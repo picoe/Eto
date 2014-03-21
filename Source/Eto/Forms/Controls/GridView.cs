@@ -80,17 +80,24 @@ namespace Eto.Forms
 		protected GridView(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			// Always attach the SelectionChangedEvent
-			// since it is always handled in the GridView.
-			HandleEvent(Grid.SelectionChangedEvent);
+			Initialize();
 		}
 
 		public GridView(Generator generator, IControl handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
+			Initialize();
+		}
+
+		private new void Initialize()
+		{
 			// Always attach the SelectionChangedEvent
 			// since it is always handled in the GridView.
 			HandleEvent(Grid.SelectionChangedEvent);
+
+			// Create a selection so that Filter and SortComparer
+			// can be set before DataStore.
+			selection = new GridViewSelection(this, null);
 		}
 
 		/// <summary>

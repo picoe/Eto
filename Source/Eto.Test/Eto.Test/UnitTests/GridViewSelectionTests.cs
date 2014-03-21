@@ -27,6 +27,7 @@ namespace Eto.Test.UnitTests
 		GridView g;
 		DataStoreCollection model;
 		TestGridViewHandler h;
+		int selectionChangedCount; // incremented when g.SelectionChanged fires
 
 		[TestInitialize]
 		public void Setup()
@@ -34,6 +35,7 @@ namespace Eto.Test.UnitTests
 			g = new GridView(null, h = new TestGridViewHandler());
 			model = GridViewUtils.CreateModel();
 			g.DataStore = model;
+			g.SelectionChanged += (s, e) => selectionChangedCount++;
 		}
 
 		[TestMethod]
@@ -90,7 +92,8 @@ namespace Eto.Test.UnitTests
 			Assert.AreEqual(0, g.SelectedRows.ToList()[0]); // model
 			Assert.AreEqual(1, h.SelectedRows.Count()); // view
 			Assert.AreEqual(0, h.SelectedRows.ToList()[0]); // view
-						
+
+			selectionChangedCount = 0; // reset the count
 			g.SortComparer = GridViewUtils.SortItemsDescending;
 			// After sorting, the selected rows in the model should be unchanged
 			// but the selected rows in the view should have changed.
@@ -99,7 +102,7 @@ namespace Eto.Test.UnitTests
 			Assert.AreEqual(1, h.SelectedRows.Count()); //  view
 			Assert.AreEqual(ItemCount -1, h.SelectedRows.ToList()[0]); // view
 
-			// TODO: also verify that no selection changed events are fired.
+			Assert.AreEqual(0, selectionChangedCount); // verify that no selection changed events are fired.
 		}
 
 		[TestMethod]
@@ -109,6 +112,7 @@ namespace Eto.Test.UnitTests
 			for (var i = 0; i < ItemCount / 2; ++i) // Select the first half of items
 				g.SelectRow(i);
 
+			selectionChangedCount = 0; // reset the count
 			g.Filter = GridViewUtils.KeepOddItemsFilter;
 			// After filtering , the selected rows in the model should be unchanged
 			// but the selected rows in the view should have changed.
@@ -119,7 +123,27 @@ namespace Eto.Test.UnitTests
 			for (var i = 0; i < ItemCount / 4; ++i)
 				Assert.AreEqual(i, h.SelectedRows.ToList()[i]);
 
-			// TODO: also verify that no selection changed events are fired.
+			Assert.AreEqual(0, selectionChangedCount); // verify that no selection changed events are fired.
+		}
+	}
+
+	[TestClass]
+	public class GridViewInitializationTests
+	{
+		[TestMethod]
+		public void GridView_SetFilterBeforeDataStore_NoException()
+		{
+			var g = new GridView(null, new TestGridViewHandler());
+			g.Filter = GridViewUtils.KeepOddItemsFilter; 
+			g.DataStore = GridViewUtils.CreateModel();
+		}
+
+		[TestMethod]
+		public void GridView_SetSortBeforeDataStore_NoException()
+		{
+			var g = new GridView(null, new TestGridViewHandler());
+			g.SortComparer = GridViewUtils.SortItemsAscending;
+			g.DataStore = GridViewUtils.CreateModel();
 		}
 	}
 }
