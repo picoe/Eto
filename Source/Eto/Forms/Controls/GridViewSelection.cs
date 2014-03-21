@@ -225,7 +225,28 @@ namespace Eto.Forms
 			}
 			else if (e.Action == NotifyCollectionChangedAction.Remove)
 			{
-				throw new NotImplementedException();
+				var selectedItems = new HashSet<object>();
+				var newSelectedRows = new SortedSet<int>();
+
+				foreach (var i in selectedRows)
+				{
+					// The tricky part:
+					// a) A selected item may be removed, or 
+					// b) A selected item's index may be decremented, or 
+					// c) none of the above.
+					var temp = i;
+					if (i >= e.OldStartingIndex)
+					{
+						if (i < e.OldStartingIndex + e.OldItems.Count)
+							continue; // the item is in the removed range
+						else
+							temp = i - e.OldItems.Count; // the item is beyond the removed range so its index is decremented
+					}
+					newSelectedRows.Add(temp);
+					selectedItems.Add(model[temp]);
+				}
+
+				ResetSelection(newSelectedRows, selectedItems);
 			}
 			else if (e.Action == NotifyCollectionChangedAction.Move)
 			{

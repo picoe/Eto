@@ -61,11 +61,7 @@ namespace Eto.Test.UnitTests
 			Assert.AreEqual(selectedItem, g.SelectedItem);
 		}
 
-		/// <summary>
-		/// BUGBUG: This currently fails.
-		/// To fix this, restore the selected rows after deletion.
-		/// </summary>
-		/*[TestMethod]
+		[TestMethod]
 		public void GridViewSelection_DeleteSelectedItems_SelectedItemsRemoved()
 		{
 			g.AllowMultipleSelection = true;
@@ -79,7 +75,11 @@ namespace Eto.Test.UnitTests
 
 			// The selection should now be a quarter of the original items
 			Assert.AreEqual(ItemCount / 4, g.SelectedItems.Count());
-		}*/
+			var expectedSelectedItemIds = new List<int>();
+			for (var i = 0; i < GridViewUtils.ItemCount / 2; i += 2)
+				expectedSelectedItemIds.Add(i);
+			Assert.IsTrue(expectedSelectedItemIds.SequenceEqual(g.SelectedItems.Select(x => ((DataItem)x).Id)));
+		}
 
 		[TestMethod]
 		public void GridViewSelection_SortItems_SelectionUnchanged()
