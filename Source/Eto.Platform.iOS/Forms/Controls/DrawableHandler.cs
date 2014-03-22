@@ -111,7 +111,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
-		public void Create()
+		public virtual void Create()
 		{
 			Control = new EtoView { Handler = this };
 		}
