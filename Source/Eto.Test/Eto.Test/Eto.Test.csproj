@@ -125,6 +125,8 @@
     <Compile Include="TestIcons.cs" />
     <Compile Include="UnitTests\GridViewTests.cs" />
     <Compile Include="UnitTests\DataStoreViewTests.cs" />
+    <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />
+    <Compile Include="UnitTests\MatrixTests.cs" />
     <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="UnitTests\GridViewSelectionTests.cs" />
     <Compile Include="UnitTests\GridViewUtils.cs" />
