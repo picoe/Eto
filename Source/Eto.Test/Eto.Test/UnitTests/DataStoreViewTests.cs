@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_UNITTESTS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
@@ -99,3 +100,4 @@ namespace Eto.Test.UnitTests
 		}
 	}
 }
+#endif
