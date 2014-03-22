@@ -13,6 +13,7 @@ using ClassInitialize = NUnit.Framework.TestFixtureSetUpAttribute;
 using Assert = NUnit.Framework.Assert;
 using Eto.Forms;
 using Eto;
+using Eto.Test.UnitTests.Handlers;
 
 namespace Eto.Test.UnitTests
 {

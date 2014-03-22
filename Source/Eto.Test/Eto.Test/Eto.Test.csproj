@@ -128,7 +128,7 @@
     <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="UnitTests\GridViewSelectionTests.cs" />
     <Compile Include="UnitTests\GridViewUtils.cs" />
-    <Compile Include="UnitTests\TestGridViewHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestGridViewHandler.cs" />
     <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
