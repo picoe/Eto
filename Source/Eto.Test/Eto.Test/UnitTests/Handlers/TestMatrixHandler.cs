@@ -143,7 +143,16 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public void Invert()
 		{
-			throw new NotImplementedException();
+			var e = Elements;
+
+			if(e[0] == 0)
+				throw new InvalidOperationException("The matrix is not invertible");
+
+			var det = 1 / (e[0] * e[3] - e[1] * e[2]);
+			Elements = new float[]
+			{
+				det * e[3], -det*e[1], -det*e[2], det*e[0], -e[4], -e[5]
+			};
 		}
 
 		public PointF TransformPoint(Point point)

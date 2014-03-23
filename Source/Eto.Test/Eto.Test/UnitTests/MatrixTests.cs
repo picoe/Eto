@@ -100,6 +100,24 @@ namespace Eto.Test.UnitTests
 			Assert.IsTrue(Equals(m, Xx, Yx, Xy, Yy, a0, b0));
 		}
 
+		[TestCase(
+			1, 0, 0, 1, 0, 0,
+			1, 0, 0, 1, 0, 0)]
+		[TestCase(
+			1, 0, 0, 1, 10, 20,
+			1, 0, 0, 1, -10, -20)]
+		[TestCase(
+			10, 0, 0, 100, 0, 0,
+			.1f, 0, 0, .01f, 0, 0)]
+		public void Matrix_Invert_Inverts(
+			float xx, float yx, float xy, float yy, float x0, float y0, // matrix
+			float XX, float YX, float XY, float YY, float X0, float Y0)	// expected matrix
+		{
+			var m = Create(xx, yx, xy, yy, x0, y0);
+			m.Invert();
+			Assert.IsTrue(Equals(m, XX, YX, XY, YY, X0, Y0));
+		}
+
 		[TestMethod]
 		public void Matrix_Translate_Translates()
 		{
