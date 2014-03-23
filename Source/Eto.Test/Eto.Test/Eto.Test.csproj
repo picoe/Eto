@@ -48,6 +48,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="UnitTests\Handlers\Generator.cs" />
     <Compile Include="Handlers\TabControlHandler.cs" />
     <Compile Include="Handlers\TabPageHandler.cs" />
     <Compile Include="Log.cs" />
