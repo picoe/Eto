@@ -23,6 +23,40 @@ namespace Eto.Test.UnitTests.Handlers
 
 		float xx, yx, xy, yy, x0, y0;
 
+		float CosD(float degrees)
+		{
+			return (float) Math.Cos(degrees * Pi / 180);
+		}
+
+		float SinD(float degrees)
+		{
+			return (float) Math.Sin(degrees * Pi / 180);
+		}
+
+		float Cos(float radians)
+		{
+			return (float) Math.Cos(radians);
+		}
+
+		float Sin(float degrees)
+		{
+			return (float) Math.Sin(degrees);
+		}
+
+		static float[] Multiply(float[] e1, float[] e2)
+		{
+			return new float[]
+			{
+				e1[0]*e2[0] + e1[1]*e2[2],
+				e1[0]*e2[1] + e1[1]*e2[3],
+				e1[2]*e2[0] + e1[3]*e2[2],
+				e1[2]*e2[1] + e1[3]*e2[3],
+
+				e1[4]*e2[0] + e1[5]*e2[2] + e2[4],
+				e1[4]*e2[1] + e1[5]*e2[3] + e2[5],
+			};
+		}
+
 		public void Create()
 		{
 			xx = yy = 1;
@@ -41,6 +75,15 @@ namespace Eto.Test.UnitTests.Handlers
 		public float[] Elements
 		{
 			get { return new float[] { xx, yx, xy, yy, x0, y0 }; }
+			private set
+			{
+				xx = value[0];
+				yx = value[1];
+				xy = value[2];
+				yy = value[3];
+				x0 = value[4];
+				y0 = value[5];
+			}
 		}
 
 		public float Xx { get { return xx; } set { xx = value; } }
@@ -52,7 +95,11 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public void Rotate(float angle)
 		{
-			throw new NotImplementedException();
+			var m = new TestMatrixHandler();
+			var c = CosD(angle);
+			var s = SinD(angle);
+			m.Create(c, s, -s, c, 0, 0);
+			Append(m);
 		}
 
 		public void RotateAt(float angle, float centerX, float centerY)
@@ -83,12 +130,12 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public void Append(IMatrix matrix)
 		{
-			throw new NotImplementedException();
+			Elements = Multiply(Elements, matrix.Elements);
 		}
 
 		public void Prepend(IMatrix matrix)
 		{
-			throw new NotImplementedException();
+			Elements = Multiply(matrix.Elements, Elements);
 		}
 
 		public void Invert()
