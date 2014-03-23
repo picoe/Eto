@@ -93,13 +93,16 @@ namespace Eto.Test.UnitTests.Handlers
 		public float X0 { get { return xx; } set { x0 = value; } }
 		public float Y0 { get { return xx; } set { y0 = value; } }
 
+		void Prepend(float[] elements)
+		{
+			Elements = Multiply(elements, Elements);
+		}
+
 		public void Rotate(float angle)
 		{
-			var m = new TestMatrixHandler();
 			var c = CosD(angle);
 			var s = SinD(angle);
-			m.Create(c, s, -s, c, 0, 0);
-			Append(m);
+			Prepend(new float[] { c, s, -s, c, 0, 0 });
 		}
 
 		public void RotateAt(float angle, float centerX, float centerY)
@@ -115,7 +118,7 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public void Scale(float scaleX, float scaleY)
 		{
-			throw new NotImplementedException();
+			Prepend(new float[] { scaleX, 0, 0, scaleY, 0, 0 });
 		}
 
 		public void ScaleAt(float scaleX, float scaleY, float centerX, float centerY)
@@ -145,12 +148,16 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public PointF TransformPoint(Point point)
 		{
-			throw new NotImplementedException();
+			return TransformPoint(new PointF(point));
 		}
 
 		public PointF TransformPoint(PointF point)
 		{
-			throw new NotImplementedException();
+			var e = Elements;
+			var p = point;
+			return new PointF(
+				e[0] * p.X + e[1] * p.Y,
+				e[2] * p.X + e[3] * p.Y);
 		}
 
 		public IMatrix Clone()

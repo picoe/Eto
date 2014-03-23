@@ -75,13 +75,28 @@ namespace Eto.Test.UnitTests
 			1, 0, 0, 1, 30, 40,
 			1, 0, 0, 1, 40, 60)]
 		public void Matrix_Append_Appends(
-			float xx, float yx, float xy, float yy, float x0, float y0,
-			float XX, float YX, float XY, float YY, float X0, float Y0,
-			float Xx, float Yx, float Xy, float Yy, float a0, float b0)
+			float xx, float yx, float xy, float yy, float x0, float y0, // matrix
+			float XX, float YX, float XY, float YY, float X0, float Y0,	// prepended matrix
+			float Xx, float Yx, float Xy, float Yy, float a0, float b0)	// expected matrix
 		{
 			var m = Create(xx, yx, xy, yy, x0, y0);
 			var a = Create(XX, YX, XY, YY, X0, Y0);
 			m.Append(a);
+			Assert.IsTrue(Equals(m, Xx, Yx, Xy, Yy, a0, b0));
+		}
+
+		[TestCase(
+			1, 0, 0, 1, 10, 20,
+			1, 0, 0, 1, 30, 40,
+			1, 0, 0, 1, 40, 60)]
+		public void Matrix_Prepend_Prepends(
+			float xx, float yx, float xy, float yy, float x0, float y0, // matrix
+			float XX, float YX, float XY, float YY, float X0, float Y0, // prepended matrix
+			float Xx, float Yx, float Xy, float Yy, float a0, float b0) // expected matrix
+		{
+			var m = Create(xx, yx, xy, yy, x0, y0);
+			var a = Create(XX, YX, XY, YY, X0, Y0);
+			m.Prepend(a);
 			Assert.IsTrue(Equals(m, Xx, Yx, Xy, Yy, a0, b0));
 		}
 
@@ -103,6 +118,31 @@ namespace Eto.Test.UnitTests
 			var m = Create(xx, yx, xy, yy, x0, y0);
 			m.Rotate(degrees);
 			Assert.IsTrue(Equals(m, XX, YX, XY, YY, X0, Y0));
+		}
+
+		[TestCase(
+			2, 3, 1, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0)]
+		public void Matrix_Scale_Scales(
+			float sx, float sy,
+			float xx, float yx, float xy, float yy, float x0, float y0,
+			float XX, float YX, float XY, float YY, float X0, float Y0)
+		{
+			var m = Create(xx, yx, xy, yy, x0, y0);
+			m.Scale(sx, sy);
+			Assert.IsTrue(Equals(m, XX, YX, XY, YY, X0, Y0));
+		}
+
+
+		[TestCase(
+			1, 1, 1, 1,  1, 0, 0, 1, 0, 0)]
+		public void Matrix_TransformPoint_TransformsPoint(
+			float x, float y, // input point
+			float X, float Y, // expected transformed point
+			float xx, float yx, float xy, float yy, float x0, float y0)
+		{
+			var m = Create(xx, yx, xy, yy, x0, y0);
+			var p = m.TransformPoint(new PointF(x, y));
+			Assert.AreEqual(new PointF(X, Y), p);
 		}
 	}
 }
