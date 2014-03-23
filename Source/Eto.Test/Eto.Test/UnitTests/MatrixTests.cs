@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NO_UNITTESTS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -164,3 +165,4 @@ namespace Eto.Test.UnitTests
 		}
 	}
 }
+#endif
