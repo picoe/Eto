@@ -3,14 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
-using TestClass = NUnit.Framework.TestFixtureAttribute;
-using TestMethod = NUnit.Framework.TestAttribute;
-using TestCleanup = NUnit.Framework.TearDownAttribute;
-using TestInitialize = NUnit.Framework.SetUpAttribute;
-using TestCase = NUnit.Framework.TestCaseAttribute;
-using ClassCleanup = NUnit.Framework.TestFixtureTearDownAttribute;
-using ClassInitialize = NUnit.Framework.TestFixtureSetUpAttribute;
-using Assert = NUnit.Framework.Assert;
+using NUnit.Framework;
 using Eto.Forms;
 using Eto;
 using Eto.Test.UnitTests.Handlers;
@@ -22,7 +15,7 @@ namespace Eto.Test.UnitTests
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	/// </summary>
-	[TestClass]
+	[TestFixture]
 	public class GridViewSelectionTests
 	{
 		static int ItemCount { get { return GridViewUtils.ItemCount; } }
@@ -31,7 +24,7 @@ namespace Eto.Test.UnitTests
 		TestGridViewHandler h;
 		int selectionChangedCount; // incremented when g.SelectionChanged fires
 
-		[TestInitialize]
+		[SetUp]
 		public void Setup()
 		{
 			g = new GridView(null, h = new TestGridViewHandler());
@@ -40,7 +33,7 @@ namespace Eto.Test.UnitTests
 			g.SelectionChanged += (s, e) => selectionChangedCount++;
 		}
 
-		[TestMethod]
+		[Test]
 		public void GridViewSelection_SelectFirstRow_SelectsFirstRow()
 		{
 			g.SelectRow(0);
@@ -48,7 +41,7 @@ namespace Eto.Test.UnitTests
 			Assert.AreEqual(0, h.SelectedRows.ToList()[0]);
 		}
 
-		[TestMethod]
+		[Test]
 		public void GridViewSelection_SelectAll_SelectsAllRows()
 		{
 			g.SelectAll();
@@ -56,7 +49,7 @@ namespace Eto.Test.UnitTests
 			Assert.AreEqual(ItemCount, h.SelectedRows.Count());
 		}
 
-		[TestMethod]
+		[Test]
 		public void GridViewSelection_InsertItem_SelectionUnchanged()
 		{
 			g.SelectRow(0);
@@ -65,7 +58,7 @@ namespace Eto.Test.UnitTests
 			Assert.AreEqual(selectedItem, g.SelectedItem);
 		}
 
-		[TestMethod]
+		[Test]
 		public void GridViewSelection_DeleteSelectedItems_SelectedItemsRemoved()
 		{
 			g.AllowMultipleSelection = true;
@@ -85,7 +78,7 @@ namespace Eto.Test.UnitTests
 			Assert.IsTrue(expectedSelectedItemIds.SequenceEqual(g.SelectedItems.Select(x => ((DataItem)x).Id)));
 		}
 
-		[TestMethod]
+		[Test]
 		public void GridViewSelection_SortItems_SelectionUnchanged()
 		{
 			g.SortComparer = GridViewUtils.SortItemsAscending;
@@ -107,7 +100,7 @@ namespace Eto.Test.UnitTests
 			Assert.AreEqual(0, selectionChangedCount); // verify that no selection changed events are fired.
 		}
 
-		[TestMethod]
+		[Test]
 		public void GridViewSelection_FilterItems_SelectionUnchanged()
 		{
 			g.AllowMultipleSelection = true;

@@ -3,14 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TestClass = NUnit.Framework.TestFixtureAttribute;
-using TestMethod = NUnit.Framework.TestAttribute;
-using TestCleanup = NUnit.Framework.TearDownAttribute;
-using TestInitialize = NUnit.Framework.SetUpAttribute;
-using TestCase = NUnit.Framework.TestCaseAttribute;
-using ClassCleanup = NUnit.Framework.TestFixtureTearDownAttribute;
-using ClassInitialize = NUnit.Framework.TestFixtureSetUpAttribute;
-using Assert = NUnit.Framework.Assert;
+using NUnit.Framework;
 using Eto.Drawing;
 using Eto.Test.UnitTests.Handlers;
 
@@ -25,7 +18,7 @@ namespace Eto.Test.UnitTests
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	/// </summary>	
-	[TestClass]
+	[TestFixture]
 	public class MatrixTests
 	{
 		protected virtual IMatrixHandler CreateMatrix()
@@ -64,7 +57,7 @@ namespace Eto.Test.UnitTests
 			return Math.Abs(p - q) < 0.001f;
 		}
 
-		[TestMethod]
+		[Test]
 		public void Matrix_CreateIdentity_VerifyElements()
 		{
 			var m = Create();
@@ -119,7 +112,7 @@ namespace Eto.Test.UnitTests
 			Assert.IsTrue(Equals(m, XX, YX, XY, YY, X0, Y0));
 		}
 
-		[TestMethod]
+		[Test]
 		public void Matrix_Translate_Translates()
 		{
 			var m = Create();
