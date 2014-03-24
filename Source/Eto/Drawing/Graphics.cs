@@ -4,12 +4,23 @@ using Eto.Forms;
 
 namespace Eto.Drawing
 {
+	public interface IMeasureString
+	{
+		/// <summary>
+		/// Measures the string with the given <paramref name="font"/>
+		/// </summary>
+		/// <param name="font">Font to measure with</param>
+		/// <param name="text">Text string to measure</param>
+		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
+		SizeF MeasureString(Font font, string text);
+	}
+
 	/// <summary>
 	/// Platform handler interface for the <see cref="Graphics"/> class
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGraphics : IInstanceWidget
+	public interface IGraphics : IInstanceWidget, IMeasureString
 	{
 		/// <summary>
 		/// Gets the scale of points to pixels. Multiply by desired pixel size to get point value (e.g. for font sizes)
@@ -156,14 +167,6 @@ namespace Eto.Drawing
 		void DrawText (Font font, SolidBrush brush, float x, float y, string text);
 
 		/// <summary>
-		/// Measures the string with the given <paramref name="font"/>
-		/// </summary>
-		/// <param name="font">Font to measure with</param>
-		/// <param name="text">Text string to measure</param>
-		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
-		SizeF MeasureString (Font font, string text);
-
-		/// <summary>
 		/// Flushes the drawing (for some platforms)
 		/// </summary>
 		/// <remarks>
@@ -297,7 +300,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class Graphics : InstanceWidget
+	public class Graphics : InstanceWidget, IMeasureString
 	{
 		new IGraphics Handler { get { return (IGraphics)base.Handler; } }
 
@@ -972,7 +975,7 @@ namespace Eto.Drawing
 		/// <param name="font">Font to measure with</param>
 		/// <param name="text">Text string to measure</param>
 		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
-		public SizeF MeasureString (Font font, string text)
+		public virtual SizeF MeasureString (Font font, string text)
 		{
 			if (string.IsNullOrEmpty(text)) return SizeF.Empty; // handle null explicitly
 			return Handler.MeasureString (font, text);

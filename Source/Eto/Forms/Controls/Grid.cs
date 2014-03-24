@@ -303,6 +303,20 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
+		/// </summary>
+		/// <param name="generator">Generator to instantiate the handler with</param>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
+		protected Grid(Generator generator, IControl handler, bool initialize = true)
+			: base(generator, handler, false)
+		{
+			Columns = new GridColumnCollection();
+			if (initialize)
+				Initialize();
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating that the header should be shown
 		/// </summary>
 		/// <value><c>true</c> to show header; otherwise, <c>false</c>.</value>

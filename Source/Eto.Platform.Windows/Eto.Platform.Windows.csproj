@@ -104,6 +104,7 @@
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
+    <Compile Include="Forms\ModalWindowHandler.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
     <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />

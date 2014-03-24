@@ -3,17 +3,14 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	/// <summary>
-	/// This should be renamed to DataStoreCollection, since there isn't
-	/// any Grid-ness about it anymore.
-	/// </summary>
+	[Obsolete("Use class DataStoreCollection instead")]
 	public class GridItemCollection : DataStoreCollection<object>, IDataStore
 	{
 		public GridItemCollection ()
 		{
 		}
 
-		public GridItemCollection (IEnumerable<object> items)
+		public GridItemCollection(IEnumerable<object> items)
 			: base (items)
 		{
 		}

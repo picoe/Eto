@@ -8,6 +8,7 @@ using sd = SharpDX.Direct2D1;
 using sw = SharpDX.WIC;
 using System.IO;
 using Eto.Platform.Windows.Drawing;
+using System.Diagnostics;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -99,9 +100,22 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public Color GetPixel(int x, int y)
         {
-			var output = new uint[1];
-			Control.CopyPixels(new s.Rectangle(x, y, 1, 1), output);
-			return new s.Color4(new s.ColorBGRA(output[0]).ToRgba()).ToEto();
+			try
+			{
+				var output = new uint[1];
+				Control.CopyPixels(new s.Rectangle(x, y, 1, 1), output);
+				return new s.Color4(new s.ColorBGRA(output[0]).ToRgba()).ToEto();
+			}
+			catch (s.SharpDXException ex)
+			{
+				if (ex.ResultCode == 0x88982F0D) // [WINCODEC_ERR_ALREADYLOCKED/Alreadylocked], Message: There is already an outstanding read or write lock.
+				{
+					Debug.Print("GetPixel: {0}", ex.ToString());
+					return Color.Empty;
+				}
+				else
+					throw;
+			}			
         }
 
         public Size Size

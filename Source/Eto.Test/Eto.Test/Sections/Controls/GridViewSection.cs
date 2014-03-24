@@ -49,7 +49,7 @@ namespace Eto.Test.Sections.Controls
 			// hook up selection of main grid to the selection grid
 			withContextMenuAndFilter.SelectionChanged += (s, e) =>
 			{
-				var items = new GridItemCollection();
+				var items = new DataStoreCollection();
 				items.AddRange(withContextMenuAndFilter.SelectedItems);
 				selectionGridView.DataStore = items;
 			};
@@ -170,7 +170,7 @@ namespace Eto.Test.Sections.Controls
 
 			if (addItems)
 			{
-				var items = new GridItemCollection();
+				var items = new DataStoreCollection();
 				var rand = new Random();
 				for (int i = 0; i < 10000; i++)
 				{
@@ -197,7 +197,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = Default();
 			control.AllowMultipleSelection = true;
-			var items = control.DataStore as GridItemCollection;
+			var items = control.DataStore as DataStoreCollection;
 
 			// Filter
 			filterText.TextChanged += (s, e) =>
