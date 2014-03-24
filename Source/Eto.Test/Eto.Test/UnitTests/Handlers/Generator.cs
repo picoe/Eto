@@ -18,8 +18,11 @@ namespace Eto.Test.Handlers
 
 		public static void AddTo(Eto.Generator g)
 		{
-			g.Add<IGridView>(() => new TestGridViewHandler());
+			// Drawing
+			g.Add<IBitmap>(() => new TestBitmapHandler());
 			g.Add<IMatrixHandler>(() => new TestMatrixHandler());
+
+			g.Add<IGridView>(() => new TestGridViewHandler());
 		}
 
 		public override string ID
