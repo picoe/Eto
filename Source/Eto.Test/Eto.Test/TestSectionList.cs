@@ -2,6 +2,7 @@ using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Test.Sections.Controls;
 using Eto.Test.Sections.Drawing;
+using Eto.Test.Sections;
 
 namespace Eto.Test
 {
@@ -17,6 +18,7 @@ namespace Eto.Test
 			yield return new Section("Dialogs", DialogsSection());
 			yield return new Section("Printing", PrintingSection());
 			yield return new Section("Serialization", SerializationSection());
+			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 		
 		static IEnumerable<Section> ControlSection()
@@ -70,7 +72,6 @@ namespace Eto.Test
 			yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<DrawLoopSection> { Text = "Draw Loop" };
-			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 
 		static IEnumerable<Section> LayoutsSection()

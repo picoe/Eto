@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Test.UnitTests.Handlers;
 
-namespace Eto.Test.Handlers
+namespace Eto.UnitTest.Handlers
 {
 	public class Generator : Eto.Generator
 	{

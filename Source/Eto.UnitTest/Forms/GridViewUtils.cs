@@ -1,12 +1,11 @@
-﻿#if !NO_UNITTESTS
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Eto.Forms;
 
-namespace Eto.Test.UnitTests
+namespace Eto.UnitTest.Forms
 {
 	class DataItem
 	{
@@ -23,7 +22,7 @@ namespace Eto.Test.UnitTests
 		}
 	}
 
-	class GridViewUtils
+	static class GridViewUtils
 	{
 		public const int ItemCount = 100;
 
@@ -68,4 +67,3 @@ namespace Eto.Test.UnitTests
 		}
 	}
 }
-#endif
