@@ -4,8 +4,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E3524178-5A24-47C0-B155-92314FE4B2B6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.Wpf</RootNamespace>

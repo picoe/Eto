@@ -4,8 +4,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Eto.Test.Gtk</RootNamespace>

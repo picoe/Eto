@@ -4,8 +4,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.GtkSharp</RootNamespace>
