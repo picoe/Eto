@@ -3,16 +3,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{757FCF9A-E2D0-4031-9A11-82A2A49FA892}</ProjectGuid>
+    <ProjectGuid>{D7161F60-B4AD-11E3-A5E2-0800200C9A66}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>Eto.Json</RootNamespace>
+    <RootNamespace>Eto.UnitTest</RootNamespace>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
-    <AssemblyName>Eto.Json</AssemblyName>
+    <AssemblyName>Eto.UnitTest</AssemblyName>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -20,44 +20,44 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\BuildOutput\Android\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;MOBILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\BuildOutput\Android\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <ConsolePause>false</ConsolePause>
+    <DefineConstants>MOBILE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Components\json.net-4.5.11\lib\android\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DefaultNamespaceManager.cs" />
-    <Compile Include="DelegateConverter.cs" />
-    <Compile Include="DynamicLayoutConverter.cs" />
-    <Compile Include="EtoBinder.cs" />
-    <Compile Include="EtoContractResolver.cs" />
-    <Compile Include="EventValueProvider.cs" />
-    <Compile Include="ImageConverter.cs" />
-    <Compile Include="JsonReader.cs" />
-    <Compile Include="NameConverter.cs" />
-    <Compile Include="NamespaceManager.cs" />
-    <Compile Include="PropertyStoreConverter.cs" />
+    <Compile Include="Drawing\ClipTests.cs" />
+    <Compile Include="Forms\DataStoreViewTests.cs" />
+    <Compile Include="Forms\GridViewSelectionTests.cs" />
+    <Compile Include="Forms\GridViewTests.cs" />
+    <Compile Include="Forms\GridViewUtils.cs" />
+    <Compile Include="Drawing\MatrixTests.cs" />
+    <Compile Include="FormTester.cs" />
+    <Compile Include="Handlers\Generator.cs" />
+    <Compile Include="Handlers\TestGridViewHandler.cs" />
+    <Compile Include="Handlers\TestMatrixHandler.cs" />
+    <Compile Include="InvokeAttribute.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - Android.csproj">
@@ -66,9 +66,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <XamarinComponentReference Include="json.net">
-      <Version>4.5.11</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

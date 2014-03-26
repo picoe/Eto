@@ -3,7 +3,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using Eto.Forms;
-using NUnit.ConsoleRunner;
 
 namespace Eto.Test.Sections
 {
@@ -92,7 +91,8 @@ namespace Eto.Test.Sections
 						try
 						{
 							var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-							var consoleRunner = Runner.Main(new[]
+							#if DESKTOP
+							var consoleRunner = NUnit.ConsoleRunner.Runner.Main(new[]
 							{
 								"-noshadow",
 								"-nothread",
@@ -102,6 +102,7 @@ namespace Eto.Test.Sections
 								"-work=" + dir,
 								typeof(Eto.UnitTest.Startup).Assembly.Location
 							});
+							#endif
 						}
 						finally
 						{

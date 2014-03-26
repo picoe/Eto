@@ -15,7 +15,11 @@ namespace Eto.UnitTest
 		{
 			if (Application.Instance == null)
 			{
+				#if DESKTOP
 				var generatorTypeName = ConfigurationManager.AppSettings["generator"];
+				#else
+				string generatorTypeName = null;
+				#endif
 				var ev = new ManualResetEvent(false);
 				Exception exception = null;
 				var thread = new Thread(() =>
