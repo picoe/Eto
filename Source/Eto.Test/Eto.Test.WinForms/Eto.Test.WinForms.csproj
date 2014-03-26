@@ -12,6 +12,7 @@
     <AssemblyName>Eto.Test.WinForms</AssemblyName>
     <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
+    <BaseDir Condition="$(BaseDir) == '' Or $(BaseDir) == '*Undefined*'">..\..</BaseDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup>

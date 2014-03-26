@@ -11,6 +11,7 @@
     <RootNamespace>Eto.Test</RootNamespace>
     <AssemblyName>Eto.Test</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
+    <BaseDir>$(ProjectDir)..\..</BaseDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup>
