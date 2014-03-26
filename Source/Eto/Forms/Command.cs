@@ -126,13 +126,13 @@ namespace Eto.Forms
 
 		public string ToolBarText { get; set; }
 		
-		public virtual string ToolTip { get; set; }
+		public string ToolTip { get; set; }
 
 		public bool ShowLabel { get; set; }
 		
-		public virtual Image Image { get; set; }
+		public Image Image { get; set; }
 
-		public virtual Keys Shortcut { get; set; }
+		public Keys Shortcut { get; set; }
 
 		#endregion
 
