@@ -61,7 +61,7 @@ namespace Eto.Platform.Mac
 		public string ToolTip
 		{
 			get { return Control.ToolTip; }
-			set { Control.ToolTip = value; }
+			set { Control.ToolTip = value ?? string.Empty; }
 		}
 
 		public Keys Shortcut

@@ -190,9 +190,9 @@ namespace Eto.Platform.Mac
 			get { return Control.ToolTip; }
 			set { 
 				if (menuItem != null)
-					menuItem.ToolTip = value ?? "";
+					menuItem.ToolTip = value ?? string.Empty;
 				if (button != null)
-					button.ToolTip = value ?? "";
+					button.ToolTip = value ?? string.Empty;
 			}
 		}
 
