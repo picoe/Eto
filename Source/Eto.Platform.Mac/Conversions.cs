@@ -27,16 +27,6 @@ namespace Eto.Platform.Mac
 			return new Color(red, green, blue, alpha);
 		}
 
-		public static CGColor ToCG(this NSColor color)
-		{
-			var cs = NSColorSpace.DeviceRGBColorSpace;
-			
-			var devColor = color.UsingColorSpace(cs);
-			float[] components;
-			devColor.GetComponents(out components);
-			return new CGColor(cs.ColorSpace, components);
-		}
-
 		public static NSRange ToNS(this Range range)
 		{
 			return new NSRange(range.Start, range.Length);
