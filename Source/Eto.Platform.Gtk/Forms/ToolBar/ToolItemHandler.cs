@@ -5,7 +5,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public interface IToolBarItemHandler
 	{
-		void CreateControl(ToolBarHandler handler);
+		void CreateControl(ToolBarHandler handler, int index);
 		
 	}
 
@@ -18,7 +18,7 @@ namespace Eto.Platform.GtkSharp
 
 		protected Gtk.Image GtkImage { get; set; }
 
-		public abstract void CreateControl(ToolBarHandler handler);
+		public abstract void CreateControl(ToolBarHandler handler, int index);
 		
 		public string Text { get; set; }
 		

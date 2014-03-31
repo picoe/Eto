@@ -24,7 +24,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override void CreateControl(ToolBarHandler handler)
+		public override void CreateControl(ToolBarHandler handler, int index)
 		{
 			Gtk.Toolbar tb = handler.Control;
 			
@@ -36,7 +36,7 @@ namespace Eto.Platform.GtkSharp
 			Control.Sensitive = Enabled;
 			Control.CanFocus = false;
 			Control.IsImportant = true;
-			tb.Insert(Control, -1);
+			tb.Insert(Control, index);
 			if (tb.Visible)
 				Control.ShowAll();
 		}

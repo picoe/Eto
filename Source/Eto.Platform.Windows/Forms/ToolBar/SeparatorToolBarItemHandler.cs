@@ -32,9 +32,9 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public void CreateControl(ToolBarHandler handler)
+		public void CreateControl(ToolBarHandler handler, int index)
 		{
-			handler.Control.Items.Add(Control);
+			handler.Control.Items.Insert(index, Control);
 		}
 
 		public string Text

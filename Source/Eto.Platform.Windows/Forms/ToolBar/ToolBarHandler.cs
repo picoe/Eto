@@ -22,9 +22,9 @@ namespace Eto.Platform.Windows
 			set { dock = value; }
 		}
 
-		public void AddButton(ToolItem item)
+		public void AddButton(ToolItem item, int index)
 		{
-			((IToolBarItemHandler)item.Handler).CreateControl(this);
+			((IToolBarItemHandler)item.Handler).CreateControl(this, index);
 		}
 
 		public void RemoveButton(ToolItem item)
