@@ -363,7 +363,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		protected GtkControlConnector Connector { get { return (GtkControlConnector)base.Connector; } }
+		protected new GtkControlConnector Connector { get { return (GtkControlConnector)base.Connector; } }
 
 		protected override WeakConnector CreateConnector()
 		{
@@ -375,7 +375,7 @@ namespace Eto.Platform.GtkSharp
 		/// </summary>
 		protected class GtkControlConnector : WeakConnector
 		{
-			public GtkControl<TControl, TWidget> Handler { get { return (GtkControl<TControl, TWidget>)base.Handler; } }
+			public new GtkControl<TControl, TWidget> Handler { get { return (GtkControl<TControl, TWidget>)base.Handler; } }
 
 			public void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
 			{

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{97DEC3D5-5E7C-493D-AB7E-C0001AF7085F}</ProjectGuid>
     <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -64,7 +64,6 @@
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
     <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
-    <Compile Include="Sections\Drawing\UnitTestSection.cs" />
     <Compile Include="Sections\FormsSection\ImageViewFormSection.cs" />
     <Compile Include="Sections\Layouts\PixelLayoutSection\AnchorSection.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
     <Compile Include="TestIcons.cs" />
-    <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
@@ -129,6 +127,7 @@
     <Compile Include="Sections\Controls\SplitterSection.cs" />
     <Compile Include="Sections\Controls\SpinnerSection.cs" />
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
+    <Compile Include="Sections\UnitTestSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

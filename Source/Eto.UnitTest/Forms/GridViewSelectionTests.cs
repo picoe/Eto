@@ -1,125 +1,122 @@
-﻿#if !NO_UNITTESTS
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using NUnit.Framework;
 using Eto.Forms;
 using Eto;
-using Eto.Test.UnitTests.Handlers;
+using Eto.UnitTest.Handlers;
+using System.Threading;
 
-namespace Eto.Test.UnitTests
+namespace Eto.UnitTest.Forms
 {
 	/// <summary>
 	/// Unit tests for GridViewSelection
+	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
-	[TestFixture]
+	[TestFixture, UseTestGenerator]
 	public class GridViewSelectionTests
 	{
 		static int ItemCount { get { return GridViewUtils.ItemCount; } }
-		GridView g;
+		GridView grid;
+		IGridView handler;
 		DataStoreCollection model;
-		TestGridViewHandler h;
 		int selectionChangedCount; // incremented when g.SelectionChanged fires
 
 		[SetUp]
 		public void Setup()
 		{
-			g = new GridView(null, h = new TestGridViewHandler());
-			model = GridViewUtils.CreateModel();
-			g.DataStore = model;
-			g.SelectionChanged += (s, e) => selectionChangedCount++;
+			Application.Instance.Invoke(() =>
+			{
+				grid = new GridView();
+				handler = (IGridView)grid.Handler;
+				model = GridViewUtils.CreateModel();
+				grid.DataStore = model;
+				grid.SelectionChanged += (s, e) => selectionChangedCount++;
+			});
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void GridViewSelection_SelectFirstRow_SelectsFirstRow()
 		{
-			g.SelectRow(0);
-			Assert.AreEqual(model[0], g.SelectedItem);
-			Assert.AreEqual(0, h.SelectedRows.ToList()[0]);
+			grid.SelectRow(0);
+			Assert.AreEqual(model[0], grid.SelectedItem);
+			Assert.AreEqual(0, grid.SelectedRows.ToList()[0]);
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void GridViewSelection_SelectAll_SelectsAllRows()
 		{
-			g.SelectAll();
-			Assert.AreEqual(ItemCount, g.SelectedRows.Count());
-			Assert.AreEqual(ItemCount, h.SelectedRows.Count());
+			grid.SelectAll();
+			Assert.AreEqual(ItemCount, grid.SelectedRows.Count());
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void GridViewSelection_InsertItem_SelectionUnchanged()
 		{
-			g.SelectRow(0);
-			var selectedItem = g.SelectedItem;
+			grid.SelectRow(0);
+			var selectedItem = grid.SelectedItem;
 			model.Insert(0, new DataItem(model.Count));
-			Assert.AreEqual(selectedItem, g.SelectedItem);
+			Assert.AreEqual(selectedItem, grid.SelectedItem);
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void GridViewSelection_DeleteSelectedItems_SelectedItemsRemoved()
 		{
-			g.AllowMultipleSelection = true;
+			grid.AllowMultipleSelection = true;
 
 			for (var i = 0; i < model.Count / 2; ++i) // Select the first half of items
-				g.SelectRow(i);
+				grid.SelectRow(i);
 
 			// Delete alternate items
 			for (var i = ItemCount - 1; i >= 0; i -= 2)
 				model.RemoveAt(i);
 
 			// The selection should now be a quarter of the original items
-			Assert.AreEqual(ItemCount / 4, g.SelectedItems.Count());
+			Assert.AreEqual(ItemCount / 4, grid.SelectedItems.Count());
 			var expectedSelectedItemIds = new List<int>();
 			for (var i = 0; i < GridViewUtils.ItemCount / 2; i += 2)
 				expectedSelectedItemIds.Add(i);
-			Assert.IsTrue(expectedSelectedItemIds.SequenceEqual(g.SelectedItems.Select(x => ((DataItem)x).Id)));
+			Assert.IsTrue(expectedSelectedItemIds.SequenceEqual(grid.SelectedItems.Select(x => ((DataItem)x).Id)));
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void GridViewSelection_SortItems_SelectionUnchanged()
 		{
-			g.SortComparer = GridViewUtils.SortItemsAscending;
-			g.SelectRow(0);
-			Assert.AreEqual(1, g.SelectedRows.Count()); // model
-			Assert.AreEqual(0, g.SelectedRows.ToList()[0]); // model
-			Assert.AreEqual(1, h.SelectedRows.Count()); // view
-			Assert.AreEqual(0, h.SelectedRows.ToList()[0]); // view
+			grid.SortComparer = GridViewUtils.SortItemsAscending;
+			grid.SelectRow(0);
+			Assert.AreEqual(1, grid.SelectedRows.Count()); // model
+			Assert.AreEqual(0, grid.SelectedRows.ToList()[0]); // model
 
 			selectionChangedCount = 0; // reset the count
-			g.SortComparer = GridViewUtils.SortItemsDescending;
+			grid.SortComparer = GridViewUtils.SortItemsDescending;
 			// After sorting, the selected rows in the model should be unchanged
 			// but the selected rows in the view should have changed.
-			Assert.AreEqual(1, g.SelectedRows.Count()); // model
-			Assert.AreEqual(0, g.SelectedRows.ToList()[0]); // model
-			Assert.AreEqual(1, h.SelectedRows.Count()); //  view
-			Assert.AreEqual(ItemCount -1, h.SelectedRows.ToList()[0]); // view
+			Assert.AreEqual(1, grid.SelectedRows.Count()); // model
+			Assert.AreEqual(0, grid.SelectedRows.ToList()[0]); // model
+			Assert.AreEqual(ItemCount - 1, handler.SelectedRows.ToList()[0]); // view
 
 			Assert.AreEqual(0, selectionChangedCount); // verify that no selection changed events are fired.
 		}
 
-		[Test]
+
+		[Test, Invoke]
 		public void GridViewSelection_FilterItems_SelectionUnchanged()
 		{
-			g.AllowMultipleSelection = true;
+			grid.AllowMultipleSelection = true;
 			for (var i = 0; i < ItemCount / 2; ++i) // Select the first half of items
-				g.SelectRow(i);
+				grid.SelectRow(i);
 
 			selectionChangedCount = 0; // reset the count
-			g.Filter = GridViewUtils.KeepOddItemsFilter;
+			grid.Filter = GridViewUtils.KeepOddItemsFilter;
 			// After filtering , the selected rows in the model should be unchanged
 			// but the selected rows in the view should have changed.
-			Assert.AreEqual(ItemCount / 2, g.SelectedRows.Count()); // model
+			Assert.AreEqual(ItemCount / 2, grid.SelectedRows.Count()); // model
 			for (var i = 0; i < ItemCount / 2; ++i)
-				Assert.AreEqual(i, g.SelectedRows.ToList()[i]);
-			Assert.AreEqual(ItemCount /4, h.SelectedRows.Count()); //  view
-			for (var i = 0; i < ItemCount / 4; ++i)
-				Assert.AreEqual(i, h.SelectedRows.ToList()[i]);
+				Assert.AreEqual(i, grid.SelectedRows.ToList()[i]);
 
 			Assert.AreEqual(0, selectionChangedCount); // verify that no selection changed events are fired.
 		}
 	}
 }
-#endif

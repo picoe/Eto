@@ -14,9 +14,9 @@ namespace Eto.Forms
 	///    In this case the internal selection is updated and SelectionChanged is fired.
 	/// 3) A sort or filter is applied to the GridView. 
 	/// 4) The DataStore changes, i.e. items are added, removed or modified.
+	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
 	public class GridViewSelection
 	{
 		enum GridViewSelectionState

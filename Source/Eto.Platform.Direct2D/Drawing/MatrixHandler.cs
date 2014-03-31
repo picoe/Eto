@@ -6,9 +6,9 @@ namespace Eto.Platform.Direct2D.Drawing
 {
 	/// <summary>
 	/// Handler for <see cref="IMatrix"/>
+	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
 	public class MatrixHandler : IMatrixHandler
     {
 		s.Matrix3x2 Control;

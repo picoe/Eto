@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 
-namespace Eto.Test.UnitTests.Handlers
+namespace Eto.UnitTest.Handlers
 {
 	/// <summary>
 	/// Test handler for Matrix.
@@ -14,7 +14,7 @@ namespace Eto.Test.UnitTests.Handlers
 	/// 	| xy yy 0 |
 	/// 	| x0 y0 1 |
 	/// </para>
-	/// </remarks>
+	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class TestMatrixHandler : IMatrixHandler

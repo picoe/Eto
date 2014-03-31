@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - Android", "Eto.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Json - Android", "Eto.Json\Eto.Json - Android.csproj", "{757FCF9A-E2D0-4031-9A11-82A2A49FA892}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.UnitTest - Android", "Eto.UnitTest\Eto.UnitTest - Android.csproj", "{D7161F60-B4AD-11E3-A5E2-0800200C9A66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7161F60-B4AD-11E3-A5E2-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7161F60-B4AD-11E3-A5E2-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7161F60-B4AD-11E3-A5E2-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7161F60-B4AD-11E3-A5E2-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Eto.Test\Eto.Test.Android\Eto.Test.Android.csproj

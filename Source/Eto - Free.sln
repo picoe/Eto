@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9D5A60
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Direct2D", "Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj", "{3C1B77D5-6C93-4366-A487-3D307FC29FFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.UnitTest", "Eto.UnitTest\Eto.UnitTest.csproj", "{65F2B3D9-8611-4872-B7BE-6582FB428297}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Linux Debug|Any CPU = Linux Debug|Any CPU
@@ -108,6 +110,18 @@ Global
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Mac Release|Any CPU.Build.0 = Release|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Linux Release|Any CPU.Build.0 = Release|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65F2B3D9-8611-4872-B7BE-6582FB428297}.Windows Release|Any CPU.Build.0 = Release|Any CPU
 		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU

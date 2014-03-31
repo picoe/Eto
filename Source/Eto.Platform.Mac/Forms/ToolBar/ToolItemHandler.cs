@@ -134,7 +134,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public virtual string Identifier { get; set; }
+		public string Identifier { get; set; }
 
 		protected ToolItemHandler()
 		{
@@ -190,9 +190,9 @@ namespace Eto.Platform.Mac
 			get { return Control.ToolTip; }
 			set { 
 				if (menuItem != null)
-					menuItem.ToolTip = value ?? "";
+					menuItem.ToolTip = value ?? string.Empty;
 				if (button != null)
-					button.ToolTip = value ?? "";
+					button.ToolTip = value ?? string.Empty;
 			}
 		}
 

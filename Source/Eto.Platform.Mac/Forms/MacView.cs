@@ -591,7 +591,7 @@ namespace Eto.Platform.Mac.Forms
 			if (handler != null)
 			{
 				Command command;
-				if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue(sel, out command))
+				if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue(menuItem.Action.Handle, out command))
 				{
 					if (command != null)
 						return command.Enabled;
@@ -609,7 +609,7 @@ namespace Eto.Platform.Mac.Forms
 			if (handler != null)
 			{
 				Command command;
-				if (handler.systemActions != null && toolbarItem.Action != null && handler.systemActions.TryGetValue(sel, out command))
+				if (handler.systemActions != null && toolbarItem.Action != null && handler.systemActions.TryGetValue(toolbarItem.Action.Handle, out command))
 				{
 					if (command != null)
 						return command.Enabled;

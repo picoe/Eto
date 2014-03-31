@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>12.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
@@ -15,6 +13,7 @@
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
     <AssemblyName>Eto.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,6 +42,9 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -70,7 +72,6 @@
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
     <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
-    <Compile Include="Sections\Drawing\UnitTestSection.cs" />
     <Compile Include="Sections\FormsSection\ImageViewFormSection.cs" />
     <Compile Include="Sections\Layouts\PixelLayoutSection\AnchorSection.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
@@ -124,7 +125,6 @@
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
     <Compile Include="TestIcons.cs" />
-    <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
@@ -135,6 +135,7 @@
     <Compile Include="Sections\Controls\SplitterSection.cs" />
     <Compile Include="Sections\Controls\SpinnerSection.cs" />
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
+    <Compile Include="Sections\UnitTestSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestImage.png" />
@@ -144,6 +145,7 @@
   <ItemGroup>
     <None Include="Sections\Serialization\Json\Test.json" />
     <None Include="Sections\Serialization\Xaml\Test.xaml" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto - Android.csproj">
@@ -153,6 +155,10 @@
     <ProjectReference Include="..\..\Eto.Json\Eto.Json - Android.csproj">
       <Project>{757FCF9A-E2D0-4031-9A11-82A2A49FA892}</Project>
       <Name>Eto.Json - Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.UnitTest\Eto.UnitTest - Android.csproj">
+      <Project>{D7161F60-B4AD-11E3-A5E2-0800200C9A66}</Project>
+      <Name>Eto.UnitTest - Android</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

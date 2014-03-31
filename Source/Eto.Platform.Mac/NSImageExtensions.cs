@@ -26,47 +26,53 @@ namespace Eto.Platform.Mac
 
 		public static NSImage Tint(this NSImage image, NSColor tint)
 		{
-			CIFilter colorGenerator = CIFilter.FromName("CIConstantColorGenerator");
-			CIColor color = CIColor.FromCGColor(tint.ToCG());
+			var colorGenerator = new CIConstantColorGenerator
+			{ 
+				Color = CIColor.FromCGColor(tint.CGColor)
+			};
 
-			colorGenerator.SetValueForKey(color, CIFilterInputKey.Color);
-			CIFilter colorFilter = CIFilter.FromName("CIColorControls");
+			var colorFilter = new CIColorControls
+			{
+				Image = (CIImage)colorGenerator.ValueForKey(CIFilterOutputKey.Image),
+				Saturation = 3f,
+				Brightness = 0.35f,
+				Contrast = 1f
+			};
 
-			colorFilter.SetValueForKey(colorGenerator.ValueForKey(CIFilterOutputKey.Image), CIFilterInputKey.Image);
-			colorFilter.SetValueForKey(NSNumber.FromFloat(3f), CIFilterInputKey.Saturation);
-			colorFilter.SetValueForKey(NSNumber.FromFloat(0.35f), CIFilterInputKey.Brightness);
-			colorFilter.SetValueForKey(NSNumber.FromFloat(1f), CIFilterInputKey.Contrast);
+			var monochromeFilter = new CIColorMonochrome
+			{
+				Image = CIImage.FromCGImage(image.CGImage),
+				Color = CIColor.FromRgb(0.75f, 0.75f, 0.75f),
+				Intensity = 1f
+			};
 
-			CIFilter monochromeFilter = CIFilter.FromName("CIColorMonochrome");
-			CIImage baseImage = CIImage.FromCGImage(image.CGImage);
-
-			monochromeFilter.SetValueForKey(baseImage, CIFilterInputKey.Image);
-			monochromeFilter.SetValueForKey(CIColor.FromRgb(0.75f, 0.75f, 0.75f), CIFilterInputKey.Color);
-			monochromeFilter.SetValueForKey(NSNumber.FromFloat(1f), CIFilterInputKey.Intensity);
-
-			CIFilter compositingFilter = CIFilter.FromName("CIMultiplyCompositing");
-
-			compositingFilter.SetValueForKey(colorFilter.ValueForKey(CIFilterOutputKey.Image), CIFilterInputKey.Image);
-			compositingFilter.SetValueForKey(monochromeFilter.ValueForKey(CIFilterOutputKey.Image), CIFilterInputKey.BackgroundImage);
+			var compositingFilter = new CIMultiplyCompositing
+			{
+				Image = (CIImage)colorFilter.ValueForKey(CIFilterOutputKey.Image),
+				BackgroundImage = (CIImage)monochromeFilter.ValueForKey(CIFilterOutputKey.Image)
+			};
 
 			var outputImage = (CIImage)compositingFilter.ValueForKey(CIFilterOutputKey.Image);
 			var extent = outputImage.Extent;
 
 			var newsize = sd.Size.Truncate(extent.Size);
+			if (newsize.IsEmpty)
+				return image;
 
 			var tintedImage = new NSImage(newsize);
-			var newrep = new NSBitmapImageRep(IntPtr.Zero, newsize.Width, newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * newsize.Width, 32);
-			tintedImage.AddRepresentation(newrep);
+			tintedImage.LockFocus();
+			try
+			{
+				var graphics = NSGraphicsContext.CurrentContext.GraphicsPort;
+				var ciContext = CIContext.FromContext(graphics, new CIContextOptions { UseSoftwareRenderer = true });
+				ciContext.DrawImage(outputImage, extent, extent);
+			}
+			finally
+			{
+				tintedImage.UnlockFocus();
+			}
 
-			var graphics = NSGraphicsContext.FromBitmap(newrep);
-			NSGraphicsContext.GlobalSaveGraphicsState();
-			NSGraphicsContext.CurrentContext = graphics;
-
-			var ciContext = CIContext.FromContext(graphics.GraphicsPort, new CIContextOptions { UseSoftwareRenderer = true });
-			ciContext.DrawImage(outputImage, extent, extent);
-
-			NSGraphicsContext.GlobalRestoreGraphicsState();
-
+			var newrep = tintedImage.Representations()[0];
 			newrep.Size = image.Size;
 			return tintedImage;
 		}

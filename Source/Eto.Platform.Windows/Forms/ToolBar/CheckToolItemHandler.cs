@@ -28,9 +28,9 @@ namespace Eto.Platform.Windows
 			set { control.Checked = value; }
 		}
 
-		public override void CreateControl(ToolBarHandler handler)
+		public override void CreateControl(ToolBarHandler handler, int index)
 		{
-			handler.Control.Items.Add(control);
+			handler.Control.Items.Insert(index, control);
 		}
 
 

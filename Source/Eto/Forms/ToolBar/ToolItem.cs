@@ -24,10 +24,12 @@ namespace Eto.Forms
 		protected ToolItem(Command command, Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
+			ID = command.ID;
 			Text = command.ToolBarText;
 			ToolTip = command.ToolTip;
 			Image = command.Image;
 			Click += (sender, e) => command.OnExecuted(e);
+			Enabled = command.Enabled;
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
 			Order = -1;
 		}

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.iOS", "Eto.Test\Et
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Json - iOS", "Eto.Json\Eto.Json - iOS.csproj", "{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.UnitTest - iOS", "Eto.UnitTest\Eto.UnitTest - iOS.csproj", "{CB40A480-B4AD-11E3-A5E2-0800200C9A66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
@@ -69,6 +71,18 @@ Global
 		{AB42209E-E87F-4749-96CF-8CAE83981808}.Release|iPhone.Build.0 = Release|iPhone
 		{AB42209E-E87F-4749-96CF-8CAE83981808}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{AB42209E-E87F-4749-96CF-8CAE83981808}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.AppStore|iPhone.Build.0 = Release|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Release|iPhone.Build.0 = Release|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{CB40A480-B4AD-11E3-A5E2-0800200C9A66}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{E711B298-D141-4EC5-9BFD-84962B264F90}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
 		{E711B298-D141-4EC5-9BFD-84962B264F90}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
 		{E711B298-D141-4EC5-9BFD-84962B264F90}.AppStore|iPhone.ActiveCfg = Release|Any CPU

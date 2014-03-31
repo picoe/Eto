@@ -9,9 +9,6 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Tutorial3</RootNamespace>
     <AssemblyName>Tutorial3</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,11 +19,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="${SolutionDir}/buildapp.sh &quot;${TargetDir}&quot; &quot;${TargetName}&quot; &quot;${ProjectName}&quot;" />
-      </CustomCommands>
-    </CustomCommands>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
@@ -36,11 +28,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterBuild" command="${SolutionDir}/buildapp.sh &quot;${TargetDir}&quot; &quot;${TargetName}&quot; &quot;${ProjectName}&quot;" />
-      </CustomCommands>
-    </CustomCommands>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
@@ -54,6 +41,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)buildapp.cmd" "$(TargetDir)" "$(TargetFileName)" "$(ProjectName)"</PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">"$(SolutionDir)buildapp.cmd" "$(TargetDir)" "$(TargetFileName)" "$(ProjectName)"</PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' != 'Windows_NT'">"$(SolutionDir)buildapp.sh" "$(TargetDir)" "$(TargetFileName)" "$(ProjectName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

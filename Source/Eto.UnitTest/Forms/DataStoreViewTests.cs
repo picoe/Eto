@@ -1,5 +1,4 @@
-﻿#if !NO_UNITTESTS
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
@@ -7,13 +6,13 @@ using NUnit.Framework;
 using Eto.Forms;
 using Eto;
 
-namespace Eto.Test.UnitTests
+namespace Eto.UnitTest.Forms
 {
 	/// <summary>
 	/// Unit tests for DataStoreView
+	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
 	[TestFixture]
 	public class DataStoreViewTests
 	{
@@ -24,11 +23,14 @@ namespace Eto.Test.UnitTests
 		[SetUp]
 		public void Setup()
 		{
-			model = GridViewUtils.CreateModel();
-			d = new DataStoreView { Model = model };
+			Application.Instance.Invoke(() =>
+			{
+				model = GridViewUtils.CreateModel();
+				d = new DataStoreView { Model = model };
+			});
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void DataStoreView_WithNoFilterOrSort_ViewContainsAllModelItems()
 		{
 			var view = d.View;
@@ -37,7 +39,7 @@ namespace Eto.Test.UnitTests
 				Assert.AreSame(model[i], view[i]);
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void DataStoreView_WithOddItemFilter_ViewContainsOddModelItems()
 		{
 			d.Filter = GridViewUtils.KeepOddItemsFilter;
@@ -46,8 +48,8 @@ namespace Eto.Test.UnitTests
 			for (var i = 0; i < ItemCount / 2; ++i)
 				Assert.AreSame(model[i * 2 + 1], view[i]);
 		}
-	
-		[Test]
+
+		[Test, Invoke]
 		public void DataStoreView_SortWithEvenItemsBeforeOddItems_SortsCorrectly()
 		{
 			d.SortComparer = GridViewUtils.SortEvenItemsBeforeOdd;
@@ -59,7 +61,7 @@ namespace Eto.Test.UnitTests
 				Assert.AreSame(model[i * 2 + 1], view[ItemCount/2 + i]);
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void DataStoreView_SortAscending_SortsCorrectly()
 		{
 			d.SortComparer = GridViewUtils.SortItemsAscending;
@@ -69,7 +71,7 @@ namespace Eto.Test.UnitTests
 				Assert.AreSame(model[i], view[i]);
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void DataStoreView_SortDescending_SortsCorrectly()
 		{
 			d.SortComparer = GridViewUtils.SortItemsDescending;
@@ -79,7 +81,7 @@ namespace Eto.Test.UnitTests
 				Assert.AreSame(model[ItemCount - 1 - i], view[i]);
 		}
 
-		[Test]
+		[Test, Invoke]
 		public void DataStoreView_SortWithEvenItemsBeforeOddItemsAndWithFilter_SortsAndFiltersCorrectly()
 		{
 			d.SortComparer = GridViewUtils.SortEvenItemsBeforeOdd;
@@ -93,4 +95,3 @@ namespace Eto.Test.UnitTests
 		}
 	}
 }
-#endif

@@ -73,11 +73,11 @@ namespace Eto.Platform.Mac
 			set { dock = value; }
 		}
 
-		public void AddButton(ToolItem item)
+		public void AddButton(ToolItem item, int index)
 		{
 			var handler = (IToolBarBaseItemHandler)item.Handler;
-			items.Add(handler);
-			Control.InsertItem(handler.Identifier, Control.Items.Length);
+			items.Insert(index, handler);
+			Control.InsertItem(handler.Identifier, index);
 			if (handler != null)
 				handler.ControlAdded(this);
 			//Control.ValidateVisibleItems();

@@ -10,9 +10,9 @@ namespace Eto.Forms
 	/// TODO: should this be made generic, to handle
 	/// an IDataStore of T?
 	/// 
+	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
 	public interface IDataStoreView
 	{
 		/// <summary>

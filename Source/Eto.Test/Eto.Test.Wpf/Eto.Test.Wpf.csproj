@@ -4,8 +4,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Eto.Test.Wpf</RootNamespace>

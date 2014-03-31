@@ -18,7 +18,7 @@ namespace Eto.Forms
 
 	public interface IToolBar : IInstanceWidget
 	{
-		void AddButton(ToolItem button);
+		void AddButton(ToolItem button, int index);
 
 		void RemoveButton(ToolItem button);
 

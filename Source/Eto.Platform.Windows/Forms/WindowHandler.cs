@@ -99,6 +99,8 @@ namespace Eto.Platform.Windows
 				Control.AutoSize = false;
 				Control.MinimumSize = sd.Size.Empty;
 				content.MinimumSize = content.MaximumSize = sd.Size.Empty;
+				if (ContainerContentControl.Controls.Count > 0)
+					ContainerContentControl.Controls[0].Dock = swf.DockStyle.Fill;
 			};
 			Control.Size = sd.Size.Empty;
 
@@ -106,6 +108,12 @@ namespace Eto.Platform.Windows
 
 			// Always handle closing because we want to send Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+		}
+
+		protected override void SetContent(swf.Control contentControl)
+		{
+			contentControl.Dock = swf.DockStyle.Top;
+			ContainerContentControl.Controls.Add(contentControl);
 		}
 
 		public override void AttachEvent(string id)

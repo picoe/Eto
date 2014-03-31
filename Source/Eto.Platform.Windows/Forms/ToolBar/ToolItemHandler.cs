@@ -7,7 +7,7 @@ namespace Eto.Platform.Windows
 {
 	public interface IToolBarItemHandler
 	{
-		void CreateControl(ToolBarHandler handler);
+		void CreateControl(ToolBarHandler handler, int index);
 	}
 
 	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
@@ -17,7 +17,7 @@ namespace Eto.Platform.Windows
 		Image image;
 		int imageSize = 16;
 
-		public abstract void CreateControl(ToolBarHandler handler);
+		public abstract void CreateControl(ToolBarHandler handler, int index);
 
 		public virtual void InvokeButton()
 		{

@@ -6,27 +6,27 @@ namespace Eto.Platform.GtkSharp
 	{
 		SeparatorToolItemType type;
 		bool expand;
-		
-		public override void CreateControl (ToolBarHandler handler)
+
+		public override void CreateControl(ToolBarHandler handler, int index)
 		{
 			Gtk.Toolbar tb = handler.Control;
 			Control = new Gtk.SeparatorToolItem();
 			Control.Expand = expand;
-			tb.Insert(Control, -1);
-			if (tb.Visible) Control.ShowAll();
+			tb.Insert(Control, index);
+			if (tb.Visible)
+				Control.ShowAll();
 		}
-		
-		
-		public SeparatorToolItemType Type {
-			get {
-				return type;
-			}
-			set {
+
+		public SeparatorToolItemType Type
+		{
+			get { return type; }
+			set
+			{
 				type = value;
 				expand = type == SeparatorToolItemType.FlexibleSpace;
-				if (Control != null) Control.Expand = expand;
+				if (Control != null)
+					Control.Expand = expand;
 			}
 		}
-		
 	}
 }

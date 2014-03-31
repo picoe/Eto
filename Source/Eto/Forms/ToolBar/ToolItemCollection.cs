@@ -15,7 +15,7 @@ namespace Eto.Forms
 		protected override void InsertItem(int index, ToolItem item)
 		{
 			base.InsertItem(index, item);
-			parent.Handler.AddButton(item);
+			parent.Handler.AddButton(item, index);
 		}
 
 		protected override void RemoveItem(int index)
@@ -51,9 +51,9 @@ namespace Eto.Forms
 			Add(item);
 		}
 
-		public void AddSeparator(int order = -1)
+		public void AddSeparator(int order = -1, SeparatorToolItemType type = SeparatorToolItemType.Divider)
 		{
-			Add(new SeparatorToolItem(parent.Generator) { Order = order });
+			Add(new SeparatorToolItem(parent.Generator) { Order = order, Type = type });
 		}
 
 		public void AddRange(IEnumerable<ToolItem> items)

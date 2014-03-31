@@ -169,7 +169,10 @@ namespace Eto.Platform.Wpf.Forms
 				if (Widget.MainForm != null)
 					Control.Run((System.Windows.Window)Widget.MainForm.ControlObject);
 				else
+				{
+					Control.ShutdownMode = sw.ShutdownMode.OnExplicitShutdown;
 					Control.Run();
+				}
 			}
 		}
 
