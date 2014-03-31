@@ -108,13 +108,8 @@ namespace Eto.Platform.Direct2D.Drawing
 			}
 			catch (s.SharpDXException ex)
 			{
-				if (ex.ResultCode == 0x88982F0D) // [WINCODEC_ERR_ALREADYLOCKED/Alreadylocked], Message: There is already an outstanding read or write lock.
-				{
-					Debug.Print("GetPixel: {0}", ex.ToString());
-					return Color.Empty;
-				}
-				else
-					throw;
+				Debug.Print("GetPixel: {0}", ex.ToString());
+				throw;
 			}			
         }
 

@@ -134,7 +134,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public virtual string Identifier { get; set; }
+		public string Identifier { get; set; }
 
 		protected ToolItemHandler()
 		{
