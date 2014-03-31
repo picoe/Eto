@@ -50,6 +50,7 @@
     <Compile Include="Drawing\MatrixTests.cs" />
     <Compile Include="FormTester.cs" />
     <Compile Include="Handlers\Generator.cs" />
+    <Compile Include="Handlers\TestBitmapHandler.cs" />
     <Compile Include="Handlers\TestGridViewHandler.cs" />
     <Compile Include="Handlers\TestMatrixHandler.cs" />
     <Compile Include="InvokeAttribute.cs" />
