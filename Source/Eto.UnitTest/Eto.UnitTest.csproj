@@ -49,6 +49,7 @@
     <Compile Include="Forms\GridViewUtils.cs" />
     <Compile Include="Drawing\MatrixTests.cs" />
     <Compile Include="FormTester.cs" />
+    <Compile Include="Handlers\TestGraphicsHandler.cs" />
     <Compile Include="Handlers\Generator.cs" />
     <Compile Include="Handlers\TestBitmapHandler.cs" />
     <Compile Include="Handlers\TestGridViewHandler.cs" />
