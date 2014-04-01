@@ -21,20 +21,13 @@ namespace Eto.Platform.Wpf.Forms
 			base.Initialize ();
 			Control.ShowInTaskbar = false;
 			Resizable = false;
-		}
-
-		public override bool Resizable
-		{
-			get { return Control.ResizeMode == sw.ResizeMode.CanResize || Control.ResizeMode == sw.ResizeMode.CanResizeWithGrip; }
-			set
-			{
-				Control.ResizeMode = value ? sw.ResizeMode.CanResizeWithGrip : sw.ResizeMode.NoResize;
-			}
+			Minimizable = false;
+			Maximizable = false;
 		}
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public DialogResult ShowDialog (Control parent)
+		public virtual DialogResult ShowDialog (Control parent)
 		{
 			if (parent != null) {
 				var parentWindow = parent.ParentWindow;
