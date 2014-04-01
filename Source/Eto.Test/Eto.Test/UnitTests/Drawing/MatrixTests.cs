@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Eto.Drawing;
-using Eto.UnitTest.Handlers;
+using Eto.Test.UnitTests.Handlers;
 
-namespace Eto.UnitTest.Drawing
+namespace Eto.Test.UnitTests.Drawing
 {
 	/// <summary>
 	/// Unit tests for Matrix using TestMatrixHandler.

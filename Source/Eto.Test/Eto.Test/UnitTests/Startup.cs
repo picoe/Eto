@@ -5,7 +5,7 @@ using System.Threading;
 using Eto.Drawing;
 using System.Configuration;
 
-namespace Eto.UnitTest
+namespace Eto.Test.UnitTests
 {
 	[SetUpFixture]
 	public class Startup

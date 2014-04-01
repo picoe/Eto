@@ -7,7 +7,7 @@ using Eto;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.UnitTest.Handlers
+namespace Eto.Test.UnitTests.Handlers
 {
 	/// <summary>
 	/// A mock GridViewHandler implementation.

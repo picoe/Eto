@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 
-namespace Eto.UnitTest.Handlers
+namespace Eto.Test.UnitTests.Handlers
 {
 	/// <summary>
 	/// Test handler for Matrix.

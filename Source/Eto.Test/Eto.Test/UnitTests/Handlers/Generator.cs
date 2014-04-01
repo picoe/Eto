@@ -5,7 +5,7 @@ using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.UnitTest.Handlers
+namespace Eto.Test.UnitTests.Handlers
 {
 	public class Generator : Eto.Generator
 	{

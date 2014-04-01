@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Eto.UnitTest
+namespace Eto.Test.UnitTests
 {
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class InvokeAttribute : Attribute, ITestAction

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Eto.Forms;
 using Eto;
 
-namespace Eto.UnitTest.Forms
+namespace Eto.Test.UnitTests.Forms
 {
 	/// <summary>
 	/// Unit tests for DataStoreView

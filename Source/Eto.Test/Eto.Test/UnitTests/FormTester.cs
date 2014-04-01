@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Eto.UnitTest
+namespace Eto.Test.UnitTests
 {
 	public static class FormTester
 	{

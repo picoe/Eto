@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 
-namespace Eto.UnitTest.Handlers
+namespace Eto.Test.UnitTests.Handlers
 {
 	/// <summary>
 	/// A mock IBitmap implementation.

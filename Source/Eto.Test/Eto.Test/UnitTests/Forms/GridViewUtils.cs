@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Eto.Forms;
 
-namespace Eto.UnitTest.Forms
+namespace Eto.Test.UnitTests.Forms
 {
 	class DataItem
 	{

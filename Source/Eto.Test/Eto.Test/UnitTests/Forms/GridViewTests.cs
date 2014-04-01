@@ -5,9 +5,9 @@ using Eto.Drawing;
 using NUnit.Framework;
 using Eto.Forms;
 using Eto;
-using Eto.UnitTest.Handlers;
+using Eto.Test.UnitTests.Handlers;
 
-namespace Eto.UnitTest.Forms
+namespace Eto.Test.UnitTests.Forms
 {
 	/// <summary>
 	/// Unit tests for GridView
