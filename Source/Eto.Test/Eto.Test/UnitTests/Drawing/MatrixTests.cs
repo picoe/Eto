@@ -20,6 +20,25 @@ namespace Eto.UnitTest.Drawing
 	[TestFixture]
 	public class MatrixTests
 	{
+		protected virtual IMatrixHandler CreateMatrix()
+		{
+			return new TestMatrixHandler();
+		}
+
+		IMatrix Create()
+		{
+			var result = CreateMatrix();
+			result.Create();
+			return result;
+		}
+
+		IMatrix Create(float xx, float yx, float xy, float yy, float x0, float y0)
+		{
+			var result = CreateMatrix();
+			result.Create(xx, yx, xy, yy, x0, y0);
+			return result;
+		}
+
 		bool Equals(IMatrix m, float xx, float yx, float xy, float yy, float x0, float y0)
 		{
 			var e = m.Elements;
@@ -40,7 +59,7 @@ namespace Eto.UnitTest.Drawing
 		[Test]
 		public void Matrix_CreateIdentity_VerifyElements()
 		{
-			var m = Matrix.Create();
+			var m = Create();
 			Assert.IsTrue(Equals(m, 1, 0, 0, 1, 0, 0));
 		}
 
@@ -53,8 +72,8 @@ namespace Eto.UnitTest.Drawing
 			float XX, float YX, float XY, float YY, float X0, float Y0,	// prepended matrix
 			float Xx, float Yx, float Xy, float Yy, float a0, float b0)	// expected matrix
 		{
-			var m = Matrix.Create(xx, yx, xy, yy, x0, y0);
-			var a = Matrix.Create(XX, YX, XY, YY, X0, Y0);
+			var m = Create(xx, yx, xy, yy, x0, y0);
+			var a = Create(XX, YX, XY, YY, X0, Y0);
 			m.Append(a);
 			Assert.IsTrue(Equals(m, Xx, Yx, Xy, Yy, a0, b0));
 		}
@@ -68,8 +87,8 @@ namespace Eto.UnitTest.Drawing
 			float XX, float YX, float XY, float YY, float X0, float Y0, // prepended matrix
 			float Xx, float Yx, float Xy, float Yy, float a0, float b0) // expected matrix
 		{
-			var m = Matrix.Create(xx, yx, xy, yy, x0, y0);
-			var a = Matrix.Create(XX, YX, XY, YY, X0, Y0);
+			var m = Create(xx, yx, xy, yy, x0, y0);
+			var a = Create(XX, YX, XY, YY, X0, Y0);
 			m.Prepend(a);
 			Assert.IsTrue(Equals(m, Xx, Yx, Xy, Yy, a0, b0));
 		}
@@ -87,7 +106,7 @@ namespace Eto.UnitTest.Drawing
 			float xx, float yx, float xy, float yy, float x0, float y0, // matrix
 			float XX, float YX, float XY, float YY, float X0, float Y0)	// expected matrix
 		{
-			var m = Matrix.Create(xx, yx, xy, yy, x0, y0);
+			var m = Create(xx, yx, xy, yy, x0, y0);
 			m.Invert();
 			Assert.IsTrue(Equals(m, XX, YX, XY, YY, X0, Y0));
 		}
@@ -95,7 +114,7 @@ namespace Eto.UnitTest.Drawing
 		[Test]
 		public void Matrix_Translate_Translates()
 		{
-			var m = Matrix.Create();
+			var m = Create();
 			m.Translate(100, 200);
 			Assert.IsTrue(Equals(m, 1, 0, 0, 1, 100, 200));
 		}
@@ -107,7 +126,7 @@ namespace Eto.UnitTest.Drawing
 			float xx, float yx, float xy, float yy, float x0, float y0,
 			float XX, float YX, float XY, float YY, float X0, float Y0)
 		{
-			var m = Matrix.Create(xx, yx, xy, yy, x0, y0);
+			var m = Create(xx, yx, xy, yy, x0, y0);
 			m.Rotate(degrees);
 			Assert.IsTrue(Equals(m, XX, YX, XY, YY, X0, Y0));
 		}
@@ -119,7 +138,7 @@ namespace Eto.UnitTest.Drawing
 			float xx, float yx, float xy, float yy, float x0, float y0,
 			float XX, float YX, float XY, float YY, float X0, float Y0)
 		{
-			var m = Matrix.Create(xx, yx, xy, yy, x0, y0);
+			var m = Create(xx, yx, xy, yy, x0, y0);
 			m.Scale(sx, sy);
 			Assert.IsTrue(Equals(m, XX, YX, XY, YY, X0, Y0));
 		}
@@ -132,7 +151,7 @@ namespace Eto.UnitTest.Drawing
 			float X, float Y, // expected transformed point
 			float xx, float yx, float xy, float yy, float x0, float y0)
 		{
-			var m = Matrix.Create(xx, yx, xy, yy, x0, y0);
+			var m = Create(xx, yx, xy, yy, x0, y0);
 			var p = m.TransformPoint(new PointF(x, y));
 			Assert.AreEqual(new PointF(X, Y), p);
 		}

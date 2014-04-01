@@ -8,7 +8,7 @@ using Eto.Drawing;
 namespace Eto.Test.WinForms.UnitTests
 {
 	[TestFixture]
-	public class MatrixTests : Eto.Test.UnitTests.MatrixTests
+	public class MatrixTests : Eto.UnitTest.Drawing.MatrixTests
 	{
 		protected override IMatrixHandler CreateMatrix()
 		{
