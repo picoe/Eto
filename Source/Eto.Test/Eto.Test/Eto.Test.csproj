@@ -36,6 +36,7 @@
   <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="nunit-console-runner">
       <HintPath>..\..\packages\NUnit.Runners.2.6.3\tools\lib\nunit-console-runner.dll</HintPath>
@@ -134,6 +135,20 @@
     <Compile Include="Sections\Controls\SplitterSection.cs" />
     <Compile Include="Sections\Controls\SpinnerSection.cs" />
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
+    <Compile Include="UnitTests\Drawing\ClipTests.cs" />
+    <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
+    <Compile Include="UnitTests\Forms\DataStoreViewTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewSelectionTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
+    <Compile Include="UnitTests\FormTester.cs" />
+    <Compile Include="UnitTests\Handlers\Generator.cs" />
+    <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestGraphicsHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestGridViewHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />
+    <Compile Include="UnitTests\InvokeAttribute.cs" />
+    <Compile Include="UnitTests\Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Json\Eto.Json.csproj">
@@ -143,10 +158,6 @@
     <ProjectReference Include="..\..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.UnitTest\Eto.UnitTest.csproj">
-      <Project>{65F2B3D9-8611-4872-B7BE-6582FB428297}</Project>
-      <Name>Eto.UnitTest</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
