@@ -33,9 +33,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override bool UseKeyPreview { get { return true; } }
 
-		public override void OnLoad(EventArgs e)
+		protected override void PostInitialize()
 		{
-			base.OnLoad(e);
+			base.PostInitialize();
 			DateTime? last = Value;
 			Control.ValueChanged += delegate
 			{
@@ -55,7 +55,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				}
 			};
 		}
-
+		
 		public DateTime? Value
 		{
 			get { return Control.Value; }

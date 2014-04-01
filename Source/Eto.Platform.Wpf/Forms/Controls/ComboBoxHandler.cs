@@ -91,9 +91,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override bool UseKeyPreview { get { return true; } }
 
-		public override void OnLoad(EventArgs e)
+
+		protected override void PostInitialize()
 		{
-			base.OnLoad(e);
+			base.PostInitialize();
 			Control.SelectionChanged += delegate
 			{
 				Widget.OnSelectedIndexChanged(EventArgs.Empty);
