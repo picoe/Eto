@@ -176,7 +176,7 @@ namespace Eto.Forms
 
 		public DynamicRow AddSeparateRow(params Control[] controls)
 		{
-			var row = AddSeparateRow();
+			var row = AddSeparateRow(padding: null);
 			row.Add(controls);
 			return row;
 		}
