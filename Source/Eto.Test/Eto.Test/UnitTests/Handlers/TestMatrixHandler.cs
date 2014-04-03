@@ -87,11 +87,11 @@ namespace Eto.Test.UnitTests.Handlers
 		}
 
 		public float Xx { get { return xx; } set { xx = value; } }
-		public float Yx { get { return xx; } set { yx = value; } }
-		public float Xy { get { return xx; } set { xy = value; } }
-		public float Yy { get { return xx; } set { yy = value; } }
-		public float X0 { get { return xx; } set { x0 = value; } }
-		public float Y0 { get { return xx; } set { y0 = value; } }
+		public float Yx { get { return yx; } set { yx = value; } }
+		public float Xy { get { return xy; } set { xy = value; } }
+		public float Yy { get { return yy; } set { yy = value; } }
+		public float X0 { get { return x0; } set { x0 = value; } }
+		public float Y0 { get { return y0; } set { y0 = value; } }
 
 		void Prepend(float[] elements)
 		{
@@ -165,8 +165,8 @@ namespace Eto.Test.UnitTests.Handlers
 			var e = Elements;
 			var p = point;
 			return new PointF(
-				e[0] * p.X + e[1] * p.Y,
-				e[2] * p.X + e[3] * p.Y);
+				e[0] * p.X + e[2] * p.Y + e[4],
+				e[1] * p.X + e[3] * p.Y + e[5]);
 		}
 
 		public IMatrix Clone()

@@ -56,6 +56,11 @@ namespace Eto.Test.UnitTests.Drawing
 			return Math.Abs(p - q) < 0.001f;
 		}
 
+		private bool AreEqual(PointF a, PointF b)
+		{
+			return FloatEquals(a.X, b.X) && FloatEquals(a.Y, b.Y);
+		}
+
 		[Test]
 		public void Matrix_CreateIdentity_VerifyElements()
 		{
@@ -144,8 +149,8 @@ namespace Eto.Test.UnitTests.Drawing
 		}
 
 
-		[TestCase(
-			1, 1, 1, 1,  1, 0, 0, 1, 0, 0)]
+		[TestCase(1, 1,     1, 1,      1, 0, 0, 1, 0, 0)]
+		[TestCase(100, 100, 120, 160,  0.4f, 0.5f, 0.7f, 0.9f, 10, 20)]
 		public void Matrix_TransformPoint_TransformsPoint(
 			float x, float y, // input point
 			float X, float Y, // expected transformed point
@@ -153,7 +158,7 @@ namespace Eto.Test.UnitTests.Drawing
 		{
 			var m = Create(xx, yx, xy, yy, x0, y0);
 			var p = m.TransformPoint(new PointF(x, y));
-			Assert.AreEqual(new PointF(X, Y), p);
+			Assert.IsTrue(AreEqual(new PointF(X, Y), p));
 		}
 	}
 }
