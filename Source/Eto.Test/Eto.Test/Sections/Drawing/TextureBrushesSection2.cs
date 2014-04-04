@@ -12,9 +12,9 @@ namespace Eto.Test.Sections.Drawing
 	{
 		readonly Drawable drawable;
 		Graphics bitmapGraphics;
-		Bitmap offscreenBitmap;
-		bool useOffScreenBitmap;
+		public Bitmap OffscreenBitmap { get; private set; }
 
+		bool useOffScreenBitmap;
 		public bool UseOffScreenBitmap
 		{
 			get { return useOffScreenBitmap; } 
@@ -35,16 +35,16 @@ namespace Eto.Test.Sections.Drawing
 		{
 			if (UseOffScreenBitmap)
 			{
-				if (offscreenBitmap == null ||
-					offscreenBitmap.Size.Width < e.ClipRectangle.Width ||
-					offscreenBitmap.Size.Height < e.ClipRectangle.Height)
+				if (OffscreenBitmap == null ||
+					OffscreenBitmap.Size.Width < e.ClipRectangle.Width ||
+					OffscreenBitmap.Size.Height < e.ClipRectangle.Height)
 				{
-					if (offscreenBitmap != null)
-						offscreenBitmap.Dispose();
+					if (OffscreenBitmap != null)
+						OffscreenBitmap.Dispose();
 
-					offscreenBitmap = new Bitmap(e.ClipRectangle.Size, PixelFormat.Format32bppRgba, drawable.Generator);
+					OffscreenBitmap = new Bitmap(e.ClipRectangle.Size, PixelFormat.Format32bppRgba, drawable.Generator);
 				}
-				bitmapGraphics = new Graphics(offscreenBitmap);
+				bitmapGraphics = new Graphics(OffscreenBitmap);
 				bitmapGraphics.TranslateTransform(-e.ClipRectangle.Location);
 				bitmapGraphics.SetClip(e.ClipRectangle);
 				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor, drawable.Generator));
@@ -60,7 +60,7 @@ namespace Eto.Test.Sections.Drawing
 				bitmapGraphics.Dispose();
 				bitmapGraphics = null;
 
-				e.Graphics.DrawImage(offscreenBitmap, new RectangleF(e.ClipRectangle.Size), e.ClipRectangle);
+				e.Graphics.DrawImage(OffscreenBitmap, new RectangleF(e.ClipRectangle.Size), e.ClipRectangle);
 			}
 		}
 
