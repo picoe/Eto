@@ -52,6 +52,7 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Content = main;
 			Control.Loaded += delegate
 			{
+				SetResizeMode();
 				if (initialClientSize != null)
 				{
 					initialClientSize = null;
@@ -213,7 +214,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		void SetResizeMode ()
+		protected virtual void SetResizeMode ()
 		{
 			if (resizable) Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
 			else if (minimizable) Control.ResizeMode = sw.ResizeMode.CanMinimize;

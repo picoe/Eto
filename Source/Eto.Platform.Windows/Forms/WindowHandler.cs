@@ -99,7 +99,7 @@ namespace Eto.Platform.Windows
 				Control.AutoSize = false;
 				Control.MinimumSize = sd.Size.Empty;
 				content.MinimumSize = content.MaximumSize = sd.Size.Empty;
-				if (ContainerContentControl.Controls.Count > 0)
+				if (ContainerContentControl.HasChildren)
 					ContainerContentControl.Controls[0].Dock = swf.DockStyle.Fill;
 			};
 			Control.Size = sd.Size.Empty;
@@ -112,7 +112,7 @@ namespace Eto.Platform.Windows
 
 		protected override void SetContent(swf.Control contentControl)
 		{
-			contentControl.Dock = swf.DockStyle.Top;
+			contentControl.Dock = Widget.Loaded ? swf.DockStyle.Fill : swf.DockStyle.None;
 			ContainerContentControl.Controls.Add(contentControl);
 		}
 

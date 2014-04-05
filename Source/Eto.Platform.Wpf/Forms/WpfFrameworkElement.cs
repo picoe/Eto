@@ -409,12 +409,17 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public virtual void OnLoad(EventArgs e)
+		protected override void PostInitialize()
 		{
+			base.PostInitialize();
 			Control.Tag = this;
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);
 			Control.Loaded += Control_Loaded;
+		}
+
+		public virtual void OnLoad(EventArgs e)
+		{
 		}
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)

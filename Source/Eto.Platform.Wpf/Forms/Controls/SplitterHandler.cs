@@ -300,6 +300,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				}
 			}
 		}
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			base.SetScale(xscale, yscale);
+			var control = panel1.GetWpfFrameworkElement();
+			if (control != null)
+				control.SetScale(true, true);
+			control = panel2.GetWpfFrameworkElement();
+			if (control != null)
+				control.SetScale(true, true);
+		}
 
 		public Control Panel1
 		{

@@ -60,6 +60,7 @@ namespace Eto.Forms
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
 			Click += (sender, e) => command.OnExecuted(e);
+			Validate += (sender, e) => Enabled = command.Enabled;
 			Enabled = command.Enabled;
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
 			if (initialize)

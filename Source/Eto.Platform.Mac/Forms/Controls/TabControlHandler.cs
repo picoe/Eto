@@ -41,6 +41,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.DidSelect += HandleDidSelect;
 		}
 
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			Control.ShouldSelectTabViewItem -= HandleShouldSelectTabViewItem;
+			Control.DidSelect -= HandleDidSelect;
+		}
+
 		static bool HandleShouldSelectTabViewItem(NSTabView tabView, NSTabViewItem item)
 		{
 			var handler = ((EtoTabView)tabView).WeakHandler.Target as TabControlHandler;

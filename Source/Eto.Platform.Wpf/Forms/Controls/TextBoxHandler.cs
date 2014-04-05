@@ -17,9 +17,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new mwc.WatermarkTextBox();
 		}
 
-		public override void OnLoad(EventArgs e)
+		protected override void PostInitialize()
 		{
-			base.OnLoad(e);
+			base.PostInitialize();
 			Control.GotKeyboardFocus += Control_GotKeyboardFocus;
 		}
 

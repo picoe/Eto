@@ -130,7 +130,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void DidResizeSubviews(MonoMac.Foundation.NSNotification notification)
 			{
 				var subview = Handler.Control.Subviews[0];
-				if (subview != null && Handler.Widget.Loaded && Handler.Widget.ParentWindow != null && Handler.Widget.ParentWindow.Loaded)
+				if (subview != null && Handler.position != null && Handler.Widget.Loaded && Handler.Widget.ParentWindow != null && Handler.Widget.ParentWindow.Loaded)
 				{
 					Handler.position = Handler.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
 					Handler.Widget.OnPositionChanged(EventArgs.Empty);
@@ -250,9 +250,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		void SetInitialSplitPosition()
 		{
-			base.OnLoadComplete(e);
 			if (position == null)
 			{
 				switch (fixedPanel)
@@ -270,6 +269,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 						break;
 				}
 			}
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			SetInitialSplitPosition();
 			Control.ResizeSubviewsWithOldSize(sd.SizeF.Empty);
 		}
 
