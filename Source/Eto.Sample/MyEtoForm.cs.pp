@@ -34,28 +34,32 @@ namespace $rootnamespace$
 
 		void GenerateMenuAndToolBar()
 		{
-			var args = new GenerateActionArgs();
-			// get system actions (e.g. needed for OS X)
-			Application.Instance.GetSystemActions(args, true);
+			// your commands!
+			var clickMe = new Command { MenuText = "Click Me!", ShowLabel = true, ToolBarText = "Click Me!" };
+			clickMe.Executed += (sender, e) => MessageBox.Show(this, "I was clicked!");
 
-			// your actions!
-			var clickMe = new ButtonAction { Text = "Click Me!", ID = "clickme", ShowLabel = true, ToolBarText = "Click Me!" };
-			clickMe.Activated += (sender, e) => MessageBox.Show(this, "I was clicked!");
+			var quitAction = new Command { MenuText = "Quit", Shortcut = Application.Instance.CommonModifier | Key.Q };
+			quitAction.Executed += (sender, e) => Application.Instance.Quit();
 
-			var quitAction = new ButtonAction { Text = "Quit", ID = "quit", Accelerator = Application.Instance.CommonModifier | Key.Q };
-			quitAction.Activated += (sender, e) => Application.Instance.Quit();
 
-			// add actions to the menu & toolbar definitions
-			var myMenu = args.Menu.FindAddSubMenu("&File");
-			myMenu.Actions.Add(clickMe);
-			myMenu.Actions.AddSeparator();
-			myMenu.Actions.Add(quitAction, 1000); // show last
+			// create menu & get standard menu items (e.g. needed for OS X)
+			var menu = new MenuBar();
+			Application.Instance.CreateStandardMenu(menu.Items);
+			
+			// add commands to the menu
+			var myMenu = menu.Items.GetSubmenu("&File");
+			myMenu.Items.Add(clickMe, 500);
+			myMenu.Items.AddSeparator(500);
+			myMenu.Items.Add(quitAction, 1000);
+			
+			menu.Items.Trim();
+			this.Menu = menu;
+			
 
-			args.ToolBar.Add(clickMe);
-
-			// generate menu & toolbar for this form
-			this.Menu = args.Menu.GenerateMenuBar();
-			this.ToolBar = args.ToolBar.GenerateToolBar();
+			// create toolbar			
+			var toolbar = new ToolBar();
+			toolbar.Items.Add(clickMe);
+			this.ToolBar = toolbar;
 		}
 	}
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Configuration Condition="$(Configuration) == ''">Release</Configuration>
+        <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
+        <BaseDir Condition="$(BaseDir) == ''">..\Source</BaseDir>
+		<TargetDir Condition="$(TargetDir) == ''">..\BuildOutput\$(Configuration)</TargetDir>
+	</PropertyGroup>
+	<Import Project="..\Source\.nuget\NuGet.targets" Condition="Exists('..\Source\.nuget\NuGet.targets')" />
+    <Target Name="Package">
+    	<PropertyGroup>
+			<PackageTargets>Rebuild;BuildPackage</PackageTargets>
+    	</PropertyGroup>
+    	<MSBuild Projects="..\Source\Eto\Eto.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Json\Eto.Json.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Gtk\Eto.Platform.Gtk.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Windows\Eto.Platform.Windows.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Wpf\Eto.Platform.Wpf.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Mac\Eto.Platform.Mac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Mac\Eto.Platform.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" />
+		<GetAssemblyInformationVersion AssemblyFileName="$(TargetDir)\Eto.dll">
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
+		</GetAssemblyInformationVersion>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=Eto.Platform.Mac.Template.nuspec;TargetDir=$(TargetDir);NugetBuildOptions=-Version $(AssemblyInformationalVersion)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=..\Source\Eto.Sample\Eto.Forms.Sample.nuspec;TargetDir=$(TargetDir);NugetBuildOptions=-Version $(AssemblyInformationalVersion)" Projects="$(MSBuildProjectFile)"/>
+    </Target>
+    <Target Name="Publish">
+    	<MSBuild Projects="..\Source\Eto\Eto.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Json\Eto.Json.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Gtk\Eto.Platform.Gtk.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Windows\Eto.Platform.Windows.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Wpf\Eto.Platform.Wpf.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Mac\Eto.Platform.Mac.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Projects="..\Source\Eto.Platform.Mac\Eto.Platform.XamMac.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.Template.nuspec;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.Sample.nuspec;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    </Target>
+</Project>
