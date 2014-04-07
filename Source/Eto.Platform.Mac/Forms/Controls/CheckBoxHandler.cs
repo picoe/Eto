@@ -48,7 +48,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{ 
 				if (value == null)
-					Control.State = NSCellStateValue.Mixed;
+					Control.State = ThreeState ? NSCellStateValue.Mixed : NSCellStateValue.Off;
 				else if (value.Value)
 					Control.State = NSCellStateValue.On;
 				else
