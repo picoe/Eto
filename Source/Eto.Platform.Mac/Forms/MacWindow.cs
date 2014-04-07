@@ -125,10 +125,13 @@ namespace Eto.Platform.Mac.Forms
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var content = Widget.Content.GetMacControl();
-			if (content != null)
+			if (Content != null && Content.Visible)
 			{
-				return content.GetPreferredSize(availableSize);
+				var contentControl = Content.GetMacControl();
+				if (contentControl != null)
+				{
+					return contentControl.GetPreferredSize(availableSize);
+				}
 			}
 			return new Size(200, 200);
 		}

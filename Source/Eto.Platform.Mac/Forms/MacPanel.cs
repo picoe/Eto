@@ -124,10 +124,13 @@ namespace Eto.Platform.Mac.Forms
 #endif
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
+			if (content == null || !content.Visible)
+				return Padding.Size;
+
 			var contentControl = content.GetMacControl();
 			if (contentControl != null)
 				return contentControl.GetPreferredSize(availableSize) + Padding.Size;
-			return base.GetNaturalSize(availableSize);
+			return Padding.Size;
 		}
 
 		protected virtual SD.RectangleF GetContentBounds()

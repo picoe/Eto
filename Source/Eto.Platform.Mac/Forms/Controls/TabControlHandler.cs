@@ -105,7 +105,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		protected override SizeF GetNaturalSize (SizeF availableSize)
 		{
 			var size = base.GetNaturalSize(availableSize);
-			foreach (var tab in Widget.TabPages) {
+			foreach (var tab in Widget.TabPages.Where(r => r.Visible)) {
 				size = SizeF.Max (size, tab.GetPreferredSize(availableSize));
 			}
 			return size;

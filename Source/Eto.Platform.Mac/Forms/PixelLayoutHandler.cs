@@ -34,7 +34,7 @@ namespace Eto.Platform.Mac.Forms
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			SizeF size = SizeF.Empty;
-			foreach (var item in points)
+			foreach (var item in points.Where(r => r.Key.Visible))
 			{
 				var frameSize = item.Key.GetPreferredSize(availableSize);
 				size = SizeF.Max(size, frameSize + new SizeF(item.Value));
