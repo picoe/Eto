@@ -26,15 +26,17 @@
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=..\Source\Eto.Sample\Eto.Forms.Sample.nuspec;TargetDir=$(TargetDir);NugetBuildOptions=-Version $(AssemblyInformationalVersion)" Projects="$(MSBuildProjectFile)"/>
     </Target>
     <Target Name="Publish">
-    	<MSBuild Projects="..\Source\Eto\Eto.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
-    	<MSBuild Projects="..\Source\Eto.Json\Eto.Json.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
+		<GetAssemblyInformationVersion AssemblyFileName="$(TargetDir)\Eto.dll">
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
+		</GetAssemblyInformationVersion>
+    	<MSBuild Projects="..\Source\Eto.Json\Eto.Json.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration);NupkgName=Eto.Forms.Json.$(AssemblyInformationalVersion).nupkg" />
     	<MSBuild Projects="..\Source\Eto.Platform.Gtk\Eto.Platform.Gtk.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
     	<MSBuild Projects="..\Source\Eto.Platform.Windows\Eto.Platform.Windows.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
     	<MSBuild Projects="..\Source\Eto.Platform.Wpf\Eto.Platform.Wpf.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
     	<MSBuild Projects="..\Source\Eto.Platform.Mac\Eto.Platform.Mac.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
     	<MSBuild Projects="..\Source\Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
     	<MSBuild Projects="..\Source\Eto.Platform.Mac\Eto.Platform.XamMac.csproj" Targets="PublishPackage" Properties="Configuration=$(Configuration)" />
-    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.Template.nuspec;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
-    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.Sample.nuspec;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.Template.$(AssemblyInformationalVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.Sample.$(AssemblyInformationalVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     </Target>
 </Project>

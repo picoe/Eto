@@ -15,7 +15,7 @@
         <!-- Download NuGet.exe if it does not already exist -->
         <DownloadNuGetExe Condition=" '$(DownloadNuGetExe)' == '' ">false</DownloadNuGetExe>
         <BaseDir Condition="$(BaseDir) == '' Or $(BaseDir) == '*Undefined*'">$(ProjectDir)..</BaseDir>
-        <NugetBuildOptions Condition="$(NugetBuildOptions) == ''">-symbols</NugetBuildOptions>
+        <NugetBuildOptions Condition="$(NugetBuildOptions) == ''"></NugetBuildOptions>
     </PropertyGroup>
     
     <ItemGroup Condition=" '$(PackageSources)' == '' ">
