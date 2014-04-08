@@ -12,14 +12,9 @@
     <summary>Eto.Forms - Mac Application Template</summary>
     <description>
     	This package provides an .app template for your Eto.Forms application when packaging for Mac.
-    	
-    	This also includes a build script to easily build your .app.
     </description>
-    <releaseNotes>
-		Initial release.
-    </releaseNotes>
-    <copyright>Copyright 2013 by Curtis Wensley</copyright>
-    <tags>cross platform gui framework desktop monomac osx mac eto.forms</tags>
+    <copyright>Copyright 2014 by Curtis Wensley</copyright>
+    <tags>cross platform gui ui framework desktop monomac osx mac eto.forms</tags>
     <dependencies>
       <group>
         <dependency id="Eto.Platform.Mac" version="$version$" />

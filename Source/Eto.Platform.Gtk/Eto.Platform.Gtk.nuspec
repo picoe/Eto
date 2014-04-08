@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>$description$</summary>
     <description>
-    	This is the GTK platform for Eto.Forms UI Framework.
+    	This is the GTK2 platform for Eto.Forms UI Framework.
     	
     	Include this along with your Eto.Forms application to provide a GTK interface, typically for Linux users.
     	
@@ -19,11 +19,8 @@
     	
     	On Linux, mono framework 2.10 or higher and gtk-sharp2 are required.
     </description>
-    <releaseNotes>
-		Initial release.
-    </releaseNotes>
-    <copyright>Copyright 2013 by Curtis Wensley</copyright>
-    <tags>cross platform gui framework desktop gtk eto.forms</tags>
+    <copyright>Copyright 2014 by Curtis Wensley</copyright>
+    <tags>cross platform gui ui framework desktop gtk eto.forms</tags>
     <dependencies>
       <group>
         <dependency id="Eto.Forms" version="$version$" />

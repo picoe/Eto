@@ -15,6 +15,7 @@
         <!-- Download NuGet.exe if it does not already exist -->
         <DownloadNuGetExe Condition=" '$(DownloadNuGetExe)' == '' ">false</DownloadNuGetExe>
         <BaseDir Condition="$(BaseDir) == '' Or $(BaseDir) == '*Undefined*'">$(ProjectDir)..</BaseDir>
+        <NugetBuildOptions Condition="$(NugetBuildOptions) == ''">-symbols</NugetBuildOptions>
     </PropertyGroup>
     
     <ItemGroup Condition=" '$(PackageSources)' == '' ">
@@ -39,7 +40,7 @@
         <PackagesConfig>packages.config</PackagesConfig>
         <PaddedSolutionDir>"$(BaseDir)"</PaddedSolutionDir>
     </PropertyGroup>
-    
+  
     <PropertyGroup>
         <!-- NuGet command -->
         <NuGetExePath Condition=" '$(NuGetExePath)' == '' ">$(NuGetToolsPath)\NuGet.exe</NuGetExePath>
@@ -54,8 +55,8 @@
         <NonInteractiveSwitch Condition=" '$(VisualStudioVersion)' != '' AND '$(OS)' == 'Windows_NT' ">-NonInteractive</NonInteractiveSwitch>
 
         <!-- Commands -->
-        <RestoreCommand>$(NuGetCommand) install "$(PackagesConfig)" -source "$(PackageSources)"  $(NonInteractiveSwitch) $(RequireConsentSwitch) -solutionDir $(PaddedSolutionDir)</RestoreCommand>
-        <BuildCommand>$(NuGetCommand) pack "$(ProjectPath)" -Properties "Configuration=$(Configuration);Platform=$(Platform)" $(NonInteractiveSwitch) -OutputDirectory "$(PackageOutputDir)" -symbols</BuildCommand>
+        <RestoreCommand>$(NuGetCommand) install "$(PackagesConfig)" -source "$(PackageSources)"  $(NonInteractiveSwitch) $(RequireConsentSwitch) -solutionDir $(PaddedSolutionDir) $(NugetOptions)</RestoreCommand>
+        <BuildCommand>$(NuGetCommand) pack "$(ProjectPath)" -Properties "Configuration=$(Configuration);Platform=$(Platform)" $(NonInteractiveSwitch) -OutputDirectory "$(PackageOutputDir)" $(NugetBuildOptions)</BuildCommand>
 
         <!-- We need to ensure packages are restored prior to assembly resolve -->
         <BuildDependsOn Condition="$(RestorePackages) == 'true'">
@@ -103,6 +104,56 @@
               Condition=" '$(OS)' == 'Windows_NT' " />
     </Target>
     
+    <Target Name="PublishPackage">
+		<GetAssemblyInformationVersion AssemblyFileName="$(OutputPath)$(AssemblyName).dll" Condition="$(AssemblyInformationalVersion) == '' AND $(NupkgName) == ''">
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
+		</GetAssemblyInformationVersion>
+		
+		<PropertyGroup>
+			<NupkgName Condition="$(NupkgName) == ''">$(AssemblyName).$(AssemblyInformationalVersion).nupkg</NupkgName>
+	        <PublishCommand>$(NugetCommand) push $(NonInteractiveSwitch) "$(PackageOutputDir)\$(NupkgName)"</PublishCommand>
+		</PropertyGroup>
+
+        <Exec Command="$(PublishCommand)" 
+              Condition=" '$(OS)' != 'Windows_NT' " />
+              
+        <Exec Command="$(PublishCommand)"
+              LogStandardErrorAsError="true"
+              Condition=" '$(OS)' == 'Windows_NT' " />
+    </Target>
+
+    <UsingTask TaskName="GetAssemblyInformationVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <AssemblyFileName ParameterType="System.String" Required="true" />
+            <AssemblyInformationalVersion ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Core" />
+            <Using Namespace="System" />
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.Reflection" />
+            <Using Namespace="System.Diagnostics" />
+            <Using Namespace="System.Net" />
+            <Using Namespace="Microsoft.Build.Framework" />
+            <Using Namespace="Microsoft.Build.Utilities" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                try {
+                    AssemblyFileName = Path.GetFullPath(AssemblyFileName);
+
+                    Log.LogMessage("Getting assembly version...");
+					AssemblyInformationalVersion = FileVersionInfo.GetVersionInfo(AssemblyFileName).ProductVersion;
+                    Log.LogMessage("  ver: {0}", AssemblyInformationalVersion);
+					return true;
+                }
+                catch (Exception ex) {
+                    Log.LogErrorFromException(ex);
+                    return false;
+                }
+            ]]>
+            </Code>
+        </Task>
+    </UsingTask>
     <UsingTask TaskName="DownloadNuGet" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
         <ParameterGroup>
             <OutputFilename ParameterType="System.String" Required="true" />

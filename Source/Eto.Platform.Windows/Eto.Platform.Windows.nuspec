@@ -17,11 +17,8 @@
     	
     	You do not need to use any of the classes of this assembly (unless customizing the Windows Forms functionality of the platform), and should just use the UI controls from the Eto assembly.
     </description>
-    <releaseNotes>
-		Initial release.
-    </releaseNotes>
-    <copyright>Copyright 2013 by Curtis Wensley</copyright>
-    <tags>cross platform gui framework desktop wpf eto.forms</tags>
+    <copyright>Copyright 2014 by Curtis Wensley</copyright>
+    <tags>cross platform gui ui framework desktop wpf eto.forms</tags>
     <dependencies>
       <group>
         <dependency id="Eto.Forms" version="$version$" />

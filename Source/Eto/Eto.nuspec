@@ -33,10 +33,7 @@
 
         https://github.com/picoe/Eto/wiki		
     </description>
-    <releaseNotes>
-		Initial release.
-    </releaseNotes>
-    <copyright>Copyright 2013 by Curtis Wensley</copyright>
-    <tags>cross platform gui framework desktop winforms wpf mac osx gtk eto.forms</tags>
+    <copyright>Copyright 2014 by Curtis Wensley</copyright>
+    <tags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</tags>
   </metadata>
 </package>
