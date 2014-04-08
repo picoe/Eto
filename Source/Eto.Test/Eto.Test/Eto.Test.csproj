@@ -145,6 +145,7 @@
     <Compile Include="UnitTests\FormTester.cs" />
     <Compile Include="UnitTests\Handlers\Generator.cs" />
     <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestFontHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestGraphicsHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestGridViewHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />

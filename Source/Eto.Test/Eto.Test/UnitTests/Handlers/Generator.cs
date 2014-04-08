@@ -19,6 +19,7 @@ namespace Eto.Test.UnitTests.Handlers
 		{
 			// Drawing
 			g.Add<IBitmap>(() => new TestBitmapHandler());
+			g.Add<IFont>(() => new TestFontHandler()); 
 			g.Add<IGraphics>(() => new TestGraphicsHandler()); 
 			g.Add<IMatrixHandler>(() => new TestMatrixHandler());
 

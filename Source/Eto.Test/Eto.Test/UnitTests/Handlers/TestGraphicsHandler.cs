@@ -110,7 +110,8 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public SizeF MeasureString(Font font, string text)
 		{
-			throw new NotImplementedException();
+			// A fixed-width implementation that returns 10 * the length of the string.
+			return new SizeF(text.Length * 10f, font.LineHeight);
 		}
 
 		public void Flush()
