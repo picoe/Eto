@@ -8,7 +8,7 @@ namespace Eto.Test.Sections.Drawing
 	/// Wraps a drawable and renders directly to a passed
 	/// Graphics or optionally via an intermediate bitmap.
 	/// </summary>
-	class DrawableTarget
+	public class DrawableTarget
 	{
 		readonly Drawable drawable;
 		Graphics bitmapGraphics;
