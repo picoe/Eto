@@ -31,5 +31,17 @@ namespace Eto.Test.UnitTests.Forms
 			Assert.AreEqual(r, r1.Intersect(r2));
 			Assert.AreEqual(r, r2.Intersect(r1));
 		}
+
+		[TestCase(100, 200, 4, false)]
+		[TestCase(100, 200, 99, false)]
+		[TestCase(100, 200, 100, true)]
+		[TestCase(100, 200, 200, true)]
+		[TestCase(100, 200, 201, false)]
+		[TestCase(100, 200, 500, false)]
+		public void Range_Contains_Contains(int s, int e, int value, bool contains)
+		{
+			var r = Range.FromStartEnd(s, e);
+			Assert.AreEqual(contains, r.Contains(value));
+		}
 	}
 }
