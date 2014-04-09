@@ -7,7 +7,9 @@ using System.Configuration;
 
 namespace Eto.Test.UnitTests
 {
+#if !iOS // We should not use the SetupFixture attribute on iOS. For now, this #ifdef allows iOS builds to work provided you build with the iOS symbol defined.
 	[SetUpFixture]
+#endif
 	public class Startup
 	{
 		[SetUp]

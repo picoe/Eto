@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Eto.Test.UnitTests
 {
+#if FIX_ON_IOS
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class InvokeAttribute : Attribute, ITestAction
 	{
@@ -71,4 +72,5 @@ namespace Eto.Test.UnitTests
 			get { return ActionTargets.Default; }
 		}
 	}
+#endif
 }
