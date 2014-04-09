@@ -142,6 +142,7 @@
     <Compile Include="UnitTests\Forms\GridViewSelectionTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
+    <Compile Include="UnitTests\Forms\RangeTests.cs" />
     <Compile Include="UnitTests\FormTester.cs" />
     <Compile Include="UnitTests\Handlers\Generator.cs" />
     <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
