@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\BuildOutput\Android\Debug</OutputPath>
-    <DefineConstants>DEBUG;MOBILE;</DefineConstants>
+    <DefineConstants>DEBUG;MOBILE;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>

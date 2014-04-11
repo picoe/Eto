@@ -14,7 +14,15 @@ using ag = Android.Graphics;
 
 namespace Eto.Platform.Android.Forms.Controls
 {
-	class GridColumnHandler
+	public class GridColumnHandler : WidgetHandler<object, GridColumn>, IGridColumn
 	{
+		public string HeaderText { get; set; }
+		public bool Resizable { get; set; }
+		public bool Sortable { get; set; }
+		public bool AutoSize { get; set; }
+		public int Width { get; set; }
+		public Cell DataCell { get; set; }
+		public bool Editable { get; set; }
+		public bool Visible { get; set; }
 	}
 }

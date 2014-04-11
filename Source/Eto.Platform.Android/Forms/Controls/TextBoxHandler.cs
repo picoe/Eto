@@ -50,17 +50,7 @@ namespace Eto.Platform.Android.Forms.Controls
 			throw new NotImplementedException();
 		}
 
-		public string PlaceholderText
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public string PlaceholderText { get; set; }
 
 		public string Text
 		{

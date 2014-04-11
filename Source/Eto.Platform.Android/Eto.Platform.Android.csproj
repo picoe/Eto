@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -56,6 +56,7 @@
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SolidBrushHandler.cs" />
     <Compile Include="Drawing\TextureBrushHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
