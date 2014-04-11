@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +14,8 @@
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
     <AssemblyName>Eto.Test</AssemblyName>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,6 +64,7 @@
     <Compile Include="Sections\Controls\TreeViewSection.cs" />
     <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
     <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
+    <Compile Include="Sections\Drawing\GetPixelSection.cs" />
     <Compile Include="Sections\Drawing\TextureBrushesSection2.cs" />
     <Compile Include="Sections\Drawing\TextureBrushesSection.cs" />
     <Compile Include="Sections\Drawing\BitmapSection.cs" />
@@ -136,6 +139,22 @@
     <Compile Include="Sections\Controls\SpinnerSection.cs" />
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
     <Compile Include="Sections\UnitTestSection.cs" />
+    <Compile Include="UnitTests\Drawing\ClipTests.cs" />
+    <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
+    <Compile Include="UnitTests\Forms\DataStoreViewTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewSelectionTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
+    <Compile Include="UnitTests\Forms\RangeTests.cs" />
+    <Compile Include="UnitTests\FormTester.cs" />
+    <Compile Include="UnitTests\Handlers\Generator.cs" />
+    <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestFontHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestGraphicsHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestGridViewHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />
+    <Compile Include="UnitTests\InvokeAttribute.cs" />
+    <Compile Include="UnitTests\Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestImage.png" />
@@ -156,9 +175,6 @@
       <Project>{757FCF9A-E2D0-4031-9A11-82A2A49FA892}</Project>
       <Name>Eto.Json - Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.UnitTest\Eto.UnitTest - Android.csproj">
-      <Project>{D7161F60-B4AD-11E3-A5E2-0800200C9A66}</Project>
-      <Name>Eto.UnitTest - Android</Name>
-    </ProjectReference>
   </ItemGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>
