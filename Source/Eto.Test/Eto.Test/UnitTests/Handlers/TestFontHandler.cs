@@ -13,13 +13,24 @@ namespace Eto.Test.UnitTests.Handlers
 	/// </summary>
 	public class TestFontHandler : WidgetHandler<Font>, IFont
 	{
+		const float PointsToPixels = 96f / 72f;
+
 		public float XHeight { get; set; }
 		public float Ascent { get; set; }
 		public float Descent { get; set; }
-		public float LineHeight { get; set; }
+		public float LineHeight { get; private set; }
 		public float Leading { get; set; }
 		public float Baseline { get; set; }
-		public float Size { get; set; }
+		float size;
+		public float Size
+		{
+			get { return size; }
+			set
+			{
+				size = value;
+				LineHeight = size * PointsToPixels;
+			}
+		}
 		public string FamilyName { get; set; }
 		public FontStyle FontStyle { get; set; }
 		public FontDecoration FontDecoration { get; set; }
