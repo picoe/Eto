@@ -39,7 +39,7 @@ namespace Eto.Test.UnitTests.Drawing
 			return result;
 		}
 
-		bool Equals(IMatrix m, float xx, float yx, float xy, float yy, float x0, float y0)
+		public static bool Equals(IMatrix m, float xx, float yx, float xy, float yy, float x0, float y0)
 		{
 			var e = m.Elements;
 			return
@@ -51,7 +51,7 @@ namespace Eto.Test.UnitTests.Drawing
 				FloatEquals(e[5], y0);
 		}
 
-		private bool FloatEquals(float p, float q)
+		private static bool FloatEquals(float p, float q)
 		{
 			return Math.Abs(p - q) < 0.001f;
 		}
