@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Eto.Drawing;
 using NUnit.Framework;
 using Eto.Forms;
-using Eto;
-using Eto.UnitTest.Handlers;
-using System.Threading;
+using System;
 
-namespace Eto.UnitTest.Forms
+namespace Eto.Test.UnitTests.Forms
 {
 	/// <summary>
 	/// Unit tests for GridViewSelection
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TestFixture, UseTestGenerator]
+	[TestFixture]
 	public class GridViewSelectionTests
 	{
 		static int ItemCount { get { return GridViewUtils.ItemCount; } }
@@ -23,6 +19,19 @@ namespace Eto.UnitTest.Forms
 		IGridView handler;
 		DataStoreCollection model;
 		int selectionChangedCount; // incremented when g.SelectionChanged fires
+		IDisposable generatorContext;
+		
+		[TestFixtureSetUp]
+		public void FixtureSetup()
+		{
+			generatorContext = new Handlers.Generator().Context; // create a generator before any tests in this fixture are run.
+		}
+
+		[TestFixtureTearDown]
+		public void FixtureTearDown()
+		{
+			generatorContext.Dispose();
+		}
 
 		[SetUp]
 		public void Setup()
@@ -37,7 +46,7 @@ namespace Eto.UnitTest.Forms
 			});
 		}
 
-		[Test, Invoke]
+		[Test/* ,Invoke*/]
 		public void GridViewSelection_SelectFirstRow_SelectsFirstRow()
 		{
 			grid.SelectRow(0);
@@ -45,14 +54,14 @@ namespace Eto.UnitTest.Forms
 			Assert.AreEqual(0, grid.SelectedRows.ToList()[0]);
 		}
 
-		[Test, Invoke]
+		[Test/* ,Invoke*/]
 		public void GridViewSelection_SelectAll_SelectsAllRows()
 		{
 			grid.SelectAll();
 			Assert.AreEqual(ItemCount, grid.SelectedRows.Count());
 		}
 
-		[Test, Invoke]
+		[Test/* ,Invoke*/]
 		public void GridViewSelection_InsertItem_SelectionUnchanged()
 		{
 			grid.SelectRow(0);
@@ -61,7 +70,7 @@ namespace Eto.UnitTest.Forms
 			Assert.AreEqual(selectedItem, grid.SelectedItem);
 		}
 
-		[Test, Invoke]
+		[Test/* ,Invoke*/]
 		public void GridViewSelection_DeleteSelectedItems_SelectedItemsRemoved()
 		{
 			grid.AllowMultipleSelection = true;
@@ -81,7 +90,7 @@ namespace Eto.UnitTest.Forms
 			Assert.IsTrue(expectedSelectedItemIds.SequenceEqual(grid.SelectedItems.Select(x => ((DataItem)x).Id)));
 		}
 
-		[Test, Invoke]
+		[Test/* ,Invoke*/]
 		public void GridViewSelection_SortItems_SelectionUnchanged()
 		{
 			grid.SortComparer = GridViewUtils.SortItemsAscending;
@@ -101,7 +110,7 @@ namespace Eto.UnitTest.Forms
 		}
 
 
-		[Test, Invoke]
+		[Test/* ,Invoke*/]
 		public void GridViewSelection_FilterItems_SelectionUnchanged()
 		{
 			grid.AllowMultipleSelection = true;

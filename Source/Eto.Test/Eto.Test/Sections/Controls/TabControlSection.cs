@@ -7,6 +7,7 @@ namespace Eto.Test.Sections.Controls
 	public class TabControlSection : Panel
 	{
 		TabControl tabControl;
+		Label memoryUsage;
 
 		public override void OnPreLoad(EventArgs e)
 		{
@@ -17,7 +18,7 @@ namespace Eto.Test.Sections.Controls
 		public virtual Control Create()
 		{
 			var layout = new DynamicLayout();
-			layout.AddSeparateRow(null, AddTab(), RemoveTab(), null);
+			layout.AddSeparateRow(null, AddTab(), RemoveTab(), memoryUsage = new Label(), null);
 			layout.AddSeparateRow(tabControl = DefaultTabs());
 			return layout;
 		}
@@ -28,9 +29,17 @@ namespace Eto.Test.Sections.Controls
 			control.Click += (s, e) =>
 			{
 				var tab = new TabPage(tabControl.Generator) { Text = "Tab " + (tabControl.TabPages.Count + 1) };
+				var bitmap = new Bitmap(new Size(1024, 1024), PixelFormat.Format32bppRgba); // 32MB
+				tab.Content = new ImageView { Image = bitmap };
 				tabControl.TabPages.Add(tab);
+				UpdateMemoryUsage();
 			};
 			return control;
+		}
+
+		void UpdateMemoryUsage()
+		{
+			memoryUsage.Text = string.Format("Memory usage: {0}", GC.GetTotalMemory(true));
 		}
 
 		Control RemoveTab()
@@ -41,6 +50,7 @@ namespace Eto.Test.Sections.Controls
 				if (tabControl.SelectedIndex >= 0 && tabControl.TabPages.Count > 0)
 				{
 					tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
+					UpdateMemoryUsage();
 				}
 			};
 			return control;
@@ -64,7 +74,9 @@ namespace Eto.Test.Sections.Controls
 
 			foreach (var page in control.TabPages)
 				LogEvents(page);
-			
+
+			UpdateMemoryUsage();
+
 			return control;
 			
 		}

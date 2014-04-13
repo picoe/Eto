@@ -5,7 +5,7 @@ using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.UnitTest.Handlers
+namespace Eto.Test.UnitTests.Handlers
 {
 	public class Generator : Eto.Generator
 	{
@@ -17,8 +17,13 @@ namespace Eto.UnitTest.Handlers
 
 		public static void AddTo(Eto.Generator g)
 		{
-			g.Add<IGridView>(() => new TestGridViewHandler());
+			// Drawing
+			g.Add<IBitmap>(() => new TestBitmapHandler());
+			g.Add<IFont>(() => new TestFontHandler()); 
+			g.Add<IGraphics>(() => new TestGraphicsHandler()); 
 			g.Add<IMatrixHandler>(() => new TestMatrixHandler());
+
+			g.Add<IGridView>(() => new TestGridViewHandler());
 		}
 
 		public override string ID

@@ -34,7 +34,11 @@ namespace Eto.Test
 			this.Style = "main";
 			//this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
 			//this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
+#if ANDROID
+			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
+#else
 			this.SectionList = new SectionListTreeGridView(topNodes ?? TestSectionList.TopNodes());
+#endif
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon();

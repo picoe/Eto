@@ -39,7 +39,7 @@ namespace Eto.Platform.iOS.Forms
 			return size;
 		}
 
-		static void SetPosition(Control control, Point point, float frameHeight, bool flipped)
+		public static void SetPosition(Control control, Point point, float frameHeight, bool flipped)
 		{
 			var offset = ((IIosView)control.Handler).PositionOffset;
 			var childView = control.GetContainerView();

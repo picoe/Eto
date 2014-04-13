@@ -61,6 +61,7 @@ namespace Eto.Test
 			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" };
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
+			yield return new Section<GetPixelSection> { Text = "Get Pixel Color" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
 			yield return new Section<PenSection> { Text = "Pens" };
 			yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };

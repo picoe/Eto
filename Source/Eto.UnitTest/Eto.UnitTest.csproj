@@ -41,20 +41,6 @@
     </Reference>
     <Reference Include="System.Configuration" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Drawing\ClipTests.cs" />
-    <Compile Include="Forms\DataStoreViewTests.cs" />
-    <Compile Include="Forms\GridViewSelectionTests.cs" />
-    <Compile Include="Forms\GridViewTests.cs" />
-    <Compile Include="Forms\GridViewUtils.cs" />
-    <Compile Include="Drawing\MatrixTests.cs" />
-    <Compile Include="FormTester.cs" />
-    <Compile Include="Handlers\Generator.cs" />
-    <Compile Include="Handlers\TestGridViewHandler.cs" />
-    <Compile Include="Handlers\TestMatrixHandler.cs" />
-    <Compile Include="InvokeAttribute.cs" />
-    <Compile Include="Startup.cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup>

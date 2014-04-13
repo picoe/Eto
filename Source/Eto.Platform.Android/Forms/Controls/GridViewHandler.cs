@@ -14,102 +14,44 @@ using ag = Android.Graphics;
 
 namespace Eto.Platform.Android.Forms.Controls
 {
-	public class GridViewHandler : AndroidControl<aw.TableLayout, GridView>, IGridView
+	public class GridViewHandler : AndroidControl<aw.GridView, GridView>, IGridView
 	{
-		public IDataStore DataStore
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public IDataStore DataStore { get; set; }
 
-		public bool ShowCellBorders
-		{
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
-		}
+		public bool ShowCellBorders { get; set; }
 
-		public bool ShowHeader
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public bool ShowHeader { get; set; }
 
-		public int RowHeight
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public int RowHeight { get; set; }
 
-		public bool AllowColumnReordering
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public bool AllowColumnReordering { get; set; }
 
-		public bool AllowMultipleSelection
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public bool AllowMultipleSelection { get; set; }
 
 		public IEnumerable<int> SelectedRows
 		{
-			get { throw new NotImplementedException(); }
+			get { if (false) yield return 1; }
 		}
 
 		public void SelectRow(int row)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void UnselectRow(int row)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void SelectAll()
 		{
-			throw new NotImplementedException();
 		}
 
 		public void UnselectAll()
 		{
-			throw new NotImplementedException();
 		}
 
 		public override av.View ContainerControl
 		{
-			get { throw new NotImplementedException(); }
+			get { return null; }
 		}
 	}
 }

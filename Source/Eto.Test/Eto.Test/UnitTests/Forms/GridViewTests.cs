@@ -5,9 +5,9 @@ using Eto.Drawing;
 using NUnit.Framework;
 using Eto.Forms;
 using Eto;
-using Eto.UnitTest.Handlers;
+using Eto.Test.UnitTests.Handlers;
 
-namespace Eto.UnitTest.Forms
+namespace Eto.Test.UnitTests.Forms
 {
 	/// <summary>
 	/// Unit tests for GridView
@@ -17,7 +17,21 @@ namespace Eto.UnitTest.Forms
 	[TestFixture]
 	public class GridViewTests
 	{
-		[Test, Invoke]
+		IDisposable generatorContext;
+
+		[TestFixtureSetUp]
+		public void FixtureSetup()
+		{
+			generatorContext = new Handlers.Generator().Context; // create a generator before any tests in this fixture are run.
+		}
+
+		[TestFixtureTearDown]
+		public void FixtureTearDown()
+		{
+			generatorContext.Dispose();
+		}
+
+		[Test/* ,Invoke*/]
 		public void GridView_SetFilterBeforeDataStore_NoException()
 		{
 			var g = new GridView();
@@ -25,7 +39,7 @@ namespace Eto.UnitTest.Forms
 			g.DataStore = GridViewUtils.CreateModel();
 		}
 
-		[Test, Invoke]
+		[Test/* ,Invoke*/]
 		public void GridView_SetSortBeforeDataStore_NoException()
 		{
 			var g = new GridView();

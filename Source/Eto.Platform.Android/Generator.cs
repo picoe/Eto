@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Platform.Android.Drawing;
 using Eto.Platform.Android.Forms.Controls;
 using Eto.Platform.Android.Forms;
+using Eto.Platform.Android.Forms.Cells;
 
 namespace Eto.Platform.Android
 {
@@ -38,7 +39,7 @@ namespace Eto.Platform.Android
 			//g.Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
 			//g.Add<IImageTextCell>(() => new ImageTextCellHandler());
 			//g.Add <IImageViewCell> (() => new ImageViewCellHandler ());
-			//g.Add<ITextBoxCell>(() => new TextBoxCellHandler());
+			g.Add<ITextBoxCell>(() => new TextBoxCellHandler());
 
 			// Forms.Controls
 			g.Add<IButton>(() => new ButtonHandler());
@@ -46,7 +47,7 @@ namespace Eto.Platform.Android
 			//g.Add<IComboBox>(() => new ComboBoxHandler());
 			//g.Add <IDateTimePicker> (() => new DateTimePickerHandler ());
 			//g.Add<IDrawable>(() => new DrawableHandler());
-			//g.Add<IGridColumn>(() => new GridColumnHandler());
+			g.Add<IGridColumn>(() => new GridColumnHandler());
 			g.Add<IGridView>(() => new GridViewHandler());
 			//g.Add <IGroupBox> (() => new GroupBoxHandler ());
 			//g.Add<IImageView>(() => new ImageViewHandler());
@@ -58,7 +59,7 @@ namespace Eto.Platform.Android
 			//g.Add<IProgressBar>(() => new ProgressBarHandler());
 			//g.Add<IRadioButton>(() => new RadioButtonHandler());
 			g.Add<IScrollable>(() => new ScrollableHandler());
-			//g.Add<ISearchBox>(() => new SearchBoxHandler());
+			g.Add<ISearchBox>(() => new SearchBoxHandler());
 			//g.Add<ISlider>(() => new SliderHandler());
 			g.Add<ISpinner>(() => new SpinnerHandler());
 			//g.Add<ISplitter>(() => new SplitterHandler());

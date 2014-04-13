@@ -51,41 +51,11 @@ namespace Eto.Platform.Android.Forms
 		{
 		}
 
-		public ToolBar ToolBar
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public ToolBar ToolBar { get; set; }
 
-		public double Opacity
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public double Opacity { get; set; }
 
-		public string Title
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public string Title { get; set; }
 
 		public Screen Screen
 		{

@@ -62,6 +62,7 @@ namespace Eto.Test.Sections.Drawing
 
 			layout.AddRow(
 				new Label { Text = "Clone using tiles" }, TableLayout.AutoSized(CloneTiles(), centered: true),
+				new Label { Text = "Draw to a rect" }, TableLayout.AutoSized(DrawImageToRect(), centered: true),
 				null);
 
 			layout.Add(null);
@@ -132,6 +133,29 @@ namespace Eto.Test.Sections.Drawing
 						var clone = image.Clone(new Rectangle(x, y, tile, tile));
 						g.DrawImage(clone, x, y);
 					}
+			}
+			return new DrawableImageView { Image = bitmap };
+		}
+
+		Control DrawImageToRect()
+		{
+			var image64 = new Bitmap(new Size(64, 64), PixelFormat.Format32bppRgba);
+			var image32 = new Bitmap(new Size(32, 32), PixelFormat.Format32bppRgba);
+
+			using (var g = new Graphics(image64))
+				g.Clear(Brushes.Cached(Colors.Green) as SolidBrush);
+
+			using (var g = new Graphics(image32))
+				g.Clear(Brushes.Cached(Colors.Blue) as SolidBrush);
+
+			var bitmap = new Bitmap(new Size(105, 105), PixelFormat.Format32bppRgba);
+			using (var g = new Graphics(bitmap))
+			{
+				// draw the big image at the origin, but with a smaller dest rect
+				g.DrawImage(image64, new RectangleF(0, 0, 32, 32), new RectangleF(0, 0, 32, 32));
+				// draw two guide images to indicate how big the green image should be
+				g.DrawImage(image32, new PointF(70, 0));
+				g.DrawImage(image32, new PointF(0, 70));
 			}
 			return new DrawableImageView { Image = bitmap };
 		}

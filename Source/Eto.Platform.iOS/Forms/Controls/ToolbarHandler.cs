@@ -36,12 +36,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.BarStyle = UIBarStyle.Default;
 		}
 
-		public void AddButton(ToolItem item)
+		public void AddButton(ToolItem button, int index)
 		{
-			var handler = (IToolBarBaseItemHandler)item.Handler;
+			var handler = (IToolBarBaseItemHandler)button.Handler;
 			items.Add(handler);
 			var list = GetItems();
-			list.Add((NSToolbarItem)item.ControlObject);
+			list.Insert(index, (NSToolbarItem)button.ControlObject);
 			Control.Items = list.ToArray();
 			if (handler != null)
 				handler.ControlAdded(this);

@@ -100,7 +100,7 @@ namespace Eto.Test.Sections
 								"-nodots",
 								"-domain=None",
 								"-work=" + dir,
-								typeof(Eto.UnitTest.Startup).Assembly.Location
+								typeof(Eto.Test.UnitTests.Startup).Assembly.Location
 							});
 							#endif
 						}

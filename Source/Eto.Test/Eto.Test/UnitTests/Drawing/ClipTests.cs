@@ -14,7 +14,7 @@ using System.Security;
 using System.Security.Permissions;
 using System.Threading.Tasks;
 
-namespace Eto.UnitTest.Drawing
+namespace Eto.Test.UnitTests.Drawing
 {
 	[TestFixture]
 	public class ClipTests
