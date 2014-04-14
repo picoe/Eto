@@ -110,7 +110,6 @@
     <Compile Include="Forms\Application.cs" />
     <Compile Include="Forms\Container.cs" />
     <Compile Include="Forms\Dialog.cs" />
-    <Compile Include="Forms\Layout\DockLayout.cs" />
     <Compile Include="Forms\FileDialog.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\Key.cs">
@@ -381,7 +380,6 @@
     <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
     <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
-    <Compile Include="Forms\ToolBar\ToolItem.obsolete.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
