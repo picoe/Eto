@@ -380,7 +380,7 @@ namespace Eto.Platform.GtkSharp
 			public void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-				Key modifiers = args.Event.State.ToEtoKey();
+				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
 				SizeF delta;
 
@@ -408,7 +408,7 @@ namespace Eto.Platform.GtkSharp
 			public void HandleControlLeaveNotifyEvent(object o, Gtk.LeaveNotifyEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-				Key modifiers = args.Event.State.ToEtoKey();
+				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
 
 				Handler.Widget.OnMouseLeave(new MouseEventArgs(buttons, modifiers, p));
@@ -417,7 +417,7 @@ namespace Eto.Platform.GtkSharp
 			public void HandleControlEnterNotifyEvent(object o, Gtk.EnterNotifyEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-				Key modifiers = args.Event.State.ToEtoKey();
+				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
 
 				Handler.Widget.OnMouseEnter(new MouseEventArgs(buttons, modifiers, p));
@@ -426,7 +426,7 @@ namespace Eto.Platform.GtkSharp
 			public void HandleMotionNotifyEvent(System.Object o, Gtk.MotionNotifyEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-				Key modifiers = args.Event.State.ToEtoKey();
+				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
 
 				Handler.Widget.OnMouseMove(new MouseEventArgs(buttons, modifiers, p));
@@ -435,7 +435,7 @@ namespace Eto.Platform.GtkSharp
 			public void HandleButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-				Key modifiers = args.Event.State.ToEtoKey();
+				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 
 				Handler.Widget.OnMouseUp(new MouseEventArgs(buttons, modifiers, p));
@@ -444,7 +444,7 @@ namespace Eto.Platform.GtkSharp
 			public void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-				Key modifiers = args.Event.State.ToEtoKey();
+				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 				if (Handler.Control.CanFocus && !Handler.Control.HasFocus)
 					Handler.Control.GrabFocus();

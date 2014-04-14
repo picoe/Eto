@@ -492,12 +492,12 @@ namespace Eto.Platform.GtkSharp
 
 		public static KeyEventArgs ToEto(this Gdk.EventKey args)
 		{
-			Key key = args.Key.ToEto() | args.State.ToEtoKey();
+			Keys key = args.Key.ToEto() | args.State.ToEtoKey();
 
-			if (key != Key.None)
+			if (key != Keys.None)
 			{
-				Key modifiers = (key & Key.ModifierMask);
-				if (args.KeyValue <= 128 && ((modifiers & ~Key.Shift) == 0))
+				Keys modifiers = (key & Keys.ModifierMask);
+				if (args.KeyValue <= 128 && ((modifiers & ~Keys.Shift) == 0))
 					return new KeyEventArgs(key, KeyEventType.KeyDown, (char)args.KeyValue);
 				return new KeyEventArgs(key, KeyEventType.KeyDown);
 			}

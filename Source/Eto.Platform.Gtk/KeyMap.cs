@@ -14,13 +14,13 @@ namespace Eto.Platform.GtkSharp
 			return keymap.TryGetValue(gkey, out key) ? key : Keys.None;
 		}
 		
-		public static Key ToEtoKey (this Gdk.ModifierType modifier)
+		public static Keys ToEtoKey (this Gdk.ModifierType modifier)
 		{
-			Key result = Key.None;
-			if ((modifier & Gdk.ModifierType.Mod1Mask) > 0) result |= Key.Alt;
-			if ((modifier & Gdk.ModifierType.ControlMask) > 0) result |= Key.Control;
-			if ((modifier & Gdk.ModifierType.SuperMask) > 0) result |= Key.Application;
-			if ((modifier & Gdk.ModifierType.ShiftMask) > 0) result |= Key.Shift;
+			Keys result = Keys.None;
+			if ((modifier & Gdk.ModifierType.Mod1Mask) > 0) result |= Keys.Alt;
+			if ((modifier & Gdk.ModifierType.ControlMask) > 0) result |= Keys.Control;
+			if ((modifier & Gdk.ModifierType.SuperMask) > 0) result |= Keys.Application;
+			if ((modifier & Gdk.ModifierType.ShiftMask) > 0) result |= Keys.Shift;
 			return result;
 		}
 

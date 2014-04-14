@@ -331,7 +331,7 @@ namespace Eto.Platform.GtkSharp
 				foreach (var child in item.Items)
 				{
 					var actionItem = child;
-					if (actionItem != null && actionItem.Shortcut != Key.None)
+					if (actionItem != null && actionItem.Shortcut != Keys.None)
 					{
 						var widget = (Gtk.Widget)actionItem.ControlObject;
 						var key = new Gtk.AccelKey(actionItem.Shortcut.ToGdkKey(), actionItem.Shortcut.ToGdkModifier(), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
