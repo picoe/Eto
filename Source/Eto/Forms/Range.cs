@@ -9,12 +9,6 @@ namespace Eto.Forms
 	/// </summary>
 	public struct Range : IEquatable<Range>
 	{
-		[Obsolete("Use Start instead")]
-		public int Location {
-			get { return Start; }
-			set { Start = value; }
-		}
-
 		public int Start { get; set; }
 
 		public int Length { get; set; }
