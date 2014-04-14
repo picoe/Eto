@@ -108,25 +108,6 @@ namespace Eto.Drawing
 			var asm = Assembly.GetCallingAssembly ();
 			return FromResource (asm, resourceName, generator);
 #endif
-		}
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete("Use Icon.FromResource instead")]
-		public Icon (Assembly asm, string resourceName) : base(null, typeof(IIcon))
-		{
-#if WINRT
-			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
-#else
-			if (asm == null)
-				asm = Assembly.GetCallingAssembly ();
-			using (var stream = asm.GetManifestResourceStream (resourceName)) {
-				if (stream == null)
-					throw new ResourceNotFoundException (asm, resourceName);
-				Handler.Create (stream);
-			}
-#endif
-		}
+		}		
 	}
 }

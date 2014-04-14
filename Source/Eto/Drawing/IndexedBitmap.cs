@@ -112,19 +112,5 @@ namespace Eto.Drawing
 			get { return Handler.Palette; }
 			set { Handler.Palette = value; }
 		}
-
-		#region Obsolete
-
-		/// <summary>
-		/// Unlocks the bits of the bitmap
-		/// </summary>
-		/// <param name="bitmapData">Instance of the bitmap data retrieved from the <see cref="Lock"/> method</param>
-		[Obsolete ("Use BitmapData.Dispose instead")]
-		public void Unlock (BitmapData bitmapData)
-		{
-			Handler.Unlock(bitmapData);
-		}
-
-		#endregion
 	}
 }
