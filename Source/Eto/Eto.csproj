@@ -97,7 +97,6 @@
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
-    <Compile Include="Resources.cs" />
     <Compile Include="Threading\Thread.cs" />
     <Compile Include="TypeHelper.cs" />
     <Compile Include="WeakEventHandler.cs">
@@ -187,9 +186,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IO\VirtualFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\Platform.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Xaml\EtoXamlSchemaContext.cs" />

@@ -3,19 +3,6 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	[Obsolete("Use class DataStoreCollection instead")]
-	public class GridItemCollection : DataStoreCollection<object>, IDataStore
-	{
-		public GridItemCollection ()
-		{
-		}
-
-		public GridItemCollection(IEnumerable<object> items)
-			: base (items)
-		{
-		}
-	}
-
 	public class GridItem : object, IColumnItem
 	{
 		public GridItem ()

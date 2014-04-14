@@ -898,13 +898,6 @@ namespace Eto.Forms
 		}
 
 		static readonly object DataContextKey = new object();
-
-		/// <summary>
-		/// Obsolete, do not use. Gets the parent layout
-		/// </summary>
-		[Obsolete("Use Parent instead")]
-		public Container ParentLayout { get { return Parent; } }
-
 		Container parent;
 
 		/// <summary>

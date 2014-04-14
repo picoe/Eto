@@ -17,32 +17,10 @@ namespace Eto.Forms
 		KeyUp
 	}
 
-	#pragma warning disable 612, 618
-
 	/// <summary>
 	/// Arguments for key press events
 	/// </summary>
-	public class KeyEventArgs : KeyPressEventArgs
-	{
-		/// <summary>
-		/// Initializes a new instance of the KeyPressEventArgs class for a character key press
-		/// </summary>
-		/// <param name="keyData">Key and modifiers that were pressed</param>
-		/// <param name="keyEventType">Type of key event</param>
-		/// <param name="keyChar">Character equivalent</param>
-		public KeyEventArgs(Keys keyData, KeyEventType keyEventType, char? keyChar = null)
-			: base (keyData, keyEventType, keyChar)
-		{
-		}
-	}
-
-	#pragma warning restore 612, 618
-
-	/// <summary>
-	/// Arguments for key press events
-	/// </summary>
-	[Obsolete("Use KeyEventArgs instead")]
-	public class KeyPressEventArgs : EventArgs
+	public class KeyEventArgs : EventArgs
 	{
 		readonly char? keyChar;
 		
@@ -52,7 +30,7 @@ namespace Eto.Forms
 		/// <param name="keyData">Key and modifiers that were pressed</param>
 		/// <param name="keyEventType">Type of key event</param>
 		/// <param name="keyChar">Character equivalent</param>
-		public KeyPressEventArgs(Keys keyData, KeyEventType keyEventType, char? keyChar = null)
+		public KeyEventArgs(Keys keyData, KeyEventType keyEventType, char? keyChar = null)
 		{
             this.KeyData = keyData;
 			this.KeyEventType = keyEventType;
