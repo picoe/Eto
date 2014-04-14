@@ -162,41 +162,6 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Loads a bitmap from the resource in the specified assembly
-		/// </summary>
-		/// <param name="asm">Assembly to load the resource from</param>
-		/// <param name="resourceName">Resource to load in the specified assembly</param>
-		/// <returns>A new instance of the Bitmap loaded from the resource</returns>
-		[Obsolete ("Use FromResource(string, Assembly) instead")]
-		public static Bitmap FromResource (Assembly asm, string resourceName)
-		{
-#if WINRT
-			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
-#else
-			return FromResource (resourceName, asm ?? Assembly.GetCallingAssembly ());
-#endif
-		}
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("use Bitmap.FromResource instead")]
-		public Bitmap (Assembly asm, string resourceName)
-			: this ((Generator)null)
-		{
-#if WINRT
-			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
-#else
-			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			using (var stream = asm.GetManifestResourceStream (resourceName)) {
-				if (stream == null)
-					throw new ResourceNotFoundException (asm, resourceName);
-				Handler.Create (stream);
-			}
-#endif
-		}
-
-		/// <summary>
 		/// Initializes a new instance of a Bitmap from a file
 		/// </summary>
 		/// <param name="fileName">File to load as a bitmap</param>
@@ -383,84 +348,5 @@ namespace Eto.Drawing
 		{
 			return Handler.GetPixel (x, y);
 		}
-
-		#region Obsolete
-
-		/// <summary>
-		/// Initializes a new instance of a Bitmap from a file
-		/// </summary>
-		/// <param name="generator">Generator to use to create the bitmap</param>
-		/// <param name="fileName">File to load as a bitmap</param>
-		[Obsolete("Use Bitmap(string, Generator) instead")]
-		public Bitmap (Generator generator, string fileName)
-			: this (generator)
-		{
-			Handler.Create (fileName);
-		}
-		
-		/// <summary>
-		/// Initializes a new instance of a Bitmap from a stream
-		/// </summary>
-		/// <param name="generator">Generator to use to create the bitmap</param>
-		/// <param name="stream">Stream to load from the bitmap</param>
-		[Obsolete("Use Bitmap(Stream, Generator) instead")]
-		public Bitmap (Generator generator, Stream stream)
-			: this (generator)
-		{
-			Handler.Create (stream);
-		}
-		
-		/// <summary>
-		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
-		/// </summary>
-		/// <param name="generator">Generator to use to create the bitmap</param>
-		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>
-		[Obsolete("Use Bitmap(byte[], Generator) instead")]
-		public Bitmap(Generator generator, byte[] bytes)
-			: this(generator, new MemoryStream(bytes))
-		{
-		}
-		
-		/// <summary>
-		/// Initializes a new instance of a Bitmap with the specified size and format
-		/// </summary>
-		/// <param name="generator">Generator to use to create the bitmap</param>
-		/// <param name="width">Width of the new bitmap</param>
-		/// <param name="height">Height of the new bitmap</param>
-		/// <param name="pixelFormat">Format of each pixel</param>
-		[Obsolete("Use Bitmap(int, int, PixelFormat, Generator) instead")]
-		public Bitmap (Generator generator, int width, int height, PixelFormat pixelFormat)
-			: this(generator)
-		{
-			Handler.Create (width, height, pixelFormat);
-		}
-
-		/// <summary>
-		/// Resizes the image to the specified width and height
-		/// </summary>
-		/// <remarks>
-		/// This will scale the existing image to the desired size
-		/// </remarks>
-		/// <param name="width">New width for the resized image</param>
-		/// <param name="height">New height for the resized image</param>
-		[Obsolete ("Use Bitmap(Image, int, int, InterpolationMode, Generator) instead", true)]
-		public void Resize (int width, int height)
-		{
-			var handler = Generator.Create<IBitmap>();
-			handler.Create (this, width, height, ImageInterpolation.Default);
-			base.Handler = handler;
-		}
-
-		/// <summary>
-		/// Unlocks the bits of the bitmap
-		/// </summary>
-		/// <param name="bitmapData">Instance of the bitmap data retrieved from the <see cref="Lock"/> method</param>
-		[Obsolete ("Use BitmapData.Dispose instead")]
-		public void Unlock (BitmapData bitmapData)
-		{
-			Handler.Unlock(bitmapData);
-		}
-
-		#endregion
 	}
 }

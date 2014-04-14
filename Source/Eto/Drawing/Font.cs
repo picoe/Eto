@@ -73,11 +73,6 @@ namespace Eto.Drawing
 		/// Italic font style
 		/// </summary>
 		Italic = 1 << 1,
-		/// <summary>
-		/// Normal font style that is neither bold or italic
-		/// </summary>
-		[Obsolete("Use None instead")]
-		Normal = None,
 	}
 
 	/// <summary>

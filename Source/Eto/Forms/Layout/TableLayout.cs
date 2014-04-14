@@ -197,20 +197,6 @@ namespace Eto.Forms
 			this.CellSize = size;
 		}
 
-		[Obsolete("Add a TableLayout to a Panel using the Panel.Content property")]
-		public TableLayout(Panel container, int width, int height)
-			: this(container, new Size(width, height))
-		{
-		}
-
-		[Obsolete("Add a TableLayout to a Panel using the Panel.Content property")]
-		public TableLayout(Panel container, Size size)
-			: this(size, container != null ? container.Generator : null)
-		{
-			if (container != null)
-				container.Content = this;
-		}
-
 		public void SetColumnScale(int column, bool scale = true)
 		{
 			Handler.SetColumnScale(column, scale);

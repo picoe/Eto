@@ -14,17 +14,6 @@ namespace Eto.Drawing
 	/// </remarks>
 	public struct ColorHSL : IEquatable<ColorHSL>
 	{
-		#region Obsolete
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("Use nullable values instead")]
-		public readonly static ColorHSL Empty = new ColorHSL();
-
-		#endregion
-
-
 		/// <summary>
 		/// Gets or sets the alpha (0-1)
 		/// </summary>

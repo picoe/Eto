@@ -12,16 +12,6 @@ namespace Eto.Drawing
 	/// </remarks>
 	public struct ColorCMYK : IEquatable<ColorCMYK>
 	{
-		#region Obsolete
-
-		/// <summary>
-		/// An empty color with zero for all components
-		/// </summary>
-		[Obsolete("Use nullable values instead")]
-		public readonly static ColorCMYK Empty = new ColorCMYK();
-
-		#endregion
-
 		/// <summary>
 		/// Cyan component
 		/// </summary>
