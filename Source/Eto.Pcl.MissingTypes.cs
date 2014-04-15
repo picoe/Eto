@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if PCL
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -153,3 +154,4 @@ namespace System.Runtime.InteropServices
 		public bool Value { get; set; }
 	}
 }
+#endif
