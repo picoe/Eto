@@ -7,7 +7,7 @@
     <ProjectGuid>{CF18B0BB-2C60-437F-8AA3-711ABAE11A91}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Eto.Test.WinForms</RootNamespace>
-    <AssemblyName>Eto.Test.WinForms</AssemblyName>
+    <AssemblyName>Eto.Test.WinForms.Pcl</AssemblyName>
     <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
     <BaseDir Condition="$(BaseDir) == '' Or $(BaseDir) == '*Undefined*'">..\..</BaseDir>
