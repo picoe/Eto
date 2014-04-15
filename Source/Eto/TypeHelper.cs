@@ -69,14 +69,11 @@ namespace System
 			if (typeInfo.BaseType != null)
 				typeInfo.BaseType.GetAllEvents(result);
 		}
-#else
-
-#endif
-
 		public static EventInfo GetEvent(this Type type, string name)
 		{
 			return (from e in type.GetAllEvents() where e.Name == name select e).FirstOrDefault();
 		}
+#endif
 
 		public static object InvokeOnInstance(this MethodInfo method, object instance, object[] parameters = null)
 		{
@@ -108,11 +105,7 @@ namespace System
 			if (typeInfo.BaseType != null)
 				typeInfo.BaseType.GetAllProperties(result);
 		}
-#else
 
-#endif
-
-#if PCL
 		public static List<MethodInfo> GetAllMethods(this Type type)
 		{
 			var result = new List<MethodInfo>();
