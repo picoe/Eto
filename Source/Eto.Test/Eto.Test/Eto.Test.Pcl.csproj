@@ -25,14 +25,14 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
-    <DefineConstants>DEBUG;DESKTOP;XAML</DefineConstants>
+    <DefineConstants>DEBUG;DESKTOP;XAML;PCL</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
-    <DefineConstants>DESKTOP;XAML</DefineConstants>
+    <DefineConstants>DESKTOP;XAML;PCL</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
@@ -45,7 +45,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>TRACE;DEBUG;Windows;DESKTOP;XAML;PCL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PCL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Android'">
     <Prefer32Bit>false</Prefer32Bit>
