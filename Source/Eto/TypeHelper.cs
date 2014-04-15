@@ -100,6 +100,32 @@ namespace System
 #endif
 		#endregion
 
+		#region GetAllMethods
+#if PCL
+		public static List<MethodInfo> GetAllMethods(this Type type)
+		{
+			var result = new List<MethodInfo>();
+			type.GetAllMethods(result);
+			return result;
+		}
+
+		private static void GetAllMethods(this Type type, List<MethodInfo> result)
+		{
+			var typeInfo = type.GetTypeInfo();
+
+			if (result == null)
+				result = typeInfo.DeclaredMethods.ToList();
+			else
+				result.AddRange(typeInfo.DeclaredMethods);
+
+			if (typeInfo.BaseType != null)
+				typeInfo.BaseType.GetAllMethods(result);
+		}
+#else
+
+#endif
+		#endregion
+
 		#region GetRuntimePropertyInfo
 
 		/// <summary>
