@@ -1,9 +1,10 @@
 using System.Reflection;
 using System;
-
+#if DESKTOP
+using System.Runtime.InteropServices;
+#endif
 #if XAML
 using System.Windows.Markup;
-using System.Runtime.InteropServices;
 
 [assembly: XmlnsDefinition(Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto.Forms")]
 [assembly: XmlnsDefinition(Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto.Xaml.Extensions")]

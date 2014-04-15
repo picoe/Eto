@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 /// <summary>
 /// This file contains type definitions currently needed to compile Eto
@@ -88,6 +89,16 @@ namespace System.ComponentModel
 		}
 	}
 
+	public class TypeConverterAttribute : Attribute
+	{
+		public TypeConverterAttribute(object o)
+		{
+		}
+	}
+}
+
+namespace MissingTypes // we use this namespace to avoid colliding with types defined in System when compiling assemblies that depend on this one.
+{
 	public class TypeConverter
 	{
 		public virtual bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
@@ -109,12 +120,10 @@ namespace System.ComponentModel
 		{
 			throw new Exception();
 		}
-	}
 
-	public class TypeConverterAttribute : Attribute
-	{
-		public TypeConverterAttribute(object o)
+		public object ConvertFrom(object value)
 		{
+			throw new Exception();
 		}
 	}
 }
@@ -128,5 +137,19 @@ namespace System
 
 	public class SerializableAttribute : Attribute
 	{
+	}
+}
+
+namespace System.Runtime.InteropServices
+{
+	[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Interface | AttributeTargets.Delegate, Inherited = false)]
+	[ComVisible(true)]
+	public sealed class ComVisibleAttribute : Attribute
+	{
+		public ComVisibleAttribute(bool visibility)
+		{
+		}
+
+		public bool Value { get; set; }
 	}
 }
