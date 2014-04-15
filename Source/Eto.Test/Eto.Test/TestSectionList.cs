@@ -115,7 +115,7 @@ namespace Eto.Test
 		static IEnumerable<Section> SerializationSection()
 		{
 			yield return new Section<Sections.Serialization.JsonReadSection> { Text = "Json" };
-#if XAML
+#if XAML && !PCL
 			yield return new Section<Sections.Serialization.XamlReadSection> { Text = "Xaml" };
 #endif
 		}
