@@ -17,7 +17,7 @@ namespace System
 
 		public static Type GetBaseType(this Type type)
 		{
-#if WINRT
+#if PCL
 			return type.GetTypeInfo().BaseType;
 #else
 			return type.BaseType;
@@ -29,7 +29,7 @@ namespace System
 		#region IsEnum
 		public static bool IsEnum(this Type type)
 		{
-#if WINRT
+#if PCL
 			return type.GetTypeInfo().IsEnum;
 #else
 			return type.IsEnum;
@@ -41,7 +41,7 @@ namespace System
 
 		public static MethodInfo GetGetMethodInfo(this PropertyInfo propertyInfo)
 		{
-#if WINRT
+#if PCL
 			return propertyInfo.GetMethod;
 #else
 			return propertyInfo.GetGetMethod(true);
@@ -53,7 +53,7 @@ namespace System
 
 		public static MethodInfo GetSetMethodInfo(this PropertyInfo propertyInfo)
 		{
-#if WINRT
+#if PCL
 			return propertyInfo.SetMethod;
 #else
 			return propertyInfo.GetSetMethod(true);
@@ -64,7 +64,7 @@ namespace System
 		#region InvokeOnInstance
 		public static object InvokeOnInstance(this MethodInfo method, object instance, object[] parameters = null)
 		{
-#if WINRT
+#if PCL
 			return method.Invoke(instance, parameters);
 #else
 			return method.Invoke(instance, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
@@ -75,7 +75,7 @@ namespace System
 		#endregion
 
 		#region GetAllProperties
-#if WINRT
+#if PCL
 		public static List<PropertyInfo> GetAllProperties(this Type type)
 		{
 			var result = new List<PropertyInfo>();
@@ -109,7 +109,7 @@ namespace System
 		/// <returns></returns>
 		public static PropertyInfo GetRuntimePropertyInfo(this Type type, string propertyName)
 		{
-#if WINRT			
+#if PCL
 			var typeInfo = type.GetTypeInfo();
 			var result = typeInfo.GetDeclaredProperty(propertyName);
 			if (result == null &&
@@ -132,7 +132,7 @@ namespace System
 		/// <returns></returns>
 		public static MethodInfo GetRuntimeMethodInfo(this Type type, string MethodName)
 		{
-#if WINRT			
+#if PCL
 			var typeInfo = type.GetTypeInfo();
 			var result = typeInfo.GetDeclaredMethod(MethodName);
 			if (result == null &&
@@ -146,7 +146,7 @@ namespace System
 
 		#endregion
 
-#if WINRT
+#if PCL
 
 		/// <summary>
 		/// Determines whether the specified object is an instance of the current Type.

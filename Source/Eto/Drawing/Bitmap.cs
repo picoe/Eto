@@ -151,9 +151,14 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
 		public static Bitmap FromResource (string resourceName, Assembly assembly = null, Generator generator = null)
 		{
-#if !WINRT
-			assembly = assembly ?? Assembly.GetCallingAssembly ();
+			if (assembly == null)
+			{
+#if PCL
+				throw new NotImplementedException("Portable Class Libraries do not support Assembly.GetCallingAssembly");
+#else
+				assembly = Assembly.GetCallingAssembly ();
 #endif
+			}
 			using (var stream = assembly.GetManifestResourceStream (resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (assembly, resourceName);
@@ -291,8 +296,8 @@ namespace Eto.Drawing
 		/// <param name="format">Format to save as</param>
 		public void Save (string fileName, ImageFormat format)
 		{
-#if WINRT
-			throw new NotImplementedException();
+#if PCL
+			throw new NotImplementedException("Portable Class Libraries do not support saving to a file.");
 #else
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
 				Save (stream, format);

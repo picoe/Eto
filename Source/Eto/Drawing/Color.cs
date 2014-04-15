@@ -214,14 +214,16 @@ namespace Eto.Drawing
 				if (colormap == null) {
 					lock (colormaplock) {
 						if (colormap == null) {
-#if !WINRT
+#if PCL							
+							var props = from p in typeof(Colors).GetAllProperties() where p.GetGetMethodInfo().IsStatic && p.GetGetMethodInfo().IsPublic select p;
+#else
 							var props = typeof (Colors).GetProperties (BindingFlags.Public | BindingFlags.Static);
+#endif
 							colormap = new Dictionary<string, Color> (StringComparer.OrdinalIgnoreCase);
 							foreach (var val in props.Where (r => r.PropertyType == typeof (Color))) {
 								var col = (Color)val.GetValue (null, null);
 								colormap.Add (val.Name, col);
 							}
-#endif
 						}
 					}
 				}

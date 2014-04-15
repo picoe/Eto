@@ -9,7 +9,9 @@ namespace Eto
 	static class EventLookup
 	{
 		static readonly Dictionary<Type, List<EventDeclaration>> registeredEvents = new Dictionary<Type, List<EventDeclaration>>();
-#if !WINRT
+#if PCL
+		static readonly Assembly etoAssembly = typeof(EventLookup).GetTypeInfo().Assembly;
+#else
 		static readonly Assembly etoAssembly = typeof(EventLookup).Assembly;
 #endif
 		static readonly Dictionary<Type, string[]> externalEvents = new Dictionary<Type, string[]>();
