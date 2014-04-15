@@ -19,19 +19,22 @@ namespace Eto.IO
 
 	public interface ISystemIcons : IWidget
 	{
+#if !PCL
 		Icon GetFileIcon(string fileName, IconSize size);
 		Icon GetStaticIcon(StaticIconType type, IconSize size);
+#endif
 	}
 	
 	public class SystemIcons : Widget
 	{
 		new ISystemIcons Handler { get { return (ISystemIcons)base.Handler; } }
-		readonly Dictionary<IconSize, Dictionary<object, Icon>> htSizes = new Dictionary<IconSize, Dictionary<object, Icon>>();
 
 		public SystemIcons(Generator g) : base(g, typeof(ISystemIcons))
 		{
 		}
 
+#if !PCL
+		readonly Dictionary<IconSize, Dictionary<object, Icon>> htSizes = new Dictionary<IconSize, Dictionary<object, Icon>>();
 		Dictionary<object, Icon> GetLookupTable(IconSize size)
 		{
 			Dictionary<object, Icon> htIcons;
@@ -67,5 +70,6 @@ namespace Eto.IO
 			}
 			return icon;
 		}
+#endif
 	}
 }

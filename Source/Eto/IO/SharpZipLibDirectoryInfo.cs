@@ -1,4 +1,4 @@
-#if !MOBILE
+#if !MOBILE && !PCL
 using System;
 using System.Text.RegularExpressions;
 using System.Collections;

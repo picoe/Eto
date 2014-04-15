@@ -1,3 +1,4 @@
+#if !PCL
 using Eto.Drawing;
 
 namespace Eto.IO
@@ -15,3 +16,4 @@ namespace Eto.IO
 		public abstract Icon GetIcon(SystemIcons icons, IconSize iconSize);
 	}
 }
+#endif

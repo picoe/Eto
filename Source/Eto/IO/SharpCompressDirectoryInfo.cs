@@ -1,4 +1,4 @@
-#if !MOBILE
+#if !MOBILE && !PCL
 using System;
 using SharpCompress.Reader;
 using SharpCompress.Archive;
