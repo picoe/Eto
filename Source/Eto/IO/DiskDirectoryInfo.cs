@@ -1,3 +1,4 @@
+#if !PCL
 using System.IO;
 using System.Collections.Generic;
 
@@ -96,3 +97,4 @@ namespace Eto.IO
 
 	}
 }
+#endif

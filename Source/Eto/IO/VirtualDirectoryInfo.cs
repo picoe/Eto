@@ -1,3 +1,4 @@
+#if !PCL
 using System;
 using System.Text.RegularExpressions;
 using System.IO;
@@ -195,3 +196,4 @@ namespace Eto.IO
 		}
 	}
 }
+#endif

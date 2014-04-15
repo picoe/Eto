@@ -1,3 +1,4 @@
+#if !PCL
 using System;
 using System.IO;
 using Eto.Drawing;
@@ -156,3 +157,4 @@ namespace Eto.IO
 		}
 	}
 }
+#endif

@@ -44,6 +44,7 @@ namespace Eto
 		/// </summary>
 		public bool IsLinux { get; private set; }
 
+#if !PCL
 		[DllImport("libc")]
 		static extern int uname(IntPtr buf);
 
@@ -69,7 +70,7 @@ namespace Eto
 			return osName;
 
 		}
-
+#endif
 		/// <summary>
 		/// Initializes a new instance of the OperatingSystemPlatform class
 		/// </summary>

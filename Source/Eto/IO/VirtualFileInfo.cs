@@ -1,3 +1,4 @@
+#if !PCL
 using System;
 using System.IO;
 
@@ -42,3 +43,4 @@ namespace Eto.IO
 		}
 	}
 }
+#endif
