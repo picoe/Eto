@@ -13,8 +13,6 @@ namespace System
 	/// </summary>
 	internal static class TypeHelper // internal so that unrelated assemblies can link to the same source file without errors
 	{
-		#region GetBaseType
-
 		public static Type GetBaseType(this Type type)
 		{
 #if PCL
@@ -24,9 +22,6 @@ namespace System
 #endif
 		}
 
-		#endregion
-
-		#region IsEnum
 		public static bool IsEnum(this Type type)
 		{
 #if PCL
@@ -35,9 +30,6 @@ namespace System
 			return type.IsEnum;
 #endif
 		}
-		#endregion
-
-		#region GetGetMethodInfo(PropertyInfo propertyInfo)
 
 		public static MethodInfo GetGetMethodInfo(this PropertyInfo propertyInfo)
 		{
@@ -47,9 +39,6 @@ namespace System
 			return propertyInfo.GetGetMethod(true);
 #endif
 		}
-		#endregion
-
-		#region GetSetMethodInfo(PropertyInfo propertyInfo)
 
 		public static MethodInfo GetSetMethodInfo(this PropertyInfo propertyInfo)
 		{
@@ -59,9 +48,36 @@ namespace System
 			return propertyInfo.GetSetMethod(true);
 #endif
 		}
-		#endregion
 
-		#region InvokeOnInstance
+#if PCL
+		public static List<EventInfo> GetAllEvents(this Type type)
+		{
+			var result = new List<EventInfo>();
+			type.GetAllEvents(result);
+			return result;
+		}
+
+		private static void GetAllEvents(this Type type, List<EventInfo> result)
+		{
+			var typeInfo = type.GetTypeInfo();
+
+			if (result == null)
+				result = typeInfo.DeclaredEvents.ToList();
+			else
+				result.AddRange(typeInfo.DeclaredEvents);
+
+			if (typeInfo.BaseType != null)
+				typeInfo.BaseType.GetAllEvents(result);
+		}
+#else
+
+#endif
+
+		public static EventInfo GetEvent(this Type type, string name)
+		{
+			return (from e in type.GetAllEvents() where e.Name == name select e).FirstOrDefault();
+		}
+
 		public static object InvokeOnInstance(this MethodInfo method, object instance, object[] parameters = null)
 		{
 #if PCL
@@ -72,9 +88,6 @@ namespace System
 #endif
 		}
 
-		#endregion
-
-		#region GetAllProperties
 #if PCL
 		public static List<PropertyInfo> GetAllProperties(this Type type)
 		{
@@ -98,9 +111,7 @@ namespace System
 #else
 
 #endif
-		#endregion
 
-		#region GetAllMethods
 #if PCL
 		public static List<MethodInfo> GetAllMethods(this Type type)
 		{
@@ -124,9 +135,6 @@ namespace System
 #else
 
 #endif
-		#endregion
-
-		#region GetRuntimePropertyInfo
 
 		/// <summary>
 		/// Returns a PropertyInfo for the specified property of the current type.
@@ -147,10 +155,6 @@ namespace System
 #endif
 		}
 
-		#endregion
-
-		#region GetRuntimeMethodInfo
-
 		/// <summary>
 		/// Returns a MethodInfo for the specified method of the current type.
 		/// The Method may be declared on the current type or an ancestor type.
@@ -169,8 +173,6 @@ namespace System
 			return type.GetMethod(MethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 #endif
 		}
-
-		#endregion
 
 #if PCL
 
