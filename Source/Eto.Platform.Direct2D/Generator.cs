@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.IO;
 using Eto.Platform.Direct2D.Drawing;
 using Eto.Platform.Direct2D.Forms.Controls;
 using Eto.Platform.Direct2D.Forms.Printing;

@@ -5,8 +5,11 @@ namespace Eto.Test
 {
 	public static class TestIcons
 	{
+#if PCL
+		static Assembly Assembly { get { return typeof(TestIcons).GetTypeInfo().Assembly; } } // Don't use GetExecutingAssembly, it is not cross-platform safe.
+#else
 		static Assembly Assembly { get { return typeof(TestIcons).Assembly; } } // Don't use GetExecutingAssembly, it is not cross-platform safe.
-
+#endif
 		static string prefix;
 		public static string Prefix { get { return prefix = prefix ?? Assembly.GetName().Name + "."; } }
 

@@ -18,7 +18,9 @@ namespace Eto.Test
 			yield return new Section("Dialogs", DialogsSection());
 			yield return new Section("Printing", PrintingSection());
 			yield return new Section("Serialization", SerializationSection());
+#if !PCL
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
+#endif
 		}
 		
 		static IEnumerable<Section> ControlSection()
@@ -72,7 +74,9 @@ namespace Eto.Test
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
+#if !PCL
 			yield return new Section<DrawLoopSection> { Text = "Draw Loop" };
+#endif
 		}
 
 		static IEnumerable<Section> LayoutsSection()

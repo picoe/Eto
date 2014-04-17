@@ -74,7 +74,9 @@ namespace Eto.Forms
 			}
 		}
 
+#if !PCL
 		[TypeConverter(typeof(Int32ArrayConverter))]
+#endif
 		public int[] ColumnScale
 		{
 			set
@@ -100,7 +102,9 @@ namespace Eto.Forms
 			}
 		}
 
+#if !PCL
 		[TypeConverter(typeof(Int32ArrayConverter))]
+#endif
 		public int[] RowScale
 		{
 			set
