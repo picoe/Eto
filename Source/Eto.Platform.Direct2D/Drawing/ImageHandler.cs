@@ -7,8 +7,10 @@ using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.WIC;
 using System.IO;
-using Eto.Platform.Windows.Drawing;
 using System.Diagnostics;
+#if WINFORMS
+using Eto.Platform.Windows.Drawing;
+#endif
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -17,7 +19,10 @@ namespace Eto.Platform.Direct2D.Drawing
 		sd.Bitmap GetBitmap(sd.RenderTarget target);
 	}
 
-	public class ImageHandler<TWidget> : WidgetHandler<sw.Bitmap, TWidget>, IImage, ID2DBitmapHandler, IWindowsImageSource
+	public class ImageHandler<TWidget> : WidgetHandler<sw.Bitmap, TWidget>, IImage, ID2DBitmapHandler
+#if WINFORMS		
+		, IWindowsImageSource
+#endif
 		where TWidget: Image
     {
 		sd.Bitmap targetBitmap;
@@ -108,7 +113,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			}
 			catch (s.SharpDXException ex)
 			{
-				Debug.Print("GetPixel: {0}", ex.ToString());
+				Debug.WriteLine("GetPixel: {0}", ex.ToString());
 				throw;
 			}			
         }
@@ -139,11 +144,13 @@ namespace Eto.Platform.Direct2D.Drawing
 				targetBitmap.Dispose();
 				targetBitmap = null;
 			}
+#if WINFORMS
 			if (sdimage != null)
 			{
 				sdimage.Dispose();
 				sdimage = null;
 			}
+#endif
 		}
 
 		protected override void Dispose(bool disposing)
@@ -163,6 +170,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			base.Dispose(disposing);
 		}
 
+#if WINFORMS
 		System.Drawing.Image sdimage;
 
 		public virtual System.Drawing.Image GetImageWithSize(int? size)
@@ -177,5 +185,6 @@ namespace Eto.Platform.Direct2D.Drawing
 			}
 			return sdimage ?? (sdimage = Control.ToSD());
 		}
+#endif
 	}
 }

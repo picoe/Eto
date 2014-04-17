@@ -315,6 +315,7 @@ namespace Eto.Platform.Direct2D
 			}
 		}
 
+#if WINFORMS
 		public static System.Drawing.Imaging.PixelFormat ToSDPixelFormat(this Guid pixelFormat)
 		{
 			if (pixelFormat == s.WIC.PixelFormat.Format32bppBGR)
@@ -327,6 +328,7 @@ namespace Eto.Platform.Direct2D
 				return System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
 			throw new NotSupportedException();
 		}
+#endif
 
 		public static Guid ToWic(this ImageFormat format)
 		{
@@ -347,6 +349,7 @@ namespace Eto.Platform.Direct2D
 			}
 		}
 
+#if WINFORMS
 		public static System.Drawing.Bitmap ToSD(this s.WIC.Bitmap bmp)
 		{
 			using (var bl = bmp.Lock(s.WIC.BitmapLockFlags.Read))
@@ -356,6 +359,7 @@ namespace Eto.Platform.Direct2D
 				return new System.Drawing.Bitmap(bmp.Size.Width, bmp.Size.Height, bl.Data.Pitch, pixelFormat, bl.Data.DataPointer);
 			}
 		}
+#endif
 
 		public static s.WIC.Bitmap ToBitmap(this s.WIC.BitmapSource bmp, Guid? pixelFormat = null)
 		{

@@ -4,10 +4,11 @@ using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
-using swf = System.Windows.Forms;
 using Eto.Forms;
-using Eto.Platform.Windows;
 using System.Diagnostics;
+#if WINFORMS
+using Eto.Platform.Windows;
+#endif
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -25,8 +26,9 @@ namespace Eto.Platform.Direct2D.Drawing
 		float fillOffset;
 		sd.Layer clipLayer;
 		RectangleF clipBounds;
+#if WINFORMS
 		DrawableHandler drawable;
-
+#endif
 		public float PointsPerPixel { get { return 72f / Control.DotsPerInch.Width; } }
 
 		protected override bool DisposeControl { get { return disposeControl; } }
@@ -41,6 +43,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			disposeControl = false;
 		}
 
+#if WINFORMS
 		public GraphicsHandler(DrawableHandler drawable)
 		{
 			this.drawable = drawable;
@@ -50,9 +53,10 @@ namespace Eto.Platform.Direct2D.Drawing
 			//target creation
 			drawable.Control.SizeChanged += HandleSizeChanged;
 		}
-
+#endif
 		void CreateRenderTarget()
 		{
+#if WINFORMS
 			var renderProp = new sd.RenderTargetProperties
 			{
 				DpiX = 0,
@@ -80,10 +84,12 @@ namespace Eto.Platform.Direct2D.Drawing
 				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.Unknown, sd.AlphaMode.Unknown);
 				Control = new sd.WicRenderTarget(SDFactory.D2D1Factory, imageHandler.Control, renderProp);
 			}
+#endif
 		}
 
 		void HandleSizeChanged(object sender, EventArgs e)
 		{
+#if WINFORMS
 			var target = Control as sd.WindowRenderTarget;
 			if (target == null)
 				return;
@@ -94,8 +100,11 @@ namespace Eto.Platform.Direct2D.Drawing
 			}
 			catch (Exception ex)
 			{
-				Debug.Print(string.Format("Could not resize: {0}", ex));
+				Debug.WriteLine(string.Format("Could not resize: {0}", ex));
 			}
+#else
+			throw new NotImplementedException();
+#endif
 		}
 
 		sd.Ellipse GetEllipse(float x, float y, float width, float height)
@@ -433,6 +442,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			{
 				if (globalRenderTarget == null)
 				{
+#if WINFORMS
 					// hack for now, use a temporary control to get the current target
 					// ideally, each brush/etc will create itself when needed, not right away.
 					// though, this may be difficult for things like a bitmap
@@ -453,6 +463,9 @@ namespace Eto.Platform.Direct2D.Drawing
 						Usage = sd.RenderTargetUsage.None
 					};
 					globalRenderTarget = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+#else
+					throw new NotImplementedException();
+#endif
 				}
 				return currentRenderTarget ?? globalRenderTarget;
 			}
@@ -515,7 +528,7 @@ namespace Eto.Platform.Direct2D.Drawing
 				{
 					if (ex.ResultCode == 0x8899000C) // D2DERR_RECREATE_TARGET
 					{
-						Debug.Print("Recreating targets");
+						Debug.WriteLine("Recreating targets");
 						// need to recreate render target
 						CreateRenderTarget();
 						CurrentRenderTarget = Control;

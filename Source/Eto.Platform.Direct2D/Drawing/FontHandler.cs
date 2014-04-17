@@ -6,7 +6,9 @@ using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
+#if WINFORMS
 using Eto.Platform.Windows.Drawing;
+#endif
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -15,7 +17,10 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-    public class FontHandler : WidgetHandler<sw.Font, Font>, IFont, IWindowsFontSource
+    public class FontHandler : WidgetHandler<sw.Font, Font>, IFont
+#if WINFORMS
+		, IWindowsFontSource
+#endif
     {
 		sw.TextFormat textFormat;
 		public sw.TextFormat TextFormat
@@ -55,8 +60,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
+#if WINFORMS
 			var sdfont = Eto.Platform.Windows.Conversions.ToSD(systemFont);
 			Create(sdfont.Name, size ?? sdfont.SizeInPoints, FontStyle.None, decoration);
+#else
+			throw new NotImplementedException();
+#endif
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
@@ -162,11 +171,13 @@ namespace Eto.Platform.Direct2D.Drawing
 			get { return Ascent; }
 		}
 
+#if WINFORMS
 		public System.Drawing.Font GetFont()
 		{
 			var familyName = Control.FontFamily.FamilyNames.GetString(0);
 			var style = Eto.Platform.Windows.Conversions.ToSD(FontStyle) | Eto.Platform.Windows.Conversions.ToSD(FontDecoration);
 			return new System.Drawing.Font(familyName, Size, style);
 		}
+#endif
 	}
 }
