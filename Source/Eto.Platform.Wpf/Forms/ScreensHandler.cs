@@ -1,8 +1,6 @@
 using Eto.Forms;
 using System.Collections.Generic;
-using sd = System.Drawing;
 using swf = System.Windows.Forms;
-using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
