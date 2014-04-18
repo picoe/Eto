@@ -156,37 +156,7 @@
     <Compile Include="Forms\Menu\RadioMenuItem.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
-    <Compile Include="IO\DiskDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\DiskFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoDriveInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoSystemObjectInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="IO\SystemIcons.cs" />
-    <Compile Include="IO\VirtualDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualDirectoryType.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualFileEntry.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Xaml\EtoXamlSchemaContext.cs" />
     <Compile Include="Xaml\Extensions\ResourceExtension.cs" />
     <Compile Include="Xaml\XamlReader.cs" />
