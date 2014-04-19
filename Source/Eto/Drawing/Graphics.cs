@@ -273,22 +273,6 @@ namespace Eto.Drawing
 		void Clear(SolidBrush brush);
 	}
 
-	#if MOBILE
-
-	/// <summary>
-	/// Currently supported by the iOS Graphics handler. Implements the 
-	/// UIKit pattern of creating a graphics that is automatically backed by a bitmap 
-	/// whose scale can be retina-aware. After drawing into the Graphics,
-	/// the image can be retrieved.
-	/// </summary>
-	public interface IGraphicsCreate
-	{
-		void Create(Size size, bool useMainScreenScale);
-		Bitmap GetImage();
-	}
-
-	#endif
-
 	/// <summary>
 	/// Graphics context object for drawing operations
 	/// </summary>
