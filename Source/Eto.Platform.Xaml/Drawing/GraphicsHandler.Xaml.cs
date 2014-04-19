@@ -14,10 +14,12 @@ namespace Eto.Platform.Direct2D.Drawing
 {
 	public partial class GraphicsHandler
 	{
-		public GraphicsHandler(DrawableHandler drawable)
+		DrawableHandler drawableHandler;
+		public GraphicsHandler(DrawableHandler drawableHandler)
 		{
-			drawable.Control.Loaded += (s, e) => CreateXamlRenderTarget(drawable);
-			drawable.Control.SizeChanged += (s, e) => CreateXamlRenderTarget(drawable);
+			this.drawableHandler = drawableHandler;
+			drawableHandler.Control.Loaded += (s, e) => CreateXamlRenderTarget(drawableHandler);
+			drawableHandler.Control.SizeChanged += (s, e) => CreateXamlRenderTarget(drawableHandler);
 		}
 
 		public Bitmap Image { get { return image; } }
@@ -36,7 +38,6 @@ namespace Eto.Platform.Direct2D.Drawing
 				var size = new Size((int)drawable.Control.Width, (int)drawable.Control.Height);
 				image = new Bitmap(size, PixelFormat.Format32bppRgba);
 				CreateWicTarget();
-				drawable.Invalidate();
 			}
 		}
 	}

@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Xaml.Forms.Controls
 {
@@ -131,15 +132,32 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			// convert a Wic bitmap to a BitmapImage was by serializing to/from
 			// a memory stream.
 
-			Widget.OnPaint(new PaintEventArgs(graphics, Widget.Bounds)); // renders into the bitmap
 			var graphicsHandler = graphics.Handler as GraphicsHandler;
+			graphicsHandler.BeginDrawing();
+			Widget.OnPaint(new PaintEventArgs(graphics, Widget.Bounds)); // renders into the bitmap
+			graphicsHandler.EndDrawing();
 			var bitmap = graphicsHandler.Image;
 			var bitmapHandler = bitmap.Handler as BitmapHandler;
 			var bitmapObject = bitmapHandler.Control;
 			var size = bitmapObject.Size;
 			var writeableBitmap = new WriteableBitmap(size.Width, size.Height);
-			var stream = writeableBitmap.PixelBuffer.AsStream();
-			bitmapHandler.Save(stream, ImageFormat.Png);  // save the wic bitmap to the memoryStream
+
+			// Get a pointer to the bitmap pixels
+			unsafe
+			{
+				byte* ptr = null;
+				((IBufferByteAccess)writeableBitmap.PixelBuffer).Buffer(out ptr);
+				var len = size.Width * size.Height;
+				var pixels = new SharpDX.ColorBGRA[len];
+				bitmapObject.CopyPixels(pixels);
+				for (var i = 0; i < len; ++i)
+				{
+					ptr[i * 4]     = pixels[i].B;
+					ptr[i * 4 + 1] = pixels[i].G;   
+					ptr[i * 4 + 2] = pixels[i].R;
+					ptr[i * 4 + 3] = pixels[i].A;
+				}
+			}
 			Control.Source = writeableBitmap;
 		}
 
@@ -480,5 +498,14 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			get; set;
 #endif
 		}
+	}
+
+	/// <summary>
+	/// See http://www.charlespetzold.com/blog/2012/08/WriteableBitmap-Pixel-Arrays-in-CSharp-and-CPlusPlus.html
+	/// </summary>
+	[Guid("905a0fef-bc53-11df-8c49-001e4fc686da"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	interface IBufferByteAccess
+	{
+		unsafe void Buffer(out byte* pByte);
 	}
 }

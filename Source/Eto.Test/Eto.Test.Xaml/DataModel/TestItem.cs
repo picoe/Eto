@@ -28,17 +28,9 @@ namespace Eto.Test.Xaml.Data
 			set { this.SetProperty(ref this._content, value); }
 		}
 
-		private FrameworkElement _contentControl;
 		public FrameworkElement ContentControl
 		{
-			get
-			{
-				if (_contentControl == null &&
-					getControl != null)
-					ContentControl = getControl();
-				return this._contentControl;
-			}
-			set { this.SetProperty(ref this._contentControl, value); }
+			get { return getControl != null ? getControl() : null; } // we don't cache this so that a test section can be run again during debugging
 		}
 
 		private TestGroup _group;
