@@ -234,7 +234,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
-			UpdateTiles(true);
+			UpdateTiles(true); 
 		}
 
 		public virtual Graphics CreateGraphics()
@@ -311,12 +311,15 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 		void UpdateTiles(bool rebuildKeys = false)
 		{
-			if (!tiled 
+			if (!tiled
 #if TODO_XAML
 				|| !Control.IsLoaded
 #endif
-				)
+)
+			{
+				Invalidate(); 
 				return;
+			}
 
 			var controlSize = new Size((int)Control.ActualWidth, (int)Control.ActualHeight);
 			var rect = new Rectangle(controlSize);
