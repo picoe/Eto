@@ -17,7 +17,7 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
+	public partial class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
 	{
 		bool hasBegan;
 		bool disposeControl = true;
@@ -57,17 +57,9 @@ namespace Eto.Platform.Direct2D.Drawing
 		void CreateRenderTarget()
 		{
 #if WINFORMS
-			var renderProp = new sd.RenderTargetProperties
-			{
-				DpiX = 0,
-				DpiY = 0,
-				MinLevel = sd.FeatureLevel.Level_DEFAULT,
-				Type = sd.RenderTargetType.Default,
-				Usage = sd.RenderTargetUsage.None
-			};
-
 			if (drawable != null)
 			{
+				var renderProp = CreateRenderProperties();
 				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied);
 				var winProp = new sd.HwndRenderTargetProperties
 				{
@@ -78,13 +70,33 @@ namespace Eto.Platform.Direct2D.Drawing
 
 				Control = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
 			}
-			else if (image != null)
+			else CreateWicTarget();
+#endif
+		}
+
+		private void CreateWicTarget()
+		{
+			if (image != null)
 			{
+				var renderProp = CreateRenderProperties();
 				var imageHandler = image.Handler as BitmapHandler;
 				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.Unknown, sd.AlphaMode.Unknown);
 				Control = new sd.WicRenderTarget(SDFactory.D2D1Factory, imageHandler.Control, renderProp);
 			}
-#endif
+		}
+
+		private static sd.RenderTargetProperties CreateRenderProperties()
+		{
+			var renderProp = new sd.RenderTargetProperties
+			{
+				DpiX = 0,
+				DpiY = 0,
+				MinLevel = sd.FeatureLevel.Level_DEFAULT,
+				Type = sd.RenderTargetType.Default,
+				Usage = sd.RenderTargetUsage.None
+			};
+
+			return renderProp;
 		}
 
 		void HandleSizeChanged(object sender, EventArgs e)
@@ -231,7 +243,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void CreateFromImage(Bitmap image)
 		{
 			this.image = image;
-			CreateRenderTarget();
+			CreateWicTarget();
 			BeginDrawing();
 		}
 

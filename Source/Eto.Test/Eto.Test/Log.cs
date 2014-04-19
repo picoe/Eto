@@ -16,7 +16,7 @@ namespace Eto.Test
 			sb.Append ("\n");
 
 #if DESKTOP
-			var form = Application.Instance.MainForm as MainForm;
+			var form = Application.Instance != null ? Application.Instance.MainForm as MainForm : null;
 			if (form == null) 
 				return;
 			

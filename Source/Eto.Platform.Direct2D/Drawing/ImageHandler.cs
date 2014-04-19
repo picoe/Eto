@@ -85,6 +85,8 @@ namespace Eto.Platform.Direct2D.Drawing
 				encoder.Initialize(stream);
 				using (var frameEncoder = new s.WIC.BitmapFrameEncode(encoder))
 				{
+					frameEncoder.Initialize();
+					frameEncoder.SetSize(Control.Size.Width, Control.Size.Height);
 					frameEncoder.WriteSource(Control);
 					frameEncoder.Commit();
 				}

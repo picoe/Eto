@@ -14,7 +14,9 @@ namespace Eto.Test
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
 			yield return new Section("Controls", ControlSection());
-			yield return new Section("Layouts", LayoutsSection());
+			yield return new Section("Table Layout", TableLayoutsSection());
+			yield return new Section("Scrollable Layout", ScrollableLayoutSection());
+			yield return new Section("Pixel Layout", PixelLayoutSection());
 			yield return new Section("Dialogs", DialogsSection());
 			yield return new Section("Printing", PrintingSection());
 			yield return new Section("Serialization", SerializationSection());
@@ -77,13 +79,6 @@ namespace Eto.Test
 #if !PCL
 			yield return new Section<DrawLoopSection> { Text = "Draw Loop" };
 #endif
-		}
-
-		static IEnumerable<Section> LayoutsSection()
-		{
-			yield return new Section("Table Layout", TableLayoutsSection());
-			yield return new Section("Scrollable Layout", ScrollableLayoutSection());
-			yield return new Section("Pixel Layout", PixelLayoutSection());
 		}
 		
 		static IEnumerable<Section> TableLayoutsSection()
