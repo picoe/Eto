@@ -125,6 +125,9 @@ namespace Eto.Platform.Xaml.Forms.Controls
 #endif
 		}
 
+		[DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+		public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
+
 		private async void Render()
 		{
 			// Note: there ought to be a more efficient way to do this, as this is
@@ -149,19 +152,16 @@ namespace Eto.Platform.Xaml.Forms.Controls
 				((IBufferByteAccess)writeableBitmap.PixelBuffer).Buffer(out ptr);
 				var len = size.Width * size.Height;
 				var pixels = new SharpDX.ColorBGRA[len];
-				bitmapObject.CopyPixels(pixels);
-				for (var i = 0; i < len; ++i)
+				fixed (SharpDX.ColorBGRA* pixelsPtr = &pixels[0])
 				{
-					ptr[i * 4]     = pixels[i].B;
-					ptr[i * 4 + 1] = pixels[i].G;   
-					ptr[i * 4 + 2] = pixels[i].R;
-					ptr[i * 4 + 3] = pixels[i].A;
+					bitmapObject.CopyPixels(pixels);
+					CopyMemory((IntPtr)ptr, (IntPtr)pixelsPtr, (uint)len * 4);
 				}
 			}
 			Control.Source = writeableBitmap;
 		}
 
-		async Task SaveToFile(SharpDX.WIC.Bitmap bitmap)
+		async Task SaveToFile(SharpDX.WIC.Bitmap bitmap) // debugging helper method, remove when no longer needed.
 		{
 			
 			var width = bitmap.Size.Width;
