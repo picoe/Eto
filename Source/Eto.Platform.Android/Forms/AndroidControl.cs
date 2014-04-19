@@ -152,5 +152,30 @@ namespace Eto.Platform.Android.Forms
 		{
 			throw new NotImplementedException();
 		}
+
+
+		public string ToolTip
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public Cursor Cursor
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

@@ -15,53 +15,53 @@ namespace Eto.Platform.Android
 {
 	public static class KeyMap
 	{
-		static Dictionary<av.Keycode, Key> keymap = new Dictionary<av.Keycode, Key>();
-		static Dictionary<Key, av.Keycode> inverse = new Dictionary<Key, av.Keycode>();
+		static Dictionary<av.Keycode, Keys> keymap = new Dictionary<av.Keycode, Keys>();
+		static Dictionary<Keys, av.Keycode> inverse = new Dictionary<Keys, av.Keycode>();
 
-        public static Key ToEto (this av.Keycode keyData)
+		public static Keys ToEto(this av.Keycode keyData)
         {
             // convert the modifiers
-            Key modifiers = Key.None;
+			Keys modifiers = Keys.None;
 
 #if TODO
             // Shift
             if ((keyData & av.Keycode.Shift) == av.Keycode.Shift)
-                modifiers |= Key.Shift;
+                modifiers |= Keys.Shift;
 
             // Control
             if ((keyData & av.Keycode.Control) == av.Keycode.Control)
-                modifiers |= Key.Control;
+                modifiers |= Keys.Control;
 
             // Alt
             if ((keyData & av.Keycode.Alt) == av.Keycode.Alt)
-                modifiers |= Key.Alt;
+                modifiers |= Keys.Alt;
 
             var keyCode =
                 Find(keyData & ~(av.Keycode.Shift | av.Keycode.Control | av.Keycode.Alt));
 #else
-            var keyCode = Find(keyData); // This is incomplete; modifiers are not currently handled
+			var keyCode = Find(keyData); // This is incomplete; modifiers are not currently handled
 #endif
 
             return keyCode | modifiers;
         }
 
-		private static Key Find(av.Keycode key)
+		private static Keys Find(av.Keycode key)
 		{
-			Key mapped;
+			Keys mapped;
 			if (keymap.TryGetValue(key, out mapped)) return mapped;
-			else return Key.None;
+			else return Keys.None;
 		}
-		
-		public static av.Keycode Find(Key key)
+
+		public static av.Keycode Find(Keys key)
 		{
 			av.Keycode mapped;
 			if (inverse.TryGetValue(key, out mapped)) return mapped;
 			else return av.Keycode.Unknown;
 		}
-		
-		public static av.Keycode ToSWF (this Key key)
+
+		public static av.Keycode ToSWF(this Keys key)
 		{
-			var code = key & Key.KeyMask;
+			var code = key & Keys.KeyMask;
 			av.Keycode modifiers = av.Keycode.Unknown;
 			
 #if TODO
@@ -84,76 +84,76 @@ namespace Eto.Platform.Android
 		
 		static KeyMap()
 		{
-			keymap.Add(av.Keycode.A, Key.A);
-			keymap.Add(av.Keycode.B, Key.B);
-			keymap.Add(av.Keycode.C, Key.C);
-			keymap.Add(av.Keycode.D, Key.D);
-			keymap.Add(av.Keycode.E, Key.E);
-			keymap.Add(av.Keycode.F, Key.F);
-			keymap.Add(av.Keycode.G, Key.G);
-			keymap.Add(av.Keycode.H, Key.H);
-			keymap.Add(av.Keycode.I, Key.I);
-			keymap.Add(av.Keycode.J, Key.J);
-			keymap.Add(av.Keycode.K, Key.K);
-			keymap.Add(av.Keycode.L, Key.L);
-			keymap.Add(av.Keycode.M, Key.M);
-			keymap.Add(av.Keycode.N, Key.N);
-			keymap.Add(av.Keycode.O, Key.O);
-			keymap.Add(av.Keycode.P, Key.P);
-			keymap.Add(av.Keycode.Q, Key.Q);
-			keymap.Add(av.Keycode.R, Key.R);
-			keymap.Add(av.Keycode.S, Key.S);
-			keymap.Add(av.Keycode.T, Key.T);
-			keymap.Add(av.Keycode.U, Key.U);
-			keymap.Add(av.Keycode.V, Key.V);
-			keymap.Add(av.Keycode.W, Key.W);
-			keymap.Add(av.Keycode.X, Key.X);
-			keymap.Add(av.Keycode.Y, Key.Y);
-			keymap.Add(av.Keycode.Z, Key.Z);
-			//keymap.Add(av.Keycode.F1, Key.F1);
-			//keymap.Add(av.Keycode.F2, Key.F2);
-			//keymap.Add(av.Keycode.F3, Key.F3);
-			//keymap.Add(av.Keycode.F4, Key.F4);
-			//keymap.Add(av.Keycode.F5, Key.F5);
-			//keymap.Add(av.Keycode.F6, Key.F6);
-			//keymap.Add(av.Keycode.F7, Key.F7);
-			//keymap.Add(av.Keycode.F8, Key.F8);
-			//keymap.Add(av.Keycode.F9, Key.F9);
-			//keymap.Add(av.Keycode.F10, Key.F10);
-			//keymap.Add(av.Keycode.F11, Key.F11);
-			//keymap.Add(av.Keycode.F12, Key.F12);
-			keymap.Add(av.Keycode.Num0, Key.D0);
-			keymap.Add(av.Keycode.Num1, Key.D1);
-			keymap.Add(av.Keycode.Num2, Key.D2);
-			keymap.Add(av.Keycode.Num3, Key.D3);
-			keymap.Add(av.Keycode.Num4, Key.D4);
-			keymap.Add(av.Keycode.Num5, Key.D5);
-			keymap.Add(av.Keycode.Num6, Key.D6);
-			keymap.Add(av.Keycode.Num7, Key.D7);
-			keymap.Add(av.Keycode.Num8, Key.D8);
-			keymap.Add(av.Keycode.Num9, Key.D9);
-			keymap.Add(av.Keycode.Space, Key.Space);
-			//keymap.Add(av.Keycode.Up, Key.Up);
-			//keymap.Add(av.Keycode.Down, Key.Down);
-			//keymap.Add(av.Keycode.Left, Key.Left);
-			//keymap.Add(av.Keycode.Right, Key.Right);
-			//keymap.Add(av.Keycode.PageDown, Key.PageDown);
-			//keymap.Add(av.Keycode.PageUp, Key.PageUp);
-			keymap.Add(av.Keycode.Home, Key.Home);
-			//keymap.Add(av.Keycode.End, Key.End);
-			//keymap.Add(av.Keycode.Alt, Key.Alt);
-			//keymap.Add(av.Keycode.Control, Key.Control);
-			//keymap.Add(av.Keycode.Shift, Key.Shift);
-			keymap.Add(av.Keycode.Menu, Key.Menu);
-			//keymap.Add(av.Keycode.Escape, Key.Escape);
-			keymap.Add(av.Keycode.Del, Key.Delete);
-			keymap.Add(av.Keycode.Back, Key.Backspace);
-			//keymap.Add(av.Keycode.Divide, Key.Divide);
-			keymap.Add(av.Keycode.Enter, Key.Enter);
-			//keymap.Add(av.Keycode.Insert, Key.Insert);
-            keymap.Add(av.Keycode.Period, Key.Period);
-            keymap.Add(av.Keycode.Tab, Key.Tab);
-			//keymap.Add(av.Keycode.Apps, Key.ContextMenu);
+			keymap.Add(av.Keycode.A, Keys.A);
+			keymap.Add(av.Keycode.B, Keys.B);
+			keymap.Add(av.Keycode.C, Keys.C);
+			keymap.Add(av.Keycode.D, Keys.D);
+			keymap.Add(av.Keycode.E, Keys.E);
+			keymap.Add(av.Keycode.F, Keys.F);
+			keymap.Add(av.Keycode.G, Keys.G);
+			keymap.Add(av.Keycode.H, Keys.H);
+			keymap.Add(av.Keycode.I, Keys.I);
+			keymap.Add(av.Keycode.J, Keys.J);
+			keymap.Add(av.Keycode.K, Keys.K);
+			keymap.Add(av.Keycode.L, Keys.L);
+			keymap.Add(av.Keycode.M, Keys.M);
+			keymap.Add(av.Keycode.N, Keys.N);
+			keymap.Add(av.Keycode.O, Keys.O);
+			keymap.Add(av.Keycode.P, Keys.P);
+			keymap.Add(av.Keycode.Q, Keys.Q);
+			keymap.Add(av.Keycode.R, Keys.R);
+			keymap.Add(av.Keycode.S, Keys.S);
+			keymap.Add(av.Keycode.T, Keys.T);
+			keymap.Add(av.Keycode.U, Keys.U);
+			keymap.Add(av.Keycode.V, Keys.V);
+			keymap.Add(av.Keycode.W, Keys.W);
+			keymap.Add(av.Keycode.X, Keys.X);
+			keymap.Add(av.Keycode.Y, Keys.Y);
+			keymap.Add(av.Keycode.Z, Keys.Z);
+			//keymap.Add(av.Keycode.F1, Keys.F1);
+			//keymap.Add(av.Keycode.F2, Keys.F2);
+			//keymap.Add(av.Keycode.F3, Keys.F3);
+			//keymap.Add(av.Keycode.F4, Keys.F4);
+			//keymap.Add(av.Keycode.F5, Keys.F5);
+			//keymap.Add(av.Keycode.F6, Keys.F6);
+			//keymap.Add(av.Keycode.F7, Keys.F7);
+			//keymap.Add(av.Keycode.F8, Keys.F8);
+			//keymap.Add(av.Keycode.F9, Keys.F9);
+			//keymap.Add(av.Keycode.F10, Keys.F10);
+			//keymap.Add(av.Keycode.F11, Keys.F11);
+			//keymap.Add(av.Keycode.F12, Keys.F12);
+			keymap.Add(av.Keycode.Num0, Keys.D0);
+			keymap.Add(av.Keycode.Num1, Keys.D1);
+			keymap.Add(av.Keycode.Num2, Keys.D2);
+			keymap.Add(av.Keycode.Num3, Keys.D3);
+			keymap.Add(av.Keycode.Num4, Keys.D4);
+			keymap.Add(av.Keycode.Num5, Keys.D5);
+			keymap.Add(av.Keycode.Num6, Keys.D6);
+			keymap.Add(av.Keycode.Num7, Keys.D7);
+			keymap.Add(av.Keycode.Num8, Keys.D8);
+			keymap.Add(av.Keycode.Num9, Keys.D9);
+			keymap.Add(av.Keycode.Space, Keys.Space);
+			//keymap.Add(av.Keycode.Up, Keys.Up);
+			//keymap.Add(av.Keycode.Down, Keys.Down);
+			//keymap.Add(av.Keycode.Left, Keys.Left);
+			//keymap.Add(av.Keycode.Right, Keys.Right);
+			//keymap.Add(av.Keycode.PageDown, Keys.PageDown);
+			//keymap.Add(av.Keycode.PageUp, Keys.PageUp);
+			keymap.Add(av.Keycode.Home, Keys.Home);
+			//keymap.Add(av.Keycode.End, Keys.End);
+			//keymap.Add(av.Keycode.Alt, Keys.Alt);
+			//keymap.Add(av.Keycode.Control, Keys.Control);
+			//keymap.Add(av.Keycode.Shift, Keys.Shift);
+			keymap.Add(av.Keycode.Menu, Keys.Menu);
+			//keymap.Add(av.Keycode.Escape, Keys.Escape);
+			keymap.Add(av.Keycode.Del, Keys.Delete);
+			keymap.Add(av.Keycode.Back, Keys.Backspace);
+			//keymap.Add(av.Keycode.Divide, Keys.Divide);
+			keymap.Add(av.Keycode.Enter, Keys.Enter);
+			//keymap.Add(av.Keycode.Insert, Keys.Insert);
+            keymap.Add(av.Keycode.Period, Keys.Period);
+            keymap.Add(av.Keycode.Tab, Keys.Tab);
+			//keymap.Add(av.Keycode.Apps, Keys.ContextMenu);
 			
 			foreach (var entry in keymap)
 			{

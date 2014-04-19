@@ -167,13 +167,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto\Eto - Android.csproj">
-      <Project>{73A5AD74-68BC-448C-A38C-CFBAF014A311}</Project>
-      <Name>Eto - Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Json\Eto.Json - Android.csproj">
-      <Project>{757FCF9A-E2D0-4031-9A11-82A2A49FA892}</Project>
-      <Name>Eto.Json - Android</Name>
+    <ProjectReference Include="..\..\Eto\Eto.Pcl.csproj">
+      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
+      <Name>Eto.Pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

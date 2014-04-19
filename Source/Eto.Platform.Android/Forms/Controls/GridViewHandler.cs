@@ -53,5 +53,17 @@ namespace Eto.Platform.Android.Forms.Controls
 		{
 			get { return null; }
 		}
+
+		public ContextMenu ContextMenu
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

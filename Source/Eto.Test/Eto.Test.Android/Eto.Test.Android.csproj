@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,10 +12,16 @@
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <AndroidUseLatestPlatformSdk>
+    </AndroidUseLatestPlatformSdk>
     <AssemblyName>Eto.Test.Android</AssemblyName>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.1</TargetFrameworkVersion>
+    <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <JavaMaximumHeapSize />
+    <JavaOptions />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,6 +34,9 @@
     <AndroidLinkMode>None</AndroidLinkMode>
     <ConsolePause>false</ConsolePause>
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkSkip />
+    <BundleAssemblies>False</BundleAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -61,21 +70,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto\Eto - Android.csproj">
-      <Project>{73A5AD74-68BC-448C-A38C-CFBAF014A311}</Project>
-      <Name>Eto - Android</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto.Platform.Android\Eto.Platform.Android.csproj">
-      <Project>{7A02E771-D30B-41A1-8A35-C78D3940FC33}</Project>
+      <Project>{7a02e771-d30b-41a1-8a35-c78d3940fc33}</Project>
       <Name>Eto.Platform.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto\Eto.Pcl.csproj">
+      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
+      <Name>Eto.Pcl</Name>
     </ProjectReference>
     <ProjectReference Include="..\Eto.Test\Eto.Test - Android.csproj">
       <Project>{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}</Project>
       <Name>Eto.Test - Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Json\Eto.Json - Android.csproj">
-      <Project>{757FCF9A-E2D0-4031-9A11-82A2A49FA892}</Project>
-      <Name>Eto.Json - Android</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
