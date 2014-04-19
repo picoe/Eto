@@ -206,6 +206,18 @@ namespace Eto.Platform.Mac.Forms
 			base.OnUnLoad(e);
 			Widget.SizeChanged -= HandleSizeChanged;
 		}
+
+		public ContextMenu ContextMenu
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
 

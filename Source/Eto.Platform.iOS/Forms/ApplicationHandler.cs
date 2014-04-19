@@ -132,5 +132,21 @@ namespace Eto.Platform.iOS.Forms
 				}
 			}
 		}
+
+
+		public void Restart()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void RunIteration()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

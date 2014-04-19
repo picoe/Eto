@@ -124,5 +124,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 			get	{ return Control.IndexPathForSelectedRow != null ? Control.IndexPathForSelectedRow.Row : -1; }
 			set { Control.SelectRow (NSIndexPath.FromRowSection (value, 0), true, UITableViewScrollPosition.Middle); }
 		}
+
+		public ContextMenu ContextMenu
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
