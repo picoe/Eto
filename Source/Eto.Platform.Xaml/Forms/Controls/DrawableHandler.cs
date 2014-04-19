@@ -140,25 +140,28 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			Widget.OnPaint(new PaintEventArgs(graphics, Widget.Bounds)); // renders into the bitmap
 			graphicsHandler.EndDrawing();
 			var bitmap = graphicsHandler.Image;
-			var bitmapHandler = bitmap.Handler as BitmapHandler;
-			var bitmapObject = bitmapHandler.Control;
-			var size = bitmapObject.Size;
-			var writeableBitmap = new WriteableBitmap(size.Width, size.Height);
-
-			// Get a pointer to the bitmap pixels
-			unsafe
+			if (bitmap != null)
 			{
-				byte* ptr = null;
-				((IBufferByteAccess)writeableBitmap.PixelBuffer).Buffer(out ptr);
-				var len = size.Width * size.Height;
-				var pixels = new SharpDX.ColorBGRA[len];
-				fixed (SharpDX.ColorBGRA* pixelsPtr = &pixels[0])
+				var bitmapHandler = bitmap.Handler as BitmapHandler;
+				var bitmapObject = bitmapHandler.Control;
+				var size = bitmapObject.Size;
+				var writeableBitmap = new WriteableBitmap(size.Width, size.Height);
+
+				// Get a pointer to the bitmap pixels
+				unsafe
 				{
-					bitmapObject.CopyPixels(pixels);
-					CopyMemory((IntPtr)ptr, (IntPtr)pixelsPtr, (uint)len * 4);
+					byte* ptr = null;
+					((IBufferByteAccess)writeableBitmap.PixelBuffer).Buffer(out ptr);
+					var len = size.Width * size.Height;
+					var pixels = new SharpDX.ColorBGRA[len];
+					fixed (SharpDX.ColorBGRA* pixelsPtr = &pixels[0])
+					{
+						bitmapObject.CopyPixels(pixels);
+						CopyMemory((IntPtr)ptr, (IntPtr)pixelsPtr, (uint)len * 4);
+					}
 				}
+				Control.Source = writeableBitmap;
 			}
-			Control.Source = writeableBitmap;
 		}
 
 		async Task SaveToFile(SharpDX.WIC.Bitmap bitmap) // debugging helper method, remove when no longer needed.

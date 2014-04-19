@@ -62,8 +62,11 @@ namespace Eto.Test.Sections.Drawing
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
 			layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), null);
-			matrixRow = layout.AddSeparateRow(null, new Label { Text = "Rot" }, RotationControl(), new Label { Text = "Sx" }, ScaleXControl(), new Label { Text = "Sy" }, ScaleYControl(), new Label { Text = "Ox" }, OffsetXControl(), new Label { Text = "Oy" }, OffsetYControl(), null);
-			matrixRow.Table.Visible = false;
+			if (Generator.Supports<INumericUpDown>())
+			{
+				matrixRow = layout.AddSeparateRow(null, new Label { Text = "Rot" }, RotationControl(), new Label { Text = "Sx" }, ScaleXControl(), new Label { Text = "Sy" }, ScaleYControl(), new Label { Text = "Ox" }, OffsetXControl(), new Label { Text = "Oy" }, OffsetYControl(), null);
+				matrixRow.Table.Visible = false;
+			}
 			gradientRow = layout.AddSeparateRow(null, GradientWrapControl(), null);
 			gradientRow.Table.Visible = false;
 			layout.AddSeparateRow(null, drawable, null);
@@ -90,7 +93,8 @@ namespace Eto.Test.Sections.Drawing
 			control.SelectedValue = control.Items.OfType<BrushItem>().First(r => r.Brush == brush);
 			control.SelectedValueChanged += (sender, e) => {
 				var item = (BrushItem)control.SelectedValue;
-				SetItem(item);
+				if (item != null)
+					SetItem(item);
 			};
 			LoadComplete += (sender, e) => SetItem(control.SelectedValue as BrushItem);
 			control.SelectedValueChanged += Refresh;
@@ -100,7 +104,8 @@ namespace Eto.Test.Sections.Drawing
 		void SetItem(BrushItem item)
 		{
 			brush = item.Brush;
-			matrixRow.Table.Visible = item.SupportsMatrix;
+			if (matrixRow != null)
+				matrixRow.Table.Visible = item.SupportsMatrix;
 			gradientRow.Table.Visible = item.SupportsGradient;
 		}
 
@@ -155,7 +160,7 @@ namespace Eto.Test.Sections.Drawing
 		Control UseBackgroundColorControl ()
 		{
 			var control = new CheckBox { Text = "Use Background Color" };
-			control.Bind (c => c.Checked, this, c => c.UseBackgroundColor);
+			control.Bind (c => c.IsChecked, this, c => c.UseBackgroundColor);
 			return control;
 		}
 		

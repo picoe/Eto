@@ -126,7 +126,7 @@ namespace Eto.Platform.Direct2D
 		public static sd.Bitmap ToDx(this Image image, sd.RenderTarget target)
 		{
 			var handler = (ID2DBitmapHandler)image.Handler;
-			return handler.GetBitmap(target);
+			return target != null ? handler.GetBitmap(target) : null;
 		}
 
 		public static FontStyle ToEtoStyle(this sw.Font font)

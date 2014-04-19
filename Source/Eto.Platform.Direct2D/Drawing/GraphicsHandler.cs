@@ -419,7 +419,8 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void DrawImage(Image image, float x, float y)
 		{
 			var bmp = image.ToDx(Control);
-			Control.DrawBitmap(bmp, new s.RectangleF(x, y, bmp.Size.Width, bmp.Size.Height), 1f, ImageInterpolation.ToDx());
+			if (bmp != null)
+				Control.DrawBitmap(bmp, new s.RectangleF(x, y, bmp.Size.Width, bmp.Size.Height), 1f, ImageInterpolation.ToDx());
 		}
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
@@ -492,16 +493,19 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void BeginDrawing(RectangleF? clipRect = null)
 		{
-			CurrentRenderTarget = Control;
-			Control.BeginDraw();
-			Control.Transform = s.Matrix3x2.Identity;
-			if (transformStack != null)
-				transformStack.Clear();
-			ResetClip();
-			clipBounds = new RectangleF(Control.Size.ToEto());
-			if (clipRect != null)
-				Control.PushAxisAlignedClip(clipRect.Value.ToDx(), SharpDX.Direct2D1.AntialiasMode.PerPrimitive);
-			hasBegan = true;
+			if (Control != null)
+			{
+				CurrentRenderTarget = Control;
+				Control.BeginDraw();
+				Control.Transform = s.Matrix3x2.Identity;
+				if (transformStack != null)
+					transformStack.Clear();
+				ResetClip();
+				clipBounds = new RectangleF(Control.Size.ToEto());
+				if (clipRect != null)
+					Control.PushAxisAlignedClip(clipRect.Value.ToDx(), SharpDX.Direct2D1.AntialiasMode.PerPrimitive);
+				hasBegan = true;
+			}
 		}
 
 		public void EndDrawing(bool popClip = false)
