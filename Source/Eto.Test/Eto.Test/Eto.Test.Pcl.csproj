@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Eto.Test</RootNamespace>
+    <RootNamespace>Eto.Test.Pcl</RootNamespace>
     <AssemblyName>Eto.Test.Pcl</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
     <BaseDir>$(ProjectDir)..\..</BaseDir>
