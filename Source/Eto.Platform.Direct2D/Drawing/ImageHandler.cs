@@ -82,6 +82,7 @@ namespace Eto.Platform.Direct2D.Drawing
 				SDFactory.WicImagingFactory,
 				format.ToWic()))
 			{
+				stream.Flush();
 				encoder.Initialize(stream);
 				using (var frameEncoder = new s.WIC.BitmapFrameEncode(encoder))
 				{
