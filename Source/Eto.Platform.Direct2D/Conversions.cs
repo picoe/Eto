@@ -10,6 +10,12 @@ using sw = SharpDX.DirectWrite;
 
 namespace Eto.Platform.Direct2D
 {
+	/// <summary>
+	/// Xaml conversions
+	/// </summary>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class Conversions
 	{
 		public static s.Color4 ToDx(this Color color)

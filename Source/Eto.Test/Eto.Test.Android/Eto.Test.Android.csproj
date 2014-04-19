@@ -78,9 +78,5 @@
       <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
       <Name>Eto.Pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test - Android.csproj">
-      <Project>{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}</Project>
-      <Name>Eto.Test - Android</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

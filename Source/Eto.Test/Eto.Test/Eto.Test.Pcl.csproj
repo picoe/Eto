@@ -8,7 +8,7 @@
     <ProjectGuid>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Test</RootNamespace>
-    <AssemblyName>Eto.Test</AssemblyName>
+    <AssemblyName>Eto.Test.Pcl</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
     <BaseDir>$(ProjectDir)..\..</BaseDir>
     <RestorePackages>true</RestorePackages>
@@ -30,6 +30,7 @@
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
@@ -38,7 +39,6 @@
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="nunit-console-runner">
       <HintPath>..\..\packages\NUnit.Runners.2.6.3\tools\lib\nunit-console-runner.dll</HintPath>
