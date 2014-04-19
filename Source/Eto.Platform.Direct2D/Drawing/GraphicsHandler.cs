@@ -69,9 +69,10 @@ namespace Eto.Platform.Direct2D.Drawing
 				};
 
 				Control = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+				return;
 			}
-			else CreateWicTarget();
 #endif
+			CreateWicTarget(); // this is executed in winforms if not created from a drawable, and always in Xaml.
 		}
 
 		private void CreateWicTarget()

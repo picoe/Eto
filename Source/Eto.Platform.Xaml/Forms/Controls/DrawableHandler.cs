@@ -13,6 +13,10 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.IO;
+using System.Threading.Tasks;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
 namespace Eto.Platform.Xaml.Forms.Controls
 {
@@ -135,10 +139,42 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			bitmapHandler.Save(memoryStream, ImageFormat.Png);  // save the wic bitmap to the memoryStream
 			var bytes = memoryStream.ToArray(); // hurray, we've got the bytes
 
+			//await SaveToFile(bitmapHandler.Control);
+
 			var stream = new MemoryRandomAccessStream(bytes); // TODO: does adding a using() work here?
 			var image = new BitmapImage();
 			await image.SetSourceAsync(stream);
 			Control.Source = image;
+		}
+
+		async Task SaveToFile(SharpDX.WIC.Bitmap bitmap)
+		{
+			
+			var width = bitmap.Size.Width;
+			var height = bitmap.Size.Height;
+			var pixels = new SharpDX.ColorBGRA[bitmap.Size.Width * bitmap.Size.Height];
+			bitmap.CopyPixels(pixels);
+			var bytes = new byte[width * height * 4];
+			for (var i = 0; i < pixels.Length; ++i)
+			{
+				bytes[i * 4 + 0] = (byte)pixels[i].B;
+				bytes[i * 4 + 1] = (byte)pixels[i].G;
+				bytes[i * 4 + 2] = (byte)pixels[i].R;
+				bytes[i * 4 + 3] = (byte)pixels[i].A;
+			}
+
+			var folder = ApplicationData.Current.LocalFolder;
+			var file = await folder.CreateFileAsync("test.png", CreationCollisionOption.ReplaceExisting);
+			using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite))
+			{
+				var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+				encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+									 BitmapAlphaMode.Ignore,
+									 (uint)bitmap.Size.Width, (uint)bitmap.Size.Height,
+									 96, 96, bytes);
+
+				await encoder.FlushAsync();
+			}
 		}
 
 		/// <summary>
