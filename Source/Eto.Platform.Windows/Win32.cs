@@ -121,9 +121,9 @@ namespace Eto.Platform
 
 		public static int SignedLOWORD (IntPtr n) { return SignedLOWORD ((int)((long)n)); }
 
-		public static int SignedHIWORD (int n) { return (n >> 16 & 65535); }
+		public static int SignedHIWORD (int n) { return (short)(n >> 16 & 65535); }
 
-		public static int SignedLOWORD (int n) { return (n & 65535); }
+		public static int SignedLOWORD (int n) { return (short)(n & 65535); }
 
 		public static int GetWheelDeltaWParam (IntPtr wParam) { return SignedHIWORD (wParam); }
 
