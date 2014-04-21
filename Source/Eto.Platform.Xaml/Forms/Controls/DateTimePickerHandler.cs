@@ -1,7 +1,6 @@
-#if TODO_XAML
 using System;
 using Eto.Forms;
-using mwc = Xceed.Wpf.Toolkit;
+using w = WinRTDatePicker;
 using sw = Windows.UI.Xaml;
 using wf = Windows.Foundation;
 using System.Globalization;
@@ -9,7 +8,13 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Xaml.Forms.Controls
 {
-	public class DateTimePickerHandler : WpfControl<mwc.DateTimePicker, DateTimePicker>, IDateTimePicker
+	/// <summary>
+	/// Date-time picker handler.
+	/// </summary>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>	
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class DateTimePickerHandler : WpfControl<w.DatePicker, DateTimePicker>, IDateTimePicker
 	{
 		DateTimePickerMode mode;
 
@@ -22,9 +27,11 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 		public DateTimePickerHandler()
 		{
-			Control = new mwc.DateTimePicker
+			Control = new w.DatePicker
 			{
+#if TODO_XAML
 				ShowButtonSpinner = false
+#endif
 			};
 			Mode = DateTimePicker.DefaultMode;
 			MinDate = DateTime.MinValue;
@@ -39,7 +46,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 		{
 			base.PostInitialize();
 			DateTime? last = Value;
-			Control.ValueChanged += delegate
+			Control.SelectedDateChanged += delegate
 			{
 				var val = Value;
 				if (val != null)
@@ -60,8 +67,12 @@ namespace Eto.Platform.Xaml.Forms.Controls
 		
 		public DateTime? Value
 		{
-			get { return Control.Value; }
-			set { Control.Value = value; }
+			get { return Control.SelectedDate; }
+			set
+			{
+				if (value != null)
+					Control.SelectedDate = value.Value;
+			}
 		}
 
 		public DateTime MinDate { get; set; }
@@ -74,6 +85,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			set
 			{
 				mode = value;
+#if TODO_XAML
 				switch (mode)
 				{
 					case DateTimePickerMode.Date:
@@ -91,8 +103,8 @@ namespace Eto.Platform.Xaml.Forms.Controls
 						throw new NotSupportedException();
 				}
 				SetSize();
+#endif
 			}
 		}
 	}
 }
-#endif

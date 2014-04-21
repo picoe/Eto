@@ -448,6 +448,9 @@
     <Reference Include="SharpDX.DXGI">
       <HintPath>..\packages\SharpDX.DXGI.2.5.0\lib\win8\SharpDX.DXGI.dll</HintPath>
     </Reference>
+    <Reference Include="WinRTDatePicker">
+      <HintPath>..\packages\WinRT-DatePicker.1.1\lib\netcore45\WinRTDatePicker.dll</HintPath>
+    </Reference>
     <Reference Include="WinRTXamlToolkit">
       <HintPath>..\packages\WinRTXamlToolkit.1.6.0.5\lib\netcore45\WinRTXamlToolkit.dll</HintPath>
     </Reference>
