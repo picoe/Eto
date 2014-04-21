@@ -17,6 +17,12 @@ using mwc = WinRTXamlToolkit.Controls;
 
 namespace Eto.Platform.Xaml.Forms.Controls
 {
+	/// <summary>
+	/// Tree view handler.
+	/// </summary>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>	
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class TreeViewHandler : WpfControl<mwc.TreeView, TreeView>, ITreeView
 	{
 		ContextMenu contextMenu;

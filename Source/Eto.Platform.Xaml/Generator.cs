@@ -82,8 +82,7 @@ namespace Eto.Platform.Xaml
 			g.Add<ITextBox>(() => new TextBoxHandler());
 			//g.Add<ITreeGridView>(() => new TreeGridViewHandler());
 			g.Add<ITreeView>(() => new TreeViewHandler());
-			//g.Add<IWebView> (() => new WebViewHandler ());
-			//g.Add<IWebView>(() => new WpfWebViewHandler());
+			g.Add<IWebView> (() => new WebViewHandler ());
 			//g.Add<IScreens>(() => new ScreensHandler());
 
 			// Forms.Menu

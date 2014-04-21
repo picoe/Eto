@@ -284,7 +284,7 @@
     <Compile Include="Forms\Controls\SplitterHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\SwfWebViewHandler.cs">
+    <Compile Include="Forms\Controls\WebViewHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TabControlHandler.cs">
@@ -309,9 +309,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\WpfWebViewHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\CursorHandler.cs">
