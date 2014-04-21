@@ -1,9 +1,7 @@
-#if TODO_XAML
 using System;
 using Eto.Forms;
 using sw = Windows.UI.Xaml;
-//using WpfMessageBox = Xceed.Wpf.Toolkit.MessageBox;
-using WpfMessageBox = Windows.UI.Xaml.MessageBox;
+using wup = Windows.UI.Popups;
 
 namespace Eto.Platform.Xaml.Forms
 {
@@ -31,6 +29,10 @@ namespace Eto.Platform.Xaml.Forms
 			using (var visualStyles = new EnableThemingInScope(ApplicationHandler.EnableVisualStyles))
 #endif
 			{
+				var messageDialog = new wup.MessageDialog(Text ?? "", Caption ?? "");
+				messageDialog.ShowAsync();
+
+#if TODO_XAML
 				var element = parent == null ? null : parent.GetContainerControl();
 				var window = element == null ? null : element.GetParent<sw.Window>();
 				sw.MessageBoxResult result;
@@ -41,9 +43,13 @@ namespace Eto.Platform.Xaml.Forms
 				if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
 				else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
 				return Convert(result);
+#else
+				return DialogResult.Ok; // TODO: this returns immediately, but the MessageDialog appears asynchronously. Fix the Eto API to be asynchronous.
+#endif
 			}
 		}
 
+#if TODO_XAML
 		public static sw.MessageBoxResult Convert(MessageBoxDefaultButton defaultButton, MessageBoxButtons buttons)
 		{
 			switch (defaultButton)
@@ -120,6 +126,6 @@ namespace Eto.Platform.Xaml.Forms
 					throw new NotSupportedException();
 			}
 		}
+#endif
 	}
 }
-#endif

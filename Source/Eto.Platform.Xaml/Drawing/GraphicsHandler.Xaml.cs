@@ -28,8 +28,16 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		private void CreateXamlRenderTarget()
 		{
+			InitializeControl();
+			if(drawableHandler != null)
+				drawableHandler.Render();
+		}
+
+		public sd.RenderTarget InitializeControl()
+		{
 			var sizeF = new SizeF((float)drawableHandler.Control.Width, (float)drawableHandler.Control.Height);
 			CreateXamlRenderTarget(sizeF);
+			return Control;
 		}
 
 		private void CreateXamlRenderTarget(SizeF size)
@@ -46,7 +54,6 @@ namespace Eto.Platform.Direct2D.Drawing
 
 				image = new Bitmap(new Size((int)size.Width, (int)size.Height), PixelFormat.Format32bppRgba);
 				CreateWicTarget();
-				drawableHandler.Render();
 			}
 		}
 	}

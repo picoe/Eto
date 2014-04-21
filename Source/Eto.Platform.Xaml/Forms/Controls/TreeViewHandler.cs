@@ -14,6 +14,7 @@ using System.ComponentModel;
 //using Eto.Platform.Xaml.CustomControls;
 using System.Threading.Tasks;
 using mwc = WinRTXamlToolkit.Controls;
+using Windows.System;
 
 namespace Eto.Platform.Xaml.Forms.Controls
 {
@@ -151,7 +152,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			{
 				base.OnKeyDown(e);
 
-				if (e.Key == Windows.System.VirtualKey.F2)
+				if (e.Key == VirtualKey.F2)
 				{
 #if TODO_XAML
 					var etb = this.FindChild<EditableTextBlock>();

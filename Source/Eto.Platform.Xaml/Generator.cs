@@ -112,7 +112,7 @@ namespace Eto.Platform.Xaml
 			//g.Add<IDialog>(() => new DialogHandler());
 			//g.Add<IFontDialog>(() => new FontDialogHandler());
 			//g.Add<IForm>(() => new FormHandler());
-			//g.Add<IMessageBox>(() => new MessageBoxHandler());
+			g.Add<IMessageBox>(() => new MessageBoxHandler());
 			//g.Add<IOpenFileDialog>(() => new OpenFileDialogHandler());
 			g.Add<IPixelLayout>(() => new PixelLayoutHandler());
 			//g.Add<ISaveFileDialog>(() => new SaveFileDialogHandler());

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using sw = Windows.UI.Xaml;
 using wf = Windows.Foundation;
 using swm = Windows.UI.Xaml.Media;
+using wuc = Windows.UI.Core;
 using System.Threading;
 
 namespace Eto.Platform.Xaml.Forms
@@ -17,6 +18,7 @@ namespace Eto.Platform.Xaml.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ApplicationHandler : WidgetHandler<sw.Application, Application>, IApplication
 	{
+		wuc.CoreDispatcher dispatcher;
 		bool attached;
 		bool shutdown;
 		string badgeLabel;
@@ -58,6 +60,8 @@ namespace Eto.Platform.Xaml.Forms
 
 		public override sw.Application CreateControl()
 		{
+			// Cache the dispatcher for this thread.
+			dispatcher = wuc.CoreWindow.GetForCurrentThread().Dispatcher;
 			return new sw.Application();
 		}
 
@@ -147,7 +151,7 @@ namespace Eto.Platform.Xaml.Forms
 		public void Invoke(Action action)
 		{
 #if TODO_XAML
-			Control.Dispatcher.Invoke(action, sw.Threading.DispatcherPriority.Background);
+			dispatcher.Invoke(action, sw.Threading.DispatcherPriority.Background);
 #else
 			throw new NotImplementedException();
 #endif
@@ -155,11 +159,7 @@ namespace Eto.Platform.Xaml.Forms
 
 		public void AsyncInvoke(Action action)
 		{
-#if TODO_XAML
-			Control.Dispatcher.BeginInvoke(action);
-#else
-			throw new NotImplementedException();
-#endif
+			dispatcher.RunAsync(wuc.CoreDispatcherPriority.Normal, () => action());
 		}
 
 		public IEnumerable<Command> GetSystemCommands()
