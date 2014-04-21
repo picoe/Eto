@@ -45,7 +45,8 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
-			layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
+			if (Generator.Current.Supports<INumericUpDown>())
+				layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
 			layout.AddSeparateRow(null, ShowBounds(), CurrentPoint(), null);
 			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath());

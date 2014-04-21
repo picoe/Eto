@@ -74,7 +74,9 @@ namespace Eto.Forms
 			}
 		}
 
+#if !PCL
 		[TypeConverter(typeof(Int32ArrayConverter))]
+#endif
 		public int[] ColumnScale
 		{
 			set
@@ -100,7 +102,9 @@ namespace Eto.Forms
 			}
 		}
 
+#if !PCL
 		[TypeConverter(typeof(Int32ArrayConverter))]
+#endif
 		public int[] RowScale
 		{
 			set
@@ -195,20 +199,6 @@ namespace Eto.Forms
 			: base(generator, typeof(ITableLayout), false)
 		{
 			this.CellSize = size;
-		}
-
-		[Obsolete("Add a TableLayout to a Panel using the Panel.Content property")]
-		public TableLayout(Panel container, int width, int height)
-			: this(container, new Size(width, height))
-		{
-		}
-
-		[Obsolete("Add a TableLayout to a Panel using the Panel.Content property")]
-		public TableLayout(Panel container, Size size)
-			: this(size, container != null ? container.Generator : null)
-		{
-			if (container != null)
-				container.Content = this;
 		}
 
 		public void SetColumnScale(int column, bool scale = true)

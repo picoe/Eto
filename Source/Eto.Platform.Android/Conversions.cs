@@ -45,11 +45,11 @@ namespace Eto.Platform.Android
 		{
 			if (e.Action == av.MotionEventActions.Down)
 			{
-				return new MouseEventArgs(MouseButtons.Primary, Key.None, new PointF(e.GetX(), e.GetY()));
+				return new MouseEventArgs(MouseButtons.Primary, Keys.None, new PointF(e.GetX(), e.GetY()));
 			}
 			// Is this correct? It generates a mouse event for pointer-up and cancel actions
 			// See the iOS handler as well, which does something similar
-			return new MouseEventArgs(MouseButtons.Primary, Key.None, Point.Empty);
+			return new MouseEventArgs(MouseButtons.Primary, Keys.None, Point.Empty);
 		}
 
 		public static ag.Paint.Join ToAndroid(this PenLineJoin value)

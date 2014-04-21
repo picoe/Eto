@@ -27,19 +27,6 @@ namespace Eto.Drawing
 			get { return (int[])egaColors.Clone(); }
 		}
 
-		#region Obsolete
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete("Use Color.ToArgb() instead"), CLSCompliant(false)]
-		public static UInt32 GenerateRGBColor(Color c)
-		{
-			return (((uint)(c.A * 255) << 24) + ((uint)(c.R * 255) << 16) + ((uint)(c.G * 255) << 8) + (uint)(c.B * 255));
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Initializes a new instance of the Pallette class
 		/// </summary>

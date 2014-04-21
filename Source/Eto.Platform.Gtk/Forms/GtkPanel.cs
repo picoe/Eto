@@ -19,7 +19,7 @@ namespace Eto.Platform.GtkSharp
 		protected GtkPanel()
 		{
 			alignment = new Gtk.Alignment(0, 0, 1, 1);
-			Padding = DockContainer.DefaultPadding;
+			Padding = Panel.DefaultPadding;
 		}
 
 		protected override void Initialize()

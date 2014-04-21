@@ -14,11 +14,15 @@ namespace Eto.Test
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
 			yield return new Section("Controls", ControlSection());
-			yield return new Section("Layouts", LayoutsSection());
+			yield return new Section("Table Layout", TableLayoutsSection());
+			yield return new Section("Scrollable Layout", ScrollableLayoutSection());
+			yield return new Section("Pixel Layout", PixelLayoutSection());
 			yield return new Section("Dialogs", DialogsSection());
 			yield return new Section("Printing", PrintingSection());
 			yield return new Section("Serialization", SerializationSection());
+#if !PCL
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
+#endif
 		}
 		
 		static IEnumerable<Section> ControlSection()
@@ -72,14 +76,9 @@ namespace Eto.Test
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
+#if !PCL
 			yield return new Section<DrawLoopSection> { Text = "Draw Loop" };
-		}
-
-		static IEnumerable<Section> LayoutsSection()
-		{
-			yield return new Section("Table Layout", TableLayoutsSection());
-			yield return new Section("Scrollable Layout", ScrollableLayoutSection());
-			yield return new Section("Pixel Layout", PixelLayoutSection());
+#endif
 		}
 		
 		static IEnumerable<Section> TableLayoutsSection()
@@ -115,7 +114,7 @@ namespace Eto.Test
 		static IEnumerable<Section> SerializationSection()
 		{
 			yield return new Section<Sections.Serialization.JsonReadSection> { Text = "Json" };
-#if XAML
+#if XAML && !PCL
 			yield return new Section<Sections.Serialization.XamlReadSection> { Text = "Xaml" };
 #endif
 		}

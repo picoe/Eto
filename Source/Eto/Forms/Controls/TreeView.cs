@@ -214,13 +214,6 @@ namespace Eto.Forms
 			set { Handler.SelectedItem = value; }
 		}
 
-		[Obsolete("Use DataStore property instead")]
-		public ITreeStore TopNode
-		{
-			get { return DataStore; }
-			set { DataStore = value; }
-		}
-
 		public ITreeStore DataStore
 		{
 			get { return Handler.DataStore; }

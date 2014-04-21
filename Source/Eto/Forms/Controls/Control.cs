@@ -898,13 +898,6 @@ namespace Eto.Forms
 		}
 
 		static readonly object DataContextKey = new object();
-
-		/// <summary>
-		/// Obsolete, do not use. Gets the parent layout
-		/// </summary>
-		[Obsolete("Use Parent instead")]
-		public Container ParentLayout { get { return Parent; } }
-
 		Container parent;
 
 		/// <summary>
@@ -1048,31 +1041,6 @@ namespace Eto.Forms
 				}
 				return null;
 			}
-		}
-
-		/// <summary>
-		/// Maps the platform action. Obsolete, use <see cref="MapPlatformCommand"/> instead.
-		/// </summary>
-		/// <param name="systemAction">System action.</param>
-		/// <param name="action">Action.</param>
-		[Obsolete("Use MapPlatformCommand instead")]
-		public void MapPlatformAction(string systemAction, BaseAction action)
-		{
-			Command command = null;
-			if (action != null)
-			{
-				command = new Command
-				{
-					ID = action.ID,
-					MenuText = action.MenuText,
-					ToolBarText = action.ToolBarText,
-					ToolTip = action.TooltipText
-				};
-				action.EnabledChanged += (sender, e) => command.Enabled = action.Enabled;
-				command.Executed += (sender, e) => action.Activate();
-			}
-
-			Handler.MapPlatformCommand(systemAction, command);
 		}
 
 		/// <summary>

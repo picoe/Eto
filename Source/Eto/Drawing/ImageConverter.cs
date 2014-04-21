@@ -1,6 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+#if PCL
+using MissingTypes;
+#endif
 
 namespace Eto.Drawing
 {

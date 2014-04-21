@@ -40,8 +40,9 @@ namespace Eto
 		public ResourceNotFoundException (Assembly assembly, string resourceName)
 			: this (string.Format (CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName))
 		{ }
-		
-#if !WINRT
+
+#if !PCL // Exception in Portable class library does not support this constructor overload. It should be OK to remove this.
+		[Obsolete("Do not use this constructor overload")]
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:ResourceNotFoundException"/> class
 		/// </summary>

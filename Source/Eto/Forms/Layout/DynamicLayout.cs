@@ -21,12 +21,6 @@ namespace Eto.Forms
 			get { return topTable.Rows; }
 		}
 
-		[Obsolete("Use DynamicLayout directly as a control")]
-		public Container Container
-		{
-			get { return Parent; }
-		}
-
 		public bool Generated { get; private set; }
 
 		public new Padding? Padding
@@ -89,20 +83,6 @@ namespace Eto.Forms
 				Spacing = spacing
 			};
 			currentItem = topTable;
-		}
-
-		[Obsolete("Add the DynamicLayout to the container using its Panel.Content property")]
-		public DynamicLayout(Panel container, Size? spacing)
-			: this(container, null, spacing)
-		{
-		}
-
-		[Obsolete("Add the DynamicLayout to the container using its Panel.Content property")]
-		public DynamicLayout(Panel container, Padding? padding = null, Size? spacing = null)
-			: this(padding, spacing, container == null ? null : container.Generator)
-		{
-			if (container != null)
-				container.Content = this;
 		}
 
 		public DynamicTable  BeginVertical(bool xscale, bool? yscale = null)

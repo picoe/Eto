@@ -44,9 +44,6 @@ namespace Eto.Forms
 			}
 		}
 
-		[Obsolete("Use IsSupported() instead")]
-		public static bool Supported { get { return IsSupported(); } }
-
 		public static bool IsSupported(Generator generator = null)
 		{
 			return (generator ?? Generator.Current).Supports<ISplitter>();

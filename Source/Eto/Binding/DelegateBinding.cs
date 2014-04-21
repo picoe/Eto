@@ -42,8 +42,13 @@ namespace Eto
 
 		protected virtual TValue ChangeType(object value)
 		{
-#if WINRT
-			throw new NotImplementedException();
+#if PCL
+			// TODO: what do we need to do about DBNull here? 
+			// See http://stackoverflow.com/questions/21357321/handling-missing-types-in-pcl-with-real-types-existing-on-some-of-the-platforms
+
+			return (value == null) // || DBNull.Value.Equals(value))  
+				? DefaultSetValue
+				: (TValue)Convert.ChangeType(value, underlyingType);
 #else
 			return (value == null || DBNull.Value.Equals(value)) 
 				? DefaultSetValue

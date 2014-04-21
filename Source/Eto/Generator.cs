@@ -450,16 +450,6 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Executes the specified action on the main thread
-		/// </summary>
-		/// <param name="action">Action to invoke</param>
-		[Obsolete("Use Application.InvokeOnMainThread")]
-		public void ExecuteOnMainThread(Action action)
-		{
-			Forms.Application.Instance.Invoke(action);
-		}
-
-		/// <summary>
 		/// Used at the start of your custom threads
 		/// </summary>
 		/// <returns></returns>

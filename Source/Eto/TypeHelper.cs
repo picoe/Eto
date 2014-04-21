@@ -13,58 +13,71 @@ namespace System
 	/// </summary>
 	internal static class TypeHelper // internal so that unrelated assemblies can link to the same source file without errors
 	{
-		#region GetBaseType
-
 		public static Type GetBaseType(this Type type)
 		{
-#if WINRT
+#if PCL
 			return type.GetTypeInfo().BaseType;
 #else
 			return type.BaseType;
 #endif
 		}
 
-		#endregion
-
-		#region IsEnum
 		public static bool IsEnum(this Type type)
 		{
-#if WINRT
+#if PCL
 			return type.GetTypeInfo().IsEnum;
 #else
 			return type.IsEnum;
 #endif
 		}
-		#endregion
-
-		#region GetGetMethodInfo(PropertyInfo propertyInfo)
 
 		public static MethodInfo GetGetMethodInfo(this PropertyInfo propertyInfo)
 		{
-#if WINRT
+#if PCL
 			return propertyInfo.GetMethod;
 #else
 			return propertyInfo.GetGetMethod(true);
 #endif
 		}
-		#endregion
-
-		#region GetSetMethodInfo(PropertyInfo propertyInfo)
 
 		public static MethodInfo GetSetMethodInfo(this PropertyInfo propertyInfo)
 		{
-#if WINRT
+#if PCL
 			return propertyInfo.SetMethod;
 #else
 			return propertyInfo.GetSetMethod(true);
 #endif
 		}
-		#endregion
 
-		#region InvokeOnInstance
+#if PCL
+		public static List<EventInfo> GetAllEvents(this Type type)
+		{
+			var result = new List<EventInfo>();
+			type.GetAllEvents(result);
+			return result;
+		}
+
+		private static void GetAllEvents(this Type type, List<EventInfo> result)
+		{
+			var typeInfo = type.GetTypeInfo();
+
+			if (result == null)
+				result = typeInfo.DeclaredEvents.ToList();
+			else
+				result.AddRange(typeInfo.DeclaredEvents);
+
+			if (typeInfo.BaseType != null)
+				typeInfo.BaseType.GetAllEvents(result);
+		}
+		public static EventInfo GetEvent(this Type type, string name)
+		{
+			return (from e in type.GetAllEvents() where e.Name == name select e).FirstOrDefault();
+		}
+#endif
+
 		public static object InvokeOnInstance(this MethodInfo method, object instance, object[] parameters = null)
 		{
-#if WINRT
+#if PCL
 			return method.Invoke(instance, parameters);
 #else
 			return method.Invoke(instance, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
@@ -72,10 +85,7 @@ namespace System
 #endif
 		}
 
-		#endregion
-
-		#region GetAllProperties
-#if WINRT
+#if PCL
 		public static List<PropertyInfo> GetAllProperties(this Type type)
 		{
 			var result = new List<PropertyInfo>();
@@ -95,12 +105,29 @@ namespace System
 			if (typeInfo.BaseType != null)
 				typeInfo.BaseType.GetAllProperties(result);
 		}
+
+		public static List<MethodInfo> GetAllMethods(this Type type)
+		{
+			var result = new List<MethodInfo>();
+			type.GetAllMethods(result);
+			return result;
+		}
+
+		private static void GetAllMethods(this Type type, List<MethodInfo> result)
+		{
+			var typeInfo = type.GetTypeInfo();
+
+			if (result == null)
+				result = typeInfo.DeclaredMethods.ToList();
+			else
+				result.AddRange(typeInfo.DeclaredMethods);
+
+			if (typeInfo.BaseType != null)
+				typeInfo.BaseType.GetAllMethods(result);
+		}
 #else
 
 #endif
-		#endregion
-
-		#region GetRuntimePropertyInfo
 
 		/// <summary>
 		/// Returns a PropertyInfo for the specified property of the current type.
@@ -109,7 +136,7 @@ namespace System
 		/// <returns></returns>
 		public static PropertyInfo GetRuntimePropertyInfo(this Type type, string propertyName)
 		{
-#if WINRT			
+#if PCL
 			var typeInfo = type.GetTypeInfo();
 			var result = typeInfo.GetDeclaredProperty(propertyName);
 			if (result == null &&
@@ -121,10 +148,6 @@ namespace System
 #endif
 		}
 
-		#endregion
-
-		#region GetRuntimeMethodInfo
-
 		/// <summary>
 		/// Returns a MethodInfo for the specified method of the current type.
 		/// The Method may be declared on the current type or an ancestor type.
@@ -132,7 +155,7 @@ namespace System
 		/// <returns></returns>
 		public static MethodInfo GetRuntimeMethodInfo(this Type type, string MethodName)
 		{
-#if WINRT			
+#if PCL
 			var typeInfo = type.GetTypeInfo();
 			var result = typeInfo.GetDeclaredMethod(MethodName);
 			if (result == null &&
@@ -144,9 +167,7 @@ namespace System
 #endif
 		}
 
-		#endregion
-
-#if WINRT
+#if PCL
 
 		/// <summary>
 		/// Determines whether the specified object is an instance of the current Type.

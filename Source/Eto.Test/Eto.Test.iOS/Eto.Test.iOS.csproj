@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,6 +11,7 @@
     <RootNamespace>Eto.Test.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>EtoTestiOS</AssemblyName>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -100,6 +101,7 @@
     <Reference Include="monotouch" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Info.plist" />
   </ItemGroup>
   <ItemGroup>
@@ -110,32 +112,28 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="Resources\" />
-    <Folder Include="Properties\" />
+    <ProjectReference Include="..\..\Eto.Json\Eto.Json.Pcl.csproj">
+      <Project>{3f8178ef-0710-43f7-92e2-130b9be2212d}</Project>
+      <Name>Eto.Json.Pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Platform.iOS\Eto.Platform.iOS.csproj">
+      <Project>{e711b298-d141-4ec5-9bfd-84962b264f90}</Project>
+      <Name>Eto.Platform.iOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto\Eto.Pcl.csproj">
+      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
+      <Name>Eto.Pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test.Pcl.csproj">
+      <Project>{eb9c0a22-6644-46e4-948c-f7c95e1f8ce1}</Project>
+      <Name>Eto.Test.Pcl</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Default-568h%402x.png" />
     <BundleResource Include="Resources\Default.png" />
     <BundleResource Include="Resources\Default%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Eto.Json\Eto.Json - iOS.csproj">
-      <Project>{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}</Project>
-      <Name>Eto.Json - iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Platform.iOS\Eto.Platform.iOS.csproj">
-      <Project>{E711B298-D141-4EC5-9BFD-84962B264F90}</Project>
-      <Name>Eto.Platform.iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test - iOS.csproj">
-      <Project>{97DEC3D5-5E7C-493D-AB7E-C0001AF7085F}</Project>
-      <Name>Eto.Test - iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto\Eto - iOS.csproj">
-      <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
-      <Name>Eto - iOS</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

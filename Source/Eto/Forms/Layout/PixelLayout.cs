@@ -49,14 +49,6 @@ namespace Eto.Forms
 		{
 		}
 
-		[Obsolete("Add a PixelLayout to a Panel using the Panel.Content property")]
-		public PixelLayout(Panel container)
-			: this(container == null ? null : container.Generator)
-		{
-			if (container != null)
-				container.Content = this;
-		}
-
 		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
 
 		public static Point GetLocation(Control control)

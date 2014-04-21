@@ -106,12 +106,6 @@ namespace Eto.Forms
 			return this;
 		}
 
-		[Obsolete("Use Invoke instead")]
-		public virtual void InvokeOnMainThread(Action action)
-		{
-			Invoke(action);
-		}
-
 		public virtual void Invoke(Action action)
 		{
 			Handler.Invoke(action);
@@ -145,37 +139,6 @@ namespace Eto.Forms
 		public IEnumerable<Command> GetSystemCommands()
 		{
 			return Handler.GetSystemCommands();
-		}
-
-		[Obsolete("Use CreateStandardMenu and/or GetSystemCommands instead")]
-		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
-		{
-			// map new commands/menus back to actions for backwards compatibility
-			var commands = GetSystemCommands().ToArray();
-			foreach (var command in commands)
-			{
-				var currentCommand = command;
-				var action = new ButtonAction
-				{
-					ID = currentCommand.ID,
-					MenuText = currentCommand.MenuText,
-					ToolBarText = currentCommand.ToolBarText,
-					TooltipText = currentCommand.ToolTip,
-					Accelerator = currentCommand.Shortcut,
-					command = currentCommand
-				};
-				currentCommand.Executed += (sender, e) => action.Activate();
-				action.EnabledChanged += (sender, e) => currentCommand.Enabled = action.Enabled;
-				args.Actions.Add(action);
-			}
-			#if DESKTOP
-			if (addStandardItems)
-			{
-				var menu = new MenuBar(Generator);
-				CreateStandardMenu(menu.Items, commands);
-				args.Menu.ExtractMenu(menu);
-			}
-			#endif
 		}
 
 		public string BadgeLabel

@@ -563,58 +563,5 @@ namespace Eto.Drawing
 		{
 			return other == this;
 		}
-
-		#region Obsolete
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("Use operator + instead")]
-		public static PointF Add (PointF point, SizeF size)
-		{
-			return new PointF (point.X + size.Width, point.Y + size.Height);
-		}
-		
-		/// <summary>
-		/// Gets a value indicating that both the X and Y co-ordinates of this point are zero
-		/// </summary>
-		[Obsolete ("Use PointF.IsZero instead")]
-		public bool IsEmpty
-		{
-			get { return x == 0 && y == 0; }
-		}
-		
-		/// <summary>
-		/// Adds the specified <paramref name="x"/> and <paramref name="y"/> values to this point
-		/// </summary>
-		/// <param name="x">Value to add to the X co-ordinate of this point</param>
-		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
-		[Obsolete("Use Offset() instead")]
-		public void Add (float x, float y)
-		{
-			this.x += x;
-			this.y += y;
-		}
-		
-		/// <summary>
-		/// Adds the X and Y co-ordinate values of the specified <paramref name="point"/> to this point
-		/// </summary>
-		/// <param name="point">Point with X and Y values to add to this point</param>
-		[Obsolete("Use Offset() instead")]
-		public void Add (PointF point)
-		{
-			Add(point.X, point.Y);
-		}
-		
-		/// <summary>
-		/// Gets the magnitude of this point from 0,0 using Pythagoras' theorem
-		/// </summary>
-		[Obsolete ("Use Length instead")]
-		public double Magnitude
-		{
-			get { return Math.Sqrt (X * X + Y * Y); }
-		}
-		
-		#endregion
 	}
 }

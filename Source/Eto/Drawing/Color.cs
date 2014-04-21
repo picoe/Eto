@@ -214,14 +214,16 @@ namespace Eto.Drawing
 				if (colormap == null) {
 					lock (colormaplock) {
 						if (colormap == null) {
-#if !WINRT
+#if PCL							
+							var props = from p in typeof(Colors).GetAllProperties() where p.GetGetMethodInfo().IsStatic && p.GetGetMethodInfo().IsPublic select p;
+#else
 							var props = typeof (Colors).GetProperties (BindingFlags.Public | BindingFlags.Static);
+#endif
 							colormap = new Dictionary<string, Color> (StringComparer.OrdinalIgnoreCase);
 							foreach (var val in props.Where (r => r.PropertyType == typeof (Color))) {
 								var col = (Color)val.GetValue (null, null);
 								colormap.Add (val.Name, col);
 							}
-#endif
 						}
 					}
 				}
@@ -431,116 +433,6 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		#endregion
-
-		#region Obsolete
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete("Use Colors.Black")]
-		public static readonly Color Black = new Color (0f, 0f, 0f);
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.White")]
-		public static readonly Color White = new Color (1.0f, 1.0f, 1.0f);
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Gray")]
-		public static readonly Color Gray = new Color (0x77 / 255f, 0x77 / 255f, 0x77 / 255f);
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.DarkGray")]
-		public static readonly Color LightGray = new Color (0xA8 / 255f, 0xA8 / 255f, 0xA8 / 255f);
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Red")]
-		public static readonly Color Red = new Color (1f, 0, 0);
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Lime")]
-		public static readonly Color Green = new Color (0, 1f, 0);
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Blue")]
-		public static readonly Color Blue = new Color (0, 0, 1f);
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Transparent")]
-		public static readonly Color Transparent = new Color (0f, 0f, 0f, 0f);
-		
-		/// <summary>
-		/// An empty color with zero for all components
-		/// </summary>
-#pragma warning disable 618
-		[Obsolete("Use nullable values instead of empty color structs")]
-		public static readonly Color Empty = new Color { IsEmpty = true };
-#pragma warning restore 618
-		
-		/// <summary>
-		/// Obsolete, do not use.
-		/// </summary>
-		[Obsolete ("Use ColorCMYK.ToColor() or implicit conversion")]
-		public Color (ColorCMYK cmyk)
-		: this (cmyk.ToColor ())
-		{
-		}
-		
-		/// <summary>
-		/// Obsolete, do not use.
-		/// </summary>
-		[Obsolete ("Use ColorHSL.ToColor() or implicit conversion")]
-		public Color (ColorHSL hsl)
-		: this (hsl.ToColor ())
-		{
-		}
-		
-		/// <summary>
-		/// Obsolete, do not use.
-		/// </summary>
-		[Obsolete ("Use ColorHSB.ToColor() or implicit conversion")]
-		public Color (ColorHSB hsb)
-		: this (hsb.ToColor ())
-		{
-		}
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("Use nullable values instead")]
-		public bool IsEmpty
-		{
-			get;
-			private set;
-		}
-		
-		/// <summary>
-		/// Initializes a new instance of the Color object with the specified red, green, blue, and alpha components
-		/// </summary>
-		/// <param name="red">Red component (0-255)</param>
-		/// <param name="green">Green component (0-255)</param>
-		/// <param name="blue">Blue component (0-255)</param>
-		/// <param name="alpha">Alpha component (0-255)</param>
-		[Obsolete ("Use Color.FromArgb instead")]
-		public Color (int red, int green, int blue, int alpha = 0xff)
-		: this (red / 255f, green / 255f, blue / 255f, alpha / 255f)
-		{
-		}
-		
 		#endregion
 	}
 }

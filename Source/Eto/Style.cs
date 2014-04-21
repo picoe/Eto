@@ -25,17 +25,6 @@ namespace Eto
 	public delegate void StyleHandler<THandler>(THandler handler)
 		where THandler: IWidget;
 	/// <summary>
-	/// Obsolete. Do not use.
-	/// </summary>
-	[Obsolete("Use StyleWidgetHandler<TWidget> instead")]
-	public delegate void StyleWidgetHandler(InstanceWidget widget);
-	/// <summary>
-	/// Obsolete. Do not use.
-	/// </summary>
-	[Obsolete("Use StyleHandler<THandler> instead")]
-	public delegate void StyleWidgetControlHandler<TWidget,TControl>(TWidget widget,TControl control)
-		where TWidget : InstanceWidget;
-	/// <summary>
 	/// Style manager for widgets
 	/// </summary>
 	/// <remarks>
@@ -136,19 +125,6 @@ namespace Eto
 		#endregion
 
 		/// <summary>
-		/// Obsolete. Do not use
-		/// </summary>
-		[Obsolete("Use Add<InstanceWidget> instead")]
-		public static void Add(string style, StyleWidgetHandler handler)
-		{
-			var list = GetStyleList(style);
-			list.Add(delegate (InstanceWidget widget)
-			{
-				handler(widget);
-			});
-		}
-
-		/// <summary>
 		/// Adds a style for a widget
 		/// </summary>
 		/// <remarks>
@@ -170,37 +146,6 @@ namespace Eto
 				if (control != null)
 					handler(control);
 			});
-		}
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete("Use Add<WidgetHandler> instead")]
-		public static void Add<TWidget, TControl>(string style, StyleWidgetControlHandler<TWidget, TControl> handler)
-			where TWidget: InstanceWidget
-			where TControl: class
-		{
-			var list = GetStyleList(style);
-			list.Add(delegate (InstanceWidget widget)
-			{
-				var control = widget as TWidget;
-				if (control != null)
-				{
-					var controlObject = control.ControlObject as TControl;
-					if (controlObject != null)
-						handler(control, controlObject);
-				}
-			});
-		}
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete("Use Style.Add<T> instead")]
-		public static void AddHandler<THandler>(string style, StyleHandler<THandler> styleHandler)
-			where THandler: class, IWidget
-		{
-			Style.Add<THandler>(style, styleHandler);
 		}
 
 		/// <summary>

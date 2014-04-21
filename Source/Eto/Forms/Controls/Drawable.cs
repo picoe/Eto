@@ -43,9 +43,6 @@ namespace Eto.Forms
 		}
 	}
 
-	[Obsolete("Use EventHandler<PaintEventArgs> instead")]
-	public delegate void PaintEventHandler(object sender, PaintEventArgs e);
-
 	public partial class Drawable : Panel
 	{
 		new IDrawable Handler { get { return (IDrawable)base.Handler; } }

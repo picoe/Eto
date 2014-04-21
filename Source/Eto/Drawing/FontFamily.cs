@@ -182,28 +182,6 @@ namespace Eto.Drawing
 		{
 			return Name;
 		}
-
-		#region Obsolete
-		
-		/// <summary>
-		/// Gets a generic monospace font family that works across all platforms
-		/// </summary>
-		[Obsolete("Use FontFamilies.Monospace")]
-		public static readonly FontFamily Monospace = FontFamilies.Monospace ();
-		
-		/// <summary>
-		/// Gets a generic sans-serif font family that works across all platforms
-		/// </summary>
-		[Obsolete ("Use FontFamilies.Sans")]
-		public static readonly FontFamily Sans = FontFamilies.Sans ();
-		
-		/// <summary>
-		/// Gets a generic serif font family that works across all platforms
-		/// </summary>
-		[Obsolete ("Use FontFamilies.Serif")]
-		public static readonly FontFamily Serif = FontFamilies.Serif ();
-		
-		#endregion
 	}
 }
 

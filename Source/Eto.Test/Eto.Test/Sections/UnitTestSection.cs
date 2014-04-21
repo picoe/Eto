@@ -58,6 +58,7 @@ namespace Eto.Test.Sections
 		}
 	}
 
+#if !PCL
 	public class UnitTestSection : Scrollable
 	{
 		public UnitTestSection()
@@ -116,4 +117,5 @@ namespace Eto.Test.Sections
 			};
 		}
 	}
+#endif
 }

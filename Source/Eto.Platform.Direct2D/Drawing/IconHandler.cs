@@ -5,12 +5,18 @@ using System.Text;
 using Eto.Drawing;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.WIC;
+#if WINFORMS
 using Eto.Platform.Windows.Drawing;
+#endif
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    public class IconHandler : ImageHandler<Icon>, IIcon, IWindowsIconSource
+    public class IconHandler : ImageHandler<Icon>, IIcon
+#if WINFORMS
+		, IWindowsIconSource
+#endif
     {
+#if WINFORMS
 		System.Drawing.Icon sdicon;
 		public System.Drawing.Icon GetIcon()
 		{
@@ -31,5 +37,6 @@ namespace Eto.Platform.Direct2D.Drawing
 				sdicon = null;
 			}
 		}
+#endif
 	}
 }

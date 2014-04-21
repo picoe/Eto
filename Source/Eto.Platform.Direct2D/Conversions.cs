@@ -10,6 +10,12 @@ using sw = SharpDX.DirectWrite;
 
 namespace Eto.Platform.Direct2D
 {
+	/// <summary>
+	/// Xaml conversions
+	/// </summary>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class Conversions
 	{
 		public static s.Color4 ToDx(this Color color)
@@ -120,7 +126,7 @@ namespace Eto.Platform.Direct2D
 		public static sd.Bitmap ToDx(this Image image, sd.RenderTarget target)
 		{
 			var handler = (ID2DBitmapHandler)image.Handler;
-			return handler.GetBitmap(target);
+			return target != null ? handler.GetBitmap(target) : null;
 		}
 
 		public static FontStyle ToEtoStyle(this sw.Font font)
@@ -315,6 +321,7 @@ namespace Eto.Platform.Direct2D
 			}
 		}
 
+#if WINFORMS
 		public static System.Drawing.Imaging.PixelFormat ToSDPixelFormat(this Guid pixelFormat)
 		{
 			if (pixelFormat == s.WIC.PixelFormat.Format32bppBGR)
@@ -327,6 +334,7 @@ namespace Eto.Platform.Direct2D
 				return System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
 			throw new NotSupportedException();
 		}
+#endif
 
 		public static Guid ToWic(this ImageFormat format)
 		{
@@ -347,6 +355,7 @@ namespace Eto.Platform.Direct2D
 			}
 		}
 
+#if WINFORMS
 		public static System.Drawing.Bitmap ToSD(this s.WIC.Bitmap bmp)
 		{
 			using (var bl = bmp.Lock(s.WIC.BitmapLockFlags.Read))
@@ -356,6 +365,7 @@ namespace Eto.Platform.Direct2D
 				return new System.Drawing.Bitmap(bmp.Size.Width, bmp.Size.Height, bl.Data.Pitch, pixelFormat, bl.Data.DataPointer);
 			}
 		}
+#endif
 
 		public static s.WIC.Bitmap ToBitmap(this s.WIC.BitmapSource bmp, Guid? pixelFormat = null)
 		{

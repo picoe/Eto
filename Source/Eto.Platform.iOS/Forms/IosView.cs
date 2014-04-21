@@ -300,6 +300,31 @@ namespace Eto.Platform.iOS.Forms
 		{
 			get { return ContainerControl.Frame.Location.ToEtoPoint(); }
 		}
+
+
+		public string ToolTip
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public Cursor Cursor
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
 

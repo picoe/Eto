@@ -28,6 +28,7 @@ namespace Eto.Test.Dialogs
 				HorizontalAlign = HorizontalAlign.Center
 			});
 
+#if !PCL
 			var version = Assembly.GetEntryAssembly().GetName().Version;
 			layout.Add(new Label
 			{
@@ -35,7 +36,7 @@ namespace Eto.Test.Dialogs
 				Font = new Font(SystemFont.Default, 10),
 				HorizontalAlign = HorizontalAlign.Center
 			});
-			
+#endif	
 			
 			layout.Add(new Label
 			{

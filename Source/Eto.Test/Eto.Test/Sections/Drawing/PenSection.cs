@@ -28,7 +28,8 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddSeparateRow(null, PenJoinControl(), PenCapControl(), DashStyleControl(), null);
-			layout.AddSeparateRow(null, PenThicknessControl(), null);
+			if (Generator.Supports<INumericUpDown>())
+				layout.AddSeparateRow(null, PenThicknessControl(), null);
 			layout.AddSeparateRow(GetDrawable());
 
 			Content = layout;

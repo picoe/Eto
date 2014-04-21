@@ -155,5 +155,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 				//}
 			}
 		}
+
+		public ContextMenu ContextMenu
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

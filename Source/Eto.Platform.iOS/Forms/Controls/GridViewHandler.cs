@@ -134,6 +134,18 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			Widget.OnCellFormatting(new IosCellFormatArgs(column, item, row, cell));
 		}
+
+		public ContextMenu ContextMenu
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 
 	class IosCellFormatArgs : GridCellFormatEventArgs

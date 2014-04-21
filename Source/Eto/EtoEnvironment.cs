@@ -77,18 +77,6 @@ namespace Eto
 			var handler = generator.CreateShared<IEtoEnvironment> ();
 			return handler.GetFolderPath (folder);
 		}
-
-		/// <summary>
-		/// Gets the folder path for the specified special folder
-		/// </summary>
-		/// <param name="g">Generator to use</param>
-		/// <param name="folder">Special folder to retrieve the path for</param>
-		/// <returns>Path of the specified folder</returns>
-		[Obsolete("Use GetFolderPath(EtoSpecialFolder, Generator) instead")]
-		public static string GetFolderPath (Generator g, EtoSpecialFolder folder)
-		{
-			return GetFolderPath (folder, g);
-		}
 	}
 }
 

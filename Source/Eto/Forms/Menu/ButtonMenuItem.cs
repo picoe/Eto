@@ -10,28 +10,11 @@ namespace Eto.Forms
 		Image Image { get; set; }
 	}
 
-	[Obsolete("Use ButtonMenuItem instead")]
-	public class ImageMenuItem : ButtonMenuItem
-	{
-		public ImageMenuItem()
-			: this((Generator)null)
-		{
-		}
-
-		public ImageMenuItem(Generator generator)
-			: base(generator)
-		{
-		}
-	}
-
 	public class ButtonMenuItem : MenuItem, ISubMenuWidget
 	{
 		new IButtonMenuItem Handler { get { return (IButtonMenuItem)base.Handler; } }
 
 		public MenuItemCollection Items { get; private set; }
-
-		[Obsolete("Use Items instead")]
-		public MenuItemCollection MenuItems { get { return Items; } } 
 
 		public bool Trim { get; set; }
 

@@ -28,9 +28,6 @@ namespace Eto.Platform.iOS.Drawing
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GraphicsHandler : GraphicsBase, IGraphics
-#if IOS
-		, IGraphicsCreate
-#endif
 	{
 		#if OSX
 		NSGraphicsContext graphicsContext;
@@ -138,33 +135,9 @@ namespace Eto.Platform.iOS.Drawing
 			InitializeContext(false);
 		}
 
-		bool shouldEndImageContext = false;
-		public void Create(Size size, bool useMainScreenScale)
-		{
-			this.height = size.Height;
-			UIGraphics.BeginImageContextWithOptions(size.ToSD(), opaque: true, scale: useMainScreenScale? 0f : 1f);
-			this.Control = UIGraphics.GetCurrentContext();
-			// SetDefaults(); // commented because this turns off subpixel positioning.
-			InitializeContext(false); // does nothing but included for consistency
-			shouldEndImageContext = true;
-		}
-
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			if (shouldEndImageContext)
-				UIGraphics.EndImageContext();			
-		}
-
-		public Bitmap GetImage()
-		{
-			if (shouldEndImageContext)
-			{
-				var h = new BitmapHandler();
-				h.Create(UIGraphics.GetImageFromCurrentImageContext());
-				return new Bitmap(null, h);
-			}
-			throw new InvalidOperationException("Can only call GetImage on a Graphics constructed with a specified size");
 		}
 
 		#endif

@@ -106,16 +106,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Obsolete. Use <see cref="Title"/> instead
-		/// </summary>
-		[Obsolete("Use Title instead")]
-		public string Text
-		{
-			get { return Title; }
-			set { Title = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the location of the window
 		/// </summary>
 		/// <remarks>

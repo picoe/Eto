@@ -94,7 +94,7 @@ namespace Eto.Test.Sections.Controls
 		Control EnableContextMenu()
 		{
 			var control = new CheckBox { Text = "Enable Context Menu" };
-			control.Bind(r => r.Checked, webView, w => w.BrowserContextMenuEnabled);
+			control.Bind(r => r.IsChecked, webView, w => w.BrowserContextMenuEnabled);
 			return control;
 		}
 
@@ -274,35 +274,40 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate
 			{
-				var dialog = new Dialog();
-#if DESKTOP
-				dialog.MinimumSize = new Size(300, 0);
-#endif
-				var layout = new DynamicLayout();
-				var textBox = new TextBox { Text = "http://google.com" };
-				var goButton = new Button { Text = "Go" };
-				dialog.DefaultButton = goButton;
-				goButton.Click += (sender, e) => {
-					dialog.DialogResult = DialogResult.Ok;
-					dialog.Close();
-				};
-				var cancelButton = new Button { Text = "Cancel" };
-				dialog.AbortButton = cancelButton;
-				cancelButton.Click += (sender, e) => dialog.Close();
-				layout.BeginVertical();
-				layout.AddRow(new Label { Text = "Url" }, textBox);
-				layout.EndBeginVertical();
-				layout.AddRow(null, cancelButton, goButton);
-				layout.EndVertical();
-
-				dialog.Content = layout;
-
-				if (dialog.ShowDialog(this) == DialogResult.Ok)
+				if (Generator.Current.Supports<IDialog>())
 				{
-					Uri uri;
-					if (Uri.TryCreate(textBox.Text, UriKind.Absolute, out uri))
-						webView.Url = uri;
+					var dialog = new Dialog();
+#if DESKTOP
+					dialog.MinimumSize = new Size(300, 0);
+#endif
+					var layout = new DynamicLayout();
+					var textBox = new TextBox { Text = "http://google.com" };
+					var goButton = new Button { Text = "Go" };
+					dialog.DefaultButton = goButton;
+					goButton.Click += (sender, e) => {
+						dialog.DialogResult = DialogResult.Ok;
+						dialog.Close();
+					};
+					var cancelButton = new Button { Text = "Cancel" };
+					dialog.AbortButton = cancelButton;
+					cancelButton.Click += (sender, e) => dialog.Close();
+					layout.BeginVertical();
+					layout.AddRow(new Label { Text = "Url" }, textBox);
+					layout.EndBeginVertical();
+					layout.AddRow(null, cancelButton, goButton);
+					layout.EndVertical();
+
+					dialog.Content = layout;
+
+					if (dialog.ShowDialog(this) == DialogResult.Ok)
+					{
+						Uri uri;
+						if (Uri.TryCreate(textBox.Text, UriKind.Absolute, out uri))
+							webView.Url = uri;
+					}
 				}
+				else
+					webView.Url = new Uri("http://google.com");
 			};
 			return control;
 		}

@@ -1,4 +1,4 @@
-#if XAML
+#if XAML && !PCL
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Serialization

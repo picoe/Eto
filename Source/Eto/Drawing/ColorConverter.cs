@@ -2,6 +2,9 @@ using System;
 using System.ComponentModel;
 using Eto.Drawing;
 using System.Globalization;
+#if PCL
+using MissingTypes;
+#endif
 
 namespace Eto.Drawing
 {

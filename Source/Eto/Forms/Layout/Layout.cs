@@ -75,12 +75,6 @@ namespace Eto.Forms
 		/// <value><c>true</c> if initializing; otherwise, <c>false</c>.</value>
 		protected bool Initializing { get; private set; }
 
-		/// <summary>
-		/// Obsolete. Use <see cref="Control.Parent"/> instead
-		/// </summary>
-		[Obsolete("Use Parent instead")]
-		public Container Container { get { return Parent; } }
-
 		protected Layout(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{

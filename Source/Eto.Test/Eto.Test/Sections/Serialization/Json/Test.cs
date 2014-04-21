@@ -10,7 +10,9 @@ namespace Eto.Test.Sections.Serialization.Json
 
 		public Test ()
 		{
+#if !PCL
 			Eto.Json.JsonReader.Load (this);
+#endif
 
 			MyCheckBox.Checked = true;
 			MyTextArea.Text = "This form was created via json!";

@@ -36,7 +36,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public bool FontFamilyAvailable(string fontFamily)
 		{
-			return AvailableFontFamilies.Any(r => string.Equals(r.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
+			return AvailableFontFamilies.Any(r => string.Equals(r.Name, fontFamily, StringComparison.OrdinalIgnoreCase));
 		}
 	}
 }

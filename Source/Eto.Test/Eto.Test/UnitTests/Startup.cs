@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !PCL
+using System;
 using NUnit.Framework;
 using Eto.Forms;
 using System.Threading;
@@ -54,3 +55,4 @@ namespace Eto.Test.UnitTests
 	}
 }
 
+#endif

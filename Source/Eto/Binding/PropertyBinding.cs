@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
+using System.Linq;
 
 namespace Eto
 {
@@ -15,7 +17,13 @@ namespace Eto
 	/// </remarks>
 	public class PropertyBinding : IndirectBinding
 	{
+#if PCL // For portable class library, we use PropertyInfo which is universally available 
+		// and supports most of the same methods as PropertyDescriptor. (For that matter,
+		// is there a good reason to ever use PropertyDescriptor on any platform?)
+		PropertyInfo descriptor;
+#else
 		PropertyDescriptor descriptor;
+#endif
 		string property;
 				
 		/// <summary>
@@ -48,8 +56,13 @@ namespace Eto
 		
 		void EnsureProperty (object dataItem)
 		{
-#if WINRT
-			throw new NotImplementedException();
+#if PCL
+			if (dataItem != null && (descriptor == null || !descriptor.GetType().IsInstanceOfType(dataItem)))
+			{
+				descriptor = (from p in dataItem.GetType().GetAllProperties()
+							  where p.Name == Property
+							 select p).FirstOrDefault();
+			}
 #else
 			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsInstanceOfType(dataItem))) {
 				descriptor = TypeDescriptor.GetProperties (dataItem).Find (Property, IgnoreCase);
@@ -111,9 +124,6 @@ namespace Eto
 		/// <returns>binding reference used to track the event hookup, to pass to <see cref="RemoveValueChangedHandler"/> when removing the handler</returns>
 		public override object AddValueChangedHandler (object dataItem, EventHandler<EventArgs> handler)
 		{
-#if WINRT
-			throw new NotImplementedException();
-#else
 			if (dataItem == null)
 				return false;
 			var notify = dataItem as INotifyPropertyChanged;
@@ -136,7 +146,6 @@ namespace Eto
 				}
 				return dataItem;
 			}
-#endif
 		}
 
 		/// <summary>
@@ -146,9 +155,6 @@ namespace Eto
 		/// <param name="handler">Same handler that was set up during the <see cref="AddValueChangedHandler"/> call</param>
 		public override void RemoveValueChangedHandler (object bindingReference, EventHandler<EventArgs> handler)
 		{
-#if WINRT
-			throw new NotImplementedException();
-#else
 			var helper = bindingReference as ValueChangedHandler;
 			if (helper != null) {
 				var notify = (INotifyPropertyChanged)helper.DataItem;
@@ -164,7 +170,6 @@ namespace Eto
 					catch {}
 				}
 			}
-#endif
 		}
 	}
 }

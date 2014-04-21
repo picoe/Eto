@@ -273,22 +273,6 @@ namespace Eto.Drawing
 		void Clear(SolidBrush brush);
 	}
 
-	#if MOBILE
-
-	/// <summary>
-	/// Currently supported by the iOS Graphics handler. Implements the 
-	/// UIKit pattern of creating a graphics that is automatically backed by a bitmap 
-	/// whose scale can be retina-aware. After drawing into the Graphics,
-	/// the image can be retrieved.
-	/// </summary>
-	public interface IGraphicsCreate
-	{
-		void Create(Size size, bool useMainScreenScale);
-		Bitmap GetImage();
-	}
-
-	#endif
-
 	/// <summary>
 	/// Graphics context object for drawing operations
 	/// </summary>
@@ -988,16 +972,6 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Obsolete, use <see cref="AntiAlias"/> instead
-		/// </summary>
-		[Obsolete("Use AntiAlias instead"), CLSCompliant(false)]
-		public bool Antialias
-		{
-			get { return Handler.AntiAlias; }
-			set { Handler.AntiAlias = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the interpolation mode for drawing images
 		/// </summary>
 		public ImageInterpolation ImageInterpolation
@@ -1223,47 +1197,5 @@ namespace Eto.Drawing
 		{
 			Handler.Clear (brush);
 		}
-
-		#region Obsolete
-
-		/// <summary>
-		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="image"/>
-		/// </summary>
-		/// <param name="generator">Generator to create this graphics context for</param>
-		/// <param name="image">Image to draw on using this graphics context</param>
-		[Obsolete("Use Graphics(Bitmap) instead")]
-		public Graphics(Generator generator, Bitmap image)
-			: base(generator, typeof(IGraphics), false)
-		{
-			Handler.CreateFromImage(image);
-			Initialize();
-		}
-
-		/// <summary>
-		/// Draws the <paramref name="icon"/> at the specified location and size. Obsolete. Use <see cref="DrawImage(Image, RectangleF)"/> instead.
-		/// </summary>
-		/// <param name="icon">Icon to draw</param>
-		/// <param name="rectangle">Where to draw the icon</param>
-		[Obsolete("Use DrawImage instead")]
-		public void DrawIcon (Icon icon, RectangleF rectangle)
-		{
-			Handler.DrawImage (icon, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-		}
-
-		/// <summary>
-		/// Draws the <paramref name="icon"/> at the specified location and size. Obsolete. Use <see cref="DrawImage(Image, float, float, float, float)"/> instead.
-		/// </summary>
-		/// <param name="icon">Icon to draw</param>
-		/// <param name="x">X co-ordinate of the location to draw the icon</param>
-		/// <param name="y">Y co-ordinate of the location to draw the icon</param>
-		/// <param name="width">Destination width of the icon</param>
-		/// <param name="height">Destination height of the icon</param>
-		[Obsolete("Use DrawImage instead")]
-		public void DrawIcon (Icon icon, float x, float y, float width, float height)
-		{
-			Handler.DrawImage (icon, x, y, width, height);
-		}
-
-		#endregion
 	}
 }

@@ -19,9 +19,6 @@ namespace Eto.Forms
 
 		public MenuItemCollection Items { get; private set; }
 
-		[Obsolete("Use Items instead")]
-		public MenuItemCollection MenuItems { get { return Items; } } 
-
 		public ContextMenu()
 			: this((Generator)null)
 		{

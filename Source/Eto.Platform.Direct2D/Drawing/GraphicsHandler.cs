@@ -4,10 +4,11 @@ using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
-using swf = System.Windows.Forms;
 using Eto.Forms;
-using Eto.Platform.Windows;
 using System.Diagnostics;
+#if WINFORMS
+using Eto.Platform.Windows;
+#endif
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -16,7 +17,7 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
+	public partial class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
 	{
 		bool hasBegan;
 		bool disposeControl = true;
@@ -25,8 +26,9 @@ namespace Eto.Platform.Direct2D.Drawing
 		float fillOffset;
 		sd.Layer clipLayer;
 		RectangleF clipBounds;
+#if WINFORMS
 		DrawableHandler drawable;
-
+#endif
 		public float PointsPerPixel { get { return 72f / Control.DotsPerInch.Width; } }
 
 		protected override bool DisposeControl { get { return disposeControl; } }
@@ -41,6 +43,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			disposeControl = false;
 		}
 
+#if WINFORMS
 		public GraphicsHandler(DrawableHandler drawable)
 		{
 			this.drawable = drawable;
@@ -50,8 +53,40 @@ namespace Eto.Platform.Direct2D.Drawing
 			//target creation
 			drawable.Control.SizeChanged += HandleSizeChanged;
 		}
-
+#endif
 		void CreateRenderTarget()
+		{
+#if WINFORMS
+			if (drawable != null)
+			{
+				var renderProp = CreateRenderProperties();
+				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied);
+				var winProp = new sd.HwndRenderTargetProperties
+				{
+					Hwnd = drawable.Control.Handle,
+					PixelSize = drawable.ClientSize.ToDx(),
+					PresentOptions = sd.PresentOptions.Immediately
+				};
+
+				Control = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+				return;
+			}
+#endif
+			CreateWicTarget(); // this is executed in winforms if not created from a drawable, and always in Xaml.
+		}
+
+		private void CreateWicTarget()
+		{
+			if (image != null)
+			{
+				var renderProp = CreateRenderProperties();
+				var imageHandler = image.Handler as BitmapHandler;
+				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.Unknown, sd.AlphaMode.Unknown);
+				Control = new sd.WicRenderTarget(SDFactory.D2D1Factory, imageHandler.Control, renderProp);
+			}
+		}
+
+		private static sd.RenderTargetProperties CreateRenderProperties()
 		{
 			var renderProp = new sd.RenderTargetProperties
 			{
@@ -62,28 +97,12 @@ namespace Eto.Platform.Direct2D.Drawing
 				Usage = sd.RenderTargetUsage.None
 			};
 
-			if (drawable != null)
-			{
-				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied);
-				var winProp = new sd.HwndRenderTargetProperties
-				{
-					Hwnd = drawable.Control.Handle,
-					PixelSize = drawable.ClientSize.ToDx(),
-					PresentOptions = sd.PresentOptions.Immediately
-				};
-
-				Control = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
-			}
-			else if (image != null)
-			{
-				var imageHandler = image.Handler as BitmapHandler;
-				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.Unknown, sd.AlphaMode.Unknown);
-				Control = new sd.WicRenderTarget(SDFactory.D2D1Factory, imageHandler.Control, renderProp);
-			}
+			return renderProp;
 		}
 
 		void HandleSizeChanged(object sender, EventArgs e)
 		{
+#if WINFORMS
 			var target = Control as sd.WindowRenderTarget;
 			if (target == null)
 				return;
@@ -94,8 +113,11 @@ namespace Eto.Platform.Direct2D.Drawing
 			}
 			catch (Exception ex)
 			{
-				Debug.Print(string.Format("Could not resize: {0}", ex));
+				Debug.WriteLine(string.Format("Could not resize: {0}", ex));
 			}
+#else
+			throw new NotImplementedException();
+#endif
 		}
 
 		sd.Ellipse GetEllipse(float x, float y, float width, float height)
@@ -108,8 +130,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public bool AntiAlias
 		{
-			get { return Control.AntialiasMode == sd.AntialiasMode.PerPrimitive; }
-			set { Control.AntialiasMode = value ? sd.AntialiasMode.PerPrimitive : sd.AntialiasMode.Aliased; }
+			get { return Control != null && Control.AntialiasMode == sd.AntialiasMode.PerPrimitive; }
+			set
+			{
+				if (Control != null)
+					Control.AntialiasMode = value ? sd.AntialiasMode.PerPrimitive : sd.AntialiasMode.Aliased;
+			}		
 		}
 
 		public ImageInterpolation ImageInterpolation { get; set; }
@@ -133,12 +159,17 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			get
 			{
-				// not very efficient, but works
-				var transform = Control.Transform;
-				transform.Invert();
-				var start = s.Matrix3x2.TransformPoint(transform, clipBounds.Location.ToDx()).ToEto();
-				var end = s.Matrix3x2.TransformPoint(transform, clipBounds.EndLocation.ToDx()).ToEto();
-				return new RectangleF(start, end);
+				if (Control != null)
+				{
+					// not very efficient, but works
+					var transform = Control.Transform;
+					transform.Invert();
+					var start = s.Matrix3x2.TransformPoint(transform, clipBounds.Location.ToDx()).ToEto();
+					var end = s.Matrix3x2.TransformPoint(transform, clipBounds.EndLocation.ToDx()).ToEto();
+					return new RectangleF(start, end);
+				}
+				else
+					return new RectangleF();
 			}
 		}
 
@@ -222,7 +253,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void CreateFromImage(Bitmap image)
 		{
 			this.image = image;
-			CreateRenderTarget();
+			CreateWicTarget();
 			BeginDrawing();
 		}
 
@@ -397,7 +428,8 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void DrawImage(Image image, float x, float y)
 		{
 			var bmp = image.ToDx(Control);
-			Control.DrawBitmap(bmp, new s.RectangleF(x, y, bmp.Size.Width, bmp.Size.Height), 1f, ImageInterpolation.ToDx());
+			if (bmp != null)
+				Control.DrawBitmap(bmp, new s.RectangleF(x, y, bmp.Size.Width, bmp.Size.Height), 1f, ImageInterpolation.ToDx());
 		}
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
@@ -413,12 +445,15 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Clear(SolidBrush brush)
 		{
-			// TODO: doesn't actually clear to transparent (e.g. on a bitmap)
-			var rect = new s.RectangleF(0, 0, Control.PixelSize.Width, Control.PixelSize.Height);
-			if (brush != null)
-				Control.Clear(brush.Color.ToDx());
-			else
-				Control.Clear(s.Color4.Black);
+			if (Control != null)
+			{
+				// TODO: doesn't actually clear to transparent (e.g. on a bitmap)
+				var rect = new s.RectangleF(0, 0, Control.PixelSize.Width, Control.PixelSize.Height);
+				if (brush != null)
+					Control.Clear(brush.Color.ToDx());
+				else
+					Control.Clear(s.Color4.Black);
+			}
 		}
 
 		static sd.RenderTarget globalRenderTarget;
@@ -433,6 +468,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			{
 				if (globalRenderTarget == null)
 				{
+#if WINFORMS
 					// hack for now, use a temporary control to get the current target
 					// ideally, each brush/etc will create itself when needed, not right away.
 					// though, this may be difficult for things like a bitmap
@@ -453,6 +489,9 @@ namespace Eto.Platform.Direct2D.Drawing
 						Usage = sd.RenderTargetUsage.None
 					};
 					globalRenderTarget = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+#else
+					throw new NotImplementedException();
+#endif
 				}
 				return currentRenderTarget ?? globalRenderTarget;
 			}
@@ -466,16 +505,19 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void BeginDrawing(RectangleF? clipRect = null)
 		{
-			CurrentRenderTarget = Control;
-			Control.BeginDraw();
-			Control.Transform = s.Matrix3x2.Identity;
-			if (transformStack != null)
-				transformStack.Clear();
-			ResetClip();
-			clipBounds = new RectangleF(Control.Size.ToEto());
-			if (clipRect != null)
-				Control.PushAxisAlignedClip(clipRect.Value.ToDx(), SharpDX.Direct2D1.AntialiasMode.PerPrimitive);
-			hasBegan = true;
+			if (Control != null)
+			{
+				CurrentRenderTarget = Control;
+				Control.BeginDraw();
+				Control.Transform = s.Matrix3x2.Identity;
+				if (transformStack != null)
+					transformStack.Clear();
+				ResetClip();
+				clipBounds = new RectangleF(Control.Size.ToEto());
+				if (clipRect != null)
+					Control.PushAxisAlignedClip(clipRect.Value.ToDx(), SharpDX.Direct2D1.AntialiasMode.PerPrimitive);
+				hasBegan = true;
+			}
 		}
 
 		public void EndDrawing(bool popClip = false)
@@ -515,7 +557,7 @@ namespace Eto.Platform.Direct2D.Drawing
 				{
 					if (ex.ResultCode == 0x8899000C) // D2DERR_RECREATE_TARGET
 					{
-						Debug.Print("Recreating targets");
+						Debug.WriteLine("Recreating targets");
 						// need to recreate render target
 						CreateRenderTarget();
 						CurrentRenderTarget = Control;

@@ -97,7 +97,6 @@
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
-    <Compile Include="Resources.cs" />
     <Compile Include="Threading\Thread.cs" />
     <Compile Include="TypeHelper.cs" />
     <Compile Include="WeakEventHandler.cs">
@@ -110,7 +109,6 @@
     <Compile Include="Forms\Application.cs" />
     <Compile Include="Forms\Container.cs" />
     <Compile Include="Forms\Dialog.cs" />
-    <Compile Include="Forms\Layout\DockLayout.cs" />
     <Compile Include="Forms\FileDialog.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\Key.cs">
@@ -128,39 +126,6 @@
     <Compile Include="Forms\UITimer.cs" />
     <Compile Include="Forms\Window.cs" />
     <Compile Include="Forms\Window.desktop.cs" />
-    <Compile Include="Forms\Actions\ActionCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ActionItem.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ActionItem.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ActionItemCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ActionItemCollection.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ButtonAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ButtonAction.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\CheckAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\CheckAction.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\RadioAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\RadioAction.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Controls\Button.cs" />
     <Compile Include="Forms\Controls\CheckBox.cs" />
     <Compile Include="Forms\Controls\ComboBox.cs" />
@@ -192,40 +157,7 @@
     <Compile Include="Forms\Menu\RadioMenuItem.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
-    <Compile Include="IO\DiskDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\DiskFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoDriveInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoSystemObjectInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="IO\SystemIcons.cs" />
-    <Compile Include="IO\VirtualDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualDirectoryType.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualFileEntry.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\Platform.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Xaml\EtoXamlSchemaContext.cs" />
     <Compile Include="Xaml\Extensions\ResourceExtension.cs" />
     <Compile Include="Xaml\XamlReader.cs" />
@@ -365,11 +297,6 @@
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
     <Compile Include="Forms\Controls\Spinner.cs" />
     <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
-    <Compile Include="Forms\Actions\GenerateActionArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\BaseAction.desktop.cs" />
-    <Compile Include="Forms\Actions\BaseAction.cs" />
     <Compile Include="Forms\Command.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -381,7 +308,6 @@
     <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
     <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
-    <Compile Include="Forms\ToolBar\ToolItem.obsolete.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

@@ -50,11 +50,6 @@ namespace Eto.Platform.Android.Forms
 			throw new NotImplementedException();
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
-		{
-			throw new NotImplementedException();
-		}
-
 		public void Open(string url)
 		{
 			throw new NotImplementedException();
@@ -72,12 +67,12 @@ namespace Eto.Platform.Android.Forms
 
 		public Keys CommonModifier
 		{
-			get { return Key.Control; }
+			get { return Keys.Control; }
 		}
 
 		public Keys AlternateModifier
 		{
-			get { return Key.Alt; }
+			get { return Keys.Alt; }
 		}
 
 		public string BadgeLabel
@@ -94,6 +89,22 @@ namespace Eto.Platform.Android.Forms
 
 
 		public IEnumerable<Command> GetSystemCommands()
+		{
+			throw new NotImplementedException();
+		}
+
+
+		public void Restart()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void RunIteration()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
 		{
 			throw new NotImplementedException();
 		}

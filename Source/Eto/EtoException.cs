@@ -32,7 +32,8 @@ namespace Eto
 		{
 		}
 		
-#if !WINRT
+#if !PCL // Exception in Portable class library does not support this constructor overload. It should be OK to remove this.
+		[Obsolete("Do not use this constructor overload")]
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:EtoException"/> class
 		/// </summary>
