@@ -7,7 +7,7 @@ namespace Eto.Platform
 	static class Win32
 	{
 		// Analysis disable InconsistentNaming
-
+        
 		[Flags]
 		public enum SWP : uint
 		{
@@ -121,9 +121,9 @@ namespace Eto.Platform
 
 		public static int SignedLOWORD (IntPtr n) { return SignedLOWORD ((int)((long)n)); }
 
-		public static int SignedHIWORD (int n) { return (short)(n >> 16 & 65535); }
+		public static int SignedHIWORD (int n) { return (short)((n >> 16) & 0xFFFF); }
 
-		public static int SignedLOWORD (int n) { return (short)(n & 65535); }
+		public static int SignedLOWORD (int n) { return (short)(n & 0xFFFF); }
 
 		public static int GetWheelDeltaWParam (IntPtr wParam) { return SignedHIWORD (wParam); }
 
