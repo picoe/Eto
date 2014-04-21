@@ -16,9 +16,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 	{
 		Image image;
 		readonly swc.Image swcimage;
-#if TODO_XAML
-		readonly swc.Label label;
-#endif
+		readonly swc.TextBlock label;
 		readonly swc.Grid grid;
 		ButtonImagePosition imagePosition;
 		readonly Size defaultSize = Button.DefaultSize;
@@ -29,8 +27,8 @@ namespace Eto.Platform.Xaml.Forms.Controls
 		{
 			Control = new swc.Button();
 			Control.Click += (sender, e) => Widget.OnClick(EventArgs.Empty);
-#if TODO_XAML
-			label = new swc.Label {
+			label = new swc.TextBlock
+			{
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				HorizontalAlignment = sw.HorizontalAlignment.Center,
 				Padding = new sw.Thickness (3, 0, 3, 0),
@@ -38,7 +36,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			};
 			swc.Grid.SetColumn (label, 1);
 			swc.Grid.SetRow (label, 1);
-#endif
+
 			swcimage = new swc.Image ();
 			SetImagePosition ();
 			grid = new swc.Grid ();
@@ -49,9 +47,8 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			grid.RowDefinitions.Add (new swc.RowDefinition { Height = new sw.GridLength (1, sw.GridUnitType.Star) });
 			grid.RowDefinitions.Add (new swc.RowDefinition { Height = sw.GridLength.Auto });
 			grid.Children.Add (swcimage);
-#if TODO_XAML
 			grid.Children.Add (label);
-#endif
+
 			/*
 			var panel = new swc.Control { IsTabStop = false };
 			panel.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
@@ -76,7 +73,12 @@ namespace Eto.Platform.Xaml.Forms.Controls
 				SetImagePosition ();
 			}
 #else
-			get; set;
+			get { return label.Text; }
+			set
+			{
+				label.Text = value;
+				SetImagePosition();
+			}
 #endif
 		}
 
@@ -92,11 +94,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 		void SetImagePosition ()
 		{
-#if TODO_XAML
-			bool hideLabel = string.IsNullOrEmpty ((string)label.Content);
-#else
-			var hideLabel = false;
-#endif
+			var hideLabel = string.IsNullOrEmpty (label.Text);
 			int col, row;
 			switch (imagePosition) {
 			case ButtonImagePosition.Left:
@@ -130,9 +128,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 			swc.Grid.SetColumn (swcimage, col);
 			swc.Grid.SetRow (swcimage, row);
-#if TODO_XAML
 			label.Visibility = hideLabel ? sw.Visibility.Collapsed : sw.Visibility.Visible;
-#endif
 		}
 
 		public ButtonImagePosition ImagePosition

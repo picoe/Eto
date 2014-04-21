@@ -95,7 +95,9 @@
                     <TextBlock x:Name="itemSubtitle" Margin="0,0,0,20" Text="{Binding Subtitle}" Style="{StaticResource SubtitleTextStyle}"/>
                 </StackPanel>
                 <!--<TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="0,20,0,0" Text="{Binding Content}" Style="{StaticResource BodyTextStyle}"/>-->
-                <ContentControl Grid.Row="2" Grid.ColumnSpan="2" Margin="0,20,0,0" Content="{Binding ContentControl}"/>
+                <ContentControl Grid.Row="2" Grid.ColumnSpan="2" Margin="0,20,0,0" Content="{Binding ContentControl}"
+                                HorizontalContentAlignment="Stretch" 
+                                VerticalContentAlignment="Stretch"/>
             </Grid>
         </ScrollViewer>
 
