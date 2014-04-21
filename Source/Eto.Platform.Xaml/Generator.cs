@@ -66,7 +66,7 @@ namespace Eto.Platform.Xaml
 			//g.Add<IImageView>(() => new ImageViewHandler());
 			g.Add<ILabel>(() => new LabelHandler());
 			//g.Add<IListBox>(() => new ListBoxHandler());
-			//g.Add<INumericUpDown>(() => new NumericUpDownHandler());
+			g.Add<INumericUpDown>(() => new NumericUpDownHandler());
 			g.Add<IPanel>(() => new PanelHandler());
 			g.Add<IPasswordBox>(() => new PasswordBoxHandler());
 			g.Add<IProgressBar>(() => new ProgressBarHandler());

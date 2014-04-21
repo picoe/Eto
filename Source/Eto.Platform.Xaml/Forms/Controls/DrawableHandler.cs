@@ -251,7 +251,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 		public virtual Graphics CreateGraphics()
 		{
-			throw new NotSupportedException();
+			return graphics != null ? new Graphics(null, graphics.Handler as IGraphics) : null;
 		}
 
 		void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)

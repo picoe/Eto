@@ -37,7 +37,7 @@ namespace Eto.Platform.Xaml.Forms
 #if TODO_XAML
 				FontHandler.Apply (Control, SetDecorations, font);
 #else
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 #endif
 			}
 		}

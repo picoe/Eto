@@ -1,17 +1,17 @@
-#if TODO_XAML
 using System;
 using swc = Windows.UI.Xaml.Controls;
 using sw = Windows.UI.Xaml;
 using Eto.Forms;
-using mwc = Xceed.Wpf.Toolkit;
+using mwc = WinRTXamlToolkit.Controls;
+using Eto.Drawing;
 
 namespace Eto.Platform.Xaml.Forms.Controls
 {
-	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : WpfControl<mwc.NumericUpDown, NumericUpDown>, INumericUpDown
 	{
 		public NumericUpDownHandler ()
 		{
-			Control = new mwc.DoubleUpDown ();
+			Control = new mwc.NumericUpDown { ValueBarVisibility = mwc.NumericUpDownValueBarVisibility.Visible};
 			Control.ValueChanged += (sender, e) => Widget.OnValueChanged(EventArgs.Empty);
 		}
 
@@ -27,22 +27,20 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 		public double Value
 		{
-			get { return Control.Value ?? 0; }
+			get { return Control.Value; }
 			set { Control.Value = value; }
 		}
 
 		public double MinValue
 		{
-			get { return Control.Minimum ?? double.MinValue; }
+			get { return Control.Minimum; }
 			set { Control.Minimum = value; }
 		}
 
 		public double MaxValue
 		{
-			get { return Control.Maximum ?? double.MaxValue; }
+			get { return Control.Maximum; }
 			set { Control.Maximum = value; }
 		}
-
 	}
 }
-#endif
