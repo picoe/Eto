@@ -18,24 +18,34 @@ namespace Eto.Platform.Direct2D.Drawing
 		public GraphicsHandler(DrawableHandler drawableHandler)
 		{
 			this.drawableHandler = drawableHandler;
-			drawableHandler.Control.Loaded += (s, e) => CreateXamlRenderTarget(drawableHandler);
-			drawableHandler.Control.SizeChanged += (s, e) => CreateXamlRenderTarget(drawableHandler);
+			drawableHandler.Widget.LoadComplete += (s, e) => CreateXamlRenderTarget(); 
+			drawableHandler.Control.Loaded += (s, e) => CreateXamlRenderTarget();
+			drawableHandler.Control.SizeChanged += (s, e) => CreateXamlRenderTarget();
+
+			// initialize to some default
+			// CreateXamlRenderTarget(new SizeF(1000, 1000));
 		}
 
 		public Bitmap Image { get { return image; } }
 
-		private void CreateXamlRenderTarget(DrawableHandler drawable)
+		private void CreateXamlRenderTarget()
 		{
-			if (!double.IsNaN(drawable.Control.Width) &&
-				!double.IsNaN(drawable.Control.Height) &&
+			var sizeF = new SizeF((float)drawableHandler.Control.Width, (float)drawableHandler.Control.Height);
+			CreateXamlRenderTarget(sizeF);
+		}
+
+		private void CreateXamlRenderTarget(SizeF sizeF)
+		{
+			if (!double.IsNaN(sizeF.Width) &&
+				!double.IsNaN(sizeF.Height) &&
 				(image == null ||
-				 image.Width != drawable.Control.Width ||
-				 image.Height != drawable.Control.Height))
+				 image.Width != sizeF.Width ||
+				 image.Height != sizeF.Height))
 			{
 				if (image != null)
 					image.Dispose();
 
-				var size = new Size((int)drawable.Control.Width, (int)drawable.Control.Height);
+				var size = new Size((int)sizeF.Width, (int)sizeF.Height);
 				image = new Bitmap(size, PixelFormat.Format32bppRgba);
 				CreateWicTarget();
 			}
