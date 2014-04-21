@@ -95,13 +95,10 @@ namespace Eto.Platform.Xaml.Forms.Controls
 		public ComboBoxHandler()
 		{
 			Control = new EtoComboBox();
-			sw.DataTemplate template = null;
-#if TODO_XAML
-			template = new sw.DataTemplate(typeof(IListItem));
-			template.VisualTree = WpfListItemHelper.TextBlock(setMargin: false);
-#else
-			//throw new NotImplementedException();
-#endif
+			var str = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">" +
+                "<TextBox Text=\"{Binding Text}\" />" +
+				"</DataTemplate>";
+			var template = (sw.DataTemplate)Windows.UI.Xaml.Markup.XamlReader.Load(str);
 			Control.ItemTemplate = template;
 		}
 
