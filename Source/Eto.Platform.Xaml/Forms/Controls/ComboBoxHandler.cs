@@ -7,6 +7,7 @@ using swa = Windows.UI.Xaml.Automation;
 using swm = Windows.UI.Xaml.Media;
 using Eto.Forms;
 using System.Collections;
+using Windows.UI.Xaml.Markup;
 
 namespace Eto.Platform.Xaml.Forms.Controls
 {
@@ -98,7 +99,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			var str = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">" +
                 "<TextBox Text=\"{Binding Text}\" />" +
 				"</DataTemplate>";
-			var template = (sw.DataTemplate)Windows.UI.Xaml.Markup.XamlReader.Load(str);
+			var template = (sw.DataTemplate)XamlReader.Load(str);
 			Control.ItemTemplate = template;
 		}
 

@@ -21,6 +21,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			this.drawableHandler = drawableHandler;
 			drawableHandler.Widget.LoadComplete += (s, e) => CreateXamlRenderTarget(); 
 			drawableHandler.Control.Loaded += (s, e) => CreateXamlRenderTarget();
+			//drawableHandler.Control.LayoutUpdated += (s, e) => CreateXamlRenderTarget();
 			drawableHandler.Control.SizeChanged += (s, e) => CreateXamlRenderTarget();
 		}
 

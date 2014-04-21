@@ -234,6 +234,8 @@ namespace Eto.Platform.Xaml.Forms.Controls
 		{
 			Control = new swc.Image
 			{
+				HorizontalAlignment = sw.HorizontalAlignment.Stretch,
+				VerticalAlignment = sw.VerticalAlignment.Stretch,
 #if TODO_XAML
 				Handler = this,
 				SnapsToDevicePixels = true,
