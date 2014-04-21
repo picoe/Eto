@@ -9,6 +9,7 @@ using swmi = Windows.UI.Xaml.Media.Imaging;
 using Eto.Forms;
 using System.Diagnostics;
 using Eto.Platform.Xaml.Forms.Controls;
+using System.Threading.Tasks;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -21,9 +22,6 @@ namespace Eto.Platform.Direct2D.Drawing
 			drawableHandler.Widget.LoadComplete += (s, e) => CreateXamlRenderTarget(); 
 			drawableHandler.Control.Loaded += (s, e) => CreateXamlRenderTarget();
 			drawableHandler.Control.SizeChanged += (s, e) => CreateXamlRenderTarget();
-
-			// initialize to some default
-			// CreateXamlRenderTarget(new SizeF(1000, 1000));
 		}
 
 		public Bitmap Image { get { return image; } }
@@ -34,20 +32,21 @@ namespace Eto.Platform.Direct2D.Drawing
 			CreateXamlRenderTarget(sizeF);
 		}
 
-		private void CreateXamlRenderTarget(SizeF sizeF)
+		private void CreateXamlRenderTarget(SizeF size)
 		{
-			if (!double.IsNaN(sizeF.Width) &&
-				!double.IsNaN(sizeF.Height) &&
+			if (!double.IsNaN(size.Width) &&
+				!double.IsNaN(size.Height) &&
+				!size.IsEmpty &&
 				(image == null ||
-				 image.Width != sizeF.Width ||
-				 image.Height != sizeF.Height))
+				 image.Width != size.Width ||
+				 image.Height != size.Height))
 			{
 				if (image != null)
 					image.Dispose();
 
-				var size = new Size((int)sizeF.Width, (int)sizeF.Height);
-				image = new Bitmap(size, PixelFormat.Format32bppRgba);
+				image = new Bitmap(new Size((int)size.Width, (int)size.Height), PixelFormat.Format32bppRgba);
 				CreateWicTarget();
+				drawableHandler.Render();
 			}
 		}
 	}

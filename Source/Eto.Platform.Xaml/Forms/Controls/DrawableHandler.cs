@@ -128,39 +128,46 @@ namespace Eto.Platform.Xaml.Forms.Controls
 		[DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
 		public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
 
-		private async void Render()
+		bool isRendering;
+		public void Render()
 		{
 			// Note: there ought to be a more efficient way to do this, as this is
 			// critical. However, after much searching, the only way I found to
 			// convert a Wic bitmap to a BitmapImage was by serializing to/from
 			// a memory stream.
 
-			var graphicsHandler = graphics.Handler as GraphicsHandler;
-			graphicsHandler.BeginDrawing();
-			Widget.OnPaint(new PaintEventArgs(graphics, Widget.Bounds)); // renders into the bitmap
-			graphicsHandler.EndDrawing();
-			var bitmap = graphicsHandler.Image;
-			if (bitmap != null)
+			if (!isRendering &&
+				GraphicsHandler != null &&
+				GraphicsHandler.Control != null)
 			{
-				var bitmapHandler = bitmap.Handler as BitmapHandler;
-				var bitmapObject = bitmapHandler.Control;
-				var size = bitmapObject.Size;
-				var writeableBitmap = new WriteableBitmap(size.Width, size.Height);
-
-				// Get a pointer to the bitmap pixels
-				unsafe
+				isRendering = true;
+				GraphicsHandler.BeginDrawing();
+				Widget.OnPaint(new PaintEventArgs(graphics, Widget.Bounds)); // renders into the bitmap
+				GraphicsHandler.EndDrawing();
+				var bitmap = GraphicsHandler.Image;
+				if (bitmap != null)
 				{
-					byte* ptr = null;
-					((IBufferByteAccess)writeableBitmap.PixelBuffer).Buffer(out ptr);
-					var len = size.Width * size.Height;
-					var pixels = new SharpDX.ColorBGRA[len];
-					fixed (SharpDX.ColorBGRA* pixelsPtr = &pixels[0])
+					var bitmapHandler = bitmap.Handler as BitmapHandler;
+					var bitmapObject = bitmapHandler.Control;
+					var size = bitmapObject.Size;
+					var writeableBitmap = new WriteableBitmap(size.Width, size.Height);
+
+					// Get a pointer to the bitmap pixels
+					unsafe
 					{
-						bitmapObject.CopyPixels(pixels);
-						CopyMemory((IntPtr)ptr, (IntPtr)pixelsPtr, (uint)len * 4);
+						byte* ptr = null;
+						((IBufferByteAccess)writeableBitmap.PixelBuffer).Buffer(out ptr);
+						var len = size.Width * size.Height;
+						var pixels = new SharpDX.ColorBGRA[len];
+						fixed (SharpDX.ColorBGRA* pixelsPtr = &pixels[0])
+						{
+							bitmapObject.CopyPixels(pixels);
+							CopyMemory((IntPtr)ptr, (IntPtr)pixelsPtr, (uint)len * 4);
+						}
 					}
+					Control.Source = writeableBitmap;
 				}
-				Control.Source = writeableBitmap;
+				isRendering = false;
 			}
 		}
 
@@ -208,6 +215,8 @@ namespace Eto.Platform.Xaml.Forms.Controls
 		}
 
 		Graphics graphics;
+		GraphicsHandler GraphicsHandler { get { return graphics != null ? graphics.Handler as GraphicsHandler : null; } }
+
 		public DrawableHandler()
 		{
 #if TODO_XAML
@@ -320,6 +329,8 @@ namespace Eto.Platform.Xaml.Forms.Controls
 #endif
 )
 			{
+				Control.Width = Widget.Size.Width;
+				Control.Height = Widget.Size.Height;
 				Invalidate(); 
 				return;
 			}
@@ -446,7 +457,14 @@ namespace Eto.Platform.Xaml.Forms.Controls
 				}
 			}
 			else
+			{
 				Render();
+				if (Control != null)
+				{
+					//Control.InvalidateMeasure();
+					//Control.InvalidateArrange();
+				}
+			}
 		}
 
 		public override void Invalidate(Rectangle rect)

@@ -130,8 +130,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public bool AntiAlias
 		{
-			get { return Control.AntialiasMode == sd.AntialiasMode.PerPrimitive; }
-			set { Control.AntialiasMode = value ? sd.AntialiasMode.PerPrimitive : sd.AntialiasMode.Aliased; }
+			get { return Control != null && Control.AntialiasMode == sd.AntialiasMode.PerPrimitive; }
+			set
+			{
+				if (Control != null)
+					Control.AntialiasMode = value ? sd.AntialiasMode.PerPrimitive : sd.AntialiasMode.Aliased;
+			}		
 		}
 
 		public ImageInterpolation ImageInterpolation { get; set; }
@@ -155,12 +159,17 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			get
 			{
-				// not very efficient, but works
-				var transform = Control.Transform;
-				transform.Invert();
-				var start = s.Matrix3x2.TransformPoint(transform, clipBounds.Location.ToDx()).ToEto();
-				var end = s.Matrix3x2.TransformPoint(transform, clipBounds.EndLocation.ToDx()).ToEto();
-				return new RectangleF(start, end);
+				if (Control != null)
+				{
+					// not very efficient, but works
+					var transform = Control.Transform;
+					transform.Invert();
+					var start = s.Matrix3x2.TransformPoint(transform, clipBounds.Location.ToDx()).ToEto();
+					var end = s.Matrix3x2.TransformPoint(transform, clipBounds.EndLocation.ToDx()).ToEto();
+					return new RectangleF(start, end);
+				}
+				else
+					return new RectangleF();
 			}
 		}
 
@@ -436,12 +445,15 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Clear(SolidBrush brush)
 		{
-			// TODO: doesn't actually clear to transparent (e.g. on a bitmap)
-			var rect = new s.RectangleF(0, 0, Control.PixelSize.Width, Control.PixelSize.Height);
-			if (brush != null)
-				Control.Clear(brush.Color.ToDx());
-			else
-				Control.Clear(s.Color4.Black);
+			if (Control != null)
+			{
+				// TODO: doesn't actually clear to transparent (e.g. on a bitmap)
+				var rect = new s.RectangleF(0, 0, Control.PixelSize.Width, Control.PixelSize.Height);
+				if (brush != null)
+					Control.Clear(brush.Color.ToDx());
+				else
+					Control.Clear(s.Color4.Black);
+			}
 		}
 
 		static sd.RenderTarget globalRenderTarget;

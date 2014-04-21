@@ -248,7 +248,7 @@ namespace Eto.Platform.Xaml.Forms
 			else
 				Control.Loaded += HandleFocus;
 #else
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 #endif
 		}
 
