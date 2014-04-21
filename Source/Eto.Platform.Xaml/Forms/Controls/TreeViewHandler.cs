@@ -1,4 +1,3 @@
-#if TODO_XAML
 using System;
 using swc = Windows.UI.Xaml.Controls;
 using sw = Windows.UI.Xaml;
@@ -9,15 +8,16 @@ using swi = Windows.UI.Xaml.Input;
 using wuc = Windows.UI.Core;
 using Eto.Forms;
 using System.Collections;
-using Eto.Platform.Xaml.Forms.Menu;
+//using Eto.Platform.Xaml.Forms.Menu;
 using Eto.Drawing;
 using System.ComponentModel;
-using Eto.Platform.Xaml.CustomControls;
+//using Eto.Platform.Xaml.CustomControls;
 using System.Threading.Tasks;
+using mwc = WinRTXamlToolkit.Controls;
 
 namespace Eto.Platform.Xaml.Forms.Controls
 {
-	public class TreeViewHandler : WpfControl<SelectableTreeView, TreeView>, ITreeView
+	public class TreeViewHandler : WpfControl<mwc.TreeView, TreeView>, ITreeView
 	{
 		ContextMenu contextMenu;
 		ITreeStore topNode;
@@ -26,11 +26,12 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 		bool labelEdit;
 		// use two templates to refresh individual items by changing its template (hack? yes, fast? yes)
-		sw.HierarchicalDataTemplate template1;
-		sw.HierarchicalDataTemplate template2;
+		mwc.Data.HierarchicalDataTemplate template1;
+		mwc.Data.HierarchicalDataTemplate template2;
 
-		public class EtoTreeViewItem : swc.TreeViewItem, INotifyPropertyChanged
+		public class EtoTreeViewItem : mwc.TreeViewItem, INotifyPropertyChanged
 		{
+#if TODO_XAML
 			public static readonly sw.RoutedEvent CollapsingEvent =
 					sw.EventManager.RegisterRoutedEvent("Collapsing",
 					sw.RoutingStrategy.Bubble, typeof(sw.RoutedEventHandler),
@@ -50,6 +51,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 				add { AddHandler(ExpandingEvent, value); }
 				remove { RemoveHandler(ExpandingEvent, value); }
 			}
+#endif
 
 			public TreeViewHandler Handler
 			{
@@ -94,6 +96,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 			bool cancelEvents;
 
+#if TODO_XAML
 			protected override void OnExpanded(sw.RoutedEventArgs e)
 			{
 				if (cancelEvents) return;
@@ -127,7 +130,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			protected virtual void OnCollapsing(sw.RoutedEventArgs e) { RaiseEvent(e); }
 
 			protected virtual void OnExpanding(sw.RoutedEventArgs e) { RaiseEvent(e); }
-
+#endif
 			protected override sw.DependencyObject GetContainerForItemOverride()
 			{
 				return new EtoTreeViewItem();
@@ -138,25 +141,27 @@ namespace Eto.Platform.Xaml.Forms.Controls
 				return item is EtoTreeViewItem;
 			}
 
-			protected override void OnKeyDown(wuc.KeyEventArgs e)
+			protected override void OnKeyDown(swi.KeyRoutedEventArgs e)
 			{
 				base.OnKeyDown(e);
 
-				if (e.Key == swi.Key.F2)
+				if (e.Key == Windows.System.VirtualKey.F2)
 				{
+#if TODO_XAML
 					var etb = this.FindChild<EditableTextBlock>();
 					if (etb != null && etb.IsEditable)
 					{
 						etb.IsInEditMode = true;
 						e.Handled = true;
 					}
+#endif
 				}
 			}
 
 			public event PropertyChangedEventHandler PropertyChanged;
 		}
 
-		public class EtoTreeView : SelectableTreeView
+		public class EtoTreeView : mwc.TreeView
 		{
 			public TreeViewHandler Handler { get; set; }
 
@@ -171,30 +176,37 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			}
 		}
 
+#if TODO_XAML
 		static readonly sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1,Eto<Eto.Forms.ITreeItem,Eto>.Expanded)");
+#endif
 
 		public TreeViewHandler()
 		{
 			Control = new EtoTreeView { Handler = this };
 			SetTemplate();
 
-			var style = new sw.Style(typeof(swc.TreeViewItem));
-			//style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
-			style.Setters.Add(new sw.Setter(swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Path = expandedProperty, Mode = swd.BindingMode.OneTime }));
+#if TODO_XAML
+			var style = new sw.Style(typeof(mwc.TreeViewItem));
+			//style.Setters.Add (new sw.Setter (mwc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
+			style.Setters.Add(new sw.Setter(mwc.TreeViewItem.IsExpandedProperty, new swd.Binding { Path = expandedProperty, Mode = swd.BindingMode.OneTime }));
 			Control.ItemContainerStyle = style;
+#endif
 		}
 
 		void SetTemplate()
 		{
-			var source = new swd.RelativeSource(swd.RelativeSourceMode.FindAncestor, typeof(swc.TreeViewItem), 1);
-			template1 = new sw.HierarchicalDataTemplate(typeof(ITreeItem));
+#if TODO_XAML
+			var source = new swd.RelativeSource(swd.RelativeSourceMode.FindAncestor, typeof(mwc.TreeViewItem), 1);
+			template1 = new mwc.Data.HierarchicalDataTemplate(typeof(ITreeItem));
 			template1.VisualTree = WpfListItemHelper.ItemTemplate(LabelEdit, source);
 			template1.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
 			Control.ItemTemplate = template1;
 
-			template2 = new sw.HierarchicalDataTemplate(typeof(ITreeItem));
+
+			template2 = new mwc.Data.HierarchicalDataTemplate(typeof(ITreeItem));
 			template2.VisualTree = WpfListItemHelper.ItemTemplate(LabelEdit, source);
 			template2.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
+#endif
 		}
 
 		protected override void Initialize()
@@ -208,12 +220,13 @@ namespace Eto.Platform.Xaml.Forms.Controls
 		{
 			switch (id)
 			{
+#if TODO_XAML
 				case TreeView.ExpandedEvent:
-					Control.AddHandler(swc.TreeViewItem.ExpandedEvent, new sw.RoutedEventHandler((sender, e) =>
+					Control.AddHandler(mwc.TreeViewItem.ExpandedEvent, new sw.RoutedEventHandler((sender, e) =>
 					{
 						if (Control.Refreshing)
 							return;
-						var treeItem = e.OriginalSource as swc.TreeViewItem;
+						var treeItem = e.OriginalSource as mwc.TreeViewItem;
 						var item = treeItem.DataContext as ITreeItem;
 						if (item != null && item.Expandable && !item.Expanded)
 						{
@@ -227,7 +240,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 					{
 						if (Control.Refreshing)
 							return;
-						var treeItem = e.OriginalSource as swc.TreeViewItem;
+						var treeItem = e.OriginalSource as mwc.TreeViewItem;
 						var item = treeItem.DataContext as ITreeItem;
 						if (item != null && item.Expandable && !item.Expanded)
 						{
@@ -238,11 +251,11 @@ namespace Eto.Platform.Xaml.Forms.Controls
 					}));
 					break;
 				case TreeView.CollapsedEvent:
-					Control.AddHandler(swc.TreeViewItem.CollapsedEvent, new sw.RoutedEventHandler((sender, e) =>
+					Control.AddHandler(mwc.TreeViewItem.CollapsedEvent, new sw.RoutedEventHandler((sender, e) =>
 					{
 						if (Control.Refreshing)
 							return;
-						var treeItem = e.OriginalSource as swc.TreeViewItem;
+						var treeItem = e.OriginalSource as mwc.TreeViewItem;
 						var item = treeItem.DataContext as ITreeItem;
 						if (item != null && item.Expandable && item.Expanded)
 						{
@@ -256,7 +269,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 					{
 						if (Control.Refreshing)
 							return;
-						var treeItem = e.OriginalSource as swc.TreeViewItem;
+						var treeItem = e.OriginalSource as mwc.TreeViewItem;
 						var item = treeItem.DataContext as ITreeItem;
 						if (item != null && item.Expandable && item.Expanded)
 						{
@@ -266,6 +279,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 						}
 					}));
 					break;
+
 				case TreeView.ActivatedEvent:
 					Control.PreviewKeyDown += (sender, e) =>
 					{
@@ -298,6 +312,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 						}
 					}));
 					break;
+#endif
 				case TreeView.LabelEditingEvent:
 					break;
 				case TreeView.LabelEditedEvent:
@@ -308,16 +323,17 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			}
 		}
 
-		void RefreshItem(swc.TreeViewItem item)
+		void RefreshItem(mwc.TreeViewItem item)
 		{
 			if (item == null)
 				return;
 			var old = item.DataContext;
 			item.DataContext = null;
 			item.DataContext = old;
-
+#if TODO_XAML
 			item.InvalidateProperty(EtoTreeViewItem.IsExpandedProperty);
 			item.HeaderTemplate = item.HeaderTemplate == template1 ? template2 : template1;
+#endif
 		}
 
 		public ITreeStore DataStore
@@ -335,9 +351,10 @@ namespace Eto.Platform.Xaml.Forms.Controls
 
 		public ITreeItem SelectedItem
 		{
-			get { return selectedItem ?? Control.CurrentItem as ITreeItem; }
+			get { return selectedItem ?? Control.SelectedItem as ITreeItem; }
 			set
 			{
+#if TODO_XAML // this section is probably not needed in WinRT
 				if (!Control.IsLoaded)
 				{
 					if (selectedItem == null && value != null)
@@ -346,12 +363,19 @@ namespace Eto.Platform.Xaml.Forms.Controls
 				}
 				else
 					Control.CurrentItem = value;
+
+#else
+				// TODO: how to select a tree item in WinRT?
+				// Control.SelectedItem = value;
+#endif
 			}
 		}
 
 		public void HandleSelectedItemLoad(object sender, sw.RoutedEventArgs e)
 		{
-			Control.CurrentItem = selectedItem;
+#if TODO_XAML
+			Control.SelectedItem = selectedItem;
+#endif
 			selectedItem = null;
 			Control.Loaded -= HandleSelectedItemLoad;
 		}
@@ -362,20 +386,25 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			set
 			{
 				contextMenu = value;
+#if TODO_XAML
 				if (contextMenu != null)
 					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
 				else
 					Control.ContextMenu = null;
+#endif
 			}
 		}
 
 		public void RefreshData()
 		{
+#if TODO_XAML
 			Control.RefreshData();
+#endif
 		}
 
 		public void RefreshItem(ITreeItem item)
 		{
+#if TODO_XAML
 			Control.FindTreeViewItem(item).ContinueWith(r =>
 				{
 					if (r.IsCompleted)
@@ -385,20 +414,23 @@ namespace Eto.Platform.Xaml.Forms.Controls
 						SelectedItem = sel;
 					}
 				}, TaskScheduler.FromCurrentSynchronizationContext());
+#endif
 		}
 
 
 		public ITreeItem GetNodeAt(PointF point)
 		{
+#if TODO_XAML
 			var item = Control.InputHitTest(point.ToWpf()) as sw.DependencyObject;
 			if (item != null)
 			{
-				var tvi = item.GetParent<swc.TreeViewItem>();
+				var tvi = item.GetParent<mwc.TreeViewItem>();
 				if (tvi != null)
 				{
 					return tvi.DataContext as ITreeItem;
 				}
 			}
+#endif
 			return null;
 		}
 
@@ -408,13 +440,17 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			{
 				if (foreground != null)
 					return ((swm.Brush)foreground.Value).ToEtoColor();
+#if TODO_XAML
 				return sw.SystemColors.ControlTextColor.ToEto();
+#else
+				throw new NotImplementedException();
+#endif
 			}
 			set
 			{
 				if (foreground == null)
 				{
-					foreground = new sw.Setter(swc.TreeViewItem.ForegroundProperty, value.ToWpfBrush());
+					foreground = new sw.Setter(mwc.TreeViewItem.ForegroundProperty, value.ToWpfBrush());
 					Control.ItemContainerStyle.Setters.Add(foreground);
 				}
 				else
@@ -428,6 +464,7 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			set
 			{
 				labelEdit = value;
+#if TODO_XAML
 				if (Control.IsLoaded)
 				{
 					var sel = SelectedItem;
@@ -435,9 +472,9 @@ namespace Eto.Platform.Xaml.Forms.Controls
 					SelectedItem = sel;
 				}
 				else
+#endif
 					SetTemplate();
 			}
 		}
 	}
 }
-#endif
