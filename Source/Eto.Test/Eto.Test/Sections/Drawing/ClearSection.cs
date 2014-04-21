@@ -45,14 +45,14 @@ namespace Eto.Test.Sections.Drawing
 		Control UseClearColorControl()
 		{
 			var control = new CheckBox { Text = "Use Red Clear Color at 0.5 alpha" };
-			control.Bind(r => r.Checked, this, r => r.UseClearColor);
+			control.Bind(r => r.IsChecked, this, r => r.UseClearColor);
 			return control;
 		}
 
 		Control UseGraphicsPathClipControl()
 		{
 			var control = new CheckBox { Text = "Use graphics path clip" };
-			control.Bind(r => r.Checked, this, r => r.UseGraphicsPathClip);
+			control.Bind(r => r.IsChecked, this, r => r.UseGraphicsPathClip);
 			return control;
 		}
 
