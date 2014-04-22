@@ -36,17 +36,14 @@ namespace Eto.Test.UnitTests.Forms
 		[SetUp]
 		public void Setup()
 		{
-			Application.Instance.Invoke(() =>
-			{
-				grid = new GridView();
-				handler = (IGridView)grid.Handler;
-				model = GridViewUtils.CreateModel();
-				grid.DataStore = model;
-				grid.SelectionChanged += (s, e) => selectionChangedCount++;
-			});
+			grid = new GridView();
+			handler = (IGridView)grid.Handler;
+			model = GridViewUtils.CreateModel();
+			grid.DataStore = model;
+			grid.SelectionChanged += (s, e) => selectionChangedCount++;
 		}
 
-		[Test/* ,Invoke*/]
+		[Test]
 		public void GridViewSelection_SelectFirstRow_SelectsFirstRow()
 		{
 			grid.SelectRow(0);
@@ -54,14 +51,14 @@ namespace Eto.Test.UnitTests.Forms
 			Assert.AreEqual(0, grid.SelectedRows.ToList()[0]);
 		}
 
-		[Test/* ,Invoke*/]
+		[Test]
 		public void GridViewSelection_SelectAll_SelectsAllRows()
 		{
 			grid.SelectAll();
 			Assert.AreEqual(ItemCount, grid.SelectedRows.Count());
 		}
 
-		[Test/* ,Invoke*/]
+		[Test]
 		public void GridViewSelection_InsertItem_SelectionUnchanged()
 		{
 			grid.SelectRow(0);
@@ -70,7 +67,7 @@ namespace Eto.Test.UnitTests.Forms
 			Assert.AreEqual(selectedItem, grid.SelectedItem);
 		}
 
-		[Test/* ,Invoke*/]
+		[Test]
 		public void GridViewSelection_DeleteSelectedItems_SelectedItemsRemoved()
 		{
 			grid.AllowMultipleSelection = true;
@@ -90,7 +87,7 @@ namespace Eto.Test.UnitTests.Forms
 			Assert.IsTrue(expectedSelectedItemIds.SequenceEqual(grid.SelectedItems.Select(x => ((DataItem)x).Id)));
 		}
 
-		[Test/* ,Invoke*/]
+		[Test]
 		public void GridViewSelection_SortItems_SelectionUnchanged()
 		{
 			grid.SortComparer = GridViewUtils.SortItemsAscending;
@@ -110,7 +107,7 @@ namespace Eto.Test.UnitTests.Forms
 		}
 
 
-		[Test/* ,Invoke*/]
+		[Test]
 		public void GridViewSelection_FilterItems_SelectionUnchanged()
 		{
 			grid.AllowMultipleSelection = true;
