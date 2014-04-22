@@ -135,6 +135,8 @@ namespace Eto.Platform.Wpf.Drawing
 				return Color.FromArgb(red: pixels[0], green: pixels[1], blue: pixels[2]);
 			if (Control.Format == swm.PixelFormats.Bgr32)
 				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2]);
+			if (Control.Format == swm.PixelFormats.Bgra32)
+				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
 			if (Control.Format == swm.PixelFormats.Pbgra32)
 				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
 			throw new NotSupportedException();
