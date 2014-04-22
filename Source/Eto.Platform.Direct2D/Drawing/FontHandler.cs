@@ -8,6 +8,8 @@ using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
 #if WINFORMS
 using Eto.Platform.Windows.Drawing;
+#else
+using Windows.Globalization.Fonts;
 #endif
 
 namespace Eto.Platform.Direct2D.Drawing
@@ -58,13 +60,40 @@ namespace Eto.Platform.Direct2D.Drawing
 			Control = familyHandler.Control.GetFirstMatchingFont(fontWeight, sw.FontStretch.Normal, fontStyle);
 		}
 
+#if !WINFORMS
+		static LanguageFontGroup languageFontGroup = new LanguageFontGroup("en"); // TODO: add Eto support for other locales.
+#endif
+
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
 #if WINFORMS
 			var sdfont = Eto.Platform.Windows.Conversions.ToSD(systemFont);
 			Create(sdfont.Name, size ?? sdfont.SizeInPoints, FontStyle.None, decoration);
 #else
-			throw new NotImplementedException();
+			var familyName = "Segoe UI";
+			var sizeInPoints = size ?? 12f;
+			var fontStyle = FontStyle.None;
+			
+			// TODO: map the systemfont and default size to a family name and font size.
+
+			// See: http://msdn.microsoft.com/en-us/library/windows/apps/hh700394.aspx
+			switch (systemFont)
+			{
+				case SystemFont.Default:
+				case SystemFont.Bold:
+				case SystemFont.TitleBar:
+				case SystemFont.ToolTip:
+				case SystemFont.Label:
+				case SystemFont.MenuBar:
+				case SystemFont.Menu:
+				case SystemFont.Message:
+				case SystemFont.Palette:
+				case SystemFont.StatusBar:
+				default:
+					break;
+			}
+
+			Create(familyName, sizeInPoints, fontStyle, decoration);
 #endif
 		}
 
@@ -103,6 +132,15 @@ namespace Eto.Platform.Direct2D.Drawing
 				return fontCollection = fontCollection ?? SDFactory.DirectWriteFactory.GetSystemFontCollection(checkForUpdates: false);
 			}
         }
+
+		public static sw.FontFamily GetFontFamily(string familyName)
+		{
+			sw.FontFamily result = null;
+			int index;
+			if (FontHandler.FontCollection.FindFamilyName(familyName, out index))
+				result = FontHandler.FontCollection.GetFontFamily(index);
+			return result;
+		}
 
         protected override void Dispose(bool disposing)
         {

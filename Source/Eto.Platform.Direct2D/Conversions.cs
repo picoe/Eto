@@ -11,7 +11,8 @@ using sw = SharpDX.DirectWrite;
 namespace Eto.Platform.Direct2D
 {
 	/// <summary>
-	/// Xaml conversions
+	/// Direct2D conversions. This file is part of the Direct2D platform library
+	/// and is also linked into the Xaml platform library.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>

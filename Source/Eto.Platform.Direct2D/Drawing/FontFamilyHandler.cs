@@ -61,11 +61,7 @@ namespace Eto.Platform.Direct2D.Drawing
 					break;
 			}
 
-			int index;
-			if (FontHandler.FontCollection.FindFamilyName(translatedName, out index))
-			{
-				Control = FontHandler.FontCollection.GetFontFamily(index);
-			}
+			Control = FontHandler.GetFontFamily(translatedName);
 		}
 	}
 }
