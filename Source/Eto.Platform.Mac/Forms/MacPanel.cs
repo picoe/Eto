@@ -121,6 +121,18 @@ namespace Eto.Platform.Mac.Forms
 				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
+#else
+		public ContextMenu ContextMenu
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 #endif
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -205,18 +217,6 @@ namespace Eto.Platform.Mac.Forms
 		{
 			base.OnUnLoad(e);
 			Widget.SizeChanged -= HandleSizeChanged;
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
 		}
 	}
 }
