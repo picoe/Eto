@@ -305,27 +305,6 @@ namespace Eto.Drawing
 			Initialize();
 		}
 
-		#if MOBILE
-
-		/// <summary>
-		/// Constructs a Graphics with an underlying bitmap of the specified size 
-		/// (in device-independent pixels or "points" on iOS).
-		/// 
-		/// Currently supported on iOS only.
-		/// </summary>
-		/// <param name="size"></param>
-		/// <param name="useMainScreenScale">If true, uses the scale factor of the main screen. 
-		/// On iOS, this takes into account high-resolution retina displays.</param>
-		public Graphics(Size size, bool useMainScreenScale) : base(null, typeof(IGraphics), false)
-		{
-			if (Handler is IGraphicsCreate)
-				((IGraphicsCreate)Handler).Create(size, useMainScreenScale);
-			else
-				throw new InvalidOperationException("This constructor is not supported on this platform.");
-		}
-
-		#endif
-
 		/// <summary>
 		/// Initializes a new instance of the Graphics with the specified handler type.
 		/// Allows derived types to change the handler.
