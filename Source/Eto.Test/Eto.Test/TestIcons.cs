@@ -24,24 +24,24 @@ namespace Eto.Test
 		/// </summary>
 		public static Func<string, string> TranslateResourceName { get; set; }
 
-		static string TranslatedResourceName(string s)
+		static string GetTranslatedResourceName(string s)
 		{
 			return TranslateResourceName != null ? TranslateResourceName(s) : s;
 		}
 
 		public static Icon TestIcon(Generator generator = null)
 		{
-			return Icon.FromResource(Assembly, TranslateResourceName(Prefix + TestIconName), generator);
+			return Icon.FromResource(Assembly, GetTranslatedResourceName(Prefix + TestIconName), generator);
 		}
 
 		public static Bitmap TestImage(Generator generator = null)
 		{
-			return Bitmap.FromResource(TranslateResourceName(Prefix + TestImageName), Assembly, generator: generator);
+			return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TestImageName), Assembly, generator: generator);
 		}
 
 		public static Bitmap Textures(Generator generator = null)
 		{
-			return Bitmap.FromResource(TranslateResourceName(Prefix + TexturesName), Assembly, generator: generator);
+			return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TexturesName), Assembly, generator: generator);
 		}
 	}
 }
