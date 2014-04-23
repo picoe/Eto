@@ -158,37 +158,38 @@ namespace Eto.Test
 			var about = new Actions.About();
 			var quit = new Actions.Quit();
 
-#if DESKTOP
-			var menu = new MenuBar();
-			// create standard system menu (e.g. for OS X)
-			Application.Instance.CreateStandardMenu(menu.Items);
-
-			// add our own items to the menu
-
-			var file = menu.Items.GetSubmenu("&File", 100);
-			menu.Items.GetSubmenu("&Edit", 200);
-			menu.Items.GetSubmenu("&Window", 900);
-			var help = menu.Items.GetSubmenu("&Help", 1000);
-
-			if (Generator.IsMac)
+			if (Generator.Supports<IMenuBar>())
 			{
-				// have a nice OS X style menu
-				var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
-				main.Items.Add(about, 0);
-				main.Items.Add(quit, 1000);
-			}
-			else
-			{
-				// windows/gtk style window
-				file.Items.Add(quit);
-				help.Items.Add(about);
-			}
+				var menu = new MenuBar();
+				// create standard system menu (e.g. for OS X)
+				Application.Instance.CreateStandardMenu(menu.Items);
 
-			// optional, removes empty submenus and duplicate separators
-			menu.Items.Trim();
+				// add our own items to the menu
 
-			Menu = menu;
-#endif
+				var file = menu.Items.GetSubmenu("&File", 100);
+				menu.Items.GetSubmenu("&Edit", 200);
+				menu.Items.GetSubmenu("&Window", 900);
+				var help = menu.Items.GetSubmenu("&Help", 1000);
+
+				if (Generator.IsMac)
+				{
+					// have a nice OS X style menu
+					var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
+					main.Items.Add(about, 0);
+					main.Items.Add(quit, 1000);
+				}
+				else
+				{
+					// windows/gtk style window
+					file.Items.Add(quit);
+					help.Items.Add(about);
+				}
+
+				// optional, removes empty submenus and duplicate separators
+				menu.Items.Trim();
+
+				Menu = menu;
+			}
 
 			// generate and set the toolbar
 			var toolBar = new ToolBar();

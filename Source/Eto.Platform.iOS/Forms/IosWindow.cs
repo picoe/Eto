@@ -90,17 +90,7 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
-		public Icon Icon
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public Icon Icon { get; set; }
 
 		public bool Resizable
 		{
