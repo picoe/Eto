@@ -72,9 +72,7 @@ namespace Eto.Forms
 			EventLookup.Register<Window>(c => c.OnClosed(null), ClosedEvent);
 			EventLookup.Register<Window>(c => c.OnClosing(null), ClosingEvent);
 			EventLookup.Register<Window>(c => c.OnLocationChanged(null), LocationChangedEvent);
-			#if DESKTOP
 			EventLookup.Register<Window>(c => c.OnWindowStateChanged(null), WindowStateChangedEvent);
-			#endif
 		}
 
 		/// <summary>
