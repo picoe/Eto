@@ -107,7 +107,7 @@ namespace Eto.Test.Sections.Drawing
 		Control Cloning()
 		{
 			var image = TestIcons.TestImage();
-			image = image.Clone();
+			//image = image.Clone();
 			return new DrawableImageView { Image = image };
 		}
 
@@ -139,25 +139,38 @@ namespace Eto.Test.Sections.Drawing
 
 		Control DrawImageToRect()
 		{
-			var image64 = new Bitmap(new Size(64, 64), PixelFormat.Format32bppRgba);
-			var image32 = new Bitmap(new Size(32, 32), PixelFormat.Format32bppRgba);
-
-			using (var g = new Graphics(image64))
-				g.Clear(Brushes.Cached(Colors.Green) as SolidBrush);
-
-			using (var g = new Graphics(image32))
-				g.Clear(Brushes.Cached(Colors.Blue) as SolidBrush);
+			var image64 = TestIcons.Textures();
 
 			var bitmap = new Bitmap(new Size(105, 105), PixelFormat.Format32bppRgba);
 			using (var g = new Graphics(bitmap))
 			{
-				// draw the big image at the origin, but with a smaller dest rect
-				g.DrawImage(image64, new RectangleF(0, 0, 32, 32), new RectangleF(0, 0, 32, 32));
-				// draw two guide images to indicate how big the green image should be
-				g.DrawImage(image32, new PointF(70, 0));
-				g.DrawImage(image32, new PointF(0, 70));
+				// Draw the "5" portion of the texture at a smaller size at the origin.
+				g.DrawImage(image64, new RectangleF(80, 80, 80, 80), new RectangleF(0, 0, 32, 32));
+				// draw two rulers to indicate how big the green image should be
+				g.SaveTransform();
+				g.MultiplyTransform(Matrix.Create(1, 0, 0, 1, 0, 70));
+				DrawRuler(32, g, Colors.Blue);
+				g.RestoreTransform();
+
+				g.SaveTransform();
+				g.MultiplyTransform(Matrix.Create(0, 1, 1, 0, 70, 0));
+				DrawRuler(32, g, Colors.Blue);
+				g.RestoreTransform();
 			}
 			return new DrawableImageView { Image = bitmap };
+		}
+
+		/// <summary>
+		/// Draws a unit-length horizontal ruler from (0, 0) to (1, 0) into the graphics context.
+		/// Scale and rotate as needed before calling.
+		/// </summary>
+		/// <param name="g"></param>
+		static void DrawRuler(float length, Graphics g, Color color)
+		{
+			g.DrawLine(color, 0, 0, length, 0);
+			var capHeight = 2;
+			g.DrawLine(color, 0, -capHeight, 0, capHeight);
+			g.DrawLine(color, length, -capHeight, length, capHeight);
 		}
 	}
 }
