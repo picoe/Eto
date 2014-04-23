@@ -107,7 +107,7 @@ namespace Eto.Test.Sections.Drawing
 		Control Cloning()
 		{
 			var image = TestIcons.TestImage();
-			//image = image.Clone();
+			image = image.Clone();
 			return new DrawableImageView { Image = image };
 		}
 
