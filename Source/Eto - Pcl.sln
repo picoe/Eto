@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.XamMac - Pcl",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac - Pcl", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac - Pcl.csproj", "{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Xaml - Pcl", "Eto.Xaml\Eto.Xaml - Pcl.csproj", "{231FB3B0-CB71-11E3-9C1A-0800200C9A66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mac = Debug|Mac
@@ -45,6 +47,18 @@ Global
 		Release|Linux = Release|Linux
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Linux.Build.0 = Debug|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Linux.Build.0 = Release|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Windows.ActiveCfg = Debug|Any CPU

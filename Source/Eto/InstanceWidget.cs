@@ -47,10 +47,7 @@ namespace Eto
 	/// 
 	/// InstanceWidgets also wrap the ability to handle late-bound events on the backend control.
 	/// </remarks>
-	#if XAML
-	// Doesn't work in mono yet:
-	// [RuntimeNameProperty("ID")]
-	#endif
+	[RuntimeNameProperty("ID")]
 	public abstract class InstanceWidget : Widget, IControlObjectSource
 	{
 		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }

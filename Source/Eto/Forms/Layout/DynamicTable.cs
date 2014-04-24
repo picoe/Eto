@@ -5,10 +5,6 @@ using Eto.Drawing;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 
-#if XAML
-using System.Windows.Markup;
-
-#endif
 namespace Eto.Forms
 {
 	[ContentProperty("Items"), TypeConverter(typeof(DynamicRowConverter))]

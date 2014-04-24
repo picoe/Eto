@@ -5,10 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-#if XAML
-using System.Windows.Markup;
-
-#endif
 namespace Eto.Forms
 {
 	public interface ITableLayout : IPositionalLayout

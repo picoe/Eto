@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9D5A60
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Direct2D", "Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj", "{3C1B77D5-6C93-4366-A487-3D307FC29FFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Xaml", "Eto.Xaml\Eto.Xaml.csproj", "{FA4BC167-9909-45D2-B86A-D4AE4062A524}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Linux = Debug|Linux
@@ -228,6 +230,18 @@ Global
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Release|Mac.Build.0 = Release|Any CPU
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Release|Windows.ActiveCfg = Release|Any CPU
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Release|Windows.Build.0 = Release|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Debug|Linux.Build.0 = Debug|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Debug|Mac.Build.0 = Debug|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Debug|Windows.Build.0 = Debug|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Release|Linux.ActiveCfg = Release|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Release|Linux.Build.0 = Release|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Release|Mac.ActiveCfg = Release|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Release|Mac.Build.0 = Release|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Release|Windows.ActiveCfg = Release|Any CPU
+		{FA4BC167-9909-45D2-B86A-D4AE4062A524}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

@@ -1,7 +1,3 @@
-#if XAML
-using System.Windows.Markup;
-#endif
-
 namespace Eto.Forms
 {
 	[ContentProperty("Control")]

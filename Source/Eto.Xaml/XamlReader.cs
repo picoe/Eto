@@ -1,5 +1,3 @@
-#if XAML
-
 using System;
 using System.IO;
 using System.Reflection;
@@ -105,5 +103,3 @@ namespace Eto.Xaml
 		}
 	}
 }
-
-#endif

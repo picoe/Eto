@@ -2,10 +2,6 @@ using System;
 using Eto.Drawing;
 using System.Collections.Generic;
 
-#if XAML
-using System.Windows.Markup;
-#endif
-
 namespace Eto.Forms
 {
 	public interface IPanel : IContainer

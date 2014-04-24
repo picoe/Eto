@@ -46,12 +46,8 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/PresentationCore.dll</Package>
-    </Reference>
-    <Reference Include="PresentationFramework">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/PresentationFramework.dll</Package>
-    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>

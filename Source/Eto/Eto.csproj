@@ -154,9 +154,6 @@
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
     <Compile Include="IO\SystemIcons.cs" />
-    <Compile Include="Xaml\EtoXamlSchemaContext.cs" />
-    <Compile Include="Xaml\Extensions\ResourceExtension.cs" />
-    <Compile Include="Xaml\XamlReader.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
@@ -250,11 +247,9 @@
     <Compile Include="Binding\BindingExtensions.cs" />
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
-    <Compile Include="Widget.xaml.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
     <Compile Include="HandlerInvalidException.cs" />
     <Compile Include="Forms\Range.cs" />
-    <Compile Include="Xaml\Extensions\FileExtension.cs" />
     <Compile Include="Forms\Controls\Navigation.cs" />
     <Compile Include="Forms\Controls\NavigationItem.cs" />
     <Compile Include="Forms\FontDialog.cs" />
@@ -304,6 +299,7 @@
     <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
     <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
+    <Compile Include="RuntimeNamePropertyAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -312,9 +308,6 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <ItemGroup />
-  <ItemGroup />
-  <ItemGroup />
   <ItemGroup>
     <Content Include="..\..\LICENSE">
       <Link>LICENSE</Link>

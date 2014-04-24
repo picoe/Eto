@@ -2,10 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-#if XAML
-using System.Windows.Markup;
-#endif
-
 namespace Eto.Forms
 {
 	public interface ITabControl : IContainer

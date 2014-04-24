@@ -162,6 +162,10 @@
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Xaml\Eto.Xaml.csproj">
+      <Project>{FA4BC167-9909-45D2-B86A-D4AE4062A524}</Project>
+      <Name>Eto.Xaml</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
@@ -186,7 +190,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
-          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="MSBuild" />
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="MSBuild" />
         </Policies>
       </Properties>
     </MonoDevelop>

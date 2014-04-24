@@ -1,4 +1,4 @@
-#if XAML && !PCL
+#if XAML
 
 using System;
 using Eto.Forms;

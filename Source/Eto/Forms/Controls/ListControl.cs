@@ -1,10 +1,6 @@
 using System;
 using System.Linq;
 
-#if XAML
-using System.Windows.Markup;
-#endif
-
 namespace Eto.Forms
 {
 	public interface IListControl : ICommonControl

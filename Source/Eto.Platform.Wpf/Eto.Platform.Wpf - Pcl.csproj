@@ -58,27 +58,13 @@
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.0.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/PresentationCore.dll</Package>
-    </Reference>
-    <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/PresentationFramework.dll</Package>
-    </Reference>
-    <Reference Include="ReachFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/ReachFramework.dll</Package>
-    </Reference>
-    <Reference Include="System.Printing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/System.Printing.dll</Package>
-    </Reference>
-    <Reference Include="UIAutomationProvider, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/UIAutomationProvider.dll</Package>
-    </Reference>
-    <Reference Include="WindowsFormsIntegration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/WindowsFormsIntegration.dll</Package>
-    </Reference>
-    <Reference Include="WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies-45/WindowsBase.dll</Package>
-    </Reference>
+    <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="ReachFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Printing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="UIAutomationProvider, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="WindowsFormsIntegration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Eto.Platform.Mac\Conversions.sd.cs">

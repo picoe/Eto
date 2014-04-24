@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using Eto.Drawing;
 using System.Collections.ObjectModel;
 
-#if XAML
-using System.Windows.Markup;
-
-#endif
 namespace Eto.Forms
 {
 	[ContentProperty("Rows")]

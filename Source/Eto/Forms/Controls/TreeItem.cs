@@ -1,9 +1,4 @@
 using System.Collections.Generic;
-
-#if XAML
-using System.Windows.Markup;
-
-#endif
 using System.Collections.Specialized;
 
 namespace Eto.Forms

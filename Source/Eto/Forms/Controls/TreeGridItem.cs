@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
-#if XAML
-using System.Windows.Markup;
-#endif
 
 namespace Eto.Forms
 {

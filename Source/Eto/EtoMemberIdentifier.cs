@@ -1,7 +1,4 @@
 using System;
-#if XAML
-using System.Xaml;
-#endif
 
 namespace Eto
 {
@@ -15,13 +12,12 @@ namespace Eto
 		/// </summary>
 		/// <param name="declaringType">Type that the property is attached to</param>
 		/// <param name="memberName">Name of the member/property</param>
-		public EtoMemberIdentifier (Type declaringType, string memberName)
-			: base (declaringType, memberName)
+		public EtoMemberIdentifier(Type declaringType, string memberName)
+			: base(declaringType, memberName)
 		{
 		}
 	}
 
-#if !XAML
 	/// <summary>
 	/// Attachable member identifier for properties, when xaml is not present/available
 	/// </summary>
@@ -32,51 +28,49 @@ namespace Eto
 	public class AttachableMemberIdentifier : IEquatable<AttachableMemberIdentifier>
 	{
 		public Type DeclaringType { get; private set; }
-			
+
 		public string MemberName { get; private set; }
 
-		public AttachableMemberIdentifier (Type declaringType, string memberName)
+		public AttachableMemberIdentifier(Type declaringType, string memberName)
 		{
 			this.DeclaringType = declaringType;
 			this.MemberName = memberName;
 		}
-		
-		private static bool IsNull (AttachableMemberIdentifier a)
+
+		private static bool IsNull(AttachableMemberIdentifier a)
 		{
-			return object.ReferenceEquals (a, null);
+			return object.ReferenceEquals(a, null);
 		}
-		
-		public override bool Equals (object obj)
+
+		public override bool Equals(object obj)
 		{
 			AttachableMemberIdentifier other = obj as AttachableMemberIdentifier;
-			return this.Equals (other);
+			return Equals(other);
 		}
-		
-		public bool Equals (AttachableMemberIdentifier other)
+
+		public bool Equals(AttachableMemberIdentifier other)
 		{
-			return !AttachableMemberIdentifier.IsNull (other) && this.DeclaringType == other.DeclaringType && this.MemberName == other.MemberName;
+			return !AttachableMemberIdentifier.IsNull(other) && DeclaringType == other.DeclaringType && MemberName == other.MemberName;
 		}
-		
-		public override int GetHashCode ()
+
+		public override int GetHashCode()
 		{
-			return ((!(this.DeclaringType != null)) ? 0 : this.DeclaringType.GetHashCode ()) << 5 + ((this.MemberName == null) ? 0 : this.MemberName.GetHashCode ());
+			return ((DeclaringType == null) ? 0 : DeclaringType.GetHashCode()) << 5 + ((MemberName == null) ? 0 : MemberName.GetHashCode());
 		}
-		
-		public override string ToString ()
+
+		public override string ToString()
 		{
-			return (!(this.DeclaringType != null)) ? this.MemberName : (this.DeclaringType.FullName + "." + this.MemberName);
+			return (DeclaringType == null) ? MemberName : (DeclaringType.FullName + "." + MemberName);
 		}
-		
-		public static bool operator == (AttachableMemberIdentifier left, AttachableMemberIdentifier right)
+
+		public static bool operator ==(AttachableMemberIdentifier left, AttachableMemberIdentifier right)
 		{
-			return (!AttachableMemberIdentifier.IsNull (left)) ? left.Equals (right) : AttachableMemberIdentifier.IsNull (right);
+			return (!AttachableMemberIdentifier.IsNull(left)) ? left.Equals(right) : AttachableMemberIdentifier.IsNull(right);
 		}
-		
-		public static bool operator != (AttachableMemberIdentifier left, AttachableMemberIdentifier right)
+
+		public static bool operator !=(AttachableMemberIdentifier left, AttachableMemberIdentifier right)
 		{
-			return (!AttachableMemberIdentifier.IsNull (left)) ? (AttachableMemberIdentifier.IsNull (right) || left.DeclaringType != right.DeclaringType || left.MemberName != right.MemberName) : (!AttachableMemberIdentifier.IsNull (right));
+			return (!AttachableMemberIdentifier.IsNull(left)) ? (AttachableMemberIdentifier.IsNull(right) || left.DeclaringType != right.DeclaringType || left.MemberName != right.MemberName) : (!AttachableMemberIdentifier.IsNull(right));
 		}
 	}
-#endif
-
 }
