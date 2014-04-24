@@ -153,55 +153,41 @@ namespace Eto
 		/// Gets a value indicating whether this generator is a mac based platform (MonoMac/XamMac)
 		/// </summary>
 		/// <value><c>true</c> if this generator is mac; otherwise, <c>false</c>.</value>
-		public virtual bool IsMac
-		{
-			get { return ID == Generators.Mac || ID == Generators.XamMac; }
-		}
+		public virtual bool IsMac { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this generator is based on Windows Forms
 		/// </summary>
 		/// <value><c>true</c> if this generator is window forms; otherwise, <c>false</c>.</value>
-		public virtual bool IsWinForms
-		{
-			get { return ID == Generators.Windows; }
-		}
+		public virtual bool IsWinForms { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this generator is based on WPF
 		/// </summary>
 		/// <value><c>true</c> if this generator is wpf; otherwise, <c>false</c>.</value>
-		public virtual bool IsWpf
-		{
-			get { return ID == Generators.Wpf; }
-		}
+		public virtual bool IsWpf { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this generator is based on GTK# (2 or 3)
 		/// </summary>
 		/// <value><c>true</c> if this generator is gtk; otherwise, <c>false</c>.</value>
-		public virtual bool IsGtk
-		{
-			get { return ID == Generators.Gtk || ID == Generators.Gtk3; }
-		}
+		public virtual bool IsGtk { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this generator is based on Xamarin.iOS
 		/// </summary>
 		/// <value><c>true</c> if this generator is ios; otherwise, <c>false</c>.</value>
-		public virtual bool IsIos
-		{
-			get { return ID == Generators.Ios; }
-		}
+		public virtual bool IsIos { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this generator is based on Xamarin.Android.
 		/// </summary>
 		/// <value><c>true</c> if this generator is android; otherwise, <c>false</c>.</value>
-		public virtual bool IsAndroid
-		{
-			get { return ID == Generators.Android; }
-		}
+		public virtual bool IsAndroid { get { return false; } }
+
+		public virtual bool IsDesktop { get { return false; } }
+
+		public virtual bool IsMobile { get { return false; } }
 
 		/// <summary>
 		/// Initializes a new instance of the Generator class
@@ -247,6 +233,7 @@ namespace Eto
 		/// </summary>
 		public static bool HasCurrent { get { return current != null; } }
 
+#if !PCL
 		/// <summary>
 		/// Returns the current generator, or detects the generator to use if no current generator is set.
 		/// </summary>
@@ -265,9 +252,6 @@ namespace Eto
 					return current;
 
 				Generator detected = null;
-#if MOBILE
-				detected = Generator.GetGenerator(Generators.IosAssembly, true);
-#elif DESKTOP
 			
 				if (EtoEnvironment.Platform.IsMac) {
 					detected = Generator.GetGenerator (Generators.XamMacAssembly, true);
@@ -282,7 +266,6 @@ namespace Eto
 
 				if (detected == null && EtoEnvironment.Platform.IsUnix)
 					detected = Generator.GetGenerator (Generators.GtkAssembly, true);
-#endif
 				
 				if (detected == null)
 					throw new EtoException("Could not detect platform. Are you missing a platform assembly?");
@@ -291,6 +274,7 @@ namespace Eto
 				return current;
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Can be used by apps that switch between generators.

@@ -14,6 +14,10 @@ namespace Eto.Platform.Windows
 {
 	public class Generator : Eto.Generator
 	{
+		public override bool IsDesktop { get { return true; } }
+
+		public override bool IsWinForms { get { return true; } }
+
 		public override string ID { get { return Generators.Windows; } }
 
 		static readonly EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register("Eto.Platform.Windows.CustomControls.Assemblies");

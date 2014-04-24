@@ -10,15 +10,13 @@ namespace Eto.Test.Dialogs
 		public About()
 		{
 			this.Title = "About Eto Test";
-#if DESKTOP
 			this.Resizable = true;
-#endif
 
 			var layout = new DynamicLayout(new Padding(20, 5), new Size(10, 10));
 
 			layout.AddCentered(new ImageView
 			{
-				Image = Icon.FromResource ("Eto.Test.TestIcon.ico")
+				Image = Icon.FromResource ("Eto.Test.TestIcon.ico", GetType())
 			}, true, true);
 			
 			layout.Add(new Label
@@ -28,16 +26,18 @@ namespace Eto.Test.Dialogs
 				HorizontalAlign = HorizontalAlign.Center
 			});
 
-#if !PCL
+			#if PCL
+			var version = GetType().GetTypeInfo().Assembly.GetName().Version;
+			#else
 			var version = Assembly.GetEntryAssembly().GetName().Version;
+			#endif
 			layout.Add(new Label
 			{
 				Text = string.Format("Version {0}", version),
 				Font = new Font(SystemFont.Default, 10),
 				HorizontalAlign = HorizontalAlign.Center
 			});
-#endif	
-			
+
 			layout.Add(new Label
 			{
 				Text = "Copyright 2013 by Curtis Wensley aka Eto",

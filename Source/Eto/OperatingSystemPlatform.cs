@@ -26,6 +26,7 @@ namespace Eto
 		/// </summary>
 		public bool IsWinRT { get; private set; }
 
+		#if !PCL
 		/// <summary>
 		/// Gets a value indicating that the current OS is a unix-based system
 		/// </summary>
@@ -44,7 +45,6 @@ namespace Eto
 		/// </summary>
 		public bool IsLinux { get; private set; }
 
-#if !PCL
 		[DllImport("libc")]
 		static extern int uname(IntPtr buf);
 
@@ -70,21 +70,25 @@ namespace Eto
 			return osName;
 
 		}
-#endif
+		#endif
+
 		/// <summary>
 		/// Initializes a new instance of the OperatingSystemPlatform class
 		/// </summary>
 		public OperatingSystemPlatform()
 		{
-#if WINRT
-			// System.Environment.OSVersion does not exist on WinRT so
-			// unfortunately we have to rely on a compiler #if directive.
-			// Will need to think about a portable way to do this.
-			IsWinRT = true;
-#else
-
 			if (Type.GetType("Mono.Runtime", false) != null || Type.GetType("Mono.Interop.IDispatch", false) != null)
 				IsMono = true;
+
+			var winRtType = Type.GetType("Windows.ApplicationModel.DesignMode, Windows, ContentType=WindowsRuntime");
+			IsWinRT = winRtType != null;
+
+			#if PCL
+
+			var windowsType = Type.GetType("System.ComponentModel.DesignerProperties, PresentationFramework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
+			IsWindows = windowsType != null || IsWinRT;
+
+			#else
 
 			switch (System.Environment.OSVersion.Platform)
 			{
@@ -115,7 +119,7 @@ namespace Eto
 					IsWindows = true;
 					break;
 			}
-#endif
+			#endif
 		}
 	}
 }

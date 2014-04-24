@@ -30,21 +30,21 @@ namespace Eto.Test
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
-			this.Title = "Test Application";
-			this.Style = "main";
-			//this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
-			//this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
-#if ANDROID
-			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
-#else
-			this.SectionList = new SectionListTreeGridView(topNodes ?? TestSectionList.TopNodes());
-#endif
+			Title = "Test Application";
+			Style = "main";
+			topNodes = topNodes ?? TestSectionList.TopNodes();
+			//SectionList = new SectionListGridView(topNodes);
+			//SectionList = new SectionListTreeView(topNodes);
+			if (Generator.IsAndroid)
+				SectionList = new SectionListGridView(topNodes);
+			else
+				SectionList = new SectionListTreeGridView(topNodes);
 
-#if DESKTOP
 			this.Icon = TestIcons.TestIcon();
-			this.ClientSize = new Size(900, 650);
-#endif
-			//this.Opacity = 0.5;
+
+			if (Generator.IsDesktop)
+				ClientSize = new Size(900, 650);
+			//Opacity = 0.5;
 
 			// Commenting the next line on iOS displays just the toolbar. Otherwise it is hidden for some reason.
 			Content = MainContent();
@@ -99,13 +99,10 @@ namespace Eto.Test
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
 					Panel1 = SectionList.Control,
-#if MOBILE
 					// for now, don't show log in mobile
-					Panel2 = contentContainer
-#else
-					Panel2 = RightPane()
-#endif
+					Panel2 = Generator.IsMobile ? contentContainer : RightPane()
 				};
+
 				return splitter;
 			}
 			if (Navigation.IsSupported())
@@ -158,47 +155,50 @@ namespace Eto.Test
 			var about = new Actions.About();
 			var quit = new Actions.Quit();
 
-#if DESKTOP
-			var menu = new MenuBar();
-			// create standard system menu (e.g. for OS X)
-			Application.Instance.CreateStandardMenu(menu.Items);
-
-			// add our own items to the menu
-
-			var file = menu.Items.GetSubmenu("&File", 100);
-			menu.Items.GetSubmenu("&Edit", 200);
-			menu.Items.GetSubmenu("&Window", 900);
-			var help = menu.Items.GetSubmenu("&Help", 1000);
-
-			if (Generator.IsMac)
+			if (Generator.Supports<IMenuBar>())
 			{
-				// have a nice OS X style menu
-				var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
-				main.Items.Add(about, 0);
-				main.Items.Add(quit, 1000);
+				var menu = new MenuBar();
+				// create standard system menu (e.g. for OS X)
+				Application.Instance.CreateStandardMenu(menu.Items);
+
+				// add our own items to the menu
+
+				var file = menu.Items.GetSubmenu("&File", 100);
+				menu.Items.GetSubmenu("&Edit", 200);
+				menu.Items.GetSubmenu("&Window", 900);
+				var help = menu.Items.GetSubmenu("&Help", 1000);
+
+				if (Generator.IsMac)
+				{
+					// have a nice OS X style menu
+					var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
+					main.Items.Add(about, 0);
+					main.Items.Add(quit, 1000);
+				}
+				else
+				{
+					// windows/gtk style window
+					file.Items.Add(quit);
+					help.Items.Add(about);
+				}
+
+				// optional, removes empty submenus and duplicate separators
+				menu.Items.Trim();
+
+				Menu = menu;
 			}
-			else
+
+			if (Generator.Supports<IToolBar>())
 			{
-				// windows/gtk style window
-				file.Items.Add(quit);
-				help.Items.Add(about);
+				// generate and set the toolbar
+				var toolBar = new ToolBar();
+				toolBar.Items.Add(quit);
+				toolBar.Items.Add(new ButtonToolItem(about));
+
+				ToolBar = toolBar;
 			}
-
-			// optional, removes empty submenus and duplicate separators
-			menu.Items.Trim();
-
-			Menu = menu;
-#endif
-
-			// generate and set the toolbar
-			var toolBar = new ToolBar();
-			toolBar.Items.Add(quit);
-			toolBar.Items.Add(new ButtonToolItem(about));
-
-			ToolBar = toolBar;
 		}
 
-		#if DESKTOP
 		public override void OnWindowStateChanged(EventArgs e)
 		{
 			base.OnWindowStateChanged(e);
@@ -217,7 +217,7 @@ namespace Eto.Test
 			if (result == DialogResult.No) e.Cancel = true;
 			*/
 		}
-		#endif
+
 		public override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);

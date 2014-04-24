@@ -14,7 +14,10 @@ namespace Eto.Drawing
 	/// This class keeps a cache of 32-bit ARGB values for each element in the collection for faster retrieval. These
 	/// values are generated using <see cref="Color.ToArgb"/>.
 	/// </remarks>
-	public class Palette : ObservableCollection<Color>, ICloneable
+	public class Palette : ObservableCollection<Color>
+	#if !PCL
+	, ICloneable
+	#endif
 	{
 		readonly List<uint> argb;
 		static readonly int[] egaColors = { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
@@ -360,7 +363,7 @@ namespace Eto.Drawing
 			return new Palette(this);
 		}
 
-		#region ICloneable implementation
+		#if !PCL
 
 		/// <summary>
 		/// Creates a clone of this palette
@@ -371,7 +374,6 @@ namespace Eto.Drawing
 			return Clone();
 		}
 
-		#endregion
-
+		#endif
 	}
 }

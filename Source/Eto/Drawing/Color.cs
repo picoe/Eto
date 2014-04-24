@@ -215,7 +215,7 @@ namespace Eto.Drawing
 					lock (colormaplock) {
 						if (colormap == null) {
 #if PCL							
-							var props = from p in typeof(Colors).GetAllProperties() where p.GetGetMethodInfo().IsStatic && p.GetGetMethodInfo().IsPublic select p;
+							var props = from p in typeof(Colors).GetRuntimeProperties() where p.GetGetMethod().IsStatic && p.GetGetMethod().IsPublic select p;
 #else
 							var props = typeof (Colors).GetProperties (BindingFlags.Public | BindingFlags.Static);
 #endif

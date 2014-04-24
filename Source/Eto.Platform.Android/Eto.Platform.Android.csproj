@@ -107,9 +107,9 @@
     <AndroidResource Include="Resources\values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.Pcl.csproj">
-      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto.Pcl</Name>
+    <ProjectReference Include="..\Eto\Eto - Pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -24,6 +24,10 @@ namespace Eto.Platform.iOS
 			get { return GeneratorID; }
 		}
 
+		public override bool IsIos { get { return true; } }
+
+		public override bool IsMobile { get { return true; } }
+
 		public Generator()
 		{
 			AddTo(this);

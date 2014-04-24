@@ -301,6 +301,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\WindowsPanel.cs" />
+    <Compile Include="..\Shared\EmbeddedAssemblyLoader.cs">
+      <Link>EmbeddedAssemblyLoader.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using System.Reflection;
 
 namespace Eto.Json
 {
@@ -23,7 +24,12 @@ namespace Eto.Json
 			where T: InstanceWidget, new()
 		{
 			var type = typeof(T);
-			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".json");
+
+			#if PCL
+			var stream = type.GetTypeInfo().Assembly.GetManifestResourceStream(type.FullName + ".json");
+			#else
+			var stream = type.Assembly.GetManifestResourceStream(type.FullName + ".json");
+			#endif
 			return Load<T> (stream, null, namespaceManager);
 		}
 		
@@ -61,7 +67,11 @@ namespace Eto.Json
 			where T: InstanceWidget
 		{
 			var type = typeof(T);
-			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".json");
+			#if PCL
+			var stream = type.GetTypeInfo().Assembly.GetManifestResourceStream(type.FullName + ".json");
+			#else
+			var stream = type.Assembly.GetManifestResourceStream(type.FullName + ".json");
+			#endif
 			return Load<T> (stream, instance, namespaceManager);
 		}
 
@@ -89,13 +99,15 @@ namespace Eto.Json
 					TypeNameHandling = TypeNameHandling.Auto,
 					MissingMemberHandling = MissingMemberHandling.Error,
 					ContractResolver = new EtoContractResolver(),
-					Context = new StreamingContext(StreamingContextStates.All, instance),
-					Binder = new EtoBinder { NamespaceManager = namespaceManager }
+					Binder = new EtoBinder { NamespaceManager = namespaceManager, Instance = instance }
 				};
 				serializer.Converters.Add(new DynamicLayoutConverter());
 				serializer.Converters.Add(new DelegateConverter());
 				serializer.Converters.Add(new PropertyStoreConverter());
 				serializer.Converters.Add(new ImageConverter());
+				#if PCL
+				serializer.Converters.Add(new TypeConverterConverter());
+				#endif
 
 				if (instance == null)
 					return serializer.Deserialize(reader, type) as T;

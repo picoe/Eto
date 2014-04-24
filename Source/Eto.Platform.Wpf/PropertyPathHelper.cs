@@ -8,7 +8,7 @@ namespace Eto.Platform.Wpf
 {
     public static class PropertyPathHelper
     {
-        static readonly ConstructorInfo propertyPathConstructor = typeof(sw.PropertyPath).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, Type.DefaultBinder, new Type[] { typeof(string), typeof(ITypeDescriptorContext) }, null);
+		static readonly ConstructorInfo propertyPathConstructor = typeof(sw.PropertyPath).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, Type.DefaultBinder, new Type[] { typeof(string), typeof(System.ComponentModel.ITypeDescriptorContext) }, null);
 
         public class NameResolver : swk.IXamlTypeResolver
         {
@@ -33,7 +33,7 @@ namespace Eto.Platform.Wpf
 			}
         }
 
-        public class NameServiceProvider : IServiceProvider, ITypeDescriptorContext
+		public class NameServiceProvider : IServiceProvider, System.ComponentModel.ITypeDescriptorContext
         {
             readonly NameResolver nameResolver = new NameResolver();
             public object GetService(Type serviceType)
@@ -73,7 +73,6 @@ namespace Eto.Platform.Wpf
 
         public static sw.PropertyPath Create (string path)
         {
-
             return propertyPathConstructor.Invoke(new object[] { path, nameServiceProvider }) as sw.PropertyPath;
         }
 

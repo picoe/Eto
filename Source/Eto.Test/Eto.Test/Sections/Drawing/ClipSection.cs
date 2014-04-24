@@ -104,7 +104,7 @@ namespace Eto.Test.Sections.Drawing
 		Control ResetClipControl()
 		{
 			var control = new CheckBox { Text = "Reset Clip" };
-			control.Bind(r => r.IsChecked, this, r => r.ResetClip);
+			control.Bind(r => r.Checked, this, r => r.ResetClip);
 			return control;
 		}
 

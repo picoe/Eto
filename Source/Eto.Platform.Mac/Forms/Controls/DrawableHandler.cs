@@ -78,6 +78,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoDrawableView { Handler = this };
 		}
 
+		public void Create(bool largeCanvas)
+		{
+			Create();
+		}
+
 		public bool CanFocus
 		{
 			get { return Control.CanFocus; }

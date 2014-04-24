@@ -57,9 +57,9 @@ namespace Eto
 		void EnsureProperty (object dataItem)
 		{
 #if PCL
-			if (dataItem != null && (descriptor == null || !descriptor.GetType().IsInstanceOfType(dataItem)))
+			if (dataItem != null && (descriptor == null || !descriptor.DeclaringType.IsInstanceOfType(dataItem)))
 			{
-				descriptor = (from p in dataItem.GetType().GetAllProperties()
+				descriptor = (from p in dataItem.GetType().GetRuntimeProperties()
 							  where p.Name == Property
 							 select p).FirstOrDefault();
 			}
@@ -93,9 +93,14 @@ namespace Eto
 		{
 			EnsureProperty (dataItem);
 			if (descriptor != null && dataItem != null) {
-				if (value != null && !descriptor.PropertyType.IsInstanceOfType(value))
+				var propertyType = descriptor.PropertyType;
+				if (value != null && !propertyType.IsInstanceOfType(value))
 				{
-					value = Convert.ChangeType (value, descriptor.PropertyType, CultureInfo.InvariantCulture);
+					#if PCL
+					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+					#endif
+
+					value = Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
 				}
 				descriptor.SetValue (dataItem, value);
 			}
@@ -137,10 +142,10 @@ namespace Eto
 				return helper;
 			} else {
 				var type = dataItem.GetType ();
-				var changedEvent = type.GetEvent (Property + "Changed");
+				var changedEvent = type.GetRuntimeEvent(Property + "Changed");
 				if (changedEvent != null) {
 					try {
-						changedEvent.AddEventHandler (dataItem, handler);
+						changedEvent.AddEventHandler(dataItem, handler);
 					}
 					catch {}
 				}
@@ -162,10 +167,10 @@ namespace Eto
 			} else {
 				var dataItem = bindingReference;
 				var type = dataItem.GetType ();
-				var changedEvent = type.GetEvent (Property + "Changed");
+				var changedEvent = type.GetRuntimeEvent(Property + "Changed");
 				if (changedEvent != null) {
 					try {
-						changedEvent.RemoveEventHandler (dataItem, handler);
+						changedEvent.RemoveEventHandler(dataItem, handler);
 					}
 					catch {}
 				}

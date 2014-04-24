@@ -6,6 +6,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		public DllMap ()
 		{
+			/*
 			if (EtoEnvironment.Platform.IsUnix) {
 				this.Add ("libgio-2.0-0.dll", "libgio-2.0.so.0");
 				this.Add ("libglib-2.0-0.dll", "libglib-2.0.so.0");
@@ -17,7 +18,7 @@ namespace Eto.Platform.GtkSharp
 				this.Add ("libgtk-win32-3.0-0.dll", "libgtk-3.so.0");
 				this.Add ("libpango-1.0-0.dll", "libpango-1.0.so.0");
 				this.Add ("libpangocairo-1.0-0.dll", "libpangocairo-1.0.so.0");
-			}
+			}*/
 		}
 	}
 }

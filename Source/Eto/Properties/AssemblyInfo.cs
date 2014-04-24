@@ -14,6 +14,6 @@ using System.Windows.Markup;
 [assembly: AssemblyTitle ("Eto.Forms")]
 [assembly: AssemblyDescription ("Eto.Forms UI Framework")]
 [assembly: CLSCompliant(true)]
-#if DESKTOP
+#if !PCL
 [assembly: ComVisible(false)]
 #endif

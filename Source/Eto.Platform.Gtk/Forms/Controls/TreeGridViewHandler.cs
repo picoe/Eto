@@ -17,7 +17,9 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			base.Initialize();
 
 			// these are always handled to set the expanded property
-			Widget.HandleEvent(TreeGridView.ExpandedEvent, TreeGridView.CollapsedEvent, TreeGridView.CollapsingEvent);
+			HandleEvent(TreeGridView.ExpandedEvent);
+			HandleEvent(TreeGridView.CollapsedEvent);
+			HandleEvent(TreeGridView.CollapsingEvent);
 		}
 
 		protected override ITreeModelImplementor CreateModelImplementor()

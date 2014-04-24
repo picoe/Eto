@@ -56,7 +56,6 @@
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Drawing\Matrix.cs" />
-    <Compile Include="EmbeddedAssemblyLoader.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -99,9 +98,6 @@
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Threading\Thread.cs" />
     <Compile Include="TypeHelper.cs" />
-    <Compile Include="WeakEventHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Widget.cs" />
     <Compile Include="WidgetHandler.cs">
       <SubType>Code</SubType>

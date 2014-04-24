@@ -269,5 +269,11 @@ namespace Eto.Platform.Windows
 				}
 			}
 		}
+
+		public float MinimumZoom { get { return 1f; } set { } }
+
+		public float MaximumZoom { get { return 1f; } set { } }
+
+		public float Zoom { get { return 1f; } set { } }
 	}
 }

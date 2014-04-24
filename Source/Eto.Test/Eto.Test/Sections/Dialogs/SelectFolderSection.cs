@@ -39,13 +39,14 @@ namespace Eto.Test.Sections.Dialogs
 		Control SelectFolderWithStartupPath()
 		{
 			var button = new Button { Text = "Select Folder With Initial Folder" };
-#if PCL
-			throw new NotImplementedException("PCL does not support directories");
-#else
 			button.Click += delegate
 			{
 				var dialog = new SelectFolderDialog();
+				#if PCL
+				dialog.Directory = EtoEnvironment.GetFolderPath(EtoSpecialFolder.Documents);
+				#else
 				dialog.Directory = Directory.GetCurrentDirectory();
+				#endif
 
 				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
@@ -55,7 +56,6 @@ namespace Eto.Test.Sections.Dialogs
 				else
 					Log.Write(dialog, "Result: {0}", result);
 			};
-#endif
 			return button;
 		}
 	}

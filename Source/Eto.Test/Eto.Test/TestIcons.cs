@@ -19,7 +19,7 @@ namespace Eto.Test
 
 		public static Icon TestIcon(Generator generator = null)
 		{
-			return Icon.FromResource(Assembly, Prefix + TestIconName, generator);
+            return Icon.FromResource(Prefix + TestIconName, Assembly, generator);
 		}
 
 		public static Bitmap TestImage(Generator generator = null)

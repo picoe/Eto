@@ -18,6 +18,10 @@ namespace Eto.Platform.Wpf
 	{
 		public override string ID { get { return Generators.Wpf; } }
 
+		public override bool IsDesktop { get { return true; } }
+
+		public override bool IsWpf { get { return true; } }
+
 		static readonly EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register("Eto.Platform.Wpf.CustomControls.Assemblies");
 
 		public Generator()

@@ -2,6 +2,8 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Linq;
 
 namespace Eto.Json
 {
@@ -14,18 +16,23 @@ namespace Eto.Json
 
 		public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
-			var instance = serializer.Context.Context;
-			if (instance != null)
+			var binder = serializer.Binder as EtoBinder;
+			if (binder != null)
 			{
-				var obj = JToken.ReadFrom(reader) as JValue;
-				if (obj != null)
+				var instance = binder.Instance;
+				if (instance != null)
 				{
-					var methodName = Convert.ToString(obj.Value);
-					var instanceType = instance.GetType();
-					var method = instanceType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-					if (method == null)
-						throw new JsonSerializationException(string.Format("Could not find method {0} of type {1}", methodName, instanceType));
-					return Delegate.CreateDelegate(objectType, instance, method);
+					var obj = JToken.ReadFrom(reader) as JValue;
+					if (obj != null)
+					{
+						var methodName = Convert.ToString(obj.Value);
+						var instanceType = instance.GetType();
+						var method = instanceType.GetRuntimeMethods().FirstOrDefault(r => r.Name == methodName);
+						if (method == null)
+							throw new JsonSerializationException(string.Format("Could not find method {0} of type {1}", methodName, instanceType));
+
+						return method.CreateDelegate(objectType, instance);
+					}
 				}
 			}
 			return null;

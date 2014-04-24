@@ -78,17 +78,7 @@ namespace Eto.Platform.Android.Forms
 			}
 		}
 
-		public Icon Icon
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public Icon Icon { get { return null; } set { } }
 
 		public bool Resizable
 		{

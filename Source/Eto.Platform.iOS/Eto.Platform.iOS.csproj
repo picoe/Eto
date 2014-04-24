@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E711B298-D141-4EC5-9BFD-84962B264F90}</ProjectGuid>
     <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
@@ -21,7 +19,7 @@
     <LibrariesPath>..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\BuildOutput\iOS\Debug</OutputPath>
+    <OutputPath>..\..\BuildOutput\Pcl\Debug</OutputPath>
     <DefineConstants>DEBUG;IOS;MOBILE</DefineConstants>
     <Optimize>False</Optimize>
     <DebugType>full</DebugType>
@@ -29,7 +27,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\BuildOutput\iOS\Release</OutputPath>
+    <OutputPath>..\..\BuildOutput\Pcl\Release</OutputPath>
     <DefineConstants>IOS;MOBILE</DefineConstants>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -188,12 +186,6 @@
     </Compile>
     <Compile Include="Forms\ModalWindowHandler.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.Pcl.csproj">
-      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto.Pcl</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -205,4 +197,10 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto - Pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - Pcl</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

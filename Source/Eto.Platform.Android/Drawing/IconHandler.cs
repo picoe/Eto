@@ -14,7 +14,40 @@ using ag = Android.Graphics;
 
 namespace Eto.Platform.Android.Drawing
 {
-	class IconHandler
+	class IconHandler : WidgetHandler<ag.Bitmap, Icon>, IIcon, IAndroidImage
 	{
+		public void Create(System.IO.Stream stream)
+		{
+			Control = ag.BitmapFactory.DecodeStream(stream);
+		}
+
+		public void Create(string fileName)
+		{
+			Control = ag.BitmapFactory.DecodeFile(fileName);
+		}
+		public Size Size
+		{
+			get { return new Size(Control.Width, Control.Height); }
+		}
+
+		public ag.Bitmap GetImageWithSize(int? size)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			graphics.Control.DrawBitmap(Control, new Rectangle(source).ToAndroid(), destination.ToAndroid(), paint: null);
+		}
+
+		public void DrawImage(GraphicsHandler graphics, float x, float y)
+		{
+			graphics.Control.DrawBitmap(Control, x, y, paint: null);
+		}
+
+		public void DrawImage(GraphicsHandler graphics, float x, float y, float width, float height)
+		{
+			graphics.Control.DrawBitmap(Control, null, new RectangleF(x, y, width, height).ToAndroid(), paint: null);
+		}
 	}
 }

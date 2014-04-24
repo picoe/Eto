@@ -1,4 +1,3 @@
-#if DESKTOP
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,20 +37,12 @@ namespace Eto
 		/// <param name="assembly">Assembly to load the embedded assemblies from, or null to use the calling assembly</param>
 		/// <param name="domain">Application domain to load the assemblies in, or null to use the current app domain</param>
 		/// <returns>A new instance of an EmbeddedAssemblyLoader, registered for the specified namespace and assembly</returns>
-		public static EmbeddedAssemblyLoader Register (string resourceNamespace, Assembly assembly = null
-#if !PCL
-			, AppDomain domain = null
-#endif
-			)
+		public static EmbeddedAssemblyLoader Register (string resourceNamespace, Assembly assembly = null, AppDomain domain = null)
 		{
-#if PCL
-			return null;
-#else
 			assembly = assembly ?? Assembly.GetCallingAssembly ();
 			var loader = new EmbeddedAssemblyLoader (resourceNamespace, assembly);
 			loader.Register (domain);
 			return loader;
-#endif
 		}
 
 		/// <summary>
@@ -61,13 +52,10 @@ namespace Eto
 		/// <param name="assembly">Assembly to load the embedded assemblies from, or null to use the calling assembly</param>
 		public EmbeddedAssemblyLoader (string resourceNamespace, Assembly assembly = null)
 		{
-#if !PCL
 			this.Assembly = assembly ?? Assembly.GetCallingAssembly ();
 			this.ResourceNamespace = resourceNamespace;
-#endif
 		}
 
-#if !PCL
 		/// <summary>
 		/// Registers this loader for the specified <paramref name="domain"/>
 		/// </summary>
@@ -96,8 +84,5 @@ namespace Eto
 				return loadedAssembly;
 			};
 		}
-#endif
 	}
 }
-
-#endif

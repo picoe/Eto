@@ -6,7 +6,7 @@ namespace Eto.Json
 	{
 		public DefaultNamespaceManager ()
 		{
-			var asm = typeof(Eto.Forms.Application).Assembly;
+			var asm = typeof(Eto.Forms.Application).GetAssembly();
 			DefaultNamespace = new NamespaceInfo("Eto.Forms", asm);
 			Namespaces.Add ("drawing", new NamespaceInfo("Eto.Drawing", asm));
 		}

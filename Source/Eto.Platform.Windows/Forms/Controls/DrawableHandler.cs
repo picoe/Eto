@@ -112,6 +112,11 @@ namespace Eto.Platform.Windows
 			Control.TabStop = true;
 		}
 
+		public void Create(bool largeCanvas)
+		{
+			Create();
+		}
+
 		public virtual Graphics CreateGraphics()
 		{
 			return new Graphics(Widget.Generator, new GraphicsHandler(Control.CreateGraphics()));

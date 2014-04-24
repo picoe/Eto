@@ -336,5 +336,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 			}
 		}
+
+		public float MinimumZoom { get { return 1f; } set { } }
+
+		public float MaximumZoom { get { return 1f; } set { } }
+
+		public float Zoom { get { return 1f; } set { } }
 	}
 }

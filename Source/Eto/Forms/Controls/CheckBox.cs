@@ -88,15 +88,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// A two-state cast of Checked, added to make bindings to a bool work on Eto.Platform.Xaml.
-		/// </summary>
-		public bool IsChecked
-		{
-			get { return Handler.Checked ?? false; }
-			set { Checked = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether this CheckBox allows three states: true, false, or null
 		/// </summary>
 		/// <value><c>true</c> if three state; otherwise, <c>false</c>.</value>

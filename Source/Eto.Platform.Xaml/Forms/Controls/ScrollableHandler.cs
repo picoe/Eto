@@ -242,5 +242,11 @@ namespace Eto.Platform.Xaml.Forms.Controls
 				control.Invalidate(rect);
 			}
 		}
-	}
+
+        public float MinimumZoom { get { return 1f; } set { } }
+
+        public float MaximumZoom { get { return 1f; } set { } }
+
+        public float Zoom  { get { return 1f; } set { } }
+    }
 }

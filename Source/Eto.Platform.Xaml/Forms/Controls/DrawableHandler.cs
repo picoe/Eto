@@ -246,6 +246,11 @@ namespace Eto.Platform.Xaml.Forms.Controls
 			Control.Loaded += Control_Loaded;
 		}
 
+        public void Create(bool largeCanvas)
+        {
+            Create();
+        }
+
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			UpdateTiles(true); 

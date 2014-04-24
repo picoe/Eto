@@ -9,6 +9,10 @@ namespace Eto.Test.UnitTests.Handlers
 {
 	public class Generator : Eto.Generator
 	{
+		public override bool IsDesktop { get { return true; } }
+
+		public override bool IsMobile { get { return false; } }
+
 		public Generator()
 		{
 			// Add the handlers in this assembly

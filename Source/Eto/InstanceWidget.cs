@@ -208,57 +208,9 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
-		[Obsolete("You no longer have to call this method, events are wired up automatically")]
-		public void HandleEvent(string id)
+		internal void HandleEvent(string id)
 		{
 			Handler.HandleEvent(id, false);
-		}
-
-		/// <summary>
-		/// Attaches the specified late-bound event(s) to the control to be handled
-		/// </summary>
-		/// <remarks>
-		/// This needs to be called when you want to override the On... methods instead of attaching 
-		/// to the associated event.
-		/// </remarks>
-		/// <example>
-		/// Example of how to HandleEvent automatically
-		/// <code><![CDATA[
-		/// // 
-		/// var textBox = new TextBox ();
-		/// textBox.TextChanged += MyTextChangedHandler;
-		/// textBox.SizeChanged += MySizeChangedHandler;
-		/// ]]></code>
-		/// 
-		/// Example of when you must call HandleEvent when overriding OnTextChanged
-		/// <code><![CDATA[
-		/// public class MyTextBox : TextBox
-		/// {
-		///		public MyTextBox()
-		///		{
-		///			HandleEvent (TextChangedEvent, SizeChangedEvent);
-		///		}
-		///		
-		///		protected override void OnTextChanged (EventArgs e)
-		///		{
-		///			// your logic
-		///		}
-		///		
-		///		protected override void OnSizeChanged (EventArgs e)
-		///		{
-		///			// more logic
-		///		}
-		/// }
-		/// ]]></code>
-		/// </example>
-		/// <param name="ids">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
-		[Obsolete("You no longer have to call this method, events are wired up automatically")]
-		public void HandleEvent(params string[] ids)
-		{
-			for (int i = 0; i < ids.Length; i++)
-			{
-				Handler.HandleEvent(ids[i], false);
-			}
 		}
 
 		internal void HandleDefaultEvents(params string[] ids)

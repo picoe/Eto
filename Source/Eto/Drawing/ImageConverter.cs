@@ -1,9 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-#if PCL
-using MissingTypes;
-#endif
 
 namespace Eto.Drawing
 {
@@ -47,7 +44,7 @@ namespace Eto.Drawing
 		{
 			var isIcon = IsIcon(ns.Namespace);
 			if (isIcon)
-				return Icon.FromResource(ns.Assembly, ns.Namespace);
+				return Icon.FromResource(ns.Namespace, ns.Assembly);
 			return Bitmap.FromResource(ns.Namespace, ns.Assembly);
 		}
 

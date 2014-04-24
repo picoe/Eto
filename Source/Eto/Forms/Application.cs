@@ -80,19 +80,28 @@ namespace Eto.Forms
 			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
 		}
 
+#if !PCL
 		public Application() : this(Generator.Detect)
 		{
 		}
 
-		public Application(Generator g) : this(g, typeof(IApplication))
-		{
-		}
-
 		protected Application(Generator generator, Type type, bool initialize = true)
-			: base(generator ?? Generator.Detect, type, initialize)
+		: base(generator ?? Generator.Detect, type, initialize)
+		{
+		Application.Instance = this;
+		Generator.Initialize(generator ?? Generator.Detect); // make everything use this by default
+		}
+#else
+		protected Application(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 			Application.Instance = this;
-			Generator.Initialize(generator ?? Generator.Detect); // make everything use this by default
+			Generator.Initialize(generator);
+		}
+#endif
+
+		public Application(Generator generator) : this(generator, typeof(IApplication))
+		{
 		}
 
 		public virtual void Run(params string[] args)

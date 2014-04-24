@@ -149,12 +149,17 @@ namespace Eto.Drawing
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
 		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
+		#if PCL
+		public static Bitmap FromResource (string resourceName, Assembly assembly, Generator generator = null)
+		#else
 		public static Bitmap FromResource (string resourceName, Assembly assembly = null, Generator generator = null)
+		#endif
 		{
+
 			if (assembly == null)
 			{
 #if PCL
-				throw new NotImplementedException("Portable Class Libraries do not support Assembly.GetCallingAssembly");
+				throw new ArgumentNullException("assembly");
 #else
 				assembly = Assembly.GetCallingAssembly ();
 #endif
@@ -164,6 +169,15 @@ namespace Eto.Drawing
 					throw new ResourceNotFoundException (assembly, resourceName);
 				return new Bitmap (stream, generator);
 			}
+		}
+
+		public static Bitmap FromResource (string resourceName, Type type, Generator generator = null)
+		{
+			#if PCL
+			return FromResource(resourceName, type.GetTypeInfo().Assembly, generator);
+			#else
+			return FromResource(resourceName, type.Assembly, generator);
+			#endif
 		}
 
 		/// <summary>

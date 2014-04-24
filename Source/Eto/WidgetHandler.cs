@@ -246,9 +246,10 @@ namespace Eto
 		/// <param name="id">Identifier of the event</param>
 		public virtual void AttachEvent(string id)
 		{
-			// only use for desktop until mobile controls are working
-			#if DESKTOP
-			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
+			#if DEBUG
+			// only throw for platforms that should be fully implemented, and only in debug
+			if (Generator.IsGtk || Generator.IsMac || Generator.IsWinForms || Generator.IsWpf)
+				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
 			#endif
 		}
 

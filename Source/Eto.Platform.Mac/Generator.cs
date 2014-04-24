@@ -18,6 +18,10 @@ namespace Eto.Platform.Mac
 	[Preserve(AllMembers = true)]
 	public class Generator : Eto.Generator
 	{
+		public override bool IsDesktop { get { return true; } }
+
+		public override bool IsMac { get { return true; } }
+
 		#if XAMMAC
 		public override string ID { get { return Generators.XamMac; } }
 

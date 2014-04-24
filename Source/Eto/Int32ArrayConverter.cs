@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
-#if PCL
-using MissingTypes;
-#endif
 
 namespace Eto
 {

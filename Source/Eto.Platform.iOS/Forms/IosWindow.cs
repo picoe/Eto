@@ -78,140 +78,38 @@ namespace Eto.Platform.iOS.Forms
 		}
 
 
-		public MenuBar Menu
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public MenuBar Menu { get { return null; } set { } }
 
-		public Icon Icon
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public Icon Icon { get { return null; } set { } }
 
-		public bool Resizable
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public bool Resizable { get { return false; } set { } }
 
-		public bool Maximizable
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public bool Maximizable { get { return false; } set { } }
 
-		public bool Minimizable
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public bool Minimizable { get { return false; } set { } }
 
-		public bool ShowInTaskbar
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public bool ShowInTaskbar { get { return false; } set { } }
 
-		public bool Topmost
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public bool Topmost { get { return false; } set { } }
 
-		public WindowState WindowState
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public WindowState WindowState { get { return WindowState.Maximized; } set { } }
 
 		public Rectangle? RestoreBounds
 		{
-			get { throw new NotImplementedException(); }
+			get { return null; }
 		}
 
-		public WindowStyle WindowStyle
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public WindowStyle WindowStyle { get { return WindowStyle.Default; } set { } }
 
 		public void BringToFront()
 		{
-			throw new NotImplementedException();
 		}
 
 		public void SendToBack()
 		{
-			throw new NotImplementedException();
 		}
 
-		public ContextMenu ContextMenu
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public ContextMenu ContextMenu { get { return null; } set { } }
 	}
 }
 

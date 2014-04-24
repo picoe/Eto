@@ -26,6 +26,10 @@ namespace Eto.Platform.GtkSharp
 
 	public class Generator : Eto.Generator
 	{
+		public override bool IsDesktop { get { return true; } }
+
+		public override bool IsGtk { get { return true; } }
+
 		#if GTK2
 		public override string ID { get { return Generators.Gtk; } }
 		#else

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace Eto.Json
 {
@@ -28,7 +29,7 @@ namespace Eto.Json
 						foreach (var prop in (IDictionary<string, JToken>)item) {
 							if (prop.Key == "$type") continue;
 							var memberName = "Set" + prop.Key;
-							var member = type.GetMethod(memberName, BindingFlags.Static | BindingFlags.Public);
+							var member = type.GetRuntimeMethods().FirstOrDefault(r => r.Name == memberName && r.IsStatic);
 							if (member == null)
 								throw new JsonSerializationException(string.Format ("Could not find attachable property {0}.{1}", type.Name, memberName));
 							var parameters = member.GetParameters();

@@ -160,7 +160,7 @@ namespace Eto.Test.Sections.Drawing
 		Control UseBackgroundColorControl ()
 		{
 			var control = new CheckBox { Text = "Use Background Color" };
-			control.Bind (c => c.IsChecked, this, c => c.UseBackgroundColor);
+			control.Bind (c => c.Checked, this, c => c.UseBackgroundColor);
 			return control;
 		}
 		

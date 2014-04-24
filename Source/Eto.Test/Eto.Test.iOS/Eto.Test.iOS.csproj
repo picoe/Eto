@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{AB42209E-E87F-4749-96CF-8CAE83981808}</ProjectGuid>
     <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
@@ -114,26 +112,22 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto.Json\Eto.Json.Pcl.csproj">
-      <Project>{3f8178ef-0710-43f7-92e2-130b9be2212d}</Project>
-      <Name>Eto.Json.Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Platform.iOS\Eto.Platform.iOS.csproj">
-      <Project>{e711b298-d141-4ec5-9bfd-84962b264f90}</Project>
-      <Name>Eto.Platform.iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto\Eto.Pcl.csproj">
-      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto.Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test.Pcl.csproj">
-      <Project>{eb9c0a22-6644-46e4-948c-f7c95e1f8ce1}</Project>
-      <Name>Eto.Test.Pcl</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\Default-568h%402x.png" />
     <BundleResource Include="Resources\Default.png" />
     <BundleResource Include="Resources\Default%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - Pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Platform.iOS\Eto.Platform.iOS.csproj">
+      <Project>{E711B298-D141-4EC5-9BFD-84962B264F90}</Project>
+      <Name>Eto.Platform.iOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
+      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
+      <Name>Eto.Test - Pcl</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

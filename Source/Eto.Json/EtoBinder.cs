@@ -6,6 +6,8 @@ namespace Eto.Json
 	
 	public class EtoBinder : DefaultSerializationBinder
 	{
+		public object Instance { get; set; }
+
 		public Type BindToType (string typeName)
 		{
 			var asmIndex = typeName.IndexOf(',');

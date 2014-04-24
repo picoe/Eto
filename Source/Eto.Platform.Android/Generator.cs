@@ -12,6 +12,10 @@ namespace Eto.Platform.Android
 	{
 		public override string ID { get { return Generators.Android; } }
 
+		public override bool IsMobile { get { return true; } }
+
+		public override bool IsAndroid { get { return true; } }
+
 		public Generator()
 		{
 			AddTo(this);
@@ -26,7 +30,7 @@ namespace Eto.Platform.Android
 			//g.Add<IFonts>(() => new FontsHandler());
 			g.Add<IGraphics>(() => new GraphicsHandler());
 			g.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
-			//g.Add<IIcon>(() => new IconHandler());
+			g.Add<IIcon>(() => new IconHandler());
 			//g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
 			g.Add<IMatrixHandler>(() => new MatrixHandler());
 			g.Add<IPen>(() => new PenHandler());

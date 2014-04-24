@@ -2,33 +2,32 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Eto</RootNamespace>
-    <AssemblyName>Eto.Pcl</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>Eto</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DESKTOP;WINRT;PCL</DefineConstants>
+    <OutputPath>..\..\BuildOutput\Pcl\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DESKTOP;MOBILE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;MOBILE;WINRT</DefineConstants>
+    <OutputPath>..\..\BuildOutput\Pcl\Release</OutputPath>
+    <DefineConstants>TRACE;DESKTOP;MOBILE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -37,9 +36,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="..\Eto.Pcl.MissingTypes.cs">
-      <Link>Eto.Pcl.MissingTypes.cs</Link>
-    </Compile>
     <Compile Include="Binding\ColumnBinding.cs" />
     <Compile Include="CancelEventHandler.cs">
       <SubType>Code</SubType>
@@ -55,7 +51,6 @@
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Drawing\Matrix.cs" />
-    <Compile Include="EmbeddedAssemblyLoader.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -98,9 +93,6 @@
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Threading\Thread.cs" />
     <Compile Include="TypeHelper.cs" />
-    <Compile Include="WeakEventHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Widget.cs" />
     <Compile Include="WidgetHandler.cs">
       <SubType>Code</SubType>
@@ -307,5 +299,6 @@
     <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
     <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
+    <Compile Include="PclTypes.cs" />
   </ItemGroup>
 </Project>

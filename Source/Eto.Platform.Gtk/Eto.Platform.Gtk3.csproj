@@ -279,8 +279,6 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Eto.Platform.Gtk.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Eto.Platform.Gtk3.dll.config" />
   </ItemGroup>
 </Project>

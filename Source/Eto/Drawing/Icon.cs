@@ -73,15 +73,19 @@ namespace Eto.Drawing
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
 		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
-		public static Icon FromResource (Assembly assembly, string resourceName, Generator generator = null)
+		#if PCL
+		public static Icon FromResource (string resourceName, Assembly assembly, Generator generator = null)
+		#else
+		public static Icon FromResource (string resourceName, Assembly assembly = null, Generator generator = null)
+		#endif
 		{
 			if (assembly == null)
 			{
-#if PCL
-				throw new NotImplementedException("Portable Class Libraries do not support Assembly.GetCallingAssembly");
-#else
+				#if PCL
+				throw new ArgumentNullException("assembly");
+				#else
 				assembly = Assembly.GetCallingAssembly();
-#endif
+				#endif
 			}
 			using (var stream = assembly.GetManifestResourceStream(resourceName)) {
 				if (stream == null)
@@ -90,6 +94,29 @@ namespace Eto.Drawing
 			}
 		}
 
+		public static Icon FromResource (string resourceName, Type type, Generator generator = null)
+		{
+			#if PCL
+			return FromResource(resourceName, type.GetTypeInfo().Assembly, generator);
+			#else
+			return FromResource(resourceName, type.Assembly, generator);
+			#endif
+		}
+
+		/// <summary>
+		/// Loads an icon from an embedded resource of the specified assembly
+		/// </summary>
+		/// <param name="assembly">Assembly to load the resource from</param>
+		/// <param name="resourceName">Fully qualified name of the resource to load</param>
+		/// <param name="generator">Generator for this widget</param>
+		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
+		[Obsolete("Use FromResource(string, Assembly, Generator) instead")]
+		public static Icon FromResource (Assembly assembly, string resourceName, Generator generator = null)
+		{
+			return FromResource(resourceName, assembly, generator);
+		}
+
+		#if !PCL
 		/// <summary>
 		/// Loads an icon from an embedded resource of the caller's assembly
 		/// </summary>
@@ -100,14 +127,13 @@ namespace Eto.Drawing
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
 		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
+		[Obsolete("Use FromResource(string, Assembly, Generator) instead")]
 		public static Icon FromResource (string resourceName, Generator generator = null)
 		{
-#if PCL
 			throw new NotImplementedException("Portable Class Libraries do not support Assembly.GetCallingAssembly");
-#else
 			var asm = Assembly.GetCallingAssembly ();
-			return FromResource (asm, resourceName, generator);
-#endif
+			return FromResource (resourceName, asm, generator);
 		}		
+		#endif
 	}
 }

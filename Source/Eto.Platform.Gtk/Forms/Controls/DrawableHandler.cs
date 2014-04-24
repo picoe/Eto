@@ -31,6 +31,11 @@ namespace Eto.Platform.GtkSharp
 			Control.Add(content);
 		}
 
+		public void Create(bool largeCanvas)
+		{
+			Create();
+		}
+
 		protected override void Initialize()
 		{
 			base.Initialize();

@@ -105,13 +105,13 @@
       <Project>{4c2b4fa7-5c94-4582-82cb-fc856bebfe75}</Project>
       <Name>Eto.Platform.Xaml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test.Pcl.csproj">
-      <Project>{eb9c0a22-6644-46e4-948c-f7c95e1f8ce1}</Project>
-      <Name>Eto.Test.Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto\Eto.Pcl.csproj">
+    <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
       <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto.Pcl</Name>
+      <Name>Eto - Pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
+      <Project>{eb9c0a22-6644-46e4-948c-f7c95e1f8ce1}</Project>
+      <Name>Eto.Test - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
