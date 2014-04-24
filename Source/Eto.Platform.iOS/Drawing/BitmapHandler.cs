@@ -127,6 +127,13 @@ namespace Eto.Platform.iOS.Drawing
 		public BitmapData Lock()
 		{
 			cgimage = cgimage ?? Control.CGImage;
+			if (Data == null)
+			{
+				Data = (NSMutableData)cgimage.DataProvider.CopyData().MutableCopy();
+				provider = new CGDataProvider(Data.MutableBytes, (int)Data.Length, false);
+				cgimage = new CGImage(cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BitsPerPixel, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo, provider, null, cgimage.ShouldInterpolate, cgimage.RenderingIntent);
+				Control = UIImage.FromImage(cgimage);
+			}
 			return new BitmapDataHandler(Widget, Data.MutableBytes, cgimage.BytesPerRow, cgimage.BitsPerPixel, Control);
 		}
 
@@ -206,7 +213,7 @@ namespace Eto.Platform.iOS.Drawing
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			if (rectangle == null)
-				return new Bitmap(Generator, new BitmapHandler { Control = (UIImage)Control.Copy() });
+				return new Bitmap(Generator, new BitmapHandler { Control = new UIImage(Control.CGImage.Clone()) });
 			else
 			{
 				var rect = rectangle.Value;
