@@ -6,6 +6,11 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class ClipTests
 	{
+		// TODO:Fix: This is currently broken, as there is no UI
+		// associated with Eto.Test.dll.
+		// This could just be a method, not a test, that can then be invoked 
+		// from test code in a platform test assembly.
+		[Ignore] 
 		[Test]
 		public void ClipTest()
 		{

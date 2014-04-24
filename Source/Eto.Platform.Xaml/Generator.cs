@@ -58,7 +58,7 @@ namespace Eto.Platform.Xaml
 			g.Add<IButton>(() => new ButtonHandler());
 			g.Add<ICheckBox>(() => new CheckBoxHandler());
 			g.Add<IComboBox>(() => new ComboBoxHandler());
-			//g.Add<IDateTimePicker>(() => new DateTimePickerHandler());
+			g.Add<IDateTimePicker>(() => new DateTimePickerHandler());
 			g.Add<IDrawable>(() => new DrawableHandler());
 			//g.Add<IGridColumn>(() => new GridColumnHandler());
 			//g.Add<IGridView>(() => new GridViewHandler());

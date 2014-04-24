@@ -1,4 +1,3 @@
-#if DESKTOP
 using System;
 using Eto.Drawing;
 
@@ -147,4 +146,4 @@ namespace Eto.Forms
 		}
 	}
 }
-#endif
+

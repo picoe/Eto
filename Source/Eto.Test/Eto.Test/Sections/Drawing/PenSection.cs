@@ -77,7 +77,8 @@ namespace Eto.Test.Sections.Drawing
 			control.Items.Add(new DashStyleItem { Text = "Dash Dot Dot", Style = DashStyles.DashDotDot });
 			control.SelectedIndex = 0;
 			control.SelectedIndexChanged += (sender, e) => {
-				DashStyle = ((DashStyleItem)control.SelectedValue).Style;
+				if (control.SelectedValue != null)
+					DashStyle = ((DashStyleItem)control.SelectedValue).Style;
 				Refresh(sender, e);
 			};
 			return control;

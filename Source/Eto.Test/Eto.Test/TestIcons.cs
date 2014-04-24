@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using Eto.Drawing;
 
@@ -13,23 +14,34 @@ namespace Eto.Test
 		static string prefix;
 		public static string Prefix { get { return prefix = prefix ?? Assembly.GetName().Name + "."; } }
 
+
 		public static string TestIconName = "TestIcon.ico";
 		public static string TestImageName = "TestImage.png";
 		public static string TexturesName = "Textures.png";
 
+		/// <summary>
+		/// An app can set this to translate resource names if they are linking them in.
+		/// </summary>
+		public static Func<string, string> TranslateResourceName { get; set; }
+
+		static string GetTranslatedResourceName(string s)
+		{
+			return TranslateResourceName != null ? TranslateResourceName(s) : s;
+		}
+
 		public static Icon TestIcon(Generator generator = null)
 		{
-            return Icon.FromResource(Prefix + TestIconName, Assembly, generator);
+			return Icon.FromResource(GetTranslatedResourceName(Prefix + TestIconName), Assembly, generator);
 		}
 
 		public static Bitmap TestImage(Generator generator = null)
 		{
-			return Bitmap.FromResource(Prefix + TestImageName, Assembly, generator: generator);
+			return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TestImageName), Assembly, generator: generator);
 		}
 
 		public static Bitmap Textures(Generator generator = null)
 		{
-			return Bitmap.FromResource(Prefix + TexturesName, Assembly, generator: generator);
+			return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TexturesName), Assembly, generator: generator);
 		}
 	}
 }

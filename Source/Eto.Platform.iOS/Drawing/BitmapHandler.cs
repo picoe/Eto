@@ -177,19 +177,23 @@ namespace Eto.Platform.iOS.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = source.ToSD();
-			var imgsize = Control.Size;
-			SD.RectangleF destRect = graphics.TranslateView(destination.ToSD(), false);
-			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize)
-			{
-				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height + (destRect.Y - sourceRect.Y));
-				graphics.Control.ScaleCTM(imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
-				graphics.Control.DrawImage(new SD.RectangleF(SD.PointF.Empty, destRect.Size), Control.CGImage);
-			}
-			else
-			{
-				Control.Draw(destRect, CGBlendMode.Normal, 1);
-			}
+			var destRect = graphics.TranslateView(destination.ToSD(), false).ToEto();
+			var drawRect = GetDrawRect(ref source, ref destRect, Control.Size.ToEto());
+			graphics.Control.ClipToRect(destRect.ToSD()); // first apply the clip since destination is in view coordinates.
+			Control.Draw(drawRect.ToSD(), CGBlendMode.Normal, 1);
+		}
+
+		private static RectangleF GetDrawRect(ref RectangleF source, ref RectangleF destRect, SizeF imageSize)
+		{
+			var scale = destRect.Size / source.Size;
+			var scaledImageSize = imageSize * scale;
+			// We want the source rectangle's location to coincide with the destination rectangle's location.
+			// However the source image is drawn scaled.
+			// The relevant equation is:
+			// source.Location * scale + offset = destination.Location, which gives:
+			var offset = (destRect.Location - (source.Location * scale));
+			var drawRect = new RectangleF(offset, scaledImageSize);
+			return drawRect;
 		}
 
 		protected override void Dispose(bool disposing)
