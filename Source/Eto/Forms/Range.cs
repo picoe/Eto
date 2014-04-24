@@ -41,18 +41,12 @@ namespace Eto.Forms
 
 		public Range Intersect(Range range)
 		{
-			if (range != null &&
-				Start != null &&
-				End != null &&
-				range.Start != null &&
-				range.End != null)
-			{
-				var start = Start >= range.Start ? Start : range.Start;
-				var end = End <= range.End ? End : range.End;
-				if (start <= end)
-					return Range.FromStartEnd(start, end);
-			}
-			return default(Range);
+			var start = Start >= range.Start ? Start : range.Start;
+			var end = End <= range.End ? End : range.End;
+            if (start <= end)
+                return Range.FromStartEnd(start, end);
+            else
+                return default(Range);
 		}
 
 		public override bool Equals (object obj)

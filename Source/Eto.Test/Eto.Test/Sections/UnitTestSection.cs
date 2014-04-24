@@ -93,7 +93,7 @@ namespace Eto.Test.Sections
 						{
 							var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 							#if DESKTOP
-							var consoleRunner = NUnit.ConsoleRunner.Runner.Main(new[]
+							NUnit.ConsoleRunner.Runner.Main(new[]
 							{
 								"-noshadow",
 								"-nothread",
