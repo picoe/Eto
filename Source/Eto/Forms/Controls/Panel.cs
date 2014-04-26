@@ -4,10 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IPanel : IContainer
-	#if DESKTOP
-		, IContextMenuHost
-	#endif
+	public interface IPanel : IContainer, IContextMenuHost
 	{
 		Control Content { get; set; }
 
@@ -73,13 +70,11 @@ namespace Eto.Forms
 			set { Handler.MinimumSize = value; }
 		}
 
-#if DESKTOP
 		public ContextMenu ContextMenu
 		{
 			get { return Handler.ContextMenu; }
 			set { Handler.ContextMenu = value; }
 		}
-#endif
 
 		public Control Content
 		{
