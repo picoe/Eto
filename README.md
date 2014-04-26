@@ -55,7 +55,6 @@ Namespaces
 
 * [Eto.Forms](https://github.com/picoe/Eto/tree/master/Source/Eto/Forms) - User interface 
 * [Eto.Drawing](https://github.com/picoe/Eto/tree/master/Source/Eto/Drawing) - Drawing/graphical routines
-* [Eto.IO](https://github.com/picoe/Eto/tree/master/Source/Eto/IO) - Disk/Virtual directory abstraction
 * Eto.Platform.[Platform] - platform implementations
 
 Currently supported targets
@@ -69,4 +68,7 @@ Currently supported targets
 Under development
 -----------------
 
-* Android using Xamarin.Android
+These platforms are currently in development. Any eager bodies willing to help feel free to do so!
+
+* Android using Xamarin.Android (Eto.Platform.Android)
+* Windows 8.x and Windows Phone (Eto.Platform.Xaml)
