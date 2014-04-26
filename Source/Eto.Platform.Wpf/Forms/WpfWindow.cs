@@ -81,10 +81,12 @@ namespace Eto.Platform.Wpf.Forms
 				break;
 			case Window.ClosingEvent:
 				Control.Closing += (sender, e) => {
-					Widget.OnClosing (e);
-					if (!e.Cancel && sw.Application.Current.Windows.Count == 1) {
+					var args = new Eto.CancelEventArgs { Cancel = e.Cancel };
+					Widget.OnClosing (args);
+					if (!args.Cancel && sw.Application.Current.Windows.Count == 1) {
 						// last window closing, so call OnTerminating to let the app abort terminating
-						Application.Instance.OnTerminating (e);
+						Application.Instance.OnTerminating (args);
+						e.Cancel = args.Cancel;
 					}
 				};
 				break;

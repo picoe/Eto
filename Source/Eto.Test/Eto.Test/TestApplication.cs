@@ -22,7 +22,7 @@ namespace Eto.Test
 			MainForm.Show();
 		}
 		#if DESKTOP
-		public override void OnTerminating(System.ComponentModel.CancelEventArgs e)
+		public override void OnTerminating(CancelEventArgs e)
 		{
 			base.OnTerminating(e);
 			Log.Write(this, "Terminating");

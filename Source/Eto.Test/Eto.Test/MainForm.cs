@@ -205,7 +205,7 @@ namespace Eto.Test
 			Log.Write(this, "StateChanged: {0}", WindowState);
 		}
 
-		public override void OnClosing(CancelEventArgs e)
+		public override void OnClosing(Eto.CancelEventArgs e)
 		{
 			base.OnClosing(e);
 			Log.Write(this, "Closing");

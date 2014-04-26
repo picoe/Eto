@@ -1,4 +1,3 @@
-#if IOS
 using System;
 
 namespace Eto
@@ -46,5 +45,5 @@ namespace Eto
 	public delegate void CancelEventHandler(object sender, CancelEventArgs e);
 
 }
-#endif
+
 
