@@ -23,72 +23,93 @@ namespace Eto.Test.UnitTests.Forms
 		[SetUp]
 		public void Setup()
 		{
-			model = GridViewUtils.CreateModel();
-			d = new DataStoreView { Model = model };
+			TestUtils.Invoke(() =>
+			{
+				model = GridViewUtils.CreateModel();
+				d = new DataStoreView { Model = model };
+			});
 		}
 
 		[Test]
 		public void DataStoreView_WithNoFilterOrSort_ViewContainsAllModelItems()
 		{
-			var view = d.View;
-			Assert.AreEqual(ItemCount, view.Count);
-			for (var i = 0; i < ItemCount; ++i)
-				Assert.AreSame(model[i], view[i]);
+			TestUtils.Invoke(() =>
+			{
+				var view = d.View;
+				Assert.AreEqual(ItemCount, view.Count);
+				for (var i = 0; i < ItemCount; ++i)
+					Assert.AreSame(model[i], view[i]);
+			});
 		}
 
 		[Test]
 		public void DataStoreView_WithOddItemFilter_ViewContainsOddModelItems()
 		{
-			d.Filter = GridViewUtils.KeepOddItemsFilter;
-			var view = d.View;
-			Assert.AreEqual(ItemCount / 2, view.Count);
-			for (var i = 0; i < ItemCount / 2; ++i)
-				Assert.AreSame(model[i * 2 + 1], view[i]);
+			TestUtils.Invoke(() =>
+			{
+				d.Filter = GridViewUtils.KeepOddItemsFilter;
+				var view = d.View;
+				Assert.AreEqual(ItemCount / 2, view.Count);
+				for (var i = 0; i < ItemCount / 2; ++i)
+					Assert.AreSame(model[i * 2 + 1], view[i]);
+			});
 		}
 
 		[Test]
 		public void DataStoreView_SortWithEvenItemsBeforeOddItems_SortsCorrectly()
 		{
-			d.SortComparer = GridViewUtils.SortEvenItemsBeforeOdd;
-			var view = d.View;
-			Assert.AreEqual(ItemCount, view.Count);
-			for (var i = 0; i < ItemCount/2; ++i)
-				Assert.AreSame(model[i * 2], view[i]);
-			for (var i = 0; i < ItemCount / 2; ++i)
-				Assert.AreSame(model[i * 2 + 1], view[ItemCount/2 + i]);
+			TestUtils.Invoke(() =>
+			{
+				d.SortComparer = GridViewUtils.SortEvenItemsBeforeOdd;
+				var view = d.View;
+				Assert.AreEqual(ItemCount, view.Count);
+				for (var i = 0; i < ItemCount / 2; ++i)
+					Assert.AreSame(model[i * 2], view[i]);
+				for (var i = 0; i < ItemCount / 2; ++i)
+					Assert.AreSame(model[i * 2 + 1], view[ItemCount / 2 + i]);
+			});
 		}
 
 		[Test]
 		public void DataStoreView_SortAscending_SortsCorrectly()
 		{
-			d.SortComparer = GridViewUtils.SortItemsAscending;
-			var view = d.View;
-			Assert.AreEqual(ItemCount, view.Count);
-			for (var i = 0; i < ItemCount; ++i)
-				Assert.AreSame(model[i], view[i]);
+			TestUtils.Invoke(() =>
+			{
+				d.SortComparer = GridViewUtils.SortItemsAscending;
+				var view = d.View;
+				Assert.AreEqual(ItemCount, view.Count);
+				for (var i = 0; i < ItemCount; ++i)
+					Assert.AreSame(model[i], view[i]);
+			});
 		}
 
 		[Test]
 		public void DataStoreView_SortDescending_SortsCorrectly()
 		{
-			d.SortComparer = GridViewUtils.SortItemsDescending;
-			var view = d.View;
-			Assert.AreEqual(ItemCount, view.Count);
-			for (var i = 0; i < ItemCount; ++i)
-				Assert.AreSame(model[ItemCount - 1 - i], view[i]);
+			TestUtils.Invoke(() =>
+			{
+				d.SortComparer = GridViewUtils.SortItemsDescending;
+				var view = d.View;
+				Assert.AreEqual(ItemCount, view.Count);
+				for (var i = 0; i < ItemCount; ++i)
+					Assert.AreSame(model[ItemCount - 1 - i], view[i]);
+			});
 		}
 
 		[Test]
 		public void DataStoreView_SortWithEvenItemsBeforeOddItemsAndWithFilter_SortsAndFiltersCorrectly()
 		{
-			d.SortComparer = GridViewUtils.SortEvenItemsBeforeOdd;
-			d.Filter = GridViewUtils.KeepFirstHalfOfItemsFilter;
-			var view = d.View;
-			Assert.AreEqual(ItemCount/2, view.Count);
-			for (var i = 0; i < ItemCount / 4; ++i)
-				Assert.AreSame(model[i * 2], view[i]);
-			for (var i = 0; i < ItemCount / 4; ++i)
-				Assert.AreSame(model[i * 2 + 1], view[ItemCount / 4 + i]);
+			TestUtils.Invoke(() =>
+			{
+				d.SortComparer = GridViewUtils.SortEvenItemsBeforeOdd;
+				d.Filter = GridViewUtils.KeepFirstHalfOfItemsFilter;
+				var view = d.View;
+				Assert.AreEqual(ItemCount / 2, view.Count);
+				for (var i = 0; i < ItemCount / 4; ++i)
+					Assert.AreSame(model[i * 2], view[i]);
+				for (var i = 0; i < ItemCount / 4; ++i)
+					Assert.AreSame(model[i * 2 + 1], view[ItemCount / 4 + i]);
+			});
 		}
 	}
 }

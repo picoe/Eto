@@ -17,34 +17,26 @@ namespace Eto.Test.UnitTests.Forms
 	[TestFixture]
 	public class GridViewTests
 	{
-		IDisposable generatorContext;
-
-		[TestFixtureSetUp]
-		public void FixtureSetup()
-		{
-			generatorContext = new Handlers.Generator().Context; // create a generator before any tests in this fixture are run.
-		}
-
-		[TestFixtureTearDown]
-		public void FixtureTearDown()
-		{
-			generatorContext.Dispose();
-		}
-
-		[Test/* ,Invoke*/]
+		[Test]
 		public void GridView_SetFilterBeforeDataStore_NoException()
 		{
-			var g = new GridView();
-			g.Filter = GridViewUtils.KeepOddItemsFilter; 
-			g.DataStore = GridViewUtils.CreateModel();
+			TestUtils.Invoke(() =>
+			{
+				var g = new GridView();
+				g.Filter = GridViewUtils.KeepOddItemsFilter; 
+				g.DataStore = GridViewUtils.CreateModel();
+			});
 		}
 
 		[Test/* ,Invoke*/]
 		public void GridView_SetSortBeforeDataStore_NoException()
 		{
-			var g = new GridView();
-			g.SortComparer = GridViewUtils.SortItemsAscending;
-			g.DataStore = GridViewUtils.CreateModel();
+			TestUtils.Invoke(() =>
+			{
+				var g = new GridView();
+				g.SortComparer = GridViewUtils.SortItemsAscending;
+				g.DataStore = GridViewUtils.CreateModel();
+			});
 		}
 	}
 }

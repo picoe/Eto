@@ -21,7 +21,7 @@ namespace Eto.Test
 			// show the main form
 			MainForm.Show();
 		}
-		#if DESKTOP
+
 		public override void OnTerminating(CancelEventArgs e)
 		{
 			base.OnTerminating(e);
@@ -31,7 +31,6 @@ namespace Eto.Test
 			if (result == DialogResult.No)
 				e.Cancel = true;
 		}
-		#endif
 	}
 }
 

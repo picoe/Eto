@@ -20,9 +20,7 @@ namespace Eto.Test
 			yield return new Section("Dialogs", DialogsSection());
 			yield return new Section("Printing", PrintingSection());
 			yield return new Section("Serialization", SerializationSection());
-#if !PCL
-			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
-#endif
+			yield return new Section("Tests", TestsSection());
 		}
 		
 		static IEnumerable<Section> ControlSection()
@@ -114,7 +112,7 @@ namespace Eto.Test
 		static IEnumerable<Section> SerializationSection()
 		{
 			yield return new Section<Sections.Serialization.JsonReadSection> { Text = "Json" };
-#if XAML && !PCL
+#if XAML
 			yield return new Section<Sections.Serialization.XamlReadSection> { Text = "Xaml" };
 #endif
 		}
@@ -134,15 +132,22 @@ namespace Eto.Test
 			
 			if (Mouse.IsSupported())
 				yield return new Section<Sections.Behaviors.MousePositionSection> { Text = "Mouse Position" };
-#if DESKTOP
-			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
-			yield return new Section<Sections.Behaviors.WindowsSection> { Text = "Windows" };
-#endif
+
+			if (Generator.Current.IsDesktop)
+			{
+				yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
+				yield return new Section<Sections.Behaviors.WindowsSection> { Text = "Windows" };
+			}
 		}
 
 		static IEnumerable<Section> FormsSection()
 		{
 			yield return new Sections.FormsSection.ImageViewFormSection { Text = "ImageView Form" };			
+		}
+
+		static IEnumerable<Section> TestsSection()
+		{
+			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 	}
 }

@@ -6,15 +6,10 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class ClipTests
 	{
-		// TODO:Fix: This is currently broken, as there is no UI
-		// associated with Eto.Test.dll.
-		// This could just be a method, not a test, that can then be invoked 
-		// from test code in a platform test assembly.
-		[Ignore] 
-		[Test]
+		[Test, Category("ui")]
 		public void ClipTest()
 		{
-			FormTester.Paint((drawable, e) =>
+			TestUtils.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
 				Assert.AreEqual(Size.Round(drawable.ClientSize), Size.Round(graphics.ClipBounds.Size), "Clip bounds should match drawable client size");

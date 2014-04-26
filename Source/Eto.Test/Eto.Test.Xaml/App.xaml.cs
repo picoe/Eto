@@ -45,6 +45,10 @@ namespace Eto.Test.Xaml
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
+			// Attach new Eto.Forms application to running app
+			var app = new Eto.Forms.Application(new Eto.Platform.Xaml.Generator()).Attach();
+			app.Run();
+
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
             

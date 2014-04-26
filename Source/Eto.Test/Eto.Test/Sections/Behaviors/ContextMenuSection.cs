@@ -1,4 +1,3 @@
-#if DESKTOP
 using Eto.Forms;
 using Eto.Drawing;
 using System.Linq;
@@ -67,4 +66,3 @@ namespace Eto.Test.Sections.Behaviors
 		}
 	}
 }
-#endif

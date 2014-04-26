@@ -90,7 +90,7 @@ namespace Eto.Platform.Android.Forms
 			}
 		}
 
-		public Size Size
+		public virtual Size Size
 		{
 			get
 			{

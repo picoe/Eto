@@ -58,13 +58,6 @@ namespace Eto.Platform.Xaml.Forms
 
 		public bool IsStarted { get; private set; }
 
-		public override sw.Application CreateControl()
-		{
-			// Cache the dispatcher for this thread.
-			dispatcher = wuc.CoreWindow.GetForCurrentThread().Dispatcher;
-			return new sw.Application();
-		}
-
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -150,11 +143,19 @@ namespace Eto.Platform.Xaml.Forms
 
 		public void Invoke(Action action)
 		{
-#if TODO_XAML
-			dispatcher.Invoke(action, sw.Threading.DispatcherPriority.Background);
-#else
-			throw new NotImplementedException();
-#endif
+			var ev = new ManualResetEvent(false);
+			dispatcher.RunAsync(wuc.CoreDispatcherPriority.Normal, () => {
+				try
+				{
+					action();
+				}
+				finally
+				{
+					ev.Set();
+				}
+			});
+
+			ev.WaitOne();
 		}
 
 		public void AsyncInvoke(Action action)
@@ -192,6 +193,7 @@ namespace Eto.Platform.Xaml.Forms
 
 		public void Run(string[] args)
 		{
+			dispatcher = wuc.CoreWindow.GetForCurrentThread().Dispatcher;
 			Widget.OnInitialized(EventArgs.Empty);
 			if (!attached)
 			{

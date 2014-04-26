@@ -22,6 +22,7 @@ namespace Eto.Test.Android
 			public override void OnInitialized(EventArgs e)
 			{
 				base.OnInitialized(e);
+				/*
 				var layout = new DynamicLayout();
 				layout.Add(new Label { Text = "Hello world", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center });
 				layout.Add(new Label { Text = "Hello world2", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center });
@@ -29,6 +30,8 @@ namespace Eto.Test.Android
 				layout.Add(null);
 
 				MainForm = new Form { Content = layout };
+				*/
+				MainForm = new Form { Content = new Eto.Test.Sections.UnitTestSection() };
 				MainForm.Show();
 			}
 		}

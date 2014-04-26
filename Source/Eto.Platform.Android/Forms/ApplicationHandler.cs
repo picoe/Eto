@@ -2,6 +2,7 @@ using System;
 using a = Android;
 using Eto.Forms;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Eto.Platform.Android.Forms
 {
@@ -57,12 +58,30 @@ namespace Eto.Platform.Android.Forms
 
 		public void Invoke(Action action)
 		{
-			throw new NotImplementedException();
+			if (MainActivity != null)
+			{
+				var ev = new ManualResetEvent(false);
+				MainActivity.RunOnUiThread(() =>
+				{
+					try
+					{
+						action();
+					}
+					finally
+					{
+						ev.Set();
+					}
+				});
+				ev.WaitOne();
+			}
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-			throw new NotImplementedException();
+			if (MainActivity != null)
+			{
+				MainActivity.RunOnUiThread(action);
+			}
 		}
 
 		public Keys CommonModifier

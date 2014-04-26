@@ -38,14 +38,6 @@
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="nunit-console-runner">
-      <HintPath>..\..\packages\NUnit.Runners.2.6.3\tools\lib\nunit-console-runner.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
@@ -143,16 +135,14 @@
     <Compile Include="UnitTests\Forms\GridViewTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
-    <Compile Include="UnitTests\FormTester.cs" />
     <Compile Include="UnitTests\Handlers\Generator.cs" />
     <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestFontHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestGraphicsHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestGridViewHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />
-    <Compile Include="UnitTests\InvokeAttribute.cs" />
-    <Compile Include="UnitTests\Startup.cs" />
     <Compile Include="MainForm.cs" />
+    <Compile Include="UnitTests\TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
@@ -169,15 +159,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Textures.png" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
         <Policies>
           <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
-          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="MSBuild" />
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="MSBuild" />
         </Policies>
       </Properties>
     </MonoDevelop>
@@ -192,5 +179,17 @@
       <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>
       <Name>Eto.Json - Pcl</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="nunitlite">
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\nunitlite.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Reflection">
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

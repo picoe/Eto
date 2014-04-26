@@ -1,121 +1,94 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 using Eto.Forms;
+using Eto.Threading;
+using System.Collections.Generic;
+using NUnit.Framework.Internal;
+using NUnitLite.Runner;
+using NUnit.Framework.Api;
+using System.Threading.Tasks;
+using Eto.Drawing;
 
 namespace Eto.Test.Sections
 {
-	public class EventStringWriter : StringWriter
+	public class TestListener : ITestListener
 	{
-		public event Action<string> Flushed;
-
-		public virtual bool AutoFlush { get; set; }
-
-		public EventStringWriter(bool autoFlush = true)
+		public void TestFinished(ITestResult result)
 		{
-			AutoFlush = autoFlush;
+			if (!result.HasChildren)
+			{
+				if (result.FailCount > 0)
+				{
+					Application.Instance.Invoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
+				}
+			}
 		}
 
-		public void Clear()
+		public void TestOutput(TestOutput testOutput)
 		{
-			GetStringBuilder().Clear();
+			Application.Instance.Invoke(() => Log.Write(null, testOutput.Text));
 		}
 
-		protected void OnFlush()
+		public void TestStarted(ITest test)
 		{
-			var sb = GetStringBuilder();
-			var eh = Flushed;
-			if (eh != null)
-				eh(sb.ToString());
-		}
-
-		public override void Flush()
-		{
-			base.Flush();
-			OnFlush();
-		}
-
-		public override void Write(char value)
-		{
-			base.Write(value);
-			if (AutoFlush)
-				Flush();
-		}
-
-		public override void Write(string value)
-		{
-			base.Write(value);
-			if (AutoFlush)
-				Flush();
-		}
-
-		public override void Write(char[] buffer, int index, int count)
-		{
-			base.Write(buffer, index, count);
-			if (AutoFlush)
-				Flush();
+			if (!test.HasChildren)
+				Application.Instance.Invoke(() => Log.Write(null, test.FullName));
 		}
 	}
 
-#if !PCL
-	public class UnitTestSection : Scrollable
+	public class UnitTestSection : Panel
 	{
 		public UnitTestSection()
 		{
 			var layout = new DynamicLayout();
-			var button = new Button { Text = "Start Tests" };
-			layout.Add(null);
-			layout.Add(button);
-			layout.Add(null);
+			var button = new Button { Text = "Start Tests", Size = new Size(200, 100) };
+			layout.AddCentered(button);
 
 			Content = layout;
 
 			button.Click += (s, e) =>
 			{
 				button.Enabled = false;
-				var thread = new Thread(() =>
+				Log.Write(null, "Starting tests...");
+				Task.Factory.StartNew(() =>
 				{
 					using (Generator.ThreadStart())
 					{
-						var oldOut = Console.Out;
-						var oldErr = Console.Error;
-						var output = new EventStringWriter();
-						output.Flushed += val => Application.Instance.Invoke(() =>
-						{
-							foreach (var line in val.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
-								Log.Write(null, line);
-							output.Clear();
-						});
-						Console.SetOut(output);
-						Console.SetError(output);
 						try
 						{
-							var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-							#if DESKTOP
-							NUnit.ConsoleRunner.Runner.Main(new[]
-							{
-								"-noshadow",
-								"-nothread",
-								"-nologo",
-								"-nodots",
-								"-domain=None",
-								"-work=" + dir,
-								typeof(Eto.Test.UnitTests.Startup).Assembly.Location
-							});
+							#if PCL
+							var assembly = GetType().GetTypeInfo().Assembly;
+							#else
+							var assembly = GetType().Assembly;
 							#endif
+
+							var runner = new NUnitLiteTestAssemblyRunner(new NUnitLiteTestAssemblyBuilder());
+							if (!runner.Load(assembly, new Dictionary<string, object>()))
+							{
+								Log.Write(null, "Failed to load test assembly");
+								return;
+							}
+
+							var listener = new TestListener();
+							var result = runner.Run(listener, TestFilter.Empty);
+							var writer = new StringWriter();
+							writer.WriteLine(result.FailCount > 0 ? "FAILED" : "PASSED");
+							writer.WriteLine("\tPass: {0}, Fail: {1}, Skipped: {2}, Inconclusive: {3}", result.PassCount, result.FailCount, result.SkipCount, result.InconclusiveCount);
+							writer.Write("\tDuration: {0}", result.Duration);
+							Application.Instance.Invoke(() => Log.Write(null, writer.ToString()));
+						}
+						catch (Exception ex)
+						{
+							Application.Instance.Invoke(() => Log.Write(null, "Error running tests: {0}", ex));
 						}
 						finally
 						{
-							Console.SetOut(oldOut);
-							Console.SetError(oldErr);
 							Application.Instance.Invoke(() => button.Enabled = true);
 						}
 					}
 				});
-				thread.Start();
 			};
 		}
 	}
-#endif
 }

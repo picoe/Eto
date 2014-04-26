@@ -37,13 +37,13 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="nunit-console-runner">
-      <HintPath>..\..\packages\NUnit.Runners.2.6.3\tools\lib\nunit-console-runner.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
+    <Reference Include="Portable.Reflection">
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
+    </Reference>
+    <Reference Include="nunitlite">
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\nunitlite.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -143,15 +143,13 @@
     <Compile Include="UnitTests\Forms\GridViewTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
-    <Compile Include="UnitTests\FormTester.cs" />
     <Compile Include="UnitTests\Handlers\Generator.cs" />
     <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestFontHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestGraphicsHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestGridViewHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />
-    <Compile Include="UnitTests\InvokeAttribute.cs" />
-    <Compile Include="UnitTests\Startup.cs" />
+    <Compile Include="UnitTests\TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Json\Eto.Json.csproj">
@@ -184,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="App.config" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -24,6 +24,7 @@ namespace Eto.Platform.Android.Forms.Controls
 		public ButtonHandler()
 		{
 			Control = new aw.Button(aa.Application.Context);
+			Control.Click += (sender, e) => Widget.OnClick(EventArgs.Empty);
 		}
 
 		public Eto.Drawing.Image Image

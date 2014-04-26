@@ -36,6 +36,14 @@
   </PropertyGroup>
   <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <ItemGroup>
+    <Reference Include="nunitlite, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\nunitlite.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Reflection, Version=0.1.0.0, Culture=neutral, PublicKeyToken=96ab62c35eacf7af, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -48,9 +56,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">

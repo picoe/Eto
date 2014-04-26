@@ -20,23 +20,23 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class MatrixTests
 	{
-		protected virtual IMatrixHandler CreateMatrix()
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
 		{
-			return new TestMatrixHandler();
+			// initialize test generator if running through IDE or nunit-gui
+			TestUtils.Initialize();
 		}
 
-		IMatrix Create()
+		protected virtual IMatrix Create()
 		{
-			var result = CreateMatrix();
-			result.Create();
-			return result;
+			// create using generator so we can test on all platforms
+			return Matrix.Create();
 		}
 
-		IMatrix Create(float xx, float yx, float xy, float yy, float x0, float y0)
+		protected virtual IMatrix Create(float xx, float yx, float xy, float yy, float x0, float y0)
 		{
-			var result = CreateMatrix();
-			result.Create(xx, yx, xy, yy, x0, y0);
-			return result;
+			// create using generator so we can test on all platforms
+			return Matrix.Create(xx, yx, xy, yy, x0, y0);
 		}
 
 		public static bool Equals(IMatrix m, float xx, float yx, float xy, float yy, float x0, float y0)

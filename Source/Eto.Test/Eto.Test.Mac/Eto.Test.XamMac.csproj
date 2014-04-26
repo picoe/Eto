@@ -56,8 +56,11 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="XamMac" />
+    <Reference Include="nunitlite">
+      <HintPath>..\..\packages\NUnitLite.1.0.0\lib\net40\nunitlite.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\packages\Newtonsoft.Json.5.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +89,10 @@
     <ProjectReference Include="..\..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Xaml\Eto.Xaml.csproj">
+      <Project>{FA4BC167-9909-45D2-B86A-D4AE4062A524}</Project>
+      <Name>Eto.Xaml</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

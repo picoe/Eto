@@ -88,8 +88,8 @@ namespace Eto.Forms
 		protected Application(Generator generator, Type type, bool initialize = true)
 		: base(generator ?? Generator.Detect, type, initialize)
 		{
-		Application.Instance = this;
-		Generator.Initialize(generator ?? Generator.Detect); // make everything use this by default
+			Application.Instance = this;
+			Generator.Initialize(generator ?? Generator.Detect); // make everything use this by default
 		}
 #else
 		protected Application(Generator generator, Type type, bool initialize = true)

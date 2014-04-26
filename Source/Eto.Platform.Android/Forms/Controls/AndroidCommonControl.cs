@@ -27,5 +27,22 @@ namespace Eto.Platform.Android.Forms.Controls
 				throw new NotImplementedException();
 			}
 		}
+
+		public override Size Size
+		{
+			get { return new Size(Control.Width, Control.Height); }
+			set
+			{ 
+				// TODO: need to change to desired size, not min size.. e.g. if control is in a container
+				Control.SetMinimumWidth(value.Width);
+				Control.SetMinimumHeight(value.Height);
+			}
+		}
+
+		public override bool Enabled
+		{
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
+		}
 	}
 }
