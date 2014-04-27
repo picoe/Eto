@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Behaviors
 			return showWindowEvents = new CheckBox { Text = "Show window events" };
 		}
 
-		protected override Control GenerateOptions()
+		protected override Control CreateOptions()
 		{
 			var layout = new DynamicLayout();
 

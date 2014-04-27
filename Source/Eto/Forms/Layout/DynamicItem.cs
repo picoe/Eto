@@ -1,5 +1,5 @@
 using System.ComponentModel;
-
+using System;
 
 namespace Eto.Forms
 {
@@ -10,17 +10,29 @@ namespace Eto.Forms
 
 		public bool? YScale { get; set; }
 
-		public abstract Control Generate (DynamicLayout layout);
-
-		public virtual void Generate (DynamicLayout layout, TableLayout parent, int x, int y)
+		[Obsolete("Use Create() instead")]
+		public Control Generate(DynamicLayout layout)
 		{
-			var c = Generate (layout);
+			return Create(layout);
+		}
+
+		[Obsolete("Use Create() instead")]
+		public void Generate(DynamicLayout layout, TableLayout parent, int x, int y)
+		{
+			Create(layout, parent, x, y);
+		}
+
+		public abstract Control Create(DynamicLayout layout);
+
+		public virtual void Create(DynamicLayout layout, TableLayout parent, int x, int y)
+		{
+			var c = Create(layout);
 			if (c != null)
-				parent.Add (c, x, y);
+				parent.Add(c, x, y);
 			if (XScale != null)
-				parent.SetColumnScale (x, XScale.Value);
+				parent.SetColumnScale(x, XScale.Value);
 			if (YScale != null)
-				parent.SetRowScale (y, YScale.Value);
+				parent.SetRowScale(y, YScale.Value);
 		}
 
 		public static implicit operator DynamicItem(Control control)

@@ -17,7 +17,10 @@ namespace Eto.Forms
 			get { return topTable.Rows; }
 		}
 
-		public bool Generated { get; private set; }
+		[Obsolete("Use IsCreated instead")]
+		public bool Generated { get { return IsCreated; } }
+
+		public bool IsCreated { get; private set; }
 
 		public new Padding? Padding
 		{
@@ -46,16 +49,16 @@ namespace Eto.Forms
 
 		public override void OnPreLoad(EventArgs e)
 		{
-			if (!Generated)
-				Generate();
+			if (!IsCreated)
+				Create();
 
 			base.OnPreLoad(e);
 		}
 
 		public override void OnLoad(EventArgs e)
 		{
-			if (!Generated)
-				Generate();
+			if (!IsCreated)
+				Create();
 
 			base.OnLoad(e);
 		}
@@ -244,10 +247,16 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This is called automatically on the Container's LoadCompleted event, but can be called manually if needed.
 		/// </remarks>
+		public void Create()
+		{
+			Content = topTable.Create(this);
+			IsCreated = true;
+		}
+
+		[Obsolete("Use Create() instead")]
 		public void Generate()
 		{
-			Content = topTable.Generate(this);
-			Generated = true;
+			Create();
 		}
 
 		/// <summary>
@@ -259,7 +268,7 @@ namespace Eto.Forms
 		public void Clear()
 		{
 			topTable.Rows.Clear();
-			Generated = false;
+			IsCreated = false;
 		}
 	}
 }

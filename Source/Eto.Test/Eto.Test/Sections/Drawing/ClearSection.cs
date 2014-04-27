@@ -89,7 +89,7 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		Image GenerateImage()
+		Image CreateImage()
 		{
 			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba, generator: Generator);
 			using (var graphics = new Graphics(image))
@@ -103,12 +103,12 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new DrawableImageView
 			{
-				Image = GenerateImage (),
+				Image = CreateImage (),
 				Size = new Size (200, 200),
 				BackgroundColor = Colors.Yellow
 			};
 
-			PropertyChanged += (sender, e) => control.Image = GenerateImage();
+			PropertyChanged += (sender, e) => control.Image = CreateImage();
 
 			return control;
 		}

@@ -113,7 +113,7 @@ namespace Eto.Forms
 			Rows.Add(row);
 		}
 
-		public override Control Generate(DynamicLayout layout)
+		public override Control Create(DynamicLayout layout)
 		{
 			if (Rows.Count == 0)
 				return null;
@@ -137,7 +137,7 @@ namespace Eto.Forms
 				for (int cx = 0; cx < row.Items.Count; cx++)
 				{
 					var item = row.Items[cx] ?? new DynamicControl { XScale = true };
-					item.Generate(layout, tableLayout, cx, cy);
+					item.Create(layout, tableLayout, cx, cy);
 				}
 			}
 			return Table;

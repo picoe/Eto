@@ -81,7 +81,7 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout();
 			layout.Add(mainPanel, yscale: true);
 			layout.Add(statusLayout);
-			layout.Generate();
+			layout.Create();
 			var form = new Form { Content = layout };
 			if (setSize)
 				form.ClientSize = new Size(800, 600);

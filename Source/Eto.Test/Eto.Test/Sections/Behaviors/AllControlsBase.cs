@@ -11,7 +11,7 @@ namespace Eto.Test.Sections.Behaviors
 
 			var layout = new DynamicLayout();
 			
-			var options = GenerateOptions();
+			var options = CreateOptions();
 			if (options != null)
 				layout.Add(options);
 
@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Behaviors
 			base.OnPreLoad(e);
 		}
 
-		protected virtual Control GenerateOptions()
+		protected virtual Control CreateOptions()
 		{
 			return null;
 		}

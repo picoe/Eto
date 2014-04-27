@@ -22,7 +22,7 @@ namespace Eto.Test.Sections.Behaviors
 				e.Handled = true;
 		}
 
-		protected override Control GenerateOptions()
+		protected override Control CreateOptions()
 		{
 			var layout = new DynamicLayout();
 

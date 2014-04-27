@@ -3,7 +3,7 @@ namespace Eto.Forms
 	[ContentProperty("Control")]
 	public class DynamicControl : DynamicItem
 	{
-		public override Control Generate (DynamicLayout layout)
+		public override Control Create (DynamicLayout layout)
 		{
 			return Control;
 		}

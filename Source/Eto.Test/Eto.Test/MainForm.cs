@@ -49,7 +49,7 @@ namespace Eto.Test
 			// Commenting the next line on iOS displays just the toolbar. Otherwise it is hidden for some reason.
 			Content = MainContent();
 
-			GenerateMenuToolBar();
+			CreateMenuToolBar();
 		}
 
 		public SectionList SectionList { get; set; }
@@ -150,7 +150,7 @@ namespace Eto.Test
 			return control;
 		}
 
-		void GenerateMenuToolBar()
+		void CreateMenuToolBar()
 		{
 			var about = new Actions.About();
 			var quit = new Actions.Quit();
@@ -190,10 +190,10 @@ namespace Eto.Test
 
 			if (Generator.Supports<IToolBar>())
 			{
-				// generate and set the toolbar
+				// create and set the toolbar
 				var toolBar = new ToolBar();
 				toolBar.Items.Add(quit);
-				toolBar.Items.Add(new ButtonToolItem(about));
+				toolBar.Items.Add(about);
 
 				ToolBar = toolBar;
 			}
