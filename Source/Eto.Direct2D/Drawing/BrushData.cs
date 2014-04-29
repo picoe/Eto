@@ -2,7 +2,7 @@
 using Eto.Drawing;
 using sd = SharpDX.Direct2D1;
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
 	public abstract class BrushData : IDisposable
 	{

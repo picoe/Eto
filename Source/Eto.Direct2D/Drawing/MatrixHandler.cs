@@ -2,7 +2,7 @@ using System;
 using Eto.Drawing;
 using s = SharpDX;
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
 	/// <summary>
 	/// Handler for <see cref="IMatrix"/>

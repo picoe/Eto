@@ -6,10 +6,10 @@ using Eto.Drawing;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.WIC;
 #if WINFORMS
-using Eto.Platform.Windows.Drawing;
+using Eto.WinForms.Drawing;
 #endif
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
     public class IconHandler : ImageHandler<Icon>, IIcon
 #if WINFORMS

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
-using Eto.Platform.Direct2D.Drawing;
+using Eto.Direct2D.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
 
-namespace Eto.Platform.Direct2D
+namespace Eto.Direct2D
 {
 	/// <summary>
 	/// Direct2D conversions. This file is part of the Direct2D platform library

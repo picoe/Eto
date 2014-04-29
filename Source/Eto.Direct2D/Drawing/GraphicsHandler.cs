@@ -7,10 +7,10 @@ using sw = SharpDX.DirectWrite;
 using Eto.Forms;
 using System.Diagnostics;
 #if WINFORMS
-using Eto.Platform.Windows;
+using Eto.WinForms;
 #endif
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
 	/// <summary>
 	/// Handler for <see cref="IGraphics"/>

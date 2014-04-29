@@ -1,36 +1,36 @@
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Platform.Direct2D.Drawing;
-using Eto.Platform.Direct2D.Forms.Controls;
-using Eto.Platform.Direct2D.Forms.Printing;
+using Eto.Direct2D.Drawing;
+using Eto.Direct2D.Forms.Controls;
+using Eto.Direct2D.Forms.Printing;
 
-namespace Eto.Platform.Direct2D
+namespace Eto.Direct2D
 {
-    public class Generator : Eto.Platform.Windows.Generator
+    public class Platform : Eto.WinForms.Platform
     {
         public override string ID
         {
-            get { return Generators.Direct2D; }
+            get { return Platforms.Direct2D; }
         }
 
-        public Generator()
+        public Platform()
         {
 			// generator to use for scenarios where direct 2d doesn't work (e.g. printing)
-			BaseGenerator = new Eto.Platform.Windows.Generator();
+			BaseGenerator = new Eto.WinForms.Platform();
 
-			Eto.Platform.Windows.Generator.AddTo(this);
+			Eto.WinForms.Platform.AddTo(this);
 
             // This is added after the base class's assembly
 			AddTo(this);
         }
 
-		public Eto.Generator BaseGenerator
+		public Eto.Platform BaseGenerator
 		{
 			get;
 			set;
 		}
 
-		public static new void AddTo(Eto.Generator g)
+		public static new void AddTo(Eto.Platform g)
 		{
 			// Drawing
 			g.Add<IBitmap>(() => new BitmapHandler());

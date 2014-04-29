@@ -1,6 +1,6 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
-using Eto.Platform.Direct2D.Drawing;
+using Eto.Direct2D.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading;
 using swf = System.Windows.Forms;
 
-namespace Eto.Platform.Direct2D.Forms.Controls
+namespace Eto.Direct2D.Forms.Controls
 {
-	public class DrawableHandler : Eto.Platform.Windows.DrawableHandler
+	public class DrawableHandler : Eto.WinForms.DrawableHandler
 	{
 		Graphics graphics;
 		GraphicsHandler graphicsHandler;
@@ -22,7 +22,7 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 			get { return backgroundColor != null ? backgroundColor.Color : base.BackgroundColor; }
 			set
 			{
-				backgroundColor = value.A > 0 ? new SolidBrush(value, Generator) : null;
+				backgroundColor = value.A > 0 ? new SolidBrush(value, Platform) : null;
 				if (Widget.Loaded)
 					Invalidate();
 			}
@@ -35,7 +35,7 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 			Control.SetStyle(swf.ControlStyles.AllPaintingInWmPaint | swf.ControlStyles.Opaque, true);
 			Control.HandleCreated += (sender, e) =>
 			{
-				graphics = new Graphics(Generator, new GraphicsHandler(this));
+				graphics = new Graphics(Platform, new GraphicsHandler(this));
 				graphicsHandler = (GraphicsHandler)graphics.Handler;
 			};
 		}
@@ -52,7 +52,7 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 				return null;
 			var handler = new GraphicsHandler((GraphicsHandler)graphics.Handler);
 			handler.BeginDrawing();
-			return new Graphics(Generator, handler);
+			return new Graphics(Platform, handler);
 		}
 
 		public override void Update(Eto.Drawing.Rectangle rect)
@@ -74,7 +74,7 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 			{
 				// clear to control's background color
 				if (backgroundColor == null)
-					backgroundColor = new SolidBrush(base.BackgroundColor, Generator);
+					backgroundColor = new SolidBrush(base.BackgroundColor, Platform);
 				graphics.Clear(backgroundColor);
 
 				// perform user painting

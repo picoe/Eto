@@ -7,7 +7,7 @@ using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
 using Eto.Drawing;
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
 	/// <summary>
 	/// Handler for <see cref="IGraphicsPath"/>

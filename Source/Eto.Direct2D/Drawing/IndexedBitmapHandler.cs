@@ -8,7 +8,7 @@ using sd = SharpDX.Direct2D1;
 using sw = SharpDX.WIC;
 using System.IO;
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
 	public class IndexedBitmapHandler : ImageHandler<IndexedBitmap>, IIndexedBitmap
     {

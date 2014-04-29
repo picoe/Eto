@@ -9,10 +9,10 @@ using sw = SharpDX.WIC;
 using System.IO;
 using System.Diagnostics;
 #if WINFORMS
-using Eto.Platform.Windows.Drawing;
+using Eto.WinForms.Drawing;
 #endif
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
 	public interface ID2DBitmapHandler
 	{
@@ -103,7 +103,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			else
 				bmp = new sw.Bitmap(SDFactory.WicImagingFactory, bmp, sw.BitmapCreateCacheOption.CacheOnLoad);
 
-			return new Bitmap(Generator, new BitmapHandler { Control = bmp });
+			return new Bitmap(Platform, new BitmapHandler { Control = bmp });
         }
 
         public Color GetPixel(int x, int y)

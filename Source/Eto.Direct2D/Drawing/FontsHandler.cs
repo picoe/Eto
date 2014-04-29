@@ -7,7 +7,7 @@ using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
 	/// <summary>
 	/// Handler for <see cref="IFonts"/>
@@ -27,7 +27,7 @@ namespace Eto.Platform.Direct2D.Drawing
 					availableFontFamilies = Enumerable.Range(0, fonts.FontFamilyCount)
 						.Select(r => fonts.GetFontFamily(r).FamilyNames.GetString(0))
 						.Distinct()
-						.Select(r => new FontFamily(Generator, r))
+						.Select(r => new FontFamily(Platform, r))
 						.ToArray();
 				}
 				return availableFontFamilies;

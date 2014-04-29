@@ -7,12 +7,12 @@ using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
 #if WINFORMS
-using Eto.Platform.Windows.Drawing;
+using Eto.WinForms.Drawing;
 #else
 using Windows.Globalization.Fonts;
 #endif
 
-namespace Eto.Platform.Direct2D.Drawing
+namespace Eto.Direct2D.Drawing
 {
 	/// <summary>
 	/// Handler for <see cref="IFont"/>
@@ -67,7 +67,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
 #if WINFORMS
-			var sdfont = Eto.Platform.Windows.Conversions.ToSD(systemFont);
+			var sdfont = Eto.WinForms.Conversions.ToSD(systemFont);
 			Create(sdfont.Name, size ?? sdfont.SizeInPoints, FontStyle.None, decoration);
 #else
 			var familyName = "Segoe UI";
@@ -156,7 +156,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		FontFamily family;
         public FontFamily Family
         {
-            get { return family ?? (family = new FontFamily(Generator, new FontFamilyHandler(Control.FontFamily))); }
+            get { return family ?? (family = new FontFamily(Platform, new FontFamilyHandler(Control.FontFamily))); }
         }
 
         public string FamilyName
@@ -213,7 +213,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		public System.Drawing.Font GetFont()
 		{
 			var familyName = Control.FontFamily.FamilyNames.GetString(0);
-			var style = Eto.Platform.Windows.Conversions.ToSD(FontStyle) | Eto.Platform.Windows.Conversions.ToSD(FontDecoration);
+			var style = Eto.WinForms.Conversions.ToSD(FontStyle) | Eto.WinForms.Conversions.ToSD(FontDecoration);
 			return new System.Drawing.Font(familyName, Size, style);
 		}
 #endif
