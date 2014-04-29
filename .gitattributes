@@ -1,2 +1,7 @@
+
 *       text=auto
 *.sh    eol=lf
+*.sln   eol=crlf
+*.cmd   eol=crlf
+*.csproj text
+*.xaml   text
