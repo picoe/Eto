@@ -7,6 +7,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 	{
 		Entry entry;
 		Button popupButton;
+		int vpadding;
 
 		public BaseComboBox()
 		{
@@ -19,6 +20,12 @@ namespace Eto.Platform.GtkSharp.CustomControls
 #endif
 		}
 		#if GTK2
+		protected override void OnSizeRequested(ref Requisition requisition)
+		{
+			base.OnSizeRequested(ref requisition);
+			requisition.Height += vpadding; // for border
+		}
+
 		[GLib.ConnectBefore]
 		protected override bool OnExposeEvent(Gdk.EventExpose evnt)
 		{
@@ -27,15 +34,16 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			if (rect.Width > 0 && rect.Height > 0)
 			{
 				Gtk.Style.PaintShadow(Entry.Style, GdkWindow, Entry.State, ShadowType.In, evnt.Area, Entry, "entry", rect.X, rect.Y, rect.Width, rect.Height);
-				var arrowWidth = popupButton.Allocation.Width;
-				var arrowPos = rect.Right - arrowWidth - 1;
+				var popupWidth = popupButton.Allocation.Width;
+				var vline = rect.Right - popupWidth - 2;
+				Gtk.Style.PaintVline(Entry.Style, GdkWindow, Entry.State, evnt.Area, this, "line", rect.Top + 4, rect.Bottom - 4, vline);
+				var arrowWidth = popupWidth / 2;
+				var arrowPos = vline + (popupWidth - arrowWidth) / 2 + 1;
 				Gtk.Style.PaintArrow(Entry.Style, GdkWindow, Entry.State, ShadowType.None, evnt.Area, this, "arrow", ArrowType.Down, true, arrowPos, rect.Top, arrowWidth, rect.Height);
-				Gtk.Style.PaintVline(Entry.Style, GdkWindow, Entry.State, evnt.Area, this, "line", rect.Top + 4, rect.Bottom - 4, arrowPos - 1);
 			}
 			return true;
 		}
-		
-#else
+		#else
 		protected override bool OnDrawn(Cairo.Context cr)
 		{
 			bool ret = true;
@@ -119,21 +127,24 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			return popupButton;
 		}
 
+		static readonly int DefaultEntryHeight = new Entry().SizeRequest().Height;
+
 		void Build()
 		{
 			var vbox = new VBox();
 			var hbox = new HBox();
 
 #if GTK2
-			hbox.PackStart(CreateEntry(), true, true, 4);
+			CreateEntry();
+			vpadding = (DefaultEntryHeight - entry.SizeRequest().Height) / 2;
+			hbox.PackStart(entry, true, true, 4);
 			hbox.PackEnd(CreatePopupButton(), false, false, 2);
-			vbox.PackStart(hbox, true, true, 2);
+			vbox.PackStart(hbox, true, true, (uint)vpadding);
 #else
 			hbox.PackStart(CreateEntry(), true, true, 0);
 			hbox.PackEnd(CreatePopupButton(), false, false, 2);
 			vbox.PackStart(hbox, true, true, 0);
 #endif
-
 			Add(vbox);
 		}
 	}

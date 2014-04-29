@@ -6,14 +6,15 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class DateTimePickerHandler : WindowsControl<System.Windows.Forms.DateTimePicker, DateTimePicker>, IDateTimePicker
 	{
-		public DateTimePickerHandler ()
+		public DateTimePickerHandler()
 		{
-			Control = new System.Windows.Forms.DateTimePicker ();
+			Control = new System.Windows.Forms.DateTimePicker();
 			Control.ShowCheckBox = true;
 			Mode = DateTimePicker.DefaultMode;
 			Value = null;
-			Control.ValueChanged += delegate {
-				Widget.OnValueChanged (EventArgs.Empty);
+			Control.ValueChanged += delegate
+			{
+				Widget.OnValueChanged(EventArgs.Empty);
 			};
 		}
 
@@ -21,7 +22,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			get
 			{
-				switch (Control.Format) {
+				switch (Control.Format)
+				{
 					case System.Windows.Forms.DateTimePickerFormat.Long:
 						return DateTimePickerMode.DateTime;
 					case System.Windows.Forms.DateTimePickerFormat.Short:
@@ -29,12 +31,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 					case System.Windows.Forms.DateTimePickerFormat.Time:
 						return DateTimePickerMode.Time;
 					default:
-						throw new NotImplementedException ();
+						throw new NotImplementedException();
 				}
 			}
 			set
 			{
-				switch (value) {
+				switch (value)
+				{
 					case DateTimePickerMode.DateTime:
 						Control.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
 						var format = CultureInfo.CurrentUICulture.DateTimeFormat;
@@ -47,7 +50,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 						Control.Format = System.Windows.Forms.DateTimePickerFormat.Time;
 						break;
 					default:
-						throw new NotImplementedException ();
+						throw new NotImplementedException();
 				}
 			}
 		}
@@ -84,8 +87,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 			set
 			{
-				if (value != null) {
-					Control.Value = value.Value;
+				if (value != null)
+				{
+					var date = value.Value;
+					if (date < MinDate) date = MinDate;
+					if (date > MaxDate) date = MaxDate;
+					Control.Value = date;
 					Control.Checked = true;
 				}
 				else
