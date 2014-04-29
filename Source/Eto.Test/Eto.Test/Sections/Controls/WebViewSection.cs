@@ -274,12 +274,12 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate
 			{
-				if (Generator.Current.Supports<IDialog>())
+				if (Generator.Supports<IDialog>())
 				{
 					var dialog = new Dialog();
-#if DESKTOP
-					dialog.MinimumSize = new Size(300, 0);
-#endif
+					if (Generator.IsDesktop)
+						dialog.MinimumSize = new Size(300, 0);
+
 					var layout = new DynamicLayout();
 					var textBox = new TextBox { Text = "http://google.com" };
 					var goButton = new Button { Text = "Go" };

@@ -1,7 +1,7 @@
 using Eto.Drawing;
 using sd = System.Drawing;
 
-#if DESKTOP
+#if OSX
 using MonoMac.CoreGraphics;
 
 namespace Eto.Platform.Mac.Drawing

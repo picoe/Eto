@@ -71,7 +71,6 @@ namespace Eto.Drawing
 			return GetFont(SystemFont.Label, size, decoration, generator);
 		}
 
-#if DESKTOP
 		public static Font Menu(float? size = null, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
 			return GetFont(SystemFont.Menu, size, decoration, generator);
@@ -106,7 +105,7 @@ namespace Eto.Drawing
 		{
 			return GetFont(SystemFont.ToolTip, size, decoration, generator);
 		}
-#endif
+
 	}
 }
 

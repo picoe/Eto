@@ -42,7 +42,7 @@ namespace Eto.Forms
 
 		IDataStoreView DataStoreView { get { return gridView == null ? null : gridView.DataStoreView; } }
 
-		IGridView Handler { get { return gridView == null ? null : gridView.Handler; } }
+		IGridView Handler { get { return gridView == null ? null : (IGridView)gridView.Handler; } }
 
 		bool AllowMultipleSelection { get { return gridView != null && gridView.AllowMultipleSelection; } }
 

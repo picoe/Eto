@@ -56,7 +56,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public bool NeedsQueue(Action update = null)
 		{
-			#if DESKTOP
+			#if OSX
 			if (ApplicationHandler.QueueResizing)
 			{
 				ApplicationHandler.Instance.AsyncInvoke(update ?? Update);

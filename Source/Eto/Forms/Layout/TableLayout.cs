@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
@@ -22,6 +23,36 @@ namespace Eto.Forms
 		Size Spacing { get; set; }
 
 		Padding Padding { get; set; }
+	}
+
+	public class TableItem
+	{
+		public bool ScaleWidth { get; set; }
+
+		public Control Control { get; set; }
+	}
+
+	public class TableRow
+	{
+		Collection<TableItem> items;
+
+		public bool ScaleHeight { get; set; }
+
+		public Collection<TableItem> Items
+		{ 
+			get { return items ?? (items = new Collection<TableItem>()); }
+			set { items = value; }
+		}
+
+		public TableRow(params TableItem[] items)
+		{
+			Items = new Collection<TableItem>(items.ToList());
+		}
+
+		public TableRow(IEnumerable<TableItem> items)
+		{
+			Items = new Collection<TableItem>(items.ToList());
+		}
 	}
 
 	[ContentProperty("Contents")]
@@ -69,10 +100,9 @@ namespace Eto.Forms
 				}
 			}
 		}
-
-#if !PCL
+		#if !PCL
 		[TypeConverter(typeof(Int32ArrayConverter))]
-#endif
+		#endif
 		public int[] ColumnScale
 		{
 			set
@@ -97,10 +127,9 @@ namespace Eto.Forms
 				return vals.ToArray();
 			}
 		}
-
-#if !PCL
+		#if !PCL
 		[TypeConverter(typeof(Int32ArrayConverter))]
-#endif
+		#endif
 		public int[] RowScale
 		{
 			set
@@ -125,7 +154,9 @@ namespace Eto.Forms
 				return vals.ToArray();
 			}
 		}
+
 		#region Attached Properties
+
 		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
 
 		public static Point GetLocation(Control control)
@@ -164,7 +195,9 @@ namespace Eto.Forms
 		{
 			control.Properties[RowScaleProperty] = value;
 		}
+
 		#endregion
+
 		public static Control AutoSized(Control control, Padding? padding = null, bool centered = false)
 		{
 			var layout = new TableLayout(3, 3);

@@ -253,8 +253,6 @@ namespace Eto.Forms
 			get { return Control.Location; }
 		}
 
-		#if DESKTOP
-
 		/// <summary>
 		/// Gets or sets the tool tip to show when the mouse is hovered over the control
 		/// </summary>
@@ -274,8 +272,6 @@ namespace Eto.Forms
 			get { return Control.Cursor; }
 			set { Control.Cursor = value; }
 		}
-
-		#endif
 
 		/// <summary>
 		/// Gets the instance of the platform-specific object

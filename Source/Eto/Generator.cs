@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Threading;
 
 namespace Eto
 {
@@ -104,7 +105,8 @@ namespace Eto
 		readonly Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>>();
 		readonly Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
 		readonly Dictionary<object, object> properties = new Dictionary<object, object>();
-		static Generator current;
+		static Generator globalInstance;
+		static ThreadLocal<Generator> instance = new ThreadLocal<Generator>(() => globalInstance, false);
 
 		internal T GetSharedProperty<T>(object key, Func<T> instantiator)
 		{
@@ -208,7 +210,7 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Gets the current generator
+		/// Gets the generator for the current thread
 		/// </summary>
 		/// <remarks>
 		/// Typically you'd have only one platform generator active at a time, and this holds an instance
@@ -224,14 +226,14 @@ namespace Eto
 			{
 				//if (current == null)
 				//	throw new EtoException("Generator has not been initialized");
-				return current;
+				return instance.Value;
 			}
 		}
 
 		/// <summary>
 		/// Returns true if the current generator has been set.
 		/// </summary>
-		public static bool HasCurrent { get { return current != null; } }
+		public static bool HasCurrent { get { return globalInstance != null; } }
 
 #if !PCL
 		/// <summary>
@@ -302,7 +304,7 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Initializes the specified <paramref name="generator"/> as the current generator
+		/// Initializes the specified <paramref name="generator"/> as the current generator, for the current thread
 		/// </summary>
 		/// <remarks>
 		/// This is called automatically by the <see cref="Forms.Application"/> when it is constructed
@@ -310,7 +312,10 @@ namespace Eto
 		/// <param name="generator">Generator to set as the current generator</param>
 		public static void Initialize(Generator generator)
 		{
-			current = generator;
+			if (globalInstance == null)
+				globalInstance = generator;
+			else
+				instance.Value = generator;
 		}
 
 		/// <summary>
@@ -462,7 +467,7 @@ namespace Eto
 		{
 			get
 			{
-				if (current != this)
+				if (globalInstance != this)
 					return new GeneratorContext(this);
 				else
 					return null;

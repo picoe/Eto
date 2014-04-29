@@ -38,6 +38,9 @@
     <Compile Include="Extensions\FileExtension.cs" />
     <Compile Include="Extensions\ResourceExtension.cs" />
     <Compile Include="EtoXamlType.cs" />
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

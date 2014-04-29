@@ -65,7 +65,7 @@ namespace Eto.Platform.Mac.Drawing
 					Control = NSFont.LabelFontOfSize(fontSize ?? NSFont.LabelFontSize + 2); // labels get a size of 12 
 #endif
 					break;
-#if DESKTOP
+#if OSX
 				case SystemFont.TitleBar:
 					Control = NSFont.TitleBarFontOfSize(fontSize ?? NSFont.SystemFontSize);
 					break;

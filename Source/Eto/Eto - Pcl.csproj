@@ -22,14 +22,15 @@
     <DefineConstants>TRACE;DEBUG;DESKTOP;MOBILE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\BuildOutput\Pcl\Debug\Eto.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\BuildOutput\Pcl\Release</OutputPath>
     <DefineConstants>TRACE;DESKTOP;MOBILE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\BuildOutput\Pcl\Release\Eto.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
@@ -296,5 +297,11 @@
     <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
     <Compile Include="PclTypes.cs" />
     <Compile Include="RuntimeNamePropertyAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Link>LICENSE</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

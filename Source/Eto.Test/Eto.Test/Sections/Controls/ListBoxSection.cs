@@ -13,10 +13,9 @@ namespace Eto.Test.Sections.Controls
 						
 			layout.AddRow(new Label { Text = "Virtual list, with Icons" }, WithIcons());
 
-#if DESKTOP
-			layout.AddRow(new Label { Text = "Context Menu" }, WithContextMenu());
-#endif
-			
+			if (Generator.Supports<IContextMenu>())
+				layout.AddRow(new Label { Text = "Context Menu" }, WithContextMenu());
+
 			layout.Add(null);
 
 			Content = layout;
@@ -105,7 +104,7 @@ namespace Eto.Test.Sections.Controls
 			control.DataStore = new VirtualList();
 			return control;
 		}
-		#if DESKTOP
+
 		Control WithContextMenu()
 		{
 			var control = new ListBox
@@ -133,7 +132,7 @@ namespace Eto.Test.Sections.Controls
 			control.ContextMenu = menu;
 			return control;
 		}
-		#endif
+
 		void LogEvents(ListBox control)
 		{
 			control.SelectedIndexChanged += delegate

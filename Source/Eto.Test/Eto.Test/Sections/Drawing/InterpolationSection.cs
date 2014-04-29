@@ -32,7 +32,7 @@ namespace Eto.Test.Sections.Drawing
 		Control CreateImage(ImageInterpolation interpolation)
 		{
 #if PCL
-			var resourceStream = GetType().GetTypeInfo().Assembly.GetManifestResourceStream("Eto.Test.Pcl.TestImage.png");
+			var resourceStream = GetType().GetTypeInfo().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
 #else
 			var resourceStream = GetType().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
 #endif

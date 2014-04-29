@@ -32,7 +32,7 @@ namespace Eto.Forms
 
 	public partial class GridView : Grid
 	{
-		public new IGridView Handler { get { return base.Handler as IGridView; } }
+		new IGridView Handler { get { return base.Handler as IGridView; } }
 
 		// provides sorting and filtering on the model.
 		internal IDataStoreView DataStoreView { get; private set; }

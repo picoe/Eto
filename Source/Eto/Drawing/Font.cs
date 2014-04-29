@@ -23,7 +23,6 @@ namespace Eto.Drawing
 		/// Default label font
 		/// </summary>
 		Label,
-#if DESKTOP
 		/// <summary>
 		/// Default title bar font (window title)
 		/// </summary>
@@ -52,7 +51,6 @@ namespace Eto.Drawing
 		/// Default font for status bars
 		/// </summary>
 		StatusBar
-#endif
 	}
 
 	/// <summary>

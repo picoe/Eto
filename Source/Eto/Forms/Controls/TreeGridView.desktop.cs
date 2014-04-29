@@ -1,4 +1,3 @@
-#if DESKTOP
 
 namespace Eto.Forms
 {
@@ -14,4 +13,3 @@ namespace Eto.Forms
 		}
 	}
 }
-#endif

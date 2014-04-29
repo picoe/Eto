@@ -33,27 +33,28 @@ namespace Eto.Test.Sections.Controls
 
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
-#if DESKTOP
-			layout.BeginHorizontal();
-			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
-			layout.BeginVertical();
-			layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
-			var withContextMenuAndFilter = WithContextMenuAndFilter();
-			layout.Add(withContextMenuAndFilter);
-			layout.EndVertical();
-			layout.EndHorizontal();
-
-			var selectionGridView = Default(addItems: false);
-			layout.AddRow(new Label { Text = "Selected Items" }, selectionGridView);
-
-			// hook up selection of main grid to the selection grid
-			withContextMenuAndFilter.SelectionChanged += (s, e) =>
+			if (Generator.Supports<IContextMenu>())
 			{
-				var items = new DataStoreCollection();
-				items.AddRange(withContextMenuAndFilter.SelectedItems);
-				selectionGridView.DataStore = items;
-			};
-#endif
+				layout.BeginHorizontal();
+				layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
+				layout.BeginVertical();
+				layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
+				var withContextMenuAndFilter = WithContextMenuAndFilter();
+				layout.Add(withContextMenuAndFilter);
+				layout.EndVertical();
+				layout.EndHorizontal();
+
+				var selectionGridView = Default(addItems: false);
+				layout.AddRow(new Label { Text = "Selected Items" }, selectionGridView);
+
+				// hook up selection of main grid to the selection grid
+				withContextMenuAndFilter.SelectionChanged += (s, e) =>
+				{
+					var items = new DataStoreCollection();
+					items.AddRange(withContextMenuAndFilter.SelectedItems);
+					selectionGridView.DataStore = items;
+				};
+			}
 
 			Content = layout;
 		}
@@ -192,7 +193,7 @@ namespace Eto.Test.Sections.Controls
 			control.ShowHeader = false;
 			return control;
 		}
-#if DESKTOP
+
 		GridView WithContextMenuAndFilter()
 		{
 			var control = Default();
@@ -257,7 +258,7 @@ namespace Eto.Test.Sections.Controls
 			control.ContextMenu = menu;
 			return control;
 		}
-#endif
+
 		protected virtual void LogEvents(GridView control)
 		{
 			control.CellEditing += (sender, e) =>

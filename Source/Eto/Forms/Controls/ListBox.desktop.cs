@@ -1,5 +1,3 @@
-#if DESKTOP
-
 namespace Eto.Forms
 {
 	public partial interface IListBox : IContextMenuHost
@@ -14,4 +12,3 @@ namespace Eto.Forms
 		}
 	}
 }
-#endif

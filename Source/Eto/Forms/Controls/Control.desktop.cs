@@ -1,5 +1,3 @@
-#if DESKTOP
-
 namespace Eto.Forms
 {
 	public partial interface IControl
@@ -40,4 +38,3 @@ namespace Eto.Forms
 		}
 	}
 }
-#endif

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Eto.Drawing;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -15,6 +16,7 @@ namespace Eto.Forms
 		public Collection<DynamicRow> Rows
 		{
 			get { return topTable.Rows; }
+			set { topTable.Rows = value; }
 		}
 
 		[Obsolete("Use IsCreated instead")]
@@ -82,6 +84,17 @@ namespace Eto.Forms
 				Spacing = spacing
 			};
 			currentItem = topTable;
+		}
+
+		public DynamicLayout(params DynamicRow[] rows)
+			: this((IEnumerable<DynamicRow>)rows)
+		{
+		}
+
+		public DynamicLayout(IEnumerable<DynamicRow> rows)
+			: this()
+		{
+			Rows = new Collection<DynamicRow>(rows.ToList());
 		}
 
 		public DynamicTable  BeginVertical(bool xscale, bool? yscale = null)

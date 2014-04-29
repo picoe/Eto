@@ -7,25 +7,23 @@ namespace Eto.Test.Sections.Drawing
 	{
 		public AntialiasSection()
 		{
-			var layout = new DynamicLayout();
-
-			layout.AddRow(
-				new Label { Text = "Antialias On" }, AntialiasOn(),
-				new Label { Text = "Antialias Off" }, AntialiasOff(), 
+			Content = new DynamicLayout(
+				new DynamicRow(
+					new Label { Text = "Antialias On" }, AntialiasOn(), 
+					new Label { Text = "Antialias Off" }, AntialiasOff(), 
+					null
+				),
 				null
 			);
-
-			layout.Add(null);
-
-			Content = layout;
 		}
 
 		Control AntialiasOn()
 		{
-			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size(100, 100), BackgroundColor = Colors.Black };
 
 			var path = CreatePath();
-			control.Paint += (sender, e) => {
+			control.Paint += (sender, e) =>
+			{
 				e.Graphics.AntiAlias = true;
 				e.Graphics.DrawPath(Pens.White(e.Generator), path);
 			};
@@ -35,10 +33,11 @@ namespace Eto.Test.Sections.Drawing
 
 		Control AntialiasOff()
 		{
-			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size(100, 100), BackgroundColor = Colors.Black };
 
 			var path = CreatePath();
-			control.Paint += (sender, e) => {
+			control.Paint += (sender, e) =>
+			{
 				e.Graphics.AntiAlias = false;
 				e.Graphics.DrawPath(Pens.White(e.Generator), path);
 			};

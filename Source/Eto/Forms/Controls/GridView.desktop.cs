@@ -1,5 +1,3 @@
-#if DESKTOP
-
 namespace Eto.Forms
 {
 	public partial interface IGridView : IContextMenuHost
@@ -16,4 +14,3 @@ namespace Eto.Forms
 
 	}
 }
-#endif

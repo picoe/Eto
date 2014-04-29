@@ -10,26 +10,32 @@ namespace Eto.Forms
 	[ContentProperty("Items"), TypeConverter(typeof(DynamicRowConverter))]
 	public class DynamicRow
 	{
-		readonly List<DynamicItem> list;
+		Collection<DynamicItem> items;
 
-		readonly Collection<DynamicItem> items;
 		public DynamicTable Table { get; internal set; }
 
-		public Collection<DynamicItem> Items { get { return items; } }
+		public Collection<DynamicItem> Items
+		{ 
+			get { return items ?? (items = new Collection<DynamicItem>()); }
+			set { items = value; }
+		}
 
 		public DynamicRow()
 		{
-			items = new Collection<DynamicItem>(list = new List<DynamicItem>());
+		}
+
+		public DynamicRow(params DynamicItem[] items)
+			: this((IEnumerable<DynamicItem>)items)
+		{
 		}
 
 		public DynamicRow(IEnumerable<DynamicItem> items)
 		{
-			this.items = new Collection<DynamicItem>(list = new List<DynamicItem>(items));
+			this.items = new Collection<DynamicItem>(items.ToList());
 		}
 
 		public DynamicRow(IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
 		{
-			items = new Collection<DynamicItem>(list = new List<DynamicItem>());
 			Add(controls, xscale, yscale);
 		}
 
@@ -43,7 +49,10 @@ namespace Eto.Forms
 			if (controls == null)
 				return;
 			var controlItems = controls.Select(r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
-			list.AddRange(controlItems.OfType<DynamicItem>());
+			foreach (var control in controlItems)
+			{
+				Items.Add(control);
+			}
 		}
 
 		public static implicit operator DynamicRow(Control control)
@@ -57,11 +66,14 @@ namespace Eto.Forms
 	[ContentProperty("Rows")]
 	public class DynamicTable : DynamicItem, ISupportInitialize
 	{
-
-		readonly Collection<DynamicRow> rows;
+		Collection<DynamicRow> rows;
 		bool visible = true;
 
-		public Collection<DynamicRow> Rows { get { return rows; } }
+		public Collection<DynamicRow> Rows
+		{ 
+			get { return rows ?? (rows = new Collection<DynamicRow>()); }
+			set { rows = value; }
+		}
 
 		public TableLayout Table { get; private set; }
 
@@ -87,8 +99,16 @@ namespace Eto.Forms
 
 		public DynamicTable()
 		{
+		}
 
-			rows = new Collection<DynamicRow>();
+		public DynamicTable(params DynamicRow[] rows)
+			: this((IEnumerable<DynamicRow>)rows)
+		{
+		}
+
+		public DynamicTable(IEnumerable<DynamicRow> rows)
+		{
+			Rows = new Collection<DynamicRow>(rows.ToList());
 		}
 
 		public void Add(DynamicItem item)

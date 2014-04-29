@@ -68,9 +68,8 @@ namespace Eto.Test.Sections.Dialogs
 			{
 				var dialog = CreateDialog();
 				dialog.Title = "Resizable Dialog";
-#if DESKTOP
-				dialog.Resizable = true;
-#endif
+				if (Generator.IsDesktop)
+					dialog.Resizable = true;
 				dialog.ShowDialog(this);
 			};
 
@@ -83,12 +82,14 @@ namespace Eto.Test.Sections.Dialogs
 			control.Click += delegate
 			{
 				var dialog = new Dialog();
-#if DESKTOP
-				dialog.Minimizable = true;
-				dialog.Resizable = true;
-				dialog.Maximizable = true;
-				dialog.WindowState = WindowState.Maximized;
-#endif
+				if (Generator.IsDesktop)
+				{
+					dialog.Minimizable = true;
+					dialog.Resizable = true;
+					dialog.Maximizable = true;
+					dialog.WindowState = WindowState.Maximized;
+				}
+
 				dialog.Title = "Kitchen Sink Dialog";
 				dialog.Content = new Controls.KitchenSinkSection();
 				dialog.ShowDialog(this);

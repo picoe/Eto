@@ -1,33 +1,50 @@
-using Eto.Forms;
+using System;
 using Eto.Drawing;
+using Eto.Forms;
 using Eto.IO;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto.Platform.Windows.Drawing;
-using Eto.Platform.Windows.Forms;
-using Eto.Platform.Windows.Forms.Printing;
-using Eto.Platform.Windows.Forms.Controls;
-using Eto.Platform.Windows.IO;
-using Eto.Forms.ThemedControls;
+using MonoMac.AppKit;
+using Eto.Platforms.Mac.Drawing;
+using MonoMac.Foundation;
+using Eto.Platforms.Mac.IO;
+using Eto.Platforms.Mac.Forms.Controls;
+using Eto.Platforms.Mac.Forms.Printing;
+using Eto.Platforms.Mac.Forms;
+using Eto.Platforms.Mac.Forms.Menu;
+using Eto.Platforms.Mac.Threading;
+using Eto.Threading;
 
-namespace Eto.Platform.Windows
+namespace Eto.Platforms.Mac
 {
-	public class Generator : Eto.Generator
+	[Preserve(AllMembers = true)]
+	public class Generator : Eto.Platform
 	{
 		public override bool IsDesktop { get { return true; } }
 
-		public override bool IsWinForms { get { return true; } }
+		public override bool IsMac { get { return true; } }
 
-		public override string ID { get { return "winforms"; } }
+		#if XAMMAC
+		public override string ID { get { return Generators.XamMac; } }
 
-		static readonly EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register("Eto.Platform.Windows.CustomControls.Assemblies");
+#else
+		public override string ID { get { return Generators.Mac; } }
+		#endif
+		static bool initialized;
 
 		public Generator()
 		{
+			if (!initialized)
+			{
+				NSApplication.Init();
+				// until everything is marked as thread safe correctly in monomac
+				// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
+				NSApplication.CheckForIllegalCrossThreadCalls = false;
+
+				initialized = true;
+			}
 			AddTo(this);
 		}
 
-		public static void AddTo(Eto.Generator g)
+		public static void AddTo(Eto.Platform g)
 		{
 			// Drawing
 			g.Add<IBitmap>(() => new BitmapHandler());
@@ -72,7 +89,7 @@ namespace Eto.Platform.Windows
 			g.Add<IScrollable>(() => new ScrollableHandler());
 			g.Add<ISearchBox>(() => new SearchBoxHandler());
 			g.Add<ISlider>(() => new SliderHandler());
-			g.Add<ISpinner>(() => new ThemedSpinnerHandler());
+			g.Add<ISpinner>(() => new SpinnerHandler());
 			g.Add<ISplitter>(() => new SplitterHandler());
 			g.Add<ITabControl>(() => new TabControlHandler());
 			g.Add<ITabPage>(() => new TabPageHandler());
@@ -86,7 +103,7 @@ namespace Eto.Platform.Windows
 			// Forms.Menu
 			g.Add<ICheckMenuItem>(() => new CheckMenuItemHandler());
 			g.Add<IContextMenu>(() => new ContextMenuHandler());
-			g.Add<IButtonMenuItem>(() => new ButtonMenuItemHandler());
+			g.Add<IButtonMenuItem>(() => new ImageMenuItemHandler());
 			g.Add<IMenuBar>(() => new MenuBarHandler());
 			g.Add<IRadioMenuItem>(() => new RadioMenuItemHandler());
 			g.Add<ISeparatorMenuItem>(() => new SeparatorMenuItemHandler());
@@ -98,7 +115,7 @@ namespace Eto.Platform.Windows
 			
 			// Forms.ToolBar
 			g.Add<ICheckToolItem>(() => new CheckToolItemHandler());
-			g.Add<ISeparatorToolItem>(() => new SeparatorToolBarItemHandler());
+			g.Add<ISeparatorToolItem>(() => new SeparatorToolItemHandler());
 			g.Add<IButtonToolItem>(() => new ButtonToolItemHandler());
 			g.Add<IToolBar>(() => new ToolBarHandler());
 			
@@ -111,7 +128,6 @@ namespace Eto.Platform.Windows
 			g.Add<IFontDialog>(() => new FontDialogHandler());
 			g.Add<IForm>(() => new FormHandler());
 			g.Add<IMessageBox>(() => new MessageBoxHandler());
-			g.Add<IModalWindow>(() => new ModalWindowHandler());
 			g.Add<IOpenFileDialog>(() => new OpenFileDialogHandler());
 			g.Add<IPixelLayout>(() => new PixelLayoutHandler());
 			g.Add<ISaveFileDialog>(() => new SaveFileDialogHandler());
@@ -119,12 +135,18 @@ namespace Eto.Platform.Windows
 			g.Add<ITableLayout>(() => new TableLayoutHandler());
 			g.Add<IUITimer>(() => new UITimerHandler());
 			g.Add<IMouse>(() => new MouseHandler());
-			
+
 			// IO
 			g.Add<ISystemIcons>(() => new SystemIconsHandler());
-			
+
 			// General
 			g.Add<IEtoEnvironment>(() => new EtoEnvironmentHandler());
+			g.Add<IThread>(() => new ThreadHandler());
+		}
+
+		public override IDisposable ThreadStart()
+		{
+			return new NSAutoreleasePool();
 		}
 	}
 }

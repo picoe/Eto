@@ -1,27 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Windows.Markup;
-using System.Runtime.InteropServices;
 
-// Information about this assembly is defined by the following attributes.
-// Change them to the values specific to your project.
-[assembly: AssemblyTitle("Eto.Xaml")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Picoe Software Solutions Inc.")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Curtis Wensley")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
-// The form "{Major}.{Minor}.*" will automatically update the build and revision,
-// and "{Major}.{Minor}.{Build}.*" will update just the revision.
-[assembly: AssemblyVersion("1.0.*")]
-// The following attributes are used to specify the signing key for the assembly,
-// if desired. See the Mono documentation for more information about signing.
-//[assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("")]
-
-[assembly: XmlnsDefinition(Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto.Forms")]
-[assembly: XmlnsDefinition(Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto.Xaml.Extensions")]
-[assembly: XmlnsPrefix(Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "eto")]
+[assembly: AssemblyTitle("Eto.Forms Xaml serializer")]
+[assembly: AssemblyDescription("Eto.Forms Xaml serializer")]
