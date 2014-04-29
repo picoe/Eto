@@ -18,9 +18,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		readonly swc.Label label;
 		readonly swc.Grid grid;
 		ButtonImagePosition imagePosition;
-		readonly Size defaultSize = Button.DefaultSize;
 
-		protected override Size DefaultSize { get { return defaultSize; } }
+		public static Size MinimumSize = new Size(80, 23);
+
+		protected override Size DefaultSize { get { return MinimumSize; } }
 
 		public ButtonHandler ()
 		{

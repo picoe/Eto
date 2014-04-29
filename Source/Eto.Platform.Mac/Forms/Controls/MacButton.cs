@@ -1,23 +1,26 @@
 using Eto.Forms;
 using MonoMac.AppKit;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public abstract class MacButton<TControl, TWidget> : MacControl<TControl, TWidget>, ITextControl
 		where TControl: NSButton
 		where TWidget: Control
-	{	
-
-		public virtual string Text {
-			get {
+	{
+		public virtual string Text
+		{
+			get
+			{
 				return Control.Title;
 			}
-			set {
+			set
+			{
+				var oldSize = GetPreferredSize(Size.MaxValue);
 				Control.SetTitleWithMnemonic(value);
-				LayoutIfNeeded();
+				LayoutIfNeeded(oldSize);
 			}
 		}
-
 	}
 }
 

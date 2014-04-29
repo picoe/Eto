@@ -71,6 +71,7 @@ namespace Eto.Forms
 		/// <remarks>
 		/// You can set this size to ensure that all buttons are at least of this size
 		/// </remarks>
+		[Obsolete("This is no longer supported. Set the size of your buttons directly")]
 		public static Size DefaultSize = new Size (80, 26);
 
 		EventHandler<EventArgs> click;

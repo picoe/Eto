@@ -15,8 +15,9 @@ namespace Eto.Platform.GtkSharp
 		readonly Gtk.AccelLabel label;
 		readonly Gtk.Image gtkimage;
 		readonly Gtk.Table table;
-		readonly Size defaultSize = Button.DefaultSize;
 		ButtonImagePosition imagePosition;
+
+		public static int MinimumWidth = 80;
 
 		protected override Gtk.Widget FontControl
 		{
@@ -26,7 +27,6 @@ namespace Eto.Platform.GtkSharp
 		public ButtonHandler()
 		{
 			Control = new Gtk.Button();
-
 			// need separate widgets as the theme can (and usually) disables images on buttons
 			// gtk3 can override the theme per button, but gtk2 cannot
 			table = new Gtk.Table(3, 3, false);
@@ -73,11 +73,7 @@ namespace Eto.Platform.GtkSharp
 					var size = args.Allocation;
 					if (size.Width > 1 || size.Height > 1)
 					{
-						var defaultSize = handler.defaultSize;
-						if (defaultSize.Width > size.Width)
-							size.Width = defaultSize.Width;
-						if (defaultSize.Height > size.Height)
-							size.Height = defaultSize.Height;
+						size.Width = Math.Max(size.Width, MinimumWidth);
 						if (args.Allocation != size)
 							c.SetSizeRequest(size.Width, size.Height);
 					}

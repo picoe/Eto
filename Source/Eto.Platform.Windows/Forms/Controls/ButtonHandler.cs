@@ -14,27 +14,36 @@ namespace Eto.Platform.Windows
 	public class ButtonHandler : WindowsControl<ButtonHandler.EtoButton, Button>, IButton
 	{
 		Image image;
-		readonly Size defaultSize;
+
+		// windows guidelines specify default height of 23
+		public static Size MinimumSize = new Size(80, 23);
 
 		public class EtoButton : swf.Button
 		{
-			public override sd.Size GetPreferredSize (sd.Size proposedSize)
+			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var size = base.GetPreferredSize (sd.Size.Empty);
-				// fix bug where text will wrap if it has both an image and text
-				if (AutoSize && Image != null) {
-					size.Width += 3;
+				var size = base.GetPreferredSize(sd.Size.Empty);
+
+				if (AutoSize && Image != null)
+				{
+					if (!string.IsNullOrEmpty(Text))
+						// fix bug where text will wrap if it has both an image and text
+						size.Width += 3;
+					else
+						// fix bug with image and no text
+						size.Height += 1;
 				}
+
 				return size;
 			}
 		}
 
 		public override Size? DefaultSize
 		{
-			get { return defaultSize; }
+			get { return ButtonHandler.MinimumSize; }
 		}
 
-		public ButtonHandler ()
+		public ButtonHandler()
 		{
 			Control = new EtoButton
 			{
@@ -42,10 +51,10 @@ namespace Eto.Platform.Windows
 				TextImageRelation = swf.TextImageRelation.ImageBeforeText,
 				AutoSize = true
 			};
-			Control.Click += delegate {
-				Widget.OnClick (EventArgs.Empty);
+			Control.Click += delegate
+			{
+				Widget.OnClick(EventArgs.Empty);
 			};
-			defaultSize = Button.DefaultSize;
 		}
 
 		public override string Text
@@ -54,7 +63,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				base.Text = value;
-				SetAlign ();
+				SetAlign();
 			}
 		}
 
@@ -64,13 +73,14 @@ namespace Eto.Platform.Windows
 			set
 			{
 				image = value;
-				Control.Image = image.ToSD ();
+				Control.Image = image.ToSD();
 			}
 		}
 
-		void SetAlign ()
+		void SetAlign()
 		{
-			if (string.IsNullOrEmpty (base.Text)) {
+			if (string.IsNullOrEmpty(base.Text))
+			{
 				if (Control.TextImageRelation == swf.TextImageRelation.ImageBeforeText)
 					Control.ImageAlign = sd.ContentAlignment.MiddleLeft;
 				else if (Control.TextImageRelation == swf.TextImageRelation.TextBeforeImage)
@@ -84,10 +94,11 @@ namespace Eto.Platform.Windows
 
 		public ButtonImagePosition ImagePosition
 		{
-			get { return Control.TextImageRelation.ToEto (); }
-			set {
-				Control.TextImageRelation = value.ToSD ();
-				SetAlign ();
+			get { return Control.TextImageRelation.ToEto(); }
+			set
+			{
+				Control.TextImageRelation = value.ToSD();
+				SetAlign();
 			}
 		}
 	}

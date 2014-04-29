@@ -62,13 +62,10 @@ namespace Eto.Test.Sections.Controls
 
 		Control DefaultSizeButton()
 		{
-			var old = Button.DefaultSize;
-			Button.DefaultSize = new Size(50, 50);
-			var control = new Button { Text = "B" };
+			var control = new Button { Text = "B", Size = new Size(50, 50) };
 			LogEvents(control);
-			var control2 = new Button { Text = "Button With Text" };
+			var control2 = new Button { Text = "Button With Text", Size = new Size(-1, 50) };
 			LogEvents(control2);
-			Button.DefaultSize = old;
 
 			var layout = new DynamicLayout(Padding.Empty);
 			layout.AddRow(new Label { Text = "With Default Size of 50x50:", VerticalAlign = VerticalAlign.Middle }, control, control2);

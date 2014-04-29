@@ -8,6 +8,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class ButtonHandler : IosButton<UIButton, Button>, IButton
 	{
+		public static Size MinimumSize = new Size(80, 23);
 		
 		class MyButton : UIButton {
 			
@@ -18,18 +19,16 @@ namespace Eto.Platform.iOS.Forms.Controls
 					var value = base.Frame;
 					if (Handler.AutoSize)
 					{
-						var defaultSize = Button.DefaultSize;
-						if (value.Width < defaultSize.Width) value.Width = defaultSize.Width;
-						if (value.Height < defaultSize.Height) value.Height = defaultSize.Height;
+						value.Width = Math.Max(MinimumSize.Width, value.Width);
+						value.Height = Math.Max(MinimumSize.Height, value.Height);
 					}
 					return value;
 				}
 				set {
 					if (Handler.AutoSize)
 					{
-						var defaultSize = Button.DefaultSize;
-						if (value.Width < defaultSize.Width) value.Width = defaultSize.Width;
-						if (value.Height < defaultSize.Height) value.Height = defaultSize.Height;
+						value.Width = Math.Max(MinimumSize.Width, value.Width);
+						value.Height = Math.Max(MinimumSize.Height, value.Height);
 					}
 					base.Frame = value;
 				}

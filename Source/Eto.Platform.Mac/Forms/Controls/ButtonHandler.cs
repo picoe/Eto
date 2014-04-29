@@ -15,8 +15,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		Image image;
 		ButtonImagePosition imagePosition;
-		readonly Size defaultSize;
 		static readonly Size originalSize;
+
+		public static int MinimumWidth = 80;
 
 		class EtoButtonCell : NSButtonCell
 		{
@@ -55,10 +56,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (Handler.AutoSize)
 				{
 					var size = Frame.Size;
-					if (size.Width < Handler.defaultSize.Width)
-						size.Width = Handler.defaultSize.Width;
-					if (size.Height < Handler.defaultSize.Height)
-						size.Height = Handler.defaultSize.Height;
+					size.Width = Math.Max(size.Width, MinimumWidth);
 					SetFrameSize(size);
 				}
 				setBezel = true;
@@ -90,9 +88,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				BezelStyle = NSBezelStyle.Rounded,
 				ImagePosition = NSCellImagePosition.ImageLeft
 			};
-			defaultSize = Button.DefaultSize;
 			Control.SetButtonType(NSButtonType.MomentaryPushIn);
-			Control.SetFrameSize(defaultSize.ToSDSizeF());
 			Control.Activated += HandleActivated;
 		}
 
