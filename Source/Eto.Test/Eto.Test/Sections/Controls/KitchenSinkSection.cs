@@ -162,13 +162,13 @@ namespace Eto.Test.Sections.Controls
 			{
 				var control = new Label
 				{ 
-					Text = string.Format ("WebView not supported on this platform with the {0} generator", Generator.ID),
+					Text = string.Format ("WebView not supported on this platform with the {0} generator", Platform.ID),
 					BackgroundColor = Colors.Red,
 					HorizontalAlign = HorizontalAlign.Center,
 					VerticalAlign = VerticalAlign.Middle,
 					TextColor = Colors.White
 				};
-				if (Generator.ID == Generators.Gtk)
+				if (Platform.IsGtk)
 					Log.Write(this, "You must install webkit-sharp for WebView to work under GTK. Note that GTK does not support webkit-sharp on any platform other than Linux.");
 				return control;
 			}

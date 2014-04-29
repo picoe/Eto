@@ -12,7 +12,7 @@ namespace Eto.Test.Gtk3
 #if DEBUG
 			Debug.Listeners.Add (new ConsoleTraceListener());
 #endif
-			var generator = Generator.GetGenerator (Generators.Gtk3Assembly);
+			var generator = Platform.Get (Platforms.Gtk3);
 			
 			var app = new TestApplication (generator);
 			app.Run (args);

@@ -12,14 +12,14 @@ namespace Eto.Test.WinForms.UnitTests
 	{
 		protected override IMatrix Create()
 		{
-			var matrix = new Eto.Platform.Windows.Drawing.MatrixHandler();
+			var matrix = new Eto.WinForms.Drawing.MatrixHandler();
 			matrix.Create();
 			return matrix;
 		}
 
 		protected override IMatrix Create(float xx, float yx, float xy, float yy, float x0, float y0)
 		{
-			var matrix = new Eto.Platform.Windows.Drawing.MatrixHandler();
+			var matrix = new Eto.WinForms.Drawing.MatrixHandler();
 			matrix.Create(xx, yx, xy, yy, x0, y0);
 			return matrix;
 		}

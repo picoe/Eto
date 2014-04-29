@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Eto.Test
 {
@@ -18,7 +19,16 @@ namespace Eto.Test
 			MainForm = new MainForm();
 
 			base.OnInitialized(e);
-			
+
+			int count = 100000;
+			var start = DateTime.Now;
+			for (int i = 0; i < count; i++)
+			{
+				new Button();
+			}
+			var end = DateTime.Now;
+			Debug.WriteLine("Time: {0}", end - start);
+
 			// show the main form
 			MainForm.Show();
 		}

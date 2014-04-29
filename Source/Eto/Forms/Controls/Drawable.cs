@@ -34,7 +34,7 @@ namespace Eto.Forms
 
 		public Generator Generator
 		{
-			get { return graphics.Generator; }
+			get { return graphics.Platform; }
 		}
 
 		public Rectangle ClipRectangle

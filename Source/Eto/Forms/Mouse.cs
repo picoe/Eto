@@ -25,9 +25,9 @@ namespace Eto.Forms
 	/// </summary>
 	public static class Mouse
 	{
-		public static bool IsSupported(Generator generator = null)
+		public static bool IsSupported
 		{
-			return (generator ?? Generator.Current).Supports<IMouse>();
+			get { return Platform.Instance.Supports<IMouse>(); }
 		}
 
 		static IMouse Handler(Generator generator)

@@ -357,7 +357,7 @@ namespace Eto.WinForms
 			}
 		}
 
-		public static Font ToEto(this sd.Font font, Eto.Platform generator)
+		public static Font ToEto(this sd.Font font, Eto.Generator generator)
 		{
 			return font == null ? null : new Font(generator, new FontHandler(font));
 		}
@@ -390,19 +390,14 @@ namespace Eto.WinForms
 			return buttons;
 		}
 
-		public static Graphics ToEto(this sd.Graphics g, Eto.Platform generator)
+		public static Graphics ToEto(this sd.Graphics g, Eto.Generator generator)
 		{
 			return new Graphics(generator, new GraphicsHandler(g));
 		}
 
-		public static PaintEventArgs ToEto(this swf.PaintEventArgs e, Eto.Platform generator)
+		public static PaintEventArgs ToEto(this swf.PaintEventArgs e, Eto.Generator generator)
 		{
 			return new PaintEventArgs(ToEto(e.Graphics, generator), e.ClipRectangle.ToEto());
-		}
-
-		public static sd.Image ToSD(this IImage image)
-		{
-			return image == null ? null : image.ControlObject as sd.Image;
 		}
 
 		public static sd2.PixelOffsetMode ToSD(this PixelOffsetMode mode)
@@ -669,7 +664,7 @@ namespace Eto.WinForms
 			return DrawableCellState.Normal;
 		}
 
-		public static PrintSettings ToEto(this sdp.PrinterSettings settings, Eto.Platform generator)
+		public static PrintSettings ToEto(this sdp.PrinterSettings settings, Eto.Generator generator)
 		{
 			return settings == null ? null : new PrintSettings(generator, new PrintSettingsHandler(settings));
 		}

@@ -16,7 +16,7 @@ namespace Eto.Forms
 		new ITabPage Handler { get { return (ITabPage)base.Handler; } }
 		
 		public TabPage (Control control, Padding? padding = null)
-			: this (control.Generator)
+			: this (control.Platform)
 		{
 			if (padding != null)
 				this.Padding = padding.Value;

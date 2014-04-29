@@ -21,9 +21,9 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddRow(null, CheckBoxControl(), RadioButtonControl(), null);
 			layout.AddRow(null, DateTimeControl(), NumericUpDownControl(), null);
 			layout.AddRow(null, ComboBoxControl(), PasswordBoxControl(), null);
-			if (Generator.Supports<IListBox>())
+			if (Platform.Supports<IListBox>())
 				layout.AddRow(null, ListBoxControl(), DrawableControl(), null);
-			if (Generator.Supports<IGroupBox>())
+			if (Platform.Supports<IGroupBox>())
 				layout.AddRow(null, GroupBoxControl(), new Panel(), null);
 			layout.EndVertical();
 			layout.Add(null);

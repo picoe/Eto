@@ -59,6 +59,11 @@ namespace Eto
 		}
 
 #if PCL
+		public static T GetCustomAttribute<T>(this Type type, bool inherit)
+			where T: Attribute
+		{
+			return type.GetTypeInfo().GetCustomAttribute<T>(inherit);
+		}
 
 		public static MethodInfo GetAddMethod(this EventInfo eventInfo)
 		{
@@ -90,6 +95,12 @@ namespace Eto
 		}
 
 #else 
+
+		public static T GetCustomAttribute<T>(this Type type, bool inherit)
+			where T: Attribute
+		{
+			return (T)type.GetCustomAttributes(typeof(T), inherit).FirstOrDefault();
+		}
 
 		/// <summary>
 		/// Returns a PropertyInfo for the specified property of the current type.

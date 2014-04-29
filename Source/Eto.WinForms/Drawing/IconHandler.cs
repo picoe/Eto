@@ -15,7 +15,7 @@ namespace Eto.WinForms.Drawing
 	public class IconHandler : WidgetHandler<SD.Icon, Icon>, IIcon, IWindowsImage, IWindowsIconSource
 	{
 		SD.Icon[] icons;
-		
+
 		public IconHandler (SD.Icon control)
 		{
 			this.Control = control;

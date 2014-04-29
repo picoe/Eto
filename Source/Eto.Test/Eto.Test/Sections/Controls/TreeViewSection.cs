@@ -218,7 +218,7 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150)
 			};
 
-			if (Generator.Supports<IContextMenu>())
+			if (Platform.Supports<IContextMenu>())
 			{
 				var menu = new ContextMenu();
 				var item = new ButtonMenuItem { Text = "Click Me!" };

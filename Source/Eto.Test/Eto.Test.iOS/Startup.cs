@@ -6,8 +6,8 @@ namespace Eto.Test.iOS
 		// This is the main entry point of the application.
 		static void Main(string[] args)
 		{
-			var generator = new Eto.Platform.iOS.Generator();
-			var app = new TestApplication(generator);
+			var platform = new Eto.iOS.Platform();
+			var app = new TestApplication(platform);
 			app.Run(args);
 		}
 	}

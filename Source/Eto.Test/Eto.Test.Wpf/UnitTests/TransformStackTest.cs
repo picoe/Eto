@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Eto.Drawing;
-using Eto.Platform.Wpf.Drawing;
+using Eto.Wpf.Drawing;
 using Eto.Test.UnitTests.Drawing;
 using NUnit.Framework;
 
@@ -18,7 +18,7 @@ namespace Eto.Test.Wpf.UnitTests
         [Test]
         public void TransformStack_TranlateSaveRestore_Verify()
         {
-			using (var context = new Eto.Platform.Wpf.Generator().Context)
+			using (var context = new Eto.Wpf.Platform().Context)
 			{
 				var current = Matrix.Create();
 				var stack = new Stack<IMatrix>();
@@ -29,7 +29,7 @@ namespace Eto.Test.Wpf.UnitTests
 				};
 				Action pop = () => current = stack.Pop();
 
-				var target = new TransformStack(Generator.Current, push, pop);
+				var target = new TransformStack(Platform.Instance, push, pop);
 
 				Assert.IsTrue(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 0f, 0f));
 

@@ -12,8 +12,13 @@ namespace Eto.Forms
 	{
 		new ICommonControl Handler { get { return (ICommonControl)base.Handler; } }
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected CommonControl(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
+		{
+		}
+
+		protected CommonControl()
 		{
 		}
 

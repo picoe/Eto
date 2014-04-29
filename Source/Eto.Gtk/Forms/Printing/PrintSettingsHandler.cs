@@ -4,7 +4,7 @@ namespace Eto.GtkSharp.Forms.Printing
 {
 	public static class PrintSettingsExtensions
 	{
-		public static PrintSettings ToEto (this Gtk.PrintSettings settings, Gtk.PageSetup setup, bool selectionOnly, Eto.Platform generator)
+		public static PrintSettings ToEto (this Gtk.PrintSettings settings, Gtk.PageSetup setup, bool selectionOnly, Eto.Generator generator)
 		{
 			return settings == null ? null : new PrintSettings(generator, new PrintSettingsHandler(settings, setup, selectionOnly));
 		}

@@ -285,7 +285,7 @@ namespace Eto.Mac
 			return kpea;
 		}
 
-		public static PrintSettings ToEto(this NSPrintInfo value, Eto.Platform generator)
+		public static PrintSettings ToEto(this NSPrintInfo value, Eto.Generator generator)
 		{
 			return value == null ? null : new PrintSettings(generator, new PrintSettingsHandler(value));
 		}

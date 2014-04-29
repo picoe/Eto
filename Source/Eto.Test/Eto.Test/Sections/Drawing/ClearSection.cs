@@ -70,7 +70,7 @@ namespace Eto.Test.Sections.Drawing
 
 		void DrawSample(Graphics graphics)
 		{
-			using (graphics.Generator.Context)
+			using (graphics.Platform.Context)
 			{
 				graphics.FillRectangle(Brushes.Green(), 0, 0, 200, 200);
 				if (UseGraphicsPathClip)
@@ -91,7 +91,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Image CreateImage()
 		{
-			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba, generator: Generator);
+			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba, generator: Platform);
 			using (var graphics = new Graphics(image))
 			{
 				DrawSample(graphics);

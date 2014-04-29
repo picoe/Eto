@@ -29,8 +29,6 @@ namespace Eto
 	public abstract class WidgetHandler<TWidget> : IWidget, IDisposable
 		where TWidget: Widget
 	{
-		Generator generator;
-
 		/// <summary>
 		/// Gets the widget that this platform handler is attached to
 		/// </summary>
@@ -39,16 +37,10 @@ namespace Eto
 		/// <summary>
 		/// Gets the generator that was used to create this handler
 		/// </summary>
-		public Generator Generator
+		[Obsolete("Use Platform.Instance instead")]
+		public Platform Platform
 		{
-			get { return generator; }
-			set
-			{
-				generator = value;
-				
-				// validate the generator
-				Eto.Generator.Validate(generator);
-			}
+			get { return Platform.Instance; }
 		}
 
 		#region IWidget Members
@@ -68,19 +60,18 @@ namespace Eto
 		{
 		}
 
-		void IWidget.Initialize()
-		{
-			Initialize();
-			PostInitialize();
-		}
-
 		/// <summary>
 		/// Gets or sets the widget instance
 		/// </summary>
 		Widget IWidget.Widget
 		{
 			get { return Widget; }
-			set { Widget = (TWidget)value; }
+			set
+			{
+				Widget = (TWidget)value;
+				Initialize();
+				PostInitialize();
+			}
 		}
 
 		#endregion
@@ -130,7 +121,7 @@ namespace Eto
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="T">Type of the platform-specific object</typeparam>
 	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget
+	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget, IControlObjectSource
 		where TWidget: InstanceWidget
 	{
 		const string InstanceEventSuffix = ".Instance";
@@ -140,40 +131,6 @@ namespace Eto
 		/// </summary>
 		protected WidgetHandler()
 		{
-		}
-
-		/// <summary>
-		/// Called to create the platform control for this widget
-		/// </summary>
-		/// <remarks>
-		/// This is used so that it is easy to override the control that is created for a handler.
-		/// If you derive from an existing platform handler to override it's behaviour, you can change
-		/// the class that is created via this method. You will still need that control to be of the same
-		/// type that the original handler has defined, but you will be able to subclass the platform control
-		/// to provide any specific functionality if needed.
-		/// 
-		/// This gets called automatically by <see cref="Initialize"/>, so you should only set properties on your control
-		/// in the handler's overridden initialize method, after the base class' initialize has been called.
-		/// </remarks>
-		/// <returns>A new instance of the platform-specific control this handler encapsulates</returns>
-		public virtual T CreateControl()
-		{
-			return default(T);
-		}
-
-		/// <summary>
-		/// Called to initialize this widget after it has been constructed
-		/// </summary>
-		/// <remarks>
-		/// Override this to initialize any of the platform objects.  This is called
-		/// in the widget constructor, after all of the widget's constructor code has been called.
-		/// </remarks>
-		protected override void Initialize()
-		{
-			if (EqualityComparer<T>.Default.Equals(Control, default(T)))
-				Control = CreateControl();
-
-			base.Initialize();
 		}
 
 		protected override void PostInitialize()
@@ -194,19 +151,19 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating that control should automatically be disposed when this widget is disposed
+		/// Gets a value indicating that control should automatically be disposed when this widget is disposed
 		/// </summary>
 		protected virtual bool DisposeControl { get { return true; } }
 
 		/// <summary>
 		/// Gets or sets the platform-specific control object
 		/// </summary>
-		public virtual T Control { get; protected set; }
+		public T Control { get; protected set; }
 
 		/// <summary>
 		/// Gets the platform-specific control object
 		/// </summary>
-		object IInstanceWidget.ControlObject { get { return Control; } }
+		object IControlObjectSource.ControlObject { get { return Control; } }
 
 		/// <summary>
 		/// Gets a value indicating that the specified event is handled
@@ -248,7 +205,7 @@ namespace Eto
 		{
 			#if DEBUG
 			// only throw for platforms that should be fully implemented, and only in debug
-			if (Generator.IsGtk || Generator.IsMac || Generator.IsWinForms || Generator.IsWpf)
+			if (Platform.IsGtk || Platform.IsMac || Platform.IsWinForms || Platform.IsWpf)
 				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
 			#endif
 		}

@@ -30,28 +30,28 @@ namespace Eto.Direct2D
 			set;
 		}
 
-		public static new void AddTo(Eto.Platform g)
+		public static new void AddTo(Eto.Platform p)
 		{
 			// Drawing
-			g.Add<IBitmap>(() => new BitmapHandler());
-			g.Add<IFontFamily>(() => new FontFamilyHandler());
-			g.Add<IFont>(() => new FontHandler());
-			g.Add<IFonts>(() => new FontsHandler());
-			g.Add<IGraphics>(() => new GraphicsHandler());
-			g.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
-			g.Add<IIcon>(() => new IconHandler());
-			g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
-			g.Add<IMatrixHandler>(() => new MatrixHandler());
-			g.Add<IPen>(() => new PenHandler());
-			g.Add<ISolidBrush>(() => new SolidBrushHandler());
-			g.Add<ITextureBrush>(() => new TextureBrushHandler());
-			g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
+			p.Add<IBitmap>(() => new BitmapHandler());
+			p.Add<IFontFamily>(() => new FontFamilyHandler());
+			p.Add<IFont>(() => new FontHandler());
+			p.Add<IFonts>(() => new FontsHandler());
+			p.Add<IGraphics>(() => new GraphicsHandler());
+			p.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
+			p.Add<IIcon>(() => new IconHandler());
+			p.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
+			p.Add<IMatrixHandler>(() => new MatrixHandler());
+			p.Add<IPen>(() => new PenHandler());
+			p.Add<ISolidBrush>(() => new SolidBrushHandler());
+			p.Add<ITextureBrush>(() => new TextureBrushHandler());
+			p.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
 
 			// Forms.Cells
-			g.Add<IDrawable>(() => new DrawableHandler());
+			p.Add<IDrawable>(() => new DrawableHandler());
 
 			// Forms.Printing
-			g.Add<IPrintDocument>(() => new PrintDocumentHandler());
+			p.Add<IPrintDocument>(() => new PrintDocumentHandler());
 		}
     }
 }

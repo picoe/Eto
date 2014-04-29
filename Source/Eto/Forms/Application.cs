@@ -81,26 +81,35 @@ namespace Eto.Forms
 		}
 
 #if !PCL
-		public Application() : this(Generator.Detect)
+		public Application() : this(Platform.Detect)
 		{
 		}
 
+		[Obsolete("Use default constructor or Application(Platform) and HandlerAttribute instead")]
 		protected Application(Generator generator, Type type, bool initialize = true)
-		: base(generator ?? Generator.Detect, type, initialize)
+			: base(generator ?? Platform.Detect, type, initialize)
 		{
 			Application.Instance = this;
-			Generator.Initialize(generator ?? Generator.Detect); // make everything use this by default
+			Platform.Initialize(generator as Platform ?? Platform.Detect); // make everything use this by default
 		}
 #else
+		[Obsolete("Use Application(Platform) and HandlerAttribute instead")]
 		protected Application(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
 			Application.Instance = this;
-			Generator.Initialize(generator);
+			Platform.Initialize(generator as Platform);
 		}
 #endif
 
-		public Application(Generator generator) : this(generator, typeof(IApplication))
+		[Obsolete("Use Application(Platform) instead")]
+		public Application(Generator generator)
+			: this((Platform)generator)
+		{
+		}
+
+		public Application(Platform platform)
+			: this(platform, typeof(IApplication))
 		{
 		}
 

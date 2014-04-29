@@ -53,7 +53,7 @@ namespace Eto.Test.Sections
 				Log.Write(null, "Starting tests...");
 				Task.Factory.StartNew(() =>
 				{
-					using (Generator.ThreadStart())
+					using (Platform.ThreadStart())
 					{
 						try
 						{

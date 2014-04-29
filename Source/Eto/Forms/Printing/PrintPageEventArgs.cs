@@ -18,7 +18,7 @@ namespace Eto.Forms
 			this.CurrentPage = currentPage;
 		}
 
-		public Generator Generator { get { return Graphics.Generator; } }
+		public Generator Generator { get { return Graphics.Platform; } }
 	}
 }
 

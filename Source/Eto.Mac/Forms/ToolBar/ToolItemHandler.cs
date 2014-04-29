@@ -148,16 +148,12 @@ namespace Eto.Mac
 				Tint = Colors.Gray;
 		}
 
-		public override TControl CreateControl()
-		{
-			return (TControl)new NSToolbarItem(Identifier);
-		}
-
 		static readonly Selector selAction = new Selector("action");
 
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control = (TControl)new NSToolbarItem(Identifier);
 			Control.Target = new ToolBarItemHandlerTarget { Handler = this };
 			Control.Action = selAction;
 			Control.Autovalidates = false;

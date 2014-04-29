@@ -162,7 +162,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public DirectDrawingRenderer(Generator generator = null)
 		{
-			Generator = generator ?? Generator.Current;
+			Generator = generator ?? Platform.Instance;
 			texture = TestIcons.Textures(generator);
 			font = SystemFonts.Default(generator: generator);
 			textBrush = new SolidBrush(Colors.White, generator);

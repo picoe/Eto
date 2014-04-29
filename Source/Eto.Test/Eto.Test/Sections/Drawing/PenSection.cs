@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddSeparateRow(null, PenJoinControl(), PenCapControl(), DashStyleControl(), null);
-			if (Generator.Supports<INumericUpDown>())
+			if (Platform.Supports<INumericUpDown>())
 				layout.AddSeparateRow(null, PenThicknessControl(), null);
 			layout.AddSeparateRow(GetDrawable());
 
@@ -101,13 +101,13 @@ namespace Eto.Test.Sections.Drawing
 
 		void Draw(Graphics g, Action<Pen> action)
 		{
-			var path = new GraphicsPath(Generator);
+			var path = new GraphicsPath(Platform);
 			path.AddLines(new PointF(0, 0), new PointF(100, 40), new PointF(0, 30), new PointF(50, 70));
 
 			for (int i = 0; i < 4; i++)
 			{
 				float thickness = 1f + i * PenThickness;
-				var pen = new Pen(Colors.Black, thickness, Generator);
+				var pen = new Pen(Colors.Black, thickness, Platform);
 				pen.LineCap = LineCap;
 				pen.LineJoin = LineJoin;
 				pen.DashStyle = DashStyle;

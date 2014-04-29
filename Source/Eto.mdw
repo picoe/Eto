@@ -3,5 +3,6 @@
     <Item>Eto.sln</Item>
     <Item>Eto - iOS.sln</Item>
     <Item>Eto - Android.sln</Item>
+    <Item>Eto - Pcl.sln</Item>
   </Items>
 </WorkspaceItem>

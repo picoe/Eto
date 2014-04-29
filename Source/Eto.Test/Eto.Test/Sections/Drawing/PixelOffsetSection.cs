@@ -13,7 +13,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var drawable = new Drawable { Size = canvasSize };
 			drawable.Paint += (sender, pe) => {
-				pe.Graphics.FillRectangle(Brushes.Black(Generator), pe.ClipRectangle);
+				pe.Graphics.FillRectangle(Brushes.Black(Platform), pe.ClipRectangle);
 				pe.Graphics.PixelOffsetMode = PixelOffsetMode.None;
 				Draw(pe.Graphics);
 			};
@@ -21,7 +21,7 @@ namespace Eto.Test.Sections.Drawing
 
 			drawable = new Drawable { Size = canvasSize };
 			drawable.Paint += (sender, pe) => {
-				pe.Graphics.FillRectangle(Brushes.Black(Generator), pe.ClipRectangle);
+				pe.Graphics.FillRectangle(Brushes.Black(Platform), pe.ClipRectangle);
 				pe.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
 				Draw(pe.Graphics);
 			};
@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public static void Draw(Graphics graphics)
 		{
-			var generator = graphics.Generator;
+			var generator = graphics.Platform;
 			var image = TestIcons.TestImage(generator);
 			// lines
 			var whitePen = Pens.White(generator);

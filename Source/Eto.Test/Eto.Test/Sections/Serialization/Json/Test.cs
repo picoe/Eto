@@ -11,7 +11,7 @@ namespace Eto.Test.Sections.Serialization.Json
 
 		public Test()
 		{
-			Eto.Json.JsonReader.Load(this);
+			Eto.Serialization.Json.JsonReader.Load(this);
 
 			MyCheckBox.Checked = true;
 			MyTextArea.Text = "This form was created via json!";

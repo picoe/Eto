@@ -45,10 +45,10 @@ namespace Eto
 	/// 
 	/// Style based on a platform-specific handler (this is for Mac OS X):
 	/// <code><![CDATA[
-	/// Style.Add<Eto.Platform.Mac.Forms.FormHandler>("mainForm", handler => {
+	/// Style.Add<Eto.Mac.Forms.FormHandler>("mainForm", handler => {
 	///		handler.Control.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
 	/// });
-	/// Style.Add<Eto.Platform.Mac.Forms.ApplicationHandler>("application", handler => {
+	/// Style.Add<Eto.Mac.Forms.ApplicationHandler>("application", handler => {
 	///		handler.EnableFullScreen ();
 	/// });
 	/// 
@@ -154,7 +154,7 @@ namespace Eto
 		/// <remarks>
 		/// Styling a widget handler allows you to access both the widget and the platform-specifics for the widget.
 		/// 
-		/// To use this, you would have to add a reference to one of the Eto.Platform.*.dll's so that you can utilize
+		/// To use this, you would have to add a reference to one of the Eto.*.dll's so that you can utilize
 		/// the platform handler directly.  Typically this would be called before your application is run.
 		/// </remarks>
 		/// <typeparam name="THandler">Type of the handler that should be styled</typeparam>

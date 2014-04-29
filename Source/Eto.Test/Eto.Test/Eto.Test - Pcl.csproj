@@ -40,7 +40,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+    <Compile Include="..\..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Handlers\TabControlHandler.cs" />
@@ -135,7 +135,6 @@
     <Compile Include="UnitTests\Forms\GridViewTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
-    <Compile Include="UnitTests\Handlers\Generator.cs" />
     <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestFontHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestGraphicsHandler.cs" />
@@ -143,6 +142,7 @@
     <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="UnitTests\TestUtils.cs" />
+    <Compile Include="UnitTests\Handlers\TestPlatform.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
@@ -175,9 +175,9 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - Pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Json\Eto.Json - Pcl.csproj">
+    <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json - Pcl.csproj">
       <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>
-      <Name>Eto.Json - Pcl</Name>
+      <Name>Eto.Serialization.Json - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

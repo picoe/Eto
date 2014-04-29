@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Controls
 
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
-			if (Generator.Supports<IContextMenu>())
+			if (Platform.Supports<IContextMenu>())
 			{
 				layout.BeginHorizontal();
 				layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });

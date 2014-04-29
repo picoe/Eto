@@ -794,6 +794,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the handler</param>
 		/// <param name="type">Type of the handler to create (must implement <see cref="IControl"/>)</param>
 		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Control(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
@@ -805,8 +806,25 @@ namespace Eto.Forms
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
+		[Obsolete("Use Control(IControl) instead")]
 		protected Control(Generator generator, IControl handler, bool initialize = true)
 			: base(generator, handler, initialize)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Control"/> class.
+		/// </summary>
+		protected Control()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Container with the specified handler
+		/// </summary>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		protected Control(IControl handler)
+			: base(handler)
 		{
 		}
 

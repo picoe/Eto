@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Drawing
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
 			layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), null);
-			if (Generator.Supports<INumericUpDown>())
+			if (Platform.Supports<INumericUpDown>())
 			{
 				matrixRow = layout.AddSeparateRow(null, new Label { Text = "Rot" }, RotationControl(), new Label { Text = "Sx" }, ScaleXControl(), new Label { Text = "Sy" }, ScaleYControl(), new Label { Text = "Ox" }, OffsetXControl(), new Label { Text = "Oy" }, OffsetYControl(), null);
 				matrixRow.Table.Visible = false;
@@ -171,7 +171,7 @@ namespace Eto.Test.Sections.Drawing
 
 		void Draw (Graphics g)
 		{
-			var matrix = Matrix.Create(g.Generator);
+			var matrix = Matrix.Create(g.Platform);
 			matrix.Translate (OffsetX, OffsetY);
 			matrix.Scale (Math.Max (ScaleX / 100f, 0.1f), Math.Max (ScaleY / 100f, 0.1f));
 			matrix.Rotate (Rotation);

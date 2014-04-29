@@ -28,9 +28,10 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override NSTextField CreateControl()
+		protected override void Initialize()
 		{
-			return new EtoTextField
+			base.Initialize();
+			Control = new EtoTextField
 			{
 				Handler = this,
 				Bezeled = true,
@@ -38,11 +39,7 @@ namespace Eto.Mac.Forms.Controls
 				Selectable = true,
 				Formatter = new EtoFormatter { Handler = this }
 			};
-		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
 			Control.Cell.Scrollable = true;
 			Control.Cell.Wraps = false;
 			Control.Cell.UsesSingleLineMode = true;

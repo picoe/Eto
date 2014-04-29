@@ -17,25 +17,6 @@ namespace Eto
 		/// Gets the widget this handler is implemented for
 		/// </summary>
 		Widget Widget { get; set; }
-
-		/// <summary>
-		/// Initializes the widget after it has been constructed
-		/// </summary>
-		/// <remarks>
-		/// This is typically called automatically when passing the initialize value to 
-		/// a constructor of the widget to true.
-		/// 
-		/// For widget implementors, if you have any constructor code that must be called before Initialize
-		/// is called on the widget handler, then you would pass false to the constructor's initialize parameter,
-		/// then call this manually (via <see cref="M:Widget.Initialize()"/>
-		/// </remarks>
-		void Initialize();
-
-		/// <summary>
-		/// Gets or sets the generator associated with the handler
-		/// </summary>
-		/// <value>The generator for this platform handler</value>
-		new Generator Generator { get; set; }
 	}
 
 	/// <summary>
@@ -77,7 +58,7 @@ namespace Eto
 		/// Gets the generator associated with the widget
 		/// </summary>
 		/// <value>The generator</value>
-		Generator Generator { get; }
+		Platform Platform { get; }
 	}
 
 	/// <summary>
@@ -104,7 +85,7 @@ namespace Eto
 		/// The generator is typically either passed to the constructor of the control, or the
 		/// <see cref="P:Eto.Generator.Current"/> is used.
 		/// </remarks>
-		public Generator Generator { get { return ((IWidget)Handler).Generator; } }
+		public Platform Platform { get { return ((IWidget)Handler).Platform; } }
 
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
@@ -124,14 +105,14 @@ namespace Eto
 		/// <param name="generator">Generator the widget handler was created with, or null to use <see cref="Eto.Generator.Current"/></param>
 		/// <param name="handler">Handler to assign to this widget for its implementation</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
+		[Obsolete("Use Widget(IHandler) instead")]
 		protected Widget(Generator generator, IWidget handler, bool initialize = true)
 		{
 			if (generator == null)
-				generator = Generator.Current;
+				generator = Platform.Instance;
 			this.Handler = handler;
 			if (handler != null)
 			{
-				handler.Generator = generator;
 				handler.Widget = this; // tell the handler who we are
 			}
 			if (initialize)
@@ -144,20 +125,45 @@ namespace Eto
 		/// <param name="generator">Generator to create the handler with, or null to use <see cref="Eto.Generator.Current"/></param>
 		/// <param name="type">Type of widget handler to create from the generator for this widget</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
+		[Obsolete("Use default constructor and HandlerAttribute to specify handler to use")]
 		protected Widget(Generator generator, Type type, bool initialize = true)
 		{
-			if (generator == null)
-				generator = Generator.Current;
-			this.Handler = generator.Create(type);
+			var platform = (Platform)generator ?? Platform.Instance;
+			this.Handler = platform.Create(type);
 			var widgetHandler = this.Handler as IWidget;
 			if (widgetHandler != null)
 			{
-				widgetHandler.Generator = generator;
 				widgetHandler.Widget = this;
 			}
 
 			if (initialize)
 				Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Widget class
+		/// </summary>
+		protected Widget()
+		{
+			this.Handler = Platform.Instance.Create(GetType());
+			var widgetHandler = this.Handler as IWidget;
+			if (widgetHandler != null)
+			{
+				widgetHandler.Widget = this;
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Widget class
+		/// </summary>
+		/// <param name="handler">Handler to assign to this widget for its implementation</param>
+		protected Widget(IWidget handler)
+		{
+			this.Handler = handler;
+			if (handler != null)
+			{
+				handler.Widget = this; // tell the handler who we are
+			}
 		}
 
 		/// <summary>
@@ -170,10 +176,9 @@ namespace Eto
 		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
 		/// after all of its logic has finished.
 		/// </remarks>
+		[Obsolete("No longer does anything")]
 		protected void Initialize()
 		{
-			if (Handler != null)
-				((IWidget)Handler).Initialize();
 		}
 
 		/// <summary>

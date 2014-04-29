@@ -7,9 +7,10 @@ namespace Eto.GtkSharp.Forms
 {
 	public class FontDialogHandler : WidgetHandler<Gtk.FontSelectionDialog, FontDialog>, IFontDialog
 	{
-		public override Gtk.FontSelectionDialog CreateControl()
+		protected override void Initialize()
 		{
-			return new Gtk.FontSelectionDialog(null);
+			base.Initialize();
+			Control = new Gtk.FontSelectionDialog(null);
 		}
 
 		public Font Font

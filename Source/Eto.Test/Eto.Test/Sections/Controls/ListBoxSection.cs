@@ -13,7 +13,7 @@ namespace Eto.Test.Sections.Controls
 						
 			layout.AddRow(new Label { Text = "Virtual list, with Icons" }, WithIcons());
 
-			if (Generator.Supports<IContextMenu>())
+			if (Platform.Supports<IContextMenu>())
 				layout.AddRow(new Label { Text = "Context Menu" }, WithContextMenu());
 
 			layout.Add(null);

@@ -44,9 +44,9 @@ namespace Eto.Forms
 			}
 		}
 
-		public static bool IsSupported(Generator generator = null)
+		public static bool IsSupported
 		{
-			return (generator ?? Generator.Current).Supports<ISplitter>();
+			get { return Platform.Instance.Supports<ISplitter>(); }
 		}
 
 		#region Events

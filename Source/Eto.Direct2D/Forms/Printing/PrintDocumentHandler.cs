@@ -7,11 +7,12 @@ namespace Eto.Direct2D.Forms.Printing
 {
 	public class PrintDocumentHandler : Eto.WinForms.Forms.Printing.PrintDocumentHandler
 	{
-		protected override void Initialize()
+		protected override void HandlePrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
 		{
-			base.Initialize();
-			// set to base generator to use gdi graphics
-			Platform = ((Eto.Direct2D.Platform)Platform).BaseGenerator;
+			using (((Eto.Direct2D.Platform)Platform).BaseGenerator.Context)
+			{
+				base.HandlePrintPage(sender, e);
+			}
 		}
 	}
 }

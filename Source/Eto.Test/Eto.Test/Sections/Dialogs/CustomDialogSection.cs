@@ -89,7 +89,7 @@ namespace Eto.Test.Sections.Dialogs
 			{
 				var dialog = CreateDialog();
 				dialog.Title = "Resizable Dialog";
-				if (Generator.IsDesktop)
+				if (Platform.IsDesktop)
 					dialog.Resizable = true;
 				Show(dialog, this);
 			};
@@ -104,7 +104,7 @@ namespace Eto.Test.Sections.Dialogs
 			{
 				var dialog = new Dialog();
 				dialog.DisplayMode = DisplayMode;
-				if (Generator.IsDesktop)
+				if (Platform.IsDesktop)
 				{
 					dialog.Minimizable = true;
 					dialog.Resizable = true;

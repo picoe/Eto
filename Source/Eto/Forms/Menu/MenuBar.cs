@@ -43,7 +43,7 @@ namespace Eto.Forms
 		/// <param name="commands">Commands to use from the platform, or null to use platform-supplied commands</param>
 		public static MenuBar CreateStandardMenu(IEnumerable<Command> commands = null)
 		{
-			var menu = new MenuBar(Generator.Current);
+			var menu = new MenuBar();
 			Application.Instance.InternalCreateStandardMenu(menu.Items, commands);
 			return menu;
 		}

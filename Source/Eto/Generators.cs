@@ -1,9 +1,12 @@
+using System;
+
 
 namespace Eto
 {
 	/// <summary>
-	/// Constants for the standard platform generators
+	/// Constants for the standard Generator generators
 	/// </summary>
+	[Obsolete("Use Platforms instead. ID's are no longer defined in the core, just types")]
 	public static class Generators
 	{
 		/// <summary>

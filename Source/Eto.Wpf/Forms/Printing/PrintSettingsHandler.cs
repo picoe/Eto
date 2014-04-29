@@ -32,7 +32,7 @@ namespace Eto.Wpf.Forms.Printing
 			}
 		}
 
-		public static PrintSettings GetEtoSettings(this swc.PrintDialog dialog, Eto.Platform generator)
+		public static PrintSettings GetEtoSettings(this swc.PrintDialog dialog, Eto.Generator generator)
 		{
 			return dialog == null ? null : new PrintSettings(generator, new PrintSettingsHandler(dialog));
 		}

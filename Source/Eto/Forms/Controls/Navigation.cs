@@ -22,9 +22,9 @@ namespace Eto.Forms
 			}
 		}
 
-		public static bool IsSupported(Generator generator = null)
+		public static bool IsSupported
 		{
-			return (generator ?? Generator.Current).Supports<INavigation>();
+			get { return Platform.Instance.Supports<INavigation>(); }
 		}
 
 		public event EventHandler<EventArgs> ItemShown;

@@ -17,7 +17,12 @@ namespace Eto.Forms
 			EventLookup.Register<TextControl>(c => c.OnTextChanged(null), TextControl.TextChangedEvent);
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected TextControl(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
+		{
+		}
+
+		protected TextControl()
 		{
 		}
 

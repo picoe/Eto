@@ -85,7 +85,7 @@ namespace Eto.Mac.Forms.Controls
 				set { textBox.Text = value; }
 			}
 
-			public PromptDialog(Eto.Platform generator)
+			public PromptDialog(Eto.Generator generator)
 				: base(generator)
 			{
 				this.MinimumSize = new Size(400, 0);

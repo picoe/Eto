@@ -61,6 +61,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[HandlerAttribute(typeof(IButton))]
 	public class Button : TextControl
 	{
 		new IButton Handler { get { return (IButton)base.Handler; } }
@@ -98,8 +99,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
 		/// </summary>
-		public Button ()
-			: this (null)
+		public Button()
 		{
 		}
 
@@ -107,6 +107,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the button</param>
+		[Obsolete("Use default constructor")]
 		public Button (Generator generator)
 			: this (generator, typeof (IButton))
 		{
@@ -122,6 +123,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the button</param>
 		/// <param name="type">Type of the button handler to use for the subclass</param>
 		/// <param name="initialize">True to initialize the button, false if you will initialize after constructor logic</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Button (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

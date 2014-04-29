@@ -20,7 +20,7 @@ namespace Eto.Test.UnitTests.Handlers
 		GridView GridView { get { return Widget as GridView; } }
 
 		// Boilerplate
-		public Eto.Generator Generator { get; set; }
+		public Eto.Platform Platform { get; set; }
 		public ContextMenu ContextMenu { get; set; }
 		public Cursor Cursor { get; set; }
 		public string ID { get; set; }

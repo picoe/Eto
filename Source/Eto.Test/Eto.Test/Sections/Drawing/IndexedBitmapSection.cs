@@ -22,7 +22,7 @@ namespace Eto.Test.Sections.Drawing
 
 		IndexedBitmap CreateImage()
 		{
-			var image = new IndexedBitmap(100, 100, 8, Generator);
+			var image = new IndexedBitmap(100, 100, 8, Platform);
 			var ega = Palette.GetEgaPalette();
 			var pal = new Palette(ega);
 			

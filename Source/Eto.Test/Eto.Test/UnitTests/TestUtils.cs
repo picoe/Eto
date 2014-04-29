@@ -39,7 +39,7 @@ namespace Eto.Test.UnitTests
 		{
 			if (Application.Instance == null)
 			{
-				Generator generator = Generator.Current;
+				var generator = Platform.Instance;
 				if (generator == null)
 				{
 					try
@@ -53,14 +53,14 @@ namespace Eto.Test.UnitTests
 						var generatorTypeName = System.Configuration.ConfigurationManager.AppSettings["generator"];
 						#endif
 						if (!string.IsNullOrEmpty(generatorTypeName))
-							generator = Generator.GetGenerator(generatorTypeName);
+							generator = Platform.Get(generatorTypeName);
 					}
 					catch (FileNotFoundException)
 					{
 					}
 					if (generator == null)
-						generator = new Handlers.Generator();
-					Generator.Initialize(generator);
+						generator = new Handlers.TestPlatform();
+					Platform.Initialize(generator);
 				}
 				if (generator.Supports<IApplication>())
 				{
@@ -156,7 +156,7 @@ namespace Eto.Test.UnitTests
 			Form form;
 			Run((app, finished) =>
 			{
-				if (!Generator.Current.Supports<IForm>())
+				if (!Platform.Instance.Supports<IForm>())
 					Assert.Inconclusive("This platform does not support IForm");
 
 				form = new Form();

@@ -7,10 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 
-/// <summary>
-/// This file contains type definitions currently needed to compile Eto
-/// as a Portable Class Library, in the project Eto.Pcl.csproj.
-/// </summary>
+// This file contains type definitions currently needed to compile Eto
+// as a Portable Class Library, in the project Eto.Pcl.csproj.
 namespace Eto
 {
 	public interface ISupportInitialize

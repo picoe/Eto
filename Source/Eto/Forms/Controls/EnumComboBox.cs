@@ -81,7 +81,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the EnumComboBox with the specified generator
 		/// </summary>
-		/// <param name="generator">platform generator</param>
+		/// <param name="generator">Generator generator</param>
 		public EnumComboBox (Generator generator)
 			: base (generator)
 		{

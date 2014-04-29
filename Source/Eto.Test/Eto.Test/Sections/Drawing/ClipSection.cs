@@ -36,7 +36,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new Drawable { Size = new Size (300, 100) };
 			control.Paint += (sender, e) => {
-				using (Generator.Context)
+				using (Platform.Context)
 				{
 					e.Graphics.SetClip(new RectangleF(25, 25, 50, 50));
 					if (ResetClip)
@@ -66,7 +66,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new Drawable { Size = new Size (350, 250) };
 			control.Paint += (sender, e) => {
-				using (Generator.Context)
+				using (Platform.Context)
 				{
 					var path = new GraphicsPath();
 					path.AddEllipse(25, 25, 50, 50);

@@ -47,7 +47,7 @@ namespace Eto.Test.Sections.Drawing
 
 		GraphicsPath CreatePath()
 		{
-			var path = new GraphicsPath(Generator);
+			var path = new GraphicsPath(Platform);
 			path.MoveTo(new Point(10, 10));
 			path.LineTo(new Point(20, 90));
 			path.LineTo(new Point(10, 60));

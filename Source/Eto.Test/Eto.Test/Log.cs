@@ -16,7 +16,7 @@ namespace Eto.Test
 			sb.AppendFormat(message, args);
 			sb.Append("\n");
 
-			if (Generator.Current.IsDesktop)
+			if (Platform.Instance.IsDesktop)
 			{
 				var form = Application.Instance != null ? Application.Instance.MainForm as MainForm : null;
 				if (form == null)

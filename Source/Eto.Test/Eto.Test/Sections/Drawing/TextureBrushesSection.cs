@@ -31,7 +31,7 @@ namespace Eto.Test.Sections.Drawing
 				renderers.Add(graphics =>
 				{
 					var temp = brush.Transform; // save state
-					brush.Transform = Matrix.FromRotation(90, Generator);
+					brush.Transform = Matrix.FromRotation(90, Platform);
 					graphics.FillRectangle(brush, new RectangleF(image.Size));
 					graphics.TranslateTransform(0, image.Size.Height);
 					brush.Transform = temp;

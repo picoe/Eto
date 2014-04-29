@@ -1,7 +1,7 @@
 using MonoMac.AppKit;
-using Eto.Platform.Mac.Forms.Controls;
-using Eto.Platform.Mac.Forms;
-using Eto.Platform.Mac;
+using Eto.Mac.Forms.Controls;
+using Eto.Mac.Forms;
+using Eto.Mac;
 using System.Diagnostics;
 
 namespace Eto.Test.Mac
@@ -15,7 +15,7 @@ namespace Eto.Test.Mac
 #endif
 			AddStyles ();
 			
-			var generator = new Eto.Platform.Mac.Generator ();
+			var generator = new Eto.Mac.Platform ();
 			
 			var app = new TestApplication (generator);
 

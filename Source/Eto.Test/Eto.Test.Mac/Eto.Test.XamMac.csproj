@@ -79,21 +79,21 @@
       <Project>{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}</Project>
       <Name>Eto.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Json\Eto.Json.csproj">
-      <Project>{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}</Project>
-      <Name>Eto.Json</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Platform.Mac\Eto.Platform.XamMac.csproj">
-      <Project>{15490F6C-C579-4A86-AD16-8D9B5B41EB87}</Project>
-      <Name>Eto.Platform.XamMac</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Xaml\Eto.Xaml.csproj">
+    <ProjectReference Include="..\..\Eto.Mac\Eto.XamMac.csproj">
+      <Project>{15490F6C-C579-4A86-AD16-8D9B5B41EB87}</Project>
+      <Name>Eto.XamMac</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj">
       <Project>{FA4BC167-9909-45D2-B86A-D4AE4062A524}</Project>
-      <Name>Eto.Xaml</Name>
+      <Name>Eto.Serialization.Xaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
+      <Project>{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}</Project>
+      <Name>Eto.Serialization.Json</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

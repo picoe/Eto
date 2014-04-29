@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
 	<metadata>
-		<id>$id$</id>
+		<id>Eto.Platform.Gtk3</id>
 		<version>$version$</version>
 		<title>$title$</title>
 		<authors>$author$</authors>
@@ -28,8 +28,8 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Platform.Gtk3.dll" target="lib\net45\" />
-		<file src="..\..\BuildOutput\$configuration$\Eto.Platform.Gtk3.dll" target="lib\net40\" />
+		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Gtk3.dll" target="lib\net45\" />
+		<file src="..\..\BuildOutput\$configuration$\Eto.Gtk3.dll" target="lib\net40\" />
 		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

@@ -14,7 +14,7 @@ namespace Eto.Test.UnitTests.Handlers
 	/// </summary>
 	class TestGraphicsHandler : IGraphics
 	{
-		public Eto.Generator Generator { get; set; }
+		public Eto.Platform Platform { get; set; }
 		public Widget Widget { get; set; }
 		public Size Size { get; set; }
 		public string ID { get; set; }

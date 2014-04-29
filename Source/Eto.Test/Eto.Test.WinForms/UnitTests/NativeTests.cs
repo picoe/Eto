@@ -12,7 +12,7 @@ namespace Eto.Test.WinForms.UnitTests
         [TestCase(0x01100000, 0x0110)]
         public void SignedHiWord_TestCases_WorkCorrectly(int value, int expected)
         {
-            var actual = Platform.Win32.SignedHIWORD(value);
+			var actual = Win32.SignedHIWORD(value);
             Assert.AreEqual(expected, actual);
         }
 
@@ -23,7 +23,7 @@ namespace Eto.Test.WinForms.UnitTests
         [TestCase(0x00000110, 0x0110)]
         public void SignedLoWord_TestCases_WorkCorrectly(int value, int expected)
         {
-            var actual = Platform.Win32.SignedLOWORD(value);
+			var actual = Win32.SignedLOWORD(value);
             Assert.AreEqual(expected, actual);
         }
     }

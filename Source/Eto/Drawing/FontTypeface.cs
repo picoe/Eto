@@ -84,7 +84,7 @@ namespace Eto.Drawing
 		/// <param name="family">Family this typeface is part of</param>
 		/// <param name="handler">Handler to use for this typeface instance</param>
 		public FontTypeface (FontFamily family, IFontTypeface handler)
-			: base(family.Generator, handler)
+			: base(family.Platform, handler)
 		{
 			this.Family = family;
 		}

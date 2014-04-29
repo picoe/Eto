@@ -299,7 +299,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="image">Image to draw on using this graphics context</param>
 		public Graphics (Bitmap image)
-			: base(image.Generator, typeof(IGraphics), false)
+			: base(image.Platform, typeof(IGraphics), false)
 		{
 			Handler.CreateFromImage(image);
 			Initialize();
@@ -324,7 +324,7 @@ namespace Eto.Drawing
 		/// <param name="end">Ending location</param>
 		public void DrawLine (Color color, PointF start, PointF end)
 		{
-			using (var pen = new Pen(color, 1f, Generator))
+			using (var pen = new Pen(color, 1f, Platform))
 				Handler.DrawLine (pen, start.X, start.Y, end.X, end.Y);
 		}
 
@@ -349,7 +349,7 @@ namespace Eto.Drawing
 		/// <param name="endy">Y co-ordinate of the ending point</param>
 		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
 		{
-			using (var pen = new Pen(color, 1f, Generator))
+			using (var pen = new Pen(color, 1f, Platform))
 				Handler.DrawLine (pen, startx, starty, endx, endy);
 		}
 
@@ -386,7 +386,7 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Where to draw the rectangle</param>
 		public void DrawRectangle (Color color, RectangleF rectangle)
 		{
-			using (var pen = new Pen(color, 1f, Generator))
+			using (var pen = new Pen(color, 1f, Platform))
 				Handler.DrawRectangle (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
@@ -400,7 +400,7 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the rectangle</param>
 		public void DrawRectangle(Color color, float x, float y, float width, float height)
 		{
-			using (var pen = new Pen(color, 1f, Generator))
+			using (var pen = new Pen(color, 1f, Platform))
 				Handler.DrawRectangle(pen, x, y, width, height);
 		}
 
@@ -423,8 +423,8 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the rectangle, in pixels</param>
 		public void DrawInsetRectangle (Color topLeftColor, Color bottomRightColor, RectangleF rectangle, int width = 1)
 		{
-			using (var topLeftPen = new Pen(topLeftColor, 1f, Generator))
-			using (var bottomRightPen = new Pen(bottomRightColor, 1f, Generator))
+			using (var topLeftPen = new Pen(topLeftColor, 1f, Platform))
+			using (var bottomRightPen = new Pen(bottomRightColor, 1f, Platform))
 			for (int i = 0; i < width; i++) {
 				DrawLine (topLeftPen, rectangle.TopLeft, rectangle.InnerTopRight);
 				DrawLine (topLeftPen, rectangle.TopLeft, rectangle.InnerBottomLeft);
@@ -444,7 +444,7 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the rectangle</param>
 		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				Handler.FillRectangle (brush, x, y, width, height);
 		}
 
@@ -468,7 +468,7 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Location for the rectangle</param>
 		public void FillRectangle (Color color, RectangleF rectangle)
 		{
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				Handler.FillRectangle (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
@@ -489,7 +489,7 @@ namespace Eto.Drawing
 		/// <param name="rectangles">Enumeration of rectangles to fill</param>
 		public void FillRectangles (Color color, IEnumerable<RectangleF> rectangles)
 		{
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				FillRectangles (brush, rectangles);
 		}
 
@@ -512,7 +512,7 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Location for the ellipse</param>
 		public void FillEllipse (Color color, RectangleF rectangle)
 		{
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				Handler.FillEllipse (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
@@ -536,7 +536,7 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the ellipse</param>
 		public void FillEllipse (Color color, float x, float y, float width, float height)
 		{
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				Handler.FillEllipse (brush, x, y, width, height);
 		}
 
@@ -560,7 +560,7 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Location for the ellipse</param>
 		public void DrawEllipse (Color color, RectangleF rectangle)
 		{
-			using (var pen = new Pen (color, 1f, Generator))
+			using (var pen = new Pen (color, 1f, Platform))
 				Handler.DrawEllipse (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
@@ -584,7 +584,7 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the ellipse</param>
 		public void DrawEllipse (Color color, float x, float y, float width, float height)
 		{
-			using (var pen = new Pen (color, 1f, Generator))
+			using (var pen = new Pen (color, 1f, Platform))
 				Handler.DrawEllipse (pen, x, y, width, height);
 		}
 
@@ -610,7 +610,7 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
 		public void DrawArc (Color color, RectangleF rectangle, float startAngle, float sweepAngle)
 		{
-			using (var pen = new Pen (color, 1f, Generator))
+			using (var pen = new Pen (color, 1f, Platform))
 				Handler.DrawArc (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
 		}
 
@@ -638,7 +638,7 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
 		public void DrawArc (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			using (var pen = new Pen (color, 1f, Generator))
+			using (var pen = new Pen (color, 1f, Platform))
 				Handler.DrawArc (pen, x, y, width, height, startAngle, sweepAngle);
 		}
 
@@ -666,7 +666,7 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
 		public void FillPie (Color color, RectangleF rectangle, float startAngle, float sweepAngle)
 		{
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				Handler.FillPie (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
 		}
 
@@ -694,7 +694,7 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
 		public void FillPie (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				Handler.FillPie (brush, x, y, width, height, startAngle, sweepAngle);
 		}
 
@@ -720,9 +720,9 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void FillPolygon (Color color, params PointF[] points)
 		{
-			var path = new GraphicsPath (Generator);
+			var path = new GraphicsPath (Platform);
 			path.AddLines (points);
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				FillPath (brush, path);
 		}
 
@@ -733,7 +733,7 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void FillPolygon (Brush brush, params PointF[] points)
 		{
-			var path = new GraphicsPath (Generator);
+			var path = new GraphicsPath (Platform);
 			path.AddLines (points);
 			FillPath (brush, path);
 		}
@@ -745,9 +745,9 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void DrawPolygon (Color color, params PointF[] points)
 		{
-			var path = new GraphicsPath (Generator);
+			var path = new GraphicsPath (Platform);
 			path.AddLines (points);
-			using (var pen = new Pen (color, 1f, Generator))
+			using (var pen = new Pen (color, 1f, Platform))
 				DrawPath (pen, path);
 		}
 
@@ -758,7 +758,7 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void DrawPolygon (Pen pen, params PointF[] points)
 		{
-			var path = new GraphicsPath (Generator);
+			var path = new GraphicsPath (Platform);
 			path.AddLines (points);
 			DrawPath (pen, path);
 		}
@@ -770,7 +770,7 @@ namespace Eto.Drawing
 		/// <param name="path">Path to draw</param>
 		public void DrawPath (Color color, GraphicsPath path)
 		{
-			using (var pen = new Pen (color, 1f, Generator))
+			using (var pen = new Pen (color, 1f, Platform))
 				Handler.DrawPath (pen, path);
 		}
 
@@ -791,7 +791,7 @@ namespace Eto.Drawing
 		/// <param name="path">Path to fill</param>
 		public void FillPath (Color color, GraphicsPath path)
 		{
-			using (var brush = new SolidBrush (color, Generator))
+			using (var brush = new SolidBrush (color, Platform))
 				Handler.FillPath (brush, path);
 		}
 
@@ -900,7 +900,7 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
-			using (var brush = new SolidBrush(color, Generator))
+			using (var brush = new SolidBrush(color, Platform))
 				Handler.DrawText(font, brush, x, y, text);			
 		}
 
@@ -925,7 +925,7 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, Color color, PointF location, string text)
 		{
-			using (var brush = new SolidBrush(color, Generator))
+			using (var brush = new SolidBrush(color, Platform))
 				Handler.DrawText(font, brush, location.X, location.Y, text);
 		}
 

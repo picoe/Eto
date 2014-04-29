@@ -36,14 +36,14 @@ namespace Eto.Test
 			topNodes = topNodes ?? TestSectionList.TopNodes();
 			//SectionList = new SectionListGridView(topNodes);
 			//SectionList = new SectionListTreeView(topNodes);
-			if (Generator.IsAndroid)
+			if (Platform.IsAndroid)
 				SectionList = new SectionListGridView(topNodes);
 			else
 				SectionList = new SectionListTreeGridView(topNodes);
 
 			this.Icon = TestIcons.TestIcon();
 
-			if (Generator.IsDesktop)
+			if (Platform.IsDesktop)
 				ClientSize = new Size(900, 650);
 			//Opacity = 0.5;
 
@@ -93,7 +93,7 @@ namespace Eto.Test
 				#endif
 			};
 
-			if (Splitter.IsSupported())
+			if (Splitter.IsSupported)
 			{
 				var splitter = new Splitter
 				{
@@ -101,12 +101,12 @@ namespace Eto.Test
 					FixedPanel = SplitterFixedPanel.Panel1,
 					Panel1 = SectionList.Control,
 					// for now, don't show log in mobile
-					Panel2 = Generator.IsMobile ? contentContainer : RightPane()
+					Panel2 = Platform.IsMobile ? contentContainer : RightPane()
 				};
 
 				return splitter;
 			}
-			if (Navigation.IsSupported())
+			if (Navigation.IsSupported)
 			{
 				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
@@ -156,7 +156,7 @@ namespace Eto.Test
 			var about = new Actions.About();
 			var quit = new Actions.Quit();
 
-			if (Generator.Supports<IMenuBar>())
+			if (Platform.Supports<IMenuBar>())
 			{
 				// create standard system menu (e.g. for OS X)
 				var menu = MenuBar.CreateStandardMenu();
@@ -168,7 +168,7 @@ namespace Eto.Test
 				menu.Items.GetSubmenu("&Window", 900);
 				var help = menu.Items.GetSubmenu("&Help", 1000);
 
-				if (Generator.IsMac)
+				if (Platform.IsMac)
 				{
 					// have a nice OS X style menu
 					var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
@@ -185,7 +185,7 @@ namespace Eto.Test
 				Menu = menu;
 			}
 
-			if (Generator.Supports<IToolBar>())
+			if (Platform.Supports<IToolBar>())
 			{
 				// create and set the toolbar
 				var toolBar = new ToolBar();

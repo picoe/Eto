@@ -2,7 +2,7 @@
 
 using System;
 using Eto.Forms;
-using Eto.Xaml;
+using Eto.Serialization.Xaml;
 
 namespace Eto.Test.Sections.Serialization.Xaml
 {

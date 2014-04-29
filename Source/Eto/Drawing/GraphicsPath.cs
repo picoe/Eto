@@ -359,7 +359,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Creates a new instance of the IGraphicsPath for the specified generator
 		/// </summary>
-		/// <param name="generator">Platform generator for the object, or null to use the current generator</param>
+		/// <param name="generator">Generator generator for the object, or null to use the current generator</param>
 		public static IGraphicsPath Create (Generator generator = null)
 		{
 			return generator.Create<IGraphicsPathHandler> ();
@@ -373,7 +373,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Initializes a new instance of the GraphicsPath class
 		/// </summary>
-		/// <param name="generator">Platform generator for the object, or null to use the current generator</param>
+		/// <param name="generator">Generator generator for the object, or null to use the current generator</param>
 		public GraphicsPath (Generator generator)
 		{
 			Handler = Create (generator);

@@ -17,11 +17,6 @@ namespace Eto
 		string ID { get; set; }
 
 		/// <summary>
-		/// Gets the instance of the platform-specific object
-		/// </summary>
-		object ControlObject { get; }
-
-		/// <summary>
 		/// Called to handle a specific event
 		/// </summary>
 		/// <remarks>
@@ -85,7 +80,7 @@ namespace Eto
 		/// var control = new Button { Style = "mystyle" };
 		/// 
 		/// // in your platform assembly
-		/// using Eto.Platform.Mac.Forms.Controls;
+		/// using Eto.Mac.Forms.Controls;
 		/// 
 		/// Styles.AddHandler<ButtonHandler>("mystyle", handler => {
 		///		// this is where you can use handler.Control to set properties, handle events, etc.
@@ -139,11 +134,12 @@ namespace Eto
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
+		[Obsolete("Use InstanceWidget(IInstanceWidget) instead")]
 		protected InstanceWidget(Generator generator, IWidget handler, bool initialize = true)
 			: base(generator, handler, false)
 		{
-			if (initialize)
-				Initialize();
+			Eto.Style.OnStyleWidgetDefaults(this);
+			EventLookup.HookupEvents(this);
 		}
 
 		/// <summary>
@@ -152,11 +148,32 @@ namespace Eto
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handlerType">Type of the handler to create as the backend for this widget</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected InstanceWidget(Generator generator, Type handlerType, bool initialize = true)
 			: base(generator, handlerType, false)
 		{
-			if (initialize)
-				Initialize();
+			Eto.Style.OnStyleWidgetDefaults(this);
+			EventLookup.HookupEvents(this);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the InstanceWidget with the specified handler
+		/// </summary>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		protected InstanceWidget(IInstanceWidget handler)
+			: base(handler)
+		{
+			Eto.Style.OnStyleWidgetDefaults(this);
+			EventLookup.HookupEvents(this);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the InstanceWidget
+		/// </summary>
+		protected InstanceWidget()
+		{
+			Eto.Style.OnStyleWidgetDefaults(this);
+			EventLookup.HookupEvents(this);
 		}
 
 		/// <summary>
@@ -170,9 +187,13 @@ namespace Eto
 		/// For example, the <see cref="Forms.Application"/> object's handler for OS X has a AddFullScreenMenuItem
 		/// property to specify if you want full screen support in your app.
 		/// </remarks>
+		[Obsolete("Use Handler as IControlObjectSource instead")]
 		public object ControlObject
 		{
-			get { return Handler.ControlObject; }
+			get { 
+				var controlObjectSource = Handler as IControlObjectSource;
+				return controlObjectSource != null ? controlObjectSource.ControlObject : null;
+			}
 		}
 
 		/// <summary>
@@ -228,11 +249,9 @@ namespace Eto
 		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
 		/// after all of its logic has finished.
 		/// </remarks>
+		[Obsolete("No longer does anything")]
 		protected new void Initialize()
 		{
-			base.Initialize();
-			Eto.Style.OnStyleWidgetDefaults(this);
-			EventLookup.HookupEvents(this);
 		}
 	}
 }

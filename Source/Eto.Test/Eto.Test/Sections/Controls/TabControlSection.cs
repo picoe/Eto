@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Controls
 			var control = new Button { Text = "Add Tab" };
 			control.Click += (s, e) =>
 			{
-				var tab = new TabPage(tabControl.Generator) { Text = "Tab " + (tabControl.TabPages.Count + 1) };
+				var tab = new TabPage(tabControl.Platform) { Text = "Tab " + (tabControl.TabPages.Count + 1) };
 				var bitmap = new Bitmap(new Size(1024, 1024), PixelFormat.Format32bppRgba); // 32MB
 				tab.Content = new ImageView { Image = bitmap };
 				tabControl.TabPages.Add(tab);
@@ -128,7 +128,7 @@ namespace Eto.Test.Sections.Controls
 			// Clone the current generator and add handlers
 			// for TabControl and TabPage. Create a TabControlSection
 			// using the new generator and then restore the previous generator.
-			var generator = (Generator)Activator.CreateInstance(Generator.GetType());
+			var generator = (Platform)Activator.CreateInstance(Platform.GetType());
 
 			generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());
 			generator.Add<ITabPage>(() => new Eto.Test.Handlers.TabPageHandler());

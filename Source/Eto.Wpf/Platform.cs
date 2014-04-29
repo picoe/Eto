@@ -32,7 +32,7 @@ namespace Eto.Wpf
 			UseSwfWebView();
 		}
 
-		public static void AddTo(Eto.Platform g)
+		public static void AddTo(Eto.Generator g)
 		{
 			// Drawing
 			g.Add<IBitmap>(() => new BitmapHandler());

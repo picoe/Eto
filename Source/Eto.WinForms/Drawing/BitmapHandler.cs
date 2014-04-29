@@ -62,7 +62,7 @@ namespace Eto.WinForms.Drawing
 		public BitmapHandler()
 		{
 		}
-		
+
 		public BitmapHandler(SD.Bitmap image)
 		{
 			Control = image;

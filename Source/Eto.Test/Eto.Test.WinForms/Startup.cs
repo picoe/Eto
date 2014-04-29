@@ -9,7 +9,7 @@ namespace Eto.Test.WinForms
 		[STAThread]
 		static void Main (string [] args)
 		{
-			var generator = Generator.GetGenerator(Generators.WinAssembly);
+			var generator = Platform.Get(Platforms.WinForms);
 			var app = new TestApplication (generator);
 			app.Run (args);
 		}

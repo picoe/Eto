@@ -11,8 +11,9 @@ namespace Eto.GtkSharp
 		bool widthSet;
 		bool heightSet;
 
-		public override Gtk.DrawingArea CreateControl()
+		protected override void Initialize()
 		{
+			base.Initialize();
 			var control = new Gtk.DrawingArea
 			{
 				CanFocus = false,
@@ -24,7 +25,7 @@ namespace Eto.GtkSharp
 			control.Drawn += Connector.HandleDrawn;
 #endif
 			control.Events |= Gdk.EventMask.ExposureMask;
-			return control;
+			Control = control;
 		}
 
 		protected new ImageViewConnector Connector { get { return (ImageViewConnector)base.Connector; } }

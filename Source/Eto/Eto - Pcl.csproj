@@ -77,11 +77,6 @@
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
-    <Compile Include="Generator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="GeneratorContext.cs" />
-    <Compile Include="Generators.cs" />
     <Compile Include="Int32ArrayConverter.cs" />
     <Compile Include="InstanceWidget.cs" />
     <Compile Include="NamespaceInfo.cs" />
@@ -146,7 +141,7 @@
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
     <Compile Include="IO\SystemIcons.cs" />
-    <Compile Include="..\GlobalAssemblyInfo.cs">
+    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\WebView.cs" />
@@ -293,6 +288,14 @@
     <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
     <Compile Include="PclTypes.cs" />
     <Compile Include="RuntimeNamePropertyAttribute.cs" />
+    <Compile Include="Platforms.cs" />
+    <Compile Include="Platform.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlatformContext.cs" />
+    <Compile Include="Generator.cs" />
+    <Compile Include="Generators.cs" />
+    <Compile Include="HandlerAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
 	<metadata>
-		<id>$id$</id>
+		<id>Eto.Platform.WinRT</id>
 		<version>$version$</version>
 		<title>$title$</title>
 		<authors>$author$</authors>
@@ -32,7 +32,7 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Platform.Xaml.dll" target="lib\netcore45\" />
+		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.WinRT.dll" target="lib\netcore45\" />
 		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

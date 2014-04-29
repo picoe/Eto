@@ -455,7 +455,7 @@ namespace Eto.Drawing
 			var font = obj as Font;
 
 			return font != null
-				&& object.ReferenceEquals(Generator, font.Generator)
+				&& object.ReferenceEquals(Platform, font.Platform)
 				&& Family.Equals(font.Family)
 				&& Size.Equals(font.Size)
 				&& FontStyle.Equals(font.FontStyle);
@@ -467,7 +467,7 @@ namespace Eto.Drawing
 		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
 		public override int GetHashCode()
 		{
-			return FamilyName.GetHashCode() ^ Generator.GetHashCode() ^ Size.GetHashCode() ^ FontStyle.GetHashCode();
+			return FamilyName.GetHashCode() ^ Platform.GetHashCode() ^ Size.GetHashCode() ^ FontStyle.GetHashCode();
 		}
 	}
 }

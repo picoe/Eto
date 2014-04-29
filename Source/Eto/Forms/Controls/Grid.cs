@@ -152,13 +152,15 @@ namespace Eto.Forms
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Grid : Control
 	{
+		GridColumnCollection columns;
+
 		new IGrid Handler { get { return (IGrid)base.Handler; } }
 
 		/// <summary>
 		/// Gets the collection of columns to display in the grid
 		/// </summary>
 		/// <value>The column collection</value>
-		public GridColumnCollection Columns { get; private set; }
+		public GridColumnCollection Columns { get { return columns ?? (columns = new GridColumnCollection()); } }
 
 		#region Events
 
@@ -297,9 +299,6 @@ namespace Eto.Forms
 		protected Grid(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
-			Columns = new GridColumnCollection();
-			if (initialize)
-				Initialize();
 		}
 
 		/// <summary>
@@ -311,9 +310,6 @@ namespace Eto.Forms
 		protected Grid(Generator generator, IControl handler, bool initialize = true)
 			: base(generator, handler, false)
 		{
-			Columns = new GridColumnCollection();
-			if (initialize)
-				Initialize();
 		}
 
 		/// <summary>

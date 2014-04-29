@@ -11,9 +11,10 @@ namespace Eto.WinForms.Forms
 	{
 		Font font;
 
-		public override swf.FontDialog CreateControl ()
+		protected override void Initialize()
 		{
-			return new swf.FontDialog {
+			base.Initialize();
+			Control = new swf.FontDialog {
 				ShowColor = true,
 				ShowEffects = false
 			};

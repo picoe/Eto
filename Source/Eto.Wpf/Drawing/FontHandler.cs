@@ -105,7 +105,7 @@ namespace Eto.Wpf.Drawing
 		{
 		}
 
-		public FontHandler(Eto.Platform generator, swc.Control control)
+		public FontHandler(Eto.Generator generator, swc.Control control)
 		{
 			this.Family = new FontFamily(generator, new FontFamilyHandler(control.FontFamily));
 			this.Size = PixelsToPoints(control.FontSize, control);
@@ -113,7 +113,7 @@ namespace Eto.Wpf.Drawing
 			this.WpfFontWeight = control.FontWeight;
 		}
 
-		public FontHandler(Eto.Platform generator, swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
+		public FontHandler(Eto.Generator generator, swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
 		{
 			Family = new FontFamily(generator, new FontFamilyHandler(family));
 			Size = size;
