@@ -106,7 +106,7 @@ namespace Eto
 		readonly Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
 		readonly Dictionary<object, object> properties = new Dictionary<object, object>();
 		static Generator globalInstance;
-		static ThreadLocal<Generator> instance = new ThreadLocal<Generator>(() => globalInstance, false);
+		static ThreadLocal<Generator> instance = new ThreadLocal<Generator>(() => globalInstance);
 
 		internal T GetSharedProperty<T>(object key, Func<T> instantiator)
 		{
@@ -250,8 +250,8 @@ namespace Eto
 		{
 			get
 			{
-				if (current != null)
-					return current;
+				if (globalInstance != null)
+					return globalInstance;
 
 				Generator detected = null;
 			
@@ -273,7 +273,7 @@ namespace Eto
 					throw new EtoException("Could not detect platform. Are you missing a platform assembly?");
 					
 				Initialize(detected);
-				return current;
+				return globalInstance;
 			}
 		}
 #endif
