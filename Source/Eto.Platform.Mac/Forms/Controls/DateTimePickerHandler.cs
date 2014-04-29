@@ -53,7 +53,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			//Widget.KeyDown += HandleKeyDown;
+			Widget.KeyDown += HandleKeyDown;
 			// when clicking, set the value if it is null
 			Widget.MouseDown += HandleMouseDown;
 		}

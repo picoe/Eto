@@ -8,16 +8,47 @@ namespace Eto.Test.Sections.Controls
 		public DateTimePickerSection()
 		{
 			var layout = new DynamicLayout();
-			
+
+			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Default" }, Default(), new Label { Text = "Default with Value" }, DefaultWithValue(), null);
 			layout.AddRow(new Label { Text = "Date" }, DateControl(), new Label { Text = "Date with Value" }, DateControlWithValue());
 			layout.AddRow(new Label { Text = "Time" }, TimeControl(), new Label { Text = "Time with Value" }, TimeControlWithValue());
 			layout.AddRow(new Label { Text = "Date/Time" }, DateTimeControl(), new Label { Text = "Date/Time with Value" }, DateTimeControlWithValue());
+			layout.EndVertical();
+
+			layout.AddCentered(TestProperties());
 			
 			// growing space at end is blank!
 			layout.Add(null);
 
 			Content = layout;
+		}
+
+		Control TestProperties()
+		{
+			var layout = new DynamicLayout();
+			DateTimePicker min, max, current, setValue;
+			Button setButton;
+
+			layout.AddRow(new Label { Text = "Min Value" }, min = new DateTimePicker());
+			layout.AddRow(new Label { Text = "Max Value" }, max = new DateTimePicker());
+			layout.BeginHorizontal();
+			layout.Add(new Label { Text = "Set to value" });
+			layout.BeginVertical();
+			layout.BeginHorizontal();
+			layout.AddAutoSized(setValue = new DateTimePicker());
+			layout.Add(setButton = new Button { Text = "Set" });
+			layout.EndHorizontal();
+			layout.EndVertical();
+			layout.EndHorizontal();
+			layout.AddRow(new Label { Text = "Value" }, current = new DateTimePicker());
+
+			min.ValueChanged += (sender, e) => current.MinDate = min.Value ?? DateTime.MinValue;
+			max.ValueChanged += (sender, e) => current.MaxDate = max.Value ?? DateTime.MaxValue;
+			setButton.Click += (sender, e) => current.Value = setValue.Value;
+			LogEvents(current);
+
+			return layout;
 		}
 
 		DateTimePicker Default()
