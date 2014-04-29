@@ -17,7 +17,7 @@
     	
     	You should also change the console application's output type to 'Windows Application' to suppress the console window from showing.
     </description>
-    <copyright>Copyright 2013 by Curtis Wensley</copyright>
+    <copyright>Copyright 2014 by Curtis Wensley</copyright>
     <tags>cross platform gui framework desktop winforms wpf mac osx gtk eto.forms sample</tags>
     <dependencies>
       <group>

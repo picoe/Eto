@@ -38,7 +38,7 @@ namespace $rootnamespace$
 			var clickMe = new Command { MenuText = "Click Me!", ShowLabel = true, ToolBarText = "Click Me!" };
 			clickMe.Executed += (sender, e) => MessageBox.Show(this, "I was clicked!");
 
-			var quitAction = new Command { MenuText = "Quit", Shortcut = Application.Instance.CommonModifier | Key.Q };
+			var quitAction = new Command { MenuText = "Quit", Shortcut = Application.Instance.CommonModifier | Keys.Q };
 			quitAction.Executed += (sender, e) => Application.Instance.Quit();
 
 

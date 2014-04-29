@@ -40,6 +40,20 @@
         <PackagesConfig>packages.config</PackagesConfig>
         <PaddedSolutionDir>"$(BaseDir)"</PaddedSolutionDir>
     </PropertyGroup>
+    <Target Name="_GetAssemblyInfo" Condition="$(NuspecInfoAssembly) != ''">
+        <GetAssemblyInformationVersion AssemblyFileName="$(NuspecInfoAssembly)">
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
+			<Output TaskParameter="AssemblyTitle" PropertyName="AssemblyTitle" />
+			<Output TaskParameter="AssemblyDescription" PropertyName="AssemblyDescription" />
+			<Output TaskParameter="AssemblyCopyright" PropertyName="AssemblyCopyright" />
+			<Output TaskParameter="AssemblyCompany" PropertyName="AssemblyCompany" />
+			<Output TaskParameter="AssemblyName" PropertyName="AssemblyName" />
+        </GetAssemblyInformationVersion>
+        <PropertyGroup>
+	        <NugetBuildProperties>Title=$(AssemblyTitle);Description=$(AssemblyDescription);Author=$(AssemblyCompany);Copyright=$(AssemblyCopyright);Id=$(AssemblyName)</NugetBuildProperties>
+    	    <NugetBuildOptions>-Version $(AssemblyInformationalVersion)</NugetBuildOptions>
+    	</PropertyGroup>
+    </Target>
   
     <PropertyGroup>
         <!-- NuGet command -->
@@ -56,7 +70,6 @@
 
         <!-- Commands -->
         <RestoreCommand>$(NuGetCommand) install "$(PackagesConfig)" -source "$(PackageSources)"  $(NonInteractiveSwitch) $(RequireConsentSwitch) -solutionDir $(PaddedSolutionDir) $(NugetOptions)</RestoreCommand>
-        <BuildCommand>$(NuGetCommand) pack "$(ProjectPath)" -Properties "Configuration=$(Configuration);Platform=$(Platform)" $(NonInteractiveSwitch) -OutputDirectory "$(PackageOutputDir)" $(NugetBuildOptions)</BuildCommand>
 
         <!-- We need to ensure packages are restored prior to assembly resolve -->
         <BuildDependsOn Condition="$(RestorePackages) == 'true'">
@@ -95,7 +108,11 @@
               Condition="'$(OS)' == 'Windows_NT' And Exists('$(PackagesConfig)')" />
     </Target>
 
-    <Target Name="BuildPackage" DependsOnTargets="CheckPrerequisites">
+    <Target Name="BuildPackage" DependsOnTargets="CheckPrerequisites;_GetAssemblyInfo">
+	    <MakeDir Directories="$(TargetDir)"/>
+    	<PropertyGroup>
+	        <BuildCommand>$(NuGetCommand) pack "$(ProjectPath)" -Properties "Configuration=$(Configuration);Platform=$(Platform);$(NugetBuildProperties)" $(NonInteractiveSwitch) -OutputDirectory "$(PackageOutputDir)" $(NugetBuildOptions)</BuildCommand>
+	    </PropertyGroup>
         <Exec Command="$(BuildCommand)" 
               Condition=" '$(OS)' != 'Windows_NT' " />
               
@@ -126,6 +143,11 @@
         <ParameterGroup>
             <AssemblyFileName ParameterType="System.String" Required="true" />
             <AssemblyInformationalVersion ParameterType="System.String" Output="true" />
+            <AssemblyTitle ParameterType="System.String" Output="true" />
+            <AssemblyDescription ParameterType="System.String" Output="true" />
+            <AssemblyCopyright ParameterType="System.String" Output="true" />
+            <AssemblyCompany ParameterType="System.String" Output="true" />
+            <AssemblyName ParameterType="System.String" Output="true" />
         </ParameterGroup>
         <Task>
             <Reference Include="System.Core" />
@@ -141,8 +163,26 @@
                 try {
                     AssemblyFileName = Path.GetFullPath(AssemblyFileName);
 
-                    Log.LogMessage("Getting assembly version...");
+                    Log.LogMessage("Getting assembly info...");
 					AssemblyInformationalVersion = FileVersionInfo.GetVersionInfo(AssemblyFileName).ProductVersion;
+					
+					var assembly = Assembly.LoadFrom(AssemblyFileName);
+					var informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+					if (informationalVersion != null)
+						AssemblyInformationalVersion = informationalVersion.InformationalVersion;
+					var title = assembly.GetCustomAttribute<AssemblyTitleAttribute>();
+					if (title != null)
+						AssemblyTitle = title.Title;
+					var description = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>();
+					if (description != null)
+						AssemblyDescription = description.Description;
+					var copyright = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
+					if (copyright != null)
+						AssemblyCopyright = copyright.Copyright;
+					var company = assembly.GetCustomAttribute<AssemblyCompanyAttribute>();
+					if (company != null)
+						AssemblyCompany = company.Company;
+					AssemblyName = assembly.GetName().Name;
                     Log.LogMessage("  ver: {0}", AssemblyInformationalVersion);
 					return true;
                 }
