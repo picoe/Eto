@@ -22,11 +22,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control = new mwc.DateTimePicker
 			{
-				ShowButtonSpinner = false
+				ShowButtonSpinner = false,
+				AutoCloseCalendar = true,
+				ClipValueToMinMax = true
 			};
 			Mode = DateTimePicker.DefaultMode;
-			MinDate = DateTime.MinValue;
-			MaxDate = DateTime.MaxValue;
 		}
 
 		public override bool UseMousePreview { get { return true; } }
@@ -42,10 +42,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				var val = Value;
 				if (val != null)
 				{
-					if (val.Value < MinDate)
-						val = Value = MinDate;
-					else if (val.Value > MaxDate)
-						val = Value = MaxDate;
+					// still need to do this as the popup doesn't limit the value when using the calendar
+					if (Control.Minimum != null && val.Value < Control.Minimum)
+						val = Value = Control.Minimum.Value;
+					else if (Control.Maximum != null && val.Value > Control.Maximum)
+						val = Value = Control.Maximum.Value;
 				}
 
 				if (last != val && (last == null || val == null || Math.Abs((last.Value - val.Value).TotalSeconds) >= 1))
@@ -62,9 +63,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Value = value; }
 		}
 
-		public DateTime MinDate { get; set; }
+		public DateTime MinDate
+		{
+			get { return Control.Minimum ?? DateTime.MinValue; }
+			set { Control.Minimum = value == DateTime.MinValue ? null : (DateTime?)value; }
+		}
 
-		public DateTime MaxDate { get; set; }
+		public DateTime MaxDate
+		{
+			get { return Control.Maximum ?? DateTime.MaxValue; }
+			set { Control.Maximum = value == DateTime.MaxValue ? null : (DateTime?)value; }
+		}
 
 		public DateTimePickerMode Mode
 		{
