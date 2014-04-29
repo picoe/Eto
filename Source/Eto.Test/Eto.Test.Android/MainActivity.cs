@@ -40,9 +40,9 @@ namespace Eto.Test.Android
 		{
 			base.OnCreate(savedInstanceState);
 
-			var generator = new Eto.Platform.Android.Generator();
-			new TestApplication(generator).Attach(this).Run();
-			//new SimpleApplication(generator).Attach(this).Run();
+			var generator = new Eto.Android.Platform();
+			//new TestApplication(generator).Attach(this).Run();
+			new SimpleApplication(generator).Attach(this).Run();
 		}
 	}
 }
