@@ -146,8 +146,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set
 			{
-				curValue = value;
-				Control.DateValue = (value ?? DateTime.Now).ToNS();
+				if (value != curValue)
+				{
+					curValue = value;
+					// don't validate otherwise the new value gets overridden when null
+					Control.ValidateProposedDateValue -= HandleValidateProposedDateValue;
+					Control.DateValue = (value ?? DateTime.Now).ToNS();
+					Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
+					Widget.OnValueChanged(EventArgs.Empty);
+				}
 			}
 		}
 	}
