@@ -1,7 +1,6 @@
 using System;
 using Eto.Forms;
 using SD = System.Drawing;
-using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
@@ -13,11 +12,11 @@ using Eto.Platform.iOS.Forms;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public interface IMacContainer : IMacAutoSizing
+	public interface IMacContainer : IMacControlHandler
 	{
 		void SetContentSize(SD.SizeF contentSize);
 
-		void LayoutParent(bool updateSize);
+		void LayoutParent(bool updateSize = true);
 
 		void LayoutChildren();
 
@@ -26,25 +25,45 @@ namespace Eto.Platform.Mac.Forms
 		bool InitialLayout { get; }
 	}
 
-	public abstract class MacContainer<T, W> : 
+	public abstract class MacContainer<TControl, TWidget> : 
 #if OSX
-		MacView<T, W>, 
+		MacView<TControl, TWidget>,
 #elif IOS
-		iosView<T, W>,
+		IosView<TControl, TWidget>,
 #endif
 		IContainer, IMacContainer
-		where T: NSResponder
-		where W: Container
+		where TControl: NSResponder
+		where TWidget: Container
 	{
+		public bool RecurseToChildren { get { return true; } }
+
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
 		public override bool Enabled { get; set; }
 
 		public bool InitialLayout { get; private set; }
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Enabled = true;
+		}
+
 		public virtual void Update()
 		{
 			LayoutChildren();	
+		}
+
+		public bool NeedsQueue(Action update = null)
+		{
+			#if DESKTOP
+			if (ApplicationHandler.QueueResizing)
+			{
+				ApplicationHandler.Instance.AsyncInvoke(update ?? Update);
+				return true;
+			}
+			#endif
+			return false;
 		}
 
 		public virtual void SetContentSize(SD.SizeF contentSize)
@@ -57,6 +76,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public void LayoutAllChildren()
 		{
+			//Console.WriteLine("Layout all children: {0}\n {1}", this.GetType().Name, new StackTrace());
 			LayoutChildren();
 			foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
 			{
@@ -64,36 +84,25 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoadComplete(e);
-
+			base.OnLoad(e);
 			var parent = Widget.Parent.GetMacContainer();
 			if (parent == null || parent.InitialLayout)
 			{
-				this.InitialLayout = true;
+				InitialLayout = true;
 				LayoutAllChildren();
 			}
 		}
 
 		public void LayoutParent(bool updateSize = true)
 		{
+			if (NeedsQueue(() => LayoutParent(updateSize)))
+				return;
 			var container = Widget.Parent.GetMacContainer();
 			if (container != null)
 			{
 				// traverse up the tree to update everything we own
-				if (updateSize)
-				{
-					if (!AutoSize)
-					{
-						foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
-						{
-							var size = child.GetPreferredSize(Size.MaxValue);
-							child.SetContentSize(size.ToSDSizeF());
-						}
-						updateSize = false;
-					}
-				}
 				container.LayoutParent(updateSize);
 				return;
 			} 
@@ -102,15 +111,7 @@ namespace Eto.Platform.Mac.Forms
 				if (AutoSize)
 				{
 					var size = GetPreferredSize(Size.MaxValue);
-					SetContentSize(size.ToSDSizeF());
-				}
-				else
-				{
-					foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
-					{
-						var size = child.GetPreferredSize(Size.MaxValue);
-						child.SetContentSize(size.ToSDSizeF());
-					}
+					SetContentSize(size.ToSD());
 				}
 			}
 

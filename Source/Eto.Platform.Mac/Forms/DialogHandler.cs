@@ -1,6 +1,5 @@
 using System;
 using SD = System.Drawing;
-using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -47,10 +46,7 @@ namespace Eto.Platform.Mac.Forms
 				
 				if (button != null) {
 					var b = button.ControlObject as NSButton;
-					if (b != null)
-						Control.DefaultButtonCell = b.Cell;
-					else
-						Control.DefaultButtonCell = null;
+					Control.DefaultButtonCell = b == null ? null : b.Cell;
 				}
 				else
 					Control.DefaultButtonCell = null;
@@ -67,9 +63,10 @@ namespace Eto.Platform.Mac.Forms
 		
 		public DialogResult ShowDialog (Control parent)
 		{
-			if (parent != null) {
-				if (parent.ControlObject is NSWindow) Control.ParentWindow = (NSWindow)parent.ControlObject;
-				else if (parent.ControlObject is NSView) Control.ParentWindow = ((NSView)parent.ControlObject).Window;
+			if (parent != null && parent.ParentWindow != null) {
+				var nswindow = parent.ParentWindow.ControlObject as NSWindow;
+				if (nswindow != null)
+					Control.ParentWindow = nswindow;
 			}
 			Control.MakeKeyWindow ();
 			Widget.OnShown (EventArgs.Empty);
@@ -80,8 +77,6 @@ namespace Eto.Platform.Mac.Forms
 				MacModal.RunSheet (Control, out session);
 				break;
 			default:
-			case DialogDisplayMode.Default:
-			case DialogDisplayMode.Separate:
 				MacModal.Run (Control, out session);
 				break;
 			}

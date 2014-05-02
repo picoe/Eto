@@ -2,9 +2,6 @@
 using Eto.Drawing;
 using Eto.Forms;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Test.Sections.Behaviors
 {
@@ -162,6 +159,7 @@ namespace Eto.Test.Sections.Behaviors
 
 			child.WindowStateChanged += child_WindowStateChanged;
 			child.Closed += child_Closed;
+			child.Closing += child_Closing;
 			child.Shown += child_Shown;
 			child.GotFocus += child_GotFocus;
 			child.LostFocus += child_LostFocus;
@@ -176,6 +174,7 @@ namespace Eto.Test.Sections.Behaviors
 			Log.Write(child, "Closed");
 			child.WindowStateChanged -= child_WindowStateChanged;
 			child.Closed -= child_Closed;
+			child.Closing -= child_Closing;
 			child.Shown -= child_Shown;
 			child.GotFocus -= child_GotFocus;
 			child.LostFocus -= child_LostFocus;
@@ -183,6 +182,11 @@ namespace Eto.Test.Sections.Behaviors
 			child.SizeChanged -= child_SizeChanged;
 			bringToFrontButton.Enabled = false;
 			child = null;
+		}
+
+		void child_Closing(object sender, EventArgs e)
+		{
+			Log.Write(child, "Closing");
 		}
 
 		void child_LocationChanged(object sender, EventArgs e)

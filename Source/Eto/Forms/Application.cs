@@ -1,73 +1,98 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Eto.Forms
 {
 	public partial interface IApplication : IInstanceWidget
 	{
-		void Run (string[] args);
+		void Attach(object context);
+
+		void Run(string[] args);
+
 		void Quit();
-		
-		void GetSystemActions(GenerateActionArgs args, bool addStandardItems);
-		
-		Key CommonModifier { get; }
-		Key AlternateModifier { get; }
-		
+
+		IEnumerable<Command> GetSystemCommands();
+
+		Keys CommonModifier { get; }
+
+		Keys AlternateModifier { get; }
+
 		void Open(string url);
 
-		void Invoke (Action action);
-		void AsyncInvoke (Action action);
+		void Invoke(Action action);
+
+		void AsyncInvoke(Action action);
 
 		string BadgeLabel { get; set; }
+
+		void OnMainFormChanged();
 	}
 
 	public partial class Application : InstanceWidget
 	{
 		public static Application Instance { get; private set; }
-		
-		public event EventHandler<EventArgs> Initialized;
+
+		public event EventHandler<EventArgs> Initialized
+		{
+			add { Properties.AddEvent(InitializedKey, value); }
+			remove { Properties.RemoveEvent(InitializedKey, value); }
+		}
+
+		static readonly object InitializedKey = new object();
+
 		public virtual void OnInitialized(EventArgs e)
 		{
-			if (Initialized != null) Initialized(this, e);
+			Properties.TriggerEvent(InitializedKey, this, e);
 		}
 
 		public const string TerminatingEvent = "Application.Terminating";
 
-		event EventHandler<CancelEventArgs> terminating;
-
-		public event EventHandler<CancelEventArgs> Terminating {
-			add {
-				HandleEvent (TerminatingEvent);
-				terminating += value;
-			}
-			remove { terminating -= value; }
-		}
-
-		public virtual void OnTerminating (CancelEventArgs e)
+		public event EventHandler<CancelEventArgs> Terminating
 		{
-			if (terminating != null)
-				terminating (this, e);
+			add { Properties.AddHandlerEvent(TerminatingEvent, value); }
+			remove { Properties.RemoveEvent(TerminatingEvent, value); }
 		}
-		
+
+		public virtual void OnTerminating(CancelEventArgs e)
+		{
+			Properties.TriggerEvent(TerminatingEvent, this, e);
+		}
+
 		new IApplication Handler { get { return (IApplication)base.Handler; } }
 
-		public Form MainForm { get; set; }
-		
+		Form mainForm;
+		public Form MainForm
+		{
+			get { return mainForm; }
+			set
+			{
+				mainForm = value;
+				Handler.OnMainFormChanged();
+			}
+		}
+
 		public string Name { get; set; }
+
+		static Application()
+		{
+			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
+		}
 
 		public Application() : this(Generator.Detect)
 		{
 		}
-		
+
 		public Application(Generator g) : this(g, typeof(IApplication))
 		{
 		}
-			
-		protected Application(Generator g, Type type, bool initialize = true)
-				: base(g, type, initialize)
+
+		protected Application(Generator generator, Type type, bool initialize = true)
+			: base(generator ?? Generator.Detect, type, initialize)
 		{
 			Application.Instance = this;
-			Generator.Initialize(g); // make everything use this by default
+			Generator.Initialize(generator ?? Generator.Detect); // make everything use this by default
 		}
 
 		public virtual void Run(params string[] args)
@@ -75,45 +100,82 @@ namespace Eto.Forms
 			Handler.Run(args);
 		}
 
+		public virtual Application Attach(object context = null)
+		{
+			Handler.Attach(context);
+			return this;
+		}
+
 		[Obsolete("Use Invoke instead")]
-		public virtual void InvokeOnMainThread (Action action)
+		public virtual void InvokeOnMainThread(Action action)
 		{
-			Invoke (action);
+			Invoke(action);
 		}
 
-		public virtual void Invoke (Action action)
+		public virtual void Invoke(Action action)
 		{
-			Handler.Invoke (action);
+			Handler.Invoke(action);
 		}
 
-		public virtual void AsyncInvoke (Action action)
+		public virtual void AsyncInvoke(Action action)
 		{
-			Handler.AsyncInvoke (action);
+			Handler.AsyncInvoke(action);
 		}
-		
+
 		public void Quit()
 		{
 			Handler.Quit();
 		}
-		
+
 		public void Open(string url)
 		{
 			Handler.Open(url);
 		}
-		
-		public Key CommonModifier
+
+		public Keys CommonModifier
 		{
 			get { return Handler.CommonModifier; }
 		}
-		
-		public Key AlternateModifier
+
+		public Keys AlternateModifier
 		{
 			get { return Handler.AlternateModifier; }
 		}
-		
-		public virtual void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
+
+		public IEnumerable<Command> GetSystemCommands()
 		{
-			Handler.GetSystemActions(args, addStandardItems);
+			return Handler.GetSystemCommands();
+		}
+
+		[Obsolete("Use CreateStandardMenu and/or GetSystemCommands instead")]
+		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
+		{
+			// map new commands/menus back to actions for backwards compatibility
+			var commands = GetSystemCommands().ToArray();
+			foreach (var command in commands)
+			{
+				var currentCommand = command;
+				var action = new ButtonAction
+				{
+					ID = currentCommand.ID,
+					MenuText = currentCommand.MenuText,
+					ToolBarText = currentCommand.ToolBarText,
+					TooltipText = currentCommand.ToolTip,
+					Accelerator = currentCommand.Shortcut,
+					command = currentCommand
+				};
+				currentCommand.Executed += (sender, e) => action.Activate();
+				action.EnabledChanged += (sender, e) => currentCommand.Enabled = action.Enabled;
+				args.Actions.Add(action);
+			}
+			#if DESKTOP
+			if (addStandardItems)
+			{
+				var menu = new MenuBar(Generator);
+				CreateStandardMenu(menu.Items, commands);
+				args.Menu.ExtractMenu(menu);
+			}
+			#endif
 		}
 
 		public string BadgeLabel

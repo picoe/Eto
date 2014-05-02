@@ -1,11 +1,9 @@
 #if DESKTOP
-using System;
 
 namespace Eto.Forms
 {
-	public partial interface ITreeGridView
+	public partial interface ITreeGridView : IContextMenuHost
 	{
-		ContextMenu ContextMenu { get; set; }
 	}
 	
 	public partial class TreeGridView

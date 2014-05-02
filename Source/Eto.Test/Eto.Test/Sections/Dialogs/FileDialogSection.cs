@@ -1,4 +1,3 @@
-using System;
 using Eto.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace Eto.Test.Sections.Dialogs
 			Content = layout;
 		}
 
-		IEnumerable<IFileDialogFilter> GetFilters(string allFormatDescription)
+		static IEnumerable<IFileDialogFilter> GetFilters(string allFormatDescription)
 		{
 			yield return new FileDialogFilter(allFormatDescription, "png", "jpg", "jpeg", "gif", "tiff");
 			yield return new FileDialogFilter("PNG Files", "png");
@@ -34,7 +33,7 @@ namespace Eto.Test.Sections.Dialogs
 			button.Click += delegate
 			{
 				var dialog = new OpenFileDialog();
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
 				{
 					Log.Write(dialog, "Result: {0}, FileName: {1}", result, dialog.FileName);
@@ -54,7 +53,7 @@ namespace Eto.Test.Sections.Dialogs
 
 				dialog.Filters = GetFilters("All Formats");
 
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
 				{
 					Log.Write(dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}", result, dialog.CurrentFilter, dialog.FileName);
@@ -74,7 +73,7 @@ namespace Eto.Test.Sections.Dialogs
 
 				dialog.Filters = GetFilters("Auto Detect");
 
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
 				{
 					Log.Write(dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}", result, dialog.CurrentFilter, dialog.FileName);
@@ -91,7 +90,7 @@ namespace Eto.Test.Sections.Dialogs
 			button.Click += delegate
 			{
 				var dialog = new SaveFileDialog();
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
 				{
 					Log.Write(dialog, "Result: {0}, FileName: {1}", result, dialog.FileName);

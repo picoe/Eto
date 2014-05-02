@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using MonoMac.CoreGraphics;
-using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -21,7 +20,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
@@ -40,8 +39,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone (IntPtr zone)
 			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.selCopyWithZone.Handle, zone);
-				return new EtoCell (ptr) { Handler = this.Handler };
+				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.CopyWithZoneHandle, zone);
+				return new EtoCell (ptr) { Handler = Handler };
 			}
 
 			public override void DrawBorderAndBackground (System.Drawing.RectangleF cellFrame, NSView controlView)
@@ -50,7 +49,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var nscontext = NSGraphicsContext.CurrentContext;
 					var context = nscontext.GraphicsPort;
 
-					context.SetFillColor (BackgroundColor.ToCG ());
+					context.SetFillColor (BackgroundColor.CGColor);
 					context.FillRect (cellFrame);
 				}
 
@@ -60,7 +59,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override System.Drawing.RectangleF DrawTitle (NSAttributedString title, System.Drawing.RectangleF frame, NSView controlView)
 			{
 				if (TextColor != null) {
-					var newtitle = title.MutableCopy () as NSMutableAttributedString;
+					var newtitle = (NSMutableAttributedString)title.MutableCopy();
 					var range = new NSRange (0, title.Length);
 					newtitle.RemoveAttribute (NSAttributedString.ForegroundColorAttributeName, range);
 					newtitle.AddAttribute (NSAttributedString.ForegroundColorAttributeName, TextColor, range);
@@ -79,26 +78,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override void SetBackgroundColor (NSCell cell, Color color)
 		{
-			var c = cell as EtoCell;
-			c.BackgroundColor = color.ToNS ();
+			var c = (EtoCell)cell;
+			c.BackgroundColor = color.ToNSUI ();
 			c.DrawsBackground = color != Colors.Transparent;
 		}
 
 		public override Color GetBackgroundColor (NSCell cell)
 		{
-			var c = cell as EtoCell;
+			var c = (EtoCell)cell;
 			return c.BackgroundColor.ToEto ();
 		}
 
 		public override void SetForegroundColor (NSCell cell, Color color)
 		{
-			var c = cell as EtoCell;
-			c.TextColor = color.ToNS ();
+			var c = (EtoCell)cell;
+			c.TextColor = color.ToNSUI ();
 		}
 
 		public override Color GetForegroundColor (NSCell cell)
 		{
-			var c = cell as EtoCell;
+			var c = (EtoCell)cell;
 			return c.TextColor.ToEto ();
 		}
 
@@ -116,18 +115,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return dataStore; }
 			set {
 				dataStore = value;
-				this.Control.RemoveAllItems ();
-				this.Control.AddItems (GetItems ().Select (r => r.Text).ToArray ());
+				Control.RemoveAllItems ();
+				Control.AddItems (GetItems ().Select (r => r.Text).ToArray ());
 			}
 		}
 		
-		public override void SetObjectValue (object dataItem, NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject value)
 		{
 			if (Widget.Binding != null) {
-				var row = ((NSNumber)val).Int32Value;
+				var row = ((NSNumber)value).Int32Value;
 				var item = dataStore [row];
-				var value = item != null ? item.Key : null;
-				Widget.Binding.SetValue (dataItem, value);
+				var itemValue = item != null ? item.Key : null;
+				Widget.Binding.SetValue (dataItem, itemValue);
 			}
 		}
 		

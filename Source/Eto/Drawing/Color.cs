@@ -15,7 +15,8 @@ namespace Eto.Drawing
 	{
 		// static members for mapping color names from the Colors class
 		static Dictionary<string, Color> colormap;
-		static readonly object colormaplock = new object ();
+		static readonly object colormaplock = new object();
+		internal const float Epsilon = 1f / byte.MaxValue;
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity (0-1)
@@ -41,25 +42,25 @@ namespace Eto.Drawing
 		/// Gets or sets the alpha/opacity component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The alpha component</value>
-		public int Ab { get { return (int)((A * 255) + 0.5); } set { A = value / 255f; } }
+		public int Ab { get { return (int)((A * 255) + 0.5f); } set { A = value / 255f; } }
 
 		/// <summary>
 		/// Gets or sets the red component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The red component</value>
-		public int Rb { get { return (int)((R * 255) + 0.5); } set { R = value / 255f; } }
+		public int Rb { get { return (int)((R * 255) + 0.5f); } set { R = value / 255f; } }
 
 		/// <summary>
 		/// Gets or sets the green component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The green component</value>
-		public int Gb { get { return (int)((G * 255) + 0.5); } set { G = value / 255f; } }
+		public int Gb { get { return (int)((G * 255) + 0.5f); } set { G = value / 255f; } }
 
 		/// <summary>
 		/// Gets or sets the blue component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The blue component</value>
-		public int Bb { get { return (int)((B * 255) + 0.5); } set { B = value / 255f; } }
+		public int Bb { get { return (int)((B * 255) + 0.5f); } set { B = value / 255f; } }
 
 		/// <summary>
 		/// Creates a color from 8-bit ARGB components
@@ -119,7 +120,7 @@ namespace Eto.Drawing
 		/// <param name="blendColor">Color to blend onto the base color</param>
 		public static Color Blend (Color baseColor, Color blendColor)
 		{
-			if (blendColor.A == 1.0)
+			if (Math.Abs(blendColor.A - 1.0f) < Epsilon)
 				return blendColor;
 			var inv = 1.0f - blendColor.A;
 			baseColor.R = baseColor.R * inv + blendColor.R * blendColor.A;
@@ -174,18 +175,15 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="value">String value to parse</param>
 		/// <param name="color">Color struct with the parsed value, or Transparent if value is invalid</param>
-		/// <param name="culture">Culture to use to parse the values</param>
 		/// <returns>True if the value was successfully parsed into a color, false otherwise</returns>
-		public static bool TryParse (string value, out Color color, CultureInfo culture = null)
+		public static bool TryParse (string value, out Color color)
 		{
-			culture = culture ?? CultureInfo.CurrentCulture;
 			value = value.Trim ();
 			if (value.Length == 0) {
 				color = Colors.Transparent;
 				return true;
 			}
-
-			string listSeparator = culture.TextInfo.ListSeparator;
+			string listSeparator = ",";
 			if (value.IndexOf (listSeparator, StringComparison.OrdinalIgnoreCase) == -1) {
 				bool isArgb = value[0] == '#';
 				int num = (!isArgb) ? 0 : 1;
@@ -216,12 +214,14 @@ namespace Eto.Drawing
 				if (colormap == null) {
 					lock (colormaplock) {
 						if (colormap == null) {
+#if !WINRT
 							var props = typeof (Colors).GetProperties (BindingFlags.Public | BindingFlags.Static);
 							colormap = new Dictionary<string, Color> (StringComparer.OrdinalIgnoreCase);
 							foreach (var val in props.Where (r => r.PropertyType == typeof (Color))) {
 								var col = (Color)val.GetValue (null, null);
 								colormap.Add (val.Name, col);
 							}
+#endif
 						}
 					}
 				}
@@ -296,7 +296,10 @@ namespace Eto.Drawing
 		/// <returns>True if both the Color structs have the same values for all ARGB components</returns>
 		public static bool operator == (Color color1, Color color2)
 		{
-			return color1.B == color2.B && color1.R == color2.R && color1.G == color2.G && color1.A == color2.A;
+			return Math.Abs(color1.B - color2.B) < Epsilon
+				&& Math.Abs(color1.R - color2.R) < Epsilon
+				&& Math.Abs(color1.G - color2.G) < Epsilon
+				&& Math.Abs(color1.A - color2.A) < Epsilon;
 		}
 
 		/// <summary>
@@ -345,9 +348,8 @@ namespace Eto.Drawing
 		public string ToHex (bool includeAlpha = true)
 		{
 			if (includeAlpha)
-				return string.Format (CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(A * byte.MaxValue), (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
-			else
-				return string.Format (CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
+				return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", Ab, Rb, Gb, Bb);
+			return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", Rb, Gb, Bb);
 		}
 
 		/// <summary>

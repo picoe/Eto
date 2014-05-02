@@ -74,8 +74,7 @@ namespace Eto
 		public static string GetStringAttribute(this XmlElement element, string name)
 		{
 			string attr = element.GetAttribute(name);
-			if (string.IsNullOrEmpty(attr)) return null;
-			else return attr;
+			return string.IsNullOrEmpty(attr) ? null : attr;
 		}
 		
 		/// <summary>
@@ -216,7 +215,7 @@ namespace Eto
 		public static void WriteChildXml<T>(this XmlElement element, string childElementName, T child)
 			where T: IXmlReadable
 		{
-			if (child == null) return;
+			if (EqualityComparer<T>.Default.Equals(child, default(T))) return;
 			var childElement = element.OwnerDocument.CreateElement(childElementName);
 			child.WriteXml(childElement);
 			element.AppendChild(childElement);
@@ -321,7 +320,7 @@ namespace Eto
 			var childElement = element.SelectSingleNode(childElementName) as XmlElement;
 			if (childElement == null) return default(T);
 			var child = create(childElement);
-			if (child != null) child.ReadXml(childElement);
+			if (!EqualityComparer<T>.Default.Equals(child, default(T))) child.ReadXml(childElement);
 			return child;
 		}
 
@@ -410,7 +409,7 @@ namespace Eto
 			XmlElement listNode = (!string.IsNullOrEmpty (listElement)) ? element.OwnerDocument.CreateElement (listElement) : element;
 			
 			foreach (T child in list) {
-				if (child != null) {
+				if (!EqualityComparer<T>.Default.Equals(child, default(T))) {
 					var childNode = element.OwnerDocument.CreateElement(childElement);
 					child.WriteXml(childNode);
 					listNode.AppendChild (childNode);
@@ -482,7 +481,7 @@ namespace Eto
 				list.Clear ();
 				foreach (XmlElement childNode in childNodes) {
 					var item = create(childNode);
-					if (item != null) {
+					if (!EqualityComparer<T>.Default.Equals(item, default(T))) {
 						item.ReadXml(childNode);
 						list.Add (item);
 					}

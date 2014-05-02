@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
-using System.Diagnostics;
 using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
@@ -15,12 +12,13 @@ namespace Eto.Platform.Wpf.Forms
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout>, ITableLayout
 	{
 		swc.Border border;
-		Eto.Drawing.Size spacing;
+		Size spacing;
 		Control[,] controls;
 		bool[] columnScale;
 		bool[] rowScale;
 		int lastColumnScale;
 		int lastRowScale;
+		bool inGroupBox;
 
 		public Size Adjust { get; set; }
 
@@ -90,7 +88,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		sw.FrameworkElement EmptyCell(int x, int y)
 		{
-			var empty = new sw.FrameworkElement { };
+			var empty = new sw.FrameworkElement();
 			swc.Grid.SetColumn(empty, x);
 			swc.Grid.SetRow(empty, y);
 			SetMargins(empty, x, y);
@@ -100,6 +98,8 @@ namespace Eto.Platform.Wpf.Forms
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
+			inGroupBox = Widget.FindParent<GroupBox>() != null;
+
 			if (Control.IsLoaded)
 				SetScale();
 		}
@@ -131,11 +131,17 @@ namespace Eto.Platform.Wpf.Forms
 
 		void SetChildrenSizes()
 		{
+			var inGroupBoxCurrent = inGroupBox;
 			var widths = new double[Control.ColumnDefinitions.Count];
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{
 				var rowdef = Control.RowDefinitions[y];
 				var maxy = rowdef.ActualHeight;
+				if (inGroupBoxCurrent && rowdef.Height.IsStar)
+ 				{
+					maxy -= 1;
+					inGroupBoxCurrent = false;
+				}
 				for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
 				{
 					var coldef = Control.ColumnDefinitions[x];
@@ -214,7 +220,7 @@ namespace Eto.Platform.Wpf.Forms
 			return rowScale[row];
 		}
 
-		public Eto.Drawing.Size Spacing
+		public Size Spacing
 		{
 			get { return spacing; }
 			set
@@ -294,11 +300,11 @@ namespace Eto.Platform.Wpf.Forms
 			Remove(child.GetContainerControl());
 		}
 
-		public override void Remove(sw.FrameworkElement control)
+		public override void Remove(sw.FrameworkElement child)
 		{
-			var x = swc.Grid.GetColumn(control);
-			var y = swc.Grid.GetRow(control);
-			Control.Children.Remove(control);
+			var x = swc.Grid.GetColumn(child);
+			var y = swc.Grid.GetRow(child);
+			Control.Children.Remove(child);
 			controls[x, y] = null;
 			Control.Children.Add(EmptyCell(x, y));
 			UpdatePreferredSize();

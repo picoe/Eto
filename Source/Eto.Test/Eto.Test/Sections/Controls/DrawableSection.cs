@@ -65,19 +65,19 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size (1000, 1000),
 				BackgroundColor = Colors.Blue
 			};
-			var image = TestIcons.TestImage;
+			var image = TestIcons.TestImage();
 			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
 				pe.Graphics.FillRectangle(Brushes.Black(), new Rectangle(150, 150, 100, 100));
 				var whitePen = Pens.White();
-				var inc = 400;
+				const int inc = 400;
 				for (int i = 0; i <= control.Size.Width / inc; i++)
 				{
 					var pos = i * inc;
 					pe.Graphics.DrawLine(whitePen, new Point(pos, 0), new Point(pos + control.Size.Width, control.Size.Height));
 					pe.Graphics.DrawLine(whitePen, new Point(pos, 0), new Point(pos - control.Size.Width, control.Size.Height));
 				}
-				var lpos = 100;
+				const int lpos = 100;
 				pe.Graphics.DrawLine(whitePen, new Point(0, lpos), new Point(control.Size.Width, lpos));
 				pe.Graphics.DrawLine(whitePen, new Point(lpos, 0), new Point(lpos, control.Size.Height));
 				pe.Graphics.DrawImage(image, 100, 10);

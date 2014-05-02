@@ -1,19 +1,17 @@
-using System;
 using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac;
-using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class DrawableHandler : MacDockContainer<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
+	public class DrawableHandler : MacPanel<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
 		Brush backgroundBrush;
 		Color backgroundColor;
+
+		public bool SupportsCreateGraphics { get { return true; } }
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -26,14 +24,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void DrawRect(sd.RectangleF dirtyRect)
 			{
-				if (Widget == null)
+				var drawable = Drawable;
+				if (drawable == null)
 					return;
-				dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
+				if (!IsFlipped)
+					dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
 				if (dirtyRect.X % 1.0f > 0f)
 					dirtyRect.Width += 1;
 				if (dirtyRect.Y % 1.0f > 0f)
 					dirtyRect.Height += 1;
-				Drawable.Update(Rectangle.Ceiling(Eto.Platform.Conversions.ToEto(dirtyRect)));
+				ApplicationHandler.QueueResizing = true;
+				drawable.Update(Rectangle.Ceiling(dirtyRect.ToEto()));
+				ApplicationHandler.QueueResizing = false;
 			}
 
 			public bool CanFocus { get; set; }
@@ -51,7 +53,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Graphics CreateGraphics()
 		{
-			return new Graphics(Widget.Generator, new GraphicsHandler(Control, Widget));
+			return new Graphics(Widget.Generator, new GraphicsHandler(Control));
 		}
 
 		public override bool Enabled { get; set; }
@@ -64,11 +66,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (backgroundColor != value)
 				{
 					backgroundColor = value;
-					if (backgroundColor.A > 0)
-						backgroundBrush = new SolidBrush(backgroundColor, Widget.Generator);
-					else
-						backgroundBrush = null;
-					this.Invalidate();
+					backgroundBrush = backgroundColor.A > 0 ? new SolidBrush(backgroundColor, Widget.Generator) : null;
+					Invalidate();
 				}
 			}
 		}
@@ -85,6 +84,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set { Control.CanFocus = value; }
 		}
 
+		public override void Invalidate()
+		{
+			if (!NeedsQueue(Invalidate))
+				base.Invalidate();
+		}
+
+		public override void Invalidate(Rectangle rect)
+		{
+			if (!NeedsQueue(() => Invalidate(rect)))
+				base.Invalidate(rect);
+		}
+
 		public void Update(Rectangle rect)
 		{
 			var context = NSGraphicsContext.CurrentContext;
@@ -96,7 +107,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 					if (backgroundBrush != null)
 						graphics.FillRectangle(backgroundBrush, rect);
 
-					Widget.OnPaint(new PaintEventArgs(graphics, rect));
+					var widget = Widget;
+					if (widget != null)
+						widget.OnPaint(new PaintEventArgs(graphics, rect));
 				}
 			}
 		}

@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
@@ -13,21 +12,18 @@ namespace Eto.Platform.GtkSharp
 			//control.ToolbarStyle = Gtk.ToolbarStyle.Both;
 		}
 
-
-		#region IToolBar Members
-
 		public ToolBarDock Dock
 		{
 			get { return dock; }
 			set { dock = value; }
 		}
 		
-		public void AddButton(ToolBarItem item)
+		public void AddButton(ToolItem item, int index)
 		{
-			((IToolBarItemHandler)item.Handler).CreateControl(this);
+			((IToolBarItemHandler)item.Handler).CreateControl(this, index);
 		}
 
-		public void RemoveButton(ToolBarItem item)
+		public void RemoveButton(ToolItem item)
 		{
 			if (item.ControlObject != null) Control.Remove((Gtk.Widget)item.ControlObject);
 		}
@@ -49,7 +45,6 @@ namespace Eto.Platform.GtkSharp
 					case Gtk.ToolbarStyle.BothHoriz:
 						return ToolBarTextAlign.Right;
 					default:
-					case Gtk.ToolbarStyle.Both:
 						return ToolBarTextAlign.Underneath;
 				}
 			}
@@ -61,13 +56,10 @@ namespace Eto.Platform.GtkSharp
 						Control.ToolbarStyle = Gtk.ToolbarStyle.BothHoriz;
 						break;
 					default:
-					case ToolBarTextAlign.Underneath:
 						Control.ToolbarStyle = Gtk.ToolbarStyle.Both;
 						break;
 				}
 			}
 		}
-		#endregion
-
 	}
 }

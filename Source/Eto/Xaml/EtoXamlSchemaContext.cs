@@ -2,10 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xaml;
 
 namespace Eto.Xaml
@@ -14,8 +11,8 @@ namespace Eto.Xaml
 	{
 		public const string EtoFormsNamespace = "http://schema.picoe.ca/eto.forms";
 
-		Dictionary<string, XamlType> cache = new Dictionary<string, XamlType> ();
-		object cache_sync = new object ();
+		readonly Dictionary<string, XamlType> cache = new Dictionary<string, XamlType> ();
+		readonly object cache_sync = new object ();
 
 		public EtoXamlSchemaContext (IEnumerable<Assembly> assemblies)
 			: base (assemblies)
@@ -32,12 +29,12 @@ namespace Eto.Xaml
 				xamlNamespace = "clr-namespace:Eto.Forms;assembly=Eto";
 			if (type == null && xamlNamespace.StartsWith (clr_namespace, StringComparison.OrdinalIgnoreCase))
 			{
-				lock (this.cache_sync)
+				lock (cache_sync)
 				{
-					if (!this.cache.TryGetValue (xamlNamespace + name, out type))
+					if (!cache.TryGetValue (xamlNamespace + name, out type))
 					{
 						var nsComponents = xamlNamespace.Split (';');
-						if (nsComponents.Length == 2 && nsComponents[1].StartsWith (clr_assembly))
+						if (nsComponents.Length == 2 && nsComponents[1].StartsWith(clr_assembly, StringComparison.Ordinal))
 						{
 							var assemblyName = nsComponents[1].Substring (clr_assembly.Length);
 							var ns = nsComponents[0].Substring (clr_namespace.Length);
@@ -45,8 +42,8 @@ namespace Eto.Xaml
 							if (assembly != null)
 							{
 								var realType = assembly.GetType (ns + "." + name);
-								type = this.GetXamlType (realType);
-								this.cache.Add (xamlNamespace + name, type);
+								type = GetXamlType (realType);
+								cache.Add (xamlNamespace + name, type);
 							}
 						}
 					}

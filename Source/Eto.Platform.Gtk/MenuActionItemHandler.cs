@@ -7,31 +7,34 @@ namespace Eto.Platform.GtkSharp
 	{
 		void TriggerValidate();
 	}
-	public abstract class MenuActionItemHandler<T, W> : MenuHandler<T, W>, IMenuActionItemHandler
-		where T: Gtk.MenuItem
-		where W: MenuActionItem
+
+	public abstract class MenuActionItemHandler<TControl, TWidget> : MenuHandler<TControl, TWidget>, IMenuActionItemHandler
+		where TControl: Gtk.MenuItem
+		where TWidget: MenuItem
 	{
-		public MenuActionItemHandler ()
+		public override void AttachEvent(string id)
 		{
-		}
-		
-		public override void AttachEvent (string handler)
-		{
-			switch (handler) {
-			case MenuActionItem.ValidateEvent:
+			switch (id)
+			{
+				case MenuItem.ValidateEvent:
 				// handled by the contextmenu/menubar
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
-		
-		public void TriggerValidate ()
+
+		public void TriggerValidate()
 		{
-			if (Control.Submenu != null) {
-				Widget.OnValidate (EventArgs.Empty);
+			if (Control.Submenu != null)
+			{
+				Widget.OnValidate(EventArgs.Empty);
 			}
+		}
+
+		public void CreateFromCommand(Command command)
+		{
 		}
 	}
 }

@@ -1,42 +1,68 @@
-using System;
-using System.Collections;
-using System.Reflection;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
-using Eto.Drawing;
 using Eto.Forms;
+using System;
 
 namespace Eto.Platform.Windows
 {
-	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolBarItem>, ISeparatorToolBarItem, IToolBarItemHandler
+	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolItem>, ISeparatorToolItem, IToolBarItemHandler
 	{
 		public SeparatorToolBarItemHandler()
 		{
 			Control = new SWF.ToolStripSeparator();
 		}
-	
-		public SeparatorToolBarItemType Type {
-			get {
-				if (this.Control.AutoSize) return SeparatorToolBarItemType.Divider;
-				else return SeparatorToolBarItemType.FlexibleSpace;
+
+		public SeparatorToolItemType Type
+		{
+			get
+			{
+				return Control.AutoSize ? SeparatorToolItemType.Divider : SeparatorToolItemType.FlexibleSpace;
 			}
-			set {
+			set
+			{
 				switch (value)
 				{
-					case SeparatorToolBarItemType.Divider:
-						this.Control.AutoSize = true;
+					case SeparatorToolItemType.Divider:
+						Control.AutoSize = true;
 						break;
-				default:
-					this.Control.AutoSize = false;
-					break;
+					default:
+						Control.AutoSize = false;
+						break;
 				}
 			}
 		}
-		
-		public void CreateControl (ToolBarHandler handler)
+
+		public void CreateControl(ToolBarHandler handler, int index)
 		{
-			handler.Control.Items.Add(Control);
+			handler.Control.Items.Insert(index, Control);
 		}
 
+		public string Text
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public string ToolTip
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public Eto.Drawing.Image Image
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public bool Enabled
+		{
+			get { return false; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public void CreateFromCommand(Command command)
+		{
+		}
 	}
 }

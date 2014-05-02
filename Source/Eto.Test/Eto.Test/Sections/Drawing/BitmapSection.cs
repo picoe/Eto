@@ -1,12 +1,46 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
+using ImageView = Eto.Test.Sections.Drawing.DrawableImageView;
+using System;
 
 namespace Eto.Test.Sections.Drawing
 {
+	/// <summary>
+	/// We use this class instead of ImageView to test showing the image using the graphics context only
+	/// </summary>
+	public class DrawableImageView : Drawable
+	{
+		Image image;
+		public Image Image
+		{
+			get { return image; }
+			set
+			{
+				image = value;
+				if (image != null)
+					MinimumSize = image.Size;
+				if (Loaded)
+					Invalidate();
+			}
+		}
+
+		public override void OnPaint(PaintEventArgs e)
+		{
+			base.OnPaint(e);
+			if (Image != null)
+				e.Graphics.DrawImage(Image, PointF.Empty);
+		}
+
+		public DrawableImageView()
+		{
+		}
+
+		public DrawableImageView(Generator generator)
+			: base(generator)
+		{
+		}
+	}
+
 	public class BitmapSection : Scrollable
 	{
 		public BitmapSection()
@@ -26,6 +60,11 @@ namespace Eto.Test.Sections.Drawing
 				new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloningRectangle(), centered: true),
 				null);
 
+			layout.AddRow(
+				new Label { Text = "Clone using tiles" }, TableLayout.AutoSized(CloneTiles(), centered: true),
+				new Label { Text = "Draw to a rect" }, TableLayout.AutoSized(DrawImageToRect(), centered: true),
+				null);
+
 			layout.Add(null);
 
 			Content = layout;
@@ -33,11 +72,9 @@ namespace Eto.Test.Sections.Drawing
 
 		Control LoadFromStream()
 		{
-			var resourceStream = GetType().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
+			var image = TestIcons.TestImage();
 
-			var image = new Bitmap(resourceStream);
-
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CreateCustom32()
@@ -45,13 +82,13 @@ namespace Eto.Test.Sections.Drawing
 			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
-			using (var graphics = new Graphics (image))
+			using (var graphics = new Graphics(image))
 			{
 				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
 				graphics.DrawRectangle(Pens.Blue(), new Rectangle(image.Size - 1));
 			}
 
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CreateCustom32Alpha()
@@ -59,27 +96,68 @@ namespace Eto.Test.Sections.Drawing
 			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
-			using (var graphics = new Graphics (image))
+			using (var graphics = new Graphics(image))
 			{
 				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
 				graphics.DrawRectangle(Pens.Black(), new Rectangle(image.Size - 1));
 			}
-
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
 		}
 
 		Control Cloning()
 		{
-			var image = TestIcons.TestImage;
+			var image = TestIcons.TestImage();
 			image = image.Clone();
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CloningRectangle()
 		{
-			var image = TestIcons.TestImage;
+			var image = TestIcons.TestImage();
 			image = image.Clone(new Rectangle(32, 32, 64, 64));
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
+		}
+
+		Control CloneTiles()
+		{
+			// Creates a duplicate of the bitmap by cloning tiles of it
+			// and drawing them in the same location in the duplicate.
+			var image = TestIcons.TestImage();
+			var bitmap = new Bitmap(new Size(image.Size), PixelFormat.Format32bppRgba);
+			var tile = 64; // the test image is 128x128 so this produces 4 tiles.
+			using (var g = new Graphics(bitmap))
+			{
+				for (var x = 0; x < image.Width; x += tile)
+					for (var y = 0; y < image.Height; y += tile)
+					{
+						var clone = image.Clone(new Rectangle(x, y, tile, tile));
+						g.DrawImage(clone, x, y);
+					}
+			}
+			return new DrawableImageView { Image = bitmap };
+		}
+
+		Control DrawImageToRect()
+		{
+			var image64 = new Bitmap(new Size(64, 64), PixelFormat.Format32bppRgba);
+			var image32 = new Bitmap(new Size(32, 32), PixelFormat.Format32bppRgba);
+
+			using (var g = new Graphics(image64))
+				g.Clear(Brushes.Cached(Colors.Green) as SolidBrush);
+
+			using (var g = new Graphics(image32))
+				g.Clear(Brushes.Cached(Colors.Blue) as SolidBrush);
+
+			var bitmap = new Bitmap(new Size(105, 105), PixelFormat.Format32bppRgba);
+			using (var g = new Graphics(bitmap))
+			{
+				// draw the big image at the origin, but with a smaller dest rect
+				g.DrawImage(image64, new RectangleF(0, 0, 32, 32), new RectangleF(0, 0, 32, 32));
+				// draw two guide images to indicate how big the green image should be
+				g.DrawImage(image32, new PointF(70, 0));
+				g.DrawImage(image32, new PointF(0, 70));
+			}
+			return new DrawableImageView { Image = bitmap };
 		}
 	}
 }

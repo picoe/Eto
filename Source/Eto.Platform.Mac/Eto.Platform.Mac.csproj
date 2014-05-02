@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
@@ -51,9 +49,7 @@
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
-    <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
-    <Compile Include="Forms\Controls\MacTextControl.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
@@ -122,17 +118,12 @@
     <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
-    <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs" />
     <Compile Include="Forms\Controls\MacControl.cs" />
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs" />
     <Compile Include="Forms\Controls\MacText.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Forms\Controls\MacButton.cs" />
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
-    <Compile Include="Forms\Actions\MacButtonAction.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -186,9 +177,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
-    <Compile Include="Forms\MacDockContainer.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="Forms\iosCompatibility.cs" />
+    <Compile Include="Drawing\FontExtensions.cs" />
+    <Compile Include="MacExtensions.cs" />
+    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="Forms\Actions\MacCommand.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
+    <Compile Include="Forms\MacPanel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -216,4 +215,6 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
 </Project>

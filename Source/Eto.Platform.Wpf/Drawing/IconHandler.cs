@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Drawing;
 using System.IO;
 using sw = System.Windows;
@@ -39,7 +37,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public static void CopyStream (Stream input, Stream output)
 		{
-			byte[] buffer = new byte[32768];
+			var buffer = new byte[32768];
 			int read;
 			while ((read = input.Read (buffer, 0, buffer.Length)) > 0) {
 				output.Write (buffer, 0, read);
@@ -54,7 +52,7 @@ namespace Eto.Platform.Wpf.Drawing
 			return ms;
 		}
 
-		public void Create(System.IO.Stream stream)
+		public void Create(Stream stream)
 		{
 			var ms = CreateStream (stream);
 			Control = swmi.BitmapFrame.Create (ms);
@@ -97,7 +95,7 @@ namespace Eto.Platform.Wpf.Drawing
 			if (width == null)
 				return GetLargestIcon ();
 			var curicon = icons[0];
-			if (curicon.Width == width.Value)
+			if ((int)curicon.Width == width.Value)
 				return curicon;
 			foreach (var icon in icons) {
 				if (icon.Width > width && icon.Width - width.Value < curicon.Width - width.Value)
@@ -106,8 +104,8 @@ namespace Eto.Platform.Wpf.Drawing
 			return GetLargestIcon ();
 		}
 
-		private const int sICONDIR = 6;            // sizeof(ICONDIR) 
-		private const int sICONDIRENTRY = 16;      // sizeof(ICONDIRENTRY)
+		const int sICONDIR = 6;            // sizeof(ICONDIR) 
+		const int sICONDIRENTRY = 16;      // sizeof(ICONDIRENTRY)
 
 		public swmi.BitmapSource[] SplitIcon (swmi.BitmapFrame icon, MemoryStream input)
 		{
@@ -122,8 +120,8 @@ namespace Eto.Platform.Wpf.Drawing
 			int count = BitConverter.ToInt16 (srcBuf, 4); // ICONDIR.idCount
 
 			for (int i = 0; i < count; i++) {
-				using (MemoryStream destStream = new MemoryStream ())
-				using (BinaryWriter writer = new BinaryWriter (destStream)) {
+				using (var destStream = new MemoryStream ())
+				using (var writer = new BinaryWriter (destStream)) {
 					// Copy ICONDIR and ICONDIRENTRY.
 					int pos = 0;
 					writer.Write (srcBuf, pos, sICONDIR - 2);
@@ -156,10 +154,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public swmi.BitmapSource GetImageWithSize (int? size)
 		{
-			if (size != null) {
-				return GetImageClosestToSize (size.Value);
-			}
-			else return Control;
+			return size != null ? GetImageClosestToSize(size.Value) : Control;
 		}
 
 	}

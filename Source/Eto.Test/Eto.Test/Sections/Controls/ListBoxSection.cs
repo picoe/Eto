@@ -1,7 +1,5 @@
-using System;
 using Eto.Forms;
 using Eto.Drawing;
-using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -80,7 +78,7 @@ namespace Eto.Test.Sections.Controls
 
 		class VirtualList : IListStore
 		{
-			Icon image = TestIcons.TestIcon;
+			Icon image = TestIcons.TestIcon();
 
 			public int Count
 			{
@@ -122,7 +120,7 @@ namespace Eto.Test.Sections.Controls
 			}
 			
 			var menu = new ContextMenu();
-			var item = new ImageMenuItem { Text = "Click Me!" };
+			var item = new ButtonMenuItem { Text = "Click Me!" };
 			item.Click += delegate
 			{
 				if (control.SelectedValue != null)
@@ -130,7 +128,7 @@ namespace Eto.Test.Sections.Controls
 				else
 					Log.Write(item, "Click, no item selected");
 			};
-			menu.MenuItems.Add(item);
+			menu.Items.Add(item);
 			
 			control.ContextMenu = menu;
 			return control;

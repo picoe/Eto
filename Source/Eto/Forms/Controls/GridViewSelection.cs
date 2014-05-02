@@ -1,5 +1,4 @@
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -15,9 +14,9 @@ namespace Eto.Forms
 	///    In this case the internal selection is updated and SelectionChanged is fired.
 	/// 3) A sort or filter is applied to the GridView. 
 	/// 4) The DataStore changes, i.e. items are added, removed or modified.
+	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
 	public class GridViewSelection
 	{
 		enum GridViewSelectionState
@@ -37,15 +36,15 @@ namespace Eto.Forms
 
 		GridViewSelectionState state;
 		bool areAllObjectsSelected;
-		GridView gridView;
+		readonly GridView gridView;
 
-		private IDataStore DataStore { get { return gridView != null ? gridView.DataStore : null; } }
+		IDataStore DataStore { get { return gridView == null ? null : gridView.DataStore; } }
 
-		private IDataStoreView DataStoreView { get { return gridView != null ? gridView.DataStoreView : null; } }
+		IDataStoreView DataStoreView { get { return gridView == null ? null : gridView.DataStoreView; } }
 
-		private IGridView Handler { get { return gridView != null ? gridView.Handler : null; } }
+		IGridView Handler { get { return gridView == null ? null : gridView.Handler; } }
 
-		private bool AllowMultipleSelection { get { return gridView != null && gridView.AllowMultipleSelection; } }
+		bool AllowMultipleSelection { get { return gridView != null && gridView.AllowMultipleSelection; } }
 
 		/// <summary>
 		/// Called when the underlying control's selection changes.
@@ -82,24 +81,199 @@ namespace Eto.Forms
 			}
 		}
 
-		/// <summary>
-		/// The indexes of the selected objects in the model 
-		/// (not the view).
-		/// </summary>
-		SortedSet<int> selectedRows;
+		readonly SortedSet<int> selectedRows;
 
+		/// <summary>
+		/// The indexes of the selected objects in the model
+		/// </summary>
 		public IEnumerable<int> SelectedRows
 		{
 			get
 			{
 				// If all objects are selected, return the range [0, count-1]
-				if (areAllObjectsSelected && this.DataStore != null)
-					return Enumerable.Range(0, this.DataStore.Count);
-				return selectedRows ?? (IEnumerable<int>)new List<int>();
+				if (areAllObjectsSelected && DataStore != null)
+					return Enumerable.Range(0, DataStore.Count);
+				return selectedRows ?? Enumerable.Empty<int>();
 			}
 		}
 
-		private void ChangeSelection(Action a)
+		/// <summary>
+		/// A GridView's GridViewSelection maintains the set of 
+		/// selected items.
+		/// 
+		/// When sorting or filtering is applied, 
+		/// it is necessary to recompute the view selection, since the view
+		/// only tracks items by index.
+		/// 
+		/// This class contains the logic to map selected items to their
+		/// view indexes.
+		/// 
+		/// Preserving the selection currently takes O(nlogn) if there
+		/// is a non-empty selection. This is very slow in the case
+		/// when multiple insertions and deletions occur together.
+		/// </summary>
+		class SelectionPreserver : IDisposable
+		{
+			GridViewSelection s;
+			HashSet<object> previousSelectedItems;
+
+			public SelectionPreserver(GridViewSelection s)
+			{
+				this.s = s;
+				previousSelectedItems = new HashSet<object>();
+				foreach (var i in s.SelectedRows)
+					previousSelectedItems.Add(s.DataStoreView.Model[i]);
+			}
+
+			public void Dispose()
+			{
+				if (previousSelectedItems.Count > 0) // optimization
+				{
+					// Determine which of the originally selected objects still
+					// exist and which have been removed.
+					var selectedItems = new HashSet<object>();
+					var removedSelectedItems = new HashSet<object>();
+					var selectedRows = new SortedSet<int>();
+					var model = s.DataStoreView.Model;
+					// O(nlogn)
+					for (var i = 0; i < model.Count; ++i)
+					{
+						var item = model[i];
+						if (previousSelectedItems.Contains(item))
+						{
+							selectedItems.Add(item);
+							selectedRows.Add(i);
+						}
+					}
+
+					foreach (var item in previousSelectedItems)
+						if (!selectedItems.Contains(item))
+							removedSelectedItems.Add(item);
+
+					s.ResetSelection(selectedRows, selectedItems, removedSelectedItems);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Resets the selection to the specified model indexes.
+		/// Called by
+		/// a) SelectionPreserver.Dispose() during sort and filter operations
+		/// b) OnCollectionChanged when the model collection is changed.
+		/// </summary>
+		private void ResetSelection(SortedSet<int> newSelectedRows, 
+			HashSet<object> selectedItems = null, 
+			HashSet<object> removedSelectedItems = null)
+		{
+			state = GridViewSelectionState.SelectionChanging; // causes selection events to be suppressed.
+
+			// Set the selection model indexes
+			selectedRows.Clear();
+			foreach (var i in newSelectedRows)
+				selectedRows.Add(i);
+
+			// Create the set of selected items if it wasn't supplied
+			if (selectedItems == null)
+			{
+				selectedItems = new HashSet<object>();
+				foreach (var i in selectedRows)
+					selectedItems.Add(DataStoreView.Model[i]);
+			}
+
+			// Calculate the view indexes
+			var view = DataStoreView.View;
+			var selectedRowViewIndexes = new SortedSet<int>();
+			for (var i = 0; i < view.Count; ++i) // O(nlogn)
+				if (selectedItems.Contains(view[i]))
+					selectedRowViewIndexes.Add(i);
+
+			// Reselect the rows in the handler.
+			Handler.UnselectAll();
+			foreach (var i in selectedRowViewIndexes)
+				Handler.SelectRow(i);
+
+			state = GridViewSelectionState.Normal; // start firing selection changed events again.
+
+			// TODO: should we fire SelectionChanged events if
+			// selected items were removed? This is an edge case;
+			// implement only if needed.
+		}
+
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			var model = DataStoreView.Model;
+
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				// The set of selected items does not change, 
+				// but the row indexes of affected items are incremented.
+				var selectedItems = new HashSet<object>();
+				var newSelectedRows = new SortedSet<int>();
+				foreach (var i in selectedRows)
+				{
+					// The tricky part - if the index is greater than or equal to the location
+					// where the insertions were done, add the count of objects inserted.
+					var temp = i;
+					if (i >= e.NewStartingIndex)
+						temp += e.NewItems.Count;
+
+					newSelectedRows.Add(temp);
+					selectedItems.Add(model[temp]);
+				}
+
+				ResetSelection(newSelectedRows, selectedItems);
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Remove)
+			{
+				var selectedItems = new HashSet<object>();
+				var newSelectedRows = new SortedSet<int>();
+
+				foreach (var i in selectedRows)
+				{
+					// The tricky part:
+					// a) A selected item may be removed, or 
+					// b) A selected item's index may be decremented, or 
+					// c) none of the above.
+					var temp = i;
+					if (i >= e.OldStartingIndex)
+					{
+						if (i < e.OldStartingIndex + e.OldItems.Count)
+							continue; // the item is in the removed range
+						else
+							temp = i - e.OldItems.Count; // the item is beyond the removed range so its index is decremented
+					}
+					newSelectedRows.Add(temp);
+					selectedItems.Add(model[temp]);
+				}
+
+				ResetSelection(newSelectedRows, selectedItems);
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Move)
+			{
+				throw new NotImplementedException();
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Replace)
+			{
+				throw new NotImplementedException();
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Reset)
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		/// <summary>
+		/// Wrap code that should preserve the selection with 
+		/// using(PreserveSelection()).
+		/// This takes a snapshot of the selection and restores
+		/// it during dispose.
+		/// </summary>
+		public IDisposable PreserveSelection()
+		{
+			return new SelectionPreserver(this);
+		}
+
+		void ChangeSelection(Action a)
 		{
 			state = GridViewSelectionState.SelectionChanging;
 			a(); // Causes GridView.OnSelectionChanged to trigger which calls SuppressSelectionChanged which returns true.
@@ -111,6 +285,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Programmatically selects a row.
 		/// </summary>
+		/// <param name="row">Index of the row to select in the model</param>
 		public void SelectRow(int row)
 		{
 			ChangeSelection(() => {
@@ -128,6 +303,10 @@ namespace Eto.Forms
 			});
 		}
 
+		/// <summary>
+		/// Unselects the specified row
+		/// </summary>
+		/// <param name="row">Index of the row to unselect in the model</param>
 		public void UnselectRow(int row)
 		{
 			ChangeSelection(() => {
@@ -159,6 +338,11 @@ namespace Eto.Forms
 			});
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridViewSelection"/> class.
+		/// </summary>
+		/// <param name="gridView">Grid view associated with the selection object</param>
+		/// <param name="dataStore">Data store to iterate</param>
 		public GridViewSelection(GridView gridView, IDataStore dataStore)
 		{
 			this.gridView = gridView;
@@ -167,19 +351,6 @@ namespace Eto.Forms
 			var collection = dataStore as INotifyCollectionChanged;
 			if (collection != null)
 				collection.CollectionChanged += OnCollectionChanged;
-		}
-
-		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
-			{
-			}
-			else if (e.Action == NotifyCollectionChangedAction.Move)
-			{
-			}
-			else if (e.Action == NotifyCollectionChangedAction.Remove)
-			{
-			}
 		}
 	}
 }

@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
-using System.Reflection;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows
@@ -11,7 +9,7 @@ namespace Eto.Platform.Windows
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class RadioMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, RadioMenuItem>, IRadioMenuItem, IMenu
+	public class RadioMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, RadioMenuItem>, IRadioMenuItem
 	{
 		ArrayList group;
 
@@ -30,14 +28,14 @@ namespace Eto.Platform.Windows
 		{
 			if (controller != null)
 			{
-				RadioMenuItemHandler controllerInner = (RadioMenuItemHandler)controller.Handler;
+				var controllerInner = (RadioMenuItemHandler)controller.Handler;
 				if (controllerInner.group == null)
 				{
 					controllerInner.group = new ArrayList();
 					controllerInner.group.Add(controller);
 					controllerInner.Control.Click += controllerInner.control_RadioSwitch;
 				}
-				controllerInner.group.Add(this.Widget);
+				controllerInner.group.Add(Widget);
 				Control.Click += controllerInner.control_RadioSwitch;
 			}
 		}
@@ -57,13 +55,13 @@ namespace Eto.Platform.Windows
 		
 		public string ToolTip
 		{
-			get { return this.Control.ToolTipText; }
+			get { return Control.ToolTipText; }
 			set { Control.ToolTipText = value; }
 		}
 
-		public Key Shortcut
+		public Keys Shortcut
 		{
-			get { return this.Control.ShortcutKeys.ToEto (); }
+			get { return Control.ShortcutKeys.ToEto (); }
 			set 
 			{
 				var key = value.ToSWF ();
@@ -79,7 +77,7 @@ namespace Eto.Platform.Windows
 
 		#endregion
 
-		private void control_RadioSwitch(object sender, EventArgs e)
+		void control_RadioSwitch(object sender, EventArgs e)
 		{
 			if (group != null)
 			{
@@ -89,24 +87,5 @@ namespace Eto.Platform.Windows
 				}
 			}
 		}
-
-		#region IMenu Members
-
-		public void AddMenu(int index, MenuItem item)
-		{
-			Control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
-		}
-
-		public void RemoveMenu(MenuItem item)
-		{
-			Control.DropDownItems.Remove((SWF.ToolStripItem)item.ControlObject);
-		}
-
-		public void Clear()
-		{
-			Control.DropDownItems.Clear();
-		}
-
-		#endregion
 	}
 }

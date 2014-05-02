@@ -1,44 +1,57 @@
-using System;
-using System.IO;
 using Eto.Drawing;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.Mac.Drawing
 {
 	interface IImageSource
 	{
-		NSImage GetImage ();
+		NSImage GetImage();
 	}
-	
+
 	interface IImageHandler : IImageSource
 	{
-		void DrawImage (GraphicsHandler graphics, float x, float y);
+		void DrawImage(GraphicsHandler graphics, float x, float y);
 
-		void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height);
+		void DrawImage(GraphicsHandler graphics, float x, float y, float width, float height);
 
-		void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
+		void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination);
 	}
 
-	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, IImage, IImageHandler
-		where T: class
-		where W: Image
+	public abstract class ImageHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IImage, IImageHandler
+		where TControl: class
+		where TWidget: Image
 	{
-
 		public abstract Size Size { get; }
 
-		public abstract NSImage GetImage ();
+		public abstract NSImage GetImage();
 
-		public virtual void DrawImage (GraphicsHandler graphics, float x, float y)
+		public virtual void DrawImage(GraphicsHandler graphics, float x, float y)
 		{
-			DrawImage (graphics, x, y, Size.Width, Size.Height);
+			DrawImage(graphics, x, y, Size.Width, Size.Height);
 		}
 
-		public virtual void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
+		public virtual void DrawImage(GraphicsHandler graphics, float x, float y, float width, float height)
 		{
-			DrawImage (graphics, new RectangleF (PointF.Empty, Size), new RectangleF (x, y, width, height));
+			DrawImage(graphics, new RectangleF(PointF.Empty, Size), new RectangleF(x, y, width, height));
 		}
 
-		public abstract void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
+		public abstract void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination);
 
+		protected override void Dispose(bool disposing)
+		{
+			// HACK: Remove when monomac/xammac's Dispose() actually works!
+			if (disposing && DisposeControl)
+			{
+				var obj = Control as NSObject;
+				if (obj != null)
+				{
+					obj.SafeDispose();
+					Control = null;
+				}
+			}
+			base.Dispose(disposing);
+		}
 	}
 }

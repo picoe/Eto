@@ -1,4 +1,3 @@
-using System;
 using SD = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
@@ -21,8 +20,8 @@ namespace Eto.Platform.Windows
 
 		public int MaxLength
 		{
-			get { return this.Control.MaxLength; }
-			set { this.Control.MaxLength = value; }
+			get { return Control.MaxLength; }
+			set { Control.MaxLength = value; }
 		}
 
 		public char PasswordChar

@@ -11,28 +11,28 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			switch (cursor) {
 				case CursorType.Arrow:
-					this.Control = swi.Cursors.Arrow;
+					Control = swi.Cursors.Arrow;
 					break;
 				case CursorType.Crosshair:
-					this.Control = swi.Cursors.Cross;
+					Control = swi.Cursors.Cross;
 					break;
 				case CursorType.Default:
-					this.Control = swi.Cursors.Arrow;
+					Control = swi.Cursors.Arrow;
 					break;
 				case CursorType.HorizontalSplit:
-					this.Control = swi.Cursors.ScrollWE;
+					Control = swi.Cursors.ScrollWE;
 					break;
 				case CursorType.IBeam:
-					this.Control = swi.Cursors.IBeam;
+					Control = swi.Cursors.IBeam;
 					break;
 				case CursorType.Move:
-					this.Control = swi.Cursors.SizeAll;
+					Control = swi.Cursors.SizeAll;
 					break;
 				case CursorType.Pointer:
-					this.Control = swi.Cursors.Hand;
+					Control = swi.Cursors.Hand;
 					break;
 				case CursorType.VerticalSplit:
-					this.Control = swi.Cursors.SizeNS;
+					Control = swi.Cursors.SizeNS;
 					break;
 				default:
 					throw new NotSupportedException ();

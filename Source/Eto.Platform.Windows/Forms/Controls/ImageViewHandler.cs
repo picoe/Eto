@@ -1,11 +1,7 @@
-using System;
 using SWF = System.Windows.Forms;
 using SD = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows.Forms
@@ -39,11 +35,8 @@ namespace Eto.Platform.Windows.Forms
 		void SetImage ()
 		{
 			if (image != null) {
-				var handler = image.Handler as IWindowsImage;
-				if (handler != null)
-					Control.Image = handler.GetImageWithSize (null);
-				else
-					Control.Image = null;
+				var handler = image.Handler as IWindowsImageSource;
+				Control.Image = handler != null ? handler.GetImageWithSize(null) : null;
 			}
 			else
 				Control.Image = null;

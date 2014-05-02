@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 using System.Reflection;
 using System.Globalization;
@@ -44,11 +41,13 @@ namespace Eto
 			: this (string.Format (CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName))
 		{ }
 		
+#if !WINRT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:ResourceNotFoundException"/> class
 		/// </summary>
 		/// <param name="context">The contextual information about the source or destination.</param>
 		/// <param name="info">The object that holds the serialized object data.</param>
 		protected ResourceNotFoundException (SerializationInfo info, StreamingContext context) : base (info, context) { }
+#endif
 	}
 }

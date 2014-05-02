@@ -1,8 +1,6 @@
 using System;
-using System.Reflection;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows
@@ -10,7 +8,7 @@ namespace Eto.Platform.Windows
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class CheckMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, CheckMenuItem>, ICheckMenuItem, IMenu
+	public class CheckMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, CheckMenuItem>, ICheckMenuItem
 	{
 		public CheckMenuItemHandler()
 		{
@@ -18,11 +16,10 @@ namespace Eto.Platform.Windows
 			Control.Click += control_Click;
 		}
 
-		private void control_Click(object sender, EventArgs e)
+		void control_Click(object sender, EventArgs e)
 		{
 			Widget.OnClick(e);
 		}
-		#region IMenuItem Members
 
 		public bool Enabled
 		{
@@ -31,25 +28,28 @@ namespace Eto.Platform.Windows
 		}
 		public string Text
 		{
-			get	{ return Control.Text; }
+			get { return Control.Text; }
 			set { Control.Text = value; }
 		}
-		
-		public string ToolTip {
-			get {
+
+		public string ToolTip
+		{
+			get
+			{
 				return Control.ToolTipText;
 			}
-			set {
+			set
+			{
 				Control.ToolTipText = value;
 			}
 		}
 
-		public Key Shortcut
+		public Keys Shortcut
 		{
-			get { return this.Control.ShortcutKeys.ToEto (); }
-			set 
+			get { return Control.ShortcutKeys.ToEto(); }
+			set
 			{
-				var key = value.ToSWF ();
+				var key = value.ToSWF();
 				if (SWF.ToolStripManager.IsValidShortcut(key)) Control.ShortcutKeys = key;
 			}
 		}
@@ -59,27 +59,5 @@ namespace Eto.Platform.Windows
 			get { return Control.Checked; }
 			set { Control.Checked = value; }
 		}
-
-		#endregion
-
-		#region IMenu Members
-
-		public void AddMenu(int index, MenuItem item)
-		{
-			Control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
-		}
-
-		public void RemoveMenu(MenuItem item)
-		{
-			Control.DropDownItems.Remove((SWF.ToolStripItem)item.ControlObject);
-		}
-
-		public void Clear()
-		{
-			Control.DropDownItems.Clear();
-		}
-
-		#endregion
-
 	}
 }

@@ -1,19 +1,18 @@
 using System;
-using Eto.Drawing;
-using System.Reflection;
 using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command apis instead")]
 	public class ActionCollection : KeyedCollection<string, BaseAction>
 	{
-		Generator generator;
+		readonly Generator generator;
 
-		public ActionCollection ()
-			: this(Generator.Current)
+		public ActionCollection()
+			: this((Generator)null)
 		{
 		}
-		
+
 		public ActionCollection (Generator generator)
 			: this(generator, null)
 		{
@@ -52,10 +51,7 @@ namespace Eto.Forms
 		
 		public BaseAction Find (string key)
 		{
-			if (this.Contains (key))
-				return this [key];
-			else
-				return null;
+			return Contains(key) ? this[key] : null;
 		}
 		
 		public bool RemoveHandler (string actionID, EventHandler<EventArgs> activatedHandler)
@@ -68,7 +64,7 @@ namespace Eto.Forms
 			return false;
 		}
 		
-		private void control_KeyDown (object sender, KeyEventArgs e)
+		void control_KeyDown (object sender, KeyEventArgs e)
 		{
 			//Console.WriteLine("key: {0}, sender: {1}", e.KeyData.ToString(), sender.GetType().ToString());
 			foreach (var action in this) {
@@ -76,7 +72,7 @@ namespace Eto.Forms
 					continue;
 				if (action.Accelerators == null)
 					continue;
-				foreach (Key key in action.Accelerators) {
+				foreach (Keys key in action.Accelerators) {
 					if (e.KeyData == key) {
 						//Console.WriteLine("action: {0}, key: {1}, sender: {2}", action.Text, e.KeyData.ToString(), sender.GetType().ToString());
 						e.Handled = true;

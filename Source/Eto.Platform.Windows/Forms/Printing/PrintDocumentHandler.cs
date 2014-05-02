@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swf = System.Windows.Forms;
 using sdp = System.Drawing.Printing;
 using Eto.Forms;
@@ -30,16 +26,14 @@ namespace Eto.Platform.Windows.Forms.Printing
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case PrintDocument.BeginPrintEvent:
+			case PrintDocument.PrintingEvent:
 				Control.BeginPrint += (sender, e) => {
 					currentPage = 0;
-					Widget.OnBeginPrint (e);
+					Widget.OnPrinting (e);
 				};
 				break;
-			case PrintDocument.EndPrintEvent:
-				Control.EndPrint += (sender, e) => {
-					Widget.OnEndPrint (e);
-				};
+			case PrintDocument.PrintedEvent:
+				Control.EndPrint += (sender, e) => Widget.OnPrinted(e);
 				break;
 			case PrintDocument.PrintPageEvent:
 				Control.PrintPage += (sender, e) => {

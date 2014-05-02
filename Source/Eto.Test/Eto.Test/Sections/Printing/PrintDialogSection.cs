@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -78,10 +75,10 @@ namespace Eto.Test.Sections.Printing
 			control.Click += delegate
 			{
 				var print = CreatePrintDialog();
-				var ret = print.ShowDialog(this.ParentWindow);
+				var ret = print.ShowDialog(ParentWindow);
 				if (ret == DialogResult.Ok)
 				{
-					this.DataContext = settings = print.PrintSettings;
+					DataContext = settings = print.PrintSettings;
 				}
 			};
 
@@ -92,7 +89,7 @@ namespace Eto.Test.Sections.Printing
 		{
 			var document = new PrintDocument();
 			document.PrintSettings = settings;
-			var font = Fonts.Serif(16);
+			var font = Fonts.Serif(16, generator: document.Generator);
 			var printTime = DateTime.Now;
 			document.PrintPage += (sender, e) => {
 				Size pageSize = Size.Round(e.PageSize);
@@ -100,7 +97,7 @@ namespace Eto.Test.Sections.Printing
 				// draw a border around the printable area
 				var rect = new Rectangle(pageSize);
 				rect.Inflate(-1, -1);
-				e.Graphics.DrawRectangle(Pens.Silver(), rect);
+				e.Graphics.DrawRectangle(Pens.Silver(e.Generator), rect);
 
 				// draw title
 				e.Graphics.DrawText(font, Colors.Black, new Point(50, 20), document.Name);
@@ -119,12 +116,12 @@ namespace Eto.Test.Sections.Printing
 				switch (e.CurrentPage)
 				{
 					case 0:
-						e.Graphics.DrawRectangle(Pens.Blue(), new Rectangle(50, 50, 100, 100));
-						e.Graphics.DrawRectangle(Pens.Green(), new Rectangle(new Point(pageSize) - new Size(150, 150), new Size(100, 100)));
+						e.Graphics.DrawRectangle(Pens.Blue(e.Generator), new Rectangle(50, 50, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Green(e.Generator), new Rectangle(new Point(pageSize) - new Size(150, 150), new Size(100, 100)));
 						break;
 					case 1:
-						e.Graphics.DrawRectangle(Pens.Blue(), new Rectangle(pageSize.Width - 150, 50, 100, 100));
-						e.Graphics.DrawRectangle(Pens.Green(), new Rectangle(50, pageSize.Height - 150, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Blue(e.Generator), new Rectangle(pageSize.Width - 150, 50, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Green(e.Generator), new Rectangle(50, pageSize.Height - 150, 100, 100));
 						break;
 				}
 			};
@@ -155,7 +152,7 @@ namespace Eto.Test.Sections.Printing
 				var document = GetPrintDocument();
 				var dialog = CreatePrintDialog();
 				dialog.ShowDialog(this, document);
-				this.DataContext = settings = document.PrintSettings;
+				DataContext = settings = document.PrintSettings;
 			};
 
 			return control;
@@ -198,31 +195,31 @@ namespace Eto.Test.Sections.Printing
 			return new GroupBox { Text = "Page Range", Content = layout };
 		}
 
-		Control PageOrientation()
+		static Control PageOrientation()
 		{
 			var control = new EnumComboBox<PageOrientation>();
-			control.Bind(r => r.SelectedValue, (PrintSettings s) => s.Orientation);
+			control.SelectedValueBinding.Bind<PrintSettings>(r => r.Orientation, (r, v) => r.Orientation = v);
 			return control;
 		}
 
-		Control Copies()
+		static Control Copies()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
-			control.Bind(r => r.Value, (PrintSettings s) => s.Copies, defaultControlValue: 1);
+			control.ValueBinding.Bind<PrintSettings>(r => r.Copies, (r, v) => r.Copies = (int)v, defaultGetValue: 1);
 			return control;
 		}
 
-		Control Collate()
+		static Control Collate()
 		{
 			var control = new CheckBox { Text = "Collate" };
-			control.Bind(r => r.Checked, (PrintSettings s) => s.Collate);
+			control.CheckedBinding.Bind<PrintSettings>(r => r.Collate, (r, v) => r.Collate = v ?? false);
 			return control;
 		}
 
-		Control Reverse()
+		static Control Reverse()
 		{
 			var control = new CheckBox { Text = "Reverse" };
-			control.Bind(r => r.Checked, (PrintSettings s) => s.Reverse);
+			control.CheckedBinding.Bind<PrintSettings>(r => r.Reverse, (r, v) => r.Reverse = v ?? false);
 			return control;
 		}
 
@@ -298,10 +295,10 @@ namespace Eto.Test.Sections.Printing
 			return control;
 		}
 
-		Control PrintSelection()
+		static Control PrintSelection()
 		{
 			var control = new EnumComboBox<PrintSelection>();
-			control.Bind(r => r.SelectedValue, (PrintSettings s) => s.PrintSelection);
+			control.SelectedValueBinding.Bind<PrintSettings>(r => r.PrintSelection, (r, v) => r.PrintSelection = v);
 			return control;
 		}
 	}

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
@@ -53,12 +50,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					Handler.FormatCell (control, cell, dataItem);
 				};
 				return Handler.SetupCell(element);
-			}
-
-			protected override object PrepareCellForEdit (sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
-			{
-				var control = editingElement as swc.CheckBox ?? editingElement.FindChild<swc.CheckBox> ("control");
-				return base.PrepareCellForEdit (editingElement, editingEventArgs);
 			}
 
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)

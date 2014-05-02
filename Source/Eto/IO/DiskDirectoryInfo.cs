@@ -1,14 +1,11 @@
-using System;
-using System.Collections;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Eto.IO
 {
 	public class DiskDirectoryInfo : EtoDirectoryInfo
 	{
-		DirectoryInfo info;
+		readonly DirectoryInfo info;
 		EtoDirectoryInfo parent;
 		
 		public DiskDirectoryInfo(DirectoryInfo directoryInfo)
@@ -27,8 +24,10 @@ namespace Eto.IO
 			{
 				if (parent == null) 
 				{
-					if (info.Parent != null) parent = new DiskDirectoryInfo(info.Parent);
-					else parent = new EtoDriveInfo();
+					if (info.Parent != null)
+						parent = new DiskDirectoryInfo(info.Parent);
+					else
+						parent = new EtoDriveInfo();
 				}
 				return parent;
 			}
@@ -54,12 +53,7 @@ namespace Eto.IO
 				// 'tis an archive directory, most likely!
 				return EtoDirectoryInfo.CreateVirtualDirectory(newDir);
 			}
-			else if (Directory.Exists(newDir))
-			{
-				return new DiskDirectoryInfo(newDir);
-			}
-			
-			return null;
+			return Directory.Exists(newDir) ? new DiskDirectoryInfo(newDir) : null;
 		}
 
 		protected override IEnumerable<EtoDirectoryInfo> GetPathDirectories()
@@ -70,7 +64,7 @@ namespace Eto.IO
 				if (
 					((diskDir.Attributes & FileAttributes.Hidden) == 0)
 					&& ((diskDir.Attributes & FileAttributes.System) == 0)
-					&& (!diskDir.Name.StartsWith("."))
+					&& (!diskDir.Name.StartsWith(".", System.StringComparison.Ordinal))
 					)
 				{
 					yield return new DiskDirectoryInfo(diskDir);

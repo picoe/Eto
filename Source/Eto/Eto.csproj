@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto</RootNamespace>
@@ -22,7 +20,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;DESKTOP;XAML;XML</DefineConstants>
-    <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
@@ -30,7 +27,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Release</OutputPath>
     <DefineConstants>TRACE;DESKTOP;XAML;XML</DefineConstants>
-    <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -92,8 +88,9 @@
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GeneratorContext.cs" />
     <Compile Include="Generators.cs" />
-    <Compile Include="In32ArrayConverter.cs" />
+    <Compile Include="Int32ArrayConverter.cs" />
     <Compile Include="InstanceWidget.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
@@ -101,6 +98,7 @@
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Threading\Thread.cs" />
+    <Compile Include="TypeHelper.cs" />
     <Compile Include="WeakEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -114,9 +112,6 @@
     <Compile Include="Forms\Layout\DockLayout.cs" />
     <Compile Include="Forms\FileDialog.cs" />
     <Compile Include="Forms\Form.cs" />
-    <Compile Include="Forms\GenerateActionArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Key.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -145,12 +140,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Actions\ActionItemCollection.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\BaseAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\BaseAction.desktop.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Actions\ButtonAction.cs">
@@ -196,19 +185,12 @@
     <Compile Include="Forms\Controls\TextControl.cs" />
     <Compile Include="Forms\Controls\TreeGridView.cs" />
     <Compile Include="Forms\Menu\CheckMenuItem.cs" />
-    <Compile Include="Forms\Menu\ImageMenuItem.cs" />
     <Compile Include="Forms\Menu\Menu.cs" />
-    <Compile Include="Forms\Menu\MenuActionItem.cs" />
     <Compile Include="Forms\Menu\MenuBar.cs" />
     <Compile Include="Forms\Menu\MenuItem.cs" />
     <Compile Include="Forms\Menu\RadioMenuItem.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
-    <Compile Include="Forms\ToolBar\CheckToolBarButton.cs" />
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarButton.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarActionItem.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarItem.cs" />
     <Compile Include="IO\DiskDirectoryInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -257,10 +239,8 @@
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
-    <Compile Include="Forms\Menu\SubMenu.cs" />
     <Compile Include="Forms\Layout\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
-    <Compile Include="Forms\Container.desktop.cs" />
     <Compile Include="Forms\Controls\ListBox.desktop.cs" />
     <Compile Include="Forms\Controls\CommonControl.cs" />
     <Compile Include="Forms\Controls\Slider.cs" />
@@ -319,7 +299,6 @@
     <Compile Include="Forms\Controls\GridColumn.cs" />
     <Compile Include="Forms\Cells\Cell.cs" />
     <Compile Include="Forms\Cells\ComboBoxCell.cs" />
-    <Compile Include="Forms\Cells\DrawableCell.cs" />
     <Compile Include="Forms\Cells\ImageTextCell.cs" />
     <Compile Include="Forms\Cells\SingleValueCell.cs" />
     <Compile Include="Forms\Controls\TreeGridItem.cs" />
@@ -375,9 +354,32 @@
     <Compile Include="Binding\DelegateBinding.cs" />
     <Compile Include="Forms\IKeyboardInputSource.cs" />
     <Compile Include="Forms\IMouseInputSource.cs" />
-    <Compile Include="Forms\DockContainer.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Drawing\XmlExtensions.cs" />
+    <Compile Include="Drawing\SystemFonts.cs" />
+    <Compile Include="Forms\Controls\Control.binding.cs" />
+    <Compile Include="EventLookup.cs" />
+    <Compile Include="Forms\Layout\DynamicItemConverter.cs" />
+    <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
+    <Compile Include="Forms\Controls\Spinner.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
+    <Compile Include="Forms\Actions\GenerateActionArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\BaseAction.desktop.cs" />
+    <Compile Include="Forms\Actions\BaseAction.cs" />
+    <Compile Include="Forms\Command.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\SubMenu.cs" />
+    <Compile Include="Forms\Menu\MenuItemCollection.cs" />
+    <Compile Include="Forms\ToolBar\ToolItem.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItem.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItem.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
+    <Compile Include="Forms\ToolBar\ToolItem.obsolete.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -407,4 +409,6 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
 </Project>

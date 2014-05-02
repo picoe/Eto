@@ -6,7 +6,7 @@ using MonoTouch.UIKit;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class ButtonHandler : iosButton<UIButton, Button>, IButton
+	public class ButtonHandler : IosButton<UIButton, Button>, IButton
 	{
 		
 		class MyButton : UIButton {

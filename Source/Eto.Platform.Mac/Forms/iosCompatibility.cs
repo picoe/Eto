@@ -1,9 +1,8 @@
-using System;
 using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public static class iosCompatibility
+	public static class IosCompatibility
 	{
 		/// <summary>
 		/// Compatibility with ios

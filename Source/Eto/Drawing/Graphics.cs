@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Eto.Forms;
 
 namespace Eto.Drawing
 {
@@ -10,6 +11,11 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IGraphics : IInstanceWidget
 	{
+		/// <summary>
+		/// Gets the scale of points to pixels. Multiply by desired pixel size to get point value (e.g. for font sizes)
+		/// </summary>
+		float PointsPerPixel { get; }
+
 		/// <summary>
 		/// Gets or sets the pixel offset mode for draw operations
 		/// </summary>
@@ -169,7 +175,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets or sets a value indicating that drawing operations will use antialiasing
 		/// </summary>
-		bool Antialias { get; set; }
+		bool AntiAlias { get; set; }
 
 		/// <summary>
 		/// Gets or sets the interpolation mode for drawing images
@@ -267,6 +273,22 @@ namespace Eto.Drawing
 		void Clear(SolidBrush brush);
 	}
 
+	#if MOBILE
+
+	/// <summary>
+	/// Currently supported by the iOS Graphics handler. Implements the 
+	/// UIKit pattern of creating a graphics that is automatically backed by a bitmap 
+	/// whose scale can be retina-aware. After drawing into the Graphics,
+	/// the image can be retrieved.
+	/// </summary>
+	public interface IGraphicsCreate
+	{
+		void Create(Size size, bool useMainScreenScale);
+		Bitmap GetImage();
+	}
+
+	#endif
+
 	/// <summary>
 	/// Graphics context object for drawing operations
 	/// </summary>
@@ -293,21 +315,32 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="image">Image to draw on using this graphics context</param>
 		public Graphics (Bitmap image)
-			: this(image.Generator, image)
+			: base(image.Generator, typeof(IGraphics), false)
 		{
+			Handler.CreateFromImage(image);
+			Initialize();
 		}
 
+		#if MOBILE
+
 		/// <summary>
-		/// Initializes a new instance of the Generator class to draw on the given <paramref name="image"/>
+		/// Constructs a Graphics with an underlying bitmap of the specified size 
+		/// (in device-independent pixels or "points" on iOS).
+		/// 
+		/// Currently supported on iOS only.
 		/// </summary>
-		/// <param name="generator">Generator to create this graphics context for</param>
-		/// <param name="image">Image to draw on using this graphics context</param>
-		public Graphics (Generator generator, Bitmap image)
-			: base (generator, typeof (IGraphics), false)
+		/// <param name="size"></param>
+		/// <param name="useMainScreenScale">If true, uses the scale factor of the main screen. 
+		/// On iOS, this takes into account high-resolution retina displays.</param>
+		public Graphics(Size size, bool useMainScreenScale) : base(null, typeof(IGraphics), false)
 		{
-			Handler.CreateFromImage (image);
-			Initialize ();
+			if (Handler is IGraphicsCreate)
+				((IGraphicsCreate)Handler).Create(size, useMainScreenScale);
+			else
+				throw new InvalidOperationException("This constructor is not supported on this platform.");
 		}
+
+		#endif
 
 		/// <summary>
 		/// Initializes a new instance of the Graphics with the specified handler type.
@@ -328,7 +361,7 @@ namespace Eto.Drawing
 		/// <param name="end">Ending location</param>
 		public void DrawLine (Color color, PointF start, PointF end)
 		{
-			using (var pen = new Pen(color, 1f, this.Generator))
+			using (var pen = new Pen(color, 1f, Generator))
 				Handler.DrawLine (pen, start.X, start.Y, end.X, end.Y);
 		}
 
@@ -353,7 +386,7 @@ namespace Eto.Drawing
 		/// <param name="endy">Y co-ordinate of the ending point</param>
 		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
 		{
-			using (var pen = new Pen (color, 1f, this.Generator))
+			using (var pen = new Pen(color, 1f, Generator))
 				Handler.DrawLine (pen, startx, starty, endx, endy);
 		}
 
@@ -384,14 +417,28 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Draws a 1 pixel wide  outline of a rectangle with the specified <paramref name="color"/>
+		/// Draws a 1 pixel wide outline of a rectangle with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color for the outline</param>
 		/// <param name="rectangle">Where to draw the rectangle</param>
 		public void DrawRectangle (Color color, RectangleF rectangle)
 		{
-			using (var pen = new Pen (color, 1f, this.Generator))
+			using (var pen = new Pen(color, 1f, Generator))
 				Handler.DrawRectangle (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide outline of a rectangle with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color for the outline</param>
+		/// <param name="x">X co-ordinate</param>
+		/// <param name="y">Y co-ordinate</param>
+		/// <param name="width">Width of the rectangle</param>
+		/// <param name="height">Height of the rectangle</param>
+		public void DrawRectangle(Color color, float x, float y, float width, float height)
+		{
+			using (var pen = new Pen(color, 1f, Generator))
+				Handler.DrawRectangle(pen, x, y, width, height);
 		}
 
 		/// <summary>
@@ -413,8 +460,8 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the rectangle, in pixels</param>
 		public void DrawInsetRectangle (Color topLeftColor, Color bottomRightColor, RectangleF rectangle, int width = 1)
 		{
-			using (var topLeftPen = new Pen (topLeftColor, 1f, this.Generator))
-			using (var bottomRightPen = new Pen (bottomRightColor, 1f, this.Generator))
+			using (var topLeftPen = new Pen(topLeftColor, 1f, Generator))
+			using (var bottomRightPen = new Pen(bottomRightColor, 1f, Generator))
 			for (int i = 0; i < width; i++) {
 				DrawLine (topLeftPen, rectangle.TopLeft, rectangle.InnerTopRight);
 				DrawLine (topLeftPen, rectangle.TopLeft, rectangle.InnerBottomLeft);
@@ -890,7 +937,7 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
-			using (var brush = new SolidBrush(color))
+			using (var brush = new SolidBrush(color, Generator))
 				Handler.DrawText(font, brush, x, y, text);			
 		}
 
@@ -915,7 +962,7 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, Color color, PointF location, string text)
 		{
-			using (var brush = new SolidBrush(color))
+			using (var brush = new SolidBrush(color, Generator))
 				Handler.DrawText(font, brush, location.X, location.Y, text);
 		}
 
@@ -925,19 +972,29 @@ namespace Eto.Drawing
 		/// <param name="font">Font to measure with</param>
 		/// <param name="text">Text string to measure</param>
 		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
-		public SizeF MeasureString (Font font, string text)
+		public virtual SizeF MeasureString (Font font, string text)
 		{
 			if (string.IsNullOrEmpty(text)) return SizeF.Empty; // handle null explicitly
 			return Handler.MeasureString (font, text);
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating that drawing operations will use antialiasing
+		/// Gets or sets a value indicating that drawing operations will use anti-aliasing
 		/// </summary>
+		public bool AntiAlias
+		{
+			get { return Handler.AntiAlias; }
+			set { Handler.AntiAlias = value; }
+		}
+
+		/// <summary>
+		/// Obsolete, use <see cref="AntiAlias"/> instead
+		/// </summary>
+		[Obsolete("Use AntiAlias instead"), CLSCompliant(false)]
 		public bool Antialias
 		{
-			get { return Handler.Antialias; }
-			set { Handler.Antialias = value; }
+			get { return Handler.AntiAlias; }
+			set { Handler.AntiAlias = value; }
 		}
 
 		/// <summary>
@@ -947,6 +1004,38 @@ namespace Eto.Drawing
 		{
 			get { return Handler.ImageInterpolation; }
 			set { Handler.ImageInterpolation = value; }
+		}
+
+		/// <summary>
+		/// Gets the dots per inch of the current graphics context. Usually 96 for windows and 72 for other systems
+		/// </summary>
+		public float DPI
+		{
+			get { return 72f / Handler.PointsPerPixel; }
+		}
+
+		/// <summary>
+		/// Gets the scale of points per pixel. Multiply by pixel size to get point value (e.g. to set font size in pixels).
+		/// </summary>
+		/// <remarks>
+		/// A value of 1.0 indicates that one point equals one pixel.
+		/// Windows is usually 0.75 (96 dpi) while other systems are usually 1.0 (e.g. linux, os x)
+		/// </remarks>
+		public float PointsPerPixel
+		{
+			get { return Handler.PointsPerPixel; }
+		}
+
+		/// <summary>
+		/// Gets the scale of points to pixels. Multiply by point value to get pixel size
+		/// </summary>
+		/// <remarks>
+		/// A value of 1.0 indicates that one pixel equals one point.
+		/// Windows is usually 1 1/3 (96 dpi) while other systems are usually 1.0 (e.g. linux, os x)
+		/// </remarks>
+		public float PixelsPerPoint
+		{
+			get { return 1f / Handler.PointsPerPixel; }
 		}
 
 		/// <summary>
@@ -1116,6 +1205,15 @@ namespace Eto.Drawing
 		{
 			Handler.ResetClip ();
 		}
+
+		/// <summary>
+		/// Returns true if the clip region intersects
+		/// the specified rectangle.
+		/// </summary>
+		public virtual bool IsVisible(RectangleF rectangle)
+		{
+			return IsRetained || ClipBounds.Intersects(rectangle);
+		}
 		
 		/// <summary>
 		/// Resets all pixels in the <see cref="ClipBounds"/> region with the specified <paramref name="brush"/>
@@ -1127,6 +1225,19 @@ namespace Eto.Drawing
 		}
 
 		#region Obsolete
+
+		/// <summary>
+		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="image"/>
+		/// </summary>
+		/// <param name="generator">Generator to create this graphics context for</param>
+		/// <param name="image">Image to draw on using this graphics context</param>
+		[Obsolete("Use Graphics(Bitmap) instead")]
+		public Graphics(Generator generator, Bitmap image)
+			: base(generator, typeof(IGraphics), false)
+		{
+			Handler.CreateFromImage(image);
+			Initialize();
+		}
 
 		/// <summary>
 		/// Draws the <paramref name="icon"/> at the specified location and size. Obsolete. Use <see cref="DrawImage(Image, RectangleF)"/> instead.

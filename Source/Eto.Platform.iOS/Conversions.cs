@@ -12,7 +12,7 @@ namespace Eto.Platform.iOS
 {
 	public static partial class Conversions
 	{
-		public static UIColor ToUI (this Color color)
+		public static UIColor ToNSUI (this Color color)
 		{
 			return UIColor.FromRGBA (color.R, color.G, color.B, color.A);
 		}
@@ -45,9 +45,9 @@ namespace Eto.Platform.iOS
 			if (touches.Count > 0) {
 				UITouch touch = touches.ToArray<UITouch> () [0];
 				var location = touch.LocationInView (view);
-				return new MouseEventArgs (MouseButtons.Primary, Key.None, location.ToEtoPoint ());
+				return new MouseEventArgs (MouseButtons.Primary, Keys.None, location.ToEtoPoint ());
 			}
-			return new MouseEventArgs (MouseButtons.Primary, Key.None, Point.Empty);
+			return new MouseEventArgs (MouseButtons.Primary, Keys.None, Point.Empty);
 		}
 
 		public static UIImage ToUI (this Image image)

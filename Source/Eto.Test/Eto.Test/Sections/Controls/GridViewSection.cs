@@ -23,9 +23,9 @@ namespace Eto.Test.Sections.Controls
 
 	public class GridViewSection : Panel
 	{
-		static Image image1 = TestIcons.TestImage;
-		static Image image2 = TestIcons.TestIcon;
-		SearchBox filterText = null;
+		static readonly Image image1 = TestIcons.TestImage();
+		static readonly Image image2 = TestIcons.TestIcon();
+		readonly SearchBox filterText;
 
 		public GridViewSection()
 		{
@@ -49,7 +49,7 @@ namespace Eto.Test.Sections.Controls
 			// hook up selection of main grid to the selection grid
 			withContextMenuAndFilter.SelectionChanged += (s, e) =>
 			{
-				var items = new GridItemCollection();
+				var items = new DataStoreCollection();
 				items.AddRange(withContextMenuAndFilter.SelectedItems);
 				selectionGridView.DataStore = items;
 			};
@@ -116,7 +116,7 @@ namespace Eto.Test.Sections.Controls
 				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
 				val = rand.Next(3);
-				Image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
+				Image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
 
 				text = string.Format("Col 1 Row {0}", row);
 
@@ -170,7 +170,7 @@ namespace Eto.Test.Sections.Controls
 
 			if (addItems)
 			{
-				var items = new GridItemCollection();
+				var items = new DataStoreCollection();
 				var rand = new Random();
 				for (int i = 0; i < 10000; i++)
 				{
@@ -197,7 +197,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = Default();
 			control.AllowMultipleSelection = true;
-			var items = control.DataStore as GridItemCollection;
+			var items = control.DataStore as DataStoreCollection;
 
 			// Filter
 			filterText.TextChanged += (s, e) =>
@@ -224,35 +224,35 @@ namespace Eto.Test.Sections.Controls
 
 			// Context menu
 			var menu = new ContextMenu();
-			var item = new ImageMenuItem { Text = "Click Me!" };
+			var item = new ButtonMenuItem { Text = "Click Me!" };
 			item.Click += delegate
 			{
-				if (control.SelectedRows.Count() > 0)
+				if (control.SelectedRows.Any())
 					Log.Write(item, "Click, Rows: {0}", SelectedRowsString(control));
 				else
 					Log.Write(item, "Click, no item selected");
 			};
-			menu.MenuItems.Add(item);
+			menu.Items.Add(item);
 
 			// Delete menu item: deletes the item from the store, the UI updates via the binding.
-			var deleteItem = new ImageMenuItem { Text = "Delete Item" };
+			var deleteItem = new ButtonMenuItem { Text = "Delete Item" };
 			deleteItem.Click += (s, e) =>
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
 					items.Remove(i);
 			};
-			menu.MenuItems.Add(deleteItem);
+			menu.Items.Add(deleteItem);
 
 			// Insert item: inserts an item into the store, the UI updates via the binding.
-			var insertItem = new ImageMenuItem { Text = "Insert Item at the start of the list" };
+			var insertItem = new ButtonMenuItem { Text = "Insert Item at the start of the list" };
 			insertItem.Click += (s, e) =>
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
 					items.Insert(0, new MyGridItem(new Random(), 0, null));
 			};
-			menu.MenuItems.Add(insertItem);
+			menu.Items.Add(insertItem);
 
 			control.ContextMenu = menu;
 			return control;
@@ -260,11 +260,11 @@ namespace Eto.Test.Sections.Controls
 #endif
 		protected virtual void LogEvents(GridView control)
 		{
-			control.BeginCellEdit += (sender, e) =>
+			control.CellEditing += (sender, e) =>
 			{
 				Log.Write(control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
-			control.EndCellEdit += (sender, e) =>
+			control.CellEdited += (sender, e) =>
 			{
 				Log.Write(control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
@@ -278,7 +278,7 @@ namespace Eto.Test.Sections.Controls
 			};
 		}
 
-		string SelectedRowsString(GridView control)
+		static string SelectedRowsString(GridView control)
 		{
 			return string.Join(",", control.SelectedRows.Select(r => r.ToString()).OrderBy(r => r));
 		}

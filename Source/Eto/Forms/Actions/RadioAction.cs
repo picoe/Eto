@@ -4,6 +4,7 @@ using System.Reflection;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public static class RadioActionExtensions
 	{
 		public static RadioAction AddRadio(this ActionCollection actions, RadioAction controller, string id, string text)
@@ -11,18 +12,23 @@ namespace Eto.Forms
 			return AddRadio(actions, controller, id, text, string.Empty, null, null);
 		}
 		
-		public static RadioAction AddRadio(this ActionCollection actions, RadioAction controller, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
+		public static RadioAction AddRadio(this ActionCollection actions, RadioAction controller, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource(Assembly.GetCallingAssembly(), iconResource);
-			RadioAction action = new RadioAction(controller, id, text, icon, activated);
+			var action = new RadioAction(controller, id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;
+#endif
 		}
 		
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class RadioAction : BaseAction
 	{
 		bool isChecked;
@@ -64,7 +70,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
 			throw new NotImplementedException("cannot put radio buttons on the toolbar just yet");
 		}		

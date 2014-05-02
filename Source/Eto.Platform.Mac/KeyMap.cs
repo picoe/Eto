@@ -1,23 +1,18 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac
 {
 	public static class KeyMap
 	{
-		static Dictionary<ushort, Key> keymap = new Dictionary<ushort, Key> ();
-		static Dictionary<Key, string> inverse = new Dictionary<Key, string> ();
+		static readonly Dictionary<ushort, Keys> keymap = new Dictionary<ushort, Keys> ();
+		static readonly Dictionary<Keys, string> inverse = new Dictionary<Keys, string> ();
 
-		public static Key MapKey (ushort key)
+		public static Keys MapKey (ushort key)
 		{
-			Key value;
-			if (keymap.TryGetValue (key, out value))
-				return value;
-			return Key.None;
+			Keys value;
+			return keymap.TryGetValue(key, out value) ? value : Keys.None;
 		}
 		
 		enum KeyCharacters {
@@ -33,198 +28,196 @@ namespace Eto.Platform.Mac
 			NSDeleteCharacter             = 0x007f
 		};
 
-		public static Key Convert (string keyEquivalent, NSEventModifierMask modifier)
+		public static Keys Convert (string keyEquivalent, NSEventModifierMask modifier)
 		{
-			return Key.None;
+			return Keys.None;
 		}
 
-		public static string KeyEquivalent (Key key)
+		public static string KeyEquivalent (Keys key)
 		{
 			string value;
-			if (inverse.TryGetValue (key & Key.KeyMask, out value))
-				return value;
-			return string.Empty;
+			return inverse.TryGetValue(key & Keys.KeyMask, out value) ? value : string.Empty;
 		}
 
-		public static NSEventModifierMask KeyEquivalentModifierMask (Key key)
+		public static NSEventModifierMask KeyEquivalentModifierMask (Keys key)
 		{
-			key &= Key.ModifierMask;
-			NSEventModifierMask mask = (NSEventModifierMask)0;
-			if ((key & Key.Shift) > 0)
+			key &= Keys.ModifierMask;
+			var mask = (NSEventModifierMask)0;
+			if (key.HasFlag(Keys.Shift))
 				mask |= NSEventModifierMask.ShiftKeyMask;
-			if ((key & Key.Alt) > 0)
+			if (key.HasFlag(Keys.Alt))
 				mask |= NSEventModifierMask.AlternateKeyMask;
-			if ((key & Key.Control) > 0)
+			if (key.HasFlag(Keys.Control))
 				mask |= NSEventModifierMask.ControlKeyMask;
-			if ((key & Key.Application) > 0)
+			if (key.HasFlag(Keys.Application))
 				mask |= NSEventModifierMask.CommandKeyMask;
 			return mask;
 		}
 
-		public static Key GetModifiers (NSEvent theEvent)
+		public static Keys GetModifiers (NSEvent theEvent)
 		{
-			Key key = Key.None;
+			Keys key = Keys.None;
 			if ((theEvent.ModifierFlags & NSEventModifierMask.ControlKeyMask) != 0)
-				key |= Key.Control;
+				key |= Keys.Control;
 			if ((theEvent.ModifierFlags & NSEventModifierMask.CommandKeyMask) != 0)
-				key |= Key.Application;
+				key |= Keys.Application;
 			if ((theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) != 0)
-				key |= Key.Shift;
+				key |= Keys.Shift;
 			if ((theEvent.ModifierFlags & NSEventModifierMask.AlternateKeyMask) != 0)
-				key |= Key.Alt;
+				key |= Keys.Alt;
 			return key;
 		}
 		
 		static KeyMap ()
 		{
-			keymap.Add(0, Key.A);
-			keymap.Add(11, Key.B);
-			keymap.Add(8, Key.C);
-			keymap.Add(2, Key.D);
-			keymap.Add(14, Key.E);
-			keymap.Add(3, Key.F);
-			keymap.Add(5, Key.G);
-			keymap.Add(4, Key.H);
-			keymap.Add(34, Key.I);
-			keymap.Add(38, Key.J);
-			keymap.Add(40, Key.K);
-			keymap.Add(37, Key.L);
-			keymap.Add(46, Key.M);
-			keymap.Add(45, Key.N);
-			keymap.Add(31, Key.O);
-			keymap.Add(35, Key.P);
-			keymap.Add(12, Key.Q);
-			keymap.Add(15, Key.R);
-			keymap.Add(1, Key.S);
-			keymap.Add(17, Key.T);
-			keymap.Add(32, Key.U);
-			keymap.Add(9, Key.V);
-			keymap.Add(13, Key.W);
-			keymap.Add(7, Key.X);
-			keymap.Add(16, Key.Y);
-			keymap.Add(6, Key.Z);
-			keymap.Add(18, Key.D1);
-			keymap.Add(19, Key.D2);
-			keymap.Add(20, Key.D3);
-			keymap.Add(21, Key.D4);
-			keymap.Add(23, Key.D5);
-			keymap.Add(22, Key.D6);
-			keymap.Add(26, Key.D7);
-			keymap.Add(28, Key.D8);
-			keymap.Add(25, Key.D9);
-			keymap.Add(29, Key.D0);
-			keymap.Add(122, Key.F1);
-			keymap.Add(120, Key.F2);
-			keymap.Add(99, Key.F3);
-			keymap.Add(118, Key.F4);
-			keymap.Add(96, Key.F5);
-			keymap.Add(97, Key.F6);
-			keymap.Add(98, Key.F7);
-			keymap.Add(100, Key.F8);
-			keymap.Add(101, Key.F9);
-			keymap.Add(109, Key.F10);
-			keymap.Add(103, Key.F11);
-			keymap.Add(111, Key.F12);
-			keymap.Add(50, Key.Grave);
-			keymap.Add(27, Key.Minus);
-			keymap.Add(24, Key.Equal);
-			keymap.Add(42, Key.Backslash);
-			keymap.Add(49, Key.Space);
-			//keymap.Add(30, Key.]);
-			//keymap.Add(33, Key.[);
-			keymap.Add(39, Key.Quote);
-			keymap.Add(41, Key.Semicolon);
-			keymap.Add(44, Key.ForwardSlash);
-			keymap.Add(47, Key.Period);
-			keymap.Add(43, Key.Comma);
-			keymap.Add(36, Key.Enter);
-			keymap.Add(48, Key.Tab);
-			//keymap.Add(76, Key.Return);
-			keymap.Add(53, Key.Escape);
+			keymap.Add(0, Keys.A);
+			keymap.Add(11, Keys.B);
+			keymap.Add(8, Keys.C);
+			keymap.Add(2, Keys.D);
+			keymap.Add(14, Keys.E);
+			keymap.Add(3, Keys.F);
+			keymap.Add(5, Keys.G);
+			keymap.Add(4, Keys.H);
+			keymap.Add(34, Keys.I);
+			keymap.Add(38, Keys.J);
+			keymap.Add(40, Keys.K);
+			keymap.Add(37, Keys.L);
+			keymap.Add(46, Keys.M);
+			keymap.Add(45, Keys.N);
+			keymap.Add(31, Keys.O);
+			keymap.Add(35, Keys.P);
+			keymap.Add(12, Keys.Q);
+			keymap.Add(15, Keys.R);
+			keymap.Add(1, Keys.S);
+			keymap.Add(17, Keys.T);
+			keymap.Add(32, Keys.U);
+			keymap.Add(9, Keys.V);
+			keymap.Add(13, Keys.W);
+			keymap.Add(7, Keys.X);
+			keymap.Add(16, Keys.Y);
+			keymap.Add(6, Keys.Z);
+			keymap.Add(18, Keys.D1);
+			keymap.Add(19, Keys.D2);
+			keymap.Add(20, Keys.D3);
+			keymap.Add(21, Keys.D4);
+			keymap.Add(23, Keys.D5);
+			keymap.Add(22, Keys.D6);
+			keymap.Add(26, Keys.D7);
+			keymap.Add(28, Keys.D8);
+			keymap.Add(25, Keys.D9);
+			keymap.Add(29, Keys.D0);
+			keymap.Add(122, Keys.F1);
+			keymap.Add(120, Keys.F2);
+			keymap.Add(99, Keys.F3);
+			keymap.Add(118, Keys.F4);
+			keymap.Add(96, Keys.F5);
+			keymap.Add(97, Keys.F6);
+			keymap.Add(98, Keys.F7);
+			keymap.Add(100, Keys.F8);
+			keymap.Add(101, Keys.F9);
+			keymap.Add(109, Keys.F10);
+			keymap.Add(103, Keys.F11);
+			keymap.Add(111, Keys.F12);
+			keymap.Add(50, Keys.Grave);
+			keymap.Add(27, Keys.Minus);
+			keymap.Add(24, Keys.Equal);
+			keymap.Add(42, Keys.Backslash);
+			keymap.Add(49, Keys.Space);
+			//keymap.Add(30, Keys.]);
+			//keymap.Add(33, Keys.[);
+			keymap.Add(39, Keys.Quote);
+			keymap.Add(41, Keys.Semicolon);
+			keymap.Add(44, Keys.ForwardSlash);
+			keymap.Add(47, Keys.Period);
+			keymap.Add(43, Keys.Comma);
+			keymap.Add(36, Keys.Enter);
+			keymap.Add(48, Keys.Tab);
+			//keymap.Add(76, Keys.Return);
+			keymap.Add(53, Keys.Escape);
 
-			keymap.Add(76, Key.Insert);
-			keymap.Add(51, Key.Backspace);
-			keymap.Add(117, Key.Delete);
+			keymap.Add(76, Keys.Insert);
+			keymap.Add(51, Keys.Backspace);
+			keymap.Add(117, Keys.Delete);
 			
-			keymap.Add(125, Key.Down);
-			keymap.Add(126, Key.Up);
-			keymap.Add(123, Key.Left);
-			keymap.Add(124, Key.Right);
+			keymap.Add(125, Keys.Down);
+			keymap.Add(126, Keys.Up);
+			keymap.Add(123, Keys.Left);
+			keymap.Add(124, Keys.Right);
 			
-			keymap.Add(116, Key.PageUp);
-			keymap.Add(121, Key.PageDown);
-			keymap.Add(119, Key.End);
-			keymap.Add(115, Key.Home);
-			keymap.Add(110, Key.ContextMenu);
+			keymap.Add(116, Keys.PageUp);
+			keymap.Add(121, Keys.PageDown);
+			keymap.Add(119, Keys.End);
+			keymap.Add(115, Keys.Home);
+			keymap.Add(110, Keys.ContextMenu);
 
 			
-			inverse.Add (Key.A, "a");
-			inverse.Add (Key.B, "b");
-			inverse.Add (Key.C, "c");
-			inverse.Add (Key.D, "d");
-			inverse.Add (Key.E, "e");
-			inverse.Add (Key.F, "f");
-			inverse.Add (Key.G, "g");
-			inverse.Add (Key.H, "h");
-			inverse.Add (Key.I, "i");
-			inverse.Add (Key.J, "j");
-			inverse.Add (Key.K, "k");
-			inverse.Add (Key.L, "l");
-			inverse.Add (Key.M, "m");
-			inverse.Add (Key.N, "n");
-			inverse.Add (Key.O, "o");
-			inverse.Add (Key.P, "p");
-			inverse.Add (Key.Q, "q");
-			inverse.Add (Key.R, "r");
-			inverse.Add (Key.S, "s");
-			inverse.Add (Key.T, "t");
-			inverse.Add (Key.U, "u");
-			inverse.Add (Key.V, "v");
-			inverse.Add (Key.W, "w");
-			inverse.Add (Key.X, "x");
-			inverse.Add (Key.Y, "y");
-			inverse.Add (Key.Z, "z");
-			inverse.Add (Key.Period, ".");
-			inverse.Add (Key.Comma, ",");
-			inverse.Add (Key.Space, " ");
-			inverse.Add (Key.Backslash, "\\");
-			inverse.Add (Key.ForwardSlash, "/");
-			inverse.Add (Key.Equal, "=");
-			inverse.Add (Key.Grave, "`");
-			inverse.Add (Key.Minus, "-");
-			inverse.Add (Key.Semicolon, ";");
-			inverse.Add (Key.Up, ((char)NSKey.UpArrow).ToString());
-			inverse.Add (Key.Down, ((char)NSKey.DownArrow).ToString());
-			inverse.Add (Key.Right, ((char)NSKey.RightArrow).ToString());
-			inverse.Add (Key.Left, ((char)NSKey.LeftArrow).ToString());
-			inverse.Add (Key.Home, ((char)NSKey.Home).ToString());
-			inverse.Add (Key.End, ((char)NSKey.End).ToString());
-			inverse.Add (Key.Insert, ((char)NSKey.Insert).ToString());
-			inverse.Add (Key.Delete, ((char)KeyCharacters.NSDeleteCharacter).ToString());
-			inverse.Add (Key.Backspace, ((char)KeyCharacters.NSBackspaceCharacter).ToString());
-			inverse.Add (Key.Tab, ((char)KeyCharacters.NSTabCharacter).ToString());
-			inverse.Add (Key.D0, "0");
-			inverse.Add (Key.D1, "1");
-			inverse.Add (Key.D2, "2");
-			inverse.Add (Key.D3, "3");
-			inverse.Add (Key.D4, "4");
-			inverse.Add (Key.D5, "5");
-			inverse.Add (Key.D6, "6");
-			inverse.Add (Key.D7, "7");
-			inverse.Add (Key.D8, "8");
-			inverse.Add (Key.D9, "9");
-			inverse.Add (Key.F1, ((char)NSKey.F1).ToString());
-			inverse.Add (Key.F2, ((char)NSKey.F2).ToString());
-			inverse.Add (Key.F3, ((char)NSKey.F3).ToString());
-			inverse.Add (Key.F4, ((char)NSKey.F4).ToString());
-			inverse.Add (Key.F5, ((char)NSKey.F5).ToString());
-			inverse.Add (Key.F6, ((char)NSKey.F6).ToString());
-			inverse.Add (Key.F7, ((char)NSKey.F7).ToString());
-			inverse.Add (Key.F8, ((char)NSKey.F8).ToString());
-			inverse.Add (Key.F9, ((char)NSKey.F9).ToString());
-			inverse.Add (Key.F10, ((char)NSKey.F10).ToString());
-			inverse.Add (Key.F11, ((char)NSKey.F11).ToString());
-			inverse.Add (Key.F12, ((char)NSKey.F12).ToString());
+			inverse.Add (Keys.A, "a");
+			inverse.Add (Keys.B, "b");
+			inverse.Add (Keys.C, "c");
+			inverse.Add (Keys.D, "d");
+			inverse.Add (Keys.E, "e");
+			inverse.Add (Keys.F, "f");
+			inverse.Add (Keys.G, "g");
+			inverse.Add (Keys.H, "h");
+			inverse.Add (Keys.I, "i");
+			inverse.Add (Keys.J, "j");
+			inverse.Add (Keys.K, "k");
+			inverse.Add (Keys.L, "l");
+			inverse.Add (Keys.M, "m");
+			inverse.Add (Keys.N, "n");
+			inverse.Add (Keys.O, "o");
+			inverse.Add (Keys.P, "p");
+			inverse.Add (Keys.Q, "q");
+			inverse.Add (Keys.R, "r");
+			inverse.Add (Keys.S, "s");
+			inverse.Add (Keys.T, "t");
+			inverse.Add (Keys.U, "u");
+			inverse.Add (Keys.V, "v");
+			inverse.Add (Keys.W, "w");
+			inverse.Add (Keys.X, "x");
+			inverse.Add (Keys.Y, "y");
+			inverse.Add (Keys.Z, "z");
+			inverse.Add (Keys.Period, ".");
+			inverse.Add (Keys.Comma, ",");
+			inverse.Add (Keys.Space, " ");
+			inverse.Add (Keys.Backslash, "\\");
+			inverse.Add (Keys.ForwardSlash, "/");
+			inverse.Add (Keys.Equal, "=");
+			inverse.Add (Keys.Grave, "`");
+			inverse.Add (Keys.Minus, "-");
+			inverse.Add (Keys.Semicolon, ";");
+			inverse.Add (Keys.Up, ((char)NSKey.UpArrow).ToString());
+			inverse.Add (Keys.Down, ((char)NSKey.DownArrow).ToString());
+			inverse.Add (Keys.Right, ((char)NSKey.RightArrow).ToString());
+			inverse.Add (Keys.Left, ((char)NSKey.LeftArrow).ToString());
+			inverse.Add (Keys.Home, ((char)NSKey.Home).ToString());
+			inverse.Add (Keys.End, ((char)NSKey.End).ToString());
+			inverse.Add (Keys.Insert, ((char)NSKey.Insert).ToString());
+			inverse.Add (Keys.Delete, ((char)KeyCharacters.NSDeleteCharacter).ToString());
+			inverse.Add (Keys.Backspace, ((char)KeyCharacters.NSBackspaceCharacter).ToString());
+			inverse.Add (Keys.Tab, ((char)KeyCharacters.NSTabCharacter).ToString());
+			inverse.Add (Keys.D0, "0");
+			inverse.Add (Keys.D1, "1");
+			inverse.Add (Keys.D2, "2");
+			inverse.Add (Keys.D3, "3");
+			inverse.Add (Keys.D4, "4");
+			inverse.Add (Keys.D5, "5");
+			inverse.Add (Keys.D6, "6");
+			inverse.Add (Keys.D7, "7");
+			inverse.Add (Keys.D8, "8");
+			inverse.Add (Keys.D9, "9");
+			inverse.Add (Keys.F1, ((char)NSKey.F1).ToString());
+			inverse.Add (Keys.F2, ((char)NSKey.F2).ToString());
+			inverse.Add (Keys.F3, ((char)NSKey.F3).ToString());
+			inverse.Add (Keys.F4, ((char)NSKey.F4).ToString());
+			inverse.Add (Keys.F5, ((char)NSKey.F5).ToString());
+			inverse.Add (Keys.F6, ((char)NSKey.F6).ToString());
+			inverse.Add (Keys.F7, ((char)NSKey.F7).ToString());
+			inverse.Add (Keys.F8, ((char)NSKey.F8).ToString());
+			inverse.Add (Keys.F9, ((char)NSKey.F9).ToString());
+			inverse.Add (Keys.F10, ((char)NSKey.F10).ToString());
+			inverse.Add (Keys.F11, ((char)NSKey.F11).ToString());
+			inverse.Add (Keys.F12, ((char)NSKey.F12).ToString());
 		}
 	}
 }

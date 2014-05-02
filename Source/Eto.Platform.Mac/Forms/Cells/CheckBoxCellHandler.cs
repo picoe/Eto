@@ -4,7 +4,6 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Drawing;
-using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -16,7 +15,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
@@ -31,8 +30,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone (IntPtr zone)
 			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.selCopyWithZone.Handle, zone);
-				return new EtoCell (ptr) { Handler = this.Handler };
+				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.CopyWithZoneHandle, zone);
+				return new EtoCell (ptr) { Handler = Handler };
 			}
 		}
 		
@@ -45,13 +44,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override void SetBackgroundColor (NSCell cell, Color color)
 		{
-			var c = cell as EtoCell;
-			c.BackgroundColor = color.ToNS ();
+			var c = (EtoCell)cell;
+			c.BackgroundColor = color.ToNSUI ();
 		}
 
 		public override Color GetBackgroundColor (NSCell cell)
 		{
-			var c = cell as EtoCell;
+			var c = (EtoCell)cell;
 			return c.BackgroundColor.ToEto ();
 		}
 
@@ -65,26 +64,25 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 
 
-		public override void SetObjectValue (object dataItem, NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject value)
 		{
 			if (Widget.Binding != null) {
-				var num = val as NSNumber;
+				var num = value as NSNumber;
 				if (num != null) {
 					var state = (NSCellStateValue)num.IntValue;
-					bool? value;
+					bool? boolValue;
 					switch (state) {
 					default:
-					case NSCellStateValue.Mixed:
-						value = null;
+						boolValue = null;
 						break;
 					case NSCellStateValue.On:
-						value = true;
+						boolValue = true;
 						break;
 					case NSCellStateValue.Off:
-						value = false;
+						boolValue = false;
 						break;
 					}
-					Widget.Binding.SetValue(dataItem, value);
+					Widget.Binding.SetValue(dataItem, boolValue);
 				}
 			}
 		}

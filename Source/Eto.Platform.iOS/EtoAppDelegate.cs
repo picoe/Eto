@@ -9,11 +9,11 @@ namespace Eto.Platform.iOS
 	[MonoTouch.Foundation.Register("EtoAppDelegate")]
 	public class EtoAppDelegate : UIApplicationDelegate
 	{
-		public EtoAppDelegate ()
+		public EtoAppDelegate()
 		{
 		}
 
-		public override bool FinishedLaunching (UIApplication application, NSDictionary launcOptions)
+		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
 			ApplicationHandler.Instance.Initialize(this);
 			return true;

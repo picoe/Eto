@@ -1,8 +1,6 @@
 using System;
+using System.Collections.Generic;
 
-#if XAML
-using System.Windows.Markup;
-#endif
 namespace Eto
 {
 	/// <summary>
@@ -34,24 +32,8 @@ namespace Eto
 		/// when users of the control only override the event's On... method.
 		/// </remarks>
 		/// <param name="id">ID of the event to handle</param>
-		void HandleEvent(string id);
-	}
-
-	/// <summary>
-	/// Generic implementation of <see cref="IInstanceWidget"/> to provide a statically typed control parameter
-	/// </summary>
-	/// <remarks>
-	/// This interface can be used on platform handlers so that we can get the platform-specific control
-	/// of a widget without having to know its implementation details.
-	/// </remarks>
-	/// <typeparam name="T">Platform-specific control used for the widget</typeparam>
-	/// <typeparam name="W">Widget type</typeparam>
-	public interface IInstanceWidget<out T, W> : IInstanceWidget
-	{
-		/// <summary>
-		/// Gets the platform-specific control used for the widget
-		/// </summary>
-		T Control { get; }
+		/// <param name = "defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
+		void HandleEvent(string id, bool defaultEvent = false);
 	}
 
 	/// <summary>
@@ -73,12 +55,20 @@ namespace Eto
 	{
 		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }
 
-		string style;
+		PropertyStore properties;
+
+		/// <summary>
+		/// Gets the dictionary of properties for this widget
+		/// </summary>
+		public PropertyStore Properties
+		{ 
+			get { return properties ?? (properties = new PropertyStore(this)); } 
+		}
 
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
-		public string ID
+		public virtual string ID
 		{
 			get { return Handler.ID; }
 			set { Handler.ID = value; }
@@ -108,18 +98,32 @@ namespace Eto
 		/// </example>
 		public string Style
 		{
-			get { return style; }
+			get { return Properties.Get<string>(StyleKey); }
 			set
 			{
+				var style = Style;
 				if (style != value)
 				{
-					style = value;
+					Properties[StyleKey] = value;
 					OnStyleChanged(EventArgs.Empty);
 				}
 			}
 		}
 
+		static readonly object StyleKey = new object();
+
 		#region Events
+
+		static readonly object StyleChangedKey = new object();
+
+		/// <summary>
+		/// Occurs when the <see cref="InstanceWidget.Style"/> property has changed
+		/// </summary>
+		public event EventHandler<EventArgs> StyleChanged
+		{
+			add { Properties.AddEvent(StyleChangedKey, value); }
+			remove { Properties.RemoveEvent(StyleChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Handles when the <see cref="Style"/> is changed.
@@ -127,6 +131,7 @@ namespace Eto
 		protected virtual void OnStyleChanged(EventArgs e)
 		{
 			Eto.Style.OnStyleWidget(this);
+			Properties.TriggerEvent(StyleChangedKey, this, e);
 		}
 
 		#endregion
@@ -138,7 +143,7 @@ namespace Eto
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget(Generator generator, IWidget handler, bool initialize = true)
-			: base (generator, handler, false)
+			: base(generator, handler, false)
 		{
 			if (initialize)
 				Initialize();
@@ -151,7 +156,7 @@ namespace Eto
 		/// <param name="handlerType">Type of the handler to create as the backend for this widget</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget(Generator generator, Type handlerType, bool initialize = true)
-			: base (generator, handlerType, false)
+			: base(generator, handlerType, false)
 		{
 			if (initialize)
 				Initialize();
@@ -203,9 +208,10 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
+		[Obsolete("You no longer have to call this method, events are wired up automatically")]
 		public void HandleEvent(string id)
 		{
-			Handler.HandleEvent(id);
+			Handler.HandleEvent(id, false);
 		}
 
 		/// <summary>
@@ -246,11 +252,20 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="ids">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
+		[Obsolete("You no longer have to call this method, events are wired up automatically")]
 		public void HandleEvent(params string[] ids)
 		{
-			foreach (var id in ids)
+			for (int i = 0; i < ids.Length; i++)
 			{
-				HandleEvent(id);
+				Handler.HandleEvent(ids[i], false);
+			}
+		}
+
+		internal void HandleDefaultEvents(params string[] ids)
+		{
+			for (int i = 0; i < ids.Length; i++)
+			{
+				Handler.HandleEvent(ids[i], true);
 			}
 		}
 
@@ -268,6 +283,7 @@ namespace Eto
 		{
 			base.Initialize();
 			Eto.Style.OnStyleWidgetDefaults(this);
+			EventLookup.HookupEvents(this);
 		}
 	}
 }

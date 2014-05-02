@@ -11,7 +11,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public IEnumerable<FontTypeface> Typefaces
 		{
-			get { return Control.Faces.Select (r => new FontTypeface(Widget, new FontTypefaceHandler(this, r))); }
+			get { return Control.Faces.Select (r => new FontTypeface(Widget, new FontTypefaceHandler(r))); }
 		}
 
 		public FontFamilyHandler ()
@@ -27,15 +27,15 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void Create (string familyName)
 		{
 			Name = familyName;
-			switch (familyName.ToLowerInvariant ()) {
+			switch (familyName.ToUpperInvariant()) {
 			case FontFamilies.MonospaceFamilyName:
-				Control = GetFontFamily("monospace");
+				Control = GetFontFamily("monospace", "FreeMono", "Courier");
 				break;
 			case FontFamilies.SansFamilyName:
-				Control = GetFontFamily("sans");
+				Control = GetFontFamily("sans", "FreeSans");
 				break;
 			case FontFamilies.SerifFamilyName:
-				Control = GetFontFamily("serif");
+				Control = GetFontFamily("serif", "FreeSerif");
 				break;
 			case FontFamilies.CursiveFamilyName:
 				// from http://www.codestyle.org/css/font-family/sampler-Cursive.shtml#cursive-linux

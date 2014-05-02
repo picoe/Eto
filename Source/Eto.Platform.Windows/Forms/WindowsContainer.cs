@@ -7,31 +7,37 @@ using Eto.Drawing;
 namespace Eto.Platform.Windows
 {
 
-	public abstract class WindowsContainer<T, W> : WindowsControl<T, W>, IContainer
-		where T : swf.Control
-		where W : Container
+	public abstract class WindowsContainer<TControl, TWidget> : WindowsControl<TControl, TWidget>, IContainer
+		where TControl : swf.Control
+		where TWidget : Container
 	{
 		Size minimumSize;
 
-		public WindowsContainer()
+		protected WindowsContainer()
 		{
 			EnableRedrawDuringSuspend = false;
 		}
 
-		public bool EnableRedrawDuringSuspend { get; set; }
+		public bool RecurseToChildren { get { return true; } }
 
-		public override Size DesiredSize
+		public override Size? DefaultSize
 		{
 			get
 			{
-				var size = Size.Empty;
-				var desired = base.DesiredSize;
-				if (desired.Width >= 0)
-					size.Width = desired.Width;
-				if (desired.Height >= 0)
-					size.Height = desired.Height;
-				return Size.Max(minimumSize, size);
+				var min = ContainerControl.MinimumSize;
+				ContainerControl.MinimumSize = sd.Size.Empty;
+				var size = ContainerControl.GetPreferredSize(Size.MaxValue.ToSD()).ToEto();
+				ContainerControl.MinimumSize = min;
+				return size;
 			}
+		}
+
+		public bool EnableRedrawDuringSuspend { get; set; }
+
+		public override Size GetPreferredSize(Size availableSize)
+		{
+			var size = base.GetPreferredSize(availableSize);
+			return Size.Max(minimumSize, size);
 		}
 
 		public Size MinimumSize

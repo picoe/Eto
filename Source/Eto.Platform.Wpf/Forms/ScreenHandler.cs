@@ -16,7 +16,7 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			var source = sw.PresentationSource.FromVisual (window);
 			Control = GetCurrentScreen (window);
-			scale = (float)(source.CompositionTarget.TransformToDevice.M22 * 92.0 / 72.0);
+			scale = (float)(source.CompositionTarget.TransformToDevice.M22 * 96.0 / 72.0);
 		}
 
 		public ScreenHandler (swf.Screen screen)

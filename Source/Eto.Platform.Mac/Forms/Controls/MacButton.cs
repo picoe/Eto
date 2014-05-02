@@ -1,13 +1,11 @@
-using System;
 using Eto.Forms;
 using MonoMac.AppKit;
-using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public abstract class MacButton<T, W> : MacControl<T, W>, ITextControl
-		where T: NSButton
-		where W: Control
+	public abstract class MacButton<TControl, TWidget> : MacControl<TControl, TWidget>, ITextControl
+		where TControl: NSButton
+		where TWidget: Control
 	{	
 
 		public virtual string Text {

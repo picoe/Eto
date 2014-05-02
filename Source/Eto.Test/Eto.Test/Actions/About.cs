@@ -1,26 +1,23 @@
 using System;
-using Eto.Forms;
 using Eto.Drawing;
+using Eto.Forms;
 
 namespace Eto.Test.Actions
 {
-	public class About : ButtonAction
+	public class About : Command
 	{
-		public const string ActionID = "about";
-		
-		public About ()
+		public About()
 		{
-			this.ID = ActionID;
-			this.MenuText = "About Test Application";
-			this.ToolBarText = "About";
-			this.Image = TestIcons.TestIcon;
-			this.Accelerator = Key.F11;
+			ID = "about";
+			Image = TestIcons.TestIcon();
+			MenuText = "About Test Application";
+			ToolBarText = "About";
+			Shortcut = Keys.F11;
 		}
-		
-		protected override void OnActivated (EventArgs e)
+
+		public override void OnExecuted(EventArgs e)
 		{
-			base.OnActivated (e);
-			
+			base.OnExecuted(e);
 			// show the about dialog
 			var about = new Dialogs.About();
 			about.ShowDialog (Application.Instance.MainForm);

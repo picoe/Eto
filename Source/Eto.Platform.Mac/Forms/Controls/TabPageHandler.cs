@@ -5,16 +5,14 @@ using SD = System.Drawing;
 using MonoMac.Foundation;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
-using Eto.Platform.Mac.Drawing;
-using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TabPageHandler : MacDockContainer<NSView, TabPage>, ITabPage, IMacContainer
+	public class TabPageHandler : MacPanel<NSView, TabPage>, ITabPage
 	{
 		const int ICON_PADDING = 2;
 		Image image;
-		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
+		static readonly IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -28,13 +26,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void DrawLabel (bool shouldTruncateLabel, SD.RectangleF labelRect)
 			{
 				if (Handler.image != null) {
-					var nsimage = Handler.image.ControlObject as NSImage;
+					var nsimage = (NSImage)Handler.image.ControlObject;
 
 					if (nsimage.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
 						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
 					else {
 						#pragma warning disable 618
-						nsimage.Flipped = this.View.IsFlipped;
+						nsimage.Flipped = View.IsFlipped;
 						#pragma warning restore 618
 						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1);
 					}

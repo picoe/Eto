@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 #if XAMMAC
 [assembly: AssemblyTitle("Eto.Forms - OS X Platform using Xamarin.Mac")]

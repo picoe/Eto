@@ -9,7 +9,8 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 	{
 		class Renderer : Gtk.CellRendererPixbuf
 		{
-			public ImageViewCellHandler Handler { get; set; }
+			WeakReference handler;
+			public ImageViewCellHandler Handler { get { return (ImageViewCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			[GLib.Property("item")]
 			public object Item { get; set; }
@@ -30,7 +31,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 					Handler.Format(new GtkGridCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
 				
 				// calling base crashes on windows
-				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererPixbuf.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref  cell_area, ref expose_area, flags);
+				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererPixbuf.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref  cell_area, ref expose_area, flags);
 				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 #else
@@ -71,10 +72,10 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			// can't set
 		}
 		
-		protected override GLib.Value GetValueInternal (object item, int column, int row)
+		protected override GLib.Value GetValueInternal (object dataItem, int dataColumn, int row)
 		{
 			if (Widget.Binding != null) {
-				var ret = Widget.Binding.GetValue (item);
+				var ret = Widget.Binding.GetValue (dataItem);
 				var image = ret as Image;
 				if (image != null)
 					return new GLib.Value(((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16)));
@@ -82,14 +83,14 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			return new GLib.Value((Gdk.Pixbuf)null);
 		}
 		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
-			case GridView.EndCellEditEvent:
+			switch (id) {
+			case Grid.CellEditedEvent:
 				// no editing here
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

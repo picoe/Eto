@@ -1,4 +1,3 @@
-using System;
 
 namespace Eto.Forms
 {
@@ -20,13 +19,13 @@ namespace Eto.Forms
 			Binding = new PropertyBinding (property);
 		}
 
-		public ImageViewCell ()
-			: this(Generator.Current)
+		public ImageViewCell()
+			: this((Generator)null)
 		{
 		}
-		
-		public ImageViewCell (Generator g)
-			: base(g, typeof(IImageViewCell), true)
+
+		public ImageViewCell (Generator generator)
+			: base(generator, typeof(IImageViewCell), true)
 		{
 		}
 	}

@@ -12,7 +12,7 @@ namespace Eto.Platform.Mac
 
 		bool Enabled { get; }
 
-		MenuActionItem Widget { get; }
+		MenuItem Widget { get; }
 	}
 
 	[Register("EtoMenuActionHandler")]
@@ -26,19 +26,19 @@ namespace Eto.Platform.Mac
 		[Export("activate:")]
 		public void Activate(NSObject sender)
 		{
-			var handler = Handler;
-			if (handler != null)
-				handler.HandleClick();
+			var h = Handler;
+			if (h != null)
+				h.HandleClick();
 		}
 
 		[Export("validateMenuItem:")]
 		public bool ValidateMenuItem(NSMenuItem item)
 		{
-			var handler = Handler;
-			if (handler != null)
+			var h = Handler;
+			if (h != null)
 			{
-				handler.Widget.OnValidate(EventArgs.Empty);
-				return handler.Enabled;
+				h.Widget.OnValidate(EventArgs.Empty);
+				return h.Enabled;
 			}
 			return false;
 		}

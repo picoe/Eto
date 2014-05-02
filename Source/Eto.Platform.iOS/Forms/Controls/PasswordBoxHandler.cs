@@ -5,16 +5,16 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class PasswordBoxHandler : iosControl<UITextField, PasswordBox>, IPasswordBox
+	public class PasswordBoxHandler : IosControl<UITextField, PasswordBox>, IPasswordBox
 	{
 		public override UITextField CreateControl()
 		{
 			return new UITextField();
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return Size.Max(base.GetNaturalSize(availableSize), new Size(60, 0));
+			return SizeF.Max(base.GetNaturalSize(availableSize), new SizeF(60, 0));
 		}
 
 		protected override void Initialize()

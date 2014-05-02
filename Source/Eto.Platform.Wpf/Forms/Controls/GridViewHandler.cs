@@ -1,22 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using Eto.Forms;
-using System.Collections;
 using System.Collections.ObjectModel;
-using Eto.Platform.Wpf.Forms.Menu;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<swc.DataGrid, GridView>, IGridView
 	{
 		IDataStore store;
-
-		public GridViewHandler ()
-		{
-		}
 
 		protected override void Initialize ()
 		{
@@ -26,8 +16,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		protected override object GetItemAtRow (int row)
 		{
-			if (store == null) return null;
-			return store[row];
+			return store == null ? null : store[row];
 		}
 
 		public IDataStore DataStore
@@ -36,17 +25,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				store = value;
-				// must use observable collection for editing
-				if (store is ObservableCollection<object>)
-					Control.ItemsSource = store as ObservableCollection<object>;
+				// must use observable collection for editing and collection update notifications
+				var source = store as ObservableCollection<object>;
+				if (source != null)
+					Control.ItemsSource = source;
 				else
-					Control.ItemsSource = new ObservableCollection<object> (store.AsEnumerable());
+					Control.ItemsSource = new ObservableCollection<object>(store.AsEnumerable());
 			}
 		}
 
 		public bool ShowCellBorders
 		{
-			set { } // TODO
+			get { return Control.GridLinesVisibility != swc.DataGridGridLinesVisibility.None; }
+			set { Control.GridLinesVisibility = value ? swc.DataGridGridLinesVisibility.All : swc.DataGridGridLinesVisibility.None; }
 		}
 	}
 }

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using mwc = Xceed.Wpf.Toolkit;
@@ -20,6 +17,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new mwc.WatermarkTextBox();
 		}
 
+		protected override void PostInitialize()
+		{
+			base.PostInitialize();
+			Control.GotKeyboardFocus += Control_GotKeyboardFocus;
+		}
+
+		void Control_GotKeyboardFocus(object sender, sw.Input.KeyboardFocusChangedEventArgs e)
+		{
+			Control.SelectAll();
+			Control.GotKeyboardFocus -= Control_GotKeyboardFocus;
+		}
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
@@ -28,17 +36,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override bool UseMousePreview { get { return true; } }
 
-		public override void AttachEvent (string handler)
+		public override bool UseKeyPreview { get { return true; } }
+
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
-				case TextBox.TextChangedEvent:
+			switch (id) {
+				case TextControl.TextChangedEvent:
 					Control.TextChanged += delegate {
 						if (!textChanging)
 							Widget.OnTextChanged (EventArgs.Empty);
 					};
 					break;
 				default:
-					base.AttachEvent (handler);
+					base.AttachEvent (id);
 					break;
 			}
 		}

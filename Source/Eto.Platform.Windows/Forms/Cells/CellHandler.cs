@@ -22,9 +22,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 		object GetCellValue (object dataItem);
 	}
 	
-	public abstract class CellHandler<T, W> : WidgetHandler<T, W>, ICell, ICellHandler
-		where T: swf.DataGridViewCell
-		where W: Cell
+	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ICell, ICellHandler
+		where TControl: swf.DataGridViewCell
+		where TWidget: Cell
 	{
 		swf.DataGridViewCell ICellHandler.Control {
 			get { return Control; }
@@ -56,18 +56,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		protected bool MouseClick (swf.MouseEventArgs e, int rowIndex)
 		{
-			if (CellConfig != null)
-				return CellConfig.MouseClick (e, rowIndex);
-			else
-				return false;
+			return CellConfig != null && CellConfig.MouseClick(e, rowIndex);
 		}
 
 		protected int GetRowOffset (int row)
 		{
-			if (CellConfig != null)
-				return CellConfig.GetRowOffset (row);
-			else
-				return 0;
+			return CellConfig != null ? CellConfig.GetRowOffset(row) : 0;
 		}
 
 		public abstract void SetCellValue (object dataItem, object value);

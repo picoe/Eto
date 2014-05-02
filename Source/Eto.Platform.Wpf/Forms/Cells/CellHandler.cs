@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
@@ -20,9 +16,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		swc.DataGridColumn Control { get; }
 	}
 
-	public abstract class CellHandler<T,W> : WidgetHandler<T, W>, ICellHandler
-		where T: swc.DataGridColumn
-		where W: Cell
+	public abstract class CellHandler<TControl,TWidget> : WidgetHandler<TControl, TWidget>, ICellHandler
+		where TControl: swc.DataGridColumn
+		where TWidget: Cell
 	{
 		public ICellContainerHandler ContainerHandler { get; set; }
 
@@ -38,10 +34,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public sw.FrameworkElement SetupCell (sw.FrameworkElement defaultContent)
 		{
-			if (ContainerHandler != null)
-				return ContainerHandler.SetupCell (this, defaultContent);
-			else
-				return defaultContent;
+			return ContainerHandler != null ? ContainerHandler.SetupCell(this, defaultContent) : defaultContent;
 		}
 	}
 }

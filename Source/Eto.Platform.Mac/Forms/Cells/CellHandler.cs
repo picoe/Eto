@@ -1,8 +1,6 @@
-using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
@@ -21,7 +19,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		float GetPreferredSize (object value, System.Drawing.SizeF cellSize, int row, object dataItem);
 		
-		void HandleEvent (string handler);
+		void HandleEvent (string handler, bool defaultEvent = false);
 
 		void SetBackgroundColor (NSCell cell, Color color);
 
@@ -34,9 +32,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		bool Editable { get; set; }
 	}
 	
-	public abstract class CellHandler<T, W> : MacObject<T, W>, ICell, ICellHandler
-		where T: NSCell
-		where W: Cell
+	public abstract class CellHandler<TControl, TWidget> : MacObject<TControl, TWidget>, ICell, ICellHandler
+		where TControl: NSCell
+		where TWidget: Cell
 	{
 		public IDataColumnHandler ColumnHandler { get; set; }
 		NSCell copy;

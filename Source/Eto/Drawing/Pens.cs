@@ -11,7 +11,7 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class Pens
 	{
-		static object cacheKey = new object ();
+		static readonly object cacheKey = new object ();
 		
 		static Pen GetPen (Generator generator, Color color, float thickness = 1f, DashStyle dashStyle = null)
 		{
@@ -55,6 +55,12 @@ namespace Eto.Drawing
 				cache.Clear ();
 			}
 		}
+
+		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #00000000</summary>
+		public static Pen Transparent(Generator generator = null)
+		{
+			return GetPen(generator, Colors.Transparent);
+		}
 		
 		// Red colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFCD5C5C</summary>
@@ -93,9 +99,9 @@ namespace Eto.Drawing
 			return GetPen (generator, Colors.Crimson);
 		}
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFB22222</summary>
-		public static Pen FireBrick (Generator generator = null)
+		public static Pen Firebrick (Generator generator = null)
 		{
-			return GetPen (generator, Colors.FireBrick);
+			return GetPen (generator, Colors.Firebrick);
 		}
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FF8B0000</summary>
 		public static Pen DarkRed (Generator generator = null)

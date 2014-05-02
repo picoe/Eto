@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
@@ -11,7 +7,7 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class GroupBoxHandler : WpfDockContainer<swc.GroupBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : WpfPanel<swc.GroupBox, GroupBox>, IGroupBox
 	{
 		Font font;
 		swc.Label Header { get; set; }
@@ -37,7 +33,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public Font Font
 		{
 			get { return font; }
-			set { font = FontHandler.Apply(Header, value); }
+			set { font = FontHandler.Apply(Header, r => AccessText.TextDecorations = r, value); }
 		}
 
 		public string Text

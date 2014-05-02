@@ -30,11 +30,11 @@ namespace Eto.Forms
 	{
 		new IClipboard Handler { get { return (IClipboard)base.Handler; } }
 		
-		public Clipboard ()
-			: this(Generator.Current)
+		public Clipboard()
+			: this((Generator)null)
 		{
 		}
-		
+
 		public Clipboard (Generator generator)
 			: base(generator, typeof(IClipboard))
 		{
@@ -46,7 +46,7 @@ namespace Eto.Forms
 		
 		public void SetDataStream (Stream stream, string type)
 		{
-			byte[] buffer = new byte[stream.Length];
+			var buffer = new byte[stream.Length];
 			if (stream.CanSeek && stream.Position != 0)
 				stream.Seek (0, SeekOrigin.Begin);
 			stream.Read (buffer, 0, buffer.Length);
@@ -66,10 +66,7 @@ namespace Eto.Forms
 		public Stream GetDataStream (string type)
 		{
 			var buffer = GetData (type);
-			if (buffer != null)
-				return new MemoryStream (buffer, false);
-			else
-				return null;
+			return buffer == null ? null : new MemoryStream(buffer, false);
 		}
 		
 		public void SetString (string value, string type)

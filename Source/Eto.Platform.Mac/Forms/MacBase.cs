@@ -6,27 +6,30 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoTouch.ObjCRuntime;
 using MonoTouch.Foundation;
+using Eto.Forms;
 
 #if IOS
 using NSView = MonoTouch.UIKit.UIView;
 #endif
-
 namespace Eto.Platform.Mac.Forms
 {
-	public interface IMacAutoSizing
-	{
-		bool AutoSize { get; }
-
-		Size GetPreferredSize(Size availableSize);
-	}
-
-	public interface IMacContainerControl
+	public interface IMacControlHandler
 	{
 		NSView ContainerControl { get; }
+
+		Size PositionOffset { get; }
+
+		Size MinimumSize { get; set; }
+
+		bool IsEventHandled(string eventName);
 
 		NSView ContentControl { get; }
 
 		NSView EventControl { get; }
+
+		bool AutoSize { get; }
+
+		SizeF GetPreferredSize(SizeF availableSize);
 	}
 
 	[Register("ObserverHelper")]
@@ -35,7 +38,7 @@ namespace Eto.Platform.Mac.Forms
 		bool isNotification;
 		bool isControl;
 
-		public Action<ObserverActionArgs> Action { get; set; }
+		public Action<ObserverActionEventArgs> Action { get; set; }
 
 		public NSString KeyPath { get; set; }
 
@@ -51,17 +54,17 @@ namespace Eto.Platform.Mac.Forms
 
 		public object Handler { get { return handler != null ? handler.Target : null; } set { handler = new WeakReference(value); } }
 
-		static Selector selPerformAction = new Selector("performAction:");
+		static readonly Selector selPerformAction = new Selector("performAction:");
 
 		[Export("performAction:")]
 		public void PerformAction(NSNotification notification)
 		{
-			Action(new ObserverActionArgs(this, notification));
+			Action(new ObserverActionEventArgs(this, notification));
 		}
 
 		public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
 		{
-			Action(new ObserverActionArgs(this, null));
+			Action(new ObserverActionEventArgs(this, null));
 		}
 
 		public void AddToNotificationCenter()
@@ -113,11 +116,11 @@ namespace Eto.Platform.Mac.Forms
 		}
 	}
 
-	public class ObserverActionArgs : EventArgs
+	public class ObserverActionEventArgs : EventArgs
 	{
-		ObserverHelper observer;
+		readonly ObserverHelper observer;
 
-		public ObserverActionArgs(ObserverHelper observer, NSNotification notification)
+		public ObserverActionEventArgs(ObserverHelper observer, NSNotification notification)
 		{
 			this.observer = observer;
 			this.Notification = notification;
@@ -139,9 +142,9 @@ namespace Eto.Platform.Mac.Forms
 		WeakReference WeakHandler { get; }
 	}
 
-	public class MacBase<T, W> : WidgetHandler<T, W>
-		where T: class
-		where W: InstanceWidget
+	public class MacBase<TControl, TWidget> : WidgetHandler<TControl, TWidget>
+		where TControl: class
+		where TWidget: InstanceWidget
 	{
 		List<ObserverHelper> observers;
 
@@ -168,7 +171,7 @@ namespace Eto.Platform.Mac.Forms
 			ObjCExtensions.AddMethod(classHandle, selector, action, arguments);
 		}
 
-		public NSObject AddObserver(NSString key, Action<ObserverActionArgs> action, NSObject control)
+		public NSObject AddObserver(NSString key, Action<ObserverActionEventArgs> action, NSObject control)
 		{
 			if (observers == null)
 				observers = new List<ObserverHelper>();
@@ -177,7 +180,7 @@ namespace Eto.Platform.Mac.Forms
 				Action = action,
 				KeyPath = key,
 				Control = control,
-				Widget = this.Widget,
+				Widget = Widget,
 				Handler = this
 			};
 			observer.AddToNotificationCenter();
@@ -185,7 +188,7 @@ namespace Eto.Platform.Mac.Forms
 			return observer;
 		}
 
-		public void AddControlObserver(NSString key, Action<ObserverActionArgs> action, NSObject control)
+		public void AddControlObserver(NSString key, Action<ObserverActionEventArgs> action, NSObject control)
 		{
 			if (observers == null)
 				observers = new List<ObserverHelper>();
@@ -194,7 +197,7 @@ namespace Eto.Platform.Mac.Forms
 				Action = action,
 				KeyPath = key,
 				Control = control,
-				Widget = this.Widget,
+				Widget = Widget,
 				Handler = this
 			};
 			observer.AddToControl();
@@ -211,6 +214,19 @@ namespace Eto.Platform.Mac.Forms
 				}
 				observers = null;
 			}
+
+#if OSX
+			// HACK: Remove when Dispose() actually works!
+			if (disposing && DisposeControl)
+			{
+				var obj = Control as NSObject;
+				if (obj != null)
+				{
+					obj.SafeDispose();
+					Control = null;
+				}
+			}
+#endif
 
 			base.Dispose(disposing);
 		}

@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swm = System.Windows.Media;
 using sw = System.Windows;
 using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
-using System.Runtime.InteropServices;
 using Eto.Platform.Wpf.Forms;
 using System.IO;
 
@@ -19,17 +15,17 @@ namespace Eto.Platform.Wpf.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base (image, data, scanWidth, bitsPerPixel, controlObject)
+		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
-		public override uint TranslateArgbToData (uint argb)
+		public override uint TranslateArgbToData(uint argb)
 		{
 			return argb;
 		}
 
-		public override uint TranslateDataToArgb (uint bitmapData)
+		public override uint TranslateDataToArgb(uint bitmapData)
 		{
 			return bitmapData;
 		}
@@ -42,35 +38,36 @@ namespace Eto.Platform.Wpf.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, IBitmap, IWpfImage
 	{
-		int stride;
-
-		public BitmapHandler ()
+		public BitmapHandler()
 		{
 		}
 
-		public BitmapHandler (swm.Imaging.BitmapSource source)
+		public BitmapHandler(swm.Imaging.BitmapSource source)
 		{
 			this.Control = source;
 		}
 
-		public void Create (string fileName)
+		public void Create(string fileName)
 		{
-			ApplicationHandler.InvokeIfNecessary (() => {
-				Control = swmi.BitmapFrame.Create (new Uri (fileName), swmi.BitmapCreateOptions.None, swmi.BitmapCacheOption.OnLoad);
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
+				Control = swmi.BitmapFrame.Create(new Uri(fileName), swmi.BitmapCreateOptions.None, swmi.BitmapCacheOption.OnLoad);
 			});
 		}
 
-		public void Create (System.IO.Stream stream)
+		public void Create(Stream stream)
 		{
-			ApplicationHandler.InvokeIfNecessary (() => {
-				Control = swmi.BitmapFrame.Create (stream, swmi.BitmapCreateOptions.None, swmi.BitmapCacheOption.OnLoad);
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
+				Control = swmi.BitmapFrame.Create(stream, swmi.BitmapCreateOptions.None, swmi.BitmapCacheOption.OnLoad);
 			});
 		}
 
-		public void Create (int width, int height, PixelFormat pixelFormat)
+		public void Create(int width, int height, PixelFormat pixelFormat)
 		{
 			swm.PixelFormat format;
-			switch (pixelFormat) {
+			switch (pixelFormat)
+			{
 				/*case PixelFormat.Format16bppRgb555:
 					format = swm.PixelFormats.Bgr555;
 					break;*/
@@ -84,153 +81,165 @@ namespace Eto.Platform.Wpf.Drawing
 					format = swm.PixelFormats.Pbgra32;
 					break;
 				default:
-					throw new NotSupportedException ();
+					throw new NotSupportedException();
 			}
-			stride = (width * format.BitsPerPixel + 7) / 8;
-
-			var bufferSize = stride * height;
-			ApplicationHandler.InvokeIfNecessary (() => {
-				var bf = new swm.Imaging.WriteableBitmap (width, height, 96, 96, format, null);
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
+				var bf = new swm.Imaging.WriteableBitmap(width, height, 96, 96, format, null);
 				Control = bf;
 			});
-			
+
 		}
 
-		public void Create (int width, int height, Graphics graphics)
+		public void Create(int width, int height, Graphics graphics)
 		{
-			Create (width, height, PixelFormat.Format32bppRgba);
+			Create(width, height, PixelFormat.Format32bppRgba);
 		}
 
-		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
+		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
-			ApplicationHandler.InvokeIfNecessary (() => {
-				var source = image.ToWpf ();
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
+				var source = image.ToWpf();
 				// use drawing group to allow for better quality scaling
-				var group = new swm.DrawingGroup ();
-				swm.RenderOptions.SetBitmapScalingMode (group, interpolation.ToWpf ());
-				group.Children.Add (new swm.ImageDrawing (source, new sw.Rect (0, 0, width, height)));
+				var group = new swm.DrawingGroup();
+				swm.RenderOptions.SetBitmapScalingMode(group, interpolation.ToWpf());
+				group.Children.Add(new swm.ImageDrawing(source, new sw.Rect(0, 0, width, height)));
 
-				var drawingVisual = new swm.DrawingVisual ();
-				using (var drawingContext = drawingVisual.RenderOpen ())
-					drawingContext.DrawDrawing (group);
+				var drawingVisual = new swm.DrawingVisual();
+				using (var drawingContext = drawingVisual.RenderOpen())
+					drawingContext.DrawDrawing(group);
 
-				var resizedImage = new swm.Imaging.RenderTargetBitmap (width, height, source.DpiX, source.DpiY, swm.PixelFormats.Default);
-				resizedImage.Render (drawingVisual);
+				var resizedImage = new swm.Imaging.RenderTargetBitmap(width, height, source.DpiX, source.DpiY, swm.PixelFormats.Default);
+				resizedImage.Render(drawingVisual);
 				Control = resizedImage;
 			});
 		}
 
-		public void SetBitmap (swm.Imaging.BitmapSource bitmap)
+		public void SetBitmap(swm.Imaging.BitmapSource bitmap)
 		{
-			this.Control = bitmap;
+			Control = bitmap;
 		}
 
-		public Color GetPixel (int x, int y)
+		public Color GetPixel(int x, int y)
 		{
-			var rect = new sw.Int32Rect (x, y, 1, 1);
-			
-			var stride = (rect.Width * Control.Format.BitsPerPixel + 7) / 8;
-			
-			var pixels = new byte[stride * rect.Height];
-			
-			Control.CopyPixels (rect, pixels, stride: stride, offset: 0);
-			
+			var rect = new sw.Int32Rect(x, y, 1, 1);
+
+			var pixelStride = (rect.Width * Control.Format.BitsPerPixel + 7) / 8;
+
+			var pixels = new byte[pixelStride * rect.Height];
+
+			Control.CopyPixels(rect, pixels, stride: pixelStride, offset: 0);
+
 			if (Control.Format == swm.PixelFormats.Rgb24)
-				return Color.FromArgb (red: pixels [0], green: pixels [1], blue: pixels [2]);
-			else if (Control.Format == swm.PixelFormats.Bgr32)
-				return Color.FromArgb (blue: pixels [0], green: pixels [1], red: pixels [2]);
-			else if (Control.Format == swm.PixelFormats.Pbgra32)
-				return Color.FromArgb (blue: pixels [0], green: pixels [1], red: pixels [2], alpha: pixels [3]);
-			else
-				throw new NotSupportedException ();
+				return Color.FromArgb(red: pixels[0], green: pixels[1], blue: pixels[2]);
+			if (Control.Format == swm.PixelFormats.Bgr32)
+				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2]);
+			if (Control.Format == swm.PixelFormats.Pbgra32)
+				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
+			throw new NotSupportedException();
 		}
 
-		public BitmapData Lock ()
+		public BitmapData Lock()
 		{
 			BitmapDataHandler handler = null;
-			ApplicationHandler.InvokeIfNecessary (() => {
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
 				var wb = Control as swm.Imaging.WriteableBitmap;
-				if (wb != null) {
-					wb.Lock ();
-					handler = new BitmapDataHandler (Widget, wb.BackBuffer, (int)stride, Control.Format.BitsPerPixel, Control);
-				} else {
-					wb = new swm.Imaging.WriteableBitmap (Control);
-					wb.Lock ();
+				if (wb != null)
+				{
+					wb.Lock();
+					handler = new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, Control);
+				}
+				else
+				{
+					wb = new swm.Imaging.WriteableBitmap(Control);
+					wb.Lock();
 					Control = wb;
-					handler = new BitmapDataHandler (Widget, wb.BackBuffer, (int)stride, Control.Format.BitsPerPixel, wb);
+					handler = new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, wb);
 				}
 			});
 			return handler;
 		}
 
-		public void Unlock (BitmapData bitmapData)
+		public void Unlock(BitmapData bitmapData)
 		{
-			ApplicationHandler.InvokeIfNecessary (() => {
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
 				var wb = Control as swm.Imaging.WriteableBitmap;
-				if (wb != null) {
+				if (wb != null)
+				{
 
-					wb.AddDirtyRect (new sw.Int32Rect (0, 0, Size.Width, Size.Height));
-					wb.Unlock ();
+					wb.AddDirtyRect(new sw.Int32Rect(0, 0, Size.Width, Size.Height));
+					wb.Unlock();
 				}
 			});
 		}
 
-		public void Save (System.IO.Stream stream, ImageFormat format)
+		public void Save(Stream stream, ImageFormat format)
 		{
-			ApplicationHandler.InvokeIfNecessary (() => {
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
 				swm.Imaging.BitmapEncoder encoder;
-				switch (format) {
-				case ImageFormat.Png:
-					encoder = new swm.Imaging.PngBitmapEncoder ();
-					break;
-				case ImageFormat.Gif:
-					encoder = new swm.Imaging.GifBitmapEncoder ();
-					break;
-				case ImageFormat.Bitmap:
-					encoder = new swm.Imaging.BmpBitmapEncoder ();
-					break;
-				case ImageFormat.Jpeg:
-					encoder = new swm.Imaging.JpegBitmapEncoder ();
-					break;
-				case ImageFormat.Tiff:
-					encoder = new swm.Imaging.TiffBitmapEncoder ();
-					break;
-				default:
-					throw new NotSupportedException ();
+				switch (format)
+				{
+					case ImageFormat.Png:
+						encoder = new swm.Imaging.PngBitmapEncoder();
+						break;
+					case ImageFormat.Gif:
+						encoder = new swm.Imaging.GifBitmapEncoder();
+						break;
+					case ImageFormat.Bitmap:
+						encoder = new swm.Imaging.BmpBitmapEncoder();
+						break;
+					case ImageFormat.Jpeg:
+						encoder = new swm.Imaging.JpegBitmapEncoder();
+						break;
+					case ImageFormat.Tiff:
+						encoder = new swm.Imaging.TiffBitmapEncoder();
+						break;
+					default:
+						throw new NotSupportedException();
 				}
-				encoder.Frames.Add (swmi.BitmapFrame.Create (Control));
-				encoder.Save (stream);
+				encoder.Frames.Add(swmi.BitmapFrame.Create(Control));
+				encoder.Save(stream);
 			});
 		}
 
 		public Size Size
 		{
-			get { return new Size (Control.PixelWidth, Control.PixelHeight); }
+			get { return new Size(Control.PixelWidth, Control.PixelHeight); }
 		}
 
-		public swmi.BitmapSource GetImageClosestToSize (int? width)
+		public swmi.BitmapSource GetImageClosestToSize(int? width)
 		{
 			return Control;
 		}
 
-		public Bitmap Clone (Rectangle? rectangle = null)
+		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			swmi.BitmapSource clone = null;
-			ApplicationHandler.InvokeIfNecessary (() => {
-
-				if (rectangle != null) {
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
+				if (rectangle != null)
+				{
 					var rect = rectangle.Value;
-					int stride = Control.PixelWidth * (Control.Format.BitsPerPixel / 8);
-					byte[] data = new byte[stride * Control.PixelHeight];
-					Control.CopyPixels (data, stride, 0);
-					var target = new swmi.WriteableBitmap (rect.Width, rect.Height, Control.DpiX, Control.DpiY, Control.Format, null);
-					target.WritePixels (rect.ToWpfInt32 (), data, stride, destinationX: 0, destinationY: 0);
+					var data = new byte[Stride * Control.PixelHeight];
+					Control.CopyPixels(data, Stride, 0);
+					var target = new swmi.WriteableBitmap(rect.Width, rect.Height, Control.DpiX, Control.DpiY, Control.Format, null);
+					target.WritePixels(rect.ToWpfInt32(), data, Stride, destinationX: 0, destinationY: 0);
 					clone = target;
-				} else
-					clone = Control.Clone ();
+				}
+				else
+					clone = Control.Clone();
 			});
 
-			return new Bitmap (Generator, new BitmapHandler (clone));
+			return new Bitmap(Generator, new BitmapHandler(clone));
+		}
+
+		int Stride
+		{
+			get { return (Control.PixelWidth * Control.Format.BitsPerPixel + 7) / 8; }
 		}
 	}
 }

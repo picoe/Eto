@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 #if OSX
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Drawing
 #elif IOS
@@ -16,7 +15,7 @@ namespace Eto.Platform.iOS.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, IFonts
 	{
-		string [] availableFontFamilies;
+		readonly string [] availableFontFamilies;
 
 		public FontsHandler ()
 		{
@@ -29,7 +28,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
-			get { return availableFontFamilies.Select (r => new FontFamily(this.Generator, new FontFamilyHandler (r))); }
+			get { return availableFontFamilies.Select (r => new FontFamily(Generator, new FontFamilyHandler (r))); }
 		}
 
 		public bool FontFamilyAvailable (string fontFamily)

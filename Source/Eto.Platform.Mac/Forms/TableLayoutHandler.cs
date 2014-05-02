@@ -2,15 +2,13 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
-using System.Diagnostics;
 using sd = System.Drawing;
 
 #if IOS
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
-using IMacView = Eto.Platform.iOS.Forms.IiosView;
-using MacContainer = Eto.Platform.iOS.Forms.iosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
-
+using IMacView = Eto.Platform.iOS.Forms.IIosView;
+using MacContainer = Eto.Platform.iOS.Forms.IosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
 
 #elif OSX
 using MonoMac.AppKit;
@@ -32,7 +30,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		public Eto.Drawing.Size Spacing
+		public Size Spacing
 		{
 			get { return spacing; }
 			set
@@ -67,8 +65,8 @@ namespace Eto.Platform.Mac.Forms
 		{
 			base.Initialize();
 
-			this.Spacing = TableLayout.DefaultSpacing;
-			this.Padding = TableLayout.DefaultPadding;
+			Spacing = TableLayout.DefaultSpacing;
+			Padding = TableLayout.DefaultPadding;
 			Widget.SizeChanged += HandleSizeChanged;
 		}
 
@@ -84,17 +82,16 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoadComplete(e);
+			base.OnLoad(e);
 			LayoutChildren();
 		}
 
-		public override Size GetPreferredSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var baseSize = base.GetPreferredSize(availableSize);
 			if (views == null)
-				return baseSize;
+				return SizeF.Empty;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
@@ -117,7 +114,7 @@ namespace Eto.Platform.Mac.Forms
 					var view = views[y, x];
 					if (view != null && view.Visible)
 					{
-						var size = view.GetPreferredSize(availableSize);
+						var size = view.GetPreferredSize(Size.MaxValue);
 						if (size.Width > widths[x])
 						{
 							requiredx += size.Width - widths[x];
@@ -130,12 +127,14 @@ namespace Eto.Platform.Mac.Forms
 						}
 					}
 				}
-			return Size.Max(baseSize, new Size((int)requiredx, (int)requiredy));
+			return new SizeF(requiredx, requiredy);
 		}
 
 		public override void LayoutChildren()
 		{
 			if (!Widget.Loaded)
+				return;
+			if (NeedsQueue())
 				return;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
@@ -236,7 +235,7 @@ namespace Eto.Platform.Mac.Forms
 						frame.Height = heights[y];
 						frame.X = Math.Max(0, startx);
 						frame.Y = flipped ? starty : controlFrame.Height - starty - frame.Height;
-						if (frame != nsview.Frame)
+						if (frame != oldframe)
 							nsview.Frame = frame;
 						else if (oldframe.Right > oldFrameSize.Width || oldframe.Bottom > oldFrameSize.Height
 						         || frame.Right > oldFrameSize.Width || frame.Bottom > oldFrameSize.Height)

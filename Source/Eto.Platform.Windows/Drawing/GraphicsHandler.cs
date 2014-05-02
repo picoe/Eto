@@ -52,7 +52,7 @@ namespace Eto.Platform.Windows.Drawing
 			base.Dispose(disposing);
 		}
 		
-		public bool Antialias
+		public bool AntiAlias
 		{
 			get
 			{
@@ -81,6 +81,11 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			get { return Control.PixelOffsetMode.ToEto (); }
 			set { Control.PixelOffsetMode = value.ToSD (); }
+		}
+
+		public float PointsPerPixel
+		{
+			get { return 72f / Control.DpiX; }
 		}
 
 		public void CreateFromImage (Bitmap image)

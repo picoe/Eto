@@ -3,26 +3,35 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Actions;
-using System.ComponentModel;
 using MonoMac.ObjCRuntime;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.Mac.Forms
 {
 	public class ApplicationHandler : WidgetHandler<NSApplication, Application>, IApplication
 	{
+		bool attached;
+
+		internal static bool QueueResizing { get; set; }
+
 		public NSApplicationDelegate AppDelegate { get; set; }
-		
+
 		public bool AddFullScreenMenuItem { get; set; }
 
 		public bool AddPrintingMenuItems { get; set; }
-		
-		public static ApplicationHandler Instance {
-			get { return Application.Instance.Handler as ApplicationHandler; }
+
+		public bool AllowClosingMainForm { get; set; }
+
+		public static ApplicationHandler Instance
+		{
+			get { return Application.Instance == null ? null : Application.Instance.Handler as ApplicationHandler; }
 		}
 
 		public string BadgeLabel
 		{
-			get {
+			get
+			{
 				var badgeLabel = Control.DockTile.BadgeLabel;
 				return string.IsNullOrEmpty(badgeLabel) ? null : badgeLabel;
 			}
@@ -32,204 +41,242 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public ApplicationHandler ()
+		public bool ShouldCloseForm(Window window, bool wasClosed)
+		{
+			if (ReferenceEquals(window, Widget.MainForm))
+			{
+				if (AllowClosingMainForm && wasClosed)
+					Widget.MainForm = null;
+				return AllowClosingMainForm;
+			}
+
+			return true;
+		}
+
+		public ApplicationHandler()
 		{
 			Control = NSApplication.SharedApplication;
-			// until everything is marked as thread safe correctly in monomac
-			// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
-			NSApplication.CheckForIllegalCrossThreadCalls = false;
 		}
-		
-		static void restart_WillTerminate (object sender, EventArgs e)
+
+		static void restart_WillTerminate(object sender, EventArgs e)
 		{
 			// re-open after we terminate
-			var args = new string[] {
+			var args = new string[]
+			{
 				"-c",
 				"open \"$1\"", 
 				string.Empty,
 				NSBundle.MainBundle.BundlePath
 			};
-			NSTask.LaunchFromPath ("/bin/sh", args);
+			NSTask.LaunchFromPath("/bin/sh", args);
 		}
 
-		public void Invoke (System.Action action)
+		public void Invoke(Action action)
 		{
 			var thread = NSThread.Current;
 			if (thread != null && thread.IsMainThread)
-				action ();
-			else {
-				Control.InvokeOnMainThread (delegate {
-					action ();
-				});
+				action();
+			else
+			{
+				Control.InvokeOnMainThread(() => action());
 			}
 		}
 
-		public void AsyncInvoke (System.Action action)
+		public void AsyncInvoke(Action action)
 		{
-			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread)
-				action ();
-			else {
-				Control.BeginInvokeOnMainThread (delegate {
-					action ();
-				});
-			}
+			Control.BeginInvokeOnMainThread(() => action());
 		}
-		
-		public void Restart ()
+
+		public void Restart()
 		{
 			NSApplication.SharedApplication.WillTerminate += restart_WillTerminate;
-			NSApplication.SharedApplication.Terminate (AppDelegate);
+			NSApplication.SharedApplication.Terminate(AppDelegate);
 
 			// only get here if cancelled, remove event to restart
 			NSApplication.SharedApplication.WillTerminate -= restart_WillTerminate;
 		}
 
-		public void RunIteration ()
+		public void RunIteration()
 		{
-			NSApplication.SharedApplication.NextEvent (NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoop.NSDefaultRunLoopMode, true);
-		}
-		
-		
-		
-		public void Run (string[] args)
-		{
-			EtoBundle.Init();
-
-			if (Control.Delegate == null)
-				Control.Delegate = this.AppDelegate ?? new AppDelegate ();
-			NSApplication.Main (args);
-		}
-		
-		public void Initialize (NSApplicationDelegate appdelegate)
-		{
-			this.AppDelegate = appdelegate;
-			Widget.OnInitialized (EventArgs.Empty);	
+			NSApplication.SharedApplication.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoop.NSDefaultRunLoopMode, true);
 		}
 
-		public void Quit ()
+		public void Attach(object context)
 		{
-			NSApplication.SharedApplication.Terminate (AppDelegate);
+			attached = true;
 		}
-		
-		public void Open (string url)
+
+		public void OnMainFormChanged()
 		{
-			NSWorkspace.SharedWorkspace.OpenUrl (new NSUrl (url));
 		}
-		
-		public override void AttachEvent (string handler)
+
+		public void Run(string[] args)
 		{
-			switch (handler) {
-			case Application.TerminatingEvent:
+			if (!attached)
+			{
+				EtoBundle.Init();
+
+				if (Control.Delegate == null)
+					Control.Delegate = AppDelegate ?? new AppDelegate();
+				NSApplication.Main(args);
+			}
+			else
+				Initialize(Control.Delegate);
+		}
+
+		public void Initialize(NSApplicationDelegate appdelegate)
+		{
+			AppDelegate = appdelegate;
+			Widget.OnInitialized(EventArgs.Empty);	
+		}
+
+		public void Quit()
+		{
+			NSApplication.SharedApplication.Terminate(AppDelegate);
+		}
+
+		public void Open(string url)
+		{
+			NSWorkspace.SharedWorkspace.OpenUrl(new NSUrl(url));
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Application.TerminatingEvent:
 				// handled by app delegate
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
-		
+
 		public void EnableFullScreen()
 		{
-			if (Control.RespondsToSelector (new Selector ("setPresentationOptions:"))) {
+			if (Control.RespondsToSelector(new Selector("setPresentationOptions:")))
+			{
 				AddFullScreenMenuItem = true;
-				Control.PresentationOptions |= NSApplicationPresentationOptions.FullScreen;
 			}
 		}
-		
-		public void GetSystemActions (GenerateActionArgs args, bool addStandardItems)
+
+		public IEnumerable<Command> GetSystemCommands()
 		{
-			args.Actions.AddButton ("mac_hide", string.Format ("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate {
-				NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
-			}, Key.H | Key.Application);
-			args.Actions.AddButton ("mac_hideothers", "Hide Others|Hide Others|Hides all other application windows", delegate {
-				NSApplication.SharedApplication.HideOtherApplications (NSApplication.SharedApplication);
-			}, Key.H | Key.Application | Key.Alt);
-			args.Actions.AddButton ("mac_showall", "Show All|Show All|Show All Windows", delegate {
-				NSApplication.SharedApplication.UnhideAllApplications (NSApplication.SharedApplication);
-			});
+			yield return new Command((sender, e) => NSApplication.SharedApplication.Hide(NSApplication.SharedApplication))
+			{ 
+				ID = "mac_hide", 
+				MenuText = string.Format("Hide {0}", Widget.Name),
+				ToolBarText = "Hide",
+				ToolTip = string.Format("Hides the main {0} window", Widget.Name), 
+				Shortcut = Keys.H | Keys.Application
+			};
+
+			yield return new Command((sender, e) => NSApplication.SharedApplication.HideOtherApplications(NSApplication.SharedApplication))
+			{
+				ID = "mac_hideothers", 
+				MenuText = "Hide Others",
+				ToolBarText = "Hide Others",
+				ToolTip = "Hides all other application windows",
+				Shortcut = Keys.H | Keys.Application | Keys.Alt
+			};
+
+			yield return new Command((sender, e) => NSApplication.SharedApplication.UnhideAllApplications(NSApplication.SharedApplication))
+			{
+				ID = "mac_showall",
+				MenuText = "Show All",
+				ToolBarText = "Show All",
+				ToolTip = "Show All Windows"
+			};
+
+			yield return new MacCommand("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Shortcut = Keys.Application | Keys.M };
+			yield return new MacCommand("mac_performZoom", "Zoom", "performZoom:");
+			yield return new MacCommand("mac_performClose", "Close", "performClose:") { Shortcut = Keys.Application | Keys.W };
+			yield return new MacCommand("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:");
+			yield return new MacCommand("mac_cut", "Cut", "cut:") { Shortcut = Keys.Application | Keys.X };
+			yield return new MacCommand("mac_copy", "Copy", "copy:") { Shortcut = Keys.Application | Keys.C };
+			yield return new MacCommand("mac_paste", "Paste", "paste:") { Shortcut = Keys.Application | Keys.V };
+			yield return new MacCommand("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Shortcut = Keys.Application | Keys.Alt | Keys.Shift | Keys.V };
+			yield return new MacCommand("mac_delete", "Delete", "delete:");
+			yield return new MacCommand("mac_selectAll", "Select All", "selectAll:") { Shortcut = Keys.Application | Keys.A };
+			yield return new MacCommand("mac_undo", "Undo", "undo:") { Shortcut = Keys.Application | Keys.Z };
+			yield return new MacCommand("mac_redo", "Redo", "redo:") { Shortcut = Keys.Application | Keys.Shift | Keys.Z };
+			yield return new MacCommand("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Shortcut = Keys.Application | Keys.Control | Keys.F };
+			yield return new MacCommand("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Shortcut = Keys.Application | Keys.Shift | Keys.P };
+			yield return new MacCommand("mac_print", "Print...", "print:") { Shortcut = Keys.Application | Keys.P };
+		}
+
+		public void CreateStandardMenu(MenuItemCollection menu, IEnumerable<Command> commands)
+		{
+			var lookup = commands.ToLookup(r => r.ID);
+			var application = menu.GetSubmenu(Widget.Name ?? "Application", 100);
+			application.Items.AddSeparator(800);
+			application.Items.AddRange(lookup["mac_hide"], 800);
+			application.Items.AddRange(lookup["mac_hideothers"], 800);
+			application.Items.AddRange(lookup["mac_showall"], 800);
+			application.Items.AddSeparator(801);
+
+			var file = menu.GetSubmenu("&File", 100);
+			file.Items.AddSeparator(900);
+			file.Items.AddRange(lookup["mac_performClose"], 900);
+
+			if (AddPrintingMenuItems)
+			{
+				file.Items.AddSeparator(1000);
+				file.Items.AddRange(lookup["mac_runPageLayout"], 1000);
+				file.Items.AddRange(lookup["mac_print"], 1000);
+			}
+
+			var edit = menu.GetSubmenu("&Edit", 200);
+			edit.Items.AddSeparator(100);
+			edit.Items.AddRange(lookup["mac_undo"], 100);
+			edit.Items.AddRange(lookup["mac_redo"], 100);
+			edit.Items.AddSeparator(101);
 			
-			args.Actions.Add (new MacButtonAction ("mac_performMiniaturize", "Minimize", "performMiniaturize:"){ Accelerator = Key.Application | Key.M });
-			args.Actions.Add (new MacButtonAction ("mac_performZoom", "Zoom", "performZoom:"));
-			args.Actions.Add (new MacButtonAction ("mac_performClose", "Close", "performClose:") { Accelerator = Key.Application | Key.W });
-			args.Actions.Add (new MacButtonAction ("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:"));
-			args.Actions.Add (new MacButtonAction ("mac_cut", "Cut", "cut:") { Accelerator = Key.Application | Key.X });
-			args.Actions.Add (new MacButtonAction ("mac_copy", "Copy", "copy:") { Accelerator = Key.Application | Key.C });
-			args.Actions.Add (new MacButtonAction ("mac_paste", "Paste", "paste:") { Accelerator = Key.Application | Key.V });
-			args.Actions.Add (new MacButtonAction ("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Accelerator = Key.Application | Key.Alt | Key.Shift | Key.V });
-			args.Actions.Add (new MacButtonAction ("mac_delete", "Delete", "delete:"));
-			args.Actions.Add (new MacButtonAction ("mac_selectAll", "Select All", "selectAll:") { Accelerator = Key.Application | Key.A });
-			args.Actions.Add (new MacButtonAction ("mac_undo", "Undo", "undo:") { Accelerator = Key.Application | Key.Z });
-			args.Actions.Add (new MacButtonAction ("mac_redo", "Redo", "redo:") { Accelerator = Key.Application | Key.Shift | Key.Z });
-			args.Actions.Add (new MacButtonAction ("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Key.Application | Key.Control | Key.F });
-			args.Actions.Add (new MacButtonAction ("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Accelerator = Key.Application | Key.Shift | Key.P });
-			args.Actions.Add (new MacButtonAction ("mac_print", "Print...", "print:") { Accelerator = Key.Application | Key.P });
+			edit.Items.AddSeparator(200);
+			edit.Items.AddRange(lookup["mac_cut"], 200);
+			edit.Items.AddRange(lookup["mac_copy"], 200);
+			edit.Items.AddRange(lookup["mac_paste"], 200);
+			edit.Items.AddRange(lookup["mac_delete"], 200);
+			edit.Items.AddRange(lookup["mac_selectAll"], 200);
+			edit.Items.AddSeparator(201);
+			
+			var window = menu.GetSubmenu("&Window", 900);
+			window.Items.AddSeparator(100);
+			window.Items.AddRange(lookup["mac_performMiniaturize"], 100);
+			window.Items.AddRange(lookup["mac_performZoom"], 100);
+			window.Items.AddSeparator(101);
 
-			if (addStandardItems) {
-				var application = args.Menu.GetSubmenu (Widget.Name ?? "Application", 100);
-				application.Actions.AddSeparator (800);
-				application.Actions.Add ("mac_hide", 800);
-				application.Actions.Add ("mac_hideothers", 800);
-				application.Actions.Add ("mac_showall", 800);
-				application.Actions.AddSeparator (801);
+			window.Items.AddSeparator(200);
+			window.Items.AddRange(lookup["mac_arrangeInFront"], 200);
+			window.Items.AddSeparator(201);
 
-				var file = args.Menu.GetSubmenu ("&File", 100);
-				file.Actions.AddSeparator (900);
-				file.Actions.Add ("mac_performClose", 900);
-
-				if (AddPrintingMenuItems) {
-					file.Actions.AddSeparator (1000);
-					file.Actions.Add ("mac_runPageLayout", 1000);
-					file.Actions.Add ("mac_print", 1000);
-				}
-
-				var edit = args.Menu.GetSubmenu ("&Edit", 200);
-				edit.Actions.AddSeparator (100);
-				edit.Actions.Add ("mac_undo", 100);
-				edit.Actions.Add ("mac_redo", 100);
-				edit.Actions.AddSeparator (101);
-				
-				edit.Actions.AddSeparator (200);
-				edit.Actions.Add ("mac_cut", 200);
-				edit.Actions.Add ("mac_copy", 200);
-				edit.Actions.Add ("mac_paste", 200);
-				edit.Actions.Add ("mac_delete", 200);
-				edit.Actions.Add ("mac_selectAll", 200);
-				edit.Actions.AddSeparator (201);
-				
-				var window = args.Menu.GetSubmenu ("&Window", 900);
-				window.Actions.AddSeparator (100);
-				window.Actions.Add ("mac_performMiniaturize", 100);
-				window.Actions.Add ("mac_performZoom", 100);
-				window.Actions.AddSeparator (101);
-
-				window.Actions.AddSeparator (200);
-				window.Actions.Add ("mac_arrangeInFront", 200);
-				window.Actions.AddSeparator (201);
-
-				if (AddFullScreenMenuItem) {
-					var view = args.Menu.GetSubmenu ("&View", 300);
-					view.Actions.AddSeparator (900);
-					view.Actions.Add ("mac_toggleFullScreen", 900);
-					view.Actions.AddSeparator (901);
-				}
-				
-				var help = args.Menu.GetSubmenu ("&Help", 900);
-
-				// add separator so help menu is always shown even when empty
-				help.Actions.AddSeparator (0);
+			if (AddFullScreenMenuItem)
+			{
+				var view = menu.GetSubmenu("&View", 300);
+				view.Items.AddSeparator(900);
+				view.Items.AddRange(lookup["mac_toggleFullScreen"], 900);
+				view.Items.AddSeparator(901);
 			}
+			
+			var help = menu.GetSubmenu("&Help", 900);
+			// always show help menu
+			help.Trim = false;
 		}
-		
-		public Key CommonModifier {
-			get {
-				return Key.Application;
+
+		public Keys CommonModifier
+		{
+			get
+			{
+				return Keys.Application;
 			}
 		}
 
-		public Key AlternateModifier {
-			get {
-				return Key.Alt;
+		public Keys AlternateModifier
+		{
+			get
+			{
+				return Keys.Alt;
 			}
 		}
 	}

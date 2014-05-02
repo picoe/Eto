@@ -14,7 +14,7 @@ namespace Eto.Forms
 	
 	public class MouseEventArgs : EventArgs
 	{
-		public MouseEventArgs(MouseButtons buttons, Key modifiers, PointF location, SizeF? delta = null)
+		public MouseEventArgs(MouseButtons buttons, Keys modifiers, PointF location, SizeF? delta = null)
 		{
 			this.Modifiers = modifiers;
 			this.Buttons = buttons;
@@ -23,7 +23,7 @@ namespace Eto.Forms
 			this.Delta = delta ?? SizeF.Empty;
 		}
 		
-		public Key Modifiers { get; private set; }
+		public Keys Modifiers { get; private set; }
 		
 		public MouseButtons Buttons { get; private set; }
 		

@@ -1,17 +1,11 @@
 using System;
-using System.IO;
-using json = Newtonsoft.Json;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Reflection;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
 
 namespace Eto.Json
 {
 	public class NamespaceManager
 	{
-		Dictionary<string, NamespaceInfo> namespaces = new Dictionary<string, NamespaceInfo>();
+		readonly Dictionary<string, NamespaceInfo> namespaces = new Dictionary<string, NamespaceInfo>();
 		
 		public NamespaceInfo DefaultNamespace { get; set; }
 		
@@ -25,10 +19,8 @@ namespace Eto.Json
 			if (string.IsNullOrEmpty (prefix))
 				return DefaultNamespace;
 			NamespaceInfo val;
-			if (namespaces.TryGetValue(prefix, out val))
-				return val;
+			return namespaces.TryGetValue(prefix, out val) ? val : null;
 			
-			return null;
 		}
 		
 		public Type LookupType (string typeName)
@@ -44,10 +36,8 @@ namespace Eto.Json
 			else
 				ns = DefaultNamespace;
 			
-			if (ns == null)
-				return null;
+			return ns != null ? ns.FindType(typeName) : null;
 			
-			return ns.FindType (typeName);
 		}
 	}
 }

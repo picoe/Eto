@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swd = System.Windows.Documents;
 using swc = System.Windows.Controls;
 using sp = System.Printing;
@@ -11,34 +7,49 @@ namespace Eto.Platform.Wpf.Forms.Printing
 {
 	public static class PrintSettingsExtensions
 	{
-		public static void SetEtoSettings (this swc.PrintDialog dialog, PrintSettings settings)
+		public static void SetEtoSettings(this swc.PrintDialog dialog, PrintSettings settings)
 		{
 			if (dialog == null) return;
-			if (settings != null) {
+			if (settings != null)
+			{
 				var handler = (PrintSettingsHandler)settings.Handler;
 				dialog.PrintQueue = handler.PrintQueue;
 				dialog.PrintTicket = handler.Control;
 				var maxPageRange = handler.MaximumPageRange;
 				dialog.MinPage = (uint)maxPageRange.Start;
 				dialog.MaxPage = (uint)maxPageRange.End;
-				dialog.PageRange = handler.SelectedPageRange.ToPageRange ();
-				dialog.PageRangeSelection = handler.PrintSelection.ToSWC ();
+				dialog.PageRange = handler.SelectedPageRange.ToPageRange();
+				dialog.PageRangeSelection = handler.PrintSelection.ToSWC();
 			}
-			else {
+			else
+			{
 				dialog.PrintQueue = null;
 				dialog.PrintTicket = null;
 				dialog.MinPage = 1;
 				dialog.MaxPage = 1;
 				dialog.PageRangeSelection = swc.PageRangeSelection.AllPages;
-				dialog.PageRange = new swc.PageRange (1, 1);
+				dialog.PageRange = new swc.PageRange(1, 1);
 			}
 		}
 
-		public static PrintSettings GetEtoSettings (this swc.PrintDialog dialog, Eto.Generator generator)
+		public static PrintSettings GetEtoSettings(this swc.PrintDialog dialog, Eto.Generator generator)
 		{
-			if (dialog == null) return null;
-			return new PrintSettings (generator, new PrintSettingsHandler (dialog));
+			return dialog == null ? null : new PrintSettings(generator, new PrintSettingsHandler(dialog));
 		}
+
+		public static void SetFromDialog(this PrintSettings settings, swc.PrintDialog dialog)
+		{
+			if (dialog == null) return;
+			if (settings != null)
+			{
+				var handler = (PrintSettingsHandler)settings.Handler;
+				handler.PrintQueue = dialog.PrintQueue;
+				handler.MaximumPageRange = new Range((int)dialog.MinPage, (int)dialog.MaxPage);
+				handler.SelectedPageRange = dialog.PageRange.ToEto();
+				handler.PrintSelection = dialog.PageRangeSelection.ToEto();
+			}
+		}
+
 	}
 
 	public class PrintSettingsHandler : WidgetHandler<sp.PrintTicket, PrintSettings>, IPrintSettings
@@ -47,21 +58,21 @@ namespace Eto.Platform.Wpf.Forms.Printing
 
 		public sp.PrintQueue PrintQueue { get; set; }
 
-		public PrintSettingsHandler (swc.PrintDialog dialog)
+		public PrintSettingsHandler(swc.PrintDialog dialog)
 		{
 			Control = dialog.PrintTicket;
 			PrintQueue = dialog.PrintQueue;
-			MaximumPageRange = new Range ((int)dialog.MinPage, (int)(dialog.MaxPage - dialog.MinPage) + 1);
-			SelectedPageRange = dialog.PageRange.ToEto ();
-			PrintSelection = dialog.PageRangeSelection.ToEto ();
+			MaximumPageRange = new Range((int)dialog.MinPage, (int)(dialog.MaxPage - dialog.MinPage) + 1);
+			SelectedPageRange = dialog.PageRange.ToEto();
+			PrintSelection = dialog.PageRangeSelection.ToEto();
 		}
 
-		public PrintSettingsHandler ()
+		public PrintSettingsHandler()
 		{
-			Control = new sp.PrintTicket ();
-			PrintQueue = new swc.PrintDialog ().PrintQueue;
-			MaximumPageRange = new Range (1, 1);
-			SelectedPageRange = new Range (1, 1);
+			Control = new sp.PrintTicket();
+			PrintQueue = new swc.PrintDialog().PrintQueue;
+			MaximumPageRange = new Range(1, 1);
+			SelectedPageRange = new Range(1, 1);
 			Collate = true;
 			PrintSelection = PrintSelection.AllPages;
 		}
@@ -94,8 +105,8 @@ namespace Eto.Platform.Wpf.Forms.Printing
 
 		public PageOrientation Orientation
 		{
-			get { return Control.PageOrientation.ToEto (); }
-			set { Control.PageOrientation = value.ToSP (); }
+			get { return Control.PageOrientation.ToEto(); }
+			set { Control.PageOrientation = value.ToSP(); }
 		}
 
 		public bool Reverse

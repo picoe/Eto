@@ -1,14 +1,8 @@
-using System;
-using MonoMac.Foundation;
 using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-using Eto.Forms;
 using Eto.Platform.Mac.Forms.Controls;
 using Eto.Platform.Mac.Forms;
 using Eto.Platform.Mac;
-using Eto.Drawing;
 using System.Diagnostics;
-using MonoMac.CoreGraphics;
 
 namespace Eto.Test.Mac
 {
@@ -48,7 +42,7 @@ namespace Eto.Test.Mac
 				handler.Control.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
 			});
 
-			Style.Add<ToolBarButtonHandler> (null, handler => {
+			Style.Add<ButtonToolItemHandler> (null, handler => {
 				// use standard textured/round buttons, and make the image grayscale
 				handler.UseStandardButton (grayscale: true);
 			});

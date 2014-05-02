@@ -4,29 +4,32 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using sd = SharpDX.Direct2D1;
+using sw = SharpDX.WIC;
+using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    public class IconHandler : WidgetHandler<object, Icon>, IIcon
+    public class IconHandler : ImageHandler<Icon>, IIcon, IWindowsIconSource
     {
-		public void Create(System.IO.Stream stream)
+		System.Drawing.Icon sdicon;
+		public System.Drawing.Icon GetIcon()
 		{
-			throw new NotImplementedException();
+			if (sdicon == null && Frames != null)
+			{
+				// TODO: Convert each bitmap in Frames to a single icon
+				sdicon = System.Drawing.Icon.FromHandle(Control.ToBitmap().ToSD().GetHicon());
+			}
+			return sdicon;
 		}
 
-		public void Create(string fileName)
+		public override void Reset()
 		{
-			throw new NotImplementedException();
-		}
-
-		public Size Size
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public object ControlObject
-		{
-			get { throw new NotImplementedException(); }
+			base.Reset();
+			if (sdicon != null)
+			{
+				sdicon.Dispose();
+				sdicon = null;
+			}
 		}
 	}
 }

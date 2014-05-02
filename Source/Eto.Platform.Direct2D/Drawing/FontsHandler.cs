@@ -9,43 +9,34 @@ using sw = SharpDX.DirectWrite;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    public class FontsHandler : WidgetHandler<Widget>, IFonts
-    {
-        private List<FontFamily> availableFontFamilies;
-        public IEnumerable<FontFamily> AvailableFontFamilies
-        {            
-            get 
-            {
-                if (availableFontFamilies != null)
-                {
-                    sw.FontCollection Control = null; // BUGBUG: TODO
-
-                    for (var i = 0;
-                        i < Control.FontFamilyCount;
-                        ++i)
-                    {
-                        availableFontFamilies.Add(
-                            new FontFamily(
-                                this.Generator,
-                                Control.GetFontFamily(
-                                    i)
-                                .FamilyNames
-                                // BUGBUG: TODO: uses the first locale
-                                .GetLocaleName(0))); 
-                    }
-                }
-                return availableFontFamilies;
-            }
-        }
-
-        public IFontFamily GetSystemFontFamily(string systemFontFamily)
-        {
-            throw new NotImplementedException();
-        }
+	/// <summary>
+	/// Handler for <see cref="IFonts"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class FontsHandler : WidgetHandler<Widget>, IFonts
+	{
+		FontFamily[] availableFontFamilies;
+		public IEnumerable<FontFamily> AvailableFontFamilies
+		{
+			get
+			{
+				if (availableFontFamilies == null)
+				{
+					var fonts = FontHandler.FontCollection;
+					availableFontFamilies = Enumerable.Range(0, fonts.FontFamilyCount)
+						.Select(r => fonts.GetFontFamily(r).FamilyNames.GetString(0))
+						.Distinct()
+						.Select(r => new FontFamily(Generator, r))
+						.ToArray();
+				}
+				return availableFontFamilies;
+			}
+		}
 
 		public bool FontFamilyAvailable(string fontFamily)
 		{
-			throw new NotImplementedException();
+			return AvailableFontFamilies.Any(r => string.Equals(r.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
 		}
 	}
 }

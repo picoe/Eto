@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Drawing
 {
@@ -40,19 +37,15 @@ namespace Eto.Drawing
 
 		static Image LoadImage (Stream stream)
 		{
-			if (stream != null)
-				return new Bitmap (stream);
-			else
-				return null;
+			return stream == null ? null : new Bitmap(stream);
 		}
 
 		static Image LoadImage (NamespaceInfo ns)
 		{
-			var isIcon = IsIcon (ns.Namespace);
+			var isIcon = IsIcon(ns.Namespace);
 			if (isIcon)
-				return Icon.FromResource (ns.Assembly, ns.Namespace);
-			else
-				return Bitmap.FromResource (ns.Namespace, ns.Assembly);
+				return Icon.FromResource(ns.Assembly, ns.Namespace);
+			return Bitmap.FromResource(ns.Namespace, ns.Assembly);
 		}
 
 		static Image LoadImage (string resourceName)
@@ -65,13 +58,12 @@ namespace Eto.Drawing
 			{
 				var fileName = resourceName;
 				if (fileName.StartsWith(FilePrefix, StringComparison.OrdinalIgnoreCase))
-					fileName = fileName.Substring (FilePrefix.Length);
-				if (!Path.IsPathRooted (fileName))
-					fileName = Path.Combine (EtoEnvironment.GetFolderPath (EtoSpecialFolder.ApplicationResources), fileName);
-				if (IsIcon (fileName))
-					return new Icon (fileName);
-				else
-					return new Bitmap (fileName);
+					fileName = fileName.Substring(FilePrefix.Length);
+				if (!Path.IsPathRooted(fileName))
+					fileName = Path.Combine(EtoEnvironment.GetFolderPath(EtoSpecialFolder.ApplicationResources), fileName);
+				if (IsIcon(fileName))
+					return new Icon(fileName);
+				return new Bitmap(fileName);
 			}
 		}
 
@@ -89,9 +81,7 @@ namespace Eto.Drawing
 				return LoadImage (ns);
 
 			var val = value as string;
-			if (val != null)
-				return LoadImage (val);
-			return null;
+			return val == null ? null : LoadImage(val);
 		}
 	}
 }

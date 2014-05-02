@@ -1,30 +1,41 @@
 using System;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
 	public class SeparatorMenuItemHandler : MenuHandler<Gtk.SeparatorMenuItem, SeparatorMenuItem>, ISeparatorMenuItem
 	{
-
 		public SeparatorMenuItemHandler()
 		{
 			Control = new Gtk.SeparatorMenuItem();
 		}
 
-		public override void AddMenu(int index, MenuItem item)
+		public void CreateFromCommand(Command command)
 		{
-			throw new NotSupportedException("Cannot add items to a separator");
 		}
 
-		public override void RemoveMenu(MenuItem item)
+		public string Text
 		{
-			throw new NotSupportedException("Separators do not contain any items to remove");
+			get { return null; }
+			set { throw new NotSupportedException(); }
 		}
 
-		public override void Clear()
+		public string ToolTip
 		{
-			throw new NotSupportedException("Separators do not contain any items to remove");
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public Keys Shortcut
+		{
+			get { return Keys.None; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public bool Enabled
+		{
+			get { return false; }
+			set { }
 		}
 	}
 }

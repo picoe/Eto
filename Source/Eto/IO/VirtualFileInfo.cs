@@ -5,8 +5,8 @@ namespace Eto.IO
 {
 	public class VirtualFileInfo : EtoFileInfo
 	{
-		string file;
-		VirtualDirectoryInfo parent;
+		readonly string file;
+		readonly VirtualDirectoryInfo parent;
 
 		public VirtualFileInfo(VirtualDirectoryInfo parent, string file)
 		{
@@ -32,7 +32,7 @@ namespace Eto.IO
 		
 		public override void Delete ()
 		{
-			throw new NotImplementedException ();
+			throw new NotSupportedException();
 		}
 		
 		public override EtoDirectoryInfo Directory {

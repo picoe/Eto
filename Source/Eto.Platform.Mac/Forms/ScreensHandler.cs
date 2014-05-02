@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using MonoMac.AppKit;
@@ -7,10 +6,6 @@ namespace Eto.Platform.Mac.Forms
 {
 	public class ScreensHandler : IScreens, IWidget
 	{
-		public ScreensHandler ()
-		{
-		}
-
 		public void Initialize ()
 		{
 		}

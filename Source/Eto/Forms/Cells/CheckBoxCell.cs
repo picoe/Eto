@@ -1,4 +1,3 @@
-using System;
 
 namespace Eto.Forms
 {
@@ -20,13 +19,13 @@ namespace Eto.Forms
 			Binding = new PropertyBinding (property);
 		}
 
-		public CheckBoxCell ()
-			: this(Generator.Current)
+		public CheckBoxCell()
+			: this((Generator)null)
 		{
 		}
-		
-		public CheckBoxCell (Generator g)
-			: base(g, typeof(ICheckBoxCell), true)
+
+		public CheckBoxCell (Generator generator)
+			: base(generator, typeof(ICheckBoxCell), true)
 		{
 		}
 	}

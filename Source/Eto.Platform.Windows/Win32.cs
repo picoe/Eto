@@ -1,15 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Eto.Platform
 {
 	static class Win32
 	{
-		[Flags ()]
+		// Analysis disable InconsistentNaming
+
+		[Flags]
 		public enum SWP : uint
 		{
 			ASYNCWINDOWPOS = 0x4000,
@@ -34,15 +33,16 @@ namespace Eto.Platform
 		public static readonly IntPtr HWND_TOP = new IntPtr (0);
 		public static readonly IntPtr HWND_BOTTOM = new IntPtr (1);
 
-		public enum GWL : int
+		public enum GWL
 		{
 			EXSTYLE = -20,
 			HINSTANCE = -6,
 			ID = -12,
 			STYLE = -16,
 			USERDATA = -21,
-			WNDPROC = -4
-		};
+			WNDPROC = -4}
+
+		;
 
 		[Flags]
 		public enum WS : uint
@@ -82,9 +82,20 @@ namespace Eto.Platform
 			TOOLWINDOW = 0x80
 		}
 
-		public enum WM : int
+		public enum WM
 		{
 			SETREDRAW = 0xB,
+
+			GETDLGCODE = 0x0087,
+
+			KEYDOWN = 0x0100,
+			KEYUP = 0x0101,
+			CHAR = 0x0102,
+			SYSKEYDOWN = 0x0104,
+			SYSKEYUP = 0x0105,
+			SYSCHAR = 0x0106,
+			IME_CHAR = 0x0286,
+
 			MOUSEMOVE = 0x0200,
 			LBUTTONDOWN = 0x0201,
 			LBUTTONUP = 0x0202,
@@ -95,7 +106,7 @@ namespace Eto.Platform
 			MBUTTONDOWN = 0x0207,
 			MBUTTONUP = 0x0208,
 			MBUTTONDBLCLK = 0x0209,
-			MOUSEWHEEL = 0x20A
+			MOUSEWHEEL = 0x20A,
 		}
 
 		public static ushort LOWORD (IntPtr word) { return (ushort)(((long)word) & 0xffff); }
@@ -110,14 +121,14 @@ namespace Eto.Platform
 
 		public static int SignedLOWORD (IntPtr n) { return SignedLOWORD ((int)((long)n)); }
 
-		public static int SignedHIWORD (int n) { return (int)((short)(n >> 16 & 65535)); }
+		public static int SignedHIWORD (int n) { return (n >> 16 & 65535); }
 
-		public static int SignedLOWORD (int n) { return (int)((short)(n & 65535)); }
+		public static int SignedLOWORD (int n) { return (n & 65535); }
 
 		public static int GetWheelDeltaWParam (IntPtr wParam) { return SignedHIWORD (wParam); }
 
 		[Flags]
-		public enum MK : int
+		public enum MK
 		{
 			NONE = 0x0000,
 			LBUTTON = 0x0001,
@@ -148,11 +159,11 @@ namespace Eto.Platform
 		}
 
 		[DllImport ("user32.dll")]
-		private static extern int ShowWindow (IntPtr hWnd, uint Msg);
+		static extern int ShowWindow (IntPtr hWnd, uint msg);
 
 		[DllImport ("user32.dll")]
 		[return: MarshalAs (UnmanagedType.Bool)]
-		public static extern bool SetWindowPos (IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SWP uFlags);
+		public static extern bool SetWindowPos (IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags);
 
 		[DllImport ("user32.dll", SetLastError = true)]
 		public static extern uint GetWindowLong (IntPtr hWnd, GWL nIndex);
@@ -162,5 +173,27 @@ namespace Eto.Platform
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern bool PeekMessage(ref Message wMsg, IntPtr hwnd, int msgMin, int msgMax, int remove);
+
+
+		public static Message? GetNextMessage(Control ctl, params WM[] wMsg)
+		{
+			Message? msg = null;
+			Message pmsg = default(Message);
+			var ret = false;
+			do
+			{
+				ret = false;
+				foreach (var wm in wMsg)
+				{
+					ret |= PeekMessage(ref pmsg, ctl.Handle, (int)wm, (int)wm, 0);
+					if (ret)
+						msg = pmsg;
+				}
+			} while (ret);
+			return msg;
+		}
 	}
 }

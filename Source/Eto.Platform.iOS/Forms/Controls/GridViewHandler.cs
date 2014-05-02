@@ -4,6 +4,9 @@ using Eto.Forms;
 using System.Linq;
 using Eto.Platform.iOS.Forms.Cells;
 using MonoTouch.Foundation;
+using Eto.Drawing;
+using Eto.Platform.iOS.Drawing;
+using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -36,6 +39,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public bool ShowCellBorders
 		{
+			get { return false; }
 			set { } // TODO
 		}
 
@@ -67,7 +71,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				if (cell == null)
 					cell = new UITableViewCell(UITableViewCellStyle.Default, CELL_ID);
 				var item = Handler.GetItem (indexPath);
-				foreach (var column in Handler.Widget.Columns.Where (r=> r.DataCell != null).Select(r => r.DataCell.Handler).OfType<IiOSCellHandler>())
+				foreach (var column in Handler.Widget.Columns.Where (r=> r.DataCell != null).Select(r => r.DataCell.Handler).OfType<ICellHandler>())
 				{
 					column.Configure (item, cell);
 				}
@@ -82,13 +86,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 				switch (editingStyle)
 				{
 					case UITableViewCellEditingStyle.Delete:
-						// remove the item from the underlying data source
-						if (Handler.Widget.DeleteItemHandler != null &&
-							Handler.Widget.DeleteItemHandler(Handler.GetItem(indexPath)))
-						{
-							// That succeeded, so delete the row from the table
-							tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
-						}
+						// Invoke the handler
+						if (Handler.Widget.DeleteItemHandler != null)
+							Handler.Widget.DeleteItemHandler(Handler.GetItem(indexPath));
 						break;
 					case UITableViewCellEditingStyle.None:
 					case UITableViewCellEditingStyle.Insert: // TODO
@@ -107,20 +107,14 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public object GetItem(NSIndexPath indexPath)
 		{
-			var result = store.Collection[indexPath.Row];
-			return result;
-			// BUGBUG: the below code seems wrong, it does an extra indirection.
-			var section = store.Collection[indexPath.Section] as IDataStore<object>;
-			if (section != null) {
-				return section[indexPath.Row];
-			}
-			return null;
+			return store.Collection[indexPath.Row];
 		}
 
 		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.DataSource = new DataSource { Handler = this };
+			Control.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 		}
 
 		public IDataStore DataStore {
@@ -135,11 +129,56 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			Control.ReloadData();
 		}
+
+		public void OnCellFormatting(GridColumn column, object item, int row, NSCell cell)
+		{
+			Widget.OnCellFormatting(new IosCellFormatArgs(column, item, row, cell));
+		}
+	}
+
+	class IosCellFormatArgs : GridCellFormatEventArgs
+	{
+		Font font;
+
+		public ICellHandler CellHandler { get { return Column.DataCell.Handler as ICellHandler; } }
+
+		public NSCell Cell { get; private set; }
+
+		public IosCellFormatArgs(GridColumn column, object item, int row, NSCell cell)
+			: base(column, item, row)
+		{
+			this.Cell = cell;
+		}
+
+		public override Font Font
+		{
+			get
+			{
+				return font;// ?? (font = new Font(null, new FontHandler(Cell.Font)));
+			}
+			set
+			{
+				font = value;
+				//Cell.Font = font != null ? ((FontHandler)font.Handler).Control : null;
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return CellHandler.GetBackgroundColor(Cell); }
+			set { CellHandler.SetBackgroundColor(Cell, value); }
+		}
+
+		public override Color ForegroundColor
+		{
+			get { return CellHandler.GetForegroundColor(Cell); }
+			set { CellHandler.SetForegroundColor(Cell, value); }
+		}
 	}
 
 	public class GridTableDelegate : GridHandlerTableDelegate
 	{
-		private GridViewHandler GridViewHandler { get { return this.Handler as GridViewHandler; } }
+		private new GridViewHandler Handler { get { return base.Handler as GridViewHandler; } }
 
 		public GridTableDelegate(IGrid handler)
 			: base(handler)
@@ -151,16 +190,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 			base.RowSelected(tableView, indexPath);
 
 			// CellClick event
-			GridViewHandler.Widget.OnCellClick(new GridViewCellArgs(
+			Handler.Widget.OnCellClick(new GridViewCellArgs(
 				null, // TODO
 				indexPath.Row,
 				0, // Is this correct?
-				GridViewHandler.GetItem(indexPath)));
+				Handler.GetItem(indexPath)));
 		}
 
 		public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
 		{
-			var result = GridViewHandler.Widget.DeleteConfirmationTitle;
+			var result = Handler.Widget.DeleteConfirmationTitle != null
+				? Handler.Widget.DeleteConfirmationTitle(Handler.GetItem(indexPath)) : "";
 			if (string.IsNullOrEmpty(result))
 				result = base.TitleForDeleteConfirmation(tableView, indexPath);
 			return result;
@@ -168,10 +208,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public override UITableViewCellEditingStyle EditingStyleForRow(UITableView tableView, NSIndexPath indexPath)
 		{
-			return GridViewHandler.Widget.CanDeleteItem != null &&
-				GridViewHandler.Widget.CanDeleteItem(GridViewHandler.GetItem(indexPath))
+			return Handler.Widget.CanDeleteItem != null &&
+				Handler.Widget.CanDeleteItem(Handler.GetItem(indexPath))
 				? UITableViewCellEditingStyle.Delete
 				: UITableViewCellEditingStyle.None;
+		}
+
+		public override void WillDisplay(UITableView tableView, UITableViewCell cell, NSIndexPath indexPath)
+		{
+			var item = Handler.GetItem(indexPath);
+			var column = Handler.Widget.Columns[0]; // can there be more than one column?
+			Handler.OnCellFormatting(column, item, -1 /*row*/, cell as NSCell);
 		}
 	}
 }

@@ -1,24 +1,25 @@
 using System;
-using System.Collections;
 
 namespace Eto.Forms
 {
 	public interface IComboBox : IListControl
 	{
 	}
-	
+
 	public class ComboBox : ListControl
 	{
-		public ComboBox () : this (Generator.Current)
+		public ComboBox()
+			: this((Generator)null)
 		{
 		}
 
-		public ComboBox (Generator g) : this (g, typeof(IComboBox))
+		public ComboBox(Generator generator)
+			: this(generator, typeof(IComboBox))
 		{
 		}
-		
-		protected ComboBox (Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+
+		protected ComboBox(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 		}
 	}

@@ -1,24 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Reflection;
 using Eto.Drawing;
 
 namespace Eto.Test
 {
 	public static class TestIcons
 	{
-		public static string TestIconName = "Eto.Test.TestIcon.ico"; // static not const so test apps can override
+		static string prefix;
+		public static string Prefix { get { return prefix = prefix ?? Assembly.GetExecutingAssembly().GetName().Name + "."; } }
 
-		static Icon testIcon;
-		public static Icon TestIcon { get { return testIcon = testIcon ?? Icon.FromResource(TestIconName); } }
+		public static string TestIconName = "TestIcon.ico";
+		public static string TestImageName = "TestImage.png";
+		public static string TexturesName = "Textures.png";
 
-		public static string TestImageName = "Eto.Test.TestImage.png"; // static not const so test apps can override
-		static Bitmap testImage;
-		public static Bitmap TestImage { get { return testImage = testImage ?? Bitmap.FromResource(TestImageName); } }
+		public static Icon TestIcon(Generator generator = null)
+		{
+			return Icon.FromResource(Prefix + TestIconName, generator);
+		}
 
-		public static string TexturesName = "Eto.Test.Textures.png"; // static not const so test apps can override
-		static Bitmap textures;
-		public static Bitmap Textures { get { return textures = textures ?? Bitmap.FromResource(TexturesName); } }
+		public static Bitmap TestImage(Generator generator = null)
+		{
+			return Bitmap.FromResource(Prefix + TestImageName, generator: generator);
+		}
+
+		public static Bitmap Textures(Generator generator = null)
+		{
+			return Bitmap.FromResource(Prefix + TexturesName, generator: generator);
+		}
 	}
 }

@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using Gtk;
 using System.Globalization;
 
 namespace Eto.Platform.GtkSharp.CustomControls
@@ -9,109 +8,135 @@ namespace Eto.Platform.GtkSharp.CustomControls
 	{
 		DateTime? selectedDate;
 		DateTimePickerMode mode = DateTimePickerMode.DateTime;
-	
+
 		public event EventHandler DateChanged;
-		
-		protected void OnDateChanged (EventArgs e)
+
+		protected void OnDateChanged(EventArgs e)
 		{
 			if (DateChanged != null)
-				DateChanged (this, e);
+				DateChanged(this, e);
 		}
 
-		public DateTimePickerMode Mode {
-			get { return mode; }
-			set {
-				mode = value;
-				SetValue ();
-			}
-		}
-
-		public Gdk.Color ErrorColor {
-			get;
-			set; 
-		}
-
-		public Gdk.Color NormalColor {
-			get;
-			set; 
-		}
-		
-		public string Text {
-			get {
-				return Entry.Text;
-			}
-		}
-
-		public DateTime MinDate {
-			get;
-			set;
-		}
-
-		public DateTime MaxDate {
-			get;
-			set;
-		}
-		
-		public DateTime? SelectedDate {
-			get {
-				return selectedDate;
-			}
-			set {
-				selectedDate = value;
-				SetValue ();
-			}
-		}
-		
-		void SetValue ()
+		public DateTimePickerMode Mode
 		{
-			if (selectedDate == null) {
+			get { return mode; }
+			set
+			{
+				mode = value;
+				SetValue();
+			}
+		}
+
+		public Gdk.Color ErrorColor { get; set; }
+
+		public Gdk.Color NormalColor { get; set; }
+
+		public string Text { get { return Entry.Text; } }
+
+		public DateTime MinDate { get; set; }
+
+		public DateTime MaxDate { get; set; }
+
+		public DateTime? SelectedDate
+		{
+			get { return selectedDate; }
+			set
+			{
+				selectedDate = value;
+				SetValue();
+			}
+		}
+
+		public bool AllowInvalidDates { get; set; }
+
+		void SetValue()
+		{
+			if (selectedDate == null)
+			{
 				Entry.Text = string.Empty;
-			} else {
-				switch (Mode) {
-				case DateTimePickerMode.DateTime:
-					Entry.Text = selectedDate.Value.ToString ();
-					break;
-				case DateTimePickerMode.Date:
-					Entry.Text = selectedDate.Value.ToShortDateString ();
-					break;
-				case DateTimePickerMode.Time:
-					Entry.Text = selectedDate.Value.ToShortTimeString ();
-					break;
+			}
+			else
+			{
+				switch (Mode)
+				{
+					case DateTimePickerMode.DateTime:
+						Entry.Text = selectedDate.Value.ToString();
+						break;
+					case DateTimePickerMode.Date:
+						Entry.Text = selectedDate.Value.ToShortDateString();
+						break;
+					case DateTimePickerMode.Time:
+						Entry.Text = selectedDate.Value.ToShortTimeString();
+						break;
 				}
 			}
 		}
-		
-		public DateComboBox ()
+
+		public DateComboBox()
 		{
 			
 			MinDate = DateTime.MinValue;
 			MaxDate = DateTime.MaxValue;
 			
-			ErrorColor = new Gdk.Color (255, 0, 0);
-			NormalColor = Entry.Style.Text (Gtk.StateType.Normal);
+			ErrorColor = new Gdk.Color(255, 0, 0);
+			NormalColor = Entry.Style.Text(Gtk.StateType.Normal);
 
-			Entry.Changed += delegate {
-				Entry.ModifyText (Gtk.StateType.Normal, IsDateValid () ? NormalColor : ErrorColor);
-				OnDateChanged (EventArgs.Empty);
-			};
-			PopupButton.Clicked += delegate {
-				var dlg = new DateComboBoxDialog (selectedDate ?? DateTime.Now, this.Mode);
-				dlg.DateChanged += delegate {
-					SelectedDate = dlg.SelectedDate;
+			Entry.Changed += HandleChanged;
+			PopupButton.Clicked += delegate
+			{
+				var dlg = new DateComboBoxDialog(selectedDate ?? DateTime.Now, this.Mode);
+				dlg.DateChanged += delegate
+				{
+					selectedDate = dlg.SelectedDate;
+					ValidateDateRange();
+					SetValue();
 				};
-				dlg.ShowPopup (this);
+				dlg.ShowPopup(this);
 			};
 		}
-		
-		public bool IsDateValid ()
+
+		void HandleChanged(object sender, EventArgs e)
 		{
-			if (string.IsNullOrEmpty (Entry.Text)) {
+			var isValid = IsDateValid();
+			if (!ValidateDateRange())
+			{
+				SetValue();
+				return;
+			}
+			Entry.ModifyText(Gtk.StateType.Normal, isValid ? NormalColor : ErrorColor);
+			OnDateChanged(EventArgs.Empty);
+		}
+
+		bool ValidateDateRange()
+		{
+			if (!AllowInvalidDates && selectedDate != null)
+			{
+				if (selectedDate < MinDate)
+				{
+					SelectedDate = MinDate;
+					return false;
+				}
+				if (selectedDate > MaxDate)
+				{
+					SelectedDate = MaxDate;
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public bool IsDateValid()
+		{
+			if (string.IsNullOrEmpty(Entry.Text))
+			{
 				selectedDate = null;
 				return true;
 			}
 			DateTime date;
-			if (DateTime.TryParse (Entry.Text, CultureInfo.CurrentCulture, DateTimeStyles.None, out date)) {
-				if (date >= MinDate && date <= MaxDate) {
+			if (DateTime.TryParse(Entry.Text, CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+			{
+				if (date >= MinDate && date <= MaxDate)
+				{
 					selectedDate = date;
 					return true;
 				}

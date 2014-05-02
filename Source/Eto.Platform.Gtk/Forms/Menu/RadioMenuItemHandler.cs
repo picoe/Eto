@@ -1,8 +1,5 @@
 using System;
-using Eto.Drawing;
 using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -11,110 +8,138 @@ namespace Eto.Platform.GtkSharp
 	/// </summary>
 	public class RadioMenuItemHandler : MenuActionItemHandler<Gtk.RadioMenuItem, RadioMenuItem>, IRadioMenuItem
 	{
-		string tooltip;
-		string text = string.Empty;
-		Key shortcut = Key.None;
+		string text;
+		Keys shortcut;
 		Gtk.AccelLabel label;
 		Gtk.Label accelLabel;
 		bool isActivating;
 		RadioMenuItemHandler controller;
-		
-		public void Create (RadioMenuItem controller)
+
+		public void Create(RadioMenuItem controller)
 		{
-			if (controller != null) {
-				Control = new Gtk.RadioMenuItem ((Gtk.RadioMenuItem)controller.ControlObject);
+			if (controller != null)
+			{
+				Control = new Gtk.RadioMenuItem((Gtk.RadioMenuItem)controller.ControlObject);
 				this.controller = (RadioMenuItemHandler)controller.Handler;
 			}
-			else {
+			else
+			{
 				this.controller = this;
-				Control = new Gtk.RadioMenuItem (string.Empty);
-				foreach (Gtk.Widget w in Control.Children) {
-					Control.Remove (w);
+				Control = new Gtk.RadioMenuItem(string.Empty);
+				foreach (Gtk.Widget w in Control.Children)
+				{
+					Control.Remove(w);
 				}
 			}
-			Control.Toggled += control_Activated;
 
-			Gtk.HBox hbox = new Gtk.HBox (false, 4);
-			label = new Gtk.AccelLabel (string.Empty);
+			var hbox = new Gtk.HBox(false, 4);
+			label = new Gtk.AccelLabel(string.Empty);
 			label.Xalign = 0;
 			label.UseUnderline = true;
 			label.AccelWidget = Control;
-			hbox.Add (label);
-			accelLabel = new Gtk.Label ();
+			hbox.Add(label);
+			accelLabel = new Gtk.Label();
 			accelLabel.Xalign = 1;
 			accelLabel.Visible = false;
-			hbox.Add (accelLabel);
-			Control.Add (hbox);
+			hbox.Add(accelLabel);
+			Control.Add(hbox);
 		}
 
-		public string Text {
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Toggled += Connector.HandleToggled;
+		}
+
+		protected new RadioMenuItemConnector Connector { get { return (RadioMenuItemConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new RadioMenuItemConnector();
+		}
+
+		protected class RadioMenuItemConnector : WeakConnector
+		{
+			public new RadioMenuItemHandler Handler { get { return (RadioMenuItemHandler)base.Handler; } }
+
+			public void HandleToggled(object sender, EventArgs e)
+			{
+				var handler = Handler;
+				if (!handler.controller.isActivating)
+				{
+					handler.Widget.OnClick(e);
+				}
+			}
+		}
+
+		public string Text
+		{
 			get { return text; }
-			set {
+			set
+			{
 				text = value;
 				label.TextWithMnemonic = text;
 			}
 		}
-		
-		public string ToolTip {
-			get { return tooltip; }
-			set {
-				tooltip = value;
-				//label.TooltipText = value;
-			}
+
+		public string ToolTip
+		{
+			get { return label.TooltipText; }
+			set { label.TooltipText = value; }
 		}
 
-		public Key Shortcut {
+		public Keys Shortcut
+		{
 			get { return shortcut; }
-			set {
+			set
+			{
 				shortcut = value;
-				accelLabel.Text = value.ToShortcutString ();
+				accelLabel.Text = value.ToShortcutString();
 				accelLabel.Visible = accelLabel.Text.Length > 0;
 			}
 		}
 
-		public bool Checked {
+		public bool Checked
+		{
 			get { return Control.Active; }
-			set { 
+			set
+			{ 
 				controller.isActivating = true;
 				Control.Active = value;
 				controller.isActivating = false;
 			}
 		}
 
-		public bool Enabled {
+		public bool Enabled
+		{
 			get { return Control.Sensitive; }
 			set { Control.Sensitive = value; }
 		}
 
-		public override void AddMenu (int index, MenuItem item)
+		public void AddMenu(int index, MenuItem item)
 		{
 			if (Control.Submenu == null)
-				Control.Submenu = new Gtk.Menu ();
-			((Gtk.Menu)Control.Submenu).Insert ((Gtk.Widget)item.ControlObject, index);
+				Control.Submenu = new Gtk.Menu();
+			((Gtk.Menu)Control.Submenu).Insert((Gtk.Widget)item.ControlObject, index);
 		}
 
-		public override void RemoveMenu (MenuItem item)
+		public void RemoveMenu(MenuItem item)
 		{
 			if (Control.Submenu == null)
 				return;
-			Gtk.Menu menu = (Gtk.Menu)Control.Submenu;
-			menu.Remove ((Gtk.Widget)item.ControlObject);
-			if (menu.Children.Length == 0) {
+			var menu = (Gtk.Menu)Control.Submenu;
+			menu.Remove((Gtk.Widget)item.ControlObject);
+			if (menu.Children.Length == 0)
+			{
 				Control.Submenu = null;
 			}
 		}
 
-		public override void Clear ()
+		public void Clear()
 		{
-			foreach (Gtk.Widget w in Control.Children) {
-				Control.Remove (w);
-			}
-		}
-
-		void control_Activated (object sender, EventArgs e)
-		{
-			if (!controller.isActivating) {
-				Widget.OnClick (e);
+			foreach (Gtk.Widget w in Control.Children)
+			{
+				Control.Remove(w);
 			}
 		}
 	}

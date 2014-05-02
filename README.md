@@ -44,7 +44,7 @@ This framework was built so that using it in .NET is natural. For example, a sim
 
 Applications
 ------------
-* [Manager](https://www.manager.io) - Accounting Software
+* [Manager](http://www.manager.io) - Accounting Software
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
 * [JabbR.Desktop](https://github.com/JabbR/JabbR.Desktop) - JabbR client
 * [Notedown](https://github.com/modmonkeys/Notedown) - Note taking application
@@ -61,12 +61,12 @@ Namespaces
 Currently supported targets
 ---------------------------
 
-* OS X: MonoMac and Xamarin.Mac
-* Linux: GTK# 2 and 3
-* Windows: Windows Forms and WPF
+* iOS using Xamarin.iOS
+* OS X: MonoMac or Xamarin.Mac
+* Linux: GTK# 2 or 3
+* Windows: Windows Forms (using GDI or Direct2D) or WPF
 	
 Under development
 -----------------
 
-* iOS using Xamarin.iOS
 * Android using Xamarin.Android

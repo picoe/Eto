@@ -15,7 +15,7 @@ namespace Eto.Forms
 	{
 		RadioButtonListOrientation orientation;
 		ItemDataStore dataStore;
-		List<RadioButton> buttons = new List<RadioButton> ();
+		readonly List<RadioButton> buttons = new List<RadioButton> ();
 		RadioButton controller;
 		RadioButton selectedButton;
 		Size spacing = TableLayout.DefaultSpacing;
@@ -40,7 +40,7 @@ namespace Eto.Forms
 
 		public string SelectedKey
 		{
-			get { return SelectedValue != null ? SelectedValue.Key : null; }
+			get { return SelectedValue == null ? null : SelectedValue.Key; }
 			set
 			{
 				if (SelectedValue == null || SelectedValue.Key != value) {
@@ -63,7 +63,7 @@ namespace Eto.Forms
 
 		public IListItem SelectedValue
 		{
-			get { return selectedButton != null ? selectedButton.Tag as IListItem : null; }
+			get { return selectedButton == null ? null : selectedButton.Tag as IListItem; }
 			set
 			{
 				if (SelectedValue != value) {
@@ -77,7 +77,7 @@ namespace Eto.Forms
 
 		public int SelectedIndex
 		{
-			get { return selectedButton != null ? buttons.IndexOf (selectedButton) : -1; }
+			get { return selectedButton == null ? -1 : buttons.IndexOf(selectedButton); }
 			set
 			{
 				EnsureButtons ();
@@ -93,7 +93,7 @@ namespace Eto.Forms
 			{
 				var key = Handler.SelectedKey;
 				Handler.Recreate ();
-				Handler.SetSelectedKey (key, true, false);
+				Handler.SetSelectedKey (key, true);
 			}
 
 			public override void AddItem (IListItem item)
@@ -162,7 +162,7 @@ namespace Eto.Forms
 				var items = (ListItemCollection)DataStore;
 				if (items == null) {
 					items = CreateDefaultItems ();
-					this.DataStore = items;
+					DataStore = items;
 				}
 				return items;
 			}
@@ -170,7 +170,7 @@ namespace Eto.Forms
 		
 		public IListStore DataStore
 		{
-			get { return dataStore != null ? dataStore.Collection : null; }
+			get { return dataStore == null ? null : dataStore.Collection; }
 			set
 			{
 				dataStore = new ItemDataStore { Handler = this };
@@ -182,7 +182,7 @@ namespace Eto.Forms
 		{
 			base.OnLoad (e);
 			if (DataStore == null)
-				this.DataStore = CreateDefaultItems ();
+				DataStore = CreateDefaultItems();
 			else {
 				LayoutButtons ();
 				SetSelected (selectedButton, true);
@@ -191,19 +191,15 @@ namespace Eto.Forms
 
 		void EnsureButtons ()
 		{
-			if (this.DataStore == null)
-				this.DataStore = CreateDefaultItems ();
-		}
-
-		public RadioButtonList ()
-		{
+			if (DataStore == null)
+				DataStore = CreateDefaultItems();
 		}
 
 		void LayoutButtons ()
 		{
 			if (!Loaded)
 				return;
-			this.SuspendLayout ();
+			SuspendLayout();
 			var layout = new DynamicLayout (Padding.Empty, spacing);
 			var horizontal = orientation == RadioButtonListOrientation.Horizontal;
 			if (horizontal)
@@ -214,13 +210,13 @@ namespace Eto.Forms
 			layout.Add (null);
 			if (horizontal)
 				layout.EndHorizontal ();
-			this.Content = layout;
-			this.ResumeLayout ();
+			Content = layout;
+			ResumeLayout();
 		}
 
 		void Recreate ()
 		{
-			buttons.ForEach (r => UnregisterButton (r));
+			foreach (var b in buttons) UnregisterButton(b);
 			buttons.Clear ();
 			controller = null;
 			Create ();
@@ -236,7 +232,7 @@ namespace Eto.Forms
 			}
 		}
 
-		void SetSelectedKey (string key, bool force = false, bool sendEvent = true)
+		void SetSelectedKey (string key, bool force = false)
 		{
 			EnsureButtons ();
 			SetSelected (buttons.FirstOrDefault (r => ((IListItem)r.Tag).Key == key), force);
@@ -249,7 +245,7 @@ namespace Eto.Forms
 			if (force || changed) {
 				selectedButton = button;
 				settingChecked = true;
-				buttons.ForEach (r => r.Checked = object.ReferenceEquals (r, button));
+				foreach(var r in buttons) r.Checked = object.ReferenceEquals (r, button);
 				settingChecked = false;
 				if (sendEvent && changed && Loaded)
 					OnSelectedIndexChanged (EventArgs.Empty);
@@ -275,7 +271,7 @@ namespace Eto.Forms
 
 		void HandleCheckedChanged (object sender, EventArgs e)
 		{
-			var button = sender as RadioButton;
+			var button = (RadioButton)sender;
 			if (!settingChecked && button.Checked) {
 				selectedButton = button;
 				OnSelectedIndexChanged (EventArgs.Empty);

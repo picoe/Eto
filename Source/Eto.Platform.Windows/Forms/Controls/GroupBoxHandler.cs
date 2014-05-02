@@ -1,4 +1,3 @@
-using System;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
@@ -6,9 +5,9 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class GroupBoxHandler : WindowsDockContainer<swf.GroupBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : WindowsPanel<swf.GroupBox, GroupBox>, IGroupBox
 	{
-		swf.Panel content;
+		readonly swf.Panel content;
 
 		public GroupBoxHandler()
 		{
@@ -27,14 +26,15 @@ namespace Eto.Platform.Windows
 			Control.Controls.Add(content);
 		}
 
+
+		protected override Size ContentPadding
+		{
+			get { return Size.Max(Size.Empty, Control.Size.ToEto() - Control.DisplayRectangle.Size.ToEto()); }
+		}
+
 		public override swf.Control ContainerContentControl
 		{
 			get { return content; }
-		}
-
-		public override Size DesiredSize
-		{
-			get { return Size.Max(Size.Empty, base.DesiredSize + Control.Size.ToEto() - Control.DisplayRectangle.Size.ToEto()); }
 		}
 
 		public override string Text

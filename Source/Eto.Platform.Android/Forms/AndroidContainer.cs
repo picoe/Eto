@@ -7,6 +7,11 @@ using aw = Android.Widget;
 
 namespace Eto.Platform.Android.Forms
 {
+	/// <summary>
+	/// Base handler for <see cref="IContainer"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class AndroidContainer<T, TWidget> : AndroidControl<T, TWidget>, IContainer
 		where TWidget: Container
 	{
@@ -14,7 +19,8 @@ namespace Eto.Platform.Android.Forms
 		{
 		}
 
+		public virtual bool RecurseToChildren { get { return true; } }
+
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 	}
 }
-

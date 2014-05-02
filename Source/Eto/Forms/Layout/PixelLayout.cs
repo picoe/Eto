@@ -1,13 +1,10 @@
 using System;
 using Eto.Drawing;
 using System.Collections.Generic;
-using System.Collections;
 using System.Runtime.Serialization;
-using System.Linq;
 
 #if XAML
 using System.Windows.Markup;
-using System.Xaml;
 
 #endif
 namespace Eto.Forms
@@ -22,7 +19,7 @@ namespace Eto.Forms
 		new IPixelLayout Handler { get { return (IPixelLayout)base.Handler; } }
 
 		List<Control> children;
-		List<Control> controls = new List<Control>();
+		readonly List<Control> controls = new List<Control>();
 
 		public override IEnumerable<Control> Controls
 		{
@@ -42,24 +39,29 @@ namespace Eto.Forms
 			}
 		}
 
-		public PixelLayout(Generator generator = null)
+		public PixelLayout()
+			: this((Generator)null)
+		{
+		}
+
+		public PixelLayout(Generator generator)
 			: base(generator, typeof(IPixelLayout))
 		{
 		}
 
-		[Obsolete("Add a PixelLayout to a DockContainer using the DockContainer.Content property")]
-		public PixelLayout(DockContainer container)
-			: this(container != null ? container.Generator : null)
+		[Obsolete("Add a PixelLayout to a Panel using the Panel.Content property")]
+		public PixelLayout(Panel container)
+			: this(container == null ? null : container.Generator)
 		{
 			if (container != null)
 				container.Content = this;
 		}
 
-		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
+		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
 
 		public static Point GetLocation(Control control)
 		{
-			return control.Properties.Get<Point>(LocationProperty, Point.Empty);
+			return control.Properties.Get<Point>(LocationProperty);
 		}
 
 		public static void SetLocation(Control control, Point value)
@@ -72,16 +74,9 @@ namespace Eto.Forms
 
 		public void Add(Control control, int x, int y)
 		{
-			RemoveParent(control, false);
 			control.Properties[LocationProperty] = new Point(x, y);
 			controls.Add(control);
-			var load = Loaded && !control.Loaded;
-			if (load)
-			{
-				control.OnPreLoad(EventArgs.Empty);
-				control.OnLoad(EventArgs.Empty);
-			}
-			SetParent(control);
+			var load = SetParent(control);
 			Handler.Add(control, x, y);
 			if (load)
 				control.OnLoadComplete(EventArgs.Empty);
@@ -108,12 +103,12 @@ namespace Eto.Forms
 			if (controls.Remove(child))
 			{
 				Handler.Remove(child);
-				RemoveParent(child, true);
+				RemoveParent(child);
 			}
 		}
 
 		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
+		void OnDeserialized(StreamingContext context)
 		{
 			OnDeserialized();
 		}
@@ -138,14 +133,14 @@ namespace Eto.Forms
 			}
 			else
 			{
-				this.PreLoad += HandleDeserialized;
+				PreLoad += HandleDeserialized;
 			}
 		}
 
 		void HandleDeserialized(object sender, EventArgs e)
 		{
 			OnDeserialized(true);
-			this.PreLoad -= HandleDeserialized;
+			PreLoad -= HandleDeserialized;
 		}
 	}
 }

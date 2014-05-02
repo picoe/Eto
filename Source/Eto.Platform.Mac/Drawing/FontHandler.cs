@@ -1,12 +1,10 @@
 using System;
 using Eto.Drawing;
-using System.Text;
-using System.Linq;
-
 
 #if IOS
 
 using MonoTouch.UIKit;
+using MonoTouch.Foundation;
 using NSFont = MonoTouch.UIKit.UIFont;
 
 namespace Eto.Platform.iOS.Drawing
@@ -14,137 +12,110 @@ namespace Eto.Platform.iOS.Drawing
 #elif OSX
 	
 using MonoMac.AppKit;
+using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Drawing
-	
 #endif
 {
-	public static class FontExtensions
+	public class FontHandler : WidgetHandler<NSFont, Font>, IFont
 	{
-#if OSX
-		public static NSFont ToNSFont (this Font font)
-		{
-			return ((FontHandler)font.Handler).Control;
-		}
-
-		static NSLayoutManager manager = new NSLayoutManager ();
-		public static float LineHeight(this NSFont font)
-		{
-			return manager.DefaultLineHeightForFont (font);
-			/*
-			var leading = Math.Floor (Math.Max (0, font.Leading) + 0.5f);
-			var lineHeight = (float)(Math.Floor(font.Ascender + 0.5f) - Math.Floor (font.Descender + 0.5f) + leading);
-
-			if (leading > 0)
-				return lineHeight;
-			else
-				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));*/
-		}
-#elif IOS
-		public static float LineHeight(this NSFont font)
-		{
-			return font.LineHeight;
-		}
-#endif
-	}
-
-	public class FontHandler : WidgetHandler<NSFont, Font>, IFont, IDisposable
-	{
-		public const float FONT_SIZE_FACTOR = 1.0F;
 		FontFamily family;
-		FontTypeface face;
+		FontTypeface typeface;
 		FontStyle? style;
-		
+		FontDecoration decoration;
+		NSDictionary _attributes;
+
 		public FontHandler()
 		{
 		}
 
-		public FontHandler (NSFont font)
+		public FontHandler(NSFont font)
 		{
-			this.Control = font;
+			Control = font;
 		}
 
-		public FontHandler (NSFont font, FontStyle style)
+		public FontHandler(NSFont font, FontStyle style)
 		{
-			this.Control = font;
+			Control = font;
 			this.style = style;
 		}
 
-		public void Create (FontTypeface face, float size)
+		public void Create(FontTypeface face, float size, FontDecoration decoration)
 		{
-			this.face = face;
-			this.family = face.Family;
-			this.Control = ((FontTypefaceHandler)face.Handler).CreateFont(size);
+			typeface = face;
+			family = face.Family;
+			Control = ((FontTypefaceHandler)face.Handler).CreateFont(size);
+			this.decoration = decoration;
 		}
-		
-		public void Create (SystemFont systemFont, float? fontSize)
+
+		public void Create(SystemFont systemFont, float? fontSize, FontDecoration decoration)
 		{
-			var size = fontSize;
-			if (fontSize != null) size = size.Value * FONT_SIZE_FACTOR;
-			switch (systemFont) {
-			case SystemFont.Default:
-				Control = NSFont.SystemFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
-			case SystemFont.Bold:
-				Control = NSFont.BoldSystemFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
-			case SystemFont.Label:
+			switch (systemFont)
+			{
+				case SystemFont.Default:
+					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					break;
+				case SystemFont.Bold:
+					Control = NSFont.BoldSystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					break;
+				case SystemFont.Label:
 #if IOS
-				Control = NSFont.SystemFontOfSize(size ?? NSFont.LabelFontSize);
+					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.LabelFontSize);
 #elif OSX
-				Control = NSFont.LabelFontOfSize(size ?? NSFont.LabelFontSize);
+					Control = NSFont.LabelFontOfSize(fontSize ?? NSFont.LabelFontSize + 2); // labels get a size of 12 
 #endif
-				break;
+					break;
 #if DESKTOP
-			case SystemFont.TitleBar:
-				Control = NSFont.TitleBarFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
-			case SystemFont.ToolTip:
-				Control = NSFont.ToolTipsFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
-			case SystemFont.MenuBar:
-				Control = NSFont.MenuBarFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
-			case SystemFont.Menu:
-				Control = NSFont.MenuFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
-			case SystemFont.Message:
-				Control = NSFont.MessageFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
-			case SystemFont.Palette:
-				Control = NSFont.PaletteFontOfSize(size ?? NSFont.SmallSystemFontSize);
-				break;
-			case SystemFont.StatusBar:
-				Control = NSFont.SystemFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
+				case SystemFont.TitleBar:
+					Control = NSFont.TitleBarFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					break;
+				case SystemFont.ToolTip:
+					Control = NSFont.ToolTipsFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					break;
+				case SystemFont.MenuBar:
+					Control = NSFont.MenuBarFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					break;
+				case SystemFont.Menu:
+					Control = NSFont.MenuFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					break;
+				case SystemFont.Message:
+					Control = NSFont.MessageFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					break;
+				case SystemFont.Palette:
+					Control = NSFont.PaletteFontOfSize(fontSize ?? NSFont.SmallSystemFontSize);
+					break;
+				case SystemFont.StatusBar:
+					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					break;
 #endif
-			default:
-				throw new NotSupportedException();
+				default:
+					throw new NotSupportedException();
 			}
+			this.decoration = decoration;
 		}
 
 		public float LineHeight
 		{
-			get {
+			get
+			{
 				return Control.LineHeight(); // LineHeight() is the extension method above
 			}
 		}
-		
-		public void Create (FontFamily family, float size, FontStyle style)
+
+		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
-			
-#if OSX
 			this.style = style;
 			this.family = family;
-
+			this.decoration = decoration;
+#if OSX
 			var familyHandler = (FontFamilyHandler)family.Handler;
-			NSFontTraitMask traits = style.ToNS () & familyHandler.TraitMask;
-			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, 5, size * FONT_SIZE_FACTOR);
+			NSFontTraitMask traits = style.ToNS() & familyHandler.TraitMask;
+			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, 5, size);
 			if (font == null || font.Handle == IntPtr.Zero)
 				throw new ArgumentOutOfRangeException(string.Empty, string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
 			string suffix = string.Empty;
-			var familyHandler = family.Handler as FontFamilyHandler;
+			var familyHandler = (FontFamilyHandler)family.Handler;
 			var font = familyHandler.CreateFont (size, style);
 			/*
 			var familyString = new StringBuilder();
@@ -171,7 +142,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public float Size
 		{
-			get { return Control.PointSize / FONT_SIZE_FACTOR; }
+			get { return Control.PointSize; }
 		}
 
 		public string FamilyName
@@ -181,7 +152,8 @@ namespace Eto.Platform.Mac.Drawing
 
 		public FontFamily Family
 		{
-			get {
+			get
+			{
 				if (family == null)
 					family = new FontFamily(Widget.Generator, new FontFamilyHandler(Control.FamilyName));
 				return family;
@@ -190,10 +162,11 @@ namespace Eto.Platform.Mac.Drawing
 
 		public FontTypeface Typeface
 		{
-			get {
-				if (face == null)
-					face = ((FontFamilyHandler)Family.Handler).GetFace (Control);
-				return face;
+			get
+			{
+				if (typeface == null)
+					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control);
+				return typeface;
 			}
 		}
 
@@ -203,7 +176,7 @@ namespace Eto.Platform.Mac.Drawing
 			{
 				if (style == null)
 #if OSX
-					style = NSFontManager.SharedFontManager.TraitsOfFont (Control).ToEto ();
+					style = NSFontManager.SharedFontManager.TraitsOfFont(Control).ToEto();
 #elif IOS
 					style = Typeface.FontStyle;
 #endif
@@ -211,26 +184,21 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
-        public bool Underline
-        {
-            get { return false;/* TODO */ }
-        }
-
-        public bool Strikeout
-        {
-            get { return false;/* TODO */ }
-        }
+		public FontDecoration FontDecoration
+		{
+			get { return decoration; }
+		}
 
 		public float Ascent
 		{
 			get { return Control.Ascender; }
 		}
-		
+
 		public float Descent
 		{
 			get { return -Control.Descender; }
 		}
-		
+
 		public float XHeight
 		{
 #if OSX
@@ -247,7 +215,43 @@ namespace Eto.Platform.Mac.Drawing
 
 		public float Baseline
 		{
-			get { return Ascent; }
+			get { return Control.LineHeight() - Leading - Descent; }
+		}
+
+		public NSDictionary Attributes
+		{
+			get
+			{ 
+				if (_attributes == null)
+					CreateAttributes();
+				return _attributes ?? (_attributes = CreateAttributes());
+			}
+		}
+
+		static readonly NSObject[] attributeKeys =
+		{
+#if OSX
+			NSAttributedString.FontAttributeName,
+			NSAttributedString.UnderlineStyleAttributeName,
+			NSAttributedString.StrikethroughStyleAttributeName
+#elif IOS
+			UIStringAttributeKey.Font,
+			UIStringAttributeKey.UnderlineStyle,
+			UIStringAttributeKey.StrikethroughStyle
+#endif
+		};
+
+		NSDictionary CreateAttributes()
+		{
+			return NSDictionary.FromObjectsAndKeys(
+				new NSObject[]
+				{
+					Control,
+					new NSNumber((int)(decoration.HasFlag(FontDecoration.Underline) ? NSUnderlineStyle.Single : NSUnderlineStyle.None)),
+					NSNumber.FromBoolean(decoration.HasFlag(FontDecoration.Strikethrough))
+				},
+				attributeKeys
+			);
 		}
 	}
 }

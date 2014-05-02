@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
@@ -9,7 +5,7 @@ using swi = System.Windows.Input;
 
 namespace Eto.Platform.Wpf.Forms.Menu
 {
-	public class CheckMenuItemHandler : WpfMenuItem<swc.MenuItem, CheckMenuItem>, ICheckMenuItem
+	public class CheckMenuItemHandler : MenuItemHandler<swc.MenuItem, CheckMenuItem>, ICheckMenuItem
 	{
 		public CheckMenuItemHandler ()
 		{

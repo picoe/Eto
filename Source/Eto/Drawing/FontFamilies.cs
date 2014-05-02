@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Drawing
 {
@@ -20,10 +16,10 @@ namespace Eto.Drawing
 		/// Gets the name of the monospace system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Monospace"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Monospace"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
-		public const string MonospaceFamilyName = "monospace";
+		public const string MonospaceFamilyName = "MONOSPACE";
 
 		/// <summary>
 		/// Gets a monospace font family
@@ -39,10 +35,10 @@ namespace Eto.Drawing
 		/// Gets the name of a sans-serif system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Sans"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Sans"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
-		public const string SansFamilyName = "sans-serif";
+		public const string SansFamilyName = "SANS-SERIF";
 
 		/// <summary>
 		/// Gets a sans-serif font family
@@ -58,10 +54,10 @@ namespace Eto.Drawing
 		/// Gets the name of a serif system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Serif"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Serif"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
-		public const string SerifFamilyName = "serif";
+		public const string SerifFamilyName = "SERIF";
 
 		/// <summary>
 		/// Gets a serif font family
@@ -87,10 +83,10 @@ namespace Eto.Drawing
 		/// Name of the cursive system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Cursive"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Cursive"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
-		public const string CursiveFamilyName = "cursive";
+		public const string CursiveFamilyName = "CURSIVE";
 
 		/// <summary>
 		/// Gets a fantasy font family
@@ -106,10 +102,10 @@ namespace Eto.Drawing
 		/// Name of the fantasy system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Fantasy"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Fantasy"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
-		public const string FantasyFamilyName = "fantasy";
+		public const string FantasyFamilyName = "FANTASY";
 
 	}
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
@@ -10,7 +6,7 @@ using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class PanelHandler : WpfDockContainer<swc.Border, Panel>, IPanel
+	public class PanelHandler : WpfPanel<swc.Border, Panel>, IPanel
 	{
 		public PanelHandler ()
 		{

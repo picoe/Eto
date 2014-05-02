@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Reflection;
-using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 
@@ -24,9 +21,15 @@ namespace Eto.Platform.Mac
 			set { throw new NotSupportedException (); }
 		}
 		
-		public Key Shortcut {
-			get { return Key.None; }
+		public Keys Shortcut {
+			get { return Keys.None; }
 			set { throw new NotSupportedException (); }
 		}
+
+		public string ToolTip {
+			get { return string.Empty; }
+			set { throw new NotSupportedException (); }
+		}
+
 	}
 }

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using sd = System.Drawing;
-using MonoMac.ObjCRuntime;
 using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
@@ -15,11 +14,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		ITreeStore top;
 		ContextMenu contextMenu;
-		Dictionary<ITreeItem, EtoTreeItem> cachedItems = new Dictionary<ITreeItem, EtoTreeItem>();
-		Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem>();
+		readonly Dictionary<ITreeItem, EtoTreeItem> cachedItems = new Dictionary<ITreeItem, EtoTreeItem>();
+		readonly Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem>();
 		bool selectionChanging;
 		bool raiseExpandEvents = true;
-		NSTableColumn column;
+		readonly NSTableColumn column;
 
 		public NSScrollView Scroll { get; private set; }
 
@@ -51,8 +50,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				{
 					item = value;
 					if (item.Image != null)
-						base.Image = Item.Image.ControlObject as NSImage;
-					base.Text = (NSString)item.Text;
+						Image = Item.Image.ControlObject as NSImage;
+					Text = (NSString)item.Text;
 				}
 			}
 
@@ -83,7 +82,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null)
 				{
 					var args = new TreeViewItemCancelEventArgs(myitem.Item);
-					Handler.Widget.OnBeforeLabelEdit(args);
+					Handler.Widget.OnLabelEditing(args);
 					return !args.Cancel;
 				}
 				return true;
@@ -94,7 +93,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var c = cell as NSTextFieldCell;
 				if (c != null &&
 					Handler.textColor != null)
-					c.TextColor = Handler.textColor.Value.ToNS();				
+					c.TextColor = Handler.textColor.Value.ToNSUI();				
 			}
 
 			public override void SelectionDidChange(NSNotification notification)
@@ -166,38 +165,33 @@ namespace Eto.Platform.Mac.Forms.Controls
 			WeakReference handler;
 			public TreeViewHandler Handler { get { return (TreeViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override NSObject GetObjectValue(NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
+			public override NSObject GetObjectValue(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
-				var myitem = byItem as EtoTreeItem;
+				var myitem = item as EtoTreeItem;
 				return myitem;
 			}
 
 			public override bool ItemExpandable(NSOutlineView outlineView, NSObject item)
 			{
 				var myitem = item as EtoTreeItem;
-				if (myitem == null)
-					return false;
-				return myitem.Item.Expandable;
+				return myitem != null && myitem.Item.Expandable;
 			}
 
-			public override NSObject GetChild(NSOutlineView outlineView, int childIndex, NSObject ofItem)
+			public override NSObject GetChild(NSOutlineView outlineView, int childIndex, NSObject item)
 			{
 				Dictionary<int, EtoTreeItem> items;
-				var myitem = ofItem as EtoTreeItem;
-				if (ofItem == null)
-					items = Handler.topitems;
-				else
-					items = myitem.Items;
+				var myitem = item as EtoTreeItem;
+				items = myitem == null ? Handler.topitems : myitem.Items;
 				
-				EtoTreeItem item;
-				if (!items.TryGetValue(childIndex, out item))
+				EtoTreeItem etoItem;
+				if (!items.TryGetValue(childIndex, out etoItem))
 				{
 					var parentItem = myitem != null ? myitem.Item : Handler.top;
-					item = new EtoTreeItem { Item = parentItem [childIndex] };
-					Handler.cachedItems[item.Item] = item;
-					items[childIndex] = item;
+					etoItem = new EtoTreeItem { Item = parentItem [childIndex] };
+					Handler.cachedItems[etoItem.Item] = etoItem;
+					items[childIndex] = etoItem;
 				}
-				return item;
+				return etoItem;
 			}
 
 			public override int GetChildrenCount(NSOutlineView outlineView, NSObject item)
@@ -218,7 +212,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null)
 				{
 					var args = new TreeViewItemEditEventArgs(myitem.Item, (string)(NSString)theObject);
-					Handler.Widget.OnAfterLabelEdit(args);
+					Handler.Widget.OnLabelEdited(args);
 					if (!args.Cancel)
 						myitem.Item.Text = args.Label;
 				}
@@ -243,7 +237,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var backgroundColor = Handler.BackgroundColor;
 				if (backgroundColor != Colors.Transparent) {
-					backgroundColor.ToNS ().Set ();
+					backgroundColor.ToNSUI ().Set ();
 					NSGraphics.RectFill (clipRect);
 				} else
 					base.DrawBackground (clipRect);
@@ -292,9 +286,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TreeView.ExpandedEvent:
 				case TreeView.ExpandingEvent:
@@ -304,16 +298,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 					// handled in delegate
 					break;
 				case TreeView.ActivatedEvent:
-					this.Widget.KeyDown += (sender, e) => {
-						if (!column.Editable && e.KeyData == Key.Enter)
+					Widget.KeyDown += (sender, e) => {
+						if (!column.Editable && e.KeyData == Keys.Enter)
 						{
-							Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
+							Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
 						}
 					};
 					Control.DoubleClick += HandleDoubleClick;
 					break;
-				case TreeView.AfterLabelEditEvent:
-				case TreeView.BeforeLabelEditEvent:
+				case TreeView.LabelEditedEvent:
+				case TreeView.LabelEditingEvent:
 					// handled in delegate
 					break;
 				case TreeView.NodeMouseClickEvent:
@@ -326,7 +320,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					break;
 
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -364,7 +358,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (row == -1)
 					return null;
 				var myitem = Control.ItemAtRow(row) as EtoTreeItem;
-				return myitem.Item;
+				return myitem == null ? null : myitem.Item;
 			}
 			set
 			{
@@ -408,14 +402,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.Menu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.Menu = null;
+				Control.Menu = contextMenu == null ? null : ((ContextMenuHandler)contextMenu.Handler).Control;
 			}
 		}
 
-		IEnumerable<ITreeItem> GetParents(ITreeItem item)
+		static IEnumerable<ITreeItem> GetParents(ITreeItem item)
 		{
 			var parent = item.Parent;
 			while (parent != null)
@@ -431,7 +422,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return 0;
 			
 			var rows = 0;
-			var container = item as IDataStore<ITreeItem>;
+			var container = item;
 			if (container != null)
 			{
 				rows += container.Count;
@@ -479,7 +470,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					foundItem.Item.Expanded = true;
 					row ++;
 				}
-				lastParent = parent as IDataStore<ITreeItem>;
+				lastParent = parent;
 			}
 			if (lastParent != null)
 			{
@@ -588,7 +579,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return null;
 		}
 
-		Color? textColor = null;
+		Color? textColor;
 		public Color TextColor
 		{
 			get { return textColor ?? Colors.Transparent; }

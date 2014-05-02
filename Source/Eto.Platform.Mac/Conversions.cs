@@ -7,12 +7,13 @@ using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.ImageIO;
 using sd = System.Drawing;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac
 {
 	public static partial class Conversions
 	{
-		public static NSColor ToNS(this Color color)
+		public static NSColor ToNSUI(this Color color)
 		{
 			return NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
 		}
@@ -24,16 +25,6 @@ namespace Eto.Platform.Mac
 			float red, green, blue, alpha;
 			color.GetRgba(out red, out green, out blue, out alpha);
 			return new Color(red, green, blue, alpha);
-		}
-
-		public static CGColor ToCG(this NSColor color)
-		{
-			var cs = NSColorSpace.DeviceRGBColorSpace;
-			
-			var devColor = color.UsingColorSpace(cs);
-			float[] components;
-			devColor.GetComponents(out components);
-			return new CGColor(cs.ColorSpace, components);
 		}
 
 		public static NSRange ToNS(this Range range)
@@ -144,7 +135,7 @@ namespace Eto.Platform.Mac
 		public static MouseEventArgs GetMouseEvent(NSView view, NSEvent theEvent, bool includeWheel)
 		{
 			var pt = Conversions.GetLocation(view, theEvent);
-			Key modifiers = KeyMap.GetModifiers(theEvent);
+			Keys modifiers = KeyMap.GetModifiers(theEvent);
 			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
 			if (includeWheel)
@@ -255,10 +246,7 @@ namespace Eto.Platform.Mac
 
 		public static WindowStyle ToEtoWindowStyle(this NSWindowStyle style)
 		{
-			if (style.HasFlag(NSWindowStyle.Borderless))
-				return WindowStyle.None;
-			else
-				return WindowStyle.Default;
+			return style.HasFlag(NSWindowStyle.Borderless) ? WindowStyle.None : WindowStyle.Default;
 		}
 
 		public static NSWindowStyle ToNS(this WindowStyle style, NSWindowStyle existing)
@@ -276,16 +264,16 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public static KeyEventArgs ToEtoKeyPressEventArgs(this NSEvent theEvent)
+		public static KeyEventArgs ToEtoKeyEventArgs(this NSEvent theEvent)
 		{
 			char keyChar = !string.IsNullOrEmpty(theEvent.Characters) ? theEvent.Characters[0] : '\0';
-			Key key = KeyMap.MapKey(theEvent.KeyCode);
+			Keys key = KeyMap.MapKey(theEvent.KeyCode);
 			KeyEventArgs kpea;
-			Key modifiers = KeyMap.GetModifiers(theEvent);
+			Keys modifiers = KeyMap.GetModifiers(theEvent);
 			key |= modifiers;
-			if (key != Key.None)
+			if (key != Keys.None)
 			{
-				if (((modifiers & ~(Key.Shift | Key.Alt)) == 0))
+				if (((modifiers & ~(Keys.Shift | Keys.Alt)) == 0))
 					kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
 				else
 					kpea = new KeyEventArgs(key, KeyEventType.KeyDown);
@@ -295,6 +283,21 @@ namespace Eto.Platform.Mac
 				kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
 			}
 			return kpea;
+		}
+
+		public static PrintSettings ToEto(this NSPrintInfo value, Eto.Generator generator)
+		{
+			return value == null ? null : new PrintSettings(generator, new PrintSettingsHandler(value));
+		}
+
+		public static NSPrintInfo ToNS(this PrintSettings settings)
+		{
+			return settings == null ? null : ((PrintSettingsHandler)settings.Handler).Control;
+		}
+
+		public static SizeF ToEtoSize(this NSEdgeInsets insets)
+		{
+			return new SizeF(insets.Left + insets.Right, insets.Top + insets.Bottom);
 		}
 	}
 }

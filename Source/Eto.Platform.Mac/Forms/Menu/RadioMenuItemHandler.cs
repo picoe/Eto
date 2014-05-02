@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Reflection;
-using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 using System.Collections.Generic;
@@ -44,8 +41,8 @@ namespace Eto.Platform.Mac
 					controllerInner.radioGroup = new List<RadioMenuItem>();
 					controllerInner.radioGroup.Add(controller);
 				}
-				controllerInner.radioGroup.Add(this.Widget);
-				this.radioGroup = controllerInner.radioGroup;
+				controllerInner.radioGroup.Add(Widget);
+				radioGroup = controllerInner.radioGroup;
 			}
 		}
 
@@ -64,16 +61,16 @@ namespace Eto.Platform.Mac
 		public string ToolTip
 		{
 			get { return Control.ToolTip; }
-			set { Control.ToolTip = value; }
+			set { Control.ToolTip = value ?? string.Empty; }
 		}
 
-		public Key Shortcut
+		public Keys Shortcut
 		{
 			get { return KeyMap.Convert(Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
 			set
 			{ 
-				this.Control.KeyEquivalent = KeyMap.KeyEquivalent(value);
-				this.Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask(value);
+				Control.KeyEquivalent = KeyMap.KeyEquivalent(value);
+				Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask(value);
 			}
 		}
 
@@ -83,7 +80,7 @@ namespace Eto.Platform.Mac
 			set { Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; }
 		}
 
-		MenuActionItem IMenuActionHandler.Widget
+		MenuItem IMenuActionHandler.Widget
 		{
 			get { return Widget; }
 		}

@@ -1,13 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ActionItemCollection : List<IActionItem>
 	{
-		ActionCollection actions;
+		readonly ActionCollection actions;
 
 		public Generator Generator
 		{
@@ -23,7 +23,7 @@ namespace Eto.Forms
 		{
 			foreach (IActionItem actionItem in items)
 			{
-				ActionItemSubMenu subMenu = actionItem as ActionItemSubMenu;
+				var subMenu = actionItem as ActionItemSubMenu;
 				if (subMenu != null)
 				{
 					ActionItemSubMenu currentSubMenu = GetSubmenu(subMenu.SubMenuText, subMenu.Order);
@@ -41,12 +41,12 @@ namespace Eto.Forms
 
 		public void AddSpace(int order = 500)
 		{
-			Add(new ActionItemSeparator { Order = order, ToolBarType = SeparatorToolBarItemType.Space });
+			Add(new ActionItemSeparator { Order = order, ToolBarType = SeparatorToolItemType.Space });
 		}
 
 		public void AddFlexibleSpace(int order = 500)
 		{
-			Add(new ActionItemSeparator { Order = order, ToolBarType = SeparatorToolBarItemType.FlexibleSpace });
+			Add(new ActionItemSeparator { Order = order, ToolBarType = SeparatorToolItemType.FlexibleSpace });
 		}
 
 		public ActionItem Add(string actionID, int order = 500)
@@ -73,13 +73,12 @@ namespace Eto.Forms
 		{
 			if (action != null)
 			{
-				ActionItem item = new ActionItem(action);
+				var item = new ActionItem(action);
 				item.Order = order;
-				this.Add(item);
+				Add(item);
 				return item;
 			}
-			else
-				return null;
+			return null;
 		}
 
 		[Obsolete("Use GetSubmenu instead")]
@@ -102,9 +101,9 @@ namespace Eto.Forms
 			}
 			if (create)
 			{
-				var subMenu = new ActionItemSubMenu(this.actions, subMenuText);
+				var subMenu = new ActionItemSubMenu(actions, subMenuText);
 				subMenu.Order = order;
-				this.Add(subMenu);
+				Add(subMenu);
 				return subMenu;
 			}
 			return null;
@@ -112,7 +111,7 @@ namespace Eto.Forms
 
 		public ActionItemSubMenu AddSubMenu(string subMenuText, int order = 500)
 		{
-			var sub = new ActionItemSubMenu(this.actions, subMenuText);
+			var sub = new ActionItemSubMenu(actions, subMenuText);
 			sub.Order = order;
 			Add(sub);
 			return sub;
@@ -132,8 +131,8 @@ namespace Eto.Forms
 			int sectiony = y.Order;
 			if (sectionx == sectiony)
 			{
-				sectionx = this.IndexOf(x);
-				sectiony = this.IndexOf(y);
+				sectionx = IndexOf(x);
+				sectiony = IndexOf(y);
 			}
 			return sectionx.CompareTo(sectiony);
 		}
@@ -162,6 +161,27 @@ namespace Eto.Forms
 				if (tbb != null)
 					toolBar.Items.Add(tbb);
 				lastSeparator = isSeparator;	
+			}
+		}
+
+		internal void ExtractMenu(ISubMenuWidget menu)
+		{
+			foreach (var item in menu.Items)
+			{
+				var button = item as ButtonMenuItem;
+				if (button != null && button.Items.Count > 0)
+				{
+					// submenu
+					var subMenu = this.GetSubmenu(button.Text, button.Order, true);
+					subMenu.Actions.ExtractMenu(button);
+					continue;
+				}
+				var separator = item as SeparatorMenuItem;
+				if (separator != null)
+					AddSeparator(separator.Order);
+
+				if (item.ID != null)
+					Add(item.ID, item.Order);
 			}
 		}
 	}

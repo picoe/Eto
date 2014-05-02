@@ -1,48 +1,47 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Windows
 {
 	class ScrollMessageFilter : IMessageFilter
 	{
-		public static bool IsScrollable (Control control)
+		public static bool IsScrollable(Control control)
 		{
 			var p = control as ScrollableControl;
-			if (p != null) return p.AutoScroll;
-			else return
-				control is DataGridView
-				|| control is DataGrid
-				|| control is TreeView
-				|| control is ListControl
-				|| control is RichTextBox;
+			if (p != null)
+				return p.AutoScroll;
+			return control is DataGridView
+			|| control is DataGrid
+			|| control is TreeView
+			|| control is ListControl
+			|| control is RichTextBox;
 		}
 
-		public bool PreFilterMessage (ref Message m)
+		public bool PreFilterMessage(ref Message m)
 		{
-			if (m.Msg == (int)Win32.WM.MOUSEWHEEL) {
+			if (m.Msg == (int)Win32.WM.MOUSEWHEEL)
+			{
 				var c = Control.FromHandle(m.HWnd);
-				if (c == null) return false;
-				while (c.Parent != null) c = c.Parent;
+				if (c == null)
+					return false;
+				while (c.Parent != null)
+					c = c.Parent;
 
 				var cp = Cursor.Position;
 				Control scrollChild = null;
 				while (c != null)
 				{
-					if (IsScrollable (c))
+					if (IsScrollable(c))
 						scrollChild = c;
 
 					if (!c.HasChildren)
 						break;
 
-					c = c.GetChildAtPoint (c.PointToClient (cp));
+					c = c.GetChildAtPoint(c.PointToClient(cp));
 				}
 
-				if (scrollChild == null) return false;
-				Win32.SendMessage (scrollChild.Handle, (Win32.WM)m.Msg, m.WParam, m.LParam);
+				if (scrollChild == null)
+					return false;
+				Win32.SendMessage(scrollChild.Handle, (Win32.WM)m.Msg, m.WParam, m.LParam);
 
 				return true;
 			}

@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
@@ -11,7 +10,6 @@ namespace Eto.Platform.Windows
 {
 	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox>, IListBox
 	{
-		ContextMenu contextMenu;
 		CollectionHandler collection;
 
 		class MyListBox : swf.ListBox
@@ -19,6 +17,8 @@ namespace Eto.Platform.Windows
 			public MyListBox()
 			{
 				DrawMode = swf.DrawMode.OwnerDrawFixed;
+				SetStyle(swf.ControlStyles.UserPaint | swf.ControlStyles.OptimizedDoubleBuffer | swf.ControlStyles.EnableNotifyMessage | swf.ControlStyles.ResizeRedraw, true);
+				ResizeRedraw = false;
 				ItemHeight = 18;
 			}
 
@@ -28,7 +28,30 @@ namespace Eto.Platform.Windows
 				set
 				{
 					base.Font = value;
-					this.ItemHeight = value.Height;
+					ItemHeight = value.Height;
+				}
+			}
+
+			protected override void OnPaint(swf.PaintEventArgs e)
+			{
+				using (var backBrush = new sd.SolidBrush(BackColor))
+				{
+					e.Graphics.FillRectangle(backBrush, e.ClipRectangle);
+				}
+				for (int i = 0; i < Items.Count; ++i)
+				{
+					var itemRect = GetItemRectangle(i);
+					if (e.ClipRectangle.IntersectsWith(itemRect))
+					{
+						var state = swf.DrawItemState.Default;
+						if ((SelectionMode == swf.SelectionMode.One && SelectedIndex == i)
+						|| (SelectionMode == swf.SelectionMode.MultiSimple && SelectedIndices.Contains(i))
+						|| (SelectionMode == swf.SelectionMode.MultiExtended && SelectedIndices.Contains(i)))
+						{
+							state = swf.DrawItemState.Selected;
+						}
+						OnDrawItem(new swf.DrawItemEventArgs(e.Graphics, Font, itemRect, i, state, ForeColor, BackColor));
+					}
 				}
 			}
 
@@ -39,14 +62,14 @@ namespace Eto.Platform.Windows
 
 				if (e.Index == -1)
 					return;
-				using (var foreBrush = new sd.SolidBrush(this.ForeColor))
+				using (var foreBrush = new sd.SolidBrush(ForeColor))
 				{
 					var bounds = e.Bounds;
-					var item = Items[e.Index] as IListItem;
+					var item = (IListItem)Items[e.Index];
 					var imageitem = item as IImageListItem;
 					if (imageitem != null && imageitem.Image != null)
 					{
-						var img = imageitem.Image.Handler as IWindowsImage;
+						var img = imageitem.Image.Handler as IWindowsImageSource;
 						if (img != null)
 							e.Graphics.DrawImage(img.GetImageWithSize(bounds.Height), bounds.Left, bounds.Top, bounds.Height, bounds.Height);
 						bounds.X += bounds.Height + 2;
@@ -55,34 +78,16 @@ namespace Eto.Platform.Windows
 					var adjust = Math.Max(0, (bounds.Height - stringSize.Height) / 2);
 					e.Graphics.DrawString(item.Text, e.Font, foreBrush, bounds.Left, bounds.Top + adjust);
 				}
-				base.OnDrawItem(e);
 			}
 		}
 
 		public ListBoxHandler()
 		{
 			Control = new MyListBox();
-
 			Control.SelectedIndexChanged += control_SelectedIndexChanged;
 			Control.IntegralHeight = false;
 			Control.DoubleClick += control_DoubleClick;
 			Control.KeyDown += control_KeyDown;
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get
-			{
-				return contextMenu;
-			}
-			set
-			{
-				contextMenu = value;
-				if (contextMenu != null)
-					this.Control.ContextMenuStrip = contextMenu.ControlObject as swf.ContextMenuStrip;
-				else
-					this.Control.ContextMenuStrip = null;
-			}
 		}
 
 		public int SelectedIndex
@@ -91,17 +96,17 @@ namespace Eto.Platform.Windows
 			set { Control.SelectedIndex = value; }
 		}
 
-		private void control_SelectedIndexChanged(object sender, EventArgs e)
+		void control_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			Widget.OnSelectedIndexChanged(e);
 		}
 
-		private void control_DoubleClick(object sender, EventArgs e)
+		void control_DoubleClick(object sender, EventArgs e)
 		{
 			Widget.OnActivated(EventArgs.Empty);
 		}
 
-		private void control_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+		void control_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
 			if (e.KeyData == swf.Keys.Return)
 			{

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
@@ -49,14 +46,14 @@ namespace Eto.Platform.Windows.Forms
 
 		public DialogResult ShowDialog (Window parent)
 		{
-			var result = Control.ShowDialog ();
-			if (result == swf.DialogResult.OK) {
-				font = Control.Font.ToEto (Widget.Generator);
-				Widget.OnFontChanged (EventArgs.Empty);
+			var result = Control.ShowDialog();
+			if (result == swf.DialogResult.OK)
+			{
+				font = Control.Font.ToEto(Widget.Generator);
+				Widget.OnFontChanged(EventArgs.Empty);
 				return DialogResult.Ok;
 			}
-			else
-				return DialogResult.Cancel;
+			return DialogResult.Cancel;
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class ImageViewCellHandler : CellHandler<swf.DataGridViewImageCell, ImageViewCell>, IImageViewCell
 	{
-		static sd.Bitmap transparent;
+		static readonly sd.Bitmap transparent;
 
 		class EtoCell : swf.DataGridViewImageCell
 		{
@@ -28,10 +28,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 				return size;
 			}
 
-			protected override void Paint (System.Drawing.Graphics graphics, System.Drawing.Rectangle clipBounds, System.Drawing.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
+			protected override void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates elementState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
 			{
-				Handler.Paint (graphics, clipBounds, ref cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
-				base.Paint (graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
+				Handler.Paint (graphics, clipBounds, ref cellBounds, rowIndex, elementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
+				base.Paint (graphics, clipBounds, cellBounds, rowIndex, elementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 			}
 
 			protected override void OnMouseClick (swf.DataGridViewCellMouseEventArgs e)
@@ -42,8 +42,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			public override object Clone ()
 			{
-				var val = base.Clone () as EtoCell;
-				val.Handler = this.Handler;
+				var val = (EtoCell)base.Clone();
+				val.Handler = Handler;
 				return val;
 			}
 		}
@@ -68,9 +68,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			if (Widget.Binding != null) {
 				var image = Widget.Binding.GetValue (dataItem) as Image;
 				if (image != null) {
-					var imageHandler = image.Handler as IWindowsImage;
+					var imageHandler = image.Handler as IWindowsImageSource;
 					if (imageHandler != null) {
-						return imageHandler.GetImageWithSize (Math.Max (32, this.Control.PreferredSize.Height));
+						return imageHandler.GetImageWithSize (Math.Max (32, Control.PreferredSize.Height));
 					}
 				}
 			}

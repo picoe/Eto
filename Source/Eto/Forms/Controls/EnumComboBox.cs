@@ -35,7 +35,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <typeparam name="T">Enumeration type to fill the values with</typeparam>
 	public class EnumComboBox<T> : ComboBox
-		where T : struct, IConvertible
+		where T : struct
 	{
 		class EnumValue : IListItem
 		{
@@ -66,15 +66,15 @@ namespace Eto.Forms
 		/// </summary>
 		public new T SelectedValue
 		{
-			get { return (T)Enum.ToObject (typeof (T), Convert.ToInt32 (base.SelectedKey, CultureInfo.InvariantCulture)); }
-			set { base.SelectedKey = Convert.ToString (Convert.ToInt32(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture); }
+			get { return (T)Enum.ToObject (typeof (T), Convert.ToInt32 (SelectedKey, CultureInfo.InvariantCulture)); }
+			set { SelectedKey = Convert.ToString (Convert.ToInt32(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture); }
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the EnumComboBox
 		/// </summary>
-		public EnumComboBox ()
-			: this (Generator.Current)
+		public EnumComboBox()
+			: this((Generator)null)
 		{
 		}
 
@@ -82,7 +82,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the EnumComboBox with the specified generator
 		/// </summary>
 		/// <param name="generator">platform generator</param>
-		protected EnumComboBox (Generator generator)
+		public EnumComboBox (Generator generator)
 			: base (generator)
 		{
 		}
@@ -90,7 +90,7 @@ namespace Eto.Forms
 		protected override ListItemCollection CreateDefaultItems ()
 		{
 			var type = typeof (T);
-			if (!type.IsEnum) throw new EtoException ("T must be an enumeration");
+			if (!type.IsEnum()) throw new EtoException ("T must be an enumeration");
 
 			var items = new ListItemCollection ();
 			var values = Enum.GetValues (type);
@@ -99,7 +99,7 @@ namespace Eto.Forms
 
 				var e = new AddValueEventArgs<T> ((T)values.GetValue (i), true);
 				if (e.ShouldAdd) {
-					items.Add (new EnumValue {
+					items.Add(new EnumValue {
 						Text = names[i],
 						Key = Convert.ToString (Convert.ToInt32(e.Value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture)
 					});

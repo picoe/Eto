@@ -3,6 +3,10 @@ using System.Globalization;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// A range defined by a start index and a length.
+	/// Start and End are inclusive, so End = Start + Length -1.
+	/// </summary>
 	public struct Range : IEquatable<Range>
 	{
 		[Obsolete("Use Start instead")]
@@ -15,6 +19,8 @@ namespace Eto.Forms
 
 		public int Length { get; set; }
 
+		public bool IsEmpty { get { return Length == 0; } }
+
 		public Range (int start, int length)
 			: this ()
 		{
@@ -22,11 +28,37 @@ namespace Eto.Forms
 			this.Length = length;
 		}
 
+		public static Range FromStartEnd(int start, int end)
+		{
+			return new Range(start, end - start + 1);
+		}
+
 		public int End {
 			get { return Start + Length - 1; }
 			set {
 				Length = value - Start + 1;
 			}
+		}
+
+		public bool Contains(int value)
+		{
+			return Start <= value && value <= End;
+		}
+
+		public Range Intersect(Range range)
+		{
+			if (range != null &&
+				Start != null &&
+				End != null &&
+				range.Start != null &&
+				range.End != null)
+			{
+				var start = Start >= range.Start ? Start : range.Start;
+				var end = End <= range.End ? End : range.End;
+				if (start <= end)
+					return Range.FromStartEnd(start, end);
+			}
+			return default(Range);
 		}
 
 		public override bool Equals (object obj)

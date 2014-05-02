@@ -1,5 +1,3 @@
-using System;
-using SI = System.IO;
 using Eto.Drawing;
 
 namespace Eto.IO

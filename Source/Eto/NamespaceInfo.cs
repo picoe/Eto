@@ -15,9 +15,13 @@ namespace Eto
 				assemblyName = null;
 			}
 			get {
+#if WINRT
+			throw new NotImplementedException();
+#else
 				if (assembly == null && !string.IsNullOrEmpty (assemblyName))
 					assembly = Assembly.Load (assemblyName);
 				return assembly;
+#endif
 			}
 		}
 

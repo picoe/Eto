@@ -1,5 +1,4 @@
 #if DESKTOP
-using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Linq;
@@ -24,10 +23,10 @@ namespace Eto.Test.Sections.Behaviors
 		ContextMenu CreateMenu()
 		{
 			var menu = new ContextMenu();
-			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 1" });
-			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 2" });
-			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 3" });
-			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 4" });
+			menu.Items.Add(new ButtonMenuItem { Text = "Item 1" });
+			menu.Items.Add(new ButtonMenuItem { Text = "Item 2" });
+			menu.Items.Add(new ButtonMenuItem { Text = "Item 3" });
+			menu.Items.Add(new ButtonMenuItem { Text = "Item 4" });
 			LogEvents(menu);
 			return menu;
 		}
@@ -53,13 +52,13 @@ namespace Eto.Test.Sections.Behaviors
 
 		void LogEvents(ContextMenu menu)
 		{
-			foreach (var item in menu.MenuItems.OfType<ImageMenuItem>())
+			foreach (var item in menu.Items.OfType<ButtonMenuItem>())
 			{
 				LogEvents(item);
 			}
 		}
 
-		void LogEvents(ImageMenuItem item)
+		void LogEvents(ButtonMenuItem item)
 		{
 			item.Click += delegate
 			{

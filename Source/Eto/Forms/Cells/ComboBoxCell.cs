@@ -1,4 +1,3 @@
-using System;
 
 namespace Eto.Forms
 {
@@ -22,9 +21,9 @@ namespace Eto.Forms
 		{
 			Binding = new PropertyBinding (property);
 		}
-		
-		public ComboBoxCell ()
-			: this (Generator.Current)
+
+		public ComboBoxCell()
+			: this((Generator)null)
 		{
 		}
 		

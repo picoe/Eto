@@ -30,7 +30,7 @@ namespace Eto.Forms
 		/// <param name="keyData">Key and modifiers that were pressed</param>
 		/// <param name="keyEventType">Type of key event</param>
 		/// <param name="keyChar">Character equivalent</param>
-		public KeyEventArgs(Key keyData, KeyEventType keyEventType, char? keyChar = null)
+		public KeyEventArgs(Keys keyData, KeyEventType keyEventType, char? keyChar = null)
 			: base (keyData, keyEventType, keyChar)
 		{
 		}
@@ -44,7 +44,7 @@ namespace Eto.Forms
 	[Obsolete("Use KeyEventArgs instead")]
 	public class KeyPressEventArgs : EventArgs
 	{
-		char? keyChar;
+		readonly char? keyChar;
 		
 		/// <summary>
 		/// Initializes a new instance of the KeyPressEventArgs class for a character key press
@@ -52,7 +52,7 @@ namespace Eto.Forms
 		/// <param name="keyData">Key and modifiers that were pressed</param>
 		/// <param name="keyEventType">Type of key event</param>
 		/// <param name="keyChar">Character equivalent</param>
-		public KeyPressEventArgs(Key keyData, KeyEventType keyEventType, char? keyChar = null)
+		public KeyPressEventArgs(Keys keyData, KeyEventType keyEventType, char? keyChar = null)
 		{
             this.KeyData = keyData;
 			this.KeyEventType = keyEventType;
@@ -68,22 +68,22 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets the raw key data (the combination of the <see cref="Key"/> and <see cref="Modifiers"/>)
 		/// </summary>
-		public Key KeyData { get; private set; }
+		public Keys KeyData { get; private set; }
 
 		/// <summary>
 		/// Gets the key value (without modifiers)
 		/// </summary>
-		public Key Key
+		public Keys Key
 		{
-			get { return KeyData & Key.KeyMask; }
+			get { return KeyData & Keys.KeyMask; }
 		}
 
 		/// <summary>
 		/// Gets the modifier keys that were pressed for this event
 		/// </summary>
-		public Key Modifiers
+		public Keys Modifiers
 		{
-			get { return KeyData & Key.ModifierMask; }
+			get { return KeyData & Keys.ModifierMask; }
 		}
 		
 		/// <summary>
@@ -117,7 +117,7 @@ namespace Eto.Forms
 		/// </summary>
         public bool Shift
         {
-			get { return KeyData.HasFlag (Key.Shift); }
+			get { return KeyData.HasFlag (Keys.Shift); }
         }
 
 		/// <summary>
@@ -125,7 +125,7 @@ namespace Eto.Forms
 		/// </summary>
 		public bool Control
         {
-			get { return KeyData.HasFlag (Key.Control); }
+			get { return KeyData.HasFlag (Keys.Control); }
 		}
 
 		/// <summary>
@@ -133,7 +133,7 @@ namespace Eto.Forms
 		/// </summary>
 		public bool Alt
         {
-			get { return KeyData.HasFlag (Key.Alt); }
+			get { return KeyData.HasFlag (Keys.Alt); }
 		}
 
 		/// <summary>
@@ -141,7 +141,7 @@ namespace Eto.Forms
 		/// </summary>
 		public bool Application
 		{
-			get { return KeyData.HasFlag (Key.Application); }
+			get { return KeyData.HasFlag (Keys.Application); }
 		}
 
 		/// <summary>
@@ -150,7 +150,7 @@ namespace Eto.Forms
 		/// <returns><c>true</c> the key with modifier was released; otherwise, <c>false</c>.</returns>
 		/// <param name="key">Key to test if it was released</param>
 		/// <param name="modifier">Modifier of the key, or null to allow any modifiers</param>
-		public bool IsKeyUp (Key key, Key? modifier = null)
+		public bool IsKeyUp (Keys key, Keys? modifier = null)
 		{
 			return KeyEventType == KeyEventType.KeyUp && Key == key && (modifier == null || modifier == Modifiers);
 		}
@@ -161,7 +161,7 @@ namespace Eto.Forms
 		/// <returns><c>true</c> the key with modifier was pressed; otherwise, <c>false</c>.</returns>
 		/// <param name="key">Key to test if it was pressed</param>
 		/// <param name="modifier">Modifier of the key, or null to allow any modifiers</param>
-		public bool IsKeyDown (Key key, Key? modifier = null)
+		public bool IsKeyDown (Keys key, Keys? modifier = null)
 		{
 			return KeyEventType == KeyEventType.KeyDown && Key == key && (modifier == null || modifier == Modifiers);
 		}

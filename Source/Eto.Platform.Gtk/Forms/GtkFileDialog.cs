@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.IO;
 using Eto.Forms;
 using System.Collections.Generic;
@@ -7,9 +6,9 @@ using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
-	public abstract class GtkFileDialog<T, W> : WidgetHandler<T, W>, IFileDialog
-		where T: Gtk.FileChooserDialog
-		where W: FileDialog
+	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IFileDialog
+		where TControl: Gtk.FileChooserDialog
+		where TWidget: FileDialog
 	{
 		IFileDialogFilter[] filters;
 
@@ -40,19 +39,19 @@ namespace Eto.Platform.GtkSharp
 			get { return filters; }
 			set
 			{
-				var list = this.Control.Filters.ToArray ();
+				var list = Control.Filters.ToArray ();
 				foreach (Gtk.FileFilter filter in list)
 				{
-					this.Control.RemoveFilter(filter);
+					Control.RemoveFilter(filter);
 				}
 				
 				filters = value.ToArray ();
 				foreach (var val in filters)
 				{
-					Gtk.FileFilter filter = new Gtk.FileFilter();
+					var filter = new Gtk.FileFilter();
 					filter.Name = val.Name;
 					foreach (string pattern in val.Extensions) filter.AddPattern("*" + pattern);
-					this.Control.AddFilter(filter);
+					Control.AddFilter(filter);
 				}
 			}
 		}
@@ -74,17 +73,17 @@ namespace Eto.Platform.GtkSharp
 		{
 			get
 			{
-				Gtk.FileFilter[] filters = this.Control.Filters;
+				Gtk.FileFilter[] filters = Control.Filters;
 				for (int i=0; i<filters.Length; i++)
 				{
-					if (filters[i] == this.Control.Filter) return i;
+					if (filters[i] == Control.Filter) return i;
 				}
 				return -1;
 			}
 			set
 			{
-				Gtk.FileFilter[] filters = this.Control.Filters;
-				this.Control.Filter = filters[value];
+				Gtk.FileFilter[] filters = Control.Filters;
+				Control.Filter = filters[value];
 			}
 		}
 

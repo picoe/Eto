@@ -15,7 +15,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -33,19 +33,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var handler = GetHandler(sender) as SliderHandler;
 			if (handler != null)
 			{
-				if (handler.Control.DoubleValue != (double)handler.Control.IntValue)
-					handler.Control.IntValue = (int)Math.Round(handler.Control.DoubleValue);
+				var newval = (int)Math.Round(handler.Control.DoubleValue);
+				if (newval != handler.Control.IntValue)
+					handler.Control.IntValue = newval;
 
 				handler.Widget.OnValueChanged(EventArgs.Empty);
 			}
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			if (Orientation == SliderOrientation.Horizontal)
-				return new Size(80, 30);
-			else
-				return new Size(30, 80);
+			return Orientation == SliderOrientation.Horizontal ? new Size(80, 30) : new Size(30, 80);
 		}
 
 		public int MaxValue
@@ -87,13 +85,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get
 			{ 
 				if (Control.TickMarksCount > 1)
-					return (int)((MaxValue - MinValue) / (Control.TickMarksCount - 1));
-				else
-					return MaxValue - MinValue;
+					return ((MaxValue - MinValue) / (Control.TickMarksCount - 1));
+				return MaxValue - MinValue;
 			}
 			set
 			{ 
-				Control.TickMarksCount = (int)((MaxValue - MinValue) / value) + 1;
+				Control.TickMarksCount = ((MaxValue - MinValue) / value) + 1;
 			}
 		}
 
@@ -107,14 +104,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				orientation = value;
 				// wha?!?! no way to do this other than change size or sumthun?
-				var size = this.Control.Frame.Size;
+				var size = Control.Frame.Size;
 				if (value == SliderOrientation.Vertical)
 				{
 					size.Height = size.Width + 1;
 				}
 				else
 					size.Width = size.Height + 1;
-				this.Control.SetFrameSize(size);
+				Control.SetFrameSize(size);
 				LayoutIfNeeded();
 			}
 		}

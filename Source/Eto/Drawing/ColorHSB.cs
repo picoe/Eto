@@ -19,27 +19,26 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Obsolete. Do not use
 		/// </summary>
-		[Obsolete ("Use nullable values instead")]
-		public readonly static ColorHSB Empty = new ColorHSB ();
+		[Obsolete("Use nullable values instead")]
+		public readonly static ColorHSB Empty = new ColorHSB();
 
 		#endregion
-
 
 		/// <summary>
 		/// Gets or sets the alpha (0-1)
 		/// </summary>
 		public float A { get; set; }
-		
+
 		/// <summary>
 		/// Gets or sets the hue (0-360)
 		/// </summary>
 		public float H { get; set; }
-		
+
 		/// <summary>
 		/// Gets or sets the saturation (0-1)
 		/// </summary>
 		public float S { get; set; }
-		
+
 		/// <summary>
 		/// Gets or sets the brightness (0-1)
 		/// </summary>
@@ -56,9 +55,9 @@ namespace Eto.Drawing
 		/// <param name="value1">First color to compare</param>
 		/// <param name="value2">Second color to compare</param>
 		/// <returns>The overall distance/difference between the two colours. A lower value indicates a closer match</returns>
-		public static float Distance (ColorHSB value1, ColorHSB value2)
+		public static float Distance(ColorHSB value1, ColorHSB value2)
 		{
-			return (float)Math.Sqrt (Math.Pow ((value1.H - value2.H) / 360f, 2) + Math.Pow (value1.S - value2.S, 2) + Math.Pow (value1.B - value2.B, 2));
+			return (float)Math.Sqrt(Math.Pow((value1.H - value2.H) / 360f, 2) + Math.Pow(value1.S - value2.S, 2) + Math.Pow(value1.B - value2.B, 2));
 		}
 
 		/// <summary>
@@ -68,7 +67,7 @@ namespace Eto.Drawing
 		/// <param name="saturation">Saturation component (0-1)</param>
 		/// <param name="brightness">Brightness component (0-1)</param>
 		/// <param name="alpha">Alpha component (0-1)</param>
-		public ColorHSB (float hue, float saturation, float brightness, float alpha = 1f)
+		public ColorHSB(float hue, float saturation, float brightness, float alpha = 1f)
 			: this()
 		{
 			H = hue;
@@ -76,105 +75,115 @@ namespace Eto.Drawing
 			B = brightness;
 			A = alpha;
 		}
- 
+
 		/// <summary>
 		/// Initializes a new instance of the ColorHSB class with the same color values as <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">RBG Color value to convert to HSB</param>
-		public ColorHSB (Color color)
+		public ColorHSB(Color color)
 			: this()
 		{
-			float max = Math.Max (color.R, Math.Max (color.G, color.B));
-			float min = Math.Min (color.R, Math.Min (color.G, color.B));
+			float max = Math.Max(color.R, Math.Max(color.G, color.B));
+			float min = Math.Min(color.R, Math.Min(color.G, color.B));
 
 			float h = 0f;
-			if (max == color.R && color.G >= color.B) {
+			if (Math.Abs(max - color.R) < Color.Epsilon && color.G >= color.B)
+			{
 				h = 60 * (color.G - color.B) / (max - min);
-			} else if (max == color.R && color.G < color.B) {
+			}
+			else if (Math.Abs(max - color.R) < Color.Epsilon && color.G < color.B)
+			{
 				h = 60 * (color.G - color.B) / (max - min) + 360;
-			} else if (max == color.G) {
+			}
+			else if (Math.Abs(max - color.G) < Color.Epsilon)
+			{
 				h = 60 * (color.B - color.R) / (max - min) + 120;
-			} else if (max == color.B) {
+			}
+			else if (Math.Abs(max - color.B) < Color.Epsilon)
+			{
 				h = 60 * (color.R - color.G) / (max - min) + 240;
 			}
 
-			float s = (max == 0) ? 0f : (1.0f - (min / max));
+			float s = (Math.Abs(max) < Color.Epsilon) ? 0f : (1.0f - (min / max));
 			
 			this.H = h;
 			this.S = s;
 			this.B = max;
 			this.A = color.A;
 		}
-		
+
 		/// <summary>
 		/// Converts this instance to an equivalent RGB <see cref="Color"/>
 		/// </summary>
 		/// <returns>A new instance of a <see cref="Color"/> with an equivalent color</returns>
-		public Color ToColor ()
+		public Color ToColor()
 		{
 			float r = 0;
 			float g = 0;
 			float b = 0;
 
-			if (this.S == 0) {
+			if (S == 0)
+			{
 				r = g = b = 0;
 			}
-			else {
+			else
+			{
 				// the color wheel consists of 6 sectors. Figure out which sector
 
 				// you're in.
 
-				float sectorPos = this.H / 60.0f;
-				int sectorNumber = (int)(Math.Floor (sectorPos));
+				float sectorPos = H / 60.0f;
+				int sectorNumber = (int)(Math.Floor(sectorPos));
 				// get the fractional part of the sector
 
 				float fractionalSector = sectorPos - sectorNumber;
 
 				// calculate values for the three axes of the color.
 
-				float p = this.B * (1.0f - this.S);
-				float q = this.B * (1.0f - (this.S * fractionalSector));
-				float t = this.B * (1.0f - (this.S * (1 - fractionalSector)));
+				float p = B * (1.0f - S);
+				float q = B * (1.0f - (S * fractionalSector));
+				float t = B * (1.0f - (S * (1 - fractionalSector)));
 
 				// assign the fractional colors to r, g, and b based on the sector
 
 				// the angle is in.
 
-				switch (sectorNumber) {
-				case 0:
-					r = this.B;
-					g = t;
-					b = p;
-					break;
-				case 1:
-					r = q;
-					g = this.B;
-					b = p;
-					break;
-				case 2:
-					r = p;
-					g = this.B;
-					b = t;
-					break;
-				case 3:
-					r = p;
-					g = q;
-					b = this.B;
-					break;
-				case 4:
-					r = t;
-					g = p;
-					b = this.B;
-					break;
-				case 5:
-					r = this.B;
-					g = p;
-					b = q;
-					break;
+				switch (sectorNumber)
+				{
+					case 0:
+						r = B;
+						g = t;
+						b = p;
+						break;
+					case 1:
+						r = q;
+						g = B;
+						b = p;
+						break;
+					case 2:
+						r = p;
+						g = B;
+						b = t;
+						break;
+					case 3:
+						r = p;
+						g = q;
+						b = B;
+						break;
+					case 4:
+						r = t;
+						g = p;
+						b = B;
+						break;
+					case 5:
+						r = B;
+						g = p;
+						b = q;
+						break;
 				}
 			}
 
-			return new Color (r, g, b, this.A);
+			return new Color(r, g, b, A);
 		}
 
 		/// <summary>
@@ -183,7 +192,7 @@ namespace Eto.Drawing
 		/// <param name="color1">First color to compare</param>
 		/// <param name="color2">Secont color to compare</param>
 		/// <returns>True if both instances are equal, false otherwise</returns>
-		public static bool operator == (ColorHSB color1, ColorHSB color2)
+		public static bool operator ==(ColorHSB color1, ColorHSB color2)
 		{
 			return color1.H == color2.H && color1.S == color2.S && color1.B == color2.B && color1.A == color2.A;
 		}
@@ -194,7 +203,7 @@ namespace Eto.Drawing
 		/// <param name="color1">First color to compare</param>
 		/// <param name="color2">Secont color to compare</param>
 		/// <returns>True if the instances are not equal, false if they are equal</returns>
-		public static bool operator != (ColorHSB color1, ColorHSB color2)
+		public static bool operator !=(ColorHSB color1, ColorHSB color2)
 		{
 			return !(color1 == color2);
 		}
@@ -204,9 +213,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="hsb">HSB color instance to convert</param>
 		/// <returns>A new instance of a <see cref="Color"/> that represents the <paramref name="hsb"/> value</returns>
-		public static implicit operator Color (ColorHSB hsb)
+		public static implicit operator Color(ColorHSB hsb)
 		{
-			return hsb.ToColor ();
+			return hsb.ToColor();
 		}
 
 		/// <summary>
@@ -214,7 +223,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">RGB color value to convert</param>
 		/// <returns>A new instance of a ColorHSB that represents the RGB <paramref name="color"/> value</returns>
-		public static implicit operator ColorHSB (Color color)
+		public static implicit operator ColorHSB(Color color)
 		{
 			return new ColorHSB(color);
 		}
@@ -224,7 +233,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="obj">Object to compare</param>
 		/// <returns>True if the object is equal to this instance's value, false otherwise</returns>
-		public override bool Equals (object obj)
+		public override bool Equals(object obj)
 		{
 			return obj is ColorHSB && this == (ColorHSB)obj;
 		}
@@ -233,9 +242,9 @@ namespace Eto.Drawing
 		/// Gets the hash code for this object
 		/// </summary>
 		/// <returns>Hash code to use for this object</returns>
-		public override int GetHashCode ()
+		public override int GetHashCode()
 		{
-			return H.GetHashCode () ^ S.GetHashCode () ^ B.GetHashCode () ^ A.GetHashCode ();
+			return H.GetHashCode() ^ S.GetHashCode() ^ B.GetHashCode() ^ A.GetHashCode();
 		}
 
 		/// <summary>
@@ -243,7 +252,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="other">Other instance to compare with</param>
 		/// <returns>True if <paramref name="other"/> is equal to this instance's value, false otherwise</returns>
-		public bool Equals (ColorHSB other)
+		public bool Equals(ColorHSB other)
 		{
 			return other == this;
 		}

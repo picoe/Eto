@@ -1,5 +1,4 @@
 using System;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -14,7 +13,7 @@ namespace Eto.Forms
 		Ignore,
 		Retry
 	}
-	
+
 	/// <summary>
 	/// Hint to tell the platform how to display the dialog
 	/// </summary>
@@ -29,12 +28,10 @@ namespace Eto.Forms
 		/// The default display mode for modal dialogs in the platform
 		/// </summary>
 		Default,
-		
 		/// <summary>
 		/// Display the dialog attached to the parent window, if supported (e.g. OS X)
 		/// </summary>
 		Attached,
-		
 		/// <summary>
 		/// Display the dialog as a separate window (e.g. Windows/Linux only supports this mode)
 		/// </summary>
@@ -44,8 +41,11 @@ namespace Eto.Forms
 	public interface IDialog : IWindow
 	{
 		DialogDisplayMode DisplayMode { get; set; }
-		DialogResult ShowDialog (Control parent);
+
+		DialogResult ShowDialog(Control parent);
+
 		Button DefaultButton { get; set; }
+
 		Button AbortButton { get; set; }
 	}
 
@@ -53,17 +53,18 @@ namespace Eto.Forms
 	{
 		new IDialog Handler { get { return (IDialog)base.Handler; } }
 
-		protected Dialog (Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
+		protected Dialog(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 			this.DialogResult = DialogResult.None;
 		}
 
-		public Dialog () : this(Generator.Current)
+		public Dialog()
+			: this((Generator)null)
 		{
 		}
 
-		public Dialog (Generator g) : this(g, typeof(IDialog))
+		public Dialog(Generator generator) : this(generator, typeof(IDialog))
 		{
 		}
 
@@ -74,36 +75,38 @@ namespace Eto.Forms
 		}
 
 		public DialogResult DialogResult { get; set; }
-		
+
 		public Button AbortButton
 		{
 			get { return Handler.AbortButton; }
 			set { Handler.AbortButton = value; }
 		}
-		
+
 		public Button DefaultButton
 		{
 			get { return Handler.DefaultButton; }
 			set { Handler.DefaultButton = value; }
 		}
 
-		public DialogResult ShowDialog (Control parent)
+		public DialogResult ShowDialog(Control parent = null)
 		{
 			var loaded = Loaded;
-			if (!loaded) {
-				OnPreLoad (EventArgs.Empty);
-				OnLoad (EventArgs.Empty);
-				OnLoadComplete (EventArgs.Empty);
+			if (!loaded)
+			{
+				OnPreLoad(EventArgs.Empty);
+				OnLoad(EventArgs.Empty);
+				OnDataContextChanged(EventArgs.Empty);
+				OnLoadComplete(EventArgs.Empty);
 			}
 			
-			this.DialogResult = Handler.ShowDialog (parent);
+			DialogResult = Handler.ShowDialog(parent);
 			return DialogResult;
 		}
 
-		public void Close (DialogResult result)
+		public void Close(DialogResult result)
 		{
-			this.DialogResult = result;
-			Close ();
+			DialogResult = result;
+			Close();
 		}
 	}
 }

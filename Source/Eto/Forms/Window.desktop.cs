@@ -1,6 +1,5 @@
 #if DESKTOP
 using System;
-using System.ComponentModel;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -40,45 +39,38 @@ namespace Eto.Forms
 
 		WindowStyle WindowStyle { get; set; }
 
-		void BringToFront ();
+		void BringToFront();
 
-		void SendToBack ();
+		void SendToBack();
 	}
 
 	public abstract partial class Window
 	{
-
 		public const string WindowStateChangedEvent = "Window.WindowStateChanged";
-		
-		event EventHandler<EventArgs> windowStateChanged;
 
-		public event EventHandler<EventArgs> WindowStateChanged {
-			add {
-				HandleEvent (WindowStateChangedEvent);
-				windowStateChanged += value;
-			}
-			remove
-			{
-				windowStateChanged -= value;
-			}
+		public event EventHandler<EventArgs> WindowStateChanged
+		{
+			add { Properties.AddHandlerEvent(WindowStateChangedEvent, value); }
+			remove { Properties.RemoveEvent(WindowStateChangedEvent, value); }
 		}
 
-		public virtual void OnWindowStateChanged (EventArgs e)
+		public virtual void OnWindowStateChanged(EventArgs e)
 		{
-			if (windowStateChanged != null)
-				windowStateChanged (this, e);
-#pragma warning disable 612, 618
-			if (this.WindowState == WindowState.Maximized)
-				OnMaximized (e);
-			if (this.WindowState == WindowState.Minimized)
-				OnMinimized (e);
-#pragma warning restore 612, 618
+			Properties.TriggerEvent(WindowStateChangedEvent, this, e);
 		}
 
 		public virtual MenuBar Menu
 		{
 			get { return Handler.Menu; }
-			set { Handler.Menu = value; }
+			set
+			{
+				var menu = Handler.Menu;
+				if (menu != null)
+					menu.OnUnLoad(EventArgs.Empty);
+				Handler.Menu = value;
+				if (value != null)
+					value.OnLoad(EventArgs.Empty);
+			}
 		}
 
 		public Icon Icon
@@ -111,7 +103,7 @@ namespace Eto.Forms
 			set { Handler.ShowInTaskbar = value; }
 		}
 
-		[Obsolete("Use Topmost")]
+		[Obsolete("Use Topmost"), CLSCompliant(false)]
 		public bool TopMost { get { return Topmost; } set { Topmost = value; } }
 
 		public bool Topmost
@@ -131,12 +123,12 @@ namespace Eto.Forms
 			get { return Handler.RestoreBounds; }
 		}
 
-		public void Minimize ()
+		public void Minimize()
 		{
 			Handler.WindowState = WindowState.Minimized;
 		}
 
-		public void Maximize ()
+		public void Maximize()
 		{
 			Handler.WindowState = WindowState.Maximized;
 		}
@@ -147,73 +139,15 @@ namespace Eto.Forms
 			set { Handler.WindowStyle = value; }
 		}
 
-		public void BringToFront ()
+		public void BringToFront()
 		{
-			Handler.BringToFront ();
+			Handler.BringToFront();
 		}
 
-		public void SendToBack ()
+		public void SendToBack()
 		{
-			Handler.SendToBack ();
+			Handler.SendToBack();
 		}
-
-		#region Obsolete
-
-		[Obsolete ("Use StateChanged event instead")]
-		public const string MinimizedEvent = WindowStateChangedEvent;
-
-		event EventHandler<EventArgs> minimized;
-
-		[Obsolete("Use StateChanged event instead")]
-		public event EventHandler<EventArgs> Minimized
-		{
-			add
-			{
-				HandleEvent (WindowStateChangedEvent);
-				minimized += value;
-			}
-			remove { minimized -= value; }
-		}
-		
-		[Obsolete("Use OnStateChanged instead")]
-		protected virtual void OnMinimized (EventArgs e)
-		{
-			if (minimized != null)
-				minimized (this, e);
-		}
-
-		[Obsolete ("Use StateChanged event instead")]
-		public const string MaximizedEvent = WindowStateChangedEvent;
-		
-		event EventHandler<EventArgs> maximized;
-		
-		[Obsolete("Use StateChanged event instead")]
-		public event EventHandler<EventArgs> Maximized
-		{
-			add
-			{
-				HandleEvent (WindowStateChangedEvent);
-				maximized += value;
-			}
-			remove { maximized -= value; }
-		}
-		
-		[Obsolete("Use OnStateChanged instead")]
-		protected virtual void OnMaximized (EventArgs e)
-		{
-			if (maximized != null)
-				maximized (this, e);
-		}
-
-		[Obsolete ("Use WindowState instead")]
-		public WindowState State
-		{
-			get { return Handler.WindowState; }
-			set { Handler.WindowState = value; }
-		}
-		
-
-		#endregion
 	}
 }
 #endif

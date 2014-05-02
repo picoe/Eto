@@ -3,7 +3,6 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using System.Collections.Generic;
-using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 
 namespace Eto.Platform.Mac.Forms.Controls
@@ -11,8 +10,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class TreeGridViewHandler : GridHandler<NSOutlineView, TreeGridView>, ITreeGridView, IDataViewHandler
 	{
 		ITreeGridStore<ITreeGridItem> store;
-		Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem> ();
-		Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
+		readonly Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem> ();
+		readonly Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
 
 		class EtoTreeItem : NSObject
 		{
@@ -46,7 +45,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		bool ChildIsSelected (ITreeGridItem item)
 		{
-			var node = this.SelectedItem;
+			var node = SelectedItem;
 			
 			while (node != null) {
 				if (node == item)
@@ -151,11 +150,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			WeakReference handler;
 			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override NSObject GetObjectValue (NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
+			public override NSObject GetObjectValue (NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
-				var myitem = byItem as EtoTreeItem;
-				var colHandler = Handler.GetColumn (forTableColumn);
+				var colHandler = Handler.GetColumn (tableColumn);
 				if (colHandler != null) {
+					var myitem = (EtoTreeItem)item;
 					return colHandler.GetObjectValue (myitem.Item);
 				}
 				return null;
@@ -163,9 +162,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override void SetObjectValue (NSOutlineView outlineView, NSObject theObject, NSTableColumn tableColumn, NSObject item)
 			{
-				var myitem = item as EtoTreeItem;
 				var colHandler = Handler.GetColumn (tableColumn);
 				if (colHandler != null) {
+					var myitem = (EtoTreeItem)item;
 					colHandler.SetObjectValue (myitem.Item, theObject);
 				}
 			}
@@ -173,28 +172,23 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override bool ItemExpandable (NSOutlineView outlineView, NSObject item)
 			{
 				var myitem = item as EtoTreeItem;
-				if (myitem == null)
-					return false;
-				return myitem.Item.Expandable;
+				return myitem != null && myitem.Item.Expandable;
 			}
 			
-			public override NSObject GetChild (NSOutlineView outlineView, int childIndex, NSObject ofItem)
+			public override NSObject GetChild (NSOutlineView outlineView, int childIndex, NSObject item)
 			{
 				Dictionary<int, EtoTreeItem> items;
-				var myitem = ofItem as EtoTreeItem;
-				if (ofItem == null)
-					items = Handler.topitems;
-				else
-					items = myitem.Items;
+				var myitem = item as EtoTreeItem;
+				items = myitem == null ? Handler.topitems : myitem.Items;
 				
-				EtoTreeItem item;
-				if (!items.TryGetValue (childIndex, out item)) {
+				EtoTreeItem etoItem;
+				if (!items.TryGetValue (childIndex, out etoItem)) {
 					var parentItem = myitem != null ? (ITreeGridStore<ITreeGridItem>)myitem.Item : Handler.store;
-					item = new EtoTreeItem{ Item = parentItem [childIndex] };
-					Handler.cachedItems.Add (item.Item, item);
-					items.Add (childIndex, item);
+					etoItem = new EtoTreeItem{ Item = parentItem [childIndex] };
+					Handler.cachedItems.Add (etoItem.Item, etoItem);
+					items.Add (childIndex, etoItem);
 				}
-				return item;
+				return etoItem;
 			}
 			
 			public override int GetChildrenCount (NSOutlineView outlineView, NSObject item)
@@ -216,7 +210,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -225,9 +219,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Control; }
 		}
 		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case TreeGridView.ExpandedEvent:
 			case TreeGridView.ExpandingEvent:
 			case TreeGridView.CollapsedEvent:
@@ -238,7 +232,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				// handled in delegate
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -273,7 +267,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		IEnumerable<ITreeGridItem> GetParents (ITreeGridItem item)
+		static IEnumerable<ITreeGridItem> GetParents (ITreeGridItem item)
 		{
 			var parent = item.Parent;
 			while (parent != null) {
@@ -285,9 +279,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		EtoTreeItem GetCachedItem (ITreeGridItem item)
 		{
 			EtoTreeItem myitem;
-			if (cachedItems.TryGetValue (item, out myitem))
-				return myitem;
-			return null;
+			return cachedItems.TryGetValue(item, out myitem) ? myitem : null;
 		}
 
 		int CountRows (ITreeGridItem item)
@@ -356,7 +348,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var row = Control.SelectedRow;
 				if (row == -1)
 					return null;
-				var myitem = Control.ItemAtRow (row) as EtoTreeItem;
+				var myitem = (EtoTreeItem)Control.ItemAtRow(row);
 				return myitem.Item;
 			}
 			set {
@@ -417,11 +409,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override object GetItem (int row)
 		{
-			var item = Control.ItemAtRow (row) as EtoTreeItem;
-			if (item != null)
-				return item.Item;
-			else
-				return null;
+			var item = Control.ItemAtRow(row) as EtoTreeItem;
+			return item != null ? item.Item : null;
 		}
 	}
 }

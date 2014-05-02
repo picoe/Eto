@@ -7,3 +7,6 @@ bin/
 obj/
 /BuildOutput
 *.shfbproj_*
+UpgradeLog*.htm
+Source/packages
+Source/Components

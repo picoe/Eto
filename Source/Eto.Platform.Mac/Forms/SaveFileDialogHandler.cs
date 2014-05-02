@@ -3,7 +3,6 @@ using SD = System.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -32,10 +31,7 @@ namespace Eto.Platform.Mac.Forms
 		public override string RequiredFileType {
 			get {
 				var ext = Handler.GetDefaultExtension ();
-				if (!string.IsNullOrEmpty (ext))
-					return ext;
-				else
-					return base.RequiredFileType;
+				return !string.IsNullOrEmpty(ext) ? ext : base.RequiredFileType;
 			}
 			set {
 				base.RequiredFileType = value;

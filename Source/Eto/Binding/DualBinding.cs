@@ -1,7 +1,4 @@
 using System;
-using System.ComponentModel;
-using System.Collections;
-using System.Collections.ObjectModel;
 
 namespace Eto
 {
@@ -10,7 +7,7 @@ namespace Eto
 	/// </summary>
 	/// <remarks>
 	/// This specifies what direction the updates of each of the properties are automatically handled.
-	/// Only properties that have a Changed event, or objects that implement <see cref="INotifyPropertyChanged"/>
+	/// Only properties that have a Changed event, or objects that implement <see cref="System.ComponentModel.INotifyPropertyChanged"/>
 	/// will handle automatically updating the binding.
 	/// </remarks>
 	public enum DualBindingMode

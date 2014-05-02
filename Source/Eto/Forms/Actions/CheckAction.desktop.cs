@@ -1,19 +1,17 @@
 #if DESKTOP
 using System;
-using System.Collections;
-using Eto.Drawing;
 using Eto;
 
 namespace Eto.Forms
 {
-	public partial class CheckAction : BaseAction
+	public partial class CheckAction
 	{
 		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			CheckMenuItem mi = new CheckMenuItem(generator);
+			var mi = new CheckMenuItem(generator);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
-			mi.Enabled = this.Enabled;
+			mi.Enabled = Enabled;
 			mi.Checked = Checked;
 			if (!string.IsNullOrEmpty(MenuItemStyle))
 				mi.Style = MenuItemStyle;
@@ -22,10 +20,11 @@ namespace Eto.Forms
 			return mi;
 		}
 
+		#pragma warning disable 0618
 		class MenuConnector
 		{
-			CheckMenuItem menuItem;
-			CheckAction action;
+			readonly CheckMenuItem menuItem;
+			readonly CheckAction action;
 			bool blah;
 			
 			public MenuConnector(CheckAction action, CheckMenuItem menuItem)
@@ -37,23 +36,24 @@ namespace Eto.Forms
 				this.action.CheckedChanged += new EventHandler<EventArgs>(action_CheckedChanged).MakeWeak(e => this.action.CheckedChanged -= e);
 			}
 			
-			private void menuItem_Clicked(Object sender, EventArgs e)
+			void menuItem_Clicked(Object sender, EventArgs e)
 			{
 				if (!blah) action.OnActivated(e);
 			}
 			
-			private void action_CheckedChanged(Object sender, EventArgs e)
+			void action_CheckedChanged(Object sender, EventArgs e)
 			{
 				blah = true;
 				menuItem.Checked = action.Checked;
 				blah = false;
 			}
 			
-			private void action_EnabledChanged(Object sender, EventArgs e)
+			void action_EnabledChanged(Object sender, EventArgs e)
 			{
 				menuItem.Enabled = action.Enabled;
 			}
 		}
+		#pragma warning restore 0618
 		
 	}
 }

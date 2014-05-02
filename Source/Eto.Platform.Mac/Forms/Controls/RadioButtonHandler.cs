@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Reflection;
 using Eto.Forms;
 using MonoMac.AppKit;
 using System.Collections.Generic;
@@ -19,14 +17,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
 
 		public RadioButtonHandler()
 		{
-			Control = new EtoRadioButton { Handler = this };
+			Control = new EtoRadioButton { Handler = this, Title = string.Empty };
 			Control.SetButtonType(NSButtonType.Radio);
 			Control.Activated += HandleActivated;
 		}
@@ -51,25 +49,25 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			if (controller != null)
 			{
-				RadioButtonHandler controllerInner = (RadioButtonHandler)controller.Handler;
+				var controllerInner = (RadioButtonHandler)controller.Handler;
 				if (controllerInner.group == null)
 				{
 					controllerInner.group = new List<RadioButton>();
 					controllerInner.group.Add(controller);
 					controllerInner.Activated += controllerInner.control_RadioSwitch;
 				}
-				controllerInner.group.Add((RadioButton)this.Widget);
-				this.Activated += controllerInner.control_RadioSwitch;
+				controllerInner.group.Add(Widget);
+				Activated += controllerInner.control_RadioSwitch;
 			}
 		}
 
-		private void control_RadioSwitch(object sender, EventArgs e)
+		void control_RadioSwitch(object sender, EventArgs e)
 		{
 			if (group != null)
 			{
 				foreach (RadioButton item in group)
 				{
-					var c = item.ControlObject as NSButton;
+					var c = (NSButton)item.ControlObject;
 					var ischecked = (item.Handler == sender);
 					c.State = ischecked ? NSCellStateValue.On : NSCellStateValue.Off;
 				}

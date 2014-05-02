@@ -1,59 +1,43 @@
-using System;
-using System.Collections;
-using System.Reflection;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
-using Eto.Drawing;
 using Eto.Forms;
+using System;
 
 namespace Eto.Platform.Windows
 {
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class SeparatorMenuItemHandler : MenuHandler<SWF.ToolStripSeparator, SeparatorMenuItem>, ISeparatorMenuItem, IMenu
+	public class SeparatorMenuItemHandler : MenuHandler<SWF.ToolStripSeparator, SeparatorMenuItem>, ISeparatorMenuItem
 	{
 		
 		public SeparatorMenuItemHandler()
 		{
 			Control = new SWF.ToolStripSeparator();
 		}
-		
-		public bool Enabled
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-		
+
 		public string Text
 		{
-			get { return string.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-		
-		public Key Shortcut
-		{
-			get { return Key.None; }
+			get { return null; }
 			set { throw new NotSupportedException(); }
 		}
 
-		#region IMenu Members
-
-		public void AddMenu(int index, MenuItem item)
+		public string ToolTip
 		{
-			throw new NotSupportedException();
+			get { return null; }
+			set { throw new NotSupportedException(); }
 		}
 
-		public void RemoveMenu(MenuItem item)
+		public Keys Shortcut
 		{
-			throw new NotImplementedException();
+			get { return Keys.None; }
+			set { throw new NotSupportedException(); }
 		}
 
-		public void Clear()
+		public bool Enabled
 		{
-			throw new NotImplementedException();
+			get { return false; }
+			set { throw new NotSupportedException(); }
 		}
-
-		#endregion
 	}
 }

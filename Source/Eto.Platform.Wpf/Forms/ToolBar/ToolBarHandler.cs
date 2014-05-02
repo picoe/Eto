@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using swi = System.Windows.Input;
 using Eto.Forms;
@@ -10,26 +6,26 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class ToolBarHandler : WidgetHandler<swc.ToolBar, ToolBar>, IToolBar
 	{
-		public override swc.ToolBar CreateControl ()
+		public override swc.ToolBar CreateControl()
 		{
 			var control = new swc.ToolBar { IsTabStop = false };
-			swi.KeyboardNavigation.SetTabNavigation (control, swi.KeyboardNavigationMode.Continue);
+			swi.KeyboardNavigation.SetTabNavigation(control, swi.KeyboardNavigationMode.Continue);
 			return control;
 		}
 
-		public void AddButton (ToolBarItem button)
+		public void AddButton(ToolItem button, int index)
 		{
-			Control.Items.Add (button.ControlObject);
+			Control.Items.Insert(index, button.ControlObject);
 		}
 
-		public void RemoveButton (ToolBarItem button)
+		public void RemoveButton(ToolItem button)
 		{
-			Control.Items.Remove (button.ControlObject);
+			Control.Items.Remove(button.ControlObject);
 		}
 
-		public void Clear ()
+		public void Clear()
 		{
-			Control.Items.Clear ();
+			Control.Items.Clear();
 		}
 
 		public ToolBarTextAlign TextAlign

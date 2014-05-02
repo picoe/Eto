@@ -1,8 +1,6 @@
 using System;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -18,25 +16,19 @@ namespace Eto.Platform.Mac.Forms
 
 		public MessageBoxDefaultButton DefaultButton { get; set; }
 
-		void Ended()
-		{
-			NSApplication.SharedApplication.StopModal();
-		}
-
 		public DialogResult ShowDialog(Control parent)
 		{
 			var alert = new NSAlert();
 
 			AddButtons(alert);
 
-			alert.AlertStyle = Convert(this.Type);
+			alert.AlertStyle = Convert(Type);
 			alert.MessageText = Caption ?? string.Empty;
 			alert.InformativeText = Text ?? string.Empty;
 			var ret = MacModal.Run(alert, parent);
 			switch (Buttons)
 			{
 				default:
-				case MessageBoxButtons.OK:
 					return DialogResult.Ok;
 				case MessageBoxButtons.OKCancel:
 					return (ret == 1000) ? DialogResult.Ok : DialogResult.Cancel;
@@ -114,7 +106,7 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		NSAlertStyle Convert(MessageBoxType type)
+		static NSAlertStyle Convert(MessageBoxType type)
 		{
 			switch (type)
 			{

@@ -1,8 +1,4 @@
 using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sd = System.Drawing;
 using sd2 = System.Drawing.Drawing2D;
 using sdi = System.Drawing.Imaging;
@@ -47,7 +43,7 @@ namespace Eto.Platform.Windows.Drawing
 		public void SetOpacity (TextureBrush widget, float opacity)
 		{
 			var brush = ((sd.TextureBrush)widget.ControlObject);
-			widget.ControlObject = Create (widget.Image, opacity);;
+			widget.ControlObject = Create (widget.Image, opacity);
 			var newbrush = ((sd.TextureBrush)widget.ControlObject);
 			newbrush.Transform = brush.Transform;
 		}

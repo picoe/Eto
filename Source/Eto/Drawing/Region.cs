@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Drawing
 {
@@ -38,8 +34,8 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Initializes a new instance of the Region class
 		/// </summary>
-		public Region ()
-			: this (Generator.Current)
+		public Region()
+			: this((Generator)null)
 		{
 		}
 

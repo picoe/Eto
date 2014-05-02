@@ -102,8 +102,8 @@ namespace Eto.Drawing
 		/// <param name="rectangle"></param>
 		public RectangleF(Rectangle rectangle)
 		{
-			this.location = new PointF(rectangle.X, rectangle.Y);
-			this.size = new SizeF(rectangle.Width, rectangle.Height);
+			location = new PointF(rectangle.X, rectangle.Y);
+			size = new SizeF(rectangle.Width, rectangle.Height);
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace Eto.Drawing
 		/// <param name="size">Size to give the rectangle</param>
 		public RectangleF (SizeF size)
 		{
-			this.location = new PointF (0, 0);
+			location = new PointF (0, 0);
 			this.size = size;
 		}
 
@@ -125,8 +125,8 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the rectangle</param>
 		public RectangleF (float x, float y, float width, float height)
 		{
-			this.location = new PointF (x, y);
-			this.size = new SizeF (width, height);
+			location = new PointF (x, y);
+			size = new SizeF (width, height);
 		}
 
 		/// <summary>
@@ -158,7 +158,7 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Rectangle to test if it is contained within this instance</param>
 		public bool Contains (RectangleF rectangle)
 		{
-			return this.Left <= rectangle.Left && this.Top <= rectangle.Top && this.Right >= rectangle.Right && this.Bottom >= rectangle.Bottom;
+			return Left <= rectangle.Left && Top <= rectangle.Top && Right >= rectangle.Right && Bottom >= rectangle.Bottom;
 		}
 
 		/// <summary>
@@ -168,7 +168,7 @@ namespace Eto.Drawing
 		/// <returns>True if the rectangle overlaps this instance, false otherwise</returns>
 		public bool Intersects (RectangleF rectangle)
 		{
-			return rectangle.X < this.X + this.Width && this.X < rectangle.X + rectangle.Width && rectangle.Y < this.Y + this.Height && this.Y < rectangle.Y + rectangle.Height;
+			return rectangle.X < X + Width && X < rectangle.X + rectangle.Width && rectangle.Y < Y + Height && Y < rectangle.Y + rectangle.Height;
 		}
 
 		/// <summary>
@@ -542,8 +542,8 @@ namespace Eto.Drawing
 		/// </summary>
 		public float MiddleX
 		{
-			get { return X + (this.Width / 2); }
-			set { X = value - (this.Width / 2); }
+			get { return X + (Width / 2); }
+			set { X = value - (Width / 2); }
 		}
 
 		/// <summary>
@@ -551,8 +551,8 @@ namespace Eto.Drawing
 		/// </summary>
 		public float MiddleY
 		{
-			get { return Y + (this.Height / 2); }
-			set { Y = value - (this.Height / 2); }
+			get { return Y + (Height / 2); }
+			set { Y = value - (Height / 2); }
 		}
 
 		/// <summary>
@@ -562,8 +562,8 @@ namespace Eto.Drawing
 		/// <param name="y">Vertical offset to move the rectangle</param>
 		public void Offset (float x, float y)
 		{
-			this.location.X += x;
-			this.location.Y += y;
+			location.X += x;
+			location.Y += y;
 		}
 		
 		/// <summary>
@@ -572,8 +572,8 @@ namespace Eto.Drawing
 		/// <param name="size">Width and Height to move the rectangle</param>
 		public void Offset (SizeF size)
 		{
-			this.location.X += size.Width;
-			this.location.Y += size.Height;
+			location.X += size.Width;
+			location.Y += size.Height;
 		}
 		
 		/// <summary>
@@ -582,8 +582,8 @@ namespace Eto.Drawing
 		/// <param name="point">Point with values to offset the rectangle</param>
 		public void Offset (PointF point)
 		{
-			this.location.X += point.X;
-			this.location.Y += point.Y;
+			location.X += point.X;
+			location.Y += point.Y;
 		}
 
 		/// <summary>
@@ -652,19 +652,19 @@ namespace Eto.Drawing
 		public void Inflate (float width, float height)
 		{
 			if (Width >= 0) {
-				this.X -= width;
-				this.Width += width * 2;
+				X -= width;
+				Width += width * 2;
 			} else {
-				this.X += width;
-				this.Width -= width * 2;
+				X += width;
+				Width -= width * 2;
 			}
 
 			if (Height >= 0) {
-				this.Y -= height;
-				this.Height += height * 2;
+				Y -= height;
+				Height += height * 2;
 			} else {
-				this.Y += height;
-				this.Height -= height * 2;
+				Y += height;
+				Height -= height * 2;
 			}
 		}
 
@@ -770,10 +770,10 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Rectangle to union with this instance</param>
 		public void Union (RectangleF rectangle)
 		{
-			var left = Math.Min (this.Left, rectangle.Left);
-			var top = Math.Min (this.Top, rectangle.Top);
-			var right = Math.Max (this.Right, rectangle.Right);
-			var bottom = Math.Max (this.Bottom, rectangle.Bottom);
+			var left = Math.Min(Left, rectangle.Left);
+			var top = Math.Min(Top, rectangle.Top);
+			var right = Math.Max(Right, rectangle.Right);
+			var bottom = Math.Max(Bottom, rectangle.Bottom);
 			location = new PointF (left, top);
 			size = new SizeF (right - left, bottom - top);
 		}
@@ -796,10 +796,10 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Rectangle to intersect with</param>
 		public void Intersect (RectangleF rectangle)
 		{
-			var left = Math.Max (this.Left, rectangle.Left);
-			var top = Math.Max (this.Top, rectangle.Top);
-			var width = Math.Max (Math.Min (this.Right, rectangle.Right) - left, 0);
-			var height = Math.Max (Math.Min (this.Bottom, rectangle.Bottom) - top, 0);
+			var left = Math.Max(Left, rectangle.Left);
+			var top = Math.Max(Top, rectangle.Top);
+			var width = Math.Max (Math.Min(Right, rectangle.Right) - left, 0);
+			var height = Math.Max (Math.Min(Bottom, rectangle.Bottom) - top, 0);
 			location = new PointF (left, top);
 			size = new SizeF (width, height);
 		}

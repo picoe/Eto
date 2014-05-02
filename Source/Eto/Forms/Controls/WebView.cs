@@ -7,248 +7,236 @@ namespace Eto.Forms
 	{
 		Uri Url { get; set; }
 
-		void LoadHtml (string html, Uri baseUri);
-		
-		void GoBack ();
-		
+		void LoadHtml(string html, Uri baseUri);
+
+		void GoBack();
+
 		bool CanGoBack { get; }
 
-		void GoForward ();
-		
+		void GoForward();
+
 		bool CanGoForward { get; }
-		
-		void Stop ();
-		
-		void Reload ();
-		
+
+		void Stop();
+
+		void Reload();
+
 		string DocumentTitle { get; }
-		
-		string ExecuteScript (string script);
+
+		string ExecuteScript(string script);
 
 		void ShowPrintDialog();
 
 		bool BrowserContextMenuEnabled { get; set; }
 	}
-	
+
 	public class WebViewLoadedEventArgs : EventArgs
 	{
 		public Uri Uri { get; private set; }
-		
-		public WebViewLoadedEventArgs (Uri uri)
+
+		public WebViewLoadedEventArgs(Uri uri)
 		{
 			this.Uri = uri;
 		}
 	}
-	
+
 	public class WebViewLoadingEventArgs : WebViewLoadedEventArgs
 	{
 		public bool Cancel { get; set; }
-		
+
 		public bool IsMainFrame { get; set; }
-		
-		public WebViewLoadingEventArgs (Uri uri, bool isMainFrame)
+
+		public WebViewLoadingEventArgs(Uri uri, bool isMainFrame)
 			: base(uri)
 		{
 			this.IsMainFrame = isMainFrame;
 		}
 	}
-	
+
 	public class WebViewTitleEventArgs : EventArgs
 	{
 		public string Title { get; private set; }
-		
-		public WebViewTitleEventArgs (string title)
+
+		public WebViewTitleEventArgs(string title)
 		{
 			this.Title = title;
 		}
 	}
-	
+
 	public class WebViewNewWindowEventArgs : WebViewLoadingEventArgs
 	{
 		public string NewWindowName { get; private set; }
-		
-		public WebViewNewWindowEventArgs (Uri uri, string newWindowName)
-			: base (uri, false)
+
+		public WebViewNewWindowEventArgs(Uri uri, string newWindowName)
+			: base(uri, false)
 		{
 			this.NewWindowName = newWindowName;
 		}
 	}
-	
+
 	public class WebView : Control
 	{
 		new IWebView Handler { get { return (IWebView)base.Handler; } }
-		
+
 		#region Events
 
-        #region Navigated
-        public const string NavigatedEvent = "WebView.Navigated";
-        EventHandler<WebViewLoadedEventArgs> navigated;
+		public const string NavigatedEvent = "WebView.Navigated";
 
-        public event EventHandler<WebViewLoadedEventArgs> Navigated
-        {
-            add
-            {
-                HandleEvent(NavigatedEvent);
-                navigated += value;
-            }
-            remove { navigated -= value; }
-        }
-
-        public virtual void OnNavigated(WebViewLoadedEventArgs e)
-        {
-            if (navigated != null)
-                navigated(this, e);
-        }
-
-        #endregion
-
-        public const string DocumentLoadedEvent = "WebView.DocumentLoaded";
-		EventHandler<WebViewLoadedEventArgs> documentLoaded;
-
-		public event EventHandler<WebViewLoadedEventArgs> DocumentLoaded {
-			add { 
-				HandleEvent (DocumentLoadedEvent);
-				documentLoaded += value;
-			}
-			remove { documentLoaded -= value; }
-		}
-		
-		public virtual void OnDocumentLoaded (WebViewLoadedEventArgs e)
+		public event EventHandler<WebViewLoadedEventArgs> Navigated
 		{
-			if (documentLoaded != null)
-				documentLoaded (this, e);
+			add { Properties.AddHandlerEvent(NavigatedEvent, value); }
+			remove { Properties.RemoveEvent(NavigatedEvent, value); }
 		}
-		
+
+		public virtual void OnNavigated(WebViewLoadedEventArgs e)
+		{
+			Properties.TriggerEvent(NavigatedEvent, this, e);
+		}
+
+		public const string DocumentLoadedEvent = "WebView.DocumentLoaded";
+
+		public event EventHandler<WebViewLoadedEventArgs> DocumentLoaded
+		{
+			add { Properties.AddHandlerEvent(DocumentLoadedEvent, value); }
+			remove { Properties.RemoveEvent(DocumentLoadedEvent, value); }
+		}
+
+		public virtual void OnDocumentLoaded(WebViewLoadedEventArgs e)
+		{
+			Properties.TriggerEvent(DocumentLoadedEvent, this, e);
+		}
+
 		public const string DocumentLoadingEvent = "WebView.DocumentLoading";
-		EventHandler<WebViewLoadingEventArgs> documentLoading;
 
-		public event EventHandler<WebViewLoadingEventArgs> DocumentLoading {
-			add { 
-				HandleEvent (DocumentLoadingEvent);
-				documentLoading += value;
-			}
-			remove { documentLoading -= value; }
-		}
-		
-		public virtual void OnDocumentLoading (WebViewLoadingEventArgs e)
+		public event EventHandler<WebViewLoadingEventArgs> DocumentLoading
 		{
-			if (documentLoading != null)
-				documentLoading (this, e);
+			add { Properties.AddHandlerEvent(DocumentLoadingEvent, value); }
+			remove { Properties.RemoveEvent(DocumentLoadingEvent, value); }
+		}
+
+		public virtual void OnDocumentLoading(WebViewLoadingEventArgs e)
+		{
+			Properties.TriggerEvent(DocumentLoadingEvent, this, e);
+		}
+
+		public const string OpenNewWindowEvent = "WebView.OpenNewWindow";
+
+		public event EventHandler<WebViewNewWindowEventArgs> OpenNewWindow
+		{
+			add { Properties.AddHandlerEvent(OpenNewWindowEvent, value); }
+			remove { Properties.RemoveEvent(OpenNewWindowEvent, value); }
+		}
+
+		public virtual void OnOpenNewWindow(WebViewNewWindowEventArgs e)
+		{
+			Properties.TriggerEvent(OpenNewWindowEvent, this, e);
 		}
 
 		public const string DocumentTitleChangedEvent = "WebView.DocumentTitleChanged";
-		EventHandler<WebViewTitleEventArgs> documentTitleChanged;
 
-		public event EventHandler<WebViewTitleEventArgs> DocumentTitleChanged {
-			add { 
-				HandleEvent (DocumentTitleChangedEvent);
-				documentTitleChanged += value;
-			}
-			remove { documentTitleChanged -= value; }
-		}
-		
-		public const string OpenNewWindowEvent = "WebView.OpenNewWindow";
-
-		EventHandler<WebViewNewWindowEventArgs> _OpenNewWindow;
-
-		public event EventHandler<WebViewNewWindowEventArgs> OpenNewWindow {
-			add {
-				HandleEvent (OpenNewWindowEvent);
-				_OpenNewWindow += value;
-			}
-			remove { _OpenNewWindow -= value; }
-		}
-
-		public virtual void OnOpenNewWindow (WebViewNewWindowEventArgs e)
+		public event EventHandler<WebViewTitleEventArgs> DocumentTitleChanged
 		{
-			if (_OpenNewWindow != null)
-				_OpenNewWindow (this, e);
+			add { Properties.AddHandlerEvent(DocumentTitleChangedEvent, value); }
+			remove { Properties.RemoveEvent(DocumentTitleChangedEvent, value); }
 		}
-		
-		
-		public virtual void OnDocumentTitleChanged (WebViewTitleEventArgs e)
+
+		public virtual void OnDocumentTitleChanged(WebViewTitleEventArgs e)
 		{
-			if (documentTitleChanged != null)
-				documentTitleChanged (this, e);
+			Properties.TriggerEvent(DocumentTitleChangedEvent, this, e);
 		}
-		
+
 		#endregion
-		
-		public WebView ()
-			: this (Generator.Current)
+
+		static WebView()
+		{
+			EventLookup.Register<WebView>(c => c.OnNavigated(null), WebView.NavigatedEvent);
+			EventLookup.Register<WebView>(c => c.OnDocumentLoaded(null), WebView.DocumentLoadedEvent);
+			EventLookup.Register<WebView>(c => c.OnDocumentLoading(null), WebView.DocumentLoadingEvent);
+			EventLookup.Register<WebView>(c => c.OnDocumentTitleChanged(null), WebView.DocumentTitleChangedEvent);
+			EventLookup.Register<WebView>(c => c.OnOpenNewWindow(null), WebView.OpenNewWindowEvent);
+		}
+
+		public WebView()
+			: this((Generator)null)
 		{
 		}
-		
-		public WebView (Generator generator)
-			: this (generator, typeof(IWebView))
+
+		public WebView(Generator generator)
+			: this(generator, typeof(IWebView))
 		{
 		}
-		
-		protected WebView (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+
+		protected WebView(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 		}
-		
-		public void GoBack ()
+
+		public void GoBack()
 		{
-			Handler.GoBack ();
+			Handler.GoBack();
 		}
-		
-		public bool CanGoBack {
+
+		public bool CanGoBack
+		{
 			get{ return Handler.CanGoBack; }
 		}
-		
-		public void GoForward ()
+
+		public void GoForward()
 		{
-			Handler.GoForward ();
+			Handler.GoForward();
 		}
-		
-		public bool CanGoForward {
+
+		public bool CanGoForward
+		{
 			get { return Handler.CanGoForward; }
 		}
 
-		public Uri Url {
+		public Uri Url
+		{
 			get { return Handler.Url; }
 			set { Handler.Url = value; }
 		}
-		
-		public void Stop ()
+
+		public void Stop()
 		{
-			Handler.Stop ();
-		}
-		
-		public void Reload ()
-		{
-			Handler.Reload ();
-		}
-		
-		public string ExecuteScript (string script)
-		{
-			return Handler.ExecuteScript (script);
+			Handler.Stop();
 		}
 
-		public string DocumentTitle {
+		public void Reload()
+		{
+			Handler.Reload();
+		}
+
+		public string ExecuteScript(string script)
+		{
+			return Handler.ExecuteScript(script);
+		}
+
+		public string DocumentTitle
+		{
 			get { return Handler.DocumentTitle; }
 		}
 
-		public void LoadHtml (Stream stream, Uri baseUri = null)
+		public void LoadHtml(Stream stream, Uri baseUri = null)
 		{
-			using (var reader = new StreamReader(stream)) {
-				Handler.LoadHtml (reader.ReadToEnd (), baseUri);
+			using (var reader = new StreamReader(stream))
+			{
+				Handler.LoadHtml(reader.ReadToEnd(), baseUri);
 			}
 		}
-		
-		public void LoadHtml (string html, Uri baseUri = null)
+
+		public void LoadHtml(string html, Uri baseUri = null)
 		{
-			Handler.LoadHtml (html, baseUri);
+			Handler.LoadHtml(html, baseUri);
 		}
 
-		public void ShowPrintDialog ()
+		public void ShowPrintDialog()
 		{
-			Handler.ShowPrintDialog ();
+			Handler.ShowPrintDialog();
 		}
 
-		public bool BrowserContextMenuEnabled {
+		public bool BrowserContextMenuEnabled
+		{
 			get { return Handler.BrowserContextMenuEnabled; }
 			set { Handler.BrowserContextMenuEnabled = value; }
 		}

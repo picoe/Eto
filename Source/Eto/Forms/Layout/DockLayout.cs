@@ -1,8 +1,5 @@
 using System;
 using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
 
 
 #if XAML
@@ -31,8 +28,8 @@ namespace Eto.Forms
 		/// <param name="control">Control to add to the container</param>
 		/// <param name="padding">Amount of padding around the control, inside the container</param>
 		/// <returns></returns>
-		[Obsolete("use the DockContainer.Content property instead")]
-		public static Container AddDockedControl (this DockContainer container, Control control, Padding? padding = null)
+		[Obsolete("use the Panel.Content property instead")]
+		public static Container AddDockedControl (this Panel container, Control control, Padding? padding = null)
 		{
 			container.Content = control;
 			if (padding != null)
@@ -48,19 +45,9 @@ namespace Eto.Forms
 	/// This layout is used to fill an entire container with a single content control.
 	/// </remarks>
 	[ContentProperty("Content")]
-	[Obsolete("Use the DockContainer.Content property instead, or use a Panel")]
+	[Obsolete("Use the Panel.Content property instead, or use a Panel")]
 	public class DockLayout : Panel
 	{
-		/// <summary>
-		/// Gets or sets the default amount of padding for all new DockLayout objects
-		/// </summary>
-		[Obsolete("Use DockContainer.DefaultPadding instead")]
-		public new static Padding DefaultPadding
-		{
-			get { return DockContainer.DefaultPadding; }
-			set { DockContainer.DefaultPadding = value; }
-		}
-
 		[Obsolete("Use Panel directly instead")]
 		public Container Container { get { return Parent; } }
 
@@ -90,7 +77,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the DockLayout with an unspecified container
 		/// </summary>
 		/// <remarks>
-		/// Used typically when creating for json or xaml.  Use <see cref="DockLayout(DockContainer)"/> when
+		/// Used typically when creating for json or xaml.  Use <see cref="DockLayout(Panel)"/> when
 		/// calling through code.
 		/// </remarks>
 		public DockLayout ()
@@ -102,8 +89,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the DockLayout for the specified container
 		/// </summary>
 		/// <param name="container">Container for the dock layout to manage</param>
-		public DockLayout (DockContainer container)
-			: base ()
+		public DockLayout (Panel container)
 		{
 			if (container != null)
 				container.Content = this;

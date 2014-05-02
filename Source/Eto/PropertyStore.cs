@@ -1,63 +1,96 @@
-using System;
 using System.Collections.Generic;
-
-#if XAML
-using System.Xaml;
-#endif
+using System;
 
 namespace Eto
 {
 	/// <summary>
-	/// Attachable property storage for xaml
+	/// A storage for properties and events of a class
 	/// </summary>
 	/// <remarks>
-	/// This is used as a storage for xaml property values.
+	/// This is used by <see cref="InstanceWidget"/> object to minimize the footprint of each instance.
+	/// For example, the <see cref="Forms.Control"/> class has around 20 events, each would take up to 4 bytes on a 32 bit 
+	/// system for a total overhead of 80 bytes per instance.
+	/// Most of the events won't be handled on most controls, so using a dictionary can dramatically reduce the size.
 	/// </remarks>
-	public class PropertyStore : Dictionary<AttachableMemberIdentifier, object>
+	public class PropertyStore : Dictionary<object, object>
 	{
 		/// <summary>
-		/// Gets the parent object of this store
+		/// Gets the parent widget that this property store is attached to
 		/// </summary>
-		public object Parent { get; private set; }
+		/// <remarks>
+		/// This is used to attach/remove events
+		/// </remarks>
+		/// <value>The parent widget</value>
+		public InstanceWidget Parent { get; private set; }
 
 		/// <summary>
-		/// Initializes a new instance of the PropertyStore class
+		/// Initializes a new instance of the <see cref="Eto.PropertyStore"/> class.
 		/// </summary>
-		/// <param name="parent">Object that contains this property store</param>
-		public PropertyStore (object parent)
+		/// <param name="parent">Parent to attach the properties to</param>
+		internal PropertyStore(InstanceWidget parent)
 		{
 			this.Parent = parent;
 		}
 
-		/// <summary>
-		/// Gets an attachable property value, using a default if not set to a value
-		/// </summary>
-		/// <typeparam name="T">Type of the property value to get</typeparam>
-		/// <param name="member">Member to retrieve</param>
-		/// <param name="defaultValue">Default value to use if no value is stored</param>
-		/// <returns>Value of the attached property, or <paramref name="defaultValue"/> if not set</returns>
-		public T Get<T> (AttachableMemberIdentifier member, T defaultValue)
+		public T Get<T>(object key)
 		{
 			object value;
-			if (this.TryGetValue (member, out value))
-				return (T)value;
-			else
-				return defaultValue;
+			return TryGetValue(key, out value) ? (T)value : default(T);
 		}
 
-		/// <summary>
-		/// Gets an attachable property value
-		/// </summary>
-		/// <typeparam name="T">Type of the property value to get</typeparam>
-		/// <param name="member">Member to retrieve</param>
-		/// <returns>Value of the attached property</returns>
-		public T Get<T> (AttachableMemberIdentifier member)
+		public T Create<T>(object key)
+			where T: new()
 		{
 			object value;
-			if (this.TryGetValue (member, out value))
-				return (T)value;
+			if (!TryGetValue(key, out value))
+			{
+				value = new T();
+				Add(key, value);
+			}
+			return (T)value;
+		}
+
+		public void AddEvent(object key, Delegate value)
+		{
+			object existingDelegate;
+			if (TryGetValue(key, out existingDelegate))
+				this[key] = Delegate.Combine((Delegate)existingDelegate, value);
 			else
-				return default (T);
+			{
+				Add(key, value);
+			}
+		}
+
+		public void AddHandlerEvent(string key, Delegate value)
+		{
+			object existingDelegate;
+			if (TryGetValue(key, out existingDelegate))
+				this[key] = Delegate.Combine((Delegate)existingDelegate, value);
+			else
+			{
+				if (!EventLookup.IsDefault(Parent, key))
+					Parent.HandleDefaultEvents(key);
+				Add(key, value);
+			}
+		}
+
+		public void RemoveEvent(object key, Delegate value)
+		{
+			object existingDelegate;
+			if (TryGetValue(key, out existingDelegate))
+			{
+				this[key] = Delegate.Remove((Delegate)existingDelegate, value);
+			}
+		}
+
+		public void TriggerEvent<T>(object key, object sender, T args)
+			where T: EventArgs
+		{
+			object existingDelegate;
+			if (TryGetValue(key, out existingDelegate) && existingDelegate != null)
+			{
+				((EventHandler<T>)existingDelegate)(sender, args);
+			}
 		}
 	}
 }

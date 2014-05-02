@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Eto
 {
@@ -24,11 +25,10 @@ namespace Eto
 	/// ]]></code>
 	/// </example>
 	/// <seealso cref="WidgetHandler{T,W}"/>
-	/// <typeparam name="W">Type of widget the handler is for</typeparam>
+	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
 	public abstract class WidgetHandler<TWidget> : IWidget, IDisposable
 		where TWidget: Widget
 	{
-		HashSet<string> eventHooks;
 		Generator generator;
 
 		/// <summary>
@@ -72,55 +72,6 @@ namespace Eto
 		{
 			Initialize();
 			PostInitialize();
-		}
-
-		/// <summary>
-		/// Gets a value indicating that the specified event is handled
-		/// </summary>
-		/// <param name="id">Identifier of the event</param>
-		/// <returns>True if the event is handled, otherwise false</returns>
-		public bool IsEventHandled(string id)
-		{
-			if (eventHooks == null)
-				return false;
-			return eventHooks.Contains(id);
-		}
-
-		/// <summary>
-		/// Called to handle the specified event
-		/// </summary>
-		/// <remarks>
-		/// This is typically called directly from the Widget's event handlers, or from the
-		/// user of the widget manually.  This method takes care of only handling the
-		/// event once by passing the event off to <see cref="AttachEvent"/> only when it has
-		/// not been attached already.
-		/// </remarks>
-		/// <param name="id">Identifier of the event</param>
-		public void HandleEvent(string id)
-		{
-			if (eventHooks == null)
-				eventHooks = new HashSet<string>();
-			if (eventHooks.Contains(id))
-				return;
-			eventHooks.Add(id);
-			AttachEvent(id);
-		}
-
-		/// <summary>
-		/// Attaches the specified event to the platform-specific control
-		/// </summary>
-		/// <remarks>
-		/// Implementors should override this method to handle any events that the widget
-		/// supports. Ensure to call the base class' implementation if the event is not
-		/// one the specific widget supports, so the base class' events can be handled as well.
-		/// </remarks>
-		/// <param name="id">Identifier of the event</param>
-		public virtual void AttachEvent(string id)
-		{
-			// only use for desktop until mobile controls are working
-#if DESKTOP
-			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
-#endif
 		}
 
 		/// <summary>
@@ -179,10 +130,12 @@ namespace Eto
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="T">Type of the platform-specific object</typeparam>
 	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget<T, TWidget>
+	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget
 		where TWidget: InstanceWidget
 	{
-		/// <summary>
+		const string InstanceEventSuffix = ".Instance";
+
+				/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
 		/// </summary>
 		protected WidgetHandler()
@@ -217,7 +170,7 @@ namespace Eto
 		/// </remarks>
 		protected override void Initialize()
 		{
-			if (Control == null)
+			if (EqualityComparer<T>.Default.Equals(Control, default(T)))
 				Control = CreateControl();
 
 			base.Initialize();
@@ -229,10 +182,16 @@ namespace Eto
 			Style.OnStyleWidgetDefaults(this);
 		}
 
+		static readonly object IDKey = new object();
+
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
-		public virtual string ID { get; set; }
+		public virtual string ID
+		{
+			get { return Widget.Properties.Get<string>(IDKey); }
+			set { Widget.Properties[IDKey] = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating that control should automatically be disposed when this widget is disposed
@@ -247,12 +206,50 @@ namespace Eto
 		/// <summary>
 		/// Gets the platform-specific control object
 		/// </summary>
-		object IInstanceWidget.ControlObject
+		object IInstanceWidget.ControlObject { get { return Control; } }
+
+		/// <summary>
+		/// Gets a value indicating that the specified event is handled
+		/// </summary>
+		/// <param name="id">Identifier of the event</param>
+		/// <returns>True if the event is handled, otherwise false</returns>
+		public bool IsEventHandled(string id)
 		{
-			get
+			return Widget.Properties.ContainsKey(id) || EventLookup.IsDefault(Widget, id) || Widget.Properties.ContainsKey(id + InstanceEventSuffix);
+		}
+
+		public void HandleEvent(string id, bool defaultEvent = false)
+		{
+			if (defaultEvent)
 			{
-				return Control;
+				if (!Widget.Properties.ContainsKey(id + InstanceEventSuffix))
+					AttachEvent(id);
 			}
+			else if (!Widget.Properties.ContainsKey(id) && !EventLookup.IsDefault(Widget, id))
+			{
+				var instanceId = id + InstanceEventSuffix;
+				if (Widget.Properties.ContainsKey(instanceId))
+					return;
+				Widget.Properties.Add(instanceId, true);
+				AttachEvent(id);
+			}
+		}
+
+		/// <summary>
+		/// Attaches the specified event to the platform-specific control
+		/// </summary>
+		/// <remarks>
+		/// Implementors should override this method to handle any events that the widget
+		/// supports. Ensure to call the base class' implementation if the event is not
+		/// one the specific widget supports, so the base class' events can be handled as well.
+		/// </remarks>
+		/// <param name="id">Identifier of the event</param>
+		public virtual void AttachEvent(string id)
+		{
+			// only use for desktop until mobile controls are working
+			#if DESKTOP
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
+			#endif
 		}
 
 		/// <summary>
@@ -292,8 +289,60 @@ namespace Eto
 		/// <returns>The platform-specific control used for the specified widget</returns>
 		public static T GetControl(TWidget widget)
 		{
-			var handler = (IInstanceWidget<T, TWidget>)widget.Handler;
+			var handler = (WidgetHandler<T, TWidget>)widget.Handler;
 			return handler.Control;
 		}
+
+		static readonly object connector_key = new object();
+
+		/// <summary>
+		/// Gets a weak connector class to hook up events to the underlying control
+		/// </summary>
+		/// <remarks>
+		/// Some frameworks (e.g. gtk, monomac, ios, android) keep track of references in a way that leak objects when
+		/// there is a circular reference between the control and the handler.  This is the case when registering events
+		/// from the control to a method implemented in the handler.
+		/// This instance can be used to connect the objects together using a weak reference to the handler, allowing
+		/// controls to be garbage collected.
+		/// </remarks>
+		/// <value>The connector instance</value>
+		protected WeakConnector Connector
+		{ 
+			get
+			{
+				object connectorObject;
+				if (Widget.Properties.TryGetValue(connector_key, out connectorObject))
+					return (WeakConnector)connectorObject;
+
+				var connector = CreateConnector();
+				connector.Handler = this;
+				Widget.Properties[connector_key] = connector;
+				return connector;
+			} 
+		}
+
+		/// <summary>
+		/// Creates the event connector for this control
+		/// </summary>
+		/// <remarks>
+		/// This creates the weak connector to use for event registration and other purposes.
+		/// </remarks>
+		/// <seealso cref="Connector"/>
+		protected virtual WeakConnector CreateConnector()
+		{
+			return new WeakConnector();
+		}
+
+		/// <summary>
+		/// Connector for events to keep a weak reference to allow gtk controls to be garbage collected when no longer referenced
+		/// </summary>
+		/// <seealso cref="Connector"/>
+		protected class WeakConnector
+		{
+			WeakReference handler;
+
+			public WidgetHandler<T, TWidget> Handler { get { return (WidgetHandler<T, TWidget>)handler.Target; } internal set { handler = new WeakReference(value); } }
+		}
+
 	}
 }

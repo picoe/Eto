@@ -1,7 +1,6 @@
 using System;
 using swf = System.Windows.Forms;
 using Eto.Forms;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace Eto.Platform.Windows.Forms.Controls
@@ -10,12 +9,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 	{
 		CollectionHandler collection;
 		
-		public GridViewHandler ()
-		{
-		}
-
 		public bool ShowCellBorders
 		{
+			get { return Control.CellBorderStyle != swf.DataGridViewCellBorderStyle.None; }
 			set { Control.CellBorderStyle = value ? swf.DataGridViewCellBorderStyle.Single : swf.DataGridViewCellBorderStyle.None; }
 		}
 
@@ -26,9 +22,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			return null;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case GridView.CellClickEvent:
 				Control.CellClick += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
@@ -37,7 +33,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent(handler);
+				base.AttachEvent(id);
 				break;
 			}
 		}
@@ -87,13 +83,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		private void SetRowCount()
+		void SetRowCount()
 		{
 			Control.RowCount = collection.Collection != null ? collection.Collection.Count : 0;
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
 		}
 
-		private void IncrementRowCountBy(int increment)
+		void IncrementRowCountBy(int increment)
 		{
 			Control.RowCount += increment;
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.

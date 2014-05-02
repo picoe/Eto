@@ -4,15 +4,14 @@ using SD = System.Drawing;
 using MonoMac.AppKit;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
-using MonoMac.ObjCRuntime;
 using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class NumericUpDownHandler : MacView<NSView, NumericUpDown>, INumericUpDown
 	{
-		NSTextField text;
-		NSStepper stepper;
+		readonly NSTextField text;
+		readonly NSStepper stepper;
 		Font font;
 		Size? naturalSize;
 
@@ -28,7 +27,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void SetFrameSize(System.Drawing.SizeF newSize)
 			{
 				base.SetFrameSize(newSize);
-				var views = this.Subviews;
+				var views = Subviews;
 				var text = views[0];
 				var splitter = views[1];
 				var offset = (newSize.Height - text.Frame.Height) / 2;
@@ -36,6 +35,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 				text.SetFrameSize(new SD.SizeF(newSize.Width - splitter.Frame.Width, text.Frame.Height));
 				offset = (newSize.Height - splitter.Frame.Height) / 2;
 				splitter.SetFrameOrigin(new SD.PointF(newSize.Width - splitter.Frame.Width, offset));
+			}
+		}
+
+		class EtoStepper : NSStepper
+		{
+			public override bool AcceptsFirstResponder()
+			{
+				return false;
 			}
 		}
 
@@ -59,7 +66,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 			text.Changed += HandleTextChanged;
 			
-			stepper = new NSStepper();
+			stepper = new EtoStepper();
 			stepper.Activated += HandleStepperActivated;
 			MinValue = 0;
 			MaxValue = 100;
@@ -73,7 +80,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var handler = GetHandler(((NSView)sender).Superview) as NumericUpDownHandler;
 			if (handler != null)
 			{
-				handler.text.DoubleValue = handler.stepper.DoubleValue;
+				var val = handler.stepper.DoubleValue;
+				if (Math.Abs(val) < 1E-10)
+				{
+					handler.text.IntValue = 0;
+				}
+				else
+				{
+					handler.text.DoubleValue = handler.stepper.DoubleValue;
+				}
 				handler.Widget.OnValueChanged(EventArgs.Empty);
 			}
 		}
@@ -91,29 +106,39 @@ namespace Eto.Platform.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			var naturalSize = GetNaturalSize(Size.MaxValue);
-			Control.Frame = new System.Drawing.RectangleF(0, 0, naturalSize.Width, naturalSize.Height);
-			HandleEvent(NumericUpDown.KeyDownEvent);
+			var size = GetNaturalSize(Size.MaxValue);
+			Control.Frame = new System.Drawing.RectangleF(0, 0, size.Width, size.Height);
+			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 		}
 
 		public override void PostKeyDown(KeyEventArgs e)
 		{
 			base.PostKeyDown(e);
-			if (e.KeyData == Key.Down)
+			if (e.KeyData == Keys.Down)
 			{
-				Value = Math.Max(Value - 1, MinValue);
-				Widget.OnValueChanged(EventArgs.Empty);
+				var val = Value;
+				var newval = Math.Max(val - 1, MinValue);
+				if (newval < val)
+				{
+					Value = newval;
+					Widget.OnValueChanged(EventArgs.Empty);
+				}
 				e.Handled = true;
 			}
-			else if (e.KeyData == Key.Up)
+			else if (e.KeyData == Keys.Up)
 			{
-				Value = Math.Min(Value + 1, MaxValue);
-				Widget.OnValueChanged(EventArgs.Empty);
+				var val = Value;
+				var newval = Math.Min(val + 1, MaxValue);
+				if (newval > val)
+				{
+					Value = newval;
+					Widget.OnValueChanged(EventArgs.Empty);
+				}
 				e.Handled = true;
 			}
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (naturalSize == null)
 			{
@@ -139,9 +164,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get { return text.DoubleValue; }
 			set
-			{ 
-				text.DoubleValue = value;
-				stepper.DoubleValue = value;
+			{
+				if (Math.Abs(value) < 1E-10)
+				{
+					stepper.IntValue = text.IntValue = 0;
+				}
+				else
+				{
+					stepper.DoubleValue = text.DoubleValue = value;
+				}
 			}
 		}
 
@@ -186,17 +217,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(Widget.Generator, new FontHandler(text.Font));
-				return font;
+				return font ?? (font = new Font(Widget.Generator, new FontHandler(text.Font)));
 			}
 			set
 			{
 				font = value;
-				if (font != null)
-					text.Font = font.ControlObject as NSFont;
-				else
-					text.Font = null;
+				text.Font = font == null ? null : font.ControlObject as NSFont;
 				text.SizeToFit();
 				LayoutIfNeeded();
 			}

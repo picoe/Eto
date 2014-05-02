@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Eto.Drawing;
 using sd = System.Drawing;
@@ -22,7 +21,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control = new sd2.GraphicsPath ();
 		}
 
-		private GraphicsPathHandler (sd2.GraphicsPath control)
+		GraphicsPathHandler (sd2.GraphicsPath control)
 		{
 			Control = control;
 		}
@@ -41,7 +40,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void AddLine (float startX, float startY, float endX, float endY)
 		{
-			this.Control.AddLine (new sd.PointF (startX, startY), new sd.PointF (endX, endY));
+			Control.AddLine (new sd.PointF (startX, startY), new sd.PointF (endX, endY));
 			position = new sd.PointF (endX, endY);
 		}
 
@@ -58,7 +57,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.AddBezier (start.ToSD (), control1.ToSD (), control2.ToSD (), end.ToSD ());
 		}
 
-		public void AddPath (IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect = false)
 		{
 			if (path != null && !path.IsEmpty) // avoid throwing an exception if the path is empty - consistent across platforms.
 				Control.AddPath(path.ToSD(), connect);
@@ -79,7 +78,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.StartFigure ();
 		}
 
-		public void AddCurve (IEnumerable<PointF> points, float tension)
+		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			var sdpoints = from p in points select p.ToSD ();
 			var pointArray = sdpoints.ToArray ();
@@ -130,7 +129,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public IGraphicsPath Clone ()
 		{
-			return new GraphicsPathHandler ((sd.Drawing2D.GraphicsPath)this.Control.Clone ());
+			return new GraphicsPathHandler ((sd.Drawing2D.GraphicsPath)Control.Clone ());
 		}
 
 		public FillMode FillMode

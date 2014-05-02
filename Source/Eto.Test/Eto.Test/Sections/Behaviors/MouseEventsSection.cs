@@ -1,6 +1,4 @@
-using System;
 using Eto.Forms;
-using Eto.Drawing;
 
 namespace Eto.Test.Sections.Behaviors
 {
@@ -9,8 +7,9 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox handleEvents;
 		CheckBox showParentEvents;
 
-		public MouseEventsSection()
+		public override void OnLoad(System.EventArgs e)
 		{
+			base.OnLoad(e);
 			LogEvents(this);
 		}
 

@@ -31,7 +31,7 @@ namespace Eto.Platform.GtkSharp
 			if (Buttons == MessageBoxButtons.YesNoCancel)
 			{
 				// must add cancel manually
-				Gtk.Button b = (Gtk.Button)control.AddButton(Gtk.Stock.Cancel, (int)Gtk.ResponseType.Cancel);
+				var b = (Gtk.Button)control.AddButton(Gtk.Stock.Cancel, (int)Gtk.ResponseType.Cancel);
 				b.UseStock = true;
 			}
 			control.DefaultResponse = DefaultButton.ToGtk(Buttons);

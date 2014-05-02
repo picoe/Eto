@@ -1,7 +1,5 @@
 using System;
 using Eto.Forms;
-using Eto.Drawing;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.GtkSharp.Forms.Cells
 {
@@ -9,31 +7,31 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 	{
 		class Renderer : Gtk.CellRendererText
 		{
-			public TextBoxCellHandler Handler { get; set; }
+			WeakReference handler;
+			public TextBoxCellHandler Handler { get { return (TextBoxCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			[GLib.Property("item")]
 			public object Item { get; set; }
 
 			[GLib.Property("row")]
 			public int Row { get; set; }
-
-#if GTK2
-			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			#if GTK2
+			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
-				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				height = Math.Max(height, Handler.Source.RowHeight);
 			}
 
-			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
+			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
 				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkTextCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
+					Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Item, Row));
 
 				// calling base crashes on windows
-				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererText.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref  cell_area, ref expose_area, flags);
+				GtkCell.gtksharp_cellrenderer_invoke_render(Gtk.CellRendererText.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref  cell_area, ref expose_area, flags);
 				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
-#else
+			#else
 			protected override void OnGetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.OnGetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
@@ -49,54 +47,80 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 #endif
 		}
 
-		public TextBoxCellHandler ()
+		public TextBoxCellHandler()
 		{
 			Control = new Renderer { Handler = this };
-			this.Control.Edited += delegate(object o, Gtk.EditedArgs args) {
-				SetValue (args.Path, args.NewText);
-			};
 		}
 
-		protected override void BindCell (ref int dataIndex)
+		protected override void Initialize()
 		{
-			Column.Control.ClearAttributes (Control);
-			SetColumnMap (dataIndex);
-			Column.Control.AddAttribute (Control, "text", dataIndex++);
+			base.Initialize();
+			this.Control.Edited += Connector.HandleEdited;
 		}
-		
-		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
+
+		protected new TextBoxCellEventConnector Connector { get { return (TextBoxCellEventConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
 		{
-			this.Control.Editable = editable;
+			return new TextBoxCellEventConnector();
 		}
-		
-		public override void SetValue (object dataItem, object value)
+
+		protected class TextBoxCellEventConnector : SingleCellConnector
 		{
-			if (Widget.Binding != null) {
-				Widget.Binding.SetValue (dataItem, value as string);
+			public new TextBoxCellHandler Handler { get { return (TextBoxCellHandler)base.Handler; } }
+
+			public void HandleEdited(object o, Gtk.EditedArgs args)
+			{
+				Handler.SetValue(args.Path, args.NewText);
+			}
+
+			public void HandleEndEditing(object o, Gtk.EditedArgs args)
+			{
+				Handler.Source.EndCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
 			}
 		}
-		
-		protected override GLib.Value GetValueInternal (object item, int column, int row)
+
+		protected override void BindCell(ref int dataIndex)
 		{
-			if (Widget.Binding != null) {
-				var ret = Widget.Binding.GetValue (item);
+			Column.Control.ClearAttributes(Control);
+			SetColumnMap(dataIndex);
+			Column.Control.AddAttribute(Control, "text", dataIndex++);
+		}
+
+		public override void SetEditable(Gtk.TreeViewColumn column, bool editable)
+		{
+			Control.Editable = editable;
+		}
+
+		public override void SetValue(object dataItem, object value)
+		{
+			if (Widget.Binding != null)
+			{
+				Widget.Binding.SetValue(dataItem, value);
+			}
+		}
+
+		protected override GLib.Value GetValueInternal(object dataItem, int dataColumn, int row)
+		{
+			if (Widget.Binding != null)
+			{
+				var ret = Widget.Binding.GetValue(dataItem);
 				if (ret != null)
-					return new GLib.Value (Convert.ToString (ret));
+					return new GLib.Value(Convert.ToString(ret));
 			}
-			return new GLib.Value ((string)null);
+			return new GLib.Value((string)null);
 		}
-		
-		public override void AttachEvent (string eventHandler)
+
+		public override void AttachEvent(string id)
 		{
-			switch (eventHandler) {
-			case GridView.EndCellEditEvent:
-				Control.Edited += (sender, e) => {
-					Source.EndCellEditing (new Gtk.TreePath(e.Path), this.ColumnIndex);
-				};
-				break;
-			default:
-				base.AttachEvent (eventHandler);
-				break;
+			switch (id)
+			{
+				case Grid.CellEditedEvent:
+					Control.Edited += Connector.HandleEndEditing;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 	}

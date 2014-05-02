@@ -16,7 +16,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -26,12 +26,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoImageView { Handler = this, ImageScaling = NSImageScale.ProportionallyUpOrDown };
 		}
 
-		protected override Size GetNaturalSize (Size availableSize)
+		protected override SizeF GetNaturalSize (SizeF availableSize)
 		{
-			if (image != null)
-				return image.Size;
-			else
-				return Size.Empty;
+			return image == null ? Size.Empty : image.Size;
 		}
 		
 		public Image Image {
@@ -40,10 +37,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set {
 				image = value;
-				if (image != null)
-					Control.Image = ((IImageSource)value.Handler).GetImage ();
-				else
-					Control.Image = null;
+				Control.Image = image == null ? null : ((IImageSource)value.Handler).GetImage();
 			}
 		}
 	}

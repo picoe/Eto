@@ -16,7 +16,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
@@ -31,8 +31,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone (IntPtr zone)
 			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.selCopyWithZone.Handle, zone);
-				return new EtoCell (ptr) { Handler = this.Handler };
+				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.CopyWithZoneHandle, zone);
+				return new EtoCell (ptr) { Handler = Handler };
 			}
 		}
 		
@@ -46,26 +46,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override void SetBackgroundColor (NSCell cell, Color color)
 		{
-			var c = cell as EtoCell;
-			c.BackgroundColor = color.ToNS ();
+			var c = (EtoCell)cell;
+			c.BackgroundColor = color.ToNSUI ();
 			c.DrawsBackground = color != Colors.Transparent;
 		}
 
 		public override Color GetBackgroundColor (NSCell cell)
 		{
-			var c = cell as EtoCell;
+			var c = (EtoCell)cell;
 			return c.BackgroundColor.ToEto ();
 		}
 
 		public override void SetForegroundColor (NSCell cell, Color color)
 		{
-			var c = cell as EtoCell;
-			c.TextColor = color.ToNS ();
+			var c = (EtoCell)cell;
+			c.TextColor = color.ToNSUI ();
 		}
 
 		public override Color GetForegroundColor (NSCell cell)
 		{
-			var c = cell as EtoCell;
+			var c = (EtoCell)cell;
 			return c.TextColor.ToEto ();
 		}
 
@@ -83,12 +83,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return result;
 		}
 		
-		public override void SetObjectValue (object dataItem, NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject value)
 		{
 			if (Widget.TextBinding != null) {
-				var str = val as NSString;
+				var str = value as NSString;
 				if (str != null)
-					Widget.TextBinding.SetValue (dataItem, (string)str);
+					Widget.TextBinding.SetValue (dataItem, str.ToString());
 				else
 					Widget.TextBinding.SetValue (dataItem, null);
 			}

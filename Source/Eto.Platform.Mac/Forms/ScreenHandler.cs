@@ -3,7 +3,6 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.ObjCRuntime;
 using Eto.Drawing;
-using System.Linq;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -14,17 +13,16 @@ namespace Eto.Platform.Mac.Forms
 			this.Control = screen;
 		}
 
-		static Selector selBackingScaleFactor = new Selector ("backingScaleFactor");
+		static readonly Selector selBackingScaleFactor = new Selector ("backingScaleFactor");
 
 #pragma warning disable 612, 618
 		public float RealScale
 		{
 			get
 			{
-				if (this.Control.RespondsToSelector (selBackingScaleFactor))
-					return this.Control.BackingScaleFactor;
-				else
-					return this.Control.UserSpaceScaleFactor;
+				if (Control.RespondsToSelector(selBackingScaleFactor))
+					return Control.BackingScaleFactor;
+				return Control.UserSpaceScaleFactor;
 			}
 		}
 #pragma warning restore 612, 618
@@ -41,7 +39,7 @@ namespace Eto.Platform.Mac.Forms
 				var bounds = Control.Frame;
 				var origin = NSScreen.Screens[0].Frame.Bottom;
 				bounds.Y = origin - bounds.Height - bounds.Y;
-				return Platform.Conversions.ToEto (bounds);
+				return bounds.ToEto();
 
 			}
 		}
@@ -50,10 +48,10 @@ namespace Eto.Platform.Mac.Forms
 		{
 			get
 			{ 
-				var workingArea = this.Control.VisibleFrame;
+				var workingArea = Control.VisibleFrame;
 				var origin = NSScreen.Screens[0].Frame.Bottom;
 				workingArea.Y = origin - workingArea.Height - workingArea.Y;
-				return Platform.Conversions.ToEto (workingArea);
+				return workingArea.ToEto();
 			}
 		}
 
@@ -64,7 +62,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public bool IsPrimary
 		{
-			get { return this.Control == NSScreen.Screens[0]; }
+			get { return Control == NSScreen.Screens[0]; }
 		}
 	}
 }

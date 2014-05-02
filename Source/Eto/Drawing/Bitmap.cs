@@ -147,14 +147,17 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="resourceName">Name of the resource in the caller's assembly to load</param>
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
+		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
-		public static Bitmap FromResource (string resourceName, Assembly assembly = null)
+		public static Bitmap FromResource (string resourceName, Assembly assembly = null, Generator generator = null)
 		{
+#if !WINRT
 			assembly = assembly ?? Assembly.GetCallingAssembly ();
+#endif
 			using (var stream = assembly.GetManifestResourceStream (resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (assembly, resourceName);
-				return new Bitmap (stream);
+				return new Bitmap (stream, generator);
 			}
 		}
 
@@ -167,7 +170,11 @@ namespace Eto.Drawing
 		[Obsolete ("Use FromResource(string, Assembly) instead")]
 		public static Bitmap FromResource (Assembly asm, string resourceName)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			return FromResource (resourceName, asm ?? Assembly.GetCallingAssembly ());
+#endif
 		}
 
 		/// <summary>
@@ -175,14 +182,18 @@ namespace Eto.Drawing
 		/// </summary>
 		[Obsolete ("use Bitmap.FromResource instead")]
 		public Bitmap (Assembly asm, string resourceName)
-			: this (Generator.Current)
+			: this ((Generator)null)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
 			using (var stream = asm.GetManifestResourceStream (resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (asm, resourceName);
 				Handler.Create (stream);
 			}
+#endif
 		}
 
 		/// <summary>
@@ -292,7 +303,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <remarks>
 		/// This locks the data to read and write to directly using unsafe pointers. After reading or updating
-		/// the data, you must call <see cref="BitmapData.Dispose"/> to unlock the data before using the bitmap.
+		/// the data, you must call <see cref="BitmapData.Dispose()"/> to unlock the data before using the bitmap.
 		/// e.g.:
 		/// 
 		/// <code>
@@ -315,9 +326,13 @@ namespace Eto.Drawing
 		/// <param name="format">Format to save as</param>
 		public void Save (string fileName, ImageFormat format)
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
 				Save (stream, format);
 			}
+#endif
 		}
 
 		/// <summary>
@@ -341,7 +356,7 @@ namespace Eto.Drawing
 		public byte[] ToByteArray (ImageFormat imageFormat)
 		{
 			using (var memoryStream = new MemoryStream ()) {
-				this.Save (memoryStream, imageFormat);
+				Save(memoryStream, imageFormat);
 				return memoryStream.ToArray ();
 			}
 		}

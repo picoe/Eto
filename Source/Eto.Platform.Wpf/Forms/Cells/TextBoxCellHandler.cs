@@ -1,14 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
 using sw = System.Windows;
 using swm = System.Windows.Media;
-using Eto.Platform.Wpf.Drawing;
-using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -48,7 +43,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
-				var element = base.GenerateEditingElement (cell, dataItem) as swc.TextBox;
+				var element = (swc.TextBox)base.GenerateEditingElement (cell, dataItem);
 				element.Name = "control";
 				element.DataContextChanged += (sender, e) => {
 					var control = sender as swc.TextBox;

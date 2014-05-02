@@ -1,4 +1,3 @@
-using System;
 using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing

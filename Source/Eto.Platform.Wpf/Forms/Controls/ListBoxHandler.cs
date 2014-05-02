@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
-using Eto.Platform.Wpf.Drawing;
-using System.Collections;
 using System.Collections.ObjectModel;
 
 namespace Eto.Platform.Wpf.Forms.Controls
@@ -51,10 +47,33 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					}
 				}
 			};
+		}
 
+		public override void Focus()
+		{
+			if (Control.IsLoaded)
+			{
+				var item = Control.ItemContainerGenerator.ContainerFromIndex(Math.Max(0, SelectedIndex)) as sw.FrameworkElement;
+				if (item != null)
+					item.Focus();
+				else
+					Control.Focus();
+			}
+			else
+			{
+				Control.Loaded += Control_Loaded;
+			}
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			Focus();
+			Control.Loaded -= Control_Loaded;
 		}
 
 		public override bool UseMousePreview { get { return true; } }
+
+		public override bool UseKeyPreview { get { return true; } }
 
 		public IListStore DataStore
 		{
@@ -62,10 +81,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				store = value;
-				if (store is ObservableCollection<IListItem>)
-					Control.ItemsSource = store as ObservableCollection<IListItem>;
-				else
-					Control.ItemsSource = new ObservableCollection<IListItem>(store.AsEnumerable());
+				var source = store as ObservableCollection<IListItem>; 
+				Control.ItemsSource = source ?? new ObservableCollection<IListItem>(store.AsEnumerable());
 			}
 		}
 
@@ -89,10 +106,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenu = contextMenu.ControlObject as System.Windows.Controls.ContextMenu;
-				else
-					Control.ContextMenu = null;
+				Control.ContextMenu = contextMenu != null ? contextMenu.ControlObject as sw.Controls.ContextMenu : null;
 			}
 		}
 	}

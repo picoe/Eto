@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E3524178-5A24-47C0-B155-92314FE4B2B6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.Wpf</RootNamespace>
     <AssemblyName>Eto.Platform.Wpf</AssemblyName>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -54,14 +54,14 @@
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\..\Libraries\WPFToolkit.Extended\Xceed.Wpf.Toolkit.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\Libraries\SHDocVw\Interop.SHDocVw.dll</HintPath>
       <Private>False</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -153,12 +153,13 @@
     <Compile Include="Forms\Controls\WpfWebViewHandler.cs" />
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
-    <Compile Include="Forms\WpfDockContainer.cs" />
+    <Compile Include="Forms\EnableThemingInScope.cs" />
+    <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
-    <Compile Include="Forms\Menu\WpfMenuItem.cs" />
+    <Compile Include="Forms\Menu\MenuItemHandler.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItemHandler.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
@@ -168,25 +169,24 @@
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
-    <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />
     <Compile Include="Forms\WpfContainer.cs" />
     <Compile Include="Forms\WpfFileDialog.cs" />
     <Compile Include="Forms\WpfCommonDialog.cs" />
     <Compile Include="Forms\DialogHandler.cs" />
     <Compile Include="Forms\Menu\ContextMenuHandler.cs" />
-    <Compile Include="Forms\Menu\ImageMenuItemHandler.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
     <Compile Include="Forms\MessageBoxHandler.cs" />
     <Compile Include="Forms\OpenFileDialogHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
     <Compile Include="Forms\WpfFrameworkElement.cs" />
     <Compile Include="Forms\WpfLayout.cs" />
-    <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\FormHandler.cs" />
     <Compile Include="Forms\Menu\MenuBarHandler.cs" />
     <Compile Include="Forms\WpfControl.cs" />
@@ -210,19 +210,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\Libraries\WPFToolkit.Extended\Xceed.Wpf.Toolkit.dll">
-      <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
       <Link>CustomControls\Assemblies\ColorPicker.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\Libraries\SHDocVw\Interop.SHDocVw.dll">
       <Link>CustomControls\Assemblies\Interop.SHDocVw.dll</Link>
     </EmbeddedResource>
-    <Content Include="..\..\Libraries\WPFToolkit.Extended\WPFToolkit.Extended-License.txt">
-      <Link>WPFToolkit.Extended-License.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <EmbeddedResource Include="Properties\FontDialogResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FontDialogResources.Designer.cs</LastGenOutput>
@@ -281,6 +274,14 @@
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll">
+      <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -292,4 +293,6 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
 </Project>

@@ -1,9 +1,6 @@
 using System;
 using Eto;
-using Eto.Misc;
 using Eto.Test;
-using Eto.Forms;
-using Eto.Drawing;
 
 namespace Eto.Test.WinForms
 {
@@ -12,12 +9,10 @@ namespace Eto.Test.WinForms
 		[STAThread]
 		static void Main (string [] args)
 		{
-			var generator = Generator.GetGenerator ("Eto.Platform.Windows.Generator, Eto.Platform.Windows");
-			
+			var generator = Generator.GetGenerator(Generators.WinAssembly);
 			var app = new TestApplication (generator);
 			app.Run (args);
 		}
-
 	}
 }
 

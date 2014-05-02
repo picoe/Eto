@@ -10,7 +10,7 @@ namespace Eto.IO
 	public abstract class EtoDirectoryInfo : EtoSystemObjectInfo, IComparable<EtoDirectoryInfo>
 	{
 		// TODO: should be a concurrent dictionary, but not supported on MonoTouch..
-		static Dictionary<string, VirtualDirectoryType> virtualDirectoryTypes = new Dictionary<string, VirtualDirectoryType>(StringComparer.OrdinalIgnoreCase);
+		static readonly Dictionary<string, VirtualDirectoryType> virtualDirectoryTypes = new Dictionary<string, VirtualDirectoryType>(StringComparer.OrdinalIgnoreCase);
 
 		public static void AddVirtualDirectoryType(VirtualDirectoryType type)
 		{
@@ -25,27 +25,21 @@ namespace Eto.IO
 		public static VirtualDirectoryType FindVirtualDirectoryType(string extension)
 		{
 			VirtualDirectoryType type;
-			if (virtualDirectoryTypes.TryGetValue(extension, out type))
-			{
-				return type;
-			}
-			return null;
+			return virtualDirectoryTypes.TryGetValue(extension, out type) ? type : null;
 		}
 		
 		public static EtoDirectoryInfo CreateVirtualDirectory(string fileName)
 		{
 			string extension = Path.GetExtension(fileName);
 			var type = FindVirtualDirectoryType(extension);
-			if (type != null) return type.Create(new DiskFileInfo(fileName));
-			else return null;
+			return type == null ? null : type.Create(new DiskFileInfo(fileName));
 		}
 
 		public static EtoDirectoryInfo CreateVirtualDirectory(string fileName, Stream stream)
 		{
 			string extension = Path.GetExtension(fileName);
 			var type = FindVirtualDirectoryType(extension);
-			if (type != null) return type.Create(stream);
-			else return null;
+			return type == null ? null : type.Create(stream);
 		}
 		
 		public static IEnumerable<VirtualDirectoryType> VirtualDirectoryTypes
@@ -59,9 +53,8 @@ namespace Eto.IO
 
 		public static EtoDirectoryInfo GetDirectory(string path)
 		{
-			string pathRoot = string.Empty;
 			if (!Path.IsPathRooted(path)) path = Path.GetFullPath(path);
-			pathRoot = Path.GetPathRoot(path);
+			var pathRoot = Path.GetPathRoot(path);
 			path = path.Substring(pathRoot.Length);
 			string[] paths = path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
@@ -88,7 +81,7 @@ namespace Eto.IO
 		{
 			foreach (var type in EtoDirectoryInfo.VirtualDirectoryTypes)
 			{
-				foreach (var fileInfo in this.GetFiles(new string[] { type.FileMask }))
+				foreach (var fileInfo in GetFiles(new string[] { type.FileMask }))
 				{
 					yield return type.Create(fileInfo);
 				}
@@ -106,7 +99,7 @@ namespace Eto.IO
 			filter = filter.Replace(".", "\\.");
 			filter = filter.Replace("*", ".+");
 
-			Regex reg = new Regex(filter, RegexOptions.IgnoreCase
+			var reg = new Regex(filter, RegexOptions.IgnoreCase
 #if !MOBILE
 				| RegexOptions.Compiled
 #endif
@@ -140,15 +133,16 @@ namespace Eto.IO
 		
 		public override bool Equals (object obj)
 		{
-			var dir = obj as EtoDirectoryInfo;
-			if ((object)dir == null) return false;
-			else return this.FullName.Equals (dir.FullName, StringComparison.OrdinalIgnoreCase);
+			return this == obj as EtoDirectoryInfo;
 		}
 
 		public static bool operator == (EtoDirectoryInfo dir1, EtoDirectoryInfo dir2)
 		{
-			if (ReferenceEquals(dir1, null)) return ReferenceEquals(dir2, null);
-			return dir1.Equals (dir2);
+			if (ReferenceEquals(dir1, dir2))
+				return true;
+			if (ReferenceEquals(dir1, null) || ReferenceEquals(dir2, null))
+				return false;
+			return dir1.FullName.Equals(dir2.FullName, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public static bool operator != (EtoDirectoryInfo dir1, EtoDirectoryInfo dir2)
@@ -158,7 +152,7 @@ namespace Eto.IO
 		
 		public virtual int CompareTo (EtoDirectoryInfo other)
 		{
-			return string.Compare(this.FullName, other.FullName, StringComparison.CurrentCulture);
+			return string.Compare(FullName, other.FullName, StringComparison.CurrentCulture);
 		}
 	}
 }

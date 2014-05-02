@@ -83,19 +83,13 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class LinearGradientBrush : Brush, ITransformBrush
 	{
-		ILinearGradientBrush handler;
+		readonly ILinearGradientBrush handler;
 
 		/// <summary>
 		/// Gets the platform handler object for the widget
 		/// </summary>
 		/// <value>The handler for the widget</value>
 		public override object Handler { get { return handler; } }
-
-		/// <summary>
-		/// Gets the control object for this widget
-		/// </summary>
-		/// <value>The control object for the widget</value>
-		public override object ControlObject { get; set; }
 
 		/// <summary>
 		/// Gets a delegate to instantiate <see cref="LinearGradientBrush"/> objects

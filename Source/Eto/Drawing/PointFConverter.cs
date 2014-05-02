@@ -30,7 +30,7 @@ namespace Eto.Drawing
 		/// <param name="culture">Culture to perform the conversion</param>
 		/// <param name="value">Value to convert</param>
 		/// <returns>A new instance of a <see cref="PointF"/> converted from the specified <paramref name="value"/></returns>
-		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			var text = value as string;
 			if (text != null) {

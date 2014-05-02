@@ -353,10 +353,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator used to create the graphics path objects</param>
 		public static Func<IGraphicsPath> Instantiator (Generator generator = null)
 		{
-			var instantiator = generator.Find<IGraphicsPathHandler> ();
-			return () => {
-				return instantiator ();
-			};
+			return generator.Find<IGraphicsPathHandler>();
 		}
 		
 		/// <summary>
@@ -368,11 +365,16 @@ namespace Eto.Drawing
 			return generator.Create<IGraphicsPathHandler> ();
 		}
 
+		public GraphicsPath()
+			: this((Generator)null)
+		{
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the GraphicsPath class
 		/// </summary>
 		/// <param name="generator">Platform generator for the object, or null to use the current generator</param>
-		public GraphicsPath (Generator generator = null)
+		public GraphicsPath (Generator generator)
 		{
 			Handler = Create (generator);
 		}
@@ -566,8 +568,18 @@ namespace Eto.Drawing
 		/// </summary>
 		public void Dispose ()
 		{
-			Handler.Dispose ();
+			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Disposes the graphics path
+		/// </summary>
+		/// <param name="disposing">If set to <c>true</c> dispose was called explicitly, otherwise specify false if calling from a finalizer</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+				Handler.Dispose();
 		}
 
 		/// <summary>

@@ -1,7 +1,4 @@
 using System;
-using System.ComponentModel;
-using System.Collections;
-using System.Collections.ObjectModel;
 
 namespace Eto
 {
@@ -20,7 +17,7 @@ namespace Eto
 		#region Events
 
 		/// <summary>
-		/// Identifier for the <see cref="DataValueChanged"/> event
+		/// Identifier for the <see cref="DirectBinding.DataValueChanged"/> event
 		/// </summary>
 		public const string DataValueChangedEvent = "ObjectBinding.DataValueChangedEvent";
 
@@ -48,8 +45,8 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// Implementors of this class should call this method when the value changes
-		/// on the bound object. Make sure to also override the <see cref="Binding.HandleEvent"/> 
-		/// and <see cref="Binding.RemoveEvent"/> methods to hook up/remove any event bindings 
+		/// on the bound object. Make sure to also override the <see cref="M:Binding.HandleEvent"/> 
+		/// and <see cref="M:Binding.RemoveEvent"/> methods to hook up/remove any event bindings 
 		/// you need on the bound object.
 		/// </remarks>
 		public virtual void OnDataValueChanged (EventArgs e)

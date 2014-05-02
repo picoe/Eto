@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
@@ -26,10 +23,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		string GetTextValue (object dataItem)
 		{
-			if (Widget.TextBinding != null) {
-				return Convert.ToString(Widget.TextBinding.GetValue (dataItem));
-			}
-			return null;
+			return Widget.TextBinding != null ? Convert.ToString(Widget.TextBinding.GetValue(dataItem)) : null;
 		}
 
 		void SetTextValue (object dataItem, string value)
@@ -55,7 +49,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			sw.FrameworkElement SetupCell (sw.FrameworkElement element)
 			{
-				swc.StackPanel container = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
+				var container = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 				container.Children.Add (Image ());
 				container.Children.Add (element);
 				return Handler.SetupCell (container);
@@ -80,7 +74,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
-				var element = base.GenerateEditingElement (cell, dataItem) as swc.TextBox;
+				var element = (swc.TextBox)base.GenerateEditingElement (cell, dataItem);
 				element.Name = "control";
 				element.DataContextChanged += (sender, e) => {
 					var control = sender as swc.TextBox;

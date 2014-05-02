@@ -8,11 +8,11 @@ namespace Eto.Test.Sections.Controls
 	public class TreeViewSection : Scrollable
 	{
 		int expanded;
-		CheckBox allowCollapsing;
-		CheckBox allowExpanding;
-		TreeView treeView;
+		readonly CheckBox allowCollapsing;
+		readonly CheckBox allowExpanding;
+		readonly TreeView treeView;
 		int newItemCount;
-		static Image Image = TestIcons.TestIcon;
+		static readonly Image Image = TestIcons.TestIcon();
 		Label hoverNodeLabel;
 		bool cancelLabelEdit;
 
@@ -21,21 +21,21 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout();
 			
 			layout.BeginHorizontal();
-			layout.Add(new Label { });
-			layout.BeginVertical ();
-			layout.BeginHorizontal ();
-			layout.Add (null);
-			layout.Add (allowExpanding = new CheckBox{ Text = "Allow Expanding", Checked = true });
-			layout.Add (allowCollapsing = new CheckBox{ Text = "Allow Collapsing", Checked = true });
-			layout.Add (RefreshButton ());
-			layout.Add (null);
-			layout.EndHorizontal ();
-			layout.EndVertical ();
-			layout.EndHorizontal ();
+			layout.Add(new Label());
+			layout.BeginVertical();
+			layout.BeginHorizontal();
+			layout.Add(null);
+			layout.Add(allowExpanding = new CheckBox{ Text = "Allow Expanding", Checked = true });
+			layout.Add(allowCollapsing = new CheckBox{ Text = "Allow Collapsing", Checked = true });
+			layout.Add(RefreshButton());
+			layout.Add(null);
+			layout.EndHorizontal();
+			layout.EndVertical();
+			layout.EndHorizontal();
 
-			treeView = ImagesAndMenu ();
+			treeView = ImagesAndMenu();
 
-			layout.AddRow (new Label{ Text = "Simple" }, Default ());
+			layout.AddRow(new Label{ Text = "Simple" }, Default());
 			layout.BeginHorizontal();
 			layout.Add(new Panel());
 			layout.BeginVertical();
@@ -43,10 +43,10 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow(LabelEditCheck(), EnabledCheck(), null);
 			layout.EndVertical();
 			layout.EndHorizontal();
-			layout.AddRow (new Label{ Text = "With Images\n&& Context Menu" }, treeView);
-			layout.AddRow (new Panel(), HoverNodeLabel());
+			layout.AddRow(new Label{ Text = "With Images\n&& Context Menu" }, treeView);
+			layout.AddRow(new Panel(), HoverNodeLabel());
 
-			layout.Add (null, false, true);
+			layout.Add(null, false, true);
 
 			Content = layout;
 		}
@@ -55,7 +55,8 @@ namespace Eto.Test.Sections.Controls
 		{
 			hoverNodeLabel = new Label();
 
-			treeView.MouseMove += (sender, e) => {
+			treeView.MouseMove += (sender, e) =>
+			{
 				var node = treeView.GetNodeAt(e.Location);
 				hoverNodeLabel.Text = "Item under mouse: " + (node != null ? node.Text : "(no node)");
 			};
@@ -66,10 +67,12 @@ namespace Eto.Test.Sections.Controls
 		Control InsertButton()
 		{
 			var control = new Button { Text = "Insert" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				var item = treeView.SelectedItem as TreeItem;
 				var parent = (item != null ? item.Parent : treeView.DataStore) as TreeItem;
-				if (parent != null) {
+				if (parent != null)
+				{
 					var index = item != null ? parent.Children.IndexOf(item) : 0;
 					parent.Children.Insert(index, new TreeItem { Text = "New Item " + newItemCount++ });
 					if (item != null)
@@ -84,7 +87,8 @@ namespace Eto.Test.Sections.Controls
 		Control AddChildButton()
 		{
 			var control = new Button { Text = "Add Child" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				var item = treeView.SelectedItem as TreeItem;
 				if (item != null)
 				{
@@ -98,7 +102,8 @@ namespace Eto.Test.Sections.Controls
 		Control RemoveButton()
 		{
 			var control = new Button { Text = "Remove" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				var item = treeView.SelectedItem as TreeItem;
 				if (item != null)
 				{
@@ -116,8 +121,9 @@ namespace Eto.Test.Sections.Controls
 		Control RefreshButton()
 		{
 			var control = new Button { Text = "Refresh" };
-			control.Click += (sender, e) => {
-				foreach (var tree in this.Children.OfType<TreeView>())
+			control.Click += (sender, e) =>
+			{
+				foreach (var tree in Children.OfType<TreeView>())
 				{
 					tree.RefreshData();
 				}
@@ -128,7 +134,8 @@ namespace Eto.Test.Sections.Controls
 		Control ExpandButton()
 		{
 			var control = new Button { Text = "Expand" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				var item = treeView.SelectedItem;
 				if (item != null)
 				{
@@ -142,7 +149,8 @@ namespace Eto.Test.Sections.Controls
 		Control CollapseButton()
 		{
 			var control = new Button { Text = "Collapse" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				var item = treeView.SelectedItem;
 				if (item != null)
 				{
@@ -156,27 +164,21 @@ namespace Eto.Test.Sections.Controls
 		Control CancelLabelEdit()
 		{
 			var control = new CheckBox { Text = "Cancel Edit" };
-			control.CheckedChanged += (sender, e) => {
-				cancelLabelEdit = control.Checked ?? false;
-			};
+			control.CheckedChanged += (sender, e) => cancelLabelEdit = control.Checked ?? false;
 			return control;
 		}
 
 		Control LabelEditCheck()
 		{
 			var control = new CheckBox { Text = "LabelEdit", Checked = treeView.LabelEdit };
-			control.CheckedChanged += (sender, e) => {
-				treeView.LabelEdit = control.Checked ?? false;
-			};
+			control.CheckedChanged += (sender, e) => treeView.LabelEdit = control.Checked ?? false;
 			return control;
 		}
 
 		Control EnabledCheck()
 		{
 			var control = new CheckBox { Text = "Enabled", Checked = treeView.Enabled };
-			control.CheckedChanged += (sender, e) => {
-				treeView.Enabled = control.Checked ?? false;
-			};
+			control.CheckedChanged += (sender, e) => treeView.Enabled = control.Checked ?? false;
 			return control;
 		}
 
@@ -218,7 +220,7 @@ namespace Eto.Test.Sections.Controls
 
 #if DESKTOP
 			var menu = new ContextMenu();
-			var item = new ImageMenuItem { Text = "Click Me!" };
+			var item = new ButtonMenuItem { Text = "Click Me!" };
 			item.Click += delegate
 			{
 				if (control.SelectedItem != null)
@@ -226,7 +228,7 @@ namespace Eto.Test.Sections.Controls
 				else
 					Log.Write(item, "Click, no item selected");
 			};
-			menu.MenuItems.Add(item);
+			menu.Items.Add(item);
 			
 			control.ContextMenu = menu;
 #endif
@@ -238,7 +240,8 @@ namespace Eto.Test.Sections.Controls
 
 		void LogEvents(TreeView control)
 		{
-			control.BeforeLabelEdit += (sender, e) => {
+			control.LabelEditing += (sender, e) =>
+			{
 				if (cancelLabelEdit)
 				{
 					Log.Write(control, "BeforeLabelEdit (cancelled), Item: {0}", e.Item.Text);
@@ -247,7 +250,8 @@ namespace Eto.Test.Sections.Controls
 				else
 					Log.Write(control, "BeforeLabelEdit, Item: {0}", e.Item.Text);
 			};
-			control.AfterLabelEdit += (sender, e) => {
+			control.LabelEdited += (sender, e) =>
+			{
 				Log.Write(control, "AfterLabelEdit, Item: {0}, New Label: {1}", e.Item.Text, e.Label);
 			};
 			control.Activated += delegate(object sender, TreeViewItemEventArgs e)
@@ -258,18 +262,22 @@ namespace Eto.Test.Sections.Controls
 			{
 				Log.Write(control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? control.SelectedItem.Text : "<none selected>");
 			};
-			control.Expanding += (sender, e) => {
+			control.Expanding += (sender, e) =>
+			{
 				Log.Write(control, "Expanding, Item: {0}", e.Item.Text);
 				e.Cancel = !(allowExpanding.Checked ?? true);
 			};
-			control.Expanded += (sender, e) => {
+			control.Expanded += (sender, e) =>
+			{
 				Log.Write(control, "Expanded, Item: {0}", e.Item.Text);
 			};
-			control.Collapsing += (sender, e) => {
+			control.Collapsing += (sender, e) =>
+			{
 				Log.Write(control, "Collapsing, Item: {0}", e.Item.Text);
 				e.Cancel = !(allowCollapsing.Checked ?? true);
 			};
-			control.Collapsed += (sender, e) => {
+			control.Collapsed += (sender, e) =>
+			{
 				Log.Write(control, "Collapsed, Item: {0}", e.Item.Text);
 			};
 		}

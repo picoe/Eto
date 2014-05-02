@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
@@ -12,7 +9,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea>, ITextArea
 	{
 		int? lastCaretIndex;
-		Size defaultSize = TextArea.DefaultSize;
+		readonly Size defaultSize = TextArea.DefaultSize;
 
 		protected override Size DefaultSize { get { return defaultSize; } }
 
@@ -27,6 +24,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
+		protected override void SetDecorations(sw.TextDecorationCollection decorations)
+		{
+			Control.TextDecorations = decorations;
+		}
+
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			return base.GetPreferredSize(Conversions.ZeroSize);
@@ -34,19 +36,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override bool UseMousePreview { get { return true; } }
 
-		public override void AttachEvent (string handler)
+		public override bool UseKeyPreview { get { return true; } }
+
+		public override void AttachEvent (string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-			case TextArea.TextChangedEvent:
-				Control.TextChanged += (sender, e) => {
-					Widget.OnTextChanged (EventArgs.Empty);
-				};
+			case TextControl.TextChangedEvent:
+				Control.TextChanged += (sender, e) => Widget.OnTextChanged(EventArgs.Empty);
 				break;
 			case TextArea.SelectionChangedEvent:
-				Control.SelectionChanged += (sender, e) => {
-					Widget.OnSelectionChanged (EventArgs.Empty);
-				};
+				Control.SelectionChanged += (sender, e) => Widget.OnSelectionChanged(EventArgs.Empty);
 				break;
 			case TextArea.CaretIndexChangedEvent:
 				Control.SelectionChanged += (sender, e) => {
@@ -59,7 +59,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

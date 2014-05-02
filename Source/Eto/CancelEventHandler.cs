@@ -1,8 +1,8 @@
+#if IOS
 using System;
 
 namespace Eto
 {
-#if IOS
 
 	/// <summary>
 	/// Arguments for events that can be cancelled
@@ -45,6 +45,6 @@ namespace Eto
 	/// <param name="e">cancel event arguments</param>
 	public delegate void CancelEventHandler(object sender, CancelEventArgs e);
 
-#endif
 }
+#endif
 

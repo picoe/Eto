@@ -1,12 +1,13 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
 	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label>, ILabel
 	{
-		Gtk.EventBox eventBox;
+		readonly Gtk.EventBox eventBox;
 		HorizontalAlign horizontalAlign = HorizontalAlign.Left;
 		VerticalAlign verticalAlign = VerticalAlign.Top;
 
@@ -22,14 +23,14 @@ namespace Eto.Platform.GtkSharp
 
 		public class EtoLabel : Gtk.Label
 		{
-			int wrapWidth = 0;
+			int wrapWidth;
 
 #if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				//base.OnSizeRequested (ref requisition);
 				int width, height;
-				this.Layout.GetPixelSize(out width, out height);
+				Layout.GetPixelSize(out width, out height);
 				requisition.Width = width;
 				requisition.Height = height;
 			}
@@ -79,7 +80,7 @@ namespace Eto.Platform.GtkSharp
 				LineWrapMode = Pango.WrapMode.Word
 			};
 			Control.SetAlignment(0, 0);
-			eventBox.Child = (Gtk.Label)Control;
+			eventBox.Child = Control;
 		}
 
 		public WrapMode Wrap
@@ -88,12 +89,9 @@ namespace Eto.Platform.GtkSharp
 			{
 				if (!Control.LineWrap)
 					return WrapMode.None;
-				else if (Control.LineWrapMode == Pango.WrapMode.Word)
+				if (Control.LineWrapMode == Pango.WrapMode.Word)
 					return WrapMode.Word;
-				else if (Control.LineWrapMode == Pango.WrapMode.Char)
-					return WrapMode.Character;
-				else 
-					return WrapMode.Character;
+				return WrapMode.Character;
 			}
 			set
 			{
@@ -122,14 +120,14 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-				case Eto.Forms.Control.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -158,34 +156,33 @@ namespace Eto.Platform.GtkSharp
 
 		void SetAlignment()
 		{
-			float xalignment = 0;
-			float yalignment = 0;
+			float xalignment;
+			float yalignment;
 			Gtk.Justification justify;
 			switch (horizontalAlign)
 			{
 				default:
-				case Eto.Forms.HorizontalAlign.Left:
 					xalignment = 0F;
 					justify = Gtk.Justification.Left;
 					break;
-				case Eto.Forms.HorizontalAlign.Center:
+				case HorizontalAlign.Center:
 					xalignment = 0.5F;
 					justify = Gtk.Justification.Center;
 					break;
-				case Eto.Forms.HorizontalAlign.Right:
+				case HorizontalAlign.Right:
 					xalignment = 1F;
 					justify = Gtk.Justification.Right;
 					break;
 			}
 			switch (verticalAlign)
 			{
-				case Eto.Forms.VerticalAlign.Middle:
+				case VerticalAlign.Middle:
 					yalignment = 0.5F;
 					break;
-				case Eto.Forms.VerticalAlign.Top:
+				default:
 					yalignment = 0F;
 					break;
-				case Eto.Forms.VerticalAlign.Bottom:
+				case VerticalAlign.Bottom:
 					yalignment = 1F;
 					break;
 			}
@@ -200,7 +197,16 @@ namespace Eto.Platform.GtkSharp
 			{
 				verticalAlign = value;
 				SetAlignment();
-				
+			}
+		}
+
+		public override Font Font
+		{
+			get { return base.Font; }
+			set
+			{
+				base.Font = value;
+				Control.Attributes = value != null ? ((FontHandler)value.Handler).Attributes : null;
 			}
 		}
 	}

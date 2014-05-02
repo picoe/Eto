@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Linq;
 using Eto.Forms;
 using MonoMac.AppKit;
@@ -11,6 +10,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		bool disableSelectedIndexChanged;
 
+		public bool RecurseToChildren { get { return true; } }
+
 		public override NSView ContainerControl { get { return Control; } }
 
 		public class EtoTabView : NSTabView, IMacControl
@@ -19,7 +20,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -40,14 +41,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.DidSelect += HandleDidSelect;
 		}
 
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			Control.ShouldSelectTabViewItem -= HandleShouldSelectTabViewItem;
+			Control.DidSelect -= HandleDidSelect;
+		}
+
 		static bool HandleShouldSelectTabViewItem(NSTabView tabView, NSTabViewItem item)
 		{
 			var handler = ((EtoTabView)tabView).WeakHandler.Target as TabControlHandler;
 			var tab = handler.Widget.TabPages.FirstOrDefault (r => ((TabPageHandler)r.Handler).TabViewItem == item);
-			if (tab != null)
-				return tab.Enabled;
-			else
-				return true;
+			return tab == null || tab.Enabled;
 		}
 
 		static void HandleDidSelect (object sender, NSTabViewItemEventArgs e)
@@ -62,7 +67,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return Control.Selected != null ? Control.IndexOf(Control.Selected) : -1; }
+			get { return Control.Selected == null ? -1 : Control.IndexOf(Control.Selected); }
 			set { Control.SelectAt (value); }
 		}
 
@@ -97,11 +102,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		protected override Size GetNaturalSize (Size availableSize)
+		protected override SizeF GetNaturalSize (SizeF availableSize)
 		{
-			Size size = base.GetNaturalSize(availableSize);
-			foreach (var tab in Widget.TabPages) {
-				size = Size.Max (size, tab.GetPreferredSize(availableSize));
+			var size = base.GetNaturalSize(availableSize);
+			foreach (var tab in Widget.TabPages.Where(r => r.Visible)) {
+				size = SizeF.Max (size, tab.GetPreferredSize(availableSize));
 			}
 			return size;
 		}

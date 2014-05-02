@@ -1,10 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Test.Sections.Drawing
 {
@@ -40,22 +36,26 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new Drawable { Size = new Size (300, 100) };
 			control.Paint += (sender, e) => {
-				e.Graphics.SetClip(new RectangleF(25, 25, 50, 50));
-				if (ResetClip)
-					e.Graphics.ResetClip();
-				e.Graphics.FillRectangle(Brushes.Blue(), new RectangleF(25, 0, 100, 100));
+				using (Generator.Context)
+				{
+					e.Graphics.SetClip(new RectangleF(25, 25, 50, 50));
+					if (ResetClip)
+						e.Graphics.ResetClip();
+					e.Graphics.FillRectangle(Brushes.Blue(), new RectangleF(25, 0, 100, 100));
 
-				e.Graphics.SetClip(new RectangleF(125, 25, 50, 50));
-				if (ResetClip)
-					e.Graphics.ResetClip();
-				e.Graphics.FillRectangle(Brushes.Red(), new RectangleF(125, 0, 100, 100));
+					e.Graphics.SetClip(new RectangleF(125, 25, 50, 50));
+					if (ResetClip)
+						e.Graphics.ResetClip();
+					e.Graphics.FillRectangle(Brushes.Red(), new RectangleF(125, 0, 100, 100));
 
-				e.Graphics.SetClip(new RectangleF(225, 25, 50, 50));
-				if (ResetClip)
-					e.Graphics.ResetClip();
-				e.Graphics.FillRectangle(Brushes.Green(), new RectangleF(225, 0, 100, 100));
+					e.Graphics.SetClip(new RectangleF(225, 25, 50, 50));
+					if (ResetClip)
+						e.Graphics.ResetClip();
+					e.Graphics.FillRectangle(Brushes.Green(), new RectangleF(225, 0, 100, 100));
+				}
 			};
-			this.PropertyChanged += (sender, e) => {
+			PropertyChanged += (sender, e) =>
+			{
 				if (e.PropertyName == "ResetClip")
 					control.Invalidate();
 			};
@@ -66,31 +66,35 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new Drawable { Size = new Size (350, 250) };
 			control.Paint += (sender, e) => {
-				var path = new GraphicsPath();
-				path.AddEllipse(25, 25, 50, 50);
-				path.AddRectangle(125, 25, 50, 50);
-				path.AddLines(new PointF(225, 25), new PointF(225, 75), new PointF(275, 50));
-				path.CloseFigure();
+				using (Generator.Context)
+				{
+					var path = new GraphicsPath();
+					path.AddEllipse(25, 25, 50, 50);
+					path.AddRectangle(125, 25, 50, 50);
+					path.AddLines(new PointF(225, 25), new PointF(225, 75), new PointF(275, 50));
+					path.CloseFigure();
 
-				e.Graphics.SetClip(path);
-				if (ResetClip)
-					e.Graphics.ResetClip();
-				e.Graphics.FillRectangle(Brushes.Blue(), path.Bounds);
+					e.Graphics.SetClip(path);
+					if (ResetClip)
+						e.Graphics.ResetClip();
+					e.Graphics.FillRectangle(Brushes.Blue(), path.Bounds);
 
-				path.Transform(Matrix.FromTranslation(0, 75));
-				e.Graphics.SetClip(path);
-				if (ResetClip)
-					e.Graphics.ResetClip();
-				e.Graphics.FillRectangle(Brushes.Red(), path.Bounds);
+					path.Transform(Matrix.FromTranslation(0, 75));
+					e.Graphics.SetClip(path);
+					if (ResetClip)
+						e.Graphics.ResetClip();
+					e.Graphics.FillRectangle(Brushes.Red(), path.Bounds);
 
-				path.Transform(Matrix.FromTranslation(0, 75));
-				e.Graphics.SetClip(path);
-				if (ResetClip)
-					e.Graphics.ResetClip();
-				e.Graphics.FillRectangle(Brushes.Green(), path.Bounds);
+					path.Transform(Matrix.FromTranslation(0, 75));
+					e.Graphics.SetClip(path);
+					if (ResetClip)
+						e.Graphics.ResetClip();
+					e.Graphics.FillRectangle(Brushes.Green(), path.Bounds);
+				}
 
 			};
-			this.PropertyChanged += (sender, e) => {
+			PropertyChanged += (sender, e) =>
+			{
 				if (e.PropertyName == "ResetClip")
 					control.Invalidate();
 			};

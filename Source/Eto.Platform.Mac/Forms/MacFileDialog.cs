@@ -22,29 +22,28 @@ namespace Eto.Platform.Mac.Forms
 		public IMacFileDialog Handler { get { return (IMacFileDialog)handler.Target; } set { handler = new WeakReference(value); } }
      
         public override bool ShouldEnableUrl (NSSavePanel panel, NSUrl url)
-        {
-            if (Directory.Exists (url.Path))
-                return true;
+		{
+			if (Directory.Exists(url.Path))
+				return true;
 
-			var extension = Path.GetExtension (url.Path).ToLowerInvariant ().TrimStart ('.');
-            if (Handler.MacFilters == null || Handler.MacFilters.Contains (extension, StringComparer.InvariantCultureIgnoreCase))
-                return true;
-            else
-                return false;
-        }
+			var extension = Path.GetExtension(url.Path).ToLowerInvariant().TrimStart('.');
+			if (Handler.MacFilters == null || Handler.MacFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
+				return true;
+			return false;
+		}
 		
     }
 	
-    public abstract class MacFileDialog<T, W> : WidgetHandler<T, W>, IFileDialog, IMacFileDialog
-     where T: NSSavePanel
-     where W: FileDialog
+    public abstract class MacFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IFileDialog, IMacFileDialog
+     where TControl: NSSavePanel
+     where TWidget: FileDialog
     {
         IFileDialogFilter[] filters;
 		List<string> macfilters;
-		NSPopUpButton fileTypes;
+		readonly NSPopUpButton fileTypes;
 		List<string> titles;
 
-        public MacFileDialog ()
+        protected MacFileDialog ()
         {
 			fileTypes = new NSPopUpButton();
         }
@@ -56,7 +55,7 @@ namespace Eto.Platform.Mac.Forms
 			var fileTypeView = new NSView();
 			fileTypeView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			
-			int padding = 15;
+			const int padding = 15;
 			
 			if (macfilters != null && macfilters.Count > 0) {
 				var label = new NSTextField();
@@ -121,7 +120,7 @@ namespace Eto.Platform.Mac.Forms
 		void SetFilters()
 		{
             macfilters = new List<string> ();
-			var filter = filters[this.CurrentFilterIndex];
+			var filter = filters[CurrentFilterIndex];
             //foreach (var filter in filters) {
                 foreach (var filterext in filter.Extensions) {
                     macfilters.Add (filterext.TrimStart ('*', '.'));
@@ -183,7 +182,7 @@ namespace Eto.Platform.Mac.Forms
             set { Control.Title = value; }
         }
      
-        public Eto.Forms.DialogResult ShowDialog (Window parent)
+        public DialogResult ShowDialog (Window parent)
         {
             //Control.AllowsOtherFileTypes = false;
             Control.Delegate = new SavePanelDelegate{ Handler = this };

@@ -1,6 +1,6 @@
-#if DESKTOP
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -13,11 +13,9 @@ namespace Eto.Forms
 		void Clear ();
 	}
 	
-	public interface ISubMenuWidget : IControlObjectSource, IHandlerSource, IGeneratorSource
+	public interface ISubMenuWidget
 	{
-		MenuItemCollection MenuItems { get; }
-		
-		void GenerateActions (IEnumerable<IActionItem> actionItems);
+		MenuItemCollection Items { get; }
 	}
 }
-#endif
+

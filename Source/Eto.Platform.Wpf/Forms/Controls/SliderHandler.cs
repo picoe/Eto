@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using Eto.Forms;
 
@@ -22,6 +19,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		}
 
 		public override bool UseMousePreview { get { return true; } }
+
+		public override bool UseKeyPreview { get { return true; } }
 
 		public int MaxValue
 		{

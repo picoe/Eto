@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swm = System.Windows.Media;
@@ -9,20 +8,21 @@ using Eto.Forms;
 using Eto.Drawing;
 using swi = System.Windows.Input;
 using Eto.Platform.Wpf.Drawing;
-using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class DrawableHandler : WpfDockContainer<swc.Canvas, Drawable>, IDrawable
+	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable>, IDrawable
 	{
 		bool tiled;
 		Scrollable scrollable;
-		Dictionary<int, EtoTile> visibleTiles = new Dictionary<int, EtoTile>();
-		List<EtoTile> unusedTiles = new List<EtoTile>();
+		readonly Dictionary<int, EtoTile> visibleTiles = new Dictionary<int, EtoTile>();
+		readonly List<EtoTile> unusedTiles = new List<EtoTile>();
 		Size maxTiles;
 		Size tileSize = new Size(100, 100);
 
 		public bool AllowTiling { get; set; }
+
+		public bool SupportsCreateGraphics { get { return false; } }
 
 		public Size TileSize
 		{
@@ -60,7 +60,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				base.OnRender(dc);
 				if (!Handler.tiled)
 				{
-					var rect = new sw.Rect(0, 0, this.ActualWidth, this.ActualHeight);
+					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
 					var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, dc, rect, false));
 					Handler.Widget.OnPaint(new PaintEventArgs(graphics, rect.ToEto()));
 				}
@@ -86,7 +86,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						Width = Handler.tileSize.Width;
 						Height = Handler.tileSize.Height;
 						RenderTransform = new swm.TranslateTransform(-bounds.X, -bounds.Y);
-						if (this.IsVisible)
+						if (IsVisible)
 							InvalidateVisual();
 					}
 				}
@@ -96,9 +96,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			public int Key { get { return Position.Y * Handler.maxTiles.Width + Position.X; } }
 
-			protected override void OnRender(swm.DrawingContext dc)
+			protected override void OnRender(swm.DrawingContext drawingContext)
 			{
-				var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, dc, bounds.ToWpf(), false));
+				var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, drawingContext, bounds.ToWpf(), false));
 				Handler.Widget.OnPaint(new PaintEventArgs(graphics, Bounds));
 			}
 		}
@@ -220,7 +220,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				// only show tiles in the visible rect of the scrollable
 				var visibleRect = new Rectangle(scroll.ClientSize);
-				var scrollableHandler = scroll.Handler as ScrollableHandler;
+				var scrollableHandler = (ScrollableHandler)scroll.Handler;
 				visibleRect.Offset(-Control.TranslatePoint(new sw.Point(), scrollableHandler.ContentControl).ToEtoPoint());
 				rect.Intersect(visibleRect);
 			}
@@ -336,7 +336,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				base.Invalidate(rect);
 		}
 
-		public void Update(Eto.Drawing.Rectangle rect)
+		public void Update(Rectangle rect)
 		{
 			Invalidate(rect);
 		}

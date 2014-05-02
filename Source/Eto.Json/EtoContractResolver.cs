@@ -1,10 +1,7 @@
 using System;
-using System.IO;
-using json = Newtonsoft.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
-using System.Runtime.Serialization;
 
 namespace Eto.Json
 {
@@ -23,14 +20,14 @@ namespace Eto.Json
 		{
 			var list = base.CreateProperties (type, memberSerialization);
 			foreach (var eventInfo in type.GetEvents (BindingFlags.Instance | BindingFlags.Public)) {
-				var prop = this.CreateProperty (eventInfo, memberSerialization);
+				var prop = CreateProperty(eventInfo, memberSerialization);
 				prop.Writable = true;
 				list.Add (prop);
 			}
 
 			var idprop = type.GetProperty ("ID", BindingFlags.Instance | BindingFlags.Public);
 			if (idprop != null) {
-				var prop = this.CreateProperty (idprop, memberSerialization);
+				var prop = CreateProperty(idprop, memberSerialization);
 				prop.PropertyName = "$name";
 				prop.PropertyType = typeof(NameConverter.Info);
 				prop.MemberConverter = new NameConverter ();

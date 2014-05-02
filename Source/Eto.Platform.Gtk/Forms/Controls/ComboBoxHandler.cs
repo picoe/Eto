@@ -1,7 +1,5 @@
 using System;
 using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
 using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
 
@@ -11,28 +9,45 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	{
 		Font font;
 		CollectionHandler collection;
-		Gtk.ListStore listStore;
-		Gtk.CellRendererText text;
+		readonly Gtk.ListStore listStore;
+		readonly Gtk.CellRendererText text;
 
-		public ComboBoxHandler ()
+		public ComboBoxHandler()
 		{
-			listStore = new Gtk.ListStore (typeof(string));
-			Control = new Gtk.ComboBox (listStore);
-			text = new Gtk.CellRendererText ();
-			Control.PackStart (text, false);
-			Control.AddAttribute (text, "text", 0);
-			Control.Changed += delegate {
-				Widget.OnSelectedIndexChanged (EventArgs.Empty);
-			};
+			listStore = new Gtk.ListStore(typeof(string));
+			Control = new Gtk.ComboBox(listStore);
+			text = new Gtk.CellRendererText();
+			Control.PackStart(text, false);
+			Control.AddAttribute(text, "text", 0);
 		}
-		
-		public int SelectedIndex {
-			get {
-				return Control.Active;
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Changed += Connector.HandleChanged;
+		}
+
+		protected new ComboBoxConnector Connector { get { return (ComboBoxConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new ComboBoxConnector();
+		}
+
+		protected class ComboBoxConnector : GtkControlConnector
+		{
+			public new ComboBoxHandler Handler { get { return (ComboBoxHandler)base.Handler; } }
+
+			public void HandleChanged(object sender, EventArgs e)
+			{
+				Handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
 			}
-			set {
-				Control.Active = value;
-			}
+		}
+
+		public int SelectedIndex
+		{
+			get { return Control.Active; }
+			set { Control.Active = value; }
 		}
 
 		public override Font Font
@@ -40,16 +55,13 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			get
 			{
 				if (font == null)
-					font = new Font (Widget.Generator, new FontHandler (text.FontDesc));
+					font = new Font(Widget.Generator, new FontHandler(text.FontDesc));
 				return font;
 			}
 			set
 			{
 				font = value;
-				if (font != null)
-					text.FontDesc = ((FontHandler)font.Handler).Control;
-				else
-					text.FontDesc = null;
+				text.FontDesc = font != null ? ((FontHandler)font.Handler).Control : null;
 			}
 		}
 
@@ -57,39 +69,40 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 			public ComboBoxHandler Handler { get; set; }
 
-			public override void AddItem (IListItem item)
+			public override void AddItem(IListItem item)
 			{
-				Handler.listStore.AppendValues (item.Text);
+				Handler.listStore.AppendValues(item.Text);
 			}
 
-			public override void InsertItem (int index, IListItem item)
+			public override void InsertItem(int index, IListItem item)
 			{
-				Handler.listStore.InsertWithValues (index, item.Text);
+				Handler.listStore.InsertWithValues(index, item.Text);
 			}
 
-			public override void RemoveItem (int index)
+			public override void RemoveItem(int index)
 			{
 				Gtk.TreeIter iter;
-				if (Handler.listStore.IterNthChild (out iter, index))
-					Handler.listStore.Remove (ref iter);
+				if (Handler.listStore.IterNthChild(out iter, index))
+					Handler.listStore.Remove(ref iter);
 			}
 
-			public override void RemoveAllItems ()
+			public override void RemoveAllItems()
 			{
-				Handler.listStore.Clear ();
+				Handler.listStore.Clear();
 			}
 		}
 
-		public IListStore DataStore {
+		public IListStore DataStore
+		{
 			get { return collection != null ? collection.Collection : null; }
-			set {
+			set
+			{
 				if (collection != null)
-					collection.Unregister ();
+					collection.Unregister();
 				collection = new CollectionHandler{ Handler = this };
-				collection.Register (value);
+				collection.Register(value);
 			}
 		}
-
 	}
 }
 

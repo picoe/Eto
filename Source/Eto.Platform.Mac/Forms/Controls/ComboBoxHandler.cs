@@ -1,12 +1,9 @@
 using System;
-using System.Reflection;
 using SD = System.Drawing;
 using Eto.Forms;
 using System.Linq;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -20,7 +17,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -88,7 +85,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public IListStore DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get { return collection == null ? null : collection.Collection; }
 			set
 			{
 				if (collection != null)
@@ -101,7 +98,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public int SelectedIndex
 		{
 			get	{ return Control.IndexOfSelectedItem; }
-			set { Control.SelectItem(value); }
+			set
+			{
+				if (value != SelectedIndex)
+				{
+					Control.SelectItem(value);
+					if (Widget.Loaded)
+						Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				}
+			}
 		}
 	}
 }

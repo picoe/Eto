@@ -5,16 +5,16 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class TextBoxHandler : iosControl<UITextField, TextBox>, ITextBox
+	public class TextBoxHandler : IosControl<UITextField, TextBox>, ITextBox
 	{
 		public override UITextField CreateControl()
 		{
 			return new UITextField();
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return Size.Max(base.GetNaturalSize(availableSize), new Size(60, 0));
+			return SizeF.Max(base.GetNaturalSize(availableSize), new SizeF(60, 0));
 		}
 
 		protected override void Initialize()
@@ -46,7 +46,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			switch (handler)
 			{
-				case Eto.Forms.Control.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.EditingChanged += (s, e) => Widget.OnTextChanged(e);
 					break;
 				default:

@@ -10,28 +10,28 @@ namespace Eto.Platform.Mac.Forms
 		{
 			switch (cursor) {
 			case CursorType.Arrow:
-				this.Control = NSCursor.ArrowCursor;
+				Control = NSCursor.ArrowCursor;
 				break;
 			case CursorType.Crosshair:
-				this.Control = NSCursor.CrosshairCursor;
+				Control = NSCursor.CrosshairCursor;
 				break;
 			case CursorType.Default:
-				this.Control = NSCursor.CurrentSystemCursor;
+				Control = NSCursor.CurrentSystemCursor;
 				break;
 			case CursorType.HorizontalSplit:
-				this.Control = NSCursor.ResizeLeftRightCursor;
+				Control = NSCursor.ResizeLeftRightCursor;
 				break;
 			case CursorType.IBeam:
-				this.Control = NSCursor.IBeamCursor;
+				Control = NSCursor.IBeamCursor;
 				break;
 			case CursorType.Move:
-				this.Control = NSCursor.OpenHandCursor;
+				Control = NSCursor.OpenHandCursor;
 				break;
 			case CursorType.Pointer:
-				this.Control = NSCursor.PointingHandCursor;
+				Control = NSCursor.PointingHandCursor;
 				break;
 			case CursorType.VerticalSplit:
-				this.Control = NSCursor.ResizeUpDownCursor;
+				Control = NSCursor.ResizeUpDownCursor;
 				break;
 			default:
 				throw new NotSupportedException();

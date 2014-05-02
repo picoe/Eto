@@ -1,36 +1,28 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.GtkSharp
 {
-	public interface IGtkListModelHandler<T, S>
-		where S: IDataStore<T>
-		where T: class
+	public interface IGtkListModelHandler<TItem, TStore>
+		where TStore: IDataStore<TItem>
+		where TItem: class
 	{
-		S DataStore { get; }
+		TStore DataStore { get; }
 		
 		int NumberOfColumns { get; }
 		
-		GLib.Value GetColumnValue (T item, int column, int row);
+		GLib.Value GetColumnValue (TItem item, int column, int row);
 
-		int GetRowOfItem (T item);
+		int GetRowOfItem (TItem item);
 	}
 
-	public class GtkListModel<T, S> : GLib.Object, ITreeModelImplementor
-		where S: IDataStore<T>
-		where T: class
+	public class GtkListModel<TItem, TStore> : GLib.Object, ITreeModelImplementor
+		where TStore: class, IDataStore<TItem>
+		where TItem: class
 	{
+		WeakReference handler;
+		public IGtkListModelHandler<TItem, TStore> Handler { get { return (IGtkListModelHandler<TItem, TStore>)handler.Target; } set { handler = new WeakReference(value); } }
 
-		public IGtkListModelHandler<T, S> Handler { get; set; }
-
-		public GtkListModel ()
-		{
-		}
-		
 		public Gtk.TreeIter GetIterAtRow (int row)
 		{
 			return new Gtk.TreeIter { UserData = (IntPtr)(row+1) };
@@ -43,33 +35,29 @@ namespace Eto.Platform.GtkSharp
 			return path;
 		}
 		
-		public T GetItemAtPath (Gtk.TreePath path)
+		public TItem GetItemAtPath (Gtk.TreePath path)
 		{
 			var row = GetRow (path);
-			if (row >= 0)
-				return Handler.DataStore [row];
-			return default(T);
+			return row >= 0 ? Handler.DataStore[row] : default(TItem);
 		}
 
-		public T GetItemAtPath (string path)
+		public TItem GetItemAtPath (string path)
 		{
 			return GetItemAtPath (new Gtk.TreePath (path));
 		}
 		
-		public T GetItemAtIter (Gtk.TreeIter iter)
+		public TItem GetItemAtIter (Gtk.TreeIter iter)
 		{
 			var node = NodeFromIter (iter);
-			if (node >= 0)
-				return Handler.DataStore [node];
-			return default(T);
+			return node >= 0 ? Handler.DataStore[node] : default(TItem);
 		}
 
 		int GetRow (Gtk.TreePath path)
 		{
-			if (path.Indices.Length > 0 && Handler.DataStore != null && Handler.DataStore.Count > 0)
-				return path.Indices [0];
-			else
-				return -1;
+			var h = Handler;
+			if (h != null && path.Indices.Length > 0 && h.DataStore != null && h.DataStore.Count > 0)
+				return path.Indices[0];
+			return -1;
 		}
 
 		public Gtk.TreeModelFlags Flags {
@@ -165,16 +153,17 @@ namespace Eto.Platform.GtkSharp
 
 		public int IterNChildren (Gtk.TreeIter iter)
 		{
-			if (iter.UserData == IntPtr.Zero && Handler.DataStore != null)
-				return Handler.DataStore.Count;
-			else
-				return 0;
+			var h = Handler;
+			if (iter.UserData == IntPtr.Zero && h.DataStore != null)
+				return h.DataStore.Count;
+			return 0;
 		}
 
 		public bool IterNthChild (out Gtk.TreeIter child, Gtk.TreeIter parent, int n)
 		{
-			if (parent.UserData == IntPtr.Zero && Handler.DataStore != null) {
-				if (n < Handler.DataStore.Count) {
+			var h = Handler;
+			if (parent.UserData == IntPtr.Zero && h != null && h.DataStore != null) {
+				if (n < h.DataStore.Count) {
 					child = new Gtk.TreeIter { UserData = (IntPtr)(n+1) };
 					return true;
 				}

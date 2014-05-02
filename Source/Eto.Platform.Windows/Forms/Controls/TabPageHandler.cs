@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
-	public class TabPageHandler : WindowsDockContainer<swf.TabPage, TabPage>, ITabPage
+	public class TabPageHandler : WindowsPanel<swf.TabPage, TabPage>, ITabPage
 	{
 		Image image;
 		swf.TabControl tabcontrol;
@@ -26,30 +26,30 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 		
-		public Eto.Drawing.Image Image {
+		public Image Image {
 			get { return image; }
 			set {
-				if (tabcontrol != null && !string.IsNullOrEmpty (this.Control.ImageKey)) {
-					this.tabcontrol.ImageList.Images.RemoveByKey (this.Control.ImageKey);
-					this.Control.ImageIndex = -1;
+				if (tabcontrol != null && !string.IsNullOrEmpty (Control.ImageKey)) {
+					tabcontrol.ImageList.Images.RemoveByKey (Control.ImageKey);
+					Control.ImageIndex = -1;
 				}
 				image = value;
 				if (image != null) {
-					this.Control.ImageKey = Guid.NewGuid ().ToString ();
+					Control.ImageKey = Guid.NewGuid ().ToString ();
 					SetImage ();
 				}
 				else {
-					this.Control.ImageKey = null;
+					Control.ImageKey = null;
 				}
 			}
 		}
 		
 		void SetImage ()
 		{
-			if (tabcontrol != null && image != null && this.Control.ImageIndex == -1) {
-				this.tabcontrol.ImageList.AddImage (image, this.Control.ImageKey);
+			if (tabcontrol != null && image != null && Control.ImageIndex == -1) {
+				tabcontrol.ImageList.AddImage (image, Control.ImageKey);
 				// must set image index since it doesn't work with key for tabs.. ugh
-				this.Control.ImageIndex = this.tabcontrol.ImageList.Images.IndexOfKey (this.Control.ImageKey);
+				Control.ImageIndex = tabcontrol.ImageList.Images.IndexOfKey (Control.ImageKey);
 			}
 		}
 

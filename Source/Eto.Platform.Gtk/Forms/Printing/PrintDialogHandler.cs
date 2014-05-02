@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp.Forms.Printing
@@ -11,6 +10,8 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 		{
 			AllowPageRange =true;
 		}
+
+		public PrintDocument Document { get; set; }
 
 		public class CustomOptions : Gtk.VBox {
 			public Gtk.CheckButton SelectionOnly { get; private set; }
@@ -34,7 +35,7 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 				Control.Modal = true;
 			}
 
-			var caps = Gtk.PrintCapabilities.Preview
+			const Gtk.PrintCapabilities caps = Gtk.PrintCapabilities.Preview
 					| Gtk.PrintCapabilities.Collate
 					| Gtk.PrintCapabilities.GeneratePdf
 					| Gtk.PrintCapabilities.Copies
@@ -43,10 +44,10 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 					| Gtk.PrintCapabilities.Scale
 					| Gtk.PrintCapabilities.NumberUp
 					| Gtk.PrintCapabilities.Reverse;
-			var printSettingsHandler = (PrintSettingsHandler)this.PrintSettings.Handler;
+			var printSettingsHandler = (PrintSettingsHandler)PrintSettings.Handler;
 
-			Control.PageSetup = this.PrintSettings.ToGtkPageSetup ();
-			Control.PrintSettings = this.PrintSettings.ToGtkPrintSettings ();
+			Control.PageSetup = PrintSettings.ToGtkPageSetup ();
+			Control.PrintSettings = PrintSettings.ToGtkPrintSettings ();
 			var customOptions = new CustomOptions();
 			customOptions.SelectionOnly.Active = printSettingsHandler.SelectionOnly;
 

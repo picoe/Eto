@@ -1,11 +1,10 @@
 #if DESKTOP
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public partial class ActionItemCollection : List<IActionItem>
+	public partial class ActionItemCollection
 	{
 		
 		public MenuBar GenerateMenuBar()
@@ -14,8 +13,13 @@ namespace Eto.Forms
 			Generate (menu);
 			return menu;
 		}
-		
+
 		public void Generate(ISubMenuWidget menu)
+		{
+			Generate(menu.Items);
+		}
+
+		public void Generate(MenuItemCollection menu)
 		{
 			var list = new List<IActionItem>(this);
 			list.Sort(Compare);
@@ -27,9 +31,9 @@ namespace Eto.Forms
 				
 				if ((lastSeparator && isSeparator) || (isSeparator && (i == 0 || i == list.Count - 1)))
 					continue;
-				var mi = ai.Generate(menu.Generator);
+				var mi = ai.Generate(menu.parent.Generator);
 				if (mi != null)
-					menu.MenuItems.Add(mi);
+					menu.Add(mi);
 				lastSeparator = isSeparator;	
 			}
 		}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+	<metadata>
+		<id>Eto.Forms.Json</id>
+		<version>$version$</version>
+		<title>Eto.Forms Json serializer</title>
+		<authors>Picoe Software Solutions Inc.</authors>
+		<owners>Picoe Software Solutions Inc.</owners>
+		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/picoe/Eto</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>Eto.Forms Json serializer</summary>
+		<description>
+    	Eto.Json allows you to load json UI definitions for the Eto.Forms framework
+    	
+        To get more information about how to get started, read the wiki:
+
+        https://github.com/picoe/Eto/wiki		
+		</description>
+		<copyright>Copyright 2014 by Curtis Wensley</copyright>
+		<tags>cross platform gui ui framework desktop json eto.forms</tags>
+		<dependencies>
+			<group>
+				<dependency id="Newtonsoft.Json" version="6.0.0" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="..\..\BuildOutput\$configuration$\Eto.Json.dll" target="lib\net40\" />
+		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
+	</files>
+</package>

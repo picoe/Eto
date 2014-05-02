@@ -8,9 +8,12 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class SplitterHandler : MacContainer<UIView, Splitter>, ISplitter, IiosViewController
+	public class SplitterHandler : MacContainer<UIView, Splitter>, ISplitter
 	{
-		public override UIViewController Controller { get { return (UIViewController)MGSplitController ?? SplitController; } }
+		protected override UIViewController CreateController()
+		{
+			return (UIViewController)MGSplitController ?? SplitController;
+		}
 
 		public override UIView ContainerControl { get { return Control; } }
 		
@@ -31,8 +34,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return MGSplitController.View;
 			} else {
 				SplitController = new UISplitViewController ();
+				SplitController.Delegate = new SplitControllerDelegate();
 				return SplitController.View;
 			}
+		}
+
+		class SplitControllerDelegate : UISplitViewControllerDelegate
+		{
+			public override bool ShouldHideViewController(UISplitViewController svc, UIViewController viewController, UIInterfaceOrientation inOrientation)
+			{
+				return false;
+			}			
 		}
 		
 		public SplitterHandler ()

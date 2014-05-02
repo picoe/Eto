@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using Eto.Forms;
 using Eto.Drawing;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Eto.Platform.GtkSharp
@@ -88,8 +86,8 @@ namespace Eto.Platform.GtkSharp
 			align.Add(Control);
 			box = new Gtk.EventBox { Child = align };
 
-			this.Spacing = TableLayout.DefaultSpacing;
-			this.Padding = TableLayout.DefaultPadding;
+			Spacing = TableLayout.DefaultSpacing;
+			Padding = TableLayout.DefaultPadding;
 		}
 
 		public void SetColumnScale(int column, bool scale)

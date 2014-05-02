@@ -1,10 +1,8 @@
-using System;
 using Eto.Forms;
 using System.Collections.Generic;
-using System.Linq;
 using Eto.Test.Sections.Controls;
 using Eto.Test.Sections.Drawing;
-using Eto.Test.Sections.Layouts;
+using Eto.Test.Sections;
 
 namespace Eto.Test
 {
@@ -20,6 +18,7 @@ namespace Eto.Test
 			yield return new Section("Dialogs", DialogsSection());
 			yield return new Section("Printing", PrintingSection());
 			yield return new Section("Serialization", SerializationSection());
+			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 		
 		static IEnumerable<Section> ControlSection()
@@ -36,6 +35,7 @@ namespace Eto.Test
 			yield return new Section<ListBoxSection> { Text = "List Box" };
 			yield return new Section<TabControlSection> { Text = "Tab Control" };
 			yield return new Section<ThemedTabControlSection> { Text = "Tab Control (Themed)" };
+			yield return new ThemedTabControlFormSection { Text = "Tab Control Form (Themed)" };
 			yield return new Section<TreeGridViewSection> { Text = "Tree Grid View" };
 			yield return new Section<TreeViewSection> { Text = "Tree View" };
 			yield return new Section<NumericUpDownSection> { Text = "Numeric Up/Down" };
@@ -43,6 +43,7 @@ namespace Eto.Test
 			yield return new Section<ComboBoxSection> { Text = "Combo Box" };
 			yield return new Section<GroupBoxSection> { Text = "Group Box" };
 			yield return new Section<SliderSection> { Text = "Slider" };
+			yield return new Section<SpinnerSection> { Text = "Spinner" };
 			yield return new Section<GridViewSection> { Text = "Grid View" };
 			yield return new Section<GridCellFormattingSection> { Text = "Grid Cell Formatting" };
 			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
@@ -50,7 +51,7 @@ namespace Eto.Test
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 			yield return new Section<ImageViewSection> { Text = "Image View" };
 			yield return new Section<RadioButtonListSection> { Text = "Radio Button List" };
-			yield return new Sections.Controls.SplitterSection { Text = "Splitter" };
+			yield return new Section<SplitterSection> { Text = "Splitter" };
 		}
 		
 		static IEnumerable<Section> DrawingSection()
@@ -59,8 +60,8 @@ namespace Eto.Test
 			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
 			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" };
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
-			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
+			yield return new Section<GetPixelSection> { Text = "Get Pixel Color" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
 			yield return new Section<PenSection> { Text = "Pens" };
 			yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
@@ -70,10 +71,10 @@ namespace Eto.Test
 			yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2" };
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
-			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" };
-			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
+			yield return new Section<DrawTextSection> { Text = "Draw Text" };
+			yield return new Section<DrawLoopSection> { Text = "Draw Loop" };
 		}
-		
+
 		static IEnumerable<Section> LayoutsSection()
 		{
 			yield return new Section("Table Layout", TableLayoutsSection());
@@ -131,7 +132,8 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.KeyEventsSection> { Text = "Key Events" };
 			yield return new Section<Sections.Behaviors.BadgeLabelSection> { Text = "Badge Label" };
 			yield return new Section<Sections.Behaviors.ScreenSection> { Text = "Screens" };
-			if (Generator.Current.Supports <IMouse> ())
+			
+			if (Mouse.IsSupported())
 				yield return new Section<Sections.Behaviors.MousePositionSection> { Text = "Mouse Position" };
 #if DESKTOP
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };

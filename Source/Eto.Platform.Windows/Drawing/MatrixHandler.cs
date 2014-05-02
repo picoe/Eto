@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Eto.Drawing;
 using sd = System.Drawing;
 using sd2 = System.Drawing.Drawing2D;
@@ -93,44 +91,44 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Rotate (float angle)
 		{
-			this.Control.Rotate (angle, sd2.MatrixOrder.Prepend);
+			Control.Rotate (angle, sd2.MatrixOrder.Prepend);
 		}
 
 		public void RotateAt (float angle, float centerX, float centerY)
 		{
-			this.Control.RotateAt (angle, new sd.PointF (centerX, centerY), sd2.MatrixOrder.Prepend);
+			Control.RotateAt (angle, new sd.PointF (centerX, centerY), sd2.MatrixOrder.Prepend);
 		}
 
 		public void Translate (float x, float y)
 		{
-			this.Control.Translate (x, y, sd2.MatrixOrder.Prepend);
+			Control.Translate (x, y, sd2.MatrixOrder.Prepend);
 		}
 
 		public void Scale (float scaleX, float scaleY)
 		{
-			this.Control.Scale (scaleX, scaleY, sd2.MatrixOrder.Prepend);
+			Control.Scale (scaleX, scaleY, sd2.MatrixOrder.Prepend);
 		}
 
 		public void ScaleAt (float scaleX, float scaleY, float centerX, float centerY)
 		{
 			var m = new sd2.Matrix (scaleX, 0, 0, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
-			this.Control.Multiply (m, sd2.MatrixOrder.Prepend);
+			Control.Multiply (m, sd2.MatrixOrder.Prepend);
 		}
 
 		public void Skew (float skewX, float skewY)
 		{
 			var m = new sd2.Matrix (1, (float)Math.Tan(Conversions.DegreesToRadians(skewX)), (float)Math.Tan(Conversions.DegreesToRadians(skewY)), 1, 0, 0);
-			this.Control.Multiply (m, sd2.MatrixOrder.Prepend);
+			Control.Multiply (m, sd2.MatrixOrder.Prepend);
 		}
 
 		public void Append (IMatrix matrix)
 		{
-			this.Control.Multiply (matrix.ToSD (), sd2.MatrixOrder.Append);
+			Control.Multiply (matrix.ToSD (), sd2.MatrixOrder.Append);
 		}
 
 		public void Prepend (IMatrix matrix)
 		{
-			this.Control.Multiply (matrix.ToSD (), sd2.MatrixOrder.Prepend);
+			Control.Multiply (matrix.ToSD (), sd2.MatrixOrder.Prepend);
 		}
 
 		public void Create ()
@@ -145,23 +143,23 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Invert ()
 		{
-			this.Control.Invert ();
+			Control.Invert ();
 		}
 
 		public PointF TransformPoint (Point p)
 		{
-			var px = new sd.Point[] { Platform.Conversions.ToSD (p) };
+			var px = new sd.Point[] { p.ToSD() };
 
-			this.Control.TransformPoints (px);
+			Control.TransformPoints (px);
 
-			return Platform.Conversions.ToEto (px [0]);
+			return px[0].ToEto();
 		}
 
 		public PointF TransformPoint (PointF p)
 		{
 			var px = new sd.PointF[] { p.ToSD () };
 
-			this.Control.TransformPoints (px);
+			Control.TransformPoints (px);
 
 			return px [0].ToEto ();
 		}

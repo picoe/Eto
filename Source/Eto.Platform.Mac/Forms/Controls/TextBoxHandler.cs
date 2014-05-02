@@ -3,7 +3,6 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Controls;
-using MonoMac.ObjCRuntime;
 using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
@@ -23,7 +22,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			if (value == null)
 				return string.Empty;
-			var str = value as NSString;
+			var str = (NSString)value;
 			//if (str != null && value.Handle != IntPtr.Zero)
 			return str.ToString();
 		}
@@ -102,22 +101,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxLength = -1;
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var size = base.GetNaturalSize(availableSize);
 			size.Width = Math.Max(100, size.Height);
 			return size;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-				case TextArea.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.Changed += HandleTextChanged;
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

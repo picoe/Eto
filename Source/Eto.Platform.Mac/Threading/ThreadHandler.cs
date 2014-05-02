@@ -31,7 +31,7 @@ namespace Eto.Platform.iOS.Threading
 			}
 		}
 
-		static Selector selExecute = new Selector("execute");
+		static readonly Selector selExecute = new Selector("execute");
 		
 		public void Create()
 		{

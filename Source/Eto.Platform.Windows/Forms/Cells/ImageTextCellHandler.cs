@@ -9,8 +9,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class ImageTextCellHandler : CellHandler<swf.DataGridViewTextBoxCell, ImageTextCell>, IImageTextCell
 	{
-		public static int ICON_SIZE = 16;
-		public static int ICON_PADDING = 2;
+		public static int IconSize = 16;
+		public static int IconPadding = 2;
 
 		class EtoCell : swf.DataGridViewTextBoxCell
 		{
@@ -18,7 +18,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			public override void PositionEditingControl (bool setLocation, bool setSize, sd.Rectangle cellBounds, sd.Rectangle cellClip, swf.DataGridViewCellStyle cellStyle, bool singleVerticalBorderAdded, bool singleHorizontalBorderAdded, bool isFirstDisplayedColumn, bool isFirstDisplayedRow)
 			{
-				Handler.PositionEditingControl (RowIndex, ref cellClip, ref cellBounds, ICON_SIZE + ICON_PADDING * 2);
+				Handler.PositionEditingControl (RowIndex, ref cellClip, ref cellBounds, IconSize + IconPadding * 2);
 				base.PositionEditingControl (setLocation, setSize, cellBounds, cellClip, cellStyle, singleVerticalBorderAdded, singleHorizontalBorderAdded, isFirstDisplayedColumn, isFirstDisplayedRow);
 			}
 
@@ -33,7 +33,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				var size = base.GetPreferredSize (graphics, cellStyle, rowIndex, constraintSize);
 				var val = GetValue (rowIndex) as object[];
 				var img = val[0] as sd.Image;
-				if (img != null) size.Width += ICON_SIZE + ICON_PADDING * 2;
+				if (img != null) size.Width += IconSize + IconPadding * 2;
 				size.Width += Handler.GetRowOffset (rowIndex);
 				return size;
 			}
@@ -48,10 +48,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 					var container = graphics.BeginContainer ();
 					graphics.SetClip (cellBounds);
 
-					graphics.DrawImage (img, new sd.Rectangle (cellBounds.X + ICON_PADDING, cellBounds.Y + (cellBounds.Height - Math.Min(img.Height, cellBounds.Height)) / 2, ICON_SIZE, ICON_SIZE));
+					graphics.DrawImage (img, new sd.Rectangle (cellBounds.X + IconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(img.Height, cellBounds.Height)) / 2, IconSize, IconSize));
 					graphics.EndContainer (container);
-					cellBounds.X += ICON_SIZE + ICON_PADDING * 2;
-					cellBounds.Width -= ICON_SIZE + ICON_PADDING * 2;
+					cellBounds.X += IconSize + IconPadding * 2;
+					cellBounds.Width -= IconSize + IconPadding * 2;
 				}
 				base.Paint (graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 			}
@@ -64,8 +64,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			public override object Clone ()
 			{
-				var val = base.Clone () as EtoCell;
-				val.Handler = this.Handler;
+				var val = (EtoCell)base.Clone ();
+				val.Handler = Handler;
 				return val;
 			}
 		}
@@ -88,9 +88,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			if (Widget.ImageBinding != null) {
 				var image = Widget.ImageBinding.GetValue (dataItem) as Image;
 				if (image != null) {
-					var imageHandler = image.Handler as IWindowsImage;
+					var imageHandler = image.Handler as IWindowsImageSource;
 					if (imageHandler != null) {
-						obj[0] = imageHandler.GetImageWithSize (Math.Max (32, this.Control.PreferredSize.Height));
+						obj[0] = imageHandler.GetImageWithSize (Math.Max (32, Control.PreferredSize.Height));
 					}
 				}
 			}

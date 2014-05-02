@@ -1,9 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Test.Sections.Drawing
 {
@@ -79,7 +76,7 @@ namespace Eto.Test.Sections.Drawing
 			control.Items.Add(new DashStyleItem { Text = "Dash Dot Dot", Style = DashStyles.DashDotDot });
 			control.SelectedIndex = 0;
 			control.SelectedIndexChanged += (sender, e) => {
-				this.DashStyle = ((DashStyleItem)control.SelectedValue).Style;
+				DashStyle = ((DashStyleItem)control.SelectedValue).Style;
 				Refresh(sender, e);
 			};
 			return control;
@@ -96,24 +93,22 @@ namespace Eto.Test.Sections.Drawing
 			{
 				Size = new Size (560, 300)
 			};
-			drawable.Paint += (sender, pe) => {
-				Draw(pe.Graphics, null);
-			};
+			drawable.Paint += (sender, pe) => Draw(pe.Graphics, null);
 			return drawable;
 		}
 
 		void Draw(Graphics g, Action<Pen> action)
 		{
-			var path = new GraphicsPath();
+			var path = new GraphicsPath(Generator);
 			path.AddLines(new PointF(0, 0), new PointF(100, 40), new PointF(0, 30), new PointF(50, 70));
 
 			for (int i = 0; i < 4; i++)
 			{
 				float thickness = 1f + i * PenThickness;
-				var pen = new Pen(Colors.Black, thickness);
-				pen.LineCap = this.LineCap;
-				pen.LineJoin = this.LineJoin;
-				pen.DashStyle = this.DashStyle;
+				var pen = new Pen(Colors.Black, thickness, Generator);
+				pen.LineCap = LineCap;
+				pen.LineJoin = LineJoin;
+				pen.DashStyle = DashStyle;
 				if (action != null)
 					action(pen);
 				var y = i * 20;

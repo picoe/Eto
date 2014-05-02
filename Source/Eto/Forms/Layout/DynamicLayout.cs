@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Eto.Drawing;
+using System.Collections.ObjectModel;
 
 #if XAML
 using System.Windows.Markup;
@@ -12,11 +12,11 @@ namespace Eto.Forms
 	[ContentProperty("Rows")]
 	public class DynamicLayout : Panel
 	{
-		DynamicTable topTable;
+		readonly DynamicTable topTable;
 		DynamicTable currentItem;
 		bool? yscale;
 
-		public List<DynamicRow> Rows
+		public Collection<DynamicRow> Rows
 		{
 			get { return topTable.Rows; }
 		}
@@ -24,12 +24,12 @@ namespace Eto.Forms
 		[Obsolete("Use DynamicLayout directly as a control")]
 		public Container Container
 		{
-			get { return this.Parent; }
+			get { return Parent; }
 		}
 
 		public bool Generated { get; private set; }
 
-		public Padding? Padding
+		public new Padding? Padding
 		{
 			get { return topTable.Padding; }
 			set { topTable.Padding = value; }
@@ -41,7 +41,7 @@ namespace Eto.Forms
 			set { topTable.Spacing = value; }
 		}
 
-		public Padding? DefaultPadding { get; set; }
+		public new Padding? DefaultPadding { get; set; }
 
 		public Size? DefaultSpacing { get; set; }
 
@@ -54,31 +54,10 @@ namespace Eto.Forms
 			}
 		}
 
-		#region Exceptions
-		[Serializable]
-		public class AlreadyGeneratedException : Exception
-		{
-			public AlreadyGeneratedException()
-			{
-			}
-
-			public AlreadyGeneratedException(string message) : base (message)
-			{
-			}
-
-			public AlreadyGeneratedException(string message, Exception inner) : base (message, inner)
-			{
-			}
-
-			protected AlreadyGeneratedException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base (info, context)
-			{
-			}
-		}
-		#endregion
 		public override void OnPreLoad(EventArgs e)
 		{
 			if (!Generated)
-				this.Generate();
+				Generate();
 
 			base.OnPreLoad(e);
 		}
@@ -86,7 +65,7 @@ namespace Eto.Forms
 		public override void OnLoad(EventArgs e)
 		{
 			if (!Generated)
-				this.Generate();
+				Generate();
 
 			base.OnLoad(e);
 		}
@@ -97,7 +76,7 @@ namespace Eto.Forms
 		}
 
 		public DynamicLayout(Size? spacing)
-			: this ((Padding?)null, spacing, (Generator)null)
+			: this((Padding?)null, spacing, (Generator)null)
 		{
 		}
 
@@ -112,15 +91,15 @@ namespace Eto.Forms
 			currentItem = topTable;
 		}
 
-		[Obsolete("Add the DynamicLayout to the container using its DockContainer.Content property")]
-		public DynamicLayout(DockContainer container, Size? spacing)
-			: this (container, null, spacing)
+		[Obsolete("Add the DynamicLayout to the container using its Panel.Content property")]
+		public DynamicLayout(Panel container, Size? spacing)
+			: this(container, null, spacing)
 		{
 		}
 
-		[Obsolete("Add the DynamicLayout to the container using its DockContainer.Content property")]
-		public DynamicLayout(DockContainer container, Padding? padding = null, Size? spacing = null)
-			: this (padding, spacing, container != null ? container.Generator : null)
+		[Obsolete("Add the DynamicLayout to the container using its Panel.Content property")]
+		public DynamicLayout(Panel container, Padding? padding = null, Size? spacing = null)
+			: this(padding, spacing, container == null ? null : container.Generator)
 		{
 			if (container != null)
 				container.Content = this;
@@ -138,8 +117,6 @@ namespace Eto.Forms
 
 		public DynamicTable BeginVertical(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			var newItem = new DynamicTable
 			{ 
 				Parent = currentItem ?? topTable, 
@@ -155,8 +132,6 @@ namespace Eto.Forms
 
 		public void EndVertical()
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			currentItem = currentItem.Parent ?? topTable;
 		}
 
@@ -174,8 +149,6 @@ namespace Eto.Forms
 
 		public DynamicRow BeginHorizontal(bool? yscale = null)
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			currentItem.AddRow(currentItem.CurrentRow = new DynamicRow());
 			this.yscale = yscale;
 			return currentItem.CurrentRow;
@@ -183,18 +156,14 @@ namespace Eto.Forms
 
 		public void EndHorizontal()
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			if (currentItem.CurrentRow == null)
 				EndVertical();
-			else 
+			else
 				currentItem.CurrentRow = null;
 		}
 
 		public DynamicControl Add(Control control, bool? xscale = null, bool? yscale = null)
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			if (xscale == null && currentItem.CurrentRow != null && control == null)
 				xscale = true;
 			yscale = yscale ?? this.yscale;
@@ -207,23 +176,23 @@ namespace Eto.Forms
 
 		public DynamicRow AddSeparateRow(params Control[] controls)
 		{
-			var row = AddSeparateRow();
+			var row = AddSeparateRow(padding: null);
 			row.Add(controls);
 			return row;
 		}
 
-		public DynamicRow AddSeparateRow(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		public DynamicRow AddSeparateRow(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, IEnumerable<Control> controls = null)
 		{
-			this.BeginVertical(padding, spacing, xscale, yscale);
-			var row = this.AddRow();
-			this.EndVertical();
+			BeginVertical(padding, spacing, xscale, yscale);
+			var row = AddRow();
+			if (controls != null)
+				row.Add(controls);
+			EndVertical();
 			return row;
 		}
 
 		public DynamicRow AddRow(params Control[] controls)
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			if (controls == null)
 				controls = new Control[] { null };
 			
@@ -250,39 +219,39 @@ namespace Eto.Forms
 
 		public void AddCentered(Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool horizontalCenter = true, bool verticalCenter = true)
 		{
-			this.BeginVertical(padding ?? Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
+			BeginVertical(padding ?? Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
 			if (verticalCenter)
-				this.Add(null, null, true);
+				Add(null, null, true);
 			
-			this.BeginHorizontal();
+			BeginHorizontal();
 			if (horizontalCenter)
-				this.Add(null, true, null);
+				Add(null, true, null);
 			
-			this.Add(control);
+			Add(control);
 			
 			if (horizontalCenter)
-				this.Add(null, true, null);
+				Add(null, true, null);
 			
-			this.EndHorizontal();
+			EndHorizontal();
 			
 			if (verticalCenter)
-				this.Add(null, null, true);
-			this.EndVertical();
+				Add(null, null, true);
+			EndVertical();
 			
 		}
 
 		public void AddAutoSized(Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool centered = false)
 		{
-			this.BeginVertical(padding ?? Eto.Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
+			BeginVertical(padding ?? Eto.Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
 			if (centered)
 			{
-				this.Add(null);
-				this.AddRow(null, control, null);
+				Add(null);
+				AddRow(null, control, null);
 			}
 			else
-				this.AddRow(control, null);
-			this.Add(null);
-			this.EndVertical();
+				AddRow(control, null);
+			Add(null);
+			EndVertical();
 		}
 
 		public void AddColumn(params Control[] controls)
@@ -299,13 +268,22 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This is called automatically on the Container's LoadCompleted event, but can be called manually if needed.
 		/// </remarks>
-		/// <exception cref="AlreadyGeneratedException">specifies that the control was already generated</exception>
 		public void Generate()
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
-			this.Content = topTable.Generate(this);
+			Content = topTable.Generate(this);
 			Generated = true;
+		}
+
+		/// <summary>
+		/// Clears the layout so it can be recreated
+		/// </summary>
+		/// <remarks>
+		/// You must call <see cref="Generate"/> when done updating the layout
+		/// </remarks>
+		public void Clear()
+		{
+			topTable.Rows.Clear();
+			Generated = false;
 		}
 	}
 }

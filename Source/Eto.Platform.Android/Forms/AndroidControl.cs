@@ -4,6 +4,8 @@ using Eto.Drawing;
 using a = Android;
 using av = Android.Views;
 using aw = Android.Widget;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.Android.Forms
 {
@@ -12,6 +14,11 @@ namespace Eto.Platform.Android.Forms
 		av.View ContainerControl { get; }
 	}
 
+	/// <summary>
+	/// Base handler for <see cref="IControl"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class AndroidControl<T, TWidget> : WidgetHandler<T, TWidget>, IControl, IAndroidControl
 		where TWidget: Control
 	{
@@ -62,10 +69,6 @@ namespace Eto.Platform.Android.Forms
 		{
 		}
 
-		public virtual void MapPlatformAction(string systemAction, BaseAction action)
-		{
-		}
-
 		public PointF PointFromScreen(PointF point)
 		{
 			throw new NotImplementedException();
@@ -99,7 +102,7 @@ namespace Eto.Platform.Android.Forms
 			}
 		}
 
-		public bool Enabled
+		public virtual bool Enabled
 		{
 			get
 			{
@@ -140,6 +143,14 @@ namespace Eto.Platform.Android.Forms
 			set { }
 		}
 
+		public IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return Enumerable.Empty<string>(); }
+		}
+
+		public void MapPlatformCommand(string systemAction, Command action)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
-

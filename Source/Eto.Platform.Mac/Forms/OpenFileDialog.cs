@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Eto.Forms;
 using MonoMac.AppKit;

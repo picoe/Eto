@@ -2,7 +2,6 @@ using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using System.Collections.Generic;
-using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Drawing;
@@ -27,7 +26,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		bool autoSized;
 
-		public override void SetFrameSize(System.Drawing.SizeF newSize)
+		public override void SetFrameSize(sd.SizeF newSize)
 		{
 			base.SetFrameSize(newSize);
 			if (!autoSized && Handler.Widget.Loaded)
@@ -51,7 +50,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-		static Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
+		static readonly Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
 
 		public override void MouseDown(NSEvent theEvent)
 		{
@@ -60,7 +59,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				point = ConvertPointFromBacking(point);
 			else
 				point = ConvertPointFromBase(point);
-			var col = this.GetColumn(point);
+			var col = GetColumn(point);
 			if (col >= 0)
 			{
 				var column = Handler.Widget.Columns[col];
@@ -89,17 +88,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(CellHandler.Generator, new FontHandler(Cell.Font));
-				return font;
+				return font ?? (font = new Font(CellHandler.Generator, new FontHandler(Cell.Font)));
 			}
 			set
 			{
 				font = value;
-				if (font != null)
-					Cell.Font = ((FontHandler)font.Handler).Control;
-				else
-					Cell.Font = null;
+				Cell.Font = font != null ? ((FontHandler)font.Handler).Control : null;
 			}
 		}
 
@@ -116,9 +110,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 	}
 
-	public abstract class GridHandler<T, W> : MacControl<T, W>, IGrid, IDataViewHandler, IGridHandler
-		where T: NSTableView
-		where W: Grid
+	public abstract class GridHandler<TControl, TWidget> : MacControl<TControl, TWidget>, IGrid, IDataViewHandler, IGridHandler
+		where TControl: NSTableView
+		where TWidget: Grid
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
@@ -177,7 +171,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<T,W> Handler { get; set; }
+			public GridHandler<TControl,TWidget> Handler { get; set; }
 
 			public override void AddItem(GridColumn item)
 			{
@@ -240,7 +234,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public GridHandler()
+		protected GridHandler()
 		{
 			ScrollView = new EtoGridScrollView
 			{
@@ -254,18 +248,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 			this.AddObserver(NSView.BoundsChangedNotification, HandleScrolled, ScrollView.ContentView);
 		}
 
-		static void HandleScrolled(ObserverActionArgs e)
+		static void HandleScrolled(ObserverActionEventArgs e)
 		{
-			var handler = (GridHandler<T,W>)e.Handler;
+			var handler = (GridHandler<TControl,TWidget>)e.Handler;
 			handler.UpdateColumnSizes();
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -285,7 +279,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.OnLoadComplete(e);
 			
 			int i = 0;
-			foreach (var col in this.Widget.Columns)
+			foreach (var col in Widget.Columns)
 			{
 				var colHandler = (GridColumnHandler)col.Handler;
 				colHandler.Loaded(this, i++);
@@ -332,10 +326,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.Menu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.Menu = null;
+				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 
@@ -351,8 +342,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{ 
 				if (Control.SelectedRows != null && Control.SelectedRows.Count > 0)
 					return Control.SelectedRows.Select(r => (int)r);
-				else
-					return Enumerable.Empty<int>();
+				return Enumerable.Empty<int>();
 			}
 		}
 
@@ -394,7 +384,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		public System.Drawing.RectangleF GetVisibleRect()
+		public sd.RectangleF GetVisibleRect()
 		{
 			var rect = ScrollView.VisibleRect();
 			var loc = ScrollView.ContentView.Bounds.Location;
@@ -402,12 +392,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return rect;
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var width = Widget.Columns.Sum(r => r.Width);
 			if (width == 0)
 				width = 100;
-			var height = this.RowHeight * 10;
+			var height = RowHeight * 4;
 			return new Size(width, height);
 		}
 

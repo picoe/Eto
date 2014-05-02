@@ -9,19 +9,18 @@ namespace Eto.Platform.Android.Forms
 {
 	public static class AndroidExtensions
 	{
-		/*
-		public static IAndroidContainer GetMacContainer(this Control control)
+		public static IAndroidControl GetAndroidControl(this Control control)
 		{
 			if (control == null)
 				return null;
-			var container = control.Handler as IMacContainer;
+			var container = control.Handler as IAndroidControl;
 			if (container != null)
 				return container;
 			var child = control.ControlObject as Control;
 			if (child != null)
-				return child.GetMacContainer();
+				return child.GetAndroidControl();
 			return null;
-		}*/
+		}
 
 		public static av.View GetContainerView(this Control control)
 		{
@@ -37,4 +36,3 @@ namespace Eto.Platform.Android.Forms
 		}
 	}
 }
-

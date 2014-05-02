@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 #if XAML
 using System.Windows.Markup;
@@ -19,11 +18,21 @@ namespace Eto.Forms
 
 		void RemoveTab(int index, TabPage page);
 	}
-	
+
+	public class TabRemovingEventArgs : EventArgs
+	{
+		public TabPage Page { get; private set; }
+
+		public TabRemovingEventArgs(TabPage page)
+		{
+			this.Page = page;
+		}
+	}
+
 	[ContentProperty("TabPages")]
 	public class TabControl : Container
 	{
-		TabPageCollection pages;
+		readonly TabPageCollection pages;
 		new ITabControl Handler { get { return (ITabControl)base.Handler; } }
 
 		public override IEnumerable<Control> Controls
@@ -38,12 +47,13 @@ namespace Eto.Forms
 			if (SelectedIndexChanged != null)
 				SelectedIndexChanged(this, e);
 		}
-		
-		public TabControl() : this (Generator.Current)
+
+		public TabControl()
+			: this((Generator)null)
 		{
 		}
 
-		public TabControl(Generator g) : this (g, typeof(ITabControl))
+		public TabControl(Generator generator) : this (generator, typeof(ITabControl))
 		{
 		}
 		
@@ -78,38 +88,36 @@ namespace Eto.Forms
 
 		internal void InsertTab(int index, TabPage page)
 		{
-			if (Loaded)
-			{
-				page.OnPreLoad(EventArgs.Empty);
-				page.OnLoad(EventArgs.Empty);
-				page.OnLoadComplete(EventArgs.Empty);
-			}
-			SetParent(page);
+			var load = SetParent(page);
 			Handler.InsertTab(index, page);
+			if (load)
+				page.OnLoadComplete(EventArgs.Empty);
 		}
 
 		internal void RemoveTab(int index, TabPage page)
 		{
 			Handler.RemoveTab(index, page);
-			RemoveParent(page, true);
+			RemoveParent(page);
 		}
 		
 		internal void ClearTabs()
 		{
-			Handler.ClearTabs();
+			foreach (var page in TabPages.ToArray())
+				Remove(page);
 		}
 
 		public override void Remove(Control child)
 		{
-			var childPage = child as TabPage;
-			if (childPage != null)
+			Remove(child as TabPage);
+		}
+
+		private void Remove(TabPage page)
+		{
+			if (page != null)
 			{
-				var index = pages.IndexOf(childPage);
+				var index = pages.IndexOf(page);
 				if (index >= 0)
-				{
-					RemoveTab(index, childPage);
-					RemoveParent(childPage, true);
-				}
+					RemoveTab(index, page);
 			}
 		}
 

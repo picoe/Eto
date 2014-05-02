@@ -1,25 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using Eto.Forms;
 using Eto.Drawing;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Threading;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ScrollableHandler : WpfDockContainer<swc.Border, Scrollable>, IScrollable
+	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable>, IScrollable
 	{
 		BorderType borderType;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
-		EtoScrollViewer scroller;
+		readonly EtoScrollViewer scroller;
 
 		public sw.FrameworkElement ContentControl { get { return scroller; } }
 
@@ -29,7 +22,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			public swc.Primitives.IScrollInfo GetScrollInfo()
 			{
-				return base.ScrollInfo;
+				return ScrollInfo;
 			}
 		}
 
@@ -105,12 +98,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			UpdateSizes();
 		}
 
-		public Eto.Drawing.Point ScrollPosition
+		public Point ScrollPosition
 		{
 			get
 			{
 				EnsureLoaded();
-				return new Eto.Drawing.Point((int)scroller.HorizontalOffset, (int)scroller.VerticalOffset);
+				return new Point((int)scroller.HorizontalOffset, (int)scroller.VerticalOffset);
 			}
 			set
 			{
@@ -119,12 +112,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public Eto.Drawing.Size ScrollSize
+		public Size ScrollSize
 		{
 			get
 			{
 				EnsureLoaded();
-				return new Eto.Drawing.Size((int)scroller.ExtentWidth, (int)scroller.ExtentHeight);
+				return new Size((int)scroller.ExtentWidth, (int)scroller.ExtentHeight);
 			}
 			set
 			{
@@ -165,23 +158,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get
 			{
 				if (!Widget.Loaded)
-					return base.Size;
+					return Size;
 				EnsureLoaded();
 				var info = scroller.GetScrollInfo();
-				if (info != null)
-					return new Size((int)info.ViewportWidth, (int)info.ViewportHeight);
-				else
-					return Size.Empty;
+				return info != null ? new Size((int)info.ViewportWidth, (int)info.ViewportHeight) : Size.Empty;
 			}
 			set
 			{
-				this.Size = value;
+				Size = value;
 			}
 		}
 
-		public Eto.Drawing.Rectangle VisibleRect
+		public Rectangle VisibleRect
 		{
-			get { return new Eto.Drawing.Rectangle(ScrollPosition, ClientSize); }
+			get { return new Rectangle(ScrollPosition, ClientSize); }
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)
@@ -192,9 +182,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			scroller.Content = content;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Scrollable.ScrollEvent:
 					scroller.ScrollChanged += (sender, e) =>
@@ -203,7 +193,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

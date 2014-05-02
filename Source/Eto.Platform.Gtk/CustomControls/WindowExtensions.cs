@@ -1,5 +1,3 @@
-using System;
-using Gtk;
 
 namespace Eto.Platform.GtkSharp.CustomControls
 {

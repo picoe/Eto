@@ -1,13 +1,8 @@
 using System;
-using System.Reflection;
 using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.CoreImage;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -20,7 +15,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		Image image;
 		ButtonImagePosition imagePosition;
-		Size defaultSize;
+		readonly Size defaultSize;
 		static readonly Size originalSize;
 
 		class EtoButtonCell : NSButtonCell
@@ -59,12 +54,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 				if (Handler.AutoSize)
 				{
-					var size = this.Frame.Size;
+					var size = Frame.Size;
 					if (size.Width < Handler.defaultSize.Width)
 						size.Width = Handler.defaultSize.Width;
 					if (size.Height < Handler.defaultSize.Height)
 						size.Height = Handler.defaultSize.Height;
-					this.SetFrameSize(size);
+					SetFrameSize(size);
 				}
 				setBezel = true;
 			}
@@ -99,6 +94,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.SetButtonType(NSButtonType.MomentaryPushIn);
 			Control.SetFrameSize(defaultSize.ToSDSizeF());
 			Control.Activated += HandleActivated;
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
 			SetBezel();
 		}
 
@@ -111,12 +111,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -125,12 +125,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				var cell = Control.Cell as EtoButtonCell;
+				var cell = (EtoButtonCell)Control.Cell;
 				return cell.Color ?? Colors.Transparent;
 			}
 			set
 			{
-				var cell = Control.Cell as EtoButtonCell;
+				var cell = (EtoButtonCell)Control.Cell;
 				cell.Color = value.A > 0 ? (Color?)value : null;
 				Control.SetNeedsDisplay();
 			}
@@ -165,10 +165,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSBezelStyle GetBezelStyle()
 		{
 			var size = Control.Frame.Size.ToEtoSize();
+			if (size.Height < 22 || size.Width < 22)
+				return NSBezelStyle.SmallSquare;
 			if (size.Height > originalSize.Height)
 				return NSBezelStyle.RegularSquare;
-			if (size.Height < 22)
-				return NSBezelStyle.SmallSquare;
 			if (Image == null)
 				return NSBezelStyle.Rounded;
 			if (image.Size.Height > 18)
@@ -177,7 +177,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				case NSCellImagePosition.ImageAbove:
 				case NSCellImagePosition.ImageBelow:
-					if (!string.IsNullOrEmpty(this.Text))
+					if (!string.IsNullOrEmpty(Text))
 						return NSBezelStyle.RegularSquare;
 					break;
 			}
@@ -202,7 +202,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		void SetImagePosition()
 		{
 			var position = imagePosition.ToNS();
-			if ((position == NSCellImagePosition.ImageAbove || position == NSCellImagePosition.ImageBelow) && string.IsNullOrEmpty(this.Text))
+			if ((position == NSCellImagePosition.ImageAbove || position == NSCellImagePosition.ImageBelow) && string.IsNullOrEmpty(Text))
 				position = NSCellImagePosition.ImageOnly;
 			Control.ImagePosition = position;
 			SetBezel();

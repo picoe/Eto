@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
 using sd = System.Drawing;
@@ -96,7 +95,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			var yscale = height / width;
 			var centerY = y + height / 2;
-			var transform = new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale);
+			var affine = new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale);
 
 			if (startFigure) {
 				// degrees to radians conversion
@@ -113,41 +112,64 @@ namespace Eto.Platform.iOS.Drawing
 				MoveTo ((float)xs, (float)ys);
 			}
 
-			Control.AddArc (transform, x+ width / 2, centerY, width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc (affine, x+ width / 2, centerY, width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
 		}
 
 		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)
 		{
 			ConnectTo (start);
-			Control.AddCurveToPoint (control1.X, control1.Y, control2.X, control2.Y, end.X, end.Y);
+			this.AddCurveToPoint (control1, control2, end);
 		}
 
-		public void AddPath (IGraphicsPath path, bool connect)
+		/// <summary>
+		/// Check points early. If an invalid point is passed to AddCurveToPoint,
+		/// iOS crashes with a SIGABRT leading to a long debugging experience.
+		/// This provides early diagnostics.
+		/// </summary>
+		/// <param name="f"></param>
+		private void Check(float f)
+		{
+			if (float.IsInfinity(f) || float.IsNaN(f))
+				throw new InvalidOperationException("Invalid point specified to AddCurveToPoint");
+		}
+
+		private void Check(PointF p)
+		{
+			Check(p.X);
+			Check(p.Y);
+		}
+
+		private void AddCurveToPoint(PointF point1, PointF point2, PointF point3)
+		{
+			Check(point1);
+			Check(point2);
+			Check(point3);
+			Control.AddCurveToPoint(point1.ToSD(), point2.ToSD(), point3.ToSD());
+		}
+
+		public void AddPath (IGraphicsPath path, bool connect = false)
 		{
 			if (path.IsEmpty)
 				return;
 
 			var handler = path.ToHandler ();
 			if (connect && handler.startPoint != null && !handler.firstFigureClosed) {
-				var startPoint = handler.startPoint.Value;
-				if (handler.transform != null)
-					startPoint = handler.transform.TransformPoint (startPoint);
 				var first = true;
 				handler.Control.Apply (element => {
 					switch (element.Type) {
 					case CGPathElementType.AddCurveToPoint:
 						if (first)
-							ConnectTo (Platform.Conversions.ToEto (element.Point3));
-						Control.AddCurveToPoint (element.Point1, element.Point2, element.Point3);
+							ConnectTo (element.Point3.ToEto());
+						this.AddCurveToPoint(element.Point1.ToEto(), element.Point2.ToEto(), element.Point3.ToEto());
 						break;
 					case CGPathElementType.AddLineToPoint:
 						if (first)
-							ConnectTo (Platform.Conversions.ToEto (element.Point1));
+							ConnectTo (element.Point1.ToEto());
 						Control.AddLineToPoint(element.Point1);
 						break;
 					case CGPathElementType.AddQuadCurveToPoint:
 						if (first)
-							ConnectTo (Platform.Conversions.ToEto (element.Point2));
+							ConnectTo (element.Point2.ToEto());
 						Control.AddQuadCurveToPoint (element.Point1.X, element.Point1.Y, element.Point2.X, element.Point2.Y);
 						break;
 					case CGPathElementType.CloseSubpath:
@@ -155,7 +177,7 @@ namespace Eto.Platform.iOS.Drawing
 						break;
 					case CGPathElementType.MoveToPoint:
 						if (first)
-							ConnectTo (Platform.Conversions.ToEto (element.Point1));
+							ConnectTo (element.Point1.ToEto());
 						else
 							Control.MoveToPoint (element.Point1);
 						break;
@@ -184,8 +206,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			Control.CloseSubpath ();
 			startFigure = true;
-			if (isFirstFigure)
-				firstFigureClosed = true;
+			firstFigureClosed |= isFirstFigure;
 			isFirstFigure = false;
 		}
 
@@ -202,17 +223,15 @@ namespace Eto.Platform.iOS.Drawing
 			isFirstFigure = false;
 		}
 
-		public void AddCurve (IEnumerable<PointF> points, float tension)
+		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			points = SplineHelper.SplineCurve (points, tension);
-			SplineHelper.Draw (points, start => ConnectTo (start), (c1, c2, end) => {
-				Control.AddCurveToPoint (c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y);
-			});
+			SplineHelper.Draw (points, ConnectTo, (c1, c2, end) => this.AddCurveToPoint(c1, c2, end));
 		}
 
 		public RectangleF Bounds
 		{
-			get { return Platform.Conversions.ToEto (Control.PathBoundingBox); }
+			get { return Control.PathBoundingBox.ToEto(); }
 		}
 
 		public bool IsEmpty
@@ -222,7 +241,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public PointF CurrentPoint
 		{
-			get { return Platform.Conversions.ToEto (Control.CurrentPoint); }
+			get { return Control.CurrentPoint.ToEto(); }
 		}
 
 		public object ControlObject
@@ -244,7 +263,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public IGraphicsPath Clone ()
 		{
-			return new GraphicsPathHandler (new CGPath (this.Control));
+			return new GraphicsPathHandler (new CGPath (Control));
 		}
 	}
 }

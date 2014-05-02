@@ -1,4 +1,3 @@
-using System;
 
 namespace Eto.Forms
 {
@@ -20,13 +19,13 @@ namespace Eto.Forms
 			Binding = new PropertyBinding (property);
 		}
 		
-		public TextBoxCell ()
-			: this(Generator.Current)
+		public TextBoxCell()
+			: this((Generator)null)
 		{
 		}
-		
-		public TextBoxCell (Generator g)
-			: base(g, typeof(ITextBoxCell), true)
+
+		public TextBoxCell (Generator generator)
+			: base(generator, typeof(ITextBoxCell), true)
 		{
 		}
 	}

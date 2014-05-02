@@ -1,16 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 
 namespace Eto.Forms
 {
 	public interface IPrintDialog : ICommonDialog
 	{
+		PrintDocument Document { get; set; }
+
 		PrintSettings PrintSettings { get; set; }
 
 		bool AllowPageRange { get; set; }
+
 		bool AllowSelection { get; set; }
 	}
 
@@ -18,12 +17,12 @@ namespace Eto.Forms
 	{
 		new IPrintDialog Handler { get { return (IPrintDialog)base.Handler; } }
 
-		public PrintDialog ()
-			: this (Generator.Current)
+		public PrintDialog()
+			: this((Generator)null)
 		{
 		}
 
-		public PrintDialog (Generator generator)
+		public PrintDialog(Generator generator)
 			: base (generator, typeof (IPrintDialog))
 		{
 		}
@@ -34,27 +33,30 @@ namespace Eto.Forms
 			set { Handler.PrintSettings = value; }
 		}
 
-		public bool AllowSelection {
+		public bool AllowSelection
+		{
 			get { return Handler.AllowSelection; }
 			set { Handler.AllowSelection = value; }
 		}
 
 		[DefaultValue(true)]
-		public bool AllowPageRange {
+		public bool AllowPageRange
+		{
 			get { return Handler.AllowPageRange; }
 			set { Handler.AllowPageRange = value; }
 		}
 
-		public DialogResult ShowDialog (Control parent, PrintDocument document)
+		public DialogResult ShowDialog(Control parent, PrintDocument document)
 		{
-			this.PrintSettings.MaximumPageRange = new Range (1, document.PageCount);
-			this.PrintSettings = document.PrintSettings;
-			var result = this.ShowDialog (parent);
-			if (result == DialogResult.Ok) {
-				document.Print ();
+			PrintSettings = document.PrintSettings;
+			PrintSettings.MaximumPageRange = new Range(1, document.PageCount);
+			Handler.Document = document;
+			var result = ShowDialog(parent);
+			if (result == DialogResult.Ok)
+			{
+				document.Print();
 			}
 			return result;
 		}
-
 	}
 }

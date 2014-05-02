@@ -2,10 +2,70 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Eto.Drawing;
+using s = SharpDX;
+using sd = SharpDX.Direct2D1;
+using sw = SharpDX.DirectWrite;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    public class FontFamilyHandler
+	/// <summary>
+	/// Handler for <see cref="IFontFamily"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class FontFamilyHandler : WidgetHandler<sw.FontFamily, FontFamily>, IFontFamily
     {
-    }
+		public string Name { get; private set; }
+
+		FontTypeface[] typefaces;
+		public IEnumerable<FontTypeface> Typefaces
+		{
+			get {
+				return typefaces ?? (typefaces = Enumerable.Range(0, Control.FontCount)
+					.Select(r => Control.GetFont(r))
+					.Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r)))
+					.ToArray());
+			} 
+		}
+
+		public FontFamilyHandler()
+		{
+		}
+
+		public FontFamilyHandler(sw.FontFamily family)
+		{
+			Control = family;
+		}
+
+		public void Create(string familyName)
+		{
+			string translatedName = Name = familyName;
+
+			switch (familyName.ToUpperInvariant())
+			{
+				case FontFamilies.MonospaceFamilyName:
+					translatedName = "Courier New";
+					break;
+				case FontFamilies.SansFamilyName:
+					translatedName = "Microsoft Sans Serif";
+					break;
+				case FontFamilies.SerifFamilyName:
+					translatedName = "Times New Roman";
+					break;
+				case FontFamilies.CursiveFamilyName:
+					translatedName = "Comic Sans MS";
+					break;
+				case FontFamilies.FantasyFamilyName:
+					translatedName = "Gabriola";
+					break;
+			}
+
+			int index;
+			if (FontHandler.FontCollection.FindFamilyName(translatedName, out index))
+			{
+				Control = FontHandler.FontCollection.GetFontFamily(index);
+			}
+		}
+	}
 }

@@ -1,6 +1,4 @@
-using System;
 using Eto.Forms;
-using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {

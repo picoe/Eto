@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
@@ -24,21 +21,13 @@ namespace Eto.Platform.Wpf.Forms
 			base.Initialize ();
 			Control.ShowInTaskbar = false;
 			Resizable = false;
-		}
-
-		public override bool Resizable
-		{
-			get { return Control.ResizeMode == sw.ResizeMode.CanResize || Control.ResizeMode == sw.ResizeMode.CanResizeWithGrip; }
-			set
-			{
-				if (value) Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
-				else Control.ResizeMode = sw.ResizeMode.NoResize;
-			}
+			Minimizable = false;
+			Maximizable = false;
 		}
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public DialogResult ShowDialog (Control parent)
+		public virtual DialogResult ShowDialog (Control parent)
 		{
 			if (parent != null) {
 				var parentWindow = parent.ParentWindow;
@@ -57,9 +46,9 @@ namespace Eto.Platform.Wpf.Forms
 
 		void HandleSourceInitialized (object sender, EventArgs e)
 		{
-			var owner = this.Control.Owner;
-			Control.Left = owner.Left + (owner.ActualWidth - Control.Width) / 2;
-			Control.Top = owner.Top + (owner.ActualHeight - Control.Height) / 2;
+			var owner = Control.Owner;
+			Control.Left = owner.Left + (owner.ActualWidth - Control.ActualWidth) / 2;
+			Control.Top = owner.Top + (owner.ActualHeight - Control.ActualHeight) / 2;
 			Control.SourceInitialized -= HandleSourceInitialized;
 		}
 
@@ -69,12 +58,12 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				if (defaultButton != null) {
-					var handler = defaultButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)defaultButton.Handler;
 					handler.Control.IsDefault = false;
 				}
 				defaultButton = value;
 				if (defaultButton != null) {
-					var handler = defaultButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)defaultButton.Handler;
 					handler.Control.IsDefault = true;
 				}
 			}
@@ -86,12 +75,12 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				if (abortButton != null) {
-					var handler = abortButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)abortButton.Handler;
 					handler.Control.IsCancel = false;
 				}
 				abortButton = value;
 				if (abortButton != null) {
-					var handler = abortButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)abortButton.Handler;
 					handler.Control.IsCancel = true;
 				}
 			}

@@ -7,8 +7,8 @@ namespace Eto.Test.Sections.Behaviors
 {
 	public class ScreenSection : Scrollable
 	{
-		RectangleF displayBounds = Screen.DisplayBounds();
-		Screen[] screens;
+		readonly RectangleF displayBounds = Screen.DisplayBounds();
+		readonly Screen[] screens;
 		Window parentWindow;
 
 		public ScreenSection()
@@ -16,14 +16,18 @@ namespace Eto.Test.Sections.Behaviors
 			var layout = new DynamicLayout();
 
 			screens = Screen.Screens().ToArray();
-			layout.AddSeparateRow(null, new Label { Text = string.Format ("Display Bounds: {0}", displayBounds) }, null);
+			layout.AddSeparateRow(null, new Label { Text = string.Format("Display Bounds: {0}", displayBounds) }, null);
 			layout.BeginVertical(Padding.Empty);
 			var num = 0;
 			foreach (var screen in screens)
 			{
-				layout.AddRow(null, new Label { Text = string.Format ("Screen {0}", num++) }, new Label { Text = string.Format ("BitsPerPixel: {0}, IsPrimary: {1}", screen.BitsPerPixel, screen.IsPrimary) });
-				layout.AddRow(null, new Label { Text = "Bounds:", HorizontalAlign = HorizontalAlign.Right }, new Label { Text = screen.Bounds.ToString () }, null);
-				layout.AddRow(null, new Label { Text = "Working Area:", HorizontalAlign = HorizontalAlign.Right }, new Label { Text = screen.WorkingArea.ToString () }, null);
+				layout.AddRow(null, new Label { Text = string.Format("Screen {0}, BitsPerPixel: {1}, IsPrimary: {2}", num++, screen.BitsPerPixel, screen.IsPrimary) }, null);
+				layout.AddRow(null, new Label { Text = string.Format("Bounds: {0}", screen.Bounds) }, null);
+				layout.AddRow(null, new Label { Text = string.Format("Working Area: {0}", screen.WorkingArea) }, null);
+				layout.AddRow(null, new Label { Text = string.Format("DPI: {0}, Scale: {1}", screen.DPI, screen.Scale) }, null);
+
+				if (Math.Abs(screen.RealDPI - screen.DPI) > 0.1f)
+					layout.AddRow(null, new Label { Text = string.Format("Real DPI: {0}, Real Scale: {1}", screen.RealDPI, screen.RealScale) }, null);
 			}
 			layout.EndVertical();
 			layout.Add(ScreenLayout());
@@ -34,7 +38,7 @@ namespace Eto.Test.Sections.Behaviors
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			parentWindow = this.ParentWindow;
+			parentWindow = ParentWindow;
 			parentWindow.LocationChanged += HandleLocationChanged;
 		}
 
@@ -52,7 +56,8 @@ namespace Eto.Test.Sections.Behaviors
 		Control ScreenLayout()
 		{
 			var drawable = new Drawable();
-			drawable.Paint += (sender, pe) => {
+			drawable.Paint += (sender, pe) =>
+			{
 				var scaleSize = (SizeF)drawable.Size / displayBounds.Size;
 				var scale = Math.Min(scaleSize.Width, scaleSize.Height);
 				var offset = (drawable.Size - (displayBounds.Size * scale)) / 2;

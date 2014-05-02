@@ -1,3 +1,7 @@
+
+// uncomment to track garbage collection of widgets
+//#define TRACK_GC
+
 using System;
 
 namespace Eto
@@ -107,6 +111,13 @@ namespace Eto
 		/// </summary>
 		public object Handler { get; internal set; }
 
+		#if TRACK_GC
+		~Widget()
+		{
+			Dispose(false);
+		}
+		#endif
+
 		/// <summary>
 		/// Initializes a new instance of the Widget class
 		/// </summary>
@@ -118,8 +129,11 @@ namespace Eto
 			if (generator == null)
 				generator = Generator.Current;
 			this.Handler = handler;
-			handler.Generator = generator;
-			handler.Widget = this; // tell the handler who we are
+			if (handler != null)
+			{
+				handler.Generator = generator;
+				handler.Widget = this; // tell the handler who we are
+			}
 			if (initialize)
 				Initialize();
 		}
@@ -158,7 +172,8 @@ namespace Eto
 		/// </remarks>
 		protected void Initialize()
 		{
-			((IWidget)Handler).Initialize();
+			if (Handler != null)
+				((IWidget)Handler).Initialize();
 		}
 
 		/// <summary>
@@ -173,7 +188,7 @@ namespace Eto
 		/// <summary>
 		/// Handles the disposal of this widget
 		/// </summary>
-		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if this is called from the finalizer</param>
+		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if being called from a finalizer</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -183,7 +198,9 @@ namespace Eto
 					handler.Dispose();
 				Handler = null;
 			}
-			//Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", this.GetType ().Name);
+			#if TRACK_GC
+			Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", GetType().Name);
+			#endif
 		}
 	}
 }

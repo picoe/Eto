@@ -196,7 +196,7 @@ namespace Eto
 		/// Removes the specified items from the collection
 		/// </summary>
 		/// <remarks>
-		/// This simply calls <see cref="RemoveItem(I)"/> for each item to remove.  If there
+		/// This simply calls <see cref="RemoveItem(TItem)"/> for each item to remove.  If there
 		/// is a faster mechanism for doing so, implementors should override this method.
 		/// 
 		/// For example, sometimes removing a single item will update the UI for each item, this

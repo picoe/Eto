@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
@@ -12,7 +9,7 @@ using System.Collections;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ComboBoxHandler : WpfControl<swc.ComboBox, ComboBox>, IComboBox
+	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox>, IComboBox
 	{
 		IListStore store;
 
@@ -20,72 +17,89 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			int? _selected;
 
-			public EtoComboBox ()
+			public EtoComboBox()
 			{
 				Loaded += ComboBoxEx_Loaded;
 			}
 
-			public override void OnApplyTemplate ()
+			public override void OnApplyTemplate()
 			{
-				base.OnApplyTemplate ();
+				base.OnApplyTemplate();
 
 				_selected = SelectedIndex;
 				SelectedIndex = -1;
 			}
 
-			protected override void OnSelectionChanged (swc.SelectionChangedEventArgs e)
+			protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
 			{
 				if (_selected == null)
-					base.OnSelectionChanged (e);
+					base.OnSelectionChanged(e);
 			}
 
-			protected override void OnItemsChanged (System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+			protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 			{
-				base.OnItemsChanged (e);
-				if (this.IsLoaded) {
-					this.InvalidateMeasure ();
+				base.OnItemsChanged(e);
+				if (IsLoaded)
+				{
+					InvalidateMeasure();
 				}
 			}
 
-			void ComboBoxEx_Loaded (object sender, sw.RoutedEventArgs e)
+			void ComboBoxEx_Loaded(object sender, sw.RoutedEventArgs e)
 			{
-				if (_selected != null) {
+				if (_selected != null)
+				{
 					SelectedIndex = _selected.Value;
 					_selected = null;
 				}
 			}
 
-			protected override sw.Size MeasureOverride (sw.Size constraint)
+			protected override sw.Size MeasureOverride(sw.Size constraint)
 			{
-				var size = base.MeasureOverride (constraint);
-
-				var popup = GetTemplateChild ("PART_Popup") as swc.Primitives.Popup;
-				var content = popup.Child as sw.FrameworkElement;
-				content.Measure (constraint);
-				size.Width = Math.Min(constraint.Width, Math.Max (content.DesiredSize.Width, size.Width));
+				var size = base.MeasureOverride(constraint);
+				var popup = (swc.Primitives.Popup)GetTemplateChild("PART_Popup");
+				popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
+				if (ItemContainerGenerator.Status == swc.Primitives.GeneratorStatus.ContainersGenerated)
+				{
+					double maxWidth = 0;
+					foreach (var item in Items)
+					{
+						var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
+						comboBoxItem.Measure(Conversions.PositiveInfinitySize);
+						maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
+					}
+					var toggle = GetTemplateChild("toggleButton") as sw.UIElement;
+					if (toggle != null)
+						maxWidth += toggle.DesiredSize.Width; // add room for the toggle button
+					else
+						maxWidth += 20; // windows 7 doesn't name the toggle button, so hack it
+					size.Width = Math.Max(maxWidth, size.Width);
+				}
 				return size;
 			}
-
 		}
 
-		public ComboBoxHandler ()
+		public ComboBoxHandler()
 		{
-			Control = new EtoComboBox ();
-			var template = new sw.DataTemplate (typeof (IListItem));
-			template.VisualTree = WpfListItemHelper.TextBlock ();
+			Control = new EtoComboBox();
+			var template = new sw.DataTemplate(typeof(IListItem));
+			template.VisualTree = WpfListItemHelper.TextBlock(setMargin: false);
 			Control.ItemTemplate = template;
 		}
 
 		public override bool UseMousePreview { get { return true; } }
 
-		public override void OnLoad (EventArgs e)
+		public override bool UseKeyPreview { get { return true; } }
+
+
+		protected override void PostInitialize()
 		{
-			base.OnLoad (e);
-			Control.SelectionChanged += delegate {
-				Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			base.PostInitialize();
+			Control.SelectionChanged += delegate
+			{
+				Widget.OnSelectedIndexChanged(EventArgs.Empty);
 			};
 		}
-
 
 		public IListStore DataStore
 		{
@@ -93,7 +107,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				store = value;
-				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable ();
+				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable();
 			}
 		}
 

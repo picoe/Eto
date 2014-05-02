@@ -8,17 +8,38 @@ using aw = Android.Widget;
 
 namespace Eto.Platform.Android.Forms
 {
-	public abstract class AndroidWindow<TWidget> : AndroidDockContainer<aw.FrameLayout, TWidget>, IWindow
+	public interface IAndroidWindow
+	{
+		a.App.Activity Activity { get; set; }
+	}
+
+	/// <summary>
+	/// Base handler for <see cref="IWindow"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public abstract class AndroidWindow<TWidget> : AndroidPanel<aw.FrameLayout, TWidget>, IWindow, IAndroidWindow
 		where TWidget: Window
 	{
+		a.App.Activity activity;
+		public a.App.Activity Activity
+		{
+			get { return activity ?? (activity = CreateActivity()); }
+			set { activity = value; }
+		}
+
+		protected virtual a.App.Activity CreateActivity()
+		{
+			return null; // todo
+		}
+
 		protected AndroidWindow()
 		{
-			Control = new aw.FrameLayout(a.App.Application.Context);
 		}
 
 		public override av.View ContainerControl
 		{
-			get { return Control; }
+			get { return InnerFrame; }
 		}
 
 		public void Close()
@@ -28,44 +49,13 @@ namespace Eto.Platform.Android.Forms
 
 		protected override void SetContent(av.View content)
 		{
-			Control.AddView(content);
 		}
 
-		public ToolBar ToolBar
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public ToolBar ToolBar { get; set; }
 
-		public double Opacity
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public double Opacity { get; set; }
 
-		public string Title
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public string Title { get; set; }
 
 		public Screen Screen
 		{
@@ -76,4 +66,3 @@ namespace Eto.Platform.Android.Forms
 		}
 	}
 }
-

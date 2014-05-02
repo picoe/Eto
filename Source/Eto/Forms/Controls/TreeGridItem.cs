@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 #if XAML
 using System.Windows.Markup;
 #endif
-using System.Collections.Specialized;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -73,7 +71,7 @@ namespace Eto.Forms
 		
 		public ITreeGridItem Parent { get; set; }
 		
-		public virtual bool Expandable { get { return this.Count > 0; } }
+		public virtual bool Expandable { get { return Count > 0; } }
 		
 		public virtual bool Expanded { get; set; }
 		

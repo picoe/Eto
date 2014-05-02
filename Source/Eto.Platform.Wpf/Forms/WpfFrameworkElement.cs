@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
 using swi = System.Windows.Input;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -29,10 +28,8 @@ namespace Eto.Platform.Wpf.Forms
 			if (handler != null)
 				return handler;
 			var controlObject = control.ControlObject as Control;
-			if (controlObject != null)
-				return controlObject.GetWpfFrameworkElement();
+			return controlObject != null ? controlObject.GetWpfFrameworkElement() : null;
 
-			return null;
 		}
 
 		public static IWpfContainer GetWpfContainer(this Container control)
@@ -43,10 +40,8 @@ namespace Eto.Platform.Wpf.Forms
 			if (handler != null)
 				return handler;
 			var controlObject = control.ControlObject as Container;
-			if (controlObject != null)
-				return controlObject.GetWpfContainer();
+			return controlObject != null ? controlObject.GetWpfContainer() : null;
 
-			return null;
 		}
 
 		public static sw.FrameworkElement GetContainerControl(this Control control)
@@ -78,9 +73,9 @@ namespace Eto.Platform.Wpf.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
-	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl, IWpfFrameworkElement
-		where T : System.Windows.FrameworkElement
-		where W : Control
+	public abstract class WpfFrameworkElement<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IWpfFrameworkElement
+		where TControl : System.Windows.FrameworkElement
+		where TWidget : Control
 	{
 		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
@@ -99,6 +94,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual bool UseMousePreview { get { return false; } }
 
+		public virtual bool UseKeyPreview { get { return false; } }
+
 		public sw.Size ParentMinimumSize
 		{
 			get { return parentMinimumSize; }
@@ -115,9 +112,11 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get
 			{
-				if (newSize != null) return newSize.Value;
-				else if (!Control.IsLoaded) return preferredSize.ToEtoSize();
-				else return Conversions.GetSize(Control);
+				if (newSize != null)
+					return newSize.Value;
+				if (!Control.IsLoaded)
+					return preferredSize.ToEtoSize();
+				return Control.GetSize();
 			}
 			set
 			{
@@ -135,10 +134,11 @@ namespace Eto.Platform.Wpf.Forms
 
 		protected virtual void SetSize()
 		{
-			ContainerControl.Width = XScale ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
-			ContainerControl.Height = YScale ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
-			ContainerControl.MinWidth = Math.Max(0, XScale ? 0 : double.IsNaN(preferredSize.Width) ? DefaultSize.Width : preferredSize.Width);
-			ContainerControl.MinHeight = Math.Max(0, YScale ? 0 : double.IsNaN(preferredSize.Height) ? DefaultSize.Height : preferredSize.Height);
+			ContainerControl.Width = XScale && Control.IsLoaded ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
+			ContainerControl.Height = YScale && Control.IsLoaded ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
+			var defaultSize = DefaultSize;
+			ContainerControl.MinWidth = XScale && Control.IsLoaded ? 0 : Math.Max(0, double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
+			ContainerControl.MinHeight = YScale && Control.IsLoaded ? 0 : Math.Max(0, double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)
@@ -168,10 +168,7 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				cursor = value;
-				if (cursor != null)
-					Control.Cursor = ((CursorHandler)cursor.Handler).Control;
-				else
-					Control.Cursor = null;
+				Control.Cursor = cursor != null ? ((CursorHandler)cursor.Handler).Control : null;
 			}
 		}
 
@@ -219,11 +216,6 @@ namespace Eto.Platform.Wpf.Forms
 			Control.EnsureLoaded();
 		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
-		}
-
 		public virtual bool HasFocus
 		{
 			get { return Control.IsFocused; }
@@ -238,18 +230,16 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
 			var wpfcontrol = Control as swc.Control;
-			switch (handler)
+			switch (id)
 			{
 				case Eto.Forms.Control.MouseMoveEvent:
-					ContainerControl.MouseMove += (sender, e) =>
-					{
-						var args = e.ToEto(Control);
-						Widget.OnMouseMove(args);
-						e.Handled = args.Handled || isMouseCaptured;
-					};
+					if (UseMousePreview)
+						ContainerControl.PreviewMouseMove += HandleMouseMove;
+					else
+						ContainerControl.MouseMove += HandleMouseMove;
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					if (UseMousePreview)
@@ -309,28 +299,22 @@ namespace Eto.Platform.Wpf.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
-						this.newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
+						newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
 						Widget.OnSizeChanged(EventArgs.Empty);
-						this.newSize = null;
+						newSize = null;
 					};
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
-					Control.TextInput += (sender, e) =>
+					if (UseKeyPreview)
 					{
-						foreach (var keyChar in e.Text)
-						{
-							var key = Key.None;
-							var args = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
-							Widget.OnKeyDown(args);
-							e.Handled |= args.Handled;
-						}
-					};
-					Control.KeyDown += (sender, e) =>
+						Control.PreviewKeyDown += HandleKeyDown;
+						Control.PreviewTextInput += HandleTextInput;
+					}
+					else
 					{
-						var args = e.ToEto(KeyEventType.KeyDown);
-						Widget.OnKeyDown(args);
-						e.Handled = args.Handled;
-					};
+						Control.KeyDown += HandleKeyDown;
+						Control.TextInput += HandleTextInput;
+					}
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					Control.KeyUp += (sender, e) =>
@@ -350,21 +334,40 @@ namespace Eto.Platform.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (sender, e) =>
-					{
-						Widget.OnGotFocus(EventArgs.Empty);
-					};
+					Control.GotFocus += (sender, e) => Widget.OnGotFocus(EventArgs.Empty);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (sender, e) =>
-					{
-						Widget.OnLostFocus(EventArgs.Empty);
-					};
+					Control.LostFocus += (sender, e) => Widget.OnLostFocus(EventArgs.Empty);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
+		{
+			foreach (var keyChar in e.Text)
+			{
+				var key = Keys.None;
+				var args = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
+				Widget.OnKeyDown(args);
+				e.Handled |= args.Handled;
+			}
+		}
+
+		void HandleKeyDown(object sender, swi.KeyEventArgs e)
+		{
+			var args = e.ToEto(KeyEventType.KeyDown);
+			Widget.OnKeyDown(args);
+			e.Handled = args.Handled;
+		}
+
+		void HandleMouseMove(object sender, swi.MouseEventArgs e)
+		{
+			var args = e.ToEto(Control);
+			Widget.OnMouseMove(args);
+			e.Handled = args.Handled || isMouseCaptured;
 		}
 
 		void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
@@ -388,13 +391,15 @@ namespace Eto.Platform.Wpf.Forms
 
 		void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			WpfFrameworkElementHelper.ShouldCaptureMouse = true;
 			isMouseCaptured = false;
 			var args = e.ToEto(Control);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Widget.OnMouseDoubleClick(args);
 			if (!args.Handled)
+			{
+				WpfFrameworkElementHelper.ShouldCaptureMouse = true;
 				Widget.OnMouseDown(args);
+			}
 			e.Handled = args.Handled || !WpfFrameworkElementHelper.ShouldCaptureMouse;
 			if (WpfFrameworkElementHelper.ShouldCaptureMouse && (!UseMousePreview || e.Handled))
 			{
@@ -404,11 +409,21 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public virtual void OnLoad(EventArgs e)
+		protected override void PostInitialize()
 		{
+			base.PostInitialize();
 			Control.Tag = this;
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);
+			Control.Loaded += Control_Loaded;
+		}
+
+		public virtual void OnLoad(EventArgs e)
+		{
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
 			SetSize();
 		}
 
@@ -431,28 +446,27 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				var currentParent = Widget.Parent.Handler as IWpfContainer;
 				if (currentParent != null)
-					currentParent.Remove(this.ContainerControl);
+					currentParent.Remove(ContainerControl);
 			}
 		}
 
-		public void MapPlatformAction(string systemAction, BaseAction action)
+		public IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return Enumerable.Empty<string>(); }
+		}
+
+		public void MapPlatformCommand(string systemAction, Command command)
 		{
 		}
 
 		public PointF PointFromScreen(PointF point)
 		{
-			if (Control.IsLoaded)
-				return Control.PointFromScreen(point.ToWpf()).ToEto();
-			else
-				return point;
+			return Control.IsLoaded ? Control.PointFromScreen(point.ToWpf()).ToEto() : point;
 		}
 
 		public PointF PointToScreen(PointF point)
 		{
-			if (Control.IsLoaded)
-				return Control.PointToScreen(point.ToWpf()).ToEto();
-			else
-				return point;
+			return Control.IsLoaded ? Control.PointToScreen(point.ToWpf()).ToEto() : point;
 		}
 
 		public Point Location
@@ -461,8 +475,7 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				if (Widget.Parent == null)
 					return Point.Empty;
-				else
-					return Control.TranslatePoint(new sw.Point(0, 0), Widget.Parent.GetContainerControl()).ToEtoPoint();
+				return Control.TranslatePoint(new sw.Point(0, 0), Widget.Parent.GetContainerControl()).ToEtoPoint();
 			}
 		}
 	}

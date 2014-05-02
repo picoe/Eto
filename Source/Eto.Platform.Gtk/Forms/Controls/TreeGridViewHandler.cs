@@ -1,8 +1,5 @@
 using System;
-using System.Linq;
 using Eto.Forms;
-using Eto.Drawing;
-using Eto.Platform.GtkSharp.Drawing;
 using System.Collections.Generic;
 using Eto.Platform.GtkSharp.Forms.Cells;
 
@@ -15,15 +12,15 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		bool? selectCollapsingItem;
 		ITreeGridItem lastSelected;
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 
 			// these are always handled to set the expanded property
-			Widget.HandleEvent (TreeGridView.ExpandedEvent, TreeGridView.CollapsedEvent, TreeGridView.CollapsingEvent);
+			Widget.HandleEvent(TreeGridView.ExpandedEvent, TreeGridView.CollapsedEvent, TreeGridView.CollapsingEvent);
 		}
 
-		protected override ITreeModelImplementor CreateModelImplementor ()
+		protected override ITreeModelImplementor CreateModelImplementor()
 		{
 			model = new GtkTreeModel<ITreeGridItem, ITreeGridStore<ITreeGridItem>> { Handler = this };
 			return model;
@@ -31,100 +28,108 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		public class CollectionHandler : DataStoreChangedHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>
 		{
-			public TreeGridViewHandler Handler { get; set; }
-			
+			WeakReference handler;
+			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
 			void ExpandItems(ITreeGridStore<ITreeGridItem> store, Gtk.TreePath path)
 			{
-				for (int i = 0; i < store.Count; i++) {
+				for (int i = 0; i < store.Count; i++)
+				{
 					var item = store[i];
-					if (item.Expandable && item.Expanded) {
-						var newpath = path.Copy ();
-						newpath.AppendIndex (i);
-						Handler.Tree.ExpandToPath (newpath);
-						ExpandItems ((ITreeGridStore<ITreeGridItem>)item, newpath);
+					if (item.Expandable && item.Expanded)
+					{
+						var newpath = path.Copy();
+						newpath.AppendIndex(i);
+						Handler.Tree.ExpandToPath(newpath);
+						ExpandItems((ITreeGridStore<ITreeGridItem>)item, newpath);
 					}
 				}
 			}
-			
+
 			void ExpandItems()
 			{
 				var store = Handler.collection.Collection;
-				Gtk.TreePath path = new Gtk.TreePath();
-				ExpandItems (store, path);
+				var path = new Gtk.TreePath();
+				ExpandItems(store, path);
 			}
 
-			public override void AddRange (IEnumerable<ITreeGridItem> items)
+			public override void AddRange(IEnumerable<ITreeGridItem> items)
 			{
-				Handler.UpdateModel ();
+				Handler.UpdateModel();
 				ExpandItems();
 			}
 
-			public override void AddItem (ITreeGridItem item)
+			public override void AddItem(ITreeGridItem item)
 			{
-				var path = new Gtk.TreePath ();
-				path.AppendIndex (Collection.Count);
-				var iter = Handler.model.GetIterFromItem (item, path);
-				Handler.Tree.Model.EmitRowInserted (path, iter);
+				var path = new Gtk.TreePath();
+				path.AppendIndex(Collection.Count);
+				var iter = Handler.model.GetIterFromItem(item, path);
+				Handler.Tree.Model.EmitRowInserted(path, iter);
 			}
 
-			public override void InsertItem (int index, ITreeGridItem item)
+			public override void InsertItem(int index, ITreeGridItem item)
 			{
-				var path = new Gtk.TreePath ();
-				path.AppendIndex (index);
-				var iter = Handler.model.GetIterFromItem (item, path);
-				Handler.Tree.Model.EmitRowInserted (path, iter);
+				var path = new Gtk.TreePath();
+				path.AppendIndex(index);
+				var iter = Handler.model.GetIterFromItem(item, path);
+				Handler.Tree.Model.EmitRowInserted(path, iter);
 			}
 
-			public override void RemoveItem (int index)
+			public override void RemoveItem(int index)
 			{
-				var path = new Gtk.TreePath ();
-				path.AppendIndex (index);
-				Handler.Tree.Model.EmitRowDeleted (path);
+				var path = new Gtk.TreePath();
+				path.AppendIndex(index);
+				Handler.Tree.Model.EmitRowDeleted(path);
 			}
 
-			public override void RemoveAllItems ()
+			public override void RemoveAllItems()
 			{
-				Handler.UpdateModel ();
+				Handler.UpdateModel();
 			}
 		}
 
-		public ITreeGridStore<ITreeGridItem> DataStore {
+		public ITreeGridStore<ITreeGridItem> DataStore
+		{
 			get { return collection != null ? collection.Collection : null; }
-			set {
+			set
+			{
 				if (collection != null)
-					collection.Unregister ();
+					collection.Unregister();
 				collection = new CollectionHandler { Handler = this };
-				collection.Register (value);
+				collection.Register(value);
 			}
 		}
 
-		public ITreeGridItem SelectedItem {
-			get {
+		public ITreeGridItem SelectedItem
+		{
+			get
+			{
 				Gtk.TreeIter iter;
-				if (Tree.Selection.GetSelected (out iter)) {
-					return model.GetItemAtIter (iter);
-				}
-				return null;
+				return Tree.Selection.GetSelected(out iter) ? model.GetItemAtIter(iter) : null;
 			}
-			set {
-				if (value != null) {
+			set
+			{
+				if (value != null)
+				{
 					var path = model.GetPathFromItem(value);
-					if (path != null) {
+					if (path != null)
+					{
 						Tree.ExpandToPath(path);
-						Tree.Selection.SelectPath (path);
+						Tree.Selection.SelectPath(path);
 						Tree.ScrollToCell(path, null, false, 0, 0);
 					}
 				}
 				else
-					Tree.Selection.UnselectAll ();
+					Tree.Selection.UnselectAll();
 			}
 		}
 
-		bool ChildIsSelected (ITreeGridItem item)
+		bool ChildIsSelected(ITreeGridItem item)
 		{
-			var node = this.SelectedItem;
+			var node = SelectedItem;
 			
-			while (node != null) {
+			while (node != null)
+			{
 				if (node == item)
 					return true;
 				node = node.Parent;
@@ -132,105 +137,138 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			return false;
 		}
 
-		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler) {
-			case TreeGridView.ExpandingEvent:
-				this.Tree.TestExpandRow += delegate(object o, Gtk.TestExpandRowArgs args) {
-					var e = new TreeGridViewItemCancelEventArgs(GetItem(args.Path) as ITreeGridItem);
-					Widget.OnExpanding (e);
-					args.RetVal = e.Cancel;
-				};
-				break;
-			case TreeGridView.ExpandedEvent:
-				this.Tree.RowExpanded += delegate(object o, Gtk.RowExpandedArgs args) {
-					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
-					e.Item.Expanded = true;
-					Widget.OnExpanded (e);
-				};
-				break;
-			case TreeGridView.CollapsingEvent:
-				this.Tree.TestCollapseRow += delegate(object o, Gtk.TestCollapseRowArgs args) {
-					var e = new TreeGridViewItemCancelEventArgs(GetItem(args.Path) as ITreeGridItem);
-					Widget.OnCollapsing (e);
-					args.RetVal = e.Cancel;
-					if (!e.Cancel)
-					{
-						selectCollapsingItem = AllowMultipleSelection ? false : ChildIsSelected (e.Item);
-						SkipSelectedChange = true;
-					}
-				};
-				break;
-			case TreeGridView.CollapsedEvent:
-				this.Tree.RowCollapsed += delegate(object o, Gtk.RowCollapsedArgs args) {
-					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
-					e.Item.Expanded = false;
-					Widget.OnCollapsed (e);
-					SkipSelectedChange = false;
-					if (selectCollapsingItem == true)
-					{
-						Tree.Selection.UnselectAll ();
-						Tree.Selection.SelectPath(args.Path);
-						selectCollapsingItem = null;
-					}
-				};
-				break;
-			case TreeGridView.SelectedItemChangedEvent:
-				this.Tree.Selection.Changed += (o, args) => {
-					var item = this.SelectedItem;
-					if (!SkipSelectedChange && !object.ReferenceEquals (item, lastSelected))
-					{
-						Widget.OnSelectedItemChanged (EventArgs.Empty);
-						lastSelected = item;
-					}
-				};
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+			switch (id)
+			{
+				case TreeGridView.ExpandingEvent:
+					Tree.TestExpandRow += Connector.HandleTestExpandRow;
+					break;
+				case TreeGridView.ExpandedEvent:
+					Tree.RowExpanded += Connector.HandleRowExpanded;
+					break;
+				case TreeGridView.CollapsingEvent:
+					Tree.TestCollapseRow += Connector.HandleTestCollapseRow;
+					break;
+				case TreeGridView.CollapsedEvent:
+					Tree.RowCollapsed += Connector.HandleRowCollapsed;
+					break;
+				case TreeGridView.SelectedItemChangedEvent:
+					Tree.Selection.Changed += Connector.HandleSelectionChanged;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
-		public override object GetItem (Gtk.TreePath path)
+		protected new TreeGridViewConnector Connector { get { return (TreeGridViewConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
 		{
-			return model.GetItemAtPath (path);
+			return new TreeGridViewConnector();
 		}
 
-		public override Gtk.TreeIter GetIterAtRow (int row)
+		protected class TreeGridViewConnector : GridConnector
 		{
-			throw new NotImplementedException ();
+			public new TreeGridViewHandler Handler { get { return (TreeGridViewHandler)base.Handler; } }
+
+			public void HandleTestExpandRow(object o, Gtk.TestExpandRowArgs args)
+			{
+				var h = Handler;
+				var e = new TreeGridViewItemCancelEventArgs(h.GetItem(args.Path) as ITreeGridItem);
+				h.Widget.OnExpanding(e);
+				args.RetVal = e.Cancel;
+			}
+
+			public void HandleRowExpanded(object o, Gtk.RowExpandedArgs args)
+			{
+				var h = Handler;
+				var e = new TreeGridViewItemEventArgs(h.GetItem(args.Path) as ITreeGridItem);
+				e.Item.Expanded = true;
+				h.Widget.OnExpanded(e);
+			}
+
+			public void HandleTestCollapseRow(object o, Gtk.TestCollapseRowArgs args)
+			{
+				var h = Handler;
+				var e = new TreeGridViewItemCancelEventArgs(h.GetItem(args.Path) as ITreeGridItem);
+				h.Widget.OnCollapsing(e);
+				args.RetVal = e.Cancel;
+				if (!e.Cancel)
+				{
+					h.selectCollapsingItem = !h.AllowMultipleSelection && h.ChildIsSelected(e.Item);
+					h.SkipSelectedChange = true;
+				}
+			}
+
+			public void HandleRowCollapsed(object o, Gtk.RowCollapsedArgs args)
+			{
+				var h = Handler;
+				var e = new TreeGridViewItemEventArgs(h.GetItem(args.Path) as ITreeGridItem);
+				e.Item.Expanded = false;
+				h.Widget.OnCollapsed(e);
+				h.SkipSelectedChange = false;
+				if (h.selectCollapsingItem == true)
+				{
+					h.Tree.Selection.UnselectAll();
+					h.Tree.Selection.SelectPath(args.Path);
+					h.selectCollapsingItem = null;
+				}
+			}
+
+			public void HandleSelectionChanged(object sender, EventArgs e)
+			{
+				var h = Handler;
+				var item = h.SelectedItem;
+				if (!h.SkipSelectedChange && !object.ReferenceEquals(item, h.lastSelected))
+				{
+					h.Widget.OnSelectedItemChanged(EventArgs.Empty);
+					h.lastSelected = item;
+				}
+			}
 		}
 
-		public GLib.Value GetColumnValue (ITreeGridItem item, int dataColumn, int row)
+		public override object GetItem(Gtk.TreePath path)
+		{
+			return model.GetItemAtPath(path);
+		}
+
+		public override Gtk.TreeIter GetIterAtRow(int row)
+		{
+			throw new NotImplementedException();
+		}
+
+		public GLib.Value GetColumnValue(ITreeGridItem item, int dataColumn, int row)
 		{
 			int column;
-			if (ColumnMap.TryGetValue (dataColumn, out column)) {
+			if (ColumnMap.TryGetValue(dataColumn, out column))
+			{
 				var colHandler = (IGridColumnHandler)Widget.Columns[column].Handler;
-				return colHandler.GetValue (item, dataColumn, row);
+				return colHandler.GetValue(item, dataColumn, row);
 			}
-			return new GLib.Value ((string)null);
+			return new GLib.Value((string)null);
 		}
 
-		public int GetRowOfItem (ITreeGridItem item)
+		public int GetRowOfItem(ITreeGridItem item)
 		{
-			if (collection == null) return -1;
-			return collection.IndexOf (item);
+			return collection == null ? -1 : collection.IndexOf(item);
 		}
 
-		int GetCount (Gtk.TreeIter parent, int upToIndex)
+		int GetCount(Gtk.TreeIter parent, int upToIndex)
 		{
 			int rows = upToIndex == -1 ? model.IterNChildren(parent) : upToIndex;
 			int count = 0;
-			for (int i = 0; i < rows; i ++)
+			for (int i = 0; i < rows; i++)
 			{
 				Gtk.TreeIter iter;
-				if (model.IterNthChild(out iter, parent, i)) {
-					var childPath = model.GetPath (iter);
+				if (model.IterNthChild(out iter, parent, i))
+				{
+					var childPath = model.GetPath(iter);
 					
 					if (Tree.GetRowExpanded(childPath))
 					{
-						count += GetCount (iter, -1);
+						count += GetCount(iter, -1);
 					}
 				}
 				count++;
@@ -242,19 +280,19 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				var rows = Tree.Selection.GetSelectedRows ();
+				var rows = Tree.Selection.GetSelectedRows();
 				foreach (var row in rows)
 				{
 					int count = 0;
-					Gtk.TreePath path = new Gtk.TreePath();
-					count += GetCount (Gtk.TreeIter.Zero, row.Indices[0]);
+					var path = new Gtk.TreePath();
+					count += GetCount(Gtk.TreeIter.Zero, row.Indices[0]);
 					// slow but works for now
-					for (int i = 0; i < row.Indices.Length-1; i++)
+					for (int i = 0; i < row.Indices.Length - 1; i++)
 					{
-						path.AppendIndex (row.Indices[i]);
+						path.AppendIndex(row.Indices[i]);
 						Gtk.TreeIter iter;
-						if (model.GetIter (out iter, path))
-							count += GetCount (iter, row.Indices[i+1]);
+						if (model.GetIter(out iter, path))
+							count += GetCount(iter, row.Indices[i + 1]);
 					}
 					count += row.Indices.Length - 1;
 					//count += row.Indices[row.Indices.Length - 1];
@@ -264,8 +302,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				
 			}
 		}
-
-
 	}
 }
 

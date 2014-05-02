@@ -7,8 +7,15 @@ using aw = Android.Widget;
 
 namespace Eto.Platform.Android.Forms.Controls
 {
+	/// <summary>
+	/// Handler for <see cref="ILabel"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class LabelHandler : AndroidCommonControl<aw.TextView, Label>, ILabel
 	{
+		const av.GravityFlags AlignmentMask = av.GravityFlags.HorizontalGravityMask | av.GravityFlags.VerticalGravityMask;
+
 		public LabelHandler()
 		{
 			Control = new aw.TextView(a.App.Application.Context);
@@ -16,25 +23,21 @@ namespace Eto.Platform.Android.Forms.Controls
 
 		public HorizontalAlign HorizontalAlign
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get { return Control.Gravity.ToEtoHorizontal(); }
 			set
 			{
-				throw new NotImplementedException();
+				var gravity = value.ToAndroid();
+				Control.Gravity = (Control.Gravity & ~av.GravityFlags.HorizontalGravityMask & AlignmentMask) | gravity;
 			}
 		}
 
 		public VerticalAlign VerticalAlign
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get { return Control.Gravity.ToEtoVertical(); }
 			set
 			{
-				throw new NotImplementedException();
+				var gravity = value.ToAndroid();
+				Control.Gravity = (Control.Gravity & ~av.GravityFlags.VerticalGravityMask & AlignmentMask) | gravity;
 			}
 		}
 
@@ -63,4 +66,3 @@ namespace Eto.Platform.Android.Forms.Controls
 		}
 	}
 }
-

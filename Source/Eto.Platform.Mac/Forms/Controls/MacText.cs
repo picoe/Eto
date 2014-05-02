@@ -1,4 +1,3 @@
-using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using Eto.Drawing;
@@ -6,20 +5,20 @@ using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public abstract class MacText<T, W> : MacControl<T, W>, ITextControl
-		where T: NSTextField
-		where W: TextControl
+	public abstract class MacText<TControl, TWidget> : MacControl<TControl, TWidget>, ITextControl
+		where TControl: NSTextField
+		where TWidget: TextControl
 	{
 		public override Color BackgroundColor
 		{
 			get { return Control.BackgroundColor.ToEto(); }
-			set { Control.BackgroundColor = value.ToNS(); }
+			set { Control.BackgroundColor = value.ToNSUI(); }
 		}
 
 		public virtual string Text
 		{
-			get { return Control.StringValue; }
-			set { Control.StringValue = value ?? string.Empty; }
+			get { return Control.AttributedStringValue.Value; }
+			set { Control.AttributedStringValue = Font.AttributedString(value ?? string.Empty, Control.AttributedStringValue); }
 		}
 	}
 }

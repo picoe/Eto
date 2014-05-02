@@ -1,8 +1,5 @@
 using Eto.Drawing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sd = System.Drawing;
 using sd2 = System.Drawing.Drawing2D;
 
@@ -62,9 +59,11 @@ namespace Eto.Platform.Windows.Drawing
 		public void SetLineCap (Pen widget, PenLineCap lineCap)
 		{
 			var pen = widget.ToSD ();
+			// get dash style before changing cap
+			var dashStyle = widget.DashStyle;
 			pen.StartCap = pen.EndCap = lineCap.ToSD ();
 			pen.DashCap = lineCap == PenLineCap.Round ? sd2.DashCap.Round : sd2.DashCap.Flat;
-			SetDashStyle (widget, widget.DashStyle);
+			SetDashStyle (widget, dashStyle);
 		}
 
 		public float GetMiterLimit (Pen widget)
@@ -92,6 +91,7 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			var pen = widget.ToSD ();
 
+			pen.DashOffset = 0;
 			if (dashStyle == null || dashStyle.IsSolid)
 				pen.DashStyle = sd2.DashStyle.Solid;
 			else if (dashStyle.Equals(DashStyles.Dash))
@@ -105,10 +105,10 @@ namespace Eto.Platform.Windows.Drawing
 				pen.DashStyle = sd2.DashStyle.Custom;
 				pen.DashPattern = dashStyle.Dashes;
 				pen.DashOffset = dashStyle.Offset;
-				if (pen.StartCap == sd2.LineCap.Square)
-				{
-					pen.DashOffset += 0.5f;
-				}
+			}
+			if (pen.StartCap == sd2.LineCap.Square)
+			{
+				pen.DashOffset += 0.5f;
 			}
 		}
 	}

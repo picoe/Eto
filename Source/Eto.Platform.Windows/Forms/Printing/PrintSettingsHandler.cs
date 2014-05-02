@@ -1,46 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sdp = System.Drawing.Printing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows.Forms.Printing
 {
-	public static class PrintSettingsExtensions
-	{
-		public static PrintSettings ToEto (this sdp.PrinterSettings settings, Eto.Generator generator)
-		{
-			if (settings == null)
-				return null;
-			return new PrintSettings (generator, new PrintSettingsHandler (settings));
-		}
-
-		public static sdp.PrinterSettings ToSD (this PrintSettings settings)
-		{
-			if (settings == null)
-				return PrintSettingsHandler.DefaultSettings ();
-			else
-				return ((PrintSettingsHandler)settings.Handler).Control;
-		}
-	}
-
 	public class PrintSettingsHandler : WidgetHandler<sdp.PrinterSettings, PrintSettings>, IPrintSettings
 	{
-		public PrintSettingsHandler (sdp.PrinterSettings settings)
+		public PrintSettingsHandler(sdp.PrinterSettings settings)
 		{
 			Control = settings;
 		}
 
-		public static sdp.PrinterSettings DefaultSettings ()
+		public static sdp.PrinterSettings DefaultSettings()
 		{
 			return new sdp.PrinterSettings { MinimumPage = 1, MaximumPage = 1, FromPage = 1, ToPage = 1, Copies = 1, Collate = true };
 		}
 
-		public PrintSettingsHandler ()
+		public PrintSettingsHandler()
 		{
-			Control = DefaultSettings ();
+			Control = DefaultSettings();
 		}
 
 		public int Copies
@@ -51,7 +29,7 @@ namespace Eto.Platform.Windows.Forms.Printing
 
 		public Range MaximumPageRange
 		{
-			get { return new Range (Control.MinimumPage, Control.MaximumPage - Control.MinimumPage + 1); }
+			get { return new Range(Control.MinimumPage, Control.MaximumPage - Control.MinimumPage + 1); }
 			set
 			{
 				Control.MinimumPage = value.Start;
@@ -61,7 +39,7 @@ namespace Eto.Platform.Windows.Forms.Printing
 
 		public Range SelectedPageRange
 		{
-			get { return new Range (Control.FromPage, Control.ToPage - Control.FromPage + 1); }
+			get { return new Range(Control.FromPage, Control.ToPage - Control.FromPage + 1); }
 			set
 			{
 				Control.FromPage = value.Start;
@@ -77,8 +55,8 @@ namespace Eto.Platform.Windows.Forms.Printing
 
 		public PrintSelection PrintSelection
 		{
-			get { return Control.PrintRange.ToEto (); }
-			set { Control.PrintRange = value.ToSDP (); }
+			get { return Control.PrintRange.ToEto(); }
+			set { Control.PrintRange = value.ToSDP(); }
 		}
 
 		public bool Collate

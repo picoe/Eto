@@ -1,4 +1,3 @@
-#if DESKTOP
 using System;
 using System.Collections.Generic;
 
@@ -6,50 +5,60 @@ namespace Eto.Forms
 {
 	public interface IContextMenu : ISubMenu
 	{
-		void Show (Control relativeTo);	
+		void Show(Control relativeTo);
 	}
-	
+
+	public interface IContextMenuHost
+	{
+		ContextMenu ContextMenu { get; set; }
+	}
+
 	public class ContextMenu : Menu, ISubMenuWidget
 	{
 		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }
-		MenuItemCollection menuItems;
-		
-		public ContextMenu () : this (Generator.Current)
+
+		public MenuItemCollection Items { get; private set; }
+
+		[Obsolete("Use Items instead")]
+		public MenuItemCollection MenuItems { get { return Items; } } 
+
+		public ContextMenu()
+			: this((Generator)null)
 		{
 		}
 
-		public ContextMenu (Generator g) : this (g, typeof(IContextMenu))
+		public ContextMenu(Generator generator) : this(generator, typeof(IContextMenu))
 		{
 		}
 
-		protected ContextMenu (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+		protected ContextMenu(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
-			menuItems = new MenuItemCollection (this, Handler);
+			Items = new MenuItemCollection(Handler);
 		}
 
-		public ContextMenu (Generator g, IEnumerable<IActionItem> actionItems) : this (g)
+		public ContextMenu(Generator g, IEnumerable<MenuItem> items) : this(g)
 		{
-			GenerateActions (actionItems);
-		}
-		
-		public void GenerateActions (IEnumerable<IActionItem> actionItems)
-		{
-			foreach (var ai in actionItems) {
-				var mi = ai.Generate (this.Generator);
-				if (mi != null)
-					this.menuItems.Add(mi);
-			}
+			Items.AddRange(items);
 		}
 
-		public MenuItemCollection MenuItems {
-			get { return menuItems; }
-		}
-		
-		public void Show (Control relativeTo)
+		public void Show(Control relativeTo)
 		{
-			Handler.Show (relativeTo);
+			Handler.Show(relativeTo);
+		}
+
+		internal protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			foreach (var item in Items)
+				item.OnLoad(e);
+		}
+
+		internal protected override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			foreach (var item in Items)
+				item.OnLoad(e);
 		}
 	}
 }
-#endif

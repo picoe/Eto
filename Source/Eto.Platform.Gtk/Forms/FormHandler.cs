@@ -1,5 +1,3 @@
-using System;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
@@ -11,10 +9,10 @@ namespace Eto.Platform.GtkSharp
 			Control = new Gtk.Window(Gtk.WindowType.Toplevel);
 #if GTK2
 			Control.AllowShrink = true;
+			Control.AllowGrow = true;
 #else
 			Control.Resizable = true;
 #endif
-			Control.SetSizeRequest(100,100);
 			Control.SetPosition(Gtk.WindowPosition.Center);
 		}
 

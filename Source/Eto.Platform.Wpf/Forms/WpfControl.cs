@@ -1,25 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Drawing;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class WpfControl<T, W> : WpfFrameworkElement<T, W>, IControl
-		where T : swc.Control
-		where W: Control
+	public class WpfControl<TControl, TWidget> : WpfFrameworkElement<TControl, TWidget>, IControl
+		where TControl : swc.Control
+		where TWidget: Control
 	{
 		Font font;
-
 
 		public override Color BackgroundColor
 		{
 			get { return (ContainerControl as swc.Control ?? Control).Background.ToEtoColor(); }
 			set { (ContainerControl as swc.Control ?? Control).Background = value.ToWpfBrush(Control.Background); }
+		}
+
+		protected virtual void SetDecorations(sw.TextDecorationCollection decorations)
+		{
 		}
 
 		public Font Font
@@ -33,7 +33,7 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				font = value;
-				FontHandler.Apply (Control, font);
+				FontHandler.Apply (Control, SetDecorations, font);
 			}
 		}
 

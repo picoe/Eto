@@ -1,9 +1,7 @@
 using System;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Controls;
-using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -52,15 +50,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxLength = -1;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-				case TextArea.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.Changed += HandleChanged;
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

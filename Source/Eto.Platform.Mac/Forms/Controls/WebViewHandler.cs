@@ -3,7 +3,6 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using System.Linq;
-using System.Net;
 using Eto.Drawing;
 using wk = MonoMac.WebKit;
 using MonoMac.AppKit;
@@ -12,8 +11,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class WebViewHandler : MacView<wk.WebView, WebView>, IWebView
 	{
-		static Selector selIgnore = new Selector("ignore");
-		static Selector selUse = new Selector("use");
+		static readonly Selector selIgnore = new Selector("ignore");
+		static readonly Selector selUse = new Selector("use");
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -27,6 +26,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler = this,
 				UIDelegate = new UIDelegate { Handler = this }
 			};
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			HandleEvent(WebView.OpenNewWindowEvent); // needed to provide default implementation
 			HandleEvent(WebView.DocumentLoadingEvent);
 		}
@@ -55,7 +59,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			[Export("webView:decidePolicyForNavigationAction:request:frame:decisionListener:")]
 			public void DecidePolicyForNavigation(wk.WebView webView, NSDictionary action, NSUrlRequest request, wk.WebFrame frame, NSObject listener)
 			{
-				var url = action.ObjectForKey(new NSString("WebActionOriginalURLKey")) as NSUrl;
+				var url = (NSUrl)action.ObjectForKey(new NSString("WebActionOriginalURLKey"));
 				var args = new WebViewNewWindowEventArgs(new Uri(url.AbsoluteString), frame.Name);
 				Handler.Widget.OnOpenNewWindow(args);
 				if (!args.Cancel)
@@ -66,8 +70,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class PromptDialog : Dialog
 		{
-			TextBox textBox;
-			Label prompt;
+			readonly TextBox textBox;
+			readonly Label prompt;
 
 			public string Prompt
 			{
@@ -100,9 +104,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var button = new Button { Text = "Cancel" };
 				AbortButton = button;
-				button.Click += (sender, e) => {
-					Close(DialogResult.Cancel);
-				};
+				button.Click += (sender, e) => Close(DialogResult.Cancel);
 				return button;
 			}
 
@@ -110,9 +112,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var button = new Button { Text = "OK" };
 				DefaultButton = button;
-				button.Click += (sender, e) => {
-					Close(DialogResult.Ok);
-				};
+				button.Click += (sender, e) => Close(DialogResult.Ok);
 				return button;
 			}
 		}
@@ -147,10 +147,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override NSMenuItem[] UIGetContextMenuItems(wk.WebView sender, NSDictionary forElement, NSMenuItem[] defaultMenuItems)
 			{
-				if (Handler.BrowserContextMenuEnabled)
-					return defaultMenuItems;
-				else
-					return null;
+				return Handler.BrowserContextMenuEnabled ? defaultMenuItems : null;
 			}
 
 			public override void UIRunOpenPanelForFileButton(wk.WebView sender, wk.WebOpenPanelResultListener resultListener)
@@ -164,8 +161,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void UIPrintFrameView(wk.WebView sender, wk.WebFrameView frameView)
 			{
-				var margin = 24f;
-				var printOperation = frameView.GetPrintOperation(new MonoMac.AppKit.NSPrintInfo()
+				const float margin = 24f;
+				var printOperation = frameView.GetPrintOperation(new NSPrintInfo
 				{
 					VerticallyCentered = false,
 					LeftMargin = margin,
@@ -174,45 +171,45 @@ namespace Eto.Platform.Mac.Forms.Controls
 					BottomMargin = margin
 				});
 				printOperation.PrintPanel.Options = 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsCopies | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsOrientation | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPageRange | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPageSetupAccessory | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPaperSize | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPreview | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPrintSelection | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsScaling;
+					NSPrintPanelOptions.ShowsCopies | 
+					NSPrintPanelOptions.ShowsOrientation | 
+					NSPrintPanelOptions.ShowsPageSetupAccessory | 
+					NSPrintPanelOptions.ShowsPageRange | 
+					NSPrintPanelOptions.ShowsPaperSize | 
+					NSPrintPanelOptions.ShowsPreview | 
+					NSPrintPanelOptions.ShowsPrintSelection | 
+					NSPrintPanelOptions.ShowsScaling;
 				printOperation.RunOperation();
 			}
 
 			public override wk.WebView UICreateWebView(wk.WebView sender, NSUrlRequest request)
 			{
-				Handler.newWindowHandler = new NewWindowHandler { Handler = this.Handler };
+				Handler.newWindowHandler = new NewWindowHandler { Handler = Handler };
 				return Handler.newWindowHandler.WebView;
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case WebView.NavigatedEvent:
 					HandleEvent(WebView.DocumentLoadedEvent);
 					break;
 				case WebView.DocumentLoadedEvent:
-					this.Control.FinishedLoad += HandleFinishedLoad;
+					Control.FinishedLoad += HandleFinishedLoad;
 					break;
 				case WebView.DocumentLoadingEvent:
-					this.Control.DecidePolicyForNavigation += HandleDecidePolicyForNavigation;
+					Control.DecidePolicyForNavigation += HandleDecidePolicyForNavigation;
 					break;
 				case WebView.OpenNewWindowEvent:
-					this.Control.DecidePolicyForNewWindow += HandleDecidePolicyForNewWindow;
+					Control.DecidePolicyForNewWindow += HandleDecidePolicyForNewWindow;
 					break;
 				case WebView.DocumentTitleChangedEvent:
-					this.Control.ReceivedTitle += HandleReceivedTitle;
+					Control.ReceivedTitle += HandleReceivedTitle;
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -270,10 +267,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return new Uri(Control.MainFrameUrl); }
 			set
 			{ 
-				if (value != null)
-					Control.MainFrameUrl = value.AbsoluteUri;
-				else
-					Control.MainFrameUrl = null;
+				Control.MainFrameUrl = value == null ? null : value.AbsoluteUri;
 			}
 		}
 

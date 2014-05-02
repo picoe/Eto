@@ -1,7 +1,6 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using System.Text;
 using System.Collections.Generic;
 
 namespace Eto.Test
@@ -33,33 +32,24 @@ namespace Eto.Test
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes());
+			//this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
+			//this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
+#if ANDROID
+			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
+#else
+			this.SectionList = new SectionListTreeGridView(topNodes ?? TestSectionList.TopNodes());
+#endif
 
 #if DESKTOP
-			this.Icon = TestIcons.TestIcon;
+			this.Icon = TestIcons.TestIcon();
 			this.ClientSize = new Size(900, 650);
 #endif
 			//this.Opacity = 0.5;
 
-#if DESKTOP
-			HandleEvent(MainForm.WindowStateChangedEvent);
-#endif
-			HandleEvent(MainForm.ClosedEvent, MainForm.ClosingEvent);
-
-			/* Option 1: use actions to generate menu and toolbar (recommended)
-			 */
-			GenerateMenuToolBarActions();
-
-
-			/* Option 2: generate menu and toolbar directly
-			 *
-			GenerateMenu();
-			
-			GenerateToolBar();
-			/*
-			 */
-
+			// Commenting the next line on iOS displays just the toolbar. Otherwise it is hidden for some reason.
 			Content = MainContent();
+
+			GenerateMenuToolBar();
 		}
 
 		public SectionList SectionList { get; set; }
@@ -69,11 +59,12 @@ namespace Eto.Test
 			contentContainer = new Panel();
 
 			// set focus when the form is shown
-			this.Shown += delegate
+			Shown += delegate
 			{
 				SectionList.Focus();
 			};
-			SectionList.SelectedItemChanged += (sender, e) => {
+			SectionList.SelectedItemChanged += (sender, e) =>
+			{
 				try
 				{
 					var item = SectionList.SelectedItem;
@@ -91,7 +82,7 @@ namespace Eto.Test
 				}
 				catch (Exception ex)
 				{
-					Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+					Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
 					contentContainer.Content = null;
 				}
 
@@ -101,50 +92,45 @@ namespace Eto.Test
 				#endif
 			};
 
-			if (Splitter.Supported)
+			if (Splitter.IsSupported())
 			{
 				var splitter = new Splitter
 				{
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
-					Panel1 = SectionList,
+					Panel1 = SectionList.Control,
 #if MOBILE
 					// for now, don't show log in mobile
 					Panel2 = contentContainer
 #else
-					Panel2 = RightPane ()
+					Panel2 = RightPane()
 #endif
 				};
 				return splitter;
 			}
-			else if (Navigation.Supported)
+			if (Navigation.IsSupported())
 			{
-				navigation = new Navigation(SectionList, "Eto.Test");
+				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
 			}
-			else
-				throw new EtoException("Platform must support splitter or navigation");
+			throw new EtoException("Platform must support splitter or navigation");
 
 		}
 
 		Control RightPane()
 		{
-			var splitter = new Splitter
+			return new Splitter
 			{
 				Orientation = SplitterOrientation.Vertical,
-				Position = 500,
-				FixedPanel = SplitterFixedPanel.Panel2
+				FixedPanel = SplitterFixedPanel.Panel2,
+				Panel1 = contentContainer,
+				Panel2 = EventLogSection()
 			};
-
-			splitter.Panel1 = contentContainer;
-			splitter.Panel2 = this.EventLogSection();
-
-			return splitter;
 		}
 
 		Control EventLogSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { Size = new Size(100, 120) };
 			
 			layout.BeginHorizontal();
 			layout.Add(EventLog, true);
@@ -163,107 +149,60 @@ namespace Eto.Test
 			{
 				Text = "Clear"
 			};
-			control.Click += (sender, e) => {
-				EventLog.Text = string.Empty;
-			};
+			control.Click += (sender, e) => EventLog.Text = string.Empty;
 			return control;
 		}
 
-		void GenerateMenuToolBarActions()
+		void GenerateMenuToolBar()
 		{
-			// use actions to generate menu & toolbar to share logic
-			var args = new GenerateActionArgs();
+			var about = new Actions.About();
+			var quit = new Actions.Quit();
 
-			// generate actions to use in menus and toolbars
-			Application.Instance.GetSystemActions(args, true);
+#if DESKTOP
+			var menu = new MenuBar();
+			// create standard system menu (e.g. for OS X)
+			Application.Instance.CreateStandardMenu(menu.Items);
 
-			args.Actions.Add(new Actions.About());
-			args.Actions.Add(new Actions.Quit());
-			args.Actions.Add(new Actions.Close());
+			// add our own items to the menu
 
-
-			// generate and set the menu
-			GenerateMenu(args);
-
-			// generate and set the toolbar
-			GenerateToolBar(args);
-		}
-
-		void GenerateMenu(GenerateActionArgs args)
-		{
-			var file = args.Menu.GetSubmenu("&File", 100);
-			args.Menu.GetSubmenu("&Edit", 200);
-			args.Menu.GetSubmenu("&Window", 900);
-			var help = args.Menu.GetSubmenu("&Help", 1000);
+			var file = menu.Items.GetSubmenu("&File", 100);
+			menu.Items.GetSubmenu("&Edit", 200);
+			menu.Items.GetSubmenu("&Window", 900);
+			var help = menu.Items.GetSubmenu("&Help", 1000);
 
 			if (Generator.IsMac)
 			{
 				// have a nice OS X style menu
-
-				var main = args.Menu.GetSubmenu(Application.Instance.Name, 0);
-				main.Actions.Add(Actions.About.ActionID, 0);
-				main.Actions.Add(Actions.Quit.ActionID, 1000);
+				var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
+				main.Items.Add(about, 0);
+				main.Items.Add(quit, 1000);
 			}
 			else
 			{
 				// windows/gtk style window
-				file.Actions.Add(Actions.Quit.ActionID);
-
-				help.Actions.Add(Actions.About.ActionID);
+				file.Items.Add(quit);
+				help.Items.Add(about);
 			}
 
-#if DESKTOP
-			this.Menu = args.Menu.GenerateMenuBar();
+			// optional, removes empty submenus and duplicate separators
+			menu.Items.Trim();
+
+			Menu = menu;
 #endif
+
+			// generate and set the toolbar
+			var toolBar = new ToolBar();
+			toolBar.Items.Add(quit);
+			toolBar.Items.Add(new ButtonToolItem(about));
+
+			ToolBar = toolBar;
 		}
 
-		void GenerateToolBar(GenerateActionArgs args)
-		{
-			args.ToolBar.Add(Actions.Quit.ActionID);
-			args.ToolBar.Add(Actions.About.ActionID);
-#if DESKTOP
-			// TODO for mobile
-			this.ToolBar = args.ToolBar.GenerateToolBar();
-#endif
-		}
-		#region Generate Menu & Toolbar Manually
-		/*
-		void GenerateMenu ()
-		{
-			var menuBar = new MenuBar ();
-			
-			var file = new ImageMenuItem{ Text = "&File" };
-			menuBar.MenuItems.Add (file);
-			
-			// close
-			var close = new ImageMenuItem { Text = "&Close" };
-			close.Click += delegate {
-				this.Close ();
-			};
-			file.MenuItems.Add (close);
-			
-			
-			this.Menu = menuBar;
-		}
-		
-		void GenerateToolBar ()
-		{
-			var toolBar = new ToolBar ();
-			
-			// close
-			var close = new ToolBarButton{ Text = "Close" };
-			close.Click += delegate {
-				this.Close ();
-			};
-			toolBar.Items.Add (close);
-		}
-		*/
-		#endregion
 		#if DESKTOP
 		public override void OnWindowStateChanged(EventArgs e)
 		{
 			base.OnWindowStateChanged(e);
-			Log.Write(this, "StateChanged: {0}", this.WindowState);
+			Log.Write(this, "StateChanged: {0}", WindowState);
 		}
 
 		public override void OnClosing(System.ComponentModel.CancelEventArgs e)

@@ -1,9 +1,5 @@
 using Eto.Drawing;
 using Eto.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swf = System.Windows.Forms;
 
 namespace Eto.Platform.Windows.Forms
@@ -20,7 +16,7 @@ namespace Eto.Platform.Windows.Forms
 
 		public PointF Position
 		{
-			get { return swf.Control.MousePosition.ToEto (); ; }
+			get { return swf.Control.MousePosition.ToEto (); }
 		}
 
 		public MouseButtons Buttons

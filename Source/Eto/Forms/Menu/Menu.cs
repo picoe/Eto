@@ -1,6 +1,4 @@
-#if DESKTOP
 using System;
-using System.Collections;
 
 namespace Eto.Forms
 {
@@ -18,6 +16,13 @@ namespace Eto.Forms
 			//inner = (IMenu)base.Handler;
 		}
 
+		protected internal virtual void OnLoad(EventArgs e)
+		{
+		}
+
+		protected internal virtual void OnUnLoad(EventArgs e)
+		{
+		}
+
 	}
 }
-#endif

@@ -11,11 +11,11 @@ namespace Eto.Forms
 	public partial class Drawable
 	{
 		public Drawable (bool largeCanvas)
-			: this(Generator.Current, largeCanvas)
+			: this(null, largeCanvas)
 		{
 		}
 
-		public Drawable (Generator g, bool largeCanvas) : base(g, typeof(IDrawable))
+		public Drawable (Generator generator, bool largeCanvas) : base(generator, typeof(IDrawable))
 		{
 			Handler.Create (largeCanvas);
 		}

@@ -1,10 +1,6 @@
 using System;
-using System.Reflection;
-using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
@@ -37,14 +33,14 @@ namespace Eto.Platform.Mac
 		
 		public string ToolTip {
 			get { return Control.ToolTip; }
-			set { Control.ToolTip = value; }
+			set { Control.ToolTip = value ?? string.Empty; }
 		}
 
-		public Key Shortcut {
+		public Keys Shortcut {
 			get { return KeyMap.Convert (Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
 			set { 
-				this.Control.KeyEquivalent = KeyMap.KeyEquivalent (value);
-				this.Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask (value);
+				Control.KeyEquivalent = KeyMap.KeyEquivalent (value);
+				Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask (value);
 			}
 		}
 
@@ -55,7 +51,7 @@ namespace Eto.Platform.Mac
 
 		#endregion
 
-		MenuActionItem IMenuActionHandler.Widget {
+		MenuItem IMenuActionHandler.Widget {
 			get { return Widget; }
 		}
 	}

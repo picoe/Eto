@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using mwc = Xceed.Wpf.Toolkit;
 using sw = System.Windows;
@@ -24,16 +21,19 @@ namespace Eto.Platform.Wpf.Forms
 
 		public DialogResult ShowDialog(Control parent)
 		{
-			var element = parent == null ? null : parent.GetContainerControl();
-			var window = element == null ? null : element.GetParent<sw.Window>();
-			sw.MessageBoxResult result;
-			var buttons = Convert(Buttons);
-			var defaultButton = Convert(DefaultButton, Buttons);
-			var icon = Convert(Type);
-			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
-			if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
-			else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
-			return Convert(result);
+			using (var visualStyles = new EnableThemingInScope(ApplicationHandler.EnableVisualStyles))
+			{
+				var element = parent == null ? null : parent.GetContainerControl();
+				var window = element == null ? null : element.GetParent<sw.Window>();
+				sw.MessageBoxResult result;
+				var buttons = Convert(Buttons);
+				var defaultButton = Convert(DefaultButton, Buttons);
+				var icon = Convert(Type);
+				var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
+				if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
+				else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
+				return Convert(result);
+			}
 		}
 
 		public static sw.MessageBoxResult Convert(MessageBoxDefaultButton defaultButton, MessageBoxButtons buttons)
@@ -66,11 +66,10 @@ namespace Eto.Platform.Wpf.Forms
 		}
 
 
-		sw.MessageBoxImage Convert(MessageBoxType type)
+		static sw.MessageBoxImage Convert(MessageBoxType type)
 		{
 			switch (type)
 			{
-				default:
 				case MessageBoxType.Information:
 					return sw.MessageBoxImage.Information;
 				case MessageBoxType.Error:
@@ -79,10 +78,12 @@ namespace Eto.Platform.Wpf.Forms
 					return sw.MessageBoxImage.Question;
 				case MessageBoxType.Warning:
 					return sw.MessageBoxImage.Warning;
+				default:
+					throw new NotSupportedException();
 			}
 		}
 
-		DialogResult Convert(sw.MessageBoxResult result)
+		static DialogResult Convert(sw.MessageBoxResult result)
 		{
 			switch (result)
 			{
@@ -95,7 +96,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		sw.MessageBoxButton Convert(MessageBoxButtons value)
+		static sw.MessageBoxButton Convert(MessageBoxButtons value)
 		{
 			switch (value)
 			{

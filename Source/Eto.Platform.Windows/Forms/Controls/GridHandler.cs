@@ -16,23 +16,41 @@ namespace Eto.Platform.Windows.Forms.Controls
 		bool CellMouseClick (GridColumnHandler column, swf.MouseEventArgs e, int rowIndex);
 	}
 
-	public abstract class GridHandler<W> : WindowsControl<swf.DataGridView, W>, IGrid, IGridHandler
-		where W: Grid
+	public abstract class GridHandler<TWidget> : WindowsControl<swf.DataGridView, TWidget>, IGrid, IGridHandler
+		where TWidget: Grid
 	{
-		ContextMenu contextMenu;
 		ColumnCollection columns;
 
 		protected abstract object GetItemAtRow (int row);
 
-		public GridHandler ()
+		class EtoDataGridView : swf.DataGridView
 		{
-			Control = new swf.DataGridView {
+			public GridHandler<TWidget> Handler { get; set; }
+			public override sd.Size GetPreferredSize(sd.Size proposedSize)
+			{
+				var size = base.GetPreferredSize(proposedSize);
+				var def = Handler.UserDesiredSize;
+				if (def.Width >= 0)
+					size.Width = def.Width;
+				if (def.Height >= 0)
+					size.Height = def.Height;
+				else
+					size.Height = Math.Min(size.Height, 100);
+				return size;
+			}
+		}
+
+		protected GridHandler()
+		{
+			Control = new EtoDataGridView {
+				Handler = this,
 				VirtualMode = true,
 				MultiSelect = false,
 				SelectionMode = swf.DataGridViewSelectionMode.FullRowSelect,
 				RowHeadersVisible = false,
 				AllowUserToAddRows = false,
 				AllowUserToResizeRows = false,
+				AutoSize = true,
 				AutoSizeColumnsMode = swf.DataGridViewAutoSizeColumnsMode.DisplayedCells,
 				ColumnHeadersHeightSizeMode = swf.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
 			};
@@ -84,7 +102,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			LeakHelper.UnhookObject(Control);
 		}
 
-		bool handledAutoSize = false;
+		bool handledAutoSize;
 		void HandleRowPostPaint (object sender, swf.DataGridViewRowPostPaintEventArgs e)
 		{
 			if (handledAutoSize) return;
@@ -114,53 +132,46 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 
 			Font font;
-			public override Eto.Drawing.Font Font
+			public override Font Font
 			{
 				get {
-					if (font == null)
-						font = new Font (Column.Generator, new FontHandler (Args.CellStyle.Font));
-					return font;
+					return font ?? (font = new Font (Column.Generator, new FontHandler (Args.CellStyle.Font)));
 				}
 				set {
 					font = value;
-					if (font != null)
-						Args.CellStyle.Font = ((FontHandler)font.Handler).Control;
-					else
-						Args.CellStyle.Font = null;
+					Args.CellStyle.Font = font.ToSD();
 				}
 			}
 
-			public override Eto.Drawing.Color BackgroundColor {
+			public override Color BackgroundColor {
 				get { return Args.CellStyle.BackColor.ToEto (); }
 				set { Args.CellStyle.BackColor = value.ToSD (); }
 			}
 
-			public override Eto.Drawing.Color ForegroundColor {
+			public override Color ForegroundColor {
 				get { return Args.CellStyle.ForeColor.ToEto (); }
 				set { Args.CellStyle.ForeColor = value.ToSD (); }
 			}
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Grid.ColumnHeaderClickEvent:
-				Control.ColumnHeaderMouseClick += (sender, e) => {
-					Widget.OnColumnHeaderClick (new GridColumnEventArgs (Widget.Columns[e.ColumnIndex]));
-				};
+				Control.ColumnHeaderMouseClick += (sender, e) => Widget.OnColumnHeaderClick(new GridColumnEventArgs(Widget.Columns[e.ColumnIndex]));
 				break;
-			case Grid.BeginCellEditEvent:
+			case Grid.CellEditingEvent:
 				Control.CellBeginEdit += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
-					Widget.OnBeginCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+					Widget.OnCellEditing (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
-			case Grid.EndCellEditEvent:
+			case Grid.CellEditedEvent:
 				Control.CellEndEdit += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
-					Widget.OnEndCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+					Widget.OnCellEdited (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
 			case Grid.SelectionChangedEvent:
@@ -176,7 +187,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -190,7 +201,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<W> Handler { get; set; }
+			public GridHandler<TWidget> Handler { get; set; }
 
 			public override void AddItem (GridColumn item)
 			{
@@ -218,24 +229,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 		}
 
 		public bool ShowHeader {
-			get { return this.Control.ColumnHeadersVisible; }
-			set { this.Control.ColumnHeadersVisible = value; }
+			get { return Control.ColumnHeadersVisible; }
+			set { Control.ColumnHeadersVisible = value; }
 		}
 
 		public bool AllowColumnReordering {
-			get { return this.Control.AllowUserToOrderColumns; }
-			set { this.Control.AllowUserToOrderColumns = value; }
-		}
-		
-		public ContextMenu ContextMenu {
-			get { return contextMenu; }
-			set {
-				contextMenu = value;
-				if (contextMenu != null)
-					this.Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					this.Control.ContextMenuStrip = null;
-			}
+			get { return Control.AllowUserToOrderColumns; }
+			set { Control.AllowUserToOrderColumns = value; }
 		}
 
 		public bool AllowMultipleSelection {

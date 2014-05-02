@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
@@ -28,12 +27,6 @@ namespace Eto.Platform.Windows.Drawing
 
 	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap, IWindowsImage
 	{
-
-		public IndexedBitmapHandler()
-		{
-		}
-
-
 		public void Create(int width, int height, int bitsPerPixel)
 		{
 			SD.Imaging.PixelFormat sdPixelFormat;

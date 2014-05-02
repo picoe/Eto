@@ -14,7 +14,7 @@ namespace Eto.Platform.Windows
 			const uint EM_SETCUEBANNER = ECM_FIRST + 1;
 
 			[DllImport ("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-			static extern IntPtr SendMessage (IntPtr hWnd, uint Msg, uint wParam, [MarshalAs (UnmanagedType.LPWStr)] string lParam);
+			static extern IntPtr SendMessage (IntPtr hWnd, uint msg, uint wParam, [MarshalAs (UnmanagedType.LPWStr)] string lParam);
 
 			string watermarkText;
 			public string WatermarkText
@@ -29,7 +29,7 @@ namespace Eto.Platform.Windows
 
 			void SetWatermark (string watermarkText)
 			{
-				SendMessage (this.Handle, EM_SETCUEBANNER, 0, watermarkText);
+				SendMessage(Handle, EM_SETCUEBANNER, 0, watermarkText);
 			}
 
 		}
@@ -44,8 +44,8 @@ namespace Eto.Platform.Windows
 		}
 		
 		public int MaxLength {
-			get { return this.Control.MaxLength; }
-			set { this.Control.MaxLength = value; }
+			get { return Control.MaxLength; }
+			set { Control.MaxLength = value; }
 		}
 
 		public string PlaceholderText {
@@ -55,8 +55,8 @@ namespace Eto.Platform.Windows
 
 		public void SelectAll ()
 		{
-			this.Control.Focus ();
-			this.Control.SelectAll ();
+			Control.Focus ();
+			Control.SelectAll ();
 		}
 	}
 }

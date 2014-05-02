@@ -11,10 +11,6 @@ namespace Eto.Platform.Android.Forms.Controls
 		where TWidget: CommonControl
 		where T: av.View
 	{
-		public AndroidCommonControl()
-		{
-		}
-
 		public override av.View ContainerControl
 		{
 			get { return Control; }
@@ -33,4 +29,3 @@ namespace Eto.Platform.Android.Forms.Controls
 		}
 	}
 }
-

@@ -1,32 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
 using Eto.Forms;
 using System.Collections;
-using System.Collections.ObjectModel;
 using Eto.Platform.Wpf.Forms.Menu;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public abstract class GridHandler<C, W> : WpfControl<C, W>, IGrid, IGridHandler
-		where C: swc.DataGrid
-		where W: Grid
+	public abstract class GridHandler<TControl, TWidget> : WpfControl<TControl, TWidget>, IGrid, IGridHandler
+		where TControl: swc.DataGrid
+		where TWidget: Grid
 	{
 		ContextMenu contextMenu;
 		bool hasFocus;
 		protected bool SkipSelectionChanged { get; set; }
 		protected swc.DataGridColumn CurrentColumn { get; set; }
 
-		public GridHandler ()
+		protected GridHandler()
 		{
-			Control = (C)new swc.DataGrid {
+			Control = (TControl)new swc.DataGrid {
 				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
 				AutoGenerateColumns = false,
 				CanUserAddRows = false,
@@ -39,9 +37,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		protected abstract object GetItemAtRow (int row);
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Grid.ColumnHeaderClickEvent:
 				Control.Sorting += (sender, e) => {
 					var column = Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, e.Column));
@@ -49,20 +47,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					e.Handled = true;
 				};
 				break;
-			case Grid.BeginCellEditEvent:
+			case Grid.CellEditingEvent:
 				Control.PreparingCellForEdit += (sender, e) => {
 					var row = e.Row.GetIndex ();
 					var item = GetItemAtRow (row);
 					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Widget.OnBeginCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+					Widget.OnCellEditing (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
 				};
 				break;
-			case Grid.EndCellEditEvent:
+			case Grid.CellEditedEvent:
 				Control.CellEditEnding += (sender, e) => {
 					var row = e.Row.GetIndex ();
 					var item = GetItemAtRow(row);
 					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Widget.OnEndCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+					Widget.OnCellEdited (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
 				};
 				break;
 			case Grid.SelectionChangedEvent:
@@ -75,7 +73,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				// handled by FormatCell method
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -104,7 +102,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<C,W> Handler { get; set; }
+			public GridHandler<TControl,TWidget> Handler { get; set; }
 
 			public override void AddItem (GridColumn item)
 			{
@@ -137,10 +135,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.ContextMenu = null;
+				Control.ContextMenu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 
@@ -179,13 +174,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			var list = Control.ItemsSource as IList;
 			if (list != null) {
-				if (this.AllowMultipleSelection)
-					Control.SelectedItems.Add (list[row]);
+				if (AllowMultipleSelection)
+					Control.SelectedItems.Add(list[row]);
 				else
 				{
-					SaveColumnFocus ();
+					SaveColumnFocus();
 					Control.SelectedIndex = row;
-					RestoreColumnFocus ();
+					RestoreColumnFocus();
 				}
 			}
 		}
@@ -194,10 +189,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			var list = Control.ItemsSource as IList;
 			if (list != null) {
-				if (this.AllowMultipleSelection)
-					Control.SelectedItems.Remove (list[row]);
+				if (AllowMultipleSelection)
+					Control.SelectedItems.Remove(list[row]);
 				else
-					Control.UnselectAll ();
+					Control.UnselectAll();
 			}
 		}
 
@@ -206,7 +201,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.UnselectAll ();
 		}
 
-		public virtual System.Windows.FrameworkElement SetupCell (IGridColumnHandler column, System.Windows.FrameworkElement defaultContent)
+		public virtual sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent)
 		{
 			return defaultContent;
 		}
@@ -225,7 +220,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				this.Cell = gridcell;
 			}
 
-			public override Eto.Drawing.Font Font
+			public override Font Font
 			{
 				get {
 					if (font == null)
@@ -235,17 +230,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				set
 				{
 					font = value;
-					FontHandler.Apply (Cell, font);
+					FontHandler.Apply (Cell, null, font);
 				}
 			}
 
-			public override Eto.Drawing.Color BackgroundColor
+			public override Color BackgroundColor
 			{
 				get
 				{
 					var brush = Cell.Background as swm.SolidColorBrush;
-					if (brush != null) return brush.Color.ToEto ();
-					else return Colors.White;
+					return brush != null ? brush.Color.ToEto() : Colors.White;
 				}
 				set
 				{
@@ -253,13 +247,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				}
 			}
 
-			public override Eto.Drawing.Color ForegroundColor
+			public override Color ForegroundColor
 			{
 				get
 				{
 					var brush = Cell.Foreground as swm.SolidColorBrush;
-					if (brush != null) return brush.Color.ToEto ();
-					else return Colors.Black;
+					return brush != null ? brush.Color.ToEto() : Colors.Black;
 				}
 				set
 				{
@@ -274,8 +267,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				if (Widget.ParentWindow != null)
 					return Control.HasFocus((sw.DependencyObject)Widget.ParentWindow.ControlObject);
-				else
-					return base.HasFocus;
+				return base.HasFocus;
 			}
 		}
 
@@ -325,14 +317,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		protected void SaveFocus ()
 		{
 			SaveColumnFocus ();
-			hasFocus = this.HasFocus;
+			hasFocus = HasFocus;
 		}
 
 		protected void RestoreFocus ()
 		{
 			if (hasFocus)
 			{
-				this.Focus ();
+				Focus();
 				RestoreColumnFocus ();
 			}
 		}

@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
@@ -27,10 +26,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public void InsertTab (int index, TabPage page)
 		{
 			var pageHandler = (TabPageHandler)page.Handler;
-			if (index == -1 || index == this.Control.TabPages.Count)
-				this.Control.TabPages.Add (pageHandler.Control);
+			if (index == -1 || index == Control.TabPages.Count)
+				Control.TabPages.Add (pageHandler.Control);
 			else
-				this.Control.TabPages.Insert (index, pageHandler.Control);
+				Control.TabPages.Insert (index, pageHandler.Control);
 			if (Widget.Loaded && Control.TabPages.Count == 1)
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);
 		}
@@ -53,7 +52,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		
 		public void ClearTabs ()
 		{
-			this.Control.TabPages.Clear ();
+			Control.TabPages.Clear ();
 		}
 	}
 }

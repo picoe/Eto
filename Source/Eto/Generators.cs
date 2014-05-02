@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Eto
 {
@@ -10,6 +6,16 @@ namespace Eto
 	/// </summary>
 	public static class Generators
 	{
+		/// <summary>
+		/// ID of the Direct2D platform
+		/// </summary>
+		public const string Direct2D = "Direct2D";
+
+		/// <summary>
+		/// Assembly name of the Direct2D platform
+		/// </summary>
+		public const string Direct2DAssembly = "Eto.Platform.Direct2D.Generator, Eto.Platform.Direct2D";
+
 		/// <summary>
 		/// ID of the iOS platform
 		/// </summary>
@@ -79,5 +85,15 @@ namespace Eto
 		/// Assembly name of the WPF platform
 		/// </summary>
 		public const string WpfAssembly = "Eto.Platform.Wpf.Generator, Eto.Platform.Wpf";
+		
+		/// <summary>
+		/// ID of the Android platform
+		/// </summary>
+		public const string Android = "android";
+
+		/// <summary>
+		/// Assembly name of the Android platform
+		/// </summary>
+		public const string AndroidAssembly = "Eto.Platform.Android.Generator, Eto.Platform.Android";
 	}
 }

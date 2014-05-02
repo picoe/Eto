@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 using sw = System.Windows;
 using swm = System.Windows.Media;
@@ -51,8 +48,10 @@ namespace Eto.Platform.Wpf.CustomControls
 		}
 
 		[Flags]
-		private enum DwmBlurBehindFlags : uint
+		enum DwmBlurBehindFlags : uint
 		{
+			// Analysis disable InconsistentNaming
+
 			/// <summary>
 			/// Indicates a value for fEnable has been specified.
 			/// </summary>
@@ -69,7 +68,7 @@ namespace Eto.Platform.Wpf.CustomControls
 			DWM_BB_TRANSITIONONMAXIMIZED = 0x00000004
 		}
 
-		private enum DwmWindowAttribute : uint
+		enum DwmWindowAttribute : uint
 		{
 			DWMWA_NCRENDERING_ENABLED = 1,
 			DWMWA_NCRENDERING_POLICY,
@@ -87,7 +86,7 @@ namespace Eto.Platform.Wpf.CustomControls
 		}
 
 		[StructLayout (LayoutKind.Sequential)]
-		private struct DWM_BLURBEHIND
+		struct DWM_BLURBEHIND
 		{
 			public DwmBlurBehindFlags dwFlags;
 			public bool fEnable;
@@ -96,7 +95,7 @@ namespace Eto.Platform.Wpf.CustomControls
 		}
 
 		[DllImport ("dwmapi.dll")]
-		private static extern IntPtr DwmEnableBlurBehindWindow (IntPtr hWnd, ref DWM_BLURBEHIND pBlurBehind);
+		static extern IntPtr DwmEnableBlurBehindWindow (IntPtr hWnd, ref DWM_BLURBEHIND pBlurBehind);
 
 
 		public static bool BlurBehindWindow (sw.Window window)
@@ -175,7 +174,7 @@ namespace Eto.Platform.Wpf.CustomControls
 		/// The window margins
 		/// </param>
 		[DllImport ("dwmapi.dll", PreserveSig = false)]
-		private static extern void DwmExtendFrameIntoClientArea (IntPtr hwnd, ref MARGINS margins);
+		static extern void DwmExtendFrameIntoClientArea (IntPtr hwnd, ref MARGINS margins);
 
 		/// <summary>
 		/// See if the desktop window manager composition is enabled
@@ -184,7 +183,7 @@ namespace Eto.Platform.Wpf.CustomControls
 		/// Returns true/false based on whether DWM is endabled
 		/// </returns>
 		[DllImport ("dwmapi.dll", PreserveSig = false)]
-		private static extern bool DwmIsCompositionEnabled ();
+		static extern bool DwmIsCompositionEnabled ();
 
 		[DllImport ("dwmapi.dll", PreserveSig = false)]
 		static extern void DwmSetWindowAttribute (IntPtr hwnd, DwmWindowAttribute attr, ref int attrValue, int attrSize);

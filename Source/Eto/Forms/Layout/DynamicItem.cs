@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
+
 
 namespace Eto.Forms
 {
+	[TypeConverter(typeof(DynamicItemConverter))]
 	public abstract class DynamicItem
 	{
 		public bool? XScale { get; set; }
@@ -22,6 +21,11 @@ namespace Eto.Forms
 				parent.SetColumnScale (x, XScale.Value);
 			if (YScale != null)
 				parent.SetRowScale (y, YScale.Value);
+		}
+
+		public static implicit operator DynamicItem(Control control)
+		{
+			return new DynamicControl { Control = control };
 		}
 	}
 }

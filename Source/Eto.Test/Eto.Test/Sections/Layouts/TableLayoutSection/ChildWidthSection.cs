@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
-using Eto.Drawing;
 
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {

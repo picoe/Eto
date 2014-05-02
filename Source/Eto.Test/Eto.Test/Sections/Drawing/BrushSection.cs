@@ -12,14 +12,14 @@ namespace Eto.Test.Sections.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BrushSection : Scrollable
 	{
-		Image image = TestIcons.TestImage;
-		Drawable drawable;
+		readonly Image image = TestIcons.TestImage();
+		readonly Drawable drawable;
 		Brush brush;
-		LinearGradientBrush gradientBrush;
-		Brush textureBrush;
-		Brush solidBrush;
-		DynamicRow matrixRow;
-		DynamicRow gradientRow;
+		readonly LinearGradientBrush gradientBrush;
+		readonly Brush textureBrush;
+		readonly Brush solidBrush;
+		readonly DynamicRow matrixRow;
+		readonly DynamicRow gradientRow;
 		bool useBackgroundColor;
 
 		public float Rotation { get; set; }
@@ -59,9 +59,7 @@ namespace Eto.Test.Sections.Drawing
 
 			drawable = new Drawable { Size = new Size (300, 200) };
 
-			drawable.Paint += (sender, pe) => {
-				Draw(pe.Graphics);
-			};
+			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
 			layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), null);
 			matrixRow = layout.AddSeparateRow(null, new Label { Text = "Rot" }, RotationControl(), new Label { Text = "Sx" }, ScaleXControl(), new Label { Text = "Sy" }, ScaleYControl(), new Label { Text = "Ox" }, OffsetXControl(), new Label { Text = "Oy" }, OffsetYControl(), null);
@@ -94,17 +92,14 @@ namespace Eto.Test.Sections.Drawing
 				var item = (BrushItem)control.SelectedValue;
 				SetItem(item);
 			};
-			this.LoadComplete += delegate
-			{
-				SetItem(control.SelectedValue as BrushItem);
-			};
+			LoadComplete += (sender, e) => SetItem(control.SelectedValue as BrushItem);
 			control.SelectedValueChanged += Refresh;
 			return control;
 		}
 
 		void SetItem(BrushItem item)
 		{
-			this.brush = item.Brush;
+			brush = item.Brush;
 			matrixRow.Table.Visible = item.SupportsMatrix;
 			gradientRow.Table.Visible = item.SupportsGradient;
 		}
@@ -135,7 +130,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control OffsetXControl()
 		{
-			var control = new NumericUpDown { };
+			var control = new NumericUpDown();
 			control.Bind (c => c.Value, this, c => c.OffsetX);
 			control.ValueChanged += Refresh;
 			return control;
@@ -143,7 +138,7 @@ namespace Eto.Test.Sections.Drawing
 		
 		Control OffsetYControl ()
 		{
-			var control = new NumericUpDown { };
+			var control = new NumericUpDown();
 			control.Bind (c => c.Value, this, c => c.OffsetY);
 			control.ValueChanged += Refresh;
 			return control;
@@ -171,17 +166,17 @@ namespace Eto.Test.Sections.Drawing
 
 		void Draw (Graphics g)
 		{
-			var matrix = Matrix.Create ();
+			var matrix = Matrix.Create(g.Generator);
 			matrix.Translate (OffsetX, OffsetY);
 			matrix.Scale (Math.Max (ScaleX / 100f, 0.1f), Math.Max (ScaleY / 100f, 0.1f));
 			matrix.Rotate (Rotation);
-			var textureBrush = brush as ITransformBrush;
-			if (textureBrush != null) {
-				textureBrush.Transform = matrix;
+			var tb = brush as ITransformBrush;
+			if (tb != null) {
+				tb.Transform = matrix;
 			}
-			var gradientBrush = brush as LinearGradientBrush;
-			if (gradientBrush != null) {
-				gradientBrush.Wrap = GradientWrap;
+			var gb = brush as LinearGradientBrush;
+			if (gb != null) {
+				gb.Wrap = GradientWrap;
 			}
 
 			var rect = new RectangleF (0, 0, 200, 100);

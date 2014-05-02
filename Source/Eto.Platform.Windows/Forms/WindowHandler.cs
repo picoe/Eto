@@ -4,10 +4,8 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using System.Linq;
 using Eto.Platform.Windows.Forms;
-using System.CodeDom.Compiler;
-using System.Diagnostics;
+using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
@@ -18,9 +16,9 @@ namespace Eto.Platform.Windows
 		swf.IWin32Window Win32Window { get; }
 	}
 
-	public abstract class WindowHandler<T, W> : WindowsDockContainer<T, W>, IWindow, IWindowHandler
-		where T : swf.Form
-		where W : Window
+	public abstract class WindowHandler<TControl, TWidget> : WindowsPanel<TControl, TWidget>, IWindow, IWindowHandler
+		where TControl : swf.Form
+		where TWidget : Window
 	{
 		MenuBar menu;
 		Icon icon;
@@ -28,7 +26,7 @@ namespace Eto.Platform.Windows
 		swf.Panel menuHolder;
 		swf.Panel content;
 		swf.Panel toolbarHolder;
-		swf.ToolTip tooltips = new swf.ToolTip();
+		readonly swf.ToolTip tooltips = new swf.ToolTip();
 		bool resizable;
 
 		public override swf.Control ContainerContentControl
@@ -68,7 +66,7 @@ namespace Eto.Platform.Windows
 
 		protected override void Initialize()
 		{
-			Control.KeyPreview = true;
+			Control.KeyPreview = !ApplicationHandler.BubbleKeyEvents;
 			Control.FormBorderStyle = DefaultWindowStyle;
 			resizable = Control.FormBorderStyle.IsResizable();
 			content = new swf.Panel
@@ -97,8 +95,12 @@ namespace Eto.Platform.Windows
 
 			Control.Load += (sender, e) =>
 			{
-				content.MinimumSize = sd.Size.Empty;
-				content.MaximumSize = sd.Size.Empty;
+				Control.MinimumSize = Control.Size;
+				Control.AutoSize = false;
+				Control.MinimumSize = sd.Size.Empty;
+				content.MinimumSize = content.MaximumSize = sd.Size.Empty;
+				if (ContainerContentControl.HasChildren)
+					ContainerContentControl.Controls[0].Dock = swf.DockStyle.Fill;
 			};
 			Control.Size = sd.Size.Empty;
 
@@ -108,9 +110,15 @@ namespace Eto.Platform.Windows
 			HandleEvent(Window.ClosingEvent);
 		}
 
-		public override void AttachEvent(string handler)
+		protected override void SetContent(swf.Control contentControl)
 		{
-			switch (handler)
+			contentControl.Dock = Widget.Loaded ? swf.DockStyle.Fill : swf.DockStyle.None;
+			ContainerContentControl.Controls.Add(contentControl);
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
 			{
 				case Window.ClosedEvent:
 					Control.FormClosed += delegate
@@ -134,19 +142,19 @@ namespace Eto.Platform.Windows
 						e.Cancel = args.Cancel;
 					};
 					break;
-				case Window.ShownEvent:
+				case Eto.Forms.Control.ShownEvent:
 					Control.Shown += delegate
 					{
 						Widget.OnShown(EventArgs.Empty);
 					};
 					break;
-				case Window.GotFocusEvent:
+				case Eto.Forms.Control.GotFocusEvent:
 					Control.Activated += delegate
 					{
 						Widget.OnGotFocus(EventArgs.Empty);
 					};
 					break;
-				case Window.LostFocusEvent:
+				case Eto.Forms.Control.LostFocusEvent:
 					Control.Deactivate += delegate
 					{
 						Widget.OnLostFocus(EventArgs.Empty);
@@ -164,13 +172,10 @@ namespace Eto.Platform.Windows
 					};
 					break;
 				case Window.LocationChangedEvent:
-					Control.LocationChanged += (sender, e) =>
-					{
-						Widget.OnLocationChanged(EventArgs.Empty);
-					};
+					Control.LocationChanged += (sender, e) => Widget.OnLocationChanged(EventArgs.Empty);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -183,7 +188,6 @@ namespace Eto.Platform.Windows
 			}
 			set
 			{
-				this.Control.SuspendLayout();
 				menuHolder.SuspendLayout();
 				if (menu != null)
 					menuHolder.Controls.Remove((swf.MenuStrip)menu.ControlObject);
@@ -196,13 +200,10 @@ namespace Eto.Platform.Windows
 				{
 					var c = (swf.MenuStrip)value.ControlObject;
 					c.Dock = swf.DockStyle.Top;
-					c.ResumeLayout();
 					menuHolder.Controls.Add(c);
 					Control.MainMenuStrip = c;
 				}
 				menuHolder.ResumeLayout();
-				this.Control.ResumeLayout();
-				menuHolder.Update();
 				menu = value;
 			}
 		}
@@ -253,12 +254,10 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				return this.toolBar;
+				return toolBar;
 			}
 			set
 			{
-				if (Widget.Loaded)
-					SuspendLayout();
 				toolbarHolder.SuspendLayout();
 				if (toolBar != null)
 					toolbarHolder.Controls.Remove((swf.Control)toolBar.ControlObject);
@@ -270,8 +269,6 @@ namespace Eto.Platform.Windows
 					toolbarHolder.Controls.Add(c);
 				}
 				toolbarHolder.ResumeLayout();
-				if (Widget.Loaded)
-					ResumeLayout();
 			}
 		}
 
@@ -305,7 +302,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				icon = value;
-				Control.Icon = (sd.Icon)icon.ControlObject;
+				Control.Icon = ((IWindowsIconSource)icon.Handler).GetIcon();
 			}
 		}
 
@@ -367,8 +364,9 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				if (this.WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
-				else return Control.RestoreBounds.ToEto();
+				if (WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty)
+					return null;
+				return Control.RestoreBounds.ToEto();
 			}
 		}
 
@@ -380,7 +378,7 @@ namespace Eto.Platform.Windows
 			}
 			set
 			{
-				Control.AllowTransparency = value != 1.0;
+				Control.AllowTransparency = Math.Abs(value - 1.0) > 0.01f;
 				Control.Opacity = value;
 			}
 		}

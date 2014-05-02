@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using Eto.Drawing;
 using Eto;
 using System.Reflection;
 
 namespace Eto.Forms
 {
-
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public static class CheckActionExtensions
 	{
 		public static CheckAction AddCheck(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated)
@@ -19,19 +18,23 @@ namespace Eto.Forms
 			return AddCheck(actions, id, text, string.Empty, activated, null);
 		}
 
-		public static CheckAction AddCheck(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
+		public static CheckAction AddCheck(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
-			CheckAction action = new CheckAction(id, text, icon, activated);
+			var action = new CheckAction(id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;
+#endif
 		}
 		
 		public static bool RemoveCheckHandler(this ActionCollection actions, string actionID, EventHandler<EventArgs> checkChangedHandler)
 		{
-			CheckAction action = actions[actionID] as CheckAction;
+			var action = actions[actionID] as CheckAction;
 			if (action != null)
 			{
 				action.CheckedChanged -= checkChangedHandler;
@@ -43,6 +46,7 @@ namespace Eto.Forms
 		
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class CheckAction : BaseAction
 	{
 		bool isChecked;
@@ -84,12 +88,12 @@ namespace Eto.Forms
 			}
 		}
 
-		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
-			CheckToolBarButton tbb = new CheckToolBarButton(generator);
-			tbb.ID = this.ID;
+			var tbb = new CheckToolItem(generator);
+			tbb.ID = ID;
 			tbb.Checked = Checked;
-			tbb.Enabled = this.Enabled;
+			tbb.Enabled = Enabled;
 			if (ShowLabel || actionItem.ShowLabel || textAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			if (Image != null) tbb.Image = Image;
 			if (!string.IsNullOrEmpty (ToolBarItemStyle))
@@ -98,13 +102,13 @@ namespace Eto.Forms
 			return tbb;
 		}
 
-		private class ToolBarConnector
+		class ToolBarConnector
 		{
-			CheckToolBarButton toolBarButton;
-			CheckAction action;
-			bool blah;
+			readonly CheckToolItem toolBarButton;
+			readonly CheckAction action;
+			bool changing;
 			
-			public ToolBarConnector(CheckAction action, CheckToolBarButton toolBarButton)
+			public ToolBarConnector(CheckAction action, CheckToolItem toolBarButton)
 			{
 				this.toolBarButton = toolBarButton;
 				this.toolBarButton.Click += toolBarButton_Click;
@@ -113,19 +117,19 @@ namespace Eto.Forms
 				this.action.CheckedChanged += new EventHandler<EventArgs>(action_CheckedChanged).MakeWeak(e => this.action.CheckedChanged -= e);
 			}
 			
-			private void toolBarButton_Click(Object sender, EventArgs e)
+			void toolBarButton_Click(Object sender, EventArgs e)
 			{
-				if (!blah) action.OnActivated(e);
+				if (!changing) action.OnActivated(e);
 			}
 			
-			private void action_CheckedChanged(Object sender, EventArgs e)
+			void action_CheckedChanged(Object sender, EventArgs e)
 			{
-				blah = true;
+				changing = true;
 				toolBarButton.Checked = action.Checked;
-				blah = false;
+				changing = false;
 			}
 			
-			private void action_EnabledChanged(Object sender, EventArgs e)
+			void action_EnabledChanged(Object sender, EventArgs e)
 			{
 				toolBarButton.Enabled = action.Enabled;
 			}

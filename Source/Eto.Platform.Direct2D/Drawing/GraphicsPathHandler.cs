@@ -9,221 +9,233 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    public class GraphicsPathHandler : IGraphicsPathHandler
-    {
-		sd.PathGeometry Control { get; set; }
-        private sd.GeometrySink sink;
+	/// <summary>
+	/// Handler for <see cref="IGraphicsPath"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class GraphicsPathHandler : IGraphicsPathHandler
+	{
+		List<sd.Geometry> geometries = new List<sd.Geometry>();
+		IMatrix transform;
+		sd.PathGeometry path;
+		bool isInFigure = false;
+		sd.FillMode fillMode;
+		sd.Geometry control;
 
-        #region Constructors
+		public PointF CurrentPoint { get; private set; }
+		public object ControlObject { get { return this.Control; } }
+	
+		public sd.Geometry Control
+		{
+			get
+			{
+				if (control == null)
+				{
+					if (geometries.Count > 0)
+					{
+						control = new sd.GeometryGroup(SDFactory.D2D1Factory, fillMode, geometries.ToArray());
+					}
+					if (transform != null && control != null)
+						control = new sd.TransformedGeometry(SDFactory.D2D1Factory, control, transform.ToDx());
+				}
+				return control;
+			}
+		}
+		public RectangleF Bounds
+		{
+			get
+			{
+				return Control.GetBounds().ToEto();
+			}
+		}
 
-        public GraphicsPathHandler()
-        {
-            this.Control = new sd.PathGeometry(SDFactory.Instance);
-            this.sink = this.Control.Open();
-        }
+		sd.GeometrySink sink;
+		public sd.GeometrySink Sink
+		{
+			get
+			{
+				if (sink == null)
+				{
+					geometries.Add(path = new sd.PathGeometry(SDFactory.D2D1Factory));
+					control = null;
+					sink = path.Open();
+				}
+				return sink;
+			}
+		}
 
-        #endregion
+		public GraphicsPathHandler()
+		{
+		}
 
-        public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
-        {
-            throw new NotImplementedException();
-        }
+		public void CloseSink()
+		{
+			// This must be called before rendering the path.
+			if (sink != null)
+			{
+				if (isInFigure)
+					sink.EndFigure(sd.FigureEnd.Open);
+				isInFigure = false;
+				sink.Close();
+				sink.Dispose();
+				sink = null;
+			}
+		}
 
-        public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
-        {
-            sink.AddLine(pt1.ToWpf());
+		public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
+		{
+			ConnectTo(pt1);
+			AddBezier(pt2, pt3, pt4);
+		}
 
-            sink.AddBezier(
-                new sd.BezierSegment
-                {
-                    Point1 = pt2.ToWpf(),
-                    Point2 = pt3.ToWpf(),
-                    Point3 = pt4.ToWpf()
-                });
-        }
+		void AddBezier(PointF pt2, PointF pt3, PointF pt4)
+		{
+			Sink.AddBezier(new sd.BezierSegment
+			{
+				Point1 = pt2.ToDx(),
+				Point2 = pt3.ToDx(),
+				Point3 = pt4.ToDx()
+			});
 
-        public void AddBeziers(Point[] p)
-        {
-            if (p != null &&
-                p.Length > 3)
-            {
-                sink.AddLine(p[0].ToWpf());
+			CurrentPoint = pt4;
+		}
 
-                var i = 1;
-                while (p.Length > i + 2)
-                {
-                    sink.AddBezier(
-                        new sd.BezierSegment
-                        {
-                            Point1 = p[i].ToWpf(),
-                            Point2 = p[i + 1].ToWpf(),
-                            Point3 = p[i + 2].ToWpf()
-                        });
-
-                    i = i + 3;
-                }
-            }
-        }
-
-        public void AddCurve(PointF[] points)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddEllipse(RectangleF rect)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddLine(PointF point1, PointF point2)
-        {
-            sink.AddLines(
-                new s.DrawingPointF[]
-                {
-                    point1.ToWpf(),
-                    point2.ToWpf()                   
-                });
-        }
-
-        public void AddLine(Point point1, Point point2)
-        {
-            sink.AddLines(
-                new s.DrawingPointF[]
-                {
-                    point1.ToWpf(),
-                    point2.ToWpf()                   
-                });
-        }
-
-        public void AddLines(PointF[] points)
-        {
-            sink.AddLines(points.ToDx());
-        }
-
-        public void AddRectangle(RectangleF r)
-        {
-            sink.AddLines(
-                new s.DrawingPointF[]
-                {
-                   new s.DrawingPointF(r.Left, r.Top),
-                   new s.DrawingPointF(r.Right, r.Top),
-                   new s.DrawingPointF(r.Right, r.Bottom),
-                   new s.DrawingPointF(r.Left, r.Bottom),
-                   new s.DrawingPointF(r.Left, r.Top),
-                });
-        }
-
-		public void AddPath(IGraphicsPath path, bool connect)
+		public IGraphicsPath Clone()
 		{
 			throw new NotImplementedException();
 		}
 
-        public IGraphicsPath Clone()
-        {
-            throw new NotImplementedException();
-        }
-
-        public FillMode FillMode
-        {
-			get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
-
-        public bool IsEmpty
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void LineTo(PointF point)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void MoveTo(PointF point)
-        {
-            sink.BeginFigure(
-                point.ToWpf(),
-                sd.FigureBegin.Filled); // is this correct?
-        }
-
-        public void CloseFigure()
-        {
-            sink.EndFigure(sd.FigureEnd.Closed);
-        }
-
-        public void Translate(PointF point)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Transform(IMatrix matrix)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object ControlObject
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-		public PointF CurrentPoint
+		public FillMode FillMode
 		{
-			get { throw new NotImplementedException(); }
+			get { return fillMode.ToEto(); ; }
+			set { fillMode = value.ToDx(); }
 		}
 
-		public void AddLine(float startX, float startY, float endX, float endY)
+		public bool IsEmpty
 		{
-			throw new NotImplementedException();
+			get { return geometries.Count == 0; }
 		}
 
-		public void LineTo(float x, float y)
+		void ConnectTo(PointF p)
 		{
-			throw new NotImplementedException();
-		}
+			var pt = p.ToDx();
+			if (isInFigure)
+				Sink.AddLine(pt);
+			else
+			{
+				isInFigure = true;
+				// create filled for when we fill with a brush
+				Sink.BeginFigure(pt, sd.FigureBegin.Filled);
+			}
 
-		public void MoveTo(float x, float y)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void AddEllipse(float x, float y, float width, float height)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void AddRectangle(float x, float y, float width, float height)
-		{
-			throw new NotImplementedException();
+			CurrentPoint = p;
 		}
 
 		public void StartFigure()
 		{
-			throw new NotImplementedException();
+			if (isInFigure)
+			{
+				Sink.EndFigure(sd.FigureEnd.Open);
+				isInFigure = false;
+			}
 		}
 
-		public RectangleF Bounds
+		public void CloseFigure()
 		{
-			get { return Control.GetBounds().ToEto(); }
+			if (isInFigure)
+			{
+				Sink.EndFigure(sd.FigureEnd.Closed);
+				isInFigure = false;
+			}
+		}
+
+		public void Transform(IMatrix matrix)
+		{
+			if (matrix != null)
+			{
+				if (transform != null)
+					transform.Prepend(matrix);
+				else
+					transform = matrix.Clone();
+			}
+			else
+				transform = null;
+			control = null;
+		}
+
+		public void AddLine(float startX, float startY, float endX, float endY)
+		{
+			ConnectTo(new PointF(startX, startY));
+			ConnectTo(new PointF(endX, endY));
 		}
 
 		public void AddLines(IEnumerable<PointF> points)
 		{
-			throw new NotImplementedException();
+			foreach (var p in points)
+				ConnectTo(p);
+		}
+
+		public void LineTo(float x, float y)
+		{
+			ConnectTo(new PointF(x, y));
+		}
+
+		public void MoveTo(float x, float y)
+		{
+			StartFigure();
+			ConnectTo(new PointF(x, y));
+		}
+
+		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
+		{
+			var temp = SplineHelper.SplineCurve(points, tension);
+			SplineHelper.Draw(temp, ConnectTo, AddBezier);
+		}
+
+		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			PointF start;
+			var arc = GraphicsHandler.CreateArc(x, y, width, height, startAngle, sweepAngle, out start);
+			ConnectTo(start);
+			Sink.AddArc(arc);
+		}
+
+		public void AddEllipse(float x, float y, float width, float height)
+		{
+			CloseSink();
+			var ellipse = new sd.Ellipse(new s.Vector2(x + width / 2, y + height / 2), width / 2, height / 2);
+			geometries.Add(new sd.EllipseGeometry(SDFactory.D2D1Factory, ellipse));
+			control = null;
+		}
+
+		public void AddPath(IGraphicsPath path, bool connect)
+		{
+			var inputGeometry = path.ToHandler();
+			if (connect)
+			{
+				// TODO: how do we attach to the existing sink?  throws an exception otherwise
+				StartFigure();
+				inputGeometry.Control.Simplify(sd.GeometrySimplificationOption.CubicsAndLines, Sink);
+			}
+			else
+			{
+				CloseSink();
+				geometries.Add(inputGeometry.Control);
+			}
+			control = null;
+		}
+
+		public void AddRectangle(float x, float y, float width, float height)
+		{
+			CloseSink();
+			geometries.Add(new sd.RectangleGeometry(SDFactory.D2D1Factory, new s.RectangleF(x, y, width, height)));
+			control = null;
 		}
 
 		public void Dispose()
 		{
-			throw new NotImplementedException();
+			Control.Dispose();
 		}
 	}
 }

@@ -3,9 +3,6 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using System.Collections.Generic;
 using MonoMac.Foundation;
-using Eto.Platform.Mac.Forms.Menu;
-using System.Linq;
-using Eto.Platform.Mac.Drawing;
 using Eto.Drawing;
 using sd = System.Drawing;
 
@@ -33,7 +30,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var backgroundColor = Handler.BackgroundColor;
 				if (backgroundColor != Colors.Transparent) {
-					backgroundColor.ToNS ().Set ();
+					backgroundColor.ToNSUI ().Set ();
 					NSGraphics.RectFill (clipRect);
 				} else
 					base.DrawBackground (clipRect);
@@ -54,10 +51,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var item = Handler.collection.Collection [row];
 				var colHandler = Handler.GetColumn (tableColumn);
-				if (colHandler != null) {
-					return colHandler.GetObjectValue (item);
-				}
-				return null;
+				return colHandler == null ? null : colHandler.GetObjectValue(item);
 			}
 
 			public override void SetObjectValue (NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)
@@ -67,7 +61,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (colHandler != null) {
 					colHandler.SetObjectValue (item, theObject);
 					
-					Handler.Widget.OnEndCellEdit (new GridViewCellArgs ((GridColumn)colHandler.Widget, row, colHandler.Column, item));
+					Handler.Widget.OnCellEdited (new GridViewCellArgs(colHandler.Widget, row, colHandler.Column, item));
 				}
 			}
 		}
@@ -82,7 +76,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var colHandler = Handler.GetColumn (tableColumn);
 				var item = Handler.collection.Collection [row];
 				var args = new GridViewCellArgs (colHandler.Widget, row, colHandler.Column, item);
-				Handler.Widget.OnBeginCellEdit (args);
+				Handler.Widget.OnCellEditing (args);
 				return true;
 			}
 					
@@ -115,19 +109,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public GridViewHandler ()
-		{
-		}
-
 		public bool ShowCellBorders
 		{
-			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : new sd.SizeF(0, 0); } 
+			get { return Control.IntercellSpacing.Width > 0 || Control.IntercellSpacing.Height > 0; }
+			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : sd.SizeF.Empty; } 
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
-			case Grid.BeginCellEditEvent:
+			switch (id) {
+			case Grid.CellEditingEvent:
 				// handled by delegate
 				/* following should work, but internal delegate to trigger event does not work
 				table.ShouldEditTableColumn = (tableView, tableColumn, row) => {
@@ -138,7 +129,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return true;
 				};*/
 				break;
-			case Grid.EndCellEditEvent:
+			case Grid.CellEditedEvent:
 				// handled after object value is set
 				break;
 			case Grid.SelectionChangedEvent:
@@ -158,7 +149,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			case Grid.CellFormattingEvent:
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

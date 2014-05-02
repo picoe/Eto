@@ -5,28 +5,41 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Eto.Forms;
 
 namespace Eto.Test.Android
 {
 	[Activity(Label = "Eto.Test.Android", MainLauncher = true)]
 	public class MainActivity : Activity
 	{
-
-		protected override void OnCreate(Bundle bundle)
+		public class SimpleApplication : Forms.Application
 		{
-			base.OnCreate(bundle);
-
-			// Set our view from the "main" layout resource
-			SetContentView(Resource.Layout.Main);
-
-			// Get our button from the layout resource,
-			// and attach an event to it
-			/*Button button = FindViewById<Button>(Resource.Id.myButton);
-			
-			button.Click += delegate
+			public SimpleApplication(Generator generator = null)
+				: base(generator)
 			{
-				button.Text = string.Format("{0} clicks!", count++);
-			};*/
+			}
+
+			public override void OnInitialized(EventArgs e)
+			{
+				base.OnInitialized(e);
+				var layout = new DynamicLayout();
+				layout.Add(new Label { Text = "Hello world", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center });
+				layout.Add(new Label { Text = "Hello world2", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center });
+				layout.Add(new Eto.Forms.Spinner { Enabled = true });
+				layout.Add(null);
+
+				MainForm = new Form { Content = layout };
+				MainForm.Show();
+			}
+		}
+
+		protected override void OnCreate(Bundle savedInstanceState)
+		{
+			base.OnCreate(savedInstanceState);
+
+			var generator = new Eto.Platform.Android.Generator();
+			//new TestApplication(generator).Attach(this);
+			new SimpleApplication(generator).Attach(this).Run();
 		}
 	}
 }

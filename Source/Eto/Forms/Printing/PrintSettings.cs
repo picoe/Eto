@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Forms
 {
@@ -40,8 +36,8 @@ namespace Eto.Forms
 	{
 		new IPrintSettings Handler { get { return (IPrintSettings)base.Handler; } }
 
-		public PrintSettings ()
-			: this (Generator.Current)
+		public PrintSettings()
+			: this((Generator)null)
 		{
 		}
 

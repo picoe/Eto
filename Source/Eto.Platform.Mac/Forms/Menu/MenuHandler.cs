@@ -1,6 +1,6 @@
-using System;
 using Eto.Forms;
 using MonoMac.AppKit;
+using Eto.Platform.Mac.Forms.Actions;
 
 namespace Eto.Platform.Mac
 {
@@ -9,15 +9,10 @@ namespace Eto.Platform.Mac
 		void EnsureSubMenu();
 	}
 
-	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IWidget, IMenu, IMenuHandler
-		where T: NSMenuItem
-		where W: Menu
+	public abstract class MenuHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IMenu, IMenuHandler
+		where TControl: NSMenuItem
+		where TWidget: Menu
 	{
-		
-		public MenuHandler()
-		{
-		}
-
 		public void EnsureSubMenu()
 		{
 			if (!Control.HasSubmenu)
@@ -40,6 +35,16 @@ namespace Eto.Platform.Mac
 		public virtual void Clear()
 		{
 			Control.Submenu = null;
+		}
+
+		public void CreateFromCommand(Command command)
+		{
+			var m = command as MacCommand;
+			if (m != null)
+			{
+				Control.Target = null;
+				Control.Action = m.Selector;
+			}
 		}
 	}
 }

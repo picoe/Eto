@@ -101,9 +101,9 @@ namespace Eto
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Generator
 	{
-		Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>>();
-		Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
-		Dictionary<object, object> properties = new Dictionary<object, object>();
+		readonly Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>>();
+		readonly Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
+		readonly Dictionary<object, object> properties = new Dictionary<object, object>();
 		static Generator current;
 
 		internal T GetSharedProperty<T>(object key, Func<T> instantiator)
@@ -149,29 +149,58 @@ namespace Eto
 		/// </remarks>
 		public abstract string ID { get; }
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is a mac based platform (MonoMac/XamMac)
+		/// </summary>
+		/// <value><c>true</c> if this generator is mac; otherwise, <c>false</c>.</value>
 		public virtual bool IsMac
 		{
 			get { return ID == Generators.Mac || ID == Generators.XamMac; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on Windows Forms
+		/// </summary>
+		/// <value><c>true</c> if this generator is window forms; otherwise, <c>false</c>.</value>
 		public virtual bool IsWinForms
 		{
 			get { return ID == Generators.Windows; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on WPF
+		/// </summary>
+		/// <value><c>true</c> if this generator is wpf; otherwise, <c>false</c>.</value>
 		public virtual bool IsWpf
 		{
 			get { return ID == Generators.Wpf; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on GTK# (2 or 3)
+		/// </summary>
+		/// <value><c>true</c> if this generator is gtk; otherwise, <c>false</c>.</value>
 		public virtual bool IsGtk
 		{
-			get { return ID == Generators.Gtk; }
+			get { return ID == Generators.Gtk || ID == Generators.Gtk3; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on Xamarin.iOS
+		/// </summary>
+		/// <value><c>true</c> if this generator is ios; otherwise, <c>false</c>.</value>
 		public virtual bool IsIos
 		{
 			get { return ID == Generators.Ios; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on Xamarin.Android.
+		/// </summary>
+		/// <value><c>true</c> if this generator is android; otherwise, <c>false</c>.</value>
+		public virtual bool IsAndroid
+		{
+			get { return ID == Generators.Android; }
 		}
 
 		/// <summary>
@@ -207,8 +236,8 @@ namespace Eto
 		{
 			get
 			{
-				if (current == null)
-					throw new EtoException("Generator has not been initialized");
+				//if (current == null)
+				//	throw new EtoException("Generator has not been initialized");
 				return current;
 			}
 		}
@@ -284,7 +313,7 @@ namespace Eto
 		{
 			if (ValidateGenerator != null && !object.ReferenceEquals(generator, ValidateGenerator))
 			{
-				throw new EtoException(string.Format("Expected to use generator {0}", ValidateGenerator));
+				throw new EtoException(string.Format(CultureInfo.InvariantCulture, "Expected to use generator {0}", ValidateGenerator));
 			}
 		}
 
@@ -437,6 +466,33 @@ namespace Eto
 		public virtual IDisposable ThreadStart()
 		{
 			return null;
+		}
+
+		/// <summary>
+		/// Gets an object to wrap in the generator's context, when using multiple generators.
+		/// </summary>
+		/// <remarks>
+		/// This sets this generator as current, and reverts back to the previous generator when disposed.
+		/// 
+		/// This value may be null.
+		/// </remarks>
+		/// <example>
+		/// <code>
+		///		using (generator.Context)
+		///		{
+		///			// do some stuff with the specified generator
+		///		}
+		/// </code>
+		/// </example>
+		public IDisposable Context
+		{
+			get
+			{
+				if (current != this)
+					return new GeneratorContext(this);
+				else
+					return null;
+			}
 		}
 	}
 }

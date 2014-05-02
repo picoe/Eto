@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface INavigation : IControl
+	public interface INavigation : IContainer
 	{
 		void Push (INavigationItem item);
 
@@ -22,7 +22,13 @@ namespace Eto.Forms
 			}
 		}
 
-		public static bool Supported { get { return Generator.Current.Supports<INavigation> (); } }
+		[Obsolete("Use IsSupported() instead")]
+		public static bool Supported { get { return IsSupported(); } }
+
+		public static bool IsSupported(Generator generator = null)
+		{
+			return (generator ?? Generator.Current).Supports<INavigation>();
+		}
 
 		public event EventHandler<EventArgs> ItemShown;
 		
@@ -32,13 +38,13 @@ namespace Eto.Forms
 				ItemShown (this, e);
 		}
 
-		public Navigation ()
-			: this(Generator.Current)
+		public Navigation()
+			: this((Generator)null)
 		{
 		}
-		
-		public Navigation (Generator g)
-			: base(g, typeof(INavigation))
+
+		public Navigation (Generator generator)
+			: base(generator, typeof(INavigation))
 		{
 		}
 		
@@ -54,22 +60,17 @@ namespace Eto.Forms
 			Push (item);
 		}
 		
-		public virtual void Push (Control content, string title = null)
+		public void Push (Control content, string title = null)
 		{
 			Push (new NavigationItem { Content = content, Text = title });
 		}
 		
-		public virtual void Push (INavigationItem item)
+		public void Push (INavigationItem item)
 		{
-			var loaded = item.Content.Loaded;
-			SetParent(item.Content);
-			if (!loaded) {
-				item.Content.OnPreLoad (EventArgs.Empty);
-				item.Content.OnLoad (EventArgs.Empty);
-			}
+			var load = SetParent(item.Content);
 
 			Handler.Push (item);
-			if (!loaded)
+			if (load)
 				item.Content.OnLoadComplete (EventArgs.Empty);
 		}
 		
@@ -80,7 +81,7 @@ namespace Eto.Forms
 
 		public override void Remove(Control child)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 	}
 }

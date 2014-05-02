@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -30,8 +26,8 @@ namespace Eto.Test.Sections.Drawing
 
 			var path = CreatePath();
 			control.Paint += (sender, e) => {
-				e.Graphics.Antialias = true;
-				e.Graphics.DrawPath(Pens.White(), path);
+				e.Graphics.AntiAlias = true;
+				e.Graphics.DrawPath(Pens.White(e.Generator), path);
 			};
 
 			return control;
@@ -43,8 +39,8 @@ namespace Eto.Test.Sections.Drawing
 
 			var path = CreatePath();
 			control.Paint += (sender, e) => {
-				e.Graphics.Antialias = false;
-				e.Graphics.DrawPath(Pens.White(), path);
+				e.Graphics.AntiAlias = false;
+				e.Graphics.DrawPath(Pens.White(e.Generator), path);
 			};
 
 			return control;
@@ -52,7 +48,7 @@ namespace Eto.Test.Sections.Drawing
 
 		GraphicsPath CreatePath()
 		{
-			var path = new GraphicsPath();
+			var path = new GraphicsPath(Generator);
 			path.MoveTo(new Point(10, 10));
 			path.LineTo(new Point(20, 90));
 			path.LineTo(new Point(10, 60));

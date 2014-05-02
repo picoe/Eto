@@ -7,8 +7,8 @@ namespace Eto.Test.Sections.Controls
 {
 	public class KitchenSinkSection : Panel
 	{
-		Bitmap bitmap1 = TestIcons.TestImage;
-		Icon icon1 = TestIcons.TestIcon;
+		Bitmap bitmap1 = TestIcons.TestImage();
+		Icon icon1 = TestIcons.TestIcon();
 
 		public KitchenSinkSection()
 		{
@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Controls
 		}
 
 		T MainContent<T>(T container)
-			where T: DockContainer
+			where T: Panel
 		{
 			var layout = new DynamicLayout();
 			layout.AddRow(LeftPane(), RightPane());
@@ -118,7 +118,7 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(2), HeaderText = "Text", Editable = true });
 			control.Columns.Add(new GridColumn { DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
 			
-			var items = new GridItemCollection();
+			var items = new DataStoreCollection();
 			items.Add(new GridItem(bitmap1, true, "Text in Grid 1", "1"));
 			items.Add(new GridItem(icon1, false, "Text in Grid 2", "2"));
 			items.Add(new GridItem(bitmap1, null, "Text in Grid 3", "3"));

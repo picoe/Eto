@@ -1,11 +1,8 @@
 using Eto.Drawing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using swm = System.Windows.Media;
 using sw = System.Windows;
-using System.Globalization;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -25,7 +22,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void Create (string familyName)
 		{
 			Name = familyName;
-			switch (familyName.ToLowerInvariant ()) {
+			switch (familyName.ToUpperInvariant ()) {
 			case FontFamilies.MonospaceFamilyName:
 				familyName = "Courier New";
 				break;

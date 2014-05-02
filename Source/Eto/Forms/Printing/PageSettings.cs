@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -13,8 +9,8 @@ namespace Eto.Forms
 
 	public class PageSettings : InstanceWidget
 	{
-		public PageSettings ()
-			: this (Generator.Current)
+		public PageSettings()
+			: this((Generator)null)
 		{
 		}
 

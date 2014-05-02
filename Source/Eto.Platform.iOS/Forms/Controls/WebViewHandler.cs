@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class WebViewHandler : iosView<UIWebView, WebView>, IWebView
+	public class WebViewHandler : IosView<UIWebView, WebView>, IWebView
 	{
 		public override UIView ContainerControl { get { return Control; } }
 

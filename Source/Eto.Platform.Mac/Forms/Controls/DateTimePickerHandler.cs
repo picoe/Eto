@@ -20,10 +20,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				else
 				{
 					// paint with no elements visible
-					var old = this.DatePickerElements;
-					this.DatePickerElements = 0;
+					var old = DatePickerElements;
+					DatePickerElements = 0;
 					base.DrawRect(dirtyRect);
-					this.DatePickerElements = old;
+					DatePickerElements = old;
 				}
 			}
 
@@ -53,17 +53,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			//Widget.KeyDown += HandleKeyDown;
+			Widget.KeyDown += HandleKeyDown;
 			// when clicking, set the value if it is null
 			Widget.MouseDown += HandleMouseDown;
 		}
 
 		static void HandleKeyDown(object sender, KeyEventArgs e)
 		{
-			var handler = ((Control)sender).Handler as DateTimePickerHandler;
+			var handler = (DateTimePickerHandler)((Control)sender).Handler;
 			if (!e.Handled)
 			{
-				if (e.KeyData == (Key.Application | Key.Backspace))
+				if (e.KeyData == (Keys.Application | Keys.Backspace))
 				{
 					handler.curValue = null;
 					handler.Widget.OnValueChanged(EventArgs.Empty);
@@ -74,7 +74,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleMouseDown(object sender, MouseEventArgs e)
 		{
-			var handler = ((Control)sender).Handler as DateTimePickerHandler;
+			var handler = (DateTimePickerHandler)((Control)sender).Handler;
 			if (e.Buttons == MouseButtons.Primary)
 			{
 				if (handler.curValue == null)
@@ -98,9 +98,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return Size.Max(new Size(mode == DateTimePickerMode.DateTime ? 180 : 120, 10), base.GetNaturalSize(availableSize));
+			return SizeF.Max(new Size(mode == DateTimePickerMode.DateTime ? 180 : 120, 10), base.GetNaturalSize(availableSize));
 		}
 
 		public DateTimePickerMode Mode
@@ -146,11 +146,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set
 			{
-				curValue = value;
-				if (value != null)
-					Control.DateValue = value.ToNS();
-				else
-					Control.DateValue = DateTime.Now.ToNS();
+				if (value != curValue)
+				{
+					curValue = value;
+					// don't validate otherwise the new value gets overridden when null
+					Control.ValidateProposedDateValue -= HandleValidateProposedDateValue;
+					Control.DateValue = (value ?? DateTime.Now).ToNS();
+					Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
+					Widget.OnValueChanged(EventArgs.Empty);
+				}
 			}
 		}
 	}

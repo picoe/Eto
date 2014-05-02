@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
@@ -10,14 +7,11 @@ using swk = System.Windows.Markup;
 using swi = System.Windows.Input;
 using Eto.Forms;
 using System.Collections;
-using Eto.Platform.Wpf.Drawing;
 using Eto.Platform.Wpf.Forms.Menu;
 using Eto.Drawing;
 using System.ComponentModel;
-using System.Reflection;
 using Eto.Platform.Wpf.CustomControls;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -26,6 +20,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		ContextMenu contextMenu;
 		ITreeStore topNode;
 		ITreeItem selectedItem;
+		sw.Setter foreground;
+
 		bool labelEdit;
 		// use two templates to refresh individual items by changing its template (hack? yes, fast? yes)
 		sw.HierarchicalDataTemplate template1;
@@ -63,9 +59,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				get
 				{
 					var item = DataContext as ITreeItem;
-					if (item != null)
-						return item.Text;
-					return null;
+					return item != null ? item.Text : null;
 				}
 				set
 				{
@@ -108,7 +102,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				else
 				{
 					cancelEvents = true;
-					this.IsExpanded = false;
+					IsExpanded = false;
 					cancelEvents = false;
 				}
 			}
@@ -123,7 +117,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				else
 				{
 					cancelEvents = true;
-					this.IsExpanded = true;
+					IsExpanded = true;
 					cancelEvents = false;
 				}
 			}
@@ -175,7 +169,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		static sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1,Eto<Eto.Forms.ITreeItem,Eto>.Expanded)");
+		static readonly sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1,Eto<Eto.Forms.ITreeItem,Eto>.Expanded)");
 
 		public TreeViewHandler()
 		{
@@ -208,9 +202,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			HandleEvent(TreeView.CollapsedEvent);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TreeView.ExpandedEvent:
 					Control.AddHandler(swc.TreeViewItem.ExpandedEvent, new sw.RoutedEventHandler((sender, e) =>
@@ -275,7 +269,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					{
 						if (!LabelEdit && e.Key == sw.Input.Key.Enter && SelectedItem != null)
 						{
-							Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
+							Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
 							e.Handled = true;
 						}
 					};
@@ -283,34 +277,31 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					{
 						if (!LabelEdit && SelectedItem != null)
 						{
-							Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
+							Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
 							e.Handled = true;
 						}
 					};
 					break;
 				case TreeView.SelectionChangedEvent:
 					ITreeItem oldSelectedItem = null;
-					Control.CurrentItemChanged += (sender, e) =>
+					Control.CurrentItemChanged += (sender, e) => Control.Dispatcher.BeginInvoke(new Action(() =>
 					{
-						Control.Dispatcher.BeginInvoke(new Action(() =>
+						selectedItem = null;
+						var newSelected = SelectedItem;
+						if (!object.ReferenceEquals(oldSelectedItem, newSelected))
 						{
-							selectedItem = null;
-							var newSelected = this.SelectedItem;
-							if (!object.ReferenceEquals(oldSelectedItem, newSelected))
-							{
-								Widget.OnSelectionChanged(EventArgs.Empty);
-								RefreshItem(Control.CurrentTreeViewItem);
-								oldSelectedItem = newSelected;
-							}
-						}));
-					};
+							Widget.OnSelectionChanged(EventArgs.Empty);
+							RefreshItem(Control.CurrentTreeViewItem);
+							oldSelectedItem = newSelected;
+						}
+					}));
 					break;
-				case TreeView.BeforeLabelEditEvent:
+				case TreeView.LabelEditingEvent:
 					break;
-				case TreeView.AfterLabelEditEvent:
+				case TreeView.LabelEditedEvent:
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -387,9 +378,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				{
 					if (r.IsCompleted)
 					{
-						var sel = this.SelectedItem;
+						var sel = SelectedItem;
 						RefreshItem(r.Result);
-						this.SelectedItem = sel;
+						SelectedItem = sel;
 					}
 				}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
@@ -411,8 +402,22 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return this.Control.Foreground.ToEtoColor(); }
-			set { this.Control.Foreground = value.ToWpfBrush(this.Control.Foreground); }
+			get
+			{
+				if (foreground != null)
+					return ((swm.Brush)foreground.Value).ToEtoColor();
+				return sw.SystemColors.ControlTextColor.ToEto();
+			}
+			set
+			{
+				if (foreground == null)
+				{
+					foreground = new sw.Setter(swc.TreeViewItem.ForegroundProperty, value.ToWpfBrush());
+					Control.ItemContainerStyle.Setters.Add(foreground);
+				}
+				else
+					foreground.Value = value.ToWpfBrush(foreground.Value as swm.Brush);
+			}
 		}
 
 		public bool LabelEdit

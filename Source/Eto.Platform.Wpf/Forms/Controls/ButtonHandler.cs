@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
@@ -17,20 +14,18 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class ButtonHandler : WpfControl<swc.Button, Button>, IButton
 	{
 		Image image;
-		swc.Image swcimage;
-		swc.Label label;
-		swc.Grid grid;
+		readonly swc.Image swcimage;
+		readonly swc.Label label;
+		readonly swc.Grid grid;
 		ButtonImagePosition imagePosition;
-		Size defaultSize = Button.DefaultSize;
+		readonly Size defaultSize = Button.DefaultSize;
 
 		protected override Size DefaultSize { get { return defaultSize; } }
 
 		public ButtonHandler ()
 		{
 			Control = new swc.Button();
-			Control.Click += (sender, e) => {
-				Widget.OnClick (EventArgs.Empty);
-			};
+			Control.Click += (sender, e) => Widget.OnClick(EventArgs.Empty);
 			label = new swc.Label {
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				HorizontalAlignment = sw.HorizontalAlignment.Center,
@@ -63,6 +58,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		}
 
 		public override bool UseMousePreview { get { return true; } }
+
+		public override bool UseKeyPreview { get { return true; } }
 
 		public string Text
 		{

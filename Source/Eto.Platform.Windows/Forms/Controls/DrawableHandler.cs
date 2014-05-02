@@ -7,8 +7,10 @@ using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class DrawableHandler : WindowsDockContainer<DrawableHandler.EtoDrawable, Drawable>, IDrawable
+	public class DrawableHandler : WindowsPanel<DrawableHandler.EtoDrawable, Drawable>, IDrawable
 	{
+		public virtual bool SupportsCreateGraphics { get { return true; } }
+
 		public class EtoDrawable : swf.Control
 		{
 			bool canFocus;
@@ -27,10 +29,15 @@ namespace Eto.Platform.Windows
 				this.SetStyle (swf.ControlStyles.SupportsTransparentBackColor, true);
 			}
 
+			public new void SetStyle(swf.ControlStyles flag, bool value)
+			{
+				base.SetStyle(flag, value);
+			}
+
 			public bool CanFocusMe
 			{
 				get { return canFocus; }
-				set { canFocus = value; this.SetStyle (swf.ControlStyles.Selectable, value); }
+				set { canFocus = value; SetStyle(swf.ControlStyles.Selectable, value); }
 			}
 
 			protected override void OnGotFocus (EventArgs e)
@@ -48,7 +55,7 @@ namespace Eto.Platform.Windows
 			protected override bool ProcessDialogKey (swf.Keys keyData)
 			{
 				var e = new swf.KeyEventArgs (keyData);
-				base.OnKeyDown (e);
+				OnKeyDown(e);
 				if (!e.Handled) {
 					// Prevent firing the keydown event twice for the same key
 					Handler.LastKeyDown = e.KeyData.ToEto ();
@@ -74,7 +81,7 @@ namespace Eto.Platform.Windows
 			{
 				base.OnPaint (e);
 
-				Handler.Widget.OnPaint (e.ToEto (Handler.Generator));
+				Handler.OnPaint(e);
 			}
 
 			protected override void OnClick (EventArgs e)
@@ -105,7 +112,7 @@ namespace Eto.Platform.Windows
 			Control.TabStop = true;
 		}
 
-		public Graphics CreateGraphics()
+		public virtual Graphics CreateGraphics()
 		{
 			return new Graphics(Widget.Generator, new GraphicsHandler(Control.CreateGraphics()));
 		}
@@ -115,13 +122,18 @@ namespace Eto.Platform.Windows
 			set { Control.CanFocusMe = value; }
 		}
 
-		public void Update(Rectangle rect)
+		public virtual void Update(Rectangle rect)
 		{
 			using (var g = Control.CreateGraphics ()) {
 				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (g));
 
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
+		}
+
+		protected virtual void OnPaint(swf.PaintEventArgs e)
+		{
+			Widget.OnPaint(e.ToEto(Widget.Generator));
 		}
 	}
 }

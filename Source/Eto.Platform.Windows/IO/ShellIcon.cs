@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
 
 #if WINFORMS
 namespace Eto.Platform.Windows.IO
@@ -12,7 +11,7 @@ namespace Eto.Platform.Wpf.IO
 	/// <summary>
 	/// Summary description for Shell.
 	/// </summary>
-	public class ShellIcon
+	public static class ShellIcon
 	{
 		/// <summary>
 		/// Options to specify the size of icons to return.
@@ -44,32 +43,28 @@ namespace Eto.Platform.Wpf.IO
 			Closed = 1
 		}
 
-		private ShellIcon()
-		{
-		}
-	
 		public static System.Drawing.Icon GetFileIcon(string name, IconSize size, bool linkOverlay)
 		{
-			Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
+			var shfi = new Shell32.SHFILEINFO();
 			uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
     
-			if (true == linkOverlay) flags += Shell32.SHGFI_LINKOVERLAY;
+			if (linkOverlay) flags |= Shell32.SHGFI_LINKOVERLAY;
 
 			
 			/* Check the size specified for return. */
 			if (IconSize.Small == size)
 			{
-				flags += Shell32.SHGFI_SMALLICON ; // include the small icon flag
+				flags |= Shell32.SHGFI_SMALLICON ; // include the small icon flag
 			} 
 			else 
 			{
-				flags += Shell32.SHGFI_LARGEICON ;  // include the large icon flag
+				flags |= Shell32.SHGFI_LARGEICON ;  // include the large icon flag
 			}
     
 			Shell32.SHGetFileInfo( name, 
 				Shell32.FILE_ATTRIBUTE_NORMAL, 
 				ref shfi, 
-				(uint) System.Runtime.InteropServices.Marshal.SizeOf(shfi), 
+				(uint) Marshal.SizeOf(shfi), 
 				flags );
 
 
@@ -81,8 +76,7 @@ namespace Eto.Platform.Wpf.IO
 			}
 			else
 			{
-				System.Drawing.Icon icon = (System.Drawing.Icon)
-					System.Drawing.Icon.FromHandle(shfi.hIcon).Clone();
+				var icon = (System.Drawing.Icon)System.Drawing.Icon.FromHandle(shfi.hIcon).Clone();
 				User32.DestroyIcon( shfi.hIcon ); // Cleanup
 				return icon;
 			}
@@ -100,30 +94,30 @@ namespace Eto.Platform.Wpf.IO
 
 			if (FolderType.Open == folderType)
 			{
-				flags += Shell32.SHGFI_OPENICON;
+				flags |= Shell32.SHGFI_OPENICON;
 			}
 			
 			if (IconSize.Small == size)
 			{
-				flags += Shell32.SHGFI_SMALLICON;
+				flags |= Shell32.SHGFI_SMALLICON;
 			} 
 			else 
 			{
-				flags += Shell32.SHGFI_LARGEICON;
+				flags |= Shell32.SHGFI_LARGEICON;
 			}
 
 			// Get the folder icon
-			Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
+			var shfi = new Shell32.SHFILEINFO();
 			Shell32.SHGetFileInfo(	null, 
 				Shell32.FILE_ATTRIBUTE_DIRECTORY, 
 				ref shfi, 
-				(uint) System.Runtime.InteropServices.Marshal.SizeOf(shfi), 
+				(uint) Marshal.SizeOf(shfi), 
 				flags );
 
 			System.Drawing.Icon.FromHandle(shfi.hIcon);	// Load the icon from an HICON handle
 
 			// Now clone the icon, so that it can be successfully stored in an ImageList
-			System.Drawing.Icon icon = (System.Drawing.Icon)System.Drawing.Icon.FromHandle(shfi.hIcon).Clone();
+			var icon = (System.Drawing.Icon)System.Drawing.Icon.FromHandle(shfi.hIcon).Clone();
 
 			User32.DestroyIcon( shfi.hIcon );		// Cleanup
 			return icon;
@@ -139,12 +133,12 @@ namespace Eto.Platform.Wpf.IO
 
 	// This code has been left largely untouched from that in the CRC example. The main changes have been moving
 	// the icon reading code over to the IconReader type.
-	public class Shell32  
+	public static class Shell32  
 	{
-		
+		// Analysis disable InconsistentNaming
 		public const int 	MAX_PATH = 256;
 		[StructLayout(LayoutKind.Sequential)]
-			public struct SHITEMID
+		public struct SHITEMID
 		{
 			public ushort cb;
 			[MarshalAs(UnmanagedType.LPArray)]
@@ -152,13 +146,13 @@ namespace Eto.Platform.Wpf.IO
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-			public struct ITEMIDLIST
+		public struct ITEMIDLIST
 		{
 			public SHITEMID mkid;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-			public struct BROWSEINFO 
+		public struct BROWSEINFO 
 		{ 
 			public IntPtr		hwndOwner; 
 			public IntPtr		pidlRoot; 
@@ -234,7 +228,7 @@ namespace Eto.Platform.Wpf.IO
 	/// <summary>
 	/// Wraps necessary functions imported from User32.dll. Code courtesy of MSDN Cold Rooster Consulting example.
 	/// </summary>
-	public class User32
+	public static class User32
 	{
 		/// <summary>
 		/// Provides access to function required to delete handle. This method is used internally

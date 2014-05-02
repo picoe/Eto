@@ -35,7 +35,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
 	{
-		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
+		readonly Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 
 		public bool Alpha { get; set; }
 
@@ -108,7 +108,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			string fileName = Guid.NewGuid().ToString();
 			Control.Save(fileName, format.ToGdk());
 			Stream fileStream = File.OpenRead(fileName);
-			byte[] buffer = new byte[4096];
+			var buffer = new byte[4096];
 
 			int size = fileStream.Read(buffer, 0, buffer.Length);
 			while (size > 0)
@@ -142,14 +142,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 			context.Rectangle(destination.ToCairo());
 			double scalex = 1;
 			double scaley = 1;
-			if (source.Width != destination.Width || source.Height != destination.Height)
+			if (Math.Abs(source.Width - destination.Width) > 0.5f || Math.Abs(source.Height - destination.Height) > 0.5f)
 			{
 				scalex = (double)destination.Width / (double)source.Width;
 				scaley = (double)destination.Height / (double)source.Height;
 				context.Scale(scalex, scaley);
 			}
 			Gdk.CairoHelper.SetSourcePixbuf(context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
-			var pattern = context.Source as Cairo.SurfacePattern;
+			var pattern = (Cairo.SurfacePattern)context.Source;
 			pattern.Filter = graphics.ImageInterpolation.ToCairo();
 			context.Fill();
 			context.Restore();
@@ -235,22 +235,21 @@ namespace Eto.Platform.GtkSharp.Drawing
 			{
 				unsafe
 				{
-					byte* srcrow = (byte*)data.Data;
+					var srcrow = (byte*)data.Data;
 					srcrow += y * data.ScanWidth;
 					srcrow += x * data.BytesPerPixel;
 					if (data.BytesPerPixel == 4)
 					{
 						return Color.FromArgb(data.TranslateDataToArgb(*(uint*)srcrow));
 					}
-					else if (data.BytesPerPixel == 3)
+					if (data.BytesPerPixel == 3)
 					{
 						var b = *(srcrow++);
 						var g = *(srcrow++);
 						var r = *(srcrow++);
 						return Color.FromArgb(r, g, b);
 					}
-					else
-						throw new NotSupportedException();
+					throw new NotSupportedException();
 				}
 			}
 		}

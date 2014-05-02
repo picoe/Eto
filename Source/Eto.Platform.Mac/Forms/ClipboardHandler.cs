@@ -55,17 +55,17 @@ namespace Eto.Platform.Mac.Forms
 
 		public unsafe byte[] GetData (string type)
 		{
-			var availableType = Control.GetAvailableTypeFromArray (new string[] { type });
+			var availableType = Control.GetAvailableTypeFromArray(new string[] { type });
 		
-			if (availableType != null) {
-				var data = Control.GetDataForType (availableType);
+			if (availableType != null)
+			{
+				var data = Control.GetDataForType(availableType);
 				var bytes = new byte[data.Length];
-				var stream = new UnmanagedMemoryStream ((byte*) data.Bytes, data.Length);
-				stream.Read (bytes, 0, (int)data.Length);
+				var stream = new UnmanagedMemoryStream((byte*)data.Bytes, data.Length);
+				stream.Read(bytes, 0, (int)data.Length);
 				return bytes;
 			}
-			else
-				return null;
+			return null;
 		}
 		
 		public string GetString (string type)

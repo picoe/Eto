@@ -51,23 +51,25 @@ namespace Tutorial2
 
 			Content = layout;
 
-			GenerateActions();
+			CreateMenu();
 		}
 
-		void GenerateActions()
+		void CreateMenu()
 		{
-			var actions = new GenerateActionArgs(this);
-			Application.Instance.GetSystemActions(actions, true);
+			var menu = new MenuBar();
+			// add standard menu items (e.g. for OS X)
+			Application.Instance.CreateStandardMenu(menu.Items);
 
-			var quitAction = new ButtonAction { Text = "Quit", Accelerator = Application.Instance.CommonModifier | Key.Q };
-			quitAction.Activated += (sender, e) => Application.Instance.Quit();
+			// use commands if you want the same logic for menu and toolbar buttons
+			var quitMenuItem = new ButtonMenuItem { Text = "Quit", Shortcut = Application.Instance.CommonModifier | Key.Q };
+			quitMenuItem.Click += (sender, e) => Application.Instance.Quit();
 				
-			// add action to file sub-menu
-			var file = actions.Menu.FindAddSubMenu("&File");
-			file.Actions.Add(quitAction);
+			// add command to file sub-menu
+			var file = menu.Items.GetSubmenu("&File");
+			file.Items.Add(quitMenuItem);
 
-			// generate menu
-			this.Menu = actions.Menu.GenerateMenuBar();
+			// set the menu to the form
+			Menu = menu;
 		}
 	}
 

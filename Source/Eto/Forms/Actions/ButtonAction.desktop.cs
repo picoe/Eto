@@ -1,33 +1,34 @@
 #if DESKTOP
 using System;
-using System.Reflection;
-using System.Collections;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {
 	
-	public partial class ButtonAction : BaseAction
+	public partial class ButtonAction
 	{
 		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			ImageMenuItem mi = new ImageMenuItem(generator);
+			if (command != null)
+				return command.CreateMenuItem(generator);
+
+			var mi = new ButtonMenuItem(generator);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
-			mi.Enabled = this.Enabled;
+			mi.Enabled = Enabled;
 			if (Image != null) mi.Image = Image;
 			if (!string.IsNullOrEmpty(MenuItemStyle))
 				mi.Style = MenuItemStyle;
 			new MenuConnector(this, mi);
 			return mi;
 		}
-		
+
+		#pragma warning disable 0618
 		protected class MenuConnector
 		{
-			ImageMenuItem menuItem;
-			ButtonAction action;
+			readonly ButtonMenuItem menuItem;
+			readonly ButtonAction action;
 			
-			public MenuConnector(ButtonAction action, ImageMenuItem menuItem)
+			public MenuConnector(ButtonAction action, ButtonMenuItem menuItem)
 			{
 				this.action = action;
 				this.menuItem = menuItem;
@@ -45,6 +46,7 @@ namespace Eto.Forms
 				menuItem.Enabled = action.Enabled;
 			}
 		}
+		#pragma warning restore 0618
 	}
 }
 #endif

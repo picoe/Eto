@@ -7,16 +7,16 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class NumericUpDownHandler : iosControl<UITextField, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : IosControl<UITextField, NumericUpDown>, INumericUpDown
 	{
 		public override UITextField CreateControl()
 		{
 			return new UITextField();
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return Size.Max(base.GetNaturalSize(availableSize), new Size(60, 0));
+			return SizeF.Max(base.GetNaturalSize(availableSize), new SizeF(60, 0));
 		}
 
 		protected override void Initialize()

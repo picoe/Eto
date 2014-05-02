@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.50727</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EECFE22F-A544-4498-AE2D-90C81BD2931A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -33,6 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
+    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +46,7 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
+    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -105,6 +105,11 @@
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -186,9 +191,6 @@
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Menu\ImageMenuItemHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Menu\SeparatorMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -201,17 +203,7 @@
     <Compile Include="Forms\Menu\MenuBarHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
@@ -272,8 +264,9 @@
     <Compile Include="DllMap.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="EtoWebView.cs" />
-    <Compile Include="Forms\GtkDockContainer.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
+    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="Forms\GtkPanel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

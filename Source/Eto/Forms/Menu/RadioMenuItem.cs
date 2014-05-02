@@ -1,42 +1,51 @@
-#if DESKTOP
 using System;
-using System.Collections;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IRadioMenuItem : IMenuActionItem
+	public interface IRadioMenuItem : IMenuItem
 	{
-		void Create (RadioMenuItem controller);
+		void Create(RadioMenuItem controller);
 
 		bool Checked { get; set; }
 	}
-	
-	public class RadioMenuItem : MenuActionItem
+
+	public class RadioMenuItem : MenuItem
 	{
 		new IRadioMenuItem Handler { get { return (IRadioMenuItem)base.Handler; } }
 
-		public RadioMenuItem (RadioMenuItem controller = null) : this (Generator.Current, controller)
-		{
-		}
-		
-		public RadioMenuItem (Generator g, RadioMenuItem controller = null)
-			: this (g, typeof(IRadioMenuItem), controller)
+		public RadioMenuItem()
+			: this(null, typeof(IRadioMenuItem), null)
 		{
 		}
 
-		protected RadioMenuItem (Generator generator, Type type, RadioMenuItem controller, bool initialize = true)
-			: base (generator, type, false)
+		public RadioMenuItem(RadioMenuItem controller, Generator generator = null)
+			: this(generator, typeof(IRadioMenuItem), controller)
 		{
-			Handler.Create (controller);
+		}
+
+		public RadioMenuItem(RadioCommand command, RadioMenuItem controller, Generator generator = null)
+			: base(command, generator, typeof(IRadioMenuItem), false)
+		{
+			Checked = command.Checked;
+			Click += (sender, e) => command.Checked = Checked;
+			command.CheckedChanged += (sender, e) => Checked = command.Checked;
+			Handler.Create(controller);
+			Initialize();
+			Handler.CreateFromCommand(command);
+		}
+
+		protected RadioMenuItem(Generator generator, Type type, RadioMenuItem controller, bool initialize = true)
+			: base(generator, type, false)
+		{
+			Handler.Create(controller);
 			if (initialize)
-				Initialize ();
+				Initialize();
 		}
 
-		public bool Checked {
+		public bool Checked
+		{
 			get { return Handler.Checked; }
 			set { Handler.Checked = value; }
 		}
 	}
 }
-#endif

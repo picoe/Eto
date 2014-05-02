@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms
@@ -13,9 +10,7 @@ namespace Eto.Platform.Wpf.Forms
 		public UITimerHandler ()
 		{
 			Control = new System.Windows.Threading.DispatcherTimer ();
-			Control.Tick += (sender, e) => {
-				Widget.OnElapsed (EventArgs.Empty);
-			};
+			Control.Tick += (sender, e) => Widget.OnElapsed(EventArgs.Empty);
 		}
 
 		public void Start ()

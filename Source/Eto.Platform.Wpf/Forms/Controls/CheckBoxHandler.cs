@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
@@ -10,7 +7,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class CheckBoxHandler : WpfControl<swc.CheckBox, CheckBox>, ICheckBox
 	{
-		swc.Border border;
+		readonly swc.Border border;
 
 		public override sw.FrameworkElement ContainerControl
 		{
@@ -23,12 +20,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				IsThreeState = false,
 				VerticalAlignment = sw.VerticalAlignment.Center
 			};
-			Control.Checked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
-			Control.Unchecked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
+			Control.Checked += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
+			Control.Unchecked += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
+			Control.Indeterminate += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
 			border = new swc.Border { Child = Control };
 		}
 
@@ -39,6 +33,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		}
 
 		public override bool UseMousePreview { get { return true; } }
+
+		public override bool UseKeyPreview { get { return true; } }
 
 		public bool? Checked
 		{

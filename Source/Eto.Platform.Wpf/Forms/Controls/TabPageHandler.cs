@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swm = System.Windows.Media;
@@ -11,12 +7,12 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TabPageHandler : WpfDockContainer<swc.TabItem, TabPage>, ITabPage
+	public class TabPageHandler : WpfPanel<swc.TabItem, TabPage>, ITabPage
 	{
-		Eto.Drawing.Image image;
-		swc.DockPanel content;
-		swc.Image headerImage;
-		swc.TextBlock headerText;
+		Image image;
+		readonly swc.DockPanel content;
+		readonly swc.Image headerImage;
+		readonly swc.TextBlock headerText;
 
 		public TabPageHandler()
 		{
@@ -28,7 +24,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			header.Children.Add(headerText);
 			Control.Header = header;
 
-			Control.Content = content = new swc.DockPanel { };
+			Control.Content = content = new swc.DockPanel { LastChildFill = true };
 		}
 
 		public string Text
@@ -43,16 +39,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
-		public Eto.Drawing.Image Image
+		public Image Image
 		{
 			get { return image; }
 			set
 			{
 				image = value;
-				if (image != null)
-					headerImage.Source = ((IWpfImage)image.Handler).GetImageClosestToSize(16);
-				else
-					headerImage.Source = null;
+				headerImage.Source = image != null ? ((IWpfImage)image.Handler).GetImageClosestToSize(16) : null;
 			}
 		}
 

@@ -9,7 +9,7 @@ using Eto.Platform.iOS.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class ListBoxHandler : iosView<UITableView, ListBox>, IListBox
+	public class ListBoxHandler : IosView<UITableView, ListBox>, IListBox
 	{
 		CollectionChangedHandler<IListItem, IListStore> collection;
 

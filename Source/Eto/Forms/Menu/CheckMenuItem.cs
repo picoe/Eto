@@ -1,36 +1,43 @@
-#if DESKTOP
 using System;
-using System.Collections;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface ICheckMenuItem : IMenuActionItem
+	public interface ICheckMenuItem : IMenuItem
 	{
 		bool Checked { get; set; }
 	}
-	
-	public class CheckMenuItem : MenuActionItem
+
+	public class CheckMenuItem : MenuItem
 	{
 		new ICheckMenuItem Handler { get { return (ICheckMenuItem)base.Handler; } }
 
-		public CheckMenuItem () : this (Generator.Current)
-		{
-		}
-		
-		public CheckMenuItem (Generator g) : this (g, typeof(ICheckMenuItem))
+		public CheckMenuItem()
+			: this((Generator)null)
 		{
 		}
 
-		protected CheckMenuItem (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+		public CheckMenuItem(Generator generator)
+			: this(generator, typeof(ICheckMenuItem))
 		{
 		}
 
-		public bool Checked {
+		public CheckMenuItem(CheckCommand command, Generator generator = null)
+			: base(command, generator, typeof(ICheckMenuItem))
+		{
+			Checked = command.Checked;
+			command.CheckedChanged += (sender, e) => Checked = command.Checked;
+			Click += (sender, e) => command.Checked = Checked;
+		}
+
+		protected CheckMenuItem(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
+		{
+		}
+
+		public bool Checked
+		{
 			get { return Handler.Checked; }
 			set { Handler.Checked = value; }
 		}
 	}
 }
-#endif

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Configuration Condition="$(Configuration) == ''">Release</Configuration>
+        <BaseDir Condition="$(BaseDir) == ''">..\Source</BaseDir>
+		<SourceDir Condition="$(SourceDir) == ''">..\BuildOutput\$(Configuration)</SourceDir>
+		<SourcePclDir Condition="$(SourcePclDir) == ''">..\BuildOutput\Pcl\$(Configuration)</SourcePclDir>
+		<TargetDir Condition="$(TargetDir) == ''">..\BuildOutput\Nuget\$(Configuration)</TargetDir>
+		<PackageTargets Condition="$(PackageTargets) == ''">Clean;Build</PackageTargets>
+        <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
+	</PropertyGroup>
+	<Import Project="$(BaseDir)\.nuget\NuGet.targets" Condition="Exists('$(BaseDir)\.nuget\NuGet.targets')" />
+	<Target Name="PrepareMac">
+		<PropertyGroup>
+			<mdtool Condition="$(mdtool) == ''">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
+		</PropertyGroup>
+    	<Exec Command="$(mdtool) build -t:Clean -p:Eto.Platform.XamMac -c:'Mac $(Configuration)' $(BaseDir)\Eto.sln" />
+    	<Exec Command="$(mdtool) build -t:Clean -p:Eto -c:'Mac $(Configuration)' $(BaseDir)\Eto.sln" />
+    	<Exec Command="$(mdtool) build -p:Eto.Platform.XamMac -c:'Mac $(Configuration)' $(BaseDir)\Eto.sln" />
+	</Target>
+    <Target Name="Package">
+    	
+    	<MSBuild Projects="$(BaseDir)\Eto.sln" Targets="$(PackageTargets)" Properties="Configuration=Windows $(Configuration);Platform=Any CPU" />
+    	
+		<GetAssemblyInformationVersion AssemblyFileName="$(SourceDir)\Eto.dll">
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
+		</GetAssemblyInformationVersion>
+
+		<!-- Nuget has problems with files that have no extension -->		
+		<Copy SourceFiles="$(SourceDir)\LICENSE" DestinationFiles="$(SourceDir)\LICENSE.txt" />
+		
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.Gtk.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Platform.Gtk.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.Gtk3.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Platform.Gtk3.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.Mac.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Platform.Mac.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.Windows.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Platform.Windows.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.Wpf.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Platform.Wpf.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.XamMac.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Platform.XamMac.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Json.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Json.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.Mac.Template.nuspec;NugetBuildOptions=-Version $(AssemblyVersion);TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Forms.Sample\Eto.Forms.Sample.nuspec;NugetBuildOptions=-Version $(AssemblyVersion);TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    </Target>
+    <Target Name="Publish">
+		<GetAssemblyInformationVersion AssemblyFileName="$(SourceDir)\Eto.dll">
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
+		</GetAssemblyInformationVersion>
+		
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk3.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Windows.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Wpf.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<!--<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Json.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>-->
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.Template.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.Sample.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    </Target>
+</Project>

@@ -5,7 +5,6 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Drawing;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -44,17 +43,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var imgitem = value as IImageListItem;
 			if (imgitem != null && imgitem.Image != null)
-				this.Image = ((IImageSource)imgitem.Image.Handler).GetImage ();
-			this.Text = (NSString)value.Text;
+				Image = ((IImageSource)imgitem.Image.Handler).GetImage();
+			Text = (NSString)value.Text;
 		}
 
-		static IntPtr selRetain = Selector.GetHandle ("retain");
-		
 		[Export("copyWithZone:")]
 		public virtual NSObject CopyWithZone (IntPtr zone)
 		{
-			var clone = this.Clone () as MacImageData;
-			Messaging.void_objc_msgSend(clone.Handle, selRetain);
+			var clone = (MacImageData)Clone();
+			clone.Retain();
 			return clone;
 		}
 		
@@ -76,7 +73,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSColor groupColor = NSColor.FromCalibratedRgba (0x6F / (float)0xFF, 0x7E / (float)0xFF, 0x8B / (float)0xFF, 1.0F);
 		//light shade: NSColor.FromCalibratedRgba (0x82 / (float)0xFF, 0x90 / (float)0xFF, 0x9D / (float)0xFF, 1.0F);
 		
-		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
+		static readonly IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
 		
 		public MacImageListItemCell ()
@@ -97,7 +94,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public void SetGroupItem (bool isGroupItem, NSTableView tableView, float? groupSize = null, float? normalSize = null)
 		{
 			if (isGroupItem)
-				this.Font = NSFont.BoldSystemFontOfSize (groupSize ?? NSFont.SystemFontSize);
+				Font = NSFont.BoldSystemFontOfSize(groupSize ?? NSFont.SystemFontSize);
 			else if (Highlighted)
 				Font = NSFont.BoldSystemFontOfSize (normalSize ?? NSFont.SystemFontSize);
 			else
@@ -181,7 +178,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 						else {
 							// 10.5-
 							#pragma warning disable 618
-							data.Image.Flipped = this.ControlView.IsFlipped; 
+							data.Image.Flipped = ControlView.IsFlipped; 
 							#pragma warning restore 618
 							data.Image.Draw (imageRect, new SD.RectangleF (SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
 						}
@@ -191,7 +188,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 			}
 
-			SD.SizeF titleSize = this.AttributedStringValue.Size;
+			SD.SizeF titleSize = AttributedStringValue.Size;
 			
 			// test to see if the text height is bigger then the cell, if it is,
 			// don't try to center it or it will be pushed up out of the cell!
@@ -200,9 +197,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			
 			if (UseTextShadow) {
-				var str = new NSMutableAttributedString(this.StringValue);
-				str.AddAttribute (NSAttributedString.ShadowAttributeName, this.Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, str.Length));
-				this.AttributedStringValue = str;
+				var str = new NSMutableAttributedString(StringValue);
+				str.AddAttribute (NSAttributedString.ShadowAttributeName, Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, str.Length));
+				AttributedStringValue = str;
 			}
 			
 			base.DrawInteriorWithFrame (cellFrame, inView);

@@ -8,17 +8,17 @@ namespace Eto.Forms
 	
 	public class SaveFileDialog : FileDialog
 	{
-		public SaveFileDialog ()
-			: this (Generator.Current)
+		public SaveFileDialog()
+			: this((Generator)null)
 		{
 		}
 
-		public SaveFileDialog (Generator g) : this (g, typeof(ISaveFileDialog))
+		public SaveFileDialog (Generator generator) : this (generator, typeof(ISaveFileDialog))
 		{
 		}
 
-		protected SaveFileDialog (Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+		protected SaveFileDialog (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 		}
 	}

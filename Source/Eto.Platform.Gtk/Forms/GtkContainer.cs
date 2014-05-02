@@ -1,22 +1,19 @@
-using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public abstract class GtkContainer<T, W> : GtkControl<T, W>, IContainer
-		where T: Gtk.Widget
-		where W: Container
+	public abstract class GtkContainer<TControl, TWidget> : GtkControl<TControl, TWidget>, IContainer
+		where TControl: Gtk.Widget
+		where TWidget: Container
 	{
+		public bool RecurseToChildren { get { return true; } }
 
 		public virtual Size ClientSize
 		{
-			get { return this.Size; }
-			set
-			{
-				this.Size = value;
-			}
+			get { return Size; }
+			set { Size = value; }
 		}
 
 		public override void SetBackgroundColor()

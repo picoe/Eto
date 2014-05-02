@@ -8,7 +8,7 @@ namespace Eto.Forms
 	/// Enumeration of values that correspond to physical keys on a keyboard
 	/// </summary>
 	[Flags]
-	public enum Key
+	public enum Keys
 	{
 		/// <summary>No key</summary>
 		None = 0x0000,
@@ -166,7 +166,7 @@ namespace Eto.Forms
 		Equal = 0x0055,
 
 		/// <summary>The Semicolon ';' Key</summary>
-		[Obsolete("Use Semicolon instead")]
+		[Obsolete("Use Semicolon instead"), CLSCompliant(false)]
 		SemiColon = 0x0056,
 
 		/// <summary>The Semicolon ';' Key</summary>
@@ -206,9 +206,282 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
+	/// Obsolete. Use <see cref="Keys"/> instead.
+	/// </summary>
+	[Obsolete("Use Keys instead")]
+	public struct Key
+	{
+		readonly Keys keys;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public Key(Keys keys)
+		{
+			this.keys = keys;
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys None = Keys.None;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys A = Keys.A;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys B = Keys.B;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys C = Keys.C;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D = Keys.D;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys E = Keys.E;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F = Keys.F;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys G = Keys.G;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys H = Keys.H;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys I = Keys.I;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys J = Keys.J;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys K = Keys.K;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys L = Keys.L;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys M = Keys.M;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys N = Keys.N;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys O = Keys.O;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys P = Keys.P;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Q = Keys.Q;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys R = Keys.R;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys S = Keys.S;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys T = Keys.T;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys U = Keys.U;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys V = Keys.V;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys W = Keys.W;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys X = Keys.X;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Y = Keys.Y;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Z = Keys.Z;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F1 = Keys.F1;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F2 = Keys.F2;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F3 = Keys.F3;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F4 = Keys.F4;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F5 = Keys.F5;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F6 = Keys.F6;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F7 = Keys.F7;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F8 = Keys.F8;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F9 = Keys.F9;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F10 = Keys.F10;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F11 = Keys.F11;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys F12 = Keys.F12;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D0 = Keys.D0;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D1 = Keys.D1;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D2 = Keys.D2;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D3 = Keys.D3;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D4 = Keys.D4;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D5 = Keys.D5;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D6 = Keys.D6;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D7 = Keys.D7;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D8 = Keys.D8;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys D9 = Keys.D9;
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Minus = Keys.Minus;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Plus = Keys.Plus;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Grave = Keys.Grave;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Insert = Keys.Insert;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Home = Keys.Home;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys PageUp = Keys.PageUp;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys PageDown = Keys.PageDown;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Delete = Keys.Delete;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys End = Keys.End;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Divide = Keys.Divide;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Decimal = Keys.Decimal;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Backspace = Keys.Backspace;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Up = Keys.Up;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Down = Keys.Down;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Left = Keys.Left;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Right = Keys.Right;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Tab = Keys.Tab;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Space = Keys.Space;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys CapsLock = Keys.CapsLock;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys ScrollLock = Keys.ScrollLock;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys PrintScreen = Keys.PrintScreen;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys NumberLock = Keys.NumberLock;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Enter = Keys.Enter;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Escape = Keys.Escape;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Menu = Keys.Menu;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Backslash = Keys.Backslash;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Equal = Keys.Equal;
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		[Obsolete("Use Semicolon instead"), CLSCompliant(false)]
+		public const Keys SemiColon = Keys.Semicolon;
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Semicolon = Keys.Semicolon;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Quote = Keys.Quote;
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Comma = Keys.Comma;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Period = Keys.Period;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys ForwardSlash = Keys.ForwardSlash;
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys RightBracket = Keys.RightBracket;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys LeftBracket = Keys.LeftBracket;
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys ContextMenu = Keys.ContextMenu;
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Shift = Keys.Shift;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Alt = Keys.Alt;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Control = Keys.Control;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys Application = Keys.Application;  // windows/command key
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys ModifierMask = Keys.ModifierMask;
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public const Keys KeyMask = Keys.KeyMask;
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public bool HasFlag(Key key)
+		{
+			return keys.HasFlag(key.keys);
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public static Key operator &(Key key1, Key key2)
+		{
+			return new Key(key1.keys & key2.keys);
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public static Key operator ~(Key key1)
+		{
+			return new Key(~key1.keys);
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public static bool operator ==(Key key1, Key key2)
+		{
+			return key1.keys == key2.keys;
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public static bool operator !=(Key key1, Key key2)
+		{
+			return key1.keys != key2.keys;
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public static implicit operator Keys(Key key)
+		{
+			return key.keys;
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public static implicit operator Key(Keys key)
+		{
+			return new Key(key);
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public static implicit operator int(Key key)
+		{
+			return (int)key.keys;
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public static Key operator |(Key key1, Key key2)
+		{
+			return new Key(key1.keys | key2.keys);
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public override bool Equals(object obj)
+		{
+			return obj is Key && (Key)obj == this;
+		}
+
+		/// <summary>Obsolete. Use Keys instead</summary>
+		public override int GetHashCode()
+		{
+			return keys.GetHashCode();
+		}
+	}
+
+
+	/// <summary>
 	/// Extensions for the <see cref="Key"/> enumeration
 	/// </summary>
-	public static class KeyExtensions
+	public static class KeysExtensions
 	{
 		static void AppendSeparator (StringBuilder sb, string separator, string value)
 		{
@@ -217,35 +490,35 @@ namespace Eto.Forms
 			sb.Append (value);
 		}
 
-		static Dictionary<Key, string> keymap = new Dictionary<Key, string> () {
-			{ Key.D0, "0" },
-			{ Key.D1, "1" },
-			{ Key.D2, "2" },
-			{ Key.D3, "3" },
-			{ Key.D4, "4" },
-			{ Key.D5, "5" },
-			{ Key.D6, "6" },
-			{ Key.D7, "7" },
-			{ Key.D8, "8" },
-			{ Key.D9, "9" },
+		static readonly Dictionary<Keys, string> keymap = new Dictionary<Keys,string> {
+			{ Keys.D0, "0" },
+			{ Keys.D1, "1" },
+			{ Keys.D2, "2" },
+			{ Keys.D3, "3" },
+			{ Keys.D4, "4" },
+			{ Keys.D5, "5" },
+			{ Keys.D6, "6" },
+			{ Keys.D7, "7" },
+			{ Keys.D8, "8" },
+			{ Keys.D9, "9" },
 
-			{ Key.Minus, "-" },
-			{ Key.Plus, "+" },
-			{ Key.Grave, "`" },
-			{ Key.Divide, "/" },
-			{ Key.Decimal, "." },
-			{ Key.Backslash, "\\" },
-			{ Key.Equal, "=" },
+			{ Keys.Minus, "-" },
+			{ Keys.Plus, "+" },
+			{ Keys.Grave, "`" },
+			{ Keys.Divide, "/" },
+			{ Keys.Decimal, "." },
+			{ Keys.Backslash, "\\" },
+			{ Keys.Equal, "=" },
 		
-			{ Key.Semicolon, ";" },
-			{ Key.Quote, "'" },
+			{ Keys.Semicolon, ";" },
+			{ Keys.Quote, "'" },
 		
-			{ Key.Comma, "," },
-			{ Key.Period, "." },
-			{ Key.ForwardSlash, "/" },
+			{ Keys.Comma, "," },
+			{ Keys.Period, "." },
+			{ Keys.ForwardSlash, "/" },
 		
-			{ Key.RightBracket, "(" },
-			{ Key.LeftBracket, ")" }
+			{ Keys.RightBracket, "(" },
+			{ Keys.LeftBracket, ")" }
 		};
 
 		/// <summary>
@@ -254,17 +527,17 @@ namespace Eto.Forms
 		/// <param name="key">Key to convert</param>
 		/// <param name="separator">Separator between each modifier and key</param>
 		/// <returns>A human-readable string representing the key combination including modifiers</returns>
-		public static string ToShortcutString(this Key key, string separator = "+")
+		public static string ToShortcutString(this Keys key, string separator = "+")
 		{
 			var sb = new StringBuilder();
-			if (key.HasFlag(Key.Control))
+			if (key.HasFlag(Keys.Control))
 				AppendSeparator(sb, separator, "Ctrl");
-			if (key.HasFlag(Key.Shift))
+			if (key.HasFlag(Keys.Shift))
 				AppendSeparator(sb, separator, "Shift");
-			if (key.HasFlag(Key.Alt))
+			if (key.HasFlag(Keys.Alt))
 				AppendSeparator(sb, separator, "Alt");
 
-			var mainKey = key & Key.KeyMask;
+			var mainKey = key & Keys.KeyMask;
 			string val;
 			if (keymap.TryGetValue(mainKey, out val))
 				AppendSeparator(sb, separator, val);

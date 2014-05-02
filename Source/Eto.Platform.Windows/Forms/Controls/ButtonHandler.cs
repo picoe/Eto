@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
@@ -15,7 +14,7 @@ namespace Eto.Platform.Windows
 	public class ButtonHandler : WindowsControl<ButtonHandler.EtoButton, Button>, IButton
 	{
 		Image image;
-		Size defaultSize;
+		readonly Size defaultSize;
 
 		public class EtoButton : swf.Button
 		{

@@ -1,51 +1,58 @@
 using System;
 using System.Reflection;
-using System.Collections;
 using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public static class ButtonActionExtensions
 	{
 		
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text)
 		{
-			ButtonAction action = new ButtonAction(id, text);
+			var action = new ButtonAction(id, text);
 			actions.Add(action);
 			return action;
 		}
 		
-		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
+		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
-			ButtonAction action = new ButtonAction(id, text, icon, activated);
+			var action = new ButtonAction(id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;
+#endif
 		}
 
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
-			ButtonAction action = new ButtonAction(id, text, icon, activated);
+			var action = new ButtonAction(id, text, icon, activated);
 			actions.Add(action);
 			return action;
+#endif
 		}
 
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, Icon icon, EventHandler<EventArgs> activated)
 		{
-			ButtonAction action = new ButtonAction(id, text, icon, activated);
+			var action = new ButtonAction(id, text, icon, activated);
 			actions.Add(action);
 			return action;
 		}
 
 		
-		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, EventHandler<EventArgs> activated, params Key[] accelerators)
+		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
-			ButtonAction action = new ButtonAction(id, text, activated);
+			var action = new ButtonAction(id, text, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;
@@ -53,16 +60,18 @@ namespace Eto.Forms
 
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, EventHandler<EventArgs> activated)
 		{
-			ButtonAction action = new ButtonAction(id, text, activated);
+			var action = new ButtonAction(id, text, activated);
 			actions.Add(action);
 			return action;
 		}
 		
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ButtonAction : BaseAction
 	{
-		
+		internal Command command;
+
 		public ButtonAction(string id, string text, Icon icon, EventHandler<EventArgs> activated)
 			: base(id, text, icon, activated)
 		{
@@ -83,11 +92,11 @@ namespace Eto.Forms
 		{
 		}
 
-		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
-			ToolBarButton tbb = new ToolBarButton(generator);
-			tbb.ID = this.ID;
-			tbb.Enabled = this.Enabled;
+			var tbb = new ButtonToolItem(generator);
+			tbb.ID = ID;
+			tbb.Enabled = Enabled;
 			if (ShowLabel || actionItem.ShowLabel || textAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			//Console.WriteLine("Adding toolbar {0}", ToolBarText);
 			if (Image != null) tbb.Image = Image;
@@ -99,9 +108,9 @@ namespace Eto.Forms
 		
 		protected class ToolBarConnector
 		{
-			ToolBarButton toolBarButton;
-			ButtonAction action;
-			public ToolBarConnector(ButtonAction action, ToolBarButton toolBarButton)
+			readonly ButtonToolItem toolBarButton;
+			readonly ButtonAction action;
+			public ToolBarConnector(ButtonAction action, ButtonToolItem toolBarButton)
 			{
 				this.toolBarButton = toolBarButton;
 				this.toolBarButton.Click += toolBarButton_Click;

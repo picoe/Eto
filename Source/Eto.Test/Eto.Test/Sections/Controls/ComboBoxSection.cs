@@ -32,7 +32,7 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout();
 			layout.Add(TableLayout.AutoSized(control));
 			layout.BeginVertical();
-			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), null);
+			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
 			layout.EndVertical();
 			
 			return layout;
@@ -70,6 +70,28 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+		Control SetSelected(ComboBox list)
+		{
+			var control = new Button { Text = "Set Selected" };
+			control.Click += delegate
+			{
+				if (list.Items.Count > 0)
+					list.SelectedIndex = new Random().Next(list.Items.Count - 1);
+			};
+			return control;
+		}
+
+
+		Control ClearSelected(ComboBox list)
+		{
+			var control = new Button { Text = "Clear Selected" };
+			control.Click += delegate
+			{
+				list.SelectedIndex = -1;
+			};
+			return control;
+		}
+
 		ComboBox Items()
 		{
 			var control = new ComboBox();
@@ -97,9 +119,9 @@ namespace Eto.Test.Sections.Controls
 
 		Control EnumCombo()
 		{
-			var control = new EnumComboBox<Key>();
+			var control = new EnumComboBox<Keys>();
 			LogEvents(control);
-			control.SelectedKey = ((int)Key.E).ToString();
+			control.SelectedKey = ((int)Keys.E).ToString();
 			return control;
 		}
 

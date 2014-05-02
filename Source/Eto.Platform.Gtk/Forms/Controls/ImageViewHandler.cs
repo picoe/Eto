@@ -11,64 +11,84 @@ namespace Eto.Platform.GtkSharp
 		bool widthSet;
 		bool heightSet;
 
-		public override Gtk.DrawingArea CreateControl ()
+		public override Gtk.DrawingArea CreateControl()
 		{
-			var control = new Gtk.DrawingArea {
+			var control = new Gtk.DrawingArea
+			{
 				CanFocus = false,
 				CanDefault = true
 			};
 #if GTK2
-			control.ExposeEvent += control_ExposeEvent;
+			control.ExposeEvent += Connector.HandleExpose;
 #else
-			control.Drawn += HandleDrawn;
+			control.Drawn += Connector.HandleDrawn;
 #endif
 			control.Events |= Gdk.EventMask.ExposureMask;
 			return control;
 		}
 
-#if GTK2
-		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
-		{
-			Gdk.EventExpose ev = args.Event;
-			var handler = new GraphicsHandler (Control, ev.Window);
-#else
-		void HandleDrawn (object o, Gtk.DrawnArgs args)
-		{
-			var handler = new GraphicsHandler (args.Cr, Control.CreatePangoContext (), false);
-#endif
-			using (var graphics = new Graphics (Widget.Generator, handler)) {
-				var widgetSize = new Size(Control.Allocation.Width, Control.Allocation.Height);
-				var imageSize = (SizeF)image.Size;
-				var scaleWidth = widgetSize.Width / imageSize.Width;
-				var scaleHeight = widgetSize.Height / imageSize.Height;
-				imageSize *= Math.Min (scaleWidth, scaleHeight);
-				var location = new PointF((widgetSize.Width - imageSize.Width) / 2, (widgetSize.Height - imageSize.Height) / 2);
+		protected new ImageViewConnector Connector { get { return (ImageViewConnector)base.Connector; } }
 
-				var destRect = new Rectangle(Point.Round(location), Size.Truncate (imageSize));
-				graphics.DrawImage (image, destRect);
+		protected override WeakConnector CreateConnector()
+		{
+			return new ImageViewConnector();
+		}
+
+		protected class ImageViewConnector : GtkControlConnector
+		{
+			public new ImageViewHandler Handler { get { return (ImageViewHandler)base.Handler; } }
+
+#if GTK2
+			public void HandleExpose(object o, Gtk.ExposeEventArgs args)
+			{
+				Gdk.EventExpose ev = args.Event;
+				var h = Handler;
+				var handler = new GraphicsHandler(h.Control, ev.Window);
+#else
+			public void HandleDrawn(object o, Gtk.DrawnArgs args)
+			{
+				var h = Handler;
+				var handler = new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false);
+#endif
+				using (var graphics = new Graphics(h.Widget.Generator, handler))
+				{
+
+					var widgetSize = new Size(h.Control.Allocation.Width, h.Control.Allocation.Height);
+					var imageSize = (SizeF)h.image.Size;
+					var scaleWidth = widgetSize.Width / imageSize.Width;
+					var scaleHeight = widgetSize.Height / imageSize.Height;
+					imageSize *= Math.Min(scaleWidth, scaleHeight);
+					var location = new PointF((widgetSize.Width - imageSize.Width) / 2, (widgetSize.Height - imageSize.Height) / 2);
+
+					var destRect = new Rectangle(Point.Round(location), Size.Truncate(imageSize));
+					graphics.DrawImage(h.image, destRect);
+				}
 			}
 		}
 
-		public override Eto.Drawing.Size Size {
-			get {
-				return base.Size;
-			}
-			set {
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
 				base.Size = value;
 				widthSet = value.Width >= 0;
 				heightSet = value.Height >= 0;
 			}
 		}
-		
-		public Image Image {
+
+		public Image Image
+		{
 			get { return image; }
-			set {
+			set
+			{
 				image = value;
-				if (image != null && !widthSet || !heightSet) {
-					Control.SetSizeRequest (widthSet ? Size.Width : image.Size.Width, heightSet ? Size.Height : image.Size.Height);
+				if (image != null && !widthSet || !heightSet)
+				{
+					Control.SetSizeRequest(widthSet ? Size.Width : image.Size.Width, heightSet ? Size.Height : image.Size.Height);
 				}
 				if (Control.Visible)
-					Control.QueueDraw ();
+					Control.QueueDraw();
 			}
 		}
 	}

@@ -1,5 +1,4 @@
 using System;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
@@ -8,18 +7,47 @@ namespace Eto.Platform.GtkSharp
 	{
 		string text;
 		string tooltip;
-		Key shortcut;
-		Gtk.AccelLabel label;
+		Keys shortcut;
+		readonly Gtk.AccelLabel label;
 
 		public CheckMenuItemHandler()
 		{
 			Control = new Gtk.CheckMenuItem();
-			Control.Toggled += control_Activated;
 			label = new Gtk.AccelLabel(string.Empty);
 			label.Xalign = 0;
 			label.UseUnderline = true;
 			label.AccelWidget = Control;
 			Control.Add(label);
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Toggled += Connector.HandleToggled;
+		}
+
+		protected new CheckMenuItemConnector Connector { get { return (CheckMenuItemConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new CheckMenuItemConnector();
+		}
+
+		protected class CheckMenuItemConnector : WeakConnector
+		{
+			public new CheckMenuItemHandler Handler { get { return (CheckMenuItemHandler)base.Handler; } }
+
+			public void HandleToggled(object sender, EventArgs e)
+			{
+				var handler = Handler;
+				if (!handler.isBeingChecked)
+				{
+					handler.isBeingChecked = true;
+					handler.Control.Active = !handler.Control.Active; // don't let Gtk turn it on/off
+					handler.isBeingChecked = false;
+					handler.Widget.OnClick(e);
+				}
+			}
 		}
 
 		public string Text
@@ -44,13 +72,13 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public Key Shortcut
+		public Keys Shortcut
 		{
 			get { return shortcut; }
 			set { shortcut = value; }
 		}
 
-		private bool isBeingChecked = false;
+		bool isBeingChecked;
 
 		public bool Checked
 		{
@@ -67,28 +95,6 @@ namespace Eto.Platform.GtkSharp
 		{
 			get { return Control.Sensitive; }
 			set { Control.Sensitive = value; }
-		}
-
-		public override void AddMenu(int index, MenuItem item)
-		{
-		}
-
-		public override void RemoveMenu(MenuItem item)
-		{
-		}
-
-		public override void Clear()
-		{
-		}
-		private void control_Activated(object sender, EventArgs e)
-		{
-			if (!isBeingChecked)
-			{
-				isBeingChecked = true;
-				Control.Active = !Control.Active; // don't let Gtk turn it on/off
-				isBeingChecked = false;
-				Widget.OnClick(e);
-			}
 		}
 	}
 }

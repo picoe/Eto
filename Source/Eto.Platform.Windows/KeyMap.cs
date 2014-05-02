@@ -1,69 +1,64 @@
-using System;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Eto.Platform.Windows
 {
 	public static class KeyMap
 	{
-		static Dictionary<swf.Keys, Key> keymap = new Dictionary<swf.Keys, Key>();
-		static Dictionary<Key, swf.Keys> inverse = new Dictionary<Key, swf.Keys>();
+		static readonly Dictionary<swf.Keys, Keys> keymap = new Dictionary<swf.Keys, Keys>();
+		static readonly Dictionary<Keys, swf.Keys> inverse = new Dictionary<Keys, swf.Keys>();
 
-        public static Key ToEto (this swf.Keys keyData)
+        public static Keys ToEto (this swf.Keys keyData)
         {
             // convert the modifiers
-            Key modifiers = Key.None;
+            Keys modifiers = Keys.None;
 
             // Shift
             if ((keyData & swf.Keys.Shift) == swf.Keys.Shift)
-                modifiers |= Key.Shift;
+                modifiers |= Keys.Shift;
 
             // Control
             if ((keyData & swf.Keys.Control) == swf.Keys.Control)
-                modifiers |= Key.Control;
+                modifiers |= Keys.Control;
 
             // Alt
             if ((keyData & swf.Keys.Alt) == swf.Keys.Alt)
-                modifiers |= Key.Alt;
+                modifiers |= Keys.Alt;
 
-            var keyCode =
-                Find(keyData & ~(swf.Keys.Shift | swf.Keys.Control | swf.Keys.Alt));
+            var keyCode = Find(keyData & swf.Keys.KeyCode);
 
             return keyCode | modifiers;
         }
 
-		private static Key Find(swf.Keys key)
+		static Keys Find(swf.Keys key)
 		{
-			Key mapped;
-			if (keymap.TryGetValue(key, out mapped)) return mapped;
-			else return Key.None;
+			Keys mapped;
+			return keymap.TryGetValue(key, out mapped) ? mapped : Keys.None;
 		}
 		
-		public static swf.Keys Find(Key key)
+		public static swf.Keys Find(Keys key)
 		{
 			swf.Keys mapped;
-			if (inverse.TryGetValue(key, out mapped)) return mapped;
-			else return swf.Keys.None;
+			return inverse.TryGetValue(key, out mapped) ? mapped : swf.Keys.None;
 		}
 		
-		public static swf.Keys ToSWF (this Key key)
+		public static swf.Keys ToSWF (this Keys key)
 		{
-			var code = key & Key.KeyMask;
+			var code = key & Keys.KeyMask;
 			swf.Keys modifiers = swf.Keys.None;
 			
 			// convert the modifiers
 			// Shift
-			if ((key & Key.Shift) == Key.Shift)
+			if (key.HasFlag(Keys.Shift))
 				modifiers |= swf.Keys.Shift;
 	
 			// Control
-			if ((key & Key.Control) == Key.Control)
+			if (key.HasFlag(Keys.Control))
 				modifiers |= swf.Keys.Control;
 
 			// Alt
-			if ((key & Key.Alt) == Key.Alt)
+			if (key.HasFlag(Keys.Alt))
 				modifiers |= swf.Keys.Alt;
 
 			return Find (code) | modifiers;
@@ -71,80 +66,82 @@ namespace Eto.Platform.Windows
 		
 		static KeyMap()
 		{
-			keymap.Add(swf.Keys.A, Key.A);
-			keymap.Add(swf.Keys.B, Key.B);
-			keymap.Add(swf.Keys.C, Key.C);
-			keymap.Add(swf.Keys.D, Key.D);
-			keymap.Add(swf.Keys.E, Key.E);
-			keymap.Add(swf.Keys.F, Key.F);
-			keymap.Add(swf.Keys.G, Key.G);
-			keymap.Add(swf.Keys.H, Key.H);
-			keymap.Add(swf.Keys.I, Key.I);
-			keymap.Add(swf.Keys.J, Key.J);
-			keymap.Add(swf.Keys.K, Key.K);
-			keymap.Add(swf.Keys.L, Key.L);
-			keymap.Add(swf.Keys.M, Key.M);
-			keymap.Add(swf.Keys.N, Key.N);
-			keymap.Add(swf.Keys.O, Key.O);
-			keymap.Add(swf.Keys.P, Key.P);
-			keymap.Add(swf.Keys.Q, Key.Q);
-			keymap.Add(swf.Keys.R, Key.R);
-			keymap.Add(swf.Keys.S, Key.S);
-			keymap.Add(swf.Keys.T, Key.T);
-			keymap.Add(swf.Keys.U, Key.U);
-			keymap.Add(swf.Keys.V, Key.V);
-			keymap.Add(swf.Keys.W, Key.W);
-			keymap.Add(swf.Keys.X, Key.X);
-			keymap.Add(swf.Keys.Y, Key.Y);
-			keymap.Add(swf.Keys.Z, Key.Z);
-			keymap.Add(swf.Keys.F1, Key.F1);
-			keymap.Add(swf.Keys.F2, Key.F2);
-			keymap.Add(swf.Keys.F3, Key.F3);
-			keymap.Add(swf.Keys.F4, Key.F4);
-			keymap.Add(swf.Keys.F5, Key.F5);
-			keymap.Add(swf.Keys.F6, Key.F6);
-			keymap.Add(swf.Keys.F7, Key.F7);
-			keymap.Add(swf.Keys.F8, Key.F8);
-			keymap.Add(swf.Keys.F9, Key.F9);
-			keymap.Add(swf.Keys.F10, Key.F10);
-			keymap.Add(swf.Keys.F11, Key.F11);
-			keymap.Add(swf.Keys.F12, Key.F12);
-			keymap.Add(swf.Keys.D0, Key.D0);
-			keymap.Add(swf.Keys.D1, Key.D1);
-			keymap.Add(swf.Keys.D2, Key.D2);
-			keymap.Add(swf.Keys.D3, Key.D3);
-			keymap.Add(swf.Keys.D4, Key.D4);
-			keymap.Add(swf.Keys.D5, Key.D5);
-			keymap.Add(swf.Keys.D6, Key.D6);
-			keymap.Add(swf.Keys.D7, Key.D7);
-			keymap.Add(swf.Keys.D8, Key.D8);
-			keymap.Add(swf.Keys.D9, Key.D9);
-			keymap.Add(swf.Keys.Space, Key.Space);
-			keymap.Add(swf.Keys.Up, Key.Up);
-			keymap.Add(swf.Keys.Down, Key.Down);
-			keymap.Add(swf.Keys.Left, Key.Left);
-			keymap.Add(swf.Keys.Right, Key.Right);
-			keymap.Add(swf.Keys.PageDown, Key.PageDown);
-			keymap.Add(swf.Keys.PageUp, Key.PageUp);
-			keymap.Add(swf.Keys.Home, Key.Home);
-			keymap.Add(swf.Keys.End, Key.End);
-			keymap.Add(swf.Keys.Alt, Key.Alt);
-			keymap.Add(swf.Keys.Control, Key.Control);
-			keymap.Add(swf.Keys.Shift, Key.Shift);
-			keymap.Add(swf.Keys.Menu, Key.Menu);
-			keymap.Add(swf.Keys.Escape, Key.Escape);
-			keymap.Add(swf.Keys.Delete, Key.Delete);
-			keymap.Add(swf.Keys.Back, Key.Backspace);
-			keymap.Add(swf.Keys.Divide, Key.Divide);
-			keymap.Add(swf.Keys.Enter, Key.Enter);
-			keymap.Add(swf.Keys.Insert, Key.Insert);
-            keymap.Add(swf.Keys.OemPeriod, Key.Period);
-            keymap.Add(swf.Keys.Tab, Key.Tab);
-			keymap.Add(swf.Keys.Apps, Key.ContextMenu);
+			keymap.Add(swf.Keys.A, Keys.A);
+			keymap.Add(swf.Keys.B, Keys.B);
+			keymap.Add(swf.Keys.C, Keys.C);
+			keymap.Add(swf.Keys.D, Keys.D);
+			keymap.Add(swf.Keys.E, Keys.E);
+			keymap.Add(swf.Keys.F, Keys.F);
+			keymap.Add(swf.Keys.G, Keys.G);
+			keymap.Add(swf.Keys.H, Keys.H);
+			keymap.Add(swf.Keys.I, Keys.I);
+			keymap.Add(swf.Keys.J, Keys.J);
+			keymap.Add(swf.Keys.K, Keys.K);
+			keymap.Add(swf.Keys.L, Keys.L);
+			keymap.Add(swf.Keys.M, Keys.M);
+			keymap.Add(swf.Keys.N, Keys.N);
+			keymap.Add(swf.Keys.O, Keys.O);
+			keymap.Add(swf.Keys.P, Keys.P);
+			keymap.Add(swf.Keys.Q, Keys.Q);
+			keymap.Add(swf.Keys.R, Keys.R);
+			keymap.Add(swf.Keys.S, Keys.S);
+			keymap.Add(swf.Keys.T, Keys.T);
+			keymap.Add(swf.Keys.U, Keys.U);
+			keymap.Add(swf.Keys.V, Keys.V);
+			keymap.Add(swf.Keys.W, Keys.W);
+			keymap.Add(swf.Keys.X, Keys.X);
+			keymap.Add(swf.Keys.Y, Keys.Y);
+			keymap.Add(swf.Keys.Z, Keys.Z);
+			keymap.Add(swf.Keys.F1, Keys.F1);
+			keymap.Add(swf.Keys.F2, Keys.F2);
+			keymap.Add(swf.Keys.F3, Keys.F3);
+			keymap.Add(swf.Keys.F4, Keys.F4);
+			keymap.Add(swf.Keys.F5, Keys.F5);
+			keymap.Add(swf.Keys.F6, Keys.F6);
+			keymap.Add(swf.Keys.F7, Keys.F7);
+			keymap.Add(swf.Keys.F8, Keys.F8);
+			keymap.Add(swf.Keys.F9, Keys.F9);
+			keymap.Add(swf.Keys.F10, Keys.F10);
+			keymap.Add(swf.Keys.F11, Keys.F11);
+			keymap.Add(swf.Keys.F12, Keys.F12);
+			keymap.Add(swf.Keys.D0, Keys.D0);
+			keymap.Add(swf.Keys.D1, Keys.D1);
+			keymap.Add(swf.Keys.D2, Keys.D2);
+			keymap.Add(swf.Keys.D3, Keys.D3);
+			keymap.Add(swf.Keys.D4, Keys.D4);
+			keymap.Add(swf.Keys.D5, Keys.D5);
+			keymap.Add(swf.Keys.D6, Keys.D6);
+			keymap.Add(swf.Keys.D7, Keys.D7);
+			keymap.Add(swf.Keys.D8, Keys.D8);
+			keymap.Add(swf.Keys.D9, Keys.D9);
+			keymap.Add(swf.Keys.Space, Keys.Space);
+			keymap.Add(swf.Keys.Up, Keys.Up);
+			keymap.Add(swf.Keys.Down, Keys.Down);
+			keymap.Add(swf.Keys.Left, Keys.Left);
+			keymap.Add(swf.Keys.Right, Keys.Right);
+			keymap.Add(swf.Keys.PageDown, Keys.PageDown);
+			keymap.Add(swf.Keys.PageUp, Keys.PageUp);
+			keymap.Add(swf.Keys.Home, Keys.Home);
+			keymap.Add(swf.Keys.End, Keys.End);
+			keymap.Add(swf.Keys.Alt, Keys.Alt);
+			keymap.Add(swf.Keys.Control, Keys.Control);
+			keymap.Add(swf.Keys.Shift, Keys.Shift);
+			keymap.Add(swf.Keys.Menu, Keys.Menu);
+			keymap.Add(swf.Keys.LWin, Keys.Application);
+			keymap.Add(swf.Keys.RWin, Keys.Application);
+			keymap.Add(swf.Keys.Escape, Keys.Escape);
+			keymap.Add(swf.Keys.Delete, Keys.Delete);
+			keymap.Add(swf.Keys.Back, Keys.Backspace);
+			keymap.Add(swf.Keys.Divide, Keys.Divide);
+			keymap.Add(swf.Keys.Enter, Keys.Enter);
+			keymap.Add(swf.Keys.Insert, Keys.Insert);
+            keymap.Add(swf.Keys.OemPeriod, Keys.Period);
+            keymap.Add(swf.Keys.Tab, Keys.Tab);
+			keymap.Add(swf.Keys.Apps, Keys.ContextMenu);
 			
 			foreach (var entry in keymap)
 			{
-				inverse.Add(entry.Value, entry.Key);
+				inverse[entry.Value] = entry.Key;
 			}
 		}
 	}

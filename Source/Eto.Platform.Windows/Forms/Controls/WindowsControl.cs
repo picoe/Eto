@@ -1,13 +1,11 @@
 using System;
-using System.ComponentModel;
-using System.Collections;
-using System.Reflection;
 using sd = System.Drawing;
-using SWF = System.Windows.Forms;
+using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Windows.Drawing;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.Windows
 {
@@ -15,13 +13,15 @@ namespace Eto.Platform.Windows
 	{
 		bool InternalVisible { get; }
 
-		SWF.DockStyle DockStyle { get; }
+		swf.DockStyle DockStyle { get; }
 
-		SWF.Control ContainerControl { get; }
+		swf.Control ContainerControl { get; }
 
 		Size ParentMinimumSize { get; set; }
 
-		Size DesiredSize { get; }
+		Size GetPreferredSize(Size availableSize);
+
+		bool SetMinimumSize(bool force = false);
 
 		void SetScale(bool xscale, bool yscale);
 
@@ -44,13 +44,17 @@ namespace Eto.Platform.Windows
 				return handler;
 
 			var controlObject = control.ControlObject as Control;
-			if (controlObject != null)
-				return controlObject.GetWindowsHandler();
+			return controlObject != null ? controlObject.GetWindowsHandler() : null;
 
-			return null;
 		}
 
-		public static SWF.Control GetContainerControl(this Control control)
+		public static Size GetPreferredSize(this Control control)
+		{
+			var handler = control.GetWindowsHandler();
+			return handler != null ? handler.GetPreferredSize(Size.Empty) : Size.Empty;
+		}
+
+		public static swf.Control GetContainerControl(this Control control)
 		{
 			if (control == null)
 				return null;
@@ -63,7 +67,7 @@ namespace Eto.Platform.Windows
 			if (controlObject != null)
 				return controlObject.GetContainerControl();
 
-			return control.ControlObject as SWF.Control;
+			return control.ControlObject as swf.Control;
 		}
 
 		public static void SetScale(this Control control, bool xscale, bool yscale)
@@ -75,9 +79,9 @@ namespace Eto.Platform.Windows
 		}
 	}
 
-	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
-		where T : System.Windows.Forms.Control
-		where W : Control
+	public abstract class WindowsControl<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IWindowsControl
+		where TControl : swf.Control
+		where TWidget : Control
 	{
 		bool internalVisible = true;
 		Font font;
@@ -92,20 +96,17 @@ namespace Eto.Platform.Windows
 
 		public virtual Size? DefaultSize { get { return null; } }
 
-		public virtual Size DesiredSize
+		public virtual Size GetPreferredSize(Size availableSize)
 		{
-			get
+			var size = UserDesiredSize;
+			var defSize = DefaultSize;
+			if (defSize != null)
 			{
-				var size = UserDesiredSize;
-				var defSize = DefaultSize;
-				if (defSize != null)
-				{
-					if (size.Width == -1) size.Width = defSize.Value.Width;
-					if (size.Height == -1) size.Height = defSize.Value.Height;
-				}
-
-				return Size.Max(parentMinimumSize, size);
+				if (size.Width == -1) size.Width = defSize.Value.Width;
+				if (size.Height == -1) size.Height = defSize.Value.Height;
 			}
+
+			return Size.Max(parentMinimumSize, size);
 		}
 
 		public Size UserDesiredSize
@@ -131,9 +132,9 @@ namespace Eto.Platform.Windows
 			get { return false; }
 		}
 
-		public virtual SWF.Control ContainerControl
+		public virtual swf.Control ContainerControl
 		{
-			get { return this.Control; }
+			get { return Control; }
 		}
 
 		protected override void Initialize()
@@ -142,38 +143,41 @@ namespace Eto.Platform.Windows
 			Control.TabIndex = 100;
 			XScale = true;
 			YScale = true;
-			this.Control.Margin = SWF.Padding.Empty;
-			this.Control.Tag = this;
+			Control.Margin = swf.Padding.Empty;
+			Control.Tag = this;
 		}
 
-		public virtual SWF.DockStyle DockStyle
+		public virtual swf.DockStyle DockStyle
 		{
-			get { return SWF.DockStyle.Fill; }
+			get { return swf.DockStyle.Fill; }
 		}
 
-		protected void SetMinimumSize()
+		public bool SetMinimumSize(bool force = false)
 		{
-			if (!Widget.Loaded)
-				return;
-			var size = this.DesiredSize;
+			if (!force && !Widget.Loaded)
+				return false;
+			var size = GetPreferredSize(Size.Empty);
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
-			SetMinimumSize(size);
+			return SetMinimumSize(size);
 		}
 
-		protected virtual void SetMinimumSize(Size size)
+		protected virtual bool SetMinimumSize(Size size)
 		{
 			var sdsize = size.ToSD();
-			if (Control.MinimumSize != sdsize)
+			if (ContainerControl.MinimumSize != sdsize)
 			{
-				Control.MinimumSize = sdsize;
+				ContainerControl.MinimumSize = sdsize;
+				//Debug.Print(string.Format("Min Size: {0}, Type:{1}", sdsize, Widget));
+				return true;
 			}
+			return false;
 		}
 
 		public virtual void SetScale(bool xscale, bool yscale)
 		{
-			this.XScale = xscale;
-			this.YScale = yscale;
+			XScale = xscale;
+			YScale = yscale;
 			SetMinimumSize();
 		}
 
@@ -182,25 +186,45 @@ namespace Eto.Platform.Windows
 			SetScale(XScale, YScale);
 		}
 
-		public override void AttachEvent(string handler)
+		ContextMenu contextMenu;
+		public ContextMenu ContextMenu
 		{
-			switch (handler)
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				Control.ContextMenuStrip = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
-					Control.KeyDown += Control_KeyDown;
-					Control.KeyPress += Control_KeyPress;
+					if (!ApplicationHandler.BubbleKeyEvents)
+					{
+						Control.KeyDown += Control_KeyDown;
+						Control.KeyPress += Control_KeyPress;
+					}
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += Control_KeyUp;
+					if (!ApplicationHandler.BubbleKeyEvents)
+					{
+						Control.KeyUp += Control_KeyUp;
+					}
 					break;
-				case Eto.Forms.TextControl.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.TextChanged += Control_TextChanged;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					Control.SizeChanged += Control_SizeChanged;
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
-					Control.MouseDoubleClick += HandleDoubleClick;
+					if (!ApplicationHandler.BubbleMouseEvents)
+					{
+						Control.MouseDoubleClick += HandleDoubleClick;
+					}
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
 					Control.MouseEnter += HandleControlMouseEnter;
@@ -209,20 +233,32 @@ namespace Eto.Platform.Windows
 					Control.MouseLeave += HandleControlMouseLeave;
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
-					Control.MouseDown += HandleMouseDown;
-					if (ShouldCaptureMouse)
-						HandleEvent(Eto.Forms.Control.MouseUpEvent);
+					if (!ApplicationHandler.BubbleMouseEvents)
+					{
+						Control.MouseDown += HandleMouseDown;
+						if (ShouldCaptureMouse)
+							HandleEvent(Eto.Forms.Control.MouseUpEvent);
+					}
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
-					Control.MouseUp += HandleMouseUp;
-					if (ShouldCaptureMouse)
-						HandleEvent(Eto.Forms.Control.MouseDownEvent);
+					if (!ApplicationHandler.BubbleMouseEvents)
+					{
+						Control.MouseUp += HandleMouseUp;
+						if (ShouldCaptureMouse)
+							HandleEvent(Eto.Forms.Control.MouseDownEvent);
+					}
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
-					Control.MouseMove += HandleMouseMove;
+					if (!ApplicationHandler.BubbleMouseEvents)
+					{
+						Control.MouseMove += HandleMouseMove;
+					}
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
-					Control.MouseWheel += HandleMouseWheel;
+					if (!ApplicationHandler.BubbleMouseEvents)
+					{
+						Control.MouseWheel += HandleMouseWheel;
+					}
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.GotFocus += delegate
@@ -237,63 +273,57 @@ namespace Eto.Platform.Windows
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
 
-		void HandleMouseWheel(object sender, SWF.MouseEventArgs e)
+		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
 		{
-			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseWheel(e.ToEto());
+			Widget.OnMouseWheel(e.ToEto(Control));
 		}
 
 		void HandleControlMouseLeave(object sender, EventArgs e)
 		{
-			Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, SWF.Control.ModifierKeys.ToEto(), SWF.Control.MousePosition.ToEto()));
+			Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, swf.Control.ModifierKeys.ToEto(), swf.Control.MousePosition.ToEto()));
 		}
 
 		void HandleControlMouseEnter(object sender, EventArgs e)
 		{
-			Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, SWF.Control.ModifierKeys.ToEto(), SWF.Control.MousePosition.ToEto()));
+			Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, swf.Control.ModifierKeys.ToEto(), swf.Control.MousePosition.ToEto()));
 		}
 
-		void HandleDoubleClick(object sender, SWF.MouseEventArgs e)
+		void HandleDoubleClick(object sender, swf.MouseEventArgs e)
 		{
-			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseDoubleClick(e.ToEto());
+			var ee = e.ToEto(Control);
+			Widget.OnMouseDoubleClick(ee);
+			if (!ee.Handled)
+				Widget.OnMouseDown(ee);
 		}
 
-		void HandleMouseUp(Object sender, SWF.MouseEventArgs e)
+		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
 		{
-			if (!ApplicationHandler.BubbleMouseEvents)
-			{
-				if (ShouldCaptureMouse)
-					Control.Capture = false;
-				Widget.OnMouseUp(e.ToEto());
-			}
+			if (ShouldCaptureMouse)
+				Control.Capture = false;
+			Widget.OnMouseUp(e.ToEto(Control));
 		}
 
-		void HandleMouseMove(Object sender, SWF.MouseEventArgs e)
+		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
 		{
-			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseMove(e.ToEto());
+			Widget.OnMouseMove(e.ToEto(Control));
 		}
 
-		void HandleMouseDown(object sender, SWF.MouseEventArgs e)
+		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
-			if (!ApplicationHandler.BubbleMouseEvents)
-			{
-				Widget.OnMouseDown(e.ToEto());
-				if (ShouldCaptureMouse)
-					Control.Capture = true;
-			}
+			Widget.OnMouseDown(e.ToEto(Control));
+			if (ShouldCaptureMouse)
+				Control.Capture = true;
 		}
 
 		public virtual string Text
 		{
 			get { return Control.Text; }
-			set { Control.Text = value; }
+			set { Control.Text = value; SetMinimumSize(); }
 		}
 
 		public virtual Size Size
@@ -301,20 +331,26 @@ namespace Eto.Platform.Windows
 			get { return ContainerControl.Size.ToEto(); }
 			set
 			{
-				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.Size = value.ToSD();
 				desiredSize = value;
-				SetMinimumSize();
+				ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
+				var minset = SetMinimumSize();
+				ContainerControl.Size = value.ToSD();
+				if (minset && ContainerControl.IsHandleCreated)
+				{
+					var parent = Widget.Parent.GetWindowsHandler();
+					if (parent != null)
+						parent.SetMinimumSize();
+				}
 			}
 		}
 
 		public virtual Size ClientSize
 		{
-			get { return ContainerControl.ClientSize.ToEto(); }
+			get { return Control.ClientSize.ToEto(); }
 			set
 			{
-				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.ClientSize = value.ToSD();
+				Control.AutoSize = value.Width == -1 || value.Height == -1;
+				Control.ClientSize = value.ToSD();
 			}
 		}
 
@@ -330,10 +366,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				cursor = value;
-				if (cursor != null)
-					this.Control.Cursor = cursor.ControlObject as SWF.Cursor;
-				else
-					this.Control.Cursor = null;
+				Control.Cursor = cursor != null ? cursor.ControlObject as swf.Cursor : null;
 			}
 		}
 
@@ -375,8 +408,19 @@ namespace Eto.Platform.Windows
 
 		public void Focus()
 		{
-			if (!Control.Visible)
-				Control.TabIndex = 0;
+			if (Control.IsHandleCreated)
+			{
+				if (!Control.Visible)
+					Control.TabIndex = 0;
+				Control.Focus();
+			}
+			else
+				Control.HandleCreated += Control_HandleCreated;
+		}
+
+		void Control_HandleCreated(object sender, EventArgs e)
+		{
+			Control.HandleCreated -= Control_HandleCreated;
 			Control.Focus();
 		}
 
@@ -400,7 +444,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public virtual void SetParent(Eto.Forms.Container parent)
+		public virtual void SetParent(Container parent)
 		{
 		}
 
@@ -415,7 +459,7 @@ namespace Eto.Platform.Windows
 
 		public virtual void OnLoad(EventArgs e)
 		{
-			SetMinimumSize();
+			SetMinimumSize(true);
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)
@@ -429,19 +473,19 @@ namespace Eto.Platform.Windows
 
 		void SetToolTip()
 		{
-			if (this.Widget.ParentWindow != null)
+			if (Widget.ParentWindow != null)
 			{
-				var parent = this.Widget.ParentWindow.Handler as IWindowHandler;
+				var parent = Widget.ParentWindow.Handler as IWindowHandler;
 				if (parent != null)
 					parent.ToolTips.SetToolTip(Control, tooltip);
 			}
 		}
 
-		Key key;
+		Keys key;
 		bool handled;
 		char keyChar;
 		bool charPressed;
-		public Key? LastKeyDown { get; set; }
+		public Keys? LastKeyDown { get; set; }
 
 		void Control_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
@@ -449,12 +493,12 @@ namespace Eto.Platform.Windows
 			handled = true;
 			key = e.KeyData.ToEto();
 
-			if (key != Key.None && LastKeyDown != key)
+			if (key != Keys.None && LastKeyDown != key)
 			{
 				var kpea = new KeyEventArgs(key, KeyEventType.KeyDown);
 				Widget.OnKeyDown(kpea);
-				e.SuppressKeyPress = kpea.Handled;
-				handled = kpea.Handled;
+
+				handled = e.SuppressKeyPress = e.Handled = kpea.Handled;
 			}
 			else
 				handled = false;
@@ -465,7 +509,7 @@ namespace Eto.Platform.Windows
 				// we want the char event to come after the dialog is closed, and handled is set to true!
 				var kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
 				Widget.OnKeyDown(kpea);
-				e.SuppressKeyPress = kpea.Handled;
+				e.SuppressKeyPress = e.Handled = kpea.Handled;
 			}
 
 			LastKeyDown = null;
@@ -497,7 +541,9 @@ namespace Eto.Platform.Windows
 
 		void Control_TextChanged(object sender, EventArgs e)
 		{
-			Widget.OnTextChanged(e);
+			var widget = Widget as TextControl;
+			if (widget != null)
+				widget.OnTextChanged(e);
 		}
 
 		public Font Font
@@ -511,30 +557,32 @@ namespace Eto.Platform.Windows
 			set
 			{
 				font = value;
-				if (font != null)
-					this.Control.Font = font.ControlObject as System.Drawing.Font;
-				else
-					this.Control.Font = null;
+				Control.Font = font.ToSD();
 			}
 		}
 
-		public virtual void MapPlatformAction(string systemAction, BaseAction action)
+		public IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return Enumerable.Empty<string>(); }
+		}
+
+		public virtual void MapPlatformCommand(string systemAction, Command command)
 		{
 		}
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
-			return this.Control.PointToClient(point.ToSDPoint()).ToEto();
+            return !Control.IsDisposed ? Control.PointToClient(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
 		}
 
 		public virtual PointF PointToScreen(PointF point)
 		{
-			return this.Control.PointToScreen(point.ToSDPoint()).ToEto();
+			return !Control.IsDisposed ? Control.PointToScreen(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
 		}
 
 		public Point Location
 		{
-			get { return this.Control.Location.ToEto(); }
+			get { return Control.Location.ToEto(); }
 		}
 	}
 }

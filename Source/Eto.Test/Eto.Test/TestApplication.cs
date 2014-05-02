@@ -1,10 +1,5 @@
 using System;
 using Eto.Forms;
-using System.Linq;
-using Eto.Drawing;
-using Eto.Test.Sections.Layouts.ScrollingLayouts;
-using Eto.Test.Sections.Controls;
-using Eto.Test.Sections.Behaviors;
 
 namespace Eto.Test
 {
@@ -19,13 +14,12 @@ namespace Eto.Test
 
 		public override void OnInitialized(EventArgs e)
 		{
-			base.MainForm = new MainForm();
-			HandleEvent(Application.TerminatingEvent);
-			
+			MainForm = new MainForm();
+
 			base.OnInitialized(e);
 			
 			// show the main form
-			base.MainForm.Show();
+			MainForm.Show();
 		}
 		#if DESKTOP
 		public override void OnTerminating(System.ComponentModel.CancelEventArgs e)
@@ -33,7 +27,7 @@ namespace Eto.Test
 			base.OnTerminating(e);
 			Log.Write(this, "Terminating");
 			
-			var result = MessageBox.Show(base.MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
+			var result = MessageBox.Show(MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
 			if (result == DialogResult.No)
 				e.Cancel = true;
 		}

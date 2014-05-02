@@ -2,14 +2,11 @@ using System;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections;
 using System.ComponentModel;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
 #if XAML
 using System.Windows.Markup;
-using System.Xaml;
 
 #endif
 namespace Eto.Forms
@@ -46,9 +43,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				if (controls == null)
-					return Enumerable.Empty<Control>();
-				return controls.OfType<Control>();
+				return controls == null ? Enumerable.Empty<Control>() : controls.OfType<Control>();
 			}
 		}
 
@@ -90,7 +85,7 @@ namespace Eto.Forms
 				}
 				foreach (var col in value)
 				{
-					SetColumnScale(col, true);
+					SetColumnScale(col);
 				}
 			}
 			get
@@ -116,7 +111,7 @@ namespace Eto.Forms
 				}
 				foreach (var row in value)
 				{
-					SetRowScale(row, true);
+					SetRowScale(row);
 				}
 			}
 			get
@@ -131,11 +126,11 @@ namespace Eto.Forms
 			}
 		}
 		#region Attached Properties
-		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
+		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
 
 		public static Point GetLocation(Control control)
 		{
-			return control.Properties.Get<Point>(LocationProperty, Point.Empty);
+			return control.Properties.Get<Point>(LocationProperty);
 		}
 
 		public static void SetLocation(Control control, Point value)
@@ -146,11 +141,11 @@ namespace Eto.Forms
 				layout.Move(control, value);
 		}
 
-		static EtoMemberIdentifier ColumnScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "ColumnScale");
+		static readonly EtoMemberIdentifier ColumnScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "ColumnScale");
 
 		public static bool GetColumnScale(Control control)
 		{
-			return control.Properties.Get<bool>(ColumnScaleProperty, false);
+			return control.Properties.Get<bool>(ColumnScaleProperty);
 		}
 
 		public static void SetColumnScale(Control control, bool value)
@@ -158,11 +153,11 @@ namespace Eto.Forms
 			control.Properties[ColumnScaleProperty] = value;
 		}
 
-		static EtoMemberIdentifier RowScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "RowScale");
+		static readonly EtoMemberIdentifier RowScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "RowScale");
 
 		public static bool GetRowScale(Control control)
 		{
-			return control.Properties.Get<bool>(RowScaleProperty, false);
+			return control.Properties.Get<bool>(RowScaleProperty);
 		}
 
 		public static void SetRowScale(Control control, bool value)
@@ -202,15 +197,15 @@ namespace Eto.Forms
 			this.CellSize = size;
 		}
 
-		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
-		public TableLayout(DockContainer container, int width, int height)
+		[Obsolete("Add a TableLayout to a Panel using the Panel.Content property")]
+		public TableLayout(Panel container, int width, int height)
 			: this(container, new Size(width, height))
 		{
 		}
 
-		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
-		public TableLayout(DockContainer container, Size size)
-			: this(size, container != null ? container.Generator : Generator.Current)
+		[Obsolete("Add a TableLayout to a Panel using the Panel.Content property")]
+		public TableLayout(Panel container, Size size)
+			: this(size, container != null ? container.Generator : null)
 		{
 			if (container != null)
 				container.Content = this;
@@ -247,19 +242,11 @@ namespace Eto.Forms
 		{
 			var old = controls[x, y];
 			if (old != null)
-				RemoveParent(old, true);
+				RemoveParent(old);
 			controls[x, y] = control;
-			bool load = Loaded;
 			if (control != null)
 			{
-				RemoveParent(control, false);
-				load &= !control.Loaded;
-				if (load)
-				{
-					control.OnPreLoad(EventArgs.Empty);
-					control.OnLoad(EventArgs.Empty);
-				}
-				SetParent(control);
+				var load = SetParent(control);
 				Handler.Add(control, x, y);
 				if (load)
 					control.OnLoadComplete(EventArgs.Empty);
@@ -291,7 +278,7 @@ namespace Eto.Forms
 
 			var old = controls[x, y];
 			if (old != null)
-				RemoveParent(old, true);
+				RemoveParent(old);
 			controls[x, y] = child;
 			child.Properties[LocationProperty] = new Point(x, y);
 			Handler.Move(child, x, y);
@@ -309,7 +296,7 @@ namespace Eto.Forms
 			{
 				controls[index.Item1, index.Item2] = null;
 				Handler.Remove(child);
-				RemoveParent(child, true);
+				RemoveParent(child);
 			}
 		}
 
@@ -329,7 +316,7 @@ namespace Eto.Forms
 		}
 
 		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
+		void OnDeserialized(StreamingContext context)
 		{
 			OnDeserialized();
 		}
@@ -359,14 +346,14 @@ namespace Eto.Forms
 			}
 			else
 			{
-				this.PreLoad += HandleDeserialized;
+				PreLoad += HandleDeserialized;
 			}
 		}
 
 		void HandleDeserialized(object sender, EventArgs e)
 		{
 			OnDeserialized(true);
-			this.PreLoad -= HandleDeserialized;
+			PreLoad -= HandleDeserialized;
 		}
 	}
 }

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
@@ -22,7 +19,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 			{
 				var item = value as ITreeItem;
-				return GetChildren ((ITreeStore)item);
+				return GetChildren(item);
 			}
 
 			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -35,7 +32,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 			{
-				var item = value as ITreeItem;
+				var item = (ITreeItem)value;
 				return item.Expanded;
 			}
 

@@ -1,9 +1,15 @@
+using System;
 using Eto.Drawing;
 using s = SharpDX;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    public class MatrixHandler : IMatrixHandler
+	/// <summary>
+	/// Handler for <see cref="IMatrix"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class MatrixHandler : IMatrixHandler
     {
 		s.Matrix3x2 Control;
 
@@ -12,9 +18,9 @@ namespace Eto.Platform.Direct2D.Drawing
             this.Control = s.Matrix3x2.Identity;
         }
 
-        public MatrixHandler(s.Matrix3x2 m)
+        public MatrixHandler(ref s.Matrix3x2 m)
         {
-            this.Control = m;
+            this.Control = m; // copied the value as Control is a struct
         }
 
         public float[] Elements
@@ -43,25 +49,39 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public void Rotate(float angle)
         {
-            Control = 
-                s.Matrix3x2.Multiply(
-                    s.Matrix3x2.Rotation(angle), // premultiply
-                    Control);
+			Control = s.Matrix3x2.Multiply(s.Matrix3x2.Rotation(Conversions.DegreesToRadians(angle)), Control); // premultiply
         }
+
+		public void RotateAt(float angle, float centerX, float centerY)
+		{
+			angle = Conversions.DegreesToRadians(angle);
+			var sina = (float)Math.Sin(angle);
+			var cosa = (float)Math.Cos(angle);
+			var matrix = new s.Matrix3x2(cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);
+			Control = s.Matrix3x2.Multiply(matrix, Control);
+		}
 
         public void Translate(float x, float y)
         {
-            var c = Control;
-            c.TranslationVector = new s.Vector2(x, y);
-            Control = c;
+			Control = s.Matrix3x2.Multiply(s.Matrix3x2.Translation(x, y), Control); // premultiply
         }
 
         public void Scale(float sx, float sy)
-        {            
-            var c = Control;
-            c.ScaleVector = new s.Vector2(sx, sy);
-            Control = c;
+        {
+			Control = s.Matrix3x2.Multiply(s.Matrix3x2.Scaling(sx, sy), Control); // premultiply
         }
+
+		public void Skew(float skewX, float skewY)
+		{
+			var matrix = new s.Matrix3x2(1, (float)Math.Tan(Conversions.DegreesToRadians(skewX)), (float)Math.Tan(Conversions.DegreesToRadians(skewY)), 1, 0, 0);
+			Control = s.Matrix3x2.Multiply(matrix, Control);
+		}
+
+		public void ScaleAt(float scaleX, float scaleY, float centerX, float centerY)
+		{
+			var matrix = new s.Matrix3x2(scaleX, 0f, 0f, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
+			Control = s.Matrix3x2.Multiply(matrix, Control);
+		}
 
 		public void Prepend(IMatrix matrix)
 		{
@@ -75,143 +95,75 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public void Create(float m11, float m12, float m21, float m22, float dx, float dy)
         {
-            this.Control =
-                new s.Matrix3x2(m11, m12, m21, m22, dx, dy);
-        }
-
-        public void Invert()
-        {
-            var m1 = s.Matrix3x2.Identity;
-            var m2 = this.Control;
-            s.Matrix3x2 result;
-            s.Matrix3x2.Divide(
-                ref m1, 
-                ref m2,
-                out result);
-            this.Control = result;
-        }
-
-        public PointF TransformPoint(Point p)
-        {
-            s.DrawingPointF v =
-                s.Matrix3x2.TransformPoint(
-                    this.Control,
-                    p.ToWpf()); // implicit conversion from Vector2 to DrawingPointF
-
-            return v.ToEto();
-        }
-
-        public PointF TransformPoint(PointF p)
-        {
-            s.DrawingPointF v =
-                s.Matrix3x2.TransformPoint(
-                    this.Control,
-                    p.ToWpf()); // implicit conversion from Vector2 to DrawingPointF
-
-            return v.ToEto();
+            this.Control = new s.Matrix3x2(m11, m12, m21, m22, dx, dy);
         }
 
 		public void Create()
 		{
-			throw new System.NotImplementedException();
+			this.Control = s.Matrix3x2.Identity;
 		}
 
+        public void Invert()
+        {
+			this.Control = s.Matrix3x2.Invert(this.Control);
+        }
+
+		public PointF TransformPoint(Point p)
+		{
+			s.Vector2 v = s.Matrix3x2.TransformPoint(this.Control, new s.Vector2(p.X, p.Y)); // implicit conversion from Vector2 to Vector2
+			return v.ToEto();
+		}
+
+		public PointF TransformPoint(PointF p)
+		{
+			s.Vector2 v = s.Matrix3x2.TransformPoint(this.Control, p.ToDx()); // implicit conversion from Vector2 to Vector2
+			return v.ToEto();
+		}
 
 		public float Xx
 		{
-			get
-			{
-				throw new System.NotImplementedException();
-			}
-			set
-			{
-				throw new System.NotImplementedException();
-			}
+			get { return Control.M11; }
+			set { Control.M11 = value; }
 		}
 
 		public float Xy
 		{
-			get
-			{
-				throw new System.NotImplementedException();
-			}
-			set
-			{
-				throw new System.NotImplementedException();
-			}
+			get { return Control.M21; }
+			set { Control.M21 = value; }
 		}
 
 		public float Yx
 		{
-			get
-			{
-				throw new System.NotImplementedException();
-			}
-			set
-			{
-				throw new System.NotImplementedException();
-			}
+			get { return Control.M12; }
+			set { Control.M12 = value; }
 		}
 
 		public float Yy
 		{
-			get
-			{
-				throw new System.NotImplementedException();
-			}
-			set
-			{
-				throw new System.NotImplementedException();
-			}
+			get { return Control.M22; }
+			set { Control.M22 = value; }
 		}
 
 		public float X0
 		{
-			get
-			{
-				throw new System.NotImplementedException();
-			}
-			set
-			{
-				throw new System.NotImplementedException();
-			}
+			get { return Control.M31; }
+			set { Control.M31 = value; }
 		}
 
 		public float Y0
 		{
-			get
-			{
-				throw new System.NotImplementedException();
-			}
-			set
-			{
-				throw new System.NotImplementedException();
-			}
-		}
-
-		public void RotateAt(float angle, float centerX, float centerY)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void ScaleAt(float scaleX, float scaleY, float centerX, float centerY)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void Skew(float skewX, float skewY)
-		{
-			throw new System.NotImplementedException();
+			get { return Control.M32; }
+			set { Control.M32 = value; }
 		}
 
 		public object ControlObject
 		{
-			get { throw new System.NotImplementedException(); }
+			get { return Control; }
 		}
 
 		public IMatrix Clone()
 		{
-			throw new System.NotImplementedException();
+			return new MatrixHandler(ref Control);
 		}
 
 		public void Dispose()

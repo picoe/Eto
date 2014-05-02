@@ -4,24 +4,24 @@ using Eto.Drawing;
 
 namespace Tutorial2
 {
-	public class MyAction : ButtonAction
+	public class MyCommand : Command
 	{
 		public const string ActionID = "my_action";
 
-		public MyAction()
+		public MyCommand()
 		{
 			this.ID = ActionID;
 			this.MenuText = "C&lick Me";
 			this.ToolBarText = "Click Me";
-			this.TooltipText = "This shows a dialog for no reason";
+			this.ToolTip = "This shows a dialog for no reason";
 			//this.Icon = Icon.FromResource ("MyResourceName.ico");
-			this.Accelerator = Application.Instance.CommonModifier | Key.M;  // control+M or cmd+M
+			this.Shortcut = Application.Instance.CommonModifier | Key.M;  // control+M or cmd+M
 		}
 
-		protected override void OnActivated(EventArgs e)
+		public override void OnExecuted(EventArgs e)
 		{
-			base.OnActivated(e);
-			
+			base.OnExecuted(e);
+
 			MessageBox.Show(Application.Instance.MainForm, "You clicked me!", "Tutorial 2", MessageBoxButtons.OK);
 		}
 	}
@@ -33,27 +33,30 @@ namespace Tutorial2
 			this.ClientSize = new Size(600, 400);
 			this.Title = "Menus and Toolbars";
 
-			GenerateActions();
+			Menu = CreateMenu();
+			ToolBar = CreateToolBar();
 		}
 
-		void GenerateActions()
+		MenuBar CreateMenu()
 		{
-			var actions = new GenerateActionArgs(this);
+			var menu = new MenuBar();
+			// add standard menu items (e.g. for OS X)
+			Application.Instance.CreateStandardMenu(menu.Items);
 
-			Application.Instance.GetSystemActions(actions, true);
+			// add command to file sub-menu
+			var file = menu.Items.GetSubmenu("&File");
+			file.Items.Add(new MyCommand());
 
-			var myAction = new MyAction();
-				
-			// add action to file sub-menu
-			var file = actions.Menu.FindAddSubMenu("&File");
-			file.Actions.Add(myAction);
+			return menu;
+		}
 
-			// add action to toolbar
-			actions.ToolBar.Add(myAction);
+		ToolBar CreateToolBar()
+		{
+			var toolbar = new ToolBar();
 
-			// generate menu & toolbar
-			this.Menu = actions.Menu.GenerateMenuBar();
-			this.ToolBar = actions.ToolBar.GenerateToolBar();
+			toolbar.Items.Add(new MyCommand());
+
+			return toolbar;
 		}
 	}
 

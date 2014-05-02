@@ -1,65 +1,71 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Drawing;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 #if XAML
 using System.Windows.Markup;
-#endif
 
+#endif
 namespace Eto.Forms
 {
-	[ContentProperty("Items")]
+	[ContentProperty("Items"), TypeConverter(typeof(DynamicRowConverter))]
 	public class DynamicRow
 	{
-		List<DynamicItem> items = new List<DynamicItem> ();
+		readonly List<DynamicItem> list;
 
+		readonly Collection<DynamicItem> items;
 		public DynamicTable Table { get; internal set; }
 
-		public List<DynamicItem> Items
+		public Collection<DynamicItem> Items { get { return items; } }
+
+		public DynamicRow()
 		{
-			get { return items; }
+			items = new Collection<DynamicItem>(list = new List<DynamicItem>());
 		}
 
-		public DynamicRow ()
-		{ }
-
-		public DynamicRow (IEnumerable<DynamicItem> items)
+		public DynamicRow(IEnumerable<DynamicItem> items)
 		{
-			this.items.AddRange (items);
+			this.items = new Collection<DynamicItem>(list = new List<DynamicItem>(items));
 		}
 
-		public DynamicRow (IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
+		public DynamicRow(IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
 		{
-			Add (controls, xscale, yscale);
+			items = new Collection<DynamicItem>(list = new List<DynamicItem>());
+			Add(controls, xscale, yscale);
 		}
-		
-		public void Add (params Control[] controls)
+
+		public void Add(params Control[] controls)
 		{
-			Add ((IEnumerable<Control>)controls);
+			Add(controls.AsEnumerable());
 		}
-			
-		public void Add (IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
+
+		public void Add(IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
 		{
 			if (controls == null)
 				return;
-			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
-			Items.AddRange (items.OfType<DynamicItem>());
+			var controlItems = controls.Select(r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
+			list.AddRange(controlItems.OfType<DynamicItem>());
+		}
+
+		public static implicit operator DynamicRow(Control control)
+		{
+			var dynamicRow = new DynamicRow();
+			dynamicRow.Items.Add(new DynamicControl { Control = control });
+			return dynamicRow;
 		}
 	}
 
 	[ContentProperty("Rows")]
 	public class DynamicTable : DynamicItem, ISupportInitialize
 	{
-		bool visible = true;
-		List<DynamicRow> rows = new List<DynamicRow> ();
 
-		public List<DynamicRow> Rows
-		{
-			get { return rows; }
-		}
+		readonly Collection<DynamicRow> rows;
+		bool visible = true;
+
+		public Collection<DynamicRow> Rows { get { return rows; } }
 
 		public TableLayout Table { get; private set; }
 
@@ -72,7 +78,8 @@ namespace Eto.Forms
 		public bool Visible
 		{
 			get { return Table != null ? Table.Visible : visible; }
-			set {
+			set
+			{
 				if (Table != null)
 					Table.Visible = value;
 				else
@@ -82,65 +89,71 @@ namespace Eto.Forms
 
 		internal DynamicRow CurrentRow { get; set; }
 
-		public void Add (DynamicItem item)
+		public DynamicTable()
+		{
+
+			rows = new Collection<DynamicRow>();
+		}
+
+		public void Add(DynamicItem item)
 		{
 			if (CurrentRow != null)
-				CurrentRow.Items.Add (item);
+				CurrentRow.Items.Add(item);
 			else
-				AddRow (item);
+				AddRow(item);
 		}
 
-		public void AddRow (DynamicItem item)
+		public void AddRow(DynamicItem item)
 		{
-			var row = new DynamicRow ();
+			var row = new DynamicRow();
 			row.Table = this;
-			row.Items.Add (item);
-			rows.Add (row);
+			row.Items.Add(item);
+			Rows.Add(row);
 		}
 
-		public void AddRow (DynamicRow row)
+		public void AddRow(DynamicRow row)
 		{
 			row.Table = this;
-			rows.Add (row);
+			Rows.Add(row);
 		}
 
-		public override Control Generate (DynamicLayout layout)
+		public override Control Generate(DynamicLayout layout)
 		{
-			if (rows.Count == 0)
+			if (Rows.Count == 0)
 				return null;
-			int cols = rows.Where (r => r != null).Max (r => r.Items.Count);
+			int cols = Rows.Where(r => r != null).Max(r => r.Items.Count);
 
-			this.Table = new TableLayout (cols, rows.Count);
-			var tableLayout = this.Table;
-			var padding = this.Padding ?? layout.DefaultPadding;
+			Table = new TableLayout(cols, Rows.Count);
+			var tableLayout = Table;
+			var padding = Padding ?? layout.DefaultPadding;
 			if (padding != null)
 				tableLayout.Padding = padding.Value;
 
-			var spacing = this.Spacing ?? layout.DefaultSpacing;
+			var spacing = Spacing ?? layout.DefaultSpacing;
 			if (spacing != null)
 				tableLayout.Spacing = spacing.Value;
 
-			var scalingRow = new DynamicRow ();
-			scalingRow.Items.Add (new DynamicControl{ YScale = true });
-			for (int cy = 0; cy < rows.Count; cy++) {
-				var row = rows[cy];
-				if (row == null) row = scalingRow;
-				for (int cx = 0; cx < row.Items.Count; cx++) {
-					var item = row.Items[cx];
-					if (item == null) item = new DynamicControl { XScale = true };
-					item.Generate (layout, tableLayout, cx, cy);
+			var scalingRow = new DynamicRow();
+			scalingRow.Items.Add(new DynamicControl { YScale = true });
+			for (int cy = 0; cy < Rows.Count; cy++)
+			{
+				var row = Rows[cy] ?? scalingRow;
+				for (int cx = 0; cx < row.Items.Count; cx++)
+				{
+					var item = row.Items[cx] ?? new DynamicControl { XScale = true };
+					item.Generate(layout, tableLayout, cx, cy);
 				}
 			}
 			return Table;
 		}
 
-		void ISupportInitialize.BeginInit ()
+		void ISupportInitialize.BeginInit()
 		{
 		}
 
-		void ISupportInitialize.EndInit ()
+		void ISupportInitialize.EndInit()
 		{
-			foreach (var row in rows)
+			foreach (var row in Rows)
 			{
 				row.Table = this;
 			}

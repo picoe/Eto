@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace Eto.Forms
 {
@@ -28,13 +27,14 @@ namespace Eto.Forms
 			if (CheckedChanged != null)
 				CheckedChanged (this, e);
 		}
-		
-		public RadioButton (RadioButton controller = null) : this (Generator.Current, controller)
+
+		public RadioButton()
+			: this(null, null)
 		{
 		}
-
-		public RadioButton (Generator g, RadioButton controller)
-			: this (g, typeof(IRadioButton), controller)
+		
+		public RadioButton (RadioButton controller = null, Generator generator = null)
+			: this(generator, typeof(IRadioButton), controller)
 		{
 		}
 		

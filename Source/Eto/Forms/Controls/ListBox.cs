@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -25,11 +24,12 @@ namespace Eto.Forms
 				Activated (this, e);
 		}
 
-		public ListBox () : this (Generator.Current)
+		public ListBox()
+			: this((Generator)null)
 		{
 		}
-		
-		public ListBox (Generator g) : this (g, typeof(IListBox))
+
+		public ListBox (Generator generator) : this (generator, typeof(IListBox))
 		{
 		}
 		

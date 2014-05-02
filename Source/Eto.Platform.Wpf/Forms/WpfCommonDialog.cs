@@ -1,20 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using mw = Microsoft.Win32;
 using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfCommonDialog<T, W> : WidgetHandler<T, W>, ICommonDialog
-		where T : mw.CommonDialog
-		where W : CommonDialog
+	public abstract class WpfCommonDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ICommonDialog
+		where TControl : mw.CommonDialog
+		where TWidget : CommonDialog
 	{
 		public DialogResult ShowDialog (Window parent)
 		{
-			bool? result = null;
+			bool? result;
 			if (parent != null) {
 				var owner = parent.ControlObject as sw.Window;
 				result = Control.ShowDialog (owner);

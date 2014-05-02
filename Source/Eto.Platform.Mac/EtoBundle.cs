@@ -1,6 +1,5 @@
 using System;
 using MonoMac.Foundation;
-using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
@@ -8,8 +7,8 @@ namespace Eto.Platform.Mac
 	public static class EtoBundle
 	{
 		
-		static IntPtr selEtoLoadNibNamed = Selector.GetHandle ("etoLoadNibNamed:owner:");
-		static IntPtr selLoadNibNamed = Selector.GetHandle ("loadNibNamed:owner:");
+		static readonly IntPtr selEtoLoadNibNamed = Selector.GetHandle ("etoLoadNibNamed:owner:");
+		static readonly IntPtr selLoadNibNamed = Selector.GetHandle ("loadNibNamed:owner:");
 		
 		public static void Init ()
 		{
@@ -21,9 +20,7 @@ namespace Eto.Platform.Mac
 		static bool EtoLoadNibNamed (IntPtr self, IntPtr sel, IntPtr filePath, IntPtr owner)
 		{
 			var str = new NSString (filePath);
-			if (str.Length == 0)
-				return true;
-			return Messaging.bool_objc_msgSend_IntPtr_IntPtr (self, selEtoLoadNibNamed, filePath, owner);
+			return str.Length == 0 || Messaging.bool_objc_msgSend_IntPtr_IntPtr(self, selEtoLoadNibNamed, filePath, owner);
 		}
 	}
 }

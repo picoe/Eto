@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing
@@ -22,8 +20,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 		void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize);
 	}
 	
-	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, IImage, IImageHandler
-		where W: Image
+	public abstract class ImageHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IImage, IImageHandler
+		where TWidget: Image
 	{
 
 		public abstract Size Size { get; }

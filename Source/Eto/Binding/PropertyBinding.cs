@@ -1,7 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Collections;
-using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace Eto
@@ -50,9 +48,13 @@ namespace Eto
 		
 		void EnsureProperty (object dataItem)
 		{
-			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsAssignableFrom(dataItem.GetType()))) {
+#if WINRT
+			throw new NotImplementedException();
+#else
+			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsInstanceOfType(dataItem))) {
 				descriptor = TypeDescriptor.GetProperties (dataItem).Find (Property, IgnoreCase);
 			}
+#endif
 		}
 		
 		/// <summary>
@@ -78,7 +80,7 @@ namespace Eto
 		{
 			EnsureProperty (dataItem);
 			if (descriptor != null && dataItem != null) {
-				if (value != null && !descriptor.PropertyType.IsAssignableFrom (value.GetType ()))
+				if (value != null && !descriptor.PropertyType.IsInstanceOfType(value))
 				{
 					value = Convert.ChangeType (value, descriptor.PropertyType, CultureInfo.InvariantCulture);
 				}
@@ -109,6 +111,9 @@ namespace Eto
 		/// <returns>binding reference used to track the event hookup, to pass to <see cref="RemoveValueChangedHandler"/> when removing the handler</returns>
 		public override object AddValueChangedHandler (object dataItem, EventHandler<EventArgs> handler)
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			if (dataItem == null)
 				return false;
 			var notify = dataItem as INotifyPropertyChanged;
@@ -131,6 +136,7 @@ namespace Eto
 				}
 				return dataItem;
 			}
+#endif
 		}
 
 		/// <summary>
@@ -140,9 +146,12 @@ namespace Eto
 		/// <param name="handler">Same handler that was set up during the <see cref="AddValueChangedHandler"/> call</param>
 		public override void RemoveValueChangedHandler (object bindingReference, EventHandler<EventArgs> handler)
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			var helper = bindingReference as ValueChangedHandler;
 			if (helper != null) {
-				var notify = helper.DataItem as INotifyPropertyChanged;
+				var notify = (INotifyPropertyChanged)helper.DataItem;
 				notify.PropertyChanged -= helper.HandlePropertyChanged;
 			} else {
 				var dataItem = bindingReference;
@@ -155,6 +164,7 @@ namespace Eto
 					catch {}
 				}
 			}
+#endif
 		}
 	}
 }

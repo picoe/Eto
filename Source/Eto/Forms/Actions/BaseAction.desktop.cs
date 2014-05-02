@@ -1,9 +1,4 @@
 #if DESKTOP
-using System;
-using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {

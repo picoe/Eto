@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 
 namespace Eto.Drawing
 {
@@ -518,6 +515,14 @@ namespace Eto.Drawing
 		{
 			for (int i = 0; i < matrices.Length; i++)
 				matrix.Prepend (matrices [i]);
+		}
+
+		/// <summary>
+		/// Returns the scale coordinates Xx and Yy of the <paramref name="matrix"/> as a PointF.
+		/// </summary>
+		public static PointF GetScale(this IMatrix matrix)
+		{
+			return new PointF(matrix.Xx, matrix.Yy);
 		}
 	}
 }

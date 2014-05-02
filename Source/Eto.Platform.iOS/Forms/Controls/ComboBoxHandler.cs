@@ -6,7 +6,7 @@ using MonoTouch.UIKit;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class ComboBoxHandler : iosControl<UILabel, ComboBox>, IComboBox
+	public class ComboBoxHandler : IosControl<UILabel, ComboBox>, IComboBox
 	{
 		
 		public ComboBoxHandler()

@@ -7,7 +7,7 @@ using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class GroupBoxHandler : MacDockContainer<NSBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : MacPanel<NSBox, GroupBox>, IGroupBox
 	{
 		Font font;
 
@@ -17,7 +17,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -42,7 +42,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override bool Enabled { get; set; }
 		
-		public override Eto.Drawing.Size ClientSize {
+		public override Size ClientSize {
 			get {
 				var view = Control.ContentView as NSView;
 				return view.Frame.Size.ToEtoSize ();
@@ -55,16 +55,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public Font Font
 		{
 			get {
-				if (font == null)
-					font = new Font (Widget.Generator, new FontHandler (Control.TitleFont));
-				return font;
+				return font ?? (font = new Font (Widget.Generator, new FontHandler (Control.TitleFont)));
 			}
 			set {
 				font = value;
-				if (font != null)
-					Control.TitleFont = ((FontHandler)font.Handler).Control;
-				else
-					Control.TitleFont = null;
+				Control.TitleFont = font == null ? null : ((FontHandler)font.Handler).Control;
 				LayoutIfNeeded ();
 			}
 		}
@@ -74,9 +69,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set { Control.Title = value; }
 		}
 		
-		public override Eto.Drawing.Size GetPreferredSize (Size availableSize)
+		public override SizeF GetPreferredSize (SizeF availableSize)
 		{
-			return base.GetPreferredSize (availableSize) + new Size (14, (int)(Control.TitleFont.LineHeight () + 9));
+			return base.GetPreferredSize (availableSize) + new SizeF (14, Control.TitleFont.LineHeight () + 9);
 		}
 		
 		public override void SetContentSize (SD.SizeF contentSize)

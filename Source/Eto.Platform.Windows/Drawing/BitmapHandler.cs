@@ -8,14 +8,20 @@ using ImageManipulation;
 namespace Eto.Platform.Windows.Drawing
 {
 	/// <summary>
+	/// Interface to get an image representation with the specified size
+	/// </summary>
+	public interface IWindowsImageSource
+	{
+		SD.Image GetImageWithSize(int? size);
+	}
+
+	/// <summary>
 	/// Interface for all windows images
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IWindowsImage
+	public interface IWindowsImage : IWindowsImageSource
 	{
-		SD.Image GetImageWithSize (int? size);
-
 		void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
 
 		void DrawImage (GraphicsHandler graphics, float x, float y);
@@ -67,8 +73,14 @@ namespace Eto.Platform.Windows.Drawing
 			// We create a temp image from the file
 			// because SD.Bitmap(filename) locks the file
 			// until the image is disposed.
-			using (var temp = new SD.Bitmap(fileName))
-				Control = new SD.Bitmap(temp);
+			// this is not the case in mono
+			if (EtoEnvironment.Platform.IsWindows)
+			{
+				using (var temp = new SD.Bitmap(fileName))
+					Control = new SD.Bitmap(temp);
+			}
+			else
+				Control = new SD.Bitmap(fileName);
 		}
 
 		public void Create(Stream stream)
@@ -101,13 +113,21 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Create(int width, int height, Graphics graphics)
 		{
-			this.Control = new SD.Bitmap(width, height, GraphicsHandler.GetControl (graphics));
+			Control = new SD.Bitmap(width, height, GraphicsHandler.GetControl(graphics));
 		}
 
 		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
 		{
 			var source = image.ToSD ();
-			Control = new SD.Bitmap (width, height, source.PixelFormat);
+			var pixelFormat = source.PixelFormat;
+			if (EtoEnvironment.Platform.IsMono && (
+				pixelFormat == SD.Imaging.PixelFormat.Indexed
+				|| pixelFormat == SD.Imaging.PixelFormat.Format1bppIndexed
+				|| pixelFormat == SD.Imaging.PixelFormat.Format4bppIndexed
+				|| pixelFormat == SD.Imaging.PixelFormat.Format8bppIndexed
+			))
+				pixelFormat = SD.Imaging.PixelFormat.Format32bppRgb;
+			Control = new SD.Bitmap (width, height, pixelFormat);
 			using (var graphics = SD.Graphics.FromImage(Control)) {
 				graphics.InterpolationMode = interpolation.ToSD ();
 				var rect = new SD.Rectangle (0, 0, width, height);
@@ -145,29 +165,29 @@ namespace Eto.Platform.Windows.Drawing
 
 		public SD.Image GetImageWithSize (int? size)
 		{
-			if (size != null) {
+			if (size != null)
+			{
 				var max = Math.Max(Control.Width, Control.Height);
-				var newsize = new SD.Size (size.Value * Control.Width / max, size.Value * Control.Height / max);
-				return new SD.Bitmap (Control, newsize);
+				var newsize = new SD.Size(size.Value * Control.Width / max, size.Value * Control.Height / max);
+				return new SD.Bitmap(Control, newsize);
 			}
-			else
-				return Control;
+			return Control;
 		}
 
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			SD.Bitmap copy;
 			if (rectangle == null)
-				copy = (SD.Bitmap)this.Control.Clone ();
+				copy = (SD.Bitmap)Control.Clone ();
 			else
-				copy = this.Control.Clone (rectangle.Value.ToSD(), this.Control.PixelFormat);
+				copy = Control.Clone (rectangle.Value.ToSD(), Control.PixelFormat);
 
 			return new Bitmap (Generator, new BitmapHandler (copy));
 		}
 
 		public Color GetPixel(int x, int y)
 		{
-			return this.Control.GetPixel(x, y).ToEto();
+			return Control.GetPixel(x, y).ToEto();
 		}
 
 		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)

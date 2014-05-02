@@ -6,7 +6,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using sd = System.Drawing;
-using MonoMac.ImageIO;
+using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.Mac.Drawing
 {
@@ -90,57 +90,43 @@ namespace Eto.Platform.Mac.Drawing
 				case PixelFormat.Format32bppRgb:
 					{
 						alpha = false;
-						int numComponents = 4;
-						int bitsPerComponent = 8;
-						int bitsPerPixel = numComponents * bitsPerComponent;
-						int bytesPerPixel = bitsPerPixel / 8;
+						const int numComponents = 4;
+						const int bitsPerComponent = 8;
+						const int bitsPerPixel = numComponents * bitsPerComponent;
+						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
 
 						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, 3, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 						Control = new NSImage();
 						Control.AddRepresentation(rep);
-				
-						//var provider = new CGDataProvider (data.Bytes, (int)data.Length);
-						//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-						//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
-				
 						break;
 					}
 				case PixelFormat.Format24bppRgb:
 					{
 						alpha = false;
-						int numComponents = 3;
-						int bitsPerComponent = 8;
-						int bitsPerPixel = numComponents * bitsPerComponent;
-						int bytesPerPixel = bitsPerPixel / 8;
+						const int numComponents = 3;
+						const int bitsPerComponent = 8;
+						const int bitsPerPixel = numComponents * bitsPerComponent;
+						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
 				
 						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 						Control = new NSImage();
 						Control.AddRepresentation(rep);
-
-						//var provider = new CGDataProvider (data.ClassHandle);
-						//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-						//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
 						break;
 					}
 				case PixelFormat.Format32bppRgba:
 					{
 						alpha = true;
-						int numComponents = 4;
-						int bitsPerComponent = 8;
-						int bitsPerPixel = numComponents * bitsPerComponent;
-						int bytesPerPixel = bitsPerPixel / 8;
+						const int numComponents = 4;
+						const int bitsPerComponent = 8;
+						const int bitsPerPixel = numComponents * bitsPerComponent;
+						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
 
 						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 						Control = new NSImage();
 						Control.AddRepresentation(rep);
-
-						//var provider = new CGDataProvider (data.Bytes, (int)data.Length);
-						//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-						//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
-
 						break;
 					}
 			/*case PixelFormat.Format16bppRgb555:
@@ -169,10 +155,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public BitmapData Lock()
 		{
-			if (bmprep != null)
-				return new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
-			else
-				return null;
+			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -209,10 +192,7 @@ namespace Eto.Platform.Mac.Drawing
 			if (newrep == null)
 			{
 				CGImage img;
-				if (this.bmprep != null)
-					img = this.bmprep.CGImage;
-				else
-					img = Control.CGImage;
+				img = bmprep != null ? bmprep.CGImage : Control.CGImage;
 				newrep = new NSBitmapImageRep(img);
 			}
 			var data = newrep.RepresentationUsingTypeProperties(type, new NSDictionary());
@@ -240,14 +220,12 @@ namespace Eto.Platform.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = graphics.Translate(source.ToSD(), Control.Size.Height);
+			var sourceRect = new sd.RectangleF(source.X, Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
 			var destRect = graphics.TranslateView(destination.ToSD(), true, true);
-			graphics.FlipDrawing();
-			destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
 			if (alpha)
-				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 			else
-				Control.Draw(destRect, sourceRect, NSCompositingOperation.Copy, 1);
+				Control.Draw(destRect, sourceRect, NSCompositingOperation.Copy, 1, true, null);
 		}
 
 		public Bitmap Clone(Rectangle? rectangle = null)
@@ -256,21 +234,10 @@ namespace Eto.Platform.Mac.Drawing
 				return new Bitmap(Generator, new BitmapHandler((NSImage)Control.Copy()));
 			else
 			{
-				var rect = rectangle.Value;
-				PixelFormat format;
-				if (bmprep != null && bmprep.BitsPerPixel == 24)
-					format = PixelFormat.Format24bppRgb;
-				else if (alpha || (bmprep != null && bmprep.HasAlpha))
-					format = PixelFormat.Format32bppRgba;
-				else
-					format = PixelFormat.Format32bppRgb;
-
-				var bmp = new Bitmap(rect.Width, rect.Height, format, Generator);
-				using (var graphics = new Graphics (Generator, bmp))
-				{
-					graphics.DrawImage(Widget, rect, new Rectangle(rect.Size));
-				}
-				return bmp;
+				var rect = new sd.RectangleF (sd.PointF.Empty, this.Control.Size);
+				var temp = Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
+				var image = new NSImage (temp, new sd.SizeF (temp.Width, temp.Height));
+				return new Bitmap(Generator, new BitmapHandler(image));
 			}
 		}
 
@@ -280,6 +247,19 @@ namespace Eto.Platform.Mac.Drawing
 				throw new InvalidOperationException(string.Format("Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
 
 			return bmprep.ColorAt(x, y).ToEto();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (rep != null)
+				{
+					rep.SafeDispose();
+					rep = null;
+				}
+			}
+			base.Dispose(disposing);
 		}
 	}
 }

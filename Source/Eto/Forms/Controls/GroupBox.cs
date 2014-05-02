@@ -3,22 +3,23 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IGroupBox : IDockContainer
+	public interface IGroupBox : IPanel
 	{
 		Font Font { get; set; }
 
 		string Text { get; set; }
 	}
-	
-	public class GroupBox : DockContainer
+
+	public class GroupBox : Panel
 	{
 		new IGroupBox Handler { get { return (IGroupBox)base.Handler; } }
 		
-		public GroupBox () : this(Generator.Current)
+		public GroupBox()
+			: this((Generator)null)
 		{
 		}
-		
-		public GroupBox (Generator g) : this (g, typeof(IGroupBox))
+
+		public GroupBox (Generator generator) : this (generator, typeof(IGroupBox))
 		{
 		}
 		

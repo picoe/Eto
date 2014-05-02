@@ -1,20 +1,21 @@
 using System;
-using System.Collections;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial interface IActionItem
 	{
-		ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
+		ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
 
 		int Order { get; }
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public abstract partial class ActionItemBase : IActionItem
 	{
 		int order = 500;
 		
-		public abstract ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
+		public abstract ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
 		
 		public int Order
 		{
@@ -27,13 +28,14 @@ namespace Eto.Forms
 		public string MenuItemStyle { get; set; }
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ActionItemSeparator : ActionItemBase
 	{
-		public SeparatorToolBarItemType ToolBarType { get; set; }
+		public SeparatorToolItemType ToolBarType { get; set; }
 
-		public override ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
 		{
-			var tbb = new SeparatorToolBarItem(generator) { Type = this.ToolBarType };
+			var tbb = new SeparatorToolItem(generator) { Type = ToolBarType };
 			if (!string.IsNullOrEmpty (ToolBarItemStyle))
 				tbb.Style = ToolBarItemStyle;
 			return tbb;
@@ -41,6 +43,7 @@ namespace Eto.Forms
 
 	}
 
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ActionItemSubMenu : ActionItemBase
 	{
 		public ActionItemSubMenu(ActionCollection actions, string subMenuText)
@@ -49,20 +52,19 @@ namespace Eto.Forms
 			this.SubMenuText = subMenuText;
 		}
 
-		public string Icon { get; set; }
-
 		public string ID { get; set; }
 
 		public string SubMenuText { get; set; }
 		
 		public ActionItemCollection Actions { get; private set; }
 
-		public override ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
 		{
 			return null;
 		}
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ActionItem : ActionItemBase
 	{
 		
@@ -83,7 +85,7 @@ namespace Eto.Forms
 
 		public bool ShowLabel { get; set; }
 
-		public override ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
 		{
 			var item = Action.GenerateToolBarItem(this, generator, textAlign);
 			if (item != null) {

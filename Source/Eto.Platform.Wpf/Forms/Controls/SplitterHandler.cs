@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swm = System.Windows.Media;
 using sw = System.Windows;
@@ -12,15 +10,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class SplitterHandler : WpfContainer<swc.Grid, Splitter>, ISplitter
 	{
-		swc.GridSplitter splitter;
-		swc.DockPanel pane1;
-		swc.DockPanel pane2;
+		readonly swc.GridSplitter splitter;
+		readonly swc.DockPanel pane1;
+		readonly swc.DockPanel pane2;
 		SplitterOrientation orientation;
 		SplitterFixedPanel fixedPanel;
 		int? position;
 		int? initialWidth;
 		int? initialHeight;
-		sw.Style style;
+		readonly sw.Style style;
 
 		Control panel1;
 		Control panel2;
@@ -52,7 +50,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			style.Setters.Add(new sw.Setter(sw.FrameworkElement.VerticalAlignmentProperty, sw.VerticalAlignment.Stretch));
 			style.Setters.Add(new sw.Setter(sw.FrameworkElement.HorizontalAlignmentProperty, sw.HorizontalAlignment.Stretch));
 
-
 			UpdateOrientation();
 			Control.Loaded += delegate
 			{
@@ -62,10 +59,21 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				UpdateColumnSizing();
 				if (FixedPanel == SplitterFixedPanel.Panel2)
 				{
-					if (Orientation == SplitterOrientation.Horizontal && initialWidth != null && initialWidth.Value > 0)
-						Position = this.Size.Width - (initialWidth.Value - position.Value);
-					else if (Orientation == SplitterOrientation.Vertical && initialHeight != null && initialHeight.Value > 0)
-						Position = this.Size.Height - (initialHeight.Value - position.Value);
+					var size = panel2.GetPreferredSize(Conversions.PositiveInfinitySize);
+					var currentOrientation = Orientation;
+					if (currentOrientation == SplitterOrientation.Horizontal)
+					{
+						var width = (int)Control.ActualWidth;
+						position = position ?? (int)(width - size.Width);
+						Position = Size.Width - (width - position.Value);
+					}
+					else if (currentOrientation == SplitterOrientation.Vertical)
+					{
+						var height = (int)Control.ActualHeight;
+						position = position ?? (int)(height - size.Height);
+
+						Position = Size.Height - (height - position.Value);
+					}
 					else if (position != null)
 						Position = position.Value;
 				}
@@ -74,7 +82,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
-		void SetStretch(Control panel)
+		static void SetStretch(Control panel)
 		{
 			if (panel != null)
 			{
@@ -146,7 +154,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		void UpdateColumnSizing()
 		{
-			var pos = this.Position;
+			var pos = Position;
 			switch (Orientation)
 			{
 				case SplitterOrientation.Horizontal:
@@ -186,7 +194,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
-			Position = pos;
+			if (Widget.Loaded)
+				Position = pos;
 		}
 
 		public SplitterOrientation Orientation
@@ -229,34 +238,38 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					return position ?? 0;
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns)
 					return (int)Control.ColumnDefinitions[0].ActualWidth;
-				else
-					return (int)Control.RowDefinitions[0].ActualHeight;
+				return (int)Control.RowDefinitions[0].ActualHeight;
 			}
 			set
 			{
+				var col1 = Control.ColumnDefinitions[0];
+				var col2 = Control.ColumnDefinitions[2];
 				if (!Widget.Loaded)
 				{
 					position = value;
-					initialWidth = this.Size.Width;
-					initialHeight = this.Size.Height;
-					return;
+					initialWidth = Size.Width;
+					initialHeight = Size.Height;
 				}
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns)
 				{
-					var col1 = Control.ColumnDefinitions[0];
-					var col2 = Control.ColumnDefinitions[2];
 					var controlWidth = Control.IsLoaded ? Control.ActualWidth : Control.Width;
 					switch (fixedPanel)
 					{
 						case SplitterFixedPanel.None:
-							var scale = (col1.Width.Value + col2.Width.Value) / controlWidth;
-							col1.Width = new sw.GridLength(value * scale, sw.GridUnitType.Star);
+							if (Widget.Loaded)
+							{
+								var scale = (col1.Width.Value + col2.Width.Value) / controlWidth;
+								col1.Width = new sw.GridLength(value * scale, sw.GridUnitType.Star);
+							}
 							break;
 						case SplitterFixedPanel.Panel1:
 							col1.Width = new sw.GridLength(value, sw.GridUnitType.Pixel);
 							break;
 						case SplitterFixedPanel.Panel2:
-							col2.Width = new sw.GridLength(controlWidth - value, sw.GridUnitType.Pixel);
+							if (Widget.Loaded)
+								col2.Width = new sw.GridLength(controlWidth - value, sw.GridUnitType.Pixel);
+							else
+								col1.Width = new sw.GridLength(value, sw.GridUnitType.Pixel);
 							break;
 					}
 				}
@@ -268,18 +281,34 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					switch (fixedPanel)
 					{
 						case SplitterFixedPanel.None:
-							var scale = (row1.Height.Value + row2.Height.Value) / controlHeight;
-							row1.Height = new sw.GridLength(value * scale, sw.GridUnitType.Star);
+							if (Widget.Loaded)
+							{
+								var scale = (row1.Height.Value + row2.Height.Value) / controlHeight;
+								row1.Height = new sw.GridLength(value * scale, sw.GridUnitType.Star);
+							}
 							break;
 						case SplitterFixedPanel.Panel1:
 							row1.Height = new sw.GridLength(value, sw.GridUnitType.Pixel);
 							break;
 						case SplitterFixedPanel.Panel2:
-							row2.Height = new sw.GridLength(Math.Max(0, controlHeight - value), sw.GridUnitType.Pixel);
+							if (Widget.Loaded)
+								row2.Height = new sw.GridLength(Math.Max(0, controlHeight - value), sw.GridUnitType.Pixel);
+							else
+								row1.Height = new sw.GridLength(value, sw.GridUnitType.Pixel);
 							break;
 					}
 				}
 			}
+		}
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			base.SetScale(xscale, yscale);
+			var control = panel1.GetWpfFrameworkElement();
+			if (control != null)
+				control.SetScale(true, true);
+			control = panel2.GetWpfFrameworkElement();
+			if (control != null)
+				control.SetScale(true, true);
 		}
 
 		public Control Panel1

@@ -1,7 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 
 namespace Eto.Forms
@@ -12,9 +10,9 @@ namespace Eto.Forms
 	/// TODO: should this be made generic, to handle
 	/// an IDataStore of T?
 	/// 
+	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
 	public interface IDataStoreView
 	{
 		/// <summary>
@@ -76,10 +74,10 @@ namespace Eto.Forms
 		/// This object reference is kept throughout the life of the
 		/// DataStoreView.
 		/// </summary>
-		readonly GridItemCollection view = new GridItemCollection();
+		readonly DataStoreCollection view = new DataStoreCollection();
 		readonly MyComparer comparer = new MyComparer();
-		List<int> viewToModel = null;
-		Dictionary<int, int> modelToView = null;
+		List<int> viewToModel;
+		Dictionary<int, int> modelToView;
 
 		IDataStore model;
 		public IDataStore Model
@@ -125,7 +123,7 @@ namespace Eto.Forms
 			if (!HasSortOrFilter)
 				return index;
 
-			var temp = 0;
+			int temp;
 			if (modelToView != null && modelToView.TryGetValue(index, out temp))
 				return temp;
 
@@ -177,7 +175,9 @@ namespace Eto.Forms
 			public Comparison<object> SortComparer { get; set; }
 			public int Compare(object x, object y)
 			{
-				return SortComparer != null ? SortComparer(x, y) : 0;
+				if (SortComparer == null)
+					throw new InvalidOperationException("SortComparer must not be null");
+				return SortComparer(x, y);
 			}
 		}
 
@@ -191,8 +191,7 @@ namespace Eto.Forms
 		/// </summary>
 		void UpdateView()
 		{
-			if (view != null &&
-				model != null)
+			if (view != null && model != null)
 			{
 				var temp = new DataStoreVirtualCollection<object>(model);
 
@@ -200,13 +199,9 @@ namespace Eto.Forms
 				var viewItems = (Filter != null) ? temp.Where(Filter).ToList() : temp.ToList();
 
 				// sort if needed
-				if (this.comparer != null)
-					viewItems.Sort(this.comparer);
-
-				// Clear and re-add the list
-				view.Clear();
-
-				view.AddRange(viewItems);
+				if (comparer != null &&
+					comparer.SortComparer != null)
+					viewItems.Sort(comparer);
 
 				// If a sort or filter is specified, create a dictionary
 				// of the item indices. This materializes a list of all the
@@ -231,16 +226,20 @@ namespace Eto.Forms
 					var viewIndex = 0;
 					foreach (var o in viewItems)
 					{
-						var modelIndex = -1;
-						if (o != null &&
-							modelIndexes.TryGetValue(o, out modelIndex))
-						{
+						int modelIndex;
+						if (o != null && modelIndexes.TryGetValue(o, out modelIndex))
 							modelToView[modelIndex] = viewIndex;
-						}
+						else
+							modelIndex = -1;
 						viewToModel.Add(modelIndex); // always add to viewToModel because the number of items must match those in viewItems
 						viewIndex++;
 					}
 				}
+
+				// Clear and re-add the list
+				view.Clear();
+
+				view.AddRange(viewItems);
 			}
 		}
 

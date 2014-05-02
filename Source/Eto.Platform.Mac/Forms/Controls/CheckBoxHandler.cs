@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using Eto.Forms;
 using MonoMac.AppKit;
 
@@ -14,14 +13,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
 
 		public CheckBoxHandler()
 		{
-			Control = new EtoCheckBoxButton { Handler = this };
+			Control = new EtoCheckBoxButton { Handler = this, Title = string.Empty };
 			Control.SetButtonType(NSButtonType.Switch);
 			Control.Activated += HandleActivated;
 		}
@@ -43,14 +42,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 					case NSCellStateValue.Off:
 						return false;
 					default:
-					case NSCellStateValue.Mixed:
 						return null;
 				}
 			}
 			set
 			{ 
 				if (value == null)
-					Control.State = NSCellStateValue.Mixed;
+					Control.State = ThreeState ? NSCellStateValue.Mixed : NSCellStateValue.Off;
 				else if (value.Value)
 					Control.State = NSCellStateValue.On;
 				else

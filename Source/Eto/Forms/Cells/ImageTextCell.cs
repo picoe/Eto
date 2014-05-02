@@ -1,4 +1,3 @@
-using System;
 
 namespace Eto.Forms
 {
@@ -26,13 +25,13 @@ namespace Eto.Forms
 			TextBinding = new PropertyBinding(textProperty);
 		}
 		
-		public ImageTextCell ()
-			: this(Generator.Current)
+		public ImageTextCell()
+			: this((Generator)null)
 		{
 		}
-		
-		public ImageTextCell (Generator g)
-			: base(g, typeof(IImageTextCell), true)
+
+		public ImageTextCell (Generator generator)
+			: base(generator, typeof(IImageTextCell), true)
 		{
 		}
 	}

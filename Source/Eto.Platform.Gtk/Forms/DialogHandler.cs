@@ -1,5 +1,4 @@
 using System;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
@@ -51,15 +50,12 @@ namespace Eto.Platform.GtkSharp
 
 		public DialogResult ShowDialog(Control parent)
 		{
-			Widget.OnPreLoad(EventArgs.Empty);
-			
 			if (parent != null)
 			{
 				Control.TransientFor = ((Gtk.Window)(parent.ParentWindow).ControlObject);
 				Control.Modal = true;
 			}
 			Control.ShowAll();
-			Widget.OnLoad(EventArgs.Empty);
 
 			if (DefaultButton != null)
 			{
