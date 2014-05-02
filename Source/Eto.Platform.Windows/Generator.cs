@@ -50,8 +50,7 @@ namespace Eto.Platform.Windows
 			g.Add<IImageTextCell>(() => new ImageTextCellHandler());
 			g.Add<IImageViewCell>(() => new ImageViewCellHandler());
 			g.Add<ITextBoxCell>(() => new TextBoxCellHandler());
-			g.Add<IDrawableCell>(() => new DrawableCellHandler());
-			
+
 			// Forms.Controls
 			g.Add<IButton>(() => new ButtonHandler());
 			g.Add<ICheckBox>(() => new CheckBoxHandler());
@@ -111,7 +110,6 @@ namespace Eto.Platform.Windows
 			g.Add<IFontDialog>(() => new FontDialogHandler());
 			g.Add<IForm>(() => new FormHandler());
 			g.Add<IMessageBox>(() => new MessageBoxHandler());
-			g.Add<IModalWindow>(() => new ModalWindowHandler());
 			g.Add<IOpenFileDialog>(() => new OpenFileDialogHandler());
 			g.Add<IPixelLayout>(() => new PixelLayoutHandler());
 			g.Add<ISaveFileDialog>(() => new SaveFileDialogHandler());

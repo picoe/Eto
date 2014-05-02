@@ -3,9 +3,9 @@
 	<metadata>
 		<id>Eto.Forms</id>
 		<version>$version$</version>
-		<title>Eto.Forms</title>
-		<authors>Picoe Software Solutions Inc.</authors>
-		<owners>Picoe Software Solutions Inc.</owners>
+		<title>$title$</title>
+		<authors>$author$</authors>
+		<owners>$author$</owners>
 		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -21,7 +21,7 @@
 
 			This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac/Xamarin.Mac, and GTK#.
 
-			In order to run your Eto.Forms based application, you must also install one (or all) of the following packages:
+			In order to run your Eto.Forms based application, you must also install one (or more) of the following packages:
 
 			- Eto.Platform.Wpf
 			- Eto.Platform.Windows

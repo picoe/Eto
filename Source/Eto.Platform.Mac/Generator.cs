@@ -67,8 +67,7 @@ namespace Eto.Platform.Mac
 			g.Add<IImageTextCell>(() => new ImageTextCellHandler());
 			g.Add<IImageViewCell>(() => new ImageViewCellHandler());
 			g.Add<ITextBoxCell>(() => new TextBoxCellHandler());
-			g.Add<IDrawableCell>(() => new DrawableCellHandler());
-			
+
 			// Forms.Controls
 			g.Add<IButton>(() => new ButtonHandler());
 			g.Add<ICheckBox>(() => new CheckBoxHandler());
