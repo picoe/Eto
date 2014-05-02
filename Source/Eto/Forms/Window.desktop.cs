@@ -66,6 +66,10 @@ namespace Eto.Forms
 				var menu = Handler.Menu;
 				if (menu != null)
 					menu.OnUnLoad(EventArgs.Empty);
+				if (value != null && value.AutoTrim)
+				{
+					value.Items.Trim();
+				}
 				Handler.Menu = value;
 				if (value != null)
 					value.OnLoad(EventArgs.Empty);
