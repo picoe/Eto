@@ -6,11 +6,10 @@ namespace Eto.Wpf.Forms
 {
 	public class ToolBarHandler : WidgetHandler<swc.ToolBar, ToolBar>, IToolBar
 	{
-		public override swc.ToolBar CreateControl()
+		public ToolBarHandler()
 		{
-			var control = new swc.ToolBar { IsTabStop = false };
-			swi.KeyboardNavigation.SetTabNavigation(control, swi.KeyboardNavigationMode.Continue);
-			return control;
+			Control = new swc.ToolBar { IsTabStop = false };
+			swi.KeyboardNavigation.SetTabNavigation(Control, swi.KeyboardNavigationMode.Continue);
 		}
 
 		public void AddButton(ToolItem button, int index)

@@ -7,11 +7,6 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class SearchBoxHandler : IosControl<UISearchBar, SearchBox>, ISearchBox
 	{
-		public override UISearchBar CreateControl()
-		{
-			return new UISearchBar();
-		}
-
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			return SizeF.Max(base.GetNaturalSize(availableSize), new SizeF(60, 0));
@@ -20,6 +15,7 @@ namespace Eto.iOS.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control = new UISearchBar();
 			MaxLength = Int32.MaxValue;
 		}
 

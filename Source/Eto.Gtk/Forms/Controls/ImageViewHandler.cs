@@ -11,21 +11,24 @@ namespace Eto.GtkSharp
 		bool widthSet;
 		bool heightSet;
 
-		protected override void Initialize()
+		public ImageViewHandler()
 		{
-			base.Initialize();
-			var control = new Gtk.DrawingArea
+			Control = new Gtk.DrawingArea
 			{
 				CanFocus = false,
 				CanDefault = true
 			};
+			Control.Events |= Gdk.EventMask.ExposureMask;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 #if GTK2
-			control.ExposeEvent += Connector.HandleExpose;
+			Control.ExposeEvent += Connector.HandleExpose;
 #else
-			control.Drawn += Connector.HandleDrawn;
+			Control.Drawn += Connector.HandleDrawn;
 #endif
-			control.Events |= Gdk.EventMask.ExposureMask;
-			Control = control;
 		}
 
 		protected new ImageViewConnector Connector { get { return (ImageViewConnector)base.Connector; } }

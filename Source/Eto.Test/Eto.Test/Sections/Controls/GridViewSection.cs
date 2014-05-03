@@ -23,8 +23,8 @@ namespace Eto.Test.Sections.Controls
 
 	public class GridViewSection : Panel
 	{
-		static readonly Image image1 = TestIcons.TestImage();
-		static readonly Image image2 = TestIcons.TestIcon();
+		static readonly Image image1 = TestIcons.TestImage;
+		static readonly Image image2 = TestIcons.TestIcon;
 		readonly SearchBox filterText;
 
 		public GridViewSection()
@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Controls
 
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
-			if (Platform.Supports<IContextMenu>())
+			if (Platform.Supports<ContextMenu>())
 			{
 				layout.BeginHorizontal();
 				layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });

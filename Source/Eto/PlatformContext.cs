@@ -18,15 +18,15 @@ namespace Eto
 		public PlatformContext(Platform platform)
 		{
 			previous = Platform.Instance;
-			previousValidate = Platform.ValidateGenerator;
+			previousValidate = Platform.ValidatePlatform;
 			Platform.Initialize(platform);
-			Eto.Platform.ValidateGenerator = platform;
+			Eto.Platform.ValidatePlatform = platform;
 		}
 
 		public void Dispose()
 		{
 			Platform.Initialize(previous);
-			Platform.ValidateGenerator = previousValidate;
+			Platform.ValidatePlatform = previousValidate;
 		}
 	}
 }

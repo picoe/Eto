@@ -74,7 +74,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the EnumComboBox
 		/// </summary>
 		public EnumComboBox()
-			: this((Generator)null)
 		{
 		}
 
@@ -82,6 +81,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the EnumComboBox with the specified generator
 		/// </summary>
 		/// <param name="generator">Generator generator</param>
+		[Obsolete("Use default constructor instead")]
 		public EnumComboBox (Generator generator)
 			: base (generator)
 		{

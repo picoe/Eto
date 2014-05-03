@@ -85,21 +85,16 @@ namespace Eto.Wpf.Forms.Controls
 			var template = new sw.DataTemplate(typeof(IListItem));
 			template.VisualTree = WpfListItemHelper.TextBlock(setMargin: false);
 			Control.ItemTemplate = template;
+			Control.SelectionChanged += delegate
+			{
+				Widget.OnSelectedIndexChanged(EventArgs.Empty);
+			};
 		}
 
 		public override bool UseMousePreview { get { return true; } }
 
 		public override bool UseKeyPreview { get { return true; } }
 
-
-		protected override void PostInitialize()
-		{
-			base.PostInitialize();
-			Control.SelectionChanged += delegate
-			{
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
-			};
-		}
 
 		public IListStore DataStore
 		{

@@ -14,11 +14,6 @@ namespace Eto.GtkSharp
 		public void Create()
 		{
 			Control = new Gtk.EventBox();
-#if GTK2
-			Control.ExposeEvent += Connector.HandleExpose;
-#else
-			Control.Drawn += Connector.HandleDrawn;
-#endif
 			Control.Events |= Gdk.EventMask.ExposureMask;
 			//Control.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(0, 0, 0));
 			//Control.DoubleBuffered = false;
@@ -31,15 +26,20 @@ namespace Eto.GtkSharp
 			Control.Add(content);
 		}
 
-		public void Create(bool largeCanvas)
-		{
-			Create();
-		}
-
 		protected override void Initialize()
 		{
 			base.Initialize();
+#if GTK2
+			Control.ExposeEvent += Connector.HandleExpose;
+#else
+			Control.Drawn += Connector.HandleDrawn;
+#endif
 			Control.ButtonPressEvent += Connector.HandleDrawableButtonPressEvent;
+		}
+
+		public void Create(bool largeCanvas)
+		{
+			Create();
 		}
 
 		public bool CanFocus

@@ -69,7 +69,13 @@ namespace Eto
 			else
 			{
 				if (!EventLookup.IsDefault(Parent, key))
-					Parent.HandleDefaultEvents(key);
+				{
+					var handler = Parent.Handler as IInstanceWidget;
+					if (handler != null)
+					{
+						handler.HandleEvent(key, true);
+					}
+				}
 				Add(key, value);
 			}
 		}

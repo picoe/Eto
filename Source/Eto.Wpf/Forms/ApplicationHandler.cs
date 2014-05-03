@@ -45,14 +45,10 @@ namespace Eto.Wpf.Forms
 
 		public bool IsStarted { get; private set; }
 
-		public override sw.Application CreateControl()
-		{
-			return new sw.Application();
-		}
-
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control = new sw.Application();
 			instance = this;
 			Control.Startup += HandleStartup;
 		}

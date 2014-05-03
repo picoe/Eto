@@ -52,6 +52,23 @@ namespace Eto.Forms
 			Properties.TriggerEvent(ValidateEvent, this, e);
 		}
 
+		protected MenuItem()
+		{
+		}
+
+		protected MenuItem(Command command)
+		{
+			ID = command.ID;
+			Text = command.MenuText;
+			ToolTip = command.ToolTip;
+			Shortcut = command.Shortcut;
+			Click += (sender, e) => command.OnExecuted(e);
+			Validate += (sender, e) => Enabled = command.Enabled;
+			Enabled = command.Enabled;
+			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
+		}
+
+		[Obsolete("Use MenuItem(Command) instead")]
 		protected MenuItem(Command command, Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
@@ -67,6 +84,7 @@ namespace Eto.Forms
 				Handler.CreateFromCommand(command);
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected MenuItem(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{

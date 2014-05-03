@@ -72,7 +72,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			using (graphics.Platform.Context)
 			{
-				graphics.FillRectangle(Brushes.Green(), 0, 0, 200, 200);
+				graphics.FillRectangle(Brushes.Green, 0, 0, 200, 200);
 				if (UseGraphicsPathClip)
 				{
 					var path = GraphicsPath.GetRoundRect(new RectangleF(10, 10, 180, 180), 20);
@@ -85,13 +85,13 @@ namespace Eto.Test.Sections.Drawing
 					graphics.Clear(new SolidBrush(new Color(Colors.Red, 0.5f)));
 				else
 					graphics.Clear();
-				graphics.FillEllipse(Brushes.Blue(), 25, 25, 150, 150);
+				graphics.FillEllipse(Brushes.Blue, 25, 25, 150, 150);
 			}
 		}
 
 		Image CreateImage()
 		{
-			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba, generator: Platform);
+			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba);
 			using (var graphics = new Graphics(image))
 			{
 				DrawSample(graphics);

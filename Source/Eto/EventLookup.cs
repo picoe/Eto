@@ -35,7 +35,7 @@ namespace Eto
 			declarations.Add(new EventDeclaration(method, identifier));
 		}
 
-		public static void HookupEvents(InstanceWidget widget)
+		public static void HookupEvents(Widget widget)
 		{
 			var type = widget.GetType();
 #if PCL
@@ -45,7 +45,15 @@ namespace Eto
 			if (type.Assembly == etoAssembly)
 				return;
 #endif
-			widget.HandleDefaultEvents(GetEvents(type));
+			var handler = widget.Handler as IInstanceWidget;
+			if (handler != null)
+			{
+				var ids = GetEvents(type);
+				for (int i = 0; i < ids.Length; i++)
+				{
+					handler.HandleEvent(ids[i], true);
+				}
+			}
 		}
 
 		public static bool IsDefault(InstanceWidget widget, string identifier)

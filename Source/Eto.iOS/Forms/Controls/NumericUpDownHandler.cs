@@ -9,9 +9,9 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class NumericUpDownHandler : IosControl<UITextField, NumericUpDown>, INumericUpDown
 	{
-		public override UITextField CreateControl()
+		public NumericUpDownHandler()
 		{
-			return new UITextField();
+			Control = new UITextField();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

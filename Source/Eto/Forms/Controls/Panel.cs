@@ -14,18 +14,25 @@ namespace Eto.Forms
 	}
 
 	[ContentProperty("Content")]
+	[Handler(typeof(IPanel))]
 	public class Panel : Container
 	{
 		public Panel()
-			: this((Generator)null)
 		{
 		}
 
+		protected Panel(IPanel handler)
+			: base(handler)
+		{
+		}
+
+		[Obsolete("Use default constructor instead")]
 		public Panel(Generator generator)
 			: this(generator, typeof(IPanel))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Panel(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
@@ -38,6 +45,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
+		[Obsolete("Use Panel(IPanel) instead")]
 		protected Panel(Generator generator, IPanel handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{

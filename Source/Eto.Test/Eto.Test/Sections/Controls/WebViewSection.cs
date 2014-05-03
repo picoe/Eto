@@ -274,7 +274,7 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate
 			{
-				if (Platform.Supports<IDialog>())
+				if (Platform.Supports<Dialog>())
 				{
 					var dialog = new Dialog();
 					if (Platform.IsDesktop)

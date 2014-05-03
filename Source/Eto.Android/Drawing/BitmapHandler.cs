@@ -110,11 +110,11 @@ namespace Eto.Android.Drawing
 			if (rectangle != null)
 			{
 				var r = rectangle.Value;
-				return new Bitmap(this.Generator, new BitmapHandler(
+				return new Bitmap(new BitmapHandler(
 					ag.Bitmap.CreateBitmap(this.Control, r.X, r.Y, r.Width, r.Height)));
 			}
 			else
-				return new Bitmap(this.Generator, new BitmapHandler(ag.Bitmap.CreateBitmap(this.Control)));
+				return new Bitmap(new BitmapHandler(ag.Bitmap.CreateBitmap(this.Control)));
 		}
 
 		public Color GetPixel(int x, int y)

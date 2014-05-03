@@ -19,13 +19,13 @@ namespace Eto.Forms
 	/// </remarks>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(ISpinner))]
 	public class Spinner : Control
 	{
 		/// <summary>
 		/// Initializes a new instance of the Spinner class
 		/// </summary>
 		public Spinner()
-			: this(null)
 		{
 		}
 
@@ -33,6 +33,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the Spinner class with the specified generator
 		/// </summary>
 		/// <param name="generator">Generator to create the spinner from</param>
+		[Obsolete("Use default constructor instead")]
 		public Spinner(Generator generator)
 			: base(generator, typeof(ISpinner), true)
 		{

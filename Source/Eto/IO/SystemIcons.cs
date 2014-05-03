@@ -2,6 +2,7 @@ using System.IO;
 using System.Collections;
 using Eto.Drawing;
 using System.Collections.Generic;
+using System;
 
 namespace Eto.IO
 {
@@ -22,14 +23,24 @@ namespace Eto.IO
 		Icon GetFileIcon(string fileName, IconSize size);
 		Icon GetStaticIcon(StaticIconType type, IconSize size);
 	}
-	
+
+	[Handler(typeof(ISystemIcons))]
 	public class SystemIcons : Widget
 	{
 		new ISystemIcons Handler { get { return (ISystemIcons)base.Handler; } }
 
+		public SystemIcons()
+		{
+		}
+
+		#pragma warning disable 612,618
+
+		[Obsolete("Use default constructor instead")]
 		public SystemIcons(Generator g) : base(g, typeof(ISystemIcons))
 		{
 		}
+
+		#pragma warning restore 612,618
 
 		readonly Dictionary<IconSize, Dictionary<object, Icon>> htSizes = new Dictionary<IconSize, Dictionary<object, Icon>>();
 		Dictionary<object, Icon> GetLookupTable(IconSize size)

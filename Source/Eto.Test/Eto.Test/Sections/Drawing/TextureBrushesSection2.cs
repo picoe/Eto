@@ -42,12 +42,12 @@ namespace Eto.Test.Sections.Drawing
 					if (OffscreenBitmap != null)
 						OffscreenBitmap.Dispose();
 
-					OffscreenBitmap = new Bitmap(e.ClipRectangle.Size, PixelFormat.Format32bppRgba, drawable.Platform);
+					OffscreenBitmap = new Bitmap(e.ClipRectangle.Size, PixelFormat.Format32bppRgba);
 				}
 				bitmapGraphics = new Graphics(OffscreenBitmap);
 				bitmapGraphics.TranslateTransform(-e.ClipRectangle.Location);
 				bitmapGraphics.SetClip(e.ClipRectangle);
-				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor, drawable.Platform));
+				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor));
 				return bitmapGraphics;
 			}
 			return e.Graphics;
@@ -83,7 +83,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public TextureBrushesSection2()
 		{
-			image = TestIcons.Textures();
+			image = TestIcons.Textures;
 			var drawable = new Drawable();
 			var drawableTarget = new DrawableTarget(drawable);
 			var layout = new DynamicLayout(new Padding(10));

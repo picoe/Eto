@@ -119,7 +119,7 @@ namespace Eto.WinForms
 
 		public virtual Graphics CreateGraphics()
 		{
-			return new Graphics(Widget.Platform, new GraphicsHandler(Control.CreateGraphics()));
+			return new Graphics(new GraphicsHandler(Control.CreateGraphics()));
 		}
 
 		public bool CanFocus {
@@ -130,7 +130,7 @@ namespace Eto.WinForms
 		public virtual void Update(Rectangle rect)
 		{
 			using (var g = Control.CreateGraphics ()) {
-				var graphics = new Graphics (Widget.Platform, new GraphicsHandler (g));
+				var graphics = new Graphics(new GraphicsHandler(g));
 
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
@@ -138,7 +138,7 @@ namespace Eto.WinForms
 
 		protected virtual void OnPaint(swf.PaintEventArgs e)
 		{
-			Widget.OnPaint(e.ToEto(Widget.Platform));
+			Widget.OnPaint(e.ToEto());
 		}
 	}
 }

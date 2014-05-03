@@ -9,14 +9,10 @@ namespace Eto.iOS.Forms.Controls
 	{
 		public override UIView ContainerControl { get { return Control; } }
 
-		public override UIView CreateControl ()
-		{
-			return new UIView();
-		}
-
 		protected override void Initialize ()
 		{
 			base.Initialize ();
+			Control = new UIView();
 			Control.BackgroundColor = UIColor.White;
 		}
 	}

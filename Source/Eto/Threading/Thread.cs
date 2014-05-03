@@ -2,6 +2,7 @@ using System;
 
 namespace Eto.Threading
 {
+	[AutoInitialize(false)]
 	public interface IThread : IInstanceWidget
 	{
 		void Create();
@@ -18,40 +19,47 @@ namespace Eto.Threading
 		
 		bool IsMain { get; }
 	}
-	
+
+	[Handler(typeof(IThread))]
 	public class Thread : InstanceWidget
 	{
 		new IThread Handler { get { return (IThread)base.Handler; } }
 		
 		readonly Action action;
-		
-		public static Thread CurrentThread(Generator generator = null)
+
+		public static Thread CurrentThread
 		{
-			var thread = new Thread(generator);
-			thread.Handler.CreateCurrent();
-			return thread;
+			get
+			{
+				var thread = new Thread();
+				thread.Handler.CreateCurrent();
+				thread.Initialize();
+				return thread;
+			}
 		}
-		
-		public static Thread MainThread(Generator generator = null)
+
+		public static Thread MainThread
 		{
-			var thread = new Thread(generator);
-			thread.Handler.CreateMain();
-			return thread;
+			get
+			{
+				var thread = new Thread();
+				thread.Handler.CreateMain();
+				thread.Initialize();
+				return thread;
+			}
 		}
-		
-		Thread(Generator generator)
-			: base(generator, typeof(IThread))
+
+		Thread()
 		{
 		}
-		
-		public Thread(Action action, Generator generator = null)
-			: base(generator, typeof(IThread), false)
+
+		public Thread(Action action)
 		{
 			this.action = action;
 			Handler.Create();
 			Initialize();
 		}
-		
+
 		public virtual void OnExecuted()
 		{
 			if (action != null)
@@ -78,10 +86,22 @@ namespace Eto.Threading
 			get { return Handler.IsMain; }
 		}
 		
-		public static bool IsMainThread(Generator generator = null)
+		public static bool IsMainThread
 		{
-			return CurrentThread(generator).IsMain;
+			get { return CurrentThread.IsMain; }
 		}
-		
+
+		#pragma warning disable 612,618
+
+		[Obsolete("Use constructor without generator instead")]
+		public Thread(Action action, Generator generator = null)
+			: base(generator, typeof(IThread), false)
+		{
+			this.action = action;
+			Handler.Create();
+			Initialize();
+		}
+
+		#pragma warning restore 612,618
 	}
 }

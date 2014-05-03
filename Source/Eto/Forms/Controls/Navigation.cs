@@ -9,7 +9,8 @@ namespace Eto.Forms
 
 		void Pop ();
 	}
-	
+
+	[Handler(typeof(INavigation))]
 	public class Navigation : Container
 	{
 		new INavigation Handler { get { return (INavigation)base.Handler; } }
@@ -36,10 +37,10 @@ namespace Eto.Forms
 		}
 
 		public Navigation()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public Navigation (Generator generator)
 			: base(generator, typeof(INavigation))
 		{

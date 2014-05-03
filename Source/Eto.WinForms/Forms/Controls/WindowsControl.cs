@@ -551,7 +551,7 @@ namespace Eto.WinForms
 			get
 			{
 				if (font == null)
-					font = new Font(Widget.Platform, new FontHandler(Control.Font));
+					font = new Font(new FontHandler(Control.Font));
 				return font;
 			}
 			set

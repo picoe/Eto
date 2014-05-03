@@ -58,7 +58,7 @@ namespace Eto.Mac.Forms.Printing
 			get
 			{
 				if (settings == null)
-					settings = Control.PrintInfo.ToEto(Widget.Platform);
+					settings = Control.PrintInfo.ToEto();
 				return settings;
 			}
 			set

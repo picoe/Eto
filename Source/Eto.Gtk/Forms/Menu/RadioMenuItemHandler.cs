@@ -43,11 +43,6 @@ namespace Eto.GtkSharp
 			accelLabel.Visible = false;
 			hbox.Add(accelLabel);
 			Control.Add(hbox);
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
 			Control.Toggled += Connector.HandleToggled;
 		}
 

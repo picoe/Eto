@@ -1,10 +1,13 @@
+using System;
+
 
 namespace Eto.Forms
 {
 	public interface IImageTextCell : ICell
 	{
 	}
-	
+
+	[Handler(typeof(IImageTextCell))]
 	public class ImageTextCell : Cell
 	{
 		public IndirectBinding ImageBinding { get; set; }
@@ -12,24 +15,22 @@ namespace Eto.Forms
 		public IndirectBinding TextBinding { get; set; }
 		
 		public ImageTextCell (int imageColumn, int textColumn)
-			: this()
 		{
 			ImageBinding = new ColumnBinding (imageColumn);
 			TextBinding = new ColumnBinding (textColumn);
 		}
 		
 		public ImageTextCell (string imageProperty, string textProperty)
-			: this()
 		{
 			ImageBinding = new PropertyBinding(imageProperty);
 			TextBinding = new PropertyBinding(textProperty);
 		}
 		
 		public ImageTextCell()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public ImageTextCell (Generator generator)
 			: base(generator, typeof(IImageTextCell), true)
 		{

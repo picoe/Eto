@@ -21,6 +21,23 @@ namespace Eto.Forms
 			if (Click != null) Click(this, e);
 		}
 
+		protected ToolItem()
+		{
+		}
+
+		protected ToolItem(Command command)
+		{
+			ID = command.ID;
+			Text = command.ToolBarText;
+			ToolTip = command.ToolTip;
+			Image = command.Image;
+			Click += (sender, e) => command.OnExecuted(e);
+			Enabled = command.Enabled;
+			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
+			Order = -1;
+		}
+
+		[Obsolete("Use ToolItem(Command) instead")]
 		protected ToolItem(Command command, Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
@@ -34,6 +51,7 @@ namespace Eto.Forms
 			Order = -1;
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ToolItem(Generator g, Type type)
 			: base(g, type)
 		{

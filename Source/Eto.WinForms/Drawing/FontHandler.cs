@@ -66,7 +66,7 @@ namespace Eto.WinForms.Drawing
 
 		public FontFamily Family
 		{
-			get { return family = family ?? new FontFamily(Widget.Platform, new FontFamilyHandler(Control.FontFamily)); }
+			get { return family = family ?? new FontFamily(new FontFamilyHandler(Control.FontFamily)); }
 		}
 
 		public FontTypeface Typeface

@@ -16,7 +16,7 @@ namespace Eto.Mac.IO
 		{
 			var ws = new NSWorkspace();
 			var image = ws.IconForFileType(Path.GetExtension(fileName));
-			return new Icon(Widget.Platform, new IconHandler(image));
+			return new Icon(new IconHandler(image));
 		}
 
 		public Icon GetStaticIcon(StaticIconType type, IconSize size)
@@ -35,7 +35,7 @@ namespace Eto.Mac.IO
 					throw new NotSupportedException();
 			}
 			var image = ws.IconForFileType(code);
-			return new Icon(Widget.Platform, new IconHandler(image));
+			return new Icon(new IconHandler(image));
 		}
 
 		#endregion

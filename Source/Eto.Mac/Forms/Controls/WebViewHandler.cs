@@ -85,8 +85,7 @@ namespace Eto.Mac.Forms.Controls
 				set { textBox.Text = value; }
 			}
 
-			public PromptDialog(Eto.Generator generator)
-				: base(generator)
+			public PromptDialog()
 			{
 				this.MinimumSize = new Size(400, 0);
 				var layout = new DynamicLayout(padding: new Padding(20, 10));
@@ -135,7 +134,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override string UIRunJavaScriptTextInputPanelWithFrame(wk.WebView sender, string prompt, string defaultText, wk.WebFrame initiatedByFrame)
 			{
-				var dialog = new PromptDialog(Handler.Widget.Platform)
+				var dialog = new PromptDialog
 				{
 					Prompt = prompt,
 					Value = defaultText,

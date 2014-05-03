@@ -49,14 +49,17 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a delegate to instantiate objects of this type with minimal overhead
 		/// </summary>
-		/// <param name="generator">Generator to create the solid brushes</param>
-		public static Func<Color, SolidBrush> Instantiator (Generator generator = null)
+		public static Func<Color, SolidBrush> Instantiator
 		{
-			var sharedHandler = generator.CreateShared<ISolidBrush> ();
-			return color => {
-				var control = sharedHandler.Create (color);
-				return new SolidBrush (sharedHandler, control);
-			};
+			get
+			{
+				var sharedHandler = Platform.Instance.CreateShared<ISolidBrush>();
+				return color =>
+				{
+					var control = sharedHandler.Create(color);
+					return new SolidBrush(sharedHandler, control);
+				};
+			}
 		}
 
 		SolidBrush (ISolidBrush handler, object control)
@@ -69,12 +72,27 @@ namespace Eto.Drawing
 		/// Initializes a new instance of a SolidBrush with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color for the brush</param>
-		/// <param name="generator">Generator to create the brush for</param>
-		public SolidBrush (Color color, Generator generator = null)
+		public SolidBrush(Color color)
 		{
-			handler = generator.CreateShared <ISolidBrush> ();
+			handler = Platform.Instance.CreateShared <ISolidBrush> ();
 			ControlObject = handler.Create (color);
 		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Initializes a new instance of a SolidBrush with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color for the brush</param>
+		/// <param name="generator">Generator to create the brush for</param>
+		[Obsolete("Use variation without generator instead")]
+		public SolidBrush(Color color, Generator generator = null)
+		{
+			handler = generator.CreateShared <ISolidBrush>();
+			ControlObject = handler.Create(color);
+		}
+
+		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Gets or sets the fill color of this brush

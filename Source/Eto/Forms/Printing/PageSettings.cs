@@ -1,4 +1,5 @@
 using Eto.Drawing;
+using System;
 
 namespace Eto.Forms
 {
@@ -7,13 +8,14 @@ namespace Eto.Forms
 		RectangleF PrintableArea { get; set; }
 	}
 
+	[Handler(typeof(IPageSettings))]
 	public class PageSettings : InstanceWidget
 	{
 		public PageSettings()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public PageSettings (Generator generator)
 			: base (generator, typeof (IPageSettings))
 		{

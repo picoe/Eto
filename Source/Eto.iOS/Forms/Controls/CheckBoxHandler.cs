@@ -97,14 +97,9 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
-		public override CheckBox CreateControl ()
+		public CheckBoxHandler()
 		{
-			return new CheckBox();
-		}
-
-		protected override void Initialize ()
-		{
-			base.Initialize ();
+			Control = new CheckBox();
 			Control.ValueChanged += delegate {
 				Widget.OnCheckedChanged(EventArgs.Empty);
 			};

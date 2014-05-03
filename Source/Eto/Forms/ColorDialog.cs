@@ -7,7 +7,8 @@ namespace Eto.Forms
 	{
 		Color Color { get; set; }
 	}
-	
+
+	[Handler(typeof(IColorDialog))]
 	public class ColorDialog : CommonDialog
 	{
 		new IColorDialog Handler { get { return (IColorDialog)base.Handler; } }
@@ -19,17 +20,18 @@ namespace Eto.Forms
 			if (ColorChanged != null)
 				ColorChanged (this, e);
 		}
-		
+
 		public ColorDialog()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public ColorDialog (Generator generator)
 			: this (generator, typeof(IColorDialog))
 		{
 		}
-		
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ColorDialog (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

@@ -10,7 +10,12 @@ namespace Eto.Forms
 	public abstract class CommonDialog : InstanceWidget
 	{
 		new ICommonDialog Handler { get { return (ICommonDialog)base.Handler; } }
-		
+
+		protected CommonDialog()
+		{
+		}
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected CommonDialog (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{

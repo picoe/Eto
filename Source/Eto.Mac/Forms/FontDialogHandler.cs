@@ -18,7 +18,7 @@ namespace Eto.Mac.Forms
 		public void ChangeFont(NSFontManager sender)
 		{
 			var font = sender.ConvertFont(NSFont.SystemFontOfSize(NSFont.SystemFontSize));
-			Handler.Font = font != null ? new Font(Handler.Widget.Platform, new FontHandler(font)) : null;
+			Handler.Font = font != null ? new Font(new FontHandler(font)) : null;
 			Handler.Widget.OnFontChanged(EventArgs.Empty);
 		}
 

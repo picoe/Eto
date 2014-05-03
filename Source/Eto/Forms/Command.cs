@@ -46,15 +46,19 @@ namespace Eto.Forms
 		{
 		}
 
-		public override MenuItem CreateMenuItem(Generator generator = null)
+		#pragma warning disable 672,612,618
+
+		public override MenuItem CreateMenuItem(Generator generator)
 		{
-			return new CheckMenuItem(this, generator);
+			return new CheckMenuItem(this);
 		}
 
-		public override ToolItem CreateToolItem(Generator generator = null)
+		public override ToolItem CreateToolItem(Generator generator)
 		{
-			return new CheckToolItem(this, generator);
+			return new CheckToolItem(this);
 		}
+
+		#pragma warning restore 672,612,618
 	}
 
 	public class RadioCommand : CheckCommand
@@ -71,15 +75,19 @@ namespace Eto.Forms
 		{
 		}
 
-		public override MenuItem CreateMenuItem(Generator generator = null)
+		#pragma warning disable 672,612,618
+
+		public override MenuItem CreateMenuItem(Generator generator)
 		{
-			return menuItem = new RadioMenuItem(this, Controller != null ? Controller.menuItem : null, generator);
+			return menuItem = new RadioMenuItem(this, Controller != null ? Controller.menuItem : null);
 		}
 
-		public override ToolItem CreateToolItem(Generator generator = null)
+		public override ToolItem CreateToolItem(Generator generator)
 		{
 			throw new NotSupportedException();
 		}
+
+		#pragma warning restore 672,612,618
 	}
 
 	public class Command
@@ -150,14 +158,31 @@ namespace Eto.Forms
 			OnExecuted(EventArgs.Empty);
 		}
 
-		public virtual ToolItem CreateToolItem(Generator generator = null)
+
+		#pragma warning disable 612,618
+
+		public virtual ToolItem CreateToolItem()
+		{
+			return CreateToolItem(null);
+		}
+
+		public virtual MenuItem CreateMenuItem()
+		{
+			return CreateMenuItem(null);
+		}
+
+		[Obsolete("Use variation without generator instead")]
+		public virtual ToolItem CreateToolItem(Generator generator)
 		{
 			return new ButtonToolItem(this, generator);
 		}
 
-		public virtual MenuItem CreateMenuItem(Generator generator = null)
+		[Obsolete("Use variation without generator instead")]
+		public virtual MenuItem CreateMenuItem(Generator generator)
 		{
 			return new ButtonMenuItem(this, generator);
 		}
+
+		#pragma warning restore 612,618
 	}
 }

@@ -36,6 +36,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(IPasswordBox))]
 	public class PasswordBox : TextControl
 	{
 		new IPasswordBox Handler { get { return (IPasswordBox)base.Handler; } }
@@ -44,7 +45,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.PasswordBox"/> class.
 		/// </summary>
 		public PasswordBox()
-			: this((Generator)null)
 		{
 		}
 
@@ -52,6 +52,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.PasswordBox"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the control</param>
+		[Obsolete("Use default constructor instead")]
 		public PasswordBox(Generator generator)
 			: this(generator, typeof(IPasswordBox))
 		{
@@ -63,6 +64,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the control</param>
 		/// <param name="type">Type of platform handler interface to create (must implement IPasswordBox)</param>
 		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected PasswordBox(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

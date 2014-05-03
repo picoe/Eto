@@ -236,7 +236,7 @@ namespace Eto.Wpf.Drawing
 					clone = Control.Clone();
 			});
 
-			return new Bitmap(Platform, new BitmapHandler(clone));
+			return new Bitmap(new BitmapHandler(clone));
 		}
 
 		int Stride

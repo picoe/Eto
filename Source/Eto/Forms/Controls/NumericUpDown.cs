@@ -13,6 +13,7 @@ namespace Eto.Forms
 		double MaxValue { get; set; }
 	}
 
+	[Handler(typeof(INumericUpDown))]
 	public class NumericUpDown : CommonControl
 	{
 		new INumericUpDown Handler { get { return (INumericUpDown)base.Handler; } }
@@ -26,14 +27,15 @@ namespace Eto.Forms
 		}
 
 		public NumericUpDown()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public NumericUpDown(Generator generator) : this(generator, typeof(INumericUpDown))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected NumericUpDown(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

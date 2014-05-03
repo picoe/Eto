@@ -8,9 +8,9 @@ namespace Eto.iOS.Forms.Controls
 	{
 		public override UIView ContainerControl { get { return Control; } }
 
-		public override UIWebView CreateControl ()
+		public WebViewHandler()
 		{
-			return new UIWebView();
+			Control = new UIWebView();
 		}
 
 		public void LoadHtml (string html, Uri baseUri)

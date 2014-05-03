@@ -55,7 +55,7 @@ namespace Eto.Mac.Forms.Controls
 		public Font Font
 		{
 			get {
-				return font ?? (font = new Font (Widget.Platform, new FontHandler (Control.TitleFont)));
+				return font ?? (font = new Font(new FontHandler(Control.TitleFont)));
 			}
 			set {
 				font = value;

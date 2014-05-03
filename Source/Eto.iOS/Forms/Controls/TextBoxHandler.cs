@@ -7,11 +7,6 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class TextBoxHandler : IosControl<UITextField, TextBox>, ITextBox
 	{
-		public override UITextField CreateControl()
-		{
-			return new UITextField();
-		}
-
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			return SizeF.Max(base.GetNaturalSize(availableSize), new SizeF(60, 0));
@@ -20,6 +15,7 @@ namespace Eto.iOS.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control = new UITextField();
 			MaxLength = Int32.MaxValue;
 			Control.BorderStyle = UITextBorderStyle.RoundedRect;
 			Control.ShouldChangeCharacters = delegate(UITextField textField, MonoTouch.Foundation.NSRange range, string replacementString)

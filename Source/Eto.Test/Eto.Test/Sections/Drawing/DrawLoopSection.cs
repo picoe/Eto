@@ -157,15 +157,13 @@ namespace Eto.Test.Sections.Drawing
 		public long PreviousFrameStartTicks { get; set; }
 		public readonly List<Box> Boxes = new List<Box>();
 		public bool UseTexturesAndGradients { get; set; }
-		public Generator Generator { get; private set; }
 		public bool EraseBoxes { get; set; }
 
-		public DirectDrawingRenderer(Generator generator = null)
+		public DirectDrawingRenderer()
 		{
-			Generator = generator ?? Platform.Instance;
-			texture = TestIcons.Textures(generator);
-			font = SystemFonts.Default(generator: generator);
-			textBrush = new SolidBrush(Colors.White, generator);
+			texture = TestIcons.Textures;
+			font = SystemFonts.Default();
+			textBrush = new SolidBrush(Colors.White);
 		}
 
 		public void RestartFPS()
@@ -186,7 +184,6 @@ namespace Eto.Test.Sections.Drawing
 			readonly Brush fillBrush;
 			RectangleF position;
 			IMatrix transform;
-			DirectDrawingRenderer renderer;
 
 			public SizeF Increment { get { return increment; } set { increment = value; } }
 
@@ -197,7 +194,6 @@ namespace Eto.Test.Sections.Drawing
 
 			public Box(Size canvasSize, bool useTexturesAndGradients, DirectDrawingRenderer renderer)
 			{
-				this.renderer = renderer;
 				var size = new SizeF(random.Next(50) + 50, random.Next(50) + 50);
 				var location = new PointF(random.Next(canvasSize.Width - (int)size.Width), random.Next(canvasSize.Height - (int)size.Height));
 				position = new RectangleF(location, size);
@@ -212,9 +208,9 @@ namespace Eto.Test.Sections.Drawing
 
 				var rect = new RectangleF(size);
 				color = GetRandomColor(random);
-				var colorPen = new Pen(color, generator: renderer.Generator);
-				var blackPen = Pens.Black(renderer.Generator);
-				var blackBrush = Brushes.Black(renderer.Generator);
+				var colorPen = new Pen(color);
+				var blackPen = Pens.Black;
+				var blackBrush = Brushes.Black;
 				switch (random.Next(useTexturesAndGradients ? 4 : 2))
 				{
 					case 0:
@@ -229,12 +225,12 @@ namespace Eto.Test.Sections.Drawing
 						switch (random.Next(2))
 						{
 							case 0:
-								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height), renderer.Generator);
+								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height));
 								break;
 							case 1:
-								fillBrush = new TextureBrush(renderer.texture, 1f, renderer.Generator)
+								fillBrush = new TextureBrush(renderer.texture)
 								{
-									Transform = Matrix.FromScale(size / 80, renderer.Generator)
+									Transform = Matrix.FromScale(size / 80)
 								};
 								break;
 						}
@@ -245,12 +241,12 @@ namespace Eto.Test.Sections.Drawing
 						switch (random.Next(2))
 						{
 							case 0:
-								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height), renderer.Generator);
+								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height));
 								break;
 							case 1:
-								fillBrush = new TextureBrush(renderer.texture, 1f, renderer.Generator)
+								fillBrush = new TextureBrush(renderer.texture)
 								{
-									Transform = Matrix.FromScale(size / 80, renderer.Generator)
+									Transform = Matrix.FromScale(size / 80)
 								};
 								break;
 						}
@@ -275,7 +271,7 @@ namespace Eto.Test.Sections.Drawing
 					increment.Height = -increment.Height;
 				angle += rotation;
 
-				transform = Matrix.FromTranslation(position.Location, renderer.Generator);
+				transform = Matrix.FromTranslation(position.Location);
 				transform.RotateAt(angle, position.Width / 2, position.Height / 2);
 			}
 

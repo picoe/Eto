@@ -29,6 +29,7 @@ namespace Eto.Forms
 		Control Panel2 { get; set; }
 	}
 
+	[Handler(typeof(ISplitter))]
 	public class Splitter : Container
 	{
 		new ISplitter Handler { get { return (ISplitter)base.Handler; } }
@@ -75,14 +76,15 @@ namespace Eto.Forms
 		}
 
 		public Splitter()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public Splitter(Generator generator) : this (generator, typeof(ISplitter))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Splitter(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

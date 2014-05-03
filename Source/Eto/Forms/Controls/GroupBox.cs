@@ -10,19 +10,21 @@ namespace Eto.Forms
 		string Text { get; set; }
 	}
 
+	[Handler(typeof(IGroupBox))]
 	public class GroupBox : Panel
 	{
 		new IGroupBox Handler { get { return (IGroupBox)base.Handler; } }
 		
 		public GroupBox()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public GroupBox (Generator generator) : this (generator, typeof(IGroupBox))
 		{
 		}
 		
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected GroupBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

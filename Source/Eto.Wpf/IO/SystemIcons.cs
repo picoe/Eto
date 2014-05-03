@@ -27,7 +27,7 @@ namespace Eto.Wpf.IO
 			}
 
 			using (var icon = ShellIcon.GetFileIcon (fileName, iconSize, false)) {
-				return new Icon(Widget.Platform, new IconHandler(icon));
+				return new Icon(new IconHandler(icon));
 			}
 		}
 
@@ -58,7 +58,7 @@ namespace Eto.Wpf.IO
 			}
 
 			using (var icon = ShellIcon.GetFolderIcon (iconSize, folderType)) {
-				return new Icon(Widget.Platform, new IconHandler(icon));
+				return new Icon(new IconHandler(icon));
 			}
 		}
 	}

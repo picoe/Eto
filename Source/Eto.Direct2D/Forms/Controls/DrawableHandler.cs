@@ -22,7 +22,7 @@ namespace Eto.Direct2D.Forms.Controls
 			get { return backgroundColor != null ? backgroundColor.Color : base.BackgroundColor; }
 			set
 			{
-				backgroundColor = value.A > 0 ? new SolidBrush(value, Platform) : null;
+				backgroundColor = value.A > 0 ? new SolidBrush(value) : null;
 				if (Widget.Loaded)
 					Invalidate();
 			}
@@ -35,7 +35,7 @@ namespace Eto.Direct2D.Forms.Controls
 			Control.SetStyle(swf.ControlStyles.AllPaintingInWmPaint | swf.ControlStyles.Opaque, true);
 			Control.HandleCreated += (sender, e) =>
 			{
-				graphics = new Graphics(Platform, new GraphicsHandler(this));
+				graphics = new Graphics(new GraphicsHandler(this));
 				graphicsHandler = (GraphicsHandler)graphics.Handler;
 			};
 		}
@@ -52,7 +52,7 @@ namespace Eto.Direct2D.Forms.Controls
 				return null;
 			var handler = new GraphicsHandler((GraphicsHandler)graphics.Handler);
 			handler.BeginDrawing();
-			return new Graphics(Platform, handler);
+			return new Graphics(handler);
 		}
 
 		public override void Update(Eto.Drawing.Rectangle rect)
@@ -74,7 +74,7 @@ namespace Eto.Direct2D.Forms.Controls
 			{
 				// clear to control's background color
 				if (backgroundColor == null)
-					backgroundColor = new SolidBrush(base.BackgroundColor, Platform);
+					backgroundColor = new SolidBrush(base.BackgroundColor);
 				graphics.Clear(backgroundColor);
 
 				// perform user painting

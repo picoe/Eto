@@ -58,19 +58,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Direct2D\Eto.Direct2D - Pcl.csproj">
-      <Project>{330ef9fd-5947-4ac9-9796-950c7633695f}</Project>
+      <Project>{330EF9FD-5947-4AC9-9796-950C7633695F}</Project>
       <Name>Eto.Direct2D - Pcl</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Eto.WinForms\Eto.WinForms - Pcl.csproj">
-      <Project>{9f51798a-354c-47a1-9207-4bb7d7fc7fc4}</Project>
+      <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
       <Name>Eto.WinForms - Pcl</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
-      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - Pcl</Name>
     </ProjectReference>
     <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
-      <Project>{eb9c0a22-6644-46e4-948c-f7c95e1f8ce1}</Project>
+      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
       <Name>Eto.Test - Pcl</Name>
     </ProjectReference>
   </ItemGroup>

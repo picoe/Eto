@@ -154,19 +154,18 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override void Initialize ()
+		public GridViewHandler()
 		{
-			Control = new EtoTableView {
+			Control = new EtoTableView
+			{
 				Handler = this,
 				FocusRingType = NSFocusRingType.None,
 				DataSource = new EtoTableViewDataSource { Handler = this },
 				Delegate = new EtoTableDelegate { Handler = this },
 				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
 			};
-			
-			base.Initialize ();
 		}
-		
+
 		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }

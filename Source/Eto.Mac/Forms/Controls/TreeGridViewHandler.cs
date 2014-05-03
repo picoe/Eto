@@ -237,12 +237,13 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override void Initialize ()
+		public TreeGridViewHandler()
 		{
-			Control = new EtoOutlineView { 
+			Control = new EtoOutlineView
+			{
 				Handler = this,
-				Delegate = new EtoOutlineDelegate{ Handler = this },
-				DataSource = new EtoDataSource{ Handler = this },
+				Delegate = new EtoOutlineDelegate { Handler = this },
+				DataSource = new EtoDataSource { Handler = this },
 				//HeaderView = null,
 				//AutoresizesOutlineColumn = true,
 				//AllowsColumnResizing = false,
@@ -251,9 +252,8 @@ namespace Eto.Mac.Forms.Controls
 				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
 			};
 
-			base.Initialize ();
 		}
-		
+
 		public ITreeGridStore<ITreeGridItem> DataStore {
 			get { return store; }
 			set {

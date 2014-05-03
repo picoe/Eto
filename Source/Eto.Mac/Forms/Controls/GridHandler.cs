@@ -88,7 +88,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				return font ?? (font = new Font(CellHandler.Platform, new FontHandler(Cell.Font)));
+				return font ?? (font = new Font(new FontHandler(Cell.Font)));
 			}
 			set
 			{

@@ -27,6 +27,7 @@ namespace Eto.Mac.Forms.Controls
 			view = new MacEventView { Handler = this };
 			view.AddSubview(Control);
 		}
+
 		protected override void Initialize()
 		{
 			base.Initialize();

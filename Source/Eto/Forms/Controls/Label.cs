@@ -31,20 +31,22 @@ namespace Eto.Forms
 		WrapMode Wrap { get; set; }
 		Color TextColor { get; set; }
 	}
-	
+
+	[Handler(typeof(ILabel))]
 	public class Label : TextControl
 	{
 		new ILabel Handler { get { return (ILabel)base.Handler; } }
 		
 		public Label()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public Label(Generator generator) : this (generator, typeof(ILabel))
 		{
 		}
-		
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Label (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

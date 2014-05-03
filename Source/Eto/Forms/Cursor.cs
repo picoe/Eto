@@ -47,15 +47,16 @@ namespace Eto.Forms
 		/// </summary>
 		HorizontalSplit
 	}
-	
+
 	/// <summary>
 	/// Platform interface for the <see cref="Cursor"/> class
 	/// </summary>
+	[AutoInitialize(false)]
 	public interface ICursor : IInstanceWidget
 	{
-		void Create (CursorType cursor);
+		void Create(CursorType cursor);
 	}
-	
+
 	/// <summary>
 	/// Class for a particular Mouse cursor type
 	/// </summary>
@@ -63,23 +64,33 @@ namespace Eto.Forms
 	/// This can be used to specify a cursor for a particular control
 	/// using <see cref="Control.Cursor"/>
 	/// </remarks>
+	[Handler(typeof(ICursor))]
 	public class Cursor : InstanceWidget
 	{
 		new ICursor Handler { get { return (ICursor)base.Handler; } }
-		
-		public Cursor (CursorType cursor, Generator generator = null)
-			: base (generator, typeof(ICursor), false)
+
+		public Cursor(CursorType cursor)
 		{
-			Handler.Create (cursor);
-			Initialize ();
+			Handler.Create(cursor);
+			Initialize();
 		}
-		
-		protected Cursor (Generator generator)
-			: this (generator, typeof(ICursor))
+
+		[Obsolete("Use constructor without generator instead")]
+		public Cursor(CursorType cursor, Generator generator = null)
+			: base(generator, typeof(ICursor), false)
+		{
+			Handler.Create(cursor);
+			Initialize();
+		}
+
+		[Obsolete("Use default constructor instead")]
+		protected Cursor(Generator generator)
+			: this(generator, typeof(ICursor))
 		{
 		}
-		
-		protected Cursor (Generator generator, Type type, bool initialize = true)
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
+		protected Cursor(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
 		}

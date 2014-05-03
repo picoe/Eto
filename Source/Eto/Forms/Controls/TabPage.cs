@@ -11,12 +11,12 @@ namespace Eto.Forms
 		Image Image { get; set; }
 	}
 
+	[Handler(typeof(ITabPage))]
 	public class TabPage : Panel, IImageListItem
 	{
 		new ITabPage Handler { get { return (ITabPage)base.Handler; } }
 		
 		public TabPage (Control control, Padding? padding = null)
-			: this (control.Platform)
 		{
 			if (padding != null)
 				this.Padding = padding.Value;
@@ -24,15 +24,16 @@ namespace Eto.Forms
 		}
 
 		public TabPage ()
-			: this ((Generator)null)
 		{
 		}
-		
+
+		[Obsolete("Use default constructor instead")]
 		public TabPage (Generator generator)
 			: this (generator, typeof(ITabPage))
 		{
 		}
-		
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected TabPage (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

@@ -62,7 +62,7 @@ namespace Eto.Test.UnitTests
 						generator = new Handlers.TestPlatform();
 					Platform.Initialize(generator);
 				}
-				if (generator.Supports<IApplication>())
+				if (generator.Supports<Application>())
 				{
 					var ev = new ManualResetEvent(false);
 					Exception exception = null;
@@ -156,7 +156,7 @@ namespace Eto.Test.UnitTests
 			Form form;
 			Run((app, finished) =>
 			{
-				if (!Platform.Instance.Supports<IForm>())
+				if (!Platform.Instance.Supports<Form>())
 					Assert.Inconclusive("This platform does not support IForm");
 
 				form = new Form();

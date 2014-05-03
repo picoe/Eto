@@ -3,6 +3,7 @@
 //#define TRACK_GC
 
 using System;
+using System.Globalization;
 
 namespace Eto
 {
@@ -17,6 +18,10 @@ namespace Eto
 		/// Gets the widget this handler is implemented for
 		/// </summary>
 		Widget Widget { get; set; }
+
+		void Initialize();
+
+		new Platform Platform { get; set; }
 	}
 
 	/// <summary>
@@ -113,6 +118,7 @@ namespace Eto
 			this.Handler = handler;
 			if (handler != null)
 			{
+				handler.Platform = (Platform)generator;
 				handler.Widget = this; // tell the handler who we are
 			}
 			if (initialize)
@@ -133,11 +139,9 @@ namespace Eto
 			var widgetHandler = this.Handler as IWidget;
 			if (widgetHandler != null)
 			{
+				widgetHandler.Platform = (Platform)generator;
 				widgetHandler.Widget = this;
 			}
-
-			if (initialize)
-				Initialize();
 		}
 
 		/// <summary>
@@ -145,12 +149,18 @@ namespace Eto
 		/// </summary>
 		protected Widget()
 		{
-			this.Handler = Platform.Instance.Create(GetType());
+			var info = Platform.Instance.FindHandler(GetType());
+			if (info == null)
+				throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "type for '{0}' could not be found in this platform", GetType().FullName));
+			this.Handler = info.Instantiator();
 			var widgetHandler = this.Handler as IWidget;
 			if (widgetHandler != null)
 			{
+				widgetHandler.Platform = Platform.Instance;
 				widgetHandler.Widget = this;
 			}
+			if (info.Initialize)
+				Initialize();
 		}
 
 		/// <summary>
@@ -162,8 +172,10 @@ namespace Eto
 			this.Handler = handler;
 			if (handler != null)
 			{
+				handler.Platform = Platform.Instance;
 				handler.Widget = this; // tell the handler who we are
 			}
+			Initialize();
 		}
 
 		/// <summary>
@@ -173,12 +185,16 @@ namespace Eto
 		/// This is typically called from the constructor after all of the logic is completed to construct
 		/// the object.
 		/// 
-		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
-		/// after all of its logic has finished.
+		/// If your handler interface has the <see cref="AutoInitializeAttribute"/> set to false, then you are responsible
+		/// for calling this method in your constructor after calling the creation method on your custom handler.
 		/// </remarks>
-		[Obsolete("No longer does anything")]
 		protected void Initialize()
 		{
+			var handler = Handler as IWidget;
+			if (handler != null)
+				handler.Initialize();
+			Eto.Style.OnStyleWidgetDefaults(this);
+			EventLookup.HookupEvents(this);
 		}
 
 		/// <summary>

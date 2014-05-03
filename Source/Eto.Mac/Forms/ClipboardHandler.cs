@@ -49,7 +49,7 @@ namespace Eto.Mac.Forms
 			get {
 				var image = new NSImage(Control);
 				if (image.Handle == IntPtr.Zero) return null;
-				return new Bitmap(Widget.Platform, new BitmapHandler(image));
+				return new Bitmap(new BitmapHandler(image));
 			}
 		}
 

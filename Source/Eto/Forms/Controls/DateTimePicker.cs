@@ -55,6 +55,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Date/time picker control to enter a date and/or time value
 	/// </summary>
+	[Handler(typeof(IDateTimePicker))]
 	public class DateTimePicker : CommonControl
 	{
 		new IDateTimePicker Handler { get { return (IDateTimePicker)base.Handler; } }
@@ -80,7 +81,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
 		/// </summary>
 		public DateTimePicker()
-			: this((Generator)null)
 		{
 		}
 
@@ -88,6 +88,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
+		[Obsolete("Use default constructor instead")]
 		public DateTimePicker(Generator generator)
 			: this(generator, typeof(IDateTimePicker))
 		{
@@ -99,6 +100,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the handler</param>
 		/// <param name="type">Type of the handler interface to create, must implement <see cref="IDateTimePicker"/></param>
 		/// <param name="initialize">If set to <c>true</c>, initialize after created, otherwise the subclass should call Initialize.</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected DateTimePicker(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

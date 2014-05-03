@@ -38,6 +38,7 @@ namespace Eto.Drawing
 	/// The variations can include Light, Bold, Italic, Oblique, etc.  Only the styles in <see cref="FontStyle"/> are 
 	/// discoverable, other than looking at the <see cref="FontTypeface.Name"/> for hints as to what the variation will look like.
 	/// </remarks>
+	[Handler(typeof(IFontFamily))]
 	public class FontFamily : InstanceWidget, IEquatable<FontFamily>
 	{
 		new IFontFamily Handler { get { return (IFontFamily)base.Handler; } }
@@ -58,10 +59,9 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Used by platform implementations to create instances of the FontFamily class directly
 		/// </remarks>
-		/// <param name="generator">Generator for this instance</param>
 		/// <param name="handler">Handler to use</param>
-		public FontFamily (Generator generator, IFontFamily handler)
-			: base (generator, handler, true)
+		public FontFamily (IFontFamily handler)
+			: base(handler)
 		{
 		}
 
@@ -70,7 +70,26 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="familyName">Name of the font family to assign to this instance</param>
 		public FontFamily (string familyName)
-			: this (null, familyName)
+		{
+			if (familyName.IndexOf (',') > 0)
+				familyName = SplitFamilyName(familyName);
+
+			Handler.Create (familyName);
+		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Initializes a new instance of the FontFamily class with the specified handler
+		/// </summary>
+		/// <remarks>
+		/// Used by platform implementations to create instances of the FontFamily class directly
+		/// </remarks>
+		/// <param name="generator">Generator for this instance</param>
+		/// <param name="handler">Handler to use</param>
+		[Obsolete("Use variation without generator instead")]
+		public FontFamily(Generator generator, IFontFamily handler)
+			: base(generator, handler, true)
 		{
 		}
 
@@ -79,18 +98,22 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="generator">Generator to create this font family on</param>
 		/// <param name="familyName">Name of the font family to assign to this instance</param>
-		public FontFamily (Generator generator, string familyName)
-			: base (generator, typeof(IFontFamily), true)
+		[Obsolete("Use variation without generator instead")]
+		public FontFamily(Generator generator, string familyName)
+			: base(generator, typeof(IFontFamily), true)
 		{
-			if (familyName.IndexOf (',') > 0)
-				familyName = SplitFamilyName (familyName, generator);
+			if (familyName.IndexOf(',') > 0)
+				familyName = SplitFamilyName(familyName);
 
-			Handler.Create (familyName);
+			Handler.Create(familyName);
 		}
 
-		static string SplitFamilyName (string familyName, Generator generator)
+		#pragma warning restore 612,618
+
+
+		static string SplitFamilyName (string familyName)
 		{
-			var handler = generator.CreateShared<IFonts>();
+			var handler = Platform.Instance.CreateShared<IFonts>();
 			var families = familyName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 			char[] trimChars = { ' ', '\'', '"' };

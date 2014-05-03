@@ -53,7 +53,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public Graphics CreateGraphics()
 		{
-			return new Graphics(Widget.Platform, new GraphicsHandler(Control));
+			return new Graphics(new GraphicsHandler(Control));
 		}
 
 		public override bool Enabled { get; set; }
@@ -66,7 +66,7 @@ namespace Eto.Mac.Forms.Controls
 				if (backgroundColor != value)
 				{
 					backgroundColor = value;
-					backgroundBrush = backgroundColor.A > 0 ? new SolidBrush(backgroundColor, Widget.Platform) : null;
+					backgroundBrush = backgroundColor.A > 0 ? new SolidBrush(backgroundColor) : null;
 					Invalidate();
 				}
 			}
@@ -107,7 +107,7 @@ namespace Eto.Mac.Forms.Controls
 			if (context != null)
 			{
 				var handler = new GraphicsHandler(Control, context, Control.Frame.Height, Control.IsFlipped);
-				using (var graphics = new Graphics(Widget.Platform, handler))
+				using (var graphics = new Graphics(handler))
 				{
 					if (backgroundBrush != null)
 						graphics.FillRectangle(backgroundBrush, rect);

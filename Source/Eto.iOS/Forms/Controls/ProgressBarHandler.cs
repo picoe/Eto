@@ -13,11 +13,7 @@ namespace Eto.iOS.Forms.Controls
 
 		public ProgressBarHandler ()
 		{
-		}
-
-		public override UIProgressView CreateControl ()
-		{
-			return new UIProgressView ();
+			Control = new UIProgressView();
 		}
 
 		protected override void Initialize ()

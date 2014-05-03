@@ -139,20 +139,6 @@ namespace Eto.Mac
 		protected ToolItemHandler()
 		{
 			this.Identifier = Guid.NewGuid().ToString();
-		}
-
-		public void UseStandardButton(bool grayscale)
-		{
-			this.ToolBarItemStyle = MacToolBarItemStyle.StandardButton;
-			if (grayscale)
-				Tint = Colors.Gray;
-		}
-
-		static readonly Selector selAction = new Selector("action");
-
-		protected override void Initialize()
-		{
-			base.Initialize();
 			Control = (TControl)new NSToolbarItem(Identifier);
 			Control.Target = new ToolBarItemHandlerTarget { Handler = this };
 			Control.Action = selAction;
@@ -166,6 +152,15 @@ namespace Eto.Mac
 
 			this.ToolBarItemStyle = MacToolBarItemStyle.Default;
 		}
+
+		public void UseStandardButton(bool grayscale)
+		{
+			this.ToolBarItemStyle = MacToolBarItemStyle.StandardButton;
+			if (grayscale)
+				Tint = Colors.Gray;
+		}
+
+		static readonly Selector selAction = new Selector("action");
 
 		public virtual void ControlAdded(ToolBarHandler toolbar)
 		{

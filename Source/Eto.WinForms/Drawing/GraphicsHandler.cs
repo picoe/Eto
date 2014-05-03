@@ -93,10 +93,9 @@ namespace Eto.WinForms.Drawing
 			Control = sd.Graphics.FromImage ((sd.Image)image.ControlObject);
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
-
+			base.Initialize();
 			Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
 			Control.SmoothingMode = sdd.SmoothingMode.AntiAlias;
 			Control.InterpolationMode = sdd.InterpolationMode.HighQualityBilinear;

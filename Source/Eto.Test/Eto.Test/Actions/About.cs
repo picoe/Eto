@@ -9,7 +9,7 @@ namespace Eto.Test.Actions
 		public About()
 		{
 			ID = "about";
-			Image = TestIcons.TestIcon();
+			Image = TestIcons.TestIcon;
 			MenuText = "About Test Application";
 			ToolBarText = "About";
 			Shortcut = Keys.F11;

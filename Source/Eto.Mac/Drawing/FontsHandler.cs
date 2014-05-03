@@ -28,7 +28,7 @@ namespace Eto.iOS.Drawing
 
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
-			get { return availableFontFamilies.Select (r => new FontFamily(Platform, new FontFamilyHandler (r))); }
+			get { return availableFontFamilies.Select (r => new FontFamily(new FontFamilyHandler (r))); }
 		}
 
 		public bool FontFamilyAvailable (string fontFamily)

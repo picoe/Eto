@@ -52,14 +52,9 @@ namespace Eto.Mac.Forms.Controls
 			HeaderText = string.Empty;
 			Editable = false;
 			AutoSize = true;
+			DataCell = new TextBoxCell();
 		}
 
-		protected override void Initialize ()
-		{
-			base.Initialize ();
-			DataCell = new TextBoxCell(Widget.Platform);
-		}
-		
 		public void Loaded (IDataViewHandler handler, int column)
 		{
 			Column = column;
@@ -188,7 +183,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get {
 				if (font == null)
-					font = new Font (Widget.Platform, new FontHandler (Control.DataCell.Font));
+					font = new Font(new FontHandler(Control.DataCell.Font));
 				return font;
 			}
 			set {

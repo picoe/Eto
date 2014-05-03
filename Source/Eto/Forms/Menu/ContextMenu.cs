@@ -13,27 +13,41 @@ namespace Eto.Forms
 		ContextMenu ContextMenu { get; set; }
 	}
 
+	[Handler(typeof(IContextMenu))]
 	public class ContextMenu : Menu, ISubMenuWidget
 	{
+		MenuItemCollection items;
+
 		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }
 
-		public MenuItemCollection Items { get; private set; }
+		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
 
 		public ContextMenu()
-			: this((Generator)null)
 		{
 		}
 
+		public ContextMenu(IEnumerable<MenuItem> items)
+		{
+			Items.AddRange(items);
+		}
+
+		public ContextMenu(params MenuItem[] items)
+		{
+			Items.AddRange(items);
+		}
+
+		[Obsolete("Use default constructor instead")]
 		public ContextMenu(Generator generator) : this(generator, typeof(IContextMenu))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ContextMenu(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			Items = new MenuItemCollection(Handler);
 		}
 
+		[Obsolete("Use constructor without generator instead")]
 		public ContextMenu(Generator g, IEnumerable<MenuItem> items) : this(g)
 		{
 			Items.AddRange(items);

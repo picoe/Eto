@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 
 namespace Eto.Forms
 {
@@ -13,13 +14,13 @@ namespace Eto.Forms
 	{
 		static readonly object cursorCache = new object();
 
-		static Cursor GetCursor (CursorType type, Generator generator = null)
+		static Cursor GetCursor(CursorType type)
 		{
-			var cache = generator.Cache<CursorType, Cursor> (cursorCache);
+			var cache = Platform.Instance.Cache<CursorType, Cursor> (cursorCache);
 			Cursor cursor;
 			lock (cache) {
 				if (!cache.TryGetValue (type, out cursor)) {
-					cursor = new Cursor(type, generator);
+					cursor = new Cursor(type);
 					cache [type] = cursor;
 				}
 			}
@@ -30,24 +31,22 @@ namespace Eto.Forms
 		/// Gets a cached cursor with the specified <paramref name="type"/>
 		/// </summary>
 		/// <param name="type">Type of cursor to get</param>
-		/// <param name="generator">Generator to get the cached pen for</param>
 		/// <returns>A cached instance of the specified cursor</returns>
-		public static Cursor Cached (CursorType type, Generator generator = null)
+		public static Cursor Cached(CursorType type)
 		{
-			return GetCursor (type, generator);
+			return GetCursor(type);
 		}
 		
 		/// <summary>
 		/// Clears the cursor cache
 		/// </summary>
 		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached"/> method to cache pens and want to clear it
+		/// This is useful if you are using the <see cref="Cached(CursorType)"/> method to cache pens and want to clear it
 		/// to conserve memory or resources.
 		/// </remarks>
-		/// <param name="generator">Generator to clear the pen cache for</param>
-		public static void ClearCache (Generator generator = null)
+		public static void ClearCache()
 		{
-			var cache = generator.Cache<CursorType, Cursor> (cursorCache);
+			var cache = Platform.Instance.Cache<CursorType, Cursor> (cursorCache);
 			lock (cache) {
 				cache.Clear ();
 			}
@@ -56,65 +55,98 @@ namespace Eto.Forms
 		/// <summary>
 		/// Default cursor, which is usually an arrow but may be different depending on the control
 		/// </summary>
-		public static Cursor Default (Generator generator = null)
+		public static Cursor Default
 		{
-			return GetCursor (CursorType.Default, generator);
+			get { return GetCursor(CursorType.Default); }
 		}
 
 		/// <summary>
 		/// Standard arrow cursor
 		/// </summary>
-		public static Cursor Arrow (Generator generator = null)
+		public static Cursor Arrow
 		{
-			return GetCursor (CursorType.Arrow, generator);
+			get { return GetCursor(CursorType.Arrow); }
 		}
 
 		/// <summary>
 		/// Cursor with a cross hair
 		/// </summary>
-		public static Cursor Crosshair (Generator generator = null)
+		public static Cursor Crosshair
 		{
-			return GetCursor (CursorType.Crosshair, generator);
+			get { return GetCursor(CursorType.Crosshair); }
 		}
 
 		/// <summary>
 		/// Pointer cursor, which is usually a hand
 		/// </summary>
-		public static Cursor Pointer (Generator generator = null)
+		public static Cursor Pointer
 		{
-			return GetCursor (CursorType.Pointer, generator);
+			get { return GetCursor(CursorType.Pointer); }
 		}
 
 		/// <summary>
 		/// All direction move cursor
 		/// </summary>
-		public static Cursor Move (Generator generator = null)
+		public static Cursor Move
 		{
-			return GetCursor (CursorType.Move, generator);
+			get { return GetCursor(CursorType.Move); }
 		}
 
 		/// <summary>
 		/// I-beam cursor for selecting text or placing the text cursor
 		/// </summary>
-		public static Cursor IBeam (Generator generator = null)
+		public static Cursor IBeam
 		{
-			return GetCursor (CursorType.IBeam, generator);
+			get { return GetCursor(CursorType.IBeam); }
 		}
 		
 		/// <summary>
 		/// Vertical sizing cursor
 		/// </summary>
-		public static Cursor VerticalSplit (Generator generator = null)
+		public static Cursor VerticalSplit
 		{
-			return GetCursor (CursorType.VerticalSplit, generator);
+			get { return GetCursor(CursorType.VerticalSplit); }
 		}
 		
 		/// <summary>
 		/// Horizontal sizing cursor
 		/// </summary>
-		public static Cursor HorizontalSplit (Generator generator = null)
+		public static Cursor HorizontalSplit
 		{
-			return GetCursor (CursorType.HorizontalSplit, generator);
+			get { return GetCursor(CursorType.HorizontalSplit); }
 		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Gets a cached cursor with the specified <paramref name="type"/>
+		/// </summary>
+		/// <param name="type">Type of cursor to get</param>
+		/// <param name="generator">Generator to get the cached pen for</param>
+		/// <returns>A cached instance of the specified cursor</returns>
+		[Obsolete("Use variation without generator instead")]
+		public static Cursor Cached (CursorType type, Generator generator)
+		{
+			return GetCursor(type);
+		}
+
+		/// <summary>
+		/// Clears the cursor cache
+		/// </summary>
+		/// <remarks>
+		/// This is useful if you are using the <see cref="Cached(CursorType,Generator)"/> method to cache pens and want to clear it
+		/// to conserve memory or resources.
+		/// </remarks>
+		/// <param name="generator">Generator to clear the pen cache for</param>
+		[Obsolete("Use variation without generator instead")]
+		public static void ClearCache (Generator generator)
+		{
+			var cache = generator.Cache<CursorType, Cursor> (cursorCache);
+			lock (cache) {
+				cache.Clear ();
+			}
+		}
+
+		#pragma warning restore 612,618
 	}
 }

@@ -21,7 +21,7 @@ namespace Eto.WinForms.Forms
 			{
 				foreach (var screen in swf.Screen.AllScreens)
 				{
-					yield return new Screen(Platform, new ScreenHandler(screen));
+					yield return new Screen(new ScreenHandler(screen));
 				}
 			}
 		}
@@ -31,7 +31,7 @@ namespace Eto.WinForms.Forms
 			get
 			{
 				var screen = swf.Screen.PrimaryScreen;
-				return new Screen (Platform, new ScreenHandler (screen));
+				return new Screen(new ScreenHandler (screen));
 			}
 		}
 	}

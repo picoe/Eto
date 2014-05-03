@@ -7,9 +7,10 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class PasswordBoxHandler : IosControl<UITextField, PasswordBox>, IPasswordBox
 	{
-		public override UITextField CreateControl()
+
+		public PasswordBoxHandler()
 		{
-			return new UITextField();
+			Control = new UITextField();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

@@ -10,6 +10,7 @@ namespace Eto.Forms
 	}
 
 	[ContentProperty ("Contents")]
+	[Handler(typeof(IPixelLayout))]
 	public class PixelLayout : Layout
 	{
 		new IPixelLayout Handler { get { return (IPixelLayout)base.Handler; } }
@@ -36,10 +37,10 @@ namespace Eto.Forms
 		}
 
 		public PixelLayout()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public PixelLayout(Generator generator)
 			: base(generator, typeof(IPixelLayout))
 		{

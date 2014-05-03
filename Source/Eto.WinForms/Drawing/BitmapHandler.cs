@@ -182,7 +182,7 @@ namespace Eto.WinForms.Drawing
 			else
 				copy = Control.Clone (rectangle.Value.ToSD(), Control.PixelFormat);
 
-			return new Bitmap (Platform, new BitmapHandler (copy));
+			return new Bitmap(new BitmapHandler(copy));
 		}
 
 		public Color GetPixel(int x, int y)

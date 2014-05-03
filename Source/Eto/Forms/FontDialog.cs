@@ -8,6 +8,7 @@ namespace Eto.Forms
 		Font Font { get; set; }
 	}
 
+	[Handler(typeof(IFontDialog))]
 	public class FontDialog : CommonDialog
 	{
 		new IFontDialog Handler { get { return (IFontDialog)base.Handler; } }
@@ -31,10 +32,10 @@ namespace Eto.Forms
 		}
 
 		public FontDialog()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public FontDialog(Generator generator)
 			: base(generator, typeof(IFontDialog), true)
 		{

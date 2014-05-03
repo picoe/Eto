@@ -2,6 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
+	[AutoInitialize(false)]
 	public interface IRadioButton : ITextControl
 	{
 		void Create (RadioButton controller);
@@ -9,6 +10,7 @@ namespace Eto.Forms
 		bool Checked { get; set; }
 	}
 
+	[Handler(typeof(IRadioButton))]
 	public class RadioButton : TextControl
 	{
 		public event EventHandler<EventArgs> CheckedChanged;
@@ -29,21 +31,29 @@ namespace Eto.Forms
 		}
 
 		public RadioButton()
-			: this(null, null)
 		{
+			Handler.Create(null);
+			Initialize();
 		}
-		
+
+		public RadioButton(RadioButton controller = null)
+		{
+			Handler.Create(controller);
+			Initialize();
+		}
+
+		[Obsolete("Use RadioButton(RadioButton) instead")]
 		public RadioButton (RadioButton controller = null, Generator generator = null)
 			: this(generator, typeof(IRadioButton), controller)
 		{
 		}
-		
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected RadioButton (Generator generator, Type type, RadioButton controller, bool initialize = true)
 			: base (generator, type, false)
 		{
 			Handler.Create (controller);
-			if (initialize)
-				Initialize ();
+			Initialize();
 		}
 
 		public virtual bool Checked {

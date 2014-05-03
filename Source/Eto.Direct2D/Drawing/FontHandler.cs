@@ -156,7 +156,7 @@ namespace Eto.Direct2D.Drawing
 		FontFamily family;
         public FontFamily Family
         {
-            get { return family ?? (family = new FontFamily(Platform, new FontFamilyHandler(Control.FontFamily))); }
+            get { return family ?? (family = new FontFamily(new FontFamilyHandler(Control.FontFamily))); }
         }
 
         public string FamilyName

@@ -56,7 +56,7 @@ namespace Eto.Mac.Forms.Controls
 
 				var drawableCellHandler = Handler as DrawableCellHandler;
 				var handler = new GraphicsHandler(null, nscontext, cellFrame.Height, flipped: false);
-				var graphics = new Graphics(drawableCellHandler.Widget.Platform, handler);
+				var graphics = new Graphics(handler);
 				if (drawableCellHandler.Widget.PaintHandler != null)
 				{
 					var b = graphics.ClipBounds;

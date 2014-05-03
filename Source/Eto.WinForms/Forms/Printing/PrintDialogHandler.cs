@@ -38,7 +38,7 @@ namespace Eto.WinForms.Forms.Printing
 			get
 			{
 				if (printSettings == null)
-					printSettings = Control.PrinterSettings.ToEto (Widget.Platform);
+					printSettings = Control.PrinterSettings.ToEto();
 				return printSettings;
 			}
 			set

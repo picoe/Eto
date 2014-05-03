@@ -12,7 +12,7 @@ namespace Eto.Test.Sections.Controls
 		readonly CheckBox allowExpanding;
 		readonly TreeView treeView;
 		int newItemCount;
-		static readonly Image Image = TestIcons.TestIcon();
+		static readonly Image Image = TestIcons.TestIcon;
 		Label hoverNodeLabel;
 		bool cancelLabelEdit;
 
@@ -218,7 +218,7 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150)
 			};
 
-			if (Platform.Supports<IContextMenu>())
+			if (Platform.Supports<ContextMenu>())
 			{
 				var menu = new ContextMenu();
 				var item = new ButtonMenuItem { Text = "Click Me!" };

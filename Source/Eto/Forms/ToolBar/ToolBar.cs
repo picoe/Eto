@@ -29,20 +29,20 @@ namespace Eto.Forms
 		ToolBarDock Dock { get; set; }
 	}
 
+	[Handler(typeof(IToolBar))]
 	public class ToolBar : InstanceWidget
 	{
 		internal new IToolBar Handler { get { return (IToolBar)base.Handler; } }
 
-		readonly ToolItemCollection items;
+		ToolItemCollection items;
 
 		public ToolBar()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public ToolBar(Generator generator) : base(generator, typeof(IToolBar))
 		{
-			items = new ToolItemCollection(this);
 		}
 
 		public ToolBarDock Dock
@@ -51,10 +51,7 @@ namespace Eto.Forms
 			set { Handler.Dock = value; }
 		}
 
-		public ToolItemCollection Items
-		{
-			get { return items; }
-		}
+		public ToolItemCollection Items { get { return items ?? (items = new ToolItemCollection(this)); } }
 
 		public ToolBarTextAlign TextAlign
 		{

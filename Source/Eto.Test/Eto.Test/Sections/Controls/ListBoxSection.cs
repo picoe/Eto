@@ -13,7 +13,7 @@ namespace Eto.Test.Sections.Controls
 						
 			layout.AddRow(new Label { Text = "Virtual list, with Icons" }, WithIcons());
 
-			if (Platform.Supports<IContextMenu>())
+			if (Platform.Supports<ContextMenu>())
 				layout.AddRow(new Label { Text = "Context Menu" }, WithContextMenu());
 
 			layout.Add(null);
@@ -77,7 +77,7 @@ namespace Eto.Test.Sections.Controls
 
 		class VirtualList : IListStore
 		{
-			Icon image = TestIcons.TestIcon();
+			Icon image = TestIcons.TestIcon;
 
 			public int Count
 			{

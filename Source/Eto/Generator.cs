@@ -72,6 +72,12 @@ namespace Eto
 			get { return Platform.Instance; }
 		}
 
+		[Obsolete("Use Platform.ValidatePlatform instead")]
+		public static Generator ValidateGenerator
+		{
+			get { return Platform.ValidatePlatform; }
+		}
+
 		#if PCL
 		[Obsolete("This will now throw an exception on .net 45/pcl. Create your platform manually or use Platform.Get()")]
 		public static Generator Detect

@@ -27,7 +27,7 @@ namespace Eto.Wpf.Forms
 			get
 			{
 				if (font == null)
-					font = new Font(Widget.Platform, new FontHandler(Widget.Platform, Control));
+					font = new Font(new FontHandler(Control));
 				return font;
 			}
 			set

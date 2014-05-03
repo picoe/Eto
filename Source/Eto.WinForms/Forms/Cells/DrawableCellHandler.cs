@@ -47,7 +47,7 @@ namespace Eto.WinForms.Forms.Controls
 					cachedGraphics == null)
 				{
 					cachedGraphicsKey = graphics;
-					cachedGraphics = new Graphics(Handler.Platform, new GraphicsHandler(graphics, shouldDisposeGraphics: false));
+					cachedGraphics = new Graphics(new GraphicsHandler(graphics, shouldDisposeGraphics: false));
 				}
 
 				if (Handler.Widget.PaintHandler != null)

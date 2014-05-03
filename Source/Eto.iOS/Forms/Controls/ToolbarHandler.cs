@@ -108,15 +108,6 @@ namespace Eto.iOS.Forms.Controls
 		}
 
 		UIButton button;
-		public override TControl CreateControl()
-		{
-			// Create a button so that any image can be used.
-			// (A standard toolbar item uses only the alpha channel of the image.)
-			button = new UIButton(new sd.RectangleF(0, 0, 40, 40));
-			button.TouchUpInside += (s, e) => OnClick();
-			var result = new NSToolbarItem(button);
-			return (TControl)result;
-		}
 
 		public void CreateFromCommand(Command command)
 		{
@@ -127,6 +118,12 @@ namespace Eto.iOS.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			// Create a button so that any image can be used.
+			// (A standard toolbar item uses only the alpha channel of the image.)
+			button = new UIButton(new sd.RectangleF(0, 0, 40, 40));
+			button.TouchUpInside += (s, e) => OnClick();
+			Control = (TControl)new NSToolbarItem(button);
+
 			Control.Enabled = true;
 		}
 
@@ -223,6 +220,8 @@ namespace Eto.iOS.Forms.Controls
 		public SeparatorToolItemHandler()
 		{
 			Type = SeparatorToolItemType.Divider;
+			Control = new NSToolbarItem(UIBarButtonSystemItem.FixedSpace);
+			Control.Width = 10;
 		}
 
 		public bool Selectable
@@ -231,13 +230,6 @@ namespace Eto.iOS.Forms.Controls
 		}
 
 		public SeparatorToolItemType Type { get; set; }
-
-		public override NSToolbarItem CreateControl()
-		{
-			var result = new NSToolbarItem(UIBarButtonSystemItem.FixedSpace);
-			result.Width = 10;
-			return result;
-		}
 
 		public void ControlAdded(ToolBarHandler toolbar)
 		{

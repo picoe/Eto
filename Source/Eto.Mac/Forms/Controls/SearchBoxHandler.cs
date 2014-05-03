@@ -32,16 +32,15 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override void Initialize()
+		public SearchBoxHandler()
 		{
-			base.Initialize();
 			Control = new EtoTextField
 			{
 				Handler = this,
 				Bezeled = true,
 				Editable = true,
 				Selectable = true,
-				Formatter = new EtoFormatter{ Handler = this }
+				Formatter = new EtoFormatter { Handler = this }
 			};
 
 			Control.Cell.Scrollable = true;

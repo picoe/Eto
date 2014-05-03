@@ -155,7 +155,7 @@ namespace Eto.Mac.Drawing
 			get
 			{
 				if (family == null)
-					family = new FontFamily(Widget.Platform, new FontFamilyHandler(Control.FamilyName));
+					family = new FontFamily(new FontFamilyHandler(Control.FamilyName));
 				return family;
 			}
 		}

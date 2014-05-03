@@ -788,6 +788,8 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnTextInput(null), Control.TextInputEvent);
 		}
 
+		#pragma warning disable 612,618
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Control"/> class.
 		/// </summary>
@@ -811,6 +813,8 @@ namespace Eto.Forms
 			: base(generator, handler, initialize)
 		{
 		}
+
+		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Control"/> class.
@@ -935,7 +939,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Finds a control in the parent hierarchy with the specified type and <see cref="Control.ID"/> if specified
+		/// Finds a control in the parent hierarchy with the specified type and <see cref="InstanceWidget.ID"/> if specified
 		/// </summary>
 		/// <returns>The parent if found, or null if not found</returns>
 		/// <param name="id">Identifier of the parent control to find, or null to ignore</param>

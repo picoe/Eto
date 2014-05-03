@@ -138,8 +138,8 @@ namespace Eto
 		protected InstanceWidget(Generator generator, IWidget handler, bool initialize = true)
 			: base(generator, handler, false)
 		{
-			Eto.Style.OnStyleWidgetDefaults(this);
-			EventLookup.HookupEvents(this);
+			if (initialize)
+				Initialize();
 		}
 
 		/// <summary>
@@ -152,8 +152,8 @@ namespace Eto
 		protected InstanceWidget(Generator generator, Type handlerType, bool initialize = true)
 			: base(generator, handlerType, false)
 		{
-			Eto.Style.OnStyleWidgetDefaults(this);
-			EventLookup.HookupEvents(this);
+			if (initialize)
+				Initialize();
 		}
 
 		/// <summary>
@@ -163,8 +163,6 @@ namespace Eto
 		protected InstanceWidget(IInstanceWidget handler)
 			: base(handler)
 		{
-			Eto.Style.OnStyleWidgetDefaults(this);
-			EventLookup.HookupEvents(this);
 		}
 
 		/// <summary>
@@ -172,8 +170,6 @@ namespace Eto
 		/// </summary>
 		protected InstanceWidget()
 		{
-			Eto.Style.OnStyleWidgetDefaults(this);
-			EventLookup.HookupEvents(this);
 		}
 
 		/// <summary>
@@ -181,13 +177,14 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// This can sometimes be useful to get the platform-specific object.
+		/// Some handlers may not have any backing object for its functionality, so this may be null.
+		/// 
 		/// It is more preferred to use the <see cref="Widget.Handler"/> and cast that to the platform-specific
 		/// handler class which can give you additional methods and helpers to do common tasks.
 		/// 
 		/// For example, the <see cref="Forms.Application"/> object's handler for OS X has a AddFullScreenMenuItem
 		/// property to specify if you want full screen support in your app.
 		/// </remarks>
-		[Obsolete("Use Handler as IControlObjectSource instead")]
 		public object ControlObject
 		{
 			get { 
@@ -229,29 +226,6 @@ namespace Eto
 		internal void HandleEvent(string id)
 		{
 			Handler.HandleEvent(id, false);
-		}
-
-		internal void HandleDefaultEvents(params string[] ids)
-		{
-			for (int i = 0; i < ids.Length; i++)
-			{
-				Handler.HandleEvent(ids[i], true);
-			}
-		}
-
-		/// <summary>
-		/// Initializes the widget handler
-		/// </summary>
-		/// <remarks>
-		/// This is typically called from the constructor after all of the logic is completed to construct
-		/// the object.
-		/// 
-		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
-		/// after all of its logic has finished.
-		/// </remarks>
-		[Obsolete("No longer does anything")]
-		protected new void Initialize()
-		{
 		}
 	}
 }

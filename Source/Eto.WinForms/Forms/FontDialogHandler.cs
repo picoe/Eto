@@ -11,10 +11,10 @@ namespace Eto.WinForms.Forms
 	{
 		Font font;
 
-		protected override void Initialize()
+		public FontDialogHandler()
 		{
-			base.Initialize();
-			Control = new swf.FontDialog {
+			Control = new swf.FontDialog
+			{
 				ShowColor = true,
 				ShowEffects = false
 			};
@@ -36,7 +36,7 @@ namespace Eto.WinForms.Forms
 		{
 			get {
 				if (font == null)
-					font = new Font (Widget.Platform, new FontHandler (Control.Font));
+					font = new Font(new FontHandler(Control.Font));
 				return font;
 			}
 			set {
@@ -50,7 +50,7 @@ namespace Eto.WinForms.Forms
 			var result = Control.ShowDialog();
 			if (result == swf.DialogResult.OK)
 			{
-				font = Control.Font.ToEto(Widget.Platform);
+				font = Control.Font.ToEto();
 				Widget.OnFontChanged(EventArgs.Empty);
 				return DialogResult.Ok;
 			}

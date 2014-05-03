@@ -60,11 +60,23 @@ namespace Eto.Drawing
 	{
 		new IImage Handler { get { return (IImage)base.Handler; } }
 
+		protected Image()
+		{
+		}
+
+		protected Image(IImage handler)
+			: base(handler)
+		{
+		}
+
+		#pragma warning disable 612,618
+
 		/// <summary>
 		/// Initializes a new instance of an image with the specified type
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
 		/// <param name="type">Type of the handler to create (must be derived from <see cref="IImage"/>)</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Image(Generator generator, Type type) : base(generator, type)
 		{
 		}
@@ -78,10 +90,13 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="generator">Generator for the handler</param>
 		/// <param name="handler">Instance of the handler to attach to this instance</param>
+		[Obsolete("Use variation without generator instead")]
 		protected Image(Generator generator, IImage handler) : base(generator, handler)
 		{
 		}
-		
+
+		#pragma warning restore 612,618
+
 		/// <summary>
 		/// Gets the size of the image, in pixels
 		/// </summary>

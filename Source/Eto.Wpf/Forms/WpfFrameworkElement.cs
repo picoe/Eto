@@ -409,9 +409,9 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		protected override void PostInitialize()
+		protected override void Initialize()
 		{
-			base.PostInitialize();
+			base.Initialize();
 			Control.Tag = this;
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);

@@ -7,8 +7,8 @@ namespace Eto.Test
 {
 	public class TestApplication : Application
 	{
-		public TestApplication(Generator generator)
-			: base(generator)
+		public TestApplication(Platform platform)
+			: base(platform)
 		{
 			this.Name = "Test Application";
 			this.Style = "application";
@@ -20,6 +20,7 @@ namespace Eto.Test
 
 			base.OnInitialized(e);
 
+			/*
 			int count = 100000;
 			var start = DateTime.Now;
 			for (int i = 0; i < count; i++)
@@ -28,6 +29,7 @@ namespace Eto.Test
 			}
 			var end = DateTime.Now;
 			Debug.WriteLine("Time: {0}", end - start);
+			*/
 
 			// show the main form
 			MainForm.Show();

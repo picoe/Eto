@@ -12,7 +12,7 @@ namespace Eto.Test.iOS
 		{
 			nav = new Navigation ();
 
-			if (Splitter.IsSupported()) {
+			if (Splitter.IsSupported) {
 				// ipad and tablets usually support this
 				splitter = new Splitter();
 

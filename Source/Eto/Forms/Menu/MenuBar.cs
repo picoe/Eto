@@ -12,8 +12,10 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(IMenuBar))]
 	public class MenuBar : Menu, ISubMenuWidget
 	{
+		MenuItemCollection items;
 		new IMenuBar Handler { get { return (IMenuBar)base.Handler; } }
 
 		/// <summary>
@@ -30,7 +32,7 @@ namespace Eto.Forms
 		/// Gets the collection of menu items
 		/// </summary>
 		/// <value>The menu items</value>
-		public MenuItemCollection Items { get; private set; }
+		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
 
 		/// <summary>
 		/// Creates a menu bar with standard menu items
@@ -49,21 +51,35 @@ namespace Eto.Forms
 		}
 
 		public MenuBar()
-			: this((Generator)null)
 		{
+			AutoTrim = true;
 		}
 
+		public MenuBar(IEnumerable<MenuItem> items)
+			: this()
+		{
+			Items.AddRange(items);
+		}
+
+		public MenuBar(params MenuItem[] items)
+			: this()
+		{
+			Items.AddRange(items);
+		}
+
+		[Obsolete("Use default constructor instead")]
 		public MenuBar(Generator generator) : this(generator, typeof(IMenuBar))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected MenuBar(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			Items = new MenuItemCollection(Handler);
 			AutoTrim = true;
 		}
 
+		[Obsolete("Use constructor without generator instead")]
 		public MenuBar(Generator g, IEnumerable<MenuItem> items) : this(g)
 		{
 			Items.AddRange(items);

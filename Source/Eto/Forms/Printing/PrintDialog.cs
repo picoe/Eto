@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System;
 
 namespace Eto.Forms
 {
@@ -13,15 +14,16 @@ namespace Eto.Forms
 		bool AllowSelection { get; set; }
 	}
 
+	[Handler(typeof(IPrintDialog))]
 	public class PrintDialog : CommonDialog
 	{
 		new IPrintDialog Handler { get { return (IPrintDialog)base.Handler; } }
 
 		public PrintDialog()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public PrintDialog(Generator generator)
 			: base (generator, typeof (IPrintDialog))
 		{

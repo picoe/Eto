@@ -46,7 +46,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		void SetLabels ()
 		{
-			var position = Mouse.GetPosition();
+			var position = Mouse.Position;
 			mousePositionLabel.Text = position.ToString ();
 
 			// convert to control co-ordinates
@@ -57,7 +57,7 @@ namespace Eto.Test.Sections.Behaviors
 			position = PointToScreen(position);
 			pointToScreenLabel.Text = position.ToString ();
 			
-			buttonsLabel.Text = Mouse.GetButtons ().ToString ();
+			buttonsLabel.Text = Mouse.Buttons.ToString ();
 		}
 
 		public override void OnMouseMove (MouseEventArgs e)

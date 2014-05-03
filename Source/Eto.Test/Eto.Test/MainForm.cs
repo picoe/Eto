@@ -41,7 +41,7 @@ namespace Eto.Test
 			else
 				SectionList = new SectionListTreeGridView(topNodes);
 
-			this.Icon = TestIcons.TestIcon();
+			this.Icon = TestIcons.TestIcon;
 
 			if (Platform.IsDesktop)
 				ClientSize = new Size(900, 650);
@@ -156,7 +156,7 @@ namespace Eto.Test
 			var about = new Actions.About();
 			var quit = new Actions.Quit();
 
-			if (Platform.Supports<IMenuBar>())
+			if (Platform.Supports<MenuBar>())
 			{
 				// create standard system menu (e.g. for OS X)
 				var menu = MenuBar.CreateStandardMenu();
@@ -185,7 +185,7 @@ namespace Eto.Test
 				Menu = menu;
 			}
 
-			if (Platform.Supports<IToolBar>())
+			if (Platform.Supports<ToolBar>())
 			{
 				// create and set the toolbar
 				var toolBar = new ToolBar();

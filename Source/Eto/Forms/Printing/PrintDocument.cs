@@ -13,6 +13,7 @@ namespace Eto.Forms
 		int PageCount { get; set; }
 	}
 
+	[Handler(typeof(IPrintDocument))]
 	public class PrintDocument : InstanceWidget
 	{
 		new IPrintDocument Handler { get { return (IPrintDocument)base.Handler; } }
@@ -68,10 +69,10 @@ namespace Eto.Forms
 		}
 
 		public PrintDocument()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public PrintDocument(Generator generator)
 			: base(generator, typeof(IPrintDocument))
 		{

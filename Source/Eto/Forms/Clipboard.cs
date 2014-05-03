@@ -25,16 +25,17 @@ namespace Eto.Forms
 		
 		void Clear ();
 	}
-	
+
+	[Handler(typeof(IClipboard))]
 	public class Clipboard : InstanceWidget
 	{
 		new IClipboard Handler { get { return (IClipboard)base.Handler; } }
 		
 		public Clipboard()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public Clipboard (Generator generator)
 			: base(generator, typeof(IClipboard))
 		{

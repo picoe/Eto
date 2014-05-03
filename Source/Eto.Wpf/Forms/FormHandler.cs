@@ -6,9 +6,9 @@ namespace Eto.Wpf.Forms
 {
 	public class FormHandler : WpfWindow<sw.Window, Form>, IForm
 	{
-		public override sw.Window CreateControl ()
+		public FormHandler()
 		{
-			return new sw.Window ();
+			Control = new sw.Window();
 		}
 
 		public void Show()

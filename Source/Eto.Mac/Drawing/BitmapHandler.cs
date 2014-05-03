@@ -231,13 +231,13 @@ namespace Eto.Mac.Drawing
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			if (rectangle == null)
-				return new Bitmap(Platform, new BitmapHandler((NSImage)Control.Copy()));
+				return new Bitmap(new BitmapHandler((NSImage)Control.Copy()));
 			else
 			{
 				var rect = new sd.RectangleF (sd.PointF.Empty, this.Control.Size);
 				var temp = Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
 				var image = new NSImage (temp, new sd.SizeF (temp.Width, temp.Height));
-				return new Bitmap(Platform, new BitmapHandler(image));
+				return new Bitmap(new BitmapHandler(image));
 			}
 		}
 

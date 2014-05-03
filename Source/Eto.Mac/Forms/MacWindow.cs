@@ -302,7 +302,7 @@ namespace Eto.Mac.Forms
 				return;
 			handler.oldLocation = null;
 			// find offset of mouse cursor to location of window
-			var moveOffset = Size.Round((SizeF)(Mouse.GetPosition(handler.Platform) - handler.Location));
+			var moveOffset = Size.Round((SizeF)(Mouse.Position - handler.Location));
 
 			ThreadPool.QueueUserWorkItem(a =>
 			{
@@ -311,7 +311,7 @@ namespace Eto.Mac.Forms
 				{
 					NSApplication.SharedApplication.InvokeOnMainThread(() =>
 					{
-						var newLocation = Point.Round(Mouse.GetPosition(handler.Platform) - moveOffset);
+						var newLocation = Point.Round(Mouse.Position - moveOffset);
 						if (handler.oldLocation != newLocation)
 						{
 							handler.Widget.OnLocationChanged(EventArgs.Empty);
@@ -734,7 +734,7 @@ namespace Eto.Mac.Forms
 
 		public Screen Screen
 		{
-			get { return new Screen(Platform, new ScreenHandler(Control.Screen)); }
+			get { return new Screen(new ScreenHandler(Control.Screen)); }
 		}
 
 		public override PointF PointFromScreen(PointF point)

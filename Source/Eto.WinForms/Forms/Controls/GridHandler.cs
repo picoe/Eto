@@ -135,7 +135,7 @@ namespace Eto.WinForms.Forms.Controls
 			public override Font Font
 			{
 				get {
-					return font ?? (font = new Font (Column.Platform, new FontHandler (Args.CellStyle.Font)));
+					return font ?? (font = new Font(new FontHandler(Args.CellStyle.Font)));
 				}
 				set {
 					font = value;
@@ -192,9 +192,9 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			columns = new ColumnCollection { Handler = this };
 			columns.Register (Widget.Columns);
 		}

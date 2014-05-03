@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
+	[AutoInitialize(false)]
 	public interface ITableLayout : IPositionalLayout
 	{
 		void CreateControl(int cols, int rows);
@@ -56,6 +57,7 @@ namespace Eto.Forms
 	}
 
 	[ContentProperty("Contents")]
+	[Handler(typeof(ITableLayout))]
 	public class TableLayout : Layout
 	{
 		new ITableLayout Handler { get { return (ITableLayout)base.Handler; } }
@@ -215,15 +217,26 @@ namespace Eto.Forms
 		}
 
 		public TableLayout()
-			: this(Size.Empty, null)
 		{
 		}
 
+		public TableLayout(int width, int height)
+			: this(new Size(width, height))
+		{
+		}
+
+		public TableLayout(Size size)
+		{
+			this.CellSize = size;
+		}
+
+		[Obsolete("Use constructor without generator instead")]
 		public TableLayout(int width, int height, Generator generator = null)
 			: this(new Size(width, height), generator)
 		{
 		}
 
+		[Obsolete("Use constructor without generator instead")]
 		public TableLayout(Size size, Generator generator = null)
 			: base(generator, typeof(ITableLayout), false)
 		{

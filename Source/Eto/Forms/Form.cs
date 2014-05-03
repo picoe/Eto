@@ -17,6 +17,7 @@ namespace Eto.Forms
 	/// Non-modal form window
 	/// </summary>
 	/// <seealso cref="Dialog"/>
+	[Handler(typeof(IForm))]
 	public class Form : Window
 	{
 		new IForm Handler { get { return (IForm)base.Handler; } }
@@ -25,7 +26,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Form"/> class.
 		/// </summary>
 		public Form()
-			: this((Generator)null)
 		{
 		}
 
@@ -33,6 +33,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Form"/> class with the specified <paramref name="generator"/>
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
+		[Obsolete("Use default constructor instead")]
 		public Form(Generator generator) : this(generator, typeof(IForm))
 		{
 		}
@@ -43,6 +44,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the handler</param>
 		/// <param name="type">Type of the handler interface to create, must implement <see cref="IForm"/></param>
 		/// <param name="initialize">If set to <c>true</c>, initialize the handler after created, otherwise the subclass should initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Form(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

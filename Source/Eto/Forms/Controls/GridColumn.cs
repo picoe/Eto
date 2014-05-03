@@ -25,21 +25,23 @@ namespace Eto.Forms
 		
 		bool Visible { get; set; }
 	}
-	
+
+	[Handler(typeof(IGridColumn))]
 	public class GridColumn : InstanceWidget
 	{
 		new IGridColumn Handler { get { return (IGridColumn)base.Handler; } }
 
 		public GridColumn()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public GridColumn (Generator generator)
 			: this (generator, typeof(IGridColumn), true)
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected GridColumn (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

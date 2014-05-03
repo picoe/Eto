@@ -8,9 +8,9 @@ namespace Eto.Wpf.Forms
 {
 	public class FontDialogHandler : WidgetHandler<CustomControls.FontDialog.FontChooser, FontDialog>, IFontDialog
 	{
-		public override CustomControls.FontDialog.FontChooser CreateControl ()
+		public FontDialogHandler()
 		{
-			return new CustomControls.FontDialog.FontChooser ();
+			Control = new CustomControls.FontDialog.FontChooser();
 		}
 
 		public override void AttachEvent (string id)
@@ -47,8 +47,8 @@ namespace Eto.Wpf.Forms
 			var result = Control.ShowDialog ();
 
 			if (result == true) {
-				var fontHandler = new FontHandler(Widget.Platform, Control.SelectedFontFamily, Control.SelectedFontPointSize, Control.SelectedFontStyle, Control.SelectedFontWeight);
-				Font = new Font(Widget.Platform, fontHandler);
+				var fontHandler = new FontHandler(Control.SelectedFontFamily, Control.SelectedFontPointSize, Control.SelectedFontStyle, Control.SelectedFontWeight);
+				Font = new Font(fontHandler);
 				Widget.OnFontChanged (EventArgs.Empty);
 			}
 

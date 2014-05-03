@@ -99,6 +99,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Platform handler for the <see cref="Font"/> class
 	/// </summary>
+	[AutoInitialize(false)]
 	public interface IFont : IInstanceWidget
 	{
 		/// <summary>
@@ -218,6 +219,7 @@ namespace Eto.Drawing
 	/// You can get a list of <see cref="FontFamily"/> objects available in the current system using
 	/// <see cref="Fonts.AvailableFontFamilies"/>, which can then be used to create an instance of a font.
 	/// </remarks>
+	[Handler(typeof(IFont))]
 	public class Font : InstanceWidget
 	{
 		new IFont Handler { get { return (IFont)base.Handler; } }
@@ -229,25 +231,23 @@ namespace Eto.Drawing
 		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="decoration">Decorations to apply to the font</param>
-		/// <param name="generator">Generator to create the font for</param>
-		public Font(string family, float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
-			: base(generator, typeof(IFont))
+		public Font(string family, float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None)
 		{
 			Handler.Create(new FontFamily(family), size, style, decoration);
+			Initialize();
 		}
 
 		/// <summary>
 		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
 		/// </summary>
-		/// <param name="generator">Generator to create the font for</param>
 		/// <param name="family">Family of font to use</param>
 		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="decoration">Decorations to apply to the font</param>
-		public Font(FontFamily family, float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
-			: base(generator, typeof(IFont))
+		public Font(FontFamily family, float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None)
 		{
 			Handler.Create(family, size, style, decoration);
+			Initialize();
 		}
 
 		/// <summary>
@@ -257,14 +257,13 @@ namespace Eto.Drawing
 		/// The system fonts are the same fonts that the standard UI of each platform use for particular areas
 		/// given the <see cref="SystemFont"/> enumeration.
 		/// </remarks>
-		/// <param name="generator">Generator to create the font for</param>
 		/// <param name="systemFont">Type of system font to create</param>
 		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
 		/// <param name="decoration">Decorations to apply to the font</param>
-		public Font(SystemFont systemFont, float? size = null, FontDecoration decoration = FontDecoration.None, Generator generator = null)
-			: base(generator, typeof(IFont))
+		public Font(SystemFont systemFont, float? size = null, FontDecoration decoration = FontDecoration.None)
 		{
 			Handler.Create(systemFont, size, decoration);
+			Initialize();
 		}
 
 		/// <summary>
@@ -273,11 +272,10 @@ namespace Eto.Drawing
 		/// <param name="typeface">Typeface of the font to create</param>
 		/// <param name="size">Size of the font in points</param>
 		/// <param name="decoration">Decorations to apply to the font</param>
-		/// <param name="generator">Generator to create the font handler</param>
-		public Font(FontTypeface typeface, float size, FontDecoration decoration = FontDecoration.None, Generator generator = null)
-			: base (generator, typeof (IFont))
+		public Font(FontTypeface typeface, float size, FontDecoration decoration = FontDecoration.None)
 		{
 			Handler.Create(typeface, size, decoration);
+			Initialize();
 		}
 
 		/// <summary>
@@ -286,10 +284,9 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Not intended to be used directly, this is used by each platform to pass back a font instance with a specific handler
 		/// </remarks>
-		/// <param name="generator">Generator of the handler</param>
 		/// <param name="handler">Handler for the font</param>
-		public Font(Generator generator, IFont handler)
-			: base (generator, handler, true)
+		public Font(IFont handler)
+			: base(handler)
 		{
 		}
 
@@ -469,5 +466,85 @@ namespace Eto.Drawing
 		{
 			return FamilyName.GetHashCode() ^ Platform.GetHashCode() ^ Size.GetHashCode() ^ FontStyle.GetHashCode();
 		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
+		/// </summary>
+		/// <param name="family">Family of font to use</param>
+		/// <param name="size">Size of the font, in points</param>
+		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
+		/// <param name="generator">Generator to create the font for</param>
+		[Obsolete("Use variation without generator instead")]
+		public Font(string family, float size, FontStyle style, FontDecoration decoration, Generator generator)
+			: base(generator, typeof(IFont))
+		{
+			Handler.Create(new FontFamily(family), size, style, decoration);
+		}
+
+		/// <summary>
+		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
+		/// </summary>
+		/// <param name="generator">Generator to create the font for</param>
+		/// <param name="family">Family of font to use</param>
+		/// <param name="size">Size of the font, in points</param>
+		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
+		[Obsolete("Use variation without generator instead")]
+		public Font(FontFamily family, float size, FontStyle style, FontDecoration decoration, Generator generator)
+			: base(generator, typeof(IFont))
+		{
+			Handler.Create(family, size, style, decoration);
+		}
+
+		/// <summary>
+		/// Creates a new instance of the Font class with a specified <paramref name="systemFont"/> and optional custom <paramref name="size"/>
+		/// </summary>
+		/// <remarks>
+		/// The system fonts are the same fonts that the standard UI of each platform use for particular areas
+		/// given the <see cref="SystemFont"/> enumeration.
+		/// </remarks>
+		/// <param name="generator">Generator to create the font for</param>
+		/// <param name="systemFont">Type of system font to create</param>
+		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
+		[Obsolete("Use variation without generator instead")]
+		public Font(SystemFont systemFont, float? size, FontDecoration decoration, Generator generator)
+			: base(generator, typeof(IFont))
+		{
+			Handler.Create(systemFont, size, decoration);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Font class with the specified <paramref name="typeface"/> and <paramref name="size"/>
+		/// </summary>
+		/// <param name="typeface">Typeface of the font to create</param>
+		/// <param name="size">Size of the font in points</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
+		/// <param name="generator">Generator to create the font handler</param>
+		[Obsolete("Use variation without generator instead")]
+		public Font(FontTypeface typeface, float size, FontDecoration decoration, Generator generator)
+			: base (generator, typeof (IFont))
+		{
+			Handler.Create(typeface, size, decoration);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Font class with the specified font <paramref name="handler"/>
+		/// </summary>
+		/// <remarks>
+		/// Not intended to be used directly, this is used by each platform to pass back a font instance with a specific handler
+		/// </remarks>
+		/// <param name="generator">Generator of the handler</param>
+		/// <param name="handler">Handler for the font</param>
+		[Obsolete("Use variation without generator instead")]
+		public Font(Generator generator, IFont handler)
+			: base (generator, handler, true)
+		{
+		}
+
+		#pragma warning restore 612,618
 	}
 }

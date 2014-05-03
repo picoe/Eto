@@ -15,12 +15,7 @@ namespace Eto.WinForms.Forms.Controls
 		public GridColumnHandler ()
 		{
 			Control = new swf.DataGridViewColumn();
-		}
-
-		protected override void Initialize ()
-		{
-			base.Initialize ();
-			DataCell = new TextBoxCell(Widget.Platform);
+			DataCell = new TextBoxCell();
 			Editable = false;
 			AutoSize = true;
 			Resizable = true;

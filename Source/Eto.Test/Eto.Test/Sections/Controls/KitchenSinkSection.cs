@@ -7,8 +7,8 @@ namespace Eto.Test.Sections.Controls
 {
 	public class KitchenSinkSection : Panel
 	{
-		Bitmap bitmap1 = TestIcons.TestImage();
-		Icon icon1 = TestIcons.TestIcon();
+		Bitmap bitmap1 = TestIcons.TestImage;
+		Icon icon1 = TestIcons.TestIcon;
 
 		public KitchenSinkSection()
 		{

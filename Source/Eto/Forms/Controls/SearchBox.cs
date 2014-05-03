@@ -19,13 +19,13 @@ namespace Eto.Forms
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(ISearchBox))]
 	public class SearchBox: TextBox
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.SearchBox"/> class.
 		/// </summary>
 		public SearchBox()
-			: this((Generator)null)
 		{
 		}
 
@@ -33,6 +33,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.SearchBox"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
+		[Obsolete("Use default constructor instead")]
 		public SearchBox(Generator generator) 
 			: this(generator, typeof(ISearchBox))
 		{
@@ -45,6 +46,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the handler</param>
 		/// <param name="type">Type of the handler to create (must implement <see cref="ISearchBox"/>)></param>
 		/// <param name="initialize">True to initialize the handler, or false if the caller should initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected SearchBox(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

@@ -32,10 +32,15 @@ namespace Eto.Forms
 			get { return graphics; }
 		}
 
+		#pragma warning disable 612,618
+
+		[Obsolete("Use Platform.Instance instead")]
 		public Generator Generator
 		{
 			get { return graphics.Platform; }
 		}
+
+		#pragma warning restore 612,618
 
 		public Rectangle ClipRectangle
 		{
@@ -43,6 +48,7 @@ namespace Eto.Forms
 		}
 	}
 
+	[Handler(typeof(IDrawable))]
 	public partial class Drawable : Panel
 	{
 		new IDrawable Handler { get { return (IDrawable)base.Handler; } }
@@ -50,15 +56,23 @@ namespace Eto.Forms
 		public event EventHandler<PaintEventArgs> Paint;
 
 		public Drawable()
-			: this((Generator)null)
+		{
+			Handler.Create();
+			Initialize();
+		}
+
+		protected Drawable(IDrawable handler)
+			: base(handler)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public Drawable(Generator generator)
 			: this(generator, typeof(IDrawable))
 		{
 		}
 
+		[Obsolete("Use default constructor with HandlerAttribute instead")]
 		protected Drawable(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
@@ -67,6 +81,7 @@ namespace Eto.Forms
 		}
 
 
+		[Obsolete("Use Drawable(IDrawable) instead")]
 		public Drawable(Generator generator, IDrawable handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{

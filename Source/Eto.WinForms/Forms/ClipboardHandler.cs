@@ -75,7 +75,7 @@ namespace Eto.WinForms.Forms
 					if (sdimage != null) {
 						var handler = new BitmapHandler (sdimage);
 						
-						result = new Bitmap (Widget.Platform, handler);
+						result = new Bitmap(handler);
 					}
 				} catch {
 				}

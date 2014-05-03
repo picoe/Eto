@@ -91,14 +91,14 @@ namespace Eto.Forms
 
 		public void Add(Command command, int order = -1)
 		{
-			var item = command.CreateMenuItem(parent.Platform);
+			var item = command.CreateMenuItem();
 			item.Order = order;
 			Add(item);
 		}
 
 		public void AddSeparator(int order = -1)
 		{
-			Add(new SeparatorMenuItem(parent.Platform) { Order = order });
+			Add(new SeparatorMenuItem { Order = order });
 		}
 
 		public void AddRange(IEnumerable<MenuItem> items)

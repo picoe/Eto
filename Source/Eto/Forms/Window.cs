@@ -75,12 +75,22 @@ namespace Eto.Forms
 			EventLookup.Register<Window>(c => c.OnWindowStateChanged(null), WindowStateChangedEvent);
 		}
 
+		protected Window()
+		{
+		}
+
+		protected Window(IWindow handler)
+			: base(handler)
+		{
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Window"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler instance</param>
 		/// <param name="type">Type of interface to create for the handler, must implement <see cref="IWindow"/></param>
 		/// <param name="initialize"><c>true</c> to initialize the handler, false if the subclass will initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Window(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
@@ -107,7 +117,7 @@ namespace Eto.Forms
 		/// Gets or sets the location of the window
 		/// </summary>
 		/// <remarks>
-		/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Screen.PrimaryScreen"/>
+		/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Eto.Forms.Screen.PrimaryScreen"/>
 		/// </remarks>
 		public new Point Location
 		{

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Eto.Drawing;
+using System;
 
 namespace Eto.Forms
 {
@@ -25,45 +26,66 @@ namespace Eto.Forms
 		Screen PrimaryScreen { get; }
 	}
 
+	[Handler(typeof(IScreen))]
 	public class Screen : InstanceWidget
 	{
 		new IScreen Handler { get { return (IScreen)base.Handler; } }
 
 		public Screen()
-			: this((Generator)null)
 		{
 		}
 
+		public Screen(IScreen handler)
+			: base(handler)
+		{
+		}
+
+		#pragma warning disable 612,618
+
+		[Obsolete("Use default constructor instead")]
 		public Screen (Generator generator)
 			: base (generator, typeof(IScreen))
 		{
 		}
 
+		[Obsolete("Use Screen(IScreen) instead")]
 		public Screen (Generator generator, IScreen handler)
 			: base (generator, handler)
 		{
 		}
 
-		public static IEnumerable<Screen> Screens (Generator generator = null)
-		{
-			var handler = generator.CreateShared <IScreens>();
-			return handler.Screens;
-		}
+		#pragma warning restore 612,618
 
-		public static RectangleF DisplayBounds (Generator generator = null)
+		public static IEnumerable<Screen> Screens
 		{
-			var handler = generator.CreateShared <IScreens> ();
-			var bounds = RectangleF.Empty;
-			foreach (var screen in handler.Screens) {
-				bounds.Union (screen.Bounds);
+			get
+			{
+				var handler = Platform.Instance.CreateShared <IScreens>();
+				return handler.Screens;
 			}
-			return bounds;
 		}
 
-		public static Screen PrimaryScreen (Generator generator = null)
+		public static RectangleF DisplayBounds
 		{
-			var handler = generator.CreateShared <IScreens>();
-			return handler.PrimaryScreen;
+			get
+			{
+				var handler = Platform.Instance.CreateShared <IScreens>();
+				var bounds = RectangleF.Empty;
+				foreach (var screen in handler.Screens)
+				{
+					bounds.Union(screen.Bounds);
+				}
+				return bounds;
+			}
+		}
+
+		public static Screen PrimaryScreen
+		{
+			get
+			{
+				var handler = Platform.Instance.CreateShared<IScreens>();
+				return handler.PrimaryScreen;
+			}
 		}
 
 		public float DPI { get { return Handler.Scale * 72f; } }

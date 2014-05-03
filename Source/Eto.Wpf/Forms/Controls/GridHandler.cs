@@ -93,9 +93,9 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.CanUserReorderColumns = value; }
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			Columns = new ColumnCollection { Handler = this };
 			Columns.Register (Widget.Columns);
 		}
@@ -224,7 +224,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				get {
 					if (font == null)
-						font = new Font(Column.Platform, new FontHandler(Column.Platform, Cell));
+						font = new Font(new FontHandler(Cell));
 					return font;
 				}
 				set

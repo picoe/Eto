@@ -10,7 +10,8 @@ namespace Eto.Forms
 
 		void Stop ();
 	}
-	
+
+	[Handler(typeof(IUITimer))]
 	public class UITimer : InstanceWidget
 	{
 		new IUITimer Handler { get { return (IUITimer)base.Handler; } }
@@ -26,14 +27,15 @@ namespace Eto.Forms
 		}
 
 		public UITimer()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public UITimer (Generator generator) : this (generator, typeof(IUITimer))
 		{
 		}
-		
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected UITimer (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

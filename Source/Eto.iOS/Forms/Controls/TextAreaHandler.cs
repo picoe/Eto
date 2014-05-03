@@ -22,14 +22,10 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
-		public override UITextView CreateControl ()
-		{
-			return new EtoTextView();
-		}
-
 		protected override void Initialize ()
 		{
 			base.Initialize ();
+			Control = new EtoTextView();
 			Control.Layer.BorderWidth = 1f;
 			Control.Layer.BorderColor = UIColor.Gray.CGColor;
 			Control.Layer.CornerRadius = 2f;

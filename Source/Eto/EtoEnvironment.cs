@@ -33,7 +33,7 @@ namespace Eto
 		/// </summary>
 		Documents
 	}
-	
+
 	/// <summary>
 	/// Handler interface for the <see cref="EtoEnvironment"/> class
 	/// </summary>
@@ -46,7 +46,7 @@ namespace Eto
 		/// <returns>Path of the specified folder</returns>
 		string GetFolderPath(EtoSpecialFolder folder);
 	}
-	
+
 	/// <summary>
 	/// Environment methods
 	/// </summary>
@@ -57,11 +57,12 @@ namespace Eto
 		/// <summary>
 		/// Gets the platform information for the currently running operating system
 		/// </summary>
-		public static OperatingSystemPlatform Platform {
+		public static OperatingSystemPlatform Platform
+		{
 			get
 			{
 				if (platform == null)
-					platform = new OperatingSystemPlatform ();
+					platform = new OperatingSystemPlatform();
 				return platform;
 			}
 		}
@@ -70,13 +71,29 @@ namespace Eto
 		/// Gets the folder path for the specified special folder
 		/// </summary>
 		/// <param name="folder">Special folder to retrieve the path for</param>
+		/// <returns>Path of the specified folder</returns>
+		public static string GetFolderPath(EtoSpecialFolder folder)
+		{
+			var handler = Eto.Platform.Instance.CreateShared<IEtoEnvironment>();
+			return handler.GetFolderPath(folder);
+		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Gets the folder path for the specified special folder
+		/// </summary>
+		/// <param name="folder">Special folder to retrieve the path for</param>
 		/// <param name="generator">Generator to get the folder path with</param>
 		/// <returns>Path of the specified folder</returns>
-		public static string GetFolderPath (EtoSpecialFolder folder, Generator generator = null)
+		[Obsolete("Use variation without generator instead")]
+		public static string GetFolderPath(EtoSpecialFolder folder, Generator generator)
 		{
-			var handler = generator.CreateShared<IEtoEnvironment> ();
-			return handler.GetFolderPath (folder);
+			var handler = generator.CreateShared<IEtoEnvironment>();
+			return handler.GetFolderPath(folder);
 		}
+
+		#pragma warning restore 612,618
 	}
 }
 

@@ -61,10 +61,10 @@ namespace Eto.GtkSharp
 		protected override void Initialize()
 		{
 			base.Initialize();
-			#if GTK2
+#if GTK2
 			Control.SizeRequested += Connector.HandleControlSizeRequested;
 			vp.SizeRequested += Connector.HandleViewportSizeRequested;
-			#endif
+#endif
 			Control.VScrollbar.VisibilityNotifyEvent += Connector.HandleScrollbarVisibilityChanged;
 			Control.HScrollbar.VisibilityNotifyEvent += Connector.HandleScrollbarVisibilityChanged;
 		}

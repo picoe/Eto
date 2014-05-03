@@ -1,4 +1,6 @@
 using Eto.Drawing;
+using System;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -30,19 +32,40 @@ namespace Eto.Forms
 			get { return Platform.Instance.Supports<IMouse>(); }
 		}
 
-		static IMouse Handler(Generator generator)
+		static IMouse Handler
 		{
-			return generator.CreateShared<IMouse>();
+			get { return Platform.Instance.CreateShared<IMouse>(); }
 		}
 
 		/// <summary>
 		/// Gets the current mouse position in screen coordinates
 		/// </summary>
 		/// <returns>The mouse position.</returns>
+		public static PointF Position
+		{
+			get { return Handler.Position; }
+		}
+
+		/// <summary>
+		/// Gets the current state of the mouse buttons
+		/// </summary>
+		/// <returns>The mouse button state.</returns>
+		public static MouseButtons Buttons
+		{
+			get { return Handler.Buttons; }
+		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Gets the current mouse position in screen coordinates
+		/// </summary>
+		/// <returns>The mouse position.</returns>
 		/// <param name="generator">Generator to get the mouse position for</param>
+		[Obsolete("Use Mouse.Position")]
 		public static PointF GetPosition(Generator generator = null)
 		{
-			return Handler(generator).Position;
+			return Handler.Position;
 		}
 
 		/// <summary>
@@ -50,10 +73,13 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The mouse button state.</returns>
 		/// <param name="generator">Generator to get the buttons from</param>
+		[Obsolete("Use Mouse.Buttons")]
 		public static MouseButtons GetButtons(Generator generator = null)
 		{
-			return Handler(generator).Buttons;
+			return Handler.Buttons;
 		}
+
+		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Returns true if any of the specified mouse buttons is pressed.
@@ -62,7 +88,7 @@ namespace Eto.Forms
 		/// <returns></returns>
 		public static bool IsAnyButtonPressed(MouseButtons buttons)
 		{
-			return (GetButtons() & buttons) != MouseButtons.None;
+			return (Buttons & buttons) != MouseButtons.None;
 		}
 	}
 }

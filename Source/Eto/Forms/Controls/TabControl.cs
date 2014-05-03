@@ -26,9 +26,10 @@ namespace Eto.Forms
 	}
 
 	[ContentProperty("TabPages")]
+	[Handler(typeof(ITabControl))]
 	public class TabControl : Container
 	{
-		readonly TabPageCollection pages;
+		TabPageCollection pages;
 		new ITabControl Handler { get { return (ITabControl)base.Handler; } }
 
 		public override IEnumerable<Control> Controls
@@ -45,24 +46,29 @@ namespace Eto.Forms
 		}
 
 		public TabControl()
-			: this((Generator)null)
 		{
 		}
 
+		protected TabControl(ITabControl handler)
+			: base(handler)
+		{
+		}
+
+		[Obsolete("Use default constructor instead")]
 		public TabControl(Generator generator) : this (generator, typeof(ITabControl))
 		{
 		}
-		
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected TabControl(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			pages = new TabPageCollection(this);
 		}
 
+		[Obsolete("Use TabControl(ITabControl) instead")]
 		protected TabControl(Generator generator, ITabControl handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
-			pages = new TabPageCollection(this);
 		}
 
 		public int SelectedIndex
@@ -79,7 +85,7 @@ namespace Eto.Forms
 
 		public TabPageCollection TabPages
 		{
-			get { return pages; }
+			get { return pages ?? (pages = new TabPageCollection(this)); }
 		}
 
 		internal void InsertTab(int index, TabPage page)

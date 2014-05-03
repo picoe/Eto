@@ -66,16 +66,28 @@ namespace Eto.Forms
 		}
 
 		public DynamicLayout()
-			: this((Padding?)null, (Size?)null, (Generator)null)
 		{
+			topTable = new DynamicTable();
+			currentItem = topTable;
 		}
 
 		public DynamicLayout(Size? spacing)
-			: this((Padding?)null, spacing, (Generator)null)
+			: this()
 		{
+			topTable.Spacing = spacing;
 		}
 
-		public DynamicLayout(Padding? padding, Size? spacing = null, Generator generator = null)
+		public DynamicLayout(Padding? padding, Size? spacing = null)
+			: this()
+		{
+			topTable.Padding = padding;
+			topTable.Spacing = spacing;
+		}
+
+		#pragma warning disable 612,618
+
+		[Obsolete("Use variation without generator instead")]
+		public DynamicLayout(Padding? padding, Size? spacing, Generator generator)
 			: base(generator)
 		{
 			topTable = new DynamicTable
@@ -85,6 +97,8 @@ namespace Eto.Forms
 			};
 			currentItem = topTable;
 		}
+
+		#pragma warning restore 612,618
 
 		public DynamicLayout(params DynamicRow[] rows)
 			: this((IEnumerable<DynamicRow>)rows)

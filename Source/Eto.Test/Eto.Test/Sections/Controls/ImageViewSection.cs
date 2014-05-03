@@ -58,12 +58,12 @@ namespace Eto.Test.Sections.Controls
 
 		Icon GetIcon()
 		{
-			return TestIcons.TestIcon();
+			return TestIcons.TestIcon;
 		}
 
 		Bitmap GetBitmap()
 		{
-			return TestIcons.TestImage();
+			return TestIcons.TestImage;
 		}
 
 		Control AutoSized(Image image)

@@ -52,7 +52,7 @@ namespace Eto.Wpf.Forms
 
 		public Image Image
 		{
-			get { return new Bitmap(Widget.Platform, new BitmapHandler(sw.Clipboard.GetImage())); }
+			get { return new Bitmap(new BitmapHandler(sw.Clipboard.GetImage())); }
 			set { sw.Clipboard.SetImage (value.ToWpf ()); }
 		}
 

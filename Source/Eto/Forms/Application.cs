@@ -30,6 +30,7 @@ namespace Eto.Forms
 		void OnMainFormChanged();
 	}
 
+	[Handler(typeof(IApplication))]
 	public partial class Application : InstanceWidget
 	{
 		public static Application Instance { get; private set; }
@@ -81,7 +82,8 @@ namespace Eto.Forms
 		}
 
 #if !PCL
-		public Application() : this(Platform.Detect)
+		public Application()
+			: this(Platform.Detect)
 		{
 		}
 
@@ -108,9 +110,30 @@ namespace Eto.Forms
 		{
 		}
 
-		public Application(Platform platform)
-			: this(platform, typeof(IApplication))
+		public Application(string platformType)
+			: this(Platform.Get(platformType))
 		{
+		}
+
+		public Application(Platform platform)
+			: this(InitializePlatform(platform))
+		{
+			Application.Instance = this;
+		}
+
+		Application(InitHelper init)
+		{
+		}
+
+		class InitHelper { }
+
+		/// <summary>
+		/// Helper to call proper constructor for initializing the platform before base class constructor is called
+		/// </summary>
+		static InitHelper InitializePlatform(Platform platform)
+		{
+			Platform.Initialize(platform);
+			return null;
 		}
 
 		public virtual void Run(params string[] args)

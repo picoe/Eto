@@ -19,9 +19,9 @@ namespace Eto.Wpf.Forms.Controls
 			return controller[row];
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			controller = new TreeController { Handler = this };
 			Control.Background = sw.SystemColors.WindowBrush;
 			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;

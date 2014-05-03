@@ -56,6 +56,7 @@ namespace Eto.Forms
 		}
 	}
 
+	[Handler(typeof(ITreeView))]
 	public partial class TreeView : Control
 	{
 		new ITreeView Handler { get { return (ITreeView)base.Handler; } }
@@ -195,14 +196,15 @@ namespace Eto.Forms
 		}
 
 		public TreeView()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public TreeView(Generator generator) : this(generator, typeof(ITreeView))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected TreeView(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

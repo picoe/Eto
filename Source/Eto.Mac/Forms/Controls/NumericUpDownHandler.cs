@@ -217,7 +217,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				return font ?? (font = new Font(Widget.Platform, new FontHandler(text.Font)));
+				return font ?? (font = new Font(new FontHandler(text.Font)));
 			}
 			set
 			{

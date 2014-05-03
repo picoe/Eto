@@ -75,11 +75,22 @@ namespace Eto.Forms
 		/// <value><c>true</c> if initializing; otherwise, <c>false</c>.</value>
 		protected bool Initializing { get; private set; }
 
+		protected Layout()
+		{
+		}
+
+		protected Layout(ILayout handler)
+			: base(handler)
+		{
+		}
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Layout(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
 		}
 
+		[Obsolete("Use Layout(ILayout) instead")]
 		protected Layout(Generator g, ILayout handler, bool initialize = true)
 			: base(g, handler, initialize)
 		{

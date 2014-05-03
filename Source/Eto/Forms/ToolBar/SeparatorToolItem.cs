@@ -1,3 +1,5 @@
+using System;
+
 
 namespace Eto.Forms
 {
@@ -31,15 +33,16 @@ namespace Eto.Forms
 		SeparatorToolItemType Type { get; set; }
 	}
 
+	[Handler(typeof(ISeparatorToolItem))]
 	public class SeparatorToolItem : ToolItem
 	{
 		new ISeparatorToolItem Handler { get { return (ISeparatorToolItem)base.Handler; } }
 		
 		public SeparatorToolItem()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public SeparatorToolItem (Generator generator) : base(generator, typeof(ISeparatorToolItem))
 		{
 		}

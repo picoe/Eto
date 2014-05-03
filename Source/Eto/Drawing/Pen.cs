@@ -123,14 +123,17 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a delegate that can be used to create instances of the Pen with low overhead
 		/// </summary>
-		/// <param name="generator">Generator to create the pens</param>
-		public static Func<Color, float, Pen> Instantiator (Generator generator = null)
+		public static Func<Color, float, Pen> Instantiator
 		{
-			var sharedHandler = generator.CreateShared<IPen> ();
-			return (color, thickness) => {
-				var control = sharedHandler.Create (color, thickness);
-				return new Pen (sharedHandler, control);
-			};
+			get
+			{
+				var sharedHandler = Platform.Instance.CreateShared<IPen>();
+				return (color, thickness) =>
+				{
+					var control = sharedHandler.Create(color, thickness);
+					return new Pen(sharedHandler, control);
+				};
+			}
 		}
 
 		Pen (IPen handler, object control)
@@ -144,12 +147,28 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color for the new pen</param>
 		/// <param name="thickness">Thickness of the new pen</param>
-		/// <param name="generator">Generator to create the pen for</param>
-		public Pen (Color color, float thickness = 1f, Generator generator = null)
+		public Pen(Color color, float thickness = 1f)
 		{
-			handler = generator.CreateShared<IPen> ();
-			ControlObject = handler.Create (color, thickness);
+			handler = Platform.Instance.CreateShared<IPen>();
+			ControlObject = handler.Create(color, thickness);
 		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Creates a new pen with the specified <paramref name="color"/> and <paramref name="thickness"/>
+		/// </summary>
+		/// <param name="color">Color for the new pen</param>
+		/// <param name="thickness">Thickness of the new pen</param>
+		/// <param name="generator">Generator to create the pen for</param>
+		[Obsolete("Use variation without generator instead")]
+		public Pen(Color color, float thickness, Generator generator)
+		{
+			handler = generator.CreateShared<IPen>();
+			ControlObject = handler.Create(color, thickness);
+		}
+
+		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Gets or sets the color of the pen

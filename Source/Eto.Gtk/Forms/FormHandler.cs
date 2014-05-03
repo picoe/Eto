@@ -14,11 +14,7 @@ namespace Eto.GtkSharp
 			Control.Resizable = true;
 #endif
 			Control.SetPosition(Gtk.WindowPosition.Center);
-		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
 			var vbox = new Gtk.VBox();
 			vbox.PackStart(WindowActionControl, false, true, 0);
 			vbox.PackStart(WindowContentControl, true, true, 0);

@@ -12,7 +12,7 @@ namespace Eto.Test.Sections.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BrushSection : Scrollable
 	{
-		readonly Image image = TestIcons.TestImage();
+		readonly Image image = TestIcons.TestImage;
 		readonly Drawable drawable;
 		Brush brush;
 		readonly LinearGradientBrush gradientBrush;
@@ -47,7 +47,7 @@ namespace Eto.Test.Sections.Drawing
 		public BrushSection()
 		{
 			var layout = new DynamicLayout();
-			brush = solidBrush = Brushes.LightSkyBlue();
+			brush = solidBrush = Brushes.LightSkyBlue;
 			gradientBrush = new LinearGradientBrush(Colors.AliceBlue, Colors.Black, new PointF(0, 0), new PointF(100f, 100f));
 			//gradientBrush = new LinearGradientBrush (new RectangleF (0, 0, 50, 50), Colors.AliceBlue, Colors.Black, 10);
 			gradientBrush.Wrap = GradientWrapMode.Repeat;
@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Drawing
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
 			layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), null);
-			if (Platform.Supports<INumericUpDown>())
+			if (Platform.Supports<NumericUpDown>())
 			{
 				matrixRow = layout.AddSeparateRow(null, new Label { Text = "Rot" }, RotationControl(), new Label { Text = "Sx" }, ScaleXControl(), new Label { Text = "Sy" }, ScaleYControl(), new Label { Text = "Ox" }, OffsetXControl(), new Label { Text = "Oy" }, OffsetYControl(), null);
 				matrixRow.Table.Visible = false;
@@ -171,7 +171,7 @@ namespace Eto.Test.Sections.Drawing
 
 		void Draw (Graphics g)
 		{
-			var matrix = Matrix.Create(g.Platform);
+			var matrix = Matrix.Create();
 			matrix.Translate (OffsetX, OffsetY);
 			matrix.Scale (Math.Max (ScaleX / 100f, 0.1f), Math.Max (ScaleY / 100f, 0.1f));
 			matrix.Rotate (Rotation);

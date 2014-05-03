@@ -28,11 +28,14 @@ namespace Eto.Test.Sections.Controls
 			var control = new Button { Text = "Add Tab" };
 			control.Click += (s, e) =>
 			{
-				var tab = new TabPage(tabControl.Platform) { Text = "Tab " + (tabControl.TabPages.Count + 1) };
-				var bitmap = new Bitmap(new Size(1024, 1024), PixelFormat.Format32bppRgba); // 32MB
-				tab.Content = new ImageView { Image = bitmap };
-				tabControl.TabPages.Add(tab);
-				UpdateMemoryUsage();
+				using (tabControl.Platform.Context)
+				{
+					var tab = new TabPage { Text = "Tab " + (tabControl.TabPages.Count + 1) };
+					var bitmap = new Bitmap(new Size(1024, 1024), PixelFormat.Format32bppRgba); // 32MB
+					tab.Content = new ImageView { Image = bitmap };
+					tabControl.TabPages.Add(tab);
+					UpdateMemoryUsage();
+				}
 			};
 			return control;
 		}
@@ -66,7 +69,7 @@ namespace Eto.Test.Sections.Controls
 			control.TabPages.Add(new TabPage
 			{ 
 				Text = "Tab 2",
-				Image = TestIcons.TestIcon(),
+				Image = TestIcons.TestIcon,
 				Content = TabTwo()
 			});
 

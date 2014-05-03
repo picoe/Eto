@@ -27,18 +27,6 @@ namespace Eto.iOS.Forms.Controls
 
 		public bool UseMGSplitViewController { get; set; }
 
-		public override UIView CreateControl ()
-		{
-			if (UseMGSplitViewController) {
-				MGSplitController = new MG.MGSplitViewController ();
-				return MGSplitController.View;
-			} else {
-				SplitController = new UISplitViewController ();
-				SplitController.Delegate = new SplitControllerDelegate();
-				return SplitController.View;
-			}
-		}
-
 		class SplitControllerDelegate : UISplitViewControllerDelegate
 		{
 			public override bool ShouldHideViewController(UISplitViewController svc, UIViewController viewController, UIInterfaceOrientation inOrientation)
@@ -55,6 +43,15 @@ namespace Eto.iOS.Forms.Controls
 		protected override void Initialize ()
 		{
 			base.Initialize ();
+
+			if (UseMGSplitViewController) {
+				MGSplitController = new MG.MGSplitViewController ();
+				Control = MGSplitController.View;
+			} else {
+				SplitController = new UISplitViewController ();
+				SplitController.Delegate = new SplitControllerDelegate();
+				Control = SplitController.View;
+			}
 			//SplitController.Delegate = new MG.MGSplitViewControllerDelegate();
 			Control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			

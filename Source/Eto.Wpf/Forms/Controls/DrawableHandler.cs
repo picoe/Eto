@@ -61,7 +61,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (!Handler.tiled)
 				{
 					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
-					var graphics = new Graphics(Handler.Widget.Platform, new GraphicsHandler(this, dc, rect, false));
+					var graphics = new Graphics(new GraphicsHandler(this, dc, rect, false));
 					Handler.Widget.OnPaint(new PaintEventArgs(graphics, rect.ToEto()));
 				}
 			}
@@ -98,7 +98,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			protected override void OnRender(swm.DrawingContext drawingContext)
 			{
-				var graphics = new Graphics(Handler.Widget.Platform, new GraphicsHandler(this, drawingContext, bounds.ToWpf(), false));
+				var graphics = new Graphics(new GraphicsHandler(this, drawingContext, bounds.ToWpf(), false));
 				Handler.Widget.OnPaint(new PaintEventArgs(graphics, Bounds));
 			}
 		}

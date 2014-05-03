@@ -27,7 +27,7 @@ namespace Eto.Direct2D.Drawing
 					availableFontFamilies = Enumerable.Range(0, fonts.FontFamilyCount)
 						.Select(r => fonts.GetFontFamily(r).FamilyNames.GetString(0))
 						.Distinct()
-						.Select(r => new FontFamily(Platform, r))
+						.Select(r => new FontFamily(r))
 						.ToArray();
 				}
 				return availableFontFamilies;

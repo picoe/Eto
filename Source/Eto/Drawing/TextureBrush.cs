@@ -82,11 +82,13 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// This can be used to instantiate texture brushes when creating many brushes to minimize overhead
 		/// </remarks>
-		/// <param name="generator">Generator to create the brush</param>
-		public static Func<Image, float, TextureBrush> Instantiator (Generator generator = null)
+		public static Func<Image, float, TextureBrush> Instantiator
 		{
-			var sharedHandler = generator.CreateShared<ITextureBrush> ();
-			return (image, opacity) => new TextureBrush(sharedHandler, image, opacity);
+			get
+			{
+				var sharedHandler = Platform.Instance.CreateShared<ITextureBrush>();
+				return (image, opacity) => new TextureBrush(sharedHandler, image, opacity);
+			}
 		}
 
 		TextureBrush (ITextureBrush handler, Image image, float opacity)
@@ -102,13 +104,29 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="image">Image for the brush</param>
 		/// <param name="opacity">Opacity of the texture to apply to the brush when painting</param>
-		/// <param name="generator">Generator to create the brush</param>
-		public TextureBrush (Image image, float opacity = 1f, Generator generator = null)
+		public TextureBrush (Image image, float opacity = 1f)
 		{
 			this.Image = image;
-			handler = generator.CreateShared<ITextureBrush> ();
+			handler = Platform.Instance.CreateShared<ITextureBrush> ();
 			ControlObject = handler.Create (image, opacity);
 		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.TextureBrush"/> class.
+		/// </summary>
+		/// <param name="image">Image for the brush</param>
+		/// <param name="opacity">Opacity of the texture to apply to the brush when painting</param>
+		/// <param name="generator">Generator to create the brush</param>
+		public TextureBrush(Image image, float opacity, Generator generator)
+		{
+			this.Image = image;
+			handler = generator.CreateShared<ITextureBrush>();
+			ControlObject = handler.Create(image, opacity);
+		}
+
+		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Gets or sets the transform for this brush

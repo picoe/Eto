@@ -73,7 +73,7 @@ namespace Eto.GtkSharp
 		{
 			var rect = new Rectangle(size);
 			rect.Inflate(-2, -2);
-			graphics.FillEllipse(Brushes.Red(Platform), rect);
+			graphics.FillEllipse(Brushes.Red, rect);
 			graphics.DrawEllipse(new Pen(Colors.White, 2, Platform), rect);
 			var font = new Font(SystemFont.Bold, 10);
 			var labelSize = graphics.MeasureString(font, badgeLabel);

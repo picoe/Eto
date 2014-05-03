@@ -7,6 +7,7 @@ namespace Eto.Forms
 		bool Checked { get; set; }
 	}
 
+	[Handler(typeof(ICheckToolItem))]
 	public class CheckToolItem : ToolItem
 	{
 		new ICheckToolItem Handler { get { return (ICheckToolItem)base.Handler; } }
@@ -14,15 +15,25 @@ namespace Eto.Forms
 		public event EventHandler<EventArgs> CheckedChanged;
 
 		public CheckToolItem()
-			: this((Generator)null)
 		{
 		}
 
+		public CheckToolItem(CheckCommand command)
+			: base(command)
+		{
+			Checked = command.Checked;
+			command.CheckedChanged += (sender, e) => Checked = command.Checked;
+			Click += (sender, e) => command.Checked = Checked;
+			Handler.CreateFromCommand(command);
+		}
+
+		[Obsolete("Use default constructor instead")]
 		public CheckToolItem(Generator generator)
 			: base(generator, typeof(ICheckToolItem))
 		{
 		}
 
+		[Obsolete("Use CheckToolItem(CheckCommand) instead")]
 		public CheckToolItem(CheckCommand command, Generator generator = null)
 			: base(command, generator, typeof(ICheckToolItem))
 		{

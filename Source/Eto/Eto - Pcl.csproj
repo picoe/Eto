@@ -296,6 +296,7 @@
     <Compile Include="Generator.cs" />
     <Compile Include="Generators.cs" />
     <Compile Include="HandlerAttribute.cs" />
+    <Compile Include="AutoInitializeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

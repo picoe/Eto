@@ -45,7 +45,7 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
-			if (Platform.Instance.Supports<INumericUpDown>())
+			if (Platform.Instance.Supports<NumericUpDown>())
 				layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
 			layout.AddSeparateRow(null, ShowBounds(), CurrentPoint(), null);
 			layout.BeginVertical();
@@ -130,7 +130,7 @@ namespace Eto.Test.Sections.Drawing
 			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
 			control.Paint += (sender, e) => 
 			{
-				var pen = new Pen(Colors.White, PenThickness, Platform);
+				var pen = new Pen(Colors.White, PenThickness);
 				pen.LineJoin = LineJoin;
 				pen.LineCap = LineCap;
 				e.Graphics.DrawPath(pen, Path);
@@ -141,7 +141,7 @@ namespace Eto.Test.Sections.Drawing
 		Control FillLinePath()
 		{
 			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
-			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.White(Platform), Path);
+			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.White, Path);
 			return control;
 		}
 
@@ -154,7 +154,7 @@ namespace Eto.Test.Sections.Drawing
 
 			// test adding child paths and transforms
 			var childPath = CreatePath();
-			var matrix = Matrix.Create(Platform);
+			var matrix = Matrix.Create();
 			matrix.Translate(240, 120);
 			matrix.Scale(0.25f);
 			childPath.Transform(matrix);
@@ -167,7 +167,7 @@ namespace Eto.Test.Sections.Drawing
 
 		GraphicsPath CreatePath()
 		{
-			var newPath = new GraphicsPath(Platform);
+			var newPath = new GraphicsPath();
 			var start = StartFigures;
 			var close = CloseFigures;
 

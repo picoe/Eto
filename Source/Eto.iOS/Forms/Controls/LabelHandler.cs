@@ -7,9 +7,9 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class LabelHandler : IosControl<UILabel, Label>, ILabel
 	{
-		public override UILabel CreateControl ()
+		public LabelHandler()
 		{
-			return new UILabel();
+			Control = new UILabel();
 		}
 
 		public string Text

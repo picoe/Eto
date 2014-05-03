@@ -17,12 +17,6 @@ namespace Eto.iOS.Forms.Controls
 			set { base.Controller = value; }
 		}
 
-		public override T CreateControl ()
-		{
-			Controller = new RotatableTableViewController { Control = this.Widget };
-			return (T)Controller.TableView;
-		}
-
 		protected virtual UITableViewDelegate CreateDelegate()
 		{
 			return new GridHandlerTableDelegate(this);
@@ -31,6 +25,8 @@ namespace Eto.iOS.Forms.Controls
 		protected override void Initialize ()
 		{
 			base.Initialize ();
+			Controller = new RotatableTableViewController { Control = this.Widget };
+			Control = (T)Controller.TableView;
 
 			Control.Delegate = CreateDelegate ();
 		}

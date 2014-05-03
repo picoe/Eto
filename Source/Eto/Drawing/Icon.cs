@@ -33,6 +33,7 @@ namespace Eto.Drawing
 	/// 
 	/// For HiDPI/Retina displays (e.g. on OS X), this will allow using a higher resolution image automatically.
 	/// </remarks>
+	[Handler(typeof(IIcon))]
 	public class Icon : Image
 	{
 		new IIcon Handler { get { return (IIcon)base.Handler; } }
@@ -40,18 +41,17 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Initializes a new instance of the Icon class with the specified handler
 		/// </summary>
-		/// <param name="generator">Generator for this widget</param>
 		/// <param name="handler">Handler for the icon backend</param>
-		public Icon (Generator generator, IIcon handler) : base(generator, handler)
+		public Icon (IIcon handler)
+			: base(handler)
 		{
 		}
 	
 		/// <summary>
 		/// Initializes a new instance of the Icon class with the contents of the specified <paramref name="stream"/>
 		/// </summary>
-		/// <param name="generator">Generator for this widget</param>
 		/// <param name="stream">Stream to load the content from</param>
-		public Icon (Stream stream, Generator generator = null) : base(generator, typeof(IIcon))
+		public Icon (Stream stream)
 		{
 			Handler.Create (stream);
 		}
@@ -59,9 +59,8 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Intitializes a new instanc of the Icon class with the contents of the specified <paramref name="fileName"/>
 		/// </summary>
-		/// <param name="generator">Generator for this widget</param>
 		/// <param name="fileName">Name of the file to loat the content from</param>
-		public Icon (string fileName, Generator generator = null) : base(generator, typeof(IIcon))
+		public Icon (string fileName)
 		{
 			Handler.Create (fileName);
 		}
@@ -71,12 +70,83 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="assembly">Assembly to load the resource from</param>
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
-		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
 		#if PCL
-		public static Icon FromResource (string resourceName, Assembly assembly, Generator generator = null)
+		public static Icon FromResource (string resourceName, Assembly assembly)
 		#else
-		public static Icon FromResource (string resourceName, Assembly assembly = null, Generator generator = null)
+		public static Icon FromResource (string resourceName, Assembly assembly = null)
+		#endif
+		{
+			if (assembly == null)
+			{
+				#if PCL
+				throw new ArgumentNullException("assembly");
+				#else
+				assembly = Assembly.GetCallingAssembly();
+				#endif
+			}
+			using (var stream = assembly.GetManifestResourceStream(resourceName)) {
+				if (stream == null)
+					throw new ResourceNotFoundException (assembly, resourceName);
+				return new Icon (stream);
+			}
+		}
+
+		public static Icon FromResource (string resourceName, Type type)
+		{
+			#if PCL
+			return FromResource(resourceName, type.GetTypeInfo().Assembly);
+			#else
+			return FromResource(resourceName, type.Assembly);
+			#endif
+		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Initializes a new instance of the Icon class with the specified handler
+		/// </summary>
+		/// <param name="generator">Generator for this widget</param>
+		/// <param name="handler">Handler for the icon backend</param>
+		[Obsolete("Use variation without generator instead")]
+		public Icon (Generator generator, IIcon handler) : base(generator, handler)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Icon class with the contents of the specified <paramref name="stream"/>
+		/// </summary>
+		/// <param name="generator">Generator for this widget</param>
+		/// <param name="stream">Stream to load the content from</param>
+		[Obsolete("Use variation without generator instead")]
+		public Icon (Stream stream, Generator generator) : base(generator, typeof(IIcon))
+		{
+			Handler.Create (stream);
+		}
+
+		/// <summary>
+		/// Intitializes a new instanc of the Icon class with the contents of the specified <paramref name="fileName"/>
+		/// </summary>
+		/// <param name="generator">Generator for this widget</param>
+		/// <param name="fileName">Name of the file to loat the content from</param>
+		[Obsolete("Use variation without generator instead")]
+		public Icon (string fileName, Generator generator) : base(generator, typeof(IIcon))
+		{
+			Handler.Create (fileName);
+		}
+
+		/// <summary>
+		/// Loads an icon from an embedded resource of the specified assembly
+		/// </summary>
+		/// <param name="assembly">Assembly to load the resource from</param>
+		/// <param name="resourceName">Fully qualified name of the resource to load</param>
+		/// <param name="generator">Generator for this widget</param>
+		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
+		[Obsolete("Use variation without generator instead")]
+		#if PCL
+		public static Icon FromResource (string resourceName, Assembly assembly, Generator generator)
+		#else
+		public static Icon FromResource (string resourceName, Assembly assembly, Generator generator)
 		#endif
 		{
 			if (assembly == null)
@@ -94,7 +164,8 @@ namespace Eto.Drawing
 			}
 		}
 
-		public static Icon FromResource (string resourceName, Type type, Generator generator = null)
+		[Obsolete("Use variation without generator instead")]
+		public static Icon FromResource (string resourceName, Type type, Generator generator)
 		{
 			#if PCL
 			return FromResource(resourceName, type.GetTypeInfo().Assembly, generator);
@@ -103,37 +174,6 @@ namespace Eto.Drawing
 			#endif
 		}
 
-		/// <summary>
-		/// Loads an icon from an embedded resource of the specified assembly
-		/// </summary>
-		/// <param name="assembly">Assembly to load the resource from</param>
-		/// <param name="resourceName">Fully qualified name of the resource to load</param>
-		/// <param name="generator">Generator for this widget</param>
-		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
-		[Obsolete("Use FromResource(string, Assembly, Generator) instead")]
-		public static Icon FromResource (Assembly assembly, string resourceName, Generator generator = null)
-		{
-			return FromResource(resourceName, assembly, generator);
-		}
-
-		#if !PCL
-		/// <summary>
-		/// Loads an icon from an embedded resource of the caller's assembly
-		/// </summary>
-		/// <remarks>
-		/// This is a shortcut for <see cref="FromResource(Assembly,string,Generator)"/> where it will
-		/// use the caller's assembly to load the resource from
-		/// </remarks>
-		/// <param name="resourceName">Fully qualified name of the resource to load</param>
-		/// <param name="generator">Generator for this widget</param>
-		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
-		[Obsolete("Use FromResource(string, Assembly, Generator) instead")]
-		public static Icon FromResource (string resourceName, Generator generator = null)
-		{
-			throw new NotImplementedException("Portable Class Libraries do not support Assembly.GetCallingAssembly");
-			var asm = Assembly.GetCallingAssembly ();
-			return FromResource (resourceName, asm, generator);
-		}		
-		#endif
+		#pragma warning restore 612,618
 	}
 }

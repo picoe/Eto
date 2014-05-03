@@ -403,7 +403,7 @@ namespace Eto.WinForms
 
 		public Screen Screen
 		{
-			get { return new Screen(Platform, new ScreenHandler(swf.Screen.FromControl(Control))); }
+			get { return new Screen(new ScreenHandler(swf.Screen.FromControl(Control))); }
 		}
 	}
 }

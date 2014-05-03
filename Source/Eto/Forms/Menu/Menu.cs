@@ -10,6 +10,11 @@ namespace Eto.Forms
 	{
 		//IMenu inner;
 
+		protected Menu()
+		{
+		}
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Menu (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{

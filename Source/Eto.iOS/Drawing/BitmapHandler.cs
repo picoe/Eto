@@ -217,7 +217,7 @@ namespace Eto.iOS.Drawing
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			if (rectangle == null)
-				return new Bitmap(Platform, new BitmapHandler { Control = new UIImage(Control.CGImage.Clone()) });
+				return new Bitmap(new BitmapHandler { Control = new UIImage(Control.CGImage.Clone()) });
 			else
 			{
 				var rect = rectangle.Value;
@@ -230,7 +230,7 @@ namespace Eto.iOS.Drawing
 				else
 					format = PixelFormat.Format32bppRgba;
 				
-				var bmp = new Bitmap(rect.Width, rect.Height, format, Platform);
+				var bmp = new Bitmap(rect.Width, rect.Height, format);
 				using (var graphics = new Graphics (bmp))
 				{
 					graphics.DrawImage(Widget, rect, new Rectangle(rect.Size));

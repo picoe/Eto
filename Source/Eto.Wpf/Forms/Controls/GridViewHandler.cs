@@ -8,9 +8,9 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		IDataStore store;
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
 		}
 

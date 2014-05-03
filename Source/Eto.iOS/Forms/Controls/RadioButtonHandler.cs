@@ -12,6 +12,11 @@ namespace Eto.iOS.Forms.Controls
 		RadioButtonHandler controller;
 		List<RadioButtonHandler> children;
 
+		public RadioButtonHandler()
+		{
+			Control = new UIButton(UIButtonType.RoundedRect);
+		}
+
 		public void Create (RadioButton controller)
 		{
 			this.controller = (RadioButtonHandler)(controller != null ? controller.Handler : this);
@@ -19,11 +24,6 @@ namespace Eto.iOS.Forms.Controls
 				this.controller.children.Add (this);
 			else
 				children = new List<RadioButtonHandler>();
-		}
-
-		public override UIButton CreateControl ()
-		{
-			return new UIButton(UIButtonType.RoundedRect);
 		}
 
 		protected override void Initialize ()

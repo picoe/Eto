@@ -61,9 +61,8 @@ namespace Eto.iOS.Forms.Controls
 			{
 				WeakDelegate = new Delegate { Handler = this }
 			};
+			Control = Navigation.View;
 		}
-
-		public override UIView Control { get { return Navigation.View; } }
 
 		public void Push(INavigationItem item)
 		{

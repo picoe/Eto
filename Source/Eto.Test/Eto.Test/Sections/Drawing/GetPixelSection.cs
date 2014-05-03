@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Drawing
 		public GetPixelSection()
 		{
 			var location = new Point(100, 100);
-			var image = TestIcons.Textures();
+			var image = TestIcons.Textures;
 			var drawable = new Drawable();
 			var drawableTarget = new DrawableTarget(drawable) { UseOffScreenBitmap = true };
 			this.Content = drawable;

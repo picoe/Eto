@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System;
 
 namespace Eto.Forms
 {
@@ -32,20 +33,27 @@ namespace Eto.Forms
 		SelectedPages
 	}
 
+	[Handler(typeof(IPrintSettings))]
 	public class PrintSettings : InstanceWidget
 	{
 		new IPrintSettings Handler { get { return (IPrintSettings)base.Handler; } }
 
 		public PrintSettings()
-			: this((Generator)null)
 		{
 		}
 
+		public PrintSettings(IPrintSettings handler)
+			: base(handler)
+		{
+		}
+
+		[Obsolete("Use default constructor instead")]
 		public PrintSettings (Generator generator)
 			: base (generator, typeof (IPrintSettings))
 		{
 		}
 
+		[Obsolete("Use PrintSettings(IPrintSettings) instead")]
 		public PrintSettings (Generator generator, IPrintSettings handler)
 			: base (generator, handler)
 		{

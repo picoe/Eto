@@ -47,6 +47,11 @@ namespace Eto.GtkSharp
 			containerBox.Visible = true;
 
 			bottomToolbarBox = new Gtk.VBox();
+
+			actionvbox.PackStart(menuBox, false, false, 0);
+			actionvbox.PackStart(topToolbarBox, false, false, 0);
+			vbox.PackStart(containerBox, true, true, 0);
+			vbox.PackStart(bottomToolbarBox, false, false, 0);
 		}
 
 		protected override Color DefaultBackgroundColor
@@ -175,10 +180,6 @@ namespace Eto.GtkSharp
 		protected override void Initialize()
 		{
 			base.Initialize();
-			actionvbox.PackStart(menuBox, false, false, 0);
-			actionvbox.PackStart(topToolbarBox, false, false, 0);
-			vbox.PackStart(containerBox, true, true, 0);
-			vbox.PackStart(bottomToolbarBox, false, false, 0);
 			
 			HandleEvent(Window.WindowStateChangedEvent); // to set restore bounds properly
 			HandleEvent(Window.ClosingEvent); // to chain application termination events

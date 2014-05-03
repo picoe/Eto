@@ -27,15 +27,6 @@ namespace Eto.Wpf.Forms.Controls
 				ClipValueToMinMax = true
 			};
 			Mode = DateTimePicker.DefaultMode;
-		}
-
-		public override bool UseMousePreview { get { return true; } }
-
-		public override bool UseKeyPreview { get { return true; } }
-
-		protected override void PostInitialize()
-		{
-			base.PostInitialize();
 			DateTime? last = Value;
 			Control.ValueChanged += delegate
 			{
@@ -56,7 +47,11 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			};
 		}
-		
+
+		public override bool UseMousePreview { get { return true; } }
+
+		public override bool UseKeyPreview { get { return true; } }
+
 		public DateTime? Value
 		{
 			get { return Control.Value; }

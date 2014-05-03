@@ -49,6 +49,11 @@ namespace Eto.Forms
 				SelectedValueChanged(this, e);
 		}
 
+		protected ListControl()
+		{
+		}
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ListControl(Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{

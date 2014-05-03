@@ -10,8 +10,8 @@ namespace Eto.Drawing
 	/// The bitmap data is accessed through <see cref="Bitmap.Lock"/>, which locks the data
 	/// for direct access using the <see cref="BitmapData.Data"/> pointer.
 	/// 
-	/// Ensure you call <see cref="Bitmap.Unlock"/> with the same instance when you are done
-	/// accessing or writing the data.
+	/// Ensure you call dispose the instance when you are done accessing or writing the data,
+	/// otherwise the bitmap may be left in an unusable state.
 	/// </remarks>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>

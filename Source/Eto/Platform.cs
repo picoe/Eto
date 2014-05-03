@@ -28,59 +28,17 @@ namespace Eto
 		}
 	}
 
-	/// <summary>
-	/// Extensions for the <see cref="Platform"/> class
-	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public static class PlatformExtensions
+	internal class HandlerInfo
 	{
-		/// <summary>
-		/// Creates a new instance of the handler of the specified type of <typeparamref name="T"/>
-		/// </summary>
-		/// <remarks>
-		/// This extension should be used when creating instances of a fixed type.
-		/// This is a helper so that you can use a null platform variable to create instances with the current
-		/// platform without having to do the extra check
-		/// </remarks>
-		/// <typeparam name="T">Type of handler to create</typeparam>
-		/// <param name="platform">Platform to create the instance, or null to use the current platform</param>
-		/// <returns>A new instance of a handler</returns>
-		public static T Create<T>(this Platform platform)
-		{
-			return (T)(platform ?? Platform.Instance).Create(typeof(T));
-		}
+		public Type Type { get; private set; }
+		public bool Initialize { get; private set; }
+		public Func<object> Instantiator { get; private set; }
 
-		/// <summary>
-		/// Creates a shared singleton instance of the specified type of <typeparamref name="T"/>
-		/// </summary>
-		/// <remarks>
-		/// This extension should be used when creating shared instances of a fixed type.
-		/// This is a helper so that you can use a null platform variable to create instances with the current
-		/// platform without having to do the extra check
-		/// </remarks>
-		/// <param name="platform">Platform to create or get the shared instance, or null to use the current platform</param>
-		/// <typeparam name="T">The type of handler to get a shared instance for</typeparam>
-		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
-		public static T CreateShared<T>(this Platform platform)
+		public HandlerInfo(Type type, bool initialize, Func<object> instantiator)
 		{
-			return (T)(platform ?? Platform.Instance).CreateShared(typeof(T));
-		}
-
-		/// <summary>
-		/// Finds the delegate to create instances of the specified type
-		/// </summary>
-		/// <typeparam name="T">Type of the handler interface (usually derived from <see cref="IWidget"/> or another type)</typeparam>
-		/// <returns>The delegate to use to create instances of the specified type</returns>
-		public static Func<T> Find<T>(this Platform platform)
-			where T: class
-		{
-			return (Func<T>)(platform ?? Platform.Instance).Find(typeof(T));
-		}
-
-		public static Dictionary<TKey, TValue> Cache<TKey, TValue>(this Platform platform, object cacheKey)
-		{
-			return (platform ?? Platform.Instance).GetSharedProperty <Dictionary<TKey, TValue>>(cacheKey, () => new Dictionary<TKey, TValue>());
+			Type = Type;
+			Initialize = initialize;
+			Instantiator = instantiator;
 		}
 	}
 
@@ -100,9 +58,12 @@ namespace Eto
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+#pragma warning disable 0612,0618
 	public abstract class Platform : Generator
+#pragma warning restore 0612,0618
 	{
 		readonly Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>>();
+		readonly Dictionary<Type, HandlerInfo> handlerMap = new Dictionary<Type, HandlerInfo>();
 		readonly Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
 		readonly Dictionary<object, object> properties = new Dictionary<object, object>();
 		static Platform globalInstance;
@@ -206,7 +167,7 @@ namespace Eto
 		public virtual bool Supports<T>()
 			where T: class
 		{
-			return this.Find<T>() != null;
+			return Find(typeof(T)) != null;
 		}
 
 		/// <summary>
@@ -244,7 +205,7 @@ namespace Eto
 		/// Mac OS X will prefer the Mac platform.
 		/// Other unix-based platforms will prefer GTK.
 		/// </remarks>
-		public static Platform Detect
+		public new static Platform Detect
 		{
 			get
 			{
@@ -286,21 +247,38 @@ namespace Eto
 		/// 
 		/// If null, no validation is performed.
 		/// </summary>
-		public static Platform ValidateGenerator { get; set; }
+		public static Platform ValidatePlatform { get; set; }
 
 		/// <summary>
-		/// Called by handlers to make sure they use the generator
-		/// specified by ValidateGenerator
+		/// Called by handlers to make sure they use the generator specified by ValidateGenerator
+		/// </summary>
+		/// <param name="platform">Platform instance to validate with</param>
+		[Conditional("DEBUG")]
+		public static void Validate(Platform platform)
+		{
+			if (ValidatePlatform != null && !object.ReferenceEquals(platform, ValidatePlatform))
+			{
+				throw new EtoException(string.Format(CultureInfo.InvariantCulture, "Expected to use generator {0}", ValidatePlatform));
+			}
+		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Called by handlers to make sure they use the generator specified by ValidateGenerator
 		/// </summary>
 		/// <param name="generator"></param>
 		[Conditional("DEBUG")]
+		[Obsolete("Use variation with Platform instead")]
 		public static void Validate(Generator generator)
 		{
-			if (ValidateGenerator != null && !object.ReferenceEquals(generator, ValidateGenerator))
+			if (ValidatePlatform != null && !object.ReferenceEquals(generator, ValidatePlatform))
 			{
-				throw new EtoException(string.Format(CultureInfo.InvariantCulture, "Expected to use generator {0}", ValidateGenerator));
+				throw new EtoException(string.Format(CultureInfo.InvariantCulture, "Expected to use generator {0}", ValidatePlatform));
 			}
 		}
+
+		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Initializes the specified <paramref name="platform"/> as the current generator, for the current thread
@@ -397,6 +375,38 @@ namespace Eto
 			return null;
 		}
 
+		internal HandlerInfo FindHandler(Type type)
+		{
+			HandlerInfo info;
+			if (handlerMap.TryGetValue(type, out info))
+				return info;
+
+			var handler = type.GetCustomAttribute<HandlerAttribute>(true);
+			Func<object> activator;
+			if (handler != null && instantiatorMap.TryGetValue(handler.Type, out activator))
+			{
+				var autoInit = handler.Type.GetCustomAttribute<AutoInitializeAttribute>(true);
+				info = new HandlerInfo(handler.Type, autoInit == null || autoInit.Initialize, activator);
+				handlerMap.Add(type, info);
+				return info;
+			}
+			return null;
+		}
+
+
+		/// <summary>
+		/// Creates a new instance of the handler of the specified type of <typeparamref name="T"/>
+		/// </summary>
+		/// <remarks>
+		/// This extension should be used when creating instances of a fixed type.
+		/// </remarks>
+		/// <typeparam name="T">Type of handler to create</typeparam>
+		/// <returns>A new instance of a handler</returns>
+		public T Create<T>()
+		{
+			return (T)Create(typeof(T));
+		}
+
 		/// <summary>
 		/// Creates a new instance of the handler of the specified type
 		/// </summary>
@@ -438,6 +448,25 @@ namespace Eto
 			}
 			return instance;
 		}
+
+		/// <summary>
+		/// Creates a shared singleton instance of the specified type of <typeparamref name="T"/>
+		/// </summary>
+		/// <remarks>
+		/// This extension should be used when creating shared instances of a fixed type.
+		/// </remarks>
+		/// <typeparam name="T">The type of handler to get a shared instance for</typeparam>
+		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
+		public T CreateShared<T>()
+		{
+			return (T)CreateShared(typeof(T));
+		}
+
+		public Dictionary<TKey, TValue> Cache<TKey, TValue>(object cacheKey)
+		{
+			return GetSharedProperty<Dictionary<TKey, TValue>>(cacheKey, () => new Dictionary<TKey, TValue>());
+		}
+
 
 		/// <summary>
 		/// Used at the start of your custom threads

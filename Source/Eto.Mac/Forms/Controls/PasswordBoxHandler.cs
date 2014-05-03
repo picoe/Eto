@@ -28,9 +28,8 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected override void Initialize()
+		public PasswordBoxHandler()
 		{
-			base.Initialize();
 			Control = new EtoTextField
 			{
 				Handler = this,

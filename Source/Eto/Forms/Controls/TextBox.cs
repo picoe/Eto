@@ -12,21 +12,24 @@ namespace Eto.Forms
 
 		string PlaceholderText { get; set; }
 	}
-	
+
+	[Handler(typeof(ITextBox))]
 	public class TextBox : TextControl
 	{
 		new ITextBox Handler { get { return (ITextBox)base.Handler; }}
 		
 		public TextBox()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public TextBox (Generator generator)
 			: this(generator, typeof(ITextBox))
 		{
 			
 		}
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected TextBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

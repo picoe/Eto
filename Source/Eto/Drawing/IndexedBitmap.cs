@@ -7,6 +7,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[AutoInitialize(false)]
 	public interface IIndexedBitmap : IImage, ILockableImage
 	{
 		/// <summary>
@@ -35,6 +36,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(IIndexedBitmap))]
 	public class IndexedBitmap : Image
 	{
 		new IIndexedBitmap Handler { get { return (IIndexedBitmap)base.Handler; } }
@@ -43,7 +45,22 @@ namespace Eto.Drawing
 		/// Gets the number of bits per pixel for this bitmap
 		/// </summary>
 		public int BitsPerPixel { get; private set; }
-		
+
+		/// <summary>
+		/// Initializes a new instance of the IndexedBitmap class
+		/// </summary>
+		/// <param name="width">Width of the bitmap in pixels</param>
+		/// <param name="height">Height of the bitmap in pixels</param>
+		/// <param name="bitsPerPixel">Number of bits per pixel, usually 4 (16 colours), 8 (64 colours), or 8 (256 colours)</param>
+		public IndexedBitmap (int width, int height, int bitsPerPixel)
+		{
+			BitsPerPixel = bitsPerPixel;
+			Handler.Create(width, height, bitsPerPixel);
+			Initialize();
+		}
+
+		#pragma warning disable 612,618
+
 		/// <summary>
 		/// Initializes a new instance of the IndexedBitmap class
 		/// </summary>
@@ -51,7 +68,8 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the bitmap in pixels</param>
 		/// <param name="height">Height of the bitmap in pixels</param>
 		/// <param name="bitsPerPixel">Number of bits per pixel, usually 4 (16 colours), 8 (64 colours), or 8 (256 colours)</param>
-		public IndexedBitmap (int width, int height, int bitsPerPixel, Generator generator = null)
+		[Obsolete("Use variation without generator instead")]
+		public IndexedBitmap(int width, int height, int bitsPerPixel, Generator generator)
 			: this(generator, width, height, bitsPerPixel)
 		{
 		}
@@ -63,12 +81,16 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the bitmap in pixels</param>
 		/// <param name="height">Height of the bitmap in pixels</param>
 		/// <param name="bitsPerPixel">Number of bits per pixel, usually 4 (16 colours), 8 (64 colours), or 8 (256 colours)</param>
-		public IndexedBitmap (Generator generator, int width, int height, int bitsPerPixel)
+		[Obsolete("Use variation without generator instead")]
+		public IndexedBitmap(Generator generator, int width, int height, int bitsPerPixel)
 			: base(generator, typeof(IIndexedBitmap))
 		{
 			this.BitsPerPixel = bitsPerPixel;
 			Handler.Create(width, height, bitsPerPixel);
 		}
+
+		#pragma warning restore 612,618
+
 
 		/// <summary>
 		/// Resizes the bitmap to the specified size

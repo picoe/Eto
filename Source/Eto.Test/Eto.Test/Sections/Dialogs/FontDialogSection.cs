@@ -158,7 +158,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control FontList()
 		{
 			fontList = new ListBox { Size = new Size(300, 180) };
-			var lookup = Fonts.AvailableFontFamilies().ToDictionary(r => r.Name);
+			var lookup = Fonts.AvailableFontFamilies.ToDictionary(r => r.Name);
 			fontList.Items.AddRange(lookup.Values.OrderBy(r => r.Name).Select(r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
 			fontList.SelectedIndexChanged += (sender, e) =>
 			{
@@ -310,24 +310,24 @@ namespace Eto.Test.Sections.Dialogs
 
 				var ypos = Math.Max(0, (metricsPreview.Size.Height - size.Height) / 2);
 
-				pe.Graphics.FillRectangle(Brushes.GhostWhite(), new RectangleF(new PointF(0, ypos), size));
+				pe.Graphics.FillRectangle(Brushes.GhostWhite, new RectangleF(new PointF(0, ypos), size));
 
 				pe.Graphics.DrawText(selectedFont, Colors.Black, 0, ypos, preview.Text);
 
 				var baseline = ypos + selectedFont.Baseline * scale;
-				pe.Graphics.DrawLine(Pens.Black(), 0, baseline, width, baseline);
+				pe.Graphics.DrawLine(Pens.Black, 0, baseline, width, baseline);
 
 				var ascender = baseline - selectedFont.Ascent * scale;
-				pe.Graphics.DrawLine(Pens.Blue(), 0, ascender, width, ascender);
+				pe.Graphics.DrawLine(Pens.Blue, 0, ascender, width, ascender);
 
 				var descender = baseline + selectedFont.Descent * scale;
-				pe.Graphics.DrawLine(Pens.Red(), 0, descender, width, descender);
+				pe.Graphics.DrawLine(Pens.Red, 0, descender, width, descender);
 
 				var xheight = baseline - selectedFont.XHeight * scale;
-				pe.Graphics.DrawLine(Pens.Green(), 0, xheight, width, xheight);
+				pe.Graphics.DrawLine(Pens.Green, 0, xheight, width, xheight);
 
 				var lineheight = ypos + selectedFont.LineHeight * scale;
-				pe.Graphics.DrawLine(Pens.Orange(), 0, lineheight, width, lineheight);
+				pe.Graphics.DrawLine(Pens.Orange, 0, lineheight, width, lineheight);
 			};
 			return metricsPreview;
 		}

@@ -20,7 +20,7 @@ namespace Eto.Mac.Forms
 			{
 				foreach (var screen in NSScreen.Screens)
 				{
-					yield return new Screen (Platform, new ScreenHandler (screen));
+					yield return new Screen(new ScreenHandler(screen));
 				}
 			}
 		}
@@ -30,7 +30,7 @@ namespace Eto.Mac.Forms
 			get
 			{
 				var screen = NSScreen.Screens[0];
-				return new Screen (Platform, new ScreenHandler (screen));
+				return new Screen(new ScreenHandler(screen));
 			}
 		}
 	}

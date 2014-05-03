@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.Drawing
 	{
 		public TextureBrushesSection()
 		{
-			var image = TestIcons.Textures();
+			var image = TestIcons.Textures;
 			var drawable = new Drawable { Size = new Size(image.Size.Width, image.Size.Height * 10) };
 			var drawableTarget = new DrawableTarget(drawable);
 			var layout = new DynamicLayout(new Padding(10));
@@ -31,7 +31,7 @@ namespace Eto.Test.Sections.Drawing
 				renderers.Add(graphics =>
 				{
 					var temp = brush.Transform; // save state
-					brush.Transform = Matrix.FromRotation(90, Platform);
+					brush.Transform = Matrix.FromRotation(90);
 					graphics.FillRectangle(brush, new RectangleF(image.Size));
 					graphics.TranslateTransform(0, image.Size.Height);
 					brush.Transform = temp;

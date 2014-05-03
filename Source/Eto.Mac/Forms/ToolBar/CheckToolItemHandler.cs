@@ -20,9 +20,9 @@ namespace Eto.Mac
 			}
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			Selectable = true;
 		}
 

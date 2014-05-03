@@ -46,14 +46,14 @@ namespace Eto.Forms
 
 		public void Add(Command command, int order = -1)
 		{
-			var item = command.CreateToolItem(parent.Platform);
+			var item = command.CreateToolItem();
 			item.Order = order;
 			Add(item);
 		}
 
 		public void AddSeparator(int order = -1, SeparatorToolItemType type = SeparatorToolItemType.Divider)
 		{
-			Add(new SeparatorToolItem(parent.Platform) { Order = order, Type = type });
+			Add(new SeparatorToolItem { Order = order, Type = type });
 		}
 
 		public void AddRange(IEnumerable<ToolItem> items)

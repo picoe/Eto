@@ -11,7 +11,8 @@ namespace Eto.Forms
 	public partial interface IListBox : IListControl
 	{
 	}
-	
+
+	[Handler(typeof(IListBox))]
 	public partial class ListBox : ListControl
 	{
 		new IListBox Handler { get { return (IListBox)base.Handler; } }
@@ -25,14 +26,15 @@ namespace Eto.Forms
 		}
 
 		public ListBox()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public ListBox (Generator generator) : this (generator, typeof(IListBox))
 		{
 		}
-		
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ListBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

@@ -12,16 +12,7 @@ namespace Eto.iOS.Forms.Controls
 
 		public ImageViewHandler ()
 		{
-		}
-
-		public override UIImageView CreateControl ()
-		{
-			return new UIImageView();
-		}
-
-		protected override void Initialize ()
-		{
-			base.Initialize ();
+			Control = new UIImageView();
 			Control.ContentMode = UIViewContentMode.ScaleAspectFit;
 		}
 

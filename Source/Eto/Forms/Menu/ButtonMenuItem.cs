@@ -10,35 +10,45 @@ namespace Eto.Forms
 		Image Image { get; set; }
 	}
 
+	[Handler(typeof(IButtonMenuItem))]
 	public class ButtonMenuItem : MenuItem, ISubMenuWidget
 	{
+		MenuItemCollection items;
+
 		new IButtonMenuItem Handler { get { return (IButtonMenuItem)base.Handler; } }
 
-		public MenuItemCollection Items { get; private set; }
+		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
 
 		public bool Trim { get; set; }
 
 		public ButtonMenuItem()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public ButtonMenuItem(Generator generator)
 			: this(generator, typeof(IButtonMenuItem))
 		{
 		}
 
+		public ButtonMenuItem(Command command)
+			: base(command)
+		{
+			Image = command.Image;
+			Handler.CreateFromCommand(command);
+		}
+
+		[Obsolete("Use constructor without generator instead")]
 		public ButtonMenuItem(Command command, Generator generator = null)
 			: base(command, generator, typeof(IButtonMenuItem))
 		{
-			Items = new MenuItemCollection(Handler);
 			Image = command.Image;
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ButtonMenuItem(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			Items = new MenuItemCollection(Handler);
 		}
 
 		public Image Image

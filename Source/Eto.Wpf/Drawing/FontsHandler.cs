@@ -12,7 +12,7 @@ namespace Eto.Wpf.Drawing
 
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
-			get { return swm.Fonts.SystemFontFamilies.Select (r => new FontFamily (Platform, new FontFamilyHandler (r))); }
+			get { return swm.Fonts.SystemFontFamilies.Select (r => new FontFamily (new FontFamilyHandler (r))); }
 		}
 
 		public bool FontFamilyAvailable (string fontFamily)

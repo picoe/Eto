@@ -105,17 +105,17 @@ namespace Eto.Wpf.Drawing
 		{
 		}
 
-		public FontHandler(Eto.Generator generator, swc.Control control)
+		public FontHandler(swc.Control control)
 		{
-			this.Family = new FontFamily(generator, new FontFamilyHandler(control.FontFamily));
+			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
 			this.Size = PixelsToPoints(control.FontSize, control);
 			this.WpfFontStyle = control.FontStyle;
 			this.WpfFontWeight = control.FontWeight;
 		}
 
-		public FontHandler(Eto.Generator generator, swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
+		public FontHandler(swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
 		{
-			Family = new FontFamily(generator, new FontFamilyHandler(family));
+			Family = new FontFamily(new FontFamilyHandler(family));
 			Size = size;
 			WpfFontStyle = style;
 			WpfFontWeight = weight;
@@ -166,26 +166,26 @@ namespace Eto.Wpf.Drawing
 				case SystemFont.Palette:
 				case SystemFont.TitleBar:
 				case SystemFont.ToolTip:
-					Family = new FontFamily(Widget.Platform, new FontFamilyHandler(sw.SystemFonts.MessageFontFamily));
+					Family = new FontFamily(new FontFamilyHandler(sw.SystemFonts.MessageFontFamily));
 					WpfFontStyle = sw.SystemFonts.MessageFontStyle;
 					WpfFontWeight = sw.SystemFonts.MessageFontWeight;
 					PixelSize = sw.SystemFonts.MessageFontSize;
 					break;
 				case SystemFont.Bold:
-					Family = new FontFamily(Widget.Platform, new FontFamilyHandler(sw.SystemFonts.MessageFontFamily));
+					Family = new FontFamily(new FontFamilyHandler(sw.SystemFonts.MessageFontFamily));
 					WpfFontStyle = sw.SystemFonts.MessageFontStyle;
 					WpfFontWeight = sw.FontWeights.Bold;
 					PixelSize = sw.SystemFonts.MessageFontSize;
 					break;
 				case SystemFont.MenuBar:
 				case SystemFont.Menu:
-					Family = new FontFamily(Widget.Platform, new FontFamilyHandler(sw.SystemFonts.MenuFontFamily));
+					Family = new FontFamily(new FontFamilyHandler(sw.SystemFonts.MenuFontFamily));
 					WpfFontStyle = sw.SystemFonts.MenuFontStyle;
 					WpfFontWeight = sw.SystemFonts.MenuFontWeight;
 					PixelSize = sw.SystemFonts.MenuFontSize;
 					break;
 				case SystemFont.StatusBar:
-					Family = new FontFamily(Widget.Platform, new FontFamilyHandler(sw.SystemFonts.StatusFontFamily));
+					Family = new FontFamily(new FontFamilyHandler(sw.SystemFonts.StatusFontFamily));
 					WpfFontStyle = sw.SystemFonts.StatusFontStyle;
 					WpfFontWeight = sw.SystemFonts.StatusFontWeight;
 					PixelSize = sw.SystemFonts.StatusFontSize;

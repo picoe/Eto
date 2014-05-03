@@ -290,12 +290,22 @@ namespace Eto.Forms
 			EventLookup.Register<Grid>(c => c.OnColumnHeaderClick(null), Grid.ColumnHeaderClickEvent);
 		}
 
+		protected Grid()
+		{
+		}
+
+		protected Grid(IGrid handler)
+			: base(handler)
+		{
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to instantiate the handler with</param>
 		/// <param name="type">Type of handler to create</param>
 		/// <param name="initialize">If set to <c>true</c> initialize.</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Grid(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
@@ -307,6 +317,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to instantiate the handler with</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">If set to <c>true</c> initialize.</param>
+		[Obsolete("Use Grid(IGrid) instead")]
 		protected Grid(Generator generator, IControl handler, bool initialize = true)
 			: base(generator, handler, false)
 		{

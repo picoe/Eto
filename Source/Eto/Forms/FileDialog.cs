@@ -63,11 +63,17 @@ namespace Eto.Forms
 		string Title { get; set; }
 		Uri Directory { get; set; }
 	}
-	
+
+	[Handler(typeof(IFileDialog))]
 	public abstract class FileDialog : CommonDialog
 	{
 		new IFileDialog Handler { get { return (IFileDialog)base.Handler; } }
 
+		protected FileDialog()
+		{
+		}
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected FileDialog(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
 		{
 		}

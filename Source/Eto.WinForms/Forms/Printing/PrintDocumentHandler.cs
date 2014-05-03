@@ -49,7 +49,7 @@ namespace Eto.WinForms.Forms.Printing
 
 		protected virtual void HandlePrintPage(object sender, sdp.PrintPageEventArgs e)
 		{
-			var graphics = new Graphics(Widget.Platform, new GraphicsHandler(e.Graphics));
+			var graphics = new Graphics(new GraphicsHandler(e.Graphics));
 
 			var args = new PrintPageEventArgs(graphics, e.PageBounds.Size.ToEto(), currentPage);
 			Widget.OnPrintPage(args);
@@ -74,7 +74,7 @@ namespace Eto.WinForms.Forms.Printing
 			get
 			{
 				if (printSettings == null)
-					printSettings = Control.PrinterSettings.ToEto(Widget.Platform);
+					printSettings = Control.PrinterSettings.ToEto();
 				return printSettings;
 			}
 			set

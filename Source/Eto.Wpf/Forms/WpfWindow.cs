@@ -33,10 +33,10 @@ namespace Eto.Wpf.Forms
 		bool maximizable = true;
 		bool minimizable = true;
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
 			content = new swc.DockPanel();
-			
+
 			base.Initialize();
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 			Control.SnapsToDevicePixels = true;
@@ -444,7 +444,7 @@ namespace Eto.Wpf.Forms
 
 		public Screen Screen
 		{
-			get { return new Screen (Platform, new ScreenHandler (Control)); }
+			get { return new Screen(new ScreenHandler (Control)); }
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)

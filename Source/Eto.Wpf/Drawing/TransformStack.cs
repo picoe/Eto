@@ -9,7 +9,6 @@ namespace Eto.Wpf.Drawing
 	/// </summary>
 	public class TransformStack
 	{
-		readonly Eto.Generator generator;
 		readonly Action<IMatrix> push;
 		readonly Action pop;
 		Stack<StackEntry> stack;
@@ -21,26 +20,25 @@ namespace Eto.Wpf.Drawing
 		/// <param name="generator">Generator for the stack</param>
 		/// <param name="push">A callback that should prepend the specified value to the current matrix </param>
 		/// <param name="pop">A callback that should either pop the matrix stack or set the current matrix to the specified value</param>
-		public TransformStack(Eto.Generator generator, Action<IMatrix> push, Action pop)
+		public TransformStack(Action<IMatrix> push, Action pop)
 		{
-			this.generator = generator;
 			this.push = push;
 			this.pop = pop;
 		}
 
 		public void TranslateTransform (float dx, float dy)
 		{
-			Push (Matrix.FromTranslation (dx, dy, generator));
+			Push (Matrix.FromTranslation (dx, dy));
 		}
 
 		public void RotateTransform (float angle)
 		{
-			Push (Matrix.FromRotation (angle, generator));
+			Push (Matrix.FromRotation (angle));
 		}
 
 		public void ScaleTransform (float sx, float sy)
 		{
-			Push (Matrix.FromScale (sx, sy, generator));
+			Push (Matrix.FromScale (sx, sy));
 		}
 
 		public void MultiplyTransform (IMatrix matrix)

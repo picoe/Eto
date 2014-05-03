@@ -59,20 +59,22 @@ namespace Eto.Forms
 		Button AbortButton { get; set; }
 	}
 
+	[Handler(typeof(IDialog))]
 	public class Dialog : Window
 	{
 		new IDialog Handler { get { return (IDialog)base.Handler; } }
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Dialog(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
 		}
 
 		public Dialog()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public Dialog(Generator generator) : this(generator, typeof(IDialog))
 		{
 		}

@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 		int expanded;
 		CheckBox allowCollapsing;
 		CheckBox allowExpanding;
-		static Image Image = TestIcons.TestIcon();
+		static Image Image = TestIcons.TestIcon;
 
 		public TreeGridViewSection()
 		{
@@ -95,7 +95,7 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add(new GridColumn { DataCell = new ImageTextCell(0, 1), HeaderText = "Image and Text", AutoSize = true, Resizable = true, Editable = true });
 			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(2), HeaderText = "Text", AutoSize = true, Width = 150, Resizable = true, Editable = true });
 
-			if (Platform.Supports<IContextMenu>())
+			if (Platform.Supports<ContextMenu>())
 			{
 				var menu = new ContextMenu();
 				var item = new ButtonMenuItem{ Text = "Click Me!" };

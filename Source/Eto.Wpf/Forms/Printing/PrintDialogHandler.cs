@@ -34,7 +34,7 @@ namespace Eto.Wpf.Forms.Printing
 			get
 			{
 				if (settings == null)
-					settings = Control.GetEtoSettings(Widget.Platform);
+					settings = Control.GetEtoSettings();
 				return settings;
 			}
 			set

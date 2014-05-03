@@ -41,15 +41,16 @@ namespace Eto.Forms
 	/// <summary>
 	/// A cell that is rendered by custom code.
 	/// </summary>
+	[Handler(typeof(IDrawableCell))]
 	public class DrawableCell : Cell
 	{
 		public Action<DrawableCellPaintArgs> PaintHandler { get; set; }
 
 		public DrawableCell()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public DrawableCell(Generator generator)
 			: base(generator, typeof(IDrawableCell), true)
 		{

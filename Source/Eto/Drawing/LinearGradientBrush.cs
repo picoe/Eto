@@ -97,17 +97,20 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Use this to instantiate many objects of this type
 		/// </remarks>
-		/// <param name="generator">Generator to create the objects with</param>
-		public static Func<Color, Color, PointF, PointF, LinearGradientBrush> Instantiator (Generator generator = null)
+		public static Func<Color, Color, PointF, PointF, LinearGradientBrush> Instantiator
 		{
-			var handler = generator.CreateShared<ILinearGradientBrush>();
-			return (startColor, endColor, startPoint, endPoint) => {
-				var control = handler.Create (startColor, endColor, startPoint, endPoint);
-				return new LinearGradientBrush (handler, control);
-			};
+			get
+			{
+				var handler = Platform.Instance.CreateShared<ILinearGradientBrush>();
+				return (startColor, endColor, startPoint, endPoint) =>
+				{
+					var control = handler.Create(startColor, endColor, startPoint, endPoint);
+					return new LinearGradientBrush(handler, control);
+				};
+			}
 		}
 
-		LinearGradientBrush (ILinearGradientBrush handler, object control)
+		LinearGradientBrush(ILinearGradientBrush handler, object control)
 		{
 			this.handler = handler;
 			ControlObject = control;
@@ -120,10 +123,9 @@ namespace Eto.Drawing
 		/// <param name="endColor">End color for the gradient</param>
 		/// <param name="startPoint">Start point for the gradient</param>
 		/// <param name="endPoint">End point for the gradient</param>
-		/// <param name="generator">Generator to create the brush, or null to use the current generator</param>
-		public LinearGradientBrush (Color startColor, Color endColor, PointF startPoint, PointF endPoint, Generator generator = null)
+		public LinearGradientBrush(Color startColor, Color endColor, PointF startPoint, PointF endPoint)
 		{
-			handler = generator.CreateShared<ILinearGradientBrush> ();
+			handler = Platform.Instance.CreateShared<ILinearGradientBrush> ();
 			ControlObject = handler.Create (startColor, endColor, startPoint, endPoint);
 		}
 
@@ -134,12 +136,43 @@ namespace Eto.Drawing
 		/// <param name="startColor">Start color for the gradient</param>
 		/// <param name="endColor">End color for the gradient</param>
 		/// <param name="angle">Angle of the gradient</param>
-		/// <param name="generator">Generator to create the brush, or null to use the current generator</param>
-		public LinearGradientBrush (RectangleF rectangle, Color startColor, Color endColor, float angle, Generator generator = null)
+		public LinearGradientBrush(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			handler = generator.CreateShared<ILinearGradientBrush> ();
+			handler = Platform.Instance.CreateShared<ILinearGradientBrush> ();
 			ControlObject = handler.Create (rectangle, startColor, endColor, angle);
 		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.LinearGradientBrush"/> class between two points
+		/// </summary>
+		/// <param name="startColor">Start color for the gradient</param>
+		/// <param name="endColor">End color for the gradient</param>
+		/// <param name="startPoint">Start point for the gradient</param>
+		/// <param name="endPoint">End point for the gradient</param>
+		/// <param name="generator">Generator to create the brush, or null to use the current generator</param>
+		public LinearGradientBrush(Color startColor, Color endColor, PointF startPoint, PointF endPoint, Generator generator)
+		{
+			handler = generator.CreateShared<ILinearGradientBrush>();
+			ControlObject = handler.Create(startColor, endColor, startPoint, endPoint);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.LinearGradientBrush"/> class with a given <paramref name="rectangle"/> and <paramref name="angle"/>
+		/// </summary>
+		/// <param name="rectangle">Rectangle to define the area of the gradient</param>
+		/// <param name="startColor">Start color for the gradient</param>
+		/// <param name="endColor">End color for the gradient</param>
+		/// <param name="angle">Angle of the gradient</param>
+		/// <param name="generator">Generator to create the brush, or null to use the current generator</param>
+		public LinearGradientBrush(RectangleF rectangle, Color startColor, Color endColor, float angle, Generator generator)
+		{
+			handler = generator.CreateShared<ILinearGradientBrush>();
+			ControlObject = handler.Create(rectangle, startColor, endColor, angle);
+		}
+
+		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Gets or sets the transform to apply to the gradient

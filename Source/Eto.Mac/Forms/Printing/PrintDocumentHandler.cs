@@ -57,7 +57,7 @@ namespace Eto.Mac.Forms.Printing
 				// this causes monomac to hang for some reason:
 				//var context = NSGraphicsContext.CurrentContext;
 
-				using (var graphics = new Graphics(Handler.Widget.Platform, new GraphicsHandler(this, context, Frame.Height, IsFlipped)))
+				using (var graphics = new Graphics(new GraphicsHandler(this, context, Frame.Height, IsFlipped)))
 				{
 					Handler.Widget.OnPrintPage(new PrintPageEventArgs(graphics, operation.PrintInfo.PaperSize.ToEto(), operation.CurrentPage - 1));
 				}
@@ -120,7 +120,7 @@ namespace Eto.Mac.Forms.Printing
 			get
 			{
 				if (printSettings == null)
-					printSettings = new PrintSettings(Widget.Platform);
+					printSettings = new PrintSettings();
 				return printSettings;
 			}
 			set

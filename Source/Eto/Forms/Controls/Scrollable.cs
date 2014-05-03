@@ -37,6 +37,7 @@ namespace Eto.Forms
 		None
 	}
 
+	[Handler(typeof(IScrollable))]
 	public partial class Scrollable : Panel
 	{
 		new IScrollable Handler { get { return (IScrollable)base.Handler; } }
@@ -60,14 +61,15 @@ namespace Eto.Forms
 		}
 
 		public Scrollable()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public Scrollable(Generator generator) : this(generator, typeof(IScrollable))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Scrollable(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

@@ -37,10 +37,10 @@ namespace Eto
 		/// <summary>
 		/// Gets the generator that was used to create this handler
 		/// </summary>
-		[Obsolete("Use Platform.Instance instead")]
 		public Platform Platform
 		{
-			get { return Platform.Instance; }
+			get;
+			set;
 		}
 
 		#region IWidget Members
@@ -54,10 +54,12 @@ namespace Eto
 		/// </remarks>
 		protected virtual void Initialize()
 		{
+			Style.OnStyleWidgetDefaults(this);
 		}
 
-		protected virtual void PostInitialize()
+		void IWidget.Initialize()
 		{
+			Initialize();
 		}
 
 		/// <summary>
@@ -69,8 +71,6 @@ namespace Eto
 			set
 			{
 				Widget = (TWidget)value;
-				Initialize();
-				PostInitialize();
 			}
 		}
 
@@ -126,17 +126,11 @@ namespace Eto
 	{
 		const string InstanceEventSuffix = ".Instance";
 
-				/// <summary>
+		/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
 		/// </summary>
 		protected WidgetHandler()
 		{
-		}
-
-		protected override void PostInitialize()
-		{
-			base.PostInitialize();
-			Style.OnStyleWidgetDefaults(this);
 		}
 
 		static readonly object IDKey = new object();

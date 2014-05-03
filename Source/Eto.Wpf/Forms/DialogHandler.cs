@@ -12,14 +12,9 @@ namespace Eto.Wpf.Forms
 		Button defaultButton;
 		Button abortButton;
 
-		public override sw.Window CreateControl()
+		public DialogHandler()
 		{
-			return new sw.Window();
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
+			Control = new sw.Window();
 			Control.ShowInTaskbar = false;
 			Resizable = false;
 			Minimizable = false;

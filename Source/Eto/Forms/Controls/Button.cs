@@ -61,7 +61,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[HandlerAttribute(typeof(IButton))]
+	[Handler(typeof(IButton))]
 	public class Button : TextControl
 	{
 		new IButton Handler { get { return (IButton)base.Handler; } }
@@ -107,7 +107,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the button</param>
-		[Obsolete("Use default constructor")]
+		[Obsolete("Use default constructor instead")]
 		public Button (Generator generator)
 			: this (generator, typeof (IButton))
 		{

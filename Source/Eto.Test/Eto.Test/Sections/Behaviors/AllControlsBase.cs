@@ -21,9 +21,9 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddRow(null, CheckBoxControl(), RadioButtonControl(), null);
 			layout.AddRow(null, DateTimeControl(), NumericUpDownControl(), null);
 			layout.AddRow(null, ComboBoxControl(), PasswordBoxControl(), null);
-			if (Platform.Supports<IListBox>())
+			if (Platform.Supports<ListBox>())
 				layout.AddRow(null, ListBoxControl(), DrawableControl(), null);
-			if (Platform.Supports<IGroupBox>())
+			if (Platform.Supports<GroupBox>())
 				layout.AddRow(null, GroupBoxControl(), new Panel(), null);
 			layout.EndVertical();
 			layout.Add(null);
@@ -126,7 +126,7 @@ namespace Eto.Test.Sections.Behaviors
 			var control = new Drawable { Size = new Size(100, 30), CanFocus = true };
 			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
-				pe.Graphics.FillRectangle(Brushes.Blue(), pe.ClipRectangle);
+				pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
 			};
 			LogEvents(control);
 			return control;

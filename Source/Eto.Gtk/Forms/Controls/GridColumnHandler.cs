@@ -31,12 +31,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control = new Gtk.TreeViewColumn();
 			AutoSize = true;
 			Resizable = true;
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-			DataCell = new TextBoxCell(Widget.Platform);
+			DataCell = new TextBoxCell();
 		}
 
 		public string HeaderText

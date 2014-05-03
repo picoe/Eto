@@ -22,10 +22,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		public IGridHandler GridHandler { get; set; }
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
-			DataCell = new TextBoxCell(Widget.Platform);
+			base.Initialize();
+			DataCell = new TextBoxCell();
 			Editable = false;
 		}
 

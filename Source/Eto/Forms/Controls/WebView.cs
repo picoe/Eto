@@ -74,6 +74,7 @@ namespace Eto.Forms
 		}
 	}
 
+	[Handler(typeof(IWebView))]
 	public class WebView : Control
 	{
 		new IWebView Handler { get { return (IWebView)base.Handler; } }
@@ -157,15 +158,16 @@ namespace Eto.Forms
 		}
 
 		public WebView()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public WebView(Generator generator)
 			: this(generator, typeof(IWebView))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected WebView(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

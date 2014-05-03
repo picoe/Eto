@@ -13,7 +13,7 @@ namespace Eto.WinForms.Drawing
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
 			get {
-				return sd.FontFamily.Families.Select (r => new FontFamily(Platform, new FontFamilyHandler(r)));
+				return sd.FontFamily.Families.Select (r => new FontFamily(new FontFamilyHandler(r)));
 			}
 		}
 

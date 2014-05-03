@@ -1,3 +1,5 @@
+using System;
+
 
 namespace Eto.Drawing
 {
@@ -27,6 +29,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Defines a region to use for clipping
 	/// </summary>
+	[Handler(typeof(IRegion))]
 	public class Region : InstanceWidget
 	{
 		new IRegion Handler { get { return (IRegion)base.Handler; } }
@@ -35,7 +38,6 @@ namespace Eto.Drawing
 		/// Initializes a new instance of the Region class
 		/// </summary>
 		public Region()
-			: this((Generator)null)
 		{
 		}
 
@@ -43,6 +45,7 @@ namespace Eto.Drawing
 		/// Initializes a new instance of the Region class using the specified generator to instantiate the handler
 		/// </summary>
 		/// <param name="generator">Generator to use for instantiating the handler</param>
+		[Obsolete("Use default constructor instead")]
 		public Region (Generator generator)
 			: base (generator, typeof(IRegion))
 		{

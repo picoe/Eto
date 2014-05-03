@@ -10,11 +10,10 @@ namespace Eto.iOS.Forms.Controls
 		SliderOrientation orientation;
 		int? lastValue;
 
-		public override UISlider CreateControl()
+		public SliderHandler()
 		{
-			var slider = new UISlider();
-			slider.ValueChanged += HandleValueChanged;
-			return slider;
+			Control = new UISlider();
+			Control.ValueChanged += HandleValueChanged;
 		}
 
 		void HandleValueChanged(object sender, EventArgs e)

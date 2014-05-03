@@ -103,7 +103,7 @@ namespace Eto.Direct2D.Drawing
 			else
 				bmp = new sw.Bitmap(SDFactory.WicImagingFactory, bmp, sw.BitmapCreateCacheOption.CacheOnLoad);
 
-			return new Bitmap(Platform, new BitmapHandler { Control = bmp });
+			return new Bitmap(new BitmapHandler { Control = bmp });
         }
 
         public Color GetPixel(int x, int y)

@@ -25,7 +25,7 @@ namespace Eto.Test.Sections.Drawing
 			control.Paint += (sender, e) =>
 			{
 				e.Graphics.AntiAlias = true;
-				e.Graphics.DrawPath(Pens.White(e.Generator), path);
+				e.Graphics.DrawPath(Pens.White, path);
 			};
 
 			return control;
@@ -39,7 +39,7 @@ namespace Eto.Test.Sections.Drawing
 			control.Paint += (sender, e) =>
 			{
 				e.Graphics.AntiAlias = false;
-				e.Graphics.DrawPath(Pens.White(e.Generator), path);
+				e.Graphics.DrawPath(Pens.White, path);
 			};
 
 			return control;
@@ -47,7 +47,7 @@ namespace Eto.Test.Sections.Drawing
 
 		GraphicsPath CreatePath()
 		{
-			var path = new GraphicsPath(Platform);
+			var path = new GraphicsPath();
 			path.MoveTo(new Point(10, 10));
 			path.LineTo(new Point(20, 90));
 			path.LineTo(new Point(10, 60));

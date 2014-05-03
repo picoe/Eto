@@ -30,6 +30,7 @@ namespace Eto.Forms
 		}
 	}
 
+	[Handler(typeof(IGridView))]
 	public partial class GridView : Grid
 	{
 		new IGridView Handler { get { return base.Handler as IGridView; } }
@@ -68,21 +69,30 @@ namespace Eto.Forms
 		}
 
 		public GridView()
-			: this((Generator)null)
 		{
+			Initialize();
 		}
 
+		protected GridView(IGridView handler)
+			: base(handler)
+		{
+			Initialize();
+		}
+
+		[Obsolete("Use default constructor instead")]
 		public GridView(Generator generator)
 			: this(generator, typeof(IGridView))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected GridView(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
 			Initialize();
 		}
 
+		[Obsolete("Use GridView(IGridView) instead")]
 		public GridView(Generator generator, IControl handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{

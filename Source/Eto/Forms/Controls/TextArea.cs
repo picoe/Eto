@@ -20,6 +20,7 @@ namespace Eto.Forms
 		int CaretIndex { get; set; }
 	}
 
+	[Handler(typeof(ITextArea))]
 	public class TextArea : TextControl
 	{
 		new ITextArea Handler { get { return (ITextArea)base.Handler; } }
@@ -63,14 +64,15 @@ namespace Eto.Forms
 		}
 
 		public TextArea()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public TextArea(Generator generator) : this(generator, typeof(ITextArea))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected TextArea(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

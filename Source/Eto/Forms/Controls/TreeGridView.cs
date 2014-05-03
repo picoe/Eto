@@ -36,6 +36,7 @@ namespace Eto.Forms
 		}
 	}
 
+	[Handler(typeof(ITreeGridView))]
 	public partial class TreeGridView : Grid
 	{
 		new ITreeGridView Handler { get { return (ITreeGridView)base.Handler; } }
@@ -132,14 +133,15 @@ namespace Eto.Forms
 		}
 
 		public TreeGridView()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public TreeGridView(Generator generator) : this(generator, typeof(ITreeGridView))
 		{
 		}
 
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected TreeGridView(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

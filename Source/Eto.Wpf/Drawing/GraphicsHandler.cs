@@ -364,7 +364,7 @@ namespace Eto.Wpf.Drawing
 			get
 			{
 				if (transformStack == null)
-					transformStack = new TransformStack(Platform,
+					transformStack = new TransformStack(
 						m => Control.PushTransform(m.ToWpfTransform()),
 						Control.Pop);
 
@@ -497,7 +497,7 @@ namespace Eto.Wpf.Drawing
 			{
 				// drawable
 				if (brush == null || brush.Color.A < 1.0f)
-					Widget.FillRectangle(Brushes.Black(Platform), rect);
+					Widget.FillRectangle(Brushes.Black, rect);
 			}
 			if (brush != null)
 			{

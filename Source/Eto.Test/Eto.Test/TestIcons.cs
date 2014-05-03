@@ -7,9 +7,9 @@ namespace Eto.Test
 	public static class TestIcons
 	{
 #if PCL
-		static Assembly Assembly { get { return typeof(TestIcons).GetTypeInfo().Assembly; } } // Don't use GetExecutingAssembly, it is not cross-platform safe.
+		static Assembly Assembly { get { return typeof(TestIcons).GetTypeInfo().Assembly; } }
 #else
-		static Assembly Assembly { get { return typeof(TestIcons).Assembly; } } // Don't use GetExecutingAssembly, it is not cross-platform safe.
+		static Assembly Assembly { get { return typeof(TestIcons).Assembly; } }
 #endif
 		static string prefix;
 		public static string Prefix { get { return prefix = prefix ?? Assembly.GetName().Name + "."; } }
@@ -29,19 +29,19 @@ namespace Eto.Test
 			return TranslateResourceName != null ? TranslateResourceName(s) : s;
 		}
 
-		public static Icon TestIcon(Generator generator = null)
+		public static Icon TestIcon
 		{
-			return Icon.FromResource(GetTranslatedResourceName(Prefix + TestIconName), Assembly, generator);
+			get { return Icon.FromResource(GetTranslatedResourceName(Prefix + TestIconName), Assembly); }
 		}
 
-		public static Bitmap TestImage(Generator generator = null)
+		public static Bitmap TestImage
 		{
-			return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TestImageName), Assembly, generator: generator);
+			get { return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TestImageName), Assembly); }
 		}
 
-		public static Bitmap Textures(Generator generator = null)
+		public static Bitmap Textures
 		{
-			return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TexturesName), Assembly, generator: generator);
+			get { return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TexturesName), Assembly); }
 		}
 	}
 }

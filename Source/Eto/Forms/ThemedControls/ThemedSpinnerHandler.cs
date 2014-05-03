@@ -129,10 +129,10 @@ namespace Eto.Forms.ThemedControls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control = new Drawable(Platform);
+			Control = new Drawable();
 			Control.Size = new Size(16, 16);
 			Control.Paint += HandlePaint;
-			timer = new UITimer(Platform);
+			timer = new UITimer();
 			timer.Interval = 0.05f;
 			timer.Elapsed += HandleElapsed;
 
@@ -222,13 +222,13 @@ namespace Eto.Forms.ThemedControls
 				switch (Mode)
 				{
 					case ThemedSpinnerMode.Circle:
-						using (var brush = new SolidBrush(elementColor, Platform))
+						using (var brush = new SolidBrush(elementColor))
 						{
 							e.Graphics.FillEllipse(brush, x, y, size, size);
 						}
 						break;
 					case ThemedSpinnerMode.Line:
-						using (var pen = new Pen(elementColor, LineThickness * minSize / 16, Platform))
+						using (var pen = new Pen(elementColor, LineThickness * minSize / 16))
 						{
 							pen.LineCap = LineCap;
 							x -= pen.Thickness / 2;

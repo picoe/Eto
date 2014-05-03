@@ -41,6 +41,7 @@ namespace Eto.Forms
 	/// Control to show progress of a long running task
 	/// </summary>
 	/// <seealso cref="Spinner"/>
+	[Handler(typeof(IProgressBar))]
 	public class ProgressBar : Control
 	{
 		new IProgressBar Handler { get { return (IProgressBar)base.Handler; } }
@@ -49,7 +50,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.ProgressBar"/> class.
 		/// </summary>
 		public ProgressBar()
-			: this((Generator)null)
 		{
 		}
 
@@ -57,6 +57,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.ProgressBar"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
+		[Obsolete("Use default constructor instead")]
 		public ProgressBar(Generator generator)
 			: this(generator, typeof(IProgressBar))
 		{
@@ -68,6 +69,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the handler</param>
 		/// <param name="type">Type of platform handler interface to create (must implement <see cref="IProgressBar"/>)</param>
 		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ProgressBar(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

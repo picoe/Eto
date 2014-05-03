@@ -12,7 +12,7 @@ namespace Eto
 	/// <typeparam name="TWidget">Type of widget to style</typeparam>
 	/// <param name="widget">Widget instance that is being styled</param>
 	public delegate void StyleWidgetHandler<TWidget>(TWidget widget)
-		where TWidget: InstanceWidget;
+		where TWidget: Widget;
 	/// <summary>
 	/// Delegate to handle styling a widget handler
 	/// </summary>
@@ -66,7 +66,7 @@ namespace Eto
 	/// </example>
 	public static class Style
 	{
-		static readonly Dictionary<object, IList<Action<InstanceWidget>>> styleMap = new Dictionary<object, IList<Action<InstanceWidget>>>();
+		static readonly Dictionary<object, IList<Action<Widget>>> styleMap = new Dictionary<object, IList<Action<Widget>>>();
 
 		#region Events
 
@@ -94,7 +94,7 @@ namespace Eto
 				StyleWidget(widget);
 		}
 
-		internal static void OnStyleWidgetDefaults(InstanceWidget widget)
+		internal static void OnStyleWidgetDefaults(Widget widget)
 		{
 			if (widget != null)
 			{
@@ -107,14 +107,14 @@ namespace Eto
 			}
 		}
 
-		internal static void OnStyleWidgetDefaults(IInstanceWidget handler)
+		internal static void OnStyleWidgetDefaults(IWidget handler)
 		{
 			if (handler != null)
 			{
 				var styleHandlers = GetStyleList(handler.GetType(), false);
 				if (styleHandlers != null)
 				{
-					var widget = handler.Widget as InstanceWidget;
+					var widget = handler.Widget;
 					if (widget != null)
 						foreach (var styleHandler in styleHandlers)
 							styleHandler(widget);
@@ -137,10 +137,10 @@ namespace Eto
 		/// <param name="style">Identifier of the style</param>
 		/// <param name="handler">Delegate with your logic to style the widget</param>
 		public static void Add<TWidget>(string style, StyleWidgetHandler<TWidget> handler)
-			where TWidget: InstanceWidget
+			where TWidget: Widget
 		{
 			var list = GetStyleList((object)style ?? typeof(TWidget));
-			list.Add(delegate (InstanceWidget widget)
+			list.Add(widget =>
 			{
 				var control = widget as TWidget;
 				if (control != null)
@@ -164,7 +164,7 @@ namespace Eto
 			where THandler: class, IWidget
 		{
 			var list = GetStyleList((object)style ?? typeof(THandler));
-			list.Add(delegate (InstanceWidget widget)
+			list.Add(widget =>
 			{
 				var handler = widget.Handler as THandler;
 				if (handler != null)
@@ -172,12 +172,12 @@ namespace Eto
 			});
 		}
 
-		static IList<Action<InstanceWidget>> GetStyleList(object style, bool create = true)
+		static IList<Action<Widget>> GetStyleList(object style, bool create = true)
 		{
-			IList<Action<InstanceWidget>> styleHandlers;
+			IList<Action<Widget>> styleHandlers;
 			if (!styleMap.TryGetValue(style, out styleHandlers) && create)
 			{
-				styleHandlers = new List<Action<InstanceWidget>>();
+				styleHandlers = new List<Action<Widget>>();
 				styleMap[style] = styleHandlers;
 			}
 			return styleHandlers;

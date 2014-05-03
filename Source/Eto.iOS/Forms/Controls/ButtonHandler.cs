@@ -49,27 +49,11 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
-		public override UIButton CreateControl ()
+		public ButtonHandler()
 		{
-			//return UIButton.FromType(UIButtonType.Custom);
-			return UIButton.FromType(UIButtonType.RoundedRect);
-		}
-
-		protected override void Initialize ()
-		{
-			base.Initialize ();
-			/**
-			Control.SetTitleColor (UIColor.Black, UIControlState.Normal);
-			Control.BackgroundColor = UIColor.White;
-			Control.Layer.BorderColor = UIColor.Black.CGColor;
-			Control.Layer.BorderWidth = 0.5f;
-			Control.Layer.CornerRadius = 7f;
-			/**/
 			Control = UIButton.FromType(UIButtonType.RoundedRect);
-			/**/
 			Control.SetTitle(string.Empty, UIControlState.Normal);
 			//Control.ButtonType = UIButtonType.RoundedRect;
-			Control.SetFrameSize(Button.DefaultSize.ToSDSizeF());
 			Control.TouchUpInside += delegate {
 				Widget.OnClick(EventArgs.Empty);
 			};

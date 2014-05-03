@@ -45,9 +45,9 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 
 			//Control.AutoSizeColumnsMode = swf.DataGridViewAutoSizeColumnsMode.AllCells;
 			Control.BackgroundColor = sd.SystemColors.Window;

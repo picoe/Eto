@@ -30,15 +30,6 @@ namespace Eto.Test.Sections.Drawing
 			if (Image != null)
 				e.Graphics.DrawImage(Image, PointF.Empty);
 		}
-
-		public DrawableImageView()
-		{
-		}
-
-		public DrawableImageView(Generator generator)
-			: base(generator)
-		{
-		}
 	}
 
 	public class BitmapSection : Scrollable
@@ -72,7 +63,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control LoadFromStream()
 		{
-			var image = TestIcons.TestImage();
+			var image = TestIcons.TestImage;
 
 			return new DrawableImageView { Image = image };
 		}
@@ -84,8 +75,8 @@ namespace Eto.Test.Sections.Drawing
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics(image))
 			{
-				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
-				graphics.DrawRectangle(Pens.Blue(), new Rectangle(image.Size - 1));
+				graphics.DrawLine(Pens.Blue, Point.Empty, new Point(image.Size));
+				graphics.DrawRectangle(Pens.Blue, new Rectangle(image.Size - 1));
 			}
 
 			return new DrawableImageView { Image = image };
@@ -98,22 +89,22 @@ namespace Eto.Test.Sections.Drawing
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics(image))
 			{
-				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
-				graphics.DrawRectangle(Pens.Black(), new Rectangle(image.Size - 1));
+				graphics.DrawLine(Pens.Blue, Point.Empty, new Point(image.Size));
+				graphics.DrawRectangle(Pens.Black, new Rectangle(image.Size - 1));
 			}
 			return new DrawableImageView { Image = image };
 		}
 
 		Control Cloning()
 		{
-			var image = TestIcons.TestImage();
+			var image = TestIcons.TestImage;
 			image = image.Clone();
 			return new DrawableImageView { Image = image };
 		}
 
 		Control CloningRectangle()
 		{
-			var image = TestIcons.TestImage();
+			var image = TestIcons.TestImage;
 			image = image.Clone(new Rectangle(32, 32, 64, 64));
 			return new DrawableImageView { Image = image };
 		}
@@ -122,7 +113,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			// Creates a duplicate of the bitmap by cloning tiles of it
 			// and drawing them in the same location in the duplicate.
-			var image = TestIcons.TestImage();
+			var image = TestIcons.TestImage;
 			var bitmap = new Bitmap(new Size(image.Size), PixelFormat.Format32bppRgba);
 			var tile = 64; // the test image is 128x128 so this produces 4 tiles.
 			using (var g = new Graphics(bitmap))
@@ -139,7 +130,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control DrawImageToRect()
 		{
-			var image64 = TestIcons.Textures();
+			var image64 = TestIcons.Textures;
 
 			var bitmap = new Bitmap(new Size(105, 105), PixelFormat.Format32bppRgba);
 			using (var g = new Graphics(bitmap))

@@ -32,7 +32,8 @@ namespace Eto.Forms
 
 		SliderOrientation Orientation { get; set; }
 	}
-	
+
+	[Handler(typeof(ISlider))]
 	public class Slider : Control
 	{
 		new ISlider Handler { get { return (ISlider)base.Handler; } }
@@ -46,15 +47,16 @@ namespace Eto.Forms
 		}
 		
 		public Slider()
-			: this((Generator)null)
 		{
 		}
 
+		[Obsolete("Use default constructor instead")]
 		public Slider (Generator generator)
 			: this (generator, typeof(ISlider))
 		{
 		}
-		
+
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Slider (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

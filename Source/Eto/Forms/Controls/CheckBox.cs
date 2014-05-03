@@ -23,6 +23,7 @@ namespace Eto.Forms
 		bool ThreeState { get; set; }
 	}
 
+	[Handler(typeof(ICheckBox))]
 	public class CheckBox : TextControl
 	{
 		new ICheckBox Handler { get { return (ICheckBox)base.Handler; } }
@@ -51,7 +52,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
 		/// </summary>
 		public CheckBox()
-			: this((Generator)null)
 		{
 		}
 
@@ -59,6 +59,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
+		[Obsolete("Use default constructor instead")]
 		public CheckBox(Generator generator) : this(generator, typeof(ICheckBox))
 		{
 		}
@@ -69,6 +70,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the handler</param>
 		/// <param name="type">Handler type to create, must be an instance of <see cref="ICheckBox"/></param>
 		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected CheckBox(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

@@ -29,7 +29,7 @@ namespace Eto.Test.Wpf.UnitTests
 				};
 				Action pop = () => current = stack.Pop();
 
-				var target = new TransformStack(Platform.Instance, push, pop);
+				var target = new TransformStack(push, pop);
 
 				Assert.IsTrue(MatrixTests.Equals(current, 1f, 0f, 0f, 1f, 0f, 0f));
 
