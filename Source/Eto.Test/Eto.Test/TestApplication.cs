@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using System.ComponentModel;
 
 namespace Eto.Test
 {

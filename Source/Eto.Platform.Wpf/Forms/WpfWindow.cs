@@ -8,6 +8,7 @@ using swc = System.Windows.Controls;
 using swi = System.Windows.Input;
 using Eto.Platform.Wpf.CustomControls;
 using Eto.Platform.Wpf.Forms.Menu;
+using System.ComponentModel;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -81,7 +82,7 @@ namespace Eto.Platform.Wpf.Forms
 				break;
 			case Window.ClosingEvent:
 				Control.Closing += (sender, e) => {
-					var args = new Eto.CancelEventArgs { Cancel = e.Cancel };
+					var args = new CancelEventArgs { Cancel = e.Cancel };
 					Widget.OnClosing (args);
 					if (!args.Cancel && sw.Application.Current.Windows.Count == 1) {
 						// last window closing, so call OnTerminating to let the app abort terminating

@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Eto.Test
 {
@@ -201,7 +202,7 @@ namespace Eto.Test
 			Log.Write(this, "StateChanged: {0}", WindowState);
 		}
 
-		public override void OnClosing(Eto.CancelEventArgs e)
+		public override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
 			Log.Write(this, "Closing");

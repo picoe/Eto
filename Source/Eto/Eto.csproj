@@ -42,9 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Binding\ColumnBinding.cs" />
-    <Compile Include="CancelEventHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\DashStyle.cs" />
