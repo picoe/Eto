@@ -8,11 +8,11 @@ namespace Tutorial1
 	{
 		public MyForm()
 		{
-			this.ClientSize = new Size(600, 400);
+			ClientSize = new Size(600, 400);
 			
-			this.Title = "Hello, Eto.Forms";
+			Title = "Hello, Eto.Forms";
 
-			this.Content = new Label { Text = "Some content" };
+			Content = new Label { Text = "Some content" };
 		}
 	}
 

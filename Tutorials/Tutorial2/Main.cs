@@ -1,21 +1,19 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto;
 
 namespace Tutorial2
 {
 	public class MyCommand : Command
 	{
-		public const string ActionID = "my_action";
-
 		public MyCommand()
 		{
-			this.ID = ActionID;
-			this.MenuText = "C&lick Me";
-			this.ToolBarText = "Click Me";
-			this.ToolTip = "This shows a dialog for no reason";
-			//this.Icon = Icon.FromResource ("MyResourceName.ico");
-			this.Shortcut = Application.Instance.CommonModifier | Key.M;  // control+M or cmd+M
+			MenuText = "C&lick Me";
+			ToolBarText = "Click Me";
+			ToolTip = "This shows a dialog for no reason";
+			//Icon = Icon.FromResource ("MyResourceName.ico");
+			Shortcut = Application.Instance.CommonModifier | Keys.M;  // control+M or cmd+M
 		}
 
 		public override void OnExecuted(EventArgs e)
@@ -30,8 +28,8 @@ namespace Tutorial2
 	{
 		public MyForm()
 		{
-			this.ClientSize = new Size(600, 400);
-			this.Title = "Menus and Toolbars";
+			ClientSize = new Size(600, 400);
+			Title = "Menus and Toolbars";
 
 			Menu = CreateMenu();
 			ToolBar = CreateToolBar();
@@ -39,9 +37,7 @@ namespace Tutorial2
 
 		MenuBar CreateMenu()
 		{
-			var menu = new MenuBar();
-			// add standard menu items (e.g. for OS X)
-			Application.Instance.CreateStandardMenu(menu.Items);
+			var menu = MenuBar.CreateStandardMenu();
 
 			// add command to file sub-menu
 			var file = menu.Items.GetSubmenu("&File");

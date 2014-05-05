@@ -18,10 +18,9 @@ output_macos="$output_app/Contents/MacOS"
 
 # copy Eto files to output for Gtk & Windows platforms
 cp "$eto_bin_dir"/Eto.dll "$target_dir"
-cp "$eto_bin_dir"/Eto.Platform.Gtk.dll "$target_dir"
-cp "$eto_bin_dir"/Eto.Platform.Windows.dll "$target_dir"
-#cp "$eto_bin_dir"/Eto.Platform.Wpf.dll "$target_dir"
-
+cp "$eto_bin_dir"/Eto.Gtk2.dll "$target_dir"
+cp "$eto_bin_dir"/Eto.WinForms.dll "$target_dir"
+#cp "$eto_bin_dir"/Eto.Wpf.dll "$target_dir"
 
 # copy MacAppTemplate.app to our new .app bundle
 rm -Rf "$output_app"
@@ -34,7 +33,7 @@ rm -Rf "$output_mono"/Eto.*
 
 # copy Eto Mac platform into .app bundle
 cp "$eto_bin_dir"/Eto.dll "$output_mono"
-cp "$eto_bin_dir"/Eto.Platform.Mac.dll "$output_mono"
+cp "$eto_bin_dir"/Eto.Mac.dll "$output_mono"
 cp "$eto_bin_dir"/MonoMac.dll "$output_mono"
 
 # update Info.plist to use our project name as the app name

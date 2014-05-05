@@ -21,9 +21,9 @@ SET cp=xcopy /y /i
 
 echo Copy Eto files to output for Gtk and Windows platforms
 %cp% "%eto_bin_dir%\Eto.dll" "%target_dir%"
-%cp% "%eto_bin_dir%\Eto.Platform.Gtk.dll" "%target_dir%"
-%cp% "%eto_bin_dir%\Eto.Platform.Windows.dll" "%target_dir%"
-%cp% "%eto_bin_dir%\Eto.Platform.Wpf.dll" "%target_dir%"
+%cp% "%eto_bin_dir%\Eto.Gtk2.dll" "%target_dir%"
+%cp% "%eto_bin_dir%\Eto.WinForms.dll" "%target_dir%"
+%cp% "%eto_bin_dir%\Eto.Wpf.dll" "%target_dir%"
 
 
 echo Copy MacAppTemplate.app to %project_name%.app
@@ -37,7 +37,7 @@ del /q "%output_mono%\Eto.*"
 
 echo Copy Eto Mac platform into .app bundle
 %cp% "%eto_bin_dir%\Eto.dll" "%output_mono%"
-%cp% "%eto_bin_dir%\Eto.Platform.Mac.dll" "%output_mono%"
+%cp% "%eto_bin_dir%\Eto.Mac.dll" "%output_mono%"
 %cp% "%eto_bin_dir%\MonoMac.dll" "%output_mono%"
 
 echo Update Info.plist app name and assembly

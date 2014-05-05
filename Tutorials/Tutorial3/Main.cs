@@ -8,8 +8,8 @@ namespace Tutorial2
 	{
 		public MyForm()
 		{
-			this.ClientSize = new Size(600, 400);
-			this.Title = "Dynamic Layout";
+			ClientSize = new Size(600, 400);
+			Title = "Dynamic Layout";
 
 			// Using a DynamicLayout for a simple table is actually a lot easier to maintain than using a TableLayout 
 			// and having to specify the x/y co-ordinates for each control added.
@@ -51,25 +51,22 @@ namespace Tutorial2
 
 			Content = layout;
 
-			CreateMenu();
+			Menu = CreateMenu();
 		}
 
-		void CreateMenu()
+		MenuBar CreateMenu()
 		{
-			var menu = new MenuBar();
-			// add standard menu items (e.g. for OS X)
-			Application.Instance.CreateStandardMenu(menu.Items);
+			var menu = MenuBar.CreateStandardMenu();
 
 			// use commands if you want the same logic for menu and toolbar buttons
-			var quitMenuItem = new ButtonMenuItem { Text = "Quit", Shortcut = Application.Instance.CommonModifier | Key.Q };
+			var quitMenuItem = new ButtonMenuItem { Text = "Quit", Shortcut = Application.Instance.CommonModifier | Keys.Q };
 			quitMenuItem.Click += (sender, e) => Application.Instance.Quit();
 				
 			// add command to file sub-menu
 			var file = menu.Items.GetSubmenu("&File");
 			file.Items.Add(quitMenuItem);
 
-			// set the menu to the form
-			Menu = menu;
+			return menu;
 		}
 	}
 

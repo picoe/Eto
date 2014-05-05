@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D51732E0-1E93-11E3-8224-0800200C9A66}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -41,7 +41,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">"$(SolutionDir)buildapp.cmd" "$(TargetDir)" "$(TargetFileName)" "$(ProjectName)"</PostBuildEvent>
-    <PostBuildEvent Condition="'$(OS)' != 'Windows_NT'">"$(SolutionDir)buildapp.sh" "$(TargetDir)" "$(TargetFileName)" "$(ProjectName)"</PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">"$(SolutionDir)buildapp.cmd" "$(TargetDir)" "$(TargetFileName)" "$(MSBuildProjectName)"</PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' != 'Windows_NT'">"$(SolutionDir)buildapp.sh" "$(TargetDir)" "$(TargetFileName)" "$(MSBuildProjectName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

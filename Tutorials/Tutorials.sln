@@ -27,7 +27,7 @@ Global
 		{D51732E0-1E93-11E3-8224-0800200C9A66}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Tutorial1\Tutorial1 - Hello World.csproj
+		StartupItem = Tutorial2\Tutorial2 - Menus and Toolbars.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
