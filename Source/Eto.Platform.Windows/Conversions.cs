@@ -661,6 +661,14 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+		public static DrawableCellState ToEto(this swf.DataGridViewElementStates state)
+		{
+			if ((state & swf.DataGridViewElementStates.Selected) == swf.DataGridViewElementStates.Selected)
+				return DrawableCellState.Selected;
+
+			return DrawableCellState.Normal;
+		}
+
 		public static PrintSettings ToEto(this sdp.PrinterSettings settings, Eto.Generator generator)
 		{
 			return settings == null ? null : new PrintSettings(generator, new PrintSettingsHandler(settings));
