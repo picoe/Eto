@@ -67,16 +67,58 @@ namespace Eto
 	public abstract class Generator
 	{
 		[Obsolete("Use Platform.Instance instead")]
-		public static Generator Current
+		public static Platform Current
 		{
 			get { return Platform.Instance; }
 		}
 
 		[Obsolete("Use Platform.ValidatePlatform instead")]
-		public static Generator ValidateGenerator
+		public static Platform ValidateGenerator
 		{
 			get { return Platform.ValidatePlatform; }
 		}
+
+		[Obsolete("Use Platform.Initialize instead")]
+		public static void Initialize(string generatorType)
+		{
+			Platform.Initialize(generatorType);
+		}
+
+		[Obsolete("Use Platform.Initialize instead")]
+		public static void Initialize(Generator generator)
+		{
+			Platform.Initialize((Platform)generator);
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this platform is a mac based platform (MonoMac/XamMac)
+		/// </summary>
+		/// <value><c>true</c> if this platform is mac; otherwise, <c>false</c>.</value>
+		public virtual bool IsMac { get { return ((Platform)this).IsMac; } }
+
+		/// <summary>
+		/// Gets a value indicating whether this platform is based on Windows Forms
+		/// </summary>
+		/// <value><c>true</c> if this platform is window forms; otherwise, <c>false</c>.</value>
+		public virtual bool IsWinForms { get { return ((Platform)this).IsWinForms; } }
+
+		/// <summary>
+		/// Gets a value indicating whether this platform is based on WPF
+		/// </summary>
+		/// <value><c>true</c> if this platform is wpf; otherwise, <c>false</c>.</value>
+		public virtual bool IsWpf { get { return ((Platform)this).IsWpf; } }
+
+		/// <summary>
+		/// Gets a value indicating whether this platform is based on GTK# (2 or 3)
+		/// </summary>
+		/// <value><c>true</c> if this platform is gtk; otherwise, <c>false</c>.</value>
+		public virtual bool IsGtk { get { return ((Platform)this).IsGtk; } }
+
+		/// <summary>
+		/// Gets a value indicating whether this platform is based on Xamarin.iOS
+		/// </summary>
+		/// <value><c>true</c> if this platform is ios; otherwise, <c>false</c>.</value>
+		public virtual bool IsIos { get { return ((Platform)this).IsIos; } }
 
 		#if PCL
 		[Obsolete("This will now throw an exception on .net 45/pcl. Create your platform manually or use Platform.Get()")]
@@ -86,7 +128,7 @@ namespace Eto
 		}
 		#else
 		[Obsolete("Use Platform.Detect")]
-		public static Generator Detect
+		public static Platform Detect
 		{
 			get { return Platform.Detect; }
 		}

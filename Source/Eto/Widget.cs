@@ -122,6 +122,9 @@ namespace Eto
 		/// </remarks>
 		public Platform Platform { get { return WidgetHandler.Platform; } }
 
+		[Obsolete("Use Platform instead")]
+		public Platform Generator { get { return ((IWidget)Handler).Platform; } }
+
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
