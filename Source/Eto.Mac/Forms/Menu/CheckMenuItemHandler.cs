@@ -54,5 +54,18 @@ namespace Eto.Mac
 		MenuItem IMenuActionHandler.Widget {
 			get { return Widget; }
 		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case MenuItem.ValidateEvent:
+					// handled in MenuActionHandler
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
 	}
 }
