@@ -36,7 +36,6 @@ namespace Eto.Test.UnitTests.Handlers
 		public FontDecoration FontDecoration { get; set; }
 		public FontFamily Family { get; set; }
 		public FontTypeface Typeface { get; set; }
-		public string ID { get; set; }
 		public object ControlObject { get; set; }
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
@@ -58,10 +57,6 @@ namespace Eto.Test.UnitTests.Handlers
 			Typeface = typeface;
 			Size = size;
 			FontDecoration = decoration;
-		}
-
-		public void HandleEvent(string id, bool defaultEvent = false)
-		{
 		}
 	}
 }

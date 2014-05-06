@@ -2,7 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IPrintDocument : IInstanceWidget
+	public interface IPrintDocument : IWidget
 	{
 		void Print();
 
@@ -14,7 +14,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(IPrintDocument))]
-	public class PrintDocument : InstanceWidget
+	public class PrintDocument : Widget
 	{
 		new IPrintDocument Handler { get { return (IPrintDocument)base.Handler; } }
 

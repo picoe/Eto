@@ -28,7 +28,7 @@ namespace Eto.Forms
 		Cancel
 	}
 
-	public interface IMessageBox : IWidget
+	public interface IMessageBox
 	{
 		string Text { get; set; }
 		string Caption { get; set; }

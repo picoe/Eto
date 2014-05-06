@@ -7,7 +7,6 @@ namespace Eto.GtkSharp.CustomControls
 	{
 		Entry entry;
 		Button popupButton;
-		int vpadding;
 
 		public BaseComboBox()
 		{
@@ -20,6 +19,7 @@ namespace Eto.GtkSharp.CustomControls
 #endif
 		}
 		#if GTK2
+		int vpadding;
 		protected override void OnSizeRequested(ref Requisition requisition)
 		{
 			base.OnSizeRequested(ref requisition);

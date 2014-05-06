@@ -7,7 +7,7 @@ namespace Eto
 	/// A storage for properties and events of a class
 	/// </summary>
 	/// <remarks>
-	/// This is used by <see cref="InstanceWidget"/> object to minimize the footprint of each instance.
+	/// This is used by <see cref="Widget"/> object to minimize the footprint of each instance.
 	/// For example, the <see cref="Forms.Control"/> class has around 20 events, each would take up to 4 bytes on a 32 bit 
 	/// system for a total overhead of 80 bytes per instance.
 	/// Most of the events won't be handled on most controls, so using a dictionary can dramatically reduce the size.
@@ -21,13 +21,13 @@ namespace Eto
 		/// This is used to attach/remove events
 		/// </remarks>
 		/// <value>The parent widget</value>
-		public InstanceWidget Parent { get; private set; }
+		public Widget Parent { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.PropertyStore"/> class.
 		/// </summary>
 		/// <param name="parent">Parent to attach the properties to</param>
-		internal PropertyStore(InstanceWidget parent)
+		internal PropertyStore(Widget parent)
 		{
 			this.Parent = parent;
 		}
@@ -70,7 +70,7 @@ namespace Eto
 			{
 				if (!EventLookup.IsDefault(Parent, key))
 				{
-					var handler = Parent.Handler as IInstanceWidget;
+					var handler = Parent.Handler as IWidget;
 					if (handler != null)
 					{
 						handler.HandleEvent(key, true);

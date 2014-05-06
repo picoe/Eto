@@ -2,7 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ISelectFolderDialog : IInstanceWidget
+	public interface ISelectFolderDialog : IWidget
 	{
 		string Title { get; set; }
 
@@ -12,7 +12,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(ISelectFolderDialog))]
-	public class SelectFolderDialog : InstanceWidget
+	public class SelectFolderDialog : Widget
 	{
 		new ISelectFolderDialog Handler { get { return (ISelectFolderDialog)base.Handler; } }
 		

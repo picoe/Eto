@@ -7,7 +7,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Platform handler interface for the <see cref="Fonts"/> class
 	/// </summary>
-	public interface IFonts : IWidget
+	public interface IFonts
 	{
 		/// <summary>
 		/// Gets an enumeration of available font families in the current system

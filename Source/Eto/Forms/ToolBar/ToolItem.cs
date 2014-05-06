@@ -3,14 +3,14 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IToolItem : IInstanceWidget, ICommandItem
+	public interface IToolItem : IWidget, ICommandItem
 	{
 		Image Image { get; set; }
 
 		void CreateFromCommand(Command command);
 	}
 
-	public abstract class ToolItem : InstanceWidget, ICommandItemWidget
+	public abstract class ToolItem : Widget, ICommandItemWidget
 	{
 		new IToolItem Handler { get { return (IToolItem)base.Handler; } }
 

@@ -2,12 +2,12 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ICommonDialog : IInstanceWidget
+	public interface ICommonDialog : IWidget
 	{
 		DialogResult ShowDialog (Window parent);
 	}
 	
-	public abstract class CommonDialog : InstanceWidget
+	public abstract class CommonDialog : Widget
 	{
 		new ICommonDialog Handler { get { return (ICommonDialog)base.Handler; } }
 

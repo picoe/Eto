@@ -6,7 +6,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Interface for a <see cref="FontFamily"/> handler
 	/// </summary>
-	public interface IFontFamily : IInstanceWidget
+	public interface IFontFamily : IWidget
 	{
 		/// <summary>
 		/// Gets the name of the font family
@@ -39,7 +39,7 @@ namespace Eto.Drawing
 	/// discoverable, other than looking at the <see cref="FontTypeface.Name"/> for hints as to what the variation will look like.
 	/// </remarks>
 	[Handler(typeof(IFontFamily))]
-	public class FontFamily : InstanceWidget, IEquatable<FontFamily>
+	public class FontFamily : Widget, IEquatable<FontFamily>
 	{
 		new IFontFamily Handler { get { return (IFontFamily)base.Handler; } }
 

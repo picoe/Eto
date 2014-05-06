@@ -7,7 +7,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Handler interface for the <see cref="Mouse"/> class
 	/// </summary>
-	public interface IMouse : IWidget
+	public interface IMouse
 	{
 		/// <summary>
 		/// Gets the current mouse position in screen coordinates

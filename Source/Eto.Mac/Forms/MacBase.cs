@@ -144,7 +144,7 @@ namespace Eto.Mac.Forms
 
 	public class MacBase<TControl, TWidget> : WidgetHandler<TControl, TWidget>
 		where TControl: class
-		where TWidget: InstanceWidget
+		where TWidget: Widget
 	{
 		List<ObserverHelper> observers;
 

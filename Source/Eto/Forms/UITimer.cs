@@ -2,7 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IUITimer : IInstanceWidget
+	public interface IUITimer : IWidget
 	{
 		double Interval { get; set; }
 
@@ -12,7 +12,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(IUITimer))]
-	public class UITimer : InstanceWidget
+	public class UITimer : Widget
 	{
 		new IUITimer Handler { get { return (IUITimer)base.Handler; } }
 

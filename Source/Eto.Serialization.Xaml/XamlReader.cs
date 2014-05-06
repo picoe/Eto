@@ -24,7 +24,7 @@ namespace Eto.Serialization.Xaml
 		/// <typeparam name="T">Type of object to load from xaml</typeparam>
 		/// <returns>A new instance of the specified type with the contents loaded from xaml</returns>
 		public static T Load<T> ()
-			where T: InstanceWidget, new()
+			where T: Widget, new()
 		{
 			var type = typeof(T);
 			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".xaml");
@@ -42,7 +42,7 @@ namespace Eto.Serialization.Xaml
 		/// <param name="stream">Xaml content to load (e.g. from resources)</param>
 		/// <returns>A new instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T> (Stream stream)
-			where T: InstanceWidget, new()
+			where T: Widget, new()
 		{
 			return Load<T> (stream, null);
 		}
@@ -60,7 +60,7 @@ namespace Eto.Serialization.Xaml
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T> (T instance)
-			where T: InstanceWidget
+			where T: Widget
 		{
 			var type = typeof(T);
 			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".xaml");
@@ -75,7 +75,7 @@ namespace Eto.Serialization.Xaml
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T> (Stream stream, T instance)
-			where T : InstanceWidget
+			where T : Widget
 		{
 			var type = typeof(T);
 			var context = new EtoXamlSchemaContext (new Assembly[] { typeof(XamlReader).Assembly });
@@ -84,7 +84,7 @@ namespace Eto.Serialization.Xaml
 				RootObjectInstance = instance
 			};
 			writerSettings.AfterPropertiesHandler += delegate (object sender, XamlObjectEventArgs e) {
-				var obj = e.Instance as InstanceWidget;
+				var obj = e.Instance as Widget;
 				if (obj != null && !string.IsNullOrEmpty (obj.ID)) {
 					var property = type.GetProperty (obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 					if (property != null)

@@ -6,7 +6,7 @@ namespace Eto.Mac.Forms
 {
 	public class MacObject<TControl, TWidget> : MacBase<TControl, TWidget>
 		where TControl: NSObject 
-		where TWidget: InstanceWidget
+		where TWidget: Widget
 	{
 		public virtual object EventObject
 		{

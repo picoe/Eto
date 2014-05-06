@@ -16,7 +16,7 @@ namespace Eto.Forms
 		Bottom
 	}
 
-	public interface IToolBar : IInstanceWidget
+	public interface IToolBar : IWidget
 	{
 		void AddButton(ToolItem button, int index);
 
@@ -30,7 +30,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(IToolBar))]
-	public class ToolBar : InstanceWidget
+	public class ToolBar : Widget
 	{
 		internal new IToolBar Handler { get { return (IToolBar)base.Handler; } }
 

@@ -29,6 +29,8 @@ namespace Eto
 	public abstract class WidgetHandler<TWidget> : IWidget, IDisposable
 		where TWidget: Widget
 	{
+		const string InstanceEventSuffix = ".Instance";
+
 		/// <summary>
 		/// Gets the widget that this platform handler is attached to
 		/// </summary>
@@ -37,13 +39,63 @@ namespace Eto
 		/// <summary>
 		/// Gets the generator that was used to create this handler
 		/// </summary>
-		public Platform Platform
+		public Platform Platform { get; set; }
+
+		static readonly object IDKey = new object();
+
+		/// <summary>
+		/// Gets or sets the ID of this widget
+		/// </summary>
+		public virtual string ID
 		{
-			get;
-			set;
+			get { return Widget.Properties.Get<string>(IDKey); }
+			set { Widget.Properties[IDKey] = value; }
 		}
 
-		#region IWidget Members
+		/// <summary>
+		/// Gets a value indicating that the specified event is handled
+		/// </summary>
+		/// <param name="id">Identifier of the event</param>
+		/// <returns>True if the event is handled, otherwise false</returns>
+		public bool IsEventHandled(string id)
+		{
+			return Widget.Properties.ContainsKey(id) || EventLookup.IsDefault(Widget, id) || Widget.Properties.ContainsKey(id + InstanceEventSuffix);
+		}
+
+		public void HandleEvent(string id, bool defaultEvent = false)
+		{
+			if (defaultEvent)
+			{
+				if (!Widget.Properties.ContainsKey(id + InstanceEventSuffix))
+					AttachEvent(id);
+			}
+			else if (!Widget.Properties.ContainsKey(id) && !EventLookup.IsDefault(Widget, id))
+			{
+				var instanceId = id + InstanceEventSuffix;
+				if (Widget.Properties.ContainsKey(instanceId))
+					return;
+				Widget.Properties.Add(instanceId, true);
+				AttachEvent(id);
+			}
+		}
+
+		/// <summary>
+		/// Attaches the specified event to the platform-specific control
+		/// </summary>
+		/// <remarks>
+		/// Implementors should override this method to handle any events that the widget
+		/// supports. Ensure to call the base class' implementation if the event is not
+		/// one the specific widget supports, so the base class' events can be handled as well.
+		/// </remarks>
+		/// <param name="id">Identifier of the event</param>
+		public virtual void AttachEvent(string id)
+		{
+			#if DEBUG
+			// only throw for platforms that should be fully implemented, and only in debug
+			if (Platform.IsGtk || Platform.IsMac || Platform.IsWinForms || Platform.IsWpf)
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
+			#endif
+		}
 
 		/// <summary>
 		/// Called to initialize this widget after it has been constructed
@@ -73,8 +125,6 @@ namespace Eto
 				Widget = (TWidget)value;
 			}
 		}
-
-		#endregion
 
 		#region IDisposable Members
 
@@ -121,27 +171,14 @@ namespace Eto
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="T">Type of the platform-specific object</typeparam>
 	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget, IControlObjectSource
-		where TWidget: InstanceWidget
+	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IControlObjectSource
+		where TWidget: Widget
 	{
-		const string InstanceEventSuffix = ".Instance";
-
 		/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
 		/// </summary>
 		protected WidgetHandler()
 		{
-		}
-
-		static readonly object IDKey = new object();
-
-		/// <summary>
-		/// Gets or sets the ID of this widget
-		/// </summary>
-		public virtual string ID
-		{
-			get { return Widget.Properties.Get<string>(IDKey); }
-			set { Widget.Properties[IDKey] = value; }
 		}
 
 		/// <summary>
@@ -159,50 +196,6 @@ namespace Eto
 		/// </summary>
 		object IControlObjectSource.ControlObject { get { return Control; } }
 
-		/// <summary>
-		/// Gets a value indicating that the specified event is handled
-		/// </summary>
-		/// <param name="id">Identifier of the event</param>
-		/// <returns>True if the event is handled, otherwise false</returns>
-		public bool IsEventHandled(string id)
-		{
-			return Widget.Properties.ContainsKey(id) || EventLookup.IsDefault(Widget, id) || Widget.Properties.ContainsKey(id + InstanceEventSuffix);
-		}
-
-		public void HandleEvent(string id, bool defaultEvent = false)
-		{
-			if (defaultEvent)
-			{
-				if (!Widget.Properties.ContainsKey(id + InstanceEventSuffix))
-					AttachEvent(id);
-			}
-			else if (!Widget.Properties.ContainsKey(id) && !EventLookup.IsDefault(Widget, id))
-			{
-				var instanceId = id + InstanceEventSuffix;
-				if (Widget.Properties.ContainsKey(instanceId))
-					return;
-				Widget.Properties.Add(instanceId, true);
-				AttachEvent(id);
-			}
-		}
-
-		/// <summary>
-		/// Attaches the specified event to the platform-specific control
-		/// </summary>
-		/// <remarks>
-		/// Implementors should override this method to handle any events that the widget
-		/// supports. Ensure to call the base class' implementation if the event is not
-		/// one the specific widget supports, so the base class' events can be handled as well.
-		/// </remarks>
-		/// <param name="id">Identifier of the event</param>
-		public virtual void AttachEvent(string id)
-		{
-			#if DEBUG
-			// only throw for platforms that should be fully implemented, and only in debug
-			if (Platform.IsGtk || Platform.IsMac || Platform.IsWinForms || Platform.IsWpf)
-				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
-			#endif
-		}
 
 		/// <summary>
 		/// Disposes this widget and the associated control if <see cref="DisposeControl"/> is <c>true</c>

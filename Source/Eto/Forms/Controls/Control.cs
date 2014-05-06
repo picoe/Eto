@@ -10,7 +10,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public partial interface IControl : IInstanceWidget
+	public partial interface IControl : IWidget
 	{
 		/// <summary>
 		/// Gets or sets the color for the background of the control
@@ -222,7 +222,7 @@ namespace Eto.Forms
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
-	public abstract partial class Control : InstanceWidget, IMouseInputSource, IKeyboardInputSource
+	public abstract partial class Control : Widget, IMouseInputSource, IKeyboardInputSource
 	{
 		new IControl Handler { get { return (IControl)base.Handler; } }
 

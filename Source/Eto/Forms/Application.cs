@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public partial interface IApplication : IInstanceWidget
+	public partial interface IApplication : IWidget
 	{
 		void Attach(object context);
 
@@ -31,7 +31,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(IApplication))]
-	public partial class Application : InstanceWidget
+	public partial class Application : Widget
 	{
 		public static Application Instance { get; private set; }
 

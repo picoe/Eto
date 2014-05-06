@@ -3,7 +3,7 @@ using System;
 namespace Eto.Threading
 {
 	[AutoInitialize(false)]
-	public interface IThread : IInstanceWidget
+	public interface IThread : IWidget
 	{
 		void Create();
 		
@@ -21,7 +21,7 @@ namespace Eto.Threading
 	}
 
 	[Handler(typeof(IThread))]
-	public class Thread : InstanceWidget
+	public class Thread : Widget
 	{
 		new IThread Handler { get { return (IThread)base.Handler; } }
 		

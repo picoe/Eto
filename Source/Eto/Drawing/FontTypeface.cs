@@ -4,7 +4,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Platform handler interface for the <see cref="FontTypeface"/> class
 	/// </summary>
-	public interface IFontTypeface : IInstanceWidget
+	public interface IFontTypeface : IWidget
 	{
 		/// <summary>
 		/// Gets the name of this typeface
@@ -33,7 +33,7 @@ namespace Eto.Drawing
 	/// This class represents each supported typeface of a particular font family, and can be used
 	/// to create a <see cref="Font"/> instance that uses this typeface, using the <see cref="M:Font(FontTypeface,float,FontDecoration,Generator)"/> constructor.
 	/// </remarks>
-	public class FontTypeface : InstanceWidget
+	public class FontTypeface : Widget
 	{
 		new IFontTypeface Handler  { get { return (IFontTypeface)base.Handler; } }
 

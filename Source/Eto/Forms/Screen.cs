@@ -4,7 +4,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IScreen : IInstanceWidget
+	public interface IScreen : IWidget
 	{
 		float Scale { get; }
 
@@ -19,7 +19,7 @@ namespace Eto.Forms
 		bool IsPrimary { get; }
 	}
 
-	public interface IScreens : IWidget
+	public interface IScreens
 	{
 		IEnumerable<Screen> Screens { get; }
 
@@ -27,7 +27,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(IScreen))]
-	public class Screen : InstanceWidget
+	public class Screen : Widget
 	{
 		new IScreen Handler { get { return (IScreen)base.Handler; } }
 

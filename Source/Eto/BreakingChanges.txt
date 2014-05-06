@@ -2,6 +2,7 @@
 
 1.4.0
 -----
+- All obsolete code in 1.3 has been removed
 - Renamed Generator to Platform
 - Renamed platform assemblies from Eto.Platform.[Gtk|Mac|Windows|etc] to Eto.[Gtk|Mac|WinForms|etc]
 	- "Windows" platform is renamed to "WinForms"
@@ -15,6 +16,7 @@
 		- Mouse.GetPosition()/GetButtons() -> Mouse.Position/Buttons
 - All constructors with Generator are now obsolete
 	- To specify the handler type to use, add the HandlerAttribute() to your widget class
+- Removed Eto.IO virtual directory abstractions
 
 1.3.0
 -----

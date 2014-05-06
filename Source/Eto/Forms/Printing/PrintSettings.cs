@@ -3,7 +3,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IPrintSettings : IInstanceWidget
+	public interface IPrintSettings : IWidget
 	{
 		int Copies { get; set; }
 
@@ -34,7 +34,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(IPrintSettings))]
-	public class PrintSettings : InstanceWidget
+	public class PrintSettings : Widget
 	{
 		new IPrintSettings Handler { get { return (IPrintSettings)base.Handler; } }
 

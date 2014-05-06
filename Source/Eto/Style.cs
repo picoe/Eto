@@ -73,9 +73,9 @@ namespace Eto
 		/// <summary>
 		/// Event to handle when a widget has being styled
 		/// </summary>
-		public static event Action<InstanceWidget> StyleWidget;
+		public static event Action<Widget> StyleWidget;
 
-		internal static void OnStyleWidget(InstanceWidget widget)
+		internal static void OnStyleWidget(Widget widget)
 		{
 			if (widget != null && !string.IsNullOrEmpty(widget.Style))
 			{

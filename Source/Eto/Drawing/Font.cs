@@ -100,7 +100,7 @@ namespace Eto.Drawing
 	/// Platform handler for the <see cref="Font"/> class
 	/// </summary>
 	[AutoInitialize(false)]
-	public interface IFont : IInstanceWidget
+	public interface IFont : IWidget
 	{
 		/// <summary>
 		/// Creates a new font object
@@ -220,7 +220,7 @@ namespace Eto.Drawing
 	/// <see cref="Fonts.AvailableFontFamilies"/>, which can then be used to create an instance of a font.
 	/// </remarks>
 	[Handler(typeof(IFont))]
-	public class Font : InstanceWidget
+	public class Font : Widget
 	{
 		new IFont Handler { get { return (IFont)base.Handler; } }
 

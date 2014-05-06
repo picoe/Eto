@@ -5,14 +5,6 @@ namespace Eto.GtkSharp
 {
 	public class MouseHandler : IMouse
 	{
-		public void Initialize ()
-		{
-		}
-
-		public Widget Widget { get; set; }
-
-		public Eto.Platform Platform { get; set; }
-
 		public PointF Position
 		{
 			get

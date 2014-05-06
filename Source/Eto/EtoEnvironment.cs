@@ -37,7 +37,7 @@ namespace Eto
 	/// <summary>
 	/// Handler interface for the <see cref="EtoEnvironment"/> class
 	/// </summary>
-	public interface IEtoEnvironment : IWidget
+	public interface IEtoEnvironment
 	{
 		/// <summary>
 		/// Gets the folder path for the specified special folder

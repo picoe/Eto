@@ -10,7 +10,7 @@ using swi = System.Windows.Interop;
 
 namespace Eto.Wpf.IO
 {
-	public class SystemIconsHandler : WidgetHandler<SystemIcons>, ISystemIcons
+	public class SystemIconsHandler : ISystemIcons
 	{
 		public Icon GetFileIcon (string fileName, IconSize size)
 		{

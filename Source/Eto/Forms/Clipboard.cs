@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Eto.Forms
 {
-	public interface IClipboard : IInstanceWidget
+	public interface IClipboard : IWidget
 	{
 		string[] Types { get; }
 		
@@ -27,7 +27,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(IClipboard))]
-	public class Clipboard : InstanceWidget
+	public class Clipboard : Widget
 	{
 		new IClipboard Handler { get { return (IClipboard)base.Handler; } }
 		

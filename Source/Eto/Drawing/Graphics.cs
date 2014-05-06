@@ -9,7 +9,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGraphics : IInstanceWidget
+	public interface IGraphics : IWidget
 	{
 		/// <summary>
 		/// Gets the scale of points to pixels. Multiply by desired pixel size to get point value (e.g. for font sizes)
@@ -282,7 +282,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(IGraphics))]
-	public class Graphics : InstanceWidget
+	public class Graphics : Widget
 	{
 		new IGraphics Handler { get { return (IGraphics)base.Handler; } }
 

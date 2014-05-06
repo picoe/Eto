@@ -6,7 +6,7 @@ namespace Eto.Forms
 	{
 	}
 	
-	public abstract class Cell : InstanceWidget
+	public abstract class Cell : Widget
 	{
 		protected Cell()
 		{

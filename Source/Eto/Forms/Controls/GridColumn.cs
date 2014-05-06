@@ -7,7 +7,7 @@ namespace Eto.Forms
 	{
 	}
 
-	public interface IGridColumn : IInstanceWidget
+	public interface IGridColumn : IWidget
 	{
 		string HeaderText { get; set; }
 
@@ -27,7 +27,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(IGridColumn))]
-	public class GridColumn : InstanceWidget
+	public class GridColumn : Widget
 	{
 		new IGridColumn Handler { get { return (IGridColumn)base.Handler; } }
 

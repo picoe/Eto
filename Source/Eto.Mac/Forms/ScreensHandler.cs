@@ -4,16 +4,8 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms
 {
-	public class ScreensHandler : IScreens, IWidget
+	public class ScreensHandler : IScreens
 	{
-		public void Initialize ()
-		{
-		}
-
-		public Widget Widget { get; set; }
-
-		public Eto.Platform Platform { get; set; }
-
 		public IEnumerable<Screen> Screens
 		{
 			get

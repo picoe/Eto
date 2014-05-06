@@ -45,7 +45,7 @@ namespace Eto
 			if (type.Assembly == etoAssembly)
 				return;
 #endif
-			var handler = widget.Handler as IInstanceWidget;
+			var handler = widget.Handler as IWidget;
 			if (handler != null)
 			{
 				var ids = GetEvents(type);
@@ -56,7 +56,7 @@ namespace Eto
 			}
 		}
 
-		public static bool IsDefault(InstanceWidget widget, string identifier)
+		public static bool IsDefault(Widget widget, string identifier)
 		{
 			var type = widget.GetType();
 #if PCL

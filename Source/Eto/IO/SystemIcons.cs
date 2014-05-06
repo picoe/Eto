@@ -18,33 +18,21 @@ namespace Eto.IO
 		Small
 	}
 
-	public interface ISystemIcons : IWidget
+	public interface ISystemIcons
 	{
 		Icon GetFileIcon(string fileName, IconSize size);
 		Icon GetStaticIcon(StaticIconType type, IconSize size);
 	}
 
 	[Handler(typeof(ISystemIcons))]
-	public class SystemIcons : Widget
+	public static class SystemIcons
 	{
-		new ISystemIcons Handler { get { return (ISystemIcons)base.Handler; } }
+		static ISystemIcons Handler { get { return Platform.Instance.CreateShared<ISystemIcons>(); } }
 
-		public SystemIcons()
+		static readonly object cacheKey = new object();
+		static Dictionary<object, Icon> GetLookupTable(IconSize size)
 		{
-		}
-
-		#pragma warning disable 612,618
-
-		[Obsolete("Use default constructor instead")]
-		public SystemIcons(Generator g) : base(g, typeof(ISystemIcons))
-		{
-		}
-
-		#pragma warning restore 612,618
-
-		readonly Dictionary<IconSize, Dictionary<object, Icon>> htSizes = new Dictionary<IconSize, Dictionary<object, Icon>>();
-		Dictionary<object, Icon> GetLookupTable(IconSize size)
-		{
+			var htSizes = Platform.Instance.Cache<IconSize, Dictionary<object, Icon>>(cacheKey);
 			Dictionary<object, Icon> htIcons;
 			if (!htSizes.TryGetValue(size, out htIcons))
 			{
@@ -54,7 +42,7 @@ namespace Eto.IO
 			return htIcons;
 		}
 
-		public Icon GetFileIcon(string fileName, IconSize size)
+		public static Icon GetFileIcon(string fileName, IconSize size)
 		{
 			var htIcons = GetLookupTable(size);
 			string ext = Path.GetExtension(fileName).ToUpperInvariant();
@@ -67,7 +55,7 @@ namespace Eto.IO
 			return icon;
 		}
 
-		public Icon GetStaticIcon(StaticIconType type, IconSize size)
+		public static Icon GetStaticIcon(StaticIconType type, IconSize size)
 		{
 			var htIcons = GetLookupTable(size);
 			Icon icon;

@@ -5,7 +5,7 @@ namespace Eto.WinForms
 {
 	public abstract class MenuHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IMenu
 		where TControl: SWF.ToolStripItem
-		where TWidget: InstanceWidget
+		where TWidget: Widget
 	{
 
 		public override void AttachEvent (string id)

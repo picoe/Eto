@@ -2,11 +2,11 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IMenu : IInstanceWidget
+	public interface IMenu : IWidget
 	{
 	}
 
-	public abstract class Menu : InstanceWidget
+	public abstract class Menu : Widget
 	{
 		//IMenu inner;
 

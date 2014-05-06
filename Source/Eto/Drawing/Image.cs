@@ -8,7 +8,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IImage : IInstanceWidget
+	public interface IImage : IWidget
 	{
 		/// <summary>
 		/// Gets the size of the image, in pixels
@@ -56,7 +56,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter(typeof(ImageConverter))]
-	public abstract class Image : InstanceWidget
+	public abstract class Image : Widget
 	{
 		new IImage Handler { get { return (IImage)base.Handler; } }
 

@@ -21,7 +21,7 @@ namespace Eto.Serialization.Json
 		/// <typeparam name="T">Type of object to load from json</typeparam>
 		/// <returns>A new instance of the specified type with the contents loaded from json</returns>
 		public static T Load<T> (NamespaceManager namespaceManager = null)
-			where T: InstanceWidget, new()
+			where T: Widget, new()
 		{
 			var type = typeof(T);
 
@@ -45,7 +45,7 @@ namespace Eto.Serialization.Json
 		/// <param name="namespaceManager">Namespace manager to use when loading</param>
 		/// <returns>A new instance of the specified type with the contents loaded from the json stream</returns>
 		public static T Load<T> (Stream stream, NamespaceManager namespaceManager = null)
-			where T: InstanceWidget, new()
+			where T: Widget, new()
 		{
 			return Load<T> (stream, null, namespaceManager);
 		}
@@ -64,7 +64,7 @@ namespace Eto.Serialization.Json
 		/// <param name="namespaceManager">Namespace manager to use when loading</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the json stream</returns>
 		public static T Load<T> (T instance, NamespaceManager namespaceManager = null)
-			where T: InstanceWidget
+			where T: Widget
 		{
 			var type = typeof(T);
 			#if PCL
@@ -84,7 +84,7 @@ namespace Eto.Serialization.Json
 		/// <param name="namespaceManager">Namespace manager to use to lookup type names</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the json stream</returns>
 		public static T Load<T> (Stream stream, T instance, NamespaceManager namespaceManager = null)
-			where T : InstanceWidget
+			where T : Widget
 		{
 			var type = typeof(T);
 

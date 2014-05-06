@@ -6,7 +6,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Handler interface for the <see cref="Region"/> class
 	/// </summary>
-	public interface IRegion : IInstanceWidget
+	public interface IRegion : IWidget
 	{
 		/// <summary>
 		/// Excludes the specified <paramref name="rectangle"/> from the region
@@ -30,7 +30,7 @@ namespace Eto.Drawing
 	/// Defines a region to use for clipping
 	/// </summary>
 	[Handler(typeof(IRegion))]
-	public class Region : InstanceWidget
+	public class Region : Widget
 	{
 		new IRegion Handler { get { return (IRegion)base.Handler; } }
 

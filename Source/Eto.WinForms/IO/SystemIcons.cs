@@ -6,11 +6,8 @@ using System;
 
 namespace Eto.WinForms.IO
 {
-	public class SystemIconsHandler : WidgetHandler<SystemIcons>, ISystemIcons
+	public class SystemIconsHandler : ISystemIcons
 	{
-
-		#region ISystemIcons Members
-
 		public Icon GetFileIcon(string fileName, IconSize size)
 		{
 			ShellIcon.IconSize iconSize;
@@ -61,8 +58,5 @@ namespace Eto.WinForms.IO
 			SD.Icon icon = ShellIcon.GetFolderIcon(iconSize, folderType);
 			return new Icon(new IconHandler(icon));
 		}
-
-		#endregion
-
 	}
 }

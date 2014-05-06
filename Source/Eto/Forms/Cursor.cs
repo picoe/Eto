@@ -52,7 +52,7 @@ namespace Eto.Forms
 	/// Platform interface for the <see cref="Cursor"/> class
 	/// </summary>
 	[AutoInitialize(false)]
-	public interface ICursor : IInstanceWidget
+	public interface ICursor : IWidget
 	{
 		void Create(CursorType cursor);
 	}
@@ -65,7 +65,7 @@ namespace Eto.Forms
 	/// using <see cref="Control.Cursor"/>
 	/// </remarks>
 	[Handler(typeof(ICursor))]
-	public class Cursor : InstanceWidget
+	public class Cursor : Widget
 	{
 		new ICursor Handler { get { return (ICursor)base.Handler; } }
 

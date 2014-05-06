@@ -3,13 +3,13 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IPageSettings : IInstanceWidget
+	public interface IPageSettings : IWidget
 	{
 		RectangleF PrintableArea { get; set; }
 	}
 
 	[Handler(typeof(IPageSettings))]
-	public class PageSettings : InstanceWidget
+	public class PageSettings : Widget
 	{
 		public PageSettings()
 		{
