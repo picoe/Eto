@@ -175,6 +175,8 @@ namespace Eto
 				widgetHandler.Platform = (Platform)generator;
 				widgetHandler.Widget = this;
 			}
+			if (initialize)
+				Initialize();
 		}
 
 		/// <summary>
@@ -223,7 +225,7 @@ namespace Eto
 		/// </remarks>
 		protected void Initialize()
 		{
-			var handler = Handler as IWidget;
+			var handler = WidgetHandler;
 			if (handler != null)
 				handler.Initialize();
 			Eto.Style.OnStyleWidgetDefaults(this);
