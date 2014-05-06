@@ -12,6 +12,11 @@
 		<summary>Eto.Forms - Mac Application Template</summary>
 		<description>
     	This package provides an .app template for your Eto.Forms application when packaging for Mac.
+    	
+    	You can create apps that run on OS X natively from windows using this package.
+    	Note that Mono will need to be installed for your app to run.
+    	
+    	Alternatively, you can package for a mac so it does not require Mono and can be distributed through the App Store using Xamarin Studio on OS X and Eto.Platform.XamMac.
 		</description>
 		<copyright>Copyright 2014 by Curtis Wensley</copyright>
 		<tags>cross platform gui ui framework desktop monomac osx mac eto.forms</tags>
@@ -22,6 +27,9 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\MacAppTemplate.app\**" target="content\MyApp.app" />
+		<file src="..\..\MacAppTemplate.app\**" target="content\Mac\MyApp.app" />
+		<file src="buildapp.cmd" target="content\Mac\buildapp.cmd" />
+		<file src="README.txt" target="content\Mac\README.txt" />
+		<file src="install.ps1" target="tools\install.ps1" />
 	</files>
 </package>
