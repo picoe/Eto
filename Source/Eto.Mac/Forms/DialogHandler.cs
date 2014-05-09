@@ -32,8 +32,13 @@ namespace Eto.Mac.Forms
 			{
 				if (Handler.AbortButton != null)
 				{
-					var callback = (Button.ICallback)((ICallbackSource)Handler.AbortButton.Handler).Callback;
-					callback.OnClick(Handler.AbortButton, EventArgs.Empty);
+					var handler = Handler.AbortButton.Handler as IMacViewHandler;
+					if (handler != null)
+					{
+						var callback = handler.Callback as Button.ICallback;
+						if (callback != null)
+							callback.OnClick(Handler.AbortButton, EventArgs.Empty);
+					}
 				}
 			}
 		}
