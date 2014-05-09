@@ -61,9 +61,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				WeakDelegate = new Delegate { Handler = this }
 			};
-			//Navigation.NavigationBar.Translucent = false;
-			//Navigation.EdgesForExtendedLayout = UIRectEdge.None;
-			//Navigation.AutomaticallyAdjustsScrollViewInsets = true;
 		}
 
 		public override UIView Control { get { return Navigation.View; } }
@@ -73,10 +70,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 			items.Add(item);
 			var view = item.Content.GetViewController();
 			view.NavigationItem.Title = item.Text;
-			view.View.SetFrameOrigin(new System.Drawing.PointF(0, 100));
-			//view.AutomaticallyAdjustsScrollViewInsets = true;
-			//if (view.RespondsToSelector(new Selector("setEdgesForExtendedLayout:")))
-			//	view.EdgesForExtendedLayout = UIRectEdge.None;
+			//
+			if (!(view.View is UIScrollView) && view.RespondsToSelector(new Selector("setEdgesForExtendedLayout:")))
+				view.EdgesForExtendedLayout = UIRectEdge.None;
 			view.View.Frame = new System.Drawing.RectangleF(0, 0, 0, 0);
 			view.View.AutoresizingMask = UIViewAutoresizing.All;
 			Navigation.PushViewController(view, true);
