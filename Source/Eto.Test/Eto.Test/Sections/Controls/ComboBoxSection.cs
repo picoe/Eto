@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class ComboBoxSection : Panel
+	public class ComboBoxSection : Scrollable
 	{
 		public ComboBoxSection()
 		{
