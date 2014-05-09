@@ -18,6 +18,24 @@ namespace Eto.Platform.iOS.Forms.Controls
 			};
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Widget.SizeChanged += HandleSizeChanged;
+		}
+
+		void HandleSizeChanged (object sender, EventArgs e)
+		{
+			var size = Math.Min(Size.Width, Size.Height);
+			if (size < 32)
+				Control.ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray;
+			else
+			{
+				Control.ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge;
+				Control.Color = UIColor.Gray;
+			}
+		}
+			
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			return new SizeF(16, 16);
