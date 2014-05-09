@@ -290,10 +290,17 @@ namespace Eto.Forms
 			EventLookup.Register<Grid>(c => c.OnColumnHeaderClick(null), Grid.ColumnHeaderClickEvent);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
+		/// </summary>
 		protected Grid()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class with the specified handler
+		/// </summary>
+		/// <param name="handler">Handler implementation for the control</param>
 		protected Grid(IGrid handler)
 			: base(handler)
 		{
