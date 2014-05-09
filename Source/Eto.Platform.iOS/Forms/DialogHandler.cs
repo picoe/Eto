@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using MonoTouch.UIKit;
 using Eto.Forms;
+using System.Threading.Tasks;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -12,13 +13,13 @@ namespace Eto.Platform.iOS.Forms
 			AutomaticallyAdjustsScrollViewInsets = true;
 		}
 
-		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations ()
+		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
 		{
 			return UIInterfaceOrientationMask.All;
 		}
 
 		[Obsolete]
-		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
+		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true;
 		}
@@ -26,53 +27,79 @@ namespace Eto.Platform.iOS.Forms
 
 	public class DialogHandler : IosWindow<UIView, Dialog>, IDialog
 	{
-		Button button;
+		bool inNav;
+		TaskCompletionSource<bool> completionSource;
 
-		public DialogHandler ()
+		~DialogHandler()
 		{
-			Control = Controller.View;
+			Console.WriteLine("woo");
 		}
-		
+
+		public DialogHandler()
+		{
+			Control = new UIView();
+			Control.Frame = UIScreen.MainScreen.Bounds;
+			Controller.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+		}
+
 		public Button AbortButton { get; set; }
-		
-		public Button DefaultButton {
-			get {
-				return button;	
-			}
-			set {
-				button = value;
-				// TODO: implement?
-			}
-		}
 
-		public DialogDisplayMode DisplayMode {
-			get;
-			set;
-		}
+		public Button DefaultButton { get; set; }
 
-		public override string Title {
+		public DialogDisplayMode DisplayMode { get; set; }
+
+		public override string Title
+		{
 			get { return Controller.Title; }
 			set { Controller.Title = value; }
 		}
 
-		public override void Close ()
+		public override void Close()
 		{
-			var viewControllers = Controller.NavigationController.ViewControllers.ToList ();
-			int index = viewControllers.IndexOf (Controller);
-			if (index > 1)
-				Controller.NavigationController.PopToViewController (viewControllers [index - 1], true);
+			if (inNav)
+			{
+				var viewControllers = Controller.NavigationController.ViewControllers.ToList();
+				int index = viewControllers.IndexOf(Controller);
+				if (index > 1)
+					Controller.NavigationController.PopToViewController(viewControllers[index - 1], true);
+				completionSource.SetResult(true);
+			}
+			else
+			{
+				Controller.DismissViewController(animated: true, completionHandler: () => completionSource.SetResult(true));
+			}
 		}
-		
-		public DialogResult ShowDialog (Control parent)
+
+		public async void ShowModal(Control parent)
 		{
-			var controller = parent.Handler as IIosView;
-			if (controller != null) {
-				var nav = controller.Controller.NavigationController;
-				if (nav != null) {
-					nav.PushViewController (Controller, true);
+			await ShowModalAsync(parent);
+		}
+
+		public Task ShowModalAsync(Control parent)
+		{
+			completionSource = new TaskCompletionSource<bool>();
+			inNav = false;
+			if (DisplayMode.HasFlag(DialogDisplayMode.Navigation) || DisplayMode == DialogDisplayMode.Default)
+			{
+				var controller = parent.Handler as IIosView;
+				if (controller != null)
+				{
+					var nav = controller.Controller.NavigationController;
+					if (nav != null)
+					{
+						nav.PushViewController(Controller, true);
+						inNav = true;
+					}
 				}
 			}
-			return Widget.DialogResult;
+
+			if (!inNav)
+			{
+				var top = UIApplication.SharedApplication.KeyWindow.TopMostController();
+
+				top.PresentViewController(Controller, animated: true, completionHandler: null);
+			}
+			return completionSource.Task;
 		}
 	}
 }

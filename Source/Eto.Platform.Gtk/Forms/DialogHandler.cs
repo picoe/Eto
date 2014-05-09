@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using System.Threading.Tasks;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -48,7 +49,7 @@ namespace Eto.Platform.GtkSharp
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public DialogResult ShowDialog(Control parent)
+		public void ShowModal(Control parent)
 		{
 			if (parent != null)
 			{
@@ -74,8 +75,18 @@ namespace Eto.Platform.GtkSharp
 			
 			Control.Run();
 			Control.Hide();
-									
-			return Widget.DialogResult;
+		}
+
+		public Task ShowModalAsync(Control parent)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			Application.Instance.AsyncInvoke(() =>
+			{
+				ShowModal(parent);
+				tcs.SetResult(true);
+			});
+
+			return tcs.Task;
 		}
 	}
 }

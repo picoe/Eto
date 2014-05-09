@@ -10,6 +10,7 @@
     <AssemblyName>Eto.Test.Mac</AssemblyName>
     <LastXamMacNagTime>14/12/2100 1:15:16 AM</LastXamMacNagTime>
     <SuppressXamMacMigration>True</SuppressXamMacMigration>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

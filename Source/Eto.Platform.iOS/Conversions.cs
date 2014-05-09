@@ -65,6 +65,16 @@ namespace Eto.Platform.iOS
 		{
 			return image.ToUI ().CGImage;
 		}
+
+		public static UIViewController TopMostController(this UIWindow window)
+		{
+			// For iOS we ignore parent and determine the topmost view controller
+			// as discussed in http://stackoverflow.com/a/12684721
+			var top = window.RootViewController;
+			while (top.PresentedViewController != null)
+				top = top.PresentedViewController;
+			return top;
+		}
 	}
 }
 

@@ -73,7 +73,6 @@
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
     <Compile Include="Forms\Layout\DynamicTable.cs" />
-    <Compile Include="Forms\ModalWindow.cs" />
     <Compile Include="Forms\Mouse.cs" />
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />

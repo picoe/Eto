@@ -1,6 +1,8 @@
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
+using System;
+using System.Threading.Tasks;
 
 namespace Eto.Platform.Windows
 {
@@ -62,12 +64,25 @@ namespace Eto.Platform.Windows
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public DialogResult ShowDialog(Control parent)
+		public void ShowModal(Control parent)
 		{
 			if (parent != null) Control.ShowDialog((swf.Control)parent.ControlObject);
 			else Control.ShowDialog ();
+		}
 
-			return Widget.DialogResult;
+		public Task ShowModalAsync(Control parent)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			Application.Instance.AsyncInvoke(() =>
+			{
+				if (parent != null)
+					Control.ShowDialog((swf.Control)parent.ControlObject);
+				else
+					Control.ShowDialog();
+
+				tcs.SetResult(true);
+			});
+			return tcs.Task;
 		}
 	}
 }

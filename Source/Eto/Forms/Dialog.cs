@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Eto.Forms
 {
@@ -22,27 +23,36 @@ namespace Eto.Forms
 	/// may support only certain modes and will choose the appropriate mode based on the hint
 	/// given.
 	/// </remarks>
+	[Flags]
 	public enum DialogDisplayMode
 	{
 		/// <summary>
 		/// The default display mode for modal dialogs in the platform
 		/// </summary>
-		Default,
+		/// <remarks>
+		/// This uses the ideal display mode given the state of the application and the parent window that is passed in
+		/// </remarks>
+		Default = 0,
 		/// <summary>
 		/// Display the dialog attached to the parent window, if supported (e.g. OS X)
 		/// </summary>
-		Attached,
+		Attached = 0x01,
 		/// <summary>
 		/// Display the dialog as a separate window (e.g. Windows/Linux only supports this mode)
 		/// </summary>
-		Separate
+		Separate = 0x02,
+		/// <summary>
+		/// Display in navigation if available
+		/// </summary>
+		Navigation = 0x04
 	}
 
 	public interface IDialog : IWindow
 	{
 		DialogDisplayMode DisplayMode { get; set; }
 
-		DialogResult ShowDialog(Control parent);
+		void ShowModal(Control parent);
+		Task ShowModalAsync(Control parent);
 
 		Button DefaultButton { get; set; }
 
@@ -56,7 +66,6 @@ namespace Eto.Forms
 		protected Dialog(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			this.DialogResult = DialogResult.None;
 		}
 
 		public Dialog()
@@ -74,6 +83,7 @@ namespace Eto.Forms
 			set { Handler.DisplayMode = value; }
 		}
 
+		[Obsolete("This property is deprecated")]
 		public DialogResult DialogResult { get; set; }
 
 		public Button AbortButton
@@ -88,7 +98,14 @@ namespace Eto.Forms
 			set { Handler.DefaultButton = value; }
 		}
 
+		[Obsolete("Use ShowModal() instead")]
 		public DialogResult ShowDialog(Control parent = null)
+		{
+			ShowModal(parent);
+			return DialogResult;
+		}
+
+		public void ShowModal(Control parent = null)
 		{
 			var loaded = Loaded;
 			if (!loaded)
@@ -98,11 +115,25 @@ namespace Eto.Forms
 				OnDataContextChanged(EventArgs.Empty);
 				OnLoadComplete(EventArgs.Empty);
 			}
-			
-			DialogResult = Handler.ShowDialog(parent);
-			return DialogResult;
+
+			Handler.ShowModal(parent);
 		}
 
+		public Task ShowModalAsync(Control parent = null)
+		{
+			var loaded = Loaded;
+			if (!loaded)
+			{
+				OnPreLoad(EventArgs.Empty);
+				OnLoad(EventArgs.Empty);
+				OnDataContextChanged(EventArgs.Empty);
+				OnLoadComplete(EventArgs.Empty);
+			}
+
+			return Handler.ShowModalAsync(parent);
+		}
+
+		[Obsolete("Use Close() instead")]
 		public void Close(DialogResult result)
 		{
 			DialogResult = result;

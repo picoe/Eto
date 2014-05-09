@@ -3,6 +3,7 @@ using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Platform.Wpf.Forms.Controls;
+using System.Threading.Tasks;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -11,14 +12,14 @@ namespace Eto.Platform.Wpf.Forms
 		Button defaultButton;
 		Button abortButton;
 
-		public override sw.Window CreateControl ()
+		public override sw.Window CreateControl()
 		{
-			return new sw.Window ();
+			return new sw.Window();
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			Control.ShowInTaskbar = false;
 			Resizable = false;
 			Minimizable = false;
@@ -27,11 +28,13 @@ namespace Eto.Platform.Wpf.Forms
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public virtual DialogResult ShowDialog (Control parent)
+		public void ShowModal(Control parent)
 		{
-			if (parent != null) {
+			if (parent != null)
+			{
 				var parentWindow = parent.ParentWindow;
-				if (parentWindow != null) {
+				if (parentWindow != null)
+				{
 					var owner = ((IWpfWindow)parentWindow.Handler).Control;
 					Control.Owner = owner;
 					// CenterOwner does not work in certain cases (e.g. with autosizing)
@@ -39,12 +42,22 @@ namespace Eto.Platform.Wpf.Forms
 					Control.SourceInitialized += HandleSourceInitialized;
 				}
 			}
-			Control.ShowDialog ();
-            WpfFrameworkElementHelper.ShouldCaptureMouse = false;
-            return Widget.DialogResult;
+			Control.ShowDialog();
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 		}
 
-		void HandleSourceInitialized (object sender, EventArgs e)
+		public Task ShowModalAsync(Control parent)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			Application.Instance.AsyncInvoke(() =>
+			{
+				ShowModal(parent);
+				tcs.SetResult(true);
+			});
+			return tcs.Task;
+		}
+
+		void HandleSourceInitialized(object sender, EventArgs e)
 		{
 			var owner = Control.Owner;
 			Control.Left = owner.Left + (owner.ActualWidth - Control.ActualWidth) / 2;
@@ -57,12 +70,14 @@ namespace Eto.Platform.Wpf.Forms
 			get { return defaultButton; }
 			set
 			{
-				if (defaultButton != null) {
+				if (defaultButton != null)
+				{
 					var handler = (ButtonHandler)defaultButton.Handler;
 					handler.Control.IsDefault = false;
 				}
 				defaultButton = value;
-				if (defaultButton != null) {
+				if (defaultButton != null)
+				{
 					var handler = (ButtonHandler)defaultButton.Handler;
 					handler.Control.IsDefault = true;
 				}
@@ -74,12 +89,14 @@ namespace Eto.Platform.Wpf.Forms
 			get { return abortButton; }
 			set
 			{
-				if (abortButton != null) {
+				if (abortButton != null)
+				{
 					var handler = (ButtonHandler)abortButton.Handler;
 					handler.Control.IsCancel = false;
 				}
 				abortButton = value;
-				if (abortButton != null) {
+				if (abortButton != null)
+				{
 					var handler = (ButtonHandler)abortButton.Handler;
 					handler.Control.IsCancel = true;
 				}

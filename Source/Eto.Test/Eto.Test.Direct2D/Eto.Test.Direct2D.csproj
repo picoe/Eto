@@ -9,6 +9,7 @@
     <RootNamespace>Eto.Test.Direct2D</RootNamespace>
     <AssemblyName>Eto.Test.Direct2D</AssemblyName>
     <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

@@ -9,6 +9,7 @@
     <RootNamespace>Eto.Test.Gtk</RootNamespace>
     <AssemblyName>Eto.Test.Gtk</AssemblyName>
     <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
