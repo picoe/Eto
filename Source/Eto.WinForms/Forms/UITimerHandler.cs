@@ -3,14 +3,14 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms
 {
-	public class UITimerHandler : WidgetHandler<System.Windows.Forms.Timer, UITimer>, IUITimer
+	public class UITimerHandler : WidgetHandler<System.Windows.Forms.Timer, UITimer, UITimer.ICallback>, IUITimer
 	{
 		//bool enabled;
 		
 		public UITimerHandler ()
 		{
 			Control = new System.Windows.Forms.Timer ();
-			Control.Tick += (sender, e) => Widget.OnElapsed(EventArgs.Empty);
+			Control.Tick += (sender, e) => Callback.OnElapsed(Widget, EventArgs.Empty);
 		}
 
 		public void Start ()

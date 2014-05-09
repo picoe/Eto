@@ -25,15 +25,16 @@ namespace Eto.Mac.Forms
 		bool InitialLayout { get; }
 	}
 
-	public abstract class MacContainer<TControl, TWidget> : 
+	public abstract class MacContainer<TControl, TWidget, TCallback> : 
 #if OSX
-		MacView<TControl, TWidget>,
+		MacView<TControl, TWidget, TCallback>,
 #elif IOS
-		IosView<TControl, TWidget>,
+		IosView<TControl, TWidget, TCallback>,
 #endif
 		IContainer, IMacContainer
 		where TControl: NSResponder
 		where TWidget: Container
+		where TCallback: Container.ICallback
 	{
 		public bool RecurseToChildren { get { return true; } }
 

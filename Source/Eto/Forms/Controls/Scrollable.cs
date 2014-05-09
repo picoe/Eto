@@ -155,7 +155,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Scroll"/> event
 		/// </summary>
 		/// <param name="e">Scroll event arguments</param>
-		public virtual void OnScroll(ScrollEventArgs e)
+		protected virtual void OnScroll(ScrollEventArgs e)
 		{
 			Properties.TriggerEvent(ScrollEvent, this, e);
 		}
@@ -303,6 +303,22 @@ namespace Eto.Forms
 		{
 			get { return Handler.Zoom; }
 			set { Handler.Zoom = value; }
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Panel.ICallback
+		{
+			void OnScroll(Scrollable widget, ScrollEventArgs e);
+		}
+
+		protected class Callback : Panel.Callback, ICallback
+		{
+			public void OnScroll(Scrollable widget, ScrollEventArgs e)
+			{
+				widget.OnScroll(e);
+			}
 		}
 	}
 }

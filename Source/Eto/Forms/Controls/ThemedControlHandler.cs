@@ -14,10 +14,12 @@ namespace Eto.Forms
 	/// b) Implementing a control with a non-native look and feel that is consistent across platforms.
 	/// </remarks>
 	/// <typeparam name="TControl">The Eto control used to create the custom implementation, e.g. Panel</typeparam>
-	/// <typeparam name="TWidget">The control being implemented, eg TabControl</typeparam>
-	public class ThemedControlHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl
+	/// <typeparam name="TWidget">The control being implemented, e.g. TabControl</typeparam>
+	/// <typeparam name="TCallback">The callback inferface for the control, e.g. TabControl.ICallback</typeparam>
+	public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl
 		where TControl : Control
 		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		/// <summary>
 		/// Gets or sets the color for the background of the control
@@ -298,51 +300,51 @@ namespace Eto.Forms
 			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
-					Control.KeyDown += (s, e) => Widget.OnKeyDown(e);
+					Control.KeyDown += (s, e) => Callback.OnKeyDown(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += (s, e) => Widget.OnKeyUp(e);
+					Control.KeyUp += (s, e) => Callback.OnKeyUp(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					Control.SizeChanged += (s, e) => Widget.OnSizeChanged(e);
+					Control.SizeChanged += (s, e) => Callback.OnSizeChanged(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
-					Control.MouseDoubleClick += (s, e) => Widget.OnMouseDoubleClick(e);
+					Control.MouseDoubleClick += (s, e) => Callback.OnMouseDoubleClick(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
-					Control.MouseEnter += (s, e) => Widget.OnMouseEnter(e);
+					Control.MouseEnter += (s, e) => Callback.OnMouseEnter(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
-					Control.MouseLeave += (s, e) => Widget.OnMouseLeave(e);
+					Control.MouseLeave += (s, e) => Callback.OnMouseLeave(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
-					Control.MouseDown += (s, e) => Widget.OnMouseDown(e);
+					Control.MouseDown += (s, e) => Callback.OnMouseDown(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
-					Control.MouseUp += (s, e) => Widget.OnMouseUp(e);
+					Control.MouseUp += (s, e) => Callback.OnMouseUp(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
-					Control.MouseMove += (s, e) => Widget.OnMouseMove(e);
+					Control.MouseMove += (s, e) => Callback.OnMouseMove(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
-					Control.MouseWheel += (s, e) => Widget.OnMouseWheel(e);
+					Control.MouseWheel += (s, e) => Callback.OnMouseWheel(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (s, e) => Widget.OnGotFocus(e);
+					Control.GotFocus += (s, e) => Callback.OnGotFocus(Control, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (s, e) => Widget.OnLostFocus(e);
+					Control.LostFocus += (s, e) => Callback.OnLostFocus(Control, e);
 					handled = true;
 					break;
 #if TODO

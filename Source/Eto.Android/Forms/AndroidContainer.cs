@@ -12,8 +12,9 @@ namespace Eto.Android.Forms
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class AndroidContainer<T, TWidget> : AndroidControl<T, TWidget>, IContainer
+	public abstract class AndroidContainer<TControl, TWidget, TCallback> : AndroidControl<TControl, TWidget, TCallback>, IContainer
 		where TWidget: Container
+		where TCallback: Container.ICallback
 	{
 		protected AndroidContainer()
 		{

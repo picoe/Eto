@@ -187,7 +187,7 @@ namespace Eto.GtkSharp.Drawing
 			{
 				if (family == null)
 				{
-					family = new FontFamily(Widget.Platform, Control.Family);
+					family = new FontFamily(Control.Family);
 				}
 				return family;
 			}

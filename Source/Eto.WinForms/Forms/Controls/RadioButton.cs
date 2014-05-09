@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms
 {
-	public class RadioButtonHandler : WindowsControl<swf.RadioButton, RadioButton>, IRadioButton
+	public class RadioButtonHandler : WindowsControl<swf.RadioButton, RadioButton, RadioButton.ICallback>, IRadioButton
 	{
 		List<RadioButton> group;
 

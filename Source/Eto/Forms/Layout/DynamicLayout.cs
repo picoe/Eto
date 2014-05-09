@@ -49,7 +49,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public override void OnPreLoad(EventArgs e)
+		protected internal override void OnPreLoad(EventArgs e)
 		{
 			if (!IsCreated)
 				Create();
@@ -57,7 +57,7 @@ namespace Eto.Forms
 			base.OnPreLoad(e);
 		}
 
-		public override void OnLoad(EventArgs e)
+		protected internal override void OnLoad(EventArgs e)
 		{
 			if (!IsCreated)
 				Create();

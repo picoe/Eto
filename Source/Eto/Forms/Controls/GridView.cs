@@ -155,14 +155,14 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(CellClickEvent, value); }
 		}
 
-		public virtual void OnCellClick(GridViewCellArgs e)
+		protected virtual void OnCellClick(GridViewCellArgs e)
 		{
 			Properties.TriggerEvent(CellClickEvent, this, e);
 		}
 
 		#endregion
 
-		public override void OnSelectionChanged(EventArgs e)
+		protected internal override void OnSelectionChanged(EventArgs e)
 		{
 			if (selection != null && !selection.SuppressSelectionChanged)
 				base.OnSelectionChanged(e);
@@ -313,6 +313,22 @@ namespace Eto.Forms
 			{
 				UnselectAll();
 				SelectRow(modelRowToSelect.Value);
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Grid.ICallback
+		{
+			void OnCellClick(GridView widget, GridViewCellArgs e);
+		}
+
+		protected class Callback : Grid.Callback, ICallback
+		{
+			public void OnCellClick(GridView widget, GridViewCellArgs e)
+			{
+				widget.OnCellClick(e);
 			}
 		}
 	}

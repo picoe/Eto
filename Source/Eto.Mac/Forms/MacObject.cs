@@ -4,7 +4,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.Mac.Forms
 {
-	public class MacObject<TControl, TWidget> : MacBase<TControl, TWidget>
+	public class MacObject<TControl, TWidget, TCallback> : MacBase<TControl, TWidget, TCallback>
 		where TControl: NSObject 
 		where TWidget: Widget
 	{

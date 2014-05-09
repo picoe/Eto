@@ -28,7 +28,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(PrintingEvent, value); }
 		}
 
-		public virtual void OnPrinting(EventArgs e)
+		protected virtual void OnPrinting(EventArgs e)
 		{
 			Properties.TriggerEvent(PrintingEvent, this, e);
 		}
@@ -41,7 +41,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(PrintedEvent, value); }
 		}
 
-		public virtual void OnPrinted(EventArgs e)
+		protected virtual void OnPrinted(EventArgs e)
 		{
 			Properties.TriggerEvent(PrintedEvent, this, e);
 		}
@@ -54,7 +54,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(PrintPageEvent, value); }
 		}
 
-		public virtual void OnPrintPage(PrintPageEventArgs e)
+		protected virtual void OnPrintPage(PrintPageEventArgs e)
 		{
 			Properties.TriggerEvent(PrintPageEvent, this, e);
 		}
@@ -99,6 +99,32 @@ namespace Eto.Forms
 		{
 			get { return Handler.PageCount; }
 			set { Handler.PageCount = value; }
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Widget.ICallback
+		{
+			void OnPrinting(PrintDocument widget, EventArgs e);
+			void OnPrinted(PrintDocument widget, EventArgs e);
+			void OnPrintPage(PrintDocument widget, PrintPageEventArgs e);
+		}
+
+		protected class Callback : ICallback
+		{
+			public void OnPrinting(PrintDocument widget, EventArgs e)
+			{
+				widget.OnPrinting(e);
+			}
+			public void OnPrinted(PrintDocument widget, EventArgs e)
+			{
+				widget.OnPrinted(e);
+			}
+			public void OnPrintPage(PrintDocument widget, PrintPageEventArgs e)
+			{
+				widget.OnPrintPage(e);
+			}
 		}
 	}
 }

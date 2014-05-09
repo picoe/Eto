@@ -43,7 +43,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="CheckedChanged"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnCheckedChanged(EventArgs e)
+		protected virtual void OnCheckedChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(CheckedChangedKey, this, e);
 		}
@@ -114,6 +114,22 @@ namespace Eto.Forms
 					(c, h) => c.CheckedChanged += h, 
 					(c, h) => c.CheckedChanged -= h
 				);
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : TextControl.ICallback
+		{
+			void OnCheckedChanged(CheckBox widget, EventArgs e);
+		}
+
+		protected class Callback : TextControl.Callback, ICallback
+		{
+			public void OnCheckedChanged(CheckBox widget, EventArgs e)
+			{
+				widget.OnCheckedChanged(e);
 			}
 		}
 	}

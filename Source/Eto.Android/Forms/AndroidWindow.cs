@@ -18,8 +18,9 @@ namespace Eto.Android.Forms
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class AndroidWindow<TWidget> : AndroidPanel<aw.FrameLayout, TWidget>, IWindow, IAndroidWindow
+	public abstract class AndroidWindow<TWidget, TCallback> : AndroidPanel<aw.FrameLayout, TWidget, TCallback>, IWindow, IAndroidWindow
 		where TWidget: Window
+		where TCallback: Window.ICallback
 	{
 		a.App.Activity activity;
 		public a.App.Activity Activity

@@ -62,7 +62,7 @@ namespace Eto.GtkSharp
 			{
 				text = value;
 				//string val = (shortcutText.Length > 0) ? text+"\t"+shortcutText : text;
-				label.Text = GtkControl<Gtk.Widget, Control>.StringToMnuemonic(text);
+				label.Text = GtkControl<Gtk.Widget, Control, Control.ICallback>.StringToMnuemonic(text);
 				label.UseUnderline = true;
 			}
 		}

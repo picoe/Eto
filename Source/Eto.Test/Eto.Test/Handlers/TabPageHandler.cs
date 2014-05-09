@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Handlers
 {
-    class TabPageHandler : ThemedContainerHandler<Panel, TabPage>, ITabPage
+	class TabPageHandler : ThemedContainerHandler<Panel, TabPage, TabPage.ICallback>, ITabPage
     {
 		public Padding Padding { get; set; }
 

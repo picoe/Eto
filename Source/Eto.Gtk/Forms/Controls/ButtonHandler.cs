@@ -9,7 +9,7 @@ namespace Eto.GtkSharp
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : GtkControl<Gtk.Button, Button>, IButton
+	public class ButtonHandler : GtkControl<Gtk.Button, Button, Button.ICallback>, IButton
 	{
 		Image image;
 		readonly Gtk.AccelLabel label;
@@ -61,7 +61,7 @@ namespace Eto.GtkSharp
 
 			public void HandleClicked(object sender, EventArgs e)
 			{
-				Handler.Widget.OnClick(EventArgs.Empty);
+				Handler.Callback.OnClick(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleButtonSizeAllocated(object o, Gtk.SizeAllocatedArgs args)

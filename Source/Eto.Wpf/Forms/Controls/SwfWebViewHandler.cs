@@ -13,7 +13,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class SwfWebViewHandler : WpfFrameworkElement<swf.Integration.WindowsFormsHost, WebView>, IWebView
+	public class SwfWebViewHandler : WpfFrameworkElement<swf.Integration.WindowsFormsHost, WebView, WebView.ICallback>, IWebView
 	{
 		public swf.WebBrowser Browser { get; private set; }
 
@@ -68,7 +68,7 @@ namespace Eto.Wpf.Forms.Controls
 		void WebBrowserV1_NewWindow(string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
 		{
 			var e = new WebViewNewWindowEventArgs(new Uri(URL), TargetFrameName);
-			Widget.OnOpenNewWindow(e);
+			Callback.OnOpenNewWindow(Widget, e);
 			Processed = e.Cancel;
 		}
 
@@ -79,20 +79,20 @@ namespace Eto.Wpf.Forms.Controls
 				case WebView.NavigatedEvent:
 					this.Browser.Navigated += (sender, e) =>
 					{
-						Widget.OnNavigated(new WebViewLoadedEventArgs(e.Url));
+						Callback.OnNavigated(Widget, new WebViewLoadedEventArgs(e.Url));
 					};
 					break;
 				case WebView.DocumentLoadedEvent:
 					this.Browser.DocumentCompleted += (sender, e) =>
 					{
-						Widget.OnDocumentLoaded(new WebViewLoadedEventArgs(e.Url));
+						Callback.OnDocumentLoaded(Widget, new WebViewLoadedEventArgs(e.Url));
 					};
 					break;
 				case WebView.DocumentLoadingEvent:
 					this.Browser.Navigating += (sender, e) =>
 					{
 						var args = new WebViewLoadingEventArgs(e.Url, false);
-						Widget.OnDocumentLoading(args);
+						Callback.OnDocumentLoading(Widget, args);
 						e.Cancel = args.Cancel;
 					};
 					break;
@@ -102,7 +102,7 @@ namespace Eto.Wpf.Forms.Controls
 				case WebView.DocumentTitleChangedEvent:
 					this.Browser.DocumentTitleChanged += delegate
 					{
-						Widget.OnDocumentTitleChanged(new WebViewTitleEventArgs(Browser.DocumentTitle));
+						Callback.OnDocumentTitleChanged(Widget, new WebViewTitleEventArgs(Browser.DocumentTitle));
 					};
 					break;
 				default:

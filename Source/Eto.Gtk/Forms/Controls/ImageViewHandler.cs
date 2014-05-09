@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class ImageViewHandler : GtkControl<Gtk.DrawingArea, ImageView>, IImageView
+	public class ImageViewHandler : GtkControl<Gtk.DrawingArea, ImageView, ImageView.ICallback>, IImageView
 	{
 		Image image;
 		bool widthSet;
@@ -54,7 +54,7 @@ namespace Eto.GtkSharp
 				var h = Handler;
 				var handler = new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false);
 #endif
-				using (var graphics = new Graphics(h.Widget.Platform, handler))
+				using (var graphics = new Graphics(handler))
 				{
 
 					var widgetSize = new Size(h.Control.Allocation.Width, h.Control.Allocation.Height);

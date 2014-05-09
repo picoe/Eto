@@ -95,10 +95,7 @@ namespace Eto.Forms
 						RemoveParent(old);
 					if (value != null)
 					{
-						var load = SetParent(value);
-						Handler.Content = value;
-						if (load)
-							value.OnLoadComplete(EventArgs.Empty);
+						SetParent(value, () => Handler.Content = value);
 					}
 					else
 						Handler.Content = value;

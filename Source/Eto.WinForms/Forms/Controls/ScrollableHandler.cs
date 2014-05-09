@@ -6,7 +6,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class ScrollableHandler : WindowsPanel<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
+	public class ScrollableHandler : WindowsPanel<ScrollableHandler.CustomScrollable, Scrollable, Scrollable.ICallback>, IScrollable
 	{
 		readonly swf.Panel content;
 		bool expandWidth = true;
@@ -196,7 +196,7 @@ namespace Eto.WinForms
 			{
 				case Scrollable.ScrollEvent:
 					Control.Scroll += delegate {
-						Widget.OnScroll(new ScrollEventArgs(ScrollPosition));
+						Callback.OnScroll(Widget, new ScrollEventArgs(ScrollPosition));
 					};
 					break;
 				default:

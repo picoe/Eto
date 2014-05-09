@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar>, IProgressBar
+	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar, ProgressBar.ICallback>, IProgressBar
 	{
 		protected override Size DefaultSize { get { return new Size(-1, 22); } }
 

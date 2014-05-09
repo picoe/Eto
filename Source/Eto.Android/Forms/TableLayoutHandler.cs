@@ -19,7 +19,7 @@ namespace Eto.Android.Forms
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class TableLayoutHandler : AndroidContainer<aw.TableLayout, TableLayout>, ITableLayout
+	public class TableLayoutHandler : AndroidContainer<aw.TableLayout, TableLayout, TableLayout.ICallback>, ITableLayout
 	{
 		int lastColumnScale;
 		bool[] columnScale;

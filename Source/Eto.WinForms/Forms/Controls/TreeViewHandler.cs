@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView>, ITreeView
+	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView, TreeView.ICallback>, ITreeView
 	{
 		ITreeStore top;
 		readonly Dictionary<Image, string> images = new Dictionary<Image, string>();
@@ -66,7 +66,7 @@ namespace Eto.WinForms.Forms.Controls
 						if (!item.Expanded)
 						{
 							var args = new TreeViewItemCancelEventArgs(item);
-							Widget.OnExpanding(args);
+							Callback.OnExpanding(Widget, args);
 							e.Cancel = args.Cancel;
 						}
 					};
@@ -80,7 +80,7 @@ namespace Eto.WinForms.Forms.Controls
 						if (!item.Expanded)
 						{
 							item.Expanded = true;
-							Widget.OnExpanded(new TreeViewItemEventArgs(item));
+							Callback.OnExpanded(Widget, new TreeViewItemEventArgs(item));
 						}
 					};
 					break;
@@ -93,7 +93,7 @@ namespace Eto.WinForms.Forms.Controls
 						if (item.Expanded)
 						{
 							var args = new TreeViewItemCancelEventArgs(item);
-							Widget.OnCollapsing(args);
+							Callback.OnCollapsing(Widget, args);
 							e.Cancel = args.Cancel;
 						}
 					};
@@ -107,7 +107,7 @@ namespace Eto.WinForms.Forms.Controls
 						if (item.Expanded)
 						{
 							item.Expanded = false;
-							Widget.OnCollapsed(new TreeViewItemEventArgs(item));
+							Callback.OnCollapsed(Widget, new TreeViewItemEventArgs(item));
 						}
 					};
 					break;
@@ -118,7 +118,7 @@ namespace Eto.WinForms.Forms.Controls
 						{
 							if (e.KeyData == swf.Keys.Return)
 							{
-								Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
+								Callback.OnActivated(Widget, new TreeViewItemEventArgs(SelectedItem));
 								e.Handled = true;
 								if (LabelEdit)
 									Control.SelectedNode.BeginEdit();
@@ -137,7 +137,7 @@ namespace Eto.WinForms.Forms.Controls
 							if (LabelEdit)
 								Control.SelectedNode.BeginEdit();
 							else
-								Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
+								Callback.OnActivated(Widget, new TreeViewItemEventArgs(SelectedItem));
 						}
 					};
 					break;
@@ -145,7 +145,7 @@ namespace Eto.WinForms.Forms.Controls
 					Control.AfterLabelEdit += (s, e) =>
 					{
 						var args = new TreeViewItemEditEventArgs(e.Node.Tag as ITreeItem, e.Label);
-						Widget.OnLabelEdited(args);
+						Callback.OnLabelEdited(Widget, args);
 						if (!args.Cancel)
 							args.Item.Text = e.Label;
 						e.CancelEdit = args.Cancel;
@@ -155,15 +155,15 @@ namespace Eto.WinForms.Forms.Controls
 					Control.BeforeLabelEdit += (s, e) =>
 					{
 						var args = new TreeViewItemCancelEventArgs(e.Node.Tag as ITreeItem);
-						Widget.OnLabelEditing(args);
+						Callback.OnLabelEditing(Widget, args);
 						e.CancelEdit = args.Cancel;
 					};
 					break;
 				case TreeView.NodeMouseClickEvent:
-					Control.NodeMouseClick += (s, e) => Widget.OnNodeMouseClick(new TreeViewItemEventArgs(e.Node.Tag as ITreeItem));
+					Control.NodeMouseClick += (s, e) => Callback.OnNodeMouseClick(Widget, new TreeViewItemEventArgs(e.Node.Tag as ITreeItem));
 					break;
 				case TreeView.SelectionChangedEvent:
-					Control.AfterSelect += (sender, e) => Widget.OnSelectionChanged(EventArgs.Empty);
+					Control.AfterSelect += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(id);

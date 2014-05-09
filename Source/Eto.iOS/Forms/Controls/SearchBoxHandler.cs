@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class SearchBoxHandler : IosControl<UISearchBar, SearchBox>, ISearchBox
+	public class SearchBoxHandler : IosControl<UISearchBar, SearchBox, SearchBox.ICallback>, ISearchBox
 	{
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -24,7 +24,7 @@ namespace Eto.iOS.Forms.Controls
 			switch (handler)
 			{
 				case TextControl.TextChangedEvent:
-					Control.TextChanged += (s, e) => Widget.OnTextChanged(e);
+					Control.TextChanged += (s, e) => Callback.OnTextChanged(Widget, e);
 					break;
 				default:
 					base.AttachEvent(handler);

@@ -62,6 +62,8 @@ namespace Eto
 			return Widget.Properties.ContainsKey(id) || EventLookup.IsDefault(Widget, id) || Widget.Properties.ContainsKey(id + InstanceEventSuffix);
 		}
 
+		protected object Callback { get { return ((ICallbackSource)Widget).Callback; } }
+
 		public void HandleEvent(string id, bool defaultEvent = false)
 		{
 			if (defaultEvent)
@@ -152,7 +154,7 @@ namespace Eto
 	}
 
 	/// <summary>
-	/// Base platform handler for <see cref="InstanceWidget"/> objects
+	/// Base platform handler for <see cref="Widget"/> objects that have a backing platform object
 	/// </summary>
 	/// <remarks>
 	/// This is the base class for platform handlers. 
@@ -290,4 +292,11 @@ namespace Eto
 		}
 
 	}
+
+	public abstract class WidgetHandler<T, TWidget, TCallback> : WidgetHandler<T, TWidget>
+		where TWidget: Widget
+	{
+		public new TCallback Callback { get { return (TCallback)base.Callback; } }
+	}
+
 }

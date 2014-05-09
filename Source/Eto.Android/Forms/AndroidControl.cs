@@ -19,8 +19,9 @@ namespace Eto.Android.Forms
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class AndroidControl<T, TWidget> : WidgetHandler<T, TWidget>, IControl, IAndroidControl
+	public abstract class AndroidControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl, IAndroidControl
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		public abstract av.View ContainerControl { get; }
 

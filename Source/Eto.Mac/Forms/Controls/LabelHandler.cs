@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class LabelHandler : MacView<NSTextField, Label>, ILabel
+	public class LabelHandler : MacView<NSTextField, Label, Label.ICallback>, ILabel
 	{
 		static readonly bool supportsSingleLine;
 		Font font;

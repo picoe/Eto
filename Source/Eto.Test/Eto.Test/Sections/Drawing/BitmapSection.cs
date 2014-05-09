@@ -24,7 +24,7 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		public override void OnPaint(PaintEventArgs e)
+		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
 			if (Image != null)

@@ -16,6 +16,8 @@ namespace Eto.Wpf.Forms
 		static ApplicationHandler instance;
 		List<sw.Window> delayShownWindows;
 
+		public new IApplicationCallback Callback { get { return (IApplicationCallback)base.Callback; } }
+
 		public static ApplicationHandler Instance
 		{
 			get { return instance; }
@@ -158,7 +160,7 @@ namespace Eto.Wpf.Forms
 
 		public void Run(string[] args)
 		{
-			Widget.OnInitialized(EventArgs.Empty);
+			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
 				if (shutdown) return;

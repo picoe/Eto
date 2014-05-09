@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox>, IListBox
+	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox, ListBox.ICallback>, IListBox
 	{
 		IListStore store;
 		ContextMenu contextMenu;
@@ -29,12 +29,12 @@ namespace Eto.Wpf.Forms.Controls
 			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate
 			{
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
 			Control.MouseDoubleClick += delegate
 			{
 				if (SelectedIndex >= 0)
-					Widget.OnActivated(EventArgs.Empty);
+					Callback.OnActivated(Widget, EventArgs.Empty);
 			};
 			Control.KeyDown += (sender, e) =>
 			{
@@ -42,7 +42,7 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					if (SelectedIndex >= 0)
 					{
-						Widget.OnActivated(EventArgs.Empty);
+						Callback.OnActivated(Widget, EventArgs.Empty);
 						e.Handled = true;
 					}
 				}

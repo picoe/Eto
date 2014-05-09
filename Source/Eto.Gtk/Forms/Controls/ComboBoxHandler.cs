@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class ComboBoxHandler : GtkControl<Gtk.ComboBox, ComboBox>, IComboBox
+	public class ComboBoxHandler : GtkControl<Gtk.ComboBox, ComboBox, ComboBox.ICallback>, IComboBox
 	{
 		Font font;
 		CollectionHandler collection;
@@ -40,7 +40,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -55,7 +55,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			get
 			{
 				if (font == null)
-					font = new Font(Widget.Platform, new FontHandler(text.FontDesc));
+					font = new Font(new FontHandler(text.FontDesc));
 				return font;
 			}
 			set

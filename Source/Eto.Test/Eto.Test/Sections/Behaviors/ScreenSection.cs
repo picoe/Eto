@@ -35,14 +35,14 @@ namespace Eto.Test.Sections.Behaviors
 			Content = layout;
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		protected override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 			parentWindow = ParentWindow;
 			parentWindow.LocationChanged += HandleLocationChanged;
 		}
 
-		public override void OnUnLoad(EventArgs e)
+		protected override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
 			parentWindow.LocationChanged -= HandleLocationChanged;

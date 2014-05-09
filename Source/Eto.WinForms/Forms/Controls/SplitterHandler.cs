@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class SplitterHandler : WindowsControl<swf.SplitContainer, Splitter>, ISplitter
+	public class SplitterHandler : WindowsControl<swf.SplitContainer, Splitter, Splitter.ICallback>, ISplitter
 	{
 		Control panel1;
 		Control panel2;
@@ -74,7 +74,7 @@ namespace Eto.WinForms
 					// Hook SplitterMoving, not SplitterMoved,
 					// because the latter fires even when the
 					// splitter distance is changed programmatically.
-					Control.SplitterMoving += (s, e) => Widget.OnPositionChanged(e);
+					Control.SplitterMoving += (s, e) => Callback.OnPositionChanged(Widget, e);
 					break;
 				default:
 					base.AttachEvent(id);

@@ -5,14 +5,13 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class CheckBoxHandler : WindowsControl<SWF.CheckBox, CheckBox>, ICheckBox
+	public class CheckBoxHandler : WindowsControl<SWF.CheckBox, CheckBox, CheckBox.ICallback>, ICheckBox
 	{
-
 		public CheckBoxHandler()
 		{
 			Control = new SWF.CheckBox();
 			Control.AutoSize = true;
-			Control.CheckStateChanged += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
+			Control.CheckStateChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
 
 		public bool? Checked

@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class SliderHandler : GtkControl<Gtk.EventBox, Slider>, ISlider
+	public class SliderHandler : GtkControl<Gtk.EventBox, Slider, Slider.ICallback>, ISlider
 	{
 		int min;
 		int max = 100;
@@ -52,7 +52,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				else if (lastValue == null || lastValue.Value != value)
 				{
-					Handler.Widget.OnValueChanged(EventArgs.Empty);
+					Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 					lastValue = value;
 				}
 			}

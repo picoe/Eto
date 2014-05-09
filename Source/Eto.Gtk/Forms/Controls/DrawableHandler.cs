@@ -5,7 +5,7 @@ using System;
 
 namespace Eto.GtkSharp
 {
-	public class DrawableHandler : GtkPanel<Gtk.EventBox, Drawable>, IDrawable
+	public class DrawableHandler : GtkPanel<Gtk.EventBox, Drawable, Drawable.ICallback>, IDrawable
 	{
 		Gtk.VBox content;
 
@@ -70,19 +70,19 @@ namespace Eto.GtkSharp
 			{
 				var h = Handler;
 				Gdk.EventExpose ev = args.Event;
-				using (var graphics = new Graphics(h.Widget.Platform, new GraphicsHandler(h.Control, ev.Window)))
+				using (var graphics = new Graphics(new GraphicsHandler(h.Control, ev.Window)))
 				{
 					Rectangle rect = ev.Region.Clipbox.ToEto();
-					h.Widget.OnPaint(new PaintEventArgs(graphics, rect));
+					h.Callback.OnPaint(h.Widget, new PaintEventArgs(graphics, rect));
 				}
 			}
 #else
 			public void HandleDrawn(object o, Gtk.DrawnArgs args)
 			{
 				var h = Handler;
-				using (var graphics = new Graphics(h.Widget.Platform, new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false)))
+				using (var graphics = new Graphics(new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false)))
 				{
-					h.Widget.OnPaint (new PaintEventArgs (graphics, new Rectangle(h.Size)));
+					h.Callback.OnPaint(h.Widget, new PaintEventArgs (graphics, new Rectangle(h.Size)));
 				}
 			}
 #endif
@@ -90,15 +90,15 @@ namespace Eto.GtkSharp
 
 		public void Update(Rectangle rect)
 		{
-			using (var graphics = new Graphics(Widget.Platform, new GraphicsHandler(Control, Control.GdkWindow)))
+			using (var graphics = new Graphics(new GraphicsHandler(Control, Control.GdkWindow)))
 			{
-				Widget.OnPaint(new PaintEventArgs(graphics, rect));
+				Callback.OnPaint(Widget, new PaintEventArgs(graphics, rect));
 			}
 		}
 
 		public Graphics CreateGraphics()
 		{
-			return new Graphics(Widget.Platform, new GraphicsHandler(Control, Control.GdkWindow));
+			return new Graphics(new GraphicsHandler(Control, Control.GdkWindow));
 		}
 
 		protected override void SetContainerContent(Gtk.Widget content)

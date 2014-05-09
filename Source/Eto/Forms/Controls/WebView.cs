@@ -89,7 +89,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(NavigatedEvent, value); }
 		}
 
-		public virtual void OnNavigated(WebViewLoadedEventArgs e)
+		protected virtual void OnNavigated(WebViewLoadedEventArgs e)
 		{
 			Properties.TriggerEvent(NavigatedEvent, this, e);
 		}
@@ -102,7 +102,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(DocumentLoadedEvent, value); }
 		}
 
-		public virtual void OnDocumentLoaded(WebViewLoadedEventArgs e)
+		protected virtual void OnDocumentLoaded(WebViewLoadedEventArgs e)
 		{
 			Properties.TriggerEvent(DocumentLoadedEvent, this, e);
 		}
@@ -115,7 +115,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(DocumentLoadingEvent, value); }
 		}
 
-		public virtual void OnDocumentLoading(WebViewLoadingEventArgs e)
+		protected virtual void OnDocumentLoading(WebViewLoadingEventArgs e)
 		{
 			Properties.TriggerEvent(DocumentLoadingEvent, this, e);
 		}
@@ -128,7 +128,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(OpenNewWindowEvent, value); }
 		}
 
-		public virtual void OnOpenNewWindow(WebViewNewWindowEventArgs e)
+		protected virtual void OnOpenNewWindow(WebViewNewWindowEventArgs e)
 		{
 			Properties.TriggerEvent(OpenNewWindowEvent, this, e);
 		}
@@ -141,7 +141,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(DocumentTitleChangedEvent, value); }
 		}
 
-		public virtual void OnDocumentTitleChanged(WebViewTitleEventArgs e)
+		protected virtual void OnDocumentTitleChanged(WebViewTitleEventArgs e)
 		{
 			Properties.TriggerEvent(DocumentTitleChangedEvent, this, e);
 		}
@@ -241,6 +241,42 @@ namespace Eto.Forms
 		{
 			get { return Handler.BrowserContextMenuEnabled; }
 			set { Handler.BrowserContextMenuEnabled = value; }
+		}
+
+		public interface ICallback : Control.ICallback
+		{
+			void OnNavigated(WebView widget, WebViewLoadedEventArgs e);
+			void OnDocumentLoaded(WebView widget, WebViewLoadedEventArgs e);
+			void OnDocumentLoading(WebView widget, WebViewLoadingEventArgs e);
+			void OnOpenNewWindow(WebView widget, WebViewNewWindowEventArgs e);
+			void OnDocumentTitleChanged(WebView widget, WebViewTitleEventArgs e);
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		protected class Callback : Control.Callback, ICallback
+		{
+			public void OnNavigated(WebView widget, WebViewLoadedEventArgs e)
+			{
+				widget.OnNavigated(e);
+			}
+			public void OnDocumentLoaded(WebView widget, WebViewLoadedEventArgs e)
+			{
+				widget.OnDocumentLoaded(e);
+			}
+			public void OnDocumentLoading(WebView widget, WebViewLoadingEventArgs e)
+			{
+				widget.OnDocumentLoading(e);
+			}
+			public void OnOpenNewWindow(WebView widget, WebViewNewWindowEventArgs e)
+			{
+				widget.OnOpenNewWindow(e);
+			}
+			public void OnDocumentTitleChanged(WebView widget, WebViewTitleEventArgs e)
+			{
+				widget.OnDocumentTitleChanged(e);
+			}
 		}
 	}
 }

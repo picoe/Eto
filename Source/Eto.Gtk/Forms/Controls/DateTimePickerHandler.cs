@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class DateTimePickerHandler : GtkControl<CustomControls.DateComboBox, DateTimePicker>, IDateTimePicker
+	public class DateTimePickerHandler : GtkControl<CustomControls.DateComboBox, DateTimePicker, DateTimePicker.ICallback>, IDateTimePicker
 	{
 		public DateTimePickerHandler()
 		{
@@ -30,7 +30,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleDateChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnValueChanged(EventArgs.Empty);
+				Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

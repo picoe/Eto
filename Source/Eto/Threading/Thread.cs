@@ -60,7 +60,7 @@ namespace Eto.Threading
 			Initialize();
 		}
 
-		public virtual void OnExecuted()
+		protected virtual void OnExecuted()
 		{
 			if (action != null)
 				action();
@@ -103,5 +103,21 @@ namespace Eto.Threading
 		}
 
 		#pragma warning restore 612,618
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Widget.ICallback
+		{
+			void OnExecuted(Thread widget);
+		}
+
+		protected class Callback : ICallback
+		{
+			public void OnExecuted(Thread widget)
+			{
+				widget.OnExecuted();
+			}
+		}
 	}
 }

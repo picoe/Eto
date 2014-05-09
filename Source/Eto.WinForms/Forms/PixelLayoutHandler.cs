@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class PixelLayoutHandler : WindowsContainer<swf.Panel, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : WindowsContainer<swf.Panel, PixelLayout, PixelLayout.ICallback>, IPixelLayout
 	{
 		public PixelLayoutHandler()
 		{

@@ -48,9 +48,10 @@ namespace Eto.GtkSharp
 		}
 	}
 
-	public abstract class GtkControl<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IGtkControl
+	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl, IGtkControl
 		where TControl: Gtk.Widget
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		Font font;
 		Size size;
@@ -375,7 +376,7 @@ namespace Eto.GtkSharp
 		/// </summary>
 		protected class GtkControlConnector : WeakConnector
 		{
-			public new GtkControl<TControl, TWidget> Handler { get { return (GtkControl<TControl, TWidget>)base.Handler; } }
+			public new GtkControl<TControl, TWidget, TCallback> Handler { get { return (GtkControl<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
 			{
@@ -402,7 +403,7 @@ namespace Eto.GtkSharp
 						throw new NotSupportedException();
 				}
 
-				Handler.Widget.OnMouseWheel(new MouseEventArgs(buttons, modifiers, p, delta));
+				Handler.Callback.OnMouseWheel(Handler.Widget, new MouseEventArgs(buttons, modifiers, p, delta));
 			}
 
 			public void HandleControlLeaveNotifyEvent(object o, Gtk.LeaveNotifyEventArgs args)
@@ -411,7 +412,7 @@ namespace Eto.GtkSharp
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
 
-				Handler.Widget.OnMouseLeave(new MouseEventArgs(buttons, modifiers, p));
+				Handler.Callback.OnMouseLeave(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
 			public void HandleControlEnterNotifyEvent(object o, Gtk.EnterNotifyEventArgs args)
@@ -420,7 +421,7 @@ namespace Eto.GtkSharp
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = MouseButtons.None;
 
-				Handler.Widget.OnMouseEnter(new MouseEventArgs(buttons, modifiers, p));
+				Handler.Callback.OnMouseEnter(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
 			public void HandleMotionNotifyEvent(System.Object o, Gtk.MotionNotifyEventArgs args)
@@ -429,7 +430,7 @@ namespace Eto.GtkSharp
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
 
-				Handler.Widget.OnMouseMove(new MouseEventArgs(buttons, modifiers, p));
+				Handler.Callback.OnMouseMove(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
 			public void HandleButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
@@ -438,7 +439,7 @@ namespace Eto.GtkSharp
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 
-				Handler.Widget.OnMouseUp(new MouseEventArgs(buttons, modifiers, p));
+				Handler.Callback.OnMouseUp(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
 			public void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
@@ -450,11 +451,11 @@ namespace Eto.GtkSharp
 					Handler.Control.GrabFocus();
 				if (args.Event.Type == Gdk.EventType.ButtonPress)
 				{
-					Handler.Widget.OnMouseDown(new MouseEventArgs(buttons, modifiers, p));
+					Handler.Callback.OnMouseDown(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 				}
 				else if (args.Event.Type == Gdk.EventType.TwoButtonPress)
 				{
-					Handler.Widget.OnMouseDoubleClick(new MouseEventArgs(buttons, modifiers, p));
+					Handler.Callback.OnMouseDoubleClick(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 				}
 			}
 
@@ -464,7 +465,7 @@ namespace Eto.GtkSharp
 				{
 					// only call when the size has actually changed, gtk likes to call anyway!!  grr.
 					Handler.asize = args.Allocation.Size.ToEto();
-					Handler.Widget.OnSizeChanged(EventArgs.Empty);
+					Handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
 				}
 			}
 
@@ -474,7 +475,7 @@ namespace Eto.GtkSharp
 				var e = args.Event.ToEto();
 				if (e != null)
 				{
-					Handler.Widget.OnKeyDown(e);
+					Handler.Callback.OnKeyDown(Handler.Widget, e);
 					args.RetVal = e.Handled;
 				}
 			}
@@ -484,25 +485,25 @@ namespace Eto.GtkSharp
 				var e = args.Event.ToEto();
 				if (e != null)
 				{
-					Handler.Widget.OnKeyUp(e);
+					Handler.Callback.OnKeyUp(Handler.Widget, e);
 					args.RetVal = e.Handled;
 				}
 			}
 
 			public void FocusInEvent(object o, Gtk.FocusInEventArgs args)
 			{
-				Handler.Widget.OnGotFocus(EventArgs.Empty);
+				Handler.Callback.OnGotFocus(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
 			{
-				Handler.Widget.OnLostFocus(EventArgs.Empty);
+				Handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void VisibilityNotifyEvent(object o, Gtk.VisibilityNotifyEventArgs args)
 			{
 				if (args.Event.State == Gdk.VisibilityState.FullyObscured)
-					Handler.Widget.OnShown(EventArgs.Empty);
+					Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleControlRealized(object sender, EventArgs e)
@@ -522,7 +523,7 @@ namespace Eto.GtkSharp
 			get
 			{
 				if (font == null)
-					font = new Font(Widget.Platform, new FontHandler(FontControl));
+					font = new Font(new FontHandler(FontControl));
 				return font;
 			}
 			set

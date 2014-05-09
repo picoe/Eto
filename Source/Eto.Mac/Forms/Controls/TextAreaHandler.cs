@@ -8,7 +8,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TextAreaHandler : MacView<NSTextView, TextArea>, ITextArea
+	public class TextAreaHandler : MacView<NSTextView, TextArea, TextArea.ICallback>, ITextArea
 	{
 		int? lastCaretIndex;
 		Range? lastSelection;
@@ -39,7 +39,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void TextDidChange(NSNotification notification)
 			{
-				Handler.Widget.OnTextChanged(EventArgs.Empty);
+				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public override void DidChangeSelection(NSNotification notification)
@@ -47,13 +47,13 @@ namespace Eto.Mac.Forms.Controls
 				var selection = Handler.Selection;
 				if (selection != Handler.lastSelection)
 				{
-					Handler.Widget.OnSelectionChanged(EventArgs.Empty);
+					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 					Handler.lastSelection = selection;
 				}
 				var caretIndex = Handler.CaretIndex;
 				if (caretIndex != Handler.lastCaretIndex)
 				{
-					Handler.Widget.OnCaretIndexChanged(EventArgs.Empty);
+					Handler.Callback.OnCaretIndexChanged(Handler.Widget, EventArgs.Empty);
 					Handler.lastCaretIndex = caretIndex;
 				}
 			}

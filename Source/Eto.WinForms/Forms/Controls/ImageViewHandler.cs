@@ -6,7 +6,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms
 {
-	public class ImageViewHandler : WindowsControl<SWF.PictureBox, ImageView>, IImageView
+	public class ImageViewHandler : WindowsControl<SWF.PictureBox, ImageView, ImageView.ICallback>, IImageView
 	{
 		Image image;
 		bool sizeSet;

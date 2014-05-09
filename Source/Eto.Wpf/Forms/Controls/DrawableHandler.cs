@@ -11,7 +11,7 @@ using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable>, IDrawable
+	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable, Drawable.ICallback>, IDrawable
 	{
 		bool tiled;
 		Scrollable scrollable;
@@ -62,7 +62,7 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
 					var graphics = new Graphics(new GraphicsHandler(this, dc, rect, false));
-					Handler.Widget.OnPaint(new PaintEventArgs(graphics, rect.ToEto()));
+					Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, rect.ToEto()));
 				}
 			}
 		}
@@ -99,7 +99,7 @@ namespace Eto.Wpf.Forms.Controls
 			protected override void OnRender(swm.DrawingContext drawingContext)
 			{
 				var graphics = new Graphics(new GraphicsHandler(this, drawingContext, bounds.ToWpf(), false));
-				Handler.Widget.OnPaint(new PaintEventArgs(graphics, Bounds));
+				Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, Bounds));
 			}
 		}
 

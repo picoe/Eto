@@ -12,6 +12,7 @@ namespace Eto.Mac.Forms
 		Color Color { get; set; }
 		ColorDialog Widget { get; }
 		NSColorPanel Control { get; }
+		ColorDialog.ICallback Callback { get; }
 	}
 	
 	class ColorHandler : NSWindowDelegate
@@ -24,7 +25,7 @@ namespace Eto.Mac.Forms
 		public void ChangeColor(NSColorPanel panel)
 		{
 			Handler.Color = panel.Color.UsingColorSpace (NSColorSpace.DeviceRGB).ToEto ();
-			Handler.Widget.OnColorChanged(EventArgs.Empty);
+			Handler.Callback.OnColorChanged(Handler.Widget, EventArgs.Empty);
 		}
 		
 		public override void WillClose (NSNotification notification)
@@ -42,9 +43,8 @@ namespace Eto.Mac.Forms
 		}
 	}
 	
-	public class ColorDialogHandler : MacObject<NSColorPanel, ColorDialog>, IColorDialog, IColorDialogHandler
+	public class ColorDialogHandler : MacObject<NSColorPanel, ColorDialog, ColorDialog.ICallback>, IColorDialog, IColorDialogHandler
 	{
-		
 		public ColorDialogHandler()
 		{
 			Control = NSColorPanel.SharedColorPanel;

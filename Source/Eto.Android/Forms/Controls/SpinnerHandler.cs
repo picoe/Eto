@@ -11,7 +11,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Forms.Controls
 {
-	public class SpinnerHandler : AndroidControl<aw.ProgressBar, Spinner>, ISpinner
+	public class SpinnerHandler : AndroidControl<aw.ProgressBar, Spinner, Spinner.ICallback>, ISpinner
 	{
 		bool enabled;
 

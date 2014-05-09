@@ -20,7 +20,7 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> ValueChanged;
 
-		public virtual void OnValueChanged(EventArgs e)
+		protected virtual void OnValueChanged(EventArgs e)
 		{
 			if (ValueChanged != null)
 				ValueChanged(this, e);
@@ -79,6 +79,22 @@ namespace Eto.Forms
 				{
 					SettingNullValue = 0
 				};
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : CommonControl.ICallback
+		{
+			void OnValueChanged(NumericUpDown widget, EventArgs e);
+		}
+
+		protected class Callback : CommonControl.Callback, ICallback
+		{
+			public void OnValueChanged(NumericUpDown widget, EventArgs e)
+			{
+				widget.OnValueChanged(e);
 			}
 		}
 	}

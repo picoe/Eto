@@ -7,9 +7,10 @@ using aw = Android.Widget;
 
 namespace Eto.Android.Forms.Controls
 {
-	public abstract class AndroidCommonControl<T, TWidget> : AndroidControl<T, TWidget>, ICommonControl
+	public abstract class AndroidCommonControl<TControl, TWidget, TCallback> : AndroidControl<TControl, TWidget, TCallback>, ICommonControl
 		where TWidget: CommonControl
-		where T: av.View
+		where TControl: av.View
+		where TCallback: CommonControl.ICallback
 	{
 		public override av.View ContainerControl
 		{

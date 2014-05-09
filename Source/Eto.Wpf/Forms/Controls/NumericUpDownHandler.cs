@@ -6,12 +6,12 @@ using mwc = Xceed.Wpf.Toolkit;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
 	{
 		public NumericUpDownHandler ()
 		{
 			Control = new mwc.DoubleUpDown ();
-			Control.ValueChanged += (sender, e) => Widget.OnValueChanged(EventArgs.Empty);
+			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

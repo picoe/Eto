@@ -65,11 +65,7 @@ namespace Eto.Forms
 		
 		public void Push (INavigationItem item)
 		{
-			var load = SetParent(item.Content);
-
-			Handler.Push (item);
-			if (load)
-				item.Content.OnLoadComplete (EventArgs.Empty);
+			SetParent(item.Content, () => Handler.Push(item));
 		}
 		
 		public virtual void Pop ()
@@ -80,6 +76,22 @@ namespace Eto.Forms
 		public override void Remove(Control child)
 		{
 			//throw new NotImplementedException();
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Container.ICallback
+		{
+			void OnItemShown(Navigation widget, EventArgs e);
+		}
+
+		protected class Callback : Container.Callback, ICallback
+		{
+			public void OnItemShown(Navigation widget, EventArgs e)
+			{
+				widget.OnItemShown(e);
+			}
 		}
 	}
 }

@@ -8,7 +8,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ComboBoxHandler : IosControl<UILabel, ComboBox>, IComboBox
+	public class ComboBoxHandler : IosControl<UILabel, ComboBox, ComboBox.ICallback>, IComboBox
 	{
 		IListStore dataStore;
 		int selectedIndex = -1;
@@ -138,7 +138,7 @@ namespace Eto.iOS.Forms.Controls
 				{
 					selectedIndex = value;
 					SetText();
-					Widget.OnSelectedIndexChanged(EventArgs.Empty);
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class RadioButtonHandler : MacButton<NSButton, RadioButton>, IRadioButton
+	public class RadioButtonHandler : MacButton<NSButton, RadioButton, RadioButton.ICallback>, IRadioButton
 	{
 		List<RadioButton> group;
 

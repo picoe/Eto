@@ -33,7 +33,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(ClosedEvent, value); }
 		}
 
-		public virtual void OnClosed(EventArgs e)
+		protected virtual void OnClosed(EventArgs e)
 		{
 			OnUnLoad(EventArgs.Empty);
 			Properties.TriggerEvent(ClosedEvent, this, e);
@@ -47,7 +47,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(ClosingEvent, value); }
 		}
 
-		public virtual void OnClosing(CancelEventArgs e)
+		protected virtual void OnClosing(CancelEventArgs e)
 		{
 			Properties.TriggerEvent(ClosingEvent, this, e);
 		}
@@ -60,7 +60,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(LocationChangedEvent, value); }
 		}
 
-		public virtual void OnLocationChanged(EventArgs e)
+		protected virtual void OnLocationChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(LocationChangedEvent, this, e);
 		}
@@ -188,6 +188,37 @@ namespace Eto.Forms
 		public Screen Screen
 		{
 			get { return Handler.Screen; }
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Panel.ICallback
+		{
+			void OnClosed(Window widget, EventArgs e);
+			void OnClosing(Window widget, CancelEventArgs e);
+			void OnLocationChanged(Window widget, EventArgs e);
+			void OnWindowStateChanged(Window widget, EventArgs e);
+		}
+
+		protected class Callback : Panel.Callback, ICallback
+		{
+			public void OnClosed(Window widget, EventArgs e)
+			{
+				widget.OnClosed(e);
+			}
+			public void OnClosing(Window widget, CancelEventArgs e)
+			{
+				widget.OnClosing(e);
+			}
+			public void OnLocationChanged(Window widget, EventArgs e)
+			{
+				widget.OnLocationChanged(e);
+			}
+			public void OnWindowStateChanged(Window widget, EventArgs e)
+			{
+				widget.OnWindowStateChanged(e);
+			}
 		}
 	}
 }

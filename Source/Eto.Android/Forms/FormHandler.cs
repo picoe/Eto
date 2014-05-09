@@ -12,7 +12,7 @@ namespace Eto.Android.Forms
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class FormHandler : AndroidWindow<Form>, IForm
+	public class FormHandler : AndroidWindow<Form, Form.ICallback>, IForm
 	{
 		public void Show()
 		{

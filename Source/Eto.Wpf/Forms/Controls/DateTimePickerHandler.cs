@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class DateTimePickerHandler : WpfControl<mwc.DateTimePicker, DateTimePicker>, IDateTimePicker
+	public class DateTimePickerHandler : WpfControl<mwc.DateTimePicker, DateTimePicker, DateTimePicker.ICallback>, IDateTimePicker
 	{
 		DateTimePickerMode mode;
 
@@ -42,7 +42,7 @@ namespace Eto.Wpf.Forms.Controls
 
 				if (last != val && (last == null || val == null || Math.Abs((last.Value - val.Value).TotalSeconds) >= 1))
 				{
-					Widget.OnValueChanged(EventArgs.Empty);
+					Callback.OnValueChanged(Widget, EventArgs.Empty);
 					last = val;
 				}
 			};

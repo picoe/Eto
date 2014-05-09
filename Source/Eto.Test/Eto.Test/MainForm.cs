@@ -196,13 +196,13 @@ namespace Eto.Test
 			}
 		}
 
-		public override void OnWindowStateChanged(EventArgs e)
+		protected override void OnWindowStateChanged(EventArgs e)
 		{
 			base.OnWindowStateChanged(e);
 			Log.Write(this, "StateChanged: {0}", WindowState);
 		}
 
-		public override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
 			Log.Write(this, "Closing");
@@ -215,7 +215,7 @@ namespace Eto.Test
 			*/
 		}
 
-		public override void OnClosed(EventArgs e)
+		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
 			Log.Write(this, "Closed");

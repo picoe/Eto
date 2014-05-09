@@ -6,9 +6,10 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public abstract class MacControl<TControl, TWidget> : MacView<TControl, TWidget>
+	public abstract class MacControl<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
 		where TControl: NSControl
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		Font font;
 

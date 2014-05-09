@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class SliderHandler : WpfControl<swc.Slider, Slider>, ISlider
+	public class SliderHandler : WpfControl<swc.Slider, Slider, Slider.ICallback>, ISlider
 	{
 		public SliderHandler ()
 		{
@@ -14,7 +14,7 @@ namespace Eto.Wpf.Forms.Controls
 				TickPlacement = swc.Primitives.TickPlacement.BottomRight
 			};
 			Control.ValueChanged += delegate {
-				Widget.OnValueChanged (EventArgs.Empty);
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
 			};
 		}
 

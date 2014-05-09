@@ -8,7 +8,7 @@ using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Printing
 {
-	public class PrintDocumentHandler : WidgetHandler<PrintDocumentHandler.Paginator, PrintDocument>, IPrintDocument
+	public class PrintDocumentHandler : WidgetHandler<PrintDocumentHandler.Paginator, PrintDocument, PrintDocument.ICallback>, IPrintDocument
 	{
 		public PrintDocumentHandler ()
 		{
@@ -31,7 +31,7 @@ namespace Eto.Wpf.Forms.Printing
 				graphics.DrawRectangle (new Pen(Colors.Transparent), rect);
 
 				var args = new PrintPageEventArgs (graphics, rect.Size, PageNumber);
-				Handler.Widget.OnPrintPage (args);
+				Handler.Callback.OnPrintPage(Handler.Widget, args);
 			}
 		}
 

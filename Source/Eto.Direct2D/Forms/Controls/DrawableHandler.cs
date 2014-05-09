@@ -15,7 +15,6 @@ namespace Eto.Direct2D.Forms.Controls
 		Graphics graphics;
 		GraphicsHandler graphicsHandler;
 		SolidBrush backgroundColor;
-		Scrollable scrollable;
 
 		public override Color BackgroundColor
 		{
@@ -40,12 +39,6 @@ namespace Eto.Direct2D.Forms.Controls
 			};
 		}
 
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			scrollable = Widget.FindParent<Scrollable>();
-		}
-
 		public override Graphics CreateGraphics()
 		{
 			if (graphics == null)
@@ -61,7 +54,7 @@ namespace Eto.Direct2D.Forms.Controls
 				return;
 			graphicsHandler.PerformDrawing(null, () =>
 			{
-				Widget.OnPaint(new PaintEventArgs(graphics, rect));
+				Callback.OnPaint(Widget, new PaintEventArgs(graphics, rect));
 			});
 		}
 
@@ -78,7 +71,7 @@ namespace Eto.Direct2D.Forms.Controls
 				graphics.Clear(backgroundColor);
 
 				// perform user painting
-				Widget.OnPaint(new PaintEventArgs(graphics, clipRect));
+				Callback.OnPaint(Widget, new PaintEventArgs(graphics, clipRect));
 			});
 		}
 	}

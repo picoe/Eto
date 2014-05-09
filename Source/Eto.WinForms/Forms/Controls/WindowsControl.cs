@@ -79,9 +79,10 @@ namespace Eto.WinForms
 		}
 	}
 
-	public abstract class WindowsControl<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IWindowsControl
+	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl, IWindowsControl
 		where TControl : swf.Control
 		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		bool internalVisible = true;
 		Font font;
@@ -261,16 +262,10 @@ namespace Eto.WinForms
 					}
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += delegate
-					{
-						Widget.OnGotFocus(EventArgs.Empty);
-					};
+					Control.GotFocus += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += delegate
-					{
-						Widget.OnLostFocus(EventArgs.Empty);
-					};
+					Control.LostFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -280,42 +275,42 @@ namespace Eto.WinForms
 
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
 		{
-			Widget.OnMouseWheel(e.ToEto(Control));
+			Callback.OnMouseWheel(Widget, e.ToEto(Control));
 		}
 
 		void HandleControlMouseLeave(object sender, EventArgs e)
 		{
-			Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, swf.Control.ModifierKeys.ToEto(), swf.Control.MousePosition.ToEto()));
+			Callback.OnMouseLeave(Widget, new MouseEventArgs(MouseButtons.None, swf.Control.ModifierKeys.ToEto(), swf.Control.MousePosition.ToEto()));
 		}
 
 		void HandleControlMouseEnter(object sender, EventArgs e)
 		{
-			Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, swf.Control.ModifierKeys.ToEto(), swf.Control.MousePosition.ToEto()));
+			Callback.OnMouseEnter(Widget, new MouseEventArgs(MouseButtons.None, swf.Control.ModifierKeys.ToEto(), swf.Control.MousePosition.ToEto()));
 		}
 
 		void HandleDoubleClick(object sender, swf.MouseEventArgs e)
 		{
 			var ee = e.ToEto(Control);
-			Widget.OnMouseDoubleClick(ee);
+			Callback.OnMouseDoubleClick(Widget, ee);
 			if (!ee.Handled)
-				Widget.OnMouseDown(ee);
+				Callback.OnMouseDown(Widget, ee);
 		}
 
 		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
 		{
 			if (ShouldCaptureMouse)
 				Control.Capture = false;
-			Widget.OnMouseUp(e.ToEto(Control));
+			Callback.OnMouseUp(Widget, e.ToEto(Control));
 		}
 
 		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
 		{
-			Widget.OnMouseMove(e.ToEto(Control));
+			Callback.OnMouseMove(Widget, e.ToEto(Control));
 		}
 
 		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
-			Widget.OnMouseDown(e.ToEto(Control));
+			Callback.OnMouseDown(Widget, e.ToEto(Control));
 			if (ShouldCaptureMouse)
 				Control.Capture = true;
 		}
@@ -450,7 +445,7 @@ namespace Eto.WinForms
 
 		void Control_SizeChanged(object sender, EventArgs e)
 		{
-			Widget.OnSizeChanged(e);
+			Callback.OnSizeChanged(Widget, e);
 		}
 
 		public virtual void OnPreLoad(EventArgs e)
@@ -496,7 +491,7 @@ namespace Eto.WinForms
 			if (key != Keys.None && LastKeyDown != key)
 			{
 				var kpea = new KeyEventArgs(key, KeyEventType.KeyDown);
-				Widget.OnKeyDown(kpea);
+				Callback.OnKeyDown(Widget, kpea);
 
 				handled = e.SuppressKeyPress = e.Handled = kpea.Handled;
 			}
@@ -508,7 +503,7 @@ namespace Eto.WinForms
 				// this is when something in the event causes messages to be processed for some reason (e.g. show dialog box)
 				// we want the char event to come after the dialog is closed, and handled is set to true!
 				var kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
-				Widget.OnKeyDown(kpea);
+				Callback.OnKeyDown(Widget, kpea);
 				e.SuppressKeyPress = e.Handled = kpea.Handled;
 			}
 
@@ -522,7 +517,7 @@ namespace Eto.WinForms
 			if (!handled)
 			{
 				var kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
-				Widget.OnKeyDown(kpea);
+				Callback.OnKeyDown(Widget, kpea);
 				e.Handled = kpea.Handled;
 			}
 			else
@@ -535,7 +530,7 @@ namespace Eto.WinForms
 			key = e.KeyData.ToEto();
 
 			var kpea = new KeyEventArgs(key, KeyEventType.KeyUp);
-			Widget.OnKeyUp(kpea);
+			Callback.OnKeyUp(Widget, kpea);
 			e.Handled = kpea.Handled;
 		}
 
@@ -543,7 +538,10 @@ namespace Eto.WinForms
 		{
 			var widget = Widget as TextControl;
 			if (widget != null)
-				widget.OnTextChanged(e);
+			{
+				var callback = (TextControl.ICallback)((ICallbackSource)widget).Callback;
+				callback.OnTextChanged(widget, e);
+			}
 		}
 
 		public Font Font

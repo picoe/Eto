@@ -116,31 +116,31 @@ namespace Eto
 		/// Gets a value indicating whether this platform is a mac based platform (MonoMac/XamMac)
 		/// </summary>
 		/// <value><c>true</c> if this platform is mac; otherwise, <c>false</c>.</value>
-		public virtual bool IsMac { get { return false; } }
+		public virtual new bool IsMac { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on Windows Forms
 		/// </summary>
 		/// <value><c>true</c> if this platform is window forms; otherwise, <c>false</c>.</value>
-		public virtual bool IsWinForms { get { return false; } }
+		public virtual new bool IsWinForms { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on WPF
 		/// </summary>
 		/// <value><c>true</c> if this platform is wpf; otherwise, <c>false</c>.</value>
-		public virtual bool IsWpf { get { return false; } }
+		public virtual new bool IsWpf { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on GTK# (2 or 3)
 		/// </summary>
 		/// <value><c>true</c> if this platform is gtk; otherwise, <c>false</c>.</value>
-		public virtual bool IsGtk { get { return false; } }
+		public virtual new bool IsGtk { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on Xamarin.iOS
 		/// </summary>
 		/// <value><c>true</c> if this platform is ios; otherwise, <c>false</c>.</value>
-		public virtual bool IsIos { get { return false; } }
+		public virtual new bool IsIos { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on Xamarin.Android.
@@ -299,7 +299,7 @@ namespace Eto
 		/// Initialize the generator with the specified <paramref name="generatorType"/> as the current generator
 		/// </summary>
 		/// <param name="generatorType">Type of the generator to set as the current generator</param>
-		public static void Initialize(string generatorType)
+		public static new void Initialize(string generatorType)
 		{
 			Initialize(Get(generatorType));
 		}

@@ -278,10 +278,7 @@ namespace Eto.Forms
 			controls[x, y] = control;
 			if (control != null)
 			{
-				var load = SetParent(control);
-				Handler.Add(control, x, y);
-				if (load)
-					control.OnLoadComplete(EventArgs.Empty);
+				SetParent(control, () => Handler.Add(control, x, y));
 			}
 			else
 			{

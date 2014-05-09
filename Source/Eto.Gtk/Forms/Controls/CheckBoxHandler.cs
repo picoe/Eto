@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox>, ICheckBox
+	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox, CheckBox.ICallback>, ICheckBox
 	{
 		Font font;
 		readonly Gtk.EventBox box;
@@ -57,7 +57,7 @@ namespace Eto.GtkSharp
 						c.Active = true;
 					}
 				}
-				h.Widget.OnCheckedChanged(EventArgs.Empty);
+				h.Callback.OnCheckedChanged(h.Widget, EventArgs.Empty);
 				toggling = false;
 
 			}
@@ -74,7 +74,7 @@ namespace Eto.GtkSharp
 			get
 			{
 				if (font == null)
-					font = new Font(Widget.Platform, new FontHandler(Control.Child));
+					font = new Font(new FontHandler(Control.Child));
 				return font;
 			}
 			set

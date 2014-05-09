@@ -73,7 +73,7 @@ namespace Eto.Forms
 		/// You can set this size to ensure that all buttons are at least of this size
 		/// </remarks>
 		[Obsolete("This is no longer supported. Set the size of your buttons directly")]
-		public static Size DefaultSize = new Size (80, 26);
+		public static Size DefaultSize = new Size(80, 26);
 
 		EventHandler<EventArgs> click;
 
@@ -90,10 +90,10 @@ namespace Eto.Forms
 		/// Raises the <see cref="Click"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnClick (EventArgs e)
+		protected virtual void OnClick(EventArgs e)
 		{
 			if (click != null)
-				click (this, e);
+				click(this, e);
 		}
 
 		/// <summary>
@@ -108,8 +108,8 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="generator">Generator to create the button</param>
 		[Obsolete("Use default constructor instead")]
-		public Button (Generator generator)
-			: this (generator, typeof (IButton))
+		public Button(Generator generator)
+			: this(generator, typeof(IButton))
 		{
 		}
 
@@ -124,8 +124,8 @@ namespace Eto.Forms
 		/// <param name="type">Type of the button handler to use for the subclass</param>
 		/// <param name="initialize">True to initialize the button, false if you will initialize after constructor logic</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Button (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+		protected Button(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 		}
 
@@ -147,6 +147,22 @@ namespace Eto.Forms
 		{
 			get { return Handler.ImagePosition; }
 			set { Handler.ImagePosition = value; }
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : TextControl.ICallback
+		{
+			void OnClick(Button widget, EventArgs e);
+		}
+
+		protected class Callback : TextControl.Callback, ICallback
+		{
+			public void OnClick(Button widget, EventArgs e)
+			{
+				widget.OnClick(e);
+			}
 		}
 	}
 }

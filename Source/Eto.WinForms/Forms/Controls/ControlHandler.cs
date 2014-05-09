@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class ControlHandler : WindowsControl<SWF.Control, Control>
+	public class ControlHandler : WindowsControl<SWF.Control, Control, Control.ICallback>
 	{
 		public ControlHandler()
 		{

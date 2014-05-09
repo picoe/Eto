@@ -96,14 +96,14 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> EnabledChanged;
 
-		public virtual void OnEnabledChanged(EventArgs e)
+		protected virtual void OnEnabledChanged(EventArgs e)
 		{
 			if (EnabledChanged != null) EnabledChanged(this, e);
 		}
 
 		public event EventHandler<EventArgs> Executed;
 
-		public virtual void OnExecuted(EventArgs e)
+		protected virtual void OnExecuted(EventArgs e)
 		{
 			if (Executed != null) Executed(this, e);
 		}

@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class PasswordBoxHandler : WpfControl<swc.PasswordBox, PasswordBox>, IPasswordBox
+	public class PasswordBoxHandler : WpfControl<swc.PasswordBox, PasswordBox, PasswordBox.ICallback>, IPasswordBox
 	{
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
 
@@ -31,7 +31,7 @@ namespace Eto.Wpf.Forms.Controls
 				case TextControl.TextChangedEvent:
 					Control.PasswordChanged += delegate
 					{
-						Widget.OnTextChanged(EventArgs.Empty);
+						Callback.OnTextChanged(Widget, EventArgs.Empty);
 					};
 					break;
 				default:

@@ -4,13 +4,13 @@ using Eto.Forms;
 namespace Eto.Wpf.Forms
 {
 
-	public class UITimerHandler : WidgetHandler<System.Windows.Threading.DispatcherTimer, UITimer>, IUITimer
+	public class UITimerHandler : WidgetHandler<System.Windows.Threading.DispatcherTimer, UITimer, UITimer.ICallback>, IUITimer
 	{
 		
 		public UITimerHandler ()
 		{
 			Control = new System.Windows.Threading.DispatcherTimer ();
-			Control.Tick += (sender, e) => Widget.OnElapsed(EventArgs.Empty);
+			Control.Tick += (sender, e) => Callback.OnElapsed(Widget, EventArgs.Empty);
 		}
 
 		public void Start ()

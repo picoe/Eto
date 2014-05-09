@@ -69,7 +69,7 @@ namespace Eto.GtkSharp.Forms.Printing
 		}
 		public PrintSettings PrintSettings {
 			get {
-				if (settings == null) settings = new PrintSettings(Widget.Platform);
+				if (settings == null) settings = new PrintSettings();
 				return settings;
 			}
 			set {

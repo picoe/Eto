@@ -6,8 +6,9 @@ using Eto.GtkSharp.Forms.Cells;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public abstract class GridHandler<TWidget> : GtkControl<Gtk.ScrolledWindow, TWidget>, IGrid, ICellDataSource, IGridHandler
+	public abstract class GridHandler<TWidget, TCallback> : GtkControl<Gtk.ScrolledWindow, TWidget, TCallback>, IGrid, ICellDataSource, IGridHandler
 		where TWidget : Grid
+		where TCallback: Grid.ICallback
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
@@ -59,7 +60,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected class GridConnector : GtkControlConnector
 		{
-			public new GridHandler<TWidget> Handler { get { return (GridHandler<TWidget>)base.Handler; } }
+			public new GridHandler<TWidget, TCallback> Handler { get { return (GridHandler<TWidget, TCallback>)base.Handler; } }
 
 			[GLib.ConnectBefore]
 			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
@@ -76,7 +77,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleGridSelectionChanged(object sender, EventArgs e)
 			{
 				if (!Handler.SkipSelectedChange)
-					Handler.Widget.OnSelectionChanged(EventArgs.Empty);
+					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -126,7 +127,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<TWidget> Handler { get; set; }
+			public GridHandler<TWidget, TCallback> Handler { get; set; }
 
 			public override void AddItem(GridColumn item)
 			{
@@ -202,19 +203,19 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var row = path.Indices.Length > 0 ? path.Indices[0] : -1;
 			var item = GetItem(path);
-			Widget.OnCellEdited(new GridViewCellArgs(Widget.Columns[column], row, column, item));
+			Callback.OnCellEdited(Widget, new GridViewCellArgs(Widget.Columns[column], row, column, item));
 		}
 
 		public void BeginCellEditing(Gtk.TreePath path, int column)
 		{
 			var row = path.Indices.Length > 0 ? path.Indices[0] : -1;
 			var item = GetItem(path);
-			Widget.OnCellEditing(new GridViewCellArgs(Widget.Columns[column], row, column, item));
+			Callback.OnCellEditing(Widget, new GridViewCellArgs(Widget.Columns[column], row, column, item));
 		}
 
 		public void ColumnClicked(GridColumnHandler column)
 		{
-			Widget.OnColumnHeaderClick(new GridColumnEventArgs(column.Widget));
+			Callback.OnColumnHeaderClick(Widget, new GridColumnEventArgs(column.Widget));
 		}
 
 		public bool AllowMultipleSelection
@@ -263,7 +264,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
-			Widget.OnCellFormatting(args);
+			Callback.OnCellFormatting(Widget, args);
 		}
 
 	}

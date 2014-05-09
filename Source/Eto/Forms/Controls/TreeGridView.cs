@@ -51,7 +51,7 @@ namespace Eto.Forms
 
 		static readonly object ActivatedKey = new object();
 
-		public virtual void OnActivated(TreeGridViewItemEventArgs e)
+		protected virtual void OnActivated(TreeGridViewItemEventArgs e)
 		{
 			Properties.TriggerEvent(ActivatedKey, this, e);
 		}
@@ -64,7 +64,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(ExpandingEvent, value); }
 		}
 
-		public virtual void OnExpanding(TreeGridViewItemCancelEventArgs e)
+		protected virtual void OnExpanding(TreeGridViewItemCancelEventArgs e)
 		{
 			Properties.TriggerEvent(ExpandingEvent, this, e);
 		}
@@ -77,7 +77,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(ExpandedEvent, value); }
 		}
 
-		public virtual void OnExpanded(TreeGridViewItemEventArgs e)
+		protected virtual void OnExpanded(TreeGridViewItemEventArgs e)
 		{
 			Properties.TriggerEvent(ExpandedEvent, this, e);
 		}
@@ -90,7 +90,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(CollapsingEvent, value); }
 		}
 
-		public virtual void OnCollapsing(TreeGridViewItemCancelEventArgs e)
+		protected virtual void OnCollapsing(TreeGridViewItemCancelEventArgs e)
 		{
 			Properties.TriggerEvent(CollapsingEvent, this, e);
 		}
@@ -103,7 +103,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(CollapsedEvent, value); }
 		}
 
-		public virtual void OnCollapsed(TreeGridViewItemEventArgs e)
+		protected virtual void OnCollapsed(TreeGridViewItemEventArgs e)
 		{
 			Properties.TriggerEvent(CollapsedEvent, this, e);
 		}
@@ -116,7 +116,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(SelectedItemChangedEvent, value); }
 		}
 
-		public virtual void OnSelectedItemChanged(EventArgs e)
+		protected virtual void OnSelectedItemChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectedItemChangedEvent, this, e);
 		}
@@ -169,6 +169,47 @@ namespace Eto.Forms
 				{
 					yield return DataStore[row];
 				}
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Grid.ICallback
+		{
+			void OnActivated(TreeGridView widget, TreeGridViewItemEventArgs e);
+			void OnExpanding(TreeGridView widget, TreeGridViewItemCancelEventArgs e);
+			void OnExpanded(TreeGridView widget, TreeGridViewItemEventArgs e);
+			void OnCollapsing(TreeGridView widget, TreeGridViewItemCancelEventArgs e);
+			void OnCollapsed(TreeGridView widget, TreeGridViewItemEventArgs e);
+			void OnSelectedItemChanged(TreeGridView widget, EventArgs e);
+		}
+
+		protected class Callback : Grid.Callback, ICallback
+		{
+			public void OnActivated(TreeGridView widget, TreeGridViewItemEventArgs e)
+			{
+				widget.OnActivated(e);
+			}
+			public void OnExpanding(TreeGridView widget, TreeGridViewItemCancelEventArgs e)
+			{
+				widget.OnExpanding(e);
+			}
+			public void OnExpanded(TreeGridView widget, TreeGridViewItemEventArgs e)
+			{
+				widget.OnExpanded(e);
+			}
+			public void OnCollapsing(TreeGridView widget, TreeGridViewItemCancelEventArgs e)
+			{
+				widget.OnCollapsing(e);
+			}
+			public void OnCollapsed(TreeGridView widget, TreeGridViewItemEventArgs e)
+			{
+				widget.OnCollapsed(e);
+			}
+			public void OnSelectedItemChanged(TreeGridView widget, EventArgs e)
+			{
+				widget.OnSelectedItemChanged(e);
 			}
 		}
 	}

@@ -73,9 +73,10 @@ namespace Eto.Wpf.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
-	public abstract class WpfFrameworkElement<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IWpfFrameworkElement
+	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl, IWpfFrameworkElement
 		where TControl : System.Windows.FrameworkElement
 		where TWidget : Control
+		where TCallback: Control.ICallback
 	{
 		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
@@ -270,7 +271,7 @@ namespace Eto.Wpf.Forms
 						if (isMouseOver != Control.IsMouseOver)
 						{
 							var args = e.ToEto(Control);
-							Widget.OnMouseEnter(args);
+							Callback.OnMouseEnter(Widget, args);
 							e.Handled = args.Handled;
 							isMouseOver = Control.IsMouseOver;
 						}
@@ -282,7 +283,7 @@ namespace Eto.Wpf.Forms
 						if (isMouseOver != Control.IsMouseOver)
 						{
 							var args = e.ToEto(Control);
-							Widget.OnMouseLeave(args);
+							Callback.OnMouseLeave(Widget, args);
 							e.Handled = args.Handled;
 							isMouseOver = Control.IsMouseOver;
 						}
@@ -292,7 +293,7 @@ namespace Eto.Wpf.Forms
 					ContainerControl.PreviewMouseWheel += (sender, e) =>
 					{
 						var args = e.ToEto(Control);
-						Widget.OnMouseLeave(args);
+						Callback.OnMouseLeave(Widget, args);
 						e.Handled = args.Handled;
 					};
 					break;
@@ -300,7 +301,7 @@ namespace Eto.Wpf.Forms
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
 						newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
-						Widget.OnSizeChanged(EventArgs.Empty);
+						Callback.OnSizeChanged(Widget, EventArgs.Empty);
 						newSize = null;
 					};
 					break;
@@ -320,7 +321,7 @@ namespace Eto.Wpf.Forms
 					Control.KeyUp += (sender, e) =>
 					{
 						var args = e.ToEto(KeyEventType.KeyUp);
-						Widget.OnKeyUp(args);
+						Callback.OnKeyUp(Widget, args);
 						e.Handled = args.Handled;
 					};
 					break;
@@ -329,15 +330,15 @@ namespace Eto.Wpf.Forms
 					{
 						if ((bool)e.NewValue)
 						{
-							Widget.OnShown(EventArgs.Empty);
+							Callback.OnShown(Widget, EventArgs.Empty);
 						}
 					};
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (sender, e) => Widget.OnGotFocus(EventArgs.Empty);
+					Control.GotFocus += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (sender, e) => Widget.OnLostFocus(EventArgs.Empty);
+					Control.LostFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -351,7 +352,7 @@ namespace Eto.Wpf.Forms
 			{
 				var key = Keys.None;
 				var args = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
-				Widget.OnKeyDown(args);
+				Callback.OnKeyDown(Widget, args);
 				e.Handled |= args.Handled;
 			}
 		}
@@ -359,21 +360,21 @@ namespace Eto.Wpf.Forms
 		void HandleKeyDown(object sender, swi.KeyEventArgs e)
 		{
 			var args = e.ToEto(KeyEventType.KeyDown);
-			Widget.OnKeyDown(args);
+			Callback.OnKeyDown(Widget, args);
 			e.Handled = args.Handled;
 		}
 
 		void HandleMouseMove(object sender, swi.MouseEventArgs e)
 		{
 			var args = e.ToEto(Control);
-			Widget.OnMouseMove(args);
+			Callback.OnMouseMove(Widget, args);
 			e.Handled = args.Handled || isMouseCaptured;
 		}
 
 		void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
 			var args = e.ToEto(Control, swi.MouseButtonState.Released);
-			Widget.OnMouseUp(args);
+			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
 			if (Control.IsMouseCaptured && isMouseCaptured)
 			{
@@ -385,7 +386,7 @@ namespace Eto.Wpf.Forms
 		void HandleMouseDoubleClick(object sender, swi.MouseButtonEventArgs e)
 		{
 			var args = e.ToEto(Control);
-			Widget.OnMouseDoubleClick(args);
+			Callback.OnMouseDoubleClick(Widget, args);
 			e.Handled = args.Handled;
 		}
 
@@ -394,11 +395,11 @@ namespace Eto.Wpf.Forms
 			isMouseCaptured = false;
 			var args = e.ToEto(Control);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
-				Widget.OnMouseDoubleClick(args);
+				Callback.OnMouseDoubleClick(Widget, args);
 			if (!args.Handled)
 			{
 				WpfFrameworkElementHelper.ShouldCaptureMouse = true;
-				Widget.OnMouseDown(args);
+				Callback.OnMouseDown(Widget, args);
 			}
 			e.Handled = args.Handled || !WpfFrameworkElementHelper.ShouldCaptureMouse;
 			if (WpfFrameworkElementHelper.ShouldCaptureMouse && (!UseMousePreview || e.Handled))

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp
 {
-	public class ApplicationHandler : WidgetHandler<object, Application>, IApplication
+	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, IApplication
 	{
 		bool attached;
 		Gtk.StatusIcon statusIcon;
@@ -56,7 +56,7 @@ namespace Eto.GtkSharp
 						};
 					}
 					var bmp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
-					using (var graphics = new Graphics(new Bitmap(Widget.Platform, new BitmapHandler(bmp))))
+					using (var graphics = new Graphics(new Bitmap(new BitmapHandler(bmp))))
 					{
 						graphics.Clear();
 						DrawBadgeLabel(graphics, new Size(bmp.Width, bmp.Height), badgeLabel);
@@ -74,7 +74,7 @@ namespace Eto.GtkSharp
 			var rect = new Rectangle(size);
 			rect.Inflate(-2, -2);
 			graphics.FillEllipse(Brushes.Red, rect);
-			graphics.DrawEllipse(new Pen(Colors.White, 2, Platform), rect);
+			graphics.DrawEllipse(new Pen(Colors.White, 2), rect);
 			var font = new Font(SystemFont.Bold, 10);
 			var labelSize = graphics.MeasureString(font, badgeLabel);
 			var labelPosition = ((PointF)(rect.Size - labelSize) / 2) + rect.Location;
@@ -131,7 +131,7 @@ namespace Eto.GtkSharp
 			//if (!Platform.IsWindows) Gdk.Threads.Init(); // do this in windows, and it stalls!  ugh
 			MainThreadID = Thread.CurrentThread.ManagedThreadId;
 
-			Widget.OnInitialized(EventArgs.Empty);
+			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
 				Gtk.Application.Run();
@@ -165,9 +165,9 @@ namespace Eto.GtkSharp
 			var args = new CancelEventArgs();
 			var mainForm = Widget.MainForm != null ? Widget.MainForm.Handler as IGtkWindow : null;
 			if (mainForm != null)
-				args.Cancel = !mainForm.CloseWindow(Widget.OnTerminating);
+				args.Cancel = !mainForm.CloseWindow(ce => Callback.OnTerminating(Widget, ce));
 			else
-				Widget.OnTerminating(args);
+				Callback.OnTerminating(Widget, args);
 
 			if (!args.Cancel)
 				Gtk.Application.Quit();

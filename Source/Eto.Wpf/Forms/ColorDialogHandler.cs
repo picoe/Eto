@@ -7,7 +7,7 @@ using msc = Microsoft.Samples.CustomControls;
 
 namespace Eto.Wpf.Forms
 {
-	public class ColorDialogHandler : WidgetHandler<msc.ColorPickerDialog, ColorDialog>, IColorDialog
+	public class ColorDialogHandler : WidgetHandler<msc.ColorPickerDialog, ColorDialog, ColorDialog.ICallback>, IColorDialog
 	{
 		public ColorDialogHandler ()
 		{
@@ -32,7 +32,7 @@ namespace Eto.Wpf.Forms
 			var result = Control.ShowDialog();
 			if (result == true)
 			{
-				Widget.OnColorChanged(EventArgs.Empty);
+				Callback.OnColorChanged(Widget, EventArgs.Empty);
 				return DialogResult.Ok;
 			}
 			return DialogResult.Cancel;

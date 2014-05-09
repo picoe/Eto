@@ -6,9 +6,10 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public abstract class WindowsPanel<TControl, TWidget> : WindowsContainer<TControl, TWidget>, IPanel
+	public abstract class WindowsPanel<TControl, TWidget, TCallback> : WindowsContainer<TControl, TWidget, TCallback>, IPanel
 		where TControl : swf.Control
 		where TWidget : Panel
+		where TCallback : Panel.ICallback
 	{
 		Control content;
 

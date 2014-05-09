@@ -9,7 +9,7 @@ using Eto.Mac.Forms;
 
 namespace Eto.iOS.Forms
 {
-	public class PixelLayoutHandler : IosLayout<UIView, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : IosLayout<UIView, PixelLayout, PixelLayout.ICallback>, IPixelLayout
 	{
 		readonly Dictionary<Control, Point> points = new Dictionary<Control, Point>();
 

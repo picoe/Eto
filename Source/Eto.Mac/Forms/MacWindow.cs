@@ -53,7 +53,7 @@ namespace Eto.Mac.Forms
 				base.Zoom(sender);
 				zoom = true;
 			}
-			Handler.Widget.OnWindowStateChanged(EventArgs.Empty);
+			Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
 		}
 	}
 
@@ -72,6 +72,8 @@ namespace Eto.Mac.Forms
 		bool CloseWindow(Action<CancelEventArgs> closing = null);
 
 		NSWindow Control { get; }
+
+		Window.ICallback Callback { get; }
 	}
 
 	public class CustomFieldEditor : NSTextView
@@ -99,10 +101,12 @@ namespace Eto.Mac.Forms
 		}
 	}
 
-	public abstract class MacWindow<TControl, TWidget> : MacPanel<TControl, TWidget>, IWindow, IMacContainer, IMacWindow
+	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, IWindow, IMacContainer, IMacWindow
 		where TControl: MyWindow
 		where TWidget: Window
+		where TCallback: Window.ICallback
 	{
+
 		CustomFieldEditor fieldEditor;
 		MenuBar menuBar;
 		Icon icon;
@@ -114,6 +118,8 @@ namespace Eto.Mac.Forms
 		bool topmost;
 		bool setInitialPosition = true;
 		Point? oldLocation;
+
+		Window.ICallback IMacWindow.Callback { get { return Callback; } }
 
 		public override NSView ContainerControl { get { return Control.ContentView; } }
 
@@ -202,7 +208,7 @@ namespace Eto.Mac.Forms
 					Control.WillClose += delegate
 					{
 						if (ApplicationHandler.Instance.ShouldCloseForm(Widget, true))
-							Widget.OnClosed(EventArgs.Empty);
+							Callback.OnClosed(Widget, EventArgs.Empty);
 					};
 					break;
 				case Window.ClosingEvent:
@@ -210,18 +216,18 @@ namespace Eto.Mac.Forms
 					{
 						var args = new CancelEventArgs();
 						if (ApplicationHandler.Instance.ShouldCloseForm(Widget, false))
-							Widget.OnClosing(args);
+							Callback.OnClosing(Widget, args);
 						return !args.Cancel;
 					};
 					break;
 				case Window.WindowStateChangedEvent:
 					Control.DidMiniaturize += delegate
 					{
-						Widget.OnWindowStateChanged(EventArgs.Empty);
+						Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
 					};
 					Control.DidDeminiaturize += delegate
 					{
-						Widget.OnWindowStateChanged(EventArgs.Empty);
+						Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
 					};
 					break;
 				case Eto.Forms.Control.ShownEvent:
@@ -230,13 +236,13 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.DidBecomeKey += delegate
 					{
-						Widget.OnGotFocus(EventArgs.Empty);
+						Callback.OnGotFocus(Widget, EventArgs.Empty);
 					};
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					Control.DidResignKey += delegate
 					{
-						Widget.OnLostFocus(EventArgs.Empty);
+						Callback.OnLostFocus(Widget, EventArgs.Empty);
 					};
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
@@ -244,11 +250,11 @@ namespace Eto.Mac.Forms
 						Size? oldSize = null;
 						AddControlObserver((NSString)"frame", e =>
 						{
-							var widget = (Window)e.Widget;
-							var newSize = widget.Size;
+							var handler = (MacWindow<TControl,TWidget,TCallback>)e.Handler;
+							var newSize = handler.Size;
 							if (oldSize != newSize)
 							{
-								widget.OnSizeChanged(EventArgs.Empty);
+								handler.Callback.OnSizeChanged(handler.Widget, EventArgs.Empty);
 								oldSize = newSize;
 							}
 						});
@@ -258,7 +264,7 @@ namespace Eto.Mac.Forms
 					{
 						AddControlObserver((NSString)"frame", e =>
 						{
-							var handler = e.Handler as MacWindow<TControl,TWidget>;
+							var handler = e.Handler as MacWindow<TControl,TWidget,TCallback>;
 							if (handler != null)
 							{
 								var old = oldLocation;
@@ -267,7 +273,7 @@ namespace Eto.Mac.Forms
 								if (old != newLocation)
 								{
 									oldLocation = newLocation;
-									handler.Widget.OnLocationChanged(EventArgs.Empty);
+									handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
 								}
 							}
 						});
@@ -297,7 +303,7 @@ namespace Eto.Mac.Forms
 		/// </summary>
 		static void HandleWillMove(object sender, EventArgs e)
 		{
-			var handler = GetHandler(sender) as MacWindow<TControl,TWidget>;
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
 			if (handler == null)
 				return;
 			handler.oldLocation = null;
@@ -314,7 +320,7 @@ namespace Eto.Mac.Forms
 						var newLocation = Point.Round(Mouse.Position - moveOffset);
 						if (handler.oldLocation != newLocation)
 						{
-							handler.Widget.OnLocationChanged(EventArgs.Empty);
+							handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
 							handler.oldLocation = newLocation;
 						}
 						// check for mouse up event
@@ -466,12 +472,12 @@ namespace Eto.Mac.Forms
 		public bool CloseWindow(Action<CancelEventArgs> closing = null)
 		{
 			var args = new CancelEventArgs();
-			Widget.OnClosing(args);
+			Callback.OnClosing(Widget, args);
 			if (!args.Cancel && closing != null)
 				closing(args);
 			if (!args.Cancel)
 			{
-				Widget.OnClosed(EventArgs.Empty);
+				Callback.OnClosed(Widget, EventArgs.Empty);
 			}
 			return !args.Cancel;
 		}

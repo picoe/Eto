@@ -8,7 +8,7 @@ using NewWindowPolicyDecisionRequestedArgs = WebKit.NewWindowPolicyDecisionReque
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class WebViewHandler : GtkControl<EtoWebView, WebView>, IWebView
+	public class WebViewHandler : GtkControl<EtoWebView, WebView, WebView.ICallback>, IWebView
 	{
 		readonly Gtk.ScrolledWindow scroll;
 		readonly ManualResetEventSlim returnResetEvent = new ManualResetEventSlim();
@@ -106,8 +106,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				var uri = args.Frame.Uri != null ? new Uri(args.Frame.Uri) : null;
 				var e = new WebViewLoadedEventArgs(uri);
 				if (args.Frame == handler.Control.MainFrame)
-					handler.Widget.OnNavigated(e);
-				handler.Widget.OnDocumentLoaded(e);
+					handler.Callback.OnNavigated(handler.Widget, e);
+				handler.Callback.OnDocumentLoaded(handler.Widget, e);
 			}
 #if GTK2
 			public void HandleNavigationRequested(object o, WebKit.NavigationRequestedArgs args)
@@ -123,7 +123,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				else
 				{
 					var e = new WebViewLoadingEventArgs(new Uri(args.Request.Uri), false);
-					handler.Widget.OnDocumentLoading(e);
+					handler.Callback.OnDocumentLoading(handler.Widget, e);
 					args.RetVal = e.Cancel ? WebKit.NavigationResponse.Ignore : WebKit.NavigationResponse.Accept;
 				}
 			}
@@ -142,7 +142,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				else
 				{
 					var e = new WebViewLoadingEventArgs(new Uri(args.Request.Uri), false);
-					handler.Widget.OnDocumentLoading(e);
+					handler.Callback.OnDocumentLoading(handler.Widget, e);
 					if (e.Cancel)
 						args.PolicyDecision.Ignore();
 					else
@@ -155,7 +155,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				var handler = Handler;
 				var e = new WebViewNewWindowEventArgs(new Uri(args.Request.Uri), args.Frame.Name);
-				handler.Widget.OnOpenNewWindow(e);
+				handler.Callback.OnOpenNewWindow(handler.Widget, e);
 				#if GTK2
 				if (e.Cancel)
 					args.Decision.Ignore();
@@ -172,7 +172,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleTitleChanged(object o, WebKit.TitleChangedArgs args)
 			{
-				Handler.Widget.OnDocumentTitleChanged(new WebViewTitleEventArgs(args.Title));
+				Handler.Callback.OnDocumentTitleChanged(Handler.Widget, new WebViewTitleEventArgs(args.Title));
 			}
 		}
 

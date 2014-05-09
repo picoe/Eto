@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TabControlHandler : WpfContainer<swc.TabControl, TabControl>, ITabControl
+	public class TabControlHandler : WpfContainer<swc.TabControl, TabControl, TabControl.ICallback>, ITabControl
 	{
 		bool disableSelectedIndexChanged;
 		public TabControlHandler ()
@@ -15,7 +15,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Loaded += delegate {
 				Control.SelectionChanged += delegate {
 					if (!disableSelectedIndexChanged)
-						Widget.OnSelectedIndexChanged (EventArgs.Empty);
+						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				};
 			};
 		}
@@ -55,7 +55,7 @@ namespace Eto.Wpf.Forms.Controls
 			try {
 				Control.Items.Remove (page.ControlObject);
 				if (Widget.Loaded)
-					Widget.OnSelectedIndexChanged (EventArgs.Empty);
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			} finally {
 				disableSelectedIndexChanged = false;
 			}

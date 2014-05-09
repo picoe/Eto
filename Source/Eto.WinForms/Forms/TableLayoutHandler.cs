@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Eto.WinForms
 {
-	public class TableLayoutHandler : WindowsContainer<swf.TableLayoutPanel, TableLayout>, ITableLayout
+	public class TableLayoutHandler : WindowsContainer<swf.TableLayoutPanel, TableLayout, TableLayout.ICallback>, ITableLayout
 	{
 		Size spacing;
 		Control[,] views;

@@ -14,7 +14,7 @@ namespace Eto.Test
 			this.Style = "application";
 		}
 
-		public override void OnInitialized(EventArgs e)
+		protected override void OnInitialized(EventArgs e)
 		{
 			MainForm = new MainForm();
 
@@ -35,7 +35,7 @@ namespace Eto.Test
 			MainForm.Show();
 		}
 
-		public override void OnTerminating(CancelEventArgs e)
+		protected override void OnTerminating(CancelEventArgs e)
 		{
 			base.OnTerminating(e);
 			Log.Write(this, "Terminating");

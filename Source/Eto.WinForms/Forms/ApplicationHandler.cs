@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms
 {
-	public class ApplicationHandler : WidgetHandler<object, Application>, IApplication
+	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, IApplication
 	{
 		string badgeLabel;
 		bool attached;
@@ -86,7 +86,7 @@ namespace Eto.WinForms
 				}
 				context = SynchronizationContext.Current;
 
-				Widget.OnInitialized(EventArgs.Empty);
+				Callback.OnInitialized(Widget, EventArgs.Empty);
 
 				if (Widget.MainForm != null && Widget.MainForm.Loaded)
 					swf.Application.Run((swf.Form)Widget.MainForm.ControlObject);
@@ -95,7 +95,7 @@ namespace Eto.WinForms
 			}
 			else
 			{
-				Widget.OnInitialized(EventArgs.Empty);
+				Callback.OnInitialized(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -107,28 +107,28 @@ namespace Eto.WinForms
 			if (BubbleMouseEvents)
 			{
 				var bubble = new BubbleEventFilter();
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseWheel(e), null, Win32.WM.MOUSEWHEEL);
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseMove(e), null, Win32.WM.MOUSEMOVE);
-				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDown(e), true, Win32.WM.LBUTTONDOWN, Win32.WM.RBUTTONDOWN, Win32.WM.MBUTTONDOWN);
-				bubble.AddBubbleMouseEvents((c, e) => {
-					c.OnMouseDoubleClick(e);
+				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseWheel(c, e), null, Win32.WM.MOUSEWHEEL);
+				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseMove(c, e), null, Win32.WM.MOUSEMOVE);
+				bubble.AddBubbleMouseEvents((c, cb, e) => cb.OnMouseDown(c, e), true, Win32.WM.LBUTTONDOWN, Win32.WM.RBUTTONDOWN, Win32.WM.MBUTTONDOWN);
+				bubble.AddBubbleMouseEvents((c, cb, e) => {
+					cb.OnMouseDoubleClick(c, e);
 					if (!e.Handled)
-						c.OnMouseDown(e);
+						cb.OnMouseDown(c, e);
 				}, null, Win32.WM.LBUTTONDBLCLK, Win32.WM.RBUTTONDBLCLK, Win32.WM.MBUTTONDBLCLK);
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, Win32.WM.LBUTTONUP, b => MouseButtons.Primary);
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, Win32.WM.RBUTTONUP, b => MouseButtons.Alternate);
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, Win32.WM.MBUTTONUP, b => MouseButtons.Middle);
+				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseUp(c, e), false, Win32.WM.LBUTTONUP, b => MouseButtons.Primary);
+				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseUp(c, e), false, Win32.WM.RBUTTONUP, b => MouseButtons.Alternate);
+				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseUp(c, e), false, Win32.WM.MBUTTONUP, b => MouseButtons.Middle);
 				swf.Application.AddMessageFilter(bubble);
 			}
 			if (BubbleKeyEvents)
 			{
 				var bubble = new BubbleEventFilter();
-				bubble.AddBubbleKeyEvent((c, e) => c.OnKeyDown(e), Win32.WM.KEYDOWN, KeyEventType.KeyDown);
-				bubble.AddBubbleKeyEvent((c, e) => c.OnKeyDown(e), Win32.WM.SYSKEYDOWN, KeyEventType.KeyDown);
-				bubble.AddBubbleKeyCharEvent((c, e) => c.OnKeyDown(e), Win32.WM.CHAR, KeyEventType.KeyDown);
-				bubble.AddBubbleKeyCharEvent((c, e) => c.OnKeyDown(e), Win32.WM.SYSCHAR, KeyEventType.KeyDown);
-				bubble.AddBubbleKeyEvent((c, e) => c.OnKeyUp(e), Win32.WM.KEYUP, KeyEventType.KeyUp);
-				bubble.AddBubbleKeyEvent((c, e) => c.OnKeyUp(e), Win32.WM.SYSKEYUP, KeyEventType.KeyUp);
+				bubble.AddBubbleKeyEvent((c, cb, e) => cb.OnKeyDown(c, e), Win32.WM.KEYDOWN, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyEvent((c, cb, e) => cb.OnKeyDown(c, e), Win32.WM.SYSKEYDOWN, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyCharEvent((c, cb, e) => cb.OnKeyDown(c, e), Win32.WM.CHAR, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyCharEvent((c, cb, e) => cb.OnKeyDown(c, e), Win32.WM.SYSCHAR, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyEvent((c, cb, e) => cb.OnKeyUp(c, e), Win32.WM.KEYUP, KeyEventType.KeyUp);
+				bubble.AddBubbleKeyEvent((c, cb, e) => cb.OnKeyUp(c, e), Win32.WM.SYSKEYUP, KeyEventType.KeyUp);
 				swf.Application.AddMessageFilter(bubble);
 			}
 		}

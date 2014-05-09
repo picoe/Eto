@@ -15,9 +15,10 @@ namespace Eto.GtkSharp
 		Gtk.Window Control { get; }
 	}
 
-	public abstract class GtkWindow<TControl, TWidget> : GtkPanel<TControl, TWidget>, IWindow, IGtkWindow
+	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, IWindow, IGtkWindow
 		where TControl: Gtk.Window
 		where TWidget: Window
+		where TCallback: Window.ICallback
 	{
 		Gtk.VBox vbox;
 		readonly Gtk.VBox actionvbox;
@@ -230,7 +231,7 @@ namespace Eto.GtkSharp
 			Size? oldSize;
 			public WindowState OldState { get; set; }
 
-			public new GtkWindow<TControl, TWidget> Handler { get { return (GtkWindow<TControl, TWidget>)base.Handler; } }
+			public new GtkWindow<TControl, TWidget, TCallback> Handler { get { return (GtkWindow<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleDeleteEvent(object o, Gtk.DeleteEventArgs args)
 			{
@@ -239,7 +240,7 @@ namespace Eto.GtkSharp
 
 			public void HandleShown(object sender, EventArgs e)
 			{
-				Handler.Widget.OnShown(EventArgs.Empty);
+				Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleWindowStateEvent(object o, Gtk.WindowStateEventArgs args)
@@ -265,7 +266,7 @@ namespace Eto.GtkSharp
 				if (windowState != OldState)
 				{
 					OldState = windowState;
-					Handler.Widget.OnWindowStateChanged(EventArgs.Empty);
+					Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
 				}
 			}
 
@@ -275,7 +276,7 @@ namespace Eto.GtkSharp
 				var e = args.Event.ToEto();
 				if (e != null)
 				{
-					Handler.Widget.OnKeyDown(e);
+					Handler.Callback.OnKeyDown(Handler.Widget, e);
 					args.RetVal = e.Handled;
 				}
 			}
@@ -286,7 +287,7 @@ namespace Eto.GtkSharp
 				var newSize = handler.Size;
 				if (handler.Control.IsRealized && oldSize != newSize)
 				{
-					handler.Widget.OnSizeChanged(EventArgs.Empty);
+					Handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
 					oldSize = newSize;
 				}
 			}
@@ -300,7 +301,7 @@ namespace Eto.GtkSharp
 				handler.currentLocation = new Point(args.Event.X, args.Event.Y);
 				if (handler.Control.IsRealized && handler.Widget.Loaded && oldLocation != handler.currentLocation)
 				{
-					handler.Widget.OnLocationChanged(EventArgs.Empty);
+					handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
 					oldLocation = handler.currentLocation;
 				}
 				handler.currentLocation = null;
@@ -357,7 +358,7 @@ namespace Eto.GtkSharp
 		public bool CloseWindow(Action<CancelEventArgs> closing = null)
 		{
 			var args = new CancelEventArgs();
-			Widget.OnClosing(args);
+			Callback.OnClosing(Widget, args);
 			var shouldQuit = false;
 			if (!args.Cancel)
 			{
@@ -368,14 +369,15 @@ namespace Eto.GtkSharp
 					var windows = Gdk.Screen.Default.ToplevelWindows;
 					if (windows.Count(r => r.IsViewable) == 1 && ReferenceEquals(windows.First(r => r.IsViewable), Control.GdkWindow))
 					{
-						Application.Instance.OnTerminating(args);
+						var app = ((ApplicationHandler)Application.Instance.Handler);
+						app.Callback.OnTerminating(app.Widget, args);
 						shouldQuit = !args.Cancel;
 					}
 				}
 			}
 			if (!args.Cancel)
 			{
-				Widget.OnClosed(EventArgs.Empty);
+				Callback.OnClosed(Widget, EventArgs.Empty);
 				if (shouldQuit)
 					Gtk.Application.Quit();
 
@@ -535,7 +537,7 @@ namespace Eto.GtkSharp
 				if (screen != null && gdkWindow != null)
 				{
 					var monitor = screen.GetMonitorAtWindow(gdkWindow);
-					return new Screen(Platform, new ScreenHandler(screen, monitor));
+					return new Screen(new ScreenHandler(screen, monitor));
 				}
 				return null;
 			}

@@ -9,7 +9,7 @@ using MonoMac.CoreGraphics;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class DrawableCellHandler : CellHandler<NSImageCell, DrawableCell>, IDrawableCell
+	public class DrawableCellHandler : CellHandler<NSImageCell, DrawableCell, DrawableCell.ICallback>, IDrawableCell
 	{
 		public class EtoCell : NSImageCell, IMacControl
 		{

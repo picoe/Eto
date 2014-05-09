@@ -60,19 +60,19 @@ namespace Eto.Test.Sections.Behaviors
 			buttonsLabel.Text = Mouse.Buttons.ToString ();
 		}
 
-		public override void OnMouseMove (MouseEventArgs e)
+		protected override void OnMouseMove (MouseEventArgs e)
 		{
 			base.OnMouseMove (e);
 			SetLabels ();
 		}
 
-		public override void OnMouseDown (MouseEventArgs e)
+		protected override void OnMouseDown (MouseEventArgs e)
 		{
 			base.OnMouseDown (e);
 			SetLabels ();
 		}
 
-		public override void OnMouseUp (MouseEventArgs e)
+		protected override void OnMouseUp (MouseEventArgs e)
 		{
 			base.OnMouseUp (e);
 			SetLabels ();

@@ -8,7 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class ComboBoxHandler : WindowsControl<swf.ComboBox, ComboBox>, IComboBox
+	public class ComboBoxHandler : WindowsControl<swf.ComboBox, ComboBox, ComboBox.ICallback>, IComboBox
 	{
 		CollectionHandler collection;
 
@@ -48,7 +48,7 @@ namespace Eto.WinForms
 			};
 			Control.SelectedIndexChanged += delegate
 			{
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
 		}
 

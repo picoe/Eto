@@ -7,7 +7,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<UITableView, TreeGridView>, ITreeGridView
+	public class TreeGridViewHandler : GridHandler<UITableView, TreeGridView, TreeGridView.ICallback>, ITreeGridView
 	{
 		Collection store;
 
@@ -137,9 +137,9 @@ namespace Eto.iOS.Forms.Controls
 
 	public class TreeGridTableDelegate : GridHandlerTableDelegate
 	{
-		private TreeGridViewHandler TreeHandler { get { return Handler as TreeGridViewHandler; } }
+		TreeGridViewHandler TreeHandler { get { return Handler as TreeGridViewHandler; } }
 
-		public TreeGridTableDelegate(IGrid handler) : base(handler)
+		public TreeGridTableDelegate(TreeGridViewHandler handler) : base(handler)
 		{
 		}
 
@@ -147,7 +147,7 @@ namespace Eto.iOS.Forms.Controls
 		{
 			base.RowSelected(tableView, indexPath);
 
-			TreeHandler.Widget.OnSelectedItemChanged(EventArgs.Empty);
+			TreeHandler.Callback.OnSelectedItemChanged(TreeHandler.Widget, EventArgs.Empty);
 		}
 	}
 }

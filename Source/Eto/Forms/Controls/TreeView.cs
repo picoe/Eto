@@ -71,7 +71,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(ActivatedEvent, value); }
 		}
 
-		public virtual void OnActivated(TreeViewItemEventArgs e)
+		protected virtual void OnActivated(TreeViewItemEventArgs e)
 		{
 			Properties.TriggerEvent(ActivatedEvent, this, e);
 		}
@@ -84,7 +84,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(SelectionChangedEvent, value); }
 		}
 
-		public virtual void OnSelectionChanged(EventArgs e)
+		protected virtual void OnSelectionChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectionChangedEvent, this, e);
 		}
@@ -97,7 +97,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(ExpandingEvent, value); }
 		}
 
-		public virtual void OnExpanding(TreeViewItemCancelEventArgs e)
+		protected virtual void OnExpanding(TreeViewItemCancelEventArgs e)
 		{
 			Properties.TriggerEvent(ExpandingEvent, this, e);
 		}
@@ -110,7 +110,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(ExpandedEvent, value); }
 		}
 
-		public virtual void OnExpanded(TreeViewItemEventArgs e)
+		protected virtual void OnExpanded(TreeViewItemEventArgs e)
 		{
 			Properties.TriggerEvent(ExpandedEvent, this, e);
 		}
@@ -123,7 +123,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(CollapsingEvent, value); }
 		}
 
-		public virtual void OnCollapsing(TreeViewItemCancelEventArgs e)
+		protected virtual void OnCollapsing(TreeViewItemCancelEventArgs e)
 		{
 			Properties.TriggerEvent(CollapsingEvent, this, e);
 		}
@@ -136,7 +136,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(CollapsedEvent, value); }
 		}
 
-		public virtual void OnCollapsed(TreeViewItemEventArgs e)
+		protected virtual void OnCollapsed(TreeViewItemEventArgs e)
 		{
 			Properties.TriggerEvent(CollapsedEvent, this, e);
 		}
@@ -149,7 +149,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(LabelEditedEvent, value); }
 		}
 
-		public virtual void OnLabelEdited(TreeViewItemEditEventArgs e)
+		protected virtual void OnLabelEdited(TreeViewItemEditEventArgs e)
 		{
 			Properties.TriggerEvent(LabelEditedEvent, this, e);
 		}
@@ -162,7 +162,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(LabelEditingEvent, value); }
 		}
 
-		public virtual void OnLabelEditing(TreeViewItemCancelEventArgs e)
+		protected virtual void OnLabelEditing(TreeViewItemCancelEventArgs e)
 		{
 			Properties.TriggerEvent(LabelEditingEvent, this, e);
 		}
@@ -175,7 +175,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(NodeMouseClickEvent, value); }
 		}
 
-		public virtual void OnNodeMouseClick(TreeViewItemEventArgs e)
+		protected virtual void OnNodeMouseClick(TreeViewItemEventArgs e)
 		{
 			Properties.TriggerEvent(NodeMouseClickEvent, this, e);
 		}
@@ -247,6 +247,62 @@ namespace Eto.Forms
 		{
 			get { return Handler.LabelEdit; }
 			set { Handler.LabelEdit = value; }
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Control.ICallback
+		{
+			void OnActivated(TreeView widget, TreeViewItemEventArgs e);
+			void OnSelectionChanged(TreeView widget, EventArgs e);
+			void OnExpanding(TreeView widget, TreeViewItemCancelEventArgs e);
+			void OnExpanded(TreeView widget, TreeViewItemEventArgs e);
+			void OnCollapsing(TreeView widget, TreeViewItemCancelEventArgs e);
+			void OnCollapsed(TreeView widget, TreeViewItemEventArgs e);
+			void OnLabelEdited(TreeView widget, TreeViewItemEditEventArgs e);
+			void OnLabelEditing(TreeView widget, TreeViewItemCancelEventArgs e);
+			void OnNodeMouseClick(TreeView widget, TreeViewItemEventArgs e);
+		}
+
+		protected class Callback : Control.Callback, ICallback
+		{
+			public void OnActivated(TreeView widget, TreeViewItemEventArgs e)
+			{
+				widget.OnActivated(e);
+			}
+			public void OnSelectionChanged(TreeView widget, EventArgs e)
+			{
+				widget.OnSelectionChanged(e);
+			}
+			public void OnExpanding(TreeView widget, TreeViewItemCancelEventArgs e)
+			{
+				widget.OnExpanding(e);
+			}
+			public void OnExpanded(TreeView widget, TreeViewItemEventArgs e)
+			{
+				widget.OnExpanded(e);
+			}
+			public void OnCollapsing(TreeView widget, TreeViewItemCancelEventArgs e)
+			{
+				widget.OnCollapsing(e);
+			}
+			public void OnCollapsed(TreeView widget, TreeViewItemEventArgs e)
+			{
+				widget.OnCollapsed(e);
+			}
+			public void OnLabelEdited(TreeView widget, TreeViewItemEditEventArgs e)
+			{
+				widget.OnLabelEdited(e);
+			}
+			public void OnLabelEditing(TreeView widget, TreeViewItemCancelEventArgs e)
+			{
+				widget.OnLabelEditing(e);
+			}
+			public void OnNodeMouseClick(TreeView widget, TreeViewItemEventArgs e)
+			{
+				widget.OnNodeMouseClick(e);
+			}
 		}
 	}
 }

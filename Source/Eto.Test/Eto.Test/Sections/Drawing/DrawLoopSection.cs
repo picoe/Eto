@@ -80,7 +80,7 @@ namespace Eto.Test.Sections.Drawing
 			thread.Start(status);
 		}
 
-		public override void OnUnLoad(EventArgs e)
+		protected override void OnUnLoad(EventArgs e)
 		{
 			status.Stop = true;
 			base.OnUnLoad(e);
@@ -132,7 +132,7 @@ namespace Eto.Test.Sections.Drawing
 			return control;
 		}
 
-		public override void OnLoadComplete (EventArgs e)
+		protected override void OnLoadComplete (EventArgs e)
 		{
 			base.OnLoadComplete (e);
 			SetMode();

@@ -5,8 +5,10 @@ using Eto.GtkSharp.Forms.Cells;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<TreeGridView>, ITreeGridView, ICellDataSource, IGtkListModelHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>
+	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, ITreeGridView, ICellDataSource, IGtkListModelHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>
 	{
+		protected new TreeGridView.ICallback Callback { get { return (TreeGridView.ICallback)base.Callback; } }
+
 		GtkTreeModel<ITreeGridItem, ITreeGridStore<ITreeGridItem>> model;
 		CollectionHandler collection;
 		bool? selectCollapsingItem;
@@ -179,7 +181,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				var h = Handler;
 				var e = new TreeGridViewItemCancelEventArgs(h.GetItem(args.Path) as ITreeGridItem);
-				h.Widget.OnExpanding(e);
+				h.Callback.OnExpanding(h.Widget, e);
 				args.RetVal = e.Cancel;
 			}
 
@@ -188,14 +190,14 @@ namespace Eto.GtkSharp.Forms.Controls
 				var h = Handler;
 				var e = new TreeGridViewItemEventArgs(h.GetItem(args.Path) as ITreeGridItem);
 				e.Item.Expanded = true;
-				h.Widget.OnExpanded(e);
+				h.Callback.OnExpanded(h.Widget, e);
 			}
 
 			public void HandleTestCollapseRow(object o, Gtk.TestCollapseRowArgs args)
 			{
 				var h = Handler;
 				var e = new TreeGridViewItemCancelEventArgs(h.GetItem(args.Path) as ITreeGridItem);
-				h.Widget.OnCollapsing(e);
+				h.Callback.OnCollapsing(h.Widget, e);
 				args.RetVal = e.Cancel;
 				if (!e.Cancel)
 				{
@@ -209,7 +211,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var h = Handler;
 				var e = new TreeGridViewItemEventArgs(h.GetItem(args.Path) as ITreeGridItem);
 				e.Item.Expanded = false;
-				h.Widget.OnCollapsed(e);
+				h.Callback.OnCollapsed(h.Widget, e);
 				h.SkipSelectedChange = false;
 				if (h.selectCollapsingItem == true)
 				{
@@ -225,7 +227,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var item = h.SelectedItem;
 				if (!h.SkipSelectedChange && !object.ReferenceEquals(item, h.lastSelected))
 				{
-					h.Widget.OnSelectedItemChanged(EventArgs.Empty);
+					h.Callback.OnSelectedItemChanged(h.Widget, EventArgs.Empty);
 					h.lastSelected = item;
 				}
 			}

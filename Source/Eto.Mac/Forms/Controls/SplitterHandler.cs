@@ -6,7 +6,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class SplitterHandler : MacView<NSSplitView, Splitter>, ISplitter
+	public class SplitterHandler : MacView<NSSplitView, Splitter, Splitter.ICallback>, ISplitter
 	{
 		Control panel1;
 		Control panel2;
@@ -133,7 +133,7 @@ namespace Eto.Mac.Forms.Controls
 				if (subview != null && Handler.position != null && Handler.Widget.Loaded && Handler.Widget.ParentWindow != null && Handler.Widget.ParentWindow.Loaded)
 				{
 					Handler.position = Handler.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
-					Handler.Widget.OnPositionChanged(EventArgs.Empty);
+					Handler.Callback.OnPositionChanged(Handler.Widget, EventArgs.Empty);
 				}
 			}
 		}

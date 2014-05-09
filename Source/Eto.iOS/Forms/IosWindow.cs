@@ -10,9 +10,10 @@ using sd = System.Drawing;
 
 namespace Eto.iOS.Forms
 {
-	public abstract class IosWindow<TControl, TWidget> : MacPanel<TControl, TWidget>, IWindow
+	public abstract class IosWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, IWindow
 		where TControl: UIView
 		where TWidget: Window
+		where TCallback: Window.ICallback
 	{
 		public override UIView ContainerControl { get { return Control; } }
 

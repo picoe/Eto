@@ -5,7 +5,7 @@ using SD = System.Drawing;
 
 namespace Eto.Mac.Forms
 {
-	public class FormHandler : MacWindow<MyWindow, Form>, IForm
+	public class FormHandler : MacWindow<MyWindow, Form, Form.ICallback>, IForm
 	{
 		protected override bool DisposeControl { get { return false; } }
 
@@ -24,7 +24,7 @@ namespace Eto.Mac.Forms
 			else
 				Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
 			if (!Control.IsVisible)
-				Widget.OnShown(EventArgs.Empty);
+				Callback.OnShown(Widget, EventArgs.Empty);
 		}
 	}
 }

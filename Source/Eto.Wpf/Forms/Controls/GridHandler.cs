@@ -13,9 +13,10 @@ using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public abstract class GridHandler<TControl, TWidget> : WpfControl<TControl, TWidget>, IGrid, IGridHandler
+	public abstract class GridHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, IGrid, IGridHandler
 		where TControl: swc.DataGrid
 		where TWidget: Grid
+		where TCallback: Grid.ICallback
 	{
 		ContextMenu contextMenu;
 		bool hasFocus;
@@ -43,7 +44,7 @@ namespace Eto.Wpf.Forms.Controls
 			case Grid.ColumnHeaderClickEvent:
 				Control.Sorting += (sender, e) => {
 					var column = Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, e.Column));
-					Widget.OnColumnHeaderClick(new GridColumnEventArgs(column));
+					Callback.OnColumnHeaderClick(Widget, new GridColumnEventArgs(column));
 					e.Handled = true;
 				};
 				break;
@@ -52,7 +53,7 @@ namespace Eto.Wpf.Forms.Controls
 					var row = e.Row.GetIndex ();
 					var item = GetItemAtRow (row);
 					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Widget.OnCellEditing (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+					Callback.OnCellEditing(Widget, new GridViewCellArgs(gridColumn, row, e.Column.DisplayIndex, item));
 				};
 				break;
 			case Grid.CellEditedEvent:
@@ -60,13 +61,13 @@ namespace Eto.Wpf.Forms.Controls
 					var row = e.Row.GetIndex ();
 					var item = GetItemAtRow(row);
 					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Widget.OnCellEdited (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+					Callback.OnCellEdited(Widget, new GridViewCellArgs(gridColumn, row, e.Column.DisplayIndex, item));
 				};
 				break;
 			case Grid.SelectionChangedEvent:
 				Control.SelectedCellsChanged += (sender, e) => {
 					if (!SkipSelectionChanged)
-						Widget.OnSelectionChanged (EventArgs.Empty);
+						Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				};
 				break;
 			case Grid.CellFormattingEvent:
@@ -102,7 +103,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<TControl,TWidget> Handler { get; set; }
+			public GridHandler<TControl,TWidget,TCallback> Handler { get; set; }
 
 			public override void AddItem (GridColumn item)
 			{
@@ -298,7 +299,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (IsEventHandled (Grid.CellFormattingEvent)) {
 				var row = Control.Items.IndexOf (dataItem);
-				Widget.OnCellFormatting (new FormatEventArgs (column.Widget as GridColumn, gridcell, dataItem, row, element));
+				Callback.OnCellFormatting(Widget, new FormatEventArgs (column.Widget as GridColumn, gridcell, dataItem, row, element));
 			}
 		}
 

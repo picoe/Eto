@@ -18,7 +18,8 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected TextControl(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
+		protected TextControl(Generator g, Type type, bool initialize = true)
+			: base(g, type, initialize)
 		{
 		}
 
@@ -34,7 +35,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(TextChangedEvent, value); }
 		}
 
-		public virtual void OnTextChanged(EventArgs e)
+		protected virtual void OnTextChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(TextChangedEvent, this, e);
 		}
@@ -51,11 +52,27 @@ namespace Eto.Forms
 			{
 				return new ObjectBinding<TextControl, string>(
 					this,
-					c => c.Text, 
-					(c, v) => c.Text = v, 
-					(c, h) => c.TextChanged += h, 
+					c => c.Text,
+					(c, v) => c.Text = v,
+					(c, h) => c.TextChanged += h,
 					(c, h) => c.TextChanged -= h
 				);
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : CommonControl.ICallback
+		{
+			void OnTextChanged(TextControl widget, EventArgs e);
+		}
+
+		protected class Callback : CommonControl.Callback, ICallback
+		{
+			public void OnTextChanged(TextControl widget, EventArgs e)
+			{
+				widget.OnTextChanged(e);
 			}
 		}
 	}

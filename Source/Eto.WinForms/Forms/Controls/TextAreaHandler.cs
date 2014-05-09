@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea>, ITextArea
+	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea, TextArea.ICallback>, ITextArea
 	{
 		int? lastCaretIndex;
 		Size defaultSize;
@@ -23,10 +23,11 @@ namespace Eto.WinForms
 			get { return container; }
 		}
 
-		public TextAreaHandler ()
+		public TextAreaHandler()
 		{
 			defaultSize = TextArea.DefaultSize;
-			Control = new swf.RichTextBox {
+			Control = new swf.RichTextBox
+			{
 				Size = sd.Size.Empty,
 				Multiline = true,
 				AcceptsTab = true,
@@ -34,86 +35,90 @@ namespace Eto.WinForms
 				BorderStyle = swf.BorderStyle.None,
 				ScrollBars = swf.RichTextBoxScrollBars.Both,
 			};
-			container = new swf.TableLayoutPanel {
+			container = new swf.TableLayoutPanel
+			{
 				MinimumSize = sd.Size.Empty,
 				BorderStyle = swf.BorderStyle.FixedSingle,
 				Size = defaultSize.ToSD()
 			};
-			container.ColumnStyles.Add (new swf.ColumnStyle (swf.SizeType.AutoSize, 1));
-			container.RowStyles.Add (new swf.RowStyle (swf.SizeType.AutoSize, 1));
-			container.Controls.Add (Control, 0, 0);
+			container.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.AutoSize, 1));
+			container.RowStyles.Add(new swf.RowStyle(swf.SizeType.AutoSize, 1));
+			container.Controls.Add(Control, 0, 0);
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent(string handler)
 		{
 			switch (handler)
 			{
-			case TextArea.SelectionChangedEvent:
-				Control.SelectionChanged += (sender, e) => {
-					Widget.OnSelectionChanged (EventArgs.Empty);
-				};
-				break;
-			case TextArea.CaretIndexChangedEvent:
-				Control.SelectionChanged += (sender, e) => {
-					var caretIndex = CaretIndex;
-					if (caretIndex != lastCaretIndex)
+				case TextArea.SelectionChangedEvent:
+					Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					break;
+				case TextArea.CaretIndexChangedEvent:
+					Control.SelectionChanged += (sender, e) =>
 					{
-						Widget.OnCaretIndexChanged (EventArgs.Empty);
-						lastCaretIndex = caretIndex;
-					}
-				};
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+						var caretIndex = CaretIndex;
+						if (caretIndex != lastCaretIndex)
+						{
+							Callback.OnCaretIndexChanged(Widget, EventArgs.Empty);
+							lastCaretIndex = caretIndex;
+						}
+					};
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
 			}
 		}
-		
-		public bool ReadOnly {
+
+		public bool ReadOnly
+		{
 			get { return Control.ReadOnly; }
 			set { Control.ReadOnly = value; }
 		}
-		
-		public bool Wrap {
+
+		public bool Wrap
+		{
 			get { return Control.WordWrap; }
 			set { Control.WordWrap = value; }
 		}
-		
-		public void Append (string text, bool scrollToCursor)
+
+		public void Append(string text, bool scrollToCursor)
 		{
-			Control.AppendText (text);
-			if (scrollToCursor) {
+			Control.AppendText(text);
+			if (scrollToCursor)
+			{
 				Control.SelectionStart = Control.Text.Length;
-				Control.ScrollToCaret ();
+				Control.ScrollToCaret();
 			}
 		}
 
 		public string SelectedText
 		{
 			get { return Control.SelectedText; }
-			set {
+			set
+			{
 				var start = Control.SelectionStart;
 				Control.SelectedText = value;
 				if (value != null)
-					Control.Select (start, value.Length);
+					Control.Select(start, value.Length);
 			}
 		}
 
 		public Range Selection
 		{
-			get { return new Range (Control.SelectionStart, Control.SelectionLength); }
-			set { Control.Select (value.Start, value.Length); }
+			get { return new Range(Control.SelectionStart, Control.SelectionLength); }
+			set { Control.Select(value.Start, value.Length); }
 		}
 
-		public void SelectAll ()
+		public void SelectAll()
 		{
-			Control.SelectAll ();
+			Control.SelectAll();
 		}
 
 		public int CaretIndex
 		{
 			get { return Control.SelectionStart; }
-			set { Control.Select (value, 0); }
+			set { Control.Select(value, 0); }
 		}
 	}
 }

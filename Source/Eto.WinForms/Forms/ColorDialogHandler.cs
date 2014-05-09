@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms.Forms
 {
-	public class ColorDialogHandler : WidgetHandler<SWF.ColorDialog, ColorDialog>, IColorDialog
+	public class ColorDialogHandler : WidgetHandler<SWF.ColorDialog, ColorDialog, ColorDialog.ICallback>, IColorDialog
 	{
 		static int[] customColors;
 		public ColorDialogHandler ()
@@ -32,7 +32,7 @@ namespace Eto.WinForms.Forms
 				result = Control.ShowDialog ();
 			
 			if (result == System.Windows.Forms.DialogResult.OK) {
-				Widget.OnColorChanged (EventArgs.Empty);
+				Callback.OnColorChanged(Widget, EventArgs.Empty);
 			}
 			
 			customColors = Control.CustomColors;

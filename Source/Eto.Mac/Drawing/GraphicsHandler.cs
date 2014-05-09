@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Eto.Mac.Forms;
 using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
-using GraphicsBase = Eto.Mac.Forms.MacBase<MonoMac.CoreGraphics.CGContext, Eto.Drawing.Graphics>;
+using GraphicsBase = Eto.Mac.Forms.MacBase<MonoMac.CoreGraphics.CGContext, Eto.Drawing.Graphics, Eto.Drawing.Graphics.ICallback>;
 
 namespace Eto.Mac.Drawing
 #elif IOS
@@ -17,7 +17,7 @@ using MonoTouch.CoreGraphics;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using NSView = MonoTouch.UIKit.UIView;
-using GraphicsBase = Eto.WidgetHandler<MonoTouch.CoreGraphics.CGContext, Eto.Drawing.Graphics>;
+using GraphicsBase = Eto.WidgetHandler<MonoTouch.CoreGraphics.CGContext, Eto.Drawing.Graphics, Eto.Drawing.Graphics.ICallback>;
 
 namespace Eto.iOS.Drawing
 #endif

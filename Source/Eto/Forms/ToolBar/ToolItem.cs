@@ -31,7 +31,7 @@ namespace Eto.Forms
 			Text = command.ToolBarText;
 			ToolTip = command.ToolTip;
 			Image = command.Image;
-			Click += (sender, e) => command.OnExecuted(e);
+			Click += (sender, e) => command.Execute();
 			Enabled = command.Enabled;
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
 			Order = -1;
@@ -45,7 +45,7 @@ namespace Eto.Forms
 			Text = command.ToolBarText;
 			ToolTip = command.ToolTip;
 			Image = command.Image;
-			Click += (sender, e) => command.OnExecuted(e);
+			Click += (sender, e) => command.Execute();
 			Enabled = command.Enabled;
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
 			Order = -1;

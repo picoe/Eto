@@ -11,7 +11,7 @@ using Eto.Mac.Forms;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class DrawableHandler : MacPanel<DrawableHandler.EtoView, Drawable>, IDrawable
+	public class DrawableHandler : MacPanel<DrawableHandler.EtoView, Drawable, Drawable.ICallback>, IDrawable
 	{
 		public bool SupportsCreateGraphics { get { return false; } }
 
@@ -42,7 +42,7 @@ namespace Eto.iOS.Forms.Controls
 			public override void TouchesBegan(NSSet touches, UIEvent evt)
 			{
 				var args = Conversions.ConvertMouse(this, touches, evt);
-				Handler.Widget.OnMouseDown(args);
+				Handler.Callback.OnMouseDown(Handler.Widget, args);
 				if (!args.Handled)
 					base.TouchesBegan(touches, evt);
 			}
@@ -50,7 +50,7 @@ namespace Eto.iOS.Forms.Controls
 			public override void TouchesEnded(NSSet touches, UIEvent evt)
 			{
 				var args = Conversions.ConvertMouse(this, touches, evt);
-				Handler.Widget.OnMouseUp(args);
+				Handler.Callback.OnMouseUp(Handler.Widget, args);
 				if (!args.Handled)
 					base.TouchesEnded(touches, evt);
 			}
@@ -58,7 +58,7 @@ namespace Eto.iOS.Forms.Controls
 			public override void TouchesMoved(NSSet touches, UIEvent evt)
 			{
 				var args = Conversions.ConvertMouse(this, touches, evt);
-				Handler.Widget.OnMouseMove(args);
+				Handler.Callback.OnMouseMove(Handler.Widget, args);
 				if (!args.Handled)
 					base.TouchesMoved(touches, evt);
 			}
@@ -88,13 +88,13 @@ namespace Eto.iOS.Forms.Controls
 
 			public override bool BecomeFirstResponder()
 			{
-				Handler.Widget.OnGotFocus(EventArgs.Empty);
+				Handler.Callback.OnGotFocus(Handler.Widget, EventArgs.Empty);
 				return base.BecomeFirstResponder();
 			}
 
 			public override bool ResignFirstResponder()
 			{
-				Handler.Widget.OnLostFocus(EventArgs.Empty);
+				Handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
 				return base.ResignFirstResponder();
 			}
 
@@ -149,7 +149,7 @@ namespace Eto.iOS.Forms.Controls
 				
 				using (var graphics = new Graphics(new GraphicsHandler(Control, context, Control.BaseFrame.Height)))
 				{
-					Widget.OnPaint(new PaintEventArgs(graphics, rect));
+					Callback.OnPaint(Widget, new PaintEventArgs(graphics, rect));
 				}
 				//UIApplication.CheckForIllegalCrossThreadCalls = oldCheck;
 				//}

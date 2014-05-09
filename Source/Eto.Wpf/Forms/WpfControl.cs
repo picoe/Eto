@@ -6,9 +6,10 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {
-	public class WpfControl<TControl, TWidget> : WpfFrameworkElement<TControl, TWidget>, IControl
+	public class WpfControl<TControl, TWidget, TCallback> : WpfFrameworkElement<TControl, TWidget, TCallback>, IControl
 		where TControl : swc.Control
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		Font font;
 

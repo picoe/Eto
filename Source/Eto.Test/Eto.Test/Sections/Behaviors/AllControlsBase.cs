@@ -6,7 +6,7 @@ namespace Eto.Test.Sections.Behaviors
 {
 	public class AllControlsBase : Panel
 	{
-		public override void OnPreLoad(EventArgs e)
+		protected override void OnPreLoad(EventArgs e)
 		{
 
 			var layout = new DynamicLayout();

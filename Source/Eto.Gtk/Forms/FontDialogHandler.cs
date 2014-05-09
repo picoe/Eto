@@ -52,7 +52,7 @@ namespace Eto.GtkSharp.Forms
 
 			if (response == Gtk.ResponseType.Apply || response == Gtk.ResponseType.Ok)
 			{
-				Font = new Font(Widget.Platform, new FontHandler(Control.FontName));
+				Font = new Font(new FontHandler(Control.FontName));
 				Widget.OnFontChanged(EventArgs.Empty);
 				return DialogResult.Ok;
 			}

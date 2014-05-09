@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TabControlHandler : MacView<NSTabView, TabControl>, ITabControl
+	public class TabControlHandler : MacView<NSTabView, TabControl, TabControl.ICallback>, ITabControl
 	{
 		bool disableSelectedIndexChanged;
 
@@ -61,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 			if (handler != null)
 			{
 				if (!handler.disableSelectedIndexChanged)
-					handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+					handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace Eto.Mac.Forms.Controls
 				if (isSelected && Control.Items.Length > 0)
 					SelectedIndex = Math.Min (index, Control.Items.Length - 1);
 				if (Widget.Loaded)
-					Widget.OnSelectedIndexChanged (EventArgs.Empty);
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			} finally {
 				disableSelectedIndexChanged = false;
 			}

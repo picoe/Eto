@@ -9,7 +9,7 @@ using Eto.iOS.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ListBoxHandler : IosView<UITableView, ListBox>, IListBox
+	public class ListBoxHandler : IosView<UITableView, ListBox, ListBox.ICallback>, IListBox
 	{
 		CollectionChangedHandler<IListItem, IListStore> collection;
 
@@ -54,7 +54,7 @@ namespace Eto.iOS.Forms.Controls
 
 			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 			{
-				Handler.Widget.OnSelectedIndexChanged (EventArgs.Empty);
+				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 		

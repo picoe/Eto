@@ -9,7 +9,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class WebViewHandler : MacView<wk.WebView, WebView>, IWebView
+	public class WebViewHandler : MacView<wk.WebView, WebView, WebView.ICallback>, IWebView
 	{
 		static readonly Selector selIgnore = new Selector("ignore");
 		static readonly Selector selUse = new Selector("use");
@@ -61,14 +61,14 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var url = (NSUrl)action.ObjectForKey(new NSString("WebActionOriginalURLKey"));
 				var args = new WebViewNewWindowEventArgs(new Uri(url.AbsoluteString), frame.Name);
-				Handler.Widget.OnOpenNewWindow(args);
+				Handler.Callback.OnOpenNewWindow(Handler.Widget, args);
 				if (!args.Cancel)
 					NSWorkspace.SharedWorkspace.OpenUrl(url);
 				listener.PerformSelector(selIgnore, null, 0);
 			}
 		}
 
-		class PromptDialog : Dialog
+		class PromptDialog : Dialog<bool>
 		{
 			readonly TextBox textBox;
 			readonly Label prompt;
@@ -103,7 +103,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var button = new Button { Text = "Cancel" };
 				AbortButton = button;
-				button.Click += (sender, e) => Close(DialogResult.Cancel);
+				button.Click += (sender, e) => Close(false);
 				return button;
 			}
 
@@ -111,7 +111,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var button = new Button { Text = "OK" };
 				DefaultButton = button;
-				button.Click += (sender, e) => Close(DialogResult.Ok);
+				button.Click += (sender, e) => Close(true);
 				return button;
 			}
 		}
@@ -140,8 +140,7 @@ namespace Eto.Mac.Forms.Controls
 					Value = defaultText,
 					Title = Handler.DocumentTitle
 				};
-				var result = dialog.ShowDialog(Handler.Widget);
-				return (result == DialogResult.Ok) ? dialog.Value : string.Empty;
+				return dialog.ShowModal(Handler.Widget) ? dialog.Value : string.Empty;
 			}
 
 			public override NSMenuItem[] UIGetContextMenuItems(wk.WebView sender, NSDictionary forElement, NSMenuItem[] defaultMenuItems)
@@ -218,7 +217,7 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(e.ForFrame.WebView) as WebViewHandler;
 			if (handler != null)
 			{
-				handler.Widget.OnDocumentTitleChanged(new WebViewTitleEventArgs(e.Title));
+				handler.Callback.OnDocumentTitleChanged(handler.Widget, new WebViewTitleEventArgs(e.Title));
 			}
 		}
 
@@ -228,7 +227,7 @@ namespace Eto.Mac.Forms.Controls
 			if (handler != null)
 			{
 				var args = new WebViewNewWindowEventArgs(new Uri(e.Request.Url.AbsoluteString), e.NewFrameName);
-				handler.Widget.OnOpenNewWindow(args);
+				handler.Callback.OnOpenNewWindow(handler.Widget, args);
 				if (!args.Cancel)
 					NSWorkspace.SharedWorkspace.OpenUrl(e.Request.Url);
 				e.DecisionToken.PerformSelector(selIgnore, null, 0);
@@ -241,7 +240,7 @@ namespace Eto.Mac.Forms.Controls
 			if (handler != null)
 			{
 				var args = new WebViewLoadingEventArgs(new Uri(e.Request.Url.AbsoluteString), e.Frame == handler.Control.MainFrame);
-				handler.Widget.OnDocumentLoading(args);
+				handler.Callback.OnDocumentLoading(handler.Widget, args);
 				if (args.Cancel)
 					e.DecisionToken.PerformSelector(selIgnore, null, 0);
 				else
@@ -256,8 +255,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var args = new WebViewLoadedEventArgs(handler.Url);
 				if (e.ForFrame == handler.Control.MainFrame)
-					handler.Widget.OnNavigated(args);
-				handler.Widget.OnDocumentLoaded(args);
+					handler.Callback.OnNavigated(handler.Widget, args);
+				handler.Callback.OnDocumentLoaded(handler.Widget, args);
 			}
 		}
 

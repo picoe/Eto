@@ -5,7 +5,7 @@ using MonoTouch.ObjCRuntime;
 
 namespace Eto.iOS.Threading
 {
-	public class ThreadHandler : WidgetHandler<NSThread, Thread>, IThread
+	public class ThreadHandler : WidgetHandler<NSThread, Thread, Thread.ICallback>, IThread
 	{
 		public ThreadHandler ()
 		{
@@ -19,7 +19,7 @@ namespace Eto.iOS.Threading
 			{
 				using (var pool = new NSAutoreleasePool())
 				{
-					Handler.Widget.OnExecuted();
+					Handler.Callback.OnExecuted(Handler.Widget);
 				}
 			}
 		}

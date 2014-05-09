@@ -31,7 +31,7 @@ namespace Eto.Forms.ThemedControls
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ThemedSpinnerHandler : ThemedControlHandler<Drawable, Spinner>, ISpinner
+	public class ThemedSpinnerHandler : ThemedControlHandler<Drawable, Spinner, Spinner.ICallback>, ISpinner
 	{
 		UITimer timer;
 		bool enabled;

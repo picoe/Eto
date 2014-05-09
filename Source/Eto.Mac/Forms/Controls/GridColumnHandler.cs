@@ -35,7 +35,7 @@ namespace Eto.Mac.Forms.Controls
 		IDataViewHandler DataViewHandler { get; }
 	}
 	
-	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn>, IGridColumn, IDataColumnHandler
+	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn, GridColumn.ICallback>, IGridColumn, IDataColumnHandler
 	{
 		Cell dataCell;
 		Font font;

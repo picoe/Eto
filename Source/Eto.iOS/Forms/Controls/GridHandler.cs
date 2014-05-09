@@ -7,10 +7,20 @@ using MonoTouch.Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public abstract class GridHandler<T, W> : IosControl<T, W>, IGrid
-		where T: UITableView
-		where W: Grid
+	public interface IGridHandler
 	{
+		Grid Widget { get; }
+		Grid.ICallback Callback { get; }
+	}
+
+	public abstract class GridHandler<TControl, TWidget, TCallback> : IosControl<TControl, TWidget, TCallback>, IGrid, IGridHandler
+		where TControl: UITableView
+		where TWidget: Grid
+		where TCallback: Grid.ICallback
+	{
+		Grid IGridHandler.Widget { get { return Widget; } }
+		Grid.ICallback IGridHandler.Callback { get { return Callback; } }
+
 		public new UITableViewController Controller
 		{
 			get { return (UITableViewController)base.Controller; }
@@ -26,7 +36,7 @@ namespace Eto.iOS.Forms.Controls
 		{
 			base.Initialize ();
 			Controller = new RotatableTableViewController { Control = this.Widget };
-			Control = (T)Controller.TableView;
+			Control = (TControl)Controller.TableView;
 
 			Control.Delegate = CreateDelegate ();
 		}
@@ -81,18 +91,16 @@ namespace Eto.iOS.Forms.Controls
 	public class GridHandlerTableDelegate : UITableViewDelegate
 	{
 		WeakReference handler;
-		public IGrid Handler { get { return (IGrid)handler.Target; } set { handler = new WeakReference(value); } }
+		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-		public Grid Widget { get { return Handler.Widget as Grid; } }
-
-		public GridHandlerTableDelegate(IGrid handler)
+		public GridHandlerTableDelegate(IGridHandler handler)
 		{
 			this.Handler = handler;
 		}
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			Widget.OnSelectionChanged(EventArgs.Empty);
+			Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 		}
 	}
 

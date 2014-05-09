@@ -57,7 +57,7 @@ namespace Eto.GtkSharp
 			{
 				text = value;
 				string val = text;
-				label.Text = GtkControl<Gtk.Widget, Control>.StringToMnuemonic(val);
+				label.Text = GtkControl<Gtk.Widget, Control, Control.ICallback>.StringToMnuemonic(val);
 				label.UseUnderline = true;
 			}
 		}

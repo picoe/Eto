@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Eto.Mac.Forms
 {
-	public class ApplicationHandler : WidgetHandler<NSApplication, Application>, IApplication
+	public class ApplicationHandler : WidgetHandler<NSApplication, Application, Application.ICallback>, IApplication
 	{
 		bool attached;
 
@@ -127,7 +127,7 @@ namespace Eto.Mac.Forms
 		public void Initialize(NSApplicationDelegate appdelegate)
 		{
 			AppDelegate = appdelegate;
-			Widget.OnInitialized(EventArgs.Empty);	
+			Callback.OnInitialized(Widget, EventArgs.Empty);
 		}
 
 		public void Quit()

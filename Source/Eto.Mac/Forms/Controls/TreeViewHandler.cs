@@ -10,7 +10,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TreeViewHandler : MacControl<NSOutlineView, TreeView>, ITreeView
+	public class TreeViewHandler : MacControl<NSOutlineView, TreeView, TreeView.ICallback>, ITreeView
 	{
 		ITreeStore top;
 		ContextMenu contextMenu;
@@ -82,7 +82,7 @@ namespace Eto.Mac.Forms.Controls
 				if (myitem != null)
 				{
 					var args = new TreeViewItemCancelEventArgs(myitem.Item);
-					Handler.Widget.OnLabelEditing(args);
+					Handler.Callback.OnLabelEditing(Handler.Widget, args);
 					return !args.Cancel;
 				}
 				return true;
@@ -99,7 +99,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void SelectionDidChange(NSNotification notification)
 			{
 				if (!Handler.selectionChanging)
-					Handler.Widget.OnSelectionChanged(EventArgs.Empty);
+					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public override void ItemDidCollapse(NSNotification notification)
@@ -110,7 +110,7 @@ namespace Eto.Mac.Forms.Controls
 					if (myitem != null && myitem.Item.Expanded)
 					{
 						myitem.Item.Expanded = false;
-						Handler.Widget.OnCollapsed(new TreeViewItemEventArgs(myitem.Item));
+						Handler.Callback.OnCollapsed(Handler.Widget, new TreeViewItemEventArgs(myitem.Item));
 					}
 				}
 			}
@@ -123,7 +123,7 @@ namespace Eto.Mac.Forms.Controls
 					if (myitem != null && !myitem.Item.Expanded)
 					{
 						var args = new TreeViewItemCancelEventArgs(myitem.Item);
-						Handler.Widget.OnExpanding(args);
+						Handler.Callback.OnExpanding(Handler.Widget, args);
 						return !args.Cancel;
 					}
 				}
@@ -138,7 +138,7 @@ namespace Eto.Mac.Forms.Controls
 					if (myitem != null && myitem.Item.Expanded)
 					{
 						var args = new TreeViewItemCancelEventArgs(myitem.Item);
-						Handler.Widget.OnCollapsing(args);
+						Handler.Callback.OnCollapsing(Handler.Widget, args);
 						return !args.Cancel;
 					}
 				}
@@ -153,7 +153,7 @@ namespace Eto.Mac.Forms.Controls
 					if (myitem != null && !myitem.Item.Expanded)
 					{
 						myitem.Item.Expanded = true;
-						Handler.Widget.OnExpanded(new TreeViewItemEventArgs(myitem.Item));
+						Handler.Callback.OnExpanded(Handler.Widget, new TreeViewItemEventArgs(myitem.Item));
 						Handler.ExpandItems(myitem);
 					}
 				}
@@ -212,7 +212,7 @@ namespace Eto.Mac.Forms.Controls
 				if (myitem != null)
 				{
 					var args = new TreeViewItemEditEventArgs(myitem.Item, (string)(NSString)theObject);
-					Handler.Widget.OnLabelEdited(args);
+					Handler.Callback.OnLabelEdited(Handler.Widget, args);
 					if (!args.Cancel)
 						myitem.Item.Text = args.Label;
 				}
@@ -301,7 +301,7 @@ namespace Eto.Mac.Forms.Controls
 					Widget.KeyDown += (sender, e) => {
 						if (!column.Editable && e.KeyData == Keys.Enter)
 						{
-							Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
+							Callback.OnActivated(Widget, new TreeViewItemEventArgs(SelectedItem));
 						}
 					};
 					Control.DoubleClick += HandleDoubleClick;
@@ -333,7 +333,7 @@ namespace Eto.Mac.Forms.Controls
 				if (handler.column.Editable)
 					handler.Control.EditColumn(handler.Control.ClickedColumn, handler.Control.ClickedRow, new NSEvent(), true);
 				else
-					handler.Widget.OnActivated(new TreeViewItemEventArgs(handler.SelectedItem));
+					handler.Callback.OnActivated(handler.Widget, new TreeViewItemEventArgs(handler.SelectedItem));
 			}
 		}
 

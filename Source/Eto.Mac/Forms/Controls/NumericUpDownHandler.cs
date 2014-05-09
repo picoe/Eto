@@ -8,7 +8,7 @@ using MonoMac.Foundation;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class NumericUpDownHandler : MacView<NSView, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : MacView<NSView, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
 	{
 		readonly NSTextField text;
 		readonly NSStepper stepper;
@@ -89,7 +89,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					handler.text.DoubleValue = handler.stepper.DoubleValue;
 				}
-				handler.Widget.OnValueChanged(EventArgs.Empty);
+				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -99,7 +99,7 @@ namespace Eto.Mac.Forms.Controls
 			if (handler != null)
 			{
 				handler.stepper.DoubleValue = handler.text.DoubleValue;
-				handler.Widget.OnValueChanged(EventArgs.Empty);
+				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -121,7 +121,7 @@ namespace Eto.Mac.Forms.Controls
 				if (newval < val)
 				{
 					Value = newval;
-					Widget.OnValueChanged(EventArgs.Empty);
+					Callback.OnValueChanged(Widget, EventArgs.Empty);
 				}
 				e.Handled = true;
 			}
@@ -132,7 +132,7 @@ namespace Eto.Mac.Forms.Controls
 				if (newval > val)
 				{
 					Value = newval;
-					Widget.OnValueChanged(EventArgs.Empty);
+					Callback.OnValueChanged(Widget, EventArgs.Empty);
 				}
 				e.Handled = true;
 			}

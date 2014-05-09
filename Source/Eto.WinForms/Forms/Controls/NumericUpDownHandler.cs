@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class NumericUpDownHandler : WindowsControl<swf.NumericUpDown, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : WindowsControl<swf.NumericUpDown, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
 	{
 		public NumericUpDownHandler()
 		{
@@ -17,7 +17,7 @@ namespace Eto.WinForms
 			};
 			Control.ValueChanged += delegate
 			{
-				Widget.OnValueChanged(EventArgs.Empty);
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
 			};
 		}
 

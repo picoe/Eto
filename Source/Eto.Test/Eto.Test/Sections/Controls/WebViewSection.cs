@@ -276,7 +276,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				if (Platform.Supports<Dialog>())
 				{
-					var dialog = new Dialog();
+					var dialog = new Dialog<bool>();
 					if (Platform.IsDesktop)
 						dialog.MinimumSize = new Size(300, 0);
 
@@ -284,10 +284,7 @@ namespace Eto.Test.Sections.Controls
 					var textBox = new TextBox { Text = "http://google.com" };
 					var goButton = new Button { Text = "Go" };
 					dialog.DefaultButton = goButton;
-					goButton.Click += (sender, e) => {
-						dialog.DialogResult = DialogResult.Ok;
-						dialog.Close();
-					};
+					goButton.Click += (sender, e) => dialog.Close(true);
 					var cancelButton = new Button { Text = "Cancel" };
 					dialog.AbortButton = cancelButton;
 					cancelButton.Click += (sender, e) => dialog.Close();
@@ -299,7 +296,8 @@ namespace Eto.Test.Sections.Controls
 
 					dialog.Content = layout;
 
-					if (dialog.ShowDialog(this) == DialogResult.Ok)
+
+					if (dialog.ShowModal(this))
 					{
 						Uri uri;
 						if (Uri.TryCreate(textBox.Text, UriKind.Absolute, out uri))

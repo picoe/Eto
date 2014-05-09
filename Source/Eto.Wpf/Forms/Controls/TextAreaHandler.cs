@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea>, ITextArea
+	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, ITextArea
 	{
 		int? lastCaretIndex;
 		readonly Size defaultSize = TextArea.DefaultSize;
@@ -43,17 +43,17 @@ namespace Eto.Wpf.Forms.Controls
 			switch (id)
 			{
 			case TextControl.TextChangedEvent:
-				Control.TextChanged += (sender, e) => Widget.OnTextChanged(EventArgs.Empty);
+				Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
 				break;
 			case TextArea.SelectionChangedEvent:
-				Control.SelectionChanged += (sender, e) => Widget.OnSelectionChanged(EventArgs.Empty);
+				Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				break;
 			case TextArea.CaretIndexChangedEvent:
 				Control.SelectionChanged += (sender, e) => {
 					var caretIndex = Control.CaretIndex;
 					if (lastCaretIndex != caretIndex)
 					{
-						Widget.OnCaretIndexChanged (EventArgs.Empty);
+						Callback.OnCaretIndexChanged(Widget, EventArgs.Empty);
 						lastCaretIndex = caretIndex;
 					}
 				};

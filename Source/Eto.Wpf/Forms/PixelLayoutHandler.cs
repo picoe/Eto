@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
 {
-	public class PixelLayoutHandler : WpfLayout<swc.Canvas, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : WpfLayout<swc.Canvas, PixelLayout, PixelLayout.ICallback>, IPixelLayout
 	{
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{

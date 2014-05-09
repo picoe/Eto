@@ -16,7 +16,7 @@ namespace Eto.Mac.Forms.Controls
 		public object Handler { get { return WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 	}
 
-	public class ListBoxHandler : MacControl<NSTableView, ListBox>, IListBox
+	public class ListBoxHandler : MacControl<NSTableView, ListBox, ListBox.ICallback>, IListBox
 	{
 		Font font;
 		readonly NSScrollView scroll;
@@ -61,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void SelectionDidChange(NSNotification notification)
 			{
-				Handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -87,7 +87,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (e.Key == Keys.Enter)
 			{
-				Widget.OnActivated(EventArgs.Empty);
+				Callback.OnActivated(Widget, EventArgs.Empty);
 				e.Handled = true;
 			}
 		}
@@ -141,7 +141,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var handler = GetHandler(sender) as ListBoxHandler;
 			if (handler != null)
-				handler.Widget.OnActivated(EventArgs.Empty);
+				handler.Callback.OnActivated(handler.Widget, EventArgs.Empty);
 		}
 
 		public override Font Font

@@ -130,7 +130,7 @@ namespace Eto.GtkSharp.Forms
 				if (image != null)
 				{
 					var handler = new BitmapHandler(image);
-					return new Bitmap(Widget.Platform, handler);
+					return new Bitmap(handler);
 				}
 				return null;
 			}

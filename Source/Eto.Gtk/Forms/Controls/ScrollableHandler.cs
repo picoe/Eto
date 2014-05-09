@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class ScrollableHandler : GtkPanel<Gtk.ScrolledWindow, Scrollable>, IScrollable
+	public class ScrollableHandler : GtkPanel<Gtk.ScrolledWindow, Scrollable, Scrollable.ICallback>, IScrollable
 	{
 		readonly Gtk.Viewport vp;
 		readonly Gtk.HBox hbox;
@@ -105,13 +105,13 @@ namespace Eto.GtkSharp
 #endif
 			public void HandleScrollbarVisibilityChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnSizeChanged(EventArgs.Empty);
+				Handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleScrollableScrollEvent(object o, Gtk.ScrollEventArgs args)
 			{
 				var pos = new Point((int)args.Event.X, (int)args.Event.Y);
-				Handler.Widget.OnScroll(new ScrollEventArgs(pos));
+				Handler.Callback.OnScroll(Handler.Widget, new ScrollEventArgs(pos));
 			}
 		}
 

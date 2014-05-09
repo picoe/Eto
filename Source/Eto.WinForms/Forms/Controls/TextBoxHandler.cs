@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace Eto.WinForms
 {
-	public class TextBoxHandler : WindowsControl<TextBoxHandler.WatermarkTextBox, TextBox>, ITextBox
+	public class TextBoxHandler : WindowsControl<TextBoxHandler.WatermarkTextBox, TextBox, TextBox.ICallback>, ITextBox
 	{
 		public class WatermarkTextBox : SWF.TextBox
 		{

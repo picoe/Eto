@@ -37,7 +37,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(SelectionChangedEvent, value); }
 		}
 
-		public virtual void OnSelectionChanged(EventArgs e)
+		protected virtual void OnSelectionChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectionChangedEvent, this, e);
 		}
@@ -50,7 +50,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(CaretIndexChangedEvent, value); }
 		}
 
-		public virtual void OnCaretIndexChanged(EventArgs e)
+		protected virtual void OnCaretIndexChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(CaretIndexChangedEvent, this, e);
 		}
@@ -116,6 +116,27 @@ namespace Eto.Forms
 		public void Append(string text, bool scrollToCursor = false)
 		{
 			Handler.Append(text, scrollToCursor);
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : TextControl.ICallback
+		{
+			void OnSelectionChanged(TextArea widget, EventArgs e);
+			void OnCaretIndexChanged(TextArea widget, EventArgs e);
+		}
+
+		protected class Callback : TextControl.Callback, ICallback
+		{
+			public void OnSelectionChanged(TextArea widget, EventArgs e)
+			{
+				widget.OnSelectionChanged(e);
+			}
+			public void OnCaretIndexChanged(TextArea widget, EventArgs e)
+			{
+				widget.OnCaretIndexChanged(e);
+			}
 		}
 	}
 }

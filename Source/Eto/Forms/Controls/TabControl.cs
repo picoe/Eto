@@ -39,7 +39,7 @@ namespace Eto.Forms
 		
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
-		public virtual void OnSelectedIndexChanged(EventArgs e)
+		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
 			if (SelectedIndexChanged != null)
 				SelectedIndexChanged(this, e);
@@ -90,10 +90,7 @@ namespace Eto.Forms
 
 		internal void InsertTab(int index, TabPage page)
 		{
-			var load = SetParent(page);
-			Handler.InsertTab(index, page);
-			if (load)
-				page.OnLoadComplete(EventArgs.Empty);
+			SetParent(page, () => Handler.InsertTab(index, page));
 		}
 
 		internal void RemoveTab(int index, TabPage page)
@@ -134,6 +131,22 @@ namespace Eto.Forms
 					(c, h) => c.SelectedIndexChanged += h, 
 					(c, h) => c.SelectedIndexChanged -= h
 				);
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Control.ICallback
+		{
+			void OnSelectedIndexChanged(TabControl widget, EventArgs e);
+		}
+
+		protected class Callback : Control.Callback, ICallback
+		{
+			public void OnSelectedIndexChanged(TabControl widget, EventArgs e)
+			{
+				widget.OnSelectedIndexChanged(e);
 			}
 		}
 	}

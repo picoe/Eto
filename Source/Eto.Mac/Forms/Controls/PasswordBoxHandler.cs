@@ -5,7 +5,7 @@ using Eto.Mac.Forms.Controls;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox>, IPasswordBox, ITextBoxWithMaxLength
+	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox, PasswordBox.ICallback>, IPasswordBox, ITextBoxWithMaxLength
 	{
 		class EtoTextField : NSSecureTextField, IMacControl
 		{
@@ -63,7 +63,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var handler = GetHandler(sender) as PasswordBoxHandler;
 			if (handler != null)
-				handler.Widget.OnTextChanged(EventArgs.Empty);
+				handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty);
 		}
 
 		public bool ReadOnly

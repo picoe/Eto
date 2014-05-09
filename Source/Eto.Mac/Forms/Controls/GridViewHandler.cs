@@ -8,7 +8,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<NSTableView, GridView>, IGridView
+	public class GridViewHandler : GridHandler<NSTableView, GridView, GridView.ICallback>, IGridView
 	{
 		CollectionHandler collection;
 
@@ -61,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 				if (colHandler != null) {
 					colHandler.SetObjectValue (item, theObject);
 					
-					Handler.Widget.OnCellEdited (new GridViewCellArgs(colHandler.Widget, row, colHandler.Column, item));
+					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellArgs(colHandler.Widget, row, colHandler.Column, item));
 				}
 			}
 		}
@@ -76,20 +76,20 @@ namespace Eto.Mac.Forms.Controls
 				var colHandler = Handler.GetColumn (tableColumn);
 				var item = Handler.collection.Collection [row];
 				var args = new GridViewCellArgs (colHandler.Widget, row, colHandler.Column, item);
-				Handler.Widget.OnCellEditing (args);
+				Handler.Callback.OnCellEditing(Handler.Widget, args);
 				return true;
 			}
 					
 			public override void SelectionDidChange (NSNotification notification)
 			{
-				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+				Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 
 				// Trigger CellClick
 				var tableView = Handler.Control;
 				var row = tableView.SelectedRow;
 				var col = tableView.SelectedColumn;
 				if (row >= 0) // && col >= 0) TODO: Fix the column
-					Handler.Widget.OnCellClick (
+					Handler.Callback.OnCellClick (Handler.Widget,
 						new GridViewCellArgs (null, // TODO: col is always -1 currently, so this does not work: Handler.GetColumn (tableView.ClickedColumn).Widget,
 		                     row, col, Handler.collection.Collection [row]));					
 			}
@@ -97,7 +97,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)
 			{
 				var colHandler = Handler.GetColumn (tableColumn);
-				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (colHandler.Widget));
+				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs (colHandler.Widget));
 			}
 
 			public override void WillDisplayCell (NSTableView tableView, NSObject cell, NSTableColumn tableColumn, int row)

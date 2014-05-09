@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox>, IComboBox
+	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox, ComboBox.ICallback>, IComboBox
 	{
 		CollectionHandler collection;
 
@@ -31,7 +31,7 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleActivated(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as ComboBoxHandler;
-			handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+			handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 		}
 
 		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
@@ -104,7 +104,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Control.SelectItem(value);
 					if (Widget.Loaded)
-						Widget.OnSelectedIndexChanged(EventArgs.Empty);
+						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}

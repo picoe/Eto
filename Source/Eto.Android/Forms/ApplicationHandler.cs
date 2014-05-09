@@ -11,7 +11,7 @@ namespace Eto.Android.Forms
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ApplicationHandler : WidgetHandler<a.App.Application, Application>, IApplication
+	public class ApplicationHandler : WidgetHandler<a.App.Application, Application, Application.ICallback>, IApplication
 	{
 		public static ApplicationHandler Instance { get { return Application.Instance.Handler as ApplicationHandler; } }
 
@@ -43,7 +43,7 @@ namespace Eto.Android.Forms
 
 		public void Run(string[] args)
 		{
-			Widget.OnInitialized(EventArgs.Empty);
+			Callback.OnInitialized(Widget, EventArgs.Empty);
 		}
 
 		public void Quit()

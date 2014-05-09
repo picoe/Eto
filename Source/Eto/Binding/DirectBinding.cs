@@ -49,7 +49,7 @@ namespace Eto
 		/// and <see cref="M:Binding.RemoveEvent"/> methods to hook up/remove any event bindings 
 		/// you need on the bound object.
 		/// </remarks>
-		public virtual void OnDataValueChanged (EventArgs e)
+		protected virtual void OnDataValueChanged (EventArgs e)
 		{
 			if (_DataValueChanged != null)
 				_DataValueChanged (this, e);

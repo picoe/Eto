@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.Controls
 		TabControl tabControl;
 		Label memoryUsage;
 
-		public override void OnPreLoad(EventArgs e)
+		protected override void OnPreLoad(EventArgs e)
 		{
 			base.OnPreLoad(e);
 			Content = Create();			

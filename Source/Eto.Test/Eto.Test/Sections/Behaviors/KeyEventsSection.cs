@@ -8,14 +8,14 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox showParentEvents;
 		CheckBox showWindowEvents;
 
-		public override void OnLoad(System.EventArgs e)
+		protected override void OnLoad(System.EventArgs e)
 		{
 			base.OnLoad(e);
 			LogEvents(this);
 			LogEvents(ParentWindow);
 		}
 
-		public override void OnUnLoad(System.EventArgs e)
+		protected override void OnUnLoad(System.EventArgs e)
 		{
 			base.OnUnLoad(e);
 			ParentWindow.KeyDown -= control_KeyDown;

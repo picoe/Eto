@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<GridView>, IGridView
+	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, IGridView
 	{
 		CollectionHandler collection;
 		
@@ -29,7 +29,7 @@ namespace Eto.WinForms.Forms.Controls
 				Control.CellClick += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
-					Widget.OnCellClick (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+					Callback.OnCellClick(Widget, new GridViewCellArgs(column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
 			default:

@@ -107,22 +107,22 @@ namespace Eto.WinForms
 			return false;
 		}
 
-		public void AddBubbleKeyEvent(Action<Control, KeyEventArgs> action, Win32.WM message, KeyEventType keyEventType)
+		public void AddBubbleKeyEvent(Action<Control, Control.ICallback, KeyEventArgs> action, Win32.WM message, KeyEventType keyEventType)
 		{
 			AddBubbleEvent(be => KeyEvent(be, action, keyEventType), message);
 		}
 
-		public void AddBubbleKeyCharEvent(Action<Control, KeyEventArgs> action, Win32.WM message, KeyEventType keyEventType)
+		public void AddBubbleKeyCharEvent(Action<Control, Control.ICallback, KeyEventArgs> action, Win32.WM message, KeyEventType keyEventType)
 		{
 			AddBubbleEvent(be => KeyCharEvent(be, action, keyEventType), message);
 		}
 
-		public void AddBubbleMouseEvent(Action<Control, MouseEventArgs> action, bool? capture, Win32.WM message, Func<MouseButtons, MouseButtons> modifyButtons = null)
+		public void AddBubbleMouseEvent(Action<Control, Control.ICallback, MouseEventArgs> action, bool? capture, Win32.WM message, Func<MouseButtons, MouseButtons> modifyButtons = null)
 		{
 			AddBubbleEvent(be => MouseEvent(be, action, capture, modifyButtons), message);
 		}
 
-		public void AddBubbleMouseEvents(Action<Control, MouseEventArgs> action, bool? capture, params Win32.WM[] messages)
+		public void AddBubbleMouseEvents(Action<Control, Control.ICallback, MouseEventArgs> action, bool? capture, params Win32.WM[] messages)
 		{
 			foreach (var message in messages)
 			{
@@ -130,7 +130,7 @@ namespace Eto.WinForms
 			}
 		}
 
-		static bool MouseEvent(BubbleEventArgs be, Action<Control, MouseEventArgs> action, bool? capture, Func<MouseButtons, MouseButtons> modifyButtons = null)
+		static bool MouseEvent(BubbleEventArgs be, Action<Control, Control.ICallback, MouseEventArgs> action, bool? capture, Func<MouseButtons, MouseButtons> modifyButtons = null)
 		{
 			var modifiers = swf.Control.ModifierKeys.ToEto();
 			var delta = new SizeF(0, Win32.GetWheelDeltaWParam(be.Message.WParam) / Conversions.WheelDelta);
@@ -143,7 +143,8 @@ namespace Eto.WinForms
 			foreach (var control in be.Controls)
 			{
 				var me = new MouseEventArgs(buttons, modifiers, control.PointFromScreen(mousePosition), delta);
-				action(control, me);
+				var callback = (Control.ICallback)((ICallbackSource)control).Callback;
+				action(control, callback, me);
 				if (me.Handled)
 				{
 					ret = true;
@@ -157,19 +158,20 @@ namespace Eto.WinForms
 			return ret;
 		}
 
-		static bool KeyEvent(BubbleEventArgs be, Action<Control, KeyEventArgs> action, KeyEventType keyEventType)
+		static bool KeyEvent(BubbleEventArgs be, Action<Control, Control.ICallback, KeyEventArgs> action, KeyEventType keyEventType)
 		{
 			Keys keyData = ((swf.Keys)(long)be.Message.WParam | swf.Control.ModifierKeys).ToEto();
 			
 			char? keyChar = null;
 			var kevt = new KeyEventArgs(keyData, keyEventType, keyChar);
 			if (be.Control != null)
-				action(be.Control, kevt);
+				action(be.Control, (Control.ICallback)((ICallbackSource)be.Control).Callback, kevt);
 			if (!kevt.Handled && (keyEventType != KeyEventType.KeyDown || !IsInputKey(be.Message.HWnd, keyData)))
 			{
 				foreach (var control in be.Parents)
 				{
-					action(control, kevt);
+					var callback = (Control.ICallback)((ICallbackSource)control).Callback;
+					action(control, callback, kevt);
 					if (kevt.Handled)
 						break;
 				}
@@ -205,19 +207,20 @@ namespace Eto.WinForms
 			return ((int)((long)Win32.SendMessage(hwnd, Win32.WM.GETDLGCODE, IntPtr.Zero, IntPtr.Zero)) & num) != 0;
 		}
 
-		static bool KeyCharEvent(BubbleEventArgs be, Action<Control, KeyEventArgs> action, KeyEventType keyEventType)
+		static bool KeyCharEvent(BubbleEventArgs be, Action<Control, Control.ICallback, KeyEventArgs> action, KeyEventType keyEventType)
 		{
 			Keys keyData = Keys.None;
 
 			char keyChar = (char)((long)be.Message.WParam);
 			var kevt = new KeyEventArgs(keyData, keyEventType, keyChar);
 			if (be.Control != null)
-				action(be.Control, kevt);
+				action(be.Control, (Control.ICallback)((ICallbackSource)be.Control).Callback, kevt);
 			if (!kevt.Handled && !IsInputChar(be.Message.HWnd, keyChar))
 			{
 				foreach (var control in be.Parents)
 				{
-					action(control, kevt);
+					var callback = (Control.ICallback)((ICallbackSource)control).Callback;
+					action(control, callback, kevt);
 					if (kevt.Handled)
 						break;
 				}

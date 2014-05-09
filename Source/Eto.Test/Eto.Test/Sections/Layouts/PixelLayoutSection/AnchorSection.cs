@@ -73,13 +73,13 @@ namespace Eto.Test.Sections.Layouts.PixelLayoutSection
 			Buttons = CreateButtons();
 		}
 
-		public override void OnSizeChanged(EventArgs e)
+		protected override void OnSizeChanged(EventArgs e)
 		{
 			base.OnSizeChanged(e);
 			SetButtonsPosition(); // update child position when the size changes
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		protected override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 			SetButtonsPosition(); // set position when we're shown and know our size

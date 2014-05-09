@@ -26,7 +26,7 @@ namespace Eto.Forms
 			base.Add(new ListItem { Text = text, Key = key });
 		}
 	}
-	
+
 	[ContentProperty("Items")]
 	public abstract class ListControl : CommonControl
 	{
@@ -34,7 +34,7 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
-		public virtual void OnSelectedIndexChanged(EventArgs e)
+		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
 			if (SelectedIndexChanged != null)
 				SelectedIndexChanged(this, e);
@@ -43,7 +43,7 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> SelectedValueChanged;
 
-		public virtual void OnSelectedValueChanged(EventArgs e)
+		protected virtual void OnSelectedValueChanged(EventArgs e)
 		{
 			if (SelectedValueChanged != null)
 				SelectedValueChanged(this, e);
@@ -102,7 +102,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		protected internal override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 			if (DataStore == null)
@@ -153,6 +153,23 @@ namespace Eto.Forms
 					(c, h) => c.SelectedValueChanged += h, 
 					(c, h) => c.SelectedValueChanged -= h
 				);
+			}
+		}
+
+		static readonly object callback = new Callback();
+
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : CommonControl.ICallback
+		{
+			void OnSelectedIndexChanged(ListControl widget, EventArgs e);
+		}
+
+		protected class Callback : CommonControl.Callback, ICallback
+		{
+			public void OnSelectedIndexChanged(ListControl widget, EventArgs e)
+			{
+				widget.OnSelectedIndexChanged(e);
 			}
 		}
 	}

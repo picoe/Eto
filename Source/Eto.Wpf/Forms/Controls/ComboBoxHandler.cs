@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox>, IComboBox
+	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, IComboBox
 	{
 		IListStore store;
 
@@ -87,7 +87,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate
 			{
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
 		}
 

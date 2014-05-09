@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class GroupBoxHandler : WindowsPanel<swf.GroupBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : WindowsPanel<swf.GroupBox, GroupBox, GroupBox.ICallback>, IGroupBox
 	{
 		readonly swf.Panel content;
 

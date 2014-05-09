@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Handlers
 {
-	public class TabControlHandler : ThemedContainerHandler<Container, TabControl>, ITabControl
+	public class TabControlHandler : ThemedContainerHandler<Container, TabControl, TabControl.ICallback>, ITabControl
 	{
 		/// <summary>
 		/// Contains the tabs
@@ -32,7 +32,7 @@ namespace Eto.Test.Handlers
 							tabContentPanel = tabHandler.Control;
 					}
 					ContentPanel.Content = tabContentPanel;
-					Widget.OnSelectedIndexChanged(EventArgs.Empty);
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				},
 			};
 

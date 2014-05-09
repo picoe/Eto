@@ -110,9 +110,10 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	public abstract class GridHandler<TControl, TWidget> : MacControl<TControl, TWidget>, IGrid, IDataViewHandler, IGridHandler
+	public abstract class GridHandler<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, IGrid, IDataViewHandler, IGridHandler
 		where TControl: NSTableView
 		where TWidget: Grid
+		where TCallback: Grid.ICallback
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
@@ -171,7 +172,7 @@ namespace Eto.Mac.Forms.Controls
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<TControl,TWidget> Handler { get; set; }
+			public GridHandler<TControl,TWidget,TCallback> Handler { get; set; }
 
 			public override void AddItem(GridColumn item)
 			{
@@ -250,7 +251,7 @@ namespace Eto.Mac.Forms.Controls
 
 		static void HandleScrolled(ObserverActionEventArgs e)
 		{
-			var handler = (GridHandler<TControl,TWidget>)e.Handler;
+			var handler = (GridHandler<TControl,TWidget,TCallback>)e.Handler;
 			handler.UpdateColumnSizes();
 		}
 
@@ -403,7 +404,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void OnCellFormatting(GridColumn column, object item, int row, NSCell cell)
 		{
-			Widget.OnCellFormatting(new MacCellFormatArgs(column, item, row, cell));
+			Callback.OnCellFormatting(Widget, new MacCellFormatArgs(column, item, row, cell));
 		}
 	}
 }

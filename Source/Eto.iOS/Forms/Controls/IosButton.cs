@@ -6,9 +6,10 @@ using Eto.iOS.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public abstract class IosButton<TControl, TWidget> : IosControl<TControl, TWidget>, ITextControl
+	public abstract class IosButton<TControl, TWidget, TCallback> : IosControl<TControl, TWidget, TCallback>, ITextControl
 		where TControl: UIButton
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{	
 		Font font;
 

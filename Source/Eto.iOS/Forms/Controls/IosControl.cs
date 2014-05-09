@@ -7,9 +7,10 @@ using MonoTouch.Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class IosControl<T, W> : IosView<T, W>, IControl
-		where T: UIView
-		where W: Control
+	public class IosControl<TControl, TWidget, TCallback> : IosView<TControl, TWidget, TCallback>, IControl
+		where TControl: UIView
+		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		public override UIView ContainerControl { get { return Control; } }
 

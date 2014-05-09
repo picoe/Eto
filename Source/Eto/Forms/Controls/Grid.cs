@@ -182,7 +182,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="CellEditing"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnCellEditing(GridViewCellArgs e)
+		protected virtual void OnCellEditing(GridViewCellArgs e)
 		{
 			Properties.TriggerEvent(CellEditingEvent, this, e);
 		}
@@ -205,7 +205,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.CellEdited"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnCellEdited(GridViewCellArgs e)
+		protected virtual void OnCellEdited(GridViewCellArgs e)
 		{
 			Properties.TriggerEvent(CellEditedEvent, this, e);
 		}
@@ -228,7 +228,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.SelectionChanged"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnSelectionChanged(EventArgs e)
+		protected internal virtual void OnSelectionChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectionChangedEvent, this, e);
 		}
@@ -251,7 +251,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.ColumnHeaderClick"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnColumnHeaderClick(GridColumnEventArgs e)
+		protected virtual void OnColumnHeaderClick(GridColumnEventArgs e)
 		{
 			Properties.TriggerEvent(ColumnHeaderClickEvent, this, e);
 		}
@@ -274,7 +274,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.CellFormatting"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnCellFormatting(GridCellFormatEventArgs e)
+		protected virtual void OnCellFormatting(GridCellFormatEventArgs e)
 		{
 			Properties.TriggerEvent(CellFormattingEvent, this, e);
 		}
@@ -432,6 +432,46 @@ namespace Eto.Forms
 		public virtual void UnselectAll()
 		{
 			Handler.UnselectAll();
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Control.ICallback
+		{
+			void OnCellEditing(Grid widget, GridViewCellArgs e);
+			void OnCellEdited(Grid widget, GridViewCellArgs e);
+			void OnSelectionChanged(Grid widget, EventArgs e);
+			void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e);
+			void OnCellFormatting(Grid widget, GridCellFormatEventArgs e);
+		}
+
+		protected class Callback : Control.Callback, ICallback
+		{
+			public void OnCellEditing(Grid widget, GridViewCellArgs e)
+			{
+				widget.OnCellEditing(e);
+			}
+
+			public void OnCellEdited(Grid widget, GridViewCellArgs e)
+			{
+				widget.OnCellEdited(e);
+			}
+
+			public void OnSelectionChanged(Grid widget, EventArgs e)
+			{
+				widget.OnSelectionChanged(e);
+			}
+
+			public void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e)
+			{
+				widget.OnColumnHeaderClick(e);
+			}
+
+			public void OnCellFormatting(Grid widget, GridCellFormatEventArgs e)
+			{
+				widget.OnCellFormatting(e);
+			}
 		}
 	}
 }

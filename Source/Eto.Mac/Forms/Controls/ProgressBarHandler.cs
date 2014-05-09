@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ProgressBarHandler : MacView<NSProgressIndicator, ProgressBar>, IProgressBar
+	public class ProgressBarHandler : MacView<NSProgressIndicator, ProgressBar, ProgressBar.ICallback>, IProgressBar
 	{
 		public class EtoSlider : NSProgressIndicator, IMacControl
 		{

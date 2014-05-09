@@ -66,9 +66,8 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	public class TextBoxHandler : MacText<EtoTextField, TextBox>, ITextBox, ITextBoxWithMaxLength
+	public class TextBoxHandler : MacText<EtoTextField, TextBox, TextBox.ICallback>, ITextBox, ITextBoxWithMaxLength
 	{
-
 		public override bool HasFocus
 		{
 			get
@@ -119,7 +118,7 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleTextChanged (object sender, EventArgs e)
 		{
 			var h = GetHandler(sender) as TextBoxHandler;
-			h.Widget.OnTextChanged(EventArgs.Empty);
+			h.Callback.OnTextChanged(h.Widget, EventArgs.Empty);
 		}
 
 		public bool ReadOnly

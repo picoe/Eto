@@ -142,7 +142,7 @@ namespace Eto.Mac.Forms
 		WeakReference WeakHandler { get; }
 	}
 
-	public class MacBase<TControl, TWidget> : WidgetHandler<TControl, TWidget>
+	public class MacBase<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>
 		where TControl: class
 		where TWidget: Widget
 	{

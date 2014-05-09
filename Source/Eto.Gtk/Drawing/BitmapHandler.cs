@@ -212,7 +212,7 @@ namespace Eto.GtkSharp.Drawing
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			if (rectangle == null)
-				return new Bitmap(Platform, new BitmapHandler(Control.Copy()));
+				return new Bitmap(new BitmapHandler(Control.Copy()));
 			else
 			{
 				var rect = rectangle.Value;
@@ -223,7 +223,7 @@ namespace Eto.GtkSharp.Drawing
 					format = PixelFormat.Format32bppRgba;
 				else
 					format = PixelFormat.Format32bppRgb;
-				var bmp = new Bitmap(rect.Width, rect.Height, format, Platform);
+				var bmp = new Bitmap(rect.Width, rect.Height, format);
 				Control.CopyArea(rect.X, rect.Y, rect.Width, rect.Height, bmp.ToGdk(), 0, 0);
 				return bmp;
 			}

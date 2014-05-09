@@ -7,9 +7,10 @@ using Eto.Drawing;
 namespace Eto.WinForms
 {
 
-	public abstract class WindowsContainer<TControl, TWidget> : WindowsControl<TControl, TWidget>, IContainer
+	public abstract class WindowsContainer<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, IContainer
 		where TControl : swf.Control
 		where TWidget : Container
+		where TCallback : Control.ICallback
 	{
 		Size minimumSize;
 

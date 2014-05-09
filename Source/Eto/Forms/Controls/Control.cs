@@ -222,7 +222,7 @@ namespace Eto.Forms
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
-	public abstract partial class Control : Widget, IMouseInputSource, IKeyboardInputSource
+	public abstract partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
 		new IControl Handler { get { return (IControl)base.Handler; } }
 
@@ -282,7 +282,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.SizeChanged"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnSizeChanged(EventArgs e)
+		protected virtual void OnSizeChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SizeChangedEvent, this, e);
 		}
@@ -306,7 +306,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.KeyDown"/> event.
 		/// </summary>
 		/// <param name="e">Key event arguments</param>
-		public virtual void OnKeyDown(KeyEventArgs e)
+		protected virtual void OnKeyDown(KeyEventArgs e)
 		{
 			Properties.TriggerEvent(KeyDownEvent, this, e);
 		}
@@ -330,7 +330,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.KeyUp"/> event.
 		/// </summary>
 		/// <param name="e">Key event arguments</param>
-		public virtual void OnKeyUp(KeyEventArgs e)
+		protected virtual void OnKeyUp(KeyEventArgs e)
 		{
 			Properties.TriggerEvent(KeyUpEvent, this, e);
 		}
@@ -353,7 +353,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="TextInput"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnTextInput(TextInputEventArgs e)
+		protected virtual void OnTextInput(TextInputEventArgs e)
 		{
 			Properties.TriggerEvent(TextInputEvent, this, e);
 		}
@@ -384,7 +384,7 @@ namespace Eto.Forms
 		/// To override default behaviour of the control, set <see cref="MouseEventArgs.Handled"/> property to <c>true</c>.
 		/// </remarks>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnMouseDown(MouseEventArgs e)
+		protected virtual void OnMouseDown(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseDownEvent, this, e);
 		}
@@ -408,7 +408,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.MouseUp"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnMouseUp(MouseEventArgs e)
+		protected virtual void OnMouseUp(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseUpEvent, this, e);
 		}
@@ -437,7 +437,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="MouseMove"/> event.
 		/// </summary>
 		/// <param name="e">Mouse event args</param>
-		public virtual void OnMouseMove(MouseEventArgs e)
+		protected virtual void OnMouseMove(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseMoveEvent, this, e);
 		}
@@ -461,7 +461,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="e">Mouse event arguments</param>
 		/// <seealso cref="MouseEnter"/>
-		public virtual void OnMouseLeave(MouseEventArgs e)
+		protected virtual void OnMouseLeave(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseLeaveEvent, this, e);
 		}
@@ -485,7 +485,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="MouseEnter"/> event.
 		/// </summary>
 		/// <param name="e">Mouse event arguments</param>
-		public virtual void OnMouseEnter(MouseEventArgs e)
+		protected virtual void OnMouseEnter(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseEnterEvent, this, e);
 		}
@@ -519,7 +519,7 @@ namespace Eto.Forms
 		/// Raises the mouse <see cref="MouseDoubleClick"/> event.
 		/// </summary>
 		/// <param name="e">Mouse event arguments</param>
-		public virtual void OnMouseDoubleClick(MouseEventArgs e)
+		protected virtual void OnMouseDoubleClick(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseDoubleClickEvent, this, e);
 		}
@@ -542,7 +542,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="MouseWheel"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnMouseWheel(MouseEventArgs e)
+		protected virtual void OnMouseWheel(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseWheelEvent, this, e);
 		}
@@ -569,7 +569,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="GotFocus"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnGotFocus(EventArgs e)
+		protected virtual void OnGotFocus(EventArgs e)
 		{
 			Properties.TriggerEvent(GotFocusEvent, this, e);
 		}
@@ -596,7 +596,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="LostFocus"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnLostFocus(EventArgs e)
+		protected virtual void OnLostFocus(EventArgs e)
 		{
 			Properties.TriggerEvent(LostFocusEvent, this, e);
 		}
@@ -623,7 +623,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Shown"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnShown(EventArgs e)
+		protected virtual void OnShown(EventArgs e)
 		{
 			Properties.TriggerEvent(ShownEvent, this, e);
 		}
@@ -646,7 +646,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="PreLoad"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnPreLoad(EventArgs e)
+		protected internal virtual void OnPreLoad(EventArgs e)
 		{
 			Properties.TriggerEvent(PreLoadKey, this, e);
 			Handler.OnPreLoad(e);
@@ -675,7 +675,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Load"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnLoad(EventArgs e)
+		protected internal virtual void OnLoad(EventArgs e)
 		{
 #if DEBUG
 			if (Loaded)
@@ -704,7 +704,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="LoadComplete"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnLoadComplete(EventArgs e)
+		protected internal virtual void OnLoadComplete(EventArgs e)
 		{
 			Properties.TriggerEvent(LoadCompleteKey, this, e);
 			Handler.OnLoadComplete(e);
@@ -728,7 +728,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="UnLoad"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnUnLoad(EventArgs e)
+		protected internal virtual void OnUnLoad(EventArgs e)
 		{
 #if DEBUG
 			if (!Loaded)
@@ -1211,5 +1211,99 @@ namespace Eto.Forms
 
 			base.Dispose(disposing);
 		}
+
+		public interface ICallback
+		{
+			void OnKeyDown(Control control, KeyEventArgs e);
+			void OnKeyUp(Control control, KeyEventArgs e);
+			void OnMouseDown(Control control, MouseEventArgs e);
+			void OnMouseUp(Control control, MouseEventArgs e);
+			void OnMouseMove(Control control, MouseEventArgs e);
+			void OnMouseLeave(Control control, MouseEventArgs e);
+			void OnMouseEnter(Control control, MouseEventArgs e);
+			void OnTextInput(Control control, TextInputEventArgs e);
+			void OnSizeChanged(Control control, EventArgs e);
+			void OnMouseDoubleClick(Control control, MouseEventArgs e);
+			void OnMouseWheel(Control control, MouseEventArgs e);
+			void OnGotFocus(Control control, EventArgs e);
+			void OnLostFocus(Control control, EventArgs e);
+			void OnShown(Control control, EventArgs e);
+		}
+
+		protected class Callback : ICallback
+		{
+			public void OnKeyDown(Control control, KeyEventArgs e)
+			{
+				control.OnKeyDown(e);
+			}
+
+			public void OnKeyUp(Control control, KeyEventArgs e)
+			{
+				control.OnKeyUp(e);
+			}
+
+			public void OnMouseDown(Control control, MouseEventArgs e)
+			{
+				control.OnMouseDown(e);
+			}
+
+			public void OnMouseUp(Control control, MouseEventArgs e)
+			{
+				control.OnMouseUp(e);
+			}
+
+			public void OnMouseMove(Control control, MouseEventArgs e)
+			{
+				control.OnMouseMove(e);
+			}
+
+			public void OnMouseLeave(Control control, MouseEventArgs e)
+			{
+				control.OnMouseLeave(e);
+			}
+
+			public void OnMouseEnter(Control control, MouseEventArgs e)
+			{
+				control.OnMouseEnter(e);
+			}
+
+			public void OnTextInput(Control control, TextInputEventArgs e)
+			{
+				control.OnTextInput(e);
+			}
+
+			public void OnSizeChanged(Control control, EventArgs e)
+			{
+				control.OnSizeChanged(e);
+			}
+
+			public void OnMouseDoubleClick(Control control, MouseEventArgs e)
+			{
+				control.OnMouseDoubleClick(e);
+			}
+
+			public void OnMouseWheel(Control control, MouseEventArgs e)
+			{
+				control.OnMouseWheel(e);
+			}
+
+			public void OnGotFocus(Control control, EventArgs e)
+			{
+				control.OnGotFocus(e);
+			}
+
+			public void OnLostFocus(Control control, EventArgs e)
+			{
+				control.OnLostFocus(e);
+			}
+
+			public void OnShown(Control control, EventArgs e)
+			{
+				control.OnShown(e);
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
 	}
 }

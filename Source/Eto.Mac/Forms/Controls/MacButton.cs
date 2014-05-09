@@ -4,9 +4,10 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public abstract class MacButton<TControl, TWidget> : MacControl<TControl, TWidget>, ITextControl
+	public abstract class MacButton<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, ITextControl
 		where TControl: NSButton
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		public virtual string Text
 		{

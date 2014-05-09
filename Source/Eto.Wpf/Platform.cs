@@ -22,7 +22,10 @@ namespace Eto.Wpf
 
 		public override bool IsWpf { get { return true; } }
 
-		static readonly EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register("Eto.Wpf.CustomControls.Assemblies");
+		static Platform()
+		{
+			EmbeddedAssemblyLoader.Register("Eto.Wpf.CustomControls.Assemblies");
+		}
 
 		public Platform()
 		{

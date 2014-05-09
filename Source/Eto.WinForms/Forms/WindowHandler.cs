@@ -16,9 +16,10 @@ namespace Eto.WinForms
 		swf.IWin32Window Win32Window { get; }
 	}
 
-	public abstract class WindowHandler<TControl, TWidget> : WindowsPanel<TControl, TWidget>, IWindow, IWindowHandler
+	public abstract class WindowHandler<TControl, TWidget, TCallback> : WindowsPanel<TControl, TWidget, TCallback>, IWindow, IWindowHandler
 		where TControl : swf.Form
 		where TWidget : Window
+		where TCallback : Window.ICallback
 	{
 		MenuBar menu;
 		Icon icon;
@@ -121,22 +122,20 @@ namespace Eto.WinForms
 			switch (id)
 			{
 				case Window.ClosedEvent:
-					Control.FormClosed += delegate
-					{
-						Widget.OnClosed(EventArgs.Empty);
-					};
+					Control.FormClosed += (sender, e) => Callback.OnClosed(Widget, EventArgs.Empty);
 					break;
 				case Window.ClosingEvent:
 					Control.FormClosing += delegate(object sender, swf.FormClosingEventArgs e)
 					{
 						var args = new CancelEventArgs(e.Cancel);
-						Widget.OnClosing(args);
+						Callback.OnClosing(Widget, args);
 
 						if (!e.Cancel && swf.Application.OpenForms.Count <= 1
 							|| e.CloseReason == swf.CloseReason.ApplicationExitCall
 							|| e.CloseReason == swf.CloseReason.WindowsShutDown)
 						{
-							Application.Instance.OnTerminating(args);
+							var app = ((ApplicationHandler)Application.Instance.Handler);
+							app.Callback.OnTerminating(app.Widget, args);
 						}
 
 						e.Cancel = args.Cancel;
@@ -145,19 +144,19 @@ namespace Eto.WinForms
 				case Eto.Forms.Control.ShownEvent:
 					Control.Shown += delegate
 					{
-						Widget.OnShown(EventArgs.Empty);
+						Callback.OnShown(Widget, EventArgs.Empty);
 					};
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.Activated += delegate
 					{
-						Widget.OnGotFocus(EventArgs.Empty);
+						Callback.OnGotFocus(Widget, EventArgs.Empty);
 					};
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					Control.Deactivate += delegate
 					{
-						Widget.OnLostFocus(EventArgs.Empty);
+						Callback.OnLostFocus(Widget, EventArgs.Empty);
 					};
 					break;
 				case Window.WindowStateChangedEvent:
@@ -167,12 +166,12 @@ namespace Eto.WinForms
 						if (Control.WindowState != oldState)
 						{
 							oldState = Control.WindowState;
-							Widget.OnWindowStateChanged(EventArgs.Empty);
+							Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
 						}
 					};
 					break;
 				case Window.LocationChangedEvent:
-					Control.LocationChanged += (sender, e) => Widget.OnLocationChanged(EventArgs.Empty);
+					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(id);

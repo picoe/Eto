@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox>, ITextBox
+	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox, TextBox.ICallback>, ITextBox
 	{
 		string placeholderText;
 
@@ -40,7 +40,7 @@ namespace Eto.GtkSharp
 
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnTextChanged(EventArgs.Empty);
+				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			#if GTK2

@@ -18,9 +18,10 @@ namespace Eto.iOS.Forms
 		UIViewController Controller { get; }
 	}
 
-	public abstract class IosView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IIosView
+	public abstract class IosView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, IControl, IIosView
 		where TControl: UIResponder
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		SizeF? naturalSize;
 		UIViewController controller;
@@ -179,9 +180,9 @@ namespace Eto.iOS.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					AddControlObserver(frameKey, e =>
 					{
-						var h = e.Handler as IosView<TControl,TWidget>;
+						var h = e.Handler as IosView<TControl,TWidget,TCallback>;
 						if (!h.IsResizing)
-							h.Widget.OnSizeChanged(EventArgs.Empty);
+							h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 					});
 				/*UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
 				this.AddObserver(null, UIDevice.OrientationDidChangeNotification, delegate {

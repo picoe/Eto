@@ -6,7 +6,7 @@ using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ImageViewHandler : MacControl<NSImageView, ImageView>, IImageView
+	public class ImageViewHandler : MacControl<NSImageView, ImageView, ImageView.ICallback>, IImageView
 	{
 		Image image;
 		

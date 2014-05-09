@@ -7,168 +7,174 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class WebViewHandler : WindowsControl<SWF.WebBrowser, WebView>, IWebView
+	public class WebViewHandler : WindowsControl<SWF.WebBrowser, WebView, WebView.ICallback>, IWebView
 	{
-		[ComImport, InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
-		[Guid ("6d5140c1-7436-11ce-8034-00aa006009fa")]
+		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		[Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]
 		internal interface IServiceProvider
 		{
-			[return: MarshalAs (UnmanagedType.IUnknown)]
-			object QueryService (ref Guid guidService, ref Guid riid);
+			[return: MarshalAs(UnmanagedType.IUnknown)]
+			object QueryService(ref Guid guidService, ref Guid riid);
 		}
 
-		HashSet<string> delayedEvents = new HashSet<string> ();
+		HashSet<string> delayedEvents = new HashSet<string>();
 
 		SHDocVw.WebBrowser_V1 WebBrowserV1
 		{
 			get { return (SHDocVw.WebBrowser_V1)Control.ActiveXInstance; }
 		}
 
-		public void AttachEvent (SHDocVw.WebBrowser_V1 control, string handler)
+		public void AttachEvent(SHDocVw.WebBrowser_V1 control, string handler)
 		{
 			switch (handler)
 			{
-			case WebView.OpenNewWindowEvent:
-				control.NewWindow += WebBrowserV1_NewWindow;
-				break;
+				case WebView.OpenNewWindowEvent:
+					control.NewWindow += WebBrowserV1_NewWindow;
+					break;
 			}
 		}
 
-		public WebViewHandler ()
+		public WebViewHandler()
 		{
-			this.Control = new SWF.WebBrowser {
+			this.Control = new SWF.WebBrowser
+			{
 				IsWebBrowserContextMenuEnabled = false,
 				WebBrowserShortcutsEnabled = false,
 				AllowWebBrowserDrop = false,
 				ScriptErrorsSuppressed = true
 			};
-			this.Control.HandleCreated += (sender, e) => {
-				HookDocumentEvents ();
+			this.Control.HandleCreated += (sender, e) =>
+			{
+				HookDocumentEvents();
 			};
 		}
 
-		void WebBrowserV1_NewWindow (string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
+		void WebBrowserV1_NewWindow(string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
 		{
-			var e = new WebViewNewWindowEventArgs (new Uri (URL), TargetFrameName);
-			Widget.OnOpenNewWindow (e);
+			var e = new WebViewNewWindowEventArgs(new Uri(URL), TargetFrameName);
+			Callback.OnOpenNewWindow(Widget, e);
 			Processed = e.Cancel;
 		}
-		
-		public override void AttachEvent (string handler)
+
+		public override void AttachEvent(string handler)
 		{
-			switch (handler) {
-			case WebView.NavigatedEvent:
-				this.Control.Navigated += (s, e) => {
-					Widget.OnNavigated (new WebViewLoadedEventArgs (e.Url));
-				};
-				break;
-			case WebView.DocumentLoadedEvent:
-				this.Control.DocumentCompleted += (sender, e) => {
-					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (e.Url));
-				};
-				break;
-			case WebView.DocumentLoadingEvent:
-				this.Control.Navigating += (sender, e) => {
-					var args = new WebViewLoadingEventArgs (e.Url, false);
-					Widget.OnDocumentLoading (args);
-					e.Cancel = args.Cancel;
-				};
-				break;
-			case WebView.OpenNewWindowEvent:
-				HookDocumentEvents (handler);
-				break;
-			case WebView.DocumentTitleChangedEvent:
-				this.Control.DocumentTitleChanged += delegate {
-					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (Control.DocumentTitle));
-				};
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+			switch (handler)
+			{
+				case WebView.NavigatedEvent:
+					Control.Navigated += (s, e) => Callback.OnNavigated(Widget, new WebViewLoadedEventArgs(e.Url));
+					break;
+				case WebView.DocumentLoadedEvent:
+					Control.DocumentCompleted += (sender, e) => Callback.OnDocumentLoaded(Widget, new WebViewLoadedEventArgs(e.Url));
+					break;
+				case WebView.DocumentLoadingEvent:
+					Control.Navigating += (sender, e) =>
+					{
+						var args = new WebViewLoadingEventArgs(e.Url, false);
+						Callback.OnDocumentLoading(Widget, args);
+						e.Cancel = args.Cancel;
+					};
+					break;
+				case WebView.OpenNewWindowEvent:
+					HookDocumentEvents(handler);
+					break;
+				case WebView.DocumentTitleChangedEvent:
+					Control.DocumentTitleChanged += (sender, e) => Callback.OnDocumentTitleChanged(Widget, new WebViewTitleEventArgs(Control.DocumentTitle));
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
 			}
 			
-		}	
+		}
 
-		void HookDocumentEvents (string newEvent = null)
+		void HookDocumentEvents(string newEvent = null)
 		{
 			if (newEvent != null)
-				delayedEvents.Add (newEvent);
+				delayedEvents.Add(newEvent);
 			if (Control.ActiveXInstance != null)
 			{
 				foreach (var handler in delayedEvents)
-					AttachEvent (WebBrowserV1, handler);
-				delayedEvents.Clear ();
+					AttachEvent(WebBrowserV1, handler);
+				delayedEvents.Clear();
 			}
 		}
 
-		public Uri Url {
-			get { return this.Control.Url; }
-			set { this.Control.Url = value; }
+		public Uri Url
+		{
+			get { return Control.Url; }
+			set { Control.Url = value; }
 		}
-		
-		public string DocumentTitle {
-			get {
-				return this.Control.DocumentTitle;
+
+		public string DocumentTitle
+		{
+			get
+			{
+				return Control.DocumentTitle;
 			}
 		}
-		
-		public string ExecuteScript (string script)
+
+		public string ExecuteScript(string script)
 		{
-			var fullScript = string.Format ("var fn = function() {{ {0} }}; fn();", script);
-			return Convert.ToString (Control.Document.InvokeScript ("eval", new object[] { fullScript }));
+			var fullScript = string.Format("var fn = function() {{ {0} }}; fn();", script);
+			return Convert.ToString(Control.Document.InvokeScript("eval", new object[] { fullScript }));
 		}
-		
-		public void Stop ()
+
+		public void Stop()
 		{
-			this.Control.Stop ();
+			Control.Stop();
 		}
-		
-		public void Reload ()
+
+		public void Reload()
 		{
-			this.Control.Refresh ();
+			Control.Refresh();
 		}
-		
-		public void GoBack ()
+
+		public void GoBack()
 		{
-			this.Control.GoBack ();
+			Control.GoBack();
 		}
-		
-		public bool CanGoBack {
-			get {
-				return this.Control.CanGoBack;
+
+		public bool CanGoBack
+		{
+			get
+			{
+				return Control.CanGoBack;
 			}
 		}
-		
-		public void GoForward ()
+
+		public void GoForward()
 		{
-			this.Control.GoForward ();
+			Control.GoForward();
 		}
-		
-		public bool CanGoForward {
-			get {
-				return this.Control.CanGoForward;
+
+		public bool CanGoForward
+		{
+			get
+			{
+				return Control.CanGoForward;
 			}
 		}
-		
+
 		HttpServer server;
 
-		public void LoadHtml (string html, Uri baseUri)
+		public void LoadHtml(string html, Uri baseUri)
 		{
-			if (baseUri != null) {
+			if (baseUri != null)
+			{
 				if (server == null)
-					server = new HttpServer ();
-				server.SetHtml (html, baseUri != null ? baseUri.LocalPath : null);
-				Control.Navigate (server.Url);
+					server = new HttpServer();
+				server.SetHtml(html, baseUri != null ? baseUri.LocalPath : null);
+				Control.Navigate(server.Url);
 			}
 			else
-				this.Control.DocumentText = html;
+				Control.DocumentText = html;
 
 		}
 
-        public void ShowPrintDialog ()
-        {
-            this.Control.ShowPrintDialog();
-        }
+		public void ShowPrintDialog()
+		{
+			Control.ShowPrintDialog();
+		}
 
 		public bool BrowserContextMenuEnabled
 		{

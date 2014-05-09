@@ -53,7 +53,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(WindowStateChangedEvent, value); }
 		}
 
-		public virtual void OnWindowStateChanged(EventArgs e)
+		protected virtual void OnWindowStateChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(WindowStateChangedEvent, this, e);
 		}

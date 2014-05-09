@@ -11,7 +11,7 @@ namespace Eto.WinForms
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : WindowsControl<ButtonHandler.EtoButton, Button>, IButton
+	public class ButtonHandler : WindowsControl<ButtonHandler.EtoButton, Button, Button.ICallback>, IButton
 	{
 		Image image;
 
@@ -53,7 +53,7 @@ namespace Eto.WinForms
 			};
 			Control.Click += delegate
 			{
-				Widget.OnClick(EventArgs.Empty);
+				Callback.OnClick(Widget, EventArgs.Empty);
 			};
 		}
 

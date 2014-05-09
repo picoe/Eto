@@ -32,7 +32,7 @@ namespace Eto.Mac.Forms.Controls
 		bool Editable { get; set; }
 	}
 	
-	public abstract class CellHandler<TControl, TWidget> : MacObject<TControl, TWidget>, ICell, ICellHandler
+	public abstract class CellHandler<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, ICell, ICellHandler
 		where TControl: NSCell
 		where TWidget: Cell
 	{

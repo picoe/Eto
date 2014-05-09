@@ -10,7 +10,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ScrollableHandler : MacPanel<NSScrollView, Scrollable>, IScrollable
+	public class ScrollableHandler : MacPanel<NSScrollView, Scrollable, Scrollable.ICallback>, IScrollable
 	{
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
@@ -105,7 +105,7 @@ namespace Eto.Mac.Forms.Controls
 								if (contentBounds.Height > 0)
 									handler.scrollPosition = new Point((int)contentBounds.X, (int)(view.Frame.Height - contentBounds.Height - contentBounds.Y));
 							}
-							handler.Widget.OnScroll(new ScrollEventArgs(handler.ScrollPosition));
+							handler.Callback.OnScroll(handler.Widget, new ScrollEventArgs(handler.ScrollPosition));
 						}
 					}, Control.ContentView);
 					break;

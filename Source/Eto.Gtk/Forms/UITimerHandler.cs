@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class UITimerHandler : WidgetHandler<object, UITimer>, IUITimer
+	public class UITimerHandler : WidgetHandler<object, UITimer, UITimer.ICallback>, IUITimer
 	{
 		bool enabled;
 		bool stopped = true;
@@ -18,7 +18,7 @@ namespace Eto.GtkSharp.Forms
 				if (!enabled) { 
 					stopped = true; return false;
 				}
-				Widget.OnElapsed(EventArgs.Empty);
+				Callback.OnElapsed(Widget, EventArgs.Empty);
 				return true;
 			});
 		}

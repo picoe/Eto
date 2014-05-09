@@ -19,10 +19,10 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> Activated;
 
-		public virtual void OnActivated (EventArgs e)
+		protected virtual void OnActivated(EventArgs e)
 		{
 			if (Activated != null)
-				Activated (this, e);
+				Activated(this, e);
 		}
 
 		public ListBox()
@@ -39,6 +39,21 @@ namespace Eto.Forms
 			: base (generator, type, initialize)
 		{
 		}
-	}
 
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : ListControl.ICallback
+		{
+			void OnActivated(ListBox widget, EventArgs e);
+		}
+
+		protected class Callback : ListControl.Callback, ICallback
+		{
+			public void OnActivated(ListBox widget, EventArgs e)
+			{
+				widget.OnActivated(e);
+			}
+		}
+	}
 }

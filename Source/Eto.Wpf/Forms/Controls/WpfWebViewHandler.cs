@@ -8,7 +8,7 @@ using Eto.CustomControls;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class WpfWebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView>, IWebView
+	public class WpfWebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView, WebView.ICallback>, IWebView
 	{
 		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 		[Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]
@@ -83,13 +83,13 @@ namespace Eto.Wpf.Forms.Controls
 		void WebEvents_TitleChange(string text)
 		{
 			var args = new WebViewTitleEventArgs(text);
-			Widget.OnDocumentTitleChanged(args);
+			Callback.OnDocumentTitleChanged(Widget, args);
 		}
 
 		void WebEvents_NewWindow(string url, int flags, string targetFrameName, ref object postData, string headers, ref bool processed)
 		{
 			var args = new WebViewNewWindowEventArgs(new Uri(url), targetFrameName);
-			Widget.OnOpenNewWindow(args);
+			Callback.OnOpenNewWindow(Widget, args);
 			processed = args.Cancel;
 		}
 
@@ -101,15 +101,15 @@ namespace Eto.Wpf.Forms.Controls
 					Control.Navigated += (sender, e) =>
 					{
 						var args = new WebViewLoadedEventArgs(e.Uri);
-						Widget.OnNavigated(args);
+						Callback.OnNavigated(Widget, args);
 					};
 					break;
 				case WebView.DocumentLoadedEvent:
 					Control.LoadCompleted += (sender, e) =>
 					{
 						var args = new WebViewLoadedEventArgs(e.Uri);
-						Widget.OnDocumentLoaded(args);
-						Widget.OnDocumentTitleChanged(new WebViewTitleEventArgs(DocumentTitle));
+						Callback.OnDocumentLoaded(Widget, args);
+						Callback.OnDocumentTitleChanged(Widget, new WebViewTitleEventArgs(DocumentTitle));
 						HookDocumentEvents();
 					};
 					break;
@@ -117,7 +117,7 @@ namespace Eto.Wpf.Forms.Controls
 					Control.Navigating += (sender, e) =>
 					{
 						var args = new WebViewLoadingEventArgs(e.Uri, true);
-						Widget.OnDocumentLoading(args);
+						Callback.OnDocumentLoading(Widget, args);
 						e.Cancel = args.Cancel;
 					};
 					break;

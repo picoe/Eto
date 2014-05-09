@@ -5,9 +5,10 @@ using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public abstract class MacText<TControl, TWidget> : MacControl<TControl, TWidget>, ITextControl
+	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, ITextControl
 		where TControl: NSTextField
 		where TWidget: TextControl
+		where TCallback: TextControl.ICallback
 	{
 		public override Color BackgroundColor
 		{

@@ -14,24 +14,20 @@ namespace Eto.Mac.Forms
 {
 	class MouseDelegate : NSObject
 	{
-		WeakReference view;
-
-		public NSView View { get { return (NSView)view.Target; } set { view = new WeakReference(value); } }
-
 		WeakReference widget;
 
-		public Control Widget { get { return (Control)widget.Target; } set { widget = new WeakReference(value); } }
+		public IMacViewHandler Handler { get { return (IMacViewHandler)widget.Target; } set { widget = new WeakReference(value); } }
 
 		[Export("mouseMoved:")]
 		public void MouseMoved(NSEvent theEvent)
 		{
-			Widget.OnMouseMove(Conversions.GetMouseEvent(View, theEvent, false));
+			Handler.Callback.OnMouseMove(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("mouseEntered:")]
 		public void MouseEntered(NSEvent theEvent)
 		{
-			Widget.OnMouseEnter(Conversions.GetMouseEvent(View, theEvent, false));
+			Handler.Callback.OnMouseEnter(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("cursorUpdate:")]
@@ -42,13 +38,13 @@ namespace Eto.Mac.Forms
 		[Export("mouseExited:")]
 		public void MouseExited(NSEvent theEvent)
 		{
-			Widget.OnMouseLeave(Conversions.GetMouseEvent(View, theEvent, false));
+			Handler.Callback.OnMouseLeave(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("scrollWheel:")]
 		public void ScrollWheel(NSEvent theEvent)
 		{
-			Widget.OnMouseWheel(Conversions.GetMouseEvent(View, theEvent, true));
+			Handler.Callback.OnMouseWheel(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, true));
 		}
 	}
 
@@ -58,6 +54,8 @@ namespace Eto.Mac.Forms
 
 		Control Widget { get; }
 
+		Control.ICallback Callback { get; }
+
 		Cursor Cursor { get; set; }
 
 		void PostKeyDown(KeyEventArgs e);
@@ -65,9 +63,10 @@ namespace Eto.Mac.Forms
 		void OnSizeChanged(EventArgs e);
 	}
 
-	public abstract class MacView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IMacViewHandler
+	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, IControl, IMacViewHandler
 		where TControl: NSResponder
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		bool focus;
 		bool mouseMove;
@@ -76,6 +75,8 @@ namespace Eto.Mac.Forms
 		MouseDelegate mouseDelegate;
 		Cursor cursor;
 		SizeF? naturalSize;
+
+		Control.ICallback IMacViewHandler.Callback { get { return Callback; } }
 
 		public abstract NSView ContainerControl { get; }
 
@@ -183,7 +184,7 @@ namespace Eto.Mac.Forms
 				EventControl.RemoveTrackingArea(tracking);
 			//Console.WriteLine ("Adding mouse tracking {0} for area {1}", this.Widget.GetType ().FullName, Control.Frame.Size);
 			if (mouseDelegate == null)
-				mouseDelegate = new MouseDelegate { Widget = Widget, View = EventControl };
+				mouseDelegate = new MouseDelegate { Handler = this };
 			var options = mouseOptions | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect;
 			tracking = new NSTrackingArea(new SD.RectangleF(SD.PointF.Empty, EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
 			EventControl.AddTrackingArea(tracking);
@@ -275,7 +276,7 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				handler.OnSizeChanged(EventArgs.Empty);
-				handler.Widget.OnSizeChanged(EventArgs.Empty);
+				handler.Callback.OnSizeChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -285,7 +286,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				handler.Widget.OnGotFocus(EventArgs.Empty);
+				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
 				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 			}
 			return false;
@@ -297,7 +298,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				handler.Widget.OnLostFocus(EventArgs.Empty);
+				handler.Callback.OnLostFocus(handler.Widget, EventArgs.Empty);
 				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 			}
 			return false;
@@ -340,11 +341,11 @@ namespace Eto.Mac.Forms
 				var theEvent = new NSEvent(e);
 				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				if (theEvent.ClickCount >= 2)
-					handler.Widget.OnMouseDoubleClick(args);
+					handler.Callback.OnMouseDoubleClick(handler.Widget, args);
 			
 				if (!args.Handled)
 				{
-					handler.Widget.OnMouseDown(args);
+					handler.Callback.OnMouseDown(handler.Widget, args);
 				}
 				if (!args.Handled)
 				{
@@ -362,7 +363,7 @@ namespace Eto.Mac.Forms
 			{
 				var theEvent = new NSEvent(e);
 				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
-				handler.Widget.OnMouseUp(args);
+				handler.Callback.OnMouseUp(handler.Widget, args);
 				if (!args.Handled)
 				{
 					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
@@ -378,7 +379,7 @@ namespace Eto.Mac.Forms
 			{
 				var theEvent = new NSEvent(e);
 				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
-				handler.Widget.OnMouseMove(args);
+				handler.Callback.OnMouseMove(handler.Widget, args);
 				if (!args.Handled)
 				{
 					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
@@ -396,7 +397,7 @@ namespace Eto.Mac.Forms
 				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, true);
 				if (!args.Delta.IsZero)
 				{
-					handler.Widget.OnMouseWheel(args);
+					handler.Callback.OnMouseWheel(handler.Widget, args);
 					if (!args.Handled)
 					{
 						Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
@@ -571,7 +572,7 @@ namespace Eto.Mac.Forms
 		static void TriggerSystemAction(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<TControl,TWidget>;
+			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
 			if (handler != null)
 			{
 				Command command;
@@ -587,7 +588,7 @@ namespace Eto.Mac.Forms
 			var menuItem = new NSMenuItem(item);
 			
 			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<TControl,TWidget>;
+			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
 			if (handler != null)
 			{
 				Command command;
@@ -605,7 +606,7 @@ namespace Eto.Mac.Forms
 			var toolbarItem = new NSToolbarItem(item);
 			
 			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<TControl,TWidget>;
+			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
 			if (handler != null)
 			{
 				Command command;

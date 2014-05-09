@@ -20,7 +20,10 @@ namespace Eto.WinForms
 
 		public override string ID { get { return "winforms"; } }
 
-		static readonly EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register("Eto.WinForms.CustomControls.Assemblies");
+		static Platform()
+		{
+			EmbeddedAssemblyLoader.Register("Eto.WinForms.CustomControls.Assemblies");
+		}
 
 		public Platform()
 		{

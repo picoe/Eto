@@ -7,7 +7,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms
 {
-	public class DrawableHandler : WindowsPanel<DrawableHandler.EtoDrawable, Drawable>, IDrawable
+	public class DrawableHandler : WindowsPanel<DrawableHandler.EtoDrawable, Drawable, Drawable.ICallback>, IDrawable
 	{
 		public virtual bool SupportsCreateGraphics { get { return true; } }
 
@@ -132,13 +132,13 @@ namespace Eto.WinForms
 			using (var g = Control.CreateGraphics ()) {
 				var graphics = new Graphics(new GraphicsHandler(g));
 
-				Widget.OnPaint (new PaintEventArgs (graphics, rect));
+				Callback.OnPaint(Widget, new PaintEventArgs(graphics, rect));
 			}
 		}
 
 		protected virtual void OnPaint(swf.PaintEventArgs e)
 		{
-			Widget.OnPaint(e.ToEto());
+			Callback.OnPaint(Widget, e.ToEto());
 		}
 	}
 }

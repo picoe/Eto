@@ -43,7 +43,7 @@ namespace Eto.Forms
 
 		static readonly object InitializedKey = new object();
 
-		public virtual void OnInitialized(EventArgs e)
+		protected virtual void OnInitialized(EventArgs e)
 		{
 			Properties.TriggerEvent(InitializedKey, this, e);
 		}
@@ -56,7 +56,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(TerminatingEvent, value); }
 		}
 
-		public virtual void OnTerminating(CancelEventArgs e)
+		protected virtual void OnTerminating(CancelEventArgs e)
 		{
 			Properties.TriggerEvent(TerminatingEvent, this, e);
 		}
@@ -186,6 +186,28 @@ namespace Eto.Forms
 		{
 			get { return Handler.BadgeLabel; }
 			set { Handler.BadgeLabel = value; }
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Widget.ICallback
+		{
+			void OnInitialized(Application widget, EventArgs e);
+			void OnTerminating(Application widget, CancelEventArgs e);
+		}
+
+		protected class Callback : ICallback
+		{
+			public void OnInitialized(Application widget, EventArgs e)
+			{
+				widget.OnInitialized(e);
+			}
+
+			public void OnTerminating(Application widget, CancelEventArgs e)
+			{
+				widget.OnTerminating(e);
+			}
 		}
 	}
 }

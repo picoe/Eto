@@ -10,7 +10,7 @@ using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<UITableView, GridView>, IGridView
+	public class GridViewHandler : GridHandler<UITableView, GridView, GridView.ICallback>, IGridView
 	{
 		Collection store;
 
@@ -132,7 +132,7 @@ namespace Eto.iOS.Forms.Controls
 
 		public void OnCellFormatting(GridColumn column, object item, int row, NSCell cell)
 		{
-			Widget.OnCellFormatting(new IosCellFormatArgs(column, item, row, cell));
+			Callback.OnCellFormatting(Widget, new IosCellFormatArgs(column, item, row, cell));
 		}
 
 		public ContextMenu ContextMenu
@@ -190,9 +190,9 @@ namespace Eto.iOS.Forms.Controls
 
 	public class GridTableDelegate : GridHandlerTableDelegate
 	{
-		private new GridViewHandler Handler { get { return base.Handler as GridViewHandler; } }
+		new GridViewHandler Handler { get { return base.Handler as GridViewHandler; } }
 
-		public GridTableDelegate(IGrid handler)
+		public GridTableDelegate(GridViewHandler handler)
 			: base(handler)
 		{
 		}
@@ -202,7 +202,7 @@ namespace Eto.iOS.Forms.Controls
 			base.RowSelected(tableView, indexPath);
 
 			// CellClick event
-			Handler.Widget.OnCellClick(new GridViewCellArgs(
+			Handler.Callback.OnCellClick(Handler.Widget, new GridViewCellArgs(
 				null, // TODO
 				indexPath.Row,
 				0, // Is this correct?

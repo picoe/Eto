@@ -6,7 +6,7 @@ using MonoTouch.UIKit;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ButtonHandler : IosButton<UIButton, Button>, IButton
+	public class ButtonHandler : IosButton<UIButton, Button, Button.ICallback>, IButton
 	{
 		public static Size MinimumSize = new Size(80, 23);
 		
@@ -54,9 +54,7 @@ namespace Eto.iOS.Forms.Controls
 			Control = UIButton.FromType(UIButtonType.RoundedRect);
 			Control.SetTitle(string.Empty, UIControlState.Normal);
 			//Control.ButtonType = UIButtonType.RoundedRect;
-			Control.TouchUpInside += delegate {
-				Widget.OnClick(EventArgs.Empty);
-			};
+			Control.TouchUpInside += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public Image Image

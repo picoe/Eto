@@ -41,7 +41,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// This forces the region to be painted immediately.  On some platforms, this will be similar to calling
-		/// <see cref="Invalidate(Rectangle)"/>, and queue the repaint instead of blocking until it is painted.
+		/// <see cref="Control.Invalidate(Rectangle)"/>, and queue the repaint instead of blocking until it is painted.
 		/// </remarks>
 		/// <param name="region">Region to update the control</param>
 		void Update(Rectangle region);
@@ -221,7 +221,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Paint"/> event
 		/// </summary>
 		/// <param name="e">Paint event arguments</param>
-		public virtual void OnPaint(PaintEventArgs e)
+		protected virtual void OnPaint(PaintEventArgs e)
 		{
 			if (Paint != null)
 				Paint(this, e);
@@ -268,7 +268,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// This forces the region to be painted immediately.  On some platforms, this will be similar to calling
-		/// <see cref="Invalidate(Rectangle)"/>, and queue the repaint instead of blocking until it is painted.
+		/// <see cref="Control.Invalidate(Rectangle)"/>, and queue the repaint instead of blocking until it is painted.
 		/// </remarks>
 		/// <param name="region">Region to update the control</param>
 		public void Update(Rectangle region)
@@ -276,5 +276,20 @@ namespace Eto.Forms
 			Handler.Update(region);
 		}
 
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Panel.ICallback
+		{
+			void OnPaint(Drawable widget, PaintEventArgs e);
+		}
+
+		protected class Callback : Panel.Callback, ICallback
+		{
+			public void OnPaint(Drawable widget, PaintEventArgs e)
+			{
+				widget.OnPaint(e);
+			}
+		}
 	}
 }

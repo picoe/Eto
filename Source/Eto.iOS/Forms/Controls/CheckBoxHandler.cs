@@ -7,7 +7,7 @@ using sd = System.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class CheckBoxHandler : IosControl<CheckBoxHandler.CheckBox, CheckBox>, ICheckBox
+	public class CheckBoxHandler : IosControl<CheckBoxHandler.CheckBox, CheckBox, CheckBox.ICallback>, ICheckBox
 	{
 
 		public class CheckBox : UIView
@@ -100,9 +100,7 @@ namespace Eto.iOS.Forms.Controls
 		public CheckBoxHandler()
 		{
 			Control = new CheckBox();
-			Control.ValueChanged += delegate {
-				Widget.OnCheckedChanged(EventArgs.Empty);
-			};
+			Control.ValueChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
 
 		public string Text {

@@ -39,11 +39,11 @@ namespace Eto.Forms
 		new ISlider Handler { get { return (ISlider)base.Handler; } }
 		
 		public event EventHandler<EventArgs> ValueChanged;
-		
-		public virtual void OnValueChanged (EventArgs e)
+
+		protected virtual void OnValueChanged(EventArgs e)
 		{
 			if (ValueChanged != null)
-				ValueChanged (this, EventArgs.Empty);
+				ValueChanged(this, EventArgs.Empty);
 		}
 		
 		public Slider()
@@ -91,6 +91,23 @@ namespace Eto.Forms
 			get { return Handler.Orientation; }
 			set { Handler.Orientation = value; }
 		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Control.ICallback
+		{
+			void OnValueChanged(Slider widget, EventArgs e);
+		}
+
+		protected class Callback : Control.Callback, ICallback
+		{
+			public void OnValueChanged(Slider widget, EventArgs e)
+			{
+				widget.OnValueChanged(e);
+			}
+		}
+
 	}
 }
 

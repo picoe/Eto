@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class DateTimePickerHandler : MacControl<NSDatePicker, DateTimePicker>, IDateTimePicker
+	public class DateTimePickerHandler : MacControl<NSDatePicker, DateTimePicker, DateTimePicker.ICallback>, IDateTimePicker
 	{
 		DateTime? curValue;
 		DateTimePickerMode mode;
@@ -66,7 +66,7 @@ namespace Eto.Mac.Forms.Controls
 				if (e.KeyData == (Keys.Application | Keys.Backspace))
 				{
 					handler.curValue = null;
-					handler.Widget.OnValueChanged(EventArgs.Empty);
+					handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 					handler.Control.NeedsDisplay = true;
 				}
 			}
@@ -80,7 +80,7 @@ namespace Eto.Mac.Forms.Controls
 				if (handler.curValue == null)
 				{
 					handler.curValue = handler.Control.DateValue.ToEto();
-					handler.Widget.OnValueChanged(EventArgs.Empty);
+					handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 					handler.Control.NeedsDisplay = true;
 				}
 			}
@@ -94,7 +94,7 @@ namespace Eto.Mac.Forms.Controls
 			if (date != handler.Control.DateValue.ToEto())
 			{
 				handler.curValue = date;
-				handler.Widget.OnValueChanged(EventArgs.Empty);
+				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -153,7 +153,7 @@ namespace Eto.Mac.Forms.Controls
 					Control.ValidateProposedDateValue -= HandleValidateProposedDateValue;
 					Control.DateValue = (value ?? DateTime.Now).ToNS();
 					Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
-					Widget.OnValueChanged(EventArgs.Empty);
+					Callback.OnValueChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}

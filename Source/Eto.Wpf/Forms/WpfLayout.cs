@@ -3,9 +3,10 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {
-	public abstract class WpfLayout<TControl, TWidget> : WpfContainer<TControl, TWidget>, ILayout
-		where TControl: sw.FrameworkElement
-		where TWidget: Layout
+	public abstract class WpfLayout<TControl, TWidget, TCallback> : WpfContainer<TControl, TWidget, TCallback>, ILayout
+		where TControl : sw.FrameworkElement
+		where TWidget : Layout
+		where TCallback : Layout.ICallback
 	{
 
 		public virtual void Update()

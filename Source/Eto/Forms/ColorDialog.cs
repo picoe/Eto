@@ -12,13 +12,13 @@ namespace Eto.Forms
 	public class ColorDialog : CommonDialog
 	{
 		new IColorDialog Handler { get { return (IColorDialog)base.Handler; } }
-		
+
 		public event EventHandler<EventArgs> ColorChanged;
-		
-		public virtual void OnColorChanged (EventArgs e)
+
+		protected virtual void OnColorChanged(EventArgs e)
 		{
 			if (ColorChanged != null)
-				ColorChanged (this, e);
+				ColorChanged(this, e);
 		}
 
 		public ColorDialog()
@@ -26,21 +26,39 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public ColorDialog (Generator generator)
-			: this (generator, typeof(IColorDialog))
+		public ColorDialog(Generator generator)
+			: this(generator, typeof(IColorDialog))
 		{
 		}
 
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ColorDialog (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+		protected ColorDialog(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 		}
-		
-		public Color Color {
+
+		public Color Color
+		{
 			get { return Handler.Color; }
 			set { Handler.Color = value; }
 		}
+
+		static readonly object callback = new Callback();
+
+		public interface ICallback
+		{
+			void OnColorChanged(ColorDialog widget, EventArgs e);
+		}
+
+		protected class Callback : ICallback
+		{
+			public void OnColorChanged(ColorDialog widget, EventArgs e)
+			{
+				widget.OnColorChanged(e);
+			}
+		}
+
+		protected override object GetCallback() { return callback; }
 	}
 }
 

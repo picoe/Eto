@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable>, IScrollable
+	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable, Scrollable.ICallback>, IScrollable
 	{
 		BorderType borderType;
 		bool expandContentWidth = true;
@@ -189,7 +189,7 @@ namespace Eto.Wpf.Forms.Controls
 				case Scrollable.ScrollEvent:
 					scroller.ScrollChanged += (sender, e) =>
 					{
-						Widget.OnScroll(new ScrollEventArgs(new Point((int)e.HorizontalOffset, (int)e.VerticalOffset)));
+						Callback.OnScroll(Widget, new ScrollEventArgs(new Point((int)e.HorizontalOffset, (int)e.VerticalOffset)));
 					};
 					break;
 				default:

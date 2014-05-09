@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class TabControlHandler : WindowsContainer<SWF.TabControl, TabControl>, ITabControl
+	public class TabControlHandler : WindowsContainer<SWF.TabControl, TabControl, TabControl.ICallback>, ITabControl
 	{
 		bool disableSelectedIndexChanged;
 		public TabControlHandler ()
@@ -14,7 +14,7 @@ namespace Eto.WinForms.Forms.Controls
 			this.Control.ImageList = new SWF.ImageList{ ColorDepth = SWF.ColorDepth.Depth32Bit };
 			this.Control.SelectedIndexChanged += (sender, e) => {
 				if (!disableSelectedIndexChanged)
-					Widget.OnSelectedIndexChanged (e);
+					Callback.OnSelectedIndexChanged(Widget, e);
 			};
 		}
 
@@ -31,7 +31,7 @@ namespace Eto.WinForms.Forms.Controls
 			else
 				Control.TabPages.Insert (index, pageHandler.Control);
 			if (Widget.Loaded && Control.TabPages.Count == 1)
-				Widget.OnSelectedIndexChanged (EventArgs.Empty);
+				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 		}
 		
 		public void RemoveTab (int index, TabPage page)
@@ -44,7 +44,7 @@ namespace Eto.WinForms.Forms.Controls
 				if (isSelected)
 					Control.SelectedIndex = Math.Min (index, Control.TabPages.Count - 1);
 				if (Widget.Loaded)
-					Widget.OnSelectedIndexChanged (EventArgs.Empty);
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			} finally {
 				disableSelectedIndexChanged = false;
 			}

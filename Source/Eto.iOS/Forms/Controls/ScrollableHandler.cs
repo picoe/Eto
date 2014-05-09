@@ -7,7 +7,7 @@ using Eto.Mac.Forms;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ScrollableHandler : MacPanel<UIScrollView, Scrollable>, IScrollable
+	public class ScrollableHandler : MacPanel<UIScrollView, Scrollable, Scrollable.ICallback>, IScrollable
 	{
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;

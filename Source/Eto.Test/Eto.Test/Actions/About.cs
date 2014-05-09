@@ -15,12 +15,12 @@ namespace Eto.Test.Actions
 			Shortcut = Keys.F11;
 		}
 
-		public override void OnExecuted(EventArgs e)
+		protected override void OnExecuted(EventArgs e)
 		{
 			base.OnExecuted(e);
 			// show the about dialog
 			var about = new Dialogs.About();
-			about.ShowDialog (Application.Instance.MainForm);
+			about.ShowModal(Application.Instance.MainForm);
 		}
 	}
 }

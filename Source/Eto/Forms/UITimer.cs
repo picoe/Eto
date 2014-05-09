@@ -20,10 +20,10 @@ namespace Eto.Forms
 		
 		public event EventHandler<EventArgs> Elapsed;
 		
-		public virtual void OnElapsed (EventArgs e)
+		protected virtual void OnElapsed(EventArgs e)
 		{
 			if (Elapsed != null)
-				Elapsed (this, e);
+				Elapsed(this, e);
 		}
 
 		public UITimer()
@@ -65,6 +65,22 @@ namespace Eto.Forms
 		{
 			Started = false;
 			Handler.Stop ();
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Widget.ICallback
+		{
+			void OnElapsed(UITimer widget, EventArgs e);
+		}
+
+		protected class Callback : ICallback
+		{
+			public void OnElapsed(UITimer widget, EventArgs e)
+			{
+				widget.OnElapsed(e);
+			}
 		}
 	}
 }

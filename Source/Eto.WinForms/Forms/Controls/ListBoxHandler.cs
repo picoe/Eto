@@ -8,7 +8,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms
 {
-	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox>, IListBox
+	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox, ListBox.ICallback>, IListBox
 	{
 		CollectionHandler collection;
 
@@ -98,19 +98,19 @@ namespace Eto.WinForms
 
 		void control_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			Widget.OnSelectedIndexChanged(e);
+			Callback.OnSelectedIndexChanged(Widget, e);
 		}
 
 		void control_DoubleClick(object sender, EventArgs e)
 		{
-			Widget.OnActivated(EventArgs.Empty);
+			Callback.OnActivated(Widget, EventArgs.Empty);
 		}
 
 		void control_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
 			if (e.KeyData == swf.Keys.Return)
 			{
-				Widget.OnActivated(EventArgs.Empty);
+				Callback.OnActivated(Widget, EventArgs.Empty);
 				e.Handled = true;
 			}
 		}

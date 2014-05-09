@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class NumericUpDownHandler : IosControl<UITextField, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : IosControl<UITextField, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
 	{
 		public NumericUpDownHandler()
 		{
@@ -30,10 +30,7 @@ namespace Eto.iOS.Forms.Controls
 				textField.ResignFirstResponder();
 				return true;
 			};
-			Control.EditingChanged += (sender, e) =>
-			{
-				Widget.OnValueChanged(EventArgs.Empty);
-			};
+			Control.EditingChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 		}
 
 		public bool ReadOnly

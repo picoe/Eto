@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ImageViewHandler : WpfFrameworkElement<CustomControls.MultiSizeImage, ImageView>, IImageView
+	public class ImageViewHandler : WpfFrameworkElement<CustomControls.MultiSizeImage, ImageView, ImageView.ICallback>, IImageView
 	{
 		Image image;
 

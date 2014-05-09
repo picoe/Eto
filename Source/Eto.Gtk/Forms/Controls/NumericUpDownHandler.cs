@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class NumericUpDownHandler : GtkControl<Gtk.SpinButton, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : GtkControl<Gtk.SpinButton, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
 	{
 		public NumericUpDownHandler()
 		{
@@ -31,7 +31,7 @@ namespace Eto.GtkSharp
 
 			public void HandleValueChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnValueChanged(EventArgs.Empty);
+				Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 		public override string Text

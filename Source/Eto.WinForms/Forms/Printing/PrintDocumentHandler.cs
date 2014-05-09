@@ -6,7 +6,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Printing
 {
-	public class PrintDocumentHandler : WidgetHandler<sdp.PrintDocument, PrintDocument>, IPrintDocument
+	public class PrintDocumentHandler : WidgetHandler<sdp.PrintDocument, PrintDocument, PrintDocument.ICallback>, IPrintDocument
 	{
 		int currentPage;
 		PrintSettings printSettings;
@@ -32,11 +32,11 @@ namespace Eto.WinForms.Forms.Printing
 					Control.BeginPrint += (sender, e) =>
 					{
 						currentPage = 0;
-						Widget.OnPrinting(e);
+						Callback.OnPrinting(Widget, e);
 					};
 					break;
 				case PrintDocument.PrintedEvent:
-					Control.EndPrint += (sender, e) => Widget.OnPrinted(e);
+					Control.EndPrint += (sender, e) => Callback.OnPrinted(Widget, e);
 					break;
 				case PrintDocument.PrintPageEvent:
 					Control.PrintPage += HandlePrintPage;
@@ -52,7 +52,7 @@ namespace Eto.WinForms.Forms.Printing
 			var graphics = new Graphics(new GraphicsHandler(e.Graphics));
 
 			var args = new PrintPageEventArgs(graphics, e.PageBounds.Size.ToEto(), currentPage);
-			Widget.OnPrintPage(args);
+			Callback.OnPrintPage(Widget, args);
 			currentPage++;
 			e.HasMorePages = currentPage < PageCount;
 		}

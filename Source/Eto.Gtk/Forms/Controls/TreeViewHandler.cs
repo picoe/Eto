@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView>, ITreeView, IGtkListModelHandler<ITreeItem, ITreeStore>
+	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, ITreeView, IGtkListModelHandler<ITreeItem, ITreeStore>
 	{
 		GtkTreeModel<ITreeItem, ITreeStore> model;
 		CollectionHandler collection;
@@ -189,7 +189,7 @@ namespace Eto.GtkSharp.Forms
 				if (handler.cancelExpandCollapseEvents)
 					return;
 				var e = new TreeViewItemCancelEventArgs(handler.GetItem(args.Path) as ITreeItem);
-				handler.Widget.OnExpanding(e);
+				handler.Callback.OnExpanding(handler.Widget, e);
 				args.RetVal = e.Cancel;
 			}
 
@@ -199,7 +199,7 @@ namespace Eto.GtkSharp.Forms
 				if (handler.cancelExpandCollapseEvents)
 					return;
 				var e = new TreeViewItemCancelEventArgs(handler.GetItem(args.Path) as ITreeItem);
-				handler.Widget.OnCollapsing(e);
+				handler.Callback.OnCollapsing(handler.Widget, e);
 				args.RetVal = e.Cancel;
 			}
 
@@ -213,7 +213,7 @@ namespace Eto.GtkSharp.Forms
 				{
 					item.Expanded = true;
 					handler.collection.ExpandItems(item, args.Path);
-					handler.Widget.OnExpanded(new TreeViewItemEventArgs(item));
+					handler.Callback.OnExpanded(handler.Widget, new TreeViewItemEventArgs(item));
 				}
 			}
 
@@ -226,18 +226,18 @@ namespace Eto.GtkSharp.Forms
 				if (item != null && item.Expanded)
 				{
 					item.Expanded = false;
-					handler.Widget.OnCollapsed(new TreeViewItemEventArgs(item));
+					handler.Callback.OnCollapsed(handler.Widget, new TreeViewItemEventArgs(item));
 				}
 			}
 
 			public void HandleRowActivated(object o, Gtk.RowActivatedArgs args)
 			{
-				Handler.Widget.OnActivated(new TreeViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
+				Handler.Callback.OnActivated(Handler.Widget, new TreeViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
 			}
 
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnSelectionChanged(EventArgs.Empty);
+				Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
@@ -247,7 +247,7 @@ namespace Eto.GtkSharp.Forms
 				if (item != null)
 				{
 					var itemArgs = new TreeViewItemCancelEventArgs(item);
-					handler.Widget.OnLabelEditing(itemArgs);
+					handler.Callback.OnLabelEditing(handler.Widget, itemArgs);
 					args.RetVal = itemArgs.Cancel;
 				}
 			}
@@ -258,7 +258,7 @@ namespace Eto.GtkSharp.Forms
 				var item = handler.model.GetItemAtPath(args.Path);
 				if (item != null)
 				{
-					handler.Widget.OnLabelEdited(new TreeViewItemEditEventArgs(item, args.NewText));
+					handler.Callback.OnLabelEdited(handler.Widget, new TreeViewItemEditEventArgs(item, args.NewText));
 					item.Text = args.NewText;
 				}
 			}

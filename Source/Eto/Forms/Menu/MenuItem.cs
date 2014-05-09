@@ -62,7 +62,7 @@ namespace Eto.Forms
 			Text = command.MenuText;
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
-			Click += (sender, e) => command.OnExecuted(e);
+			Click += (sender, e) => command.Execute();
 			Validate += (sender, e) => Enabled = command.Enabled;
 			Enabled = command.Enabled;
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
@@ -76,7 +76,7 @@ namespace Eto.Forms
 			Text = command.MenuText;
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
-			Click += (sender, e) => command.OnExecuted(e);
+			Click += (sender, e) => command.Execute();
 			Validate += (sender, e) => Enabled = command.Enabled;
 			Enabled = command.Enabled;
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;

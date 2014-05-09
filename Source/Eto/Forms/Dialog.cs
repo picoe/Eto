@@ -59,6 +59,29 @@ namespace Eto.Forms
 		Button AbortButton { get; set; }
 	}
 
+	public class Dialog<T> : Dialog
+	{
+		public T Result { get; set; }
+
+		public new T ShowModal(Control parent = null)
+		{
+			base.ShowModal(parent);
+			return Result;
+		}
+
+		public new Task<T> ShowModalAsync(Control parent = null)
+		{
+			return base.ShowModalAsync(parent)
+				.ContinueWith(t => Result, TaskContinuationOptions.OnlyOnRanToCompletion);
+		}
+
+		public void Close(T result)
+		{
+			Result = result;
+			Close();
+		}
+	}
+
 	[Handler(typeof(IDialog))]
 	public class Dialog : Window
 	{
@@ -85,7 +108,7 @@ namespace Eto.Forms
 			set { Handler.DisplayMode = value; }
 		}
 
-		[Obsolete("This property is deprecated")]
+		[Obsolete("This property is deprecated, use Dialog<T> instead to define a custom return type")]
 		public DialogResult DialogResult { get; set; }
 
 		public Button AbortButton
@@ -135,7 +158,7 @@ namespace Eto.Forms
 			return Handler.ShowModalAsync(parent);
 		}
 
-		[Obsolete("Use Close() instead")]
+		[Obsolete("Use Dialog<T> instead to define the return type")]
 		public void Close(DialogResult result)
 		{
 			DialogResult = result;

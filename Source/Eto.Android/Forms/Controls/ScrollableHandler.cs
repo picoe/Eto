@@ -19,7 +19,7 @@ namespace Eto.Android.Forms.Controls
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ScrollableHandler : AndroidPanel<aw.ScrollView, Scrollable>, IScrollable
+	public class ScrollableHandler : AndroidPanel<aw.ScrollView, Scrollable, Scrollable.ICallback>, IScrollable
 	{
 		public void UpdateScrollSizes()
 		{
@@ -103,7 +103,5 @@ namespace Eto.Android.Forms.Controls
 				throw new NotImplementedException();
 			}
 		}
-
-		public bool RecurseToChildren { get { return true; } }
 	}
 }

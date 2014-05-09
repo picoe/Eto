@@ -22,7 +22,7 @@ namespace Eto.iOS.Forms.Controls
 		}
 	}
 
-	public class NavigationHandler : IosControl<UIView, Navigation>, INavigation
+	public class NavigationHandler : IosControl<UIView, Navigation, Navigation.ICallback>, INavigation
 	{
 		readonly List<INavigationItem> items = new List<INavigationItem>();
 

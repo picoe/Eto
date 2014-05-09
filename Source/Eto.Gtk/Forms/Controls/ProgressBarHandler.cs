@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class ProgressBarHandler : GtkControl<Gtk.ProgressBar, ProgressBar>, IProgressBar
+	public class ProgressBarHandler : GtkControl<Gtk.ProgressBar, ProgressBar, ProgressBar.ICallback>, IProgressBar
 	{
 		int minValue;
 		int maxValue = 100;
@@ -52,7 +52,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					if (timer == null)
 					{
-						timer = new UITimer(Widget.Platform);
+						timer = new UITimer();
 						timer.Elapsed += Connector.TimerElapsed;
 					}
 					timer.Interval = UpdateInterval;

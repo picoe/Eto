@@ -4,9 +4,10 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public abstract class GtkPanel<TControl, TWidget> : GtkContainer<TControl, TWidget>
+	public abstract class GtkPanel<TControl, TWidget, TCallback> : GtkContainer<TControl, TWidget, TCallback>
 		where TControl: Gtk.Widget
 		where TWidget: Panel
+		where TCallback: Panel.ICallback
 	{
 		readonly Gtk.Alignment alignment;
 		Control content;
@@ -43,7 +44,7 @@ namespace Eto.GtkSharp
 
 		protected class GtkPanelEventConnector : GtkControlConnector
 		{
-			public new GtkPanel<TControl, TWidget> Handler { get { return (GtkPanel<TControl, TWidget>)base.Handler; } }
+			public new GtkPanel<TControl, TWidget, TCallback> Handler { get { return (GtkPanel<TControl, TWidget, TCallback>)base.Handler; } }
 			#if GTK2
 			public void HandleContentSizeRequested(object o, Gtk.SizeRequestedArgs args)
 			{

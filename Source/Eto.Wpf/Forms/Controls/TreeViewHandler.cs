@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TreeViewHandler : WpfControl<SelectableTreeView, TreeView>, ITreeView
+	public class TreeViewHandler : WpfControl<SelectableTreeView, TreeView, TreeView.ICallback>, ITreeView
 	{
 		ContextMenu contextMenu;
 		ITreeStore topNode;
@@ -216,7 +216,7 @@ namespace Eto.Wpf.Forms.Controls
 						if (item != null && item.Expandable && !item.Expanded)
 						{
 							item.Expanded = true;
-							Widget.OnExpanded(new TreeViewItemEventArgs(item));
+							Callback.OnExpanded(Widget, new TreeViewItemEventArgs(item));
 						}
 					}));
 					break;
@@ -230,7 +230,7 @@ namespace Eto.Wpf.Forms.Controls
 						if (item != null && item.Expandable && !item.Expanded)
 						{
 							var args = new TreeViewItemCancelEventArgs(item);
-							Widget.OnExpanding(args);
+							Callback.OnExpanding(Widget, args);
 							e.Handled = args.Cancel;
 						}
 					}));
@@ -245,7 +245,7 @@ namespace Eto.Wpf.Forms.Controls
 						if (item != null && item.Expandable && item.Expanded)
 						{
 							item.Expanded = false;
-							Widget.OnCollapsed(new TreeViewItemEventArgs(item));
+							Callback.OnCollapsed(Widget, new TreeViewItemEventArgs(item));
 						}
 					}));
 					break;
@@ -259,7 +259,7 @@ namespace Eto.Wpf.Forms.Controls
 						if (item != null && item.Expandable && item.Expanded)
 						{
 							var args = new TreeViewItemCancelEventArgs(item);
-							Widget.OnCollapsing(args);
+							Callback.OnCollapsing(Widget, args);
 							e.Handled = args.Cancel;
 						}
 					}));
@@ -269,7 +269,7 @@ namespace Eto.Wpf.Forms.Controls
 					{
 						if (!LabelEdit && e.Key == sw.Input.Key.Enter && SelectedItem != null)
 						{
-							Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
+							Callback.OnActivated(Widget, new TreeViewItemEventArgs(SelectedItem));
 							e.Handled = true;
 						}
 					};
@@ -277,7 +277,7 @@ namespace Eto.Wpf.Forms.Controls
 					{
 						if (!LabelEdit && SelectedItem != null)
 						{
-							Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
+							Callback.OnActivated(Widget, new TreeViewItemEventArgs(SelectedItem));
 							e.Handled = true;
 						}
 					};
@@ -290,7 +290,7 @@ namespace Eto.Wpf.Forms.Controls
 						var newSelected = SelectedItem;
 						if (!object.ReferenceEquals(oldSelectedItem, newSelected))
 						{
-							Widget.OnSelectionChanged(EventArgs.Empty);
+							Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 							RefreshItem(Control.CurrentTreeViewItem);
 							oldSelectedItem = newSelected;
 						}

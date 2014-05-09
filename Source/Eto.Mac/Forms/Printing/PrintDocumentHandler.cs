@@ -9,7 +9,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Printing
 {
-	public class PrintDocumentHandler : WidgetHandler<PrintDocumentHandler.PrintView, PrintDocument>, IPrintDocument
+	public class PrintDocumentHandler : WidgetHandler<PrintDocumentHandler.PrintView, PrintDocument, PrintDocument.ICallback>, IPrintDocument
 	{
 		PrintSettings printSettings;
 
@@ -59,7 +59,7 @@ namespace Eto.Mac.Forms.Printing
 
 				using (var graphics = new Graphics(new GraphicsHandler(this, context, Frame.Height, IsFlipped)))
 				{
-					Handler.Widget.OnPrintPage(new PrintPageEventArgs(graphics, operation.PrintInfo.PaperSize.ToEto(), operation.CurrentPage - 1));
+					Handler.Callback.OnPrintPage(Handler.Widget, new PrintPageEventArgs(graphics, operation.PrintInfo.PaperSize.ToEto(), operation.CurrentPage - 1));
 				}
 			}
 

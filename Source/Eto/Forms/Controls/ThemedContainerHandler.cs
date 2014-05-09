@@ -7,9 +7,10 @@ namespace Eto.Forms
 	/// </summary>
 	/// <typeparam name="TControl">The Eto control used to create the custom implementation</typeparam>
 	/// <typeparam name="TWidget">The container being implemented.</typeparam>
-	public abstract class ThemedContainerHandler<TControl, TWidget> : ThemedControlHandler<TControl, TWidget>, IContainer
+	public abstract class ThemedContainerHandler<TControl, TWidget, TCallback> : ThemedControlHandler<TControl, TWidget, TCallback>, IContainer
 		where TControl: Container
-		where TWidget : Control
+		where TWidget : Container
+		where TCallback : Container.ICallback
 	{
 		/// <summary>
 		/// Gets or sets the size of the client.

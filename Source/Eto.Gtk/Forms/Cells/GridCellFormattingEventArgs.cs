@@ -48,7 +48,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		public override Font Font {
 			get {
-				return font ?? (font = new Font (Column.Platform, new FontHandler (Renderer.FontDesc)));
+				return font ?? (font = new Font(new FontHandler(Renderer.FontDesc)));
 			}
 			set {
 				font = value;

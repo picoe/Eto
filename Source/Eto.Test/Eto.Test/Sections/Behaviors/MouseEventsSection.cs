@@ -7,7 +7,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox handleEvents;
 		CheckBox showParentEvents;
 
-		public override void OnLoad(System.EventArgs e)
+		protected override void OnLoad(System.EventArgs e)
 		{
 			base.OnLoad(e);
 			LogEvents(this);

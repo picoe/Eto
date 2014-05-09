@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class SplitterHandler : GtkContainer<Gtk.Paned, Splitter>, ISplitter
+	public class SplitterHandler : GtkContainer<Gtk.Paned, Splitter, Splitter.ICallback>, ISplitter
 	{
 		readonly Gtk.EventBox container;
 		Control panel1;

@@ -17,9 +17,10 @@ namespace Eto.Wpf.Forms
 		sw.Window Control { get; }
 	}
 
-	public abstract class WpfWindow<TControl, TWidget> : WpfPanel<TControl, TWidget>, IWindow, IWpfWindow
+	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, IWindow, IWpfWindow
 		where TControl : sw.Window
 		where TWidget : Window
+		where TCallback : Window.ICallback
 	{
 		Icon icon;
 		MenuBar menu;
@@ -77,31 +78,32 @@ namespace Eto.Wpf.Forms
 			switch (id) {
 			case Window.ClosedEvent:
 				Control.Closed += delegate {
-					Widget.OnClosed (EventArgs.Empty);
+					Callback.OnClosed(Widget, EventArgs.Empty);
 				};
 				break;
 			case Window.ClosingEvent:
 				Control.Closing += (sender, e) => {
 					var args = new CancelEventArgs { Cancel = e.Cancel };
-					Widget.OnClosing (args);
+					Callback.OnClosing(Widget, args);
 					if (!args.Cancel && sw.Application.Current.Windows.Count == 1) {
 						// last window closing, so call OnTerminating to let the app abort terminating
-						Application.Instance.OnTerminating (args);
+						var app = ((ApplicationHandler)Application.Instance.Handler);
+						app.Callback.OnTerminating(app.Widget, args);
 						e.Cancel = args.Cancel;
 					}
 				};
 				break;
 			case Window.WindowStateChangedEvent:
-				Control.StateChanged += (sender, e) => Widget.OnWindowStateChanged(EventArgs.Empty);
+				Control.StateChanged += (sender, e) => Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
 				break;
 			case Eto.Forms.Control.GotFocusEvent:
-				Control.Activated += (sender, e) => Widget.OnGotFocus(EventArgs.Empty);
+				Control.Activated += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 				break;
 			case Eto.Forms.Control.LostFocusEvent:
-				Control.Deactivated += (sender, e) => Widget.OnLostFocus(EventArgs.Empty);
+				Control.Deactivated += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
 				break;
 			case Window.LocationChangedEvent:
-				Control.LocationChanged += (sender, e) => Widget.OnLocationChanged(EventArgs.Empty);
+				Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
 				break;
 			default:
 				base.AttachEvent (id);

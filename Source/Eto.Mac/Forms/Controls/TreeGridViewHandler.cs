@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<NSOutlineView, TreeGridView>, ITreeGridView, IDataViewHandler
+	public class TreeGridViewHandler : GridHandler<NSOutlineView, TreeGridView, TreeGridView.ICallback>, ITreeGridView, IDataViewHandler
 	{
 		ITreeGridStore<ITreeGridItem> store;
 		readonly Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem> ();
@@ -67,10 +67,10 @@ namespace Eto.Mac.Forms.Controls
 			public override void SelectionDidChange (NSNotification notification)
 			{
 				if (!skipSelectionChanged) {
-					Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 					var item = Handler.SelectedItem;
 					if (!object.ReferenceEquals (item, lastSelected)) {
-						Handler.Widget.OnSelectedItemChanged (EventArgs.Empty);
+						Handler.Callback.OnSelectedItemChanged(Handler.Widget, EventArgs.Empty);
 						lastSelected = item;
 					}
 				}
@@ -81,7 +81,7 @@ namespace Eto.Mac.Forms.Controls
 				var myitem = notification.UserInfo [(NSString)"NSObject"] as EtoTreeItem;
 				if (myitem != null) {
 					myitem.Item.Expanded = false;
-					Handler.Widget.OnCollapsed (new TreeGridViewItemEventArgs (myitem.Item));
+					Handler.Callback.OnCollapsed(Handler.Widget, new TreeGridViewItemEventArgs (myitem.Item));
 					if (collapsedItemIsSelected == true) {
 						Handler.SelectedItem = myitem.Item;
 						collapsedItemIsSelected = null;
@@ -95,7 +95,7 @@ namespace Eto.Mac.Forms.Controls
 				var myitem = item as EtoTreeItem;
 				if (myitem != null) {
 					var args = new TreeGridViewItemCancelEventArgs (myitem.Item);
-					Handler.Widget.OnExpanding (args);
+					Handler.Callback.OnExpanding(Handler.Widget, args);
 					return !args.Cancel;
 				}
 				return true;
@@ -106,7 +106,7 @@ namespace Eto.Mac.Forms.Controls
 				var myitem = item as EtoTreeItem;
 				if (myitem != null) {
 					var args = new TreeGridViewItemCancelEventArgs (myitem.Item);
-					Handler.Widget.OnCollapsing (args);
+					Handler.Callback.OnCollapsing(Handler.Widget, args);
 					if (!args.Cancel && !Handler.AllowMultipleSelection) {
 						collapsedItemIsSelected = Handler.ChildIsSelected (myitem.Item);
 						skipSelectionChanged = collapsedItemIsSelected ?? false;
@@ -124,7 +124,7 @@ namespace Eto.Mac.Forms.Controls
 				var myitem = notification.UserInfo [(NSString)"NSObject"] as EtoTreeItem;
 				if (myitem != null) {
 					myitem.Item.Expanded = true;
-					Handler.Widget.OnExpanded (new TreeGridViewItemEventArgs (myitem.Item));
+					Handler.Callback.OnExpanded(Handler.Widget, new TreeGridViewItemEventArgs (myitem.Item));
 					Handler.UpdateColumnSizes();
 				}
 			}
@@ -132,7 +132,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void DidClickTableColumn (NSOutlineView outlineView, NSTableColumn tableColumn)
 			{
 				var column = Handler.GetColumn (tableColumn);
-				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (column.Widget));
+				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs (column.Widget));
 			}
 
 			public override void WillDisplayCell (NSOutlineView outlineView, NSObject cell, NSTableColumn tableColumn, NSObject item)

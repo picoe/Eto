@@ -65,10 +65,7 @@ namespace Eto.Forms
 		{
 			control.Properties[LocationProperty] = new Point(x, y);
 			controls.Add(control);
-			var load = SetParent(control);
-			Handler.Add(control, x, y);
-			if (load)
-				control.OnLoadComplete(EventArgs.Empty);
+			SetParent(control, () => Handler.Add(control, x, y));
 		}
 
 		public void Add(Control child, Point p)

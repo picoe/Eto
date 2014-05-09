@@ -4,9 +4,8 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class CheckBoxHandler : MacButton<NSButton, CheckBox>, ICheckBox
+	public class CheckBoxHandler : MacButton<NSButton, CheckBox, CheckBox.ICallback>, ICheckBox
 	{
-		
 		public class EtoCheckBoxButton : NSButton, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -28,7 +27,7 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleActivated(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as CheckBoxHandler;
-			handler.Widget.OnCheckedChanged(EventArgs.Empty);
+			handler.Callback.OnCheckedChanged(handler.Widget, EventArgs.Empty);
 		}
 
 		public bool? Checked

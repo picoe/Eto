@@ -2,7 +2,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class PanelHandler : GtkPanel<Gtk.EventBox, Panel>, IPanel
+	public class PanelHandler : GtkPanel<Gtk.EventBox, Panel, Panel.ICallback>, IPanel
 	{
 		readonly Gtk.VBox box;
 

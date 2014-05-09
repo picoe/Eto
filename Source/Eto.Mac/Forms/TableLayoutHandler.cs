@@ -8,12 +8,12 @@ using sd = System.Drawing;
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
 using IMacView = Eto.iOS.Forms.IIosView;
-using MacContainer = Eto.iOS.Forms.IosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
+using MacContainer = Eto.iOS.Forms.IosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
 
 #elif OSX
 using MonoMac.AppKit;
 using Eto.Mac.Forms.Controls;
-using MacContainer = Eto.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms.TableLayout>;
+using MacContainer = Eto.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
 #endif
 namespace Eto.Mac.Forms
 {

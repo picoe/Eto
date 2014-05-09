@@ -6,7 +6,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class DrawableHandler : MacPanel<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
+	public class DrawableHandler : MacPanel<DrawableHandler.EtoDrawableView, Drawable, Drawable.ICallback>, IDrawable
 	{
 		Brush backgroundBrush;
 		Color backgroundColor;
@@ -114,7 +114,7 @@ namespace Eto.Mac.Forms.Controls
 
 					var widget = Widget;
 					if (widget != null)
-						widget.OnPaint(new PaintEventArgs(graphics, rect));
+						Callback.OnPaint(widget, new PaintEventArgs(graphics, rect));
 				}
 			}
 		}

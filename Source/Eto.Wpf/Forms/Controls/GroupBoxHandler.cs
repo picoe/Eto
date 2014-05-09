@@ -7,7 +7,7 @@ using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class GroupBoxHandler : WpfPanel<swc.GroupBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : WpfPanel<swc.GroupBox, GroupBox, GroupBox.ICallback>, IGroupBox
 	{
 		Font font;
 		swc.Label Header { get; set; }

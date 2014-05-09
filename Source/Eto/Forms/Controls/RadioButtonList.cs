@@ -23,7 +23,7 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 		
-		public virtual void OnSelectedIndexChanged (EventArgs e)
+		protected virtual void OnSelectedIndexChanged (EventArgs e)
 		{
 			if (SelectedIndexChanged != null)
 				SelectedIndexChanged (this, e);
@@ -31,8 +31,8 @@ namespace Eto.Forms
 		}
 		
 		public event EventHandler<EventArgs> SelectedValueChanged;
-		
-		public virtual void OnSelectedValueChanged (EventArgs e)
+
+		protected virtual void OnSelectedValueChanged(EventArgs e)
 		{
 			if (SelectedValueChanged != null)
 				SelectedValueChanged (this, e);
@@ -178,7 +178,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public override void OnLoad (EventArgs e)
+		protected internal override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);
 			if (DataStore == null)

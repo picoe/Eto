@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class TabControlHandler : GtkContainer<Gtk.Notebook, TabControl>, ITabControl
+	public class TabControlHandler : GtkContainer<Gtk.Notebook, TabControl, TabControl.ICallback>, ITabControl
 	{
 		public TabControlHandler()
 		{
@@ -42,7 +42,7 @@ namespace Eto.GtkSharp
 			{
 				var handler = Handler;
 				if (handler != null && handler.Widget.Loaded)
-					handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+					handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -78,7 +78,7 @@ namespace Eto.GtkSharp
 		{
 			Control.RemovePage(index);
 			if (Widget.Loaded && Control.NPages == 0)
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 		}
 	}
 }

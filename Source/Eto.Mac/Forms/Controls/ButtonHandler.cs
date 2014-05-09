@@ -11,7 +11,7 @@ namespace Eto.Mac.Forms.Controls
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : MacButton<NSButton, Button>, IButton
+	public class ButtonHandler : MacButton<NSButton, Button, Button.ICallback>, IButton
 	{
 		Image image;
 		ButtonImagePosition imagePosition;
@@ -103,7 +103,7 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(sender) as ButtonHandler;
 			if (handler != null)
 			{
-				handler.Widget.OnClick(EventArgs.Empty);
+				handler.Callback.OnClick(handler.Widget, EventArgs.Empty);
 			}
 		}
 

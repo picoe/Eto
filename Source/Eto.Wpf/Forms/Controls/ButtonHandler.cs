@@ -11,7 +11,7 @@ namespace Eto.Wpf.Forms.Controls
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : WpfControl<swc.Button, Button>, IButton
+	public class ButtonHandler : WpfControl<swc.Button, Button, Button.ICallback>, IButton
 	{
 		Image image;
 		readonly swc.Image swcimage;
@@ -26,7 +26,7 @@ namespace Eto.Wpf.Forms.Controls
 		public ButtonHandler ()
 		{
 			Control = new swc.Button();
-			Control.Click += (sender, e) => Widget.OnClick(EventArgs.Empty);
+			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 			label = new swc.Label {
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				HorizontalAlignment = sw.HorizontalAlignment.Center,

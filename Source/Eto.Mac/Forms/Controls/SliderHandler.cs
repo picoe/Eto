@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class SliderHandler : MacControl<NSSlider, Slider>, ISlider
+	public class SliderHandler : MacControl<NSSlider, Slider, Slider.ICallback>, ISlider
 	{
 		SliderOrientation orientation;
 
@@ -37,7 +37,7 @@ namespace Eto.Mac.Forms.Controls
 				if (newval != handler.Control.IntValue)
 					handler.Control.IntValue = newval;
 
-				handler.Widget.OnValueChanged(EventArgs.Empty);
+				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
 

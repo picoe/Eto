@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class GroupBoxHandler : GtkPanel<Gtk.Frame, GroupBox>, IGroupBox
+	public class GroupBoxHandler : GtkPanel<Gtk.Frame, GroupBox, GroupBox.ICallback>, IGroupBox
 	{
 		public GroupBoxHandler ()
 		{

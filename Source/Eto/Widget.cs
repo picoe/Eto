@@ -99,6 +99,11 @@ namespace Eto
 		Platform Platform { get; }
 	}
 
+	public interface ICallbackSource
+	{
+		object Callback { get; }
+	}
+
 	/// <summary>
 	/// Base widget class for all objects requiring a platform-specific implementation
 	/// </summary>
@@ -109,7 +114,7 @@ namespace Eto
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract partial class Widget : IHandlerSource, IDisposable, IPlatformSource
+	public abstract partial class Widget : IHandlerSource, IDisposable, IPlatformSource, ICallbackSource
 	{
 		IWidget WidgetHandler { get { return Handler as IWidget; } }
 
@@ -122,6 +127,10 @@ namespace Eto
 		/// </remarks>
 		public Platform Platform { get { return WidgetHandler.Platform; } }
 
+		/// <summary>
+		/// Gets the generator. Obsolete.
+		/// </summary>
+		/// <value>The generator.</value>
 		[Obsolete("Use Platform instead")]
 		public Platform Generator { get { return ((IWidget)Handler).Platform; } }
 
@@ -129,6 +138,14 @@ namespace Eto
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
 		public object Handler { get; internal set; }
+
+		protected virtual object GetCallback() { return null; }
+
+		object ICallbackSource.Callback { get { return GetCallback(); } }
+
+		public interface ICallback
+		{
+		}
 
 		#if TRACK_GC
 		~Widget()

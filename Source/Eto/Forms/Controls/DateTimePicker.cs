@@ -71,7 +71,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="ValueChanged"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnValueChanged(EventArgs e)
+		protected virtual void OnValueChanged(EventArgs e)
 		{
 			if (ValueChanged != null)
 				ValueChanged(this, e);
@@ -144,6 +144,22 @@ namespace Eto.Forms
 		{
 			get { return Handler.Mode; }
 			set { Handler.Mode = value; }
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : CommonControl.ICallback
+		{
+			void OnValueChanged(DateTimePicker widget, EventArgs e);
+		}
+
+		protected class Callback : CommonControl.Callback, ICallback
+		{
+			public void OnValueChanged(DateTimePicker widget, EventArgs e)
+			{
+				widget.OnValueChanged(e);
+			}
 		}
 	}
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Mac.Forms
 {
-	public class DialogHandler : MacWindow<MyWindow, Dialog>, IDialog
+	public class DialogHandler : MacWindow<MyWindow, Dialog, Dialog.ICallback>, IDialog
 	{
 		Button button;
 		MacModal.ModalHelper session;
@@ -31,7 +31,10 @@ namespace Eto.Mac.Forms
 			public void CancelOperation(IntPtr sender)
 			{
 				if (Handler.AbortButton != null)
-					Handler.AbortButton.OnClick(EventArgs.Empty);
+				{
+					var callback = (Button.ICallback)((ICallbackSource)Handler.AbortButton.Handler).Callback;
+					callback.OnClick(Handler.AbortButton, EventArgs.Empty);
+				}
 			}
 		}
 
@@ -73,7 +76,7 @@ namespace Eto.Mac.Forms
 				if (nswindow != null)
 					Control.ParentWindow = nswindow;
 			}
-			Widget.OnShown(EventArgs.Empty);
+			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;
 			if (DisplayMode.HasFlag(DialogDisplayMode.Attached))
@@ -95,7 +98,7 @@ namespace Eto.Mac.Forms
 				if (nswindow != null)
 					Control.ParentWindow = nswindow;
 			}
-			Widget.OnShown(EventArgs.Empty);
+			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;
 			if (DisplayMode.HasFlag(DialogDisplayMode.Attached))

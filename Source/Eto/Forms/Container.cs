@@ -106,7 +106,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.PreLoad"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public override void OnPreLoad(EventArgs e)
+		protected internal override void OnPreLoad(EventArgs e)
 		{
 			base.OnPreLoad(e);
 
@@ -123,7 +123,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.Load"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public override void OnLoad(EventArgs e)
+		protected internal override void OnLoad(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
 			{
@@ -140,7 +140,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.LoadComplete"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public override void OnLoadComplete(EventArgs e)
+		protected internal override void OnLoadComplete(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
 			{
@@ -157,7 +157,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.UnLoad"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public override void OnUnLoad(EventArgs e)
+		protected internal override void OnUnLoad(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
 			{
@@ -291,12 +291,12 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This is used by container authors to set the parent of a child before it is added to the underlying platform control.
 		/// 
-		/// If this returns <c>true</c>, you should call <see cref="Control.OnLoadComplete"/> after the control has been added
-		/// to the underlying platform control.
+		/// The <paramref name="assign"/> parameter should call the handler method to add the child to the parent.
 		/// </remarks>
 		/// <returns><c>true</c>, if parent was set, <c>false</c> otherwise.</returns>
 		/// <param name="child">Child to set the parent</param>
-		protected bool SetParent(Control child)
+		/// <param name="assign">Method to assign the child to the handler</param>
+		protected void SetParent(Control child, Action assign)
 		{
 			if (child != null && !ReferenceEquals(child.Parent, this))
 			{
@@ -311,10 +311,12 @@ namespace Eto.Forms
 					child.OnPreLoad(EventArgs.Empty);
 					child.OnLoad(EventArgs.Empty);
 					child.OnDataContextChanged(EventArgs.Empty);
-					return true;
+					assign();
+					child.OnLoadComplete(EventArgs.Empty);
+					return;
 				}
 			}
-			return false;
+			assign();
 		}
 	}
 }

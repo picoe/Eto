@@ -63,7 +63,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(PositionChangedEvent, value); }
 		}
 
-		public virtual void OnPositionChanged(EventArgs e)
+		protected virtual void OnPositionChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(PositionChangedEvent, this, e);
 		}
@@ -117,10 +117,7 @@ namespace Eto.Forms
 					RemoveParent(Handler.Panel1);
 				if (value != null)
 				{
-					var load = SetParent(value);
-					Handler.Panel1 = value;
-					if (load)
-						value.OnLoadComplete(EventArgs.Empty);
+					SetParent(value, () => Handler.Panel1 = value);
 				}
 				else
 					Handler.Panel1 = value;
@@ -136,10 +133,7 @@ namespace Eto.Forms
 					RemoveParent(Handler.Panel2);
 				if (value != null)
 				{
-					var load = SetParent(value);
-					Handler.Panel2 = value;
-					if (load)
-						value.OnLoadComplete(EventArgs.Empty);
+					SetParent(value, () => Handler.Panel2 = value);
 				}
 				else
 					Handler.Panel2 = value;
@@ -155,6 +149,22 @@ namespace Eto.Forms
 			else if (object.ReferenceEquals(Panel2, child))
 			{
 				Panel2 = null;
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
+		public interface ICallback : Container.ICallback
+		{
+			void OnPositionChanged(Splitter widget, EventArgs e);
+		}
+
+		protected class Callback : Container.Callback, ICallback
+		{
+			public void OnPositionChanged(Splitter widget, EventArgs e)
+			{
+				widget.OnPositionChanged(e);
 			}
 		}
 	}

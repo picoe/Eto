@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Wpf.Forms
 {
-	public class DialogHandler : WpfWindow<sw.Window, Dialog>, IDialog
+	public class DialogHandler : WpfWindow<sw.Window, Dialog, Dialog.ICallback>, IDialog
 	{
 		Button defaultButton;
 		Button abortButton;

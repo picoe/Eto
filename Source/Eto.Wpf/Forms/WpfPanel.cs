@@ -8,9 +8,10 @@ using Eto.Wpf.Forms.Menu;
 
 namespace Eto.Wpf.Forms
 {
-	public abstract class WpfPanel<TControl, TWidget> : WpfContainer<TControl, TWidget>, IPanel
+	public abstract class WpfPanel<TControl, TWidget, TCallback> : WpfContainer<TControl, TWidget, TCallback>, IPanel
 		where TControl : sw.FrameworkElement
 		where TWidget : Panel
+		where TCallback : Panel.ICallback
 	{
 		Control content;
 		readonly swc.Border border;

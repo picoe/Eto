@@ -4,9 +4,10 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public abstract class GtkContainer<TControl, TWidget> : GtkControl<TControl, TWidget>, IContainer
+	public abstract class GtkContainer<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, IContainer
 		where TControl: Gtk.Widget
 		where TWidget: Container
+		where TCallback: Container.ICallback
 	{
 		public bool RecurseToChildren { get { return true; } }
 

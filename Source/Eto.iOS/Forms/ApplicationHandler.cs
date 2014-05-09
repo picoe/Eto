@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Eto.iOS.Forms
 {
-	public class ApplicationHandler : WidgetHandler<UIApplication, Application>, IApplication
+	public class ApplicationHandler : WidgetHandler<UIApplication, Application, Application.ICallback>, IApplication
 	{
 		bool attached;
 
@@ -53,7 +53,7 @@ namespace Eto.iOS.Forms
 		{
 			AppDelegate = appdelegate;
 			
-			Widget.OnInitialized(EventArgs.Empty);
+			Callback.OnInitialized(Widget, EventArgs.Empty);
 		}
 
 		public void Invoke(Action action)

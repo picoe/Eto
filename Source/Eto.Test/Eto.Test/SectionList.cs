@@ -119,7 +119,7 @@ namespace Eto.Test
 						var dialog = window as Dialog;
 						if (dialog != null)
 						{
-							dialog.ShowDialog(null);
+							dialog.ShowModal(null);
 							return;
 						}
 						var form = window as Form;

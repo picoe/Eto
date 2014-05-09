@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox>, ITextBox
+	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, ITextBox
 	{
 		bool textChanging;
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
@@ -39,7 +39,7 @@ namespace Eto.Wpf.Forms.Controls
 				case TextControl.TextChangedEvent:
 					Control.TextChanged += delegate {
 						if (!textChanging)
-							Widget.OnTextChanged (EventArgs.Empty);
+							Callback.OnTextChanged(Widget, EventArgs.Empty);
 					};
 					break;
 				default:

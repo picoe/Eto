@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class TextBoxHandler : IosControl<UITextField, TextBox>, ITextBox
+	public class TextBoxHandler : IosControl<UITextField, TextBox, TextBox.ICallback>, ITextBox
 	{
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
@@ -43,7 +43,7 @@ namespace Eto.iOS.Forms.Controls
 			switch (handler)
 			{
 				case TextControl.TextChangedEvent:
-					Control.EditingChanged += (s, e) => Widget.OnTextChanged(e);
+					Control.EditingChanged += (s, e) => Callback.OnTextChanged(Widget, e);
 					break;
 				default:
 					base.AttachEvent(handler);

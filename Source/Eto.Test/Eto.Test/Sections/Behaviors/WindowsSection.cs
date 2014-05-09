@@ -30,7 +30,7 @@ namespace Eto.Test.Sections.Behaviors
 			Content = layout;
 		}
 
-		public override void OnUnLoad(EventArgs e)
+		protected override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
 			if (child != null)

@@ -9,8 +9,8 @@ namespace Eto.Mac.Forms.Controls
 	/// TODO: Try to eliminate code duplication between this class
 	/// and TextBoxHandler. 
 	/// </summary>
-	public class SearchBoxHandler : MacText<NSSearchField, SearchBox>, ISearchBox, ITextBoxWithMaxLength
-	{		
+	public class SearchBoxHandler : MacText<NSSearchField, SearchBox, SearchBox.ICallback>, ISearchBox, ITextBoxWithMaxLength
+	{
 		class EtoTextField : NSSearchField, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -75,7 +75,7 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(sender) as SearchBoxHandler;
 			if (handler != null)
 			{
-				handler.Widget.OnTextChanged(EventArgs.Empty);
+				handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
 

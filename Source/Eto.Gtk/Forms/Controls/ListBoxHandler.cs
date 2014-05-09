@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox>, IListBox, IGtkListModelHandler<IListItem, IListStore>
+	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, IListBox, IGtkListModelHandler<IListItem, IListStore>
 	{
 		readonly Gtk.ScrolledWindow scroll;
 		GtkListModel<IListItem, IListStore> model;
@@ -69,12 +69,12 @@ namespace Eto.GtkSharp
 
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleTreeRowActivated(object o, Gtk.RowActivatedArgs args)
 			{
-				Handler.Widget.OnActivated(EventArgs.Empty);
+				Handler.Callback.OnActivated(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

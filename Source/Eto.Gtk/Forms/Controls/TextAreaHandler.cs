@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class TextAreaHandler : GtkControl<Gtk.TextView, TextArea>, ITextArea
+	public class TextAreaHandler : GtkControl<Gtk.TextView, TextArea, TextArea.ICallback>, ITextArea
 	{
 		bool sendSelectionChanged = true;
 		readonly Gtk.ScrolledWindow scroll;
@@ -61,7 +61,7 @@ namespace Eto.GtkSharp
 
 			public void HandleBufferChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnTextChanged(EventArgs.Empty);
+				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void HandleSelectionChanged(object o, Gtk.MarkSetArgs args)
@@ -70,7 +70,7 @@ namespace Eto.GtkSharp
 				var selection = handler.Selection;
 				if (handler.sendSelectionChanged && selection != lastSelection)
 				{
-					handler.Widget.OnSelectionChanged(EventArgs.Empty);
+					handler.Callback.OnSelectionChanged(handler.Widget, EventArgs.Empty);
 					lastSelection = selection;
 				}
 			}
@@ -81,7 +81,7 @@ namespace Eto.GtkSharp
 				var caretIndex = handler.CaretIndex;
 				if (handler.sendSelectionChanged && caretIndex != lastCaretIndex)
 				{
-					handler.Widget.OnCaretIndexChanged(EventArgs.Empty);
+					handler.Callback.OnCaretIndexChanged(handler.Widget, EventArgs.Empty);
 					lastCaretIndex = caretIndex;
 				}
 			}
@@ -159,7 +159,7 @@ namespace Eto.GtkSharp
 					Control.Buffer.InsertAtCursor(value);
 				if (tag != null)
 					Control.Buffer.ApplyTag(tag, Control.Buffer.StartIter, Control.Buffer.EndIter);
-				Widget.OnSelectionChanged(EventArgs.Empty);
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				sendSelectionChanged = true;
 			}
 		}
@@ -179,7 +179,7 @@ namespace Eto.GtkSharp
 				var start = Control.Buffer.GetIterAtOffset(value.Start);
 				var end = Control.Buffer.GetIterAtOffset(value.Start + value.Length);
 				Control.Buffer.SelectRange(start, end);
-				Widget.OnSelectionChanged(EventArgs.Empty);
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				sendSelectionChanged = true;
 			}
 		}
