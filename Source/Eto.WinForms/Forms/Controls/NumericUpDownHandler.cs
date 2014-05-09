@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class NumericUpDownHandler : WindowsControl<swf.NumericUpDown, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
+	public class NumericUpDownHandler : WindowsControl<swf.NumericUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
 		public NumericUpDownHandler()
 		{

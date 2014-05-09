@@ -10,7 +10,7 @@ namespace Eto.WinForms.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class MatrixHandler : IMatrixHandler, IDisposable
+	public class MatrixHandler : Matrix.IHandler, IDisposable
 	{
 		sd2.Matrix control;
 

@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Handlers
 {
-	public class TabControlHandler : ThemedContainerHandler<Container, TabControl, TabControl.ICallback>, ITabControl
+	public class TabControlHandler : ThemedContainerHandler<Container, TabControl, TabControl.ICallback>, TabControl.IHandler
 	{
 		/// <summary>
 		/// Contains the tabs

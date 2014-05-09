@@ -14,11 +14,11 @@ namespace Eto.Android.Forms
 	}
 
 	/// <summary>
-	/// Base handler for <see cref="IWindow"/>
+	/// Base handler for <see cref="Window"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class AndroidWindow<TWidget, TCallback> : AndroidPanel<aw.FrameLayout, TWidget, TCallback>, IWindow, IAndroidWindow
+	public abstract class AndroidWindow<TWidget, TCallback> : AndroidPanel<aw.FrameLayout, TWidget, TCallback>, Window.IHandler, IAndroidWindow
 		where TWidget: Window
 		where TCallback: Window.ICallback
 	{

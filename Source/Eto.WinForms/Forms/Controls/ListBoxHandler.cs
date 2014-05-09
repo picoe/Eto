@@ -8,7 +8,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms
 {
-	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox, ListBox.ICallback>, IListBox
+	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
 		CollectionHandler collection;
 

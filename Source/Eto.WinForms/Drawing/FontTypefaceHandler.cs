@@ -3,7 +3,7 @@ using sd = System.Drawing;
 
 namespace Eto.WinForms.Drawing
 {
-	public class FontTypefaceHandler : WidgetHandler<sd.FontStyle, FontTypeface>, IFontTypeface
+	public class FontTypefaceHandler : WidgetHandler<sd.FontStyle, FontTypeface>, FontTypeface.IHandler
 	{
 		public FontTypefaceHandler (sd.FontStyle style)
 		{

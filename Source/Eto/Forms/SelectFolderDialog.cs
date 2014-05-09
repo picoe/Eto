@@ -2,26 +2,17 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ISelectFolderDialog : IWidget
-	{
-		string Title { get; set; }
-
-		string Directory { get; set; }
-
-		DialogResult ShowDialog (Window parent);
-	}
-
-	[Handler(typeof(ISelectFolderDialog))]
+	[Handler(typeof(SelectFolderDialog.IHandler))]
 	public class SelectFolderDialog : Widget
 	{
-		new ISelectFolderDialog Handler { get { return (ISelectFolderDialog)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public SelectFolderDialog()
 		{
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public SelectFolderDialog (Generator generator) : this (generator, typeof(ISelectFolderDialog))
+		public SelectFolderDialog (Generator generator) : this (generator, typeof(SelectFolderDialog.IHandler))
 		{
 		}
 
@@ -44,6 +35,15 @@ namespace Eto.Forms
 		public DialogResult ShowDialog (Window parent)
 		{
 			return Handler.ShowDialog (parent);
+		}
+
+		public interface IHandler : Widget.IHandler
+		{
+			string Title { get; set; }
+
+			string Directory { get; set; }
+
+			DialogResult ShowDialog (Window parent);
 		}
 	}
 }

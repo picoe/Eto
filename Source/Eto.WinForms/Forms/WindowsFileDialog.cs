@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms
 {
-	public abstract class WindowsFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IFileDialog
+	public abstract class WindowsFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
 		where TControl : swf.FileDialog
 		where TWidget : FileDialog
 	{

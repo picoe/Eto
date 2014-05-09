@@ -7,7 +7,7 @@ using msc = Microsoft.Samples.CustomControls;
 
 namespace Eto.Wpf.Forms
 {
-	public class ColorDialogHandler : WidgetHandler<msc.ColorPickerDialog, ColorDialog, ColorDialog.ICallback>, IColorDialog
+	public class ColorDialogHandler : WidgetHandler<msc.ColorPickerDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
 	{
 		public ColorDialogHandler ()
 		{

@@ -17,7 +17,7 @@ namespace Eto.iOS.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class MatrixHandler : IMatrixHandler
+	public class MatrixHandler : Matrix.IHandler
 	{
 		CGAffineTransform control;
 		

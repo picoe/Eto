@@ -45,7 +45,7 @@ namespace Eto
 			if (type.Assembly == etoAssembly)
 				return;
 #endif
-			var handler = widget.Handler as IWidget;
+			var handler = widget.Handler as Widget.IHandler;
 			if (handler != null)
 			{
 				var ids = GetEvents(type);

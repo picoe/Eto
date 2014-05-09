@@ -5,17 +5,12 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public interface IButtonMenuItem : IMenuItem, ISubMenu
-	{
-		Image Image { get; set; }
-	}
-
-	[Handler(typeof(IButtonMenuItem))]
-	public class ButtonMenuItem : MenuItem, ISubMenuWidget
+	[Handler(typeof(ButtonMenuItem.IHandler))]
+	public class ButtonMenuItem : MenuItem, ISubmenu
 	{
 		MenuItemCollection items;
 
-		new IButtonMenuItem Handler { get { return (IButtonMenuItem)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
 
@@ -27,7 +22,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public ButtonMenuItem(Generator generator)
-			: this(generator, typeof(IButtonMenuItem))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -40,7 +35,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use constructor without generator instead")]
 		public ButtonMenuItem(Command command, Generator generator = null)
-			: base(command, generator, typeof(IButtonMenuItem))
+			: base(command, generator, typeof(IHandler))
 		{
 			Image = command.Image;
 		}
@@ -69,6 +64,11 @@ namespace Eto.Forms
 			base.OnUnLoad(e);
 			foreach (var item in Items)
 				item.OnLoad(e);
+		}
+
+		public interface IHandler : MenuItem.IHandler, ISubmenuHandler
+		{
+			Image Image { get; set; }
 		}
 	}
 }

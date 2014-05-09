@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<swc.DataGrid, GridView, GridView.ICallback>, IGridView
+	public class GridViewHandler : GridHandler<swc.DataGrid, GridView, GridView.ICallback>, GridView.IHandler
 	{
 		IDataStore store;
 

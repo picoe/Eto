@@ -3,17 +3,10 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface INavigation : IContainer
-	{
-		void Push (INavigationItem item);
-
-		void Pop ();
-	}
-
-	[Handler(typeof(INavigation))]
+	[Handler(typeof(Navigation.IHandler))]
 	public class Navigation : Container
 	{
-		new INavigation Handler { get { return (INavigation)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public override IEnumerable<Control> Controls
 		{
@@ -25,7 +18,7 @@ namespace Eto.Forms
 
 		public static bool IsSupported
 		{
-			get { return Platform.Instance.Supports<INavigation>(); }
+			get { return Platform.Instance.Supports<IHandler>(); }
 		}
 
 		public event EventHandler<EventArgs> ItemShown;
@@ -42,7 +35,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public Navigation (Generator generator)
-			: base(generator, typeof(INavigation))
+			: base(generator, typeof(IHandler))
 		{
 		}
 		
@@ -92,6 +85,13 @@ namespace Eto.Forms
 			{
 				widget.OnItemShown(e);
 			}
+		}
+
+		public interface IHandler : Container.IHandler
+		{
+			void Push (INavigationItem item);
+
+			void Pop ();
 		}
 	}
 }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, ITreeView, IGtkListModelHandler<ITreeItem, ITreeStore>
+	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, TreeView.IHandler, IGtkListModelHandler<ITreeItem, ITreeStore>
 	{
 		GtkTreeModel<ITreeItem, ITreeStore> model;
 		CollectionHandler collection;

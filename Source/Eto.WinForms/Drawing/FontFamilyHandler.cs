@@ -4,7 +4,7 @@ using sd = System.Drawing;
 
 namespace Eto.WinForms.Drawing
 {
-	public class FontFamilyHandler : WidgetHandler<sd.FontFamily, FontFamily>, IFontFamily
+	public class FontFamilyHandler : WidgetHandler<sd.FontFamily, FontFamily>, FontFamily.IHandler
 	{
 		public string Name { get; set; }
 

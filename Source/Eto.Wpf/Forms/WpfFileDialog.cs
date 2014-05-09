@@ -7,7 +7,7 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {
-	public abstract class WpfFileDialog<TControl, TWidget> : WpfCommonDialog<TControl, TWidget>, IFileDialog
+	public abstract class WpfFileDialog<TControl, TWidget> : WpfCommonDialog<TControl, TWidget>, FileDialog.IHandler
 		where TControl: mw.FileDialog
 		where TWidget: FileDialog
 	{

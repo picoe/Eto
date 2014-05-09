@@ -5,29 +5,6 @@ using FontCacheKey = System.Tuple<Eto.Drawing.FontFamily, float, Eto.Drawing.Fon
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Platform handler interface for the <see cref="Fonts"/> class
-	/// </summary>
-	public interface IFonts
-	{
-		/// <summary>
-		/// Gets an enumeration of available font families in the current system
-		/// </summary>
-		IEnumerable<FontFamily> AvailableFontFamilies { get; }
-
-		/// <summary>
-		/// Gets a value indicating whether the specified font family is available in the system
-		/// </summary>
-		/// <remarks>
-		/// This is used to allow for (relatively) efficient lookup of a font name when the user
-		/// specifies a comma-separated list of families when creating a <see cref="FontFamily"/>
-		/// or <see cref="Font"/>.
-		/// </remarks>
-		/// <returns><c>true</c>, if family available was available, <c>false</c> otherwise.</returns>
-		/// <param name="fontFamily">Font family to determine if it is available</param>
-		bool FontFamilyAvailable (string fontFamily);
-	}
-
-	/// <summary>
 	/// Methods to get information about current fonts installed the running system
 	/// </summary>
 	public static class Fonts
@@ -152,7 +129,7 @@ namespace Eto.Drawing
 		{
 			get
 			{
-				var fonts = Platform.Instance.CreateShared<IFonts>();
+				var fonts = Platform.Instance.CreateShared<IHandler>();
 				return fonts.AvailableFontFamilies;
 			}
 		}
@@ -265,7 +242,28 @@ namespace Eto.Drawing
 		#pragma warning restore 612,618
 
 
+		/// <summary>
+		/// Platform handler interface for the <see cref="Fonts"/> class
+		/// </summary>
+		public interface IHandler
+		{
+			/// <summary>
+			/// Gets an enumeration of available font families in the current system
+			/// </summary>
+			IEnumerable<FontFamily> AvailableFontFamilies { get; }
 
+			/// <summary>
+			/// Gets a value indicating whether the specified font family is available in the system
+			/// </summary>
+			/// <remarks>
+			/// This is used to allow for (relatively) efficient lookup of a font name when the user
+			/// specifies a comma-separated list of families when creating a <see cref="FontFamily"/>
+			/// or <see cref="Font"/>.
+			/// </remarks>
+			/// <returns><c>true</c>, if family available was available, <c>false</c> otherwise.</returns>
+			/// <param name="fontFamily">Font family to determine if it is available</param>
+			bool FontFamilyAvailable (string fontFamily);
+		}
 	}
 }
 

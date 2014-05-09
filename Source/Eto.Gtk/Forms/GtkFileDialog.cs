@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Eto.GtkSharp
 {
-	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IFileDialog
+	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
 		where TControl: Gtk.FileChooserDialog
 		where TWidget: FileDialog
 	{

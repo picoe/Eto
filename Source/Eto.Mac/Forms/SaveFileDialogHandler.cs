@@ -46,7 +46,7 @@ namespace Eto.Mac.Forms
 			
 	}
 
-	public class SaveFileDialogHandler : MacFileDialog<NSSavePanel, SaveFileDialog>, ISaveFileDialog
+	public class SaveFileDialogHandler : MacFileDialog<NSSavePanel, SaveFileDialog>, SaveFileDialog.IHandler
 	{
 		public override string FileName {
 			get {

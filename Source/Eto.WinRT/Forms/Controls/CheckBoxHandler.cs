@@ -9,9 +9,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Checkbox handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class CheckBoxHandler : WpfControl<swc.CheckBox, CheckBox>, ICheckBox
+	public class CheckBoxHandler : WpfControl<swc.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		readonly swc.Border border;
 
@@ -26,9 +26,9 @@ namespace Eto.WinRT.Forms.Controls
 				IsThreeState = false,
 				VerticalAlignment = sw.VerticalAlignment.Center
 			};
-			Control.Checked += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
-			Control.Unchecked += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
-			Control.Indeterminate += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
+			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+			Control.Indeterminate += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			border = new swc.Border { Child = Control };
 		}
 

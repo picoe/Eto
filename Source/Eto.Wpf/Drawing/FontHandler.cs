@@ -7,7 +7,7 @@ using sd = System.Drawing;
 
 namespace Eto.Wpf.Drawing
 {
-	public class FontHandler : WidgetHandler<object, Font>, IFont
+	public class FontHandler : WidgetHandler<object, Font>, Font.IHandler
 	{
 		FontTypeface typeface;
 		FontDecoration decoration;
@@ -240,7 +240,7 @@ namespace Eto.Wpf.Drawing
 			get { return ((FontTypefaceHandler)Typeface.Handler).Control; }
 		}
 
-		float IFont.Size
+		float Font.IHandler.Size
 		{
 			get { return (float)Size; }
 		}

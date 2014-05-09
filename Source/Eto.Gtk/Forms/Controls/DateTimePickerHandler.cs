@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class DateTimePickerHandler : GtkControl<CustomControls.DateComboBox, DateTimePicker, DateTimePicker.ICallback>, IDateTimePicker
+	public class DateTimePickerHandler : GtkControl<CustomControls.DateComboBox, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
 		public DateTimePickerHandler()
 		{

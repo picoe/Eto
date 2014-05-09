@@ -8,7 +8,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ComboBoxHandler : IosControl<UILabel, ComboBox, ComboBox.ICallback>, IComboBox
+	public class ComboBoxHandler : IosControl<UILabel, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		IListStore dataStore;
 		int selectedIndex = -1;

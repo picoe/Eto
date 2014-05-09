@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Eto.Mac.Forms
 {
-	public class ApplicationHandler : WidgetHandler<NSApplication, Application, Application.ICallback>, IApplication
+	public class ApplicationHandler : WidgetHandler<NSApplication, Application, Application.ICallback>, Application.IHandler
 	{
 		bool attached;
 

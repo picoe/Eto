@@ -8,23 +8,6 @@ namespace Eto.Forms
 	{
 	}
 
-	public partial interface ITreeView : IControl
-	{
-		ITreeStore DataStore { get; set; }
-
-		ITreeItem SelectedItem { get; set; }
-
-		void RefreshData();
-
-		void RefreshItem(ITreeItem item);
-
-		ITreeItem GetNodeAt(PointF point);
-
-		bool LabelEdit { get; set; }
-
-		Color TextColor { get; set; }
-	}
-
 	public class TreeViewItemEventArgs : EventArgs
 	{
 		public ITreeItem Item { get; private set; }
@@ -56,10 +39,10 @@ namespace Eto.Forms
 		}
 	}
 
-	[Handler(typeof(ITreeView))]
+	[Handler(typeof(TreeView.IHandler))]
 	public partial class TreeView : Control
 	{
-		new ITreeView Handler { get { return (ITreeView)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		#region Events
 
@@ -200,7 +183,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public TreeView(Generator generator) : this(generator, typeof(ITreeView))
+		public TreeView(Generator generator) : this(generator, typeof(IHandler))
 		{
 		}
 
@@ -248,6 +231,13 @@ namespace Eto.Forms
 			get { return Handler.LabelEdit; }
 			set { Handler.LabelEdit = value; }
 		}
+
+		public ContextMenu ContextMenu {
+			get { return Handler.ContextMenu; }
+			set { Handler.ContextMenu = value; }
+		}
+
+		#region Callback
 
 		static readonly object callback = new Callback();
 		protected override object GetCallback() { return callback; }
@@ -304,5 +294,28 @@ namespace Eto.Forms
 				widget.OnNodeMouseClick(e);
 			}
 		}
+
+		#endregion
+
+		#region Handler
+
+		public interface IHandler : Control.IHandler, IContextMenuHost
+		{
+			ITreeStore DataStore { get; set; }
+
+			ITreeItem SelectedItem { get; set; }
+
+			void RefreshData();
+
+			void RefreshItem(ITreeItem item);
+
+			ITreeItem GetNodeAt(PointF point);
+
+			bool LabelEdit { get; set; }
+
+			Color TextColor { get; set; }
+		}
+
+		#endregion
 	}
 }

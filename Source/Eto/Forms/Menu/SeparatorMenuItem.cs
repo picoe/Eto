@@ -2,11 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ISeparatorMenuItem : IMenuItem
-	{
-	}
-
-	[Handler(typeof(ISeparatorMenuItem))]
+	[Handler(typeof(SeparatorMenuItem.IHandler))]
 	public class SeparatorMenuItem : MenuItem
 	{
 		public SeparatorMenuItem()
@@ -14,13 +10,17 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public SeparatorMenuItem(Generator generator) : this(generator, typeof(ISeparatorMenuItem))
+		public SeparatorMenuItem(Generator generator) : this(generator, typeof(SeparatorMenuItem.IHandler))
 		{
 		}
 
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected SeparatorMenuItem(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
+		{
+		}
+
+		public interface IHandler : MenuItem.IHandler
 		{
 		}
 	}

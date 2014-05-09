@@ -5,7 +5,7 @@ using MonoTouch.CoreGraphics;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class SliderHandler : IosControl<UISlider, Slider, Slider.ICallback>, ISlider
+	public class SliderHandler : IosControl<UISlider, Slider, Slider.ICallback>, Slider.IHandler
 	{
 		SliderOrientation orientation;
 		int? lastValue;

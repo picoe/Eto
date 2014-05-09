@@ -53,7 +53,7 @@ namespace Eto.Mac.Forms
 		}
 	}
 
-	public class FontDialogHandler : MacObject<NSFontPanel, FontDialog, FontDialog.ICallback>, IFontDialog
+	public class FontDialogHandler : MacObject<NSFontPanel, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
 	{
 		public NSFontManager Manager
 		{

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Eto.GtkSharp
 {
-	public class TableLayoutHandler : GtkContainer<Gtk.Table, TableLayout, TableLayout.ICallback>, ITableLayout
+	public class TableLayoutHandler : GtkContainer<Gtk.Table, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
 		const Gtk.AttachOptions SCALED_OPTIONS = Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
 		Gtk.Alignment align;

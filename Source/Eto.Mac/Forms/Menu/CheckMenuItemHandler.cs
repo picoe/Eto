@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac
 {
-	public class CheckMenuItemHandler : MenuHandler<NSMenuItem, CheckMenuItem>, ICheckMenuItem, IMenuActionHandler
+	public class CheckMenuItemHandler : MenuHandler<NSMenuItem, CheckMenuItem>, CheckMenuItem.IHandler, IMenuActionHandler
 	{
 		public CheckMenuItemHandler ()
 		{

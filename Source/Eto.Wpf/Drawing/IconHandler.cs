@@ -15,7 +15,7 @@ namespace Eto.Wpf.Drawing
 		swmi.BitmapSource GetImageClosestToSize (int? width);
 	}
 
-	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, IIcon, IWpfImage
+	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, Icon.IHandler, IWpfImage
 	{
 		swmi.BitmapSource[] icons;
 

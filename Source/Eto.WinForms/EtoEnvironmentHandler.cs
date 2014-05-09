@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Eto.WinForms
 {
-	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
+	public class EtoEnvironmentHandler : WidgetHandler<Widget>, EtoEnvironment.IHandler
 	{
 		
 		static System.Environment.SpecialFolder Convert (EtoSpecialFolder folder)

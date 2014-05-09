@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class ButtonMenuItemHandler : MenuActionItemHandler<Gtk.ImageMenuItem, ButtonMenuItem>, IButtonMenuItem
+	public class ButtonMenuItemHandler : MenuActionItemHandler<Gtk.ImageMenuItem, ButtonMenuItem>, ButtonMenuItem.IHandler
 	{
 		string tooltip;
 		string text;

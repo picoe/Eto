@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class DateTimePickerHandler : WpfControl<mwc.DateTimePicker, DateTimePicker, DateTimePicker.ICallback>, IDateTimePicker
+	public class DateTimePickerHandler : WpfControl<mwc.DateTimePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
 		DateTimePickerMode mode;
 

@@ -3,12 +3,8 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IImageViewCell : ICell
-	{
-	}
-
-	[Handler(typeof(IImageViewCell))]
-	public class ImageViewCell : SingleValueCell, IImageViewCell
+	[Handler(typeof(ImageViewCell.IHandler))]
+	public class ImageViewCell : SingleValueCell
 	{
 		public ImageViewCell (int column)
 		{
@@ -26,7 +22,11 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public ImageViewCell (Generator generator)
-			: base(generator, typeof(IImageViewCell), true)
+			: base(generator, typeof(IHandler), true)
+		{
+		}
+
+		public interface IHandler : SingleValueCell.IHandler
 		{
 		}
 	}

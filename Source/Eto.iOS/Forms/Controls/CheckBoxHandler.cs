@@ -7,7 +7,7 @@ using sd = System.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class CheckBoxHandler : IosControl<CheckBoxHandler.CheckBox, CheckBox, CheckBox.ICallback>, ICheckBox
+	public class CheckBoxHandler : IosControl<CheckBoxHandler.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 
 		public class CheckBox : UIView

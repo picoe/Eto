@@ -2,21 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IPrintDocument : IWidget
-	{
-		void Print();
-
-		string Name { get; set; }
-
-		PrintSettings PrintSettings { get; set; }
-
-		int PageCount { get; set; }
-	}
-
-	[Handler(typeof(IPrintDocument))]
+	[Handler(typeof(PrintDocument.IHandler))]
 	public class PrintDocument : Widget
 	{
-		new IPrintDocument Handler { get { return (IPrintDocument)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		#region Events
 
@@ -74,7 +63,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public PrintDocument(Generator generator)
-			: base(generator, typeof(IPrintDocument))
+			: base(generator, typeof(IHandler))
 		{
 		}
 
@@ -126,5 +115,17 @@ namespace Eto.Forms
 				widget.OnPrintPage(e);
 			}
 		}
+
+		public interface IHandler : Widget.IHandler
+		{
+			void Print();
+
+			string Name { get; set; }
+
+			PrintSettings PrintSettings { get; set; }
+
+			int PageCount { get; set; }
+		}
+
 	}
 }

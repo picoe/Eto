@@ -36,7 +36,7 @@ namespace Eto.Wpf.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, IBitmap, IWpfImage
+	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, Bitmap.IHandler, IWpfImage
 	{
 		public BitmapHandler()
 		{

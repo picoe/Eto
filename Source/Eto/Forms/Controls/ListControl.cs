@@ -3,13 +3,6 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public interface IListControl : ICommonControl
-	{
-		IListStore DataStore { get; set; }
-		
-		int SelectedIndex { get; set; }
-	}
-	
 	public interface IListStore : IDataStore<IListItem>
 	{
 	}
@@ -30,7 +23,7 @@ namespace Eto.Forms
 	[ContentProperty("Items")]
 	public abstract class ListControl : CommonControl
 	{
-		new IListControl Handler { get { return (IListControl)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
@@ -171,6 +164,13 @@ namespace Eto.Forms
 			{
 				widget.OnSelectedIndexChanged(e);
 			}
+		}
+
+		public interface IHandler : CommonControl.IHandler
+		{
+			IListStore DataStore { get; set; }
+
+			int SelectedIndex { get; set; }
 		}
 	}
 }

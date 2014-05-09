@@ -4,7 +4,7 @@ using sd = SharpDX.Direct2D1;
 
 namespace Eto.Direct2D.Drawing
 {
-	public class TextureBrushHandler : ITextureBrush
+	public class TextureBrushHandler : TextureBrush.IHandler
 	{
 		public class TextureBrushData : TransformBrushData
 		{

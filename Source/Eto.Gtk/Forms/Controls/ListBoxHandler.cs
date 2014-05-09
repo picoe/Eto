@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, IListBox, IGtkListModelHandler<IListItem, IListStore>
+	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, ListBox.IHandler, IGtkListModelHandler<IListItem, IListStore>
 	{
 		readonly Gtk.ScrolledWindow scroll;
 		GtkListModel<IListItem, IListStore> model;

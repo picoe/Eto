@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class SearchBoxHandler : IosControl<UISearchBar, SearchBox, SearchBox.ICallback>, ISearchBox
+	public class SearchBoxHandler : IosControl<UISearchBar, SearchBox, SearchBox.ICallback>, SearchBox.IHandler
 	{
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{

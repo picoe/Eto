@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class SaveFileDialogHandler : WindowsFileDialog<SWF.SaveFileDialog, SaveFileDialog>, ISaveFileDialog
+	public class SaveFileDialogHandler : WindowsFileDialog<SWF.SaveFileDialog, SaveFileDialog>, SaveFileDialog.IHandler
 	{
 
 		public SaveFileDialogHandler()

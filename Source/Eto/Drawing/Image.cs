@@ -4,22 +4,9 @@ using System.ComponentModel;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Image"/> class
-	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IImage : IWidget
-	{
-		/// <summary>
-		/// Gets the size of the image, in pixels
-		/// </summary>
-		Size Size { get; }
-	}
-
-	/// <summary>
 	/// Interface for an image that can have its data locked for direct access
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface ILockableImage
 	{
@@ -53,18 +40,18 @@ namespace Eto.Drawing
 	/// For instance, <see cref="Graphics"/> and <see cref="Forms.ImageView"/> can reference
 	/// any Image-derived object.
 	/// </remarks>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter(typeof(ImageConverter))]
 	public abstract class Image : Widget
 	{
-		new IImage Handler { get { return (IImage)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		protected Image()
 		{
 		}
 
-		protected Image(IImage handler)
+		protected Image(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -75,7 +62,7 @@ namespace Eto.Drawing
 		/// Initializes a new instance of an image with the specified type
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler to create (must be derived from <see cref="IImage"/>)</param>
+		/// <param name="type">Type of the handler to create (must be derived from <see cref="IHandler"/>)</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Image(Generator generator, Type type) : base(generator, type)
 		{
@@ -91,7 +78,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator for the handler</param>
 		/// <param name="handler">Instance of the handler to attach to this instance</param>
 		[Obsolete("Use variation without generator instead")]
-		protected Image(Generator generator, IImage handler) : base(generator, handler)
+		protected Image(Generator generator, IHandler handler) : base(generator, handler)
 		{
 		}
 
@@ -124,5 +111,18 @@ namespace Eto.Drawing
 		/// <value>The height of the image, in pixels</value>
 		/// <seealso cref="Size"/>
 		public int Height { get { return Size.Height; } }
+
+		/// <summary>
+		/// Handler interface for the <see cref="Image"/> class
+		/// </summary>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : Widget.IHandler
+		{
+			/// <summary>
+			/// Gets the size of the image, in pixels
+			/// </summary>
+			Size Size { get; }
+		}
 	}
 }

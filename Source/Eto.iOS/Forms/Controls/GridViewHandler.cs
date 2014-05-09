@@ -10,7 +10,7 @@ using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<UITableView, GridView, GridView.ICallback>, IGridView
+	public class GridViewHandler : GridHandler<UITableView, GridView, GridView.ICallback>, GridView.IHandler
 	{
 		Collection store;
 

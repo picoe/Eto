@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.Mac.Forms
 {
-	public class OpenFileDialogHandler : MacFileDialog<NSOpenPanel, OpenFileDialog>, IOpenFileDialog
+	public class OpenFileDialogHandler : MacFileDialog<NSOpenPanel, OpenFileDialog>, OpenFileDialog.IHandler
 	{
 
 		public OpenFileDialogHandler()

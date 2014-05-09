@@ -3,42 +3,13 @@ using System;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Platform handler interface for <see cref="SolidBrush"/>
-	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface ISolidBrush : IBrush
-	{
-		/// <summary>
-		/// Gets the current fill color of the specified brush
-		/// </summary>
-		/// <param name="widget">Widget to get the color for</param>
-		/// <returns>Color of the specified brush</returns>
-		Color GetColor (SolidBrush widget);
-
-		/// <summary>
-		/// Sets the fill color of the specified brush
-		/// </summary>
-		/// <param name="widget">Widget to set the color for</param>
-		/// <param name="color">Color to fill</param>
-		void SetColor(SolidBrush widget, Color color);
-
-		/// <summary>
-		/// Creates a new solid brush with the specified color
-		/// </summary>
-		/// <param name="color">Color of the brush</param>
-		/// <returns>ControlObject of the brush to store</returns>
-		object Create (Color color);
-	}
-	
-	/// <summary>
 	/// Defines a brush with a solid color for use with <see cref="Graphics"/> fill operations
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public sealed class SolidBrush : Brush
 	{
-		readonly ISolidBrush handler;
+		readonly IHandler handler;
 
 		/// <summary>
 		/// Gets the platform handler object for the widget
@@ -53,7 +24,7 @@ namespace Eto.Drawing
 		{
 			get
 			{
-				var sharedHandler = Platform.Instance.CreateShared<ISolidBrush>();
+				var sharedHandler = Platform.Instance.CreateShared<IHandler>();
 				return color =>
 				{
 					var control = sharedHandler.Create(color);
@@ -62,7 +33,7 @@ namespace Eto.Drawing
 			}
 		}
 
-		SolidBrush (ISolidBrush handler, object control)
+		SolidBrush (IHandler handler, object control)
 		{
 			this.handler = handler;
 			this.ControlObject = control;
@@ -74,7 +45,7 @@ namespace Eto.Drawing
 		/// <param name="color">Color for the brush</param>
 		public SolidBrush(Color color)
 		{
-			handler = Platform.Instance.CreateShared <ISolidBrush> ();
+			handler = Platform.Instance.CreateShared <IHandler> ();
 			ControlObject = handler.Create (color);
 		}
 
@@ -88,7 +59,7 @@ namespace Eto.Drawing
 		[Obsolete("Use variation without generator instead")]
 		public SolidBrush(Color color, Generator generator = null)
 		{
-			handler = generator.CreateShared <ISolidBrush>();
+			handler = generator.CreateShared <IHandler>();
 			ControlObject = handler.Create(color);
 		}
 
@@ -101,6 +72,35 @@ namespace Eto.Drawing
 		{
 			get { return handler.GetColor (this); }
 			set { handler.SetColor (this, value); }
+		}
+
+		/// <summary>
+		/// Platform handler interface for <see cref="SolidBrush"/>
+		/// </summary>
+		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : Brush.IHandler
+		{
+			/// <summary>
+			/// Gets the current fill color of the specified brush
+			/// </summary>
+			/// <param name="widget">Widget to get the color for</param>
+			/// <returns>Color of the specified brush</returns>
+			Color GetColor (SolidBrush widget);
+
+			/// <summary>
+			/// Sets the fill color of the specified brush
+			/// </summary>
+			/// <param name="widget">Widget to set the color for</param>
+			/// <param name="color">Color to fill</param>
+			void SetColor(SolidBrush widget, Color color);
+
+			/// <summary>
+			/// Creates a new solid brush with the specified color
+			/// </summary>
+			/// <param name="color">Color of the brush</param>
+			/// <returns>ControlObject of the brush to store</returns>
+			object Create (Color color);
 		}
 	}
 }

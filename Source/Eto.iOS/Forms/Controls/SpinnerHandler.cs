@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class SpinnerHandler : IosControl<UIActivityIndicatorView, Spinner, Spinner.ICallback>, ISpinner
+	public class SpinnerHandler : IosControl<UIActivityIndicatorView, Spinner, Spinner.ICallback>, Spinner.IHandler
 	{
 		bool enabled;
 

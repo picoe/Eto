@@ -12,7 +12,7 @@ namespace Eto.WinForms.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
+	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, Graphics.IHandler
 	{
 		Stack<sd.Drawing2D.Matrix> savedTransforms;
 

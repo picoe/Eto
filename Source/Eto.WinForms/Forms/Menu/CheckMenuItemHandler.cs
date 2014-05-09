@@ -8,7 +8,7 @@ namespace Eto.WinForms
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class CheckMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, CheckMenuItem>, ICheckMenuItem
+	public class CheckMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, CheckMenuItem>, CheckMenuItem.IHandler
 	{
 		public CheckMenuItemHandler()
 		{

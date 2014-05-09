@@ -5,7 +5,7 @@ using swi = System.Windows.Input;
 
 namespace Eto.Wpf.Forms
 {
-	public class CursorHandler : WidgetHandler<swi.Cursor, Cursor>, ICursor
+	public class CursorHandler : WidgetHandler<swi.Cursor, Cursor>, Cursor.IHandler
 	{
 		public void Create (CursorType cursor)
 		{

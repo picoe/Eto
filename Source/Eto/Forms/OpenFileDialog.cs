@@ -3,24 +3,17 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IOpenFileDialog : IFileDialog
-	{
-		bool MultiSelect { get; set; }
-
-		IEnumerable<string> Filenames { get; }
-	}
-
-	[Handler(typeof(IOpenFileDialog))]
+	[Handler(typeof(OpenFileDialog.IHandler))]
 	public class OpenFileDialog : FileDialog
 	{
-		new IOpenFileDialog Handler { get { return (IOpenFileDialog)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public OpenFileDialog()
 		{
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public OpenFileDialog (Generator generator) : this(generator, typeof(IOpenFileDialog))
+		public OpenFileDialog (Generator generator) : this(generator, typeof(OpenFileDialog.IHandler))
 		{
 		}
 
@@ -36,5 +29,13 @@ namespace Eto.Forms
 		}
 		
 		public IEnumerable<string> Filenames { get { return Handler.Filenames; } }
+
+
+		public interface IHandler : FileDialog.IHandler
+		{
+			bool MultiSelect { get; set; }
+
+			IEnumerable<string> Filenames { get; }
+		}
 	}
 }

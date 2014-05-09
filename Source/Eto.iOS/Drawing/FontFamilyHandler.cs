@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Eto.iOS.Drawing
 {
-	public class FontFamilyHandler : WidgetHandler<object, FontFamily>, IFontFamily
+	public class FontFamilyHandler : WidgetHandler<object, FontFamily>, FontFamily.IHandler
 	{
 		public string MacName { get; set; }
 

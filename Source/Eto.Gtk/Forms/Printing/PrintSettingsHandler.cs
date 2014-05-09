@@ -20,7 +20,7 @@ namespace Eto.GtkSharp.Forms.Printing
 		}
 	}
 
-	public class PrintSettingsHandler : WidgetHandler<Gtk.PrintSettings, PrintSettings>, IPrintSettings
+	public class PrintSettingsHandler : WidgetHandler<Gtk.PrintSettings, PrintSettings>, PrintSettings.IHandler
 	{
 		public bool SelectionOnly { get; set; }
 

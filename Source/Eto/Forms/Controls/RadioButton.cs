@@ -2,21 +2,13 @@ using System;
 
 namespace Eto.Forms
 {
-	[AutoInitialize(false)]
-	public interface IRadioButton : ITextControl
-	{
-		void Create (RadioButton controller);
-
-		bool Checked { get; set; }
-	}
-
-	[Handler(typeof(IRadioButton))]
+	[Handler(typeof(RadioButton.IHandler))]
 	public class RadioButton : TextControl
 	{
 		public event EventHandler<EventArgs> CheckedChanged;
 		public event EventHandler<EventArgs> Click;
 
-		new IRadioButton Handler { get { return (IRadioButton)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public void OnClick (EventArgs e)
 		{
@@ -44,7 +36,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use RadioButton(RadioButton) instead")]
 		public RadioButton (RadioButton controller = null, Generator generator = null)
-			: this(generator, typeof(IRadioButton), controller)
+			: this(generator, typeof(IHandler), controller)
 		{
 		}
 
@@ -61,5 +53,12 @@ namespace Eto.Forms
 			set { Handler.Checked = value; }
 		}
 
+		[AutoInitialize(false)]
+		public interface IHandler : TextControl.IHandler
+		{
+			void Create (RadioButton controller);
+
+			bool Checked { get; set; }
+		}
 	}
 }

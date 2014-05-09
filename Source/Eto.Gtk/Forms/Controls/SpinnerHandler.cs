@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class SpinnerHandler : GtkControl<Gtk.Spinner, Spinner, Spinner.ICallback>, ISpinner
+	public class SpinnerHandler : GtkControl<Gtk.Spinner, Spinner, Spinner.ICallback>, Spinner.IHandler
 	{
 		bool enabled;
 		public SpinnerHandler()

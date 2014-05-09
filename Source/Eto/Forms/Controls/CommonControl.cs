@@ -3,14 +3,9 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface ICommonControl : IControl
-	{
-		Font Font { get; set; }
-	}
-
 	public abstract class CommonControl : Control
 	{
-		new ICommonControl Handler { get { return (ICommonControl)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected CommonControl(Generator generator, Type type, bool initialize = true)
@@ -26,6 +21,11 @@ namespace Eto.Forms
 		{
 			get { return Handler.Font; }
 			set { Handler.Font = value; }
+		}
+
+		public interface IHandler : Control.IHandler
+		{
+			Font Font { get; set; }
 		}
 	}
 }

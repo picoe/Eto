@@ -17,7 +17,7 @@ namespace Eto.Wpf.Forms
 		sw.Window Control { get; }
 	}
 
-	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, IWindow, IWpfWindow
+	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow
 		where TControl : sw.Window
 		where TWidget : Window
 		where TCallback : Window.ICallback

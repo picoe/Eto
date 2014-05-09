@@ -4,7 +4,7 @@ using Eto.Forms;
 namespace Eto.Wpf.Forms
 {
 
-	public class UITimerHandler : WidgetHandler<System.Windows.Threading.DispatcherTimer, UITimer, UITimer.ICallback>, IUITimer
+	public class UITimerHandler : WidgetHandler<System.Windows.Threading.DispatcherTimer, UITimer, UITimer.ICallback>, UITimer.IHandler
 	{
 		
 		public UITimerHandler ()

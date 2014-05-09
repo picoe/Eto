@@ -8,7 +8,7 @@ using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ImageTextCellHandler : CellHandler<NSTextFieldCell, ImageTextCell, ImageTextCell.ICallback>, IImageTextCell
+	public class ImageTextCellHandler : CellHandler<NSTextFieldCell, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
 	{
 		public class EtoCell : MacImageListItemCell, IMacControl
 		{

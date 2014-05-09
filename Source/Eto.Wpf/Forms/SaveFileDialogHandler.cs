@@ -4,7 +4,7 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {
-	public class SaveFileDialogHandler : WpfFileDialog<mw.SaveFileDialog, SaveFileDialog>, ISaveFileDialog
+	public class SaveFileDialogHandler : WpfFileDialog<mw.SaveFileDialog, SaveFileDialog>, SaveFileDialog.IHandler
 	{
 		public SaveFileDialogHandler ()
 		{

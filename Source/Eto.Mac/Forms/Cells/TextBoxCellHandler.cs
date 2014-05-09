@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TextBoxCellHandler : CellHandler<NSTextFieldCell, TextBoxCell, TextBoxCell.ICallback>, ITextBoxCell
+	public class TextBoxCellHandler : CellHandler<NSTextFieldCell, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
 	{
 		public class EtoCell : NSTextFieldCell, IMacControl
 		{

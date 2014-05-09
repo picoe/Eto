@@ -13,11 +13,12 @@ namespace Eto.WinRT.Forms
 	/// Panel handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class WpfPanel<TControl, TWidget> : WpfContainer<TControl, TWidget>, IPanel
+	public abstract class WpfPanel<TControl, TWidget, TCallback> : WpfContainer<TControl, TWidget, TCallback>, Panel.IHandler
 		where TControl : sw.FrameworkElement
 		where TWidget : Panel
+		where TCallback : Panel.ICallback
 	{
 		Control content;
 		readonly swc.Border border;

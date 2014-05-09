@@ -17,7 +17,7 @@ using MacContainer = Eto.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms
 #endif
 namespace Eto.Mac.Forms
 {
-	public class TableLayoutHandler : MacContainer, ITableLayout
+	public class TableLayoutHandler : MacContainer, TableLayout.IHandler
 	{
 		Control[,] views;
 		bool[] xscaling;

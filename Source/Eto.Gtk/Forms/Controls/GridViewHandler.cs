@@ -4,7 +4,7 @@ using Eto.GtkSharp.Forms.Cells;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, IGridView, ICellDataSource, IGtkListModelHandler<object, IDataStore>
+	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler, ICellDataSource, IGtkListModelHandler<object, IDataStore>
 	{
 		GtkListModel<object, IDataStore> model;
 		CollectionHandler collection;

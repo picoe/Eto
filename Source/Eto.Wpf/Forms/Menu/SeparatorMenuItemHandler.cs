@@ -4,7 +4,7 @@ using System;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class SeparatorMenuItemHandler : WidgetHandler<swc.Separator, SeparatorMenuItem>, ISeparatorMenuItem
+	public class SeparatorMenuItemHandler : WidgetHandler<swc.Separator, SeparatorMenuItem>, SeparatorMenuItem.IHandler
 	{
 		public SeparatorMenuItemHandler ()
 		{

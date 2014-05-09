@@ -66,7 +66,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	public class TextBoxHandler : MacText<EtoTextField, TextBox, TextBox.ICallback>, ITextBox, ITextBoxWithMaxLength
+	public class TextBoxHandler : MacText<EtoTextField, TextBox, TextBox.ICallback>, TextBox.IHandler, ITextBoxWithMaxLength
 	{
 		public override bool HasFocus
 		{

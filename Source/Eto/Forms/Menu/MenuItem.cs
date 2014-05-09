@@ -5,8 +5,10 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public interface ICommandItem
+	public interface ICommandItemWidget
 	{
+		event EventHandler<EventArgs> Click;
+
 		string Text { get; set; }
 
 		string ToolTip { get; set; }
@@ -14,23 +16,11 @@ namespace Eto.Forms
 		bool Enabled { get; set; }
 	}
 
-	public interface ICommandItemWidget : ICommandItem
-	{
-		event EventHandler<EventArgs> Click;
-	}
-
-	public interface IMenuItem : IMenu, ICommandItem
-	{
-		Keys Shortcut { get; set; }
-
-		void CreateFromCommand(Command command);
-	}
-
 	public abstract class MenuItem : Menu, ICommandItemWidget
 	{
 		public int Order { get; set; }
 
-		new IMenuItem Handler { get { return (IMenuItem)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public const string ValidateEvent = "MenuActionItem.ValidateEvent";
 
@@ -117,6 +107,19 @@ namespace Eto.Forms
 		{
 			get { return Handler.Shortcut; }
 			set { Handler.Shortcut = value; }
+		}
+
+		public interface IHandler : Menu.IHandler
+		{
+			Keys Shortcut { get; set; }
+
+			void CreateFromCommand(Command command);
+
+			string Text { get; set; }
+
+			string ToolTip { get; set; }
+
+			bool Enabled { get; set; }
 		}
 	}
 

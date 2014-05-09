@@ -8,7 +8,7 @@ namespace Eto.WinRT
 	/// Xaml platform key map.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class KeyMap
 	{

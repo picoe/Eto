@@ -3,15 +3,10 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IFontDialog : ICommonDialog
-	{
-		Font Font { get; set; }
-	}
-
-	[Handler(typeof(IFontDialog))]
+	[Handler(typeof(FontDialog.IHandler))]
 	public class FontDialog : CommonDialog
 	{
-		new IFontDialog Handler { get { return (IFontDialog)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public const string FontChangedEvent = "FontDialog.FontChanged";
 
@@ -37,7 +32,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public FontDialog(Generator generator)
-			: base(generator, typeof(IFontDialog), true)
+			: base(generator, typeof(IHandler), true)
 		{
 		}
 
@@ -45,6 +40,11 @@ namespace Eto.Forms
 		{
 			get { return Handler.Font; }
 			set { Handler.Font = value; }
+		}
+
+		public interface IHandler : CommonDialog.IHandler
+		{
+			Font Font { get; set; }
 		}
 	}
 }

@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea, TextArea.ICallback>, ITextArea
+	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
 		Size defaultSize;

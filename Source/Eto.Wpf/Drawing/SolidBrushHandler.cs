@@ -8,7 +8,7 @@ namespace Eto.Wpf.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class SolidBrushHandler : ISolidBrush
+	public class SolidBrushHandler : SolidBrush.IHandler
 	{
 		public Color GetColor (SolidBrush widget)
 		{

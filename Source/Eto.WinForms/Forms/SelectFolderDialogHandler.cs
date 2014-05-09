@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms
 {
-	public class SelectFolderDialogHandler : WidgetHandler<SWF.FolderBrowserDialog, SelectFolderDialog>, ISelectFolderDialog
+	public class SelectFolderDialogHandler : WidgetHandler<SWF.FolderBrowserDialog, SelectFolderDialog>, SelectFolderDialog.IHandler
 	{
 		public SelectFolderDialogHandler ()
 		{

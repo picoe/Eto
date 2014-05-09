@@ -9,7 +9,7 @@ namespace Eto.Mac.Forms.Controls
 	/// TODO: Try to eliminate code duplication between this class
 	/// and TextBoxHandler. 
 	/// </summary>
-	public class SearchBoxHandler : MacText<NSSearchField, SearchBox, SearchBox.ICallback>, ISearchBox, ITextBoxWithMaxLength
+	public class SearchBoxHandler : MacText<NSSearchField, SearchBox, SearchBox.ICallback>, SearchBox.IHandler, ITextBoxWithMaxLength
 	{
 		class EtoTextField : NSSearchField, IMacControl
 		{

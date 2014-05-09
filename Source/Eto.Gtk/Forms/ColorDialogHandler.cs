@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class ColorDialogHandler : WidgetHandler<Gtk.ColorSelectionDialog, ColorDialog, ColorDialog.ICallback>, IColorDialog
+	public class ColorDialogHandler : WidgetHandler<Gtk.ColorSelectionDialog, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
 	{
 		public ColorDialogHandler ()
 		{

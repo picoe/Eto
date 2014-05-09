@@ -7,7 +7,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<UITableView, TreeGridView, TreeGridView.ICallback>, ITreeGridView
+	public class TreeGridViewHandler : GridHandler<UITableView, TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler
 	{
 		Collection store;
 

@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox, ListBox.ICallback>, IListBox
+	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
 		IListStore store;
 		ContextMenu contextMenu;

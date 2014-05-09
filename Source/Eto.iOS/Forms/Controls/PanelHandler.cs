@@ -5,7 +5,7 @@ using Eto.Mac.Forms;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class PanelHandler : MacPanel<UIView, Panel, Panel.ICallback>, IPanel
+	public class PanelHandler : MacPanel<UIView, Panel, Panel.ICallback>, Panel.IHandler
 	{
 		public override UIView ContainerControl { get { return Control; } }
 

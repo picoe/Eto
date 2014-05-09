@@ -5,7 +5,7 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {
-	public class OpenFileDialogHandler : WpfFileDialog<mw.OpenFileDialog, OpenFileDialog>, IOpenFileDialog
+	public class OpenFileDialogHandler : WpfFileDialog<mw.OpenFileDialog, OpenFileDialog>, OpenFileDialog.IHandler
 	{
 		public OpenFileDialogHandler ()
 		{

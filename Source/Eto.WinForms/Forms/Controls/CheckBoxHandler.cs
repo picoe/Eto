@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class CheckBoxHandler : WindowsControl<SWF.CheckBox, CheckBox, CheckBox.ICallback>, ICheckBox
+	public class CheckBoxHandler : WindowsControl<SWF.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		public CheckBoxHandler()
 		{

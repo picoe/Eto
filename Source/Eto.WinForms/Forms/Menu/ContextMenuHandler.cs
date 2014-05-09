@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class ContextMenuHandler : WidgetHandler<swf.ContextMenuStrip, ContextMenu>, IContextMenu
+	public class ContextMenuHandler : WidgetHandler<swf.ContextMenuStrip, ContextMenu>, ContextMenu.IHandler
 	{
 
 		public ContextMenuHandler()

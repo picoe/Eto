@@ -2,14 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IButtonToolItem : IToolItem
-	{
-	}
-
-	[Handler(typeof(IButtonToolItem))]
+	[Handler(typeof(ButtonToolItem.IHandler))]
 	public class ButtonToolItem : ToolItem
 	{
-		new IButtonToolItem Handler { get { return (IButtonToolItem)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public ButtonToolItem()
 		{
@@ -22,15 +18,19 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public ButtonToolItem(Generator generator) : base(generator, typeof(IButtonToolItem))
+		public ButtonToolItem(Generator generator) : base(generator, typeof(IHandler))
 		{
 		}
 
 		[Obsolete("Use ButtonToolItem(Command) instead")]
 		public ButtonToolItem(Command command, Generator generator = null)
-			: base(command, generator, typeof(IButtonToolItem))
+			: base(command, generator, typeof(IHandler))
 		{
 			Handler.CreateFromCommand(command);
+		}
+
+		public interface IHandler : ToolItem.IHandler
+		{
 		}
 	}
 }

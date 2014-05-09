@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Wpf.Forms
 {
-	public class ToolBarHandler : WidgetHandler<swc.ToolBar, ToolBar>, IToolBar
+	public class ToolBarHandler : WidgetHandler<swc.ToolBar, ToolBar>, ToolBar.IHandler
 	{
 		public ToolBarHandler()
 		{

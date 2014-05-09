@@ -12,7 +12,7 @@ namespace Eto.WinForms.Drawing
 		SD.Icon GetIcon();
 	}
 
-	public class IconHandler : WidgetHandler<SD.Icon, Icon>, IIcon, IWindowsImage, IWindowsIconSource
+	public class IconHandler : WidgetHandler<SD.Icon, Icon>, Icon.IHandler, IWindowsImage, IWindowsIconSource
 	{
 		SD.Icon[] icons;
 

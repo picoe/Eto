@@ -8,11 +8,11 @@ using aw = Android.Widget;
 namespace Eto.Android.Forms.Controls
 {
 	/// <summary>
-	/// Handler for <see cref="ILabel"/>
+	/// Handler for <see cref="Label"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class LabelHandler : AndroidCommonControl<aw.TextView, Label, Label.ICallback>, ILabel
+	public class LabelHandler : AndroidCommonControl<aw.TextView, Label, Label.ICallback>, Label.IHandler
 	{
 		const av.GravityFlags AlignmentMask = av.GravityFlags.HorizontalGravityMask | av.GravityFlags.VerticalGravityMask;
 

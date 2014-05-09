@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Printing
 {
-	public class PrintDialogHandler : WidgetHandler<swf.PrintDialog, PrintDialog>, IPrintDialog
+	public class PrintDialogHandler : WidgetHandler<swf.PrintDialog, PrintDialog>, PrintDialog.IHandler
 	{
 		PrintSettings printSettings;
 

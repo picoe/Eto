@@ -9,9 +9,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Slider handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class SliderHandler : WpfControl<swc.Slider, Slider>, ISlider
+	public class SliderHandler : WpfControl<swc.Slider, Slider, Slider.ICallback>, Slider.IHandler
 	{
 		public SliderHandler ()
 		{
@@ -21,7 +21,7 @@ namespace Eto.WinRT.Forms.Controls
 				TickPlacement = swc.Primitives.TickPlacement.BottomRight
 			};
 			Control.ValueChanged += delegate {
-				Widget.OnValueChanged (EventArgs.Empty);
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
 			};
 		}
 

@@ -12,7 +12,7 @@ namespace Eto.Test.UnitTests.Handlers
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	/// </summary>
-	class TestBitmapHandler : IBitmap
+	class TestBitmapHandler : Bitmap.IHandler
 	{
 		public Eto.Platform Platform { get; set; }
 		public Widget Widget { get; set; }

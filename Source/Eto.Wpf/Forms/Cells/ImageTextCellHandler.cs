@@ -9,7 +9,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.Column, ImageTextCell>, IImageTextCell
+	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.Column, ImageTextCell>, ImageTextCell.IHandler
 	{
 		object GetImageValue (object dataItem)
 		{

@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
 	{
 		public string Text { get; set; }
 

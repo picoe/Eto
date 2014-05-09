@@ -5,31 +5,10 @@ using System.IO;
 
 namespace Eto.Forms
 {
-	public interface IClipboard : IWidget
-	{
-		string[] Types { get; }
-		
-		void SetString (string value, string type);
-
-		void SetData (byte[] value, string type);
-		
-		string GetString (string type);
-
-		byte[] GetData (string type);
-
-		string Text { get; set; }
-
-		string Html { get; set; }
-
-		Image Image { get; set; }
-		
-		void Clear ();
-	}
-
-	[Handler(typeof(IClipboard))]
+	[Handler(typeof(Clipboard.IHandler))]
 	public class Clipboard : Widget
 	{
-		new IClipboard Handler { get { return (IClipboard)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public Clipboard()
 		{
@@ -37,7 +16,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public Clipboard (Generator generator)
-			: base(generator, typeof(IClipboard))
+			: base(generator, typeof(Clipboard.IHandler))
 		{
 		}
 		
@@ -99,7 +78,27 @@ namespace Eto.Forms
 		{
 			Handler.Clear ();
 		}
-		
+
+		public interface IHandler : Widget.IHandler
+		{
+			string[] Types { get; }
+
+			void SetString (string value, string type);
+
+			void SetData (byte[] value, string type);
+
+			string GetString (string type);
+
+			byte[] GetData (string type);
+
+			string Text { get; set; }
+
+			string Html { get; set; }
+
+			Image Image { get; set; }
+
+			void Clear ();
+		}
 	}
 }
 

@@ -4,31 +4,22 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IPanel : IContainer, IContextMenuHost
-	{
-		Control Content { get; set; }
-
-		Padding Padding { get; set; }
-
-		Size MinimumSize { get; set; }
-	}
-
 	[ContentProperty("Content")]
-	[Handler(typeof(IPanel))]
+	[Handler(typeof(Panel.IHandler))]
 	public class Panel : Container
 	{
 		public Panel()
 		{
 		}
 
-		protected Panel(IPanel handler)
+		protected Panel(IHandler handler)
 			: base(handler)
 		{
 		}
 
 		[Obsolete("Use default constructor instead")]
 		public Panel(Generator generator)
-			: this(generator, typeof(IPanel))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -45,13 +36,13 @@ namespace Eto.Forms
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		[Obsolete("Use Panel(IPanel) instead")]
-		protected Panel(Generator generator, IPanel handler, bool initialize = true)
+		[Obsolete("Use Panel(IHandler) instead")]
+		protected Panel(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 		}
 
-		new IPanel Handler { get { return (IPanel)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public static Padding DefaultPadding = Padding.Empty;
 
@@ -110,5 +101,15 @@ namespace Eto.Forms
 				Content = null;
 			}
 		}
+
+		public interface IHandler : Container.IHandler, IContextMenuHost
+		{
+			Control Content { get; set; }
+
+			Padding Padding { get; set; }
+
+			Size MinimumSize { get; set; }
+		}
+
 	}
 }

@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class ComboBoxHandler : GtkControl<Gtk.ComboBox, ComboBox, ComboBox.ICallback>, IComboBox
+	public class ComboBoxHandler : GtkControl<Gtk.ComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		Font font;
 		CollectionHandler collection;

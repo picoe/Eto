@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class FontDialogHandler : WidgetHandler<Gtk.FontSelectionDialog, FontDialog>, IFontDialog
+	public class FontDialogHandler : WidgetHandler<Gtk.FontSelectionDialog, FontDialog>, FontDialog.IHandler
 	{
 		public FontDialogHandler()
 		{

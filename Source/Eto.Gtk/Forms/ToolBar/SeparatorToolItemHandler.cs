@@ -2,7 +2,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class SeparatorToolItemHandler : ToolItemHandler<Gtk.SeparatorToolItem, SeparatorToolItem>, ISeparatorToolItem
+	public class SeparatorToolItemHandler : ToolItemHandler<Gtk.SeparatorToolItem, SeparatorToolItem>, SeparatorToolItem.IHandler
 	{
 		SeparatorToolItemType type;
 		bool expand;

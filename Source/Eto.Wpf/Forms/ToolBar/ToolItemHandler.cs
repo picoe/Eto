@@ -4,7 +4,7 @@ using System;
 
 namespace Eto.Wpf.Forms
 {
-	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem
+	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler
 		where TControl : System.Windows.UIElement
 		where TWidget : ToolItem
 	{

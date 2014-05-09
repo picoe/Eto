@@ -15,11 +15,11 @@ namespace Eto.Android.Forms
 	}
 
 	/// <summary>
-	/// Base handler for <see cref="IControl"/>
+	/// Base handler for <see cref="Control"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class AndroidControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl, IAndroidControl
+	public abstract class AndroidControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IAndroidControl
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{

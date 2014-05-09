@@ -12,9 +12,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Scrollable handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable>, IScrollable
+	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{
 		BorderType borderType;
 		bool expandContentWidth = true;
@@ -189,7 +189,7 @@ namespace Eto.WinRT.Forms.Controls
 				case Scrollable.ScrollEvent:
 					scroller.ViewChanged += (sender, e) =>
 					{
-						Widget.OnScroll(new ScrollEventArgs(new Point((int)scroller.HorizontalOffset, (int)scroller.VerticalOffset)));
+						Callback.OnScroll(Widget, new ScrollEventArgs(new Point((int)scroller.HorizontalOffset, (int)scroller.VerticalOffset)));
 					};
 					break;
 				default:

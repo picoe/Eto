@@ -8,7 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
 {
-	public class ScreenHandler : WidgetHandler<swf.Screen, Screen>, IScreen
+	public class ScreenHandler : WidgetHandler<swf.Screen, Screen>, Screen.IHandler
 	{
 		float scale;
 

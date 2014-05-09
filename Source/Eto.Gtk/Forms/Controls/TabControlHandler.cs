@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class TabControlHandler : GtkContainer<Gtk.Notebook, TabControl, TabControl.ICallback>, ITabControl
+	public class TabControlHandler : GtkContainer<Gtk.Notebook, TabControl, TabControl.ICallback>, TabControl.IHandler
 	{
 		public TabControlHandler()
 		{

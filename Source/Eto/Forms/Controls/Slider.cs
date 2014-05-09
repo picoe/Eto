@@ -18,25 +18,10 @@ namespace Eto.Forms
 		Vertical
 	}
 	
-	public interface ISlider : IControl
-	{
-		int MaxValue { get; set; }
-
-		int MinValue { get; set; }
-
-		int Value { get; set; }
-
-		int TickFrequency { get; set; }
-
-		bool SnapToTick { get; set; }
-
-		SliderOrientation Orientation { get; set; }
-	}
-
-	[Handler(typeof(ISlider))]
+	[Handler(typeof(Slider.IHandler))]
 	public class Slider : Control
 	{
-		new ISlider Handler { get { return (ISlider)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public event EventHandler<EventArgs> ValueChanged;
 
@@ -52,7 +37,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public Slider (Generator generator)
-			: this (generator, typeof(ISlider))
+			: this (generator, typeof(IHandler))
 		{
 		}
 
@@ -108,6 +93,20 @@ namespace Eto.Forms
 			}
 		}
 
+		public interface IHandler : Control.IHandler
+		{
+			int MaxValue { get; set; }
+
+			int MinValue { get; set; }
+
+			int Value { get; set; }
+
+			int TickFrequency { get; set; }
+
+			bool SnapToTick { get; set; }
+
+			SliderOrientation Orientation { get; set; }
+		}
 	}
 }
 

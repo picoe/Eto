@@ -14,7 +14,7 @@ namespace Eto.Drawing
 	/// 	| x0 y0 1 |
 	/// </para>
 	/// </remarks>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IMatrix : IControlObjectSource, IDisposable
 	{
@@ -136,49 +136,9 @@ namespace Eto.Drawing
 	}
 	
 	/// <summary>
-	/// Handler interface for the <see cref="IMatrix"/>
-	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IMatrixHandler : IMatrix
-	{
-		/// <summary>
-		/// Creates a new identiy matrix
-		/// </summary>
-		/// <remarks>
-		/// An identity matrix is defined as:
-		/// <para>
-		/// 	| 1  0  0 |
-		/// 	| 0  1  0 |
-		/// 	| 0  0  1 |
-		/// </para>
-		/// </remarks>
-		void Create ();
-		
-		/// <summary>
-		/// Creates a new matrix with the specified components
-		/// </summary>
-		/// <remarks>
-		/// The components of the matrix are defined as:
-		/// <para>
-		/// 	| xx xy 0 |
-		/// 	| yx yy 0 |
-		/// 	| x0 y0 1 |
-		/// </para>
-		/// </remarks>
-		/// <param name="xx">Xx component of the matrix (scaleX)</param>
-		/// <param name="yx">Yx component of the matrix</param>
-		/// <param name="xy">Xy component of the matrix</param>
-		/// <param name="yy">Yy component of the matrix (scaleY)</param>
-		/// <param name="x0">X0 component of the matrix (translateX)</param>
-		/// <param name="y0">Y0 component of the matrix (translateY)</param>
-		void Create (float xx, float yx, float xy, float yy, float x0, float y0);
-	}
-	
-	/// <summary>
 	/// Methods to create and manage an <see cref="IMatrix"/>
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class Matrix
 	{
@@ -332,7 +292,7 @@ namespace Eto.Drawing
 		public static Func<IMatrix> Instantiator
 		{
 			get {
-				var activator = Platform.Instance.Find<IMatrixHandler>();
+				var activator = Platform.Instance.Find<IHandler>();
 				return () =>
 				{
 					var matrix = activator();
@@ -350,7 +310,7 @@ namespace Eto.Drawing
 		{
 			get
 			{
-				var activator = Platform.Instance.Find<IMatrixHandler>();
+				var activator = Platform.Instance.Find<IHandler>();
 				return (xx, yx, xy, yy, x0, y0) =>
 				{
 					var matrix = activator();
@@ -365,7 +325,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public static IMatrix Create ()
 		{
-			var handler = Platform.Instance.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create ();
 			return handler;
 		}
@@ -380,7 +340,7 @@ namespace Eto.Drawing
 				throw new ArgumentNullException ("elements");
 			if (elements.Length != 6)
 				throw new ArgumentOutOfRangeException ("elements", elements, "Elements must be an array with a length of 6");
-			var handler = Platform.Instance.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create (elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 			return handler;
 		}
@@ -396,7 +356,7 @@ namespace Eto.Drawing
 		/// <param name="y0">Y0 component of the matrix</param>
 		public static IMatrix Create (float xx, float yx, float xy, float yy, float x0, float y0)
 		{
-			var handler = Platform.Instance.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create (xx, yx, xy, yy, x0, y0);
 			return handler;
 		}
@@ -677,7 +637,7 @@ namespace Eto.Drawing
 		[Obsolete("Use method without generator intance specified")]
 		public static IMatrix Create (Generator generator)
 		{
-			var handler = Platform.Instance.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create ();
 			return handler;
 		}
@@ -694,7 +654,7 @@ namespace Eto.Drawing
 				throw new ArgumentNullException ("elements");
 			if (elements.Length != 6)
 				throw new ArgumentOutOfRangeException ("elements", elements, "Elements must be an array with a length of 6");
-			var handler = Platform.Instance.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create (elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 			return handler;
 		}
@@ -712,11 +672,52 @@ namespace Eto.Drawing
 		[Obsolete("Use method without generator intance specified")]
 		public static IMatrix Create (float xx, float yx, float xy, float yy, float x0, float y0, Generator generator)
 		{
-			var handler = Platform.Instance.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create (xx, yx, xy, yy, x0, y0);
 			return handler;
 		}
 
 		#pragma warning restore 612,618
+
+		/// <summary>
+		/// Handler interface for the <see cref="IMatrix"/>
+		/// </summary>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : IMatrix
+		{
+			/// <summary>
+			/// Creates a new identiy matrix
+			/// </summary>
+			/// <remarks>
+			/// An identity matrix is defined as:
+			/// <para>
+			/// 	| 1  0  0 |
+			/// 	| 0  1  0 |
+			/// 	| 0  0  1 |
+			/// </para>
+			/// </remarks>
+			void Create ();
+
+			/// <summary>
+			/// Creates a new matrix with the specified components
+			/// </summary>
+			/// <remarks>
+			/// The components of the matrix are defined as:
+			/// <para>
+			/// 	| xx xy 0 |
+			/// 	| yx yy 0 |
+			/// 	| x0 y0 1 |
+			/// </para>
+			/// </remarks>
+			/// <param name="xx">Xx component of the matrix (scaleX)</param>
+			/// <param name="yx">Yx component of the matrix</param>
+			/// <param name="xy">Xy component of the matrix</param>
+			/// <param name="yy">Yy component of the matrix (scaleY)</param>
+			/// <param name="x0">X0 component of the matrix (translateX)</param>
+			/// <param name="y0">Y0 component of the matrix (translateY)</param>
+			void Create (float xx, float yx, float xy, float yy, float x0, float y0);
+		}
+
 	}
 }

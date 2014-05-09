@@ -7,9 +7,9 @@ namespace Eto.Forms
 {
 	public class MenuItemCollection : Collection<MenuItem>
 	{
-		internal readonly ISubMenu parent;
+		internal readonly Menu.ISubmenuHandler parent;
 
-		internal MenuItemCollection(ISubMenu parent)
+		internal MenuItemCollection(Menu.ISubmenuHandler parent)
 		{
 			this.parent = parent;
 		}

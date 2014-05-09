@@ -43,7 +43,7 @@ namespace Eto
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[AttributeUsage(AttributeTargets.Interface)]
-	public class AutoInitializeAttribute : Attribute
+	public sealed class AutoInitializeAttribute : Attribute
 	{
 		/// <summary>
 		/// Gets a value indicating whether to auto initialize the handler, false to defer this to the widget author

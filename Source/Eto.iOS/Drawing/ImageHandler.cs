@@ -16,7 +16,7 @@ namespace Eto.iOS.Drawing
 		UIImage GetUIImage ();
 	}
 
-	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, IImage, IImageHandler
+	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, Image.IHandler, IImageHandler
 		where T: class
 		where W: Image
 	{

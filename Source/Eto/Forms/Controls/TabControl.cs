@@ -4,17 +4,6 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public interface ITabControl : IContainer
-	{
-		int SelectedIndex { get; set; }
-
-		void InsertTab(int index, TabPage page);
-		
-		void ClearTabs();
-
-		void RemoveTab(int index, TabPage page);
-	}
-
 	public class TabRemovingEventArgs : EventArgs
 	{
 		public TabPage Page { get; private set; }
@@ -26,11 +15,11 @@ namespace Eto.Forms
 	}
 
 	[ContentProperty("TabPages")]
-	[Handler(typeof(ITabControl))]
+	[Handler(typeof(TabControl.IHandler))]
 	public class TabControl : Container
 	{
 		TabPageCollection pages;
-		new ITabControl Handler { get { return (ITabControl)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public override IEnumerable<Control> Controls
 		{
@@ -49,13 +38,13 @@ namespace Eto.Forms
 		{
 		}
 
-		protected TabControl(ITabControl handler)
+		protected TabControl(IHandler handler)
 			: base(handler)
 		{
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public TabControl(Generator generator) : this (generator, typeof(ITabControl))
+		public TabControl(Generator generator) : this (generator, typeof(IHandler))
 		{
 		}
 
@@ -66,7 +55,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use TabControl(ITabControl) instead")]
-		protected TabControl(Generator generator, ITabControl handler, bool initialize = true)
+		protected TabControl(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 		}
@@ -148,6 +137,17 @@ namespace Eto.Forms
 			{
 				widget.OnSelectedIndexChanged(e);
 			}
+		}
+
+		public interface IHandler : Container.IHandler
+		{
+			int SelectedIndex { get; set; }
+
+			void InsertTab(int index, TabPage page);
+
+			void ClearTabs();
+
+			void RemoveTab(int index, TabPage page);
 		}
 	}
 }

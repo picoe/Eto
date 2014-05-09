@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class SplitterHandler : WindowsControl<swf.SplitContainer, Splitter, Splitter.ICallback>, ISplitter
+	public class SplitterHandler : WindowsControl<swf.SplitContainer, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
 		Control panel1;
 		Control panel2;

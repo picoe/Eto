@@ -2,7 +2,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class FormHandler : GtkWindow<Gtk.Window, Form, Form.ICallback>, IForm
+	public class FormHandler : GtkWindow<Gtk.Window, Form, Form.ICallback>, Form.IHandler
 	{
 		public FormHandler()
 		{

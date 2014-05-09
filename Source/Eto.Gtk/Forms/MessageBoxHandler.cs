@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
 	{
 		Gtk.MessageDialog control;
 

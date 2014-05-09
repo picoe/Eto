@@ -15,11 +15,11 @@ using ag = Android.Graphics;
 namespace Eto.Android.Forms.Controls
 {
 	/// <summary>
-	/// Handler for <see cref="IScrollable"/>
+	/// Handler for <see cref="Scrollable"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ScrollableHandler : AndroidPanel<aw.ScrollView, Scrollable, Scrollable.ICallback>, IScrollable
+	public class ScrollableHandler : AndroidPanel<aw.ScrollView, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{
 		public void UpdateScrollSizes()
 		{

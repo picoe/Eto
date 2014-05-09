@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Eto.WinForms
 {
-	public class DialogHandler : WindowHandler<swf.Form, Dialog, Dialog.ICallback>, IDialog
+	public class DialogHandler : WindowHandler<swf.Form, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button button;
 		Button abortButton;

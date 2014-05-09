@@ -25,9 +25,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Drawable handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class DrawableHandler : WpfPanel<swc.Image, Drawable>, IDrawable
+	public class DrawableHandler : WpfPanel<swc.Image, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{
 		bool tiled;
 		Scrollable scrollable;
@@ -142,7 +142,7 @@ namespace Eto.WinRT.Forms.Controls
 			{
 				isRendering = true;
 				GraphicsHandler.BeginDrawing();
-				Widget.OnPaint(new PaintEventArgs(graphics, Widget.Bounds)); // renders into the bitmap
+				Callback.OnPaint(Widget, new PaintEventArgs(graphics, Widget.Bounds)); // renders into the bitmap
 				GraphicsHandler.EndDrawing();
 				var bitmap = GraphicsHandler.Image;
 				if (bitmap != null)
@@ -258,7 +258,7 @@ namespace Eto.WinRT.Forms.Controls
 
 		public virtual Graphics CreateGraphics()
 		{
-			return graphics != null ? new Graphics(null, graphics.Handler as IGraphics) : null;
+			return graphics != null ? new Graphics(null, graphics.Handler as Graphics.IHandler) : null;
 		}
 
 		void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)

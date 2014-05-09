@@ -3,7 +3,7 @@ using Eto.IO;
 
 namespace Eto.GtkSharp.IO
 {
-	public class SystemIconsHandler : ISystemIcons
+	public class SystemIconsHandler : SystemIcons.IHandler
 	{
 		#region ISystemIcons Members
 

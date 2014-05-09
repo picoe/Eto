@@ -6,7 +6,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Printing
 {
-	public class PrintDocumentHandler : WidgetHandler<sdp.PrintDocument, PrintDocument, PrintDocument.ICallback>, IPrintDocument
+	public class PrintDocumentHandler : WidgetHandler<sdp.PrintDocument, PrintDocument, PrintDocument.ICallback>, PrintDocument.IHandler
 	{
 		int currentPage;
 		PrintSettings printSettings;

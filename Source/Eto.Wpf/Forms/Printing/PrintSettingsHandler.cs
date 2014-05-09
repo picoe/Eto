@@ -52,7 +52,7 @@ namespace Eto.Wpf.Forms.Printing
 
 	}
 
-	public class PrintSettingsHandler : WidgetHandler<sp.PrintTicket, PrintSettings>, IPrintSettings
+	public class PrintSettingsHandler : WidgetHandler<sp.PrintTicket, PrintSettings>, PrintSettings.IHandler
 	{
 		PrintSelection printSelection;
 

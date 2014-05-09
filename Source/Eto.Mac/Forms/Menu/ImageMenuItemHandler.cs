@@ -7,7 +7,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac
 {
-	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ButtonMenuItem>, IButtonMenuItem, IMenuActionHandler
+	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ButtonMenuItem>, ButtonMenuItem.IHandler, IMenuActionHandler
 	{
 		Image image;
 		string text;

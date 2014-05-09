@@ -14,7 +14,7 @@ using MonoTouch.ObjCRuntime;
 namespace Eto.iOS.Threading
 #endif
 {
-	public class ThreadHandler : WidgetHandler<NSThread, Thread, Thread.ICallback>, IThread
+	public class ThreadHandler : WidgetHandler<NSThread, Thread, Thread.ICallback>, Thread.IHandler
 	{
 		class Delegate : NSObject
 		{

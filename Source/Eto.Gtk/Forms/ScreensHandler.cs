@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class ScreensHandler : IScreens
+	public class ScreensHandler : Screen.IScreensHandler
 	{
 		public void Initialize ()
 		{

@@ -5,7 +5,7 @@ using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.iOS.Forms.Cells
 {
-	public class CheckBoxCellHandler : CellHandler<NSCell, CheckBoxCell>, ICheckBoxCell
+	public class CheckBoxCellHandler : CellHandler<NSCell, CheckBoxCell>, CheckBoxCell.IHandler
 	{
 		public CheckBoxCellHandler()
 		{

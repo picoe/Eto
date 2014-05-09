@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
 {
-	public class CheckToolItemHandler : ToolItemHandler<swc.Primitives.ToggleButton, CheckToolItem>, ICheckToolItem
+	public class CheckToolItemHandler : ToolItemHandler<swc.Primitives.ToggleButton, CheckToolItem>, CheckToolItem.IHandler
 	{
         Image image;
 		readonly swc.Image swcImage;

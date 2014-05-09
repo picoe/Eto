@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class TextBoxCellHandler : CellHandler<swf.DataGridViewTextBoxCell, TextBoxCell>, ITextBoxCell
+	public class TextBoxCellHandler : CellHandler<swf.DataGridViewTextBoxCell, TextBoxCell>, TextBoxCell.IHandler
 	{
 		class EtoCell : swf.DataGridViewTextBoxCell
 		{

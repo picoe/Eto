@@ -5,7 +5,7 @@ using Eto.Mac.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, ITextControl
+	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler
 		where TControl: NSTextField
 		where TWidget: TextControl
 		where TCallback: TextControl.ICallback

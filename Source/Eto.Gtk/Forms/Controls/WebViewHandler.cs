@@ -8,7 +8,7 @@ using NewWindowPolicyDecisionRequestedArgs = WebKit.NewWindowPolicyDecisionReque
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class WebViewHandler : GtkControl<EtoWebView, WebView, WebView.ICallback>, IWebView
+	public class WebViewHandler : GtkControl<EtoWebView, WebView, WebView.ICallback>, WebView.IHandler
 	{
 		readonly Gtk.ScrolledWindow scroll;
 		readonly ManualResetEventSlim returnResetEvent = new ManualResetEventSlim();

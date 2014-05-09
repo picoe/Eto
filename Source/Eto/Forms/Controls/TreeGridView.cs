@@ -9,13 +9,6 @@ namespace Eto.Forms
 	{
 	}
 
-	public partial interface ITreeGridView : IGrid
-	{
-		ITreeGridStore<ITreeGridItem> DataStore { get; set; }
-
-		ITreeGridItem SelectedItem { get; set; }
-	}
-
 	public class TreeGridViewItemEventArgs : EventArgs
 	{
 		public ITreeGridItem Item { get; private set; }
@@ -36,10 +29,10 @@ namespace Eto.Forms
 		}
 	}
 
-	[Handler(typeof(ITreeGridView))]
+	[Handler(typeof(TreeGridView.IHandler))]
 	public partial class TreeGridView : Grid
 	{
-		new ITreeGridView Handler { get { return (ITreeGridView)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		#region Events
 
@@ -137,7 +130,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public TreeGridView(Generator generator) : this(generator, typeof(ITreeGridView))
+		public TreeGridView(Generator generator) : this(generator, typeof(IHandler))
 		{
 		}
 
@@ -170,6 +163,12 @@ namespace Eto.Forms
 					yield return DataStore[row];
 				}
 			}
+		}
+
+		public ContextMenu ContextMenu
+		{
+			get { return Handler.ContextMenu; }
+			set { Handler.ContextMenu = value; }
 		}
 
 		static readonly object callback = new Callback();
@@ -211,6 +210,13 @@ namespace Eto.Forms
 			{
 				widget.OnSelectedItemChanged(e);
 			}
+		}
+
+		public interface IHandler : Grid.IHandler, IContextMenuHost
+		{
+			ITreeGridStore<ITreeGridItem> DataStore { get; set; }
+
+			ITreeGridItem SelectedItem { get; set; }
 		}
 	}
 }

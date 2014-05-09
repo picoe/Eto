@@ -3,21 +3,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IPrintDialog : ICommonDialog
-	{
-		PrintDocument Document { get; set; }
-
-		PrintSettings PrintSettings { get; set; }
-
-		bool AllowPageRange { get; set; }
-
-		bool AllowSelection { get; set; }
-	}
-
-	[Handler(typeof(IPrintDialog))]
+	[Handler(typeof(PrintDialog.IHandler))]
 	public class PrintDialog : CommonDialog
 	{
-		new IPrintDialog Handler { get { return (IPrintDialog)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public PrintDialog()
 		{
@@ -25,7 +14,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public PrintDialog(Generator generator)
-			: base (generator, typeof (IPrintDialog))
+			: base (generator, typeof (IHandler))
 		{
 		}
 
@@ -59,6 +48,17 @@ namespace Eto.Forms
 				document.Print();
 			}
 			return result;
+		}
+
+		public interface IHandler : CommonDialog.IHandler
+		{
+			PrintDocument Document { get; set; }
+
+			PrintSettings PrintSettings { get; set; }
+
+			bool AllowPageRange { get; set; }
+
+			bool AllowSelection { get; set; }
 		}
 	}
 }

@@ -4,7 +4,7 @@ using s = SharpDX;
 
 namespace Eto.Direct2D.Drawing
 {
-	public class LinearGradientBrushHandler : ILinearGradientBrush
+	public class LinearGradientBrushHandler : LinearGradientBrush.IHandler
 	{
 		public class LinearBrushData : TransformBrushData
 		{

@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class ProgressBarHandler : GtkControl<Gtk.ProgressBar, ProgressBar, ProgressBar.ICallback>, IProgressBar
+	public class ProgressBarHandler : GtkControl<Gtk.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
 		int minValue;
 		int maxValue = 100;

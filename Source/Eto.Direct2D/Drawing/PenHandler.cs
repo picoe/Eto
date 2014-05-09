@@ -124,7 +124,7 @@ namespace Eto.Direct2D.Drawing
 		}
 	}
 
-	public class PenHandler : IPen
+	public class PenHandler : Pen.IHandler
 	{
 		public object Create(Color color, float thickness)
 		{

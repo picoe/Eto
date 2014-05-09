@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public abstract class GtkContainer<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, IContainer
+	public abstract class GtkContainer<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, Container.IHandler
 		where TControl: Gtk.Widget
 		where TWidget: Container
 		where TCallback: Container.ICallback

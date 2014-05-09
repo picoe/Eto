@@ -4,7 +4,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class TabPageHandler : GtkPanel<Gtk.VBox, TabPage, TabPage.ICallback>, ITabPage
+	public class TabPageHandler : GtkPanel<Gtk.VBox, TabPage, TabPage.ICallback>, TabPage.IHandler
 	{
 		Gtk.Label label;
 		readonly Gtk.HBox tab;

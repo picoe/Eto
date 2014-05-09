@@ -22,7 +22,7 @@ namespace Eto.WinForms.Forms.Controls
 		object GetCellValue (object dataItem);
 	}
 	
-	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ICell, ICellHandler
+	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, Cell.IHandler, ICellHandler
 		where TControl: swf.DataGridViewCell
 		where TWidget: Cell
 	{

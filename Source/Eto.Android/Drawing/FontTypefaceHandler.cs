@@ -14,7 +14,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Drawing
 {
-	class FontTypefaceHandler : WidgetHandler<ag.TypefaceStyle, FontTypeface>, IFontTypeface
+	class FontTypefaceHandler : WidgetHandler<ag.TypefaceStyle, FontTypeface>, FontTypeface.IHandler
 	{
 		public FontTypefaceHandler(ag.TypefaceStyle style)
 		{

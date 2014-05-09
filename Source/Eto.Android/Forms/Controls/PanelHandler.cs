@@ -15,11 +15,11 @@ using ag = Android.Graphics;
 namespace Eto.Android.Forms.Controls
 {
 	/// <summary>
-	/// Handler for <see cref="IPanel"/>
+	/// Handler for <see cref="Panel"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class PanelHandler : AndroidPanel<aw.FrameLayout, Panel, Panel.ICallback>, IPanel
+	public class PanelHandler : AndroidPanel<aw.FrameLayout, Panel, Panel.ICallback>, Panel.IHandler
 	{
 		public override av.View ContainerControl { get { return InnerFrame; } }
 

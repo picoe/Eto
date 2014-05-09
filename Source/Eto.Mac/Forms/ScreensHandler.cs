@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms
 {
-	public class ScreensHandler : IScreens
+	public class ScreensHandler : Screen.IScreensHandler
 	{
 		public IEnumerable<Screen> Screens
 		{

@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms
 {
-	public class MouseHandler : IMouse
+	public class MouseHandler : Mouse.IHandler
 	{
 		public void Initialize ()
 		{

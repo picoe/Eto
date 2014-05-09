@@ -15,7 +15,7 @@ namespace Eto.GtkSharp
 		Gtk.Window Control { get; }
 	}
 
-	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, IWindow, IGtkWindow
+	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
 		where TControl: Gtk.Window
 		where TWidget: Window
 		where TCallback: Window.ICallback
@@ -327,7 +327,7 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		void SetAccelerators(ISubMenuWidget item)
+		void SetAccelerators(ISubmenu item)
 		{
 			if (item != null && item.Items != null)
 				foreach (var child in item.Items)
@@ -339,7 +339,7 @@ namespace Eto.GtkSharp
 						var key = new Gtk.AccelKey(actionItem.Shortcut.ToGdkKey(), actionItem.Shortcut.ToGdkModifier(), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
 						widget.AddAccelerator("activate", accelGroup, key);
 					}
-					SetAccelerators(child as ISubMenuWidget);
+					SetAccelerators(child as ISubmenu);
 				}
 			
 		}

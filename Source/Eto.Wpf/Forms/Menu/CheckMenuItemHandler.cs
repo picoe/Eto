@@ -5,7 +5,7 @@ using swi = System.Windows.Input;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class CheckMenuItemHandler : MenuItemHandler<swc.MenuItem, CheckMenuItem>, ICheckMenuItem
+	public class CheckMenuItemHandler : MenuItemHandler<swc.MenuItem, CheckMenuItem>, CheckMenuItem.IHandler
 	{
 		public CheckMenuItemHandler ()
 		{

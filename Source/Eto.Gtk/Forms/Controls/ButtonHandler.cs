@@ -9,7 +9,7 @@ namespace Eto.GtkSharp
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : GtkControl<Gtk.Button, Button, Button.ICallback>, IButton
+	public class ButtonHandler : GtkControl<Gtk.Button, Button, Button.ICallback>, Button.IHandler
 	{
 		Image image;
 		readonly Gtk.AccelLabel label;

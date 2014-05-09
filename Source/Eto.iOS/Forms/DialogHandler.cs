@@ -25,7 +25,7 @@ namespace Eto.iOS.Forms
 		}
 	}
 
-	public class DialogHandler : IosWindow<UIView, Dialog, Dialog.ICallback>, IDialog
+	public class DialogHandler : IosWindow<UIView, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		bool inNav;
 		TaskCompletionSource<bool> completionSource;

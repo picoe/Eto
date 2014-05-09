@@ -3,43 +3,14 @@ using System;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="PasswordBox"/> control
-	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IPasswordBox : ITextControl
-	{
-		/// <summary>
-		/// Gets or sets a value indicating whether the value is read only
-		/// </summary>
-		/// <value><c>true</c> if read only; otherwise, <c>false</c>.</value>
-		bool ReadOnly { get; set; }
-
-		/// <summary>
-		/// Gets or sets the maximum length of password the user can enter
-		/// </summary>
-		/// <value>The maximum length</value>
-		int MaxLength { get; set; }
-
-		/// <summary>
-		/// Gets or sets the password display character hint
-		/// </summary>
-		/// <remarks>
-		/// Some platforms may not support changing the password display character
-		/// </remarks>
-		/// <value>The password character</value>
-		char PasswordChar { get; set; }
-	}
-
-	/// <summary>
 	/// An entry box for the user to enter a password without displaying the contents of the password while typed.
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[Handler(typeof(IPasswordBox))]
+	[Handler(typeof(PasswordBox.IHandler))]
 	public class PasswordBox : TextControl
 	{
-		new IPasswordBox Handler { get { return (IPasswordBox)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.PasswordBox"/> class.
@@ -54,7 +25,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the control</param>
 		[Obsolete("Use default constructor instead")]
 		public PasswordBox(Generator generator)
-			: this(generator, typeof(IPasswordBox))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -101,6 +72,35 @@ namespace Eto.Forms
 		{
 			get { return Handler.PasswordChar; }
 			set { Handler.PasswordChar = value; }
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="PasswordBox"/> control
+		/// </summary>
+		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : TextControl.IHandler
+		{
+			/// <summary>
+			/// Gets or sets a value indicating whether the value is read only
+			/// </summary>
+			/// <value><c>true</c> if read only; otherwise, <c>false</c>.</value>
+			bool ReadOnly { get; set; }
+
+			/// <summary>
+			/// Gets or sets the maximum length of password the user can enter
+			/// </summary>
+			/// <value>The maximum length</value>
+			int MaxLength { get; set; }
+
+			/// <summary>
+			/// Gets or sets the password display character hint
+			/// </summary>
+			/// <remarks>
+			/// Some platforms may not support changing the password display character
+			/// </remarks>
+			/// <value>The password character</value>
+			char PasswordChar { get; set; }
 		}
 	}
 }

@@ -7,7 +7,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class ButtonMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ButtonMenuItem>, IButtonMenuItem
+	public class ButtonMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ButtonMenuItem>, ButtonMenuItem.IHandler
 	{
         Image image;
 		int imageSize = 16;

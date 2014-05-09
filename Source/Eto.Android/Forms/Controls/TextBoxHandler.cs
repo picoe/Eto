@@ -15,11 +15,11 @@ using ag = Android.Graphics;
 namespace Eto.Android.Forms.Controls
 {
 	/// <summary>
-	/// Handler for <see cref="ITextBox"/>
+	/// Handler for <see cref="TextBox"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	class TextBoxHandler : AndroidControl<aw.TextView, TextBox, TextBox.ICallback>, ITextBox
+	class TextBoxHandler : AndroidControl<aw.TextView, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		public bool ReadOnly
 		{

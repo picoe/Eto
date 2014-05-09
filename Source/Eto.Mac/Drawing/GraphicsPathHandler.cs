@@ -20,7 +20,7 @@ namespace Eto.iOS.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsPathHandler : IGraphicsPathHandler
+	public class GraphicsPathHandler : GraphicsPath.IHandler
 	{
 		public CGPath Control { get; set; }
 		bool startFigure = true;

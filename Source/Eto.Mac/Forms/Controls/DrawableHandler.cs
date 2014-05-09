@@ -6,7 +6,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class DrawableHandler : MacPanel<DrawableHandler.EtoDrawableView, Drawable, Drawable.ICallback>, IDrawable
+	public class DrawableHandler : MacPanel<DrawableHandler.EtoDrawableView, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{
 		Brush backgroundBrush;
 		Color backgroundColor;

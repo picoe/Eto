@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class CheckMenuItemHandler : MenuActionItemHandler<Gtk.CheckMenuItem, CheckMenuItem>, ICheckMenuItem
+	public class CheckMenuItemHandler : MenuActionItemHandler<Gtk.CheckMenuItem, CheckMenuItem>, CheckMenuItem.IHandler
 	{
 		string text;
 		string tooltip;

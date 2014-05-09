@@ -9,7 +9,7 @@ using Eto.Wpf.CustomControls.TreeGridView;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<swc.DataGrid, TreeGridView, TreeGridView.ICallback>, ITreeGridView, ITreeHandler
+	public class TreeGridViewHandler : GridHandler<swc.DataGrid, TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ITreeHandler
 	{
 		TreeController controller;
 		ITreeGridItem lastSelected;

@@ -4,17 +4,10 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
-	public interface ITabPage : IPanel
-	{
-		string Text { get; set; }
-
-		Image Image { get; set; }
-	}
-
-	[Handler(typeof(ITabPage))]
+	[Handler(typeof(TabPage.IHandler))]
 	public class TabPage : Panel, IImageListItem
 	{
-		new ITabPage Handler { get { return (ITabPage)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public TabPage (Control control, Padding? padding = null)
 		{
@@ -29,7 +22,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public TabPage (Generator generator)
-			: this (generator, typeof(ITabPage))
+			: this (generator, typeof(IHandler))
 		{
 		}
 
@@ -58,6 +51,13 @@ namespace Eto.Forms
 		}
 		
 		public virtual string Key { get; set; }
+
+		public interface IHandler : Panel.IHandler
+		{
+			string Text { get; set; }
+
+			Image Image { get; set; }
+		}
 	}
 
 	public class TabPageCollection : Collection<TabPage>

@@ -16,11 +16,12 @@ namespace Eto.WinRT.Forms
 	/// IContainer handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class WpfContainer<TControl, TWidget> : WpfFrameworkElement<TControl, TWidget>, IContainer, IWpfContainer
+	public abstract class WpfContainer<TControl, TWidget, TCallback> : WpfFrameworkElement<TControl, TWidget, TCallback>, Container.IHandler, IWpfContainer
 		where TControl : sw.FrameworkElement
 		where TWidget : Container
+		where TCallback: Container.ICallback
 	{
 		Size minimumSize;
 

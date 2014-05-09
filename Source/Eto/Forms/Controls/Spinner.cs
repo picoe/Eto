@@ -3,15 +3,6 @@ using System;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Spinner"/> control
-	/// </summary>
-	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface ISpinner : IControl
-	{
-	}
-
-	/// <summary>
 	/// Presents a spinning indeterminate progress spinner wheel
 	/// </summary>
 	/// <remarks>
@@ -19,7 +10,7 @@ namespace Eto.Forms
 	/// </remarks>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[Handler(typeof(ISpinner))]
+	[Handler(typeof(Spinner.IHandler))]
 	public class Spinner : Control
 	{
 		/// <summary>
@@ -35,7 +26,16 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the spinner from</param>
 		[Obsolete("Use default constructor instead")]
 		public Spinner(Generator generator)
-			: base(generator, typeof(ISpinner), true)
+			: base(generator, typeof(IHandler), true)
+		{
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Spinner"/> control
+		/// </summary>
+		/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : Control.IHandler
 		{
 		}
 	}

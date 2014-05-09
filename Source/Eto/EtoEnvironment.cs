@@ -35,19 +35,6 @@ namespace Eto
 	}
 
 	/// <summary>
-	/// Handler interface for the <see cref="EtoEnvironment"/> class
-	/// </summary>
-	public interface IEtoEnvironment
-	{
-		/// <summary>
-		/// Gets the folder path for the specified special folder
-		/// </summary>
-		/// <param name="folder">Special folder to retrieve the path for</param>
-		/// <returns>Path of the specified folder</returns>
-		string GetFolderPath(EtoSpecialFolder folder);
-	}
-
-	/// <summary>
 	/// Environment methods
 	/// </summary>
 	public static class EtoEnvironment
@@ -74,7 +61,7 @@ namespace Eto
 		/// <returns>Path of the specified folder</returns>
 		public static string GetFolderPath(EtoSpecialFolder folder)
 		{
-			var handler = Eto.Platform.Instance.CreateShared<IEtoEnvironment>();
+			var handler = Eto.Platform.Instance.CreateShared<IHandler>();
 			return handler.GetFolderPath(folder);
 		}
 
@@ -89,11 +76,24 @@ namespace Eto
 		[Obsolete("Use variation without generator instead")]
 		public static string GetFolderPath(EtoSpecialFolder folder, Generator generator)
 		{
-			var handler = generator.CreateShared<IEtoEnvironment>();
+			var handler = generator.CreateShared<IHandler>();
 			return handler.GetFolderPath(folder);
 		}
 
 		#pragma warning restore 612,618
+
+		/// <summary>
+		/// Handler interface for the <see cref="EtoEnvironment"/> class
+		/// </summary>
+		public interface IHandler
+		{
+			/// <summary>
+			/// Gets the folder path for the specified special folder
+			/// </summary>
+			/// <param name="folder">Special folder to retrieve the path for</param>
+			/// <returns>Path of the specified folder</returns>
+			string GetFolderPath(EtoSpecialFolder folder);
+		}
 	}
 }
 

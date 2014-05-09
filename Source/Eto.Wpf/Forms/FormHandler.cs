@@ -4,7 +4,7 @@ using swc = System.Windows.Controls;
 
 namespace Eto.Wpf.Forms
 {
-	public class FormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, IForm
+	public class FormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, Form.IHandler
 	{
 		public FormHandler()
 		{

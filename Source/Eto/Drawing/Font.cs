@@ -97,119 +97,6 @@ namespace Eto.Drawing
 	}
 
 	/// <summary>
-	/// Platform handler for the <see cref="Font"/> class
-	/// </summary>
-	[AutoInitialize(false)]
-	public interface IFont : IWidget
-	{
-		/// <summary>
-		/// Creates a new font object
-		/// </summary>
-		/// <param name="family">Type of font family</param>
-		/// <param name="size">Size of the font (in points)</param>
-		/// <param name="style">Style of the font</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration);
-
-		/// <summary>
-		/// Creates a new font object with the specified <paramref name="systemFont"/> and optional size
-		/// </summary>
-		/// <param name="systemFont">System font to create</param>
-		/// <param name="size">Size of font to use, or null to use the system font's default size</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		void Create(SystemFont systemFont, float? size, FontDecoration decoration);
-
-		/// <summary>
-		/// Creates a new font object with the specified <paramref name="typeface"/> and <paramref name="size"/>
-		/// </summary>
-		/// <param name="typeface">Typeface to specify the style (and family) of the font</param>
-		/// <param name="size">Size of the font to create</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		void Create(FontTypeface typeface, float size, FontDecoration decoration);
-
-		/// <summary>
-		/// Gets the height of the lower case 'x' character
-		/// </summary>
-		/// <value>The height of the x character</value>
-		float XHeight { get; }
-
-		/// <summary>
-		/// Gets the top y co-ordinate from the baseline to the tallest character ascent
-		/// </summary>
-		/// <value>The tallest ascent of the font</value>
-		float Ascent { get; }
-
-		/// <summary>
-		/// Gets the bottom y co-ordinate from the baseline to the longest character descent
-		/// </summary>
-		/// <value>The longest descent of the font</value>
-		float Descent { get; }
-
-		/// <summary>
-		/// Gets the height of a single line of the font
-		/// </summary>
-		/// <value>The height of a single line</value>
-		float LineHeight { get; }
-
-		/// <summary>
-		/// Gets the leading space between each line
-		/// </summary>
-		/// <value>The leading.</value>
-		float Leading { get; }
-
-		/// <summary>
-		/// Gets the offset of the baseline from the drawing point
-		/// </summary>
-		/// <value>The baseline offset from the drawing point</value>
-		float Baseline { get; }
-
-		/// <summary>
-		/// Gets the size of the font in points
-		/// </summary>
-		float Size { get; }
-
-		/// <summary>
-		/// Gets the name of the family of this font
-		/// </summary>
-		string FamilyName { get; }
-
-		/// <summary>
-		/// Gets the style flags for this font
-		/// </summary>
-		/// <remarks>
-		/// This does not necessarily represent all of the style properties of the font. 
-		/// Each <see cref="Typeface"/> has its own style relative to the font family.  This is meerely a
-		/// convenience to get the common properties of a font's typeface style
-		/// </remarks>
-		FontStyle FontStyle { get; }
-
-		/// <summary>
-		/// Gets the decorations applied to the font
-		/// </summary>
-		/// <remarks>
-		/// Decorations can be applied to any typeface/style of font.
-		/// </remarks>
-		/// <value>The font decoration.</value>
-		FontDecoration FontDecoration { get; }
-
-		/// <summary>
-		/// Gets the family information for this font
-		/// </summary>
-		/// <remarks>
-		/// This should always return an instance that represents the family of this font
-		/// </remarks>
-		FontFamily Family { get; }
-
-		/// <summary>
-		/// Gets the typeface information for this font
-		/// </summary>
-		/// <remarks>
-		/// This should always return an instance that represents the typeface of this font
-		/// </remarks>
-		FontTypeface Typeface { get; }
-	}
-
-	/// <summary>
 	/// Defines a format for text
 	/// </summary>
 	/// <remarks>
@@ -219,10 +106,10 @@ namespace Eto.Drawing
 	/// You can get a list of <see cref="FontFamily"/> objects available in the current system using
 	/// <see cref="Fonts.AvailableFontFamilies"/>, which can then be used to create an instance of a font.
 	/// </remarks>
-	[Handler(typeof(IFont))]
+	[Handler(typeof(Font.IHandler))]
 	public class Font : Widget
 	{
-		new IFont Handler { get { return (IFont)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
@@ -285,7 +172,7 @@ namespace Eto.Drawing
 		/// Not intended to be used directly, this is used by each platform to pass back a font instance with a specific handler
 		/// </remarks>
 		/// <param name="handler">Handler for the font</param>
-		public Font(IFont handler)
+		public Font(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -479,7 +366,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create the font for</param>
 		[Obsolete("Use variation without generator instead")]
 		public Font(string family, float size, FontStyle style, FontDecoration decoration, Generator generator)
-			: base(generator, typeof(IFont))
+			: base(generator, typeof(Font.IHandler))
 		{
 			Handler.Create(new FontFamily(family), size, style, decoration);
 		}
@@ -494,7 +381,7 @@ namespace Eto.Drawing
 		/// <param name="decoration">Decorations to apply to the font</param>
 		[Obsolete("Use variation without generator instead")]
 		public Font(FontFamily family, float size, FontStyle style, FontDecoration decoration, Generator generator)
-			: base(generator, typeof(IFont))
+			: base(generator, typeof(Font.IHandler))
 		{
 			Handler.Create(family, size, style, decoration);
 		}
@@ -512,7 +399,7 @@ namespace Eto.Drawing
 		/// <param name="decoration">Decorations to apply to the font</param>
 		[Obsolete("Use variation without generator instead")]
 		public Font(SystemFont systemFont, float? size, FontDecoration decoration, Generator generator)
-			: base(generator, typeof(IFont))
+			: base(generator, typeof(Font.IHandler))
 		{
 			Handler.Create(systemFont, size, decoration);
 		}
@@ -526,7 +413,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create the font handler</param>
 		[Obsolete("Use variation without generator instead")]
 		public Font(FontTypeface typeface, float size, FontDecoration decoration, Generator generator)
-			: base (generator, typeof (IFont))
+			: base (generator, typeof (Font.IHandler))
 		{
 			Handler.Create(typeface, size, decoration);
 		}
@@ -540,11 +427,128 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator of the handler</param>
 		/// <param name="handler">Handler for the font</param>
 		[Obsolete("Use variation without generator instead")]
-		public Font(Generator generator, IFont handler)
+		public Font(Generator generator, Font.IHandler handler)
 			: base (generator, handler, true)
 		{
 		}
 
 		#pragma warning restore 612,618
+
+		#region Handler
+
+		/// <summary>
+		/// Platform handler for the <see cref="Font"/> class
+		/// </summary>
+		[AutoInitialize(false)]
+		public interface IHandler : Widget.IHandler
+		{
+			/// <summary>
+			/// Creates a new font object
+			/// </summary>
+			/// <param name="family">Type of font family</param>
+			/// <param name="size">Size of the font (in points)</param>
+			/// <param name="style">Style of the font</param>
+			/// <param name="decoration">Decorations to apply to the font</param>
+			void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration);
+
+			/// <summary>
+			/// Creates a new font object with the specified <paramref name="systemFont"/> and optional size
+			/// </summary>
+			/// <param name="systemFont">System font to create</param>
+			/// <param name="size">Size of font to use, or null to use the system font's default size</param>
+			/// <param name="decoration">Decorations to apply to the font</param>
+			void Create(SystemFont systemFont, float? size, FontDecoration decoration);
+
+			/// <summary>
+			/// Creates a new font object with the specified <paramref name="typeface"/> and <paramref name="size"/>
+			/// </summary>
+			/// <param name="typeface">Typeface to specify the style (and family) of the font</param>
+			/// <param name="size">Size of the font to create</param>
+			/// <param name="decoration">Decorations to apply to the font</param>
+			void Create(FontTypeface typeface, float size, FontDecoration decoration);
+
+			/// <summary>
+			/// Gets the height of the lower case 'x' character
+			/// </summary>
+			/// <value>The height of the x character</value>
+			float XHeight { get; }
+
+			/// <summary>
+			/// Gets the top y co-ordinate from the baseline to the tallest character ascent
+			/// </summary>
+			/// <value>The tallest ascent of the font</value>
+			float Ascent { get; }
+
+			/// <summary>
+			/// Gets the bottom y co-ordinate from the baseline to the longest character descent
+			/// </summary>
+			/// <value>The longest descent of the font</value>
+			float Descent { get; }
+
+			/// <summary>
+			/// Gets the height of a single line of the font
+			/// </summary>
+			/// <value>The height of a single line</value>
+			float LineHeight { get; }
+
+			/// <summary>
+			/// Gets the leading space between each line
+			/// </summary>
+			/// <value>The leading.</value>
+			float Leading { get; }
+
+			/// <summary>
+			/// Gets the offset of the baseline from the drawing point
+			/// </summary>
+			/// <value>The baseline offset from the drawing point</value>
+			float Baseline { get; }
+
+			/// <summary>
+			/// Gets the size of the font in points
+			/// </summary>
+			float Size { get; }
+
+			/// <summary>
+			/// Gets the name of the family of this font
+			/// </summary>
+			string FamilyName { get; }
+
+			/// <summary>
+			/// Gets the style flags for this font
+			/// </summary>
+			/// <remarks>
+			/// This does not necessarily represent all of the style properties of the font. 
+			/// Each <see cref="Typeface"/> has its own style relative to the font family.  This is meerely a
+			/// convenience to get the common properties of a font's typeface style
+			/// </remarks>
+			FontStyle FontStyle { get; }
+
+			/// <summary>
+			/// Gets the decorations applied to the font
+			/// </summary>
+			/// <remarks>
+			/// Decorations can be applied to any typeface/style of font.
+			/// </remarks>
+			/// <value>The font decoration.</value>
+			FontDecoration FontDecoration { get; }
+
+			/// <summary>
+			/// Gets the family information for this font
+			/// </summary>
+			/// <remarks>
+			/// This should always return an instance that represents the family of this font
+			/// </remarks>
+			FontFamily Family { get; }
+
+			/// <summary>
+			/// Gets the typeface information for this font
+			/// </summary>
+			/// <remarks>
+			/// This should always return an instance that represents the typeface of this font
+			/// </remarks>
+			FontTypeface Typeface { get; }
+		}
+
+		#endregion
 	}
 }

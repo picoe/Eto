@@ -16,7 +16,7 @@ namespace Eto.WinForms
 		swf.IWin32Window Win32Window { get; }
 	}
 
-	public abstract class WindowHandler<TControl, TWidget, TCallback> : WindowsPanel<TControl, TWidget, TCallback>, IWindow, IWindowHandler
+	public abstract class WindowHandler<TControl, TWidget, TCallback> : WindowsPanel<TControl, TWidget, TCallback>, Window.IHandler, IWindowHandler
 		where TControl : swf.Form
 		where TWidget : Window
 		where TCallback : Window.ICallback

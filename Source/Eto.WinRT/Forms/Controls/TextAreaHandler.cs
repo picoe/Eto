@@ -11,9 +11,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Text area handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea>, ITextArea
+	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
 		readonly Size defaultSize = TextArea.DefaultSize;
@@ -53,10 +53,10 @@ namespace Eto.WinRT.Forms.Controls
 			switch (id)
 			{
 			case TextControl.TextChangedEvent:
-				Control.TextChanged += (sender, e) => Widget.OnTextChanged(EventArgs.Empty);
+				Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
 				break;
 			case TextArea.SelectionChangedEvent:
-				Control.SelectionChanged += (sender, e) => Widget.OnSelectionChanged(EventArgs.Empty);
+				Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				break;
 			case TextArea.CaretIndexChangedEvent:
 				{

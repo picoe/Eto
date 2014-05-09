@@ -9,7 +9,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class WebViewHandler : MacView<wk.WebView, WebView, WebView.ICallback>, IWebView
+	public class WebViewHandler : MacView<wk.WebView, WebView, WebView.ICallback>, WebView.IHandler
 	{
 		static readonly Selector selIgnore = new Selector("ignore");
 		static readonly Selector selUse = new Selector("use");

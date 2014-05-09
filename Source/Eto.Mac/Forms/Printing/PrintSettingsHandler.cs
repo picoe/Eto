@@ -5,7 +5,7 @@ using MonoMac.Foundation;
 
 namespace Eto.Mac.Forms.Printing
 {
-	public class PrintSettingsHandler : WidgetHandler<NSPrintInfo, PrintSettings>, IPrintSettings
+	public class PrintSettingsHandler : WidgetHandler<NSPrintInfo, PrintSettings>, PrintSettings.IHandler
 	{
 		int lastSelectedPage;
 		int firstSelectedPage;

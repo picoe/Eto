@@ -2,7 +2,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp.Drawing
 {
-	public class FontTypefaceHandler : WidgetHandler<Pango.FontFace, FontTypeface>, IFontTypeface
+	public class FontTypefaceHandler : WidgetHandler<Pango.FontFace, FontTypeface>, FontTypeface.IHandler
 	{
 		public FontTypefaceHandler (Pango.FontFace pangoFace)
 		{

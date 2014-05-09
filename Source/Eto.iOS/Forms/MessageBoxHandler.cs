@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.iOS.Forms
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
 	{
 		public DialogResult ShowDialog (Control parent)
 		{

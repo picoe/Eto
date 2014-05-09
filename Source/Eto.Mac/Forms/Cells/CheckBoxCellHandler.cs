@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class CheckBoxCellHandler : CellHandler<NSButtonCell, CheckBoxCell, CheckBoxCell.ICallback>, ICheckBoxCell
+	public class CheckBoxCellHandler : CellHandler<NSButtonCell, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
 	{
 		public class EtoCell : NSButtonCell, IMacControl
 		{

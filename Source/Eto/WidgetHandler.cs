@@ -26,7 +26,7 @@ namespace Eto
 	/// </example>
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<TWidget> : IWidget, IDisposable
+	public abstract class WidgetHandler<TWidget> : Widget.IHandler, IDisposable
 		where TWidget: Widget
 	{
 		const string InstanceEventSuffix = ".Instance";
@@ -111,7 +111,7 @@ namespace Eto
 			Style.OnStyleWidgetDefaults(this);
 		}
 
-		void IWidget.Initialize()
+		void Widget.IHandler.Initialize()
 		{
 			Initialize();
 		}
@@ -119,7 +119,7 @@ namespace Eto
 		/// <summary>
 		/// Gets or sets the widget instance
 		/// </summary>
-		Widget IWidget.Widget
+		Widget Widget.IHandler.Widget
 		{
 			get { return Widget; }
 			set

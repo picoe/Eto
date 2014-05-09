@@ -14,9 +14,9 @@ namespace Eto.WinRT.Forms
 	/// Application handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ApplicationHandler : WidgetHandler<sw.Application, Application>, IApplication
+	public class ApplicationHandler : WidgetHandler<sw.Application, Application, Application.ICallback>, Application.IHandler
 	{
 		wuc.CoreDispatcher dispatcher;
 		bool attached;
@@ -194,7 +194,7 @@ namespace Eto.WinRT.Forms
 		public void Run(string[] args)
 		{
 			dispatcher = wuc.CoreWindow.GetForCurrentThread().Dispatcher;
-			Widget.OnInitialized(EventArgs.Empty);
+			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
 				if (shutdown) return;

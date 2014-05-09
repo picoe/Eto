@@ -2,7 +2,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class CursorHandler : WidgetHandler<Gdk.Cursor, Cursor>, ICursor
+	public class CursorHandler : WidgetHandler<Gdk.Cursor, Cursor>, Cursor.IHandler
 	{
 		
 		public void Create (CursorType cursor)

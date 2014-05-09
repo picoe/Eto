@@ -8,11 +8,11 @@ using aw = Android.Widget;
 namespace Eto.Android.Forms
 {
 	/// <summary>
-	/// Handler for <see cref="IForm"/>
+	/// Handler for <see cref="Form"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class FormHandler : AndroidWindow<Form, Form.ICallback>, IForm
+	public class FormHandler : AndroidWindow<Form, Form.ICallback>, Form.IHandler
 	{
 		public void Show()
 		{

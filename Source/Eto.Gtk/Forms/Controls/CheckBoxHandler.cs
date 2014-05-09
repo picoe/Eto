@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox, CheckBox.ICallback>, ICheckBox
+	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		Font font;
 		readonly Gtk.EventBox box;

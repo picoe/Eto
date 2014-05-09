@@ -3,15 +3,10 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IImageView : IControl
-	{
-		Image Image { get; set; }
-	}
-	
-	[Handler(typeof(IImageView))]
+	[Handler(typeof(ImageView.IHandler))]
 	public class ImageView : Control
 	{
-		new IImageView Handler { get { return (IImageView)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public ImageView()
 		{
@@ -19,7 +14,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public ImageView (Generator generator)
-			: this (generator, typeof(IImageView))
+			: this (generator, typeof(IHandler))
 		{
 		}
 		
@@ -29,11 +24,15 @@ namespace Eto.Forms
 		{
 		}
 
-		
 		public Image Image
 		{
 			get { return Handler.Image; }
 			set { Handler.Image = value; }
+		}
+
+		public interface IHandler : Control.IHandler
+		{
+			Image Image { get; set; }
 		}
 	}
 }

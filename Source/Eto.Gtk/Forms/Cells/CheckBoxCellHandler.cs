@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
-	public class CheckBoxCellHandler : SingleCellHandler<Gtk.CellRendererToggle, CheckBoxCell>, ICheckBoxCell
+	public class CheckBoxCellHandler : SingleCellHandler<Gtk.CellRendererToggle, CheckBoxCell>, CheckBoxCell.IHandler
 	{
 		class Renderer : Gtk.CellRendererToggle
 		{

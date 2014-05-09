@@ -79,7 +79,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		}
 	}
 
-	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ICell, ICellHandler
+	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, Cell.IHandler, ICellHandler
 		where TWidget: Cell
 		where TControl: Gtk.CellRenderer
 	{

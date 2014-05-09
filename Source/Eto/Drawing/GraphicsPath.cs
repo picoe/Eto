@@ -182,15 +182,6 @@ namespace Eto.Drawing
 	}
 
 	/// <summary>
-	/// Handler interface for the <see cref="IGraphicsPath"/>
-	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGraphicsPathHandler : IGraphicsPath
-	{
-	}
-
-	/// <summary>
 	/// Extensions for the <see cref="IGraphicsPath"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
@@ -353,7 +344,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		public static Func<IGraphicsPath> Instantiator
 		{
-			get { return Platform.Instance.Find<IGraphicsPathHandler>(); }
+			get { return Platform.Instance.Find<IHandler>(); }
 		}
 		
 		/// <summary>
@@ -361,7 +352,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public static IGraphicsPath Create()
 		{
-			return Platform.Instance.Create<IGraphicsPathHandler> ();
+			return Platform.Instance.Create<IHandler> ();
 		}
 
 		/// <summary>
@@ -400,7 +391,7 @@ namespace Eto.Drawing
 		[Obsolete("Use variation without generator instead")]
 		public static IGraphicsPath Create(Generator generator)
 		{
-			return Platform.Instance.Create<IGraphicsPathHandler>();
+			return Platform.Instance.Create<IHandler>();
 		}
 
 		#pragma warning restore 612,618
@@ -734,6 +725,15 @@ namespace Eto.Drawing
 		}
 
 		#pragma warning restore 612,618
+
+		/// <summary>
+		/// Handler interface for the <see cref="IGraphicsPath"/>
+		/// </summary>
+		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : IGraphicsPath
+		{
+		}
 	}
 }
 

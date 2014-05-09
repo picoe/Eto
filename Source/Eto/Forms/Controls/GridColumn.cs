@@ -7,29 +7,10 @@ namespace Eto.Forms
 	{
 	}
 
-	public interface IGridColumn : IWidget
-	{
-		string HeaderText { get; set; }
-
-		bool Resizable { get; set; }
-
-		bool Sortable { get; set; }
-		
-		bool AutoSize { get; set; }
-		
-		int Width { get; set; }
-		
-		Cell DataCell { get; set; }
-		
-		bool Editable { get; set; }
-		
-		bool Visible { get; set; }
-	}
-
-	[Handler(typeof(IGridColumn))]
+	[Handler(typeof(GridColumn.IHandler))]
 	public class GridColumn : Widget
 	{
-		new IGridColumn Handler { get { return (IGridColumn)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public GridColumn()
 		{
@@ -37,7 +18,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public GridColumn (Generator generator)
-			: this (generator, typeof(IGridColumn), true)
+			: this (generator, typeof(IHandler), true)
 		{
 		}
 
@@ -85,6 +66,25 @@ namespace Eto.Forms
 		public bool Visible {
 			get { return Handler.Visible; }
 			set { Handler.Visible = value; }
+		}
+
+		public interface IHandler : Widget.IHandler
+		{
+			string HeaderText { get; set; }
+
+			bool Resizable { get; set; }
+
+			bool Sortable { get; set; }
+
+			bool AutoSize { get; set; }
+
+			int Width { get; set; }
+
+			Cell DataCell { get; set; }
+
+			bool Editable { get; set; }
+
+			bool Visible { get; set; }
 		}
 	}
 }

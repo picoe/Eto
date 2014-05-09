@@ -36,7 +36,7 @@ namespace Eto.Android.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	class BitmapHandler : WidgetHandler<ag.Bitmap, Bitmap>, IBitmap, IAndroidImage
+	class BitmapHandler : WidgetHandler<ag.Bitmap, Bitmap>, Bitmap.IHandler, IAndroidImage
 	{
 		public BitmapHandler()
 		{

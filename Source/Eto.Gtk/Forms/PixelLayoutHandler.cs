@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class PixelLayoutHandler : GtkContainer<Gtk.Fixed, PixelLayout, PixelLayout.ICallback>, IPixelLayout
+	public class PixelLayoutHandler : GtkContainer<Gtk.Fixed, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler
 	{
 		public PixelLayoutHandler()
 		{

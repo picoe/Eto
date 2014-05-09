@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Printing
 {
-	public class PrintDocumentHandler : WidgetHandler<Gtk.PrintOperation, PrintDocument, PrintDocument.ICallback>, IPrintDocument
+	public class PrintDocumentHandler : WidgetHandler<Gtk.PrintOperation, PrintDocument, PrintDocument.ICallback>, PrintDocument.IHandler
 	{
 		PrintSettings settings;
 

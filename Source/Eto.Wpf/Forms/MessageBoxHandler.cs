@@ -6,7 +6,7 @@ using WpfMessageBox = System.Windows.MessageBox;
 
 namespace Eto.Wpf.Forms
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
 	{
 		public string Text { get; set; }
 

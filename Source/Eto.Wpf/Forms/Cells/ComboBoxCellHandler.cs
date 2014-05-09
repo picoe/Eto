@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ComboBoxCellHandler : CellHandler<swc.DataGridComboBoxColumn, ComboBoxCell>, IComboBoxCell
+	public class ComboBoxCellHandler : CellHandler<swc.DataGridComboBoxColumn, ComboBoxCell>, ComboBoxCell.IHandler
 	{
 		IListStore store;
 

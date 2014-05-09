@@ -8,7 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms
 {
-	public class ClipboardHandler : WidgetHandler<NSPasteboard, Clipboard>, IClipboard
+	public class ClipboardHandler : WidgetHandler<NSPasteboard, Clipboard>, Clipboard.IHandler
 	{
 		public ClipboardHandler ()
 		{

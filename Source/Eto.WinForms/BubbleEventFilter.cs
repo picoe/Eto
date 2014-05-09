@@ -64,7 +64,7 @@ namespace Eto.WinForms
 
 		static Control ToEto(swf.Control child)
 		{
-			var handler = child.Tag as IControl;
+			var handler = child.Tag as Control.IHandler;
 			return handler != null ? handler.Widget as Control : null;
 		}
 	}

@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class CheckToolItemHandler : ToolItemHandler<SWF.ToolStripButton, CheckToolItem>, ICheckToolItem
+	public class CheckToolItemHandler : ToolItemHandler<SWF.ToolStripButton, CheckToolItem>, CheckToolItem.IHandler
 	{
 		readonly SWF.ToolStripButton control;
 

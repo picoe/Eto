@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, ITextBox
+	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		bool textChanging;
 		protected override Size DefaultSize { get { return new Size(80, -1); } }

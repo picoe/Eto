@@ -14,7 +14,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Drawing
 {
-	class IconHandler : WidgetHandler<ag.Bitmap, Icon>, IIcon, IAndroidImage
+	class IconHandler : WidgetHandler<ag.Bitmap, Icon>, Icon.IHandler, IAndroidImage
 	{
 		public void Create(System.IO.Stream stream)
 		{

@@ -5,7 +5,7 @@ using MonoMac.Foundation;
 
 namespace Eto.Mac.Forms
 {
-	public class SelectFolderDialogHandler : WidgetHandler<NSOpenPanel, SelectFolderDialog>, ISelectFolderDialog
+	public class SelectFolderDialogHandler : WidgetHandler<NSOpenPanel, SelectFolderDialog>, SelectFolderDialog.IHandler
 	{
 		public SelectFolderDialogHandler ()
 		{

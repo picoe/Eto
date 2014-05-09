@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TreeViewHandler : WpfControl<SelectableTreeView, TreeView, TreeView.ICallback>, ITreeView
+	public class TreeViewHandler : WpfControl<SelectableTreeView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
 		ContextMenu contextMenu;
 		ITreeStore topNode;

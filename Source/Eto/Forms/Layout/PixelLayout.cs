@@ -5,15 +5,11 @@ using System.Runtime.Serialization;
 
 namespace Eto.Forms
 {
-	public interface IPixelLayout : IPositionalLayout
-	{
-	}
-
 	[ContentProperty ("Contents")]
-	[Handler(typeof(IPixelLayout))]
+	[Handler(typeof(PixelLayout.IHandler))]
 	public class PixelLayout : Layout
 	{
-		new IPixelLayout Handler { get { return (IPixelLayout)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		List<Control> children;
 		readonly List<Control> controls = new List<Control>();
@@ -42,7 +38,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public PixelLayout(Generator generator)
-			: base(generator, typeof(IPixelLayout))
+			: base(generator, typeof(IHandler))
 		{
 		}
 
@@ -127,6 +123,10 @@ namespace Eto.Forms
 		{
 			OnDeserialized(true);
 			PreLoad -= HandleDeserialized;
+		}
+
+		public interface IHandler : Layout.IHandler, IPositionalLayoutHandler
+		{
 		}
 	}
 }

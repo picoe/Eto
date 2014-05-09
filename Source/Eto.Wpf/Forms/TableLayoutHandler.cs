@@ -9,7 +9,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
 {
-	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout, TableLayout.ICallback>, ITableLayout
+	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
 		swc.Border border;
 		Size spacing;

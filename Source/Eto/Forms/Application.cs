@@ -5,32 +5,7 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public partial interface IApplication : IWidget
-	{
-		void Attach(object context);
-
-		void Run(string[] args);
-
-		void Quit();
-
-		IEnumerable<Command> GetSystemCommands();
-
-		Keys CommonModifier { get; }
-
-		Keys AlternateModifier { get; }
-
-		void Open(string url);
-
-		void Invoke(Action action);
-
-		void AsyncInvoke(Action action);
-
-		string BadgeLabel { get; set; }
-
-		void OnMainFormChanged();
-	}
-
-	[Handler(typeof(IApplication))]
+	[Handler(typeof(Application.IHandler))]
 	public partial class Application : Widget
 	{
 		public static Application Instance { get; private set; }
@@ -61,7 +36,7 @@ namespace Eto.Forms
 			Properties.TriggerEvent(TerminatingEvent, this, e);
 		}
 
-		new IApplication Handler { get { return (IApplication)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		Form mainForm;
 		public Form MainForm
@@ -188,6 +163,28 @@ namespace Eto.Forms
 			set { Handler.BadgeLabel = value; }
 		}
 
+		public void RunIteration()
+		{
+			Handler.RunIteration();
+		}
+
+		public void Restart()
+		{
+			Handler.Restart();
+		}
+
+		internal void InternalCreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands = null)
+		{
+			Handler.CreateStandardMenu(menuItems, commands ?? GetSystemCommands());
+		}
+
+		[Obsolete("Use MenuBar.CreateStandardMenu() instead")]
+		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands = null)
+		{
+			Handler.CreateStandardMenu(menuItems, commands ?? GetSystemCommands());
+		}
+
+
 		static readonly object callback = new Callback();
 		protected override object GetCallback() { return callback; }
 
@@ -208,6 +205,37 @@ namespace Eto.Forms
 			{
 				widget.OnTerminating(e);
 			}
+		}
+
+		public interface IHandler : Widget.IHandler
+		{
+			void Attach(object context);
+
+			void Run(string[] args);
+
+			void Quit();
+
+			IEnumerable<Command> GetSystemCommands();
+
+			Keys CommonModifier { get; }
+
+			Keys AlternateModifier { get; }
+
+			void Open(string url);
+
+			void Invoke(Action action);
+
+			void AsyncInvoke(Action action);
+
+			string BadgeLabel { get; set; }
+
+			void OnMainFormChanged();
+
+			void Restart();
+
+			void RunIteration();
+
+			void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands);
 		}
 	}
 }

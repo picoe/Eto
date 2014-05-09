@@ -3,16 +3,9 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IToolItem : IWidget, ICommandItem
-	{
-		Image Image { get; set; }
-
-		void CreateFromCommand(Command command);
-	}
-
 	public abstract class ToolItem : Widget, ICommandItemWidget
 	{
-		new IToolItem Handler { get { return (IToolItem)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public event EventHandler<EventArgs> Click;
 
@@ -91,6 +84,19 @@ namespace Eto.Forms
 
 		internal protected virtual void OnUnLoad(EventArgs e)
 		{
+		}
+
+		public interface IHandler : Widget.IHandler
+		{
+			Image Image { get; set; }
+
+			void CreateFromCommand(Command command);
+
+			string Text { get; set; }
+
+			string ToolTip { get; set; }
+
+			bool Enabled { get; set; }
 		}
 	}
 }

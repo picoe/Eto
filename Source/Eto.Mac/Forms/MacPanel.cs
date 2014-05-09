@@ -54,7 +54,7 @@ namespace Eto.Mac.Forms
 	}
 #endif
 
-	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, IPanel
+	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, Panel.IHandler
 		where TControl: NSResponder
 		where TWidget: Panel
 		where TCallback: Panel.ICallback

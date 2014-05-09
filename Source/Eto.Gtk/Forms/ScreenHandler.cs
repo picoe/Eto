@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class ScreenHandler : WidgetHandler<Gdk.Screen, Screen>, IScreen
+	public class ScreenHandler : WidgetHandler<Gdk.Screen, Screen>, Screen.IHandler
 	{
 		readonly int monitor;
 

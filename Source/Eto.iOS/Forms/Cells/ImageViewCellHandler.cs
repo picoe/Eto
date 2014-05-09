@@ -5,7 +5,7 @@ using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.iOS.Forms.Cells
 {
-	public class ImageViewCellHandler : CellHandler<NSCell, ImageViewCell>, IImageViewCell
+	public class ImageViewCellHandler : CellHandler<NSCell, ImageViewCell>, ImageViewCell.IHandler
 	{
 		public ImageViewCellHandler ()
 		{

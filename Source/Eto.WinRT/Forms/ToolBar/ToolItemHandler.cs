@@ -5,7 +5,7 @@ using Windows.UI.Xaml;
 
 namespace Eto.WinRT.Forms
 {
-	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem
+	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler
 		where TControl : UIElement
 		where TWidget : ToolItem
 	{

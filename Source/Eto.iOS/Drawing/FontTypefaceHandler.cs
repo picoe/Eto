@@ -4,7 +4,7 @@ using MonoTouch.UIKit;
 
 namespace Eto.iOS.Drawing
 {
-	public class FontTypefaceHandler : WidgetHandler<object, FontTypeface>, IFontTypeface
+	public class FontTypefaceHandler : WidgetHandler<object, FontTypeface>, FontTypeface.IHandler
 	{
 		FontStyle? style;
 		string name;

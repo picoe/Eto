@@ -63,7 +63,7 @@ namespace Eto.Mac.Forms
 		void OnSizeChanged(EventArgs e);
 	}
 
-	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, IControl, IMacViewHandler
+	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
 		where TControl: NSResponder
 		where TWidget: Control
 		where TCallback: Control.ICallback
@@ -564,7 +564,7 @@ namespace Eto.Mac.Forms
 			return sdpoint.ToEto();
 		}
 
-		Point IControl.Location
+		Point Control.IHandler.Location
 		{
 			get { return ContentControl.Frame.Location.ToEtoPoint(); }
 		}

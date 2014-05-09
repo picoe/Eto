@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms
 {
-	public class CursorHandler : WidgetHandler<SWF.Cursor, Cursor>, ICursor
+	public class CursorHandler : WidgetHandler<SWF.Cursor, Cursor>, Cursor.IHandler
 	{
 		public void Create (CursorType cursor)
 		{

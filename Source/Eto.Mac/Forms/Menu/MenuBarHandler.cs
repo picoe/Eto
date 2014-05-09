@@ -3,7 +3,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac
 {
-	public class MenuBarHandler : WidgetHandler<NSMenu, Menu>, IMenuBar, IMenu
+	public class MenuBarHandler : WidgetHandler<NSMenu, Menu>, MenuBar.IHandler
 	{
 
 		public MenuBarHandler()

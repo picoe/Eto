@@ -23,7 +23,7 @@ namespace Eto.iOS.Forms.Cells
 		Color GetForegroundColor(NSCell cell);
 	}
 
-	public abstract class CellHandler<T, W> : WidgetHandler<T, W>, ICell, ICellHandler
+	public abstract class CellHandler<T, W> : WidgetHandler<T, W>, Cell.IHandler, ICellHandler
 		where T: NSCell
 		where W: Cell
 	{

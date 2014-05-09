@@ -2,7 +2,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class ContextMenuHandler : MenuHandler<Gtk.Menu, ContextMenu>, IContextMenu
+	public class ContextMenuHandler : MenuHandler<Gtk.Menu, ContextMenu>, ContextMenu.IHandler
 	{
 
 		public ContextMenuHandler()

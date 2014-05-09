@@ -19,7 +19,7 @@ namespace Eto.Android.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsHandler : WidgetHandler<ag.Canvas, Graphics>, IGraphics
+	public class GraphicsHandler : WidgetHandler<ag.Canvas, Graphics>, Graphics.IHandler
 	{
 		public GraphicsHandler()
 		{

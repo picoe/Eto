@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Eto.GtkSharp
 {
-	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, IDialog
+	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		public class MyDialog : Gtk.Dialog
 		{

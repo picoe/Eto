@@ -8,24 +8,6 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
-	[AutoInitialize(false)]
-	public interface ITableLayout : IPositionalLayout
-	{
-		void CreateControl(int cols, int rows);
-
-		bool GetColumnScale(int column);
-
-		void SetColumnScale(int column, bool scale);
-
-		bool GetRowScale(int row);
-
-		void SetRowScale(int row, bool scale);
-
-		Size Spacing { get; set; }
-
-		Padding Padding { get; set; }
-	}
-
 	public class TableItem
 	{
 		public bool ScaleWidth { get; set; }
@@ -57,10 +39,10 @@ namespace Eto.Forms
 	}
 
 	[ContentProperty("Contents")]
-	[Handler(typeof(ITableLayout))]
+	[Handler(typeof(TableLayout.IHandler))]
 	public class TableLayout : Layout
 	{
-		new ITableLayout Handler { get { return (ITableLayout)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		Control[,] controls;
 		Size cellSize;
@@ -238,7 +220,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use constructor without generator instead")]
 		public TableLayout(Size size, Generator generator = null)
-			: base(generator, typeof(ITableLayout), false)
+			: base(generator, typeof(IHandler), false)
 		{
 			this.CellSize = size;
 		}
@@ -383,6 +365,24 @@ namespace Eto.Forms
 		{
 			OnDeserialized(true);
 			PreLoad -= HandleDeserialized;
+		}
+
+		[AutoInitialize(false)]
+		public interface IHandler : Layout.IHandler, IPositionalLayoutHandler
+		{
+			void CreateControl(int cols, int rows);
+
+			bool GetColumnScale(int column);
+
+			void SetColumnScale(int column, bool scale);
+
+			bool GetRowScale(int row);
+
+			void SetRowScale(int row, bool scale);
+
+			Size Spacing { get; set; }
+
+			Padding Padding { get; set; }
 		}
 	}
 }

@@ -2,21 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ITextBox : ITextControl
-	{
-		bool ReadOnly { get; set; }
-
-		int MaxLength { get; set; }
-		
-		void SelectAll();
-
-		string PlaceholderText { get; set; }
-	}
-
-	[Handler(typeof(ITextBox))]
+	[Handler(typeof(TextBox.IHandler))]
 	public class TextBox : TextControl
 	{
-		new ITextBox Handler { get { return (ITextBox)base.Handler; }}
+		new IHandler Handler { get { return (IHandler)base.Handler; }}
 		
 		public TextBox()
 		{
@@ -24,7 +13,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public TextBox (Generator generator)
-			: this(generator, typeof(ITextBox))
+			: this(generator, typeof(IHandler))
 		{
 			
 		}
@@ -53,6 +42,17 @@ namespace Eto.Forms
 		public void SelectAll()
 		{
 			Handler.SelectAll();
+		}
+
+		public interface IHandler : TextControl.IHandler
+		{
+			bool ReadOnly { get; set; }
+
+			int MaxLength { get; set; }
+
+			void SelectAll();
+
+			string PlaceholderText { get; set; }
 		}
 	}
 }

@@ -3,11 +3,11 @@ using Eto.Drawing;
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>
-	/// Handler for the <see cref="ISolidBrush"/>
+	/// Handler for the <see cref="SolidBrush"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class SolidBrushHandler : BrushHandler, ISolidBrush
+	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
 		public override void Apply (object control, GraphicsHandler graphics)
 		{

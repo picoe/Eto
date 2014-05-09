@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox, ComboBox.ICallback>, IComboBox
+	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		CollectionHandler collection;
 

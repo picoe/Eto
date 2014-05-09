@@ -10,7 +10,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TreeViewHandler : MacControl<NSOutlineView, TreeView, TreeView.ICallback>, ITreeView
+	public class TreeViewHandler : MacControl<NSOutlineView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
 		ITreeStore top;
 		ContextMenu contextMenu;

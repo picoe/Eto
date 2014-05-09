@@ -7,7 +7,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class DrawableCellHandler : CellHandler<DrawableCellHandler.EtoCell, DrawableCell>, IDrawableCell
+	public class DrawableCellHandler : CellHandler<DrawableCellHandler.EtoCell, DrawableCell>, DrawableCell.IHandler
 	{
 		public class EtoCell : swf.DataGridViewCell
 		{

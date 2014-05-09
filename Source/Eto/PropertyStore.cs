@@ -70,7 +70,7 @@ namespace Eto
 			{
 				if (!EventLookup.IsDefault(Parent, key))
 				{
-					var handler = Parent.Handler as IWidget;
+					var handler = Parent.Handler as Widget.IHandler;
 					if (handler != null)
 					{
 						handler.HandleEvent(key, true);

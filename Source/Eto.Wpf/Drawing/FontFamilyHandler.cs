@@ -7,7 +7,7 @@ using sw = System.Windows;
 namespace Eto.Wpf.Drawing
 {
 
-	public class FontFamilyHandler : WidgetHandler<swm.FontFamily, FontFamily>, IFontFamily
+	public class FontFamilyHandler : WidgetHandler<swm.FontFamily, FontFamily>, FontFamily.IHandler
 	{
 		public FontFamilyHandler ()
 		{

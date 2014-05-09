@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class DateTimePickerHandler : WindowsControl<System.Windows.Forms.DateTimePicker, DateTimePicker, DateTimePicker.ICallback>, IDateTimePicker
+	public class DateTimePickerHandler : WindowsControl<System.Windows.Forms.DateTimePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
 		public DateTimePickerHandler()
 		{

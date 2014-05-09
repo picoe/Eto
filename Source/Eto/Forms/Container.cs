@@ -6,37 +6,11 @@ using System.Linq;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Container"/> control
-	/// </summary>
-	public interface IContainer : IControl
-	{
-		/// <summary>
-		/// Gets or sets the size for the client area of the control
-		/// </summary>
-		/// <remarks>
-		/// The client size differs from the <see cref="IControl.Size"/> in that it excludes the decorations of
-		/// the container, such as the title bar and border around a <see cref="Window"/>, or the title and line 
-		/// around a <see cref="GroupBox"/>.
-		/// </remarks>
-		/// <value>The size of the client area</value>
-		Size ClientSize { get; set; }
-
-		/// <summary>
-		/// Gets a value indicating whether PreLoad/Load/LoadComplete/Unload events are propegated to the children controls
-		/// </summary>
-		/// <remarks>
-		/// This is mainly used when you want to use Eto controls in your handler, such as with the <see cref="ThemedContainerHandler{TContainer,TWidget}"/>
-		/// </remarks>
-		/// <value><c>true</c> to recurse events to children; otherwise, <c>false</c>.</value>
-		bool RecurseToChildren { get; }
-	}
-
-	/// <summary>
 	/// Base class for controls that contain children controls
 	/// </summary>
 	public abstract class Container : Control
 	{
-		new IContainer Handler { get { return (IContainer)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets or sets the size for the client area of the control
@@ -178,7 +152,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the Container with the specified handler
 		/// </summary>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		protected Container(IContainer handler)
+		protected Container(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -202,7 +176,7 @@ namespace Eto.Forms
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		[Obsolete("Use Container(IContainer) instead")]
-		protected Container(Generator generator, IContainer handler, bool initialize = true)
+		protected Container(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 		}
@@ -317,6 +291,32 @@ namespace Eto.Forms
 				}
 			}
 			assign();
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Container"/> control
+		/// </summary>
+		public interface IHandler : Control.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the size for the client area of the control
+			/// </summary>
+			/// <remarks>
+			/// The client size differs from the <see cref="Control.IHandler.Size"/> in that it excludes the decorations of
+			/// the container, such as the title bar and border around a <see cref="Window"/>, or the title and line 
+			/// around a <see cref="GroupBox"/>.
+			/// </remarks>
+			/// <value>The size of the client area</value>
+			Size ClientSize { get; set; }
+
+			/// <summary>
+			/// Gets a value indicating whether PreLoad/Load/LoadComplete/Unload events are propegated to the children controls
+			/// </summary>
+			/// <remarks>
+			/// This is mainly used when you want to use Eto controls in your handler, such as with the <see cref="ThemedContainerHandler{TContainer,TWidget,TCallback}"/>
+			/// </remarks>
+			/// <value><c>true</c> to recurse events to children; otherwise, <c>false</c>.</value>
+			bool RecurseToChildren { get; }
 		}
 	}
 }

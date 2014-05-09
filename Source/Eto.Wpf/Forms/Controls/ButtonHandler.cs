@@ -11,7 +11,7 @@ namespace Eto.Wpf.Forms.Controls
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : WpfControl<swc.Button, Button, Button.ICallback>, IButton
+	public class ButtonHandler : WpfControl<swc.Button, Button, Button.ICallback>, Button.IHandler
 	{
 		Image image;
 		readonly swc.Image swcimage;

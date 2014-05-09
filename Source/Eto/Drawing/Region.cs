@@ -3,36 +3,14 @@ using System;
 
 namespace Eto.Drawing
 {
-	/// <summary>
-	/// Handler interface for the <see cref="Region"/> class
-	/// </summary>
-	public interface IRegion : IWidget
-	{
-		/// <summary>
-		/// Excludes the specified <paramref name="rectangle"/> from the region
-		/// </summary>
-		/// <param name="rectangle">Rectangle to exclude</param>
-		void Exclude (Rectangle rectangle);
-
-		/// <summary>
-		/// Resets the region
-		/// </summary>
-		void Reset ();
-
-		/// <summary>
-		/// Sets the specified <paramref name="rectangle"/> in the region
-		/// </summary>
-		/// <param name="rectangle">Rectangle to set the region to</param>
-		void Set (Rectangle rectangle);
-	}
 
 	/// <summary>
 	/// Defines a region to use for clipping
 	/// </summary>
-	[Handler(typeof(IRegion))]
+	[Handler(typeof(Region.IHandler))]
 	public class Region : Widget
 	{
-		new IRegion Handler { get { return (IRegion)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Initializes a new instance of the Region class
@@ -47,7 +25,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to use for instantiating the handler</param>
 		[Obsolete("Use default constructor instead")]
 		public Region (Generator generator)
-			: base (generator, typeof(IRegion))
+			: base (generator, typeof(IHandler))
 		{
 		}
 
@@ -76,6 +54,30 @@ namespace Eto.Drawing
 		{
 			Handler.Set (rectangle);
 		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Region"/> class
+		/// </summary>
+		public interface IHandler : Widget.IHandler
+		{
+			/// <summary>
+			/// Excludes the specified <paramref name="rectangle"/> from the region
+			/// </summary>
+			/// <param name="rectangle">Rectangle to exclude</param>
+			void Exclude (Rectangle rectangle);
+
+			/// <summary>
+			/// Resets the region
+			/// </summary>
+			void Reset ();
+
+			/// <summary>
+			/// Sets the specified <paramref name="rectangle"/> in the region
+			/// </summary>
+			/// <param name="rectangle">Rectangle to set the region to</param>
+			void Set (Rectangle rectangle);
+		}
+
 	}
 
 }

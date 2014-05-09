@@ -3,11 +3,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ICheckBoxCell : ICell
-	{
-	}
-
-	[Handler(typeof(ICheckBoxCell))]
+	[Handler(typeof(CheckBoxCell.IHandler))]
 	public class CheckBoxCell : SingleValueCell
 	{
 		public CheckBoxCell (int column)
@@ -28,7 +24,11 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public CheckBoxCell (Generator generator)
-			: base(generator, typeof(ICheckBoxCell), true)
+			: base(generator, typeof(IHandler), true)
+		{
+		}
+
+		public interface IHandler : SingleValueCell.IHandler
 		{
 		}
 	}

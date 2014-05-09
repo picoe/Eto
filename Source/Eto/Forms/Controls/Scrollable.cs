@@ -4,88 +4,6 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Scrollable"/> control
-	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IScrollable : IPanel
-	{
-		/// <summary>
-		/// Manually updates the scroll sizes based on the content
-		/// </summary>
-		/// <remarks>
-		/// This should not typically be necessary as it should be done automatically
-		/// </remarks>
-		void UpdateScrollSizes();
-
-		/// <summary>
-		/// Gets or sets the scroll position from the top-left origin
-		/// </summary>
-		/// <value>The scroll position.</value>
-		Point ScrollPosition { get; set; }
-
-		/// <summary>
-		/// Gets or sets the size of the scrollable region manually
-		/// </summary>
-		/// <remarks>
-		/// Typically you do not need to set the scroll size manually, as the content will be used to determine the size
-		/// automatically.
-		/// </remarks>
-		/// <value>The size of the scrollable region.</value>
-		Size ScrollSize { get; set; }
-
-		/// <summary>
-		/// Gets or sets the border type
-		/// </summary>
-		/// <value>The border.</value>
-		BorderType Border { get; set; }
-
-		/// <summary>
-		/// Gets the coordinates of the rectangle that is visible to the user
-		/// </summary>
-		/// <value>The visible rect.</value>
-		Rectangle VisibleRect { get; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Scrollable"/> expands content to the width of the control
-		/// </summary>
-		/// <remarks>
-		/// This controls whether content that is smaller than the size of the control will be expanded to fill the available space.
-		/// Content that is larger than the available space will make the horizontal scrollbar appear, regardless of this setting.
-		/// </remarks>
-		/// <value><c>true</c> to expand content to the width of the control; otherwise, <c>false</c>.</value>
-		bool ExpandContentWidth { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Scrollable"/> expands content to the height of the control
-		/// </summary>
-		/// <remarks>
-		/// This controls whether content that is smaller than the size of the control will be expanded to fill the available space.
-		/// Content that is larger than the available space will make the vertical scrollbar appear, regardless of this setting.
-		/// </remarks>
-		/// <value><c>true</c> to expand content to the height of the control; otherwise, <c>false</c>.</value>
-		bool ExpandContentHeight { get; set; }
-
-		/// <summary>
-		/// Hint to get or set the minimum zoom of the scrollable region, if the platform supports it
-		/// </summary>
-		/// <value>The minimum zoom.</value>
-		float MinimumZoom { get; set; }
-
-		/// <summary>
-		/// Hint to get or set the maximum zoom of the scrollable region, if the platform supports it
-		/// </summary>
-		/// <value>The maximum zoom.</value>
-		float MaximumZoom { get; set; }
-
-		/// <summary>
-		/// Hint to set the zoom level of the scrollable region, if the platform supports it
-		/// </summary>
-		/// <value>The current zoom level</value>
-		float Zoom { get; set; }
-	}
-
-	/// <summary>
 	/// Event arguments for <see cref="Scrollable.Scroll"/> events
 	/// </summary>
 	public class ScrollEventArgs : EventArgs
@@ -132,10 +50,10 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[Handler(typeof(IScrollable))]
+	[Handler(typeof(Scrollable.IHandler))]
 	public class Scrollable : Panel
 	{
-		new IScrollable Handler { get { return (IScrollable)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="Scrollable.Scroll"/> event
@@ -177,7 +95,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="generator">Generator.</param>
 		[Obsolete("Use default constructor instead")]
-		public Scrollable(Generator generator) : this(generator, typeof(IScrollable))
+		public Scrollable(Generator generator) : this(generator, typeof(IHandler))
 		{
 		}
 
@@ -320,5 +238,91 @@ namespace Eto.Forms
 				widget.OnScroll(e);
 			}
 		}
+
+		#region Handler
+
+		/// <summary>
+		/// Handler interface for the <see cref="Scrollable"/> control
+		/// </summary>
+		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : Panel.IHandler
+		{
+			/// <summary>
+			/// Manually updates the scroll sizes based on the content
+			/// </summary>
+			/// <remarks>
+			/// This should not typically be necessary as it should be done automatically
+			/// </remarks>
+			void UpdateScrollSizes();
+
+			/// <summary>
+			/// Gets or sets the scroll position from the top-left origin
+			/// </summary>
+			/// <value>The scroll position.</value>
+			Point ScrollPosition { get; set; }
+
+			/// <summary>
+			/// Gets or sets the size of the scrollable region manually
+			/// </summary>
+			/// <remarks>
+			/// Typically you do not need to set the scroll size manually, as the content will be used to determine the size
+			/// automatically.
+			/// </remarks>
+			/// <value>The size of the scrollable region.</value>
+			Size ScrollSize { get; set; }
+
+			/// <summary>
+			/// Gets or sets the border type
+			/// </summary>
+			/// <value>The border.</value>
+			BorderType Border { get; set; }
+
+			/// <summary>
+			/// Gets the coordinates of the rectangle that is visible to the user
+			/// </summary>
+			/// <value>The visible rect.</value>
+			Rectangle VisibleRect { get; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Scrollable"/> expands content to the width of the control
+			/// </summary>
+			/// <remarks>
+			/// This controls whether content that is smaller than the size of the control will be expanded to fill the available space.
+			/// Content that is larger than the available space will make the horizontal scrollbar appear, regardless of this setting.
+			/// </remarks>
+			/// <value><c>true</c> to expand content to the width of the control; otherwise, <c>false</c>.</value>
+			bool ExpandContentWidth { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Scrollable"/> expands content to the height of the control
+			/// </summary>
+			/// <remarks>
+			/// This controls whether content that is smaller than the size of the control will be expanded to fill the available space.
+			/// Content that is larger than the available space will make the vertical scrollbar appear, regardless of this setting.
+			/// </remarks>
+			/// <value><c>true</c> to expand content to the height of the control; otherwise, <c>false</c>.</value>
+			bool ExpandContentHeight { get; set; }
+
+			/// <summary>
+			/// Hint to get or set the minimum zoom of the scrollable region, if the platform supports it
+			/// </summary>
+			/// <value>The minimum zoom.</value>
+			float MinimumZoom { get; set; }
+
+			/// <summary>
+			/// Hint to get or set the maximum zoom of the scrollable region, if the platform supports it
+			/// </summary>
+			/// <value>The maximum zoom.</value>
+			float MaximumZoom { get; set; }
+
+			/// <summary>
+			/// Hint to set the zoom level of the scrollable region, if the platform supports it
+			/// </summary>
+			/// <value>The current zoom level</value>
+			float Zoom { get; set; }
+		}
+
+		#endregion
 	}
 }

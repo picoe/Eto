@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
 {
-	public class MouseHandler : IMouse
+	public class MouseHandler : Mouse.IHandler
 	{
 		public Widget Widget { get; set; }
 

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Eto.iOS.Forms
 {
-	public class ApplicationHandler : WidgetHandler<UIApplication, Application, Application.ICallback>, IApplication
+	public class ApplicationHandler : WidgetHandler<UIApplication, Application, Application.ICallback>, Application.IHandler
 	{
 		bool attached;
 

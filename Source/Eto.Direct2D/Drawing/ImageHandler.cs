@@ -19,7 +19,7 @@ namespace Eto.Direct2D.Drawing
 		sd.Bitmap GetBitmap(sd.RenderTarget target);
 	}
 
-	public class ImageHandler<TWidget> : WidgetHandler<sw.Bitmap, TWidget>, IImage, ID2DBitmapHandler
+	public class ImageHandler<TWidget> : WidgetHandler<sw.Bitmap, TWidget>, Image.IHandler, ID2DBitmapHandler
 #if WINFORMS		
 		, IWindowsImageSource
 #endif

@@ -6,7 +6,7 @@ using mwc = Xceed.Wpf.Toolkit;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
+	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
 		public NumericUpDownHandler ()
 		{

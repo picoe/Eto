@@ -14,7 +14,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Drawing
 {
-	public class LinearGradientBrushHandler : BrushHandler, ILinearGradientBrush
+	public class LinearGradientBrushHandler : BrushHandler, LinearGradientBrush.IHandler
 	{
 		// TODO: Android does not have the concept of a linear 
 		class BrushObject

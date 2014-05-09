@@ -8,14 +8,10 @@ namespace Eto.Forms
 		Image Image { get; }
 	}
 	
-	public partial interface IListBox : IListControl
+	[Handler(typeof(ListBox.IHandler))]
+	public class ListBox : ListControl
 	{
-	}
-
-	[Handler(typeof(IListBox))]
-	public partial class ListBox : ListControl
-	{
-		new IListBox Handler { get { return (IListBox)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public event EventHandler<EventArgs> Activated;
 
@@ -30,7 +26,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public ListBox (Generator generator) : this (generator, typeof(IListBox))
+		public ListBox (Generator generator) : this (generator, typeof(IHandler))
 		{
 		}
 
@@ -38,6 +34,12 @@ namespace Eto.Forms
 		protected ListBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
+		}
+
+		public ContextMenu ContextMenu
+		{
+			get { return Handler.ContextMenu; }
+			set { Handler.ContextMenu = value; }
 		}
 
 		static readonly object callback = new Callback();
@@ -54,6 +56,10 @@ namespace Eto.Forms
 			{
 				widget.OnActivated(e);
 			}
+		}
+
+		public interface IHandler : ListControl.IHandler, IContextMenuHost
+		{
 		}
 	}
 }

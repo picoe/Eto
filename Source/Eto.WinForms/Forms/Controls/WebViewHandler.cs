@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class WebViewHandler : WindowsControl<SWF.WebBrowser, WebView, WebView.ICallback>, IWebView
+	public class WebViewHandler : WindowsControl<SWF.WebBrowser, WebView, WebView.ICallback>, WebView.IHandler
 	{
 		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 		[Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]

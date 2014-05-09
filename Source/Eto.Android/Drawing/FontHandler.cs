@@ -19,7 +19,7 @@ namespace Eto.Android.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class FontHandler : WidgetHandler<ag.Typeface, Font>, IFont
+	public class FontHandler : WidgetHandler<ag.Typeface, Font>, Font.IHandler
 	{
 		float size;
 		/// <summary>

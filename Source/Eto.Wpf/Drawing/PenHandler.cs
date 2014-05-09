@@ -9,7 +9,7 @@ namespace Eto.Wpf.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class PenHandler : IPen
+	public class PenHandler : Pen.IHandler
 	{
 		public object Create (Color color, float thickness)
 		{

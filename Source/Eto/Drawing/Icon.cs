@@ -5,24 +5,6 @@ using System.IO;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Platform handler for the <see cref="Icon"/> class
-	/// </summary>
-	public interface IIcon : IImage
-	{
-		/// <summary>
-		/// Called when creating an instance from a stream
-		/// </summary>
-		/// <param name="stream">Stream to load the icon from</param>
-		void Create (Stream stream);
-
-		/// <summary>
-		/// Called when creating an instance from a file name
-		/// </summary>
-		/// <param name="fileName">File name to load the icon from</param>
-		void Create (string fileName);
-	}
-	
-	/// <summary>
 	/// Represents an icon which allows for multiple sizes of an image
 	/// </summary>
 	/// <remarks>
@@ -33,16 +15,16 @@ namespace Eto.Drawing
 	/// 
 	/// For HiDPI/Retina displays (e.g. on OS X), this will allow using a higher resolution image automatically.
 	/// </remarks>
-	[Handler(typeof(IIcon))]
+	[Handler(typeof(Icon.IHandler))]
 	public class Icon : Image
 	{
-		new IIcon Handler { get { return (IIcon)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		/// <summary>
 		/// Initializes a new instance of the Icon class with the specified handler
 		/// </summary>
 		/// <param name="handler">Handler for the icon backend</param>
-		public Icon (IIcon handler)
+		public Icon (IHandler handler)
 			: base(handler)
 		{
 		}
@@ -109,7 +91,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator for this widget</param>
 		/// <param name="handler">Handler for the icon backend</param>
 		[Obsolete("Use variation without generator instead")]
-		public Icon (Generator generator, IIcon handler) : base(generator, handler)
+		public Icon (Generator generator, IHandler handler) : base(generator, handler)
 		{
 		}
 
@@ -119,7 +101,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator for this widget</param>
 		/// <param name="stream">Stream to load the content from</param>
 		[Obsolete("Use variation without generator instead")]
-		public Icon (Stream stream, Generator generator) : base(generator, typeof(IIcon))
+		public Icon (Stream stream, Generator generator) : base(generator, typeof(IHandler))
 		{
 			Handler.Create (stream);
 		}
@@ -130,7 +112,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator for this widget</param>
 		/// <param name="fileName">Name of the file to loat the content from</param>
 		[Obsolete("Use variation without generator instead")]
-		public Icon (string fileName, Generator generator) : base(generator, typeof(IIcon))
+		public Icon (string fileName, Generator generator) : base(generator, typeof(IHandler))
 		{
 			Handler.Create (fileName);
 		}
@@ -175,5 +157,23 @@ namespace Eto.Drawing
 		}
 
 		#pragma warning restore 612,618
+
+		/// <summary>
+		/// Platform handler for the <see cref="Icon"/> class
+		/// </summary>
+		public interface IHandler : Image.IHandler
+		{
+			/// <summary>
+			/// Called when creating an instance from a stream
+			/// </summary>
+			/// <param name="stream">Stream to load the icon from</param>
+			void Create (Stream stream);
+
+			/// <summary>
+			/// Called when creating an instance from a file name
+			/// </summary>
+			/// <param name="fileName">File name to load the icon from</param>
+			void Create (string fileName);
+		}
 	}
 }

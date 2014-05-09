@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp.Drawing
 {
-	public class GraphicsHandler : WidgetHandler<Cairo.Context, Graphics>, IGraphics
+	public class GraphicsHandler : WidgetHandler<Cairo.Context, Graphics>, Graphics.IHandler
 	{
 		Pango.Context pangoContext;
 		readonly Gtk.Widget widget;

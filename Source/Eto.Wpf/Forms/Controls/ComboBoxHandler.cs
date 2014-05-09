@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, IComboBox
+	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		IListStore store;
 

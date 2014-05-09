@@ -13,7 +13,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Forms.Controls
 {
-	public class CheckBoxHandler : AndroidCommonControl<aw.CheckBox, CheckBox, CheckBox.ICallback>, ICheckBox
+	public class CheckBoxHandler : AndroidCommonControl<aw.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		public CheckBoxHandler()
 		{

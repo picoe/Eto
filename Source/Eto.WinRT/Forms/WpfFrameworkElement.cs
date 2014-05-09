@@ -17,7 +17,7 @@ namespace Eto.WinRT.Forms
 	/// Xaml Framework element handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IWpfFrameworkElement
 	{
@@ -82,9 +82,10 @@ namespace Eto.WinRT.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
-	public abstract class WpfFrameworkElement<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IWpfFrameworkElement
+	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
 		where TControl : FrameworkElement
 		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		wf.Size preferredSize = new wf.Size(double.NaN, double.NaN);
 		Size? newSize;
@@ -357,7 +358,7 @@ namespace Eto.WinRT.Forms
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
 						newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
-						Widget.OnSizeChanged(EventArgs.Empty);
+						Callback.OnSizeChanged(Widget, EventArgs.Empty);
 						newSize = null;
 					};
 					break;
@@ -397,10 +398,10 @@ namespace Eto.WinRT.Forms
 #endif
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (sender, e) => Widget.OnGotFocus(EventArgs.Empty);
+					Control.GotFocus += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (sender, e) => Widget.OnLostFocus(EventArgs.Empty);
+					Control.LostFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(id);

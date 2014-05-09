@@ -34,7 +34,7 @@ namespace Eto.Mac.Forms
 		
     }
 	
-    public abstract class MacFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IFileDialog, IMacFileDialog
+	public abstract class MacFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler, IMacFileDialog
      where TControl: NSSavePanel
      where TWidget: FileDialog
     {

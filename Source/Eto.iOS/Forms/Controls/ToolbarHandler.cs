@@ -25,7 +25,7 @@ namespace Eto.iOS.Forms.Controls
 		UIBarButtonItem Button { get; }
 	}
 
-	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, IToolBar
+	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, ToolBar.IHandler
 	{
 		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();
 
@@ -72,7 +72,7 @@ namespace Eto.iOS.Forms.Controls
 		public ToolBarDock Dock { get; set; } // TODO
 	}
 
-	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
+	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler, IToolBarItemHandler
 		where TControl : NSToolbarItem
 		where TWidget : ToolItem
 	{
@@ -167,7 +167,7 @@ namespace Eto.iOS.Forms.Controls
 		}
 	}
 
-	public class ButtonToolItemHandler : ToolItemHandler<NSToolbarItem, ButtonToolItem>, IButtonToolItem
+	public class ButtonToolItemHandler : ToolItemHandler<NSToolbarItem, ButtonToolItem>, ButtonToolItem.IHandler
 	{
 		public override void InvokeButton()
 		{
@@ -175,7 +175,7 @@ namespace Eto.iOS.Forms.Controls
 		}
 	}
 
-	public class CheckToolItemHandler : ToolItemHandler<NSToolbarItem, CheckToolItem>, ICheckToolItem
+	public class CheckToolItemHandler : ToolItemHandler<NSToolbarItem, CheckToolItem>, CheckToolItem.IHandler
 	{
 		bool isChecked;
 		ToolBarHandler toolbarHandler;
@@ -215,7 +215,7 @@ namespace Eto.iOS.Forms.Controls
 		}
 	}
 
-	public class SeparatorToolItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolItem>, ISeparatorToolItem, IToolBarBaseItemHandler
+	public class SeparatorToolItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarBaseItemHandler
 	{
 		public SeparatorToolItemHandler()
 		{

@@ -8,7 +8,7 @@ using MonoTouch.CoreGraphics;
 
 namespace Eto.iOS.Drawing
 {
-	public class IconHandler : ImageHandler<UIImage, Icon>, IIcon
+	public class IconHandler : ImageHandler<UIImage, Icon>, Icon.IHandler
 	{
 		public IconHandler()
 		{

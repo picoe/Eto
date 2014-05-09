@@ -14,7 +14,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Drawing
 {
-	public class FontFamilyHandler : WidgetHandler<ag.Typeface, FontFamily>, IFontFamily
+	public class FontFamilyHandler : WidgetHandler<ag.Typeface, FontFamily>, FontFamily.IHandler
 	{
 		public string Name
 		{

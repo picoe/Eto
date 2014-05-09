@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, IGridView
+	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler
 	{
 		CollectionHandler collection;
 		

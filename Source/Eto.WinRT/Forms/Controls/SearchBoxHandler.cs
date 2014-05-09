@@ -7,7 +7,7 @@ namespace Eto.WinRT.Forms.Controls
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class SearchBoxHandler : TextBoxHandler, ISearchBox
+	public class SearchBoxHandler : TextBoxHandler, SearchBox.IHandler
 	{
 	}
 }

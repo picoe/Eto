@@ -13,7 +13,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class SwfWebViewHandler : WpfFrameworkElement<swf.Integration.WindowsFormsHost, WebView, WebView.ICallback>, IWebView
+	public class SwfWebViewHandler : WpfFrameworkElement<swf.Integration.WindowsFormsHost, WebView, WebView.ICallback>, WebView.IHandler
 	{
 		public swf.WebBrowser Browser { get; private set; }
 

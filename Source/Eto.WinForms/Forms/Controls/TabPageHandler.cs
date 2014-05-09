@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class TabPageHandler : WindowsPanel<swf.TabPage, TabPage, TabPage.ICallback>, ITabPage
+	public class TabPageHandler : WindowsPanel<swf.TabPage, TabPage, TabPage.ICallback>, TabPage.IHandler
 	{
 		Image image;
 		swf.TabControl tabcontrol;

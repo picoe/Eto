@@ -18,7 +18,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		void BindCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex);
 	}
 
-	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, IGridColumn, IGridColumnHandler
+	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, GridColumn.IHandler, IGridColumnHandler
 	{
 		Cell dataCell;
 		bool autoSize;

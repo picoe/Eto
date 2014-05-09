@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class CheckToolItemHandler : ToolItemHandler<Gtk.ToggleToolButton, CheckToolItem>, ICheckToolItem
+	public class CheckToolItemHandler : ToolItemHandler<Gtk.ToggleToolButton, CheckToolItem>, CheckToolItem.IHandler
 	{
 		bool ischecked;
 		bool isBeingChecked;

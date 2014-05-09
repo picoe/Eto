@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Eto.GtkSharp
 {
-	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
+	public class EtoEnvironmentHandler : WidgetHandler<Widget>, EtoEnvironment.IHandler
 	{
 		static Environment.SpecialFolder Convert (EtoSpecialFolder folder)
 		{

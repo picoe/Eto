@@ -6,7 +6,7 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {
-	public class ClipboardHandler : WidgetHandler<object, Clipboard>, IClipboard
+	public class ClipboardHandler : WidgetHandler<object, Clipboard>, Clipboard.IHandler
 	{
 		public string[] Types
 		{

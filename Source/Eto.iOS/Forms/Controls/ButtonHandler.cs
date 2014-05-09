@@ -6,7 +6,7 @@ using MonoTouch.UIKit;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ButtonHandler : IosButton<UIButton, Button, Button.ICallback>, IButton
+	public class ButtonHandler : IosButton<UIButton, Button, Button.ICallback>, Button.IHandler
 	{
 		public static Size MinimumSize = new Size(80, 23);
 		

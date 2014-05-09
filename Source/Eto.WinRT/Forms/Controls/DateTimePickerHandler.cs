@@ -12,9 +12,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Date-time picker handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>	
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>	
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class DateTimePickerHandler : WpfControl<w.DatePicker, DateTimePicker>, IDateTimePicker
+	public class DateTimePickerHandler : WpfControl<w.DatePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
 		DateTimePickerMode mode;
 
@@ -59,7 +59,7 @@ namespace Eto.WinRT.Forms.Controls
 
 				if (last != val && (last == null || val == null || Math.Abs((last.Value - val.Value).TotalSeconds) >= 1))
 				{
-					Widget.OnValueChanged(EventArgs.Empty);
+					Callback.OnValueChanged(Widget, EventArgs.Empty);
 					last = val;
 				}
 			};

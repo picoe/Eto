@@ -14,7 +14,7 @@ namespace Eto.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class FontsHandler : WidgetHandler<Widget>, IFonts
+	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler
 	{
 		FontFamily[] availableFontFamilies;
 		public IEnumerable<FontFamily> AvailableFontFamilies

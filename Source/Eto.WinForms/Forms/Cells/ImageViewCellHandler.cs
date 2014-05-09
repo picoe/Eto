@@ -7,7 +7,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class ImageViewCellHandler : CellHandler<swf.DataGridViewImageCell, ImageViewCell>, IImageViewCell
+	public class ImageViewCellHandler : CellHandler<swf.DataGridViewImageCell, ImageViewCell>, ImageViewCell.IHandler
 	{
 		static readonly sd.Bitmap transparent;
 

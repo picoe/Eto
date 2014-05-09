@@ -20,7 +20,7 @@ namespace Eto.GtkSharp.Drawing
 		void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize);
 	}
 	
-	public abstract class ImageHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IImage, IImageHandler
+	public abstract class ImageHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, Image.IHandler, IImageHandler
 		where TWidget: Image
 	{
 

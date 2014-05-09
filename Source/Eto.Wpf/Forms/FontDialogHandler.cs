@@ -6,7 +6,7 @@ using System;
 using sw = System.Windows;
 namespace Eto.Wpf.Forms
 {
-	public class FontDialogHandler : WidgetHandler<CustomControls.FontDialog.FontChooser, FontDialog>, IFontDialog
+	public class FontDialogHandler : WidgetHandler<CustomControls.FontDialog.FontChooser, FontDialog>, FontDialog.IHandler
 	{
 		public FontDialogHandler()
 		{

@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms.Menu
 {
-	public class ContextMenuHandler : WidgetHandler<NSMenu, ContextMenu>, IContextMenu
+	public class ContextMenuHandler : WidgetHandler<NSMenu, ContextMenu>, ContextMenu.IHandler
 	{
 		public ContextMenuHandler ()
 		{

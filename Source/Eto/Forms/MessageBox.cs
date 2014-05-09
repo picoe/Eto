@@ -28,16 +28,6 @@ namespace Eto.Forms
 		Cancel
 	}
 
-	public interface IMessageBox
-	{
-		string Text { get; set; }
-		string Caption { get; set; }
-		MessageBoxType Type { get; set; }
-		MessageBoxButtons Buttons { get; set; }
-		MessageBoxDefaultButton DefaultButton { get; set; }
-		DialogResult ShowDialog(Control parent);
-	}
-
 	public static class MessageBox
 	{
 		public static DialogResult Show(string text, MessageBoxType type = MessageBoxType.Information)
@@ -77,7 +67,7 @@ namespace Eto.Forms
 
 		public static DialogResult Show(Control parent, string text, string caption, MessageBoxButtons buttons, MessageBoxType type = MessageBoxType.Information, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Default)
 		{
-			var mb = Platform.Instance.Create<IMessageBox>();
+			var mb = Platform.Instance.Create<IHandler>();
 			mb.Text = text;
 			mb.Caption = caption;
 			mb.Type = type;
@@ -103,7 +93,7 @@ namespace Eto.Forms
 		[Obsolete("Use variation without generator instead")]
 		public static DialogResult Show(Generator generator, Control parent, string text, string caption, MessageBoxButtons buttons, MessageBoxType type = MessageBoxType.Information, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Default)
 		{
-			var mb = Platform.Instance.Create<IMessageBox>();
+			var mb = Platform.Instance.Create<IHandler>();
 			mb.Text = text;
 			mb.Caption = caption;
 			mb.Type = type;
@@ -113,5 +103,15 @@ namespace Eto.Forms
 		}
 
 		#pragma warning restore 612,618
+
+		public interface IHandler
+		{
+			string Text { get; set; }
+			string Caption { get; set; }
+			MessageBoxType Type { get; set; }
+			MessageBoxButtons Buttons { get; set; }
+			MessageBoxDefaultButton DefaultButton { get; set; }
+			DialogResult ShowDialog(Control parent);
+		}
 	}
 }

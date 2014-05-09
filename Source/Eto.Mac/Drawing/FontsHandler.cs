@@ -13,7 +13,7 @@ using MonoTouch.Foundation;
 namespace Eto.iOS.Drawing
 #endif
 {
-	public class FontsHandler : WidgetHandler<Widget>, IFonts
+	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler
 	{
 		readonly string [] availableFontFamilies;
 

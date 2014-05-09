@@ -3,11 +3,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IImageTextCell : ICell
-	{
-	}
-
-	[Handler(typeof(IImageTextCell))]
+	[Handler(typeof(ImageTextCell.IHandler))]
 	public class ImageTextCell : Cell
 	{
 		public IndirectBinding ImageBinding { get; set; }
@@ -32,7 +28,11 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public ImageTextCell (Generator generator)
-			: base(generator, typeof(IImageTextCell), true)
+			: base(generator, typeof(IHandler), true)
+		{
+		}
+
+		public interface IHandler : Cell.IHandler
 		{
 		}
 	}

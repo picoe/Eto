@@ -25,7 +25,7 @@ namespace Eto.WinForms.Drawing
 		}
 	}
 
-	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap, IWindowsImage
+	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IndexedBitmap.IHandler, IWindowsImage
 	{
 		public void Create(int width, int height, int bitsPerPixel)
 		{

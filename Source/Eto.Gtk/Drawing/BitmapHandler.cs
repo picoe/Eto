@@ -33,7 +33,7 @@ namespace Eto.GtkSharp.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
+	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, Bitmap.IHandler, IGtkPixbuf
 	{
 		readonly Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 

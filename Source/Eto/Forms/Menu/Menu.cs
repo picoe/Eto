@@ -2,10 +2,6 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IMenu : IWidget
-	{
-	}
-
 	public abstract class Menu : Widget
 	{
 		//IMenu inner;
@@ -29,5 +25,13 @@ namespace Eto.Forms
 		{
 		}
 
+		public interface ISubmenuHandler
+		{
+			void AddMenu (int index, MenuItem item);
+
+			void RemoveMenu (MenuItem item);
+
+			void Clear ();
+		}
 	}
 }

@@ -7,7 +7,7 @@ using System;
 
 namespace Eto.Mac.IO
 {
-	public class SystemIconsHandler : ISystemIcons
+	public class SystemIconsHandler : SystemIcons.IHandler
 	{
 
 		public Icon GetFileIcon(string fileName, IconSize size)

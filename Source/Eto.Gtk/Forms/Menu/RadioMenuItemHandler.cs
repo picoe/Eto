@@ -6,7 +6,7 @@ namespace Eto.GtkSharp
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class RadioMenuItemHandler : MenuActionItemHandler<Gtk.RadioMenuItem, RadioMenuItem>, IRadioMenuItem
+	public class RadioMenuItemHandler : MenuActionItemHandler<Gtk.RadioMenuItem, RadioMenuItem>, RadioMenuItem.IHandler
 	{
 		string text;
 		Keys shortcut;

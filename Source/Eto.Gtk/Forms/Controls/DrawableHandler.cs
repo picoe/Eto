@@ -5,7 +5,7 @@ using System;
 
 namespace Eto.GtkSharp
 {
-	public class DrawableHandler : GtkPanel<Gtk.EventBox, Drawable, Drawable.ICallback>, IDrawable
+	public class DrawableHandler : GtkPanel<Gtk.EventBox, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{
 		Gtk.VBox content;
 

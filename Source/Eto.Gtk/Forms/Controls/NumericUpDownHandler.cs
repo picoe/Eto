@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class NumericUpDownHandler : GtkControl<Gtk.SpinButton, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
+	public class NumericUpDownHandler : GtkControl<Gtk.SpinButton, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
 		public NumericUpDownHandler()
 		{

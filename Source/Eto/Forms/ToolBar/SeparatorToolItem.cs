@@ -28,22 +28,17 @@ namespace Eto.Forms
 		FlexibleSpace
 	}
 	
-	public interface ISeparatorToolItem : IToolItem
-	{
-		SeparatorToolItemType Type { get; set; }
-	}
-
-	[Handler(typeof(ISeparatorToolItem))]
+	[Handler(typeof(SeparatorToolItem.IHandler))]
 	public class SeparatorToolItem : ToolItem
 	{
-		new ISeparatorToolItem Handler { get { return (ISeparatorToolItem)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public SeparatorToolItem()
 		{
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public SeparatorToolItem (Generator generator) : base(generator, typeof(ISeparatorToolItem))
+		public SeparatorToolItem (Generator generator) : base(generator, typeof(IHandler))
 		{
 		}
 		
@@ -51,6 +46,11 @@ namespace Eto.Forms
 		{
 			get { return Handler.Type; }
 			set { Handler.Type = value; }
+		}
+
+		public interface IHandler : ToolItem.IHandler
+		{
+			SeparatorToolItemType Type { get; set; }
 		}
 	}
 }

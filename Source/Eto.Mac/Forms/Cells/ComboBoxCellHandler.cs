@@ -10,7 +10,7 @@ using MonoMac.CoreGraphics;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ComboBoxCellHandler : CellHandler<NSPopUpButtonCell, ComboBoxCell, ComboBoxCell.ICallback>, IComboBoxCell
+	public class ComboBoxCellHandler : CellHandler<NSPopUpButtonCell, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
 	{
 		IListStore dataStore;
 		

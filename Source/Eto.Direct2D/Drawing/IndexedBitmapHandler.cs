@@ -10,7 +10,7 @@ using System.IO;
 
 namespace Eto.Direct2D.Drawing
 {
-	public class IndexedBitmapHandler : ImageHandler<IndexedBitmap>, IIndexedBitmap
+	public class IndexedBitmapHandler : ImageHandler<IndexedBitmap>, IndexedBitmap.IHandler
     {
 		public static Guid GetFormat(int bitsPerPixel)
 		{

@@ -11,7 +11,7 @@ namespace Eto.Test.UnitTests.Handlers
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	/// </summary>
-	public class TestFontHandler : WidgetHandler<Font>, IFont
+	public class TestFontHandler : WidgetHandler<Font>, Font.IHandler
 	{
 		const float PointsToPixels = 96f / 72f;
 

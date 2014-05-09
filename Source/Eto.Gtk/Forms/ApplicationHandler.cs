@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp
 {
-	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, IApplication
+	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
 	{
 		bool attached;
 		Gtk.StatusIcon statusIcon;

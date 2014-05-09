@@ -57,7 +57,7 @@ namespace Eto.WinForms.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapHandler : WidgetHandler<SD.Bitmap, Bitmap>, IBitmap, IWindowsImage
+	public class BitmapHandler : WidgetHandler<SD.Bitmap, Bitmap>, Bitmap.IHandler, IWindowsImage
 	{
 		public BitmapHandler()
 		{

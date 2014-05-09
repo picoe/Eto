@@ -11,7 +11,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.Direct2D.Drawing
 {
-    public class IconHandler : ImageHandler<Icon>, IIcon
+	public class IconHandler : ImageHandler<Icon>, Icon.IHandler
 #if WINFORMS
 		, IWindowsIconSource
 #endif

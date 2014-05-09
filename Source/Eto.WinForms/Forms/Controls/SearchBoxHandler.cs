@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class SearchBoxHandler : TextBoxHandler, ISearchBox
+	public class SearchBoxHandler : TextBoxHandler, SearchBox.IHandler
 	{
 	}
 }

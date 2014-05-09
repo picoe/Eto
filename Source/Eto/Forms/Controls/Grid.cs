@@ -6,66 +6,6 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Grid"/> control
-	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGrid : IControl
-	{
-		/// <summary>
-		/// Gets or sets a value indicating that the header should be shown
-		/// </summary>
-		/// <value><c>true</c> to show header; otherwise, <c>false</c>.</value>
-		bool ShowHeader { get; set; }
-
-		/// <summary>
-		/// Gets or sets the height for each row in the grid
-		/// </summary>
-		/// <value>The height of the row.</value>
-		int RowHeight { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the user can re-order columns
-		/// </summary>
-		/// <value><c>true</c> to allow column reordering; otherwise, <c>false</c>.</value>
-		bool AllowColumnReordering { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the user can select multiple rows
-		/// </summary>
-		/// <value><c>true</c> to allow multiple row selection; otherwise, <c>false</c>.</value>
-		bool AllowMultipleSelection { get; set; }
-
-		/// <summary>
-		/// Gets the selected rows indexes
-		/// </summary>
-		/// <value>The selected rows.</value>
-		IEnumerable<int> SelectedRows { get; }
-
-		/// <summary>
-		/// Selects the row to the specified <paramref name="row"/>, clearing other selections
-		/// </summary>
-		/// <param name="row">Row to select</param>
-		void SelectRow(int row);
-
-		/// <summary>
-		/// Unselects the specified <paramref name="row"/>
-		/// </summary>
-		/// <param name="row">Row to unselect</param>
-		void UnselectRow(int row);
-
-		/// <summary>
-		/// Selects all rows
-		/// </summary>
-		void SelectAll();
-
-		/// <summary>
-		/// Clears the selection
-		/// </summary>
-		void UnselectAll();
-	}
-
-	/// <summary>
 	/// Event arguments for <see cref="Grid"/> events relating to a specific column
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
@@ -154,7 +94,7 @@ namespace Eto.Forms
 	{
 		GridColumnCollection columns;
 
-		new IGrid Handler { get { return (IGrid)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets the collection of columns to display in the grid
@@ -301,7 +241,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class with the specified handler
 		/// </summary>
 		/// <param name="handler">Handler implementation for the control</param>
-		protected Grid(IGrid handler)
+		protected Grid(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -325,7 +265,7 @@ namespace Eto.Forms
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use Grid(IGrid) instead")]
-		protected Grid(Generator generator, IControl handler, bool initialize = true)
+		protected Grid(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, false)
 		{
 		}
@@ -473,5 +413,69 @@ namespace Eto.Forms
 				widget.OnCellFormatting(e);
 			}
 		}
+
+		#region Handler
+
+		/// <summary>
+		/// Handler interface for the <see cref="Grid"/> control
+		/// </summary>
+		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : Control.IHandler
+		{
+			/// <summary>
+			/// Gets or sets a value indicating that the header should be shown
+			/// </summary>
+			/// <value><c>true</c> to show header; otherwise, <c>false</c>.</value>
+			bool ShowHeader { get; set; }
+
+			/// <summary>
+			/// Gets or sets the height for each row in the grid
+			/// </summary>
+			/// <value>The height of the row.</value>
+			int RowHeight { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the user can re-order columns
+			/// </summary>
+			/// <value><c>true</c> to allow column reordering; otherwise, <c>false</c>.</value>
+			bool AllowColumnReordering { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the user can select multiple rows
+			/// </summary>
+			/// <value><c>true</c> to allow multiple row selection; otherwise, <c>false</c>.</value>
+			bool AllowMultipleSelection { get; set; }
+
+			/// <summary>
+			/// Gets the selected rows indexes
+			/// </summary>
+			/// <value>The selected rows.</value>
+			IEnumerable<int> SelectedRows { get; }
+
+			/// <summary>
+			/// Selects the row to the specified <paramref name="row"/>, clearing other selections
+			/// </summary>
+			/// <param name="row">Row to select</param>
+			void SelectRow(int row);
+
+			/// <summary>
+			/// Unselects the specified <paramref name="row"/>
+			/// </summary>
+			/// <param name="row">Row to unselect</param>
+			void UnselectRow(int row);
+
+			/// <summary>
+			/// Selects all rows
+			/// </summary>
+			void SelectAll();
+
+			/// <summary>
+			/// Clears the selection
+			/// </summary>
+			void UnselectAll();
+		}
+
+		#endregion
 	}
 }

@@ -101,7 +101,7 @@ namespace Eto.Mac.Forms
 		}
 	}
 
-	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, IWindow, IMacContainer, IMacWindow
+	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacContainer, IMacWindow
 		where TControl: MyWindow
 		where TWidget: Window
 		where TCallback: Window.ICallback

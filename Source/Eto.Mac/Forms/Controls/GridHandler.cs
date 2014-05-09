@@ -110,7 +110,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	public abstract class GridHandler<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, IGrid, IDataViewHandler, IGridHandler
+	public abstract class GridHandler<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, Grid.IHandler, IDataViewHandler, IGridHandler
 		where TControl: NSTableView
 		where TWidget: Grid
 		where TCallback: Grid.ICallback

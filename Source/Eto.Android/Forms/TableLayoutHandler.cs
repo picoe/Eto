@@ -15,11 +15,11 @@ using ag = Android.Graphics;
 namespace Eto.Android.Forms
 {
 	/// <summary>
-	/// Handler for <see cref="ITableLayout"/>
+	/// Handler for <see cref="TableLayout"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class TableLayoutHandler : AndroidContainer<aw.TableLayout, TableLayout, TableLayout.ICallback>, ITableLayout
+	public class TableLayoutHandler : AndroidContainer<aw.TableLayout, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
 		int lastColumnScale;
 		bool[] columnScale;

@@ -8,11 +8,11 @@ using aw = Android.Widget;
 namespace Eto.Android.Forms
 {
 	/// <summary>
-	/// Base handler for <see cref="IPanel"/>
+	/// Base handler for <see cref="Panel"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class AndroidPanel<TControl, TWidget, TCallback> : AndroidContainer<TControl, TWidget, TCallback>, IPanel
+	public abstract class AndroidPanel<TControl, TWidget, TCallback> : AndroidContainer<TControl, TWidget, TCallback>, Panel.IHandler
 		where TWidget: Panel
 		where TCallback: Panel.ICallback
 	{

@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class SpinnerHandler : MacView<NSProgressIndicator, Spinner, Spinner.ICallback>, ISpinner
+	public class SpinnerHandler : MacView<NSProgressIndicator, Spinner, Spinner.ICallback>, Spinner.IHandler
 	{
 		bool enabled;
 		readonly NSView view;

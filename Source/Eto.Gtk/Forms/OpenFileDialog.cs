@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp
 {
-	public class OpenFileDialogHandler : GtkFileDialog<Gtk.FileChooserDialog, OpenFileDialog>, IOpenFileDialog
+	public class OpenFileDialogHandler : GtkFileDialog<Gtk.FileChooserDialog, OpenFileDialog>, OpenFileDialog.IHandler
 	{
 		public OpenFileDialogHandler()
 		{

@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Mac.Forms
 {
-	public class CursorHandler : WidgetHandler<NSCursor, Cursor>, ICursor
+	public class CursorHandler : WidgetHandler<NSCursor, Cursor>, Cursor.IHandler
 	{
 		public void Create (CursorType cursor)
 		{

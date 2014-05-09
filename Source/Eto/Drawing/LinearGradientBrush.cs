@@ -3,62 +3,6 @@ using System;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Handler interface for the <see cref="LinearGradientBrush"/>
-	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface ILinearGradientBrush : IBrush
-	{
-		/// <summary>
-		/// Creates a linear gradient brush
-		/// </summary>
-		/// <param name="startColor">Start color.</param>
-		/// <param name="endColor">End color.</param>
-		/// <param name="startPoint">Start point.</param>
-		/// <param name="endPoint">End point.</param>
-		/// <returns>ControlObject for the brush</returns>
-		object Create (Color startColor, Color endColor, PointF startPoint, PointF endPoint);
-
-		/// <summary>
-		/// Create the specified rectangle, startColor, endColor and angle.
-		/// </summary>
-		/// <param name="rectangle">Rectangle.</param>
-		/// <param name="startColor">Start color.</param>
-		/// <param name="endColor">End color.</param>
-		/// <param name="angle">Angle.</param>
-		/// <returns>ControlObject for the brush</returns>
-		object Create (RectangleF rectangle, Color startColor, Color endColor, float angle);
-
-		/// <summary>
-		/// Gets the transform for the specified brush
-		/// </summary>
-		/// <returns>The current transform for the specified brush</returns>
-		/// <param name="widget">Brush to get the transform</param>
-		IMatrix GetTransform (LinearGradientBrush widget);
-
-		/// <summary>
-		/// Sets the transform for the specified brush
-		/// </summary>
-		/// <param name="widget">Brush to set the transform</param>
-		/// <param name="transform">Transform to set to the brush</param>
-		void SetTransform (LinearGradientBrush widget, IMatrix transform);
-
-		/// <summary>
-		/// Gets the gradient wrap mode
-		/// </summary>
-		/// <returns>The gradient wrap mode for the brush</returns>
-		/// <param name="widget">Brush to get the gradient wrap mode</param>
-		GradientWrapMode GetGradientWrap (LinearGradientBrush widget);
-
-		/// <summary>
-		/// Sets the gradient wrap mode
-		/// </summary>
-		/// <param name="widget">Brush to set the wrap mode</param>
-		/// <param name="gradientWrap">Gradient wrap mode to set</param>
-		void SetGradientWrap (LinearGradientBrush widget, GradientWrapMode gradientWrap);
-	}
-
-	/// <summary>
 	/// Wrap mode for a gradient
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
@@ -83,7 +27,7 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class LinearGradientBrush : Brush, ITransformBrush
 	{
-		readonly ILinearGradientBrush handler;
+		readonly IHandler handler;
 
 		/// <summary>
 		/// Gets the platform handler object for the widget
@@ -101,7 +45,7 @@ namespace Eto.Drawing
 		{
 			get
 			{
-				var handler = Platform.Instance.CreateShared<ILinearGradientBrush>();
+				var handler = Platform.Instance.CreateShared<IHandler>();
 				return (startColor, endColor, startPoint, endPoint) =>
 				{
 					var control = handler.Create(startColor, endColor, startPoint, endPoint);
@@ -110,7 +54,7 @@ namespace Eto.Drawing
 			}
 		}
 
-		LinearGradientBrush(ILinearGradientBrush handler, object control)
+		LinearGradientBrush(IHandler handler, object control)
 		{
 			this.handler = handler;
 			ControlObject = control;
@@ -125,7 +69,7 @@ namespace Eto.Drawing
 		/// <param name="endPoint">End point for the gradient</param>
 		public LinearGradientBrush(Color startColor, Color endColor, PointF startPoint, PointF endPoint)
 		{
-			handler = Platform.Instance.CreateShared<ILinearGradientBrush> ();
+			handler = Platform.Instance.CreateShared<IHandler> ();
 			ControlObject = handler.Create (startColor, endColor, startPoint, endPoint);
 		}
 
@@ -138,7 +82,7 @@ namespace Eto.Drawing
 		/// <param name="angle">Angle of the gradient</param>
 		public LinearGradientBrush(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			handler = Platform.Instance.CreateShared<ILinearGradientBrush> ();
+			handler = Platform.Instance.CreateShared<IHandler> ();
 			ControlObject = handler.Create (rectangle, startColor, endColor, angle);
 		}
 
@@ -154,7 +98,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create the brush, or null to use the current generator</param>
 		public LinearGradientBrush(Color startColor, Color endColor, PointF startPoint, PointF endPoint, Generator generator)
 		{
-			handler = generator.CreateShared<ILinearGradientBrush>();
+			handler = generator.CreateShared<IHandler>();
 			ControlObject = handler.Create(startColor, endColor, startPoint, endPoint);
 		}
 
@@ -168,7 +112,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create the brush, or null to use the current generator</param>
 		public LinearGradientBrush(RectangleF rectangle, Color startColor, Color endColor, float angle, Generator generator)
 		{
-			handler = generator.CreateShared<ILinearGradientBrush>();
+			handler = generator.CreateShared<IHandler>();
 			ControlObject = handler.Create(rectangle, startColor, endColor, angle);
 		}
 
@@ -193,6 +137,66 @@ namespace Eto.Drawing
 			get { return handler.GetGradientWrap (this); }
 			set { handler.SetGradientWrap (this, value); }
 		}
+
+		#region Handler
+
+		/// <summary>
+		/// Handler interface for the <see cref="LinearGradientBrush"/>
+		/// </summary>
+		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : Brush.IHandler
+		{
+			/// <summary>
+			/// Creates a linear gradient brush
+			/// </summary>
+			/// <param name="startColor">Start color.</param>
+			/// <param name="endColor">End color.</param>
+			/// <param name="startPoint">Start point.</param>
+			/// <param name="endPoint">End point.</param>
+			/// <returns>ControlObject for the brush</returns>
+			object Create (Color startColor, Color endColor, PointF startPoint, PointF endPoint);
+
+			/// <summary>
+			/// Create the specified rectangle, startColor, endColor and angle.
+			/// </summary>
+			/// <param name="rectangle">Rectangle.</param>
+			/// <param name="startColor">Start color.</param>
+			/// <param name="endColor">End color.</param>
+			/// <param name="angle">Angle.</param>
+			/// <returns>ControlObject for the brush</returns>
+			object Create (RectangleF rectangle, Color startColor, Color endColor, float angle);
+
+			/// <summary>
+			/// Gets the transform for the specified brush
+			/// </summary>
+			/// <returns>The current transform for the specified brush</returns>
+			/// <param name="widget">Brush to get the transform</param>
+			IMatrix GetTransform (LinearGradientBrush widget);
+
+			/// <summary>
+			/// Sets the transform for the specified brush
+			/// </summary>
+			/// <param name="widget">Brush to set the transform</param>
+			/// <param name="transform">Transform to set to the brush</param>
+			void SetTransform (LinearGradientBrush widget, IMatrix transform);
+
+			/// <summary>
+			/// Gets the gradient wrap mode
+			/// </summary>
+			/// <returns>The gradient wrap mode for the brush</returns>
+			/// <param name="widget">Brush to get the gradient wrap mode</param>
+			GradientWrapMode GetGradientWrap (LinearGradientBrush widget);
+
+			/// <summary>
+			/// Sets the gradient wrap mode
+			/// </summary>
+			/// <param name="widget">Brush to set the wrap mode</param>
+			/// <param name="gradientWrap">Gradient wrap mode to set</param>
+			void SetGradientWrap (LinearGradientBrush widget, GradientWrapMode gradientWrap);
+		}
+
+		#endregion
 	}
 }
 

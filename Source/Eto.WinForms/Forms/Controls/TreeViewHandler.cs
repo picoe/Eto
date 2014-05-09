@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView, TreeView.ICallback>, ITreeView
+	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
 		ITreeStore top;
 		readonly Dictionary<Image, string> images = new Dictionary<Image, string>();

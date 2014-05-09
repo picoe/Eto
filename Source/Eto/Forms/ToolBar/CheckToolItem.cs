@@ -2,15 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ICheckToolItem : IToolItem
-	{
-		bool Checked { get; set; }
-	}
-
-	[Handler(typeof(ICheckToolItem))]
+	[Handler(typeof(CheckToolItem.IHandler))]
 	public class CheckToolItem : ToolItem
 	{
-		new ICheckToolItem Handler { get { return (ICheckToolItem)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public event EventHandler<EventArgs> CheckedChanged;
 
@@ -29,13 +24,13 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public CheckToolItem(Generator generator)
-			: base(generator, typeof(ICheckToolItem))
+			: base(generator, typeof(IHandler))
 		{
 		}
 
 		[Obsolete("Use CheckToolItem(CheckCommand) instead")]
 		public CheckToolItem(CheckCommand command, Generator generator = null)
-			: base(command, generator, typeof(ICheckToolItem))
+			: base(command, generator, typeof(IHandler))
 		{
 			Checked = command.Checked;
 			command.CheckedChanged += (sender, e) => Checked = command.Checked;
@@ -53,6 +48,11 @@ namespace Eto.Forms
 		{
 			if (CheckedChanged != null)
 				CheckedChanged(this, e);
+		}
+
+		public interface IHandler : ToolItem.IHandler
+		{
+			bool Checked { get; set; }
 		}
 	}
 }

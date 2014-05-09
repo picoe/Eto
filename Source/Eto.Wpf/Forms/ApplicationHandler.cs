@@ -8,15 +8,13 @@ using System.Threading;
 
 namespace Eto.Wpf.Forms
 {
-	public class ApplicationHandler : WidgetHandler<System.Windows.Application, Application>, IApplication
+	public class ApplicationHandler : WidgetHandler<System.Windows.Application, Application, Application.ICallback>, Application.IHandler
 	{
 		bool attached;
 		bool shutdown;
 		string badgeLabel;
 		static ApplicationHandler instance;
 		List<sw.Window> delayShownWindows;
-
-		public new IApplicationCallback Callback { get { return (IApplicationCallback)base.Callback; } }
 
 		public static ApplicationHandler Instance
 		{

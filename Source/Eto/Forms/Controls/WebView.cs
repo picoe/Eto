@@ -3,33 +3,6 @@ using System.IO;
 
 namespace Eto.Forms
 {
-	public interface IWebView : IControl
-	{
-		Uri Url { get; set; }
-
-		void LoadHtml(string html, Uri baseUri);
-
-		void GoBack();
-
-		bool CanGoBack { get; }
-
-		void GoForward();
-
-		bool CanGoForward { get; }
-
-		void Stop();
-
-		void Reload();
-
-		string DocumentTitle { get; }
-
-		string ExecuteScript(string script);
-
-		void ShowPrintDialog();
-
-		bool BrowserContextMenuEnabled { get; set; }
-	}
-
 	public class WebViewLoadedEventArgs : EventArgs
 	{
 		public Uri Uri { get; private set; }
@@ -74,10 +47,10 @@ namespace Eto.Forms
 		}
 	}
 
-	[Handler(typeof(IWebView))]
+	[Handler(typeof(WebView.IHandler))]
 	public class WebView : Control
 	{
-		new IWebView Handler { get { return (IWebView)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		#region Events
 
@@ -163,7 +136,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public WebView(Generator generator)
-			: this(generator, typeof(IWebView))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -278,6 +251,35 @@ namespace Eto.Forms
 				widget.OnDocumentTitleChanged(e);
 			}
 		}
+
+		public interface IHandler : Control.IHandler
+		{
+			Uri Url { get; set; }
+
+			void LoadHtml(string html, Uri baseUri);
+
+			void GoBack();
+
+			bool CanGoBack { get; }
+
+			void GoForward();
+
+			bool CanGoForward { get; }
+
+			void Stop();
+
+			void Reload();
+
+			string DocumentTitle { get; }
+
+			string ExecuteScript(string script);
+
+			void ShowPrintDialog();
+
+			bool BrowserContextMenuEnabled { get; set; }
+		}
+
+
 	}
 }
 

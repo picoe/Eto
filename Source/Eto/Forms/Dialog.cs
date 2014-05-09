@@ -47,18 +47,6 @@ namespace Eto.Forms
 		Navigation = 0x04
 	}
 
-	public interface IDialog : IWindow
-	{
-		DialogDisplayMode DisplayMode { get; set; }
-
-		void ShowModal(Control parent);
-		Task ShowModalAsync(Control parent);
-
-		Button DefaultButton { get; set; }
-
-		Button AbortButton { get; set; }
-	}
-
 	public class Dialog<T> : Dialog
 	{
 		public T Result { get; set; }
@@ -82,10 +70,10 @@ namespace Eto.Forms
 		}
 	}
 
-	[Handler(typeof(IDialog))]
+	[Handler(typeof(Dialog.IHandler))]
 	public class Dialog : Window
 	{
-		new IDialog Handler { get { return (IDialog)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Dialog(Generator generator, Type type, bool initialize = true)
@@ -98,7 +86,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public Dialog(Generator generator) : this(generator, typeof(IDialog))
+		public Dialog(Generator generator) : this(generator, typeof(IHandler))
 		{
 		}
 
@@ -163,6 +151,18 @@ namespace Eto.Forms
 		{
 			DialogResult = result;
 			Close();
+		}
+
+		public interface IHandler : Window.IHandler
+		{
+			DialogDisplayMode DisplayMode { get; set; }
+
+			void ShowModal(Control parent);
+			Task ShowModalAsync(Control parent);
+
+			Button DefaultButton { get; set; }
+
+			Button AbortButton { get; set; }
 		}
 	}
 }

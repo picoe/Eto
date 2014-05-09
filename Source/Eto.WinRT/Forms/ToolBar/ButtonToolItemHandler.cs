@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.WinRT.Forms
 {
-	public class ButtonToolItemHandler : ToolItemHandler<swc.Button, ButtonToolItem>, IButtonToolItem
+	public class ButtonToolItemHandler : ToolItemHandler<swc.Button, ButtonToolItem>, ButtonToolItem.IHandler
 	{
 		Image image;
 		readonly swc.Image swcImage;

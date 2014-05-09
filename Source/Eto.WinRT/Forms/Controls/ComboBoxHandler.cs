@@ -15,9 +15,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Combobox handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox>, IComboBox
+	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		IListStore store;
 
@@ -113,7 +113,7 @@ namespace Eto.WinRT.Forms.Controls
 			base.Initialize();
 			Control.SelectionChanged += delegate
 			{
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
 		}
 

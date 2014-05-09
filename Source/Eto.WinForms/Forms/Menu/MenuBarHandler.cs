@@ -6,7 +6,7 @@ namespace Eto.WinForms
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class MenuBarHandler : WidgetHandler<SWF.MenuStrip, MenuBar>, IMenuBar, IMenu
+	public class MenuBarHandler : WidgetHandler<SWF.MenuStrip, MenuBar>, MenuBar.IHandler
 	{
 		public MenuBarHandler()
 		{

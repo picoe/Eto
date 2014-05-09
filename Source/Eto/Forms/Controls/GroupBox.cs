@@ -3,24 +3,17 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IGroupBox : IPanel
-	{
-		Font Font { get; set; }
-
-		string Text { get; set; }
-	}
-
-	[Handler(typeof(IGroupBox))]
+	[Handler(typeof(GroupBox.IHandler))]
 	public class GroupBox : Panel
 	{
-		new IGroupBox Handler { get { return (IGroupBox)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public GroupBox()
 		{
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public GroupBox (Generator generator) : this (generator, typeof(IGroupBox))
+		public GroupBox (Generator generator) : this (generator, typeof(IHandler))
 		{
 		}
 		
@@ -40,5 +33,11 @@ namespace Eto.Forms
 			set { Handler.Text = value; }
 		}
 
+		public interface IHandler : Panel.IHandler
+		{
+			Font Font { get; set; }
+
+			string Text { get; set; }
+		}
 	}
 }

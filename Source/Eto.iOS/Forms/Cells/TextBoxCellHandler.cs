@@ -5,7 +5,7 @@ using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.iOS.Forms.Cells
 {
-	public class TextBoxCellHandler : CellHandler<NSCell, TextBoxCell>, ITextBoxCell
+	public class TextBoxCellHandler : CellHandler<NSCell, TextBoxCell>, TextBoxCell.IHandler
 	{
 		public TextBoxCellHandler ()
 		{

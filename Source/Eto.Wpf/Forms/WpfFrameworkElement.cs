@@ -73,7 +73,7 @@ namespace Eto.Wpf.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
-	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl, IWpfFrameworkElement
+	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
 		where TControl : System.Windows.FrameworkElement
 		where TWidget : Control
 		where TCallback: Control.ICallback

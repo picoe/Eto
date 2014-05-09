@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>
-	/// Handler for <see cref="ILinearGradientBrush"/>
+	/// Handler for <see cref="LinearGradientBrush"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class LinearGradientBrushHandler : BrushHandler, ILinearGradientBrush
+	public class LinearGradientBrushHandler : BrushHandler, LinearGradientBrush.IHandler
 	{
 		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
 		internal static extern Cairo.Extend cairo_pattern_get_extend (IntPtr pattern);

@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TabControlHandler : WpfContainer<swc.TabControl, TabControl, TabControl.ICallback>, ITabControl
+	public class TabControlHandler : WpfContainer<swc.TabControl, TabControl, TabControl.ICallback>, TabControl.IHandler
 	{
 		bool disableSelectedIndexChanged;
 		public TabControlHandler ()

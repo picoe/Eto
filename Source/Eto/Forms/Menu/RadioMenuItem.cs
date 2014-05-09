@@ -2,17 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IRadioMenuItem : IMenuItem
-	{
-		void Create(RadioMenuItem controller);
-
-		bool Checked { get; set; }
-	}
-
-	[Handler(typeof(IRadioMenuItem))]
+	[Handler(typeof(RadioMenuItem.IHandler))]
 	public class RadioMenuItem : MenuItem
 	{
-		new IRadioMenuItem Handler { get { return (IRadioMenuItem)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public RadioMenuItem()
 		{
@@ -36,13 +29,13 @@ namespace Eto.Forms
 
 		[Obsolete("Use constructor without generator instead")]
 		public RadioMenuItem(RadioMenuItem controller, Generator generator = null)
-			: this(generator, typeof(IRadioMenuItem), controller)
+			: this(generator, typeof(RadioMenuItem.IHandler), controller)
 		{
 		}
 
 		[Obsolete("Use constructor without generator instead")]
 		public RadioMenuItem(RadioCommand command, RadioMenuItem controller, Generator generator = null)
-			: base(command, generator, typeof(IRadioMenuItem), false)
+			: base(command, generator, typeof(RadioMenuItem.IHandler), false)
 		{
 			Checked = command.Checked;
 			Click += (sender, e) => command.Checked = Checked;
@@ -65,6 +58,13 @@ namespace Eto.Forms
 		{
 			get { return Handler.Checked; }
 			set { Handler.Checked = value; }
+		}
+
+		public interface IHandler : MenuItem.IHandler
+		{
+			void Create(RadioMenuItem controller);
+
+			bool Checked { get; set; }
 		}
 	}
 }

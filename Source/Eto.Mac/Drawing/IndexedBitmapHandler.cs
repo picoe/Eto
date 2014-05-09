@@ -24,7 +24,7 @@ namespace Eto.Mac.Drawing
 		}
 	}
 
-	public class IndexedBitmapHandler : ImageHandler<object, IndexedBitmap>, IIndexedBitmap
+	public class IndexedBitmapHandler : ImageHandler<object, IndexedBitmap>, IndexedBitmap.IHandler
 	{
 		Size size;
 		int bytesPerRow;

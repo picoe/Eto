@@ -31,7 +31,7 @@ namespace Eto.Mac.Forms
 #elif IOS
 		IosView<TControl, TWidget, TCallback>,
 #endif
-		IContainer, IMacContainer
+		Container.IHandler, IMacContainer
 		where TControl: NSResponder
 		where TWidget: Container
 		where TCallback: Container.ICallback

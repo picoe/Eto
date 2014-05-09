@@ -17,7 +17,7 @@ namespace Eto.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public partial class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
+	public partial class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, Graphics.IHandler
 	{
 		bool hasBegan;
 		bool disposeControl = true;

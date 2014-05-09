@@ -4,7 +4,7 @@ using Eto.Forms;
 namespace Eto.GtkSharp
 {
 
-	public class ButtonToolItemHandler : ToolItemHandler<Gtk.ToolButton, ButtonToolItem>, IButtonToolItem
+	public class ButtonToolItemHandler : ToolItemHandler<Gtk.ToolButton, ButtonToolItem>, ButtonToolItem.IHandler
 	{
 
 		#region IToolBarButton Members

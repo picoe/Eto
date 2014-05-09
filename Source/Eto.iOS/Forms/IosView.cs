@@ -18,7 +18,7 @@ namespace Eto.iOS.Forms
 		UIViewController Controller { get; }
 	}
 
-	public abstract class IosView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, IControl, IIosView
+	public abstract class IosView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IIosView
 		where TControl: UIResponder
 		where TWidget: Control
 		where TCallback: Control.ICallback

@@ -5,7 +5,7 @@ using Eto.GtkSharp.Forms.Cells;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, ITreeGridView, ICellDataSource, IGtkListModelHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>
+	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ICellDataSource, IGtkListModelHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>
 	{
 		protected new TreeGridView.ICallback Callback { get { return (TreeGridView.ICallback)base.Callback; } }
 

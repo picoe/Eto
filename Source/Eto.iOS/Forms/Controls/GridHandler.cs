@@ -13,7 +13,7 @@ namespace Eto.iOS.Forms.Controls
 		Grid.ICallback Callback { get; }
 	}
 
-	public abstract class GridHandler<TControl, TWidget, TCallback> : IosControl<TControl, TWidget, TCallback>, IGrid, IGridHandler
+	public abstract class GridHandler<TControl, TWidget, TCallback> : IosControl<TControl, TWidget, TCallback>, Grid.IHandler, IGridHandler
 		where TControl: UITableView
 		where TWidget: Grid
 		where TCallback: Grid.ICallback

@@ -6,7 +6,7 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Drawing
 {
-	public class FontTypefaceHandler : WidgetHandler<swm.Typeface, FontTypeface>, IFontTypeface
+	public class FontTypefaceHandler : WidgetHandler<swm.Typeface, FontTypeface>, FontTypeface.IHandler
 	{
 		string name;
 

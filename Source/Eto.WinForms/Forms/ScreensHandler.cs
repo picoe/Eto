@@ -5,7 +5,7 @@ using swf = System.Windows.Forms;
 
 namespace Eto.WinForms.Forms
 {
-	public class ScreensHandler : IScreens
+	public class ScreensHandler : Screen.IScreensHandler
 	{
 		public void Initialize ()
 		{

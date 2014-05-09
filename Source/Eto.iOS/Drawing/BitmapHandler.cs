@@ -35,7 +35,7 @@ namespace Eto.iOS.Drawing
 		}
 	}
 
-	public class BitmapHandler : ImageHandler<UIImage, Bitmap>, IBitmap
+	public class BitmapHandler : ImageHandler<UIImage, Bitmap>, Bitmap.IHandler
 	{
 		CGDataProvider provider;
 		CGImage cgimage;

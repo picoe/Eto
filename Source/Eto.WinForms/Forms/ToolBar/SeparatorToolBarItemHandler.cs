@@ -5,7 +5,7 @@ using System;
 
 namespace Eto.WinForms
 {
-	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolItem>, ISeparatorToolItem, IToolBarItemHandler
+	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarItemHandler
 	{
 		public SeparatorToolBarItemHandler()
 		{

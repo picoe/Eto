@@ -3,15 +3,6 @@ using System;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Base interface for brush handlers of type <see cref="Brush"/>
-	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IBrush
-	{
-	}
-
-	/// <summary>
 	/// Base brush class to use when calling fill methods of a <see cref="Graphics"/> object
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
@@ -55,6 +46,15 @@ namespace Eto.Drawing
 				if (controlDispose != null)
 					controlDispose.Dispose();
 			}
+		}
+
+		/// <summary>
+		/// Base interface for brush handlers of type <see cref="Brush"/>
+		/// </summary>
+		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler
+		{
 		}
 	}
 }

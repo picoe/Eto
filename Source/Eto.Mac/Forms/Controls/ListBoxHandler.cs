@@ -16,7 +16,7 @@ namespace Eto.Mac.Forms.Controls
 		public object Handler { get { return WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 	}
 
-	public class ListBoxHandler : MacControl<NSTableView, ListBox, ListBox.ICallback>, IListBox
+	public class ListBoxHandler : MacControl<NSTableView, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
 		Font font;
 		readonly NSScrollView scroll;

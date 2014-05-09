@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class TextAreaHandler : GtkControl<Gtk.TextView, TextArea, TextArea.ICallback>, ITextArea
+	public class TextAreaHandler : GtkControl<Gtk.TextView, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		bool sendSelectionChanged = true;
 		readonly Gtk.ScrolledWindow scroll;

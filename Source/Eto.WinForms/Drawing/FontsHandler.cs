@@ -6,7 +6,7 @@ using sd = System.Drawing;
 
 namespace Eto.WinForms.Drawing
 {
-	public class FontsHandler : WidgetHandler<Widget>, IFonts
+	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler
 	{
 		HashSet<string> availableFontFamilies;
 

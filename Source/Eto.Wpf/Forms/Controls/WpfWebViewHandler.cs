@@ -8,7 +8,7 @@ using Eto.CustomControls;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class WpfWebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView, WebView.ICallback>, IWebView
+	public class WpfWebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView, WebView.ICallback>, WebView.IHandler
 	{
 		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 		[Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]

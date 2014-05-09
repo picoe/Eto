@@ -2,7 +2,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class SaveFileDialogHandler : GtkFileDialog<Gtk.FileChooserDialog, SaveFileDialog>, ISaveFileDialog
+	public class SaveFileDialogHandler : GtkFileDialog<Gtk.FileChooserDialog, SaveFileDialog>, SaveFileDialog.IHandler
 	{
 		public SaveFileDialogHandler()
 		{

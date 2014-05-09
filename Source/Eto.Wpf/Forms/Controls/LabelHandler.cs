@@ -8,7 +8,7 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class LabelHandler : WpfControl<swc.Label, Label, Label.ICallback>, ILabel
+	public class LabelHandler : WpfControl<swc.Label, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly swc.AccessText text;
 

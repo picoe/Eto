@@ -7,7 +7,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <typeparam name="TControl">The Eto control used to create the custom implementation</typeparam>
 	/// <typeparam name="TWidget">The container being implemented.</typeparam>
-	public abstract class ThemedContainerHandler<TControl, TWidget, TCallback> : ThemedControlHandler<TControl, TWidget, TCallback>, IContainer
+	public abstract class ThemedContainerHandler<TControl, TWidget, TCallback> : ThemedControlHandler<TControl, TWidget, TCallback>, Container.IHandler
 		where TControl: Container
 		where TWidget : Container
 		where TCallback : Container.ICallback
@@ -26,7 +26,7 @@ namespace Eto.Forms
 		/// Gets a value indicating whether PreLoad/Load/LoadComplete/Unload events are propegated to the children controls
 		/// </summary>
 		/// <remarks>
-		/// This is mainly used when you want to use Eto controls in your handler, such as with the <see cref="ThemedContainerHandler{TContainer,TWidget}"/>
+		/// This is mainly used when you want to use Eto controls in your handler, such as with the <see cref="ThemedContainerHandler{TContainer,TWidget,TCallback}"/>
 		/// </remarks>
 		/// <value><c>true</c> to recurse events to children; otherwise, <c>false</c>.</value>
 		public virtual bool RecurseToChildren { get { return false; } }

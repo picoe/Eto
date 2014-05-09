@@ -17,7 +17,7 @@ namespace Eto.iOS.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class LinearGradientBrushHandler : BrushHandler, ILinearGradientBrush
+	public class LinearGradientBrushHandler : BrushHandler, LinearGradientBrush.IHandler
 	{
 		class BrushObject
 		{

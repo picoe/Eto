@@ -2,14 +2,9 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ICommonDialog : IWidget
-	{
-		DialogResult ShowDialog (Window parent);
-	}
-	
 	public abstract class CommonDialog : Widget
 	{
-		new ICommonDialog Handler { get { return (ICommonDialog)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		protected CommonDialog()
 		{
@@ -31,6 +26,11 @@ namespace Eto.Forms
 			return Handler.ShowDialog (parent);
 		}
 		
+		public interface IHandler : Widget.IHandler
+		{
+			DialogResult ShowDialog (Window parent);
+		}
+
 	}
 }
 

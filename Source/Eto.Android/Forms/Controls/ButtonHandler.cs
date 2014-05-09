@@ -15,11 +15,11 @@ using ag = Android.Graphics;
 namespace Eto.Android.Forms.Controls
 {
 	/// <summary>
-	/// Handler for <see cref="IButton"/>
+	/// Handler for <see cref="Button"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ButtonHandler : AndroidCommonControl<aw.Button, Button, Button.ICallback>, IButton
+	public class ButtonHandler : AndroidCommonControl<aw.Button, Button, Button.ICallback>, Button.IHandler
 	{
 		public ButtonHandler()
 		{

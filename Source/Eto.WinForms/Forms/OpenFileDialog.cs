@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms
 {
-	public class OpenFileDialogHandler : WindowsFileDialog<SWF.OpenFileDialog, OpenFileDialog>, IOpenFileDialog
+	public class OpenFileDialogHandler : WindowsFileDialog<SWF.OpenFileDialog, OpenFileDialog>, OpenFileDialog.IHandler
 	{
 		public OpenFileDialogHandler()
 		{

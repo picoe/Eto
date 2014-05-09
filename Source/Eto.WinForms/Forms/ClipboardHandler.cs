@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace Eto.WinForms.Forms
 {
-	public class ClipboardHandler : WidgetHandler<swf.DataObject, Clipboard>, IClipboard
+	public class ClipboardHandler : WidgetHandler<swf.DataObject, Clipboard>, Clipboard.IHandler
 	{
 		public ClipboardHandler ()
 		{

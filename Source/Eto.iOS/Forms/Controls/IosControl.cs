@@ -7,7 +7,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class IosControl<TControl, TWidget, TCallback> : IosView<TControl, TWidget, TCallback>, IControl
+	public class IosControl<TControl, TWidget, TCallback> : IosView<TControl, TWidget, TCallback>, Control.IHandler
 		where TControl: UIView
 		where TWidget: Control
 		where TCallback: Control.ICallback

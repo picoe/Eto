@@ -10,7 +10,7 @@ namespace Eto.WinForms
 		void CreateControl(ToolBarHandler handler, int index);
 	}
 
-	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
+	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler, IToolBarItemHandler
 		where TControl : SWF.ToolStripItem
 		where TWidget : ToolItem
 	{

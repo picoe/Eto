@@ -3,23 +3,6 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IPrintSettings : IWidget
-	{
-		int Copies { get; set; }
-
-		Range MaximumPageRange { get; set; }
-
-		Range SelectedPageRange { get; set; }
-
-		PrintSelection PrintSelection { get; set; }
-
-		PageOrientation Orientation { get; set; }
-
-		bool Collate { get; set; }
-
-		bool Reverse { get; set; }
-	}
-
 	public enum PageOrientation
 	{
 		Portrait,
@@ -33,28 +16,28 @@ namespace Eto.Forms
 		SelectedPages
 	}
 
-	[Handler(typeof(IPrintSettings))]
+	[Handler(typeof(PrintSettings.IHandler))]
 	public class PrintSettings : Widget
 	{
-		new IPrintSettings Handler { get { return (IPrintSettings)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public PrintSettings()
 		{
 		}
 
-		public PrintSettings(IPrintSettings handler)
+		public PrintSettings(IHandler handler)
 			: base(handler)
 		{
 		}
 
 		[Obsolete("Use default constructor instead")]
 		public PrintSettings (Generator generator)
-			: base (generator, typeof (IPrintSettings))
+			: base (generator, typeof (IHandler))
 		{
 		}
 
 		[Obsolete("Use PrintSettings(IPrintSettings) instead")]
-		public PrintSettings (Generator generator, IPrintSettings handler)
+		public PrintSettings (Generator generator, IHandler handler)
 			: base (generator, handler)
 		{
 		}
@@ -95,5 +78,23 @@ namespace Eto.Forms
 			get { return Handler.Reverse; }
 			set { Handler.Reverse = value; }
 		}
+
+		public interface IHandler : Widget.IHandler
+		{
+			int Copies { get; set; }
+
+			Range MaximumPageRange { get; set; }
+
+			Range SelectedPageRange { get; set; }
+
+			PrintSelection PrintSelection { get; set; }
+
+			PageOrientation Orientation { get; set; }
+
+			bool Collate { get; set; }
+
+			bool Reverse { get; set; }
+		}
+
 	}
 }

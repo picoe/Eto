@@ -5,7 +5,7 @@ using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.iOS.Forms.Cells
 {
-	public class ComboBoxCellHandler : CellHandler<NSCell, ComboBoxCell>, IComboBoxCell
+	public class ComboBoxCellHandler : CellHandler<NSCell, ComboBoxCell>, ComboBoxCell.IHandler
 	{
 		public ComboBoxCellHandler()
 		{

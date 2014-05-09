@@ -16,7 +16,7 @@ namespace Eto.Test.UnitTests.Forms
 	{
 		static int ItemCount { get { return GridViewUtils.ItemCount; } }
 		GridView grid;
-		IGridView handler;
+		GridView.IHandler handler;
 		DataStoreCollection model;
 		int selectionChangedCount; // incremented when g.SelectionChanged fires
 
@@ -26,7 +26,7 @@ namespace Eto.Test.UnitTests.Forms
 			TestUtils.Invoke(() =>
 			{
 				grid = new GridView();
-				handler = (IGridView)grid.Handler;
+				handler = (GridView.IHandler)grid.Handler;
 				model = GridViewUtils.CreateModel();
 				grid.DataStore = model;
 				grid.SelectionChanged += (s, e) => selectionChangedCount++;

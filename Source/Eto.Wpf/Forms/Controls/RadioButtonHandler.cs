@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class RadioButtonHandler : WpfControl<swc.RadioButton, RadioButton, RadioButton.ICallback>, IRadioButton
+	public class RadioButtonHandler : WpfControl<swc.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
 		public void Create (RadioButton controller)
 		{

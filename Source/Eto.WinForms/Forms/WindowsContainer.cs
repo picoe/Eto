@@ -7,7 +7,7 @@ using Eto.Drawing;
 namespace Eto.WinForms
 {
 
-	public abstract class WindowsContainer<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, IContainer
+	public abstract class WindowsContainer<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, Container.IHandler
 		where TControl : swf.Control
 		where TWidget : Container
 		where TCallback : Control.ICallback

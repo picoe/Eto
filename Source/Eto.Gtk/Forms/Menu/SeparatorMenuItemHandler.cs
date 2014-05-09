@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class SeparatorMenuItemHandler : MenuHandler<Gtk.SeparatorMenuItem, SeparatorMenuItem>, ISeparatorMenuItem
+	public class SeparatorMenuItemHandler : MenuHandler<Gtk.SeparatorMenuItem, SeparatorMenuItem>, SeparatorMenuItem.IHandler
 	{
 		public SeparatorMenuItemHandler()
 		{

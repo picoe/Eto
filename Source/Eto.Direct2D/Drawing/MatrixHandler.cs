@@ -9,7 +9,7 @@ namespace Eto.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class MatrixHandler : IMatrixHandler
+	public class MatrixHandler : Matrix.IHandler
     {
 		s.Matrix3x2 Control;
 

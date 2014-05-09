@@ -17,7 +17,7 @@ namespace Eto.Test.UnitTests.Handlers
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class TestMatrixHandler : IMatrixHandler
+	public class TestMatrixHandler : Matrix.IHandler
 	{
 		const double Pi = Math.PI;
 

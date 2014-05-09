@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<NSOutlineView, TreeGridView, TreeGridView.ICallback>, ITreeGridView, IDataViewHandler
+	public class TreeGridViewHandler : GridHandler<NSOutlineView, TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, IDataViewHandler
 	{
 		ITreeGridStore<ITreeGridItem> store;
 		readonly Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem> ();

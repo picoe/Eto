@@ -13,7 +13,7 @@ namespace Eto.Drawing
 	/// Ensure you call dispose the instance when you are done accessing or writing the data,
 	/// otherwise the bitmap may be left in an unusable state.
 	/// </remarks>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class BitmapData : IDisposable
 	{

@@ -4,7 +4,7 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
 {
-	public abstract class WpfCommonDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ICommonDialog
+	public abstract class WpfCommonDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, CommonDialog.IHandler
 		where TControl : mw.CommonDialog
 		where TWidget : CommonDialog
 	{

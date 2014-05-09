@@ -8,7 +8,7 @@ using MonoMac.Foundation;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class NumericUpDownHandler : MacView<NSView, NumericUpDown, NumericUpDown.ICallback>, INumericUpDown
+	public class NumericUpDownHandler : MacView<NSView, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
 		readonly NSTextField text;
 		readonly NSStepper stepper;

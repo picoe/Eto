@@ -5,7 +5,7 @@ using Eto.Forms;
 namespace Eto.WinForms.Forms.Controls
 {
 
-	public class GridColumnHandler : WidgetHandler<swf.DataGridViewColumn, GridColumn>, IGridColumn, ICellConfigHandler
+	public class GridColumnHandler : WidgetHandler<swf.DataGridViewColumn, GridColumn>, GridColumn.IHandler, ICellConfigHandler
 	{
 		Cell dataCell;
 		bool autosize;

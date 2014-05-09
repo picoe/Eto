@@ -4,29 +4,9 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Button"/> control
-	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IButton : ITextControl
-	{
-		/// <summary>
-		/// Gets or sets the image to display on the button
-		/// </summary>
-		/// <value>The image to display</value>
-		Image Image { get; set; }
-
-		/// <summary>
-		/// Gets or sets the image position
-		/// </summary>
-		/// <value>The image position</value>
-		ButtonImagePosition ImagePosition { get; set; }
-	}
-
-	/// <summary>
 	/// Button image position
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ButtonImagePosition
 	{
@@ -59,12 +39,12 @@ namespace Eto.Forms
 	/// <summary>
 	/// Button control
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[Handler(typeof(IButton))]
+	[Handler(typeof(Button.IHandler))]
 	public class Button : TextControl
 	{
-		new IButton Handler { get { return (IButton)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// The default minimum size for buttons
@@ -109,7 +89,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the button</param>
 		[Obsolete("Use default constructor instead")]
 		public Button(Generator generator)
-			: this(generator, typeof(IButton))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -163,6 +143,26 @@ namespace Eto.Forms
 			{
 				widget.OnClick(e);
 			}
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Button"/> control
+		/// </summary>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : TextControl.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the image to display on the button
+			/// </summary>
+			/// <value>The image to display</value>
+			Image Image { get; set; }
+
+			/// <summary>
+			/// Gets or sets the image position
+			/// </summary>
+			/// <value>The image position</value>
+			ButtonImagePosition ImagePosition { get; set; }
 		}
 	}
 }

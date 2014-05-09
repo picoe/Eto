@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Eto.GtkSharp.Drawing
 {
-	public class FontsHandler : WidgetHandler<Widget>, IFonts
+	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler
 	{
 		HashSet<string> familyNames;
 		static Pango.Context context;

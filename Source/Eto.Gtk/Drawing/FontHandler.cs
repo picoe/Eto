@@ -34,7 +34,7 @@ namespace Eto.GtkSharp.Drawing
 		}
 	}
 
-	public class FontHandler : WidgetHandler<Pango.FontDescription, Font>, IFont
+	public class FontHandler : WidgetHandler<Pango.FontDescription, Font>, Font.IHandler
 	{
 		FontFamily family;
 		FontTypeface typeface;

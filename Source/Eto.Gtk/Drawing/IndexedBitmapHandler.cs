@@ -25,7 +25,7 @@ namespace Eto.GtkSharp.Drawing
 		}
 	}
 
-	public class IndexedBitmapHandler : ImageHandler<byte[], IndexedBitmap>, IIndexedBitmap
+	public class IndexedBitmapHandler : ImageHandler<byte[], IndexedBitmap>, IndexedBitmap.IHandler
 	{
 		Size size;
 		int rowStride;

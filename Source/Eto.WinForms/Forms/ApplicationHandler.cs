@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms
 {
-	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, IApplication
+	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
 	{
 		string badgeLabel;
 		bool attached;

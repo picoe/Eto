@@ -4,38 +4,16 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IScreen : IWidget
-	{
-		float Scale { get; }
-
-		float RealScale { get; }
-
-		int BitsPerPixel { get; }
-
-		RectangleF Bounds { get; }
-
-		RectangleF WorkingArea { get; }
-
-		bool IsPrimary { get; }
-	}
-
-	public interface IScreens
-	{
-		IEnumerable<Screen> Screens { get; }
-
-		Screen PrimaryScreen { get; }
-	}
-
-	[Handler(typeof(IScreen))]
+	[Handler(typeof(Screen.IHandler))]
 	public class Screen : Widget
 	{
-		new IScreen Handler { get { return (IScreen)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public Screen()
 		{
 		}
 
-		public Screen(IScreen handler)
+		public Screen(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -44,12 +22,12 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public Screen (Generator generator)
-			: base (generator, typeof(IScreen))
+			: base (generator, typeof(IHandler))
 		{
 		}
 
 		[Obsolete("Use Screen(IScreen) instead")]
-		public Screen (Generator generator, IScreen handler)
+		public Screen (Generator generator, IHandler handler)
 			: base (generator, handler)
 		{
 		}
@@ -60,7 +38,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				var handler = Platform.Instance.CreateShared <IScreens>();
+				var handler = Platform.Instance.CreateShared <IScreensHandler>();
 				return handler.Screens;
 			}
 		}
@@ -69,7 +47,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				var handler = Platform.Instance.CreateShared <IScreens>();
+				var handler = Platform.Instance.CreateShared <IScreensHandler>();
 				var bounds = RectangleF.Empty;
 				foreach (var screen in handler.Screens)
 				{
@@ -83,7 +61,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				var handler = Platform.Instance.CreateShared<IScreens>();
+				var handler = Platform.Instance.CreateShared<IScreensHandler>();
 				return handler.PrimaryScreen;
 			}
 		}
@@ -103,6 +81,29 @@ namespace Eto.Forms
 		public int BitsPerPixel { get { return Handler.BitsPerPixel; } }
 
 		public bool IsPrimary { get { return Handler.IsPrimary; } }
+
+		public interface IHandler : Widget.IHandler
+		{
+			float Scale { get; }
+
+			float RealScale { get; }
+
+			int BitsPerPixel { get; }
+
+			RectangleF Bounds { get; }
+
+			RectangleF WorkingArea { get; }
+
+			bool IsPrimary { get; }
+		}
+
+		public interface IScreensHandler
+		{
+			IEnumerable<Screen> Screens { get; }
+
+			Screen PrimaryScreen { get; }
+		}
+
 	}
 }
 

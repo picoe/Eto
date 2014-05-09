@@ -18,7 +18,7 @@ namespace Eto.WinForms.Forms.Controls
 		bool CellMouseClick(GridColumnHandler column, swf.MouseEventArgs e, int rowIndex);
 	}
 
-	public abstract class GridHandler<TWidget, TCallback> : WindowsControl<swf.DataGridView, TWidget, TCallback>, IGrid, IGridHandler
+	public abstract class GridHandler<TWidget, TCallback> : WindowsControl<swf.DataGridView, TWidget, TCallback>, Grid.IHandler, IGridHandler
 		where TWidget: Grid
 		where TCallback: Grid.ICallback
 	{

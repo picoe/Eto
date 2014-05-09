@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Printing
 {
-	public class PrintSettingsHandler : WidgetHandler<sdp.PrinterSettings, PrintSettings>, IPrintSettings
+	public class PrintSettingsHandler : WidgetHandler<sdp.PrinterSettings, PrintSettings>, PrintSettings.IHandler
 	{
 		public PrintSettingsHandler(sdp.PrinterSettings settings)
 		{

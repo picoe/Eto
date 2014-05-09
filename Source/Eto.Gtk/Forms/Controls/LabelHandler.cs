@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label, Label.ICallback>, ILabel
+	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly Gtk.EventBox eventBox;
 		HorizontalAlign horizontalAlign = HorizontalAlign.Left;

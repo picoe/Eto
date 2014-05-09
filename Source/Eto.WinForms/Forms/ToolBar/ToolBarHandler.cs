@@ -5,7 +5,7 @@ using System;
 
 namespace Eto.WinForms
 {
-	public class ToolBarHandler : WidgetHandler<ToolStripEx, ToolBar>, IToolBar
+	public class ToolBarHandler : WidgetHandler<ToolStripEx, ToolBar>, ToolBar.IHandler
 	{
 		ToolBarDock dock = ToolBarDock.Top;
 

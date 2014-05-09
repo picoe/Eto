@@ -9,7 +9,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Printing
 {
-	public class PrintDocumentHandler : WidgetHandler<PrintDocumentHandler.PrintView, PrintDocument, PrintDocument.ICallback>, IPrintDocument
+	public class PrintDocumentHandler : WidgetHandler<PrintDocumentHandler.PrintView, PrintDocument, PrintDocument.ICallback>, PrintDocument.IHandler
 	{
 		PrintSettings printSettings;
 

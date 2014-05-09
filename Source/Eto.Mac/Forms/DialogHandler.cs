@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Mac.Forms
 {
-	public class DialogHandler : MacWindow<MyWindow, Dialog, Dialog.ICallback>, IDialog
+	public class DialogHandler : MacWindow<MyWindow, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button button;
 		MacModal.ModalHelper session;

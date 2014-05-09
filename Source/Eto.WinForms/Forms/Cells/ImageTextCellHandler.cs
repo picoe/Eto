@@ -7,7 +7,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class ImageTextCellHandler : CellHandler<swf.DataGridViewTextBoxCell, ImageTextCell>, IImageTextCell
+	public class ImageTextCellHandler : CellHandler<swf.DataGridViewTextBoxCell, ImageTextCell>, ImageTextCell.IHandler
 	{
 		public static int IconSize = 16;
 		public static int IconPadding = 2;

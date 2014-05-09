@@ -13,7 +13,7 @@ using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public abstract class GridHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, IGrid, IGridHandler
+	public abstract class GridHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, Grid.IHandler, IGridHandler
 		where TControl: swc.DataGrid
 		where TWidget: Grid
 		where TCallback: Grid.ICallback

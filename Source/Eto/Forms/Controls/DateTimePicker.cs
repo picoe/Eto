@@ -23,42 +23,12 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
-	/// Handler interface for the <see cref="DateTimePicker"/> control
-	/// </summary>
-	public interface IDateTimePicker : ICommonControl
-	{
-		/// <summary>
-		/// Gets or sets the value of the date/time picker
-		/// </summary>
-		/// <value>The current value.</value>
-		DateTime? Value { get; set; }
-
-		/// <summary>
-		/// Gets or sets the minimum date entered
-		/// </summary>
-		/// <value>The minimum date.</value>
-		DateTime MinDate { get; set; }
-
-		/// <summary>
-		/// Gets or sets the maximum date entered
-		/// </summary>
-		/// <value>The maximum date.</value>
-		DateTime MaxDate { get; set; }
-
-		/// <summary>
-		/// Gets or sets the mode of the date/time picker.
-		/// </summary>
-		/// <value>The picker mode.</value>
-		DateTimePickerMode Mode { get; set; }
-	}
-
-	/// <summary>
 	/// Date/time picker control to enter a date and/or time value
 	/// </summary>
-	[Handler(typeof(IDateTimePicker))]
+	[Handler(typeof(DateTimePicker.IHandler))]
 	public class DateTimePicker : CommonControl
 	{
-		new IDateTimePicker Handler { get { return (IDateTimePicker)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public static DateTimePickerMode DefaultMode = DateTimePickerMode.Date;
 
@@ -90,7 +60,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the handler</param>
 		[Obsolete("Use default constructor instead")]
 		public DateTimePicker(Generator generator)
-			: this(generator, typeof(IDateTimePicker))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -98,7 +68,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler interface to create, must implement <see cref="IDateTimePicker"/></param>
+		/// <param name="type">Type of the handler interface to create, must implement <see cref="IHandler"/></param>
 		/// <param name="initialize">If set to <c>true</c>, initialize after created, otherwise the subclass should call Initialize.</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected DateTimePicker(Generator generator, Type type, bool initialize = true)
@@ -161,6 +131,40 @@ namespace Eto.Forms
 				widget.OnValueChanged(e);
 			}
 		}
+
+		#region Handler
+
+		/// <summary>
+		/// Handler interface for the <see cref="DateTimePicker"/> control
+		/// </summary>
+		public interface IHandler : CommonControl.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the value of the date/time picker
+			/// </summary>
+			/// <value>The current value.</value>
+			DateTime? Value { get; set; }
+
+			/// <summary>
+			/// Gets or sets the minimum date entered
+			/// </summary>
+			/// <value>The minimum date.</value>
+			DateTime MinDate { get; set; }
+
+			/// <summary>
+			/// Gets or sets the maximum date entered
+			/// </summary>
+			/// <value>The maximum date.</value>
+			DateTime MaxDate { get; set; }
+
+			/// <summary>
+			/// Gets or sets the mode of the date/time picker.
+			/// </summary>
+			/// <value>The picker mode.</value>
+			DateTimePickerMode Mode { get; set; }
+		}
+
+		#endregion
 	}
 }
 

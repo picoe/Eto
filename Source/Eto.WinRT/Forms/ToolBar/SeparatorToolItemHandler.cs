@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.WinRT.Forms
 {
-	public class SeparatorToolItemHandler : ToolItemHandler<swc.ContentControl, SeparatorToolItem>, ISeparatorToolItem, IToolItem
+	public class SeparatorToolItemHandler : ToolItemHandler<swc.ContentControl, SeparatorToolItem>, SeparatorToolItem.IHandler
 	{
 		class EtoSpaceSeparator : swc.Control
 		{

@@ -3,10 +3,6 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IDrawableCell : ICell
-	{
-	}
-
 	public enum DrawableCellState
 	{
 		Normal,
@@ -41,7 +37,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// A cell that is rendered by custom code.
 	/// </summary>
-	[Handler(typeof(IDrawableCell))]
+	[Handler(typeof(DrawableCell.IHandler))]
 	public class DrawableCell : Cell
 	{
 		public Action<DrawableCellPaintArgs> PaintHandler { get; set; }
@@ -52,7 +48,11 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public DrawableCell(Generator generator)
-			: base(generator, typeof(IDrawableCell), true)
+			: base(generator, typeof(IHandler), true)
+		{
+		}
+
+		public interface IHandler : Cell.IHandler
 		{
 		}
 	}

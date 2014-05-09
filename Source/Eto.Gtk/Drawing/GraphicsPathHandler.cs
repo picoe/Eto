@@ -10,7 +10,7 @@ namespace Eto.GtkSharp.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsPathHandler : IGraphicsPathHandler
+	public class GraphicsPathHandler : GraphicsPath.IHandler
 	{
 		IMatrix transform;
 		readonly List<Command> commands = new List<Command> ();

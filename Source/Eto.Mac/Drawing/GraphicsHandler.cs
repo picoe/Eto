@@ -27,7 +27,7 @@ namespace Eto.iOS.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsHandler : GraphicsBase, IGraphics
+	public class GraphicsHandler : GraphicsBase, Graphics.IHandler
 	{
 		#if OSX
 		NSGraphicsContext graphicsContext;

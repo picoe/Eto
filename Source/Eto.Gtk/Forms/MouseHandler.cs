@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class MouseHandler : IMouse
+	public class MouseHandler : Mouse.IHandler
 	{
 		public PointF Position
 		{

@@ -17,7 +17,7 @@ using MonoMac.Foundation;
 namespace Eto.Mac.Drawing
 #endif
 {
-	public class FontHandler : WidgetHandler<NSFont, Font>, IFont
+	public class FontHandler : WidgetHandler<NSFont, Font>, Font.IHandler
 	{
 		FontFamily family;
 		FontTypeface typeface;

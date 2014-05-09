@@ -10,7 +10,7 @@ namespace Eto.WinForms.Drawing
 		sd.Font GetFont();
 	}
 
-	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, IFont, IWindowsFontSource
+	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, Font.IHandler, IWindowsFontSource
 	{
 		FontTypeface typeface;
 		FontFamily family;

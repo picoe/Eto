@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, ITextArea
+	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
 		readonly Size defaultSize = TextArea.DefaultSize;

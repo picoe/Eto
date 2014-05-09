@@ -5,7 +5,7 @@ using Eto.Mac.Forms.Controls;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox, PasswordBox.ICallback>, IPasswordBox, ITextBoxWithMaxLength
+	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler, ITextBoxWithMaxLength
 	{
 		class EtoTextField : NSSecureTextField, IMacControl
 		{

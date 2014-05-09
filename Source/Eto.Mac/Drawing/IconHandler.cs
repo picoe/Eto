@@ -7,7 +7,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Drawing
 {
-	public class IconHandler : ImageHandler<NSImage, Icon>, IIcon
+	public class IconHandler : ImageHandler<NSImage, Icon>, Icon.IHandler
 	{
 		public IconHandler()
 		{

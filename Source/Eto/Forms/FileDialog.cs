@@ -53,21 +53,9 @@ namespace Eto.Forms
 		}
 	}
 	
-	public interface IFileDialog : ICommonDialog
-	{
-		string FileName { get; set; }
-		IEnumerable<IFileDialogFilter> Filters { get; set; }
-		int CurrentFilterIndex { get; set; }
-		IFileDialogFilter CurrentFilter { get; set; }
-		bool CheckFileExists { get; set; }
-		string Title { get; set; }
-		Uri Directory { get; set; }
-	}
-
-	[Handler(typeof(IFileDialog))]
 	public abstract class FileDialog : CommonDialog
 	{
-		new IFileDialog Handler { get { return (IFileDialog)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		protected FileDialog()
 		{
@@ -118,6 +106,17 @@ namespace Eto.Forms
 		{
 			get { return Handler.Directory; }
 			set { Handler.Directory = value; }
+		}
+
+		public interface IHandler : CommonDialog.IHandler
+		{
+			string FileName { get; set; }
+			IEnumerable<IFileDialogFilter> Filters { get; set; }
+			int CurrentFilterIndex { get; set; }
+			IFileDialogFilter CurrentFilter { get; set; }
+			bool CheckFileExists { get; set; }
+			string Title { get; set; }
+			Uri Directory { get; set; }
 		}
 	}
 }

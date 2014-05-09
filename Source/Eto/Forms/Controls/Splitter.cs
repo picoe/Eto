@@ -16,23 +16,10 @@ namespace Eto.Forms
 		None
 	}
 
-	public interface ISplitter : IContainer
-	{
-		SplitterOrientation Orientation { get; set; }
-
-		SplitterFixedPanel FixedPanel { get; set; }
-
-		int Position { get; set; }
-
-		Control Panel1 { get; set; }
-
-		Control Panel2 { get; set; }
-	}
-
-	[Handler(typeof(ISplitter))]
+	[Handler(typeof(Splitter.IHandler))]
 	public class Splitter : Container
 	{
-		new ISplitter Handler { get { return (ISplitter)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public override IEnumerable<Control> Controls
 		{
@@ -47,7 +34,7 @@ namespace Eto.Forms
 
 		public static bool IsSupported
 		{
-			get { return Platform.Instance.Supports<ISplitter>(); }
+			get { return Platform.Instance.Supports<IHandler>(); }
 		}
 
 		#region Events
@@ -80,7 +67,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public Splitter(Generator generator) : this (generator, typeof(ISplitter))
+		public Splitter(Generator generator) : this (generator, typeof(IHandler))
 		{
 		}
 
@@ -166,6 +153,19 @@ namespace Eto.Forms
 			{
 				widget.OnPositionChanged(e);
 			}
+		}
+
+		public interface IHandler : Container.IHandler
+		{
+			SplitterOrientation Orientation { get; set; }
+
+			SplitterFixedPanel FixedPanel { get; set; }
+
+			int Position { get; set; }
+
+			Control Panel1 { get; set; }
+
+			Control Panel2 { get; set; }
 		}
 	}
 }

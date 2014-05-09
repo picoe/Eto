@@ -13,7 +13,7 @@ using Eto.Forms;
 
 namespace Eto.Android.Forms.Cells
 {
-	public class TextBoxCellHandler : WidgetHandler<TextBoxCell>, ITextBoxCell
+	public class TextBoxCellHandler : WidgetHandler<TextBoxCell>, TextBoxCell.IHandler
 	{
 	}
 }

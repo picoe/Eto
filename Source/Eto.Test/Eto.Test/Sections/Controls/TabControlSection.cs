@@ -133,8 +133,8 @@ namespace Eto.Test.Sections.Controls
 			// using the new generator and then restore the previous generator.
 			var generator = (Platform)Activator.CreateInstance(Platform.GetType());
 
-			generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());
-			generator.Add<ITabPage>(() => new Eto.Test.Handlers.TabPageHandler());
+			generator.Add<TabControl.IHandler>(() => new Eto.Test.Handlers.TabControlHandler());
+			generator.Add<TabPage.IHandler>(() => new Eto.Test.Handlers.TabPageHandler());
 
 			using (generator.Context)
 			{

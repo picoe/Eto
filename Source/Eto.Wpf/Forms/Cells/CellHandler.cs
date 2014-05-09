@@ -10,7 +10,7 @@ namespace Eto.Wpf.Forms.Controls
 		void FormatCell (ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell datacell, object dataItem);
 	}
 
-	public interface ICellHandler : ICell
+	public interface ICellHandler : Cell.IHandler
 	{
 		ICellContainerHandler ContainerHandler { get; set; }
 		swc.DataGridColumn Control { get; }

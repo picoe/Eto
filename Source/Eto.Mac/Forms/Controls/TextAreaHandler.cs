@@ -8,7 +8,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TextAreaHandler : MacView<NSTextView, TextArea, TextArea.ICallback>, ITextArea
+	public class TextAreaHandler : MacView<NSTextView, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
 		Range? lastSelection;

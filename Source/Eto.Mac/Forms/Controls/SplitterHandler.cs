@@ -6,7 +6,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class SplitterHandler : MacView<NSSplitView, Splitter, Splitter.ICallback>, ISplitter
+	public class SplitterHandler : MacView<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
 		Control panel1;
 		Control panel2;

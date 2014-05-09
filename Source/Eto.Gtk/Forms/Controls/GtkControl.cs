@@ -48,7 +48,7 @@ namespace Eto.GtkSharp
 		}
 	}
 
-	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl, IGtkControl
+	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IGtkControl
 		where TControl: Gtk.Widget
 		where TWidget: Control
 		where TCallback: Control.ICallback

@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class ContextMenuHandler : WidgetHandler<swc.ContextMenu, ContextMenu>, IContextMenu
+	public class ContextMenuHandler : WidgetHandler<swc.ContextMenu, ContextMenu>, ContextMenu.IHandler
 	{
 		public ContextMenuHandler ()
 		{

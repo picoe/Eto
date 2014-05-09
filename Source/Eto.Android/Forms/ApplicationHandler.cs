@@ -7,11 +7,11 @@ using System.Threading;
 namespace Eto.Android.Forms
 {
 	/// <summary>
-	/// Handler for <see cref="IApplication"/>
+	/// Handler for <see cref="Application"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ApplicationHandler : WidgetHandler<a.App.Application, Application, Application.ICallback>, IApplication
+	public class ApplicationHandler : WidgetHandler<a.App.Application, Application, Application.ICallback>, Application.IHandler
 	{
 		public static ApplicationHandler Instance { get { return Application.Instance.Handler as ApplicationHandler; } }
 

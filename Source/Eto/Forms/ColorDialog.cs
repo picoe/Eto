@@ -3,15 +3,10 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IColorDialog : ICommonDialog
-	{
-		Color Color { get; set; }
-	}
-
-	[Handler(typeof(IColorDialog))]
+	[Handler(typeof(ColorDialog.IHandler))]
 	public class ColorDialog : CommonDialog
 	{
-		new IColorDialog Handler { get { return (IColorDialog)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public event EventHandler<EventArgs> ColorChanged;
 
@@ -27,7 +22,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public ColorDialog(Generator generator)
-			: this(generator, typeof(IColorDialog))
+			: this(generator, typeof(ColorDialog.IHandler))
 		{
 		}
 
@@ -44,6 +39,7 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
 
 		public interface ICallback
 		{
@@ -58,7 +54,10 @@ namespace Eto.Forms
 			}
 		}
 
-		protected override object GetCallback() { return callback; }
+		public interface IHandler : CommonDialog.IHandler
+		{
+			Color Color { get; set; }
+		}
 	}
 }
 

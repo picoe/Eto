@@ -3,27 +3,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ITextArea : ITextControl
-	{
-		bool ReadOnly { get; set; }
-
-		bool Wrap { get; set; }
-
-		void Append(string text, bool scrollToCursor);
-
-		string SelectedText { get; set; }
-
-		Range Selection { get; set; }
-
-		void SelectAll();
-
-		int CaretIndex { get; set; }
-	}
-
-	[Handler(typeof(ITextArea))]
+	[Handler(typeof(TextArea.IHandler))]
 	public class TextArea : TextControl
 	{
-		new ITextArea Handler { get { return (ITextArea)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public static Size DefaultSize = new Size(100, 60);
 
@@ -68,7 +51,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public TextArea(Generator generator) : this(generator, typeof(ITextArea))
+		public TextArea(Generator generator) : this(generator, typeof(IHandler))
 		{
 		}
 
@@ -137,6 +120,23 @@ namespace Eto.Forms
 			{
 				widget.OnCaretIndexChanged(e);
 			}
+		}
+
+		public interface IHandler : TextControl.IHandler
+		{
+			bool ReadOnly { get; set; }
+
+			bool Wrap { get; set; }
+
+			void Append(string text, bool scrollToCursor);
+
+			string SelectedText { get; set; }
+
+			Range Selection { get; set; }
+
+			void SelectAll();
+
+			int CaretIndex { get; set; }
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace Eto.Forms
 	/// <typeparam name="TControl">The Eto control used to create the custom implementation, e.g. Panel</typeparam>
 	/// <typeparam name="TWidget">The control being implemented, e.g. TabControl</typeparam>
 	/// <typeparam name="TCallback">The callback inferface for the control, e.g. TabControl.ICallback</typeparam>
-	public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl
+	public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler
 		where TControl : Control
 		where TWidget : Control
 		where TCallback : Control.ICallback

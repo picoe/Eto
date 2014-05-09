@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public class ImageViewHandler : GtkControl<Gtk.DrawingArea, ImageView, ImageView.ICallback>, IImageView
+	public class ImageViewHandler : GtkControl<Gtk.DrawingArea, ImageView, ImageView.ICallback>, ImageView.IHandler
 	{
 		Image image;
 		bool widthSet;

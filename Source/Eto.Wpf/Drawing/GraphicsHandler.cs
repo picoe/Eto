@@ -12,7 +12,7 @@ namespace Eto.Wpf.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsHandler : WidgetHandler<swm.DrawingContext, Graphics>, IGraphics
+	public class GraphicsHandler : WidgetHandler<swm.DrawingContext, Graphics>, Graphics.IHandler
 	{
 		swm.Visual visual;
 		swm.DrawingVisual drawingVisual;

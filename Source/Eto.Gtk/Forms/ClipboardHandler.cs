@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class ClipboardHandler : WidgetHandler<Gtk.Clipboard, Clipboard>, IClipboard
+	public class ClipboardHandler : WidgetHandler<Gtk.Clipboard, Clipboard>, Clipboard.IHandler
 	{
 		delegate void GetClipboardData(ClipboardData data,Gtk.SelectionData selection);
 

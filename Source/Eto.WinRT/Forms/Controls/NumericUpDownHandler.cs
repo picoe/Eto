@@ -7,12 +7,12 @@ using Eto.Drawing;
 
 namespace Eto.WinRT.Forms.Controls
 {
-	public class NumericUpDownHandler : WpfControl<mwc.NumericUpDown, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : WpfControl<mwc.NumericUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
 		public NumericUpDownHandler ()
 		{
 			Control = new mwc.NumericUpDown { ValueBarVisibility = mwc.NumericUpDownValueBarVisibility.Visible};
-			Control.ValueChanged += (sender, e) => Widget.OnValueChanged(EventArgs.Empty);
+			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

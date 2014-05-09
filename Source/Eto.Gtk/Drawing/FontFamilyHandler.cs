@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Eto.GtkSharp.Drawing
 {
-	public class FontFamilyHandler : WidgetHandler<Pango.FontFamily, FontFamily>, IFontFamily
+	public class FontFamilyHandler : WidgetHandler<Pango.FontFamily, FontFamily>, FontFamily.IHandler
 	{
 		public string Name { get; set; }
 

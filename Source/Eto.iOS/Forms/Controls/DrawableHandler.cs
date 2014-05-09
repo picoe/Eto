@@ -11,7 +11,7 @@ using Eto.Mac.Forms;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class DrawableHandler : MacPanel<DrawableHandler.EtoView, Drawable, Drawable.ICallback>, IDrawable
+	public class DrawableHandler : MacPanel<DrawableHandler.EtoView, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{
 		public bool SupportsCreateGraphics { get { return false; } }
 

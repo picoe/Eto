@@ -12,9 +12,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Text box handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class TextBoxHandler : WpfControl<swc.TextBox, TextBox>, ITextBox
+	public class TextBoxHandler : WpfControl<swc.TextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		bool textChanging;
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
@@ -55,7 +55,7 @@ namespace Eto.WinRT.Forms.Controls
 				case TextControl.TextChangedEvent:
 					Control.TextChanged += delegate {
 						if (!textChanging)
-							Widget.OnTextChanged (EventArgs.Empty);
+							Callback.OnTextChanged (Widget, EventArgs.Empty);
 					};
 					break;
 				default:

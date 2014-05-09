@@ -6,7 +6,7 @@ using Eto.GtkSharp.Forms.Cells;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public abstract class GridHandler<TWidget, TCallback> : GtkControl<Gtk.ScrolledWindow, TWidget, TCallback>, IGrid, ICellDataSource, IGridHandler
+	public abstract class GridHandler<TWidget, TCallback> : GtkControl<Gtk.ScrolledWindow, TWidget, TCallback>, Grid.IHandler, ICellDataSource, IGridHandler
 		where TWidget : Grid
 		where TCallback: Grid.ICallback
 	{

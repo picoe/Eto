@@ -5,36 +5,18 @@ using System.ComponentModel;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Mouse"/> class
-	/// </summary>
-	public interface IMouse
-	{
-		/// <summary>
-		/// Gets the current mouse position in screen coordinates
-		/// </summary>
-		/// <value>The mouse position.</value>
-		PointF Position { get; }
-
-		/// <summary>
-		/// Gets the current state of the mouse buttons
-		/// </summary>
-		/// <value>The mouse button state.</value>
-		MouseButtons Buttons { get; }
-	}
-
-	/// <summary>
 	/// Static methods to get the current mouse state
 	/// </summary>
 	public static class Mouse
 	{
 		public static bool IsSupported
 		{
-			get { return Platform.Instance.Supports<IMouse>(); }
+			get { return Platform.Instance.Supports<IHandler>(); }
 		}
 
-		static IMouse Handler
+		static IHandler Handler
 		{
-			get { return Platform.Instance.CreateShared<IMouse>(); }
+			get { return Platform.Instance.CreateShared<IHandler>(); }
 		}
 
 		/// <summary>
@@ -89,6 +71,24 @@ namespace Eto.Forms
 		public static bool IsAnyButtonPressed(MouseButtons buttons)
 		{
 			return (Buttons & buttons) != MouseButtons.None;
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Mouse"/> class
+		/// </summary>
+		public interface IHandler
+		{
+			/// <summary>
+			/// Gets the current mouse position in screen coordinates
+			/// </summary>
+			/// <value>The mouse position.</value>
+			PointF Position { get; }
+
+			/// <summary>
+			/// Gets the current state of the mouse buttons
+			/// </summary>
+			/// <value>The mouse button state.</value>
+			MouseButtons Buttons { get; }
 		}
 	}
 }

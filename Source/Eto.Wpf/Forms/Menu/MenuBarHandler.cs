@@ -3,7 +3,7 @@ using swc = System.Windows.Controls;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class MenuBarHandler : WidgetHandler<System.Windows.Controls.Menu, MenuBar>, IMenuBar
+	public class MenuBarHandler : WidgetHandler<System.Windows.Controls.Menu, MenuBar>, MenuBar.IHandler
 	{
 		public MenuBarHandler ()
 		{

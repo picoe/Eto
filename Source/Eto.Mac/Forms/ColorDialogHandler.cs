@@ -43,7 +43,7 @@ namespace Eto.Mac.Forms
 		}
 	}
 	
-	public class ColorDialogHandler : MacObject<NSColorPanel, ColorDialog, ColorDialog.ICallback>, IColorDialog, IColorDialogHandler
+	public class ColorDialogHandler : MacObject<NSColorPanel, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler, IColorDialogHandler
 	{
 		public ColorDialogHandler()
 		{

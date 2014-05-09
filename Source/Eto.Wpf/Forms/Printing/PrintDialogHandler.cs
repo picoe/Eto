@@ -4,7 +4,7 @@ using swc = System.Windows.Controls;
 
 namespace Eto.Wpf.Forms.Printing
 {
-	public class PrintDialogHandler : WidgetHandler<swc.PrintDialog, PrintDialog>, IPrintDialog
+	public class PrintDialogHandler : WidgetHandler<swc.PrintDialog, PrintDialog>, PrintDialog.IHandler
 	{
 		PrintSettings settings;
 		public PrintDialogHandler()

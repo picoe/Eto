@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class TextBoxHandler : IosControl<UITextField, TextBox, TextBox.ICallback>, ITextBox
+	public class TextBoxHandler : IosControl<UITextField, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{

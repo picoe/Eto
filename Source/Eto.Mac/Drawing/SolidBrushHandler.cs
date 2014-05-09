@@ -11,11 +11,11 @@ namespace Eto.iOS.Drawing
 #endif
 {
 	/// <summary>
-	/// Handler for <see cref="ISolidBrush"/>
+	/// Handler for <see cref="SolidBrush"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class SolidBrushHandler : BrushHandler, ISolidBrush
+	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
 		public override void Apply (object control, GraphicsHandler graphics)
 		{
@@ -32,7 +32,7 @@ namespace Eto.iOS.Drawing
 			widget.ControlObject = color.ToCGColor ();
 		}
 
-		object ISolidBrush.Create (Color color)
+		object SolidBrush.IHandler.Create (Color color)
 		{
 			return color.ToCGColor ();
 		}

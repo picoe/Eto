@@ -8,7 +8,7 @@ namespace Eto.Wpf.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class LinearGradientBrushHandler : ILinearGradientBrush
+	public class LinearGradientBrushHandler : LinearGradientBrush.IHandler
 	{
 		public object Create (Color startColor, Color endColor, PointF startPoint, PointF endPoint)
 		{

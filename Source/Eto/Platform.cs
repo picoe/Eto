@@ -339,7 +339,7 @@ namespace Eto
 		/// Add the <paramref name="instantiator"/> for the specified handler type of <typeparamref name="T"/>
 		/// </summary>
 		/// <param name="instantiator">Instantiator to create an instance of the handler</param>
-		/// <typeparam name="T">The handler type to add the instantiator for (usually an interface derived from <see cref="IWidget"/>)</typeparam>
+		/// <typeparam name="T">The handler type to add the instantiator for (usually an interface derived from <see cref="Widget.IHandler"/>)</typeparam>
 		public void Add<T>(Func<T> instantiator)
 			where T: class
 		{
@@ -349,17 +349,20 @@ namespace Eto
 		/// <summary>
 		/// Add the specified type and instantiator.
 		/// </summary>
-		/// <param name="type">Type of the handler (usually an interface derived from <see cref="IWidget"/>)</param>
+		/// <param name="type">Type of the handler (usually an interface derived from <see cref="Widget.IHandler"/>)</param>
 		/// <param name="instantiator">Instantiator to create an instance of the handler</param>
 		public void Add(Type type, Func<object> instantiator)
 		{
+			var handler = type.GetCustomAttribute<HandlerAttribute>(true);
+			if (handler != null)
+				instantiatorMap[handler.Type] = instantiator; // for backward compatibility, for now
 			instantiatorMap[type] = instantiator;
 		}
 
 		/// <summary>
 		/// Find the delegate to create instances of the specified <paramref name="type"/>
 		/// </summary>
-		/// <param name="type">Type of the handler interface to get the instantiator for (usually derived from <see cref="IWidget"/> or another type)</param>
+		/// <param name="type">Type of the handler interface to get the instantiator for (usually derived from <see cref="Widget.IHandler"/> or another type)</param>
 		public Func<object> Find(Type type)
 		{
 			Func<object> activator;

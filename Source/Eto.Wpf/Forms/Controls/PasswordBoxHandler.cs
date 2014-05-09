@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class PasswordBoxHandler : WpfControl<swc.PasswordBox, PasswordBox, PasswordBox.ICallback>, IPasswordBox
+	public class PasswordBoxHandler : WpfControl<swc.PasswordBox, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler
 	{
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
 

@@ -3,22 +3,17 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IContextMenu : ISubMenu
-	{
-		void Show(Control relativeTo);
-	}
-
 	public interface IContextMenuHost
 	{
 		ContextMenu ContextMenu { get; set; }
 	}
 
-	[Handler(typeof(IContextMenu))]
-	public class ContextMenu : Menu, ISubMenuWidget
+	[Handler(typeof(ContextMenu.IHandler))]
+	public class ContextMenu : Menu, ISubmenu
 	{
 		MenuItemCollection items;
 
-		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
 
@@ -37,7 +32,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public ContextMenu(Generator generator) : this(generator, typeof(IContextMenu))
+		public ContextMenu(Generator generator) : this(generator, typeof(ContextMenu.IHandler))
 		{
 		}
 
@@ -70,6 +65,11 @@ namespace Eto.Forms
 			base.OnUnLoad(e);
 			foreach (var item in Items)
 				item.OnLoad(e);
+		}
+
+		public interface IHandler : Menu.IHandler, ISubmenuHandler
+		{
+			void Show(Control relativeTo);
 		}
 	}
 }

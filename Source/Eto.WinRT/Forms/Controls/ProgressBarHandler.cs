@@ -9,9 +9,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Progress bar handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar>, IProgressBar
+	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
 		protected override Size DefaultSize { get { return new Size(-1, 22); } }
 

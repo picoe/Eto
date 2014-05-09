@@ -8,7 +8,7 @@ using Eto.Wpf.Forms;
 
 namespace Eto.Wpf.Drawing
 {
-	public class IndexedBitmapHandler : WidgetHandler<swmi.WriteableBitmap, IndexedBitmap>, IIndexedBitmap, IWpfImage
+	public class IndexedBitmapHandler : WidgetHandler<swmi.WriteableBitmap, IndexedBitmap>, IndexedBitmap.IHandler, IWpfImage
 	{
 		Palette palette;
 		int numColors;

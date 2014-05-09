@@ -6,7 +6,7 @@ using swm = System.Windows.Media;
 
 namespace Eto.Wpf.Drawing
 {
-	public class FontsHandler : WidgetHandler<Widget>, IFonts
+	public class FontsHandler : WidgetHandler<Widget>, Fonts.IHandler
 	{
 		HashSet<string> availableFontFamilies;
 

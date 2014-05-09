@@ -8,7 +8,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<NSTableView, GridView, GridView.ICallback>, IGridView
+	public class GridViewHandler : GridHandler<NSTableView, GridView, GridView.ICallback>, GridView.IHandler
 	{
 		CollectionHandler collection;
 

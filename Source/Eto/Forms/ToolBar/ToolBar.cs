@@ -16,23 +16,10 @@ namespace Eto.Forms
 		Bottom
 	}
 
-	public interface IToolBar : IWidget
-	{
-		void AddButton(ToolItem button, int index);
-
-		void RemoveButton(ToolItem button);
-
-		void Clear();
-
-		ToolBarTextAlign TextAlign { get; set; }
-
-		ToolBarDock Dock { get; set; }
-	}
-
-	[Handler(typeof(IToolBar))]
+	[Handler(typeof(ToolBar.IHandler))]
 	public class ToolBar : Widget
 	{
-		internal new IToolBar Handler { get { return (IToolBar)base.Handler; } }
+		internal new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		ToolItemCollection items;
 
@@ -41,7 +28,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public ToolBar(Generator generator) : base(generator, typeof(IToolBar))
+		public ToolBar(Generator generator) : base(generator, typeof(IHandler))
 		{
 		}
 
@@ -70,5 +57,19 @@ namespace Eto.Forms
 			foreach (var item in Items)
 				item.OnLoad(e);
 		}
+
+		public interface IHandler : Widget.IHandler
+		{
+			void AddButton(ToolItem button, int index);
+
+			void RemoveButton(ToolItem button);
+
+			void Clear();
+
+			ToolBarTextAlign TextAlign { get; set; }
+
+			ToolBarDock Dock { get; set; }
+		}
+
 	}
 }

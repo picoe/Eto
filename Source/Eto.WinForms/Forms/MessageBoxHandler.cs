@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
 	{
 		public string Text { get; set; }
 

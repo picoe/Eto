@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TabControlHandler : MacView<NSTabView, TabControl, TabControl.ICallback>, ITabControl
+	public class TabControlHandler : MacView<NSTabView, TabControl, TabControl.ICallback>, TabControl.IHandler
 	{
 		bool disableSelectedIndexChanged;
 

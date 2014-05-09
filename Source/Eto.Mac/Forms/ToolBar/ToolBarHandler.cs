@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Eto.Mac
 {
-	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, IToolBar
+	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, ToolBar.IHandler
 	{
 		ToolBarDock dock = ToolBarDock.Top;
 		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();

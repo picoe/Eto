@@ -4,7 +4,7 @@ using System;
 
 namespace Eto.Mac
 {
-	public class SeparatorToolItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolItem>, ISeparatorToolItem, IToolBarBaseItemHandler
+	public class SeparatorToolItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarBaseItemHandler
 	{
 		public SeparatorToolItemHandler()
 		{

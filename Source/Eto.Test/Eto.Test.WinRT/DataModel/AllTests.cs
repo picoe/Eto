@@ -14,6 +14,7 @@ using System.Collections.Specialized;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
+using Eto.Forms;
 
 namespace Eto.Test.WinRT.Data
 {
@@ -104,9 +105,8 @@ namespace Eto.Test.WinRT.Data
 				var content = b.CreateContent();
 				try
 				{
-					content.OnPreLoad(EventArgs.Empty);
-					content.OnLoad(EventArgs.Empty);
-					result = content != null ? content.ControlObject as FrameworkElement : null;					
+					content.AttachExternal();
+					result = Eto.WinRT.Forms.ControlExtensions.GetContainerControl(content);
 				}
 				catch (Exception ex)
 				{

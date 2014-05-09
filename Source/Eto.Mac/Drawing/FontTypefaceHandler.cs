@@ -6,7 +6,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Mac.Drawing
 {
-	public class FontTypefaceHandler : WidgetHandler<object, FontTypeface>, IFontTypeface
+	public class FontTypefaceHandler : WidgetHandler<object, FontTypeface>, FontTypeface.IHandler
 	{
 		readonly string name;
 

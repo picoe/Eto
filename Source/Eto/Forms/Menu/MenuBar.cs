@@ -3,20 +3,16 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IMenuBar : IMenu, ISubMenu
-	{
-	}
-
 	/// <summary>
 	/// Menu bar for a form
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[Handler(typeof(IMenuBar))]
-	public class MenuBar : Menu, ISubMenuWidget
+	[Handler(typeof(MenuBar.IHandler))]
+	public class MenuBar : Menu, ISubmenu
 	{
 		MenuItemCollection items;
-		new IMenuBar Handler { get { return (IMenuBar)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.MenuBar"/> will trim the items when set to a form
@@ -68,7 +64,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public MenuBar(Generator generator) : this(generator, typeof(IMenuBar))
+		public MenuBar(Generator generator) : this(generator, typeof(MenuBar.IHandler))
 		{
 		}
 
@@ -97,6 +93,10 @@ namespace Eto.Forms
 			base.OnUnLoad(e);
 			foreach (var item in Items)
 				item.OnLoad(e);
+		}
+
+		public interface IHandler : Menu.IHandler, ISubmenuHandler
+		{
 		}
 	}
 }

@@ -4,7 +4,7 @@ using swf = System.Windows.Forms;
 
 namespace Eto.WinForms.Forms
 {
-	public class MouseHandler : IMouse
+	public class MouseHandler : Mouse.IHandler
 	{
 		public Widget Widget { get; set; }
 

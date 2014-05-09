@@ -3,15 +3,6 @@ using System;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="SearchBox"/> control
-	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface ISearchBox : ITextBox
-	{
-	}
-
-	/// <summary>
 	/// Search box control
 	/// </summary>
 	/// <remarks>
@@ -19,7 +10,7 @@ namespace Eto.Forms
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[Handler(typeof(ISearchBox))]
+	[Handler(typeof(IHandler))]
 	public class SearchBox: TextBox
 	{
 		/// <summary>
@@ -35,7 +26,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the handler</param>
 		[Obsolete("Use default constructor instead")]
 		public SearchBox(Generator generator) 
-			: this(generator, typeof(ISearchBox))
+			: this(generator, typeof(IHandler))
 		{
 			
 		}
@@ -49,6 +40,15 @@ namespace Eto.Forms
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected SearchBox(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
+		{
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="SearchBox"/> control
+		/// </summary>
+		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : TextBox.IHandler
 		{
 		}
 	}

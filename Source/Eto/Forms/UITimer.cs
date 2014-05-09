@@ -2,19 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IUITimer : IWidget
-	{
-		double Interval { get; set; }
-
-		void Start ();
-
-		void Stop ();
-	}
-
-	[Handler(typeof(IUITimer))]
+	[Handler(typeof(UITimer.IHandler))]
 	public class UITimer : Widget
 	{
-		new IUITimer Handler { get { return (IUITimer)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public static double DefaultInterval = 1.0; // 1 second
 		
@@ -31,7 +22,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public UITimer (Generator generator) : this (generator, typeof(IUITimer))
+		public UITimer (Generator generator) : this (generator, typeof(UITimer.IHandler))
 		{
 		}
 
@@ -81,6 +72,15 @@ namespace Eto.Forms
 			{
 				widget.OnElapsed(e);
 			}
+		}
+
+		public interface IHandler : Widget.IHandler
+		{
+			double Interval { get; set; }
+
+			void Start ();
+
+			void Stop ();
 		}
 	}
 }

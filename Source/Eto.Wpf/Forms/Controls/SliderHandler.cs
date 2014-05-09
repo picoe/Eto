@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class SliderHandler : WpfControl<swc.Slider, Slider, Slider.ICallback>, ISlider
+	public class SliderHandler : WpfControl<swc.Slider, Slider, Slider.ICallback>, Slider.IHandler
 	{
 		public SliderHandler ()
 		{

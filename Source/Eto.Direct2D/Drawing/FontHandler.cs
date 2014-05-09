@@ -19,7 +19,7 @@ namespace Eto.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-    public class FontHandler : WidgetHandler<sw.Font, Font>, IFont
+	public class FontHandler : WidgetHandler<sw.Font, Font>, Font.IHandler
 #if WINFORMS
 		, IWindowsFontSource
 #endif

@@ -12,11 +12,12 @@ namespace Eto.WinRT.Forms
 	/// Common control handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class WpfCommonControl<TControl, TWidget> : WpfFrameworkElement<TControl, TWidget>, IControl
+	public abstract class WpfCommonControl<TControl, TWidget, TCallback> : WpfFrameworkElement<TControl, TWidget, TCallback>, Control.IHandler
 		where TControl : sw.FrameworkElement
 		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		Font font;
 		public Font Font
@@ -43,9 +44,10 @@ namespace Eto.WinRT.Forms
 		}
 	}
 
-	public class WpfControl<TControl, TWidget> : WpfCommonControl<TControl, TWidget>, IControl
+	public class WpfControl<TControl, TWidget, TCallback> : WpfCommonControl<TControl, TWidget, TCallback>, Control.IHandler
 		where TControl : swc.Control
 		where TWidget: Control
+		where TCallback: Control.ICallback
 	{
 		public override Color BackgroundColor
 		{

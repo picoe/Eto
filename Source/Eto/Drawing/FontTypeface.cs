@@ -2,29 +2,6 @@
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Platform handler interface for the <see cref="FontTypeface"/> class
-	/// </summary>
-	public interface IFontTypeface : IWidget
-	{
-		/// <summary>
-		/// Gets the name of this typeface
-		/// </summary>
-		/// <remarks>
-		/// The name of the typeface typically includes hints to the style of the type
-		/// </remarks>
-		string Name { get; }
-
-		/// <summary>
-		/// Gets the style of this typeface
-		/// </summary>
-		/// <remarks>
-		/// This style does not fully describe the characteristics of the typeface, just very broad characteristics.
-		/// </remarks>
-		FontStyle FontStyle { get; }
-	}
-
-
-	/// <summary>
 	/// A font type that specifies the characteristics of a <see cref="FontFamily"/> variation
 	/// </summary>
 	/// <remarks>
@@ -35,7 +12,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	public class FontTypeface : Widget
 	{
-		new IFontTypeface Handler  { get { return (IFontTypeface)base.Handler; } }
+		new IHandler Handler  { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets the family of this typeface
@@ -83,7 +60,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="family">Family this typeface is part of</param>
 		/// <param name="handler">Handler to use for this typeface instance</param>
-		public FontTypeface(FontFamily family, IFontTypeface handler)
+		public FontTypeface(FontFamily family, IHandler handler)
 			: base(handler)
 		{
 			this.Family = family;
@@ -96,6 +73,28 @@ namespace Eto.Drawing
 		public override string ToString ()
 		{
 			return Name;
+		}
+
+		/// <summary>
+		/// Platform handler interface for the <see cref="FontTypeface"/> class
+		/// </summary>
+		public interface IHandler : Widget.IHandler
+		{
+			/// <summary>
+			/// Gets the name of this typeface
+			/// </summary>
+			/// <remarks>
+			/// The name of the typeface typically includes hints to the style of the type
+			/// </remarks>
+			string Name { get; }
+
+			/// <summary>
+			/// Gets the style of this typeface
+			/// </summary>
+			/// <remarks>
+			/// This style does not fully describe the characteristics of the typeface, just very broad characteristics.
+			/// </remarks>
+			FontStyle FontStyle { get; }
 		}
 	}
 }

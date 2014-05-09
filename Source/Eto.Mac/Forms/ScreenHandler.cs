@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms
 {
-	public class ScreenHandler : WidgetHandler<NSScreen, Screen>, IScreen
+	public class ScreenHandler : WidgetHandler<NSScreen, Screen>, Screen.IHandler
 	{
 		public ScreenHandler (NSScreen screen)
 		{

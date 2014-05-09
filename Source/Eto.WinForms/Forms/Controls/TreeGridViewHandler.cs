@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, ITreeGridView, ITreeHandler
+	public class TreeGridViewHandler : GridHandler<TreeGridView, TreeGridView.ICallback>, TreeGridView.IHandler, ITreeHandler
 	{
 		public static int INDENT_WIDTH = 16;
 		ITreeGridItem lastSelected;

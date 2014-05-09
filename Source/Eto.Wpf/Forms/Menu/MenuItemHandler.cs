@@ -9,7 +9,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class MenuItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IMenuItem, swi.ICommand
+	public class MenuItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, MenuItem.IHandler, swi.ICommand
 		where TControl : swc.MenuItem
 		where TWidget : MenuItem
 	{

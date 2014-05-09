@@ -3,11 +3,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ITextBoxCell : ICell
-	{
-	}
-
-	[Handler(typeof(ITextBoxCell))]
+	[Handler(typeof(IHandler))]
 	public class TextBoxCell : SingleValueCell
 	{
 		public TextBoxCell (int column)
@@ -26,7 +22,11 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public TextBoxCell (Generator generator)
-			: base(generator, typeof(ITextBoxCell), true)
+			: base(generator, typeof(IHandler), true)
+		{
+		}
+
+		public interface IHandler : SingleValueCell.IHandler
 		{
 		}
 	}

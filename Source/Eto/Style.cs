@@ -23,7 +23,7 @@ namespace Eto
 	/// <param name="handler">Handler instance that is being styled</param>
 	/// <typeparam name="THandler">Type of the handler to style</typeparam>
 	public delegate void StyleHandler<THandler>(THandler handler)
-		where THandler: IWidget;
+		where THandler: Widget.IHandler;
 	/// <summary>
 	/// Style manager for widgets
 	/// </summary>
@@ -107,7 +107,7 @@ namespace Eto
 			}
 		}
 
-		internal static void OnStyleWidgetDefaults(IWidget handler)
+		internal static void OnStyleWidgetDefaults(Widget.IHandler handler)
 		{
 			if (handler != null)
 			{
@@ -161,7 +161,7 @@ namespace Eto
 		/// <param name="style">Identifier for the style</param>
 		/// <param name="styleHandler">Delegate with your logic to style the widget and/or platform control</param>
 		public static void Add<THandler>(string style, StyleHandler<THandler> styleHandler)
-			where THandler: class, IWidget
+			where THandler: class, Widget.IHandler
 		{
 			var list = GetStyleList((object)style ?? typeof(THandler));
 			list.Add(widget =>

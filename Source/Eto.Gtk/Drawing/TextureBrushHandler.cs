@@ -3,11 +3,11 @@ using Eto.Drawing;
 namespace Eto.GtkSharp.Drawing
 {
 	/// <summary>
-	/// Handler for the <see cref="ITextureBrush"/>
+	/// Handler for the <see cref="TextureBrush"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class TextureBrushHandler : BrushHandler, ITextureBrush
+	public class TextureBrushHandler : BrushHandler, TextureBrush.IHandler
 	{
 		class TextureBrushObject
 		{

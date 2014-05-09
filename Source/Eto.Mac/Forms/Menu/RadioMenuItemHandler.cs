@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.Mac
 {
-	public class RadioMenuItemHandler : MenuHandler<NSMenuItem, RadioMenuItem>, IRadioMenuItem, IMenuActionHandler
+	public class RadioMenuItemHandler : MenuHandler<NSMenuItem, RadioMenuItem>, RadioMenuItem.IHandler, IMenuActionHandler
 	{
 		List<RadioMenuItem> radioGroup;
 

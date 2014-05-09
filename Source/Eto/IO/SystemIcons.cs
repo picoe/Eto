@@ -18,16 +18,10 @@ namespace Eto.IO
 		Small
 	}
 
-	public interface ISystemIcons
-	{
-		Icon GetFileIcon(string fileName, IconSize size);
-		Icon GetStaticIcon(StaticIconType type, IconSize size);
-	}
-
-	[Handler(typeof(ISystemIcons))]
+	[Handler(typeof(SystemIcons.IHandler))]
 	public static class SystemIcons
 	{
-		static ISystemIcons Handler { get { return Platform.Instance.CreateShared<ISystemIcons>(); } }
+		static IHandler Handler { get { return Platform.Instance.CreateShared<IHandler>(); } }
 
 		static readonly object cacheKey = new object();
 		static Dictionary<object, Icon> GetLookupTable(IconSize size)
@@ -65,6 +59,12 @@ namespace Eto.IO
 				htIcons.Add(type, icon);
 			}
 			return icon;
+		}
+
+		public interface IHandler
+		{
+			Icon GetFileIcon(string fileName, IconSize size);
+			Icon GetStaticIcon(StaticIconType type, IconSize size);
 		}
 	}
 }

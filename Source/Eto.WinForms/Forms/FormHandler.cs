@@ -6,7 +6,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class FormHandler : WindowHandler<FormHandler.MyForm, Form, Form.ICallback>, IForm
+	public class FormHandler : WindowHandler<FormHandler.MyForm, Form, Form.ICallback>, Form.IHandler
 	{
         public class MyForm : swf.Form
         {

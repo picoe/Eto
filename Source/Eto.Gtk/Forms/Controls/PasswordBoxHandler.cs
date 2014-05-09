@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class PasswordBoxHandler : GtkControl<Gtk.Entry, PasswordBox, PasswordBox.ICallback>, IPasswordBox
+	public class PasswordBoxHandler : GtkControl<Gtk.Entry, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler
 	{
 		public PasswordBoxHandler()
 		{

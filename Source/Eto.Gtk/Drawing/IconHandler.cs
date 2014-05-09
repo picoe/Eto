@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Drawing
 {
-	public class IconHandler : ImageHandler<Gtk.IconSet, Icon>, IIcon, IGtkPixbuf
+	public class IconHandler : ImageHandler<Gtk.IconSet, Icon>, Icon.IHandler, IGtkPixbuf
 	{
 		readonly Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 

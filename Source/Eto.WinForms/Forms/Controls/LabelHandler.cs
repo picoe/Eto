@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class LabelHandler : WindowsControl<LabelHandler.MyLabel, Label, Label.ICallback>, ILabel
+	public class LabelHandler : WindowsControl<LabelHandler.MyLabel, Label, Label.ICallback>, Label.IHandler
 	{
 		public class MyLabel : swf.Label
 		{

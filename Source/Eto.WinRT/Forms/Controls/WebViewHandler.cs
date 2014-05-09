@@ -19,9 +19,9 @@ namespace Eto.WinRT.Forms.Controls
 	/// Web view handler.
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>	
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>	
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class WebViewHandler : WpfFrameworkElement<wc.WebBrowser, WebView>, IWebView
+	public class WebViewHandler : WpfFrameworkElement<wc.WebBrowser, WebView, WebView.ICallback>, WebView.IHandler
 	{
 		HashSet<string> delayedEvents = new HashSet<string>();
 
@@ -63,7 +63,7 @@ namespace Eto.WinRT.Forms.Controls
 		void WebBrowserV1_NewWindow(string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
 		{
 			var e = new WebViewNewWindowEventArgs(new Uri(URL), TargetFrameName);
-			Widget.OnOpenNewWindow(e);
+			Callback.OnOpenNewWindow(Widget, e);
 			Processed = e.Cancel;
 		}
 

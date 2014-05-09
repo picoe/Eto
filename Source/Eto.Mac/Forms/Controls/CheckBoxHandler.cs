@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class CheckBoxHandler : MacButton<NSButton, CheckBox, CheckBox.ICallback>, ICheckBox
+	public class CheckBoxHandler : MacButton<NSButton, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		public class EtoCheckBoxButton : NSButton, IMacControl
 		{

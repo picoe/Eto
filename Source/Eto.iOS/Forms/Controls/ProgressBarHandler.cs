@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ProgressBarHandler : IosView<UIProgressView, ProgressBar, ProgressBar.ICallback>, IProgressBar
+	public class ProgressBarHandler : IosView<UIProgressView, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
 		public override UIView ContainerControl { get { return Control; } }
 

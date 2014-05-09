@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class DateTimePickerHandler : MacControl<NSDatePicker, DateTimePicker, DateTimePicker.ICallback>, IDateTimePicker
+	public class DateTimePickerHandler : MacControl<NSDatePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
 		DateTime? curValue;
 		DateTimePickerMode mode;

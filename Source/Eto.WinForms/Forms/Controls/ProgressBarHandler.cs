@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class ProgressBarHandler : WindowsControl<SWF.ProgressBar, ProgressBar, ProgressBar.ICallback>, IProgressBar
+	public class ProgressBarHandler : WindowsControl<SWF.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
 		public ProgressBarHandler ()
 		{

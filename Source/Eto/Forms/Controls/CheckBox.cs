@@ -2,31 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	/// <summary>
-	/// Handler interface for the <see cref="CheckBox"/> control
-	/// </summary>
-	public interface ICheckBox : ITextControl
-	{
-		/// <summary>
-		/// Gets or sets the checked state
-		/// </summary>
-		/// <remarks>
-		/// When <see cref="ThreeState"/> is true, null signifies an indeterminate value.
-		/// </remarks>
-		/// <value>The checked value</value>
-		bool? Checked { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this CheckBox allows three states: true, false, or null
-		/// </summary>
-		/// <value><c>true</c> if three state; otherwise, <c>false</c>.</value>
-		bool ThreeState { get; set; }
-	}
-
-	[Handler(typeof(ICheckBox))]
+	[Handler(typeof(CheckBox.IHandler))]
 	public class CheckBox : TextControl
 	{
-		new ICheckBox Handler { get { return (ICheckBox)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Occurs when <see cref="Checked"/> property is changed by the user
@@ -60,7 +39,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
 		[Obsolete("Use default constructor instead")]
-		public CheckBox(Generator generator) : this(generator, typeof(ICheckBox))
+		public CheckBox(Generator generator) : this(generator, typeof(IHandler))
 		{
 		}
 
@@ -68,7 +47,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Handler type to create, must be an instance of <see cref="ICheckBox"/></param>
+		/// <param name="type">Handler type to create, must be an instance of <see cref="IHandler"/></param>
 		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected CheckBox(Generator generator, Type type, bool initialize = true)
@@ -132,5 +111,27 @@ namespace Eto.Forms
 				widget.OnCheckedChanged(e);
 			}
 		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="CheckBox"/> control
+		/// </summary>
+		public interface IHandler : TextControl.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the checked state
+			/// </summary>
+			/// <remarks>
+			/// When <see cref="ThreeState"/> is true, null signifies an indeterminate value.
+			/// </remarks>
+			/// <value>The checked value</value>
+			bool? Checked { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this CheckBox allows three states: true, false, or null
+			/// </summary>
+			/// <value><c>true</c> if three state; otherwise, <c>false</c>.</value>
+			bool ThreeState { get; set; }
+		}
+
 	}
 }

@@ -2,15 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ITextControl : ICommonControl
-	{
-		string Text { get; set; }
-	}
-
 	[ContentProperty("Text")]
 	public abstract class TextControl : CommonControl
 	{
-		new ITextControl Handler { get { return (ITextControl)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		static TextControl()
 		{
@@ -74,6 +69,11 @@ namespace Eto.Forms
 			{
 				widget.OnTextChanged(e);
 			}
+		}
+
+		public interface IHandler : CommonControl.IHandler
+		{
+			string Text { get; set; }
 		}
 	}
 }

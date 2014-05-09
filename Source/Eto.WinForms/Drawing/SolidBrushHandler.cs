@@ -4,11 +4,11 @@ using sd = System.Drawing;
 namespace Eto.WinForms.Drawing
 {
 	/// <summary>
-	/// Handler for <see cref="ISolidBrush"/>
+	/// Handler for <see cref="SolidBrush"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class SolidBrushHandler : BrushHandler, ISolidBrush
+	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
 		public object Create (Color color)
 		{

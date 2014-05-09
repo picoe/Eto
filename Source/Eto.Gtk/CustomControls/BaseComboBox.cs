@@ -20,6 +20,8 @@ namespace Eto.GtkSharp.CustomControls
 		}
 		#if GTK2
 		int vpadding;
+		static readonly int DefaultEntryHeight = new Entry().SizeRequest().Height;
+
 		protected override void OnSizeRequested(ref Requisition requisition)
 		{
 			base.OnSizeRequested(ref requisition);
@@ -126,8 +128,6 @@ namespace Eto.GtkSharp.CustomControls
 			popupButton.CanFocus = false;
 			return popupButton;
 		}
-
-		static readonly int DefaultEntryHeight = new Entry().SizeRequest().Height;
 
 		void Build()
 		{

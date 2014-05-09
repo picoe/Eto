@@ -4,31 +4,6 @@ using System.Collections.Generic;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Interface for a <see cref="FontFamily"/> handler
-	/// </summary>
-	public interface IFontFamily : IWidget
-	{
-		/// <summary>
-		/// Gets the name of the font family
-		/// </summary>
-		/// <remarks>
-		/// This should be the same as what is used to create new instances of a font family using the <see cref="Create"/> method
-		/// </remarks>
-		string Name { get; }
-
-		/// <summary>
-		/// Gets an enumeration of the typefaces supported by this font family
-		/// </summary>
-		IEnumerable<FontTypeface> Typefaces { get; }
-
-		/// <summary>
-		/// Creates a new instance of a font family with a given name
-		/// </summary>
-		/// <param name="familyName">Name of the font family to create this instance for</param>
-		void Create (string familyName);
-	}
-
-	/// <summary>
 	/// Specifies a family for a <see cref="Font"/> object
 	/// </summary>
 	/// <remarks>
@@ -38,10 +13,10 @@ namespace Eto.Drawing
 	/// The variations can include Light, Bold, Italic, Oblique, etc.  Only the styles in <see cref="FontStyle"/> are 
 	/// discoverable, other than looking at the <see cref="FontTypeface.Name"/> for hints as to what the variation will look like.
 	/// </remarks>
-	[Handler(typeof(IFontFamily))]
+	[Handler(typeof(FontFamily.IHandler))]
 	public class FontFamily : Widget, IEquatable<FontFamily>
 	{
-		new IFontFamily Handler { get { return (IFontFamily)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets the name of this font family
@@ -60,7 +35,7 @@ namespace Eto.Drawing
 		/// Used by platform implementations to create instances of the FontFamily class directly
 		/// </remarks>
 		/// <param name="handler">Handler to use</param>
-		public FontFamily (IFontFamily handler)
+		public FontFamily (IHandler handler)
 			: base(handler)
 		{
 		}
@@ -88,7 +63,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator for this instance</param>
 		/// <param name="handler">Handler to use</param>
 		[Obsolete("Use variation without generator instead")]
-		public FontFamily(Generator generator, IFontFamily handler)
+		public FontFamily(Generator generator, IHandler handler)
 			: base(generator, handler, true)
 		{
 		}
@@ -100,7 +75,7 @@ namespace Eto.Drawing
 		/// <param name="familyName">Name of the font family to assign to this instance</param>
 		[Obsolete("Use variation without generator instead")]
 		public FontFamily(Generator generator, string familyName)
-			: base(generator, typeof(IFontFamily), true)
+			: base(generator, typeof(IHandler), true)
 		{
 			if (familyName.IndexOf(',') > 0)
 				familyName = SplitFamilyName(familyName);
@@ -113,7 +88,7 @@ namespace Eto.Drawing
 
 		static string SplitFamilyName (string familyName)
 		{
-			var handler = Platform.Instance.CreateShared<IFonts>();
+			var handler = Platform.Instance.CreateShared<Fonts.IHandler>();
 			var families = familyName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 			char[] trimChars = { ' ', '\'', '"' };
@@ -204,6 +179,31 @@ namespace Eto.Drawing
 		public override string ToString ()
 		{
 			return Name;
+		}
+
+		/// <summary>
+		/// Interface for a <see cref="FontFamily"/> handler
+		/// </summary>
+		public interface IHandler : Widget.IHandler
+		{
+			/// <summary>
+			/// Gets the name of the font family
+			/// </summary>
+			/// <remarks>
+			/// This should be the same as what is used to create new instances of a font family using the <see cref="Create"/> method
+			/// </remarks>
+			string Name { get; }
+
+			/// <summary>
+			/// Gets an enumeration of the typefaces supported by this font family
+			/// </summary>
+			IEnumerable<FontTypeface> Typefaces { get; }
+
+			/// <summary>
+			/// Creates a new instance of a font family with a given name
+			/// </summary>
+			/// <param name="familyName">Name of the font family to create this instance for</param>
+			void Create (string familyName);
 		}
 	}
 }

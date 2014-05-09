@@ -7,7 +7,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms
 {
-	public class FontDialogHandler : WidgetHandler<swf.FontDialog, FontDialog>, IFontDialog
+	public class FontDialogHandler : WidgetHandler<swf.FontDialog, FontDialog>, FontDialog.IHandler
 	{
 		Font font;
 

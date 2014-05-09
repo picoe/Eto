@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class GridColumnHandler : WidgetHandler<object, GridColumn>, IGridColumn
+	public class GridColumnHandler : WidgetHandler<object, GridColumn>, GridColumn.IHandler
 	{
 		public GridColumnHandler ()
 		{

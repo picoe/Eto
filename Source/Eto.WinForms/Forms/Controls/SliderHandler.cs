@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class SliderHandler : WindowsControl<swf.TrackBar, Slider, Slider.ICallback>, ISlider
+	public class SliderHandler : WindowsControl<swf.TrackBar, Slider, Slider.ICallback>, Slider.IHandler
 	{
         int? lastValue;
 

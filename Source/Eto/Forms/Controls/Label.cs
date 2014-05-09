@@ -24,25 +24,17 @@ namespace Eto.Forms
 		Character
 	}
 	
-	public interface ILabel : ITextControl
-	{
-		HorizontalAlign HorizontalAlign { get; set; }
-		VerticalAlign VerticalAlign { get; set; }
-		WrapMode Wrap { get; set; }
-		Color TextColor { get; set; }
-	}
-
-	[Handler(typeof(ILabel))]
+	[Handler(typeof(Label.IHandler))]
 	public class Label : TextControl
 	{
-		new ILabel Handler { get { return (ILabel)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public Label()
 		{
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public Label(Generator generator) : this (generator, typeof(ILabel))
+		public Label(Generator generator) : this (generator, typeof(IHandler))
 		{
 		}
 
@@ -74,6 +66,14 @@ namespace Eto.Forms
 		{
 			get { return Handler.VerticalAlign; }
 			set { Handler.VerticalAlign = value; }
+		}
+
+		public interface IHandler : TextControl.IHandler
+		{
+			HorizontalAlign HorizontalAlign { get; set; }
+			VerticalAlign VerticalAlign { get; set; }
+			WrapMode Wrap { get; set; }
+			Color TextColor { get; set; }
 		}
 	}
 }

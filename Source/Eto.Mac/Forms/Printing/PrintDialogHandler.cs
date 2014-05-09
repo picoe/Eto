@@ -6,7 +6,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Mac.Forms.Printing
 {
-	public class PrintDialogHandler : WidgetHandler<NSPrintPanel, PrintDialog>, IPrintDialog
+	public class PrintDialogHandler : WidgetHandler<NSPrintPanel, PrintDialog>, PrintDialog.IHandler
 	{
 		PrintSettings settings;
 

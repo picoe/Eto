@@ -8,56 +8,6 @@ using System.Globalization;
 namespace Eto
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Widget"/> class
-	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IWidget : IPlatformSource
-	{
-		/// <summary>
-		/// Gets or sets an ID for the widget
-		/// </summary>
-		/// <remarks>
-		/// Some platforms may use this to identify controls (e.g. web)
-		/// </remarks>
-		string ID { get; set; }
-
-		/// <summary>
-		/// Gets the widget this handler is implemented for
-		/// </summary>
-		Widget Widget { get; set; }
-
-		/// <summary>
-		/// Called after the widget is constructed
-		/// </summary>
-		/// <remarks>
-		/// This gets called automatically after the control is constructed and the <see cref="Widget"/> and <see cref="Platform"/> properties are set.
-		/// When the handler has specialized construction methods, then the <see cref="AutoInitializeAttribute"/> can be used to disable automatic
-		/// initialization. In this case, it is the responsibility of the subclass to call <see cref="Eto.Widget.Initialize()"/> 
-		/// </remarks>
-		void Initialize();
-
-		/// <summary>
-		/// Gets or sets the platform that was used to create this handler
-		/// </summary>
-		new Platform Platform { get; set; }
-
-		/// <summary>
-		/// Called to handle a specific event
-		/// </summary>
-		/// <remarks>
-		/// Most events are late bound by this method. Instead of wiring all events, this
-		/// will be called with an event string that is defined by the control.
-		/// 
-		/// This is called automatically when attaching to events, but must be called manually
-		/// when users of the control only override the event's On... method.
-		/// </remarks>
-		/// <param name="id">ID of the event to handle</param>
-		/// <param name = "defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
-		void HandleEvent(string id, bool defaultEvent = false);
-	}
-
-	/// <summary>
 	/// Interface for widgets that have a control object
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
@@ -116,7 +66,7 @@ namespace Eto
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract partial class Widget : IHandlerSource, IDisposable, IPlatformSource, ICallbackSource
 	{
-		IWidget WidgetHandler { get { return Handler as IWidget; } }
+		IHandler WidgetHandler { get { return Handler as IHandler; } }
 
 
 		/// <summary>
@@ -132,7 +82,7 @@ namespace Eto
 		/// </summary>
 		/// <value>The generator.</value>
 		[Obsolete("Use Platform instead")]
-		public Platform Generator { get { return ((IWidget)Handler).Platform; } }
+		public Platform Generator { get { return ((IHandler)Handler).Platform; } }
 
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
@@ -146,6 +96,57 @@ namespace Eto
 		public interface ICallback
 		{
 		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Widget"/> class
+		/// </summary>
+		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : IPlatformSource
+		{
+			/// <summary>
+			/// Gets or sets an ID for the widget
+			/// </summary>
+			/// <remarks>
+			/// Some platforms may use this to identify controls (e.g. web)
+			/// </remarks>
+			string ID { get; set; }
+
+			/// <summary>
+			/// Gets the widget this handler is implemented for
+			/// </summary>
+			Widget Widget { get; set; }
+
+			/// <summary>
+			/// Called after the widget is constructed
+			/// </summary>
+			/// <remarks>
+			/// This gets called automatically after the control is constructed and the <see cref="Widget"/> and <see cref="Platform"/> properties are set.
+			/// When the handler has specialized construction methods, then the <see cref="AutoInitializeAttribute"/> can be used to disable automatic
+			/// initialization. In this case, it is the responsibility of the subclass to call <see cref="Eto.Widget.Initialize()"/> 
+			/// </remarks>
+			void Initialize();
+
+			/// <summary>
+			/// Gets or sets the platform that was used to create this handler
+			/// </summary>
+			new Platform Platform { get; set; }
+
+			/// <summary>
+			/// Called to handle a specific event
+			/// </summary>
+			/// <remarks>
+			/// Most events are late bound by this method. Instead of wiring all events, this
+			/// will be called with an event string that is defined by the control.
+			/// 
+			/// This is called automatically when attaching to events, but must be called manually
+			/// when users of the control only override the event's On... method.
+			/// </remarks>
+			/// <param name="id">ID of the event to handle</param>
+			/// <param name = "defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
+			void HandleEvent(string id, bool defaultEvent = false);
+		}
+
 
 		#if TRACK_GC
 		~Widget()
@@ -161,7 +162,7 @@ namespace Eto
 		/// <param name="handler">Handler to assign to this widget for its implementation</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
 		[Obsolete("Use Widget(IHandler) instead")]
-		protected Widget(Generator generator, IWidget handler, bool initialize = true)
+		protected Widget(Generator generator, IHandler handler, bool initialize = true)
 		{
 			if (generator == null)
 				generator = Platform.Instance;
@@ -205,7 +206,7 @@ namespace Eto
 			if (info == null)
 				throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "type for '{0}' could not be found in this platform", GetType().FullName));
 			this.Handler = info.Instantiator();
-			var widgetHandler = this.Handler as IWidget;
+			var widgetHandler = this.Handler as IHandler;
 			if (widgetHandler != null)
 			{
 				widgetHandler.Platform = Platform.Instance;
@@ -219,7 +220,7 @@ namespace Eto
 		/// Initializes a new instance of the Widget class
 		/// </summary>
 		/// <param name="handler">Handler to assign to this widget for its implementation</param>
-		protected Widget(IWidget handler)
+		protected Widget(IHandler handler)
 		{
 			this.Handler = handler;
 			if (handler != null)
@@ -262,7 +263,7 @@ namespace Eto
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
-		public virtual string ID
+		public string ID
 		{
 			get { return WidgetHandler.ID; }
 			set { WidgetHandler.ID = value; }

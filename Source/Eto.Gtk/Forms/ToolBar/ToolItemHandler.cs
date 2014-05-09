@@ -9,7 +9,7 @@ namespace Eto.GtkSharp
 		
 	}
 
-	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
+	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler, IToolBarItemHandler
 		where TControl: Gtk.Widget
 		where TWidget: ToolItem
 	{

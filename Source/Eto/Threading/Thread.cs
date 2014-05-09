@@ -2,28 +2,10 @@ using System;
 
 namespace Eto.Threading
 {
-	[AutoInitialize(false)]
-	public interface IThread : IWidget
-	{
-		void Create();
-		
-		void CreateCurrent();
-		
-		void CreateMain();
-		
-		void Start();
-		
-		void Abort();
-		
-		bool IsAlive { get; }
-		
-		bool IsMain { get; }
-	}
-
-	[Handler(typeof(IThread))]
+	[Handler(typeof(Thread.IHandler))]
 	public class Thread : Widget
 	{
-		new IThread Handler { get { return (IThread)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		readonly Action action;
 
@@ -95,7 +77,7 @@ namespace Eto.Threading
 
 		[Obsolete("Use constructor without generator instead")]
 		public Thread(Action action, Generator generator = null)
-			: base(generator, typeof(IThread), false)
+			: base(generator, typeof(IHandler), false)
 		{
 			this.action = action;
 			Handler.Create();
@@ -118,6 +100,24 @@ namespace Eto.Threading
 			{
 				widget.OnExecuted();
 			}
+		}
+
+		[AutoInitialize(false)]
+		public interface IHandler : Widget.IHandler
+		{
+			void Create();
+
+			void CreateCurrent();
+
+			void CreateMain();
+
+			void Start();
+
+			void Abort();
+
+			bool IsAlive { get; }
+
+			bool IsMain { get; }
 		}
 	}
 }

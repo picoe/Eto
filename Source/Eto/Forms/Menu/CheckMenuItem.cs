@@ -2,15 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ICheckMenuItem : IMenuItem
-	{
-		bool Checked { get; set; }
-	}
-
-	[Handler(typeof(ICheckMenuItem))]
+	[Handler(typeof(CheckMenuItem.IHandler))]
 	public class CheckMenuItem : MenuItem
 	{
-		new ICheckMenuItem Handler { get { return (ICheckMenuItem)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public CheckMenuItem()
 		{
@@ -27,13 +22,13 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public CheckMenuItem(Generator generator)
-			: this(generator, typeof(ICheckMenuItem))
+			: this(generator, typeof(CheckMenuItem.IHandler))
 		{
 		}
 
 		[Obsolete("Use constructor without generator instead")]
 		public CheckMenuItem(CheckCommand command, Generator generator = null)
-			: base(command, generator, typeof(ICheckMenuItem))
+			: base(command, generator, typeof(CheckMenuItem.IHandler))
 		{
 			Checked = command.Checked;
 			command.CheckedChanged += (sender, e) => Checked = command.Checked;
@@ -50,6 +45,11 @@ namespace Eto.Forms
 		{
 			get { return Handler.Checked; }
 			set { Handler.Checked = value; }
+		}
+
+		public interface IHandler : MenuItem.IHandler
+		{
+			bool Checked { get; set; }
 		}
 	}
 }

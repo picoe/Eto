@@ -8,7 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class SplitterHandler : WpfContainer<swc.Grid, Splitter, Splitter.ICallback>, ISplitter
+	public class SplitterHandler : WpfContainer<swc.Grid, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
 		readonly swc.GridSplitter splitter;
 		readonly swc.DockPanel pane1;

@@ -6,7 +6,7 @@ using System;
 
 namespace Eto.WinForms.IO
 {
-	public class SystemIconsHandler : ISystemIcons
+	public class SystemIconsHandler : SystemIcons.IHandler
 	{
 		public Icon GetFileIcon(string fileName, IconSize size)
 		{

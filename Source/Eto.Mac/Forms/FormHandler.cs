@@ -5,7 +5,7 @@ using SD = System.Drawing;
 
 namespace Eto.Mac.Forms
 {
-	public class FormHandler : MacWindow<MyWindow, Form, Form.ICallback>, IForm
+	public class FormHandler : MacWindow<MyWindow, Form, Form.ICallback>, Form.IHandler
 	{
 		protected override bool DisposeControl { get { return false; } }
 

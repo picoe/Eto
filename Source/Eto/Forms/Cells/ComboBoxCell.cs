@@ -3,15 +3,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IComboBoxCell : ICell
-	{
-		IListStore DataStore { get; set; }
-	}
-
-	[Handler(typeof(IComboBoxCell))]
+	[Handler(typeof(ComboBoxCell.IHandler))]
 	public class ComboBoxCell : SingleValueCell
 	{
-		new IComboBoxCell Handler { get { return (IComboBoxCell)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 		
 		public ComboBoxCell (int column)
 		{
@@ -29,13 +24,18 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public ComboBoxCell (Generator generator)
-			: base (generator, typeof(IComboBoxCell), true)
+			: base (generator, typeof(IHandler), true)
 		{
 		}
 		
 		public IListStore DataStore {
 			get { return Handler.DataStore; }
 			set { Handler.DataStore = value; }
+		}
+
+		public interface IHandler : SingleValueCell.IHandler
+		{
+			IListStore DataStore { get; set; }
 		}
 	}
 }

@@ -7,7 +7,7 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms
 {
-	public class DrawableHandler : WindowsPanel<DrawableHandler.EtoDrawable, Drawable, Drawable.ICallback>, IDrawable
+	public class DrawableHandler : WindowsPanel<DrawableHandler.EtoDrawable, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{
 		public virtual bool SupportsCreateGraphics { get { return true; } }
 

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Eto.Mac
 {
-	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
+	public class EtoEnvironmentHandler : WidgetHandler<Widget>, EtoEnvironment.IHandler
 	{
 		static void Convert (EtoSpecialFolder folder, out NSSearchPathDirectory dir, out NSSearchPathDomain domain)
 		{

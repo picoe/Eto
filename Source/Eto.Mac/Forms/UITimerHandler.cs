@@ -13,7 +13,7 @@ namespace Eto.iOS.Forms
 namespace Eto.Mac.Forms
 #endif
 {
-	public class UITimerHandler : WidgetHandler<NSTimer, UITimer, UITimer.ICallback>, IUITimer
+	public class UITimerHandler : WidgetHandler<NSTimer, UITimer, UITimer.ICallback>, UITimer.IHandler
 	{
 		double interval = UITimer.DefaultInterval;
 		

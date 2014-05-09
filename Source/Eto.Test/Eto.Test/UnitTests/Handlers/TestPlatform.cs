@@ -22,12 +22,12 @@ namespace Eto.Test.UnitTests.Handlers
 		public static void AddTo(Eto.Platform p)
 		{
 			// Drawing
-			p.Add<IBitmap>(() => new TestBitmapHandler());
-			p.Add<IFont>(() => new TestFontHandler()); 
-			p.Add<IGraphics>(() => new TestGraphicsHandler()); 
-			p.Add<IMatrixHandler>(() => new TestMatrixHandler());
+			p.Add<Bitmap.IHandler>(() => new TestBitmapHandler());
+			p.Add<Font.IHandler>(() => new TestFontHandler()); 
+			p.Add<Graphics.IHandler>(() => new TestGraphicsHandler()); 
+			p.Add<Matrix.IHandler>(() => new TestMatrixHandler());
 
-			p.Add<IGridView>(() => new TestGridViewHandler());
+			p.Add<GridView.IHandler>(() => new TestGridViewHandler());
 		}
 
 		public override string ID

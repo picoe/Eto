@@ -4,70 +4,6 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Drawable"/> control
-	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[AutoInitialize(false)]
-	public partial interface IDrawable : IPanel
-	{
-		/// <summary>
-		/// Gets a value indicating whether this <see cref="Eto.Forms.Drawable"/> supports the <see cref="CreateGraphics"/> method
-		/// </summary>
-		/// <value><c>true</c> if supports creating graphics; otherwise, <c>false</c>.</value>
-		bool SupportsCreateGraphics { get; }
-
-		/// <summary>
-		/// Creates a new drawable control without specifying a large canvas or not
-		/// </summary>
-		void Create();
-
-		/// <summary>
-		/// Called when creating a drawable control with a hint whether it is intended for a large canvas
-		/// </summary>
-		/// <remarks>
-		/// Some platforms can optimize large canvases, such as mobile platforms by tiling the painting of the canvas.
-		/// 
-		/// A large canvas is one that is larger than the intended screen size.
-		/// 
-		/// Platforms are not required to change the behaviour of the drawable depending on this value.  Desktop platforms
-		/// typically do not change their behaviour based on this.
-		/// </remarks>
-		/// <param name="largeCanvas">If set to <c>true</c> the drawable is created to have a large canvas.</param>
-		void Create(bool largeCanvas);
-
-		/// <summary>
-		/// Update the specified <paramref name="region"/> directly
-		/// </summary>
-		/// <remarks>
-		/// This forces the region to be painted immediately.  On some platforms, this will be similar to calling
-		/// <see cref="Control.Invalidate(Rectangle)"/>, and queue the repaint instead of blocking until it is painted.
-		/// </remarks>
-		/// <param name="region">Region to update the control</param>
-		void Update(Rectangle region);
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance can recieve the input/keyboard focus
-		/// </summary>
-		/// <remarks>
-		/// If this is true, by default all platforms will focus the control automatically when it is clicked.
-		/// </remarks>
-		/// <value><c>true</c> if this instance can be focussed; otherwise, <c>false</c>.</value>
-		bool CanFocus { get; set; }
-
-		/// <summary>
-		/// Creates a graphics context for this control
-		/// </summary>
-		/// <remarks>
-		/// This can be used to draw directly onto the control.
-		/// Ensure you dispose the graphics object after performing any painting.
-		/// Note that not all platforms support drawing directly on the control, use <see cref="SupportsCreateGraphics"/>.
-		/// </remarks>
-		/// <returns>A new graphics context that can be used to draw directly onto the control</returns>
-		Graphics CreateGraphics();
-	}
-
-	/// <summary>
 	/// Event arguments when painting using the <see cref="Drawable.Paint"/> event
 	/// </summary>
 	public class PaintEventArgs : EventArgs
@@ -120,10 +56,10 @@ namespace Eto.Forms
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[Handler(typeof(IDrawable))]
-	public partial class Drawable : Panel
+	[Handler(typeof(Drawable.IHandler))]
+	public class Drawable : Panel
 	{
-		new IDrawable Handler { get { return (IDrawable)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Event to handle custom painting on the control
@@ -143,7 +79,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Drawable"/> class with the specified handler
 		/// </summary>
 		/// <param name="handler">Handler interface for the drawable</param>
-		protected Drawable(IDrawable handler)
+		protected Drawable(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -174,7 +110,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator.</param>
 		/// <param name="largeCanvas">If set to <c>true</c> large canvas.</param>
 		[Obsolete("Use Drawable(bool) instead")]
-		public Drawable (Generator generator, bool largeCanvas) : base(generator, typeof(IDrawable))
+		public Drawable (Generator generator, bool largeCanvas) : base(generator, typeof(IHandler))
 		{
 			Handler.Create (largeCanvas);
 		}
@@ -185,7 +121,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator.</param>
 		[Obsolete("Use default constructor instead")]
 		public Drawable(Generator generator)
-			: this(generator, typeof(IDrawable))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -210,7 +146,7 @@ namespace Eto.Forms
 		/// <param name="handler">Handler.</param>
 		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use Drawable(IDrawable) instead")]
-		public Drawable(Generator generator, IDrawable handler, bool initialize = true)
+		public Drawable(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 		}
@@ -291,5 +227,73 @@ namespace Eto.Forms
 				widget.OnPaint(e);
 			}
 		}
+
+		#region Handler
+
+		/// <summary>
+		/// Handler interface for the <see cref="Drawable"/> control
+		/// </summary>
+		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		[AutoInitialize(false)]
+		public interface IHandler : Panel.IHandler
+		{
+			/// <summary>
+			/// Gets a value indicating whether this <see cref="Eto.Forms.Drawable"/> supports the <see cref="CreateGraphics"/> method
+			/// </summary>
+			/// <value><c>true</c> if supports creating graphics; otherwise, <c>false</c>.</value>
+			bool SupportsCreateGraphics { get; }
+
+			/// <summary>
+			/// Creates a new drawable control without specifying a large canvas or not
+			/// </summary>
+			void Create();
+
+			/// <summary>
+			/// Called when creating a drawable control with a hint whether it is intended for a large canvas
+			/// </summary>
+			/// <remarks>
+			/// Some platforms can optimize large canvases, such as mobile platforms by tiling the painting of the canvas.
+			/// 
+			/// A large canvas is one that is larger than the intended screen size.
+			/// 
+			/// Platforms are not required to change the behaviour of the drawable depending on this value.  Desktop platforms
+			/// typically do not change their behaviour based on this.
+			/// </remarks>
+			/// <param name="largeCanvas">If set to <c>true</c> the drawable is created to have a large canvas.</param>
+			void Create(bool largeCanvas);
+
+			/// <summary>
+			/// Update the specified <paramref name="region"/> directly
+			/// </summary>
+			/// <remarks>
+			/// This forces the region to be painted immediately.  On some platforms, this will be similar to calling
+			/// <see cref="Control.Invalidate(Rectangle)"/>, and queue the repaint instead of blocking until it is painted.
+			/// </remarks>
+			/// <param name="region">Region to update the control</param>
+			void Update(Rectangle region);
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this instance can recieve the input/keyboard focus
+			/// </summary>
+			/// <remarks>
+			/// If this is true, by default all platforms will focus the control automatically when it is clicked.
+			/// </remarks>
+			/// <value><c>true</c> if this instance can be focussed; otherwise, <c>false</c>.</value>
+			bool CanFocus { get; set; }
+
+			/// <summary>
+			/// Creates a graphics context for this control
+			/// </summary>
+			/// <remarks>
+			/// This can be used to draw directly onto the control.
+			/// Ensure you dispose the graphics object after performing any painting.
+			/// Note that not all platforms support drawing directly on the control, use <see cref="SupportsCreateGraphics"/>.
+			/// </remarks>
+			/// <returns>A new graphics context that can be used to draw directly onto the control</returns>
+			Graphics CreateGraphics();
+		}
+
+		#endregion
 	}
 }

@@ -65,7 +65,6 @@
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Controls\TreeView.cs" />
-    <Compile Include="Forms\Controls\TreeView.desktop.cs" />
     <Compile Include="Forms\DataStoreView.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
@@ -105,7 +104,6 @@
     <Compile Include="Forms\Layout\TableLayout.cs" />
     <Compile Include="Forms\UITimer.cs" />
     <Compile Include="Forms\Window.cs" />
-    <Compile Include="Forms\Window.desktop.cs" />
     <Compile Include="Forms\Controls\Button.cs" />
     <Compile Include="Forms\Controls\CheckBox.cs" />
     <Compile Include="Forms\Controls\ComboBox.cs" />
@@ -143,7 +141,6 @@
     </Compile>
     <Compile Include="Forms\Controls\WebView.cs" />
     <Compile Include="Forms\Clipboard.cs" />
-    <Compile Include="Forms\Application.desktop.cs" />
     <Compile Include="Forms\CommonDialog.cs" />
     <Compile Include="Forms\ColorDialog.cs" />
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
@@ -151,11 +148,9 @@
     <Compile Include="Forms\Menu\ContextMenu.cs" />
     <Compile Include="Forms\Layout\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
-    <Compile Include="Forms\Controls\ListBox.desktop.cs" />
     <Compile Include="Forms\Controls\CommonControl.cs" />
     <Compile Include="Forms\Controls\Slider.cs" />
     <Compile Include="Forms\Cursor.cs" />
-    <Compile Include="Forms\Controls\Control.desktop.cs" />
     <Compile Include="Drawing\Bitmap.cs" />
     <Compile Include="Drawing\Color.cs">
       <SubType>Code</SubType>
@@ -215,8 +210,6 @@
     <Compile Include="Forms\Controls\TreeGridItem.cs" />
     <Compile Include="Forms\Cells\TextBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageViewCell.cs" />
-    <Compile Include="Forms\Controls\GridView.desktop.cs" />
-    <Compile Include="Forms\Controls\TreeGridView.desktop.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
     <Compile Include="Binding\Binding.cs" />

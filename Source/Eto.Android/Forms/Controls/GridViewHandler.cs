@@ -14,7 +14,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Forms.Controls
 {
-	public class GridViewHandler : AndroidControl<aw.GridView, GridView, GridView.ICallback>, IGridView
+	public class GridViewHandler : AndroidControl<aw.GridView, GridView, GridView.ICallback>, GridView.IHandler
 	{
 		public IDataStore DataStore { get; set; }
 

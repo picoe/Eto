@@ -19,7 +19,7 @@ namespace Eto.Mac.Drawing
 		void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination);
 	}
 
-	public abstract class ImageHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IImage, IImageHandler
+	public abstract class ImageHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, Image.IHandler, IImageHandler
 		where TControl: class
 		where TWidget: Image
 	{

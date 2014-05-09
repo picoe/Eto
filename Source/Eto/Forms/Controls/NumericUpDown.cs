@@ -2,21 +2,10 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface INumericUpDown : ICommonControl
-	{
-		bool ReadOnly { get; set; }
-
-		double Value { get; set; }
-
-		double MinValue { get; set; }
-
-		double MaxValue { get; set; }
-	}
-
-	[Handler(typeof(INumericUpDown))]
+	[Handler(typeof(NumericUpDown.IHandler))]
 	public class NumericUpDown : CommonControl
 	{
-		new INumericUpDown Handler { get { return (INumericUpDown)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		public event EventHandler<EventArgs> ValueChanged;
 
@@ -31,7 +20,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public NumericUpDown(Generator generator) : this(generator, typeof(INumericUpDown))
+		public NumericUpDown(Generator generator) : this(generator, typeof(IHandler))
 		{
 		}
 
@@ -96,6 +85,17 @@ namespace Eto.Forms
 			{
 				widget.OnValueChanged(e);
 			}
+		}
+
+		public interface IHandler : CommonControl.IHandler
+		{
+			bool ReadOnly { get; set; }
+
+			double Value { get; set; }
+
+			double MinValue { get; set; }
+
+			double MaxValue { get; set; }
 		}
 	}
 }

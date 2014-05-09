@@ -50,7 +50,7 @@ namespace Eto.Mac.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, IBitmap
+	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, Bitmap.IHandler
 	{
 		NSImageRep rep;
 		NSBitmapImageRep bmprep;

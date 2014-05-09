@@ -8,7 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class ComboBoxHandler : WindowsControl<swf.ComboBox, ComboBox, ComboBox.ICallback>, IComboBox
+	public class ComboBoxHandler : WindowsControl<swf.ComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		CollectionHandler collection;
 

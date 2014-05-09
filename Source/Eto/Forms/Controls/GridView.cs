@@ -4,13 +4,6 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public partial interface IGridView : IGrid
-	{
-		IDataStore DataStore { get; set; }
-
-		bool ShowCellBorders { get; set; }
-	}
-
 	public class GridViewCellArgs : EventArgs
 	{
 		public GridColumn GridColumn { get; private set; }
@@ -30,10 +23,10 @@ namespace Eto.Forms
 		}
 	}
 
-	[Handler(typeof(IGridView))]
+	[Handler(typeof(GridView.IHandler))]
 	public partial class GridView : Grid
 	{
-		new IGridView Handler { get { return base.Handler as IGridView; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		// provides sorting and filtering on the model.
 		internal IDataStoreView DataStoreView { get; private set; }
@@ -73,7 +66,7 @@ namespace Eto.Forms
 			Initialize();
 		}
 
-		protected GridView(IGridView handler)
+		protected GridView(IHandler handler)
 			: base(handler)
 		{
 			Initialize();
@@ -81,7 +74,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public GridView(Generator generator)
-			: this(generator, typeof(IGridView))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -93,7 +86,7 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use GridView(IGridView) instead")]
-		public GridView(Generator generator, IControl handler, bool initialize = true)
+		public GridView(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 			Initialize();
@@ -316,6 +309,12 @@ namespace Eto.Forms
 			}
 		}
 
+		public ContextMenu ContextMenu
+		{
+			get { return Handler.ContextMenu; }
+			set { Handler.ContextMenu = value; }
+		}
+
 		static readonly object callback = new Callback();
 		protected override object GetCallback() { return callback; }
 
@@ -331,6 +330,14 @@ namespace Eto.Forms
 				widget.OnCellClick(e);
 			}
 		}
+
+		public interface IHandler : Grid.IHandler, IContextMenuHost
+		{
+			IDataStore DataStore { get; set; }
+
+			bool ShowCellBorders { get; set; }
+		}
+
 	}
 }
 

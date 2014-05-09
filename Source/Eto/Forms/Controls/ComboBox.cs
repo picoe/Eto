@@ -2,11 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IComboBox : IListControl
-	{
-	}
-
-	[Handler(typeof(IComboBox))]
+	[Handler(typeof(ComboBox.IHandler))]
 	public class ComboBox : ListControl
 	{
 		public ComboBox()
@@ -15,7 +11,7 @@ namespace Eto.Forms
 
 		[Obsolete("Use default constructor instead")]
 		public ComboBox(Generator generator)
-			: this(generator, typeof(IComboBox))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -24,6 +20,9 @@ namespace Eto.Forms
 			: base(generator, type, initialize)
 		{
 		}
-	}
 
+		public interface IHandler : ListControl.IHandler
+		{
+		}
+	}
 }

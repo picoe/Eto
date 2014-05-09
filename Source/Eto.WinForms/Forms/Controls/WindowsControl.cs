@@ -79,7 +79,7 @@ namespace Eto.WinForms
 		}
 	}
 
-	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, IControl, IWindowsControl
+	public abstract class WindowsControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWindowsControl
 		where TControl : swf.Control
 		where TWidget : Control
 		where TCallback : Control.ICallback

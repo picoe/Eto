@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox, TextBox.ICallback>, ITextBox
+	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		string placeholderText;
 

@@ -9,7 +9,7 @@ using sw = SharpDX.DirectWrite;
 
 namespace Eto.Direct2D.Drawing
 {
-    public class FontTypefaceHandler : WidgetHandler<sw.FontFace, FontTypeface>, IFontTypeface
+	public class FontTypefaceHandler : WidgetHandler<sw.FontFace, FontTypeface>, FontTypeface.IHandler
     {
 		public sw.Font Font { get; private set; }
 
