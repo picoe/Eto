@@ -161,7 +161,7 @@ namespace Eto.Forms
 		/// a) SelectionPreserver.Dispose() during sort and filter operations
 		/// b) OnCollectionChanged when the model collection is changed.
 		/// </summary>
-		private void ResetSelection(SortedSet<int> newSelectedRows, 
+		void ResetSelection(SortedSet<int> newSelectedRows, 
 			HashSet<object> selectedItems = null, 
 			HashSet<object> removedSelectedItems = null)
 		{
@@ -239,8 +239,7 @@ namespace Eto.Forms
 					{
 						if (i < e.OldStartingIndex + e.OldItems.Count)
 							continue; // the item is in the removed range
-						else
-							temp = i - e.OldItems.Count; // the item is beyond the removed range so its index is decremented
+						temp = i - e.OldItems.Count; // the item is beyond the removed range so its index is decremented
 					}
 					newSelectedRows.Add(temp);
 					selectedItems.Add(model[temp]);

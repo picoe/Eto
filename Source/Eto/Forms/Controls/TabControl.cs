@@ -99,7 +99,7 @@ namespace Eto.Forms
 			Remove(child as TabPage);
 		}
 
-		private void Remove(TabPage page)
+		void Remove(TabPage page)
 		{
 			if (page != null)
 			{

@@ -24,7 +24,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(GridView.IHandler))]
-	public partial class GridView : Grid
+	public class GridView : Grid
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -92,7 +92,7 @@ namespace Eto.Forms
 			Initialize();
 		}
 
-		private new void Initialize()
+		new void Initialize()
 		{
 			// Always attach the SelectionChangedEvent
 			// since it is always handled in the GridView.
@@ -299,7 +299,7 @@ namespace Eto.Forms
 			{
 				var viewRows = ViewRows.ToArray();
 				if (viewRows.Length > 0)
-					modelRowToSelect = next ? viewRows.First() : viewRows.Last();
+					modelRowToSelect = next ? viewRows[0] : viewRows.Last();
 			}
 
 			if (modelRowToSelect != null)

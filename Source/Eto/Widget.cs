@@ -64,7 +64,7 @@ namespace Eto
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract partial class Widget : IHandlerSource, IDisposable, IPlatformSource, ICallbackSource
+	public abstract class Widget : IHandlerSource, IDisposable, IPlatformSource, ICallbackSource
 	{
 		IHandler WidgetHandler { get { return Handler as IHandler; } }
 
@@ -385,7 +385,7 @@ namespace Eto
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
 		internal void HandleEvent(string id)
 		{
-			WidgetHandler.HandleEvent(id, false);
+			WidgetHandler.HandleEvent(id);
 		}
 
 		/// <summary>

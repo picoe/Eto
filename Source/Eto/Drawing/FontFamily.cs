@@ -89,7 +89,7 @@ namespace Eto.Drawing
 		static string SplitFamilyName (string familyName)
 		{
 			var handler = Platform.Instance.CreateShared<Fonts.IHandler>();
-			var families = familyName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+			var families = familyName.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 			char[] trimChars = { ' ', '\'', '"' };
 			foreach (var name in families)

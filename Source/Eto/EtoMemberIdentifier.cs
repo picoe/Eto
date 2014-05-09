@@ -37,14 +37,14 @@ namespace Eto
 			this.MemberName = memberName;
 		}
 
-		private static bool IsNull(AttachableMemberIdentifier a)
+		static bool IsNull(AttachableMemberIdentifier a)
 		{
 			return object.ReferenceEquals(a, null);
 		}
 
 		public override bool Equals(object obj)
 		{
-			AttachableMemberIdentifier other = obj as AttachableMemberIdentifier;
+			var other = obj as AttachableMemberIdentifier;
 			return Equals(other);
 		}
 

@@ -40,7 +40,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(TreeView.IHandler))]
-	public partial class TreeView : Control
+	public class TreeView : Control
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 

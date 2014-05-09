@@ -30,7 +30,7 @@ namespace Eto.Forms
 	}
 
 	[Handler(typeof(TreeGridView.IHandler))]
-	public partial class TreeGridView : Grid
+	public class TreeGridView : Grid
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 

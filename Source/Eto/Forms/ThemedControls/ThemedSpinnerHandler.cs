@@ -209,7 +209,7 @@ namespace Eto.Forms.ThemedControls
 				if (alphaValue > 1f)
 					alphaValue = 0f;
 				float alpha = enabled ? alphaValue : DisabledAlpha;
-				Color elementColor = new Color(ElementColor, alpha);
+				var elementColor = new Color(ElementColor, alpha);
 
 				float rate = 5F / ElementSize;
 				float size = controlSize.Width / rate;

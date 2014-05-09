@@ -10,7 +10,7 @@ namespace Eto
 	/// and verifies that all objects created in that 
 	/// block were created using that generator.
 	/// </summary>
-	internal class PlatformContext : IDisposable
+	class PlatformContext : IDisposable
 	{
 		readonly Platform previous;
 		readonly Platform previousValidate;
@@ -20,7 +20,7 @@ namespace Eto
 			previous = Platform.Instance;
 			previousValidate = Platform.ValidatePlatform;
 			Platform.Initialize(platform);
-			Eto.Platform.ValidatePlatform = platform;
+			Platform.ValidatePlatform = platform;
 		}
 
 		public void Dispose()

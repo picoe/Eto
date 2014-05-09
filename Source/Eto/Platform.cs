@@ -28,7 +28,7 @@ namespace Eto
 		}
 	}
 
-	internal class HandlerInfo
+	class HandlerInfo
 	{
 		public Type Type { get; private set; }
 		public bool Initialize { get; private set; }

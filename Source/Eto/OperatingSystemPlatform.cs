@@ -90,7 +90,7 @@ namespace Eto
 
 			#else
 
-			switch (System.Environment.OSVersion.Platform)
+			switch (Environment.OSVersion.Platform)
 			{
 				case PlatformID.MacOSX:
 					IsMac = true;

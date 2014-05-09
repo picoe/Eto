@@ -43,10 +43,7 @@ namespace Eto.Forms
 		{
 			var start = Start >= range.Start ? Start : range.Start;
 			var end = End <= range.End ? End : range.End;
-            if (start <= end)
-                return Range.FromStartEnd(start, end);
-            else
-                return default(Range);
+            return start <= end ? Range.FromStartEnd(start, end) : default(Range);
 		}
 
 		public override bool Equals (object obj)

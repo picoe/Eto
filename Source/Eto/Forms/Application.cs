@@ -6,7 +6,7 @@ using System.Linq;
 namespace Eto.Forms
 {
 	[Handler(typeof(Application.IHandler))]
-	public partial class Application : Widget
+	public class Application : Widget
 	{
 		public static Application Instance { get; private set; }
 
