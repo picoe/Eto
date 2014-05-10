@@ -13,10 +13,6 @@ namespace Eto.Forms
 			: base(g, type, initialize)
 		{
 		}
-
-		public interface IHandler
-		{
-		}
 	}
 }
 

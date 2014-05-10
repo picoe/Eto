@@ -59,7 +59,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Interface handler for the <see cref="Form"/> control
 		/// </summary>
-		public interface IHandler : Window.IHandler
+		public new interface IHandler : Window.IHandler
 		{
 			/// <summary>
 			/// Show the form

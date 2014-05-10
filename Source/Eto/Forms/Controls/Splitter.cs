@@ -140,14 +140,18 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback : Container.ICallback
+		public new interface ICallback : Container.ICallback
 		{
 			void OnPositionChanged(Splitter widget, EventArgs e);
 		}
 
-		protected class Callback : Container.Callback, ICallback
+		protected new class Callback : Container.Callback, ICallback
 		{
 			public void OnPositionChanged(Splitter widget, EventArgs e)
 			{
@@ -155,7 +159,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public interface IHandler : Container.IHandler
+		public new interface IHandler : Container.IHandler
 		{
 			SplitterOrientation Orientation { get; set; }
 

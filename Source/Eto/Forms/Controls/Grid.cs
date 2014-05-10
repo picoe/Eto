@@ -375,39 +375,75 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback : Control.ICallback
+		/// <summary>
+		/// Callback interface for instances of <see cref="Grid"/>
+		/// </summary>
+		public new interface ICallback : Control.ICallback
 		{
+			/// <summary>
+			/// Raises the cell editing event.
+			/// </summary>
 			void OnCellEditing(Grid widget, GridViewCellArgs e);
+			/// <summary>
+			/// Raises the cell edited event.
+			/// </summary>
 			void OnCellEdited(Grid widget, GridViewCellArgs e);
+			/// <summary>
+			/// Raises the selection changed event.
+			/// </summary>
 			void OnSelectionChanged(Grid widget, EventArgs e);
+			/// <summary>
+			/// Raises the column header click event.
+			/// </summary>
 			void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e);
+			/// <summary>
+			/// Raises the cell formatting event.
+			/// </summary>
 			void OnCellFormatting(Grid widget, GridCellFormatEventArgs e);
 		}
 
-		protected class Callback : Control.Callback, ICallback
+		/// <summary>
+		/// Callbacks for instances of <see cref="Grid"/>
+		/// </summary>
+		protected new class Callback : Control.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the cell editing event.
+			/// </summary>
 			public void OnCellEditing(Grid widget, GridViewCellArgs e)
 			{
 				widget.OnCellEditing(e);
 			}
-
+			/// <summary>
+			/// Raises the cell edited event.
+			/// </summary>
 			public void OnCellEdited(Grid widget, GridViewCellArgs e)
 			{
 				widget.OnCellEdited(e);
 			}
-
+			/// <summary>
+			/// Raises the selection changed event.
+			/// </summary>
 			public void OnSelectionChanged(Grid widget, EventArgs e)
 			{
 				widget.OnSelectionChanged(e);
 			}
-
+			/// <summary>
+			/// Raises the column header click event.
+			/// </summary>
 			public void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e)
 			{
 				widget.OnColumnHeaderClick(e);
 			}
-
+			/// <summary>
+			/// Raises the cell formatting event.
+			/// </summary>
 			public void OnCellFormatting(Grid widget, GridCellFormatEventArgs e)
 			{
 				widget.OnCellFormatting(e);
@@ -421,7 +457,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
-		public interface IHandler : Control.IHandler
+		public new interface IHandler : Control.IHandler
 		{
 			/// <summary>
 			/// Gets or sets a value indicating that the header should be shown

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Eto
 {
@@ -62,8 +63,27 @@ namespace Eto
 			return Widget.Properties.ContainsKey(id) || EventLookup.IsDefault(Widget, id) || Widget.Properties.ContainsKey(id + InstanceEventSuffix);
 		}
 
+		/// <summary>
+		/// Gets the callback object for the control
+		/// </summary>
+		/// <value>The callback.</value>
 		protected object Callback { get { return ((ICallbackSource)Widget).Callback; } }
 
+		/// <summary>
+		/// Called to handle a specific event
+		/// </summary>
+		/// <remarks>
+		/// Most events are late bound by this method. Instead of wiring all events, this
+		/// will be called with an event string that is defined by the control.
+		/// 
+		/// This is called automatically when attaching to events, but must be called manually
+		/// when users of the control only override the event's On... method.
+		/// 
+		/// Override the <see cref="AttachEvent"/> to attach your events
+		/// </remarks>
+		/// <seealso cref="AttachEvent"/>
+		/// <param name="id">ID of the event to handle</param>
+		/// <param name="defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
 		public void HandleEvent(string id, bool defaultEvent = false)
 		{
 			if (defaultEvent)
@@ -171,9 +191,9 @@ namespace Eto
 	/// ]]></code>
 	/// </example>
 	/// <seealso cref="WidgetHandler{T,W}"/>
-	/// <typeparam name="T">Type of the platform-specific object</typeparam>
+	/// <typeparam name="TControl">Type of the platform-specific object</typeparam>
 	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IControlObjectSource
+	public abstract class WidgetHandler<TControl, TWidget> : WidgetHandler<TWidget>, IControlObjectSource
 		where TWidget: Widget
 	{
 		/// <summary>
@@ -191,7 +211,7 @@ namespace Eto
 		/// <summary>
 		/// Gets or sets the platform-specific control object
 		/// </summary>
-		public T Control { get; protected set; }
+		public TControl Control { get; protected set; }
 
 		/// <summary>
 		/// Gets the platform-specific control object
@@ -213,7 +233,7 @@ namespace Eto
 					control.Dispose();
 			}
 			//Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
-			Control = default(T);
+			Control = default(TControl);
 			base.Dispose(disposing);
 		}
 
@@ -234,9 +254,9 @@ namespace Eto
 		/// </remarks>
 		/// <param name="widget">The widget to get the platform-specific control from</param>
 		/// <returns>The platform-specific control used for the specified widget</returns>
-		public static T GetControl(TWidget widget)
+		public static TControl GetControl(TWidget widget)
 		{
-			var handler = (WidgetHandler<T, TWidget>)widget.Handler;
+			var handler = (WidgetHandler<TControl, TWidget>)widget.Handler;
 			return handler.Control;
 		}
 
@@ -281,19 +301,117 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Connector for events to keep a weak reference to allow gtk controls to be garbage collected when no longer referenced
+		/// Connector for events to keep a weak reference to allow controls to be garbage collected when no longer referenced
 		/// </summary>
 		/// <seealso cref="Connector"/>
 		protected class WeakConnector
 		{
 			WeakReference handler;
 
-			public WidgetHandler<T, TWidget> Handler { get { return (WidgetHandler<T, TWidget>)handler.Target; } internal set { handler = new WeakReference(value); } }
+			/// <summary>
+			/// Gets the handler that the connector is associated with
+			/// </summary>
+			/// <remarks>
+			/// This property is used to access the handler instance to trigger events.
+			/// </remarks>
+			/// <value>The handler.</value>
+			public WidgetHandler<TControl, TWidget> Handler { get { return (WidgetHandler<TControl, TWidget>)handler.Target; } internal set { handler = new WeakReference(value); } }
 		}
 
 	}
 
-	public abstract class WidgetHandler<T, TWidget, TCallback> : WidgetHandler<T, TWidget>
+	/// <summary>
+	/// Widget handler with type-specific callback
+	/// </summary>
+	/// <remarks>
+	/// This can be used by controls that have events to trigger using a callback class.
+	/// </remarks>
+	/// <example>
+	/// This is a full example showing a new control with a handler-triggered event and a property.
+	/// <code>
+	/// 	// in your eto-only dll:
+	/// 	public class MyEtoControl : Eto.Forms.Control
+	/// 	{
+	/// 
+	/// 		// define an event that is triggered by the handler
+	/// 		public const string MySomethingEvent = "MyEtoControl.MySomething";
+	/// 		
+	/// 		public event EventHandler&lt;EventArgs&gt; MySomething
+	/// 		{
+	/// 			add { Properties.AddHandlerEvent(MySomethingEvent, value); }
+	/// 			remove { Properties.RemoveEvent(MySomethingEvent, value); }
+	/// 		}
+	/// 		
+	/// 		// allow subclasses to override the event
+	/// 		protected virtual void OnMySomething(EventArgs e)
+	/// 		{
+	/// 			Properties.TriggerEvent(MySomethingEvent, this, e);
+	/// 		}
+	/// 
+	/// 		static MyEtoControl()
+	/// 		{
+	/// 			RegisterEvent&lt;MyEtoControl&gt;(c => c.OnMySomething(null), MySomethingEvent);
+	/// 		}
+	/// 
+	/// 		// defines the callback interface to trigger the event from handlers
+	/// 		public interface ICallback : Eto.Control.ICallback
+	/// 		{
+	/// 			void OnMySomething(MyEtoControl widget, EventArgs e);
+	/// 		}
+	/// 
+	/// 		// defines the callback implementation
+	/// 		protected class Callback : Eto.Control.Callback, ICallback
+	/// 		{
+	/// 			public void OnMySomething(MyEtoControl widget, EventArgs e)
+	/// 			{
+	/// 				widget.OnMySomething(e);
+	/// 			}
+	/// 		}
+	/// 
+	/// 		// create single instance of the callback, and tell Eto we want to use it
+	/// 		static readonly object callback = new Callback();
+	/// 		protected override object GetCallback() { return callback; }
+	/// 
+	/// 		// handler interface for other methods/properties
+	/// 		public interface IHandler : Eto.Control.IHandler
+	/// 		{
+	/// 			string MyProperty { get; set; }
+	/// 		}
+	/// 
+	/// 		new IHandler Handler { get { (IHandler)base.Handler; } }
+	/// 
+	/// 		public string MyProperty { get { return Handler.MyProperty; } set { Handler.MyProperty = value; } }
+	/// 	}
+	/// 
+	/// 
+	/// 	// in each platform-specific dll:
+	/// 	public class MyHandler : WidgetHandler&lt;PlatformSpecificControl, MyEtoControl, MyEtoControl.ICallback&gt; : MyEtoControl.IHandler
+	/// 	{
+	/// 		public MyHandler()
+	/// 		{
+	/// 			Control = new PlatformSpecificControl();
+	/// 		}
+	/// 
+	/// 		public override void AttachEvent(string id)
+	/// 		{
+	/// 			switch (id)
+	/// 			{
+	/// 				case MyEtoControl.MySomethingEvent:
+	/// 					Control.SomeEvent += (sender, e) => Callback.OnMySomething(EventArgs.Empty);
+	/// 					break;
+	/// 
+	/// 				default:
+	/// 					base.AttachEvent(id);
+	/// 					break;
+	/// 			}
+	/// 		}
+	/// 	}
+	/// </code>
+	/// </example>
+	/// <typeparam name="TControl">Type of the platform-specific object</typeparam>
+	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
+	/// <typeparam name="TCallback">Type of the callback</typeparam>
+	public abstract class WidgetHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget>
 		where TWidget: Widget
 	{
 		public new TCallback Callback { get { return (TCallback)base.Callback; } }

@@ -440,7 +440,7 @@ namespace Eto.Drawing
 		/// Platform handler for the <see cref="Font"/> class
 		/// </summary>
 		[AutoInitialize(false)]
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
 			/// Creates a new font object

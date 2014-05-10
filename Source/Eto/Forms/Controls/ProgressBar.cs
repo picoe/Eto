@@ -89,7 +89,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Handler interface for the <see cref="ProgressBar"/> control
 		/// </summary>
-		public interface IHandler : Control.IHandler
+		public new interface IHandler : Control.IHandler
 		{
 			/// <summary>
 			/// Gets or sets the value of the progress bar that represents 100% complete. The default is 100.

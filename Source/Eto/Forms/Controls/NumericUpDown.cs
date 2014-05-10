@@ -72,14 +72,18 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback : CommonControl.ICallback
+		public new interface ICallback : CommonControl.ICallback
 		{
 			void OnValueChanged(NumericUpDown widget, EventArgs e);
 		}
 
-		protected class Callback : CommonControl.Callback, ICallback
+		protected new class Callback : CommonControl.Callback, ICallback
 		{
 			public void OnValueChanged(NumericUpDown widget, EventArgs e)
 			{
@@ -87,7 +91,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public interface IHandler : CommonControl.IHandler
+		public new interface IHandler : CommonControl.IHandler
 		{
 			bool ReadOnly { get; set; }
 

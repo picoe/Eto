@@ -37,7 +37,7 @@ namespace Eto.Forms
 			return Handler.ShowDialog (parent);
 		}
 
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			string Title { get; set; }
 

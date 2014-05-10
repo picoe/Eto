@@ -68,7 +68,7 @@ namespace Eto.Forms
 			set { Handler.Visible = value; }
 		}
 
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			string HeaderText { get; set; }
 

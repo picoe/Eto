@@ -82,7 +82,7 @@ namespace Eto.Forms
 
 		public bool IsPrimary { get { return Handler.IsPrimary; } }
 
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			float Scale { get; }
 

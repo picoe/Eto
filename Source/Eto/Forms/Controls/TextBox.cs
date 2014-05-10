@@ -44,7 +44,7 @@ namespace Eto.Forms
 			Handler.SelectAll();
 		}
 
-		public interface IHandler : TextControl.IHandler
+		public new interface IHandler : TextControl.IHandler
 		{
 			bool ReadOnly { get; set; }
 

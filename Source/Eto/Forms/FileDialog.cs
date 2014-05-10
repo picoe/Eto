@@ -108,7 +108,7 @@ namespace Eto.Forms
 			set { Handler.Directory = value; }
 		}
 
-		public interface IHandler : CommonDialog.IHandler
+		public new interface IHandler : CommonDialog.IHandler
 		{
 			string FileName { get; set; }
 			IEnumerable<IFileDialogFilter> Filters { get; set; }

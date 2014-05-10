@@ -109,7 +109,7 @@ namespace Eto.Forms
 			set { Handler.Shortcut = value; }
 		}
 
-		public interface IHandler : Menu.IHandler
+		public new interface IHandler : Menu.IHandler
 		{
 			Keys Shortcut { get; set; }
 

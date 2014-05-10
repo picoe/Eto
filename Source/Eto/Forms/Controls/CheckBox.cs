@@ -97,14 +97,18 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback : TextControl.ICallback
+		public new interface ICallback : TextControl.ICallback
 		{
 			void OnCheckedChanged(CheckBox widget, EventArgs e);
 		}
 
-		protected class Callback : TextControl.Callback, ICallback
+		protected new class Callback : TextControl.Callback, ICallback
 		{
 			public void OnCheckedChanged(CheckBox widget, EventArgs e)
 			{
@@ -115,7 +119,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Handler interface for the <see cref="CheckBox"/> control
 		/// </summary>
-		public interface IHandler : TextControl.IHandler
+		public new interface IHandler : TextControl.IHandler
 		{
 			/// <summary>
 			/// Gets or sets the checked state

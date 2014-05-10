@@ -30,7 +30,7 @@ namespace Eto.Forms
 			set { Handler.Image = value; }
 		}
 
-		public interface IHandler : Control.IHandler
+		public new interface IHandler : Control.IHandler
 		{
 			Image Image { get; set; }
 		}

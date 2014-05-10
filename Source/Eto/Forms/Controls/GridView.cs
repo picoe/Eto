@@ -316,14 +316,18 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback : Grid.ICallback
+		public new interface ICallback : Grid.ICallback
 		{
 			void OnCellClick(GridView widget, GridViewCellArgs e);
 		}
 
-		protected class Callback : Grid.Callback, ICallback
+		protected new class Callback : Grid.Callback, ICallback
 		{
 			public void OnCellClick(GridView widget, GridViewCellArgs e)
 			{
@@ -331,7 +335,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public interface IHandler : Grid.IHandler, IContextMenuHost
+		public new interface IHandler : Grid.IHandler, IContextMenuHost
 		{
 			IDataStore DataStore { get; set; }
 

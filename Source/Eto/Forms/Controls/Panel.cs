@@ -102,7 +102,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public interface IHandler : Container.IHandler, IContextMenuHost
+		public new interface IHandler : Container.IHandler, IContextMenuHost
 		{
 			Control Content { get; set; }
 

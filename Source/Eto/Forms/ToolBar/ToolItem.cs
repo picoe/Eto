@@ -86,7 +86,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			Image Image { get; set; }
 

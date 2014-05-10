@@ -213,14 +213,18 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback : Panel.ICallback
+		public new interface ICallback : Panel.ICallback
 		{
 			void OnPaint(Drawable widget, PaintEventArgs e);
 		}
 
-		protected class Callback : Panel.Callback, ICallback
+		protected new class Callback : Panel.Callback, ICallback
 		{
 			public void OnPaint(Drawable widget, PaintEventArgs e)
 			{
@@ -236,7 +240,7 @@ namespace Eto.Forms
 		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		[AutoInitialize(false)]
-		public interface IHandler : Panel.IHandler
+		public new interface IHandler : Panel.IHandler
 		{
 			/// <summary>
 			/// Gets a value indicating whether this <see cref="Eto.Forms.Drawable"/> supports the <see cref="CreateGraphics"/> method

@@ -29,7 +29,7 @@ namespace Eto.Forms
 			Handler.CreateFromCommand(command);
 		}
 
-		public interface IHandler : ToolItem.IHandler
+		public new interface IHandler : ToolItem.IHandler
 		{
 		}
 	}

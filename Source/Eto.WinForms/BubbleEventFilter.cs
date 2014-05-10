@@ -143,8 +143,7 @@ namespace Eto.WinForms
 			foreach (var control in be.Controls)
 			{
 				var me = new MouseEventArgs(buttons, modifiers, control.PointFromScreen(mousePosition), delta);
-				var callback = (Control.ICallback)((ICallbackSource)control).Callback;
-				action(control, callback, me);
+				action(control, handler.Callback, me);
 				if (me.Handled)
 				{
 					ret = true;
@@ -209,10 +208,8 @@ namespace Eto.WinForms
 
 		static bool KeyCharEvent(BubbleEventArgs be, Action<Control, Control.ICallback, KeyEventArgs> action, KeyEventType keyEventType)
 		{
-			Keys keyData = Keys.None;
-
 			char keyChar = (char)((long)be.Message.WParam);
-			var kevt = new KeyEventArgs(keyData, keyEventType, keyChar);
+			var kevt = new KeyEventArgs(Keys.None, keyEventType, keyChar);
 			if (be.Control != null)
 				action(be.Control, (Control.ICallback)((ICallbackSource)be.Control).Callback, kevt);
 			if (!kevt.Handled && !IsInputChar(be.Message.HWnd, keyChar))

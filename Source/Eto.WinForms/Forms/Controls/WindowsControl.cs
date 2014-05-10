@@ -30,6 +30,8 @@ namespace Eto.WinForms
 		bool XScale { get; }
 
 		bool YScale { get; }
+
+		Control.ICallback Callback { get; }
 	}
 
 	public static class WindowsControlExtensions
@@ -90,6 +92,8 @@ namespace Eto.WinForms
 		string tooltip;
 		Size desiredSize = new Size(-1, -1);
 		Size parentMinimumSize;
+
+		Control.ICallback IWindowsControl.Callback { get { return Callback; } }
 
 		public bool XScale { get; set; }
 

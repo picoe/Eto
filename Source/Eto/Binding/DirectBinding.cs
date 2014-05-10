@@ -45,8 +45,8 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// Implementors of this class should call this method when the value changes
-		/// on the bound object. Make sure to also override the <see cref="M:Binding.HandleEvent"/> 
-		/// and <see cref="M:Binding.RemoveEvent"/> methods to hook up/remove any event bindings 
+		/// on the bound object. Make sure to also override the <see cref="M:Eto.Binding.HandleEvent"/> 
+		/// and <see cref="M:Eto.Binding.RemoveEvent"/> methods to hook up/remove any event bindings 
 		/// you need on the bound object.
 		/// </remarks>
 		protected virtual void OnDataValueChanged (EventArgs e)

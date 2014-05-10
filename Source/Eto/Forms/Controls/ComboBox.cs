@@ -21,7 +21,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public interface IHandler : ListControl.IHandler
+		public new interface IHandler : ListControl.IHandler
 		{
 		}
 	}

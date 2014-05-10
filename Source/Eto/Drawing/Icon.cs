@@ -161,7 +161,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Platform handler for the <see cref="Icon"/> class
 		/// </summary>
-		public interface IHandler : Image.IHandler
+		public new interface IHandler : Image.IHandler
 		{
 			/// <summary>
 			/// Called when creating an instance from a stream

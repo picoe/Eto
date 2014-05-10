@@ -9,6 +9,10 @@ namespace Eto.Forms
 	/// </summary>
 	public static class Mouse
 	{
+		/// <summary>
+		/// Gets a value indicating whether the current platform supports mouse functions in this class
+		/// </summary>
+		/// <value><c>true</c> if is supported; otherwise, <c>false</c>.</value>
 		public static bool IsSupported
 		{
 			get { return Platform.Instance.Supports<IHandler>(); }

@@ -83,23 +83,51 @@ namespace Eto.Forms
 		/// <value><c>true</c> if expandable; otherwise, <c>false</c>.</value>
 		public virtual bool Expandable { get { return Count > 0; } }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TreeItem"/> is expanded.
+		/// </summary>
+		/// <value><c>true</c> if expanded; otherwise, <c>false</c>.</value>
 		public virtual bool Expanded { get; set; }
 
+		/// <summary>
+		/// Gets the child <see cref="Eto.Forms.ITreeItem"/> at the specified index.
+		/// </summary>
+		/// <param name="index">Index to get the child</param>
 		public virtual ITreeItem this [int index]
 		{
 			get { return children[index]; }
 		}
 
+		/// <summary>
+		/// Gets the count of children of this node
+		/// </summary>
+		/// <value>The child count</value>
 		public virtual int Count
 		{
 			get { return (children != null) ? children.Count : 0; }
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TreeItem"/> class.
+		/// </summary>
 		public TreeItem()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TreeItem"/> class with the specified children
+		/// </summary>
+		/// <param name="children">Children to populate this node with</param>
 		public TreeItem(IEnumerable<ITreeItem> children)
+		{
+			this.Children.AddRange(children);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TreeItem"/> class with the specified children
+		/// </summary>
+		/// <param name="children">Children to populate this node with</param>
+		public TreeItem(params ITreeItem[] children)
 		{
 			this.Children.AddRange(children);
 		}

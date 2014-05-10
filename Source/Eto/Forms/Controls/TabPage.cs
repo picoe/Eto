@@ -52,7 +52,7 @@ namespace Eto.Forms
 		
 		public virtual string Key { get; set; }
 
-		public interface IHandler : Panel.IHandler
+		public new interface IHandler : Panel.IHandler
 		{
 			string Text { get; set; }
 

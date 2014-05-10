@@ -50,7 +50,7 @@ namespace Eto.Forms
 				CheckedChanged(this, e);
 		}
 
-		public interface IHandler : ToolItem.IHandler
+		public new interface IHandler : ToolItem.IHandler
 		{
 			bool Checked { get; set; }
 		}

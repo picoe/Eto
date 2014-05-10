@@ -68,7 +68,7 @@ namespace Eto.Forms
 			set { Handler.VerticalAlign = value; }
 		}
 
-		public interface IHandler : TextControl.IHandler
+		public new interface IHandler : TextControl.IHandler
 		{
 			HorizontalAlign HorizontalAlign { get; set; }
 			VerticalAlign VerticalAlign { get; set; }

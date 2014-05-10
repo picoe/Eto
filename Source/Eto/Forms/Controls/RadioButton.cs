@@ -54,7 +54,7 @@ namespace Eto.Forms
 		}
 
 		[AutoInitialize(false)]
-		public interface IHandler : TextControl.IHandler
+		public new interface IHandler : TextControl.IHandler
 		{
 			void Create (RadioButton controller);
 

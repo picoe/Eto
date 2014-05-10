@@ -6,6 +6,78 @@ using System.Linq;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Dynamic and extensible layout
+	/// </summary>
+	/// <remarks>
+	/// The dynamic layout allows you to build a complex structure of controls easily. The core functionality allows 
+	/// you to build a hierarchical set of tables with rows and columns of controls.
+	/// 
+	/// A vertical section begins a new table, whereas a horizontal section refers to a row in a table.
+	/// The dynamic layout intrinsically starts with a vertical section.
+	/// 
+	/// You can define your layout verbosely or succinctly as you see fit.  The Begin.../End... methods allow you define
+	/// the vertical/horizontal sections individually with separate commands, whereas you can also create a layout entirely 
+	/// with a constructor or initializer pattern using the <see cref="Rows"/>, <see cref="DynamicTable.Rows"/>, and <see cref="DynamicRow.Items"/>
+	/// properties.
+	/// 
+	/// To learn about how scaling works, see <see cref="TableLayout"/>
+	/// </remarks>
+	/// <example>
+	/// This example uses the verbose methods creating sections in separate statements
+	/// <code>
+	/// 	var layout = new DynamicLayout();
+	/// 	
+	/// 	layout.BeginHorizontal();
+	/// 	layout.Add(new Label { Text = "My Label" });
+	/// 	layout.Add(new TextBox());
+	/// 	layout.EndHorizontal();
+	/// 
+	/// 	layout.BeginHorizontal()
+	/// 	layout.Add(new Label { Text = "Vertical controls:" });
+	/// 	
+	/// 	layout.BeginVertical(padding: new Padding(10));
+	/// 	layout.Add(new TextBox());
+	/// 	layout.Add(new Label { Text = "Some text below the text box" });
+	/// 	layout.EndVertical();
+	/// 
+	/// 	layout.EndHorizontal();
+	/// </code>
+	/// 
+	/// This example uses the constructor method:
+	/// <code>
+	/// 	var layout = new DynamicLayout(
+	/// 		new DynamicRow(
+	/// 			new Label { Text = "My Label" },
+	/// 			new TextBox()
+	/// 		),
+	/// 		new DynamicRow(
+	/// 			new Label { Text = "Vertical controls:" },
+	/// 			new DynamicTable(
+	/// 				new TextBox(),
+	/// 				new Label { Text = "Some text below the text box" }
+	/// 			) { Padding = new Padding(10) }
+	/// 		)
+	/// 	);
+	/// </code>
+	/// 
+	/// And finally the initializer pattern, which allows you to set other properties of rows/tables cleaner, such as padding/spacing/scaling:
+	/// <code>
+	///		var layout = new DynamicLayout { Rows = {
+	///			new DynamicRow { Items = {
+	///				new Label { Text = "My Label" },
+	///				new TextBox()
+	///			} },
+	///			new DynamicRow { Items = {
+	///				new Label { Text = "Vertical controls:" },
+	///				new DynamicTable { Padding = new Padding(10), Rows = {
+	///					new TextBox(),
+	///					new Label { Text = "Some text below the text box" }
+	///				} }
+	///			} }
+	///		} };
+	/// </code>
+	/// </example>
 	[ContentProperty("Rows")]
 	public class DynamicLayout : Panel
 	{
@@ -13,33 +85,70 @@ namespace Eto.Forms
 		DynamicTable currentItem;
 		bool? yscale;
 
+		/// <summary>
+		/// Gets or sets the top level rows in the layout
+		/// </summary>
+		/// <value>The rows.</value>
 		public Collection<DynamicRow> Rows
 		{
 			get { return topTable.Rows; }
 			set { topTable.Rows = value; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Eto.Forms.DynamicLayout"/> is generated.
+		/// </summary>
+		/// <value><c>true</c> if generated; otherwise, <c>false</c>.</value>
 		[Obsolete("Use IsCreated instead")]
 		public bool Generated { get { return IsCreated; } }
 
+		/// <summary>
+		/// Gets a value indicating whether the layout has been created
+		/// </summary>
+		/// <remarks>
+		/// The layout automatically will be created during the <see cref="OnPreLoad"/> or <see cref="OnLoad"/>
+		/// </remarks>
+		/// <value><c>true</c> if the layout is created; otherwise, <c>false</c>.</value>
 		public bool IsCreated { get; private set; }
 
+		/// <summary>
+		/// Gets or sets the padding around the entire content of the layout
+		/// </summary>
+		/// <value>The padding.</value>
+		/// <seealso cref="DefaultPadding"/>
 		public new Padding? Padding
 		{
 			get { return topTable.Padding; }
 			set { topTable.Padding = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the spacing between the first level of cells
+		/// </summary>
+		/// <seealso cref="DefaultSpacing"/>
+		/// <value>The spacing.</value>
 		public Size? Spacing
 		{
 			get { return topTable.Spacing; }
 			set { topTable.Spacing = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the default padding for all child <see cref="DynamicTable"/> instances (vertical sections)
+		/// </summary>
+		/// <value>The default padding for each vertical section.</value>
 		public new Padding? DefaultPadding { get; set; }
 
+		/// <summary>
+		/// Gets or sets the default spacing for all cells in the layout
+		/// </summary>
+		/// <value>The default spacing.</value>
 		public Size? DefaultSpacing { get; set; }
 
+		/// <summary>
+		/// Gets an enumeration of controls that are directly contained by this container
+		/// </summary>
+		/// <value>The contained controls.</value>
 		public override IEnumerable<Control> Controls
 		{
 			get
@@ -49,6 +158,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Control.PreLoad"/> event, and creates the layout if it has not been created
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		protected internal override void OnPreLoad(EventArgs e)
 		{
 			if (!IsCreated)
@@ -57,6 +170,10 @@ namespace Eto.Forms
 			base.OnPreLoad(e);
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Control.Load"/> event, and creates the layout if it has not been created
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		protected internal override void OnLoad(EventArgs e)
 		{
 			if (!IsCreated)
@@ -65,18 +182,32 @@ namespace Eto.Forms
 			base.OnLoad(e);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class.
+		/// </summary>
 		public DynamicLayout()
 		{
 			topTable = new DynamicTable();
 			currentItem = topTable;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class with default spacing
+		/// </summary>
+		/// <param name="spacing">Spacing.</param>
+		[Obsolete("Use Spacing property initializer instead")]
 		public DynamicLayout(Size? spacing)
 			: this()
 		{
 			topTable.Spacing = spacing;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class.
+		/// </summary>
+		/// <param name="padding">Padding.</param>
+		/// <param name="spacing">Spacing.</param>
+		[Obsolete("Use Padding/Spacing property initializers instead")]
 		public DynamicLayout(Padding? padding, Size? spacing = null)
 			: this()
 		{
@@ -86,6 +217,12 @@ namespace Eto.Forms
 
 		#pragma warning disable 612,618
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class.
+		/// </summary>
+		/// <param name="padding">Padding.</param>
+		/// <param name="spacing">Spacing.</param>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use variation without generator instead")]
 		public DynamicLayout(Padding? padding, Size? spacing, Generator generator)
 			: base(generator)
@@ -100,27 +237,56 @@ namespace Eto.Forms
 
 		#pragma warning restore 612,618
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class with the specified rows
+		/// </summary>
+		/// <param name="rows">Rows to populate the layout</param>
 		public DynamicLayout(params DynamicRow[] rows)
 			: this((IEnumerable<DynamicRow>)rows)
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class with the specified rows
+		/// </summary>
+		/// <param name="rows">Rows to populate the layout.</param>
 		public DynamicLayout(IEnumerable<DynamicRow> rows)
 			: this()
 		{
 			Rows = new Collection<DynamicRow>(rows.ToList());
 		}
 
-		public DynamicTable  BeginVertical(bool xscale, bool? yscale = null)
+		/// <summary>
+		/// Obsolete
+		/// </summary>
+		[Obsolete("Use BeginVertical(xscale: <value>, yscale: <value>) instead")]
+		public DynamicTable BeginVertical(bool xscale, bool? yscale = null)
 		{
 			return BeginVertical(null, null, xscale, yscale);
 		}
 
+		/// <summary>
+		/// Obsolete
+		/// </summary>
+		[Obsolete("Use BeginVertical(spacing: <value>, xscale: <value>, yscale: <value>) instead")]
 		public DynamicTable BeginVertical(Size spacing, bool? xscale = null, bool? yscale = null)
 		{
 			return BeginVertical(null, spacing, xscale, yscale);
 		}
 
+		/// <summary>
+		/// Begins a new vertical section in the layout
+		/// </summary>
+		/// <remarks>
+		/// After calling this method, each subsequent call to <see cref="Add"/> will add controls in a vertical orientation.
+		/// 
+		/// When finished adding controls to the vertical section, call either <see cref="EndVertical"/> or <see cref="EndBeginVertical"/>.
+		/// </remarks>
+		/// <returns>A new DynamicTable instance used for the vertical section</returns>
+		/// <param name="padding">Padding to apply around the vertical section, or null to use the <see cref="DefaultPadding"/></param>
+		/// <param name="spacing">Spacing to apply to cells in the vertical section, or null to use the <see cref="DefaultSpacing"/></param>
+		/// <param name="xscale">Xscale of the vertical section</param>
+		/// <param name="yscale">Yscale of the vertical section</param>
 		public DynamicTable BeginVertical(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
 			var newItem = new DynamicTable
@@ -136,23 +302,45 @@ namespace Eto.Forms
 			return newItem;
 		}
 
+		/// <summary>
+		/// Ends the current vertical section
+		/// </summary>
+		/// <remarks>
+		/// This should be balanced with every call to <see cref="BeginVertical(Padding?,Size?,bool?,bool?)"/>.
+		/// Alternatively, you can call <see cref="EndBeginVertical"/> to end the current vertical section and start a new one.
+		/// </remarks>
 		public void EndVertical()
 		{
 			currentItem = currentItem.Parent ?? topTable;
 		}
 
+		/// <summary>
+		/// Ends the current vertical section, then begins a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// When finished adding controls to the vertical section, call <see cref="EndVertical"/>
+		/// </remarks>
+		/// <returns>A new DynamicTable instance used for the vertical section</returns>
+		/// <param name="padding">Padding to apply around the vertical section, or null to use the <see cref="DefaultPadding"/></param>
+		/// <param name="spacing">Spacing to apply to cells in the vertical section, or null to use the <see cref="DefaultSpacing"/></param>
+		/// <param name="xscale">Xscale of the vertical section</param>
+		/// <param name="yscale">Yscale of the vertical section</param>
 		public DynamicTable EndBeginVertical(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
 			EndVertical();
 			return BeginVertical(padding, spacing, xscale, yscale);
 		}
 
-		public DynamicRow EndBeginHorizontal(bool? yscale = null)
-		{
-			EndHorizontal();
-			return BeginHorizontal(yscale);
-		}
-
+		/// <summary>
+		/// Begins a new horizontal row section
+		/// </summary>
+		/// <remarks>
+		/// After calling this method, each subsequent call to <see cref="Add"/> will add controls in a horizontal orientation.
+		/// 
+		/// When finished adding controls to the horizontal section, call <see cref="EndHorizontal"/>
+		/// </remarks>
+		/// <returns>A new row to hold the horizontal controls</returns>
+		/// <param name="yscale">YScale of the horizontal section</param>
 		public DynamicRow BeginHorizontal(bool? yscale = null)
 		{
 			currentItem.AddRow(currentItem.CurrentRow = new DynamicRow());
@@ -160,6 +348,14 @@ namespace Eto.Forms
 			return currentItem.CurrentRow;
 		}
 
+		/// <summary>
+		/// Ends the current horizontal section
+		/// </summary>
+		/// <remarks>
+		/// This should be balanced with every call to <see cref="BeginHorizontal"/>.
+		/// Alternatively, you can call <see cref="EndBeginHorizontal"/> to end the current horizontal section and start a new one
+		/// with a new row.
+		/// </remarks>
 		public void EndHorizontal()
 		{
 			if (currentItem.CurrentRow == null)
@@ -168,6 +364,33 @@ namespace Eto.Forms
 				currentItem.CurrentRow = null;
 		}
 
+		/// <summary>
+		/// Ends the current horizontal section, then begins a new horizontal section with a new row
+		/// </summary>
+		/// <remarks>
+		/// When finished adding controls to the vertical section, call <see cref="EndHorizontal"/>
+		/// </remarks>
+		/// <returns>A new DynamicRow instance used to hold the horizontal controls</returns>
+		/// <param name="yscale">Yscale of the horizontal section</param>
+		public DynamicRow EndBeginHorizontal(bool? yscale = null)
+		{
+			EndHorizontal();
+			return BeginHorizontal(yscale);
+		}
+
+		/// <summary>
+		/// Add the control with the optional scaling
+		/// </summary>
+		/// <remarks>
+		/// This will add either horizontally or vertically depending on whether <see cref="BeginVertical(Padding?,Size?,bool?,bool?)"/> or
+		/// <see cref="BeginHorizontal"/> was called last.
+		/// 
+		/// The x/y scaling specified applies either to the entire column or row in the parent table that the control
+		/// was added to, not just this individual control.
+		/// </remarks>
+		/// <param name="control">Control to add, or null to add blank space</param>
+		/// <param name="xscale">Xscale for this control and any in the same column</param>
+		/// <param name="yscale">Yscale for this control and any in the same row</param>
 		public DynamicControl Add(Control control, bool? xscale = null, bool? yscale = null)
 		{
 			if (xscale == null && currentItem.CurrentRow != null && control == null)
@@ -180,6 +403,23 @@ namespace Eto.Forms
 			return dynamicControl;
 		}
 
+		/// <summary>
+		/// Adds a separate horizontal row of items in a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// This performs the same as the following, but in a single line:
+		/// <code>
+		/// 	layout.BeginVertical();
+		/// 	layout.BeginHorizontal();
+		/// 	layout.Add(control1);
+		/// 	layout.Add(control2);
+		/// 	...
+		/// 	layout.EndHorizontal();
+		/// 	layout.EndVertical();
+		/// </code>
+		/// </remarks>
+		/// <returns>The separate row.</returns>
+		/// <param name="controls">Controls.</param>
 		public DynamicRow AddSeparateRow(params Control[] controls)
 		{
 			var row = AddSeparateRow(padding: null);
@@ -187,6 +427,27 @@ namespace Eto.Forms
 			return row;
 		}
 
+		/// <summary>
+		/// Adds a separate horizontal row of items in a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// This performs the same as the following, but in a single line:
+		/// <code>
+		/// 	layout.BeginVertical(padding, spacing, xscale, yscale);
+		/// 	layout.BeginHorizontal();
+		/// 	layout.Add(control1);
+		/// 	layout.Add(control2);
+		/// 	...
+		/// 	layout.EndHorizontal();
+		/// 	layout.EndVertical();
+		/// </code>
+		/// </remarks>
+		/// <returns>The row added to contain the items</returns>
+		/// <param name="padding">Padding for the vertical section</param>
+		/// <param name="spacing">Spacing between each cell in the row</param>
+		/// <param name="xscale">Xscale for the vertical section</param>
+		/// <param name="yscale">Yscale for each of the controls in the row</param>
+		/// <param name="controls">Controls to add initially</param>
 		public DynamicRow AddSeparateRow(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, IEnumerable<Control> controls = null)
 		{
 			BeginVertical(padding, spacing, xscale, yscale);
@@ -197,6 +458,11 @@ namespace Eto.Forms
 			return row;
 		}
 
+		/// <summary>
+		/// Adds a new row of controls to the current vertical section
+		/// </summary>
+		/// <returns>A new instance of the row that was added</returns>
+		/// <param name="controls">Controls to add to the row</param>
 		public DynamicRow AddRow(params Control[] controls)
 		{
 			if (controls == null)
@@ -208,21 +474,77 @@ namespace Eto.Forms
 			return row;
 		}
 
+		/// <summary>
+		/// Adds a control centered in a new vertical section
+		/// </summary>
+		/// <seealso cref="AddAutoSized"/>
+		/// <param name="control">Control to add</param>
+		/// <param name="xscale">Xscale for the vertical section</param>
+		/// <param name="yscale">Yscale for the vertical section</param>
+		[Obsolete("Use AddCentered(control, xscale: <value>, yscale: <value>)")]
 		public void AddCentered(Control control, bool? xscale, bool? yscale = null)
 		{
 			AddCentered(control, Drawing.Padding.Empty, Size.Empty, xscale, yscale, true, true);
 		}
 
+		/// <summary>
+		/// Adds a control centered in a new vertical section
+		/// </summary>
+		/// <seealso cref="AddAutoSized"/>
+		/// <param name="control">Control to add</param>
+		/// <param name="spacing">Spacing between cells</param>
+		/// <param name="xscale">Xscale for the vertical section</param>
+		/// <param name="yscale">Yscale for the vertical section</param>
+		[Obsolete("Use AddCentered(control, spacing: <value>, xscale: <value>, yscale: <value>)")]
 		public void AddCentered(Control control, Size spacing, bool? xscale = null, bool? yscale = null)
 		{
 			AddCentered(control, Drawing.Padding.Empty, spacing, xscale, yscale, true, true);
 		}
 
+		/// <summary>
+		/// Adds a control centered in a new vertical section
+		/// </summary>
+		/// <seealso cref="AddAutoSized"/>
+		/// <param name="control">Control to add</param>
+		/// <param name="padding">Padding around the vertical section</param>
+		/// <param name="spacing">Spacing between cells</param>
+		/// <param name="xscale">Xscale for the vertical section</param>
+		/// <param name="yscale">Yscale for the vertical section</param>
+		[Obsolete("Use AddCentered(control, padding: <value>, spacing: <value>, xscale: <value>, yscale: <value>)")]
 		public void AddCentered(Control control, Padding padding, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
 			AddCentered(control, padding, spacing, xscale, yscale, true, true);
 		}
 
+		/// <summary>
+		/// Adds a control centered in a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// This adds scaled blank space around the control, and sizes the control to its preferred size.
+		/// This is similar to doing the following:
+		/// <code>
+		/// 	layout.BeginVertical(padding, spacing, xscale, yscale);
+		/// 	layout.Add(null); // spacing at top
+		/// 
+		/// 	layout.BeginHorizontal();
+		/// 	layout.Add(null); // spacing to left
+		/// 	layout.Add(control);
+		/// 	layout.Add(null); // spacing to right
+		/// 	layout.EndHorizontal();
+		/// 
+		/// 	layout.Add(null); // spacing at bottom
+		/// 
+		/// 	layout.EndVertical();
+		/// </code>
+		/// </remarks>
+		/// <seealso cref="AddAutoSized"/>
+		/// <param name="control">Control to add</param>
+		/// <param name="padding">Padding around the vertical section</param>
+		/// <param name="spacing">Spacing between cells</param>
+		/// <param name="xscale">Xscale for the vertical section</param>
+		/// <param name="yscale">Yscale for the vertical section</param>
+		/// <param name="horizontalCenter">If set to <c>true</c> horizontally center the control</param>
+		/// <param name="verticalCenter">If set to <c>true</c> vertically center the control</param>
 		public void AddCentered(Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool horizontalCenter = true, bool verticalCenter = true)
 		{
 			BeginVertical(padding ?? Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
@@ -246,6 +568,16 @@ namespace Eto.Forms
 			
 		}
 
+		/// <summary>
+		/// Adds a control to the layout with its preferred size instead of taking the entire space of the cell
+		/// </summary>
+		/// <seealso cref="AddCentered(Control,Padding?,Size?,bool?,bool?,bool,bool)"/>
+		/// <param name="control">Control to add</param>
+		/// <param name="padding">Padding around the vertical section</param>
+		/// <param name="spacing">Spacing between cells</param>
+		/// <param name="xscale">Xscale for the vertical section</param>
+		/// <param name="yscale">Yscale for the vertical section</param>
+		/// <param name="centered">If set to <c>true</c> center the control.</param>
 		public void AddAutoSized(Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool centered = false)
 		{
 			BeginVertical(padding ?? Eto.Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
@@ -260,6 +592,24 @@ namespace Eto.Forms
 			EndVertical();
 		}
 
+		/// <summary>
+		/// Adds a column of controls in a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// This allows you to add columns of controls.
+		/// 
+		/// If you are in a horizontal section, you can call this method repeatedly to add columns of controls that are
+		/// sized independently from eachother.
+		/// 
+		/// This is a shortcut for the following:
+		/// <code>
+		/// 	layout.BeginVertical();
+		/// 	layout.Add(control1);
+		/// 	...
+		/// 	layout.EndVertical();
+		/// </code>
+		/// </remarks>
+		/// <param name="controls">Controls to add</param>
 		public void AddColumn(params Control[] controls)
 		{
 			BeginVertical();
@@ -269,17 +619,22 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Generates the layout for the container
+		/// Creates the layout content
 		/// </summary>
 		/// <remarks>
-		/// This is called automatically on the Container's LoadCompleted event, but can be called manually if needed.
+		/// This is called automatically during the PreLoad or Load event, but can be called manually if changes are made
+		/// after initially created
 		/// </remarks>
+		/// <seealso cref="IsCreated"/>
 		public void Create()
 		{
 			Content = topTable.Create(this);
 			IsCreated = true;
 		}
 
+		/// <summary>
+		/// Generates this layout
+		/// </summary>
 		[Obsolete("Use Create() instead")]
 		public void Generate()
 		{

@@ -64,6 +64,9 @@ namespace Eto.Forms
 		Func<object, bool> Filter { get; set; }
 	}
 
+	/// <summary>
+	/// Data store translation for filtering and sorting
+	/// </summary>
 	public class DataStoreView : IDataStoreView
 	{
 		CollectionHandler collectionHandler;
@@ -80,6 +83,10 @@ namespace Eto.Forms
 		Dictionary<int, int> modelToView;
 
 		IDataStore model;
+		/// <summary>
+		/// The model store. This is the input to the IDataStoreView.
+		/// </summary>
+		/// <value>The model.</value>
 		public IDataStore Model
 		{
 			get { return model; }
@@ -95,16 +102,38 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// The filtered and sorted view of the model datastore.
+		/// The IDataStoreView creates this when Model is set.
+		/// View's object reference does not change until the
+		/// model is reset. The contents of View change
+		/// when Model's contents change or when SortComparer or
+		/// Filter change.
+		/// </summary>
+		/// <value>The view.</value>
 		public IDataStore View
 		{
 			get { return view; }
 		}
 
+		/// <summary>
+		/// The model indexes of the displayed rows.
+		/// E.g. ViewRows[5] is the index in the data store of
+		/// the 6th displayed item.
+		/// </summary>
+		/// <value>The view rows.</value>
 		public IEnumerable<int> ViewRows
 		{
 			get { return viewToModel ?? new List<int>(); }
 		}
 
+		/// <summary>
+		/// Converts the index of an object in the view to an
+		/// index of the same object in the model. This method
+		/// always succeeds since the view is a subset of the model.
+		/// </summary>
+		/// <returns>The model index</returns>
+		/// <param name="index">View index</param>
 		public int ViewToModel(int index)
 		{
 			var result = index;
@@ -118,6 +147,15 @@ namespace Eto.Forms
 			return result;
 		}
 
+		/// <summary>
+		/// Converts the index of an object in the model to an
+		/// index of the same object in the view. 
+		/// 
+		/// Returns null if the object is not in the view because
+		/// it is filtered out.
+		/// </summary>
+		/// <returns>View index</returns>
+		/// <param name="index">Model index</param>
 		public int? ModelToView(int index)
 		{
 			if (!HasSortOrFilter)

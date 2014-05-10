@@ -184,7 +184,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Interface for a <see cref="FontFamily"/> handler
 		/// </summary>
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
 			/// Gets the name of the font family

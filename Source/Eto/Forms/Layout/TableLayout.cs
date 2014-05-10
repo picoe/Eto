@@ -368,7 +368,7 @@ namespace Eto.Forms
 		}
 
 		[AutoInitialize(false)]
-		public interface IHandler : Layout.IHandler, IPositionalLayoutHandler
+		public new interface IHandler : Layout.IHandler, IPositionalLayoutHandler
 		{
 			void CreateControl(int cols, int rows);
 

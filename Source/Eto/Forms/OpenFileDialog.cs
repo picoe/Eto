@@ -31,7 +31,7 @@ namespace Eto.Forms
 		public IEnumerable<string> Filenames { get { return Handler.Filenames; } }
 
 
-		public interface IHandler : FileDialog.IHandler
+		public new interface IHandler : FileDialog.IHandler
 		{
 			bool MultiSelect { get; set; }
 

@@ -32,7 +32,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public interface IHandler : Cell.IHandler
+		public new interface IHandler : Cell.IHandler
 		{
 		}
 	}

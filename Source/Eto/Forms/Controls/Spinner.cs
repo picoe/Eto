@@ -35,7 +35,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
-		public interface IHandler : Control.IHandler
+		public new interface IHandler : Control.IHandler
 		{
 		}
 	}

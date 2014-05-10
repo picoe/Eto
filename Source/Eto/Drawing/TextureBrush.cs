@@ -120,7 +120,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
-		public interface IHandler : Brush.IHandler
+		public new interface IHandler : Brush.IHandler
 		{
 			/// <summary>
 			/// Gets the transform for the specified brush

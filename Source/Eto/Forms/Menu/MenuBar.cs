@@ -95,7 +95,7 @@ namespace Eto.Forms
 				item.OnLoad(e);
 		}
 
-		public interface IHandler : Menu.IHandler, ISubmenuHandler
+		public new interface IHandler : Menu.IHandler, ISubmenuHandler
 		{
 		}
 	}

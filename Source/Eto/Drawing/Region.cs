@@ -58,7 +58,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Handler interface for the <see cref="Region"/> class
 		/// </summary>
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
 			/// Excludes the specified <paramref name="rectangle"/> from the region

@@ -449,7 +449,7 @@ namespace Eto.Drawing
 		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		[AutoInitialize(false)]
-		public interface IHandler : Image.IHandler, ILockableImage
+		public new interface IHandler : Image.IHandler, ILockableImage
 		{
 			/// <summary>
 			/// Create a bitmap from a file

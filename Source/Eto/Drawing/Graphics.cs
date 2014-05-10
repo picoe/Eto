@@ -933,7 +933,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
 			/// Gets the scale of points to pixels. Multiply by desired pixel size to get point value (e.g. for font sizes)

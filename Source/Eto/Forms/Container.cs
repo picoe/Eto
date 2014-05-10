@@ -161,7 +161,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Container"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler to create (must implement <see cref="IContainer"/>)</param>
+		/// <param name="type">Type of the handler to create (must implement <see cref="IHandler"/>)</param>
 		/// <param name="initialize"><c>true</c> to initialize the handler, false if the caller will initialize</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Container(Generator generator, Type type, bool initialize = true)
@@ -296,13 +296,13 @@ namespace Eto.Forms
 		/// <summary>
 		/// Handler interface for the <see cref="Container"/> control
 		/// </summary>
-		public interface IHandler : Control.IHandler
+		public new interface IHandler : Control.IHandler
 		{
 			/// <summary>
 			/// Gets or sets the size for the client area of the control
 			/// </summary>
 			/// <remarks>
-			/// The client size differs from the <see cref="Control.IHandler.Size"/> in that it excludes the decorations of
+			/// The client size differs from the <see cref="P:Eto.Forms.Control.IHandler.Size"/> in that it excludes the decorations of
 			/// the container, such as the title bar and border around a <see cref="Window"/>, or the title and line 
 			/// around a <see cref="GroupBox"/>.
 			/// </remarks>

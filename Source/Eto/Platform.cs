@@ -46,17 +46,10 @@ namespace Eto
 	/// Base platform class
 	/// </summary>
 	/// <remarks>
-	/// The generator takes care of creating the platform-specific implementations of each
-	/// control. Typically, the types are automatically found from the platform assembly, however
-	/// you can also create your own platform-specific controls by adding the types manually via
-	/// <see cref="Platform.Add"/>
-	/// 
-	/// The types are found by the interface of the control.  For example the <see cref="Forms.Label"/> control
-	/// uses the <see cref="Forms.ILabel"/> interface for its platform implementation.  The generator
-	/// will automatically scan an assembly for a class that directly implements this interface
-	/// for its platform implementation (if it hasn't been added manually).
+	/// This class takes care of creating the platform-specific implementations of each control.
+	/// All controls the platform can handle should be added using <see cref="Platform.Add{T}"/>.
 	/// </remarks>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 #pragma warning disable 0612,0618
 	public abstract class Platform : Generator
@@ -148,8 +141,22 @@ namespace Eto
 		/// <value><c>true</c> if this platform is android; otherwise, <c>false</c>.</value>
 		public virtual bool IsAndroid { get { return false; } }
 
+		/// <summary>
+		/// Gets a value indicating whether this is a desktop platform. This includes Mac, Gtk, WinForms, Wpf, Direct2D.
+		/// </summary>
+		/// <remarks>
+		/// A desktop platform is usually used via mouse &amp; keyboard, and can have complex user interface elements.
+		/// </remarks>
+		/// <value><c>true</c> if this is a desktop platform; otherwise, <c>false</c>.</value>
 		public virtual bool IsDesktop { get { return false; } }
 
+		/// <summary>
+		/// Gets a value indicating whether this is a mobile platform. This includes iOS, Android, and WinRT.
+		/// </summary>
+		/// <remarks>
+		/// A mobile platform is usually touch friendly, and have a simpler interface.
+		/// </remarks>
+		/// <value><c>true</c> if this instance is mobile; otherwise, <c>false</c>.</value>
 		public virtual bool IsMobile { get { return false; } }
 
 		/// <summary>
@@ -465,6 +472,16 @@ namespace Eto
 			return (T)CreateShared(typeof(T));
 		}
 
+		/// <summary>
+		/// Gets a shared cache dictionary
+		/// </summary>
+		/// <remarks>
+		/// This is used to cache things like brushes and pens, but can also be used to cache other things for your
+		/// application's use.
+		/// </remarks>
+		/// <param name="cacheKey">Unique cache key to load the cache instance</param>
+		/// <typeparam name="TKey">The type of the lookup key</typeparam>
+		/// <typeparam name="TValue">The type of the lookup value</typeparam>
 		public Dictionary<TKey, TValue> Cache<TKey, TValue>(object cacheKey)
 		{
 			return GetSharedProperty<Dictionary<TKey, TValue>>(cacheKey, () => new Dictionary<TKey, TValue>());

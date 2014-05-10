@@ -58,7 +58,7 @@ namespace Eto.Forms
 				item.OnLoad(e);
 		}
 
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			void AddButton(ToolItem button, int index);
 

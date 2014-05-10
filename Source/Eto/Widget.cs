@@ -4,6 +4,7 @@
 
 using System;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace Eto
 {
@@ -49,8 +50,21 @@ namespace Eto
 		Platform Platform { get; }
 	}
 
+	/// <summary>
+	/// Interface to get the callback object for a widget
+	/// </summary>
 	public interface ICallbackSource
 	{
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <remarks>
+		/// The callback should implement the parent class' callback interface so that there only needs
+		/// to be a single callback for the entire hierarchy.
+		/// 
+		/// This should return a static instance to avoid having overhead for each instance of your widget.
+		/// </remarks>
+		/// <returns>The callback instance to use for this widget</returns>
 		object Callback { get; }
 	}
 
@@ -89,10 +103,23 @@ namespace Eto
 		/// </summary>
 		public object Handler { get; internal set; }
 
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <remarks>
+		/// The callback should implement the parent class' <see cref="ICallback"/> interface so that there only needs
+		/// to be a single callback for the entire hierarchy.
+		/// 
+		/// This should return a static instance to avoid having overhead for each instance of your control.
+		/// </remarks>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected virtual object GetCallback() { return null; }
 
 		object ICallbackSource.Callback { get { return GetCallback(); } }
 
+		/// <summary>>
+		/// Base callback interface for all widgets
+		/// </summary>
 		public interface ICallback
 		{
 		}
@@ -147,6 +174,46 @@ namespace Eto
 			void HandleEvent(string id, bool defaultEvent = false);
 		}
 
+		/// <summary>
+		/// Registers the event for overridding
+		/// </summary>
+		/// <remarks>
+		/// This is used to register an event that will be automatically hooked up when a derived class overrides the
+		/// event method.
+		/// This should be called in the static constructor of your class.
+		/// </remarks>
+		/// <example>
+		/// Shows a custom control with an event:
+		/// <code>
+		/// public class MyEtoControl : Eto.Forms.Control
+		/// {
+		/// 	public const string MySomethingEvent = "MyEtoControl.MySomethingEvent";
+		/// 	
+		/// 	public event EventHandler&lt;EventArgs&gt; MySomething
+		/// 	{
+		/// 		add { Properties.AddHandlerEvent(MySomethingEvent, value); }
+		/// 		remove { Properties.RemoveEvent(MySomethingEvent, value); }
+		/// 	}
+		/// 
+		/// 	protected virtual void OnMySomething(EventArgs e)
+		/// 	{
+		/// 		Properties.TriggerEvent(MySomethingEvent, this, e);
+		/// 	}
+		/// 
+		/// 	static MyEtoControl()
+		/// 	{
+		/// 		RegisterEvent&lt;MyEtoControl&gt;(c => c.OnMySomething(null), MySomethingEvent);
+		/// 	}
+		/// }
+		/// </code>
+		/// </example>
+		/// <param name="method">Expression to call the method that raises your event</param>
+		/// <param name="identifier">Identifier of the event</param>
+		/// <typeparam name="T">Your object type</typeparam>
+		protected static void RegisterEvent<T>(Expression<Action<T>> method, string identifier)
+		{
+			EventLookup.Register(method, identifier);
+		}
 
 		#if TRACK_GC
 		~Widget()

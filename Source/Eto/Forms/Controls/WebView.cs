@@ -216,7 +216,7 @@ namespace Eto.Forms
 			set { Handler.BrowserContextMenuEnabled = value; }
 		}
 
-		public interface ICallback : Control.ICallback
+		public new interface ICallback : Control.ICallback
 		{
 			void OnNavigated(WebView widget, WebViewLoadedEventArgs e);
 			void OnDocumentLoaded(WebView widget, WebViewLoadedEventArgs e);
@@ -226,9 +226,13 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		protected class Callback : Control.Callback, ICallback
+		protected new class Callback : Control.Callback, ICallback
 		{
 			public void OnNavigated(WebView widget, WebViewLoadedEventArgs e)
 			{
@@ -252,7 +256,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public interface IHandler : Control.IHandler
+		public new interface IHandler : Control.IHandler
 		{
 			Uri Url { get; set; }
 

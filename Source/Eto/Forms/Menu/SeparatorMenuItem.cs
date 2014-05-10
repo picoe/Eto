@@ -20,7 +20,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public interface IHandler : MenuItem.IHandler
+		public new interface IHandler : MenuItem.IHandler
 		{
 		}
 	}

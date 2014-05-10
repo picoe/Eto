@@ -172,9 +172,13 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback : Grid.ICallback
+		public new interface ICallback : Grid.ICallback
 		{
 			void OnActivated(TreeGridView widget, TreeGridViewItemEventArgs e);
 			void OnExpanding(TreeGridView widget, TreeGridViewItemCancelEventArgs e);
@@ -184,7 +188,7 @@ namespace Eto.Forms
 			void OnSelectedItemChanged(TreeGridView widget, EventArgs e);
 		}
 
-		protected class Callback : Grid.Callback, ICallback
+		protected new class Callback : Grid.Callback, ICallback
 		{
 			public void OnActivated(TreeGridView widget, TreeGridViewItemEventArgs e)
 			{
@@ -212,7 +216,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public interface IHandler : Grid.IHandler, IContextMenuHost
+		public new interface IHandler : Grid.IHandler, IContextMenuHost
 		{
 			ITreeGridStore<ITreeGridItem> DataStore { get; set; }
 

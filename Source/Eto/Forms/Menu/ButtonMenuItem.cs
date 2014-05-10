@@ -66,7 +66,7 @@ namespace Eto.Forms
 				item.OnLoad(e);
 		}
 
-		public interface IHandler : MenuItem.IHandler, ISubmenuHandler
+		public new interface IHandler : MenuItem.IHandler, ISubmenuHandler
 		{
 			Image Image { get; set; }
 		}

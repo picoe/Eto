@@ -94,7 +94,7 @@ namespace Eto.Drawing
 		/// Each platform can have a different pixel format, and this allows you to abstract 
 		/// getting the data into a 32-bit colour.
 		/// 
-		/// The ARGB value can be easily handled using <see cref="C:Color(uint)"/>.
+		/// The ARGB value can be easily handled using <see cref="Eto.Drawing.Color(uint)"/>.
 		/// 
 		/// For non-alpha bitmaps, the alpha component will be ignored
 		/// </remarks>

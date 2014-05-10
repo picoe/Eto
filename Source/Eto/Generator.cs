@@ -46,7 +46,7 @@ namespace Eto
 		/// <summary>
 		/// Finds the delegate to create instances of the specified type
 		/// </summary>
-		/// <typeparam name="T">Type of the handler interface (usually derived from <see cref="IWidget"/> or another type)</typeparam>
+		/// <typeparam name="T">Type of the handler interface (usually derived from <see cref="Widget.IHandler"/> or another type)</typeparam>
 		/// <returns>The delegate to use to create instances of the specified type</returns>
 		public static Func<T> Find<T>(this Generator generator)
 			where T: class
@@ -54,6 +54,17 @@ namespace Eto
 			return (Func<T>)((Platform)generator ?? Platform.Instance).Find(typeof(T));
 		}
 
+		/// <summary>
+		/// Gets a shared cache dictionary
+		/// </summary>
+		/// <remarks>
+		/// This is used to cache things like brushes and pens, but can also be used to cache other things for your
+		/// application's use.
+		/// </remarks>
+		/// <param name="generator">Generator to get the cache for</param>
+		/// <param name="cacheKey">Unique cache key to load the cache instance</param>
+		/// <typeparam name="TKey">The type of the lookup key</typeparam>
+		/// <typeparam name="TValue">The type of the lookup value</typeparam>
 		public static Dictionary<TKey, TValue> Cache<TKey, TValue>(this Generator generator, object cacheKey)
 		{
 			return ((Platform)generator ?? Platform.Instance).GetSharedProperty <Dictionary<TKey, TValue>>(cacheKey, () => new Dictionary<TKey, TValue>());
@@ -66,24 +77,36 @@ namespace Eto
 	[Obsolete("Use Platform instead")]
 	public abstract class Generator
 	{
+		/// <summary>
+		/// Obsolete
+		/// </summary>
 		[Obsolete("Use Platform.Instance instead")]
 		public static Platform Current
 		{
 			get { return Platform.Instance; }
 		}
 
+		/// <summary>
+		/// Obsolete
+		/// </summary>
 		[Obsolete("Use Platform.ValidatePlatform instead")]
 		public static Platform ValidateGenerator
 		{
 			get { return Platform.ValidatePlatform; }
 		}
 
+		/// <summary>
+		/// Obsolete
+		/// </summary>
 		[Obsolete("Use Platform.Initialize instead")]
 		public static void Initialize(string generatorType)
 		{
 			Platform.Initialize(generatorType);
 		}
 
+		/// <summary>
+		/// Obsolete
+		/// </summary>
 		[Obsolete("Use Platform.Initialize instead")]
 		public static void Initialize(Generator generator)
 		{
@@ -121,12 +144,18 @@ namespace Eto
 		public virtual bool IsIos { get { return ((Platform)this).IsIos; } }
 
 		#if PCL
+		/// <summary>
+		/// Obsolete
+		/// </summary>
 		[Obsolete("This will now throw an exception on .net 45/pcl. Create your platform manually or use Platform.Get()")]
 		public static Generator Detect
 		{
 			get { throw new NotImplementedException(); }
 		}
 		#else
+		/// <summary>
+		/// Obsolete
+		/// </summary>
 		[Obsolete("Use Platform.Detect")]
 		public static Platform Detect
 		{
@@ -140,6 +169,9 @@ namespace Eto
 		[Obsolete("Use Platform.Instance and check if it is null instead")]
 		public static bool HasCurrent { get { return Platform.Instance != null; } }
 
+		/// <summary>
+		/// Obsolete
+		/// </summary>
 		[Obsolete("Use Platform.Get() instead and check for null instead of catching an exception if failed")]
 		public static Generator GetGenerator(string generatorType)
 		{

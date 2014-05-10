@@ -33,7 +33,7 @@ namespace Eto.Forms
 			set { Handler.DataStore = value; }
 		}
 
-		public interface IHandler : SingleValueCell.IHandler
+		public new interface IHandler : SingleValueCell.IHandler
 		{
 			IListStore DataStore { get; set; }
 		}

@@ -3,11 +3,17 @@ using System;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Dialog to show when printing a document or adjusting print settings
+	/// </summary>
 	[Handler(typeof(PrintDialog.IHandler))]
 	public class PrintDialog : CommonDialog
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.PrintDialog"/> class.
+		/// </summary>
 		public PrintDialog()
 		{
 		}
@@ -50,7 +56,7 @@ namespace Eto.Forms
 			return result;
 		}
 
-		public interface IHandler : CommonDialog.IHandler
+		public new interface IHandler : CommonDialog.IHandler
 		{
 			PrintDocument Document { get; set; }
 

@@ -42,7 +42,7 @@ namespace Eto.Forms
 			set { Handler.Font = value; }
 		}
 
-		public interface IHandler : CommonDialog.IHandler
+		public new interface IHandler : CommonDialog.IHandler
 		{
 			Font Font { get; set; }
 		}

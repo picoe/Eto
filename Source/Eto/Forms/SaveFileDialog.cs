@@ -20,7 +20,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public interface IHandler : FileDialog.IHandler
+		public new interface IHandler : FileDialog.IHandler
 		{
 		}
 	}

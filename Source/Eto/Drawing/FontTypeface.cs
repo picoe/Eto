@@ -78,7 +78,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Platform handler interface for the <see cref="FontTypeface"/> class
 		/// </summary>
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
 			/// Gets the name of this typeface

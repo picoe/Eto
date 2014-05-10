@@ -28,7 +28,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public interface IHandler : SingleValueCell.IHandler
+		public new interface IHandler : SingleValueCell.IHandler
 		{
 		}
 	}

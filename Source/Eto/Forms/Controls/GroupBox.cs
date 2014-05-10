@@ -33,7 +33,7 @@ namespace Eto.Forms
 			set { Handler.Text = value; }
 		}
 
-		public interface IHandler : Panel.IHandler
+		public new interface IHandler : Panel.IHandler
 		{
 			Font Font { get; set; }
 

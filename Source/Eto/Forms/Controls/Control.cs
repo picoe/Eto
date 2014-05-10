@@ -589,7 +589,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Control"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler to create (must implement <see cref="IControl"/>)</param>
+		/// <param name="type">Type of the handler to create (must implement <see cref="IHandler"/>)</param>
 		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Control(Generator generator, Type type, bool initialize = true)
@@ -734,7 +734,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Finds a control in the parent hierarchy with the specified type and <see cref="InstanceWidget.ID"/> if specified
+		/// Finds a control in the parent hierarchy with the specified type and <see cref="Widget.ID"/> if specified
 		/// </summary>
 		/// <returns>The parent if found, or null if not found</returns>
 		/// <param name="id">Identifier of the parent control to find, or null to ignore</param>
@@ -1040,93 +1040,174 @@ namespace Eto.Forms
 		#region Callback
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback
+		/// <summary>
+		/// Callback interface for instances of <see cref="Control"/>
+		/// </summary>
+		public new interface ICallback : Widget.ICallback
 		{
+			/// <summary>
+			/// Raises the key down event.
+			/// </summary>
 			void OnKeyDown(Control control, KeyEventArgs e);
+			/// <summary>
+			/// Raises the key up event.
+			/// </summary>
 			void OnKeyUp(Control control, KeyEventArgs e);
+			/// <summary>
+			/// Raises the mouse down event.
+			/// </summary>
 			void OnMouseDown(Control control, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse up event.
+			/// </summary>
 			void OnMouseUp(Control control, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse move event.
+			/// </summary>
 			void OnMouseMove(Control control, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse leave event.
+			/// </summary>
 			void OnMouseLeave(Control control, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse enter event.
+			/// </summary>
 			void OnMouseEnter(Control control, MouseEventArgs e);
+			/// <summary>
+			/// Raises the text input event.
+			/// </summary>
 			void OnTextInput(Control control, TextInputEventArgs e);
+			/// <summary>
+			/// Raises the size changed event.
+			/// </summary>
 			void OnSizeChanged(Control control, EventArgs e);
+			/// <summary>
+			/// Raises the mouse double click event.
+			/// </summary>
 			void OnMouseDoubleClick(Control control, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse wheel event.
+			/// </summary>
 			void OnMouseWheel(Control control, MouseEventArgs e);
+			/// <summary>
+			/// Raises the got focus event.
+			/// </summary>
 			void OnGotFocus(Control control, EventArgs e);
+			/// <summary>
+			/// Raises the lost focus event.
+			/// </summary>
 			void OnLostFocus(Control control, EventArgs e);
+			/// <summary>
+			/// Raises the shown event.
+			/// </summary>
 			void OnShown(Control control, EventArgs e);
 		}
 
+		/// <summary>
+		/// Callback methods for handlers of <see cref="Control"/>
+		/// </summary>
 		protected class Callback : ICallback
 		{
+			/// <summary>
+			/// Raises the key down event.
+			/// </summary>
 			public void OnKeyDown(Control control, KeyEventArgs e)
 			{
 				control.OnKeyDown(e);
 			}
-
+			/// <summary>
+			/// Raises the key up event.
+			/// </summary>
 			public void OnKeyUp(Control control, KeyEventArgs e)
 			{
 				control.OnKeyUp(e);
 			}
-
+			/// <summary>
+			/// Raises the mouse down event.
+			/// </summary>
 			public void OnMouseDown(Control control, MouseEventArgs e)
 			{
 				control.OnMouseDown(e);
 			}
-
+			/// <summary>
+			/// Raises the mouse up event.
+			/// </summary>
 			public void OnMouseUp(Control control, MouseEventArgs e)
 			{
 				control.OnMouseUp(e);
 			}
-
+			/// <summary>
+			/// Raises the mouse move event.
+			/// </summary>
 			public void OnMouseMove(Control control, MouseEventArgs e)
 			{
 				control.OnMouseMove(e);
 			}
-
+			/// <summary>
+			/// Raises the mouse leave event.
+			/// </summary>
 			public void OnMouseLeave(Control control, MouseEventArgs e)
 			{
 				control.OnMouseLeave(e);
 			}
-
+			/// <summary>
+			/// Raises the mouse enter event.
+			/// </summary>
 			public void OnMouseEnter(Control control, MouseEventArgs e)
 			{
 				control.OnMouseEnter(e);
 			}
-
+			/// <summary>
+			/// Raises the text input event.
+			/// </summary>
 			public void OnTextInput(Control control, TextInputEventArgs e)
 			{
 				control.OnTextInput(e);
 			}
-
+			/// <summary>
+			/// Raises the size changed event.
+			/// </summary>
 			public void OnSizeChanged(Control control, EventArgs e)
 			{
 				control.OnSizeChanged(e);
 			}
-
+			/// <summary>
+			/// Raises the mouse double click event.
+			/// </summary>
 			public void OnMouseDoubleClick(Control control, MouseEventArgs e)
 			{
 				control.OnMouseDoubleClick(e);
 			}
-
+			/// <summary>
+			/// Raises the mouse wheel event.
+			/// </summary>
 			public void OnMouseWheel(Control control, MouseEventArgs e)
 			{
 				control.OnMouseWheel(e);
 			}
-
+			/// <summary>
+			/// Raises the got focus event.
+			/// </summary>
 			public void OnGotFocus(Control control, EventArgs e)
 			{
 				control.OnGotFocus(e);
 			}
-
+			/// <summary>
+			/// Raises the lost focus event.
+			/// </summary>
 			public void OnLostFocus(Control control, EventArgs e)
 			{
 				control.OnLostFocus(e);
 			}
-
+			/// <summary>
+			/// Raises the shown event.
+			/// </summary>
 			public void OnShown(Control control, EventArgs e)
 			{
 				control.OnShown(e);
@@ -1141,7 +1222,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
 			/// Gets or sets the color for the background of the control

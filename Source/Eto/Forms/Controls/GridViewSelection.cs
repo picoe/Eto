@@ -114,8 +114,8 @@ namespace Eto.Forms
 		/// </summary>
 		class SelectionPreserver : IDisposable
 		{
-			GridViewSelection s;
-			HashSet<object> previousSelectedItems;
+			readonly GridViewSelection s;
+			readonly HashSet<object> previousSelectedItems;
 
 			public SelectionPreserver(GridViewSelection s)
 			{

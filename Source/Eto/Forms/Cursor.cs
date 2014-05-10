@@ -90,7 +90,7 @@ namespace Eto.Forms
 		/// Platform interface for the <see cref="Cursor"/> class
 		/// </summary>
 		[AutoInitialize(false)]
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			void Create(CursorType cursor);
 		}

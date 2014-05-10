@@ -79,7 +79,7 @@ namespace Eto.Forms
 			Handler.Clear ();
 		}
 
-		public interface IHandler : Widget.IHandler
+		public new interface IHandler : Widget.IHandler
 		{
 			string[] Types { get; }
 

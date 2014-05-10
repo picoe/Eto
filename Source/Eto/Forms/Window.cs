@@ -296,9 +296,13 @@ namespace Eto.Forms
 		#region Callback
 
 		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
-		public interface ICallback : Panel.ICallback
+		public new interface ICallback : Panel.ICallback
 		{
 			void OnClosed(Window widget, EventArgs e);
 			void OnClosing(Window widget, CancelEventArgs e);
@@ -306,7 +310,7 @@ namespace Eto.Forms
 			void OnWindowStateChanged(Window widget, EventArgs e);
 		}
 
-		protected class Callback : Panel.Callback, ICallback
+		protected new class Callback : Panel.Callback, ICallback
 		{
 			public void OnClosed(Window widget, EventArgs e)
 			{
@@ -330,7 +334,7 @@ namespace Eto.Forms
 
 		#region Handler
 
-		public interface IHandler : Panel.IHandler
+		public new interface IHandler : Panel.IHandler
 		{
 			ToolBar ToolBar { get; set; }
 

@@ -82,7 +82,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Platform handler interface for the the <see cref="Layout"/> class
 		/// </summary>
-		public interface IHandler : Container.IHandler
+		public new interface IHandler : Container.IHandler
 		{
 			/// <summary>
 			/// Re-calculates the layout of the controls and re-positions them, if necessary

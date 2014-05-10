@@ -23,7 +23,7 @@ namespace Eto.Forms
 			set { Handler.Font = value; }
 		}
 
-		public interface IHandler : Control.IHandler
+		public new interface IHandler : Control.IHandler
 		{
 			Font Font { get; set; }
 		}

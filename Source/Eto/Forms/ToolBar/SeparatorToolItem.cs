@@ -48,7 +48,7 @@ namespace Eto.Forms
 			set { Handler.Type = value; }
 		}
 
-		public interface IHandler : ToolItem.IHandler
+		public new interface IHandler : ToolItem.IHandler
 		{
 			SeparatorToolItemType Type { get; set; }
 		}

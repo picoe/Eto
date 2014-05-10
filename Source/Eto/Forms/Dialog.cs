@@ -153,7 +153,7 @@ namespace Eto.Forms
 			Close();
 		}
 
-		public interface IHandler : Window.IHandler
+		public new interface IHandler : Window.IHandler
 		{
 			DialogDisplayMode DisplayMode { get; set; }
 
