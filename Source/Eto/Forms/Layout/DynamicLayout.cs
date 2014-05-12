@@ -504,21 +504,6 @@ namespace Eto.Forms
 		/// <summary>
 		/// Adds a control centered in a new vertical section
 		/// </summary>
-		/// <seealso cref="AddAutoSized"/>
-		/// <param name="control">Control to add</param>
-		/// <param name="padding">Padding around the vertical section</param>
-		/// <param name="spacing">Spacing between cells</param>
-		/// <param name="xscale">Xscale for the vertical section</param>
-		/// <param name="yscale">Yscale for the vertical section</param>
-		[Obsolete("Use AddCentered(control, padding: <value>, spacing: <value>, xscale: <value>, yscale: <value>)")]
-		public void AddCentered(Control control, Padding padding, Size? spacing = null, bool? xscale = null, bool? yscale = null)
-		{
-			AddCentered(control, padding, spacing, xscale, yscale, true, true);
-		}
-
-		/// <summary>
-		/// Adds a control centered in a new vertical section
-		/// </summary>
 		/// <remarks>
 		/// This adds scaled blank space around the control, and sizes the control to its preferred size.
 		/// This is similar to doing the following:

@@ -7,7 +7,7 @@ namespace Eto.Test.Sections.Dialogs
 	{
 		public ColorDialogSection()
 		{
-			var layout = new DynamicLayout(new Size(20, 20));
+			var layout = new DynamicLayout { Spacing = new Size(20, 20) };
 
 			layout.AddRow(null, PickColor(), null);
 			layout.AddRow(null, PickColorWithStartingColor(), null);

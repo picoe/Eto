@@ -57,7 +57,7 @@ namespace Eto.Test.Sections.Drawing
 			control.Bind(c => c.Value, this, r => r.PenThickness);
 			control.ValueChanged += Refresh;
 			
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.AddRow(new Label { Text = "Thickness Step:", VerticalAlign = VerticalAlign.Middle }, control);
 			return layout;
 		}

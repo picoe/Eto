@@ -67,7 +67,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			// Status bar
 			Label[] status = { new Label(), new Label(), new Label(), new Label(), new Label() };
-			var statusLayout = new DynamicLayout(Padding.Empty, Size.Empty);
+			var statusLayout = new DynamicLayout { Padding = Padding.Empty, Spacing = Size.Empty };
 			statusLayout.BeginHorizontal();
 			for (var i = 0; i < status.Length; ++i)
 				statusLayout.Add(status[i], xscale: true);

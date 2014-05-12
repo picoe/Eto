@@ -12,7 +12,7 @@ namespace Eto.Test.Sections.Drawing
 			var image = TestIcons.Textures;
 			var drawable = new Drawable { Size = new Size(image.Size.Width, image.Size.Height * 10) };
 			var drawableTarget = new DrawableTarget(drawable);
-			var layout = new DynamicLayout(new Padding(10));
+			var layout = new DynamicLayout { Padding = new Padding(10) };
 			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
 			layout.Add(new Scrollable { Content = drawable });
 			Content = layout;

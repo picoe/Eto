@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		public CustomDialogSection()
 		{
-			var layout = new DynamicLayout(new Size(20, 20));
+			var layout = new DynamicLayout { Spacing = new Size(20, 20) };
 
 			layout.AddSeparateRow(null, UseAsyncCheckBox(), DisplayModeDropDown(), null);
 			layout.BeginVertical();

@@ -83,7 +83,7 @@ namespace Eto.Test.Sections.Drawing
 			var control = new NumericUpDown { MinValue = 1, MaxValue = 100 };
 			control.ValueBinding.Bind(this, r => r.PenThickness, (r,val) => { r.PenThickness = (float)val; Refresh(); });
 
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.AddRow(new Label { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
 			return layout;
 		}

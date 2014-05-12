@@ -18,7 +18,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		public FontDialogSection()
 		{
-			var layout = new DynamicLayout(new Size(5, 5));
+			var layout = new DynamicLayout { Spacing = new Size(5, 5) };
 
 			layout.AddSeparateRow(null, PickFont(), PickFontWithStartingFont(), SetToFontFamily(), null);
 			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlign = VerticalAlign.Middle }, PickFontFamily(), null);
@@ -54,9 +54,9 @@ namespace Eto.Test.Sections.Dialogs
 				}
 			};
 
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.BeginHorizontal();
-			layout.AddCentered(fontFamilyName, Padding.Empty, Size.Empty);
+			layout.AddCentered(fontFamilyName, padding: Padding.Empty, spacing: Size.Empty);
 			layout.AddCentered(button, Padding.Empty, Size.Empty);
 			return layout;
 		}
@@ -272,7 +272,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control Metrics()
 		{
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.BeginHorizontal();
 			layout.BeginVertical();
 			layout.Add(null);

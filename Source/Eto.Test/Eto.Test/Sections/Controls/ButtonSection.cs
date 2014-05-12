@@ -67,7 +67,7 @@ namespace Eto.Test.Sections.Controls
 			var control2 = new Button { Text = "Button With Text", Size = new Size(-1, 50) };
 			LogEvents(control2);
 
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.AddRow(new Label { Text = "With Default Size of 50x50:", VerticalAlign = VerticalAlign.Middle }, control, control2);
 			return layout;
 		}

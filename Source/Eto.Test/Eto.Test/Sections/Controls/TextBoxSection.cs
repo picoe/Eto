@@ -30,7 +30,7 @@ namespace Eto.Test.Sections.Controls
 			var selectAll = new Button { Text = "Select All" };
 			selectAll.Click += (sender, e) => control.SelectAll();
 
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.Add(control);
 			layout.AddSeparateRow(null, selectAll, null);
 			return layout;

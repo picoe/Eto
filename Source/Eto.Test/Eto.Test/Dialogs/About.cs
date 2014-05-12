@@ -12,12 +12,12 @@ namespace Eto.Test.Dialogs
 			this.Title = "About Eto Test";
 			this.Resizable = true;
 
-			var layout = new DynamicLayout(new Padding(20, 5), new Size(10, 10));
+			var layout = new DynamicLayout { Padding = new Padding(20, 5), Spacing = new Size(10, 10) };
 
 			layout.AddCentered(new ImageView
 			{
 				Image = Icon.FromResource ("Eto.Test.TestIcon.ico", GetType())
-			}, true, true);
+			}, padding: null, xscale: true, yscale: true);
 			
 			layout.Add(new Label
 			{

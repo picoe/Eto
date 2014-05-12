@@ -142,7 +142,7 @@ namespace Eto.Test.Handlers
 
 		void LayoutItems()
 		{
-			var layout = new DynamicLayout(padding: Padding.Empty, spacing: Size.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing =  Size.Empty };
 			layout.BeginVertical();
 			foreach (var tab in items)
 				layout.Add(tab);

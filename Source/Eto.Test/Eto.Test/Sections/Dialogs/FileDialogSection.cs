@@ -8,7 +8,7 @@ namespace Eto.Test.Sections.Dialogs
 	{
 		public FileDialogSection()
 		{
-			var layout = new DynamicLayout(new Size(20, 20));
+			var layout = new DynamicLayout { Spacing = new Size(20, 20) };
 
 			layout.AddRow(null, OpenFile(), OpenFileWithFilters(), null);
 			layout.AddRow(null, SaveFile(), SaveFileWithFilters(), null);

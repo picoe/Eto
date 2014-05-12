@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Drawing
 			drawable.Paint += (sender, e) => renderer.DrawFrame(e.Graphics, drawable.Size);
 			renderer = new DirectDrawingRenderer();
 
-			var layout = new DynamicLayout(new Padding(10));
+			var layout = new DynamicLayout { Padding = new Padding(10) };
 			layout.AddSeparateRow(null, UseTexturesAndGradients(), UseCreateGraphics(), null);
 			layout.Add(content = new Panel { Content = drawable });
 			this.Content = layout;

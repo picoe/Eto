@@ -200,7 +200,7 @@ namespace Eto.Forms
 			if (!Loaded)
 				return;
 			SuspendLayout();
-			var layout = new DynamicLayout (Padding.Empty, spacing);
+			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = spacing };
 			var horizontal = orientation == RadioButtonListOrientation.Horizontal;
 			if (horizontal)
 				layout.BeginHorizontal ();

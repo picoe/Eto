@@ -106,7 +106,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Buttons()
 		{
-			var layout = new DynamicLayout(spacing: Size.Empty);
+			var layout = new DynamicLayout { Spacing = Size.Empty };
 
 			layout.BeginHorizontal();
 			layout.Add(null);

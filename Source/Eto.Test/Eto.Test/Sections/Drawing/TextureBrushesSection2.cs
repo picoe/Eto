@@ -86,7 +86,7 @@ namespace Eto.Test.Sections.Drawing
 			image = TestIcons.Textures;
 			var drawable = new Drawable();
 			var drawableTarget = new DrawableTarget(drawable);
-			var layout = new DynamicLayout(new Padding(10));
+			var layout = new DynamicLayout { Padding = new Padding(10) };
 			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
 			layout.Add(drawable);
 			this.Content = layout;
