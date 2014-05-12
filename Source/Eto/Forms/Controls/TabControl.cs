@@ -4,16 +4,6 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public class TabRemovingEventArgs : EventArgs
-	{
-		public TabPage Page { get; private set; }
-
-		public TabRemovingEventArgs(TabPage page)
-		{
-			this.Page = page;
-		}
-	}
-
 	[ContentProperty("TabPages")]
 	[Handler(typeof(TabControl.IHandler))]
 	public class TabControl : Container

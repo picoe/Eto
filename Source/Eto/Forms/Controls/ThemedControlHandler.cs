@@ -300,89 +300,53 @@ namespace Eto.Forms
 			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
-					Control.KeyDown += (s, e) => Callback.OnKeyDown(Control, e);
+					Control.KeyDown += (s, e) => Callback.OnKeyDown(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += (s, e) => Callback.OnKeyUp(Control, e);
+					Control.KeyUp += (s, e) => Callback.OnKeyUp(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					Control.SizeChanged += (s, e) => Callback.OnSizeChanged(Control, e);
+					Control.SizeChanged += (s, e) => Callback.OnSizeChanged(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
-					Control.MouseDoubleClick += (s, e) => Callback.OnMouseDoubleClick(Control, e);
+					Control.MouseDoubleClick += (s, e) => Callback.OnMouseDoubleClick(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
-					Control.MouseEnter += (s, e) => Callback.OnMouseEnter(Control, e);
+					Control.MouseEnter += (s, e) => Callback.OnMouseEnter(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
-					Control.MouseLeave += (s, e) => Callback.OnMouseLeave(Control, e);
+					Control.MouseLeave += (s, e) => Callback.OnMouseLeave(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
-					Control.MouseDown += (s, e) => Callback.OnMouseDown(Control, e);
+					Control.MouseDown += (s, e) => Callback.OnMouseDown(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
-					Control.MouseUp += (s, e) => Callback.OnMouseUp(Control, e);
+					Control.MouseUp += (s, e) => Callback.OnMouseUp(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
-					Control.MouseMove += (s, e) => Callback.OnMouseMove(Control, e);
+					Control.MouseMove += (s, e) => Callback.OnMouseMove(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
-					Control.MouseWheel += (s, e) => Callback.OnMouseWheel(Control, e);
+					Control.MouseWheel += (s, e) => Callback.OnMouseWheel(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (s, e) => Callback.OnGotFocus(Control, e);
+					Control.GotFocus += (s, e) => Callback.OnGotFocus(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (s, e) => Callback.OnLostFocus(Control, e);
+					Control.LostFocus += (s, e) => Callback.OnLostFocus(Widget, e);
 					handled = true;
 					break;
-#if TODO
-				case Eto.Forms.DragDropInputSource.DragDropEvent:
-					Control.DragDrop += (s, e) =>
-						handleDragEvent(
-							Widget.DragDropInputSource.OnDragDrop,
-							e);
-					handled = true;
-					break;
-				case Eto.Forms.DragDropInputSource.DragEnterEvent:
-					Control.DragEnter += (s, e) =>
-						handleDragEvent(
-							Widget.DragDropInputSource.OnDragEnter,
-							e);
-					handled = true;
-					break;
-				case Eto.Forms.DragDropInputSource.DragOverEvent:
-					Control.DragOver += (s, e) =>
-						handleDragEvent(
-							Widget.DragDropInputSource.OnDragOver,
-							e);
-					handled = true;
-					break;
-				case Eto.Forms.DragDropInputSource.GiveFeedbackEvent:
-					Control.GiveFeedback += (s, e) =>
-						Widget.DragDropInputSource.OnGiveFeedback(
-							e.ToEto());
-					handled = true;
-					break;
-				case Eto.Forms.DragDropInputSource.QueryContinueDragEvent:
-					Control.QueryContinueDrag += (s, e) =>
-						// TODO: convert the result back to SWF
-						Widget.DragDropInputSource.OnQueryContinueDrag(
-							e.ToEto());
-					handled = true;
-					break;
-#endif
 			}
 
 			if (!handled)
