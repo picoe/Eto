@@ -11,6 +11,8 @@ namespace Eto
 	/// value (e.g. <see cref="IndirectBinding"/>), whereas the <see cref="DualBinding"/> can link
 	/// two objects' values together
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Binding
 	{
 		#region Events

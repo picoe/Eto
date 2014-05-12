@@ -144,6 +144,9 @@ namespace Eto.Forms
 			base.OnUnLoad(e);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Container"/> class.
+		/// </summary>
 		protected Container()
 		{
 		}

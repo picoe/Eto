@@ -9,6 +9,8 @@ namespace Eto
 	/// When handling the event, one could cancel setting the new value by setting the <see cref="CancelEventArgs.Cancel"/>
 	/// property to false.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BindingChangingEventArgs : CancelEventArgs
 	{
 		/// <summary>

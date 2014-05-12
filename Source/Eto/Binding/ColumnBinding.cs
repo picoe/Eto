@@ -5,6 +5,8 @@ namespace Eto
 	/// <summary>
 	/// Interface to provide a source for the <see cref="ColumnBinding"/>
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IColumnItem
 	{
 		/// <summary>
@@ -30,6 +32,8 @@ namespace Eto
 	/// This is used to get/set values of a passed-in object to the <see cref="IndirectBinding.GetValue"/> and
 	/// <see cref="IndirectBinding.SetValue"/>.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ColumnBinding : IndirectBinding
 	{
 		/// <summary>

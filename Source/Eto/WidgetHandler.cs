@@ -66,6 +66,10 @@ namespace Eto
 		/// <summary>
 		/// Gets the callback object for the control
 		/// </summary>
+		/// <remarks>
+		/// This object is typically a single static instance that is used by the platform handlers to call private or protected
+		/// methods on the widget, such as protected event methods e.g. protected virtual void OnClick(EventArgs e)
+		/// </remarks>
 		/// <value>The callback.</value>
 		protected object Callback { get { return ((ICallbackSource)Widget).Callback; } }
 
@@ -392,6 +396,8 @@ namespace Eto
 	/// 			Control = new PlatformSpecificControl();
 	/// 		}
 	/// 
+	/// 		public string MyProperty { get; set; }
+	/// 
 	/// 		public override void AttachEvent(string id)
 	/// 		{
 	/// 			switch (id)
@@ -414,6 +420,14 @@ namespace Eto
 	public abstract class WidgetHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget>
 		where TWidget: Widget
 	{
+		/// <summary>
+		/// Gets the callback object for the control
+		/// </summary>
+		/// <remarks>
+		/// This object is typically a single static instance that is used by the platform handlers to call private or protected
+		/// methods on the widget, such as protected event methods e.g. protected virtual void OnClick(EventArgs e)
+		/// </remarks>
+		/// <value>The callback.</value>
 		public new TCallback Callback { get { return (TCallback)base.Callback; } }
 	}
 
