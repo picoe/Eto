@@ -64,42 +64,42 @@ namespace Eto.Test.Sections.Dialogs
 		static Control Descender()
 		{
 			var control = new Label { TextColor = Colors.Red };
-			control.TextBinding.Bind<Font>(r => r.Descent.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.Descent.ToString());
 			return control;
 		}
 
 		static Control Ascender()
 		{
 			var control = new Label { TextColor = Colors.Blue };
-			control.TextBinding.Bind<Font>(r => r.Ascent.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.Ascent.ToString());
 			return control;
 		}
 
 		static Control XHeight()
 		{
 			var control = new Label { TextColor = Colors.Green };
-			control.TextBinding.Bind<Font>(r => r.XHeight.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.XHeight.ToString());
 			return control;
 		}
 
 		static Control LineHeight()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.TextBinding.Bind<Font>(r => r.LineHeight.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.LineHeight.ToString());
 			return control;
 		}
 
 		static Control Leading()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.TextBinding.Bind<Font>(r => r.Leading.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.Leading.ToString());
 			return control;
 		}
 
 		static Control BaseLine()
 		{
 			var control = new Label { TextColor = Colors.Black };
-			control.TextBinding.Bind<Font>(r => r.Baseline.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.Baseline.ToString());
 			return control;
 		}
 
@@ -210,21 +210,21 @@ namespace Eto.Test.Sections.Dialogs
 		static Control BoldFont()
 		{
 			var control = new CheckBox { Text = "Bold", Enabled = false };
-			control.CheckedBinding.Bind<Font>(r => r.Bold);
+			control.CheckedBinding.BindDataContext<Font>(r => r.Bold);
 			return control;
 		}
 
 		static Control ItalicFont()
 		{
 			var control = new CheckBox { Text = "Italic", Enabled = false };
-			control.CheckedBinding.Bind<Font>(r => r.Italic);
+			control.CheckedBinding.BindDataContext<Font>(r => r.Italic);
 			return control;
 		}
 
 		Control UnderlineFont()
 		{
 			var control = new CheckBox { Text = "Underline" };
-			control.CheckedBinding.Bind<Font>(f => f.Underline, (f,val) => {
+			control.CheckedBinding.BindDataContext<Font>(f => f.Underline, (f,val) => {
 				var decoration = selectedFont.FontDecoration;
 				if (val ?? false) decoration |= FontDecoration.Underline;
 				else decoration &= ~FontDecoration.Underline;
@@ -236,7 +236,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control StrikeoutFont()
 		{
 			var control = new CheckBox { Text = "Strikethrough" };
-			control.CheckedBinding.Bind<Font>(f => f.Strikethrough, (f,val) => {
+			control.CheckedBinding.BindDataContext<Font>(f => f.Strikethrough, (f,val) => {
 				var decoration = selectedFont.FontDecoration;
 				if (val ?? false) decoration |= FontDecoration.Strikethrough;
 				else decoration &= ~FontDecoration.Strikethrough;

@@ -32,12 +32,29 @@ namespace Eto
 		{
 		}
 
-		public DualBinding Bind<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		public DualBinding Bind(Func<TValue> getValue, Action<TValue> setValue = null, Func<object, TValue> changeType = null, Action<EventHandler<EventArgs>> addChangeEvent = null, Action<EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			return Bind(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
+			return Bind(new DelegateBinding<TValue> { GetValue = getValue, SetValue = setValue, AddChangeEvent = addChangeEvent, RemoveChangeEvent = removeChangeEvent, ChangeType = changeType }, mode);
 		}
 
+		[Obsolete("Use BindDataContext<T> instead")]
+		public DualBinding Bind<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		{
+			return BindDataContext(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
+		}
+
+		[Obsolete("Use BindDataContext<T> instead")]
 		public DualBinding Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return Bind(dataContextBinding: binding, mode: mode);
+		}
+
+		public DualBinding BindDataContext<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		{
+			return BindDataContext(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
+		}
+
+		public DualBinding BindDataContext<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			return Bind(dataContextBinding: binding, mode: mode);
 		}

@@ -2,6 +2,74 @@ using System;
 
 namespace Eto
 {
+	public class DelegateBinding<TValue> : DirectBinding
+	{
+		public Func<TValue> GetValue { get; set; }
+
+		public Action<TValue> SetValue { get; set; }
+
+		public Func<object, TValue> ChangeType { get; set; }
+
+		public Action<EventHandler<EventArgs>> AddChangeEvent { get; set; }
+
+		public Action<EventHandler<EventArgs>> RemoveChangeEvent { get; set; }
+
+
+		public override object DataValue
+		{
+			get { return GetValue(); }
+			set
+			{ 
+				if (value is TValue)
+					SetValue((TValue)value);
+				if (ChangeType != null)
+					SetValue(ChangeType(value));
+			}
+		}
+
+		void HandleChangedEvent(object sender, EventArgs e)
+		{
+			OnDataValueChanged(e);
+		}
+
+		/// <summary>
+		/// Hooks up the late bound events for this object
+		/// </summary>
+		protected override void HandleEvent(string id)
+		{
+			switch (id)
+			{
+				case DataValueChangedEvent:
+					AddChangeEvent(new EventHandler<EventArgs>(HandleChangedEvent));
+					break;
+				default:
+					base.HandleEvent(id);
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Removes the late bound events for this object
+		/// </summary>
+		protected override void RemoveEvent(string id)
+		{
+			switch (id)
+			{
+				case DataValueChangedEvent:
+					RemoveChangeEvent(new EventHandler<EventArgs>(HandleChangedEvent));
+					break;
+				default:
+					base.RemoveEvent(id);
+					break;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Binding using delegate methods
+	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class DelegateBinding<T, TValue> : IndirectBinding
 	{
 		static readonly Type underlyingType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
