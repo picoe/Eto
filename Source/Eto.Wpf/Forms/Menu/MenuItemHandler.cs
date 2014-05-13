@@ -115,7 +115,7 @@ namespace Eto.Wpf.Forms.Menu
 
 		void HandleContextMenuOpening (object sender, sw.RoutedEventArgs e)
 		{
-			var submenu = Widget as ISubMenuWidget;
+			var submenu = Widget as ISubmenu;
 			if (submenu != null) {
 				foreach (var item in submenu.Items) {
 					item.OnValidate (EventArgs.Empty);

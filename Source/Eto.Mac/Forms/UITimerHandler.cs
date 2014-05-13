@@ -15,7 +15,7 @@ namespace Eto.Mac.Forms
 {
 	public class UITimerHandler : WidgetHandler<NSTimer, UITimer, UITimer.ICallback>, UITimer.IHandler
 	{
-		double interval = UITimer.DefaultInterval;
+		double interval = 1f;
 		
 		class Helper
 		{
