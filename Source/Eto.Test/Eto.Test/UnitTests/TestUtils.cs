@@ -37,32 +37,33 @@ namespace Eto.Test.UnitTests
 		/// </summary>
 		public static void Initialize()
 		{
+			var platform = Platform.Instance;
+			if (platform == null)
+			{
+				try
+				{
+					// use config file to specify which generator to use for testing
+					#if PCL
+					var doc = System.Xml.Linq.XDocument.Load("Eto.Test.dll.config");
+					var setting = doc != null ? doc.Root.Element("appSettings").Elements("add").FirstOrDefault(r => r.Attribute("key").Value == "generator") : null;
+					var generatorTypeName = setting != null ? setting.Attribute("value").Value : null;
+					#else
+					var generatorTypeName = System.Configuration.ConfigurationManager.AppSettings["generator"];
+					#endif
+					if (!string.IsNullOrEmpty(generatorTypeName))
+						platform = Platform.Get(generatorTypeName);
+				}
+				catch (FileNotFoundException)
+				{
+				}
+				if (platform == null)
+					platform = new Handlers.TestPlatform();
+				Platform.Initialize(platform);
+			}
+
 			if (Application.Instance == null)
 			{
-				var generator = Platform.Instance;
-				if (generator == null)
-				{
-					try
-					{
-						// use config file to specify which generator to use for testing
-						#if PCL
-						var doc = System.Xml.Linq.XDocument.Load("Eto.Test.dll.config");
-						var setting = doc != null ? doc.Root.Element("appSettings").Elements("add").FirstOrDefault(r => r.Attribute("key").Value == "generator") : null;
-						var generatorTypeName = setting != null ? setting.Attribute("value").Value : null;
-						#else
-						var generatorTypeName = System.Configuration.ConfigurationManager.AppSettings["generator"];
-						#endif
-						if (!string.IsNullOrEmpty(generatorTypeName))
-							generator = Platform.Get(generatorTypeName);
-					}
-					catch (FileNotFoundException)
-					{
-					}
-					if (generator == null)
-						generator = new Handlers.TestPlatform();
-					Platform.Initialize(generator);
-				}
-				if (generator.Supports<Application>())
+				if (platform.Supports<Application>())
 				{
 					var ev = new ManualResetEvent(false);
 					Exception exception = null;
@@ -70,7 +71,7 @@ namespace Eto.Test.UnitTests
 					{
 						try
 						{
-							var app = new Application(generator);
+							var app = new Application(platform);
 							app.Initialized += (sender, e) => ev.Set();
 							app.Run();
 						}
@@ -84,11 +85,7 @@ namespace Eto.Test.UnitTests
 					if (!ev.WaitOne(ApplicationTimeout))
 						Assert.Fail("Could not initialize application");
 					if (exception != null)
-						#if PCL
 						ExceptionDispatchInfo.Capture(exception).Throw();
-						#else
-						throw new AssertionException("Error initializing application", exception);
-						#endif
 				}
 			}
 		}
@@ -105,31 +102,27 @@ namespace Eto.Test.UnitTests
 			var application = Application.Instance;
 			Exception exception = null;
 			Action finished = () => ev.Set();
-            Action run = () =>
-            {
-                try
-                {
-                    test(application, finished);
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                    ev.Set();
-                }
-            };
-            if (application != null)
-                application.AsyncInvoke(run);
-            else
-                run();
-            if (!ev.WaitOne(timeout))
-                Assert.Fail("Test did not complete in time");
-            if (exception != null)
-				#if PCL
+			Action run = () =>
+			{
+				try
+				{
+					test(application, finished);
+				}
+				catch (Exception ex)
+				{
+					exception = ex;
+					ev.Set();
+				}
+			};
+			if (application != null)
+				application.AsyncInvoke(run);
+			else
+				run();
+			if (!ev.WaitOne(timeout))
+				Assert.Fail("Test did not complete in time");
+			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
-				#else
-				throw new AggregateException("Invoke failed", exception);
-				#endif
-        }
+		}
 
 		public static void Invoke(Action test, int timeout = DefaultTimeout)
 		{
@@ -199,11 +192,7 @@ namespace Eto.Test.UnitTests
 				form.Content = drawable;
 			}, timeout);
 			if (exception != null)
-				#if PCL
 				ExceptionDispatchInfo.Capture(exception).Throw();
-				#else
-				throw new AggregateException("Paint event caused exception", exception);
-				#endif
 		}
 	}
 }

@@ -7,13 +7,21 @@ namespace Eto.Test.UnitTests.Drawing
 	public class ClipTests
 	{
 		[Test, Category("ui")]
-		public void ClipTest()
+		public void ClipBoundsShouldMatchClientSize()
 		{
 			TestUtils.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
 				Assert.AreEqual(Size.Round(drawable.ClientSize), Size.Round(graphics.ClipBounds.Size), "Clip bounds should match drawable client size");
+			});
+		}
 
+		[Test, Category("ui")]
+		public void ClipRectangleShouldTranslate()
+		{
+			TestUtils.Paint((drawable, e) =>
+			{
+				var graphics = e.Graphics;
 				// Clip to the upper-left quadrant
 				var clipTo = drawable.ClientSize / 2;
 				graphics.SetClip(new RectangleF(PointF.Empty, clipTo));

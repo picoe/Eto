@@ -7,38 +7,25 @@ using Eto;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.Test.UnitTests.Handlers
+namespace Eto.Test.UnitTests.Handlers.Controls
 {
 	/// <summary>
 	/// A mock GridViewHandler implementation.
+	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
-	class TestGridViewHandler : GridView.IHandler
+	class TestGridViewHandler : TestControlHandler, GridView.IHandler
 	{
 		CollectionHandler collection;
 		GridView GridView { get { return Widget as GridView; } }
 
 		// Boilerplate
-		public Eto.Platform Platform { get; set; }
 		public ContextMenu ContextMenu { get; set; }
-		public Cursor Cursor { get; set; }
-		public string ID { get; set; }
 		public bool ShowCellBorders { get; set; }
 		public bool ShowHeader { get; set; }
 		public int RowHeight { get; set; }
 		public bool AllowColumnReordering { get; set; }
 		public bool AllowMultipleSelection { get; set; }
-		public string ToolTip { get; set; }
-		public object ControlObject { get; set; }
-		public Color BackgroundColor { get; set; }
-		public Size Size { get; set; }
-		public bool Enabled { get; set; }
-		public Widget Widget { get; set; }
-		public bool HasFocus { get; set; }
-		public bool Visible { get; set; }
-		public Point Location { get; set; }
-		public IEnumerable<string> SupportedPlatformCommands { get; set; }
 
 		/// <summary>
 		/// Simulates the UI control's row count.
@@ -87,68 +74,6 @@ namespace Eto.Test.UnitTests.Handlers
 		public void UnselectAll()
 		{
 			selectedRows.Clear();
-		}
-
-		public void Invalidate()
-		{
-		}
-
-		public void Invalidate(Rectangle rect)
-		{
-		}
-
-		public void SuspendLayout()
-		{
-		}
-
-		public void ResumeLayout()
-		{
-		}
-
-		public void Focus()
-		{
-		}
-
-		public void OnPreLoad(EventArgs e)
-		{
-		}
-
-		public void OnLoad(EventArgs e)
-		{
-		}
-
-		public void OnLoadComplete(EventArgs e)
-		{
-		}
-
-		public void OnUnLoad(EventArgs e)
-		{
-		}
-
-		public void SetParent(Container parent)
-		{
-		}
-
-		public void MapPlatformCommand(string systemCommand, Command command)
-		{
-		}
-
-		public PointF PointFromScreen(PointF point)
-		{
-			throw new NotImplementedException();
-		}
-
-		public PointF PointToScreen(PointF point)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void HandleEvent(string id, bool defaultEvent = false)
-		{
-		}
-
-		public void Initialize()
-		{
 		}
 
 		void SetRowCount()

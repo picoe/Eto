@@ -135,10 +135,14 @@
     <Compile Include="UnitTests\Forms\GridViewTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
+    <Compile Include="UnitTests\Handlers\Controls\TestControlHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Controls\TestGridViewHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Controls\TestLabelHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Controls\TestTextBoxHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Layout\TestTableLayoutHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestFontHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestGraphicsHandler.cs" />
-    <Compile Include="UnitTests\Handlers\TestGridViewHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="UnitTests\TestUtils.cs" />
