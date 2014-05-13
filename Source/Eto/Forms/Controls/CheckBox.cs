@@ -2,6 +2,14 @@ using System;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Control to show a two or three state check box
+	/// </summary>
+	/// <remarks>
+	/// Two state is either checked (true) or unchecked (false).
+	/// 
+	/// Three state check box can also have a null value.
+	/// </remarks>
 	[Handler(typeof(CheckBox.IHandler))]
 	public class CheckBox : TextControl
 	{
@@ -103,13 +111,25 @@ namespace Eto.Forms
 		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for the <see cref="CheckBox"/>
+		/// </summary>
 		public new interface ICallback : TextControl.ICallback
 		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
 			void OnCheckedChanged(CheckBox widget, EventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for handlers of <see cref="CheckBox"/>
+		/// </summary>
 		protected new class Callback : TextControl.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
 			public void OnCheckedChanged(CheckBox widget, EventArgs e)
 			{
 				widget.OnCheckedChanged(e);

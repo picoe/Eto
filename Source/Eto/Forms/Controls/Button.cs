@@ -136,13 +136,25 @@ namespace Eto.Forms
 		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for <see cref="Button"/>
+		/// </summary>
 		public new interface ICallback : TextControl.ICallback
 		{
+			/// <summary>
+			/// Raises the click event.
+			/// </summary>
 			void OnClick(Button widget, EventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for handlers of <see cref="Button"/>
+		/// </summary>
 		protected new class Callback : TextControl.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the click event.
+			/// </summary>
 			public void OnClick(Button widget, EventArgs e)
 			{
 				widget.OnClick(e);

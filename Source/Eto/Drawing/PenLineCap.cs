@@ -2,7 +2,7 @@
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Specifies the line cap for a <see cref="IPen"/>
+	/// Specifies the line cap for a <see cref="Pen"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>

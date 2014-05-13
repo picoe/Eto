@@ -755,6 +755,12 @@ namespace Eto.Forms
 			return default(T);
 		}
 
+		/// <summary>
+		/// Finds a control in the parent hierarchy with the specified type and <see cref="Widget.ID"/> if specified
+		/// </summary>
+		/// <returns>The parent if found, or null if not found.</returns>
+		/// <param name="type">The type of control to find.</param>
+		/// <param name="id">Identifier of the parent control to find, or null to find by type only.</param>
 		public Container FindParent(Type type, string id = null)
 		{
 			var control = Parent;
@@ -769,6 +775,11 @@ namespace Eto.Forms
 			return null;
 		}
 
+		/// <summary>
+		/// Finds a control in the parent hierarchy with the specified <paramref name="id"/>
+		/// </summary>
+		/// <returns>The parent if found, or null if not found.</returns>
+		/// <param name="id">Identifier of the parent control to find.</param>
 		public Container FindParent(string id)
 		{
 			return FindParent(null, id);
@@ -786,14 +797,28 @@ namespace Eto.Forms
 				Parent.Remove(this);
 		}
 
-		public void AttachExternal()
+		/// <summary>
+		/// Attaches the control for direct use in a native application
+		/// </summary>
+		/// <remarks>
+		/// Use this to use a control directly in a native application.  Note that the native application must be running
+		/// the same framework as the current platform.  E.g. a WinForms application can use an Eto.Forms control
+		/// when using the Eto.WinForms platform.
+		/// 
+		/// This prepares the control by firing the <see cref="PreLoad"/>, <see cref="Load"/>, etc. events.
+		/// </remarks>
+		public void AttachNative()
 		{
 			if (Parent != null)
 				throw new EtoException("You can only attach a parentless control");
-			OnPreLoad(EventArgs.Empty);
-			OnLoad(EventArgs.Empty);
-			OnDataContextChanged(EventArgs.Empty);
-			OnLoadComplete(EventArgs.Empty);
+
+			using (Platform.Context)
+			{
+				OnPreLoad(EventArgs.Empty);
+				OnLoad(EventArgs.Empty);
+				OnDataContextChanged(EventArgs.Empty);
+				OnLoadComplete(EventArgs.Empty);
+			}
 		}
 
 		/// <summary>

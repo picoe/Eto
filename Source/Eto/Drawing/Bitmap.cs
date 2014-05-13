@@ -34,7 +34,7 @@ namespace Eto.Drawing
 	/// Format of the image to use when saving, loading, etc.
 	/// </summary>
 	/// <remarks>
-	/// The format is typically used only when saving via <see cref="Bitmap.Save"/>
+	/// The format is typically used only when saving via <see cref="M:Eto.Drawing.Bitmap.Save"/>
 	/// </remarks>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>

@@ -7,6 +7,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <typeparam name="TControl">The Eto control used to create the custom implementation</typeparam>
 	/// <typeparam name="TWidget">The container being implemented.</typeparam>
+	/// <typeparam name="TCallback">The callback inferface for the control, e.g. TabControl.ICallback</typeparam>
 	public abstract class ThemedContainerHandler<TControl, TWidget, TCallback> : ThemedControlHandler<TControl, TWidget, TCallback>, Container.IHandler
 		where TControl: Container
 		where TWidget : Container

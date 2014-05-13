@@ -64,12 +64,27 @@ namespace Eto.Forms
 			return Bind(controlBinding, dataContextBinding, mode, defaultControlValue, defaultContextValue);
 		}
 
+		/// <summary>
+		/// Adds a new binding to the control with a direct value binding
+		/// </summary>
+		/// <param name="controlBinding">Binding to get/set the value from the control.</param>
+		/// <param name="valueBinding">Value binding to get/set the value from another source.</param>
+		/// <param name="mode">Mode of the binding</param>
 		public DualBinding Bind(IndirectBinding controlBinding, DirectBinding valueBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			var binding = new ObjectBinding(this, controlBinding);
 			return binding.Bind(valueBinding: valueBinding, mode: mode);
 		}
 
+		/// <summary>
+		/// Adds a new binding to the control with an indirect binding to the provided <paramref name="objectValue"/>
+		/// </summary>
+		/// <param name="controlBinding">Binding to get/set the value from the control.</param>
+		/// <param name="objectValue">Object value to bind to.</param>
+		/// <param name="objectBinding">Binding to get/set the value from the <paramref name="objectValue"/>.</param>
+		/// <param name="mode">Mode of the binding.</param>
+		/// <param name="defaultControlValue">Default control value to set to the objectValue, if the value of the control property is null.</param>
+		/// <param name="defaultContextValue">Default context value to set to the control, if the objectValue or value of the objectBinding is null.</param>
 		public DualBinding Bind(IndirectBinding controlBinding, object objectValue, IndirectBinding objectBinding, DualBindingMode mode = DualBindingMode.TwoWay, object defaultControlValue = null, object defaultContextValue = null)
 		{
 			var valueBinding = new ObjectBinding(objectValue, objectBinding) {
