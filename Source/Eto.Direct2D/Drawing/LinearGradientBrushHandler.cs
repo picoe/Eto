@@ -52,8 +52,8 @@ namespace Eto.Direct2D.Drawing
 			{
 				StartColor = startColor,
 				EndColor = endColor,
-				StartPoint = rectangle.Location,
-				EndPoint = rectangle.EndLocation
+				StartPoint = startPoint,
+				EndPoint = endPoint
 			};
 		}
 

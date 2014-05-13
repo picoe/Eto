@@ -448,7 +448,6 @@ namespace Eto.Direct2D.Drawing
 			if (Control != null)
 			{
 				// TODO: doesn't actually clear to transparent (e.g. on a bitmap)
-				var rect = new s.RectangleF(0, 0, Control.PixelSize.Width, Control.PixelSize.Height);
 				if (brush != null)
 					Control.Clear(brush.Color.ToDx());
 				else
