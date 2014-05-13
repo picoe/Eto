@@ -13,6 +13,31 @@ namespace Eto.Forms
 		public bool ScaleWidth { get; set; }
 
 		public Control Control { get; set; }
+
+		public TableItem()
+		{
+		}
+
+		public TableItem(Control control, bool scaleWidth = false)
+		{
+			Control = control;
+			ScaleWidth = scaleWidth;
+		}
+
+		public static implicit operator TableItem(Control control)
+		{
+			return new TableItem(control);
+		}
+
+		public static implicit operator TableItem(TableItem[] items)
+		{
+			return new TableItem(new TableLayout(items));
+		}
+
+		public static implicit operator TableItem(TableRow[] rows)
+		{
+			return new TableItem(new TableLayout(rows));
+		}
 	}
 
 	public class TableRow
@@ -35,6 +60,15 @@ namespace Eto.Forms
 		public TableRow(IEnumerable<TableItem> items)
 		{
 			Items = new Collection<TableItem>(items.ToList());
+		}
+
+		public static implicit operator TableRow(Control control)
+		{
+			return new TableRow(control);
+		}
+		public static implicit operator TableRow(TableItem[] items)
+		{
+			return new TableRow(items);
 		}
 	}
 
@@ -212,6 +246,47 @@ namespace Eto.Forms
 			this.CellSize = size;
 		}
 
+		public TableLayout(params TableRow[] rows)
+		{
+			Create(rows);
+		}
+
+		public TableLayout(IEnumerable<TableRow> rows)
+		{
+			Create(rows.ToArray());
+		}
+
+		void Create(TableRow[] rows)
+		{
+			var columnCount = rows.Max(r => r != null ? r.Items.Count : 0);
+			CellSize = new Size(columnCount, rows.Length);
+			int rowIndex = 0;
+			foreach (var row in rows)
+			{
+				if (row != null)
+				{
+					for (int columnIndex = 0; columnIndex < row.Items.Count; columnIndex++)
+					{
+						var item = row.Items[columnIndex];
+						if (item != null)
+						{
+							Add(item.Control, columnIndex, rowIndex);
+							if (item.ScaleWidth)
+								SetColumnScale(columnIndex);
+						}
+						else
+							SetColumnScale(columnIndex);
+					}
+					if (row.ScaleHeight)
+						SetRowScale(rowIndex);
+				}
+				else
+					SetRowScale(rowIndex);
+				rowIndex++;
+			}
+		}
+
+
 		[Obsolete("Use constructor without generator instead")]
 		public TableLayout(int width, int height, Generator generator = null)
 			: this(new Size(width, height), generator)
@@ -383,6 +458,11 @@ namespace Eto.Forms
 			Size Spacing { get; set; }
 
 			Padding Padding { get; set; }
+		}
+
+		public static implicit operator TableLayout(TableRow[] rows)
+		{
+			return new TableLayout(rows);
 		}
 	}
 }
