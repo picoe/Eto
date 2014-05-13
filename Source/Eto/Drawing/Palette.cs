@@ -19,7 +19,7 @@ namespace Eto.Drawing
 	, ICloneable
 	#endif
 	{
-		readonly List<uint> argb;
+		readonly List<int> argb;
 		static readonly int[] egaColors = { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
 
 		/// <summary>
@@ -35,7 +35,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public Palette()
 		{
-			argb = new List<uint>();
+			argb = new List<int>();
 		}
 
 		/// <summary>
@@ -230,7 +230,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="index">Index to get the ARGB color for</param>
 		/// <returns>A 32-bit ARGB color value of the color at the specified index</returns>
-		public uint GetRGBColor(int index)
+		public int GetRGBColor(int index)
 		{
 			return argb[index];
 		}

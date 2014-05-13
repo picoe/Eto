@@ -84,7 +84,7 @@ namespace Eto.Test.Sections.Controls
 			return new Label
 			{
 				Text = "Custom Color",
-				TextColor = Color.FromArgb(0xFF00a000)
+				TextColor = Color.FromArgb(unchecked((int)0xFF00a000))
 			};
 		}
 

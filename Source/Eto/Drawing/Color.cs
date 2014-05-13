@@ -80,9 +80,19 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="argb">32-bit ARGB value with Alpha in the high byte</param>
 		/// <returns>A new instance of the Color object with the specified color</returns>
-		public static Color FromArgb (uint argb)
+		public static Color FromArgb (int argb)
 		{
 			return new Color (((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, (argb & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
+		}
+
+		/// <summary>
+		/// Creates a Color from a 24-bit RGB value
+		/// </summary>
+		/// <param name="argb">24-bit RGB value with Red in the high byte</param>
+		/// <returns>A new instance of the Color object with the specified color</returns>
+		public static Color FromRgb(int argb)
+		{
+			return new Color(((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, (argb & 0xff) / 255f);
 		}
 
 		/// <summary>
@@ -208,7 +218,7 @@ namespace Eto.Drawing
 					else {
 						if (num2 >> 24 == 0) num2 |= 0xFF000000;
 					}
-					color = Color.FromArgb (num2);
+					color = Color.FromArgb ((int)num2);
 					return true;
 				}
 				if (colormap == null) {
@@ -242,7 +252,7 @@ namespace Eto.Drawing
 			}
 			switch (array.Length) {
 			case 1:
-				color = Color.FromArgb (array2[0]);
+				color = Color.FromArgb ((int)array2[0]);
 				return true;
 			case 3:
 				color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2]);
@@ -334,9 +344,9 @@ namespace Eto.Drawing
 		/// Converts this color to a 32-bit ARGB value.
 		/// </summary>
 		/// <returns>The 32-bit ARGB value that corresponds to this color</returns>
-		public uint ToArgb ()
+		public int ToArgb()
 		{
-			return ((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
+			return (int)((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
 		}
 
 		/// <summary>

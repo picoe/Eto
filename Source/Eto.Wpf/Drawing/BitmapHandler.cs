@@ -20,12 +20,12 @@ namespace Eto.Wpf.Drawing
 		{
 		}
 
-		public override uint TranslateArgbToData(uint argb)
+		public override int TranslateArgbToData(int argb)
 		{
 			return argb;
 		}
 
-		public override uint TranslateDataToArgb(uint bitmapData)
+		public override int TranslateDataToArgb(int bitmapData)
 		{
 			return bitmapData;
 		}

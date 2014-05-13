@@ -13,12 +13,12 @@ namespace Eto.iOS.Drawing
 		{
 		}
 
-		public override uint TranslateArgbToData(uint argb)
+		public override int TranslateArgbToData(int argb)
 		{
 			return argb;
 		}
 
-		public override uint TranslateDataToArgb(uint bitmapData)
+		public override int TranslateDataToArgb(int bitmapData)
 		{
 			return bitmapData;
 		}
@@ -28,7 +28,7 @@ namespace Eto.iOS.Drawing
 	{
 		Size size;
 		int rowStride;
-		uint[] colors;
+		int[] colors;
 		BitmapHandler bmp;
 		bool updated;
 
@@ -46,10 +46,10 @@ namespace Eto.iOS.Drawing
 		{
 			rowStride = width * bitsPerPixel / 8;
 			int colorCount = (int)Math.Pow(2, bitsPerPixel);
-			colors = new uint[colorCount];
+			colors = new int[colorCount];
 			for (int i=0; i<colorCount; i++)
 			{
-				colors[i] = 0xffffffff;
+				colors[i] = unchecked((int)0xffffffff);
 			}
 
 			size = new Size(width, height);
@@ -140,7 +140,7 @@ namespace Eto.iOS.Drawing
 					for (int y = source.Top; y <= source.Bottom; y++)
 					{
 						var srcrow = src;
-						var destrow = (uint*)dest;
+						var destrow = (int*)dest;
 						for (int x = source.Left; x <= source.Right; x++)
 						{
 							var palindex = *srcrow;

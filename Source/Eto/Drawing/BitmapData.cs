@@ -83,7 +83,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="argb">ARGB pixel value to translate into the platform-specific format</param>
 		/// <returns>Platform-specific format of the pixels that can be set directly onto the data</returns>
-		public abstract uint TranslateArgbToData(uint argb);
+		public abstract int TranslateArgbToData(int argb);
 
 		/// <summary>
 		/// Translates the platform specific pixel format to a 32-bit ARGB value
@@ -94,13 +94,13 @@ namespace Eto.Drawing
 		/// Each platform can have a different pixel format, and this allows you to abstract 
 		/// getting the data into a 32-bit colour.
 		/// 
-		/// The ARGB value can be easily handled using <see cref="Eto.Drawing.Color(uint)"/>.
+		/// The ARGB value can be easily handled using <see cref="C:Eto.Drawing.Color(uint)"/>.
 		/// 
 		/// For non-alpha bitmaps, the alpha component will be ignored
 		/// </remarks>
 		/// <param name="bitmapData">Platform specific bitmap data for a pixel to translate</param>
 		/// <returns>Translated ARGB value from the bitmap data</returns>
-		public abstract uint TranslateDataToArgb(uint bitmapData);
+		public abstract int TranslateDataToArgb(int bitmapData);
 
 		/// <summary>
 		/// Gets the pointer to the data of the bitmap

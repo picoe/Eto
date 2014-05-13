@@ -13,12 +13,12 @@ namespace Eto.Mac.Drawing
 		{
 		}
 
-		public override uint TranslateArgbToData(uint argb)
+		public override int TranslateArgbToData(int argb)
 		{
 			return argb;
 		}
 
-		public override uint TranslateDataToArgb(uint bitmapData)
+		public override int TranslateDataToArgb(int bitmapData)
 		{
 			return bitmapData;
 		}
@@ -29,7 +29,7 @@ namespace Eto.Mac.Drawing
 		Size size;
 		int bytesPerRow;
 		int bitsPerPixel;
-		uint[] colors;
+		int[] colors;
 		BitmapHandler bmp;
 		IntPtr ptr;
 
@@ -48,10 +48,10 @@ namespace Eto.Mac.Drawing
 			this.bitsPerPixel = bitsPerPixel;
 			bytesPerRow = width * bitsPerPixel / 8;
 			int colorCount = (int)Math.Pow(2, bitsPerPixel);
-			colors = new uint[colorCount];
+			colors = new int[colorCount];
 			for (int i=0; i<colorCount; i++)
 			{
-				colors[i] = 0xffffffff;
+				colors[i] = unchecked((int)0xffffffff);
 			}
 
 			size = new Size(width, height);
@@ -131,7 +131,7 @@ namespace Eto.Mac.Drawing
 				scany = scany - (right - left);
 				for (int y=source.Top; y < bottom; y++)
 				{
-					var destrow = (uint*)dest;
+					var destrow = (int*)dest;
 					for (int x=left; x < right; x++)
 					{
 						*destrow = colors[*src];

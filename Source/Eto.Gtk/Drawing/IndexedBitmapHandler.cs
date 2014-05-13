@@ -14,12 +14,12 @@ namespace Eto.GtkSharp.Drawing
 		{
 		}
 
-		public override uint TranslateArgbToData (uint argb)
+		public override int TranslateArgbToData (int argb)
 		{
 			return argb;
 		}
 
-		public override uint TranslateDataToArgb (uint bitmapData)
+		public override int TranslateDataToArgb (int bitmapData)
 		{
 			return bitmapData;
 		}
@@ -75,13 +75,13 @@ namespace Eto.GtkSharp.Drawing
 
 		public Palette Palette {
 			get {
-				return new Palette (colors.Select (r => Color.FromArgb(r)).ToList ());
+				return new Palette (colors.Select (r => Color.FromArgb(unchecked((int)r))).ToList ());
 			}
 			set {
 				if (value.Count != colors.Length)
 					throw new ArgumentException ("Input palette must have the same colors as the output");
 				for (int i=0; i<value.Count; i++) {
-					colors [i] = value [i].ToArgb ();
+					colors [i] = (uint)value [i].ToArgb ();
 				}
 			}
 		}

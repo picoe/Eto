@@ -17,14 +17,14 @@ namespace Eto.GtkSharp.Drawing
 		{
 		}
 
-		public override uint TranslateArgbToData(uint argb)
+		public override int TranslateArgbToData(int argb)
 		{
-			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
+			return unchecked((int)(((uint)argb & 0xFF00FF00) | (((uint)argb & 0xFF) << 16) | (((uint)argb & 0xFF0000) >> 16)));
 		}
 
-		public override uint TranslateDataToArgb(uint bitmapData)
+		public override int TranslateDataToArgb(int bitmapData)
 		{
-			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
+			return unchecked((int)(((uint)bitmapData & 0xFF00FF00) | (((uint)bitmapData & 0xFF) << 16) | (((uint)bitmapData & 0xFF0000) >> 16)));
 		}
 	}
 
@@ -240,7 +240,7 @@ namespace Eto.GtkSharp.Drawing
 					srcrow += x * data.BytesPerPixel;
 					if (data.BytesPerPixel == 4)
 					{
-						return Color.FromArgb(data.TranslateDataToArgb(*(uint*)srcrow));
+						return Color.FromArgb(data.TranslateDataToArgb(*(int*)srcrow));
 					}
 					if (data.BytesPerPixel == 3)
 					{

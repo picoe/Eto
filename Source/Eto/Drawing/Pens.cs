@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using PenKey = System.Tuple<System.UInt32, float, Eto.Drawing.DashStyle>;
+using PenKey = System.Tuple<System.Int32, float, Eto.Drawing.DashStyle>;
 
 namespace Eto.Drawing
 {

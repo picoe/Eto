@@ -22,24 +22,24 @@ namespace Eto.Mac.Drawing
 		{
 		}
 
-		public static uint ArgbToData(uint argb)
+		public static int ArgbToData(int argb)
 		{
-			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
+			return unchecked((int)(((uint)argb & 0xFF00FF00) | (((uint)argb & 0xFF) << 16) | (((uint)argb & 0xFF0000) >> 16)));
 		}
 
-		public static uint DataToArgb(uint bitmapData)
+		public static int DataToArgb(int bitmapData)
 		{
-			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
+			return unchecked((int)(((uint)bitmapData & 0xFF00FF00) | (((uint)bitmapData & 0xFF) << 16) | (((uint)bitmapData & 0xFF0000) >> 16)));
 		}
 
-		public override uint TranslateArgbToData(uint argb)
+		public override int TranslateArgbToData(int argb)
 		{
-			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
+			return unchecked((int)(((uint)argb & 0xFF00FF00) | (((uint)argb & 0xFF) << 16) | (((uint)argb & 0xFF0000) >> 16)));
 		}
 
-		public override uint TranslateDataToArgb(uint bitmapData)
+		public override int TranslateDataToArgb(int bitmapData)
 		{
-			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
+			return unchecked((int)(((uint)bitmapData & 0xFF00FF00) | (((uint)bitmapData & 0xFF) << 16) | (((uint)bitmapData & 0xFF0000) >> 16)));
 		}
 
 		public override bool Flipped { get { return false; } }

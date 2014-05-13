@@ -55,7 +55,7 @@ namespace Eto.Android.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Color.FromArgb((uint)Control.CurrentTextColor); }
+			get { return Color.FromArgb((int)Control.CurrentTextColor); }
 			set { Control.SetTextColor(value.ToAndroid()); }
 		}
 
