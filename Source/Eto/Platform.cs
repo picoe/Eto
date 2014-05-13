@@ -298,8 +298,7 @@ namespace Eto
 		{
 			if (globalInstance == null)
 				globalInstance = platform;
-			else
-				instance.Value = platform;
+			instance.Value = platform;
 		}
 
 		/// <summary>

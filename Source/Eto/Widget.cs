@@ -269,14 +269,17 @@ namespace Eto
 		/// </summary>
 		protected Widget()
 		{
-			var info = Platform.Instance.FindHandler(GetType());
+			var platform = Platform.Instance;
+			if (platform == null)
+				throw new EtoException("Platform instance is null. Have you created your application?");
+			var info = platform.FindHandler(GetType());
 			if (info == null)
 				throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "type for '{0}' could not be found in this platform", GetType().FullName));
 			this.Handler = info.Instantiator();
 			var widgetHandler = this.Handler as IHandler;
 			if (widgetHandler != null)
 			{
-				widgetHandler.Platform = Platform.Instance;
+				widgetHandler.Platform = platform;
 				widgetHandler.Widget = this;
 			}
 			if (info.Initialize)
