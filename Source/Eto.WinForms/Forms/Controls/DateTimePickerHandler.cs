@@ -1,14 +1,15 @@
 using System;
 using Eto.Forms;
 using System.Globalization;
+using swf = System.Windows.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class DateTimePickerHandler : WindowsControl<System.Windows.Forms.DateTimePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
+	public class DateTimePickerHandler : WindowsControl<swf.DateTimePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
 		public DateTimePickerHandler()
 		{
-			Control = new System.Windows.Forms.DateTimePicker();
+			Control = new swf.DateTimePicker();
 			Control.ShowCheckBox = true;
 			Mode = DateTimePicker.DefaultMode;
 			Value = null;
@@ -24,11 +25,11 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				switch (Control.Format)
 				{
-					case System.Windows.Forms.DateTimePickerFormat.Long:
+					case swf.DateTimePickerFormat.Long:
 						return DateTimePickerMode.DateTime;
-					case System.Windows.Forms.DateTimePickerFormat.Short:
+					case swf.DateTimePickerFormat.Short:
 						return DateTimePickerMode.Date;
-					case System.Windows.Forms.DateTimePickerFormat.Time:
+					case swf.DateTimePickerFormat.Time:
 						return DateTimePickerMode.Time;
 					default:
 						throw new NotImplementedException();
@@ -39,15 +40,15 @@ namespace Eto.WinForms.Forms.Controls
 				switch (value)
 				{
 					case DateTimePickerMode.DateTime:
-						Control.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+						Control.Format = swf.DateTimePickerFormat.Custom;
 						var format = CultureInfo.CurrentUICulture.DateTimeFormat;
 						Control.CustomFormat = format.ShortDatePattern + " " + format.LongTimePattern;
 						break;
 					case DateTimePickerMode.Date:
-						Control.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+						Control.Format = swf.DateTimePickerFormat.Short;
 						break;
 					case DateTimePickerMode.Time:
-						Control.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+						Control.Format = swf.DateTimePickerFormat.Time;
 						break;
 					default:
 						throw new NotImplementedException();
@@ -59,11 +60,11 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			get
 			{
-				return Control.MinDate;
+				return Control.MinDate == swf.DateTimePicker.MinimumDateTime ? DateTime.MinValue : Control.MinDate;
 			}
 			set
 			{
-				Control.MinDate = value;
+				Control.MinDate = value == DateTime.MinValue ? swf.DateTimePicker.MinimumDateTime : value;
 			}
 		}
 
@@ -71,11 +72,11 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			get
 			{
-				return Control.MaxDate;
+				return Control.MaxDate == swf.DateTimePicker.MaximumDateTime ? DateTime.MaxValue : Control.MaxDate;
 			}
 			set
 			{
-				Control.MaxDate = value;
+				Control.MaxDate = value == DateTime.MaxValue ? swf.DateTimePicker.MaximumDateTime : value;
 			}
 		}
 
