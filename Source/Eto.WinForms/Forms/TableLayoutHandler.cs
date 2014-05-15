@@ -113,15 +113,18 @@ namespace Eto.WinForms
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
-			for (int y = 0; y < rowScale.Length; y++)
+			if (rowScale != null)
 			{
-				var ys = yscale && (y == lastRowScale || rowScale[y]);
-				for (int x = 0; x < columnScale.Length; x++)
+				for (int y = 0; y < rowScale.Length; y++)
 				{
-					var xs = xscale && (x == lastColumnScale || columnScale[x]);
-					var control = views[x,y];
-					if (control != null)
-						control.SetScale(xs, ys);
+					var ys = yscale && (y == lastRowScale || rowScale[y]);
+					for (int x = 0; x < columnScale.Length; x++)
+					{
+						var xs = xscale && (x == lastColumnScale || columnScale[x]);
+						var control = views[x, y];
+						if (control != null)
+							control.SetScale(xs, ys);
+					}
 				}
 			}
 		}
