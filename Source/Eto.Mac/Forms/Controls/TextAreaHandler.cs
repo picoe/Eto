@@ -178,6 +178,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				font = value;
 				Control.TextStorage.SetString(font.AttributedString(Control.Value));
+				Control.TypingAttributes = font.Attributes();
 				LayoutIfNeeded();
 			}
 		}

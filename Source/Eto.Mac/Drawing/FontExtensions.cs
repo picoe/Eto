@@ -26,6 +26,16 @@ namespace Eto.iOS.Drawing
 			return font == null ? null : ((FontHandler)font.Handler).Control;
 		}
 
+		public static NSDictionary Attributes(this Font font)
+		{
+			if (font != null)
+			{
+				var handler = (FontHandler)font.Handler;
+				return handler.Attributes;
+			}
+			return null;
+		}
+
 		public static void Apply(this Font font, NSMutableAttributedString str)
 		{
 			if (font != null)
