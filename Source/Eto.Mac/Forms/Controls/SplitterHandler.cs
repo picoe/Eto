@@ -45,6 +45,7 @@ namespace Eto.Mac.Forms.Controls
 	
 			if (splitView.IsVertical)
 			{
+				panel2Rect.Y = 0;
 				panel2Rect.Height = panel1Rect.Height = newFrame.Height;
 				panel1Rect.Location = new sd.PointF(0, 0);
 				if (handler.position == null)
@@ -306,6 +307,19 @@ namespace Eto.Mac.Forms.Controls
 			}
 			else
 			{
+				if (position != null)
+				{
+					switch (FixedPanel)
+					{
+						case SplitterFixedPanel.None:
+						case SplitterFixedPanel.Panel1:
+							p1size.Height = Math.Max(p1size.Height, position.Value);
+							break;
+						case SplitterFixedPanel.Panel2:
+							p2size.Height = Math.Max(p2size.Height, Size.Height - position.Value);
+							break;
+					}
+				}
 				if (position != null)
 					p1size.Height = position.Value;
 				size.Height = p1size.Height + p2size.Height + Control.DividerThickness;

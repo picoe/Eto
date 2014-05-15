@@ -107,13 +107,10 @@ namespace Eto.Mac.Forms
 				container.LayoutParent(updateSize);
 				return;
 			} 
-			if (updateSize)
+			if (updateSize && !Widget.Loaded && AutoSize)
 			{
-				if (AutoSize)
-				{
-					var size = GetPreferredSize(Size.MaxValue);
-					SetContentSize(size.ToSD());
-				}
+				var size = GetPreferredSize(Size.MaxValue);
+				SetContentSize(size.ToSD());
 			}
 
 			// layout everything!
