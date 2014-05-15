@@ -19,6 +19,7 @@ namespace Eto.Drawing
 
 		protected Graphics()
 		{
+			Initialize();
 		}
 
 		/// <summary>
@@ -28,6 +29,7 @@ namespace Eto.Drawing
 		public Graphics(IHandler handler)
 			: base(handler)
 		{
+			Initialize();
 		}
 
 		/// <summary>
@@ -37,6 +39,7 @@ namespace Eto.Drawing
 		public Graphics(Bitmap image)
 		{
 			Handler.CreateFromImage(image);
+			Initialize();
 		}
 
 		#pragma warning disable 612,618
@@ -933,6 +936,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
+		[AutoInitialize(false)]
 		public new interface IHandler : Widget.IHandler
 		{
 			/// <summary>
