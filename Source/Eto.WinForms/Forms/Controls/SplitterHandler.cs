@@ -64,6 +64,22 @@ namespace Eto.WinForms
 				Panel1MinSize = 0,
 				Panel2MinSize = 0,
 			};
+			Control.HandleCreated += (sender, e) => SetInitialPosition();
+			Control.SplitterMoving += (sender, e) =>
+			{
+				// keep track of the desired position (for removing/re-adding the control)
+				if (Widget.Loaded)
+					position = Control.SplitterDistance;
+			};
+			Control.SizeChanged += (sender, e) =>
+			{
+				// SplitterDistance can only be at most width or height, but if the control's width is smaller than 
+				// desired position to start then gets a layout pass, try to set to the preferred position when resized
+				if (position != null && position.Value != Control.SplitterDistance)
+				{
+					SetPosition(position.Value);
+				}
+			};
 		}
 
 		public override void AttachEvent(string id)
@@ -97,46 +113,50 @@ namespace Eto.WinForms
 		{
 			if (Control.Orientation == swf.Orientation.Vertical)
 			{
-				Control.SplitterDistance = Math.Max(0, Math.Min(Control.Width - Control.Panel2MinSize - 1, position));
+				if (Control.Width > 1)
+					Control.SplitterDistance = Math.Max(0, Math.Min(Control.Width - Control.Panel2MinSize - 1, position));
 			}
 			else
 			{
-				Control.SplitterDistance = Math.Max(0, Math.Min(Control.Height - Control.Panel2MinSize - 1, position));
+				if (Control.Height > 1)
+					Control.SplitterDistance = Math.Max(0, Math.Min(Control.Height - Control.Panel2MinSize - 1, position));
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoadComplete(e);
-			Control.HandleCreated += (sender, ee) =>
-			{
-				if (position != null)
-				{
-					SetPosition(position.Value);
-					position = null;
-				}
-				else
-				{
-					switch (FixedPanel)
-					{
-						case SplitterFixedPanel.Panel1:
-							var size1 = panel1.GetPreferredSize();
-							SetPosition(Control.Orientation == swf.Orientation.Vertical ? size1.Width : size1.Height);
-							break;
-						case SplitterFixedPanel.Panel2:
-							var size2 = panel2.GetPreferredSize();
-							int pos;
-							if (Control.Orientation == swf.Orientation.Vertical)
-								pos = Control.Width - size2.Width;
-							else
-								pos = Control.Height - size2.Height;
-							SetPosition(pos);
-							break;
-					}
-				}
-			};
+			base.OnLoad(e);
+			if (Control.IsHandleCreated)
+				SetInitialPosition();
+		}
+		
+		void SetInitialPosition()
+		{
 			Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsHandler()).InternalVisible;
 			Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
+			if (position != null)
+			{
+				SetPosition(position.Value);
+			}
+			else
+			{
+				switch (FixedPanel)
+				{
+					case SplitterFixedPanel.Panel1:
+						var size1 = panel1.GetPreferredSize();
+						SetPosition(Control.Orientation == swf.Orientation.Vertical ? size1.Width : size1.Height);
+						break;
+					case SplitterFixedPanel.Panel2:
+						var size2 = panel2.GetPreferredSize();
+						int pos;
+						if (Control.Orientation == swf.Orientation.Vertical)
+							pos = Control.Width - size2.Width;
+						else
+							pos = Control.Height - size2.Height;
+						SetPosition(pos);
+						break;
+				}
+			}
 		}
 
 		public SplitterFixedPanel FixedPanel
