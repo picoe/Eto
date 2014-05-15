@@ -328,6 +328,7 @@ namespace Eto.Mac.Forms
 					});
 				}
 				handler.oldLocation = null;
+				NSApplication.SharedApplication.InvokeOnMainThread(() => handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty));
 			});
 		}
 
