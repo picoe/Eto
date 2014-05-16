@@ -51,8 +51,6 @@ namespace Eto.Mac.Forms.Controls
 			public override void SizeToFit()
 			{
 				setBezel = false;
-				var bezelStyle = BezelStyle;
-				BezelStyle = NSBezelStyle.Rounded;
 				base.SizeToFit();
 
 				if (Handler.AutoSize)
@@ -61,7 +59,6 @@ namespace Eto.Mac.Forms.Controls
 					size.Width = Math.Max(size.Width, MinimumWidth);
 					SetFrameSize(size);
 				}
-				BezelStyle = bezelStyle;
 				setBezel = true;
 			}
 
@@ -164,6 +161,8 @@ namespace Eto.Mac.Forms.Controls
 		NSBezelStyle GetBezelStyle()
 		{
 			var size = Control.Frame.Size.ToEtoSize();
+			if (size.Width == 0 || size.Height == 0)
+				return Control.BezelStyle;
 			if (size.Height < 22 || size.Width < 22)
 				return NSBezelStyle.SmallSquare;
 			if (size.Height > originalSize.Height)
