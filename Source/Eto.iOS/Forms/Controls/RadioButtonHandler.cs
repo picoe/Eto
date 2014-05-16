@@ -32,7 +32,7 @@ namespace Eto.iOS.Forms.Controls
 			Control.ShowsTouchWhenHighlighted = false;
 			Control.TouchUpInside += (sender, e) => {
 				this.Checked = true;
-				Widget.OnCheckedChanged(EventArgs.Empty);
+				Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			};
 		}
 

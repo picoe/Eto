@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class ButtonMenuItemHandler : MenuActionItemHandler<Gtk.ImageMenuItem, ButtonMenuItem>, ButtonMenuItem.IHandler
+	public class ButtonMenuItemHandler : MenuActionItemHandler<Gtk.ImageMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
 	{
 		string tooltip;
 		string text;
@@ -44,7 +44,7 @@ namespace Eto.GtkSharp
 				var handler = Handler;
 				if (handler.Control.Submenu != null)
 					handler.ValidateItems ();
-				handler.Widget.OnClick(e);
+				handler.Callback.OnClick(handler.Widget, e);
 			}
 		}
 		

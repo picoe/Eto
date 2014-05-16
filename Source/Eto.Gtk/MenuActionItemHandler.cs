@@ -8,9 +8,10 @@ namespace Eto.GtkSharp
 		void TriggerValidate();
 	}
 
-	public abstract class MenuActionItemHandler<TControl, TWidget> : MenuHandler<TControl, TWidget>, IMenuActionItemHandler
+	public abstract class MenuActionItemHandler<TControl, TWidget, TCallback> : MenuHandler<TControl, TWidget, TCallback>, IMenuActionItemHandler
 		where TControl: Gtk.MenuItem
 		where TWidget: MenuItem
+		where TCallback: MenuItem.ICallback
 	{
 		public override void AttachEvent(string id)
 		{
@@ -27,10 +28,7 @@ namespace Eto.GtkSharp
 
 		public void TriggerValidate()
 		{
-			if (Control.Submenu != null)
-			{
-				Widget.OnValidate(EventArgs.Empty);
-			}
+			Callback.OnValidate(Widget, EventArgs.Empty);
 		}
 
 		public void CreateFromCommand(Command command)

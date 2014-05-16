@@ -8,7 +8,7 @@ namespace Eto.WinForms
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class SeparatorMenuItemHandler : MenuHandler<SWF.ToolStripSeparator, SeparatorMenuItem>, SeparatorMenuItem.IHandler
+	public class SeparatorMenuItemHandler : MenuHandler<SWF.ToolStripSeparator, SeparatorMenuItem, SeparatorMenuItem.ICallback>, SeparatorMenuItem.IHandler
 	{
 		
 		public SeparatorMenuItemHandler()

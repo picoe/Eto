@@ -36,7 +36,7 @@ namespace Eto.iOS.Forms.Controls
 		{
 			public override void DidShowViewController(UINavigationController navigationController, UIViewController viewController, bool animated)
 			{
-				Handler.Widget.OnItemShown(EventArgs.Empty);
+				Handler.Callback.OnItemShown(Handler.Widget, EventArgs.Empty);
 				// need to get the view controllers to reset the references to the popped controllers
 				// this is due to how xamarin.ios keeps the controllers in an array
 				// and this resets that array

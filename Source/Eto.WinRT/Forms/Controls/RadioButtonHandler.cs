@@ -12,22 +12,19 @@ namespace Eto.WinRT.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class RadioButtonHandler : WpfControl<swc.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
-		public void Create (RadioButton controller)
+		public void Create(RadioButton controller)
 		{
-			Control = new swc.RadioButton ();
-			if (controller != null) {
+			Control = new swc.RadioButton();
+			if (controller != null)
+			{
 				var parent = (swc.RadioButton)controller.ControlObject;
 				Control.GroupName = parent.GroupName;
 			}
 			else
-				Control.GroupName = Guid.NewGuid ().ToString ();
+				Control.GroupName = Guid.NewGuid().ToString();
 
-			Control.Checked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
-			Control.Unchecked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
+			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

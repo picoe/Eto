@@ -7,22 +7,25 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class ButtonMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ButtonMenuItem>, ButtonMenuItem.IHandler
+	public class ButtonMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
 	{
-        Image image;
+		Image image;
 		int imageSize = 16;
 		bool openedHandled;
 
 		public ButtonMenuItemHandler()
 		{
 			Control = new SWF.ToolStripMenuItem();
-			Control.Click += (sender, e) => Widget.OnClick(EventArgs.Empty);
+			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
-		void HandleDropDownOpened (object sender, EventArgs e)
+		void HandleDropDownOpened(object sender, EventArgs e)
 		{
-			foreach (var item in Widget.Items) {
-				item.OnValidate (EventArgs.Empty);
+			foreach (var item in Widget.Items)
+			{
+				var callback = ((ICallbackSource)item).Callback as MenuItem.ICallback;
+				if (callback != null)
+					callback.OnValidate(item, e);
 			}
 		}
 
@@ -32,7 +35,7 @@ namespace Eto.WinForms
 			set
 			{
 				imageSize = value;
-				Control.Image = image.ToSD (imageSize);
+				Control.Image = image.ToSD(imageSize);
 			}
 		}
 
@@ -47,23 +50,27 @@ namespace Eto.WinForms
 			get	{ return Control.Text; }
 			set { Control.Text = value; }
 		}
-		
-		public string ToolTip {
-			get {
+
+		public string ToolTip
+		{
+			get
+			{
 				return Control.ToolTipText;
 			}
-			set {
+			set
+			{
 				Control.ToolTipText = value;
 			}
 		}
 
 		public Keys Shortcut
 		{
-			get { return Control.ShortcutKeys.ToEto (); }
-			set 
+			get { return Control.ShortcutKeys.ToEto(); }
+			set
 			{
-				var key = value.ToSWF ();
-				if (SWF.ToolStripManager.IsValidShortcut(key)) Control.ShortcutKeys = key;
+				var key = value.ToSWF();
+				if (SWF.ToolStripManager.IsValidShortcut(key))
+					Control.ShortcutKeys = key;
 			}
 		}
 
@@ -73,14 +80,15 @@ namespace Eto.WinForms
 			set
 			{
 				image = value;
-				Control.Image = image.ToSD (imageSize);
+				Control.Image = image.ToSD(imageSize);
 			}
 		}
 
 		public void AddMenu(int index, MenuItem item)
 		{
 			Control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
-			if (!openedHandled) {
+			if (!openedHandled)
+			{
 				Control.DropDownOpening += HandleDropDownOpened;
 				openedHandled = true;
 			}

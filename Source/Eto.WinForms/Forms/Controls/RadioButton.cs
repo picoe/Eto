@@ -22,12 +22,8 @@ namespace Eto.WinForms
 		{
 			Control = new EtoRadioButton();
 			Control.AutoSize = true;
-			Control.Click += delegate {
-				Widget.OnClick (EventArgs.Empty);	
-			};
-			Control.CheckedChanged += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
+			Control.Click += (sender, e) => Callback.OnClick (Widget, EventArgs.Empty);
+			Control.CheckedChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
 
 		public void Create(RadioButton controller)

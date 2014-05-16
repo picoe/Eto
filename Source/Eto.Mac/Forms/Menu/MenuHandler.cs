@@ -9,9 +9,10 @@ namespace Eto.Mac
 		void EnsureSubMenu();
 	}
 
-	public abstract class MenuHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, Menu.IHandler, IMenuHandler
+	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Menu.IHandler, IMenuHandler
 		where TControl: NSMenuItem
 		where TWidget: Menu
+		where TCallback: Menu.ICallback
 	{
 		public void EnsureSubMenu()
 		{

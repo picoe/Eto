@@ -7,7 +7,7 @@ using sd = System.Drawing;
 
 namespace Eto.Mac
 {
-	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ButtonMenuItem>, ButtonMenuItem.IHandler, IMenuActionHandler
+	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler, IMenuActionHandler
 	{
 		Image image;
 		string text;
@@ -34,7 +34,7 @@ namespace Eto.Mac
 
 		public void HandleClick()
 		{
-			Widget.OnClick(EventArgs.Empty);
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public override void AttachEvent(string id)

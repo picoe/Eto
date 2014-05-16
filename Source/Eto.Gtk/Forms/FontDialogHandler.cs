@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms
 {
-	public class FontDialogHandler : WidgetHandler<Gtk.FontSelectionDialog, FontDialog>, FontDialog.IHandler
+	public class FontDialogHandler : WidgetHandler<Gtk.FontSelectionDialog, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
 	{
 		public FontDialogHandler()
 		{
@@ -53,7 +53,7 @@ namespace Eto.GtkSharp.Forms
 			if (response == Gtk.ResponseType.Apply || response == Gtk.ResponseType.Ok)
 			{
 				Font = new Font(new FontHandler(Control.FontName));
-				Widget.OnFontChanged(EventArgs.Empty);
+				Callback.OnFontChanged(Widget, EventArgs.Empty);
 				return DialogResult.Ok;
 			}
 			return DialogResult.Cancel;

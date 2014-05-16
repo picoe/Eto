@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public abstract class MenuHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, Menu.IHandler
+	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Menu.IHandler
 		where TControl: SWF.ToolStripItem
 		where TWidget: Widget
 	{

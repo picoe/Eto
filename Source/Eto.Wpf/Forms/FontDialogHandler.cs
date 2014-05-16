@@ -6,50 +6,55 @@ using System;
 using sw = System.Windows;
 namespace Eto.Wpf.Forms
 {
-	public class FontDialogHandler : WidgetHandler<CustomControls.FontDialog.FontChooser, FontDialog>, FontDialog.IHandler
+	public class FontDialogHandler : WidgetHandler<CustomControls.FontDialog.FontChooser, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
 	{
 		public FontDialogHandler()
 		{
 			Control = new CustomControls.FontDialog.FontChooser();
 		}
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
-			case FontDialog.FontChangedEvent:
-				// handled during showdialog
-				break;
-			default:
-				base.AttachEvent (id);
-				break;
+			switch (id)
+			{
+				case FontDialog.FontChangedEvent:
+					// handled during showdialog
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
 		public Font Font
 		{
-			get; set;
+			get;
+			set;
 		}
 
-		public DialogResult ShowDialog (Window parent)
+		public DialogResult ShowDialog(Window parent)
 		{
-			if (parent != null) {
+			if (parent != null)
+			{
 				var owner = parent.ControlObject as sw.Window;
 				Control.Owner = owner;
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			}
-			if (Font != null) {
+			if (Font != null)
+			{
 				var fontHandler = (FontHandler)Font.Handler;
 				Control.SelectedFontFamily = fontHandler.WpfFamily;
 				Control.SelectedFontPointSize = fontHandler.Size;
 				Control.SelectedFontStyle = fontHandler.WpfFontStyle;
 				Control.SelectedFontWeight = fontHandler.WpfFontWeight;
 			}
-			var result = Control.ShowDialog ();
+			var result = Control.ShowDialog();
 
-			if (result == true) {
+			if (result == true)
+			{
 				var fontHandler = new FontHandler(Control.SelectedFontFamily, Control.SelectedFontPointSize, Control.SelectedFontStyle, Control.SelectedFontWeight);
 				Font = new Font(fontHandler);
-				Widget.OnFontChanged (EventArgs.Empty);
+				Callback.OnFontChanged(Widget, EventArgs.Empty);
 			}
 
 			return result != null && result.Value ? DialogResult.Ok : DialogResult.Cancel;

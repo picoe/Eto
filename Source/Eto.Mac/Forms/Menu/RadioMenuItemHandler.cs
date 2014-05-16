@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.Mac
 {
-	public class RadioMenuItemHandler : MenuHandler<NSMenuItem, RadioMenuItem>, RadioMenuItem.IHandler, IMenuActionHandler
+	public class RadioMenuItemHandler : MenuHandler<NSMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler, IMenuActionHandler
 	{
 		List<RadioMenuItem> radioGroup;
 
@@ -20,7 +20,7 @@ namespace Eto.Mac
 
 		public void HandleClick()
 		{
-			Widget.OnClick(EventArgs.Empty);
+			Callback.OnClick(Widget, EventArgs.Empty);
 			
 			if (radioGroup != null)
 			{

@@ -41,7 +41,7 @@ namespace Eto.GtkSharp
 
 			public void HandleCheckedChanged(object sender, EventArgs e)
 			{
-				Handler.Widget.OnCheckedChanged(EventArgs.Empty);
+				Handler.Callback.OnCheckedChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 

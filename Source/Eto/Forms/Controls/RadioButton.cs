@@ -10,16 +10,16 @@ namespace Eto.Forms
 
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		public void OnClick (EventArgs e)
+		protected virtual void OnClick(EventArgs e)
 		{
 			if (Click != null)
-				Click (this, e);
+				Click(this, e);
 		}
-		
-		public void OnCheckedChanged (EventArgs e)
+
+		protected virtual void OnCheckedChanged(EventArgs e)
 		{
 			if (CheckedChanged != null)
-				CheckedChanged (this, e);
+				CheckedChanged(this, e);
 		}
 
 		public RadioButton()
@@ -35,28 +35,52 @@ namespace Eto.Forms
 		}
 
 		[Obsolete("Use RadioButton(RadioButton) instead")]
-		public RadioButton (RadioButton controller = null, Generator generator = null)
+		public RadioButton(RadioButton controller = null, Generator generator = null)
 			: this(generator, typeof(IHandler), controller)
 		{
 		}
 
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected RadioButton (Generator generator, Type type, RadioButton controller, bool initialize = true)
-			: base (generator, type, false)
+		protected RadioButton(Generator generator, Type type, RadioButton controller, bool initialize = true)
+			: base(generator, type, false)
 		{
-			Handler.Create (controller);
+			Handler.Create(controller);
 			Initialize();
 		}
 
-		public virtual bool Checked {
+		public virtual bool Checked
+		{
 			get { return Handler.Checked; }
 			set { Handler.Checked = value; }
 		}
 
+		public new interface ICallback : TextControl.ICallback
+		{
+			void OnClick(RadioButton widget, EventArgs e);
+
+			void OnCheckedChanged(RadioButton widget, EventArgs e);
+		}
+
+		protected class Callback : TextControl.Callback, ICallback
+		{
+			public void OnClick(RadioButton widget, EventArgs e)
+			{
+				widget.OnClick(e);
+			}
+
+			public void OnCheckedChanged(RadioButton widget, EventArgs e)
+			{
+				widget.OnCheckedChanged(e);
+			}
+		}
+
+		static readonly object callback = new Callback();
+		protected override object GetCallback() { return callback; }
+
 		[AutoInitialize(false)]
 		public new interface IHandler : TextControl.IHandler
 		{
-			void Create (RadioButton controller);
+			void Create(RadioButton controller);
 
 			bool Checked { get; set; }
 		}

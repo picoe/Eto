@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp
 {
-	public class CheckMenuItemHandler : MenuActionItemHandler<Gtk.CheckMenuItem, CheckMenuItem>, CheckMenuItem.IHandler
+	public class CheckMenuItemHandler : MenuActionItemHandler<Gtk.CheckMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler
 	{
 		string text;
 		string tooltip;
@@ -45,7 +45,7 @@ namespace Eto.GtkSharp
 					handler.isBeingChecked = true;
 					handler.Control.Active = !handler.Control.Active; // don't let Gtk turn it on/off
 					handler.isBeingChecked = false;
-					handler.Widget.OnClick(e);
+					handler.Callback.OnClick(handler.Widget, e);
 				}
 			}
 		}

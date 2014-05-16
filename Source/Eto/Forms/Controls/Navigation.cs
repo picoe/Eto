@@ -23,7 +23,7 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> ItemShown;
 		
-		public virtual void OnItemShown (EventArgs e)
+		protected virtual void OnItemShown (EventArgs e)
 		{
 			if (ItemShown != null)
 				ItemShown (this, e);

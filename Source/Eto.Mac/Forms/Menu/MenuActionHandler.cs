@@ -13,6 +13,8 @@ namespace Eto.Mac
 		bool Enabled { get; }
 
 		MenuItem Widget { get; }
+
+		MenuItem.ICallback Callback { get; }
 	}
 
 	[Register("EtoMenuActionHandler")]
@@ -37,7 +39,7 @@ namespace Eto.Mac
 			var h = Handler;
 			if (h != null)
 			{
-				h.Widget.OnValidate(EventArgs.Empty);
+				h.Callback.OnValidate(h.Widget, EventArgs.Empty);
 				return h.Enabled;
 			}
 			return false;

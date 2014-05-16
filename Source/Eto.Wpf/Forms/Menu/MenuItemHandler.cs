@@ -9,19 +9,18 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class MenuItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, MenuItem.IHandler, swi.ICommand
+	public class MenuItemHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, MenuItem.IHandler, swi.ICommand
 		where TControl : swc.MenuItem
 		where TWidget : MenuItem
+		where TCallback: MenuItem.ICallback
 	{
-        Image image;
-		readonly swi.RoutedCommand command = new swi.RoutedCommand ();
+		Image image;
+		readonly swi.RoutedCommand command = new swi.RoutedCommand();
 		bool openingHandled;
 
-		protected void Setup ()
+		protected void Setup()
 		{
-			Control.Click += delegate {
-				Widget.OnClick (EventArgs.Empty);
-			};
+			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public Image Image
@@ -30,7 +29,7 @@ namespace Eto.Wpf.Forms.Menu
 			set
 			{
 				image = value;
-				Control.Icon = image.ToWpfImage (16);
+				Control.Icon = image.ToWpfImage(16);
 			}
 		}
 
@@ -50,17 +49,18 @@ namespace Eto.Wpf.Forms.Menu
 		{
 			get
 			{
-				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding> ().FirstOrDefault ();
+				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding>().FirstOrDefault();
 				return keyBinding == null ? Keys.None : KeyMap.Convert(keyBinding.Key, keyBinding.Modifiers);
 			}
 			set
 			{
-				Control.InputBindings.Clear ();
-				if (value != Keys.None) {
-					var key = KeyMap.ConvertKey (value);
-					var modifier = KeyMap.ConvertModifier (value);
-					Control.InputBindings.Add (new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
-					Control.InputGestureText = value.ToShortcutString ();
+				Control.InputBindings.Clear();
+				if (value != Keys.None)
+				{
+					var key = KeyMap.ConvertKey(value);
+					var modifier = KeyMap.ConvertModifier(value);
+					Control.InputBindings.Add(new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
+					Control.InputGestureText = value.ToShortcutString();
 				}
 				else
 					Control.InputGestureText = null;
@@ -73,52 +73,58 @@ namespace Eto.Wpf.Forms.Menu
 			set
 			{
 				Control.IsEnabled = value;
-				OnCanExecuteChanged (EventArgs.Empty);
+				OnCanExecuteChanged(EventArgs.Empty);
 			}
 		}
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
-			case MenuItem.ValidateEvent:
-				// handled by parent
-				break;
-			default:
-				base.AttachEvent (id);
-				break;
+			switch (id)
+			{
+				case MenuItem.ValidateEvent:
+					// handled by parent
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
-		public void AddMenu (int index, MenuItem item)
+		public void AddMenu(int index, MenuItem item)
 		{
-			Control.Items.Insert (index, item.ControlObject);
-			if (!openingHandled) {
+			Control.Items.Insert(index, item.ControlObject);
+			if (!openingHandled)
+			{
 				Control.SubmenuOpened += HandleContextMenuOpening;
 				openingHandled = true;
 			}
 		}
 
-		public void RemoveMenu (MenuItem item)
+		public void RemoveMenu(MenuItem item)
 		{
-			Control.Items.Remove (item.ControlObject);
+			Control.Items.Remove(item.ControlObject);
 		}
 
-		public void Clear ()
+		public void Clear()
 		{
-			Control.Items.Clear ();
+			Control.Items.Clear();
 		}
 
-		bool swi.ICommand.CanExecute (object parameter)
+		bool swi.ICommand.CanExecute(object parameter)
 		{
 			return Enabled;
 		}
 
-		void HandleContextMenuOpening (object sender, sw.RoutedEventArgs e)
+		void HandleContextMenuOpening(object sender, sw.RoutedEventArgs e)
 		{
 			var submenu = Widget as ISubmenu;
-			if (submenu != null) {
-				foreach (var item in submenu.Items) {
-					item.OnValidate (EventArgs.Empty);
+			if (submenu != null)
+			{
+				foreach (var item in submenu.Items)
+				{
+					var handler = item.Handler as MenuItemHandler<TControl, TWidget, TCallback>;
+					if (handler != null)
+						handler.Callback.OnValidate(handler.Widget, EventArgs.Empty);
 				}
 			}
 		}
@@ -126,15 +132,15 @@ namespace Eto.Wpf.Forms.Menu
 
 		public event EventHandler CanExecuteChanged;
 
-		protected virtual void OnCanExecuteChanged (EventArgs e)
+		protected virtual void OnCanExecuteChanged(EventArgs e)
 		{
 			if (CanExecuteChanged != null)
-				CanExecuteChanged (this, e);
+				CanExecuteChanged(this, e);
 		}
 
-		void swi.ICommand.Execute (object parameter)
+		void swi.ICommand.Execute(object parameter)
 		{
-			Widget.OnClick (EventArgs.Empty);
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public void CreateFromCommand(Command command)

@@ -26,9 +26,10 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> Click;
 
-		public void OnClick(EventArgs e)
+		protected virtual void OnClick(EventArgs e)
 		{
-			if (Click != null) Click(this, e);
+			if (Click != null)
+				Click(this, e);
 		}
 
 		public event EventHandler<EventArgs> Validate
@@ -37,7 +38,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(ValidateEvent, value); }
 		}
 
-		public virtual void OnValidate(EventArgs e)
+		protected virtual void OnValidate(EventArgs e)
 		{
 			Properties.TriggerEvent(ValidateEvent, this, e);
 		}
@@ -107,6 +108,33 @@ namespace Eto.Forms
 		{
 			get { return Handler.Shortcut; }
 			set { Handler.Shortcut = value; }
+		}
+
+		public new interface ICallback : Menu.ICallback
+		{
+			void OnClick(MenuItem widget, EventArgs e);
+
+			void OnValidate(MenuItem widget, EventArgs e);
+		}
+
+		protected class Callback : ICallback
+		{
+			public void OnClick(MenuItem widget, EventArgs e)
+			{
+				widget.OnClick(e);
+			}
+
+			public void OnValidate(MenuItem widget, EventArgs e)
+			{
+				widget.OnValidate(e);
+			}
+		}
+
+		static readonly object callback = new Callback();
+
+		protected override object GetCallback()
+		{
+			return callback;
 		}
 
 		public new interface IHandler : Menu.IHandler

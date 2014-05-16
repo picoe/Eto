@@ -18,7 +18,9 @@ namespace Eto.WinForms
 		{
 			foreach (var item in Widget.Items)
 			{
-				item.OnValidate(EventArgs.Empty);
+				var callback = ((ICallbackSource)item).Callback as MenuItem.ICallback;
+				if (callback != null)
+					callback.OnValidate(item, e);
 			}
 		}
 

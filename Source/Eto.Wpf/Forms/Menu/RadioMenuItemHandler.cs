@@ -7,7 +7,7 @@ using swi = System.Windows.Input;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class RadioMenuItemHandler : MenuItemHandler<swc.MenuItem, RadioMenuItem>, RadioMenuItem.IHandler
+	public class RadioMenuItemHandler : MenuItemHandler<swc.MenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
 	{
 		List<RadioMenuItem> group;
 

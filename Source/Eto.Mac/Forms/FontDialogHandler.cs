@@ -19,7 +19,7 @@ namespace Eto.Mac.Forms
 		{
 			var font = sender.ConvertFont(NSFont.SystemFontOfSize(NSFont.SystemFontSize));
 			Handler.Font = font != null ? new Font(new FontHandler(font)) : null;
-			Handler.Widget.OnFontChanged(EventArgs.Empty);
+			Handler.Callback.OnFontChanged(Handler.Widget, EventArgs.Empty);
 		}
 
 		public override void WillClose(NSNotification notification)

@@ -9,7 +9,7 @@ namespace Eto.WinForms
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class RadioMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, RadioMenuItem>, RadioMenuItem.IHandler
+	public class RadioMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
 	{
 		ArrayList group;
 
@@ -21,7 +21,7 @@ namespace Eto.WinForms
 
 		void control_Click(object sender, EventArgs e)
 		{
-			Widget.OnClick(e);
+			Callback.OnClick(Widget, e);
 		}
 
 		public void Create(RadioMenuItem controller)

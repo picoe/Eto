@@ -8,7 +8,7 @@ namespace Eto.WinForms
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class CheckMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, CheckMenuItem>, CheckMenuItem.IHandler
+	public class CheckMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler
 	{
 		public CheckMenuItemHandler()
 		{
@@ -18,7 +18,7 @@ namespace Eto.WinForms
 
 		void control_Click(object sender, EventArgs e)
 		{
-			Widget.OnClick(e);
+			Callback.OnClick(Widget, e);
 		}
 
 		public bool Enabled

@@ -16,7 +16,7 @@ namespace Eto.Forms
 			remove { Properties.RemoveEvent(FontChangedEvent, value); }
 		}
 
-		public virtual void OnFontChanged(EventArgs e)
+		protected virtual void OnFontChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(FontChangedEvent, this, e);
 		}
@@ -40,6 +40,19 @@ namespace Eto.Forms
 		{
 			get { return Handler.Font; }
 			set { Handler.Font = value; }
+		}
+
+		public new interface ICallback : CommonDialog.ICallback
+		{
+			void OnFontChanged(FontDialog widget, EventArgs e);
+		}
+
+		protected class Callback : ICallback
+		{
+			public void OnFontChanged(FontDialog widget, EventArgs e)
+			{
+				widget.OnFontChanged(e);
+			}
 		}
 
 		public new interface IHandler : CommonDialog.IHandler

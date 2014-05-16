@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac
 {
-	public class CheckMenuItemHandler : MenuHandler<NSMenuItem, CheckMenuItem>, CheckMenuItem.IHandler, IMenuActionHandler
+	public class CheckMenuItemHandler : MenuHandler<NSMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler, IMenuActionHandler
 	{
 		public CheckMenuItemHandler ()
 		{
@@ -16,7 +16,7 @@ namespace Eto.Mac
 		
 		public void HandleClick ()
 		{
-			Widget.OnClick (EventArgs.Empty);
+			Callback.OnClick (Widget, EventArgs.Empty);
 		}
 		
 		#region IMenuItem Members

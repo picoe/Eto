@@ -34,7 +34,7 @@ namespace Eto.Forms
 		
 		public event EventHandler<EventArgs> Click;
 
-		public void OnClick (EventArgs e)
+		protected virtual void OnClick (EventArgs e)
 		{
 			if (Click != null)
 				Click (this, e);

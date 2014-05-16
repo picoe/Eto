@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Mac
 {
-	public class SeparatorMenuItemHandler : MenuHandler<NSMenuItem, SeparatorMenuItem>, SeparatorMenuItem.IHandler
+	public class SeparatorMenuItemHandler : MenuHandler<NSMenuItem, SeparatorMenuItem, SeparatorMenuItem.ICallback>, SeparatorMenuItem.IHandler
 	{
 		public SeparatorMenuItemHandler ()
 		{

@@ -5,7 +5,7 @@ namespace Eto.GtkSharp
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class MenuBarHandler : MenuHandler<Gtk.MenuBar, MenuBar>, MenuBar.IHandler
+	public class MenuBarHandler : MenuHandler<Gtk.MenuBar, MenuBar, MenuBar.ICallback>, MenuBar.IHandler
 	{
 
 		public MenuBarHandler()

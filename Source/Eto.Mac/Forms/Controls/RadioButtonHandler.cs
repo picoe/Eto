@@ -36,8 +36,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				if (handler.Activated != null)
 					handler.Activated(handler, e);
-				handler.Widget.OnClick(EventArgs.Empty);
-				handler.Widget.OnCheckedChanged(EventArgs.Empty);
+				handler.Callback.OnClick(handler.Widget, EventArgs.Empty);
+				handler.Callback.OnCheckedChanged(handler.Widget, EventArgs.Empty);
 
 				if (handler.Control.AcceptsFirstResponder() && handler.Control.Window != null) 
 					handler.Control.Window.MakeFirstResponder(handler.Control);
@@ -82,7 +82,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value != Checked)
 				{
 					Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off;
-					Widget.OnCheckedChanged(EventArgs.Empty);
+					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 					if (Activated != null)
 						Activated(this, EventArgs.Empty);
 					

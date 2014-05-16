@@ -6,7 +6,7 @@ namespace Eto.GtkSharp
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class RadioMenuItemHandler : MenuActionItemHandler<Gtk.RadioMenuItem, RadioMenuItem>, RadioMenuItem.IHandler
+	public class RadioMenuItemHandler : MenuActionItemHandler<Gtk.RadioMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
 	{
 		string text;
 		Keys shortcut;
@@ -62,7 +62,7 @@ namespace Eto.GtkSharp
 				var handler = Handler;
 				if (!handler.controller.isActivating)
 				{
-					handler.Widget.OnClick(e);
+					handler.Callback.OnClick(handler.Widget, e);
 				}
 			}
 		}
