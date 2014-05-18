@@ -7,20 +7,19 @@ namespace Eto.Test.Sections.Controls
 	public class TabControlSection : Panel
 	{
 		TabControl tabControl;
-		Label memoryUsage;
 
 		protected override void OnPreLoad(EventArgs e)
 		{
 			base.OnPreLoad(e);
-			Content = Create();			
+			Content = Create();
 		}
 
 		public virtual Control Create()
 		{
-			var layout = new DynamicLayout();
-			layout.AddSeparateRow(null, AddTab(), RemoveTab(), memoryUsage = new Label(), null);
-			layout.AddSeparateRow(tabControl = DefaultTabs());
-			return layout;
+			return new TableLayout(
+				new TableLayout(new TableRow(null, AddTab(), RemoveTab(), SelectTab(), null)),
+				tabControl = DefaultTabs()
+			);
 		}
 
 		Control AddTab()
@@ -28,21 +27,14 @@ namespace Eto.Test.Sections.Controls
 			var control = new Button { Text = "Add Tab" };
 			control.Click += (s, e) =>
 			{
-				using (tabControl.Platform.Context)
-				{
-					var tab = new TabPage { Text = "Tab " + (tabControl.TabPages.Count + 1) };
-					var bitmap = new Bitmap(new Size(1024, 1024), PixelFormat.Format32bppRgba); // 32MB
-					tab.Content = new ImageView { Image = bitmap };
-					tabControl.TabPages.Add(tab);
-					UpdateMemoryUsage();
-				}
+				var tab = new TabPage
+				{ 
+					Text = "Tab " + (tabControl.TabPages.Count + 1),
+					Content = tabControl.TabPages.Count % 2 == 0 ? TabOne() : TabTwo()
+				};
+				tabControl.TabPages.Add(tab);
 			};
 			return control;
-		}
-
-		void UpdateMemoryUsage()
-		{
-			memoryUsage.Text = string.Format("Memory usage: {0}", GC.GetTotalMemory(true));
 		}
 
 		Control RemoveTab()
@@ -53,7 +45,20 @@ namespace Eto.Test.Sections.Controls
 				if (tabControl.SelectedIndex >= 0 && tabControl.TabPages.Count > 0)
 				{
 					tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
-					UpdateMemoryUsage();
+				}
+			};
+			return control;
+		}
+
+		Control SelectTab()
+		{
+			var control = new Button { Text = "Select Tab" };
+			var rnd = new Random();
+			control.Click += (s, e) =>
+			{
+				if (tabControl.TabPages.Count > 0)
+				{
+					tabControl.SelectedIndex = rnd.Next(tabControl.TabPages.Count);
 				}
 			};
 			return control;
@@ -77,8 +82,6 @@ namespace Eto.Test.Sections.Controls
 
 			foreach (var page in control.TabPages)
 				LogEvents(page);
-
-			UpdateMemoryUsage();
 
 			return control;
 			
@@ -122,38 +125,24 @@ namespace Eto.Test.Sections.Controls
 				Log.Write(control, "Click, Item: {0}", control.Text);
 			};
 		}
-	}
 
-	public class ThemedTabControlSection : TabControlSection
-	{
-		public override Control Create()
+		/// <summary>
+		/// Gets the platform with a themed tab control.
+		/// </summary>
+		/// <remarks>
+		/// Clone the current generator and add themed handlers for TabControl and TabPage.
+		/// </remarks>
+		public static Platform ThemedPlatform
 		{
-			// Clone the current generator and add handlers
-			// for TabControl and TabPage. Create a TabControlSection
-			// using the new generator and then restore the previous generator.
-			var generator = (Platform)Activator.CreateInstance(Platform.GetType());
-
-			generator.Add<TabControl.IHandler>(() => new Eto.Test.Handlers.TabControlHandler());
-			generator.Add<TabPage.IHandler>(() => new Eto.Test.Handlers.TabPageHandler());
-
-			using (generator.Context)
+			get
 			{
-				return base.Create();
+				var platform = (Platform)Activator.CreateInstance(Platform.Instance.GetType());
+
+				platform.Add<TabControl.IHandler>(() => new Eto.Test.Handlers.TabControlHandler());
+				platform.Add<TabPage.IHandler>(() => new Eto.Test.Handlers.TabPageHandler());
+
+				return platform;
 			}
-		}
-	}
-
-	class ThemedTabControlFormSection : WindowSectionMethod
-	{
-		protected override Window GetWindow()
-		{
-			var t = new ThemedTabControlSection();
-
-			return new Form
-			{
-				Content = t.Create(),
-				Size = new Size(640, 400),
-			};
 		}
 	}
 }

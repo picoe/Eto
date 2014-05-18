@@ -192,27 +192,27 @@ namespace Eto.Forms
 		{
 			public void OnActivated(TreeGridView widget, TreeGridViewItemEventArgs e)
 			{
-				widget.OnActivated(e);
+				widget.Platform.Invoke(() => widget.OnActivated(e));
 			}
 			public void OnExpanding(TreeGridView widget, TreeGridViewItemCancelEventArgs e)
 			{
-				widget.OnExpanding(e);
+				widget.Platform.Invoke(() => widget.OnExpanding(e));
 			}
 			public void OnExpanded(TreeGridView widget, TreeGridViewItemEventArgs e)
 			{
-				widget.OnExpanded(e);
+				widget.Platform.Invoke(() => widget.OnExpanded(e));
 			}
 			public void OnCollapsing(TreeGridView widget, TreeGridViewItemCancelEventArgs e)
 			{
-				widget.OnCollapsing(e);
+				widget.Platform.Invoke(() => widget.OnCollapsing(e));
 			}
 			public void OnCollapsed(TreeGridView widget, TreeGridViewItemEventArgs e)
 			{
-				widget.OnCollapsed(e);
+				widget.Platform.Invoke(() => widget.OnCollapsed(e));
 			}
 			public void OnSelectedItemChanged(TreeGridView widget, EventArgs e)
 			{
-				widget.OnSelectedItemChanged(e);
+				widget.Platform.Invoke(() => widget.OnSelectedItemChanged(e));
 			}
 		}
 

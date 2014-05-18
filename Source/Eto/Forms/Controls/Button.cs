@@ -157,7 +157,7 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnClick(Button widget, EventArgs e)
 			{
-				widget.OnClick(e);
+				widget.Platform.Invoke(() => widget.OnClick(e));
 			}
 		}
 

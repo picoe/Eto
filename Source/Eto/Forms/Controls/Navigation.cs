@@ -87,7 +87,7 @@ namespace Eto.Forms
 		{
 			public void OnItemShown(Navigation widget, EventArgs e)
 			{
-				widget.OnItemShown(e);
+				widget.Platform.Invoke(() => widget.OnItemShown(e));
 			}
 		}
 

@@ -228,7 +228,7 @@ namespace Eto.Forms
 		{
 			public void OnPaint(Drawable widget, PaintEventArgs e)
 			{
-				widget.OnPaint(e);
+				widget.Platform.Invoke(() => widget.OnPaint(e));
 			}
 		}
 

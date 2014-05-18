@@ -54,7 +54,7 @@ namespace Eto.Forms
 		{
 			public void OnColorChanged(ColorDialog widget, EventArgs e)
 			{
-				widget.OnColorChanged(e);
+				widget.Platform.Invoke(() => widget.OnColorChanged(e));
 			}
 		}
 

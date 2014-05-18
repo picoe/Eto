@@ -368,7 +368,7 @@ namespace Eto
 	/// 		{
 	/// 			public void OnMySomething(MyEtoControl widget, EventArgs e)
 	/// 			{
-	/// 				widget.OnMySomething(e);
+	/// 				widget.Platform.Invoke(() => widget.OnMySomething(e));
 	/// 			}
 	/// 		}
 	/// 

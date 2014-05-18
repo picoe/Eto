@@ -63,7 +63,7 @@ namespace Eto.Forms
 		/// on one of the parent control(s).
 		/// </remarks>
 		/// <param name="e">Event arguments</param>
-		protected internal override void OnDataContextChanged(EventArgs e)
+		protected override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
 
@@ -71,7 +71,7 @@ namespace Eto.Forms
 			{
 				foreach (var control in Controls)
 				{
-					control.OnDataContextChanged(e);
+					control.TriggerDataContextChanged(e);
 				}
 			}
 		}
@@ -80,7 +80,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.PreLoad"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal override void OnPreLoad(EventArgs e)
+		protected override void OnPreLoad(EventArgs e)
 		{
 			base.OnPreLoad(e);
 
@@ -88,7 +88,7 @@ namespace Eto.Forms
 			{
 				foreach (Control control in Controls)
 				{
-					control.OnPreLoad(e);
+					control.TriggerPreLoad(e);
 				}
 			}
 		}
@@ -97,13 +97,13 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.Load"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal override void OnLoad(EventArgs e)
+		protected override void OnLoad(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
 			{
 				foreach (Control control in Controls)
 				{
-					control.OnLoad(e);
+					control.TriggerLoad(e);
 				}
 			}
 			
@@ -114,13 +114,13 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.LoadComplete"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal override void OnLoadComplete(EventArgs e)
+		protected override void OnLoadComplete(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
 			{
 				foreach (Control control in Controls)
 				{
-					control.OnLoadComplete(e);
+					control.TriggerLoadComplete(e);
 				}
 			}
 			
@@ -131,13 +131,13 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.UnLoad"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal override void OnUnLoad(EventArgs e)
+		protected override void OnUnLoad(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
 			{
 				foreach (Control control in Controls)
 				{
-					control.OnUnLoad(e);
+					control.TriggerUnLoad(e);
 				}
 			}
 			
@@ -255,10 +255,10 @@ namespace Eto.Forms
 #endif
 				if (child.Loaded)
 				{
-					child.OnUnLoad(EventArgs.Empty);
+					child.TriggerUnLoad(EventArgs.Empty);
 				}
 				child.Parent = null;
-				child.OnDataContextChanged(EventArgs.Empty);
+				child.TriggerDataContextChanged(EventArgs.Empty);
 			}
 		}
 
@@ -285,11 +285,14 @@ namespace Eto.Forms
 				child.Parent = this;
 				if (Loaded && !child.Loaded)
 				{
-					child.OnPreLoad(EventArgs.Empty);
-					child.OnLoad(EventArgs.Empty);
-					child.OnDataContextChanged(EventArgs.Empty);
-					assign();
-					child.OnLoadComplete(EventArgs.Empty);
+					using (child.Platform.Context)
+					{
+						child.TriggerPreLoad(EventArgs.Empty);
+						child.TriggerLoad(EventArgs.Empty);
+						child.TriggerDataContextChanged(EventArgs.Empty);
+						assign();
+						child.TriggerLoadComplete(EventArgs.Empty);
+					}
 					return;
 				}
 			}

@@ -129,7 +129,7 @@ namespace Eto.Forms
 		{
 			public void OnSelectedIndexChanged(TabControl widget, EventArgs e)
 			{
-				widget.OnSelectedIndexChanged(e);
+				widget.Platform.Invoke(() => widget.OnSelectedIndexChanged(e));
 			}
 		}
 

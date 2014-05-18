@@ -239,7 +239,7 @@ namespace Eto.Forms
 		{
 			public void OnScroll(Scrollable widget, ScrollEventArgs e)
 			{
-				widget.OnScroll(e);
+				widget.Platform.Invoke(() => widget.OnScroll(e));
 			}
 		}
 

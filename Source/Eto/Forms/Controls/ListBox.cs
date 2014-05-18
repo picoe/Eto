@@ -58,7 +58,7 @@ namespace Eto.Forms
 		{
 			public void OnActivated(ListBox widget, EventArgs e)
 			{
-				widget.OnActivated(e);
+				widget.Platform.Invoke(() => widget.OnActivated(e));
 			}
 		}
 

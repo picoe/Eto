@@ -483,28 +483,28 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnClosed(Window widget, EventArgs e)
 			{
-				widget.OnClosed(e);
+				widget.Platform.Invoke(() => widget.OnClosed(e));
 			}
 			/// <summary>
 			/// Raises the closing event.
 			/// </summary>
 			public void OnClosing(Window widget, CancelEventArgs e)
 			{
-				widget.OnClosing(e);
+				widget.Platform.Invoke(() => widget.OnClosing(e));
 			}
 			/// <summary>
 			/// Raises the location changed event.
 			/// </summary>
 			public void OnLocationChanged(Window widget, EventArgs e)
 			{
-				widget.OnLocationChanged(e);
+				widget.Platform.Invoke(() => widget.OnLocationChanged(e));
 			}
 			/// <summary>
 			/// Raises the window state changed event.
 			/// </summary>
 			public void OnWindowStateChanged(Window widget, EventArgs e)
 			{
-				widget.OnWindowStateChanged(e);
+				widget.Platform.Invoke(() => widget.OnWindowStateChanged(e));
 			}
 		}
 

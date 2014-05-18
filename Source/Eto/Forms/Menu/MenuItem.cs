@@ -121,12 +121,12 @@ namespace Eto.Forms
 		{
 			public void OnClick(MenuItem widget, EventArgs e)
 			{
-				widget.OnClick(e);
+				widget.Platform.Invoke(() => widget.OnClick(e));
 			}
 
 			public void OnValidate(MenuItem widget, EventArgs e)
 			{
-				widget.OnValidate(e);
+				widget.Platform.Invoke(() => widget.OnValidate(e));
 			}
 		}
 

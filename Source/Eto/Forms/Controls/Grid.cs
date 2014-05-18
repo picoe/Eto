@@ -418,35 +418,35 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCellEditing(Grid widget, GridViewCellArgs e)
 			{
-				widget.OnCellEditing(e);
+				widget.Platform.Invoke(() => widget.OnCellEditing(e));
 			}
 			/// <summary>
 			/// Raises the cell edited event.
 			/// </summary>
 			public void OnCellEdited(Grid widget, GridViewCellArgs e)
 			{
-				widget.OnCellEdited(e);
+				widget.Platform.Invoke(() => widget.OnCellEdited(e));
 			}
 			/// <summary>
 			/// Raises the selection changed event.
 			/// </summary>
 			public void OnSelectionChanged(Grid widget, EventArgs e)
 			{
-				widget.OnSelectionChanged(e);
+				widget.Platform.Invoke(() => widget.OnSelectionChanged(e));
 			}
 			/// <summary>
 			/// Raises the column header click event.
 			/// </summary>
 			public void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e)
 			{
-				widget.OnColumnHeaderClick(e);
+				widget.Platform.Invoke(() => widget.OnColumnHeaderClick(e));
 			}
 			/// <summary>
 			/// Raises the cell formatting event.
 			/// </summary>
 			public void OnCellFormatting(Grid widget, GridCellFormatEventArgs e)
 			{
-				widget.OnCellFormatting(e);
+				widget.Platform.Invoke(() => widget.OnCellFormatting(e));
 			}
 		}
 

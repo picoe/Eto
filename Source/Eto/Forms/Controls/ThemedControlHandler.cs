@@ -154,7 +154,7 @@ namespace Eto.Forms
 		public virtual void OnPreLoad(EventArgs e)
 		{
 			if (PropagateLoadEvents)
-				Control.OnPreLoad(e);
+				Control.TriggerPreLoad(e);
 		}
 
 		/// <summary>
@@ -167,7 +167,7 @@ namespace Eto.Forms
 		public virtual void OnLoad(EventArgs e)
 		{
 			if (PropagateLoadEvents)
-				Control.OnLoad(e);
+				Control.TriggerLoad(e);
 		}
 
 		/// <summary>
@@ -180,7 +180,7 @@ namespace Eto.Forms
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			if (PropagateLoadEvents)
-				Control.OnLoadComplete(e);
+				Control.TriggerLoadComplete(e);
 		}
 
 		/// <summary>
@@ -193,7 +193,7 @@ namespace Eto.Forms
 		public virtual void OnUnLoad(EventArgs e)
 		{
 			if (PropagateLoadEvents)
-				Control.OnUnLoad(e);
+				Control.TriggerUnLoad(e);
 		}
 
 		/// <summary>

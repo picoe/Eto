@@ -87,7 +87,7 @@ namespace Eto.Forms
 		{
 			public void OnValueChanged(NumericUpDown widget, EventArgs e)
 			{
-				widget.OnValueChanged(e);
+				widget.Platform.Invoke(() => widget.OnValueChanged(e));
 			}
 		}
 

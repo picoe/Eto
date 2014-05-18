@@ -133,9 +133,12 @@ namespace Eto.Forms
 		/// </summary>
 		protected class Callback : ICallback
 		{
+			/// <summary>
+			/// Raises the elapsed event.
+			/// </summary>
 			public void OnElapsed(UITimer widget, EventArgs e)
 			{
-				widget.OnElapsed(e);
+				widget.Platform.Invoke(() => widget.OnElapsed(e));
 			}
 		}
 

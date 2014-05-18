@@ -519,5 +519,43 @@ namespace Eto
 				return instance.Value != this ? new PlatformContext(this) : null;
 			}
 		}
+
+		/// <summary>
+		/// Invoke the specified action within the context of this platform
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you are using multiple platforms at the same time, and gives you an easy
+		/// way to execute code within the context of this platform.
+		/// </remarks>
+		/// <param name="action">Action to execute.</param>
+		public void Invoke(Action action)
+		{
+			using (Context)
+			{
+				action();
+			}
+		}
+
+		/// <summary>
+		/// Invoke the specified function within the context of this platform, returning its value.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you are using multiple platforms at the same time, and gives you an easy
+		/// way to execute code within the context of this platform, and return its value.
+		/// </remarks>
+		/// <example>
+		/// <code>
+		/// 	var mycontrol = MyPlatform.Invoke(() => new MyControl());
+		/// </code>
+		/// </example>
+		/// <param name="action">Action to execute.</param>
+		/// <typeparam name="T">The type of value to return.</typeparam>
+		public T Invoke<T>(Func<T> action)
+		{
+			using (Context)
+			{
+				return action();
+			}
+		}
 	}
 }

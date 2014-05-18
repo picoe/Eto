@@ -499,63 +499,63 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnActivated(TreeView widget, TreeViewItemEventArgs e)
 			{
-				widget.OnActivated(e);
+				widget.Platform.Invoke(() => widget.OnActivated(e));
 			}
 			/// <summary>
 			/// Raises the selection changed event.
 			/// </summary>
 			public void OnSelectionChanged(TreeView widget, EventArgs e)
 			{
-				widget.OnSelectionChanged(e);
+				widget.Platform.Invoke(() => widget.OnSelectionChanged(e));
 			}
 			/// <summary>
 			/// Raises the expanding event.
 			/// </summary>
 			public void OnExpanding(TreeView widget, TreeViewItemCancelEventArgs e)
 			{
-				widget.OnExpanding(e);
+				widget.Platform.Invoke(() => widget.OnExpanding(e));
 			}
 			/// <summary>
 			/// Raises the expanded event.
 			/// </summary>
 			public void OnExpanded(TreeView widget, TreeViewItemEventArgs e)
 			{
-				widget.OnExpanded(e);
+				widget.Platform.Invoke(() => widget.OnExpanded(e));
 			}
 			/// <summary>
 			/// Raises the collapsing event.
 			/// </summary>
 			public void OnCollapsing(TreeView widget, TreeViewItemCancelEventArgs e)
 			{
-				widget.OnCollapsing(e);
+				widget.Platform.Invoke(() => widget.OnCollapsing(e));
 			}
 			/// <summary>
 			/// Raises the collapsed event.
 			/// </summary>
 			public void OnCollapsed(TreeView widget, TreeViewItemEventArgs e)
 			{
-				widget.OnCollapsed(e);
+				widget.Platform.Invoke(() => widget.OnCollapsed(e));
 			}
 			/// <summary>
 			/// Raises the label edited event.
 			/// </summary>
 			public void OnLabelEdited(TreeView widget, TreeViewItemEditEventArgs e)
 			{
-				widget.OnLabelEdited(e);
+				widget.Platform.Invoke(() => widget.OnLabelEdited(e));
 			}
 			/// <summary>
 			/// Raises the label editing event.
 			/// </summary>
 			public void OnLabelEditing(TreeView widget, TreeViewItemCancelEventArgs e)
 			{
-				widget.OnLabelEditing(e);
+				widget.Platform.Invoke(() => widget.OnLabelEditing(e));
 			}
 			/// <summary>
 			/// Raises the node mouse click event.
 			/// </summary>
 			public void OnNodeMouseClick(TreeView widget, TreeViewItemEventArgs e)
 			{
-				widget.OnNodeMouseClick(e);
+				widget.Platform.Invoke(() => widget.OnNodeMouseClick(e));
 			}
 		}
 

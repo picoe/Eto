@@ -236,23 +236,23 @@ namespace Eto.Forms
 		{
 			public void OnNavigated(WebView widget, WebViewLoadedEventArgs e)
 			{
-				widget.OnNavigated(e);
+				widget.Platform.Invoke(() => widget.OnNavigated(e));
 			}
 			public void OnDocumentLoaded(WebView widget, WebViewLoadedEventArgs e)
 			{
-				widget.OnDocumentLoaded(e);
+				widget.Platform.Invoke(() => widget.OnDocumentLoaded(e));
 			}
 			public void OnDocumentLoading(WebView widget, WebViewLoadingEventArgs e)
 			{
-				widget.OnDocumentLoading(e);
+				widget.Platform.Invoke(() => widget.OnDocumentLoading(e));
 			}
 			public void OnOpenNewWindow(WebView widget, WebViewNewWindowEventArgs e)
 			{
-				widget.OnOpenNewWindow(e);
+				widget.Platform.Invoke(() => widget.OnOpenNewWindow(e));
 			}
 			public void OnDocumentTitleChanged(WebView widget, WebViewTitleEventArgs e)
 			{
-				widget.OnDocumentTitleChanged(e);
+				widget.Platform.Invoke(() => widget.OnDocumentTitleChanged(e));
 			}
 		}
 

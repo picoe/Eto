@@ -162,7 +162,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.PreLoad"/> event, and creates the layout if it has not been created
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal override void OnPreLoad(EventArgs e)
+		protected override void OnPreLoad(EventArgs e)
 		{
 			if (!IsCreated)
 				Create();
@@ -174,7 +174,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.Load"/> event, and creates the layout if it has not been created
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal override void OnLoad(EventArgs e)
+		protected override void OnLoad(EventArgs e)
 		{
 			if (!IsCreated)
 				Create();

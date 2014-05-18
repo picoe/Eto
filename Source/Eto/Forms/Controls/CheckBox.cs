@@ -132,7 +132,7 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCheckedChanged(CheckBox widget, EventArgs e)
 			{
-				widget.OnCheckedChanged(e);
+				widget.Platform.Invoke(() => widget.OnCheckedChanged(e));
 			}
 		}
 

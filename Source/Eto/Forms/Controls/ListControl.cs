@@ -95,7 +95,7 @@ namespace Eto.Forms
 			}
 		}
 
-		protected internal override void OnLoadComplete(EventArgs e)
+		protected override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 			if (DataStore == null)
@@ -166,7 +166,7 @@ namespace Eto.Forms
 		{
 			public void OnSelectedIndexChanged(ListControl widget, EventArgs e)
 			{
-				widget.OnSelectedIndexChanged(e);
+				widget.Platform.Invoke(() => widget.OnSelectedIndexChanged(e));
 			}
 		}
 

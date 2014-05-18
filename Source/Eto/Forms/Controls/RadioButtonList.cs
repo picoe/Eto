@@ -178,7 +178,7 @@ namespace Eto.Forms
 			}
 		}
 
-		protected internal override void OnLoad (EventArgs e)
+		protected override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);
 			if (DataStore == null)

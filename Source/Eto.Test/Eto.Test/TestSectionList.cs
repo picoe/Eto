@@ -36,8 +36,7 @@ namespace Eto.Test
 			yield return new Section<DrawableSection> { Text = "Drawable" };
 			yield return new Section<ListBoxSection> { Text = "List Box" };
 			yield return new Section<TabControlSection> { Text = "Tab Control" };
-			yield return new Section<ThemedTabControlSection> { Text = "Tab Control (Themed)" };
-			yield return new ThemedTabControlFormSection { Text = "Tab Control Form (Themed)" };
+			yield return new Section<TabControlSection> { Text = "Tab Control (Themed)", Creator = () => TabControlSection.ThemedPlatform.Invoke(() => new TabControlSection()) };
 			yield return new Section<TreeGridViewSection> { Text = "Tree Grid View" };
 			yield return new Section<TreeViewSection> { Text = "Tree View" };
 			yield return new Section<NumericUpDownSection> { Text = "Numeric Up/Down" };

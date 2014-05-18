@@ -118,11 +118,11 @@ namespace Eto.Forms
 		{
 			public void OnSelectionChanged(TextArea widget, EventArgs e)
 			{
-				widget.OnSelectionChanged(e);
+				widget.Platform.Invoke(() => widget.OnSelectionChanged(e));
 			}
 			public void OnCaretIndexChanged(TextArea widget, EventArgs e)
 			{
-				widget.OnCaretIndexChanged(e);
+				widget.Platform.Invoke(() => widget.OnCaretIndexChanged(e));
 			}
 		}
 

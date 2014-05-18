@@ -373,14 +373,14 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnInitialized(Application widget, EventArgs e)
 			{
-				widget.OnInitialized(e);
+				widget.Platform.Invoke(() => widget.OnInitialized(e));
 			}
 			/// <summary>
 			/// Raises the terminating event.
 			/// </summary>
 			public void OnTerminating(Application widget, CancelEventArgs e)
 			{
-				widget.OnTerminating(e);
+				widget.Platform.Invoke(() => widget.OnTerminating(e));
 			}
 		}
 

@@ -161,7 +161,7 @@ namespace Eto.Threading
 			/// </summary>
 			public void OnExecuted(Thread widget)
 			{
-				widget.OnExecuted();
+				widget.Platform.Invoke(widget.OnExecuted);
 			}
 		}
 

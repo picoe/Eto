@@ -331,7 +331,7 @@ namespace Eto.Forms
 		{
 			public void OnCellClick(GridView widget, GridViewCellArgs e)
 			{
-				widget.OnCellClick(e);
+				widget.Platform.Invoke(() => widget.OnCellClick(e));
 			}
 		}
 

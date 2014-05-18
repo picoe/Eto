@@ -441,7 +441,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="PreLoad"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal virtual void OnPreLoad(EventArgs e)
+		protected virtual void OnPreLoad(EventArgs e)
 		{
 			Properties.TriggerEvent(PreLoadKey, this, e);
 			Handler.OnPreLoad(e);
@@ -470,7 +470,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Load"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal virtual void OnLoad(EventArgs e)
+		protected virtual void OnLoad(EventArgs e)
 		{
 #if DEBUG
 			if (Loaded)
@@ -499,7 +499,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="LoadComplete"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal virtual void OnLoadComplete(EventArgs e)
+		protected virtual void OnLoadComplete(EventArgs e)
 		{
 			Properties.TriggerEvent(LoadCompleteKey, this, e);
 			Handler.OnLoadComplete(e);
@@ -523,7 +523,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="UnLoad"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected internal virtual void OnUnLoad(EventArgs e)
+		protected virtual void OnUnLoad(EventArgs e)
 		{
 #if DEBUG
 			if (!Loaded)
@@ -558,7 +558,7 @@ namespace Eto.Forms
 		/// on one of the parent control(s).
 		/// </remarks>
 		/// <param name="e">Event arguments</param>
-		protected internal virtual void OnDataContextChanged(EventArgs e)
+		protected virtual void OnDataContextChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(DataContextChangedKey, this, e);
 		}
@@ -821,6 +821,36 @@ namespace Eto.Forms
 			}
 		}
 
+		internal void TriggerPreLoad(EventArgs e)
+		{
+			using (Platform.Context)
+				OnPreLoad(e);
+		}
+
+		internal void TriggerLoad(EventArgs e)
+		{
+			using (Platform.Context)
+				OnLoad(e);
+		}
+
+		internal void TriggerLoadComplete(EventArgs e)
+		{
+			using (Platform.Context)
+				OnLoadComplete(e);
+		}
+
+		internal void TriggerUnLoad(EventArgs e)
+		{
+			using (Platform.Context)
+				OnUnLoad(e);
+		}
+
+		internal void TriggerDataContextChanged(EventArgs e)
+		{
+			using (Platform.Context)
+				OnDataContextChanged(e);
+		}
+
 		/// <summary>
 		/// Gets or sets the color for the background of the control
 		/// </summary>
@@ -1079,59 +1109,59 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the key down event.
 			/// </summary>
-			void OnKeyDown(Control control, KeyEventArgs e);
+			void OnKeyDown(Control widget, KeyEventArgs e);
 			/// <summary>
 			/// Raises the key up event.
 			/// </summary>
-			void OnKeyUp(Control control, KeyEventArgs e);
+			void OnKeyUp(Control widget, KeyEventArgs e);
 			/// <summary>
 			/// Raises the mouse down event.
 			/// </summary>
-			void OnMouseDown(Control control, MouseEventArgs e);
+			void OnMouseDown(Control widget, MouseEventArgs e);
 			/// <summary>
 			/// Raises the mouse up event.
 			/// </summary>
-			void OnMouseUp(Control control, MouseEventArgs e);
+			void OnMouseUp(Control widget, MouseEventArgs e);
 			/// <summary>
 			/// Raises the mouse move event.
 			/// </summary>
-			void OnMouseMove(Control control, MouseEventArgs e);
+			void OnMouseMove(Control widget, MouseEventArgs e);
 			/// <summary>
 			/// Raises the mouse leave event.
 			/// </summary>
-			void OnMouseLeave(Control control, MouseEventArgs e);
+			void OnMouseLeave(Control widget, MouseEventArgs e);
 			/// <summary>
 			/// Raises the mouse enter event.
 			/// </summary>
-			void OnMouseEnter(Control control, MouseEventArgs e);
+			void OnMouseEnter(Control widget, MouseEventArgs e);
 			/// <summary>
 			/// Raises the text input event.
 			/// </summary>
-			void OnTextInput(Control control, TextInputEventArgs e);
+			void OnTextInput(Control widget, TextInputEventArgs e);
 			/// <summary>
 			/// Raises the size changed event.
 			/// </summary>
-			void OnSizeChanged(Control control, EventArgs e);
+			void OnSizeChanged(Control widget, EventArgs e);
 			/// <summary>
 			/// Raises the mouse double click event.
 			/// </summary>
-			void OnMouseDoubleClick(Control control, MouseEventArgs e);
+			void OnMouseDoubleClick(Control widget, MouseEventArgs e);
 			/// <summary>
 			/// Raises the mouse wheel event.
 			/// </summary>
-			void OnMouseWheel(Control control, MouseEventArgs e);
+			void OnMouseWheel(Control widget, MouseEventArgs e);
 			/// <summary>
 			/// Raises the got focus event.
 			/// </summary>
-			void OnGotFocus(Control control, EventArgs e);
+			void OnGotFocus(Control widget, EventArgs e);
 			/// <summary>
 			/// Raises the lost focus event.
 			/// </summary>
-			void OnLostFocus(Control control, EventArgs e);
+			void OnLostFocus(Control widget, EventArgs e);
 			/// <summary>
 			/// Raises the shown event.
 			/// </summary>
-			void OnShown(Control control, EventArgs e);
+			void OnShown(Control widget, EventArgs e);
 		}
 
 		/// <summary>
@@ -1142,100 +1172,100 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the key down event.
 			/// </summary>
-			public void OnKeyDown(Control control, KeyEventArgs e)
+			public void OnKeyDown(Control widget, KeyEventArgs e)
 			{
-				control.OnKeyDown(e);
+				widget.Platform.Invoke(() => widget.OnKeyDown(e));
 			}
 			/// <summary>
 			/// Raises the key up event.
 			/// </summary>
-			public void OnKeyUp(Control control, KeyEventArgs e)
+			public void OnKeyUp(Control widget, KeyEventArgs e)
 			{
-				control.OnKeyUp(e);
+				widget.Platform.Invoke(() => widget.OnKeyUp(e));
 			}
 			/// <summary>
 			/// Raises the mouse down event.
 			/// </summary>
-			public void OnMouseDown(Control control, MouseEventArgs e)
+			public void OnMouseDown(Control widget, MouseEventArgs e)
 			{
-				control.OnMouseDown(e);
+				widget.Platform.Invoke(() => widget.OnMouseDown(e));
 			}
 			/// <summary>
 			/// Raises the mouse up event.
 			/// </summary>
-			public void OnMouseUp(Control control, MouseEventArgs e)
+			public void OnMouseUp(Control widget, MouseEventArgs e)
 			{
-				control.OnMouseUp(e);
+				widget.Platform.Invoke(() => widget.OnMouseUp(e));
 			}
 			/// <summary>
 			/// Raises the mouse move event.
 			/// </summary>
-			public void OnMouseMove(Control control, MouseEventArgs e)
+			public void OnMouseMove(Control widget, MouseEventArgs e)
 			{
-				control.OnMouseMove(e);
+				widget.Platform.Invoke(() => widget.OnMouseMove(e));
 			}
 			/// <summary>
 			/// Raises the mouse leave event.
 			/// </summary>
-			public void OnMouseLeave(Control control, MouseEventArgs e)
+			public void OnMouseLeave(Control widget, MouseEventArgs e)
 			{
-				control.OnMouseLeave(e);
+				widget.Platform.Invoke(() => widget.OnMouseLeave(e));
 			}
 			/// <summary>
 			/// Raises the mouse enter event.
 			/// </summary>
-			public void OnMouseEnter(Control control, MouseEventArgs e)
+			public void OnMouseEnter(Control widget, MouseEventArgs e)
 			{
-				control.OnMouseEnter(e);
+				widget.Platform.Invoke(() => widget.OnMouseEnter(e));
 			}
 			/// <summary>
 			/// Raises the text input event.
 			/// </summary>
-			public void OnTextInput(Control control, TextInputEventArgs e)
+			public void OnTextInput(Control widget, TextInputEventArgs e)
 			{
-				control.OnTextInput(e);
+				widget.Platform.Invoke(() => widget.OnTextInput(e));
 			}
 			/// <summary>
 			/// Raises the size changed event.
 			/// </summary>
-			public void OnSizeChanged(Control control, EventArgs e)
+			public void OnSizeChanged(Control widget, EventArgs e)
 			{
-				control.OnSizeChanged(e);
+				widget.Platform.Invoke(() => widget.OnSizeChanged(e));
 			}
 			/// <summary>
 			/// Raises the mouse double click event.
 			/// </summary>
-			public void OnMouseDoubleClick(Control control, MouseEventArgs e)
+			public void OnMouseDoubleClick(Control widget, MouseEventArgs e)
 			{
-				control.OnMouseDoubleClick(e);
+				widget.Platform.Invoke(() => widget.OnMouseDoubleClick(e));
 			}
 			/// <summary>
 			/// Raises the mouse wheel event.
 			/// </summary>
-			public void OnMouseWheel(Control control, MouseEventArgs e)
+			public void OnMouseWheel(Control widget, MouseEventArgs e)
 			{
-				control.OnMouseWheel(e);
+				widget.Platform.Invoke(() => widget.OnMouseWheel(e));
 			}
 			/// <summary>
 			/// Raises the got focus event.
 			/// </summary>
-			public void OnGotFocus(Control control, EventArgs e)
+			public void OnGotFocus(Control widget, EventArgs e)
 			{
-				control.OnGotFocus(e);
+				widget.Platform.Invoke(() => widget.OnGotFocus(e));
 			}
 			/// <summary>
 			/// Raises the lost focus event.
 			/// </summary>
-			public void OnLostFocus(Control control, EventArgs e)
+			public void OnLostFocus(Control widget, EventArgs e)
 			{
-				control.OnLostFocus(e);
+				widget.Platform.Invoke(() => widget.OnLostFocus(e));
 			}
 			/// <summary>
 			/// Raises the shown event.
 			/// </summary>
-			public void OnShown(Control control, EventArgs e)
+			public void OnShown(Control widget, EventArgs e)
 			{
-				control.OnShown(e);
+				widget.Platform.Invoke(() => widget.OnShown(e));
 			}
 		}
 
