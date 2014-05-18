@@ -163,12 +163,12 @@ namespace Eto.Forms
 
 		public virtual ToolItem CreateToolItem()
 		{
-			return CreateToolItem(null);
+			return CreateToolItem(Platform.Instance);
 		}
 
 		public virtual MenuItem CreateMenuItem()
 		{
-			return CreateMenuItem(null);
+			return CreateMenuItem(Platform.Instance);
 		}
 
 		[Obsolete("Use variation without generator instead")]
