@@ -8,100 +8,219 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
-	public class TableItem
+	/// <summary>
+	/// Represents a cell in a <see cref="TableRow"/>
+	/// </summary>
+	[ContentProperty("Control")]
+	public class TableCell
 	{
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TableCell"/> will scale its width
+		/// </summary>
+		/// <remarks>
+		/// All controls in the same column of this cell will get the same scaling value.
+		/// Scaling will make the column expand to fit the rest of the width of the container, minus the preferred
+		/// width of any non-scaled columns.
+		/// 
+		/// If there are no columns with width scaling, the last column will automatically get scaled.
+		/// 
+		/// With scaling turned off, cells in the column will fit the preferred size of the widest control.
+		/// </remarks>
+		/// <value><c>true</c> if scale width; otherwise, <c>false</c>.</value>
 		public bool ScaleWidth { get; set; }
 
+		/// <summary>
+		/// Gets or sets the control in this cell, or null for an empty space
+		/// </summary>
+		/// <value>The control.</value>
 		public Control Control { get; set; }
 
-		public TableItem()
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableCell"/> class.
+		/// </summary>
+		public TableCell()
 		{
 		}
 
-		public TableItem(Control control, bool scaleWidth = false)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableCell"/> class.
+		/// </summary>
+		/// <param name="control">Control for this cell</param>
+		/// <param name="scaleWidth">Scale the width of the control if <c>true</c>, otherwise scale to the preferred size of the control.</param>
+		public TableCell(Control control, bool scaleWidth = false)
 		{
 			Control = control;
 			ScaleWidth = scaleWidth;
 		}
 
-		public static implicit operator TableItem(Control control)
+		/// <summary>
+		/// Converts a control to a table cell
+		/// </summary>
+		/// <param name="control">Control to convert to a cell.</param>
+		public static implicit operator TableCell(Control control)
 		{
-			return new TableItem(control);
+			return new TableCell(control);
 		}
 
-		public static implicit operator TableItem(TableItem[] items)
+		/// <summary>
+		/// Converts an array of cells to a new cell with a table of vertical cells in a new child TableLayout
+		/// </summary>
+		/// <param name="items">Items to convert.</param>
+		public static implicit operator TableCell(TableCell[] items)
 		{
-			return new TableItem(new TableLayout(items));
+			return new TableCell(new TableLayout(items));
 		}
 
-		public static implicit operator TableItem(TableRow[] rows)
+		/// <summary>
+		/// Converts an array of rows to a new cell with vertical rows in a new child TableLayout
+		/// </summary>
+		/// <param name="rows">Rows to convert.</param>
+		public static implicit operator TableCell(TableRow[] rows)
 		{
-			return new TableItem(new TableLayout(rows));
+			return new TableCell(new TableLayout(rows));
 		}
 	}
 
+	/// <summary>
+	/// Represents the contents of a row in a <see cref="TableLayout"/> 
+	/// </summary>
+	[ContentProperty("Cells")]
 	public class TableRow
 	{
-		Collection<TableItem> items;
+		Collection<TableCell> cells;
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TableCell"/> will scale its height
+		/// </summary>
+		/// <remarks>
+		/// All controls in the same row of this cell will get the same scaling value.
+		/// Scaling will make the row expand to fit the rest of the height of the container, minus the preferred
+		/// height of any non-scaled rows.
+		/// 
+		/// If there are no rows with height scaling, the last row will automatically get scaled.
+		/// 
+		/// With scaling turned off, cells in the row will fit the preferred size of the tallest control.
+		/// </remarks>
+		/// <value><c>true</c> if scale height; otherwise, <c>false</c>.</value>
 		public bool ScaleHeight { get; set; }
 
-		public Collection<TableItem> Items
+		/// <summary>
+		/// Gets or sets the cells in this row.
+		/// </summary>
+		/// <value>The cells in the row.</value>
+		public Collection<TableCell> Cells
 		{ 
-			get { return items ?? (items = new Collection<TableItem>()); }
-			set { items = value; }
+			get { return cells ?? (cells = new Collection<TableCell>()); }
+			set { cells = value; }
 		}
 
-		public TableRow(params TableItem[] items)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableRow"/> class.
+		/// </summary>
+		public TableRow()
 		{
-			Items = new Collection<TableItem>(items.ToList());
 		}
 
-		public TableRow(IEnumerable<TableItem> items)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableRow"/> class with the specified cells.
+		/// </summary>
+		/// <param name="cells">Cells to populate the row.</param>
+		public TableRow(params TableCell[] cells)
 		{
-			Items = new Collection<TableItem>(items.ToList());
+			Cells = new Collection<TableCell>(cells.ToList());
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableRow"/> class with the specified cells.
+		/// </summary>
+		/// <param name="cells">Cells to populate the row.</param>
+		public TableRow(IEnumerable<TableCell> cells)
+		{
+			Cells = new Collection<TableCell>(cells.ToList());
+		}
+
+		/// <summary>
+		/// Implicitly converts a control to a TableRow
+		/// </summary>
+		/// <remarks>
+		/// Used to make defining a table's contents easier by allowing you to pass a control as a table row
+		/// </remarks>
+		/// <param name="control">Control to convert.</param>
 		public static implicit operator TableRow(Control control)
 		{
 			return new TableRow(control);
 		}
-		public static implicit operator TableRow(TableItem[] items)
+
+		/// <summary>
+		/// Implicitly converts an array of cells to a TableRow
+		/// </summary>
+		/// <param name="cells">Cells to convert.</param>
+		public static implicit operator TableRow(TableCell[] cells)
 		{
-			return new TableRow(items);
+			return new TableRow(cells);
 		}
 	}
 
-	[ContentProperty("Contents")]
+	/// <summary>
+	/// Layout for controls in a table
+	/// </summary>
+	/// <remarks>
+	/// This is similar to an html table, though each control will fill its entire cell.
+	/// 
+	/// </remarks>
+	[ContentProperty("Rows")]
 	[Handler(typeof(TableLayout.IHandler))]
 	public class TableLayout : Layout
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		Control[,] controls;
+		static object rowsKey = new object();
+		static object contentsKey = new object();
+		Control[] controls;
 		Size cellSize;
-		List<Control> children;
+
+		/// <summary>
+		/// The default spacing for all tables
+		/// </summary>
 		public static Size DefaultSpacing = new Size(5, 5);
+
+		/// <summary>
+		/// The default padding for all tables
+		/// </summary>
 		public static Padding DefaultPadding = new Padding(5);
 
+		/// <summary>
+		/// Gets an enumeration of controls that are directly contained by this container
+		/// </summary>
+		/// <value>The contained controls.</value>
 		public override IEnumerable<Control> Controls
 		{
-			get
-			{
-				return controls == null ? Enumerable.Empty<Control>() : controls.OfType<Control>();
-			}
+			get { return controls == null ? Enumerable.Empty<Control>() : controls.Where(r => r != null); }
 		}
 
-		public List<Control> Contents
+		/// <summary>
+		/// Gets the collection of rows in the table
+		/// </summary>
+		/// <value>The rows.</value>
+		public Collection<TableRow> Rows
 		{
-			get
-			{
-				if (children == null)
-					children = new List<Control>();
-				return children;
-			}
+			get { return Properties.Create<Collection<TableRow>>(rowsKey); }
 		}
 
+		/// <summary>
+		/// Gets the collection of controls contained in this container.
+		/// </summary>
+		/// <value>The contents.</value>
+		[Obsolete("Use Rows instead to add rows hierarchically")]
+		public Collection<Control> Contents
+		{
+			get { return Properties.Create<Collection<Control>>(contentsKey); }
+		}
+
+		/// <summary>
+		/// Gets or sets the dimensions of the table
+		/// </summary>
+		/// <value>The dimensions of the table.</value>
 		public Size CellSize
 		{
 			get { return cellSize; }
@@ -112,15 +231,18 @@ namespace Eto.Forms
 				cellSize = value;
 				if (!cellSize.IsEmpty)
 				{
-					controls = new Control[cellSize.Width, cellSize.Height];
+					controls = new Control[cellSize.Width * cellSize.Height];
 					Handler.CreateControl(cellSize.Width, cellSize.Height);
 					Initialize();
 				}
 			}
 		}
-		#if !PCL
+
+		/// <summary>
+		/// Gets or sets the scaled columns in the table.
+		/// </summary>
+		/// <value>The scaled columns</value>
 		[TypeConverter(typeof(Int32ArrayConverter))]
-		#endif
 		public int[] ColumnScale
 		{
 			set
@@ -145,9 +267,12 @@ namespace Eto.Forms
 				return vals.ToArray();
 			}
 		}
-		#if !PCL
+
+		/// <summary>
+		/// Gets or sets the scaled rows in the table.
+		/// </summary>
+		/// <value>The scaled rows.</value>
 		[TypeConverter(typeof(Int32ArrayConverter))]
-		#endif
 		public int[] RowScale
 		{
 			set
@@ -177,11 +302,24 @@ namespace Eto.Forms
 
 		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
 
+		/// <summary>
+		/// Gets the table location of the specified control.
+		/// </summary>
+		/// <returns>The location.</returns>
+		/// <param name="control">Control.</param>
+		[Obsolete("Use Rows instead to add rows hierarchically")]
 		public static Point GetLocation(Control control)
 		{
 			return control.Properties.Get<Point>(LocationProperty);
 		}
 
+		/// <summary>
+		/// Sets the table location of the specified control.
+		/// </summary>
+		/// <returns>The location.</returns>
+		/// <param name="control">Control to set the location.</param>
+		/// <param name="value">Location value</param>
+		[Obsolete("Use Rows instead to add rows hierarchically")]
 		public static void SetLocation(Control control, Point value)
 		{
 			control.Properties[LocationProperty] = value;
@@ -192,11 +330,23 @@ namespace Eto.Forms
 
 		static readonly EtoMemberIdentifier ColumnScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "ColumnScale");
 
+		/// <summary>
+		/// Gets the column scale for the specified control.
+		/// </summary>
+		/// <returns><c>true</c>, if column scale was gotten, <c>false</c> otherwise.</returns>
+		/// <param name="control">Control.</param>
+		[Obsolete("Use TableCell instead to set column scaling, or get directly using GetColumnScale(int)")]
 		public static bool GetColumnScale(Control control)
 		{
 			return control.Properties.Get<bool>(ColumnScaleProperty);
 		}
 
+		/// <summary>
+		/// Sets the column scale for the specified control.
+		/// </summary>
+		/// <param name="control">Control.</param>
+		/// <param name="value">If set to <c>true</c> value.</param>
+		[Obsolete("Use TableCell instead to set column scaling, or set directly using SetColumnScale(int)")]
 		public static void SetColumnScale(Control control, bool value)
 		{
 			control.Properties[ColumnScaleProperty] = value;
@@ -204,11 +354,23 @@ namespace Eto.Forms
 
 		static readonly EtoMemberIdentifier RowScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "RowScale");
 
+		/// <summary>
+		/// Gets the row scale for the specified control.
+		/// </summary>
+		/// <returns><c>true</c>, if row scale was gotten, <c>false</c> otherwise.</returns>
+		/// <param name="control">Control.</param>
+		[Obsolete("Use TableRow instead to set row scaling, or get directly using GetRowScale(int)")]
 		public static bool GetRowScale(Control control)
 		{
 			return control.Properties.Get<bool>(RowScaleProperty);
 		}
 
+		/// <summary>
+		/// Sets the row scale for the specified control.
+		/// </summary>
+		/// <param name="control">Control.</param>
+		/// <param name="value">If set to <c>true</c> value.</param>
+		[Obsolete("Use TableRow instead to set row scaling, or get directly using SetRowScale(int)")]
 		public static void SetRowScale(Control control, bool value)
 		{
 			control.Properties[RowScaleProperty] = value;
@@ -216,7 +378,21 @@ namespace Eto.Forms
 
 		#endregion
 
-		public static Control AutoSized(Control control, Padding? padding = null, bool centered = false)
+		/// <summary>
+		/// Creates a table layout with an auto sized control.
+		/// </summary>
+		/// <remarks>
+		/// Since controls fill an entire cell, you can use this method to create a layout that will ensure that the
+		/// specified <paramref name="control"/> gets its preferred size instead of stretching to fill the container.
+		/// 
+		/// By default, extra space will be added to the right and bottom, unless <paramref name="centered"/> is <c>true</c>,
+		/// which will add equal space to the top/bottom, and left/right.
+		/// </remarks>
+		/// <returns>The table layout with the auto sized control.</returns>
+		/// <param name="control">Control to auto size.</param>
+		/// <param name="padding">Padding around the control</param>
+		/// <param name="centered">If set to <c>true</c> center the control, otherwise control is upper left of the container.</param>
+		public static TableLayout AutoSized(Control control, Padding? padding = null, bool centered = false)
 		{
 			var layout = new TableLayout(3, 3);
 			layout.Padding = padding ?? Padding.Empty;
@@ -232,25 +408,45 @@ namespace Eto.Forms
 			return layout;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class.
+		/// </summary>
 		public TableLayout()
 		{
 		}
 
-		public TableLayout(int width, int height)
-			: this(new Size(width, height))
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class with the specified number of columns and rows.
+		/// </summary>
+		/// <param name="columns">Number of columns in the table.</param>
+		/// <param name="rows">Number of rows in the table.</param>
+		public TableLayout(int columns, int rows)
+			: this(new Size(columns, rows))
 		{
 		}
 
-		public TableLayout(Size size)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class with the specified dimensions.
+		/// </summary>
+		/// <param name="dimensions">Dimensions of the table.</param>
+		public TableLayout(Size dimensions)
 		{
-			this.CellSize = size;
+			this.CellSize = dimensions;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class with the specified rows.
+		/// </summary>
+		/// <param name="rows">Rows to populate the table.</param>
 		public TableLayout(params TableRow[] rows)
 		{
 			Create(rows);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class with the specified rows.
+		/// </summary>
+		/// <param name="rows">Rows to populate the table.</param>
 		public TableLayout(IEnumerable<TableRow> rows)
 		{
 			Create(rows.ToArray());
@@ -258,16 +454,16 @@ namespace Eto.Forms
 
 		void Create(TableRow[] rows)
 		{
-			var columnCount = rows.Max(r => r != null ? r.Items.Count : 0);
+			var columnCount = rows.Max(r => r != null ? r.Cells.Count : 0);
 			CellSize = new Size(columnCount, rows.Length);
 			int rowIndex = 0;
 			foreach (var row in rows)
 			{
 				if (row != null)
 				{
-					for (int columnIndex = 0; columnIndex < row.Items.Count; columnIndex++)
+					for (int columnIndex = 0; columnIndex < row.Cells.Count; columnIndex++)
 					{
-						var item = row.Items[columnIndex];
+						var item = row.Cells[columnIndex];
 						if (item != null)
 						{
 							Add(item.Control, columnIndex, rowIndex);
@@ -286,13 +482,23 @@ namespace Eto.Forms
 			}
 		}
 
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class.
+		/// </summary>
+		/// <param name="width">Width.</param>
+		/// <param name="height">Height.</param>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use constructor without generator instead")]
 		public TableLayout(int width, int height, Generator generator = null)
 			: this(new Size(width, height), generator)
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class.
+		/// </summary>
+		/// <param name="size">Size.</param>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use constructor without generator instead")]
 		public TableLayout(Size size, Generator generator = null)
 			: base(generator, typeof(IHandler), false)
@@ -300,26 +506,55 @@ namespace Eto.Forms
 			this.CellSize = size;
 		}
 
+		/// <summary>
+		/// Sets the scale for the specified column.
+		/// </summary>
+		/// <param name="column">Column to set the scale for.</param>
+		/// <param name="scale">If set to <c>true</c> scale, otherwise size to preferred size of controls in the column.</param>
 		public void SetColumnScale(int column, bool scale = true)
 		{
 			Handler.SetColumnScale(column, scale);
 		}
 
+		/// <summary>
+		/// Gets the scale for the specified column.
+		/// </summary>
+		/// <returns><c>true</c>, if column is scaled, <c>false</c> otherwise.</returns>
+		/// <param name="column">Column to retrieve the scale.</param>
 		public bool GetColumnScale(int column)
 		{
 			return Handler.GetColumnScale(column);
 		}
 
+		/// <summary>
+		/// Sets the scale for the specified row.
+		/// </summary>
+		/// <param name="row">Row to set the scale for.</param>
+		/// <param name="scale">If set to <c>true</c> scale, otherwise size to preferred size of controls in the row.</param>
 		public void SetRowScale(int row, bool scale = true)
 		{
 			Handler.SetRowScale(row, scale);
 		}
 
+		/// <summary>
+		/// Gets the scale for the specified row.
+		/// </summary>
+		/// <returns><c>true</c>, if row is scaled, <c>false</c> otherwise.</returns>
+		/// <param name="row">Row to retrieve the scale.</param>
 		public bool GetRowScale(int row)
 		{
 			return Handler.GetRowScale(row);
 		}
 
+		/// <summary>
+		/// Adds a control to the specified x &amp; y coordinates.
+		/// </summary>
+		/// <remarks>
+		/// If a control already exists in the location, it is replaced. Only one control can exist in a cell.
+		/// </remarks>
+		/// <param name="control">Control to add.</param>
+		/// <param name="x">The x coordinate.</param>
+		/// <param name="y">The y coordinate.</param>
 		public void Add(Control control, int x, int y)
 		{
 			if (control != null)
@@ -329,10 +564,13 @@ namespace Eto.Forms
 
 		void InnerAdd(Control control, int x, int y)
 		{
-			var old = controls[x, y];
+			if (controls == null)
+				throw new InvalidOperationException("You must set the size of the TableLayout before adding controls");
+			var index = y * cellSize.Width + x;
+			var old = controls[index];
 			if (old != null)
 				RemoveParent(old);
-			controls[x, y] = control;
+			controls[index] = control;
 			if (control != null)
 			{
 				SetParent(control, () => Handler.Add(control, x, y));
@@ -343,62 +581,112 @@ namespace Eto.Forms
 			}
 		}
 
-		public void Add(Control child, int x, int y, bool xscale, bool yscale)
+		/// <summary>
+		/// Adds a control to the specified x &amp; y coordinates.
+		/// </summary>
+		/// <remarks>
+		/// If a control already exists in the location, it is replaced. Only one control can exist in a cell.
+		/// The <paramref name="xscale"/> and <paramref name="yscale"/> parameters are to easily set the scaling
+		/// for the current row/column while adding the control.
+		/// </remarks>
+		/// <param name="control">Control to add.</param>
+		/// <param name="x">The x coordinate.</param>
+		/// <param name="y">The y coordinate.</param>
+		/// <param name="xscale">If set to <c>true</c> xscale.</param>
+		/// <param name="yscale">If set to <c>true</c> yscale.</param>
+		public void Add(Control control, int x, int y, bool xscale, bool yscale)
 		{
-			child.Properties[LocationProperty] = new Point(x, y);
+			control.Properties[LocationProperty] = new Point(x, y);
 			SetColumnScale(x, xscale);
 			SetRowScale(y, yscale);
-			Add(child, x, y);
+			Add(control, x, y);
 		}
 
-		public void Add(Control child, Point p)
+		/// <summary>
+		/// Adds a control to the specified location.
+		/// </summary>
+		/// <remarks>
+		/// If a control already exists in the location, it is replaced. Only one control can exist in a cell.
+		/// </remarks>
+		/// <param name="control">Control to add.</param>
+		/// <param name="location">The location of the control.</param>
+		public void Add(Control control, Point location)
 		{
-			Add(child, p.X, p.Y);
+			Add(control, location.X, location.Y);
 		}
 
-		public void Move(Control child, int x, int y)
+		/// <summary>
+		/// Moves the specified control to the new x and y coordinates.
+		/// </summary>
+		/// <remarks>
+		/// If a control already exists in the new location, it will be replaced. Only one control can exist in a cell.
+		/// The old location of the control will have an empty space.
+		/// </remarks>
+		/// <param name="control">Control to move.</param>
+		/// <param name="x">The new x coordinate.</param>
+		/// <param name="y">The new y coordinate.</param>
+		public void Move(Control control, int x, int y)
 		{
-			var index = controls.IndexOf(child);
-			if (index != null)
-				controls[index.Item1, index.Item2] = null;
+			var index = Array.IndexOf(controls, control);
+			if (index != -1)
+				controls[index] = null;
 
-			var old = controls[x, y];
+			index = y * cellSize.Width + x;
+			var old = controls[index];
 			if (old != null)
 				RemoveParent(old);
-			controls[x, y] = child;
-			child.Properties[LocationProperty] = new Point(x, y);
-			Handler.Move(child, x, y);
+			controls[index] = control;
+			control.Properties[LocationProperty] = new Point(x, y);
+			Handler.Move(control, x, y);
 		}
 
-		public void Move(Control child, Point p)
+		/// <summary>
+		/// Move the specified control to a new location.
+		/// </summary>
+		/// <remarks>
+		/// If a control already exists in the new location, it will be replaced. Only one control can exist in a cell.
+		/// The old location of the control will have an empty space.
+		/// </remarks>
+		/// <param name="control">Control to move.</param>
+		/// <param name="location">New location of the control.</param>
+		public void Move(Control control, Point location)
 		{
-			Move(child, p.X, p.Y);
+			Move(control, location.X, location.Y);
 		}
 
+		/// <summary>
+		/// Remove the specified child control.
+		/// </summary>
+		/// <param name="child">Child control to remove.</param>
 		public override void Remove(Control child)
 		{
-			var index = controls.IndexOf(child);
-			if (index != null)
+			var index = Array.IndexOf(controls, child);
+			if (index != -1)
 			{
-				controls[index.Item1, index.Item2] = null;
+				controls[index] = null;
 				Handler.Remove(child);
 				RemoveParent(child);
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the horizontal and vertical spacing between each of the cells of the table.
+		/// </summary>
+		/// <value>The spacing between the cells.</value>
 		public Size Spacing
 		{
 			get { return Handler.Spacing; }
 			set { Handler.Spacing = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the padding bordering the table.
+		/// </summary>
+		/// <value>The padding bordering the table.</value>
 		public Padding Padding
 		{
 			get { return Handler.Padding; }
-			set
-			{
-				Handler.Padding = value;
-			}
+			set { Handler.Padding = value; }
 		}
 
 		[OnDeserialized]
@@ -407,19 +695,42 @@ namespace Eto.Forms
 			OnDeserialized();
 		}
 
+		/// <summary>
+		/// Ends the initialization when loading from xaml or other code generated scenarios
+		/// </summary>
 		public override void EndInit()
 		{
 			base.EndInit();
 			OnDeserialized(Parent != null); // mono calls EndInit BEFORE setting to parent
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Control.PreLoad"/> event, and recurses to this container's children
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected override void OnPreLoad(EventArgs e)
+		{
+			OnDeserialized(true);
+			base.OnPreLoad(e);
+		}
+
 		void OnDeserialized(bool direct = false)
 		{
 			if (Loaded || direct)
 			{
-				if (children != null)
+				var rows = Properties.Get<Collection<TableRow>>(rowsKey);
+				if (rows != null)
 				{
-					foreach (var control in children)
+					Create(rows.ToArray());
+					Properties.Remove(rowsKey);
+				}
+
+				#pragma warning disable 612,618
+				// remove when obsolete code is removed
+				var contents = Properties.Get<Collection<Control>>(contentsKey);
+				if (contents != null)
+				{
+					foreach (var control in contents)
 					{
 						var location = GetLocation(control);
 						Add(control, location);
@@ -428,38 +739,73 @@ namespace Eto.Forms
 						if (GetRowScale(control))
 							SetRowScale(location.Y);
 					}
+					Properties.Remove(contentsKey);
 				}
-			}
-			else
-			{
-				PreLoad += HandleDeserialized;
+				#pragma warning restore 612,618
 			}
 		}
 
-		void HandleDeserialized(object sender, EventArgs e)
-		{
-			OnDeserialized(true);
-			PreLoad -= HandleDeserialized;
-		}
-
+		/// <summary>
+		/// Handler interface for <see cref="TableLayout"/>
+		/// </summary>
+		/// <remarks>
+		/// Currently, TableLayout handlers only need to set its size while created and cannot be resized.
+		/// </remarks>
 		[AutoInitialize(false)]
 		public new interface IHandler : Layout.IHandler, IPositionalLayoutHandler
 		{
-			void CreateControl(int cols, int rows);
+			/// <summary>
+			/// Creates the control with the specified dimensions.
+			/// </summary>
+			/// <param name="columns">Number of columns for the table.</param>
+			/// <param name="rows">Number of rows for the table.</param>
+			void CreateControl(int columns, int rows);
 
+			/// <summary>
+			/// Gets the scale for the specified column.
+			/// </summary>
+			/// <returns><c>true</c>, if column is scaled, <c>false</c> otherwise.</returns>
+			/// <param name="column">Column to retrieve the scale.</param>
 			bool GetColumnScale(int column);
 
+			/// <summary>
+			/// Sets the scale for the specified column.
+			/// </summary>
+			/// <param name="column">Column to set the scale for.</param>
+			/// <param name="scale">If set to <c>true</c> scale, otherwise size to preferred size of controls in the column.</param>
 			void SetColumnScale(int column, bool scale);
 
+			/// <summary>
+			/// Gets the scale for the specified row.
+			/// </summary>
+			/// <returns><c>true</c>, if row is scaled, <c>false</c> otherwise.</returns>
+			/// <param name="row">Row to retrieve the scale.</param>
 			bool GetRowScale(int row);
 
+			/// <summary>
+			/// Sets the scale for the specified row.
+			/// </summary>
+			/// <param name="row">Row to set the scale for.</param>
+			/// <param name="scale">If set to <c>true</c> scale, otherwise size to preferred size of controls in the row.</param>
 			void SetRowScale(int row, bool scale);
 
+			/// <summary>
+			/// Gets or sets the horizontal and vertical spacing between each of the cells of the table.
+			/// </summary>
+			/// <value>The spacing between the cells.</value>
 			Size Spacing { get; set; }
 
+			/// <summary>
+			/// Gets or sets the padding bordering the table.
+			/// </summary>
+			/// <value>The padding bordering the table.</value>
 			Padding Padding { get; set; }
 		}
 
+		/// <summary>
+		/// Implicitly converts an array of rows to a vertical TableLayout
+		/// </summary>
+		/// <param name="rows">Rows to convert.</param>
 		public static implicit operator TableLayout(TableRow[] rows)
 		{
 			return new TableLayout(rows);
