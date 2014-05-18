@@ -8,19 +8,26 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class ComboBoxHandler : WindowsControl<swf.ComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class ComboBoxHandler : WindowsControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		CollectionHandler collection;
 
 		public class EtoComboBox : swf.ComboBox
 		{
+			sd.Size? cachedSize;
+			public void ResetSize()
+			{
+				cachedSize = null;
+			}
+			static readonly sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var size = new sd.Size(16, 20);
-				var font = Font;
-
-				using (var graphics = CreateGraphics())
+				if (cachedSize == null)
 				{
+					var size = new sd.Size(16, 20);
+					var font = Font;
+
 					foreach (object item in Items)
 					{
 						var text = GetItemText(item);
@@ -29,10 +36,11 @@ namespace Eto.WinForms
 						size.Width = Math.Max(size.Width, itemSize.Width);
 						size.Height = Math.Max(size.Height, itemSize.Height);
 					}
+					size.Width += 18;
+					size.Height += 4;
+					cachedSize = size;
 				}
-				size.Width += 18;
-				size.Height += 4;
-				return size;
+				return cachedSize.Value;
 			}
 		}
 
@@ -107,7 +115,9 @@ namespace Eto.WinForms
 
 		protected void UpdateSizes()
 		{
-			SetMinimumSize();
+			if (Widget.Loaded)
+				SetMinimumSize();
+			Control.ResetSize();
 		}
 
 		public IListStore DataStore
