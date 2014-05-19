@@ -30,13 +30,11 @@ namespace Eto
 
 	class HandlerInfo
 	{
-		public Type Type { get; private set; }
 		public bool Initialize { get; private set; }
 		public Func<object> Instantiator { get; private set; }
 
-		public HandlerInfo(Type type, bool initialize, Func<object> instantiator)
+		public HandlerInfo(bool initialize, Func<object> instantiator)
 		{
-			Type = Type;
 			Initialize = initialize;
 			Instantiator = instantiator;
 		}
@@ -395,7 +393,7 @@ namespace Eto
 			if (handler != null && instantiatorMap.TryGetValue(handler.Type, out activator))
 			{
 				var autoInit = handler.Type.GetCustomAttribute<AutoInitializeAttribute>(true);
-				info = new HandlerInfo(handler.Type, autoInit == null || autoInit.Initialize, activator);
+				info = new HandlerInfo(autoInit == null || autoInit.Initialize, activator);
 				handlerMap.Add(type, info);
 				return info;
 			}

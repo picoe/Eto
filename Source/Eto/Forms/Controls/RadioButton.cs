@@ -61,7 +61,7 @@ namespace Eto.Forms
 			void OnCheckedChanged(RadioButton widget, EventArgs e);
 		}
 
-		protected class Callback : TextControl.Callback, ICallback
+		protected new class Callback : TextControl.Callback, ICallback
 		{
 			public void OnClick(RadioButton widget, EventArgs e)
 			{

@@ -16,12 +16,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Eto.Forms.Layout"/> is initializing.
-		/// </summary>
-		/// <value><c>true</c> if initializing; otherwise, <c>false</c>.</value>
-		protected bool Initializing { get; private set; }
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Layout"/> class.
 		/// </summary>
 		protected Layout()
@@ -87,7 +81,6 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void BeginInit()
 		{
-			Initializing = true;
 		}
 
 		/// <summary>
@@ -95,7 +88,6 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void EndInit()
 		{
-			Initializing = false;
 		}
 
 		/// <summary>
@@ -125,10 +117,10 @@ namespace Eto.Forms
 			/// Adding a control typically will make it visible to the user immediately, assuming they can see the control
 			/// in the current co-ordinates, and that the control's <see cref="Control.Visible"/> property is true
 			/// </remarks>
-			/// <param name="child">Child control to add to this layout</param>
+			/// <param name="control">Child control to add to this layout</param>
 			/// <param name="x">X co-ordinate</param>
 			/// <param name="y">Y co-ordinate</param>
-			void Add(Control child, int x, int y);
+			void Add(Control control, int x, int y);
 
 			/// <summary>
 			/// Moves the control to the specified co-ordinates
@@ -136,10 +128,10 @@ namespace Eto.Forms
 			/// <remarks>
 			/// This assumes that the control is already a child of this layout
 			/// </remarks>
-			/// <param name="child">Child control to move</param>
+			/// <param name="control">Child control to move</param>
 			/// <param name="x">New X co-ordinate</param>
 			/// <param name="y">New Y co-ordinate</param>
-			void Move(Control child, int x, int y);
+			void Move(Control control, int x, int y);
 
 			/// <summary>
 			/// Removes the specified child from this layout
@@ -148,8 +140,8 @@ namespace Eto.Forms
 			/// This assumes that the control is already a child of this layout.  This will make the child control
 			/// invisible to the user
 			/// </remarks>
-			/// <param name="child">Child control to remove</param>
-			void Remove(Control child);
+			/// <param name="control">Child control to remove</param>
+			void Remove(Control control);
 		}
 
 	}

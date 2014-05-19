@@ -64,17 +64,12 @@ namespace Eto.Test
 		}
 	}
 
-	public abstract class SectionBase : Section, ISection
-	{
-		public abstract Control CreateContent();
-	}
-
-	public class Section<T> : SectionBase
+	public class Section<T> : Section, ISection
 		where T: Control, new()
 	{
 		public Func<T> Creator { get; set; }
 
-		public override Control CreateContent()
+		public Control CreateContent()
 		{
 			return Creator != null ? Creator() : new T();
 		}
