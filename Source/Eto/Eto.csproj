@@ -288,6 +288,7 @@
     <Compile Include="Generator.cs" />
     <Compile Include="HandlerAttribute.cs" />
     <Compile Include="AutoInitializeAttribute.cs" />
+    <Compile Include="PclTypes.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
