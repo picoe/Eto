@@ -1,10 +1,10 @@
-#if !PCL
 using System;
 using System.Collections.Generic;
 using Eto.Drawing;
 using Eto.Forms;
 using System.Threading;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Eto.Test.Sections.Drawing
 {
@@ -14,7 +14,6 @@ namespace Eto.Test.Sections.Drawing
 		readonly DirectDrawingRenderer renderer;
 		readonly Panel content;
 		bool useCreateGraphics;
-		Thread thread;
 		Action drawFrame;
 		Status status = new Status();
 
@@ -39,7 +38,7 @@ namespace Eto.Test.Sections.Drawing
 			this.Content = layout;
 		}
 
-		void DrawLoop(object data)
+		async void DrawLoop(object data)
 		{
 			var currentStatus = (Status)data;
 			renderer.RestartFPS();
@@ -48,7 +47,7 @@ namespace Eto.Test.Sections.Drawing
 				var draw = drawFrame;
 				if (draw != null)
 					Application.Instance.Invoke(draw);
-				Thread.Sleep(0);
+				await Task.Delay(0);
 			}
 		}
 
@@ -76,8 +75,7 @@ namespace Eto.Test.Sections.Drawing
 			}
 			content.Content = drawable;
 			status = new Status();
-			thread = new Thread(DrawLoop);
-			thread.Start(status);
+			Task.Run(() => DrawLoop(status));
 		}
 
 		protected override void OnUnLoad(EventArgs e)
@@ -313,7 +311,8 @@ namespace Eto.Test.Sections.Drawing
 				var fps = TotalFrames / Watch.Elapsed.TotalSeconds;
 				// The frames per second as determined by the last frame. Measuring a single frame
 				// must include EndDraw, since that is when the pipeline is flushed to the device.
-				var lastFrameFps = Stopwatch.Frequency / (Watch.ElapsedTicks - PreviousFrameStartTicks);
+				var frameTicks = Watch.ElapsedTicks - PreviousFrameStartTicks;
+				var lastFrameFps = Stopwatch.Frequency / Math.Max(frameTicks, 1);
 				PreviousFrameStartTicks = Watch.ElapsedTicks;
 				var fpsText = string.Format("Frames per second since start: {0:0.00}, last: {1:0.00}", fps, lastFrameFps);
 				var start = Watch.ElapsedTicks;
@@ -335,4 +334,3 @@ namespace Eto.Test.Sections.Drawing
 		}
 	}
 }
-#endif
