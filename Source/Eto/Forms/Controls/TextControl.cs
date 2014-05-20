@@ -62,19 +62,34 @@ namespace Eto.Forms
 		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for the <see cref="TextControl"/> based controls
+		/// </summary>
 		public new interface ICallback : CommonControl.ICallback
 		{
+			/// <summary>
+			/// Raises the text changed event.
+			/// </summary>
 			void OnTextChanged(TextControl widget, EventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for handlers of <see cref="TextControl"/> based controls
+		/// </summary>
 		protected new class Callback : CommonControl.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the text changed event.
+			/// </summary>
 			public void OnTextChanged(TextControl widget, EventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnTextChanged(e));
 			}
 		}
 
+		/// <summary>
+		/// Handler interface for the <see cref="TextControl"/> based controls
+		/// </summary>
 		public new interface IHandler : CommonControl.IHandler
 		{
 			string Text { get; set; }

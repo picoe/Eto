@@ -3,39 +3,76 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Represents a list item that can have an image associated with each item.
+	/// </summary>
+	/// <remarks>
+	/// Not all controls that use the <see cref="IListItem"/> can support images, for example the <see cref="ComboBox"/>.
+	/// </remarks>
 	public interface IImageListItem : IListItem
 	{
+		/// <summary>
+		/// Gets the image for this item.
+		/// </summary>
+		/// <value>The item's image.</value>
 		Image Image { get; }
 	}
-	
+
+	/// <summary>
+	/// Control to show a list of items that the user can select
+	/// </summary>
 	[Handler(typeof(ListBox.IHandler))]
 	public class ListBox : ListControl
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// Occurs when an item is activated, usually with a double click or by pressing enter.
+		/// </summary>
 		public event EventHandler<EventArgs> Activated;
 
+		/// <summary>
+		/// Raises the <see cref="Activated"/>event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected virtual void OnActivated(EventArgs e)
 		{
 			if (Activated != null)
 				Activated(this, e);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.ListBox"/> class.
+		/// </summary>
 		public ListBox()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.ListBox"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use default constructor instead")]
 		public ListBox (Generator generator) : this (generator, typeof(IHandler))
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.ListBox"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ListBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
 		}
 
+		/// <summary>
+		/// Gets or sets the context menu for the control.
+		/// </summary>
+		/// <value>The context menu.</value>
 		public ContextMenu ContextMenu
 		{
 			get { return Handler.ContextMenu; }
@@ -49,19 +86,34 @@ namespace Eto.Forms
 		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for the <see cref="ListBox"/>
+		/// </summary>
 		public new interface ICallback : ListControl.ICallback
 		{
+			/// <summary>
+			/// Raises the activated event.
+			/// </summary>
 			void OnActivated(ListBox widget, EventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for handlers of <see cref="ListBox"/>
+		/// </summary>
 		protected new class Callback : ListControl.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the activated event.
+			/// </summary>
 			public void OnActivated(ListBox widget, EventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnActivated(e));
 			}
 		}
 
+		/// <summary>
+		/// Handler interface for the <see cref="ListBox"/>
+		/// </summary>
 		public new interface IHandler : ListControl.IHandler, IContextMenuHost
 		{
 		}

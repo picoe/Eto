@@ -101,6 +101,10 @@ namespace Eto.Forms
 			Handler.Show(relativeTo);
 		}
 
+		/// <summary>
+		/// Called when the menu is assigned to a control/window
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		internal protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
@@ -108,6 +112,10 @@ namespace Eto.Forms
 				item.OnLoad(e);
 		}
 
+		/// <summary>
+		/// Called when the menu is removed from a control/window
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		internal protected override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
@@ -115,8 +123,15 @@ namespace Eto.Forms
 				item.OnLoad(e);
 		}
 
+		/// <summary>
+		/// Handler interface for the <see cref="ContextMenu"/>
+		/// </summary>
 		public new interface IHandler : Menu.IHandler, ISubmenuHandler
 		{
+			/// <summary>
+			/// Show the context menu relative to the specified control
+			/// </summary>
+			/// <param name="relativeTo">Control to show the menu relative to</param>
 			void Show(Control relativeTo);
 		}
 	}

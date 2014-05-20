@@ -17,9 +17,7 @@ namespace Eto
 	/// </remarks>
 	public class PropertyBinding : IndirectBinding
 	{
-#if PCL // For portable class library, we use PropertyInfo which is universally available 
-		// and supports most of the same methods as PropertyDescriptor. (For that matter,
-		// is there a good reason to ever use PropertyDescriptor on any platform?)
+#if PCL
 		PropertyInfo descriptor;
 #else
 		PropertyDescriptor descriptor;

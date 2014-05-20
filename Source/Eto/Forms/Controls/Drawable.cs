@@ -219,13 +219,25 @@ namespace Eto.Forms
 		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for <see cref="Drawable"/>
+		/// </summary>
 		public new interface ICallback : Panel.ICallback
 		{
+			/// <summary>
+			/// Raises the paint event.
+			/// </summary>
 			void OnPaint(Drawable widget, PaintEventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for handlers of <see cref="Drawable"/>
+		/// </summary>
 		protected new class Callback : Panel.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the paint event.
+			/// </summary>
 			public void OnPaint(Drawable widget, PaintEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnPaint(e));
