@@ -20,11 +20,14 @@ namespace Eto.Direct2D.Drawing
 	public partial class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, Graphics.IHandler
 	{
 		bool hasBegan;
+		bool rectClip;
 		bool disposeControl = true;
 		Bitmap image;
 		float offset = 0.5f;
 		float fillOffset;
-		sd.Layer clipLayer;
+		sd.Layer helperLayer;
+		sd.Geometry clipGeometry;
+		sd.LayerParameters? clipParams;
 		RectangleF clipBounds;
 #if WINFORMS
 		DrawableHandler drawable;
@@ -32,6 +35,11 @@ namespace Eto.Direct2D.Drawing
 		public float PointsPerPixel { get { return 72f / Control.DotsPerInch.Width; } }
 
 		protected override bool DisposeControl { get { return disposeControl; } }
+
+		protected sd.Layer HelperLayer
+		{
+			get { return helperLayer ?? (helperLayer = new sd.Layer(Control)); }
+		}
 
 		public GraphicsHandler()
 		{
@@ -177,16 +185,8 @@ namespace Eto.Direct2D.Drawing
 		{
 			ResetClip();
 			clipBounds = rect;
-			var parameters = new sd.LayerParameters
-			{
-				ContentBounds = clipBounds.ToDx(),
-				GeometricMask = new sd.RectangleGeometry(SDFactory.D2D1Factory, rect.ToDx()),
-				MaskAntialiasMode = Control.AntialiasMode,
-				MaskTransform = s.Matrix3x2.Identity,
-				Opacity = 1f
-			};
-			clipLayer = new sd.Layer(Control);
-			Control.PushLayer(ref parameters, clipLayer);
+			rectClip = true;
+			Control.PushAxisAlignedClip(rect.ToDx(), Control.AntialiasMode);
 		}
 
 		public void SetClip(IGraphicsPath path)
@@ -196,22 +196,27 @@ namespace Eto.Direct2D.Drawing
 			var parameters = new sd.LayerParameters
 			{
 				ContentBounds = clipBounds.ToDx(),
-				GeometricMask = path.ToGeometry(),
+				GeometricMask = clipGeometry = path.ToGeometry(),
 				MaskAntialiasMode = Control.AntialiasMode,
 				MaskTransform = s.Matrix3x2.Identity,
 				Opacity = 1f
 			};
-			clipLayer = new sd.Layer(Control);
-			Control.PushLayer(ref parameters, clipLayer);
+			clipParams = parameters;
+			Control.PushLayer(ref parameters, HelperLayer);
 		}
 
 		public void ResetClip()
 		{
-			if (clipLayer != null)
+			if (clipParams != null)
 			{
 				Control.PopLayer();
-				clipLayer.Dispose();
-				clipLayer = null;
+				clipBounds = new RectangleF(Control.Size.ToEto());
+				clipParams = null;
+			}
+			if (rectClip)
+			{
+				Control.PopAxisAlignedClip();
+				rectClip = false;
 				clipBounds = new RectangleF(Control.Size.ToEto());
 			}
 		}
@@ -447,11 +452,67 @@ namespace Eto.Direct2D.Drawing
 		{
 			if (Control != null)
 			{
-				// TODO: doesn't actually clear to transparent (e.g. on a bitmap)
-				if (brush != null)
-					Control.Clear(brush.Color.ToDx());
+				var color = brush != null ? brush.Color : Colors.Transparent;
+				// drawing to an image, so we can clear to transparent
+				if (image != null)
+				{
+					if (clipParams != null)
+					{
+						// can't clear the current layer otherwise it will not be applied to main layer
+						// This creates a copy of the current context, inverses the current clip, and draws the image back clipping
+						// the cleared path.
+						
+						// end clip layer and current drawing session
+						Control.PopLayer();
+						Control.EndDraw();
+
+						// create a copy of the current state
+						var copy = image.Clone();
+						var bmp = copy.ToDx(Control);
+
+						Control.BeginDraw();
+
+						// clear existing contents
+						Control.Clear(null);
+						var size = Control.Size;
+
+						// create an inverse geometry
+						var inverse = new sd.PathGeometry(SDFactory.D2D1Factory);
+						var sink = inverse.Open();
+						var bounds = new s.RectangleF(0, 0, size.Width, size.Height);
+						var geom = new sd.RectangleGeometry(SDFactory.D2D1Factory, bounds);
+						geom.Combine(clipGeometry, sd.CombineMode.Exclude, sink);
+						sink.Close();
+
+						// create a new mask layer with inverse geometry
+						var parameters = new sd.LayerParameters
+						{
+							ContentBounds = bounds,
+							GeometricMask = inverse,
+							MaskAntialiasMode = Control.AntialiasMode,
+							MaskTransform = s.Matrix3x2.Identity,
+							Opacity = 1f
+						};
+						Control.PushLayer(ref parameters, HelperLayer);
+
+						// draw bitmap of contents back, clipping to the inverse of the clip region
+						Control.DrawBitmap(bmp, 1f, sd.BitmapInterpolationMode.NearestNeighbor);
+						Control.PopLayer();
+
+						// restore our clip path
+						parameters = clipParams.Value;
+						Control.PushLayer(ref parameters, HelperLayer);
+
+						copy.Dispose();
+					}
+				}
 				else
-					Control.Clear(s.Color4.Black);
+				{
+					// alpha is not supported on a drawable, so blend with black as the base color.
+					color = Color.Blend(Colors.Black, color);
+				}
+
+				Control.Clear(color.ToDx());
 			}
 		}
 
