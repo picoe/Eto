@@ -16,7 +16,7 @@ namespace Eto.Direct2D
         public Platform()
         {
 			// generator to use for scenarios where direct 2d doesn't work (e.g. printing)
-			BaseGenerator = new Eto.WinForms.Platform();
+			BasePlatform = new Eto.WinForms.Platform();
 
 			Eto.WinForms.Platform.AddTo(this);
 
@@ -24,7 +24,7 @@ namespace Eto.Direct2D
 			AddTo(this);
         }
 
-		public Eto.Platform BaseGenerator
+		public Eto.Platform BasePlatform
 		{
 			get;
 			set;

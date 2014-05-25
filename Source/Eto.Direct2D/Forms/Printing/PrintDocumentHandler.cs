@@ -9,7 +9,7 @@ namespace Eto.Direct2D.Forms.Printing
 	{
 		protected override void HandlePrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
 		{
-			using (((Eto.Direct2D.Platform)Platform).BaseGenerator.Context)
+			using (((Eto.Direct2D.Platform)Widget.Platform).BasePlatform.Context)
 			{
 				base.HandlePrintPage(sender, e);
 			}

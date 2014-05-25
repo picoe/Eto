@@ -37,11 +37,6 @@ namespace Eto
 		/// </summary>
 		public TWidget Widget { get; private set; }
 
-		/// <summary>
-		/// Gets the generator that was used to create this handler
-		/// </summary>
-		public Platform Platform { get; set; }
-
 		static readonly object IDKey = new object();
 
 		/// <summary>
@@ -118,8 +113,9 @@ namespace Eto
 		{
 			#if DEBUG
 			// only throw for platforms that should be fully implemented, and only in debug
-			if (Platform.IsGtk || Platform.IsMac || Platform.IsWinForms || Platform.IsWpf)
-			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
+			if (Widget.Platform.IsGtk || Widget.Platform.IsMac || Widget.Platform.IsWinForms || Widget.Platform.IsWpf)
+	
+				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
 			#endif
 		}
 

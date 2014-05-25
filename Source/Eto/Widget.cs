@@ -35,21 +35,7 @@ namespace Eto
 		/// <value>The handler for the widget</value>
 		object Handler { get; }
 	}
-
-	/// <summary>
-	/// Interface for widgets that are created for a specific generator
-	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IPlatformSource
-	{
-		/// <summary>
-		/// Gets the generator associated with the widget
-		/// </summary>
-		/// <value>The generator</value>
-		Platform Platform { get; }
-	}
-
+		
 	/// <summary>
 	/// Interface to get the callback object for a widget
 	/// </summary>
@@ -78,7 +64,7 @@ namespace Eto
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class Widget : IHandlerSource, IDisposable, IPlatformSource, ICallbackSource
+	public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 	{
 		IHandler WidgetHandler { get { return Handler as IHandler; } }
 
@@ -89,14 +75,14 @@ namespace Eto
 		/// <remarks>
 		/// This gets set to the current <see cref="Eto.Platform.Instance"/> during the construction of the object
 		/// </remarks>
-		public Platform Platform { get { return WidgetHandler.Platform; } }
+		public Platform Platform { get; private set; }
 
 		/// <summary>
 		/// Gets the generator. Obsolete.
 		/// </summary>
 		/// <value>The generator.</value>
 		[Obsolete("Use Platform instead")]
-		public Platform Generator { get { return ((IHandler)Handler).Platform; } }
+		public Platform Generator { get { return Platform; } }
 
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
@@ -129,7 +115,7 @@ namespace Eto
 		/// </summary>
 		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
-		public interface IHandler : IPlatformSource
+		public interface IHandler
 		{
 			/// <summary>
 			/// Gets or sets an ID for the widget
@@ -153,11 +139,6 @@ namespace Eto
 			/// initialization. In this case, it is the responsibility of the subclass to call <see cref="Eto.Widget.Initialize()"/> 
 			/// </remarks>
 			void Initialize();
-
-			/// <summary>
-			/// Gets or sets the platform that was used to create this handler
-			/// </summary>
-			new Platform Platform { get; set; }
 
 			/// <summary>
 			/// Called to handle a specific event
@@ -233,10 +214,10 @@ namespace Eto
 		{
 			if (generator == null)
 				generator = Platform.Instance;
-			this.Handler = handler;
+			Handler = handler;
+			Platform = (Platform)generator;
 			if (handler != null)
 			{
-				handler.Platform = (Platform)generator;
 				handler.Widget = this; // tell the handler who we are
 			}
 			if (initialize)
@@ -254,10 +235,10 @@ namespace Eto
 		{
 			var platform = (Platform)generator ?? Platform.Instance;
 			this.Handler = platform.Create(type);
+			this.Platform = (Platform)generator;
 			var widgetHandler = WidgetHandler;
 			if (widgetHandler != null)
 			{
-				widgetHandler.Platform = (Platform)generator;
 				widgetHandler.Widget = this;
 			}
 			if (initialize)
@@ -275,11 +256,11 @@ namespace Eto
 			var info = platform.FindHandler(GetType());
 			if (info == null)
 				throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "type for '{0}' could not be found in this platform", GetType().FullName));
-			this.Handler = info.Instantiator();
+			Handler = info.Instantiator();
+			Platform = platform;
 			var widgetHandler = this.Handler as IHandler;
 			if (widgetHandler != null)
 			{
-				widgetHandler.Platform = platform;
 				widgetHandler.Widget = this;
 			}
 			if (info.Initialize)
@@ -292,10 +273,10 @@ namespace Eto
 		/// <param name="handler">Handler to assign to this widget for its implementation</param>
 		protected Widget(IHandler handler)
 		{
-			this.Handler = handler;
+			Handler = handler;
+			Platform = Platform.Instance;
 			if (handler != null)
 			{
-				handler.Platform = Platform.Instance;
 				handler.Widget = this; // tell the handler who we are
 			}
 			Initialize();
