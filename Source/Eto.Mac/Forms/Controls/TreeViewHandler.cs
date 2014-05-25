@@ -302,6 +302,7 @@ namespace Eto.Mac.Forms.Controls
 						if (!column.Editable && e.KeyData == Keys.Enter)
 						{
 							Callback.OnActivated(Widget, new TreeViewItemEventArgs(SelectedItem));
+							e.Handled = true;
 						}
 					};
 					Control.DoubleClick += HandleDoubleClick;
