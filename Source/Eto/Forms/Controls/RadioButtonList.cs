@@ -15,36 +15,40 @@ namespace Eto.Forms
 	{
 		RadioButtonListOrientation orientation;
 		ItemDataStore dataStore;
-		readonly List<RadioButton> buttons = new List<RadioButton> ();
+		readonly List<RadioButton> buttons = new List<RadioButton>();
 		RadioButton controller;
 		RadioButton selectedButton;
 		Size spacing = TableLayout.DefaultSpacing;
 		bool settingChecked;
 
+		public IIndirectBinding<string> TextBinding { get; set; }
+		public IIndirectBinding<string> KeyBinding { get; set; }
+
 		public event EventHandler<EventArgs> SelectedIndexChanged;
-		
-		protected virtual void OnSelectedIndexChanged (EventArgs e)
+
+		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
 			if (SelectedIndexChanged != null)
-				SelectedIndexChanged (this, e);
-			OnSelectedValueChanged (e);
+				SelectedIndexChanged(this, e);
+			OnSelectedValueChanged(e);
 		}
-		
+
 		public event EventHandler<EventArgs> SelectedValueChanged;
 
 		protected virtual void OnSelectedValueChanged(EventArgs e)
 		{
 			if (SelectedValueChanged != null)
-				SelectedValueChanged (this, e);
+				SelectedValueChanged(this, e);
 		}
 
 		public string SelectedKey
 		{
-			get { return SelectedValue == null ? null : SelectedValue.Key; }
+			get { return SelectedValue == null ? null : KeyBinding.GetValue(SelectedValue); }
 			set
 			{
-				if (SelectedValue == null || SelectedValue.Key != value) {
-					SetSelectedKey (value);
+				if (SelectedValue == null || KeyBinding.GetValue(SelectedValue) != value)
+				{
+					SetSelectedKey(value);
 				}
 			}
 		}
@@ -55,22 +59,24 @@ namespace Eto.Forms
 			set
 			{
 				base.Enabled = value;
-				foreach (var button in buttons) {
+				foreach (var button in buttons)
+				{
 					button.Enabled = value;
 				}
 			}
 		}
 
-		public IListItem SelectedValue
+		public object SelectedValue
 		{
-			get { return selectedButton == null ? null : selectedButton.Tag as IListItem; }
+			get { return selectedButton == null ? null : selectedButton.Tag; }
 			set
 			{
-				if (SelectedValue != value) {
+				if (SelectedValue != value)
+				{
 					if (value != null)
-						SetSelectedKey (value.Key);
+						SetSelectedKey(KeyBinding.GetValue(value));
 					else
-						SetSelected (null);
+						SetSelected(null);
 				}
 			}
 		}
@@ -80,55 +86,55 @@ namespace Eto.Forms
 			get { return selectedButton == null ? -1 : buttons.IndexOf(selectedButton); }
 			set
 			{
-				EnsureButtons ();
-				SetSelected (buttons [value]);
+				EnsureButtons();
+				SetSelected(buttons[value]);
 			}
 		}
 
-		class ItemDataStore : DataStoreChangedHandler<IListItem, IListStore>
+		class ItemDataStore : EnumerableChangedHandler<object>
 		{
 			public RadioButtonList Handler { get; set; }
 
-			public override void AddRange (IEnumerable<IListItem> items)
+			public override void AddRange(IEnumerable<object> items)
 			{
 				var key = Handler.SelectedKey;
-				Handler.Recreate ();
-				Handler.SetSelectedKey (key, true);
+				Handler.Recreate();
+				Handler.SetSelectedKey(key, true);
 			}
 
-			public override void AddItem (IListItem item)
+			public override void AddItem(object item)
 			{
-				var button = Handler.CreateButton (item);
-				Handler.buttons.Add (button);
-				Handler.LayoutButtons ();
+				var button = Handler.CreateButton(item);
+				Handler.buttons.Add(button);
+				Handler.LayoutButtons();
 			}
 
-			public override void InsertItem (int index, IListItem item)
+			public override void InsertItem(int index, object item)
 			{
-				var button = Handler.CreateButton (item);
-				Handler.buttons.Insert (index, button);
-				Handler.LayoutButtons ();
+				var button = Handler.CreateButton(item);
+				Handler.buttons.Insert(index, button);
+				Handler.LayoutButtons();
 			}
 
-			public override void RemoveItem (int index)
+			public override void RemoveItem(int index)
 			{
-				var button = Handler.buttons [index];
+				var button = Handler.buttons[index];
 				var isSelected = Handler.selectedButton == button;
-				Handler.buttons.RemoveAt (index);
-				Handler.UnregisterButton (button);
+				Handler.buttons.RemoveAt(index);
+				Handler.UnregisterButton(button);
 				if (button == Handler.controller)
-					Handler.Recreate ();
+					Handler.Recreate();
 				else
-					Handler.LayoutButtons ();
+					Handler.LayoutButtons();
 
 				if (isSelected)
-					Handler.SetSelected (null, true);
+					Handler.SetSelected(null, true);
 			}
 
-			public override void RemoveAllItems ()
+			public override void RemoveAllItems()
 			{
-				Handler.Recreate ();
-				Handler.SetSelected (null);
+				Handler.Recreate();
+				Handler.SetSelected(null);
 			}
 		}
 
@@ -137,9 +143,10 @@ namespace Eto.Forms
 			get { return orientation; }
 			set
 			{
-				if (orientation != value) {
+				if (orientation != value)
+				{
 					orientation = value;
-					LayoutButtons ();
+					LayoutButtons();
 				}
 			}
 		}
@@ -147,10 +154,12 @@ namespace Eto.Forms
 		public Size Spacing
 		{
 			get { return spacing; }
-			set {
-				if (spacing != value) {
+			set
+			{
+				if (spacing != value)
+				{
 					spacing = value;
-					LayoutButtons ();
+					LayoutButtons();
 				}
 			}
 		}
@@ -160,42 +169,50 @@ namespace Eto.Forms
 			get
 			{
 				var items = (ListItemCollection)DataStore;
-				if (items == null) {
-					items = CreateDefaultItems ();
+				if (items == null)
+				{
+					items = CreateDefaultItems();
 					DataStore = items;
 				}
 				return items;
 			}
 		}
-		
-		public IListStore DataStore
+
+		public IEnumerable<object> DataStore
 		{
 			get { return dataStore == null ? null : dataStore.Collection; }
 			set
 			{
 				dataStore = new ItemDataStore { Handler = this };
-				dataStore.Register (value);
+				dataStore.Register(value);
 			}
 		}
 
-		protected override void OnLoad (EventArgs e)
+		public RadioButtonList()
 		{
-			base.OnLoad (e);
+			TextBinding = new ListItemTextBinding();
+			KeyBinding = new ListItemKeyBinding();
+		}
+
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
 			if (DataStore == null)
 				DataStore = CreateDefaultItems();
-			else {
-				LayoutButtons ();
-				SetSelected (selectedButton, true);
+			else
+			{
+				LayoutButtons();
+				SetSelected(selectedButton, true);
 			}
 		}
 
-		void EnsureButtons ()
+		void EnsureButtons()
 		{
 			if (DataStore == null)
 				DataStore = CreateDefaultItems();
 		}
 
-		void LayoutButtons ()
+		void LayoutButtons()
 		{
 			if (!Loaded)
 				return;
@@ -203,97 +220,103 @@ namespace Eto.Forms
 			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = spacing };
 			var horizontal = orientation == RadioButtonListOrientation.Horizontal;
 			if (horizontal)
-				layout.BeginHorizontal ();
-			foreach (var button in buttons) {
-				layout.Add (button);
+				layout.BeginHorizontal();
+			foreach (var button in buttons)
+			{
+				layout.Add(button);
 			}
-			layout.Add (null);
+			layout.Add(null);
 			if (horizontal)
-				layout.EndHorizontal ();
+				layout.EndHorizontal();
 			Content = layout;
 			ResumeLayout();
 		}
 
-		void Recreate ()
+		void Recreate()
 		{
-			foreach (var b in buttons) UnregisterButton(b);
-			buttons.Clear ();
+			foreach (var b in buttons)
+				UnregisterButton(b);
+			buttons.Clear();
 			controller = null;
-			Create ();
-			LayoutButtons ();
+			Create();
+			LayoutButtons();
 		}
 
-		void Create ()
+		void Create()
 		{
 			if (dataStore == null)
 				return;
-			foreach (var item in dataStore) {
-				buttons.Add (CreateButton (item));
+			foreach (var item in dataStore.Collection)
+			{
+				buttons.Add(CreateButton(item));
 			}
 		}
 
-		void SetSelectedKey (string key, bool force = false)
+		void SetSelectedKey(string key, bool force = false)
 		{
-			EnsureButtons ();
-			SetSelected (buttons.FirstOrDefault (r => ((IListItem)r.Tag).Key == key), force);
+			EnsureButtons();
+			SetSelected(buttons.FirstOrDefault(r => KeyBinding.GetValue(r.Tag) == key), force);
 		}
 
-		void SetSelected (RadioButton button, bool force = false, bool sendEvent = true)
+		void SetSelected(RadioButton button, bool force = false, bool sendEvent = true)
 		{
-			EnsureButtons ();
+			EnsureButtons();
 			var changed = selectedButton != button;
-			if (force || changed) {
+			if (force || changed)
+			{
 				selectedButton = button;
 				settingChecked = true;
-				foreach(var r in buttons) r.Checked = object.ReferenceEquals (r, button);
+				foreach (var r in buttons)
+					r.Checked = object.ReferenceEquals(r, button);
 				settingChecked = false;
 				if (sendEvent && changed && Loaded)
-					OnSelectedIndexChanged (EventArgs.Empty);
+					OnSelectedIndexChanged(EventArgs.Empty);
 			}
 		}
 
-		RadioButton CreateButton (IListItem item)
+		RadioButton CreateButton(object item)
 		{
-			var button = new RadioButton (controller);
+			var button = new RadioButton(controller);
 			button.CheckedChanged += HandleCheckedChanged;
-			button.Text = item.Text;
+			button.Text = TextBinding.GetValue(item);
 			button.Tag = item;
 			button.Enabled = base.Enabled;
-			if (controller == null) 
+			if (controller == null)
 				controller = button;
 			return button;
 		}
 
-		void UnregisterButton (RadioButton button)
+		void UnregisterButton(RadioButton button)
 		{
 			button.CheckedChanged -= HandleCheckedChanged;
 		}
 
-		void HandleCheckedChanged (object sender, EventArgs e)
+		void HandleCheckedChanged(object sender, EventArgs e)
 		{
 			var button = (RadioButton)sender;
-			if (!settingChecked && button.Checked) {
+			if (!settingChecked && button.Checked)
+			{
 				selectedButton = button;
-				OnSelectedIndexChanged (EventArgs.Empty);
+				OnSelectedIndexChanged(EventArgs.Empty);
 			}
 		}
 
-		protected virtual ListItemCollection CreateDefaultItems ()
+		protected virtual ListItemCollection CreateDefaultItems()
 		{
-			return new ListItemCollection ();
+			return new ListItemCollection();
 		}
 
-		public ObjectBinding<RadioButtonList, IListItem> SelectedValueBinding
+		public ObjectBinding<RadioButtonList, object> SelectedValueBinding
 		{
 			get
 			{
-				return new ObjectBinding<RadioButtonList, IListItem>(
+				return new ObjectBinding<RadioButtonList, object>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 
 					(c, h) => c.SelectedValueChanged += h, 
 					(c, h) => c.SelectedValueChanged -= h
-					);
+				);
 			}
 		}
 	}

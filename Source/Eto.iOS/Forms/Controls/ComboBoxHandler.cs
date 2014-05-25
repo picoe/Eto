@@ -5,72 +5,15 @@ using Eto.Forms;
 using MonoTouch.UIKit;
 using Eto.Drawing;
 using MonoTouch.Foundation;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ComboBoxHandler : IosControl<UILabel, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class ComboBoxHandler : BasePickerHandler<ComboBox, ComboBox.ICallback, UIPickerView>, ComboBox.IHandler
 	{
-		IListStore dataStore;
+		CollectionHandler collection;
 		int selectedIndex = -1;
-		string emptyText;
-
-		public static string DefaultEmptyText = "<select>";
-
-		public string EmptyText { get { return emptyText ?? DefaultEmptyText; } set { emptyText = value; } }
-
-		public class EtoLabel : UILabel
-		{
-			UIView inputView;
-			UIView accessoryView;
-			WeakReference handler;
-
-			public ComboBoxHandler Handler { get { return (ComboBoxHandler)handler.Target; } set { handler = new WeakReference(value); } }
-
-			public override bool CanBecomeFirstResponder { get { return true; } }
-
-			public override UIView InputView
-			{
-				get { return inputView ?? (inputView = Handler.CreatePicker()); }
-			}
-
-			public override UIView InputAccessoryView
-			{
-				get { return accessoryView ?? (accessoryView = Handler.CreateAccessoryView()); }
-			}
-
-			public override void TouchesEnded(NSSet touches, UIEvent evt)
-			{
-				base.TouchesEnded(touches, evt);
-				var picker = (UIPickerView)InputView;
-				picker.ReloadAllComponents();
-				picker.Select(Math.Max(0, Handler.SelectedIndex), 0, false);
-
-				BecomeFirstResponder();
-			}
-
-		}
-
-		static UIColor ButtonTextColor = new UIButton(UIButtonType.RoundedRect).TitleColor(UIControlState.Normal);
-		static UIColor DisabledTextColor = new UIButton(UIButtonType.RoundedRect).TitleColor(UIControlState.Disabled);
-
-		public ComboBoxHandler()
-		{
-			Control = new EtoLabel { Handler = this };
-			Control.UserInteractionEnabled = true;
-			Control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
-			Control.Text = EmptyText;
-			Control.TextColor = ButtonTextColor;
-		}
-
-		public override bool Enabled
-		{
-			get { return base.Enabled; }
-			set
-			{
-				base.Enabled = value;
-				Control.TextColor = value ? ButtonTextColor : DisabledTextColor;
-			}
-		}
 
 		class DataSource : UIPickerViewDataSource
 		{
@@ -85,7 +28,7 @@ namespace Eto.iOS.Forms.Controls
 
 			public override int GetRowsInComponent(UIPickerView pickerView, int component)
 			{
-				var data = Handler.dataStore;
+				var data = Handler.collection;
 				return data != null ? data.Count : 0;
 			}
 		}
@@ -98,12 +41,12 @@ namespace Eto.iOS.Forms.Controls
 
 			public override string GetTitle(UIPickerView pickerView, int row, int component)
 			{
-				var data = Handler.dataStore;
-				return data != null ? data[row].Text : string.Empty;
+				var data = Handler.collection;
+				return data != null ? Handler.Widget.TextBinding.GetValue(data.ElementAt(row)) : string.Empty;
 			}
 		}
 
-		public UIPickerView CreatePicker()
+		public override UIPickerView CreatePicker()
 		{
 			var picker = new UIPickerView();
 			picker.ShowSelectionIndicator = true;
@@ -112,21 +55,34 @@ namespace Eto.iOS.Forms.Controls
 			return picker;
 		}
 
-		public UIToolbar CreateAccessoryView()
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
-			var tools = new UIToolbar();
-			tools.BarStyle = UIBarStyle.Default;
+			public ComboBoxHandler Handler { get; set; }
 
-			var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (s, ee) => {
-				var picker = (UIPickerView)Control.InputView;
-				SelectedIndex = picker.SelectedRowInComponent(0);
-				Control.ResignFirstResponder();
-			});
-			var cancelButton = new UIBarButtonItem(UIBarButtonSystemItem.Cancel, (s, ee) => Control.ResignFirstResponder());
+			public override void AddRange(IEnumerable<object> items)
+			{
+			}
 
-			tools.Items = new [] { cancelButton, new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace), doneButton };
-			tools.SizeToFit();
-			return tools;
+			public override void AddItem(object item)
+			{
+			}
+
+			public override void InsertItem(int index, object item)
+			{
+			}
+
+			public override void RemoveItem(int index)
+			{
+				if (Handler.SelectedIndex == index)
+				{
+					Handler.SelectedIndex = -1;
+				}
+			}
+
+			public override void RemoveAllItems()
+			{
+				Handler.SelectedIndex = -1;
+			}
 		}
 
 		public int SelectedIndex
@@ -137,36 +93,48 @@ namespace Eto.iOS.Forms.Controls
 				if (value != selectedIndex)
 				{
 					selectedIndex = value;
-					SetText();
+					UpdateText();
 					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
 
-		void SetText()
+		protected override string GetTextValue()
 		{
-			var oldSize = GetPreferredSize(SizeF.MaxValue);
-			if (dataStore != null && selectedIndex >= 0 && selectedIndex < dataStore.Count)
+			if (collection != null && selectedIndex >= 0 && selectedIndex < collection.Collection.Count())
 			{
-				var item = dataStore[selectedIndex];
-				Control.Text = item.Text;
+				var item = collection.ElementAt(selectedIndex);
+				return Widget.TextBinding.GetValue(item);
 			}
-			else
-				Control.Text = EmptyText;
-			LayoutIfNeeded(oldSize);
+			return null;
 		}
 
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
-			get { return dataStore; }
+			get { return collection != null ? collection.Collection : null; }
 			set
 			{
 				var index = selectedIndex;
 				selectedIndex = -1;
-				dataStore = value;
+				if (collection != null)
+					collection.Unregister();
+				collection = new CollectionHandler { Handler = this };
+				collection.Register(value);
 				SelectedIndex = index;
 			}
+		}
+
+		protected override void UpdateValue(UIPickerView picker)
+		{
+			SelectedIndex = picker.SelectedRowInComponent(0);
+		}
+
+		protected override void UpdatePicker(UIPickerView picker)
+		{
+			picker.ReloadAllComponents();
+			picker.Select(Math.Max(0, SelectedIndex), 0, false);
+			picker.SizeToFit();
 		}
 	}
 }

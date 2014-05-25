@@ -3,7 +3,7 @@ using System;
 namespace Eto
 {
 	/// <summary>
-	/// Mode of the <see cref="DualBinding"/>
+	/// Mode of the <see cref="DualBinding{T}"/>
 	/// </summary>
 	/// <remarks>
 	/// This specifies what direction the updates of each of the properties are automatically handled.
@@ -32,7 +32,7 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// This is ideal when you want to set the values of the destination, then only update the source
-		/// at certain times using the <see cref="DualBinding.Update"/> method.
+		/// at certain times using the <see cref="DualBinding{T}.Update"/> method.
 		/// </remarks>
 		OneTime
 	}
@@ -42,22 +42,22 @@ namespace Eto
 	/// </summary>
 	/// <remarks>
 	/// The DualBinding is the most useful binding, as it allows you to bind two objects together.
-	/// This differs from the <see cref="IndirectBinding"/> where it only specifies how to get/set the value from a single object.
+	/// This differs from the <see cref="IndirectBinding{T}"/> where it only specifies how to get/set the value from a single object.
 	/// 
 	/// </remarks>
-	public class DualBinding : Binding
+	public class DualBinding<T> : Binding
 	{
 		bool channeling;
 		
 		/// <summary>
 		/// Gets the source binding
 		/// </summary>
-		public DirectBinding Source { get; private set; }
+		public DirectBinding<T> Source { get; private set; }
 
 		/// <summary>
 		/// Gets the destination binding
 		/// </summary>
-		public DirectBinding Destination { get; private set; }
+		public DirectBinding<T> Destination { get; private set; }
 
 		/// <summary>
 		/// Gets the mode of the binding
@@ -74,8 +74,8 @@ namespace Eto
 		/// <param name="mode">Mode of the binding</param>
 		public DualBinding (object source, string sourceProperty, object destination, string destinationProperty, DualBindingMode mode = DualBindingMode.TwoWay)
 			: this (
-				new ObjectBinding(source, sourceProperty),
-				new ObjectBinding(destination, destinationProperty),
+				new ObjectBinding<T>(source, sourceProperty),
+				new ObjectBinding<T>(destination, destinationProperty),
 				mode
 				)
 		{
@@ -87,7 +87,7 @@ namespace Eto
 		/// <param name="source">Binding for retrieving the source value from</param>
 		/// <param name="destination">Binding for setting the destination value to</param>
 		/// <param name="mode">Mode of the binding</param>
-		public DualBinding (DirectBinding source, DirectBinding destination, DualBindingMode mode = DualBindingMode.TwoWay)
+		public DualBinding (DirectBinding<T> source, DirectBinding<T> destination, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			this.Source = source;
 			this.Destination = destination;

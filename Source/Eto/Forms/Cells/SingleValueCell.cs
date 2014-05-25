@@ -2,9 +2,9 @@ using System;
 
 namespace Eto.Forms
 {
-	public abstract class SingleValueCell : Cell
+	public abstract class SingleValueCell<T> : Cell
 	{
-		public IndirectBinding Binding { get; set; }
+		public IIndirectBinding<T> Binding { get; set; }
 
 		protected SingleValueCell()
 		{

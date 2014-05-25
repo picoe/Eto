@@ -12,14 +12,12 @@ namespace Eto.Wpf.Forms.Controls
 		string GetValue (object dataItem)
 		{
 			if (Widget.Binding != null) {
-				var val = Widget.Binding.GetValue (dataItem);
-				if (val != null)
-					return Convert.ToString (val);
+				return Widget.Binding.GetValue (dataItem);
 			}
 			return null;
 		}
 
-		void SetValue (object dataItem, object value)
+		void SetValue (object dataItem, string value)
 		{
 			if (Widget.Binding != null) {
 				Widget.Binding.SetValue (dataItem, value);
@@ -65,7 +63,6 @@ namespace Eto.Wpf.Forms.Controls
 				Handler.SetValue (control.DataContext, control.Text);
 				return true;
 			}
-
 		}
 
 		public TextBoxCellHandler ()

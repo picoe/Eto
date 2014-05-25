@@ -11,37 +11,38 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class ListBoxHandler : IosView<UITableView, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
-		CollectionChangedHandler<IListItem, IListStore> collection;
+		CollectionHandler collection;
 
 		public override UIView ContainerControl { get { return Control; } }
-		
+
 		class DataSource : UITableViewDataSource
 		{
-			 static NSString kCellIdentifier = new NSString ("cell");
+			static readonly NSString kCellIdentifier = new NSString("cell");
 
 			public ListBoxHandler Handler { get; set; }
 
-			public override int RowsInSection (UITableView tableView, int section)
+			public override int RowsInSection(UITableView tableView, int section)
 			{
-				return Handler.collection != null ? Handler.collection.Collection.Count : 0;
+				return Handler.collection != null ? Handler.collection.Collection.Count() : 0;
 			}
 
-			public override int NumberOfSections (UITableView tableView)
+			public override int NumberOfSections(UITableView tableView)
 			{
 				return 1;
 			}
 
-			public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
+			public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 			{
 				var cell = tableView.DequeueReusableCell(kCellIdentifier);
-				if (cell == null) {
+				if (cell == null)
+				{
 					cell = new UITableViewCell(UITableViewCellStyle.Default, kCellIdentifier);
 				}
-				var item = Handler.collection.Collection[indexPath.Row];
-				cell.TextLabel.Text = item.Text;
-				var imageItem = item as IImageListItem;
-				if (imageItem != null)
-					cell.ImageView.Image = imageItem.Image.ToUI ();
+				var item = Handler.collection.ElementAt(indexPath.Row);
+				cell.TextLabel.Text = Handler.Widget.TextBinding.GetValue(item);
+				var imageBinding = Handler.Widget.ImageBinding;
+				if (imageBinding != null)
+					cell.ImageView.Image = imageBinding.GetValue(item).ToUI();
 				else
 					cell.ImageView.Image = null;
 				return cell;
@@ -52,77 +53,80 @@ namespace Eto.iOS.Forms.Controls
 		{
 			public ListBoxHandler Handler { get; set; }
 
-			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
+			public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 			{
 				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
-		
-		public ListBoxHandler ()
+
+		public ListBoxHandler()
 		{
-			Control = new UITableView ();
+			Control = new UITableView();
 			Control.DataSource = new DataSource{ Handler = this };
 			Control.Delegate = new Delegate { Handler = this };
 		}
-		
-		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ListBoxHandler Handler { get; set; }
-			
-			protected override void OnRegisterCollection (EventArgs e)
+
+			protected override void OnRegisterCollection(EventArgs e)
 			{
-				Handler.Control.ReloadData ();
-			}
-			protected override void OnUnregisterCollection (EventArgs e)
-			{
-				Handler.Control.ReloadData ();
-			}
-			public override void AddItem (IListItem item)
-			{
-				Handler.Control.ReloadData ();
+				Handler.Control.ReloadData();
 			}
 
-			public override void InsertItem (int index, IListItem item)
+			protected override void OnUnregisterCollection(EventArgs e)
 			{
-				Handler.Control.ReloadData ();
+				Handler.Control.ReloadData();
 			}
 
-			public override void RemoveItem (int index)
+			public override void AddItem(object item)
 			{
-				Handler.Control.ReloadData ();
+				Handler.Control.ReloadData();
 			}
 
-			public override void RemoveAllItems ()
+			public override void InsertItem(int index, object item)
 			{
-				Handler.Control.ReloadData ();
+				Handler.Control.ReloadData();
 			}
 
-			protected override int InternalIndexOf (IListItem item)
+			public override void RemoveItem(int index)
 			{
-				return -1; // TODO
+				Handler.Control.ReloadData();
+			}
+
+			public override void RemoveAllItems()
+			{
+				Handler.Control.ReloadData();
 			}
 		}
-		
-		public IListStore DataStore {
-			get {
+
+		public IEnumerable<object> DataStore
+		{
+			get
+			{
 				return collection != null ? collection.Collection : null;
 			}
-			set {
-				if (collection != null) {
+			set
+			{
+				if (collection != null)
+				{
 					var oldcollection = collection;
 					collection = null;
-					oldcollection.Unregister ();
+					oldcollection.Unregister();
 				}
-				if (value != null) {
+				if (value != null)
+				{
 					collection = new CollectionHandler { Handler = this };
-					collection.Register (value);
+					collection.Register(value);
 				}
 			}
 		}
-		
-		public int SelectedIndex {
+
+		public int SelectedIndex
+		{
 			get	{ return Control.IndexPathForSelectedRow != null ? Control.IndexPathForSelectedRow.Row : -1; }
-			set { Control.SelectRow (NSIndexPath.FromRowSection (value, 0), true, UITableViewScrollPosition.Middle); }
+			set { Control.SelectRow(NSIndexPath.FromRowSection(value, 0), true, UITableViewScrollPosition.Middle); }
 		}
 
 		public ContextMenu ContextMenu

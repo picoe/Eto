@@ -60,28 +60,28 @@ namespace Eto.Test.Sections.Drawing
 		Control StartFiguresControl()
 		{
 			var control = new CheckBox { Text = "Start Figures" };
-			control.CheckedBinding.Bind(this, r => r.StartFigures, (r,val) => { r.StartFigures = val ?? false; Refresh(); });
+			control.CheckedBinding.Bind(() => StartFigures, val => { StartFigures = val ?? false; Refresh(); });
 			return control;
 		}
 
 		Control CloseFiguresControl()
 		{
 			var control = new CheckBox { Text = "Close Figures" };
-			control.CheckedBinding.Bind(this, r => r.CloseFigures, (r,val) => { r.CloseFigures = val ?? false; Refresh(); });
+			control.CheckedBinding.Bind(() => CloseFigures, val => { CloseFigures = val ?? false; Refresh(); });
 			return control;
 		}
 
 		Control ConnectPathControl()
 		{
 			var control = new CheckBox { Text = "Connect Paths" };
-			control.CheckedBinding.Bind(this, r => r.ConnectPath, (r,val) => { r.ConnectPath = val ?? false; Refresh(); });
+			control.CheckedBinding.Bind(() => ConnectPath, val => { ConnectPath = val ?? false; Refresh(); });
 			return control;
 		}
 
 		Control PenThicknessControl()
 		{
 			var control = new NumericUpDown { MinValue = 1, MaxValue = 100 };
-			control.ValueBinding.Bind(this, r => r.PenThickness, (r,val) => { r.PenThickness = (float)val; Refresh(); });
+			control.ValueBinding.Bind(() => PenThickness, val => { PenThickness = (float)val; Refresh(); });
 
 			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.AddRow(new Label { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
@@ -91,14 +91,14 @@ namespace Eto.Test.Sections.Drawing
 		Control PenJoinControl()
 		{
 			var control = new EnumComboBox<PenLineJoin>();
-			control.SelectedValueBinding.Bind(this, r => r.LineJoin, (r,val) => { r.LineJoin = val; Refresh(); });
+			control.SelectedValueBinding.Bind(() => LineJoin, val => { LineJoin = val; Refresh(); });
 			return control;
 		}
 
 		Control PenCapControl()
 		{
 			var control = new EnumComboBox<PenLineCap>();
-			control.SelectedValueBinding.Bind(this, r => r.LineCap, (r,val) => { r.LineCap = val; Refresh(); });
+			control.SelectedValueBinding.Bind(() => LineCap, val => { LineCap = val; Refresh(); });
 			return control;
 		}
 

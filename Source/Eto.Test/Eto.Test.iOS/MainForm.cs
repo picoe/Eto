@@ -8,18 +8,21 @@ namespace Eto.Test.iOS
 		Navigation nav;
 		Splitter splitter;
 
-		public MainForm ()
+		public MainForm()
 		{
-			nav = new Navigation ();
+			nav = new Navigation();
 
-			if (Splitter.IsSupported) {
+			if (Splitter.IsSupported)
+			{
 				// ipad and tablets usually support this
 				splitter = new Splitter();
 
 				splitter.Panel1 = nav;
 				splitter.Panel2 = new Panel();
 				Content = splitter;
-			} else {
+			}
+			else
+			{
 				// show list directly for smartphones
 				Content = nav;
 			}
@@ -27,20 +30,21 @@ namespace Eto.Test.iOS
 			SetContent();
 		}
 
-		void SetContent ()
+		void SetContent()
 		{
-			var list = new ListBox ();
+			var list = new ListBox();
 			list.SelectedIndexChanged += HandleListItemSelected;
-			for (int i = 0; i<1000; i++) {
-				list.Items.Add ("Item " + i);
+			for (int i = 0; i < 1000; i++)
+			{
+				list.Items.Add("Item " + i);
 			}
-			nav.Push (list, "Test");
+			nav.Push(list, "Test");
 		}
 
-		void HandleListItemSelected (object sender, EventArgs e)
+		void HandleListItemSelected(object sender, EventArgs e)
 		{
 			var list = sender as ListBox;
-			MessageBox.Show (this, string.Format ("You selected {0}!", list.SelectedValue.Text));
+			MessageBox.Show(this, string.Format("You selected {0}!", ((ListItem)list.SelectedValue).Text));
 		}
 	}
 }

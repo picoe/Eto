@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -87,7 +88,7 @@ namespace Eto.Forms
 		{
 		}
 
-		protected override ListItemCollection CreateDefaultItems ()
+		protected override IEnumerable<object> CreateDefaultDataStore()
 		{
 			var type = typeof (T);
 			if (!type.IsEnum()) throw new EtoException ("T must be an enumeration");

@@ -141,7 +141,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		{
 			if (Widget.TextBinding != null)
 			{
-				Widget.TextBinding.SetValue(dataItem, value);
+				Widget.TextBinding.SetValue(dataItem, Convert.ToString(value));
 			}
 		}
 

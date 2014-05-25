@@ -4,18 +4,18 @@ using System;
 namespace Eto.Forms
 {
 	[Handler(typeof(CheckBoxCell.IHandler))]
-	public class CheckBoxCell : SingleValueCell
+	public class CheckBoxCell : SingleValueCell<bool?>
 	{
 		public CheckBoxCell (int column)
 			: this()
 		{
-			Binding = new ColumnBinding (column);
+			Binding = new ColumnBinding<bool?> (column);
 		}
 		
 		public CheckBoxCell (string property)
 			: this()
 		{
-			Binding = new PropertyBinding (property);
+			Binding = new PropertyBinding<bool?> (property);
 		}
 
 		public CheckBoxCell()
@@ -28,7 +28,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public new interface IHandler : SingleValueCell.IHandler
+		public new interface IHandler : SingleValueCell<bool?>.IHandler
 		{
 		}
 	}

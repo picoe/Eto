@@ -2,6 +2,8 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -65,18 +67,22 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
+		public class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ComboBoxHandler Handler { get; set; }
 
-			public override void AddItem(IListItem item)
+			public override void AddItem(object item)
 			{
-				Handler.listStore.AppendValues(item.Text);
+				var binding = Handler.Widget.TextBinding;
+				Handler.listStore.AppendValues(binding.GetValue(item));
+				Handler.Control.QueueResize();
 			}
 
-			public override void InsertItem(int index, IListItem item)
+			public override void InsertItem(int index, object item)
 			{
-				Handler.listStore.InsertWithValues(index, item.Text);
+				var binding = Handler.Widget.TextBinding;
+				Handler.listStore.InsertWithValues(index, binding.GetValue(item));
+				Handler.Control.QueueResize();
 			}
 
 			public override void RemoveItem(int index)
@@ -84,15 +90,17 @@ namespace Eto.GtkSharp.Forms.Controls
 				Gtk.TreeIter iter;
 				if (Handler.listStore.IterNthChild(out iter, index))
 					Handler.listStore.Remove(ref iter);
+				Handler.Control.QueueResize();
 			}
 
 			public override void RemoveAllItems()
 			{
 				Handler.listStore.Clear();
+				Handler.Control.QueueResize();
 			}
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection != null ? collection.Collection : null; }
 			set

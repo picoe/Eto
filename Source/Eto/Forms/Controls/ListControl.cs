@@ -1,12 +1,14 @@
 using System;
 using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
 	public interface IListStore : IDataStore<IListItem>
 	{
 	}
-	
+
 	public class ListItemCollection : DataStoreCollection<IListItem>, IListStore
 	{
 		public void Add(string text)
@@ -20,10 +22,52 @@ namespace Eto.Forms
 		}
 	}
 
+	class ListItemTextBinding : PropertyBinding<string>
+	{
+		public ListItemTextBinding()
+			: base("Text")
+		{
+		}
+
+		protected override string InternalGetValue(object dataItem)
+		{
+			var item = dataItem as IListItem;
+			return item != null ? item.Text : base.InternalGetValue(dataItem);
+		}
+
+		protected override void InternalSetValue(object dataItem, string value)
+		{
+			var item = dataItem as IListItem;
+			if (item != null)
+				item.Text = Convert.ToString(value);
+			else
+				base.InternalSetValue(dataItem, value);
+		}
+
+	}
+
+	class ListItemKeyBinding : PropertyBinding<string>
+	{
+		public ListItemKeyBinding()
+			: base("Key")
+		{
+		}
+
+		protected override string InternalGetValue(object dataItem)
+		{
+			var item = dataItem as IListItem;
+			return item != null ? item.Key : base.InternalGetValue(dataItem);
+		}
+	}
+
 	[ContentProperty("Items")]
 	public abstract class ListControl : CommonControl
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
+
+		public IIndirectBinding<string> TextBinding { get; set; }
+
+		public IIndirectBinding<string> KeyBinding { get; set; }
 
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
@@ -44,29 +88,33 @@ namespace Eto.Forms
 
 		protected ListControl()
 		{
+			TextBinding = new ListItemTextBinding();
+			KeyBinding = new ListItemKeyBinding();
 		}
 
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ListControl(Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+			: base(g, type, initialize)
 		{
+			TextBinding = new ListItemTextBinding();
+			KeyBinding = new ListItemKeyBinding();
 		}
-		
+
 		public ListItemCollection Items
 		{
 			get
 			{
-				var items = (ListItemCollection)DataStore;
+				var items = DataStore as ListItemCollection;
 				if (items == null)
 				{
-					items = CreateDefaultItems();
+					items = (ListItemCollection)CreateDefaultDataStore();
 					DataStore = items;
 				}
 				return items;
 			}
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return Handler.DataStore; }
 			set { Handler.DataStore = value; }
@@ -78,33 +126,50 @@ namespace Eto.Forms
 			set { Handler.SelectedIndex = value; }
 		}
 
-		public IListItem SelectedValue
+		public object SelectedValue
 		{
-			get { return (SelectedIndex >= 0) ? Items[SelectedIndex] : null; }
-			set { SelectedIndex = Items.IndexOf(value); }
+			get { return (SelectedIndex >= 0 && Handler.DataStore != null) ? Handler.DataStore.StoreElementAt(SelectedIndex) : null; }
+			set
+			{
+				EnsureDataStore();
+				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.IndexOf(value) : -1;
+			}
 		}
-		
+
 		public string SelectedKey
 		{
-			get { return (SelectedIndex >= 0) ? Items[SelectedIndex].Key : null; }
+			get { return KeyBinding.GetValue(SelectedValue); }
 			set
-			{ 
-				var val = Items.FirstOrDefault(r => r.Key == value);
-				if (val != null)
-					SelectedIndex = Items.IndexOf(val);
+			{
+				EnsureDataStore();
+				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.FindIndex(r => KeyBinding.GetValue(r) == value) : -1;
 			}
 		}
 
 		protected override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			if (DataStore == null)
-				DataStore = CreateDefaultItems();
+			EnsureDataStore();
 		}
 
+		[Obsolete("Use CreateDefaultDataStore")]
 		protected virtual ListItemCollection CreateDefaultItems()
 		{
 			return new ListItemCollection();
+		}
+
+		internal void EnsureDataStore()
+		{
+			if (DataStore == null)
+				DataStore = CreateDefaultDataStore();
+		}
+
+
+		protected virtual IEnumerable<object> CreateDefaultDataStore()
+		{
+			#pragma warning disable 612,618
+			return CreateDefaultItems();
+			#pragma warning restore 612,618
 		}
 
 		public ObjectBinding<ListControl, int> SelectedIndexBinding
@@ -135,11 +200,11 @@ namespace Eto.Forms
 			}
 		}
 
-		public ObjectBinding<ListControl, IListItem> SelectedValueBinding
+		public ObjectBinding<ListControl, object> SelectedValueBinding
 		{
 			get
 			{
-				return new ObjectBinding<ListControl, IListItem>(
+				return new ObjectBinding<ListControl, object>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 
@@ -155,7 +220,10 @@ namespace Eto.Forms
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
 		/// </summary>
 		/// <returns>The callback instance to use for this widget</returns>
-		protected override object GetCallback() { return callback; }
+		protected override object GetCallback()
+		{
+			return callback;
+		}
 
 		public new interface ICallback : CommonControl.ICallback
 		{
@@ -172,7 +240,7 @@ namespace Eto.Forms
 
 		public new interface IHandler : CommonControl.IHandler
 		{
-			IListStore DataStore { get; set; }
+			IEnumerable<object> DataStore { get; set; }
 
 			int SelectedIndex { get; set; }
 		}

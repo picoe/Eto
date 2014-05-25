@@ -1,19 +1,20 @@
 using System;
+using Eto.Drawing;
 
 
 namespace Eto.Forms
 {
 	[Handler(typeof(ImageViewCell.IHandler))]
-	public class ImageViewCell : SingleValueCell
+	public class ImageViewCell : SingleValueCell<Image>
 	{
 		public ImageViewCell (int column)
 		{
-			Binding = new ColumnBinding (column);
+			Binding = new ColumnBinding<Image> (column);
 		}
 		
 		public ImageViewCell (string property)
 		{
-			Binding = new PropertyBinding (property);
+			Binding = new PropertyBinding<Image> (property);
 		}
 
 		public ImageViewCell()
@@ -26,7 +27,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public new interface IHandler : SingleValueCell.IHandler
+		public new interface IHandler : SingleValueCell<Image>.IHandler
 		{
 		}
 	}

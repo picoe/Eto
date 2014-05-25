@@ -57,7 +57,7 @@ namespace Eto.Test.Sections.Drawing
 			ScaleX = 100f;
 			ScaleY = 100f;
 
-			drawable = new Drawable { Size = new Size (300, 200) };
+			drawable = new Drawable { Size = new Size(300, 200) };
 
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
@@ -91,13 +91,14 @@ namespace Eto.Test.Sections.Drawing
 			control.Items.Add(new BrushItem { Text = "Texture", Brush = textureBrush, SupportsMatrix = true });
 			control.Items.Add(new BrushItem { Text = "Gradient", Brush = gradientBrush, SupportsMatrix = true, SupportsGradient = true });
 			control.SelectedValue = control.Items.OfType<BrushItem>().First(r => r.Brush == brush);
-			control.SelectedValueChanged += (sender, e) => {
+			control.SelectedValueChanged += (sender, e) =>
+			{
 				var item = (BrushItem)control.SelectedValue;
 				if (item != null)
 					SetItem(item);
 			};
 			LoadComplete += (sender, e) => SetItem(control.SelectedValue as BrushItem);
-			control.SelectedValueChanged += Refresh;
+			control.SelectedValueChanged += (sender, e) => Refresh();
 			return control;
 		}
 
@@ -112,85 +113,105 @@ namespace Eto.Test.Sections.Drawing
 		Control ScaleXControl()
 		{
 			var control = new NumericUpDown { MinValue = 1, MaxValue = 1000 };
-			control.Bind(c => c.Value, this, c => c.ScaleX);
-			control.ValueChanged += Refresh;
+			control.ValueBinding.Bind(() => ScaleX, v =>
+			{
+				ScaleX = (float)v;
+				Refresh();
+			});
 			return control;
 		}
 
 		Control ScaleYControl()
 		{
 			var control = new NumericUpDown { MinValue = 1, MaxValue = 1000 };
-			control.Bind(c => c.Value, this, c => c.ScaleY);
-			control.ValueChanged += Refresh;
+			control.ValueBinding.Bind(() => ScaleY, v =>
+			{
+				ScaleY = (float)v;
+				Refresh();
+			});
 			return control;
 		}
 
 		Control RotationControl()
 		{
 			var control = new NumericUpDown { MinValue = 0, MaxValue = 360 };
-			control.Bind(c => c.Value, this, c => c.Rotation);
-			control.ValueChanged += Refresh;
+			control.ValueBinding.Bind(() => Rotation, v =>
+			{
+				Rotation = (float)v;
+				Refresh();
+			});
 			return control;
 		}
 
 		Control OffsetXControl()
 		{
 			var control = new NumericUpDown();
-			control.Bind (c => c.Value, this, c => c.OffsetX);
-			control.ValueChanged += Refresh;
+			control.ValueBinding.Bind(() => OffsetX, v =>
+			{
+				OffsetX = (float)v;
+				Refresh();
+			});
 			return control;
 		}
-		
-		Control OffsetYControl ()
+
+		Control OffsetYControl()
 		{
 			var control = new NumericUpDown();
-			control.Bind (c => c.Value, this, c => c.OffsetY);
-			control.ValueChanged += Refresh;
+			control.ValueBinding.Bind(() => OffsetY, v =>
+			{
+				OffsetY = (float)v;
+				Refresh();
+			});
 			return control;
 		}
 
-		Control GradientWrapControl ()
+		Control GradientWrapControl()
 		{
-			var control = new EnumComboBox<GradientWrapMode> ();
-			control.Bind (c => c.SelectedValue, this, c => c.GradientWrap);
-			control.SelectedValueChanged += Refresh;
+			var control = new EnumComboBox<GradientWrapMode>();
+			control.SelectedValueBinding.Bind(() => GradientWrap, v =>
+			{
+				GradientWrap = v;
+				Refresh();
+			});
 			return control;
 		}
 
-		Control UseBackgroundColorControl ()
+		Control UseBackgroundColorControl()
 		{
 			var control = new CheckBox { Text = "Use Background Color" };
-			control.Bind (c => c.Checked, this, c => c.UseBackgroundColor);
+			control.CheckedBinding.Bind(() => UseBackgroundColor, v => UseBackgroundColor = v ?? false);
 			return control;
 		}
-		
-		void Refresh (object sender, EventArgs e)
+
+		void Refresh()
 		{
-			drawable.Invalidate ();
+			drawable.Invalidate();
 		}
 
-		void Draw (Graphics g)
+		void Draw(Graphics g)
 		{
 			var matrix = Matrix.Create();
-			matrix.Translate (OffsetX, OffsetY);
-			matrix.Scale (Math.Max (ScaleX / 100f, 0.1f), Math.Max (ScaleY / 100f, 0.1f));
-			matrix.Rotate (Rotation);
+			matrix.Translate(OffsetX, OffsetY);
+			matrix.Scale(Math.Max(ScaleX / 100f, 0.1f), Math.Max(ScaleY / 100f, 0.1f));
+			matrix.Rotate(Rotation);
 			var tb = brush as ITransformBrush;
-			if (tb != null) {
+			if (tb != null)
+			{
 				tb.Transform = matrix;
 			}
 			var gb = brush as LinearGradientBrush;
-			if (gb != null) {
+			if (gb != null)
+			{
 				gb.Wrap = GradientWrap;
 			}
 
-			var rect = new RectangleF (0, 0, 200, 100);
-			g.FillEllipse (brush, rect);
-			g.DrawEllipse (Colors.Black, rect);
+			var rect = new RectangleF(0, 0, 200, 100);
+			g.FillEllipse(brush, rect);
+			g.DrawEllipse(Colors.Black, rect);
 			
-			rect = new RectangleF (0, 110, 200, 80);
-			g.FillRectangle (brush, rect);
-			g.DrawRectangle (Colors.Black, rect);
+			rect = new RectangleF(0, 110, 200, 80);
+			g.FillRectangle(brush, rect);
+			g.DrawRectangle(Colors.Black, rect);
 		}
 	}
 }

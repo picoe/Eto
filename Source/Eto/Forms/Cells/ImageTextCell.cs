@@ -1,4 +1,5 @@
 using System;
+using Eto.Drawing;
 
 
 namespace Eto.Forms
@@ -6,20 +7,20 @@ namespace Eto.Forms
 	[Handler(typeof(ImageTextCell.IHandler))]
 	public class ImageTextCell : Cell
 	{
-		public IndirectBinding ImageBinding { get; set; }
+		public IIndirectBinding<Image> ImageBinding { get; set; }
 		
-		public IndirectBinding TextBinding { get; set; }
+		public IIndirectBinding<string> TextBinding { get; set; }
 		
 		public ImageTextCell (int imageColumn, int textColumn)
 		{
-			ImageBinding = new ColumnBinding (imageColumn);
-			TextBinding = new ColumnBinding (textColumn);
+			ImageBinding = new ColumnBinding<Image> (imageColumn);
+			TextBinding = new ColumnBinding<string> (textColumn);
 		}
 		
 		public ImageTextCell (string imageProperty, string textProperty)
 		{
-			ImageBinding = new PropertyBinding(imageProperty);
-			TextBinding = new PropertyBinding(textProperty);
+			ImageBinding = new PropertyBinding<Image>(imageProperty);
+			TextBinding = new PropertyBinding<string>(textProperty);
 		}
 		
 		public ImageTextCell()

@@ -72,29 +72,44 @@ namespace Eto.WinForms
 			get { return Control.SelectedIndex; }
 			set { Control.SelectedIndex = value; }
 		}
+		class Item
+		{
+			public IIndirectBinding<string> Binding { get; set; }
+			public object Value { get; set; }
+			public override string ToString()
+			{
+				return Binding.GetValue(Value);
+			}
+			public Item(IIndirectBinding<string> binding, object value)
+			{
+				Binding = binding;
+				Value = value;
+			}
+		}
 
-		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ComboBoxHandler Handler { get; set; }
 
-			public override int IndexOf(IListItem item)
+			public override int IndexOf(object item)
 			{
 				return Handler.Control.Items.IndexOf(item);
 			}
 
-			public override void AddRange(IEnumerable<IListItem> items)
+			public override void AddRange(IEnumerable<object> items)
 			{
-				Handler.Control.Items.AddRange(items.ToArray());
+				var binding = Handler.Widget.TextBinding;
+				Handler.Control.Items.AddRange(items.Select(r => new Item(binding, r)).ToArray());
 				Handler.UpdateSizes();
 			}
 
-			public override void AddItem(IListItem item)
+			public override void AddItem(object item)
 			{
 				Handler.Control.Items.Add(item);
 				Handler.UpdateSizes();
 			}
 
-			public override void InsertItem(int index, IListItem item)
+			public override void InsertItem(int index, object item)
 			{
 				Handler.Control.Items.Insert(index, item);
 				Handler.UpdateSizes();
@@ -120,7 +135,7 @@ namespace Eto.WinForms
 			Control.ResetSize();
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection != null ? collection.Collection : null; }
 			set

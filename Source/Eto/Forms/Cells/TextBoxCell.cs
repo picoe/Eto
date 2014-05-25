@@ -4,16 +4,16 @@ using System;
 namespace Eto.Forms
 {
 	[Handler(typeof(IHandler))]
-	public class TextBoxCell : SingleValueCell
+	public class TextBoxCell : SingleValueCell<string>
 	{
 		public TextBoxCell (int column)
 		{
-			Binding = new ColumnBinding (column);
+			Binding = new ColumnBinding<string> (column);
 		}
 		
 		public TextBoxCell (string property)
 		{
-			Binding = new PropertyBinding (property);
+			Binding = new PropertyBinding<string> (property);
 		}
 		
 		public TextBoxCell()
@@ -26,7 +26,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public new interface IHandler : SingleValueCell.IHandler
+		public new interface IHandler : SingleValueCell<string>.IHandler
 		{
 		}
 	}

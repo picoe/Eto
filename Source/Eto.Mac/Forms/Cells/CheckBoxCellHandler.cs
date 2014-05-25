@@ -92,14 +92,7 @@ namespace Eto.Mac.Forms.Controls
 			if (Widget.Binding != null) {
 				NSCellStateValue state = NSCellStateValue.Off;
 				var val = Widget.Binding.GetValue(dataItem);
-				if (val is bool?) {
-					var boolVal = (bool?)val;
-					state = boolVal != null ? boolVal.Value ? NSCellStateValue.On : NSCellStateValue.Off : NSCellStateValue.Mixed;
-				}
-				else if (val is bool) {
-					var boolVal = (bool)val;
-					state = boolVal ? NSCellStateValue.On : NSCellStateValue.Off;
-				}
+				state = val != null ? val.Value ? NSCellStateValue.On : NSCellStateValue.Off : NSCellStateValue.Mixed;
 				return new NSNumber((int)state);
 			}
 			return new NSNumber ((int)NSCellStateValue.Off);

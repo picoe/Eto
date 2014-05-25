@@ -287,6 +287,9 @@
     <Compile Include="Generators.cs" />
     <Compile Include="HandlerAttribute.cs" />
     <Compile Include="AutoInitializeAttribute.cs" />
+    <Compile Include="..\Shared\EnumerableExtensions.cs">
+      <Link>EnumerableExtensions.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

@@ -100,7 +100,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control AttachToParentCheckBox()
 		{
 			var control = new CheckBox { Text = "Attach to Parent Window" };
-			var binding = new ObjectBinding<MessageBoxSection, bool>(this, r => r.AttachToParent, (r, val) => r.AttachToParent = val);
+			var binding = new ObjectBinding<MessageBoxSection, bool?>(this, r => r.AttachToParent, (r, val) => r.AttachToParent = val ?? false);
 			control.CheckedBinding.Bind(binding);
 			return control;
 		}

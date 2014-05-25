@@ -184,6 +184,7 @@
       <Link>Forms\MacPanel.cs</Link>
     </Compile>
     <Compile Include="Platform.cs" />
+    <Compile Include="Forms\Controls\BasePickerHandler.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

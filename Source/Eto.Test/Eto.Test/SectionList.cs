@@ -183,7 +183,7 @@ namespace Eto.Test
 			this.treeView = new TreeGridView();
 			treeView.Style = "sectionList";
 			treeView.ShowHeader = false;
-			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding("Text") } });
+			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding<string>("Text") } });
 			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
 			treeView.SelectedItemChanged += OnSelectedItemChanged;
 		}

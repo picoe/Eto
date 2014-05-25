@@ -2,29 +2,21 @@ using System;
 
 namespace Eto
 {
-	public class DelegateBinding<TValue> : DirectBinding
+	public class DelegateBinding<TValue> : DirectBinding<TValue>
 	{
 		public Func<TValue> GetValue { get; set; }
 
 		public Action<TValue> SetValue { get; set; }
-
-		public Func<object, TValue> ChangeType { get; set; }
 
 		public Action<EventHandler<EventArgs>> AddChangeEvent { get; set; }
 
 		public Action<EventHandler<EventArgs>> RemoveChangeEvent { get; set; }
 
 
-		public override object DataValue
+		public override TValue DataValue
 		{
 			get { return GetValue(); }
-			set
-			{ 
-				if (value is TValue)
-					SetValue((TValue)value);
-				if (ChangeType != null)
-					SetValue(ChangeType(value));
-			}
+			set { SetValue(value); }
 		}
 
 		void HandleChangedEvent(object sender, EventArgs e)
@@ -40,7 +32,8 @@ namespace Eto
 			switch (id)
 			{
 				case DataValueChangedEvent:
-					AddChangeEvent(new EventHandler<EventArgs>(HandleChangedEvent));
+					if (AddChangeEvent != null)
+						AddChangeEvent(new EventHandler<EventArgs>(HandleChangedEvent));
 					break;
 				default:
 					base.HandleEvent(id);
@@ -56,7 +49,8 @@ namespace Eto
 			switch (id)
 			{
 				case DataValueChangedEvent:
-					RemoveChangeEvent(new EventHandler<EventArgs>(HandleChangedEvent));
+					if (RemoveChangeEvent != null)
+						RemoveChangeEvent(new EventHandler<EventArgs>(HandleChangedEvent));
 					break;
 				default:
 					base.RemoveEvent(id);
@@ -70,10 +64,8 @@ namespace Eto
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class DelegateBinding<T, TValue> : IndirectBinding
+	public class DelegateBinding<T, TValue> : IndirectBinding<TValue>
 	{
-		static readonly Type underlyingType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
-
 		public new Func<T, TValue> GetValue { get; set; }
 
 		public new Action<T, TValue> SetValue { get; set; }
@@ -101,33 +93,17 @@ namespace Eto
 				throw new ArgumentException("You must either specify both the add and remove change event delegates, or pass null for both");
 		}
 
-		protected override object InternalGetValue(object dataItem)
+		protected override TValue InternalGetValue(object dataItem)
 		{
 			if (GetValue != null && dataItem != null)
 				return GetValue((T)dataItem);
 			return DefaultGetValue;
 		}
 
-		protected virtual TValue ChangeType(object value)
-		{
-#if PCL
-			// TODO: what do we need to do about DBNull here? 
-			// See http://stackoverflow.com/questions/21357321/handling-missing-types-in-pcl-with-real-types-existing-on-some-of-the-platforms
-
-			return (value == null) // || DBNull.Value.Equals(value))  
-				? DefaultSetValue
-				: (TValue)Convert.ChangeType(value, underlyingType);
-#else
-			return (value == null || DBNull.Value.Equals(value)) 
-				? DefaultSetValue
-				: (TValue)Convert.ChangeType(value, underlyingType);
-#endif
-		}
-
-		protected override void InternalSetValue(object dataItem, object value)
+		protected override void InternalSetValue(object dataItem, TValue value)
 		{
 			if (SetValue != null && dataItem != null)
-				SetValue((T)dataItem, ChangeType(value));
+				SetValue((T)dataItem, value);
 		}
 
 		/// <summary>

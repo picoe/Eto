@@ -5,12 +5,14 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace Eto.Wpf.Forms.Controls
 {
 	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
-		IListStore store;
+		IEnumerable<object> store;
 		ContextMenu contextMenu;
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
@@ -23,9 +25,9 @@ namespace Eto.Wpf.Forms.Controls
 			Control = new swc.ListBox();
 			Control.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
 			//Control.DisplayMemberPath = "Text";
-			var template = new sw.DataTemplate(typeof(IListItem));
+			var template = new sw.DataTemplate();
 
-			template.VisualTree = WpfListItemHelper.ItemTemplate(false);
+			template.VisualTree = new WpfImageTextBindingBlock(() => Widget.TextBinding, () => Widget.ImageBinding, false);
 			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate
 			{
@@ -75,14 +77,16 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override bool UseKeyPreview { get { return true; } }
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return store; }
 			set
 			{
 				store = value;
-				var source = store as ObservableCollection<IListItem>; 
-				Control.ItemsSource = source ?? new ObservableCollection<IListItem>(store.AsEnumerable());
+				var source = store as IEnumerable<object>;
+				if (!(source is INotifyCollectionChanged))
+					source = new ObservableCollection<object>(source);
+				Control.ItemsSource = source;
 			}
 		}
 

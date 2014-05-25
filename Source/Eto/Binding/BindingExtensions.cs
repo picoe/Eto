@@ -20,15 +20,24 @@ namespace Eto
 		/// <param name="sourceProperty">Source property from the data context.</param>
 		/// <param name="mode">Mode of the binding.</param>
 		/// <typeparam name="TWidget">The type of control.</typeparam>
-		/// <typeparam name="TWidgetProperty">The type of the widget property. Must be convertible to the TSourceProperty type</typeparam>
 		/// <typeparam name="TSource">The type of the source object.</typeparam>
-		/// <typeparam name="TSourceProperty">The type of the source property. Must be convertible to the TWidgetProperty type.</typeparam>
-		public static DualBinding Bind<TWidget,TWidgetProperty,TSource,TSourceProperty>(this TWidget control, Expression<Func<TWidget,TWidgetProperty>> controlProperty, TSource source, Expression<Func<TSource, TSourceProperty>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay)
+		/// <typeparam name="TValue">The type of the property.</typeparam>
+		public static DualBinding<TValue> Bind<TWidget,TSource,TValue>(this TWidget control, Expression<Func<TWidget,TValue>> controlProperty, TSource source, Expression<Func<TSource, TValue>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay)
 			where TWidget: Control
 		{
 			var controlExpression = (MemberExpression)controlProperty.Body;
-			var sourceExpression = (MemberExpression)sourceProperty.Body;
-			return control.Bind(controlExpression.Member.Name, source, sourceExpression.Member.Name, mode);
+			var sourceExpression = sourceProperty.Body as MemberExpression;
+			if (sourceExpression == null)
+			{
+				var unaryExpression = sourceProperty.Body as UnaryExpression;
+				if (unaryExpression != null && unaryExpression.NodeType == ExpressionType.Convert)
+				{
+					sourceExpression = unaryExpression.Operand as MemberExpression;
+				}
+			}
+			var binding = control.Bind<TValue>(controlExpression.Member.Name, source, sourceExpression.Member.Name, mode);
+
+			return binding;
 		}
 
 		/// <summary>
@@ -41,16 +50,22 @@ namespace Eto
 		/// <param name="defaultControlValue">Default control value, if the control value is null.</param>
 		/// <param name="defaultContextValue">Default context value, if the context value is null.</param>
 		/// <typeparam name="TWidget">The type of control.</typeparam>
-		/// <typeparam name="TWidgetProperty">The type of the widget property. Must be convertible to the TContextProperty type</typeparam>
-		/// <typeparam name="TContextProperty">The type of the context property. Must be convertible to the TWidgetProperty type.</typeparam>
 		/// <typeparam name="TContext">The type of the data context object.</typeparam>
 		[Obsolete("Use BindDataContext instead")]
-		public static DualBinding Bind<TWidget, TWidgetProperty, TContextProperty, TContext>(this TWidget control, Expression<Func<TWidget, TWidgetProperty>> controlProperty, Expression<Func<TContext, TContextProperty>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay, object defaultControlValue = null, object defaultContextValue = null)
+		public static DualBinding<TValue> Bind<TWidget,TContext,TValue>(this TWidget control, Expression<Func<TWidget, TValue>> controlProperty, Expression<Func<TContext, TValue>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
 			where TWidget : Control
 		{
 			var controlExpression = (MemberExpression)controlProperty.Body;
-			var sourceExpression = (MemberExpression)sourceProperty.Body;
-			return control.BindDataContext(controlExpression.Member.Name, sourceExpression.Member.Name, mode, defaultControlValue, defaultContextValue);
+			var sourceExpression = sourceProperty.Body as MemberExpression;
+			if (sourceExpression == null)
+			{
+				var unaryExpression = sourceProperty.Body as UnaryExpression;
+				if (unaryExpression != null && unaryExpression.NodeType == ExpressionType.Convert)
+				{
+					sourceExpression = unaryExpression.Operand as MemberExpression;
+				}
+			}
+			return control.BindDataContext<TValue>(controlExpression.Member.Name, sourceExpression.Member.Name, mode, defaultControlValue, defaultContextValue);
 		}
 
 		/// <summary>
@@ -63,15 +78,22 @@ namespace Eto
 		/// <param name="defaultControlValue">Default control value, if the control value is null.</param>
 		/// <param name="defaultContextValue">Default context value, if the context value is null.</param>
 		/// <typeparam name="TWidget">The type of control.</typeparam>
-		/// <typeparam name="TWidgetProperty">The type of the widget property. Must be convertible to the TContextProperty type</typeparam>
-		/// <typeparam name="TContextProperty">The type of the context property. Must be convertible to the TWidgetProperty type.</typeparam>
 		/// <typeparam name="TContext">The type of the data context object.</typeparam>
-		public static DualBinding BindDataContext<TWidget, TWidgetProperty, TContextProperty, TContext>(this TWidget control, Expression<Func<TWidget, TWidgetProperty>> controlProperty, Expression<Func<TContext, TContextProperty>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay, object defaultControlValue = null, object defaultContextValue = null)
+		/// <typeparam name="TValue">The type of the property.</typeparam>
+		public static DualBinding<TValue> BindDataContext<TWidget, TContext, TValue>(this TWidget control, Expression<Func<TWidget, TValue>> controlProperty, Expression<Func<TContext, TValue>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
 			where TWidget : Control
 		{
 			var controlExpression = (MemberExpression)controlProperty.Body;
-			var sourceExpression = (MemberExpression)sourceProperty.Body;
-			return control.BindDataContext(controlExpression.Member.Name, sourceExpression.Member.Name, mode, defaultControlValue, defaultContextValue);
+			var sourceExpression = sourceProperty.Body as MemberExpression;
+			if (sourceExpression == null)
+			{
+				var unaryExpression = sourceProperty.Body as UnaryExpression;
+				if (unaryExpression != null && unaryExpression.NodeType == ExpressionType.Convert)
+				{
+					sourceExpression = unaryExpression.Operand as MemberExpression;
+				}
+			}
+			return control.BindDataContext<TValue>(controlExpression.Member.Name, sourceExpression.Member.Name, mode, defaultControlValue, defaultContextValue);
 		}
 	}
 }

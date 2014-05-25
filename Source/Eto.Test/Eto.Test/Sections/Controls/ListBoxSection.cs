@@ -1,5 +1,6 @@
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -75,7 +76,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		class VirtualList : IListStore
+		class VirtualList : IListStore, IEnumerable<IListItem>
 		{
 			Icon image = TestIcons.TestIcon;
 
@@ -90,6 +91,17 @@ namespace Eto.Test.Sections.Controls
 				{
 					return new ImageListItem { Text = "Item " + index, Image = image };
 				}
+			}
+
+			public IEnumerator<IListItem> GetEnumerator()
+			{
+				for (int i = 0; i < Count; i++)
+					yield return this[i];
+			}
+
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
 			}
 		}
 
@@ -123,7 +135,7 @@ namespace Eto.Test.Sections.Controls
 			item.Click += delegate
 			{
 				if (control.SelectedValue != null)
-					Log.Write(item, "Click, Item: {0}", control.SelectedValue.Text);
+					Log.Write(item, "Click, Item: {0}", ((ListItem)control.SelectedValue).Text);
 				else
 					Log.Write(item, "Click, no item selected");
 			};

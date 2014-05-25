@@ -27,13 +27,13 @@ namespace Eto.Test.Sections.Dialogs
 		Control UseAsyncCheckBox()
 		{
 			var control = new CheckBox { Text = "Use Async" };
-			control.CheckedBinding.Bind(this, r => r.UseAsync, (r, val) => r.UseAsync = val ?? false);
+			control.CheckedBinding.Bind(() => UseAsync, val => UseAsync = val ?? false);
 			return control;
 		}
 		Control DisplayModeDropDown()
 		{
 			var control = new EnumComboBox<DialogDisplayMode>();
-			control.SelectedValueBinding.Bind(this, r => r.DisplayMode, (r, val) => r.DisplayMode = val);
+			control.SelectedValueBinding.Bind(() => DisplayMode, val => DisplayMode = val);
 			return control;
 		}
 

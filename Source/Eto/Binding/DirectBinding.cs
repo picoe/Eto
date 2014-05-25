@@ -9,15 +9,15 @@ namespace Eto
 	/// This binding provides a way to get/set values of an object that is provided by the binding,
 	/// and not passed in.
 	/// 
-	/// This differs from the <see cref="IndirectBinding"/>, which requires that the caller pass in the
+	/// This differs from the <see cref="IndirectBinding{T}"/>, which requires that the caller pass in the
 	/// object to get/set the value from/to.
 	/// </remarks>
-	public abstract class DirectBinding : Binding
+	public abstract class DirectBinding<T> : Binding
 	{
 		#region Events
 
 		/// <summary>
-		/// Identifier for the <see cref="DirectBinding.DataValueChanged"/> event
+		/// Identifier for the <see cref="DirectBinding{T}.DataValueChanged"/> event
 		/// </summary>
 		public const string DataValueChangedEvent = "ObjectBinding.DataValueChangedEvent";
 
@@ -60,6 +60,6 @@ namespace Eto
 		/// <summary>
 		/// Gets or sets the value of this binding
 		/// </summary>
-		public abstract object DataValue { get; set; }
+		public abstract T DataValue { get; set; }
 	}
 }

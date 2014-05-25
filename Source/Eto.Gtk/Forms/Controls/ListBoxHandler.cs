@@ -2,13 +2,15 @@ using System;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 using Eto.Drawing;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.GtkSharp
 {
-	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, ListBox.IHandler, IGtkListModelHandler<IListItem, IListStore>
+	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, ListBox.IHandler, IGtkEnumerableModelHandler<object>
 	{
 		readonly Gtk.ScrolledWindow scroll;
-		GtkListModel<IListItem, IListStore> model;
+		GtkEnumerableModel<object> model;
 		ContextMenu contextMenu;
 		CollectionHandler collection;
 		public static Size MaxImageSize = new Size(16, 16);
@@ -20,7 +22,7 @@ namespace Eto.GtkSharp
 
 		public ListBoxHandler()
 		{
-			model = new GtkListModel<IListItem, IListStore>{ Handler = this };
+			model = new GtkEnumerableModel<object>{ Handler = this };
 			
 			scroll = new Gtk.ScrolledWindow();
 			scroll.ShadowType = Gtk.ShadowType.In;
@@ -120,17 +122,16 @@ namespace Eto.GtkSharp
 			set { contextMenu = value; }
 		}
 
-		public GLib.Value GetColumnValue(IListItem item, int column, int row)
+		public GLib.Value GetColumnValue(object item, int column, int row)
 		{
 			switch (column)
 			{
 				case 0:
-					return new GLib.Value(item != null ? item.Text : (string)null);
+					return new GLib.Value(Widget.TextBinding.GetValue(item));
 				case 1:
-					var imageItem = item as IImageListItem;
-					if (imageItem != null)
+					if (Widget.ImageBinding != null)
 					{
-						var img = imageItem.Image;
+						var img = Widget.ImageBinding.GetValue(item);
 						if (img != null)
 						{
 							var imgHandler = img.Handler as IGtkPixbuf;
@@ -144,18 +145,13 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
+		public class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ListBoxHandler Handler { get; set; }
 
-			public override int IndexOf(IListItem item)
-			{
-				return -1;
-			}
-
 			protected override void OnRegisterCollection(EventArgs e)
 			{
-				Handler.model = new GtkListModel<IListItem, IListStore>{ Handler = Handler };
+				Handler.model = new GtkEnumerableModel<object>{ Handler = Handler };
 				Handler.Control.Model = new Gtk.TreeModelAdapter(Handler.model);
 			}
 
@@ -164,14 +160,15 @@ namespace Eto.GtkSharp
 				Handler.Control.Model = null;
 			}
 
-			public override void AddItem(IListItem item)
+			public override void AddItem(object item)
 			{
-				var iter = Handler.model.GetIterAtRow(Collection.Count);
-				var path = Handler.model.GetPathAtRow(Collection.Count);
+				var count = Collection.Count();
+				var iter = Handler.model.GetIterAtRow(count);
+				var path = Handler.model.GetPathAtRow(count);
 				Handler.Control.Model.EmitRowInserted(path, iter);
 			}
 
-			public override void InsertItem(int index, IListItem item)
+			public override void InsertItem(int index, object item)
 			{
 				var iter = Handler.model.GetIterAtRow(index);
 				var path = Handler.model.GetPathAtRow(index);
@@ -186,12 +183,12 @@ namespace Eto.GtkSharp
 
 			public override void RemoveAllItems()
 			{
-				Handler.model = new GtkListModel<IListItem, IListStore>{ Handler = Handler };
+				Handler.model = new GtkEnumerableModel<object>{ Handler = Handler };
 				Handler.Control.Model = new Gtk.TreeModelAdapter(Handler.model);
 			}
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection != null ? collection.Collection : null; }
 			set
@@ -208,9 +205,14 @@ namespace Eto.GtkSharp
 			get { return 2; }
 		}
 
-		public int GetRowOfItem(IListItem item)
+		public int GetRowOfItem(object item)
 		{
 			return collection == null ? -1 : collection.IndexOf(item);
+		}
+
+		EnumerableChangedHandler<object> IGtkEnumerableModelHandler<object>.Collection
+		{
+			get { return collection; }
 		}
 	}
 }

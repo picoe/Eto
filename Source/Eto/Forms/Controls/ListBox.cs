@@ -18,6 +18,20 @@ namespace Eto.Forms
 		Image Image { get; }
 	}
 
+	class ImageListItemImageBinding : PropertyBinding<Image>
+	{
+		public ImageListItemImageBinding()
+			: base("Image")
+		{
+		}
+
+		protected override Image InternalGetValue(object dataItem)
+		{
+			var item = dataItem as IImageListItem;
+			return item != null ? item.Image : base.InternalGetValue(dataItem);
+		}
+	}
+
 	/// <summary>
 	/// Control to show a list of items that the user can select
 	/// </summary>
@@ -25,6 +39,15 @@ namespace Eto.Forms
 	public class ListBox : ListControl
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
+
+		/// <summary>
+		/// Gets or sets the binding for the Image of each item
+		/// </summary>
+		/// <remarks>
+		/// By default will be an public Image property on your object
+		/// </remarks>
+		/// <value>The image binding.</value>
+		public IIndirectBinding<Image> ImageBinding { get; set; }
 
 		/// <summary>
 		/// Occurs when an item is activated, usually with a double click or by pressing enter.
@@ -46,6 +69,7 @@ namespace Eto.Forms
 		/// </summary>
 		public ListBox()
 		{
+			ImageBinding = new ImageListItemImageBinding();
 		}
 
 		/// <summary>
@@ -67,6 +91,7 @@ namespace Eto.Forms
 		protected ListBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
+			ImageBinding = new ImageListItemImageBinding();
 		}
 
 		/// <summary>

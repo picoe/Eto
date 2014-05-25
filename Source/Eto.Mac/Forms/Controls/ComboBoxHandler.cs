@@ -4,6 +4,7 @@ using Eto.Forms;
 using System.Linq;
 using MonoMac.AppKit;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -34,37 +35,44 @@ namespace Eto.Mac.Forms.Controls
 			handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ComboBoxHandler Handler { get; set; }
 
-			public override int IndexOf(IListItem item)
+			public override int IndexOf(object item)
 			{
-				return Handler.Control.IndexOfItem(item.Text);
+				var binding = Handler.Widget.TextBinding;
+				return Handler.Control.Menu.IndexOf(binding.GetValue(item));
 			}
 
-			public override void AddRange(IEnumerable<IListItem> items)
+			public override void AddRange(IEnumerable<object> items)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.AddItems(items.Select(r => r.Text).ToArray());
+				var binding = Handler.Widget.TextBinding;
+				foreach (var item in items.Select(r => binding.GetValue(r)))
+				{
+					Handler.Control.Menu.AddItem(new NSMenuItem(item));
+				}
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
 			}
 
-			public override void AddItem(IListItem item)
+			public override void AddItem(object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.AddItem(item.Text);
+				var binding = Handler.Widget.TextBinding;
+				Handler.Control.Menu.AddItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))));
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
 			}
 
-			public override void InsertItem(int index, IListItem item)
+			public override void InsertItem(int index, object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.InsertItem(item.Text, index);
+				var binding = Handler.Widget.TextBinding;
+				Handler.Control.Menu.InsertItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))), index);
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
@@ -72,18 +80,30 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void RemoveItem(int index)
 			{
+				var selected = Handler.SelectedIndex;
 				Handler.Control.RemoveItem(index);
 				Handler.LayoutIfNeeded();
+				if (Handler.Widget.Loaded && selected == index)
+				{
+					Handler.Control.SelectItem(-1);
+					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+				}
 			}
 
 			public override void RemoveAllItems()
 			{
+				var change = Handler.SelectedIndex != -1;
 				Handler.Control.RemoveAllItems();
 				Handler.LayoutIfNeeded();
+				if (Handler.Widget.Loaded && change)
+				{
+					Handler.Control.SelectItem(-1);
+					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+				}
 			}
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection == null ? null : collection.Collection; }
 			set

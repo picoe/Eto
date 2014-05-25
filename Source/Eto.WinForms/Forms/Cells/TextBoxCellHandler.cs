@@ -1,6 +1,7 @@
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
+using System;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -52,7 +53,7 @@ namespace Eto.WinForms.Forms.Controls
 		public override void SetCellValue (object dataItem, object value)
 		{
 			if (Widget.Binding != null) {
-				Widget.Binding.SetValue (dataItem, value);
+				Widget.Binding.SetValue (dataItem, Convert.ToString(value));
 			}
 		}
 

@@ -3,17 +3,23 @@ using System.Globalization;
 
 namespace Eto
 {
+	public interface IBinding
+	{
+		void Unbind();
+		void Update();
+	}
+
 	/// <summary>
 	/// Base class for binding between a value and another
 	/// </summary>
 	/// <remarks>
 	/// This is the base of any type of binding.  Some bindings may only be used to get/set a single
-	/// value (e.g. <see cref="IndirectBinding"/>), whereas the <see cref="DualBinding"/> can link
+	/// value (e.g. <see cref="IndirectBinding{T}"/>), whereas the <see cref="DualBinding{T}"/> can link
 	/// two objects' values together
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class Binding
+	public abstract class Binding : IBinding
 	{
 		#region Events
 

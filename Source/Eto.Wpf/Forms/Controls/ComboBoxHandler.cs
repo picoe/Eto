@@ -6,12 +6,13 @@ using swa = System.Windows.Automation;
 using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto.Wpf.Forms.Controls
 {
 	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
-		IListStore store;
+		IEnumerable<object> store;
 
 		public class EtoComboBox : swc.ComboBox
 		{
@@ -82,8 +83,8 @@ namespace Eto.Wpf.Forms.Controls
 		public ComboBoxHandler()
 		{
 			Control = new EtoComboBox();
-			var template = new sw.DataTemplate(typeof(IListItem));
-			template.VisualTree = WpfListItemHelper.TextBlock(setMargin: false);
+			var template = new sw.DataTemplate();
+			template.VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false);
 			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate
 			{
@@ -96,13 +97,13 @@ namespace Eto.Wpf.Forms.Controls
 		public override bool UseKeyPreview { get { return true; } }
 
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return store; }
 			set
 			{
 				store = value;
-				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable();
+				Control.ItemsSource = store;
 			}
 		}
 

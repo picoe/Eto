@@ -115,26 +115,26 @@ namespace Eto.WinForms
 			}
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ListBoxHandler Handler { get; set; }
 
-			public override int IndexOf(IListItem item)
+			public override int IndexOf(object item)
 			{
 				return Handler.Control.Items.IndexOf(item);
 			}
 
-			public override void AddRange(IEnumerable<IListItem> items)
+			public override void AddRange(IEnumerable<object> items)
 			{
 				Handler.Control.Items.AddRange(items.ToArray());
 			}
 
-			public override void AddItem(IListItem item)
+			public override void AddItem(object item)
 			{
 				Handler.Control.Items.Add(item);
 			}
 
-			public override void InsertItem(int index, IListItem item)
+			public override void InsertItem(int index, object item)
 			{
 				Handler.Control.Items.Insert(index, item);
 			}
@@ -150,7 +150,7 @@ namespace Eto.WinForms
 			}
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection != null ? collection.Collection : null; }
 			set

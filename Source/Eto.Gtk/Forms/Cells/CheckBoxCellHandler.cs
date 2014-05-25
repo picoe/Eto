@@ -96,7 +96,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		{
 			if (Widget.Binding != null)
 			{
-				Widget.Binding.SetValue(dataItem, value);
+				Widget.Binding.SetValue(dataItem, value as bool?);
 			}
 		}
 

@@ -24,6 +24,8 @@ namespace Eto.iOS
 			get { return GeneratorID; }
 		}
 
+		public static bool IsIpad { get { return UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad; } }
+
 		public override bool IsIos { get { return true; } }
 
 		public override bool IsMobile { get { return true; } }

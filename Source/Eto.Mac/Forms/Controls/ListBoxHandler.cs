@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using Eto.Mac.Forms.Controls;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+using System.Collections;
+using System.Linq;
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -36,22 +38,30 @@ namespace Eto.Mac.Forms.Controls
 		class DataSource : NSTableViewDataSource
 		{
 			WeakReference handler;
+
 			public ListBoxHandler Handler { get { return (ListBoxHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				return new MacImageData(Handler.collection.Collection[row]);
+				var w = Handler.Widget;
+				var item = Handler.collection.ElementAt(row);
+				return new MacImageData
+				{
+					Text = new NSString(Convert.ToString(w.TextBinding.GetValue(item))),
+					Image = w.ImageBinding != null ? ((Image)w.ImageBinding.GetValue(item)).ToNS() : null
+				};
 			}
 
 			public override int GetRowCount(NSTableView tableView)
 			{
-				return Handler.collection.Collection == null ? 0 : Handler.collection.Collection.Count;
+				return Handler.collection.Collection == null ? 0 : Handler.collection.Collection.Count();
 			}
 		}
 
 		class Delegate : NSTableViewDelegate
 		{
 			WeakReference handler;
+
 			public ListBoxHandler Handler { get { return (ListBoxHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override bool ShouldSelectRow(NSTableView tableView, int row)
@@ -137,7 +147,7 @@ namespace Eto.Mac.Forms.Controls
 			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 		}
 
-		static void HandleDoubleClick (object sender, EventArgs e)
+		static void HandleDoubleClick(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as ListBoxHandler;
 			if (handler != null)
@@ -166,26 +176,21 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ListBoxHandler Handler { get; set; }
 
-			public override int IndexOf(IListItem item)
-			{
-				return -1; // not needed
-			}
-
-			public override void AddRange(IEnumerable<IListItem> items)
+			public override void AddRange(IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData();
 			}
 
-			public override void AddItem(IListItem item)
+			public override void AddItem(object item)
 			{
 				Handler.Control.ReloadData();
 			}
 
-			public override void InsertItem(int index, IListItem item)
+			public override void InsertItem(int index, object item)
 			{
 				Handler.Control.ReloadData();
 			}
@@ -201,7 +206,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection.Collection; }
 			set
@@ -231,7 +236,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (Control.Window != null)
 				Control.Window.MakeFirstResponder(Control);
-			else 
+			else
 				base.Focus();
 		}
 	}
