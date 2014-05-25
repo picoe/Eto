@@ -189,7 +189,8 @@ namespace Eto.Test
 			{
 				// create and set the toolbar
 				var toolBar = new ToolBar();
-				toolBar.Items.Add(quit);
+				if (Application.Instance.QuitIsSupported)
+					toolBar.Items.Add(quit);
 				toolBar.Items.Add(about);
 
 				ToolBar = toolBar;

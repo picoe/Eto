@@ -148,6 +148,8 @@ namespace Eto.WinForms
 			swf.Application.Exit();
 		}
 
+		public bool QuitIsSupported { get { return true; } }
+
 		public void Open(string url)
 		{
 			var info = new ProcessStartInfo(url);

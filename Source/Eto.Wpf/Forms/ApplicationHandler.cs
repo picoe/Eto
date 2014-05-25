@@ -122,6 +122,8 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		public bool QuitIsSupported { get { return true; } }
+
 		public void Invoke(Action action)
 		{
 			Control.Dispatcher.Invoke(action, sw.Threading.DispatcherPriority.Background);

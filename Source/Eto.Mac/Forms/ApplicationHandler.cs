@@ -135,6 +135,8 @@ namespace Eto.Mac.Forms
 			NSApplication.SharedApplication.Terminate(AppDelegate);
 		}
 
+		public bool QuitIsSupported { get { return true; } }
+
 		public void Open(string url)
 		{
 			NSWorkspace.SharedWorkspace.OpenUrl(new NSUrl(url));

@@ -92,6 +92,8 @@ namespace Eto.iOS.Forms
 			//UIApplication.SharedApplication...SharedApplication.Terminate((NSObject)NSApplication.SharedApplication.KeyWindow ?? AppDelegate);
 		}
 
+		public bool QuitIsSupported { get { return false; } }
+
 		public void Open(string url)
 		{
 			UIApplication.SharedApplication.OpenUrl(new NSUrl(url));

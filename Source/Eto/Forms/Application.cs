@@ -244,6 +244,11 @@ namespace Eto.Forms
 			Handler.Quit();
 		}
 
+		public bool QuitIsSupported
+		{
+			get { return Handler.QuitIsSupported; }
+		}
+
 		/// <summary>
 		/// Open the specified file or url with its associated application.
 		/// </summary>
@@ -409,6 +414,8 @@ namespace Eto.Forms
 			/// the operation.
 			/// </remarks>
 			void Quit();
+
+			bool QuitIsSupported { get ; }
 
 			/// <summary>
 			/// Gets the system commands used for standard menu items

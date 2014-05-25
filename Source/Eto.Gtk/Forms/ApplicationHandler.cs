@@ -173,6 +173,8 @@ namespace Eto.GtkSharp
 				Gtk.Application.Quit();
 		}
 
+		public bool QuitIsSupported { get { return true; } }
+
 		public void Open(string url)
 		{
 			var info = new ProcessStartInfo(url);
