@@ -141,6 +141,8 @@ namespace Eto.WinRT.Forms
 #endif
 		}
 
+		public bool QuitIsSupported { get { return false; } }
+
 		public void Invoke(Action action)
 		{
 			var ev = new ManualResetEvent(false);

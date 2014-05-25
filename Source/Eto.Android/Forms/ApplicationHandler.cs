@@ -51,6 +51,8 @@ namespace Eto.Android.Forms
 			throw new NotImplementedException();
 		}
 
+		public bool QuitIsSupported { get { return false; } }
+
 		public void Open(string url)
 		{
 			throw new NotImplementedException();

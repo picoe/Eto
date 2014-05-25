@@ -105,7 +105,7 @@ namespace Eto.Test.WinRT.Data
 				var content = b.CreateContent();
 				try
 				{
-					content.AttachExternal();
+					content.AttachNative();
 					result = Eto.WinRT.Forms.ControlExtensions.GetContainerControl(content);
 				}
 				catch (Exception ex)

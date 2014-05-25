@@ -8,6 +8,7 @@ using swm = Windows.UI.Xaml.Media;
 using Eto.Forms;
 using System.Collections;
 using Windows.UI.Xaml.Markup;
+using System.Collections.Generic;
 
 namespace Eto.WinRT.Forms.Controls
 {
@@ -19,7 +20,7 @@ namespace Eto.WinRT.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
-		IListStore store;
+		IEnumerable<object> store;
 
 		public class EtoComboBox : swc.ComboBox
 		{
@@ -117,13 +118,13 @@ namespace Eto.WinRT.Forms.Controls
 			};
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return store; }
 			set
 			{
 				store = value;
-				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable();
+				Control.ItemsSource = store;
 			}
 		}
 
