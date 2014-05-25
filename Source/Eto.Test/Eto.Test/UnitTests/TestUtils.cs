@@ -146,20 +146,38 @@ namespace Eto.Test.UnitTests
 		/// <param name="timeout">Timeout to wait for the operation to complete</param>
 		public static void Form(Action<Form> test, int timeout = DefaultTimeout)
 		{
-			Form form;
-			Run((app, finished) =>
+			Form form = null;
+			try
 			{
-				if (!Platform.Instance.Supports<Form>())
-					Assert.Inconclusive("This platform does not support IForm");
+				Run((app, finished) =>
+				{
+					if (!Platform.Instance.Supports<Form>())
+						Assert.Inconclusive("This platform does not support IForm");
 
-				form = new Form();
+					form = new Form();
 
-				test(form);
+					test(form);
 
-				form.Closed += (sender, e) => finished();
-				form.Show();
+					form.Closed += (sender, e) => 
+					{
+						form = null;
+						finished();
+					};
+					form.Show();
 
-			}, timeout);
+				}, timeout);
+			}
+			catch (Exception ex)
+			{
+				if (form != null)
+				{
+					if (Application.Instance != null)
+						Application.Instance.Invoke(form.Close);
+					else
+						form.Close();
+				}
+				throw;
+			}
 		}
 
 		/// <summary>

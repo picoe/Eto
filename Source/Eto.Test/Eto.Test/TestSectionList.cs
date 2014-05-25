@@ -52,7 +52,8 @@ namespace Eto.Test
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 			yield return new Section<ImageViewSection> { Text = "Image View" };
 			yield return new Section<RadioButtonListSection> { Text = "Radio Button List" };
-			yield return new Section<SplitterSection> { Text = "Splitter" };
+			if (Platform.Instance.Supports<Splitter>())
+				yield return new Section<SplitterSection> { Text = "Splitter" };
 		}
 		
 		static IEnumerable<Section> DrawingSection()
@@ -73,9 +74,7 @@ namespace Eto.Test
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
-#if !PCL
 			yield return new Section<DrawLoopSection> { Text = "Draw Loop" };
-#endif
 		}
 		
 		static IEnumerable<Section> TableLayoutsSection()
@@ -135,8 +134,9 @@ namespace Eto.Test
 			if (Platform.Instance.IsDesktop)
 			{
 				yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
-				yield return new Section<Sections.Behaviors.WindowsSection> { Text = "Windows" };
 			}
+
+			yield return new Section<Sections.Behaviors.WindowsSection> { Text = "Windows" };
 		}
 
 		static IEnumerable<Section> FormsSection()

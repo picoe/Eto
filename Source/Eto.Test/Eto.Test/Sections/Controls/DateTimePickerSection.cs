@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -34,7 +35,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow(new Label { Text = "Max Value" }, max = new DateTimePicker());
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Set to value" });
-			layout.BeginVertical();
+			layout.BeginVertical(Padding.Empty);
 			layout.BeginHorizontal();
 			layout.AddAutoSized(setValue = new DateTimePicker());
 			layout.Add(setButton = new Button { Text = "Set" });

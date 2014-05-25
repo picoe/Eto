@@ -107,7 +107,7 @@ namespace Eto.Test.UnitTests.Forms
 				Assert.AreEqual(0, grid.SelectedRows.ToList()[0]); // model
 				Assert.AreEqual(ItemCount - 1, handler.SelectedRows.ToList()[0]); // view
 
-				Assert.AreEqual(0, selectionChangedCount); // verify that no selection changed events are fired.
+				Assert.AreEqual(0, selectionChangedCount, "SelectionChanged event should not fire when changing the SortComparer");
 			});
 		}
 
@@ -129,7 +129,7 @@ namespace Eto.Test.UnitTests.Forms
 				for (var i = 0; i < ItemCount / 2; ++i)
 					Assert.AreEqual(i, grid.SelectedRows.ToList()[i]);
 
-				Assert.AreEqual(0, selectionChangedCount); // verify that no selection changed events are fired.
+				Assert.AreEqual(0, selectionChangedCount, "SelectionChanged event should not fire when changing the Filter");
 			});
 		}
 	}
