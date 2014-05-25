@@ -4,9 +4,12 @@ using SD = System.Drawing;
 using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
+using MonoTouch.Foundation;
+using MonoMac.Foundation;
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
+using NSView = MonoTouch.UIKit.UIView;
 using Eto.iOS.Forms;
 #endif
 
@@ -26,13 +29,9 @@ namespace Eto.Mac.Forms
 	}
 
 	public abstract class MacContainer<TControl, TWidget, TCallback> : 
-#if OSX
 		MacView<TControl, TWidget, TCallback>,
-#elif IOS
-		IosView<TControl, TWidget, TCallback>,
-#endif
 		Container.IHandler, IMacContainer
-		where TControl: NSResponder
+		where TControl: NSObject
 		where TWidget: Container
 		where TCallback: Container.ICallback
 	{

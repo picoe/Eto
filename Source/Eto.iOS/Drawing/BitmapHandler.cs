@@ -52,7 +52,11 @@ namespace Eto.iOS.Drawing
 			Control = new UIImage(NSData.FromStream(stream));
 		}
 
-		internal void Create(UIImage image)
+		public BitmapHandler()
+		{
+		}
+
+		public BitmapHandler(UIImage image)
 		{
 			Control = image;
 		}
@@ -73,7 +77,7 @@ namespace Eto.iOS.Drawing
 
 						provider = new CGDataProvider(Data.MutableBytes, (int)Data.Length, false);
 						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-						Control = UIImage.FromImage(cgimage);
+						Control = UIImage.FromImage(cgimage, 0f, UIImageOrientation.Up);
 				
 						break;
 					}
@@ -89,7 +93,7 @@ namespace Eto.iOS.Drawing
 				
 						provider = new CGDataProvider(Data.MutableBytes, (int)Data.Length, false);
 						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.NoneSkipFirst, provider, null, true, CGColorRenderingIntent.Default);
-						Control = UIImage.FromImage(cgimage);
+						Control = UIImage.FromImage(cgimage, 0f, UIImageOrientation.Up);
 				
 						break;
 					}
@@ -104,7 +108,7 @@ namespace Eto.iOS.Drawing
 				
 						provider = new CGDataProvider(Data.MutableBytes, (int)Data.Length, false);
 						cgimage = new CGImage(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB(), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-						Control = UIImage.FromImage(cgimage);
+						Control = UIImage.FromImage(cgimage, 0f, UIImageOrientation.Up);
 						break;
 					}
 				default:
@@ -116,7 +120,7 @@ namespace Eto.iOS.Drawing
 		{
 			var source = image.ToUI();
 			// todo: use interpolation
-			Control = source.Scale(new SD.SizeF(width, height));
+			Control = source.Scale(new SD.SizeF(width, height), 0f);
 		}
 
 		public void Create(int width, int height, Graphics graphics)
@@ -209,8 +213,16 @@ namespace Eto.iOS.Drawing
 			}
 		}
 
-		public override UIImage GetUIImage()
+		public override UIImage GetUIImage(int? maxSize = null)
 		{
+			var size = Size;
+			var imgSize = Math.Max(size.Width, size.Height);
+			if (maxSize != null && imgSize > maxSize.Value)
+			{
+				size = (Size)(size * ((float)maxSize.Value / (float)imgSize));
+				var img = new Bitmap(Widget, size.Width, size.Height);
+				return img.ToUI();
+			}
 			return Control;
 		}
 

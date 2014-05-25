@@ -64,7 +64,7 @@ namespace Eto.Mac.Forms
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
-		where TControl: NSResponder
+		where TControl: NSObject
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
@@ -524,7 +524,7 @@ namespace Eto.Mac.Forms
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			if (focus && EventControl.Window != null)
-				EventControl.Window.MakeFirstResponder(Control);
+				EventControl.Window.MakeFirstResponder(EventControl);
 			SetBackgroundColor();
 		}
 

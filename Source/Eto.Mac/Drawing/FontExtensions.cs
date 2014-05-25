@@ -8,6 +8,7 @@ namespace Eto.Mac.Drawing
 
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
+using MonoTouch.ObjCRuntime;
 using NSFont = MonoTouch.UIKit.UIFont;
 
 namespace Eto.iOS.Drawing
@@ -19,6 +20,7 @@ namespace Eto.iOS.Drawing
 		static readonly NSString ForegroundColorAttribute = NSAttributedString.ForegroundColorAttributeName;
 		#elif IOS
 		static readonly NSString ForegroundColorAttribute = UIStringAttributeKey.ForegroundColor;
+		static readonly Selector selSetSize = new Selector("setSize:");
 		#endif
 
 		public static NSFont ToNSFont(this Font font)
@@ -140,7 +142,8 @@ namespace Eto.iOS.Drawing
 			#if OSX
 			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
 			#elif IOS
-			container.Size = (availableSize ?? SizeF.MaxValue).ToSD();
+			if (container.RespondsToSelector(selSetSize))
+				container.Size = (availableSize ?? SizeF.MaxValue).ToSD();
 			#endif
 		}
 

@@ -7,6 +7,7 @@ using Eto.Drawing;
 using MonoTouch.Foundation;
 using System.Collections.Generic;
 using System.Linq;
+using MonoTouch.ObjCRuntime;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -42,6 +43,8 @@ namespace Eto.iOS.Forms.Controls
 			get { return accessoryView ?? (accessoryView = Handler.CreateAccessoryView()); }
 		}
 
+		static readonly Selector selPreferredContentSize = new Selector("preferredContentSize");
+
 		public override void TouchesEnded(NSSet touches, UIEvent evt)
 		{
 			if (Platform.IsIpad)
@@ -49,11 +52,12 @@ namespace Eto.iOS.Forms.Controls
 				var picker = Handler.CreatePicker();
 				Handler.UpdatePicker(InputView);
 				picker.SizeToFit();
-				popover = new UIPopoverController(new UIViewController
-				{
-					View = picker,
-					PreferredContentSize = picker.SizeThatFits(SD.SizeF.Empty)
-				});
+				var view = new UIViewController { View = picker };
+				if (view.RespondsToSelector(selPreferredContentSize))
+					view.PreferredContentSize = picker.SizeThatFits(SD.SizeF.Empty);
+				else
+					view.ContentSizeForViewInPopover = picker.SizeThatFits(SD.SizeF.Empty);
+				popover = new UIPopoverController(view);
 				popover.PresentFromRect(Bounds, this, UIPopoverArrowDirection.Any, true);
 				popover.DidDismiss += (sender, e) =>
 				{
@@ -70,7 +74,7 @@ namespace Eto.iOS.Forms.Controls
 		}
 	}
 
-	public abstract class BasePickerHandler<TWidget, TCallback, TPicker> : IosControl<UILabel, TWidget, TCallback>, IBasePickerHandler
+	public abstract class BasePickerHandler<TWidget, TCallback, TPicker> : IosView<UILabel, TWidget, TCallback>, IBasePickerHandler
 		where TWidget: Control
 		where TCallback: Control.ICallback
 		where TPicker: UIView
@@ -143,6 +147,16 @@ namespace Eto.iOS.Forms.Controls
 			var oldSize = GetPreferredSize(SizeF.MaxValue);
 			Control.Text = GetTextValue() ?? EmptyText;
 			LayoutIfNeeded(oldSize);
+		}
+
+		public override Font Font
+		{
+			get { return base.Font; }
+			set
+			{
+				base.Font = value;
+				Control.Font = value.ToUI();
+			}
 		}
 
 		protected abstract void UpdateValue(TPicker picker);

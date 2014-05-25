@@ -173,10 +173,10 @@ namespace Eto.iOS.Drawing
 			}
 		}
 
-		public override UIImage GetUIImage()
+		public override UIImage GetUIImage(int? maxSize = null)
 		{
 			UpdateBitmap();
-			return bmp.GetUIImage();
+			return bmp.GetUIImage(maxSize);
 		}
 	}
 }

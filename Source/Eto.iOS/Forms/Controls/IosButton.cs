@@ -10,23 +10,28 @@ namespace Eto.iOS.Forms.Controls
 		where TControl: UIButton
 		where TWidget: Control
 		where TCallback: Control.ICallback
-	{	
+	{
 		Font font;
 
-		public virtual string Text {
-			get {
+		public virtual string Text
+		{
+			get
+			{
 				return Control.Title(UIControlState.Normal);
 			}
-			set {
+			set
+			{
 				Control.SetTitle(value, UIControlState.Normal);
 			}
 		}
 
-		public override Eto.Drawing.Font Font {
+		public override Eto.Drawing.Font Font
+		{
 			get { return font; }
-			set {
+			set
+			{
 				font = value;
-				Control.Font = font.ToUI ();
+				Control.Font = font.ToUI();
 			}
 		}
 	}

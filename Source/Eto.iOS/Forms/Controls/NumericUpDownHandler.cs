@@ -65,5 +65,15 @@ namespace Eto.iOS.Forms.Controls
 			get;
 			set;
 		}
+
+		public override Font Font
+		{
+			get { return base.Font; }
+			set
+			{
+				base.Font = value;
+				Control.Font = value.ToUI();
+			}
+		}
 	}
 }

@@ -21,16 +21,16 @@ namespace Eto.iOS.Forms.Cells
 		void SetForegroundColor(NSCell cell, Color color);
 
 		Color GetForegroundColor(NSCell cell);
+
+		Font GetFont(NSCell cell);
+
+		void SetFont(NSCell cell, Font font);
 	}
 
-	public abstract class CellHandler<T, W> : WidgetHandler<T, W>, Cell.IHandler, ICellHandler
-		where T: NSCell
-		where W: Cell
+	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, Cell.IHandler, ICellHandler
+		where TControl: NSCell
+		where TWidget: Cell
 	{
-		public CellHandler ()
-		{
-		}
-
 		public abstract void Configure (object dataItem, UITableViewCell cell);
 
 		public abstract string TitleForSection (object dataItem);
@@ -58,6 +58,16 @@ namespace Eto.iOS.Forms.Cells
 		public Color GetForegroundColor(NSCell cell)
 		{
 			return cell.TextLabel.TextColor.ToEto();
+		}
+
+		public Font GetFont(NSCell cell)
+		{
+			return cell.TextLabel.Font.ToEto();
+		}
+
+		public void SetFont(NSCell cell, Font font)
+		{
+			cell.TextLabel.Font = font.ToUI();
 		}
 	}
 }

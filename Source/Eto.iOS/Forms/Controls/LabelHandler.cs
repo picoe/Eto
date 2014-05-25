@@ -5,7 +5,7 @@ using Eto.iOS.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class LabelHandler : IosControl<UILabel, Label, Label.ICallback>, Label.IHandler
+	public class LabelHandler : IosView<UILabel, Label, Label.ICallback>, Label.IHandler
 	{
 		public LabelHandler()
 		{

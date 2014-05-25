@@ -53,21 +53,21 @@ namespace Eto.iOS
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
 
 			// Forms.Cells
-			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler ());
-			p.Add<ComboBoxCell.IHandler>(() => new ComboBoxCellHandler ());
+			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());
+			p.Add<ComboBoxCell.IHandler>(() => new ComboBoxCellHandler());
 			p.Add<ImageTextCell.IHandler>(() => new ImageTextCellHandler());
-			p.Add<ImageViewCell.IHandler>(() => new ImageViewCellHandler ());
+			p.Add<ImageViewCell.IHandler>(() => new ImageViewCellHandler());
 			p.Add<TextBoxCell.IHandler>(() => new TextBoxCellHandler());
 			
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
-			p.Add<DateTimePicker.IHandler> (() => new DateTimePickerHandler ());
+			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
 			p.Add<GridView.IHandler>(() => new GridViewHandler());
-			//g.Add<GroupBox> (() => new GroupBoxHandler ());
+			p.Add<GroupBox.IHandler>(() => new GroupBoxHandler());
 			p.Add<ImageView.IHandler>(() => new ImageViewHandler());
 			p.Add<Label.IHandler>(() => new LabelHandler());
 			p.Add<ListBox.IHandler>(() => new ListBoxHandler());
@@ -82,8 +82,8 @@ namespace Eto.iOS
 			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
 			if (IsIpad)
 				p.Add<Splitter.IHandler>(() => new SplitterHandler());
-			//p.Add<TabControl.IHandler>(() => new TabControlHandler ());
-			//p.Add<TabPage.IHandler>(() => new TabPageHandler ());
+			p.Add<TabControl.IHandler>(() => new TabControlHandler());
+			p.Add<TabPage.IHandler>(() => new TabPageHandler());
 			p.Add<TextArea.IHandler>(() => new TextAreaHandler());
 			p.Add<TextBox.IHandler>(() => new TextBoxHandler());
 			p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
@@ -132,6 +132,7 @@ namespace Eto.iOS
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
 			p.Add<Thread.IHandler>(() => new ThreadHandler());
+			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 		}
 
 		public override IDisposable ThreadStart()

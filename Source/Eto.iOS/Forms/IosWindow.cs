@@ -4,8 +4,6 @@ using Eto.Forms;
 using Eto.iOS.Forms.Controls;
 using Eto.Drawing;
 using Eto.Mac.Forms;
-using NSToolbar = MonoTouch.UIKit.UIToolbar;
-using NSToolbarItem = MonoTouch.UIKit.UIBarButtonItem;
 using sd = System.Drawing;
 
 namespace Eto.iOS.Forms
@@ -68,9 +66,14 @@ namespace Eto.iOS.Forms
 			set
 			{
 				toolBar = value;
-				var control = (NSToolbar)value.ControlObject;
-				const int height = 44;
-				var screenSize = UIScreen.MainScreen.Bounds.Size;
+				var control = (UIToolbar)value.ControlObject;
+				control.SizeToFit();
+				var height = control.Frame.Height;
+				sd.SizeF screenSize;
+				if (UIDevice.CurrentDevice.CheckSystemVersion(7,0))
+					screenSize = UIScreen.MainScreen.Bounds.Size;
+				else
+					screenSize = UIScreen.MainScreen.ApplicationFrame.Size;
 
 				var bottom = toolBar.Dock == ToolBarDock.Bottom;
 				var frame = new sd.RectangleF(0, 0, screenSize.Width, height);
@@ -95,9 +98,8 @@ namespace Eto.iOS.Forms
 
 		public Screen Screen
 		{
-			get { return null; }
+			get { return Screen.PrimaryScreen; }
 		}
-
 
 		public MenuBar Menu { get { return null; } set { } }
 

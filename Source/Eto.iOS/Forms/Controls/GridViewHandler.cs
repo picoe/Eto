@@ -150,8 +150,6 @@ namespace Eto.iOS.Forms.Controls
 
 	class IosCellFormatArgs : GridCellFormatEventArgs
 	{
-		Font font;
-
 		public ICellHandler CellHandler { get { return Column.DataCell.Handler as ICellHandler; } }
 
 		public NSCell Cell { get; private set; }
@@ -164,15 +162,8 @@ namespace Eto.iOS.Forms.Controls
 
 		public override Font Font
 		{
-			get
-			{
-				return font;// ?? (font = new Font(null, new FontHandler(Cell.Font)));
-			}
-			set
-			{
-				font = value;
-				//Cell.Font = font != null ? ((FontHandler)font.Handler).Control : null;
-			}
+			get { return CellHandler.GetFont(Cell); }
+			set { CellHandler.SetFont(Cell, value); }
 		}
 
 		public override Color BackgroundColor

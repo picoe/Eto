@@ -31,7 +31,7 @@ namespace Eto.iOS.Drawing
 					MacName = "Helvetica";
 					break;
 				case FontFamilies.SerifFamilyName:
-					MacName = "Times";
+					MacName = "Times New Roman";
 					break;
 				case FontFamilies.CursiveFamilyName:
 					MacName = "Papyrus";

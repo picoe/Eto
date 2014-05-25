@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>MinimumOSVersion</key>
-	<string>7.1</string>
+	<string>6.1</string>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>

@@ -7,8 +7,9 @@ using sd = System.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class CheckBoxHandler : IosControl<CheckBoxHandler.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
+	public class CheckBoxHandler : IosView<CheckBoxHandler.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
+		public override UIView ContainerControl { get { return Control; } }
 
 		public class CheckBox : UIView
 		{
@@ -17,7 +18,7 @@ namespace Eto.iOS.Forms.Controls
 			UISwitch switchControl;
 			UISegmentedControl segmented;
 
-			public string Text { get { return labelControl.Text; } set { labelControl.Text = value; }}
+			public string Text { get { return labelControl.Text; } set { labelControl.Text = value; } }
 
 			public UILabel Label { get { return labelControl; } }
 
@@ -25,22 +26,27 @@ namespace Eto.iOS.Forms.Controls
 
 			public UISegmentedControl Segmented { get { return segmented; } }
 
-			public bool? Checked { 
-				get {
+			public bool? Checked
+			{ 
+				get
+				{
 					if (ThreeState)
 						return segmented.SelectedSegment == 2 ? (bool?)true : (segmented.SelectedSegment == 1 ? (bool?)false : null);
 					else
 						return switchControl.On;
 				}
-				set { 
+				set
+				{ 
 					switchControl.On = value ?? false;
 					segmented.SelectedSegment = value == null ? 0 : (value.Value ? 2 : 1);
 				}
 			}
 
-			public bool ThreeState {
+			public bool ThreeState
+			{
 				get { return threeState; }
-				set {
+				set
+				{
 					threeState = value;
 					switchControl.Hidden = threeState;
 					segmented.Hidden = !threeState;
@@ -53,10 +59,10 @@ namespace Eto.iOS.Forms.Controls
 			protected virtual void OnValueChanged(EventArgs e)
 			{
 				if (ValueChanged != null)
-					ValueChanged (this, e);
+					ValueChanged(this, e);
 			}
 
-			public CheckBox ()
+			public CheckBox()
 			{
 				labelControl = new UILabel();
 				switchControl = new UISwitch();
@@ -64,35 +70,37 @@ namespace Eto.iOS.Forms.Controls
 				segmented = new UISegmentedControl(new object[] { "", "OFF", "ON" });
 				segmented.SelectedSegment = 1;
 				segmented.Hidden = true;
-				switchControl.ValueChanged += (sender, e) => {
-					OnValueChanged (EventArgs.Empty);
+				switchControl.ValueChanged += (sender, e) =>
+				{
+					OnValueChanged(EventArgs.Empty);
 				};
-				segmented.ValueChanged += (sender, e) => {
-					OnValueChanged (EventArgs.Empty);
+				segmented.ValueChanged += (sender, e) =>
+				{
+					OnValueChanged(EventArgs.Empty);
 				};
-				AddSubview (labelControl);
-				AddSubview (switchControl);
-				AddSubview (segmented);
+				AddSubview(labelControl);
+				AddSubview(switchControl);
+				AddSubview(segmented);
 			}
 
-			public override sd.SizeF SizeThatFits (sd.SizeF size)
+			public override sd.SizeF SizeThatFits(sd.SizeF size)
 			{
-				var labelSize = labelControl.SizeThatFits (size);
+				var labelSize = labelControl.SizeThatFits(size);
 				var toggle = threeState ? (UIControl)segmented : (UIControl)switchControl;
 
-				var switchSize = toggle.SizeThatFits (size);
-				return new sd.SizeF(labelSize.Width + switchSize.Width, Math.Max (labelSize.Height, switchSize.Height));
+				var switchSize = toggle.SizeThatFits(size);
+				return new sd.SizeF(labelSize.Width + switchSize.Width, Math.Max(labelSize.Height, switchSize.Height));
 			}
 
-			public override void LayoutSubviews ()
+			public override void LayoutSubviews()
 			{
-				base.LayoutSubviews ();
+				base.LayoutSubviews();
 				var toggle = threeState ? (UIControl)segmented : (UIControl)switchControl;
 
-				var switchSize = toggle.SizeThatFits (UIView.UILayoutFittingCompressedSize);
+				var switchSize = toggle.SizeThatFits(UIView.UILayoutFittingCompressedSize);
 				var size = this.Frame.Size;
 				var pos = size.Width - switchSize.Width;
-				labelControl.Frame = new sd.RectangleF(new sd.PointF (0, 0), new sd.SizeF(pos, size.Height));
+				labelControl.Frame = new sd.RectangleF(new sd.PointF(0, 0), new sd.SizeF(pos, size.Height));
 				toggle.Frame = new sd.RectangleF(new sd.PointF(pos, 0), switchSize);
 			}
 		}
@@ -103,12 +111,14 @@ namespace Eto.iOS.Forms.Controls
 			Control.ValueChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
 
-		public string Text {
+		public string Text
+		{
 			get { return Control.Text; }
 			set { Control.Text = value; }
 		}
-		
-		public bool ThreeState {
+
+		public bool ThreeState
+		{
 			get { return Control.ThreeState; }
 			set { Control.ThreeState = value; }
 		}
@@ -117,6 +127,16 @@ namespace Eto.iOS.Forms.Controls
 		{
 			get { return Control.Checked; }
 			set { Control.Checked = value; }
+		}
+
+		public override Font Font
+		{
+			get { return base.Font; }
+			set
+			{
+				base.Font = value;
+				Control.Label.Font = value.ToUI();
+			}
 		}
 	}
 }

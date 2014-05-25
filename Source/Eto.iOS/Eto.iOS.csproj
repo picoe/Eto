@@ -182,6 +182,11 @@
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\BasePickerHandler.cs" />
     <Compile Include="Forms\RotatableViewController.cs" />
+    <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
+    <Compile Include="Forms\Controls\TabControlHandler.cs" />
+    <Compile Include="Forms\Controls\TabPageHandler.cs" />
+    <Compile Include="Forms\ScreenHandler.cs" />
+    <Compile Include="Forms\ScreensHandler.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

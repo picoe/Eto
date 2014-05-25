@@ -6,7 +6,7 @@ using Eto.iOS.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class ImageViewHandler : IosControl<UIImageView, ImageView, ImageView.ICallback>, ImageView.IHandler
+	public class ImageViewHandler : IosView<UIImageView, ImageView, ImageView.ICallback>, ImageView.IHandler
 	{
 		Image image;
 

@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
-	public class TextAreaHandler : IosControl<UITextView, TextArea, TextArea.ICallback>, TextArea.IHandler
+	public class TextAreaHandler : IosView<UITextView, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 
 		public class EtoTextView : UITextView

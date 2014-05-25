@@ -18,8 +18,16 @@ namespace Eto.iOS.Forms
 		UIViewController Controller { get; set; }
 	}
 
-	public abstract class IosView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IIosView
-		where TControl: UIResponder
+	public abstract class IosView<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
+		where TControl: UIView
+		where TWidget: Control
+		where TCallback: Control.ICallback
+	{
+		public override UIView ContainerControl { get { return Control; } }
+	}
+
+	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IIosView
+		where TControl: NSObject
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
@@ -45,7 +53,7 @@ namespace Eto.iOS.Forms
 
 		public abstract UIView ContainerControl { get; }
 
-		public virtual bool AutoSize { get; protected set; }
+		public bool AutoSize { get; protected set; }
 
 		public SizeF? PreferredSize { get; set; }
 
@@ -129,7 +137,7 @@ namespace Eto.iOS.Forms
 			return size;
 		}
 
-		protected IosView()
+		protected MacView()
 		{
 			this.AutoSize = true;
 		}
@@ -180,7 +188,7 @@ namespace Eto.iOS.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					AddControlObserver(frameKey, e =>
 					{
-						var h = e.Handler as IosView<TControl,TWidget,TCallback>;
+						var h = e.Handler as MacView<TControl,TWidget,TCallback>;
 						if (!h.IsResizing)
 							h.Callback.OnSizeChanged(h.Widget, EventArgs.Empty);
 					});
@@ -224,7 +232,7 @@ namespace Eto.iOS.Forms
 
 		public void Focus()
 		{
-			Control.BecomeFirstResponder();
+			EventControl.BecomeFirstResponder();
 		}
 
 		public virtual Color BackgroundColor
@@ -241,7 +249,7 @@ namespace Eto.iOS.Forms
 
 		public bool HasFocus
 		{
-			get { return Control.IsFirstResponder; }
+			get { return EventControl.IsFirstResponder; }
 		}
 
 		public bool Visible
@@ -305,26 +313,14 @@ namespace Eto.iOS.Forms
 
 		public string ToolTip
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get { return null; }
+			set { }
 		}
 
 		public Cursor Cursor
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get { return null; }
+			set { }
 		}
 	}
 }

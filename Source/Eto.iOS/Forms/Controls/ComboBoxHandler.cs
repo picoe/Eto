@@ -101,7 +101,7 @@ namespace Eto.iOS.Forms.Controls
 
 		protected override string GetTextValue()
 		{
-			if (collection != null && selectedIndex >= 0 && selectedIndex < collection.Collection.Count())
+			if (collection != null && selectedIndex >= 0 && selectedIndex < collection.Count)
 			{
 				var item = collection.ElementAt(selectedIndex);
 				return Widget.TextBinding.GetValue(item);
@@ -134,7 +134,6 @@ namespace Eto.iOS.Forms.Controls
 		{
 			picker.ReloadAllComponents();
 			picker.Select(Math.Max(0, SelectedIndex), 0, false);
-			picker.SizeToFit();
 		}
 	}
 }

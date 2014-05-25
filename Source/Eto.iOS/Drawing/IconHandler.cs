@@ -35,8 +35,16 @@ namespace Eto.iOS.Drawing
 			get { return Control.Size.ToEtoSize(); }
 		}
 
-		public override UIImage GetUIImage()
+		public override UIImage GetUIImage(int? maxSize = null)
 		{
+			var size = Size;
+			var imgSize = Math.Max(size.Width, size.Height);
+			if (maxSize != null && imgSize > maxSize.Value)
+			{
+				size = (Size)(size * ((float)maxSize.Value / (float)imgSize));
+				var img = new Bitmap(Widget, size.Width, size.Height);
+				return img.ToUI();
+			}
 			return Control;
 		}
 

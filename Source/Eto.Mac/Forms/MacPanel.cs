@@ -3,6 +3,8 @@ using Eto.Forms;
 using Eto.Drawing;
 using SD = System.Drawing;
 using MonoTouch.UIKit;
+using MonoTouch.Foundation;
+using MonoMac.Foundation;
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
@@ -17,7 +19,7 @@ namespace Eto.Mac.Forms
 {
 
 	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, Panel.IHandler
-		where TControl: NSResponder
+		where TControl: NSObject
 		where TWidget: Panel
 		where TCallback: Panel.ICallback
 	{
@@ -81,7 +83,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				contextMenu = value;
-				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+				EventControl.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 #else
