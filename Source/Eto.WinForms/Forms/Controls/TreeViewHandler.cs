@@ -119,7 +119,7 @@ namespace Eto.WinForms.Forms.Controls
 							if (e.KeyData == swf.Keys.Return)
 							{
 								Callback.OnActivated(Widget, new TreeViewItemEventArgs(SelectedItem));
-								e.Handled = true;
+								e.Handled = e.SuppressKeyPress = true;
 								if (LabelEdit)
 									Control.SelectedNode.BeginEdit();
 							}
