@@ -28,7 +28,7 @@ namespace Eto.iOS.Forms.Controls
 			public EtoTiledView()
 			{
 				var tiledLayer = (CATiledLayer)this.Layer;
-				if (UIScreen.MainScreen.RespondsToSelector(new Selector("scale")) && UIScreen.MainScreen.Scale == 2.0f)
+				if (UIScreen.MainScreen.RespondsToSelector(new Selector("scale")) && Math.Abs(UIScreen.MainScreen.Scale - 2.0f) < 0.01f)
 				{
 					tiledLayer.TileSize = new SD.SizeF(512, 512);
 				}

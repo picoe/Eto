@@ -40,11 +40,6 @@
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="MGSplitViewController">
-      <HintPath>..\..\Libraries\MGSplitViewController\MGSplitViewController.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Drawing\BitmapHandler.cs">
@@ -184,7 +179,9 @@
       <Link>Forms\MacPanel.cs</Link>
     </Compile>
     <Compile Include="Platform.cs" />
+    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\BasePickerHandler.cs" />
+    <Compile Include="Forms\RotatableViewController.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

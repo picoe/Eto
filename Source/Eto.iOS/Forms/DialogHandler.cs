@@ -6,40 +6,28 @@ using System.Threading.Tasks;
 
 namespace Eto.iOS.Forms
 {
-	internal class RotatableViewController : UIViewController
-	{
-		public RotatableViewController()
-		{
-			AutomaticallyAdjustsScrollViewInsets = true;
-		}
-
-		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
-		{
-			return UIInterfaceOrientationMask.All;
-		}
-
-		[Obsolete]
-		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
-		{
-			return true;
-		}
-	}
-
-	public class DialogHandler : IosWindow<UIView, Dialog, Dialog.ICallback>, Dialog.IHandler
+	public class DialogHandler<TWidget, TCallback> : IosWindow<UIView, TWidget, TCallback>, Dialog.IHandler, Form.IHandler
+		where TWidget: Window
+		where TCallback: Window.ICallback
 	{
 		bool inNav;
-		TaskCompletionSource<bool> completionSource;
+		TaskCompletionSource<bool> closedcs;
+		TaskCompletionSource<bool> opencs;
 
-		~DialogHandler()
+		protected override UIViewController CreateController()
 		{
-			Console.WriteLine("woo");
+			return new RotatableViewController { View = Control };
 		}
 
 		public DialogHandler()
 		{
 			Control = new UIView();
 			Control.Frame = UIScreen.MainScreen.Bounds;
-			Controller.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 		}
 
 		public Button AbortButton { get; set; }
@@ -56,17 +44,38 @@ namespace Eto.iOS.Forms
 
 		public override void Close()
 		{
+			Close(true);
+		}
+
+		async void Close(bool closing)
+		{
 			if (inNav)
 			{
 				var viewControllers = Controller.NavigationController.ViewControllers.ToList();
 				int index = viewControllers.IndexOf(Controller);
 				if (index > 1)
 					Controller.NavigationController.PopToViewController(viewControllers[index - 1], true);
-				completionSource.SetResult(true);
+				if (closing)
+				{
+					Callback.OnClosed(Widget, EventArgs.Empty);
+					closedcs.SetResult(true);
+				}
 			}
 			else
 			{
-				Controller.DismissViewController(animated: true, completionHandler: () => completionSource.SetResult(true));
+				if (opencs != null)
+					await opencs.Task;
+				var tcs = new TaskCompletionSource<bool>();
+				Controller.DismissViewController(animated: true, completionHandler: () => 
+				{
+					tcs.SetResult(true);
+					if (closing)
+					{
+						Callback.OnClosed(Widget, EventArgs.Empty);
+						closedcs.SetResult(true);
+					}
+				});
+				await tcs.Task;
 			}
 		}
 
@@ -75,16 +84,21 @@ namespace Eto.iOS.Forms
 			await ShowModalAsync(parent);
 		}
 
-		public Task ShowModalAsync(Control parent)
+		public async Task ShowModalAsync(Control parent)
 		{
-			completionSource = new TaskCompletionSource<bool>();
+			await ShowModalAsync(parent, true);
+		}
+
+		async Task ShowModalAsync(Eto.Forms.Control parent, bool opening)
+		{
+			closedcs = new TaskCompletionSource<bool>();
 			inNav = false;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Navigation) || DisplayMode == DialogDisplayMode.Default)
+			if (parent != null && (DisplayMode.HasFlag(DialogDisplayMode.Navigation) || DisplayMode == DialogDisplayMode.Default))
 			{
-				var controller = parent.Handler as IIosView;
-				if (controller != null)
+				var iosView = parent.Handler as IIosView;
+				if (iosView != null && iosView.Controller != null)
 				{
-					var nav = controller.Controller.NavigationController;
+					var nav = iosView.Controller.NavigationController;
 					if (nav != null)
 					{
 						nav.PushViewController(Controller, true);
@@ -92,14 +106,36 @@ namespace Eto.iOS.Forms
 					}
 				}
 			}
-
 			if (!inNav)
 			{
-				var top = UIApplication.SharedApplication.KeyWindow.TopMostController();
+				Controller.ModalPresentationStyle = WindowState == WindowState.Maximized ? UIModalPresentationStyle.FullScreen : UIModalPresentationStyle.FormSheet;
 
-				top.PresentViewController(Controller, animated: true, completionHandler: null);
+				var top = UIApplication.SharedApplication.KeyWindow.TopMostController();
+				opencs = new TaskCompletionSource<bool>();
+				top.PresentViewController(Controller, animated: true, completionHandler: () => opencs.SetResult(true));
+				await opencs.Task;
+				opencs = null;
 			}
-			return completionSource.Task;
+			if (opening)
+				await closedcs.Task;
+		}
+
+		public void Show()
+		{
+			ShowModal(null);
+		}
+
+		public override void SendToBack()
+		{
+			base.SendToBack();
+
+			Close(false);
+		}
+
+		public override async void BringToFront()
+		{
+			base.BringToFront();
+			await ShowModalAsync(null, false);
 		}
 	}
 }

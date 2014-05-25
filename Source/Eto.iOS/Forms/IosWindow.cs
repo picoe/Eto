@@ -51,6 +51,12 @@ namespace Eto.iOS.Forms
 			}
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.BackgroundColor = UIColor.White;
+		}
+
 		public virtual void Close()
 		{
 		}
@@ -62,12 +68,26 @@ namespace Eto.iOS.Forms
 			set
 			{
 				toolBar = value;
-				var t = value.ControlObject as NSToolbar;
+				var control = (NSToolbar)value.ControlObject;
+				const int height = 44;
 				var screenSize = UIScreen.MainScreen.Bounds.Size;
-				var height = 44;
-				var top = toolBar.Dock == ToolBarDock.Bottom ? screenSize.Height - height : 20; // 20px to avoid overlapping the status bar on iOS7. TODO: what about iOS6?
-				t.Frame = new sd.RectangleF(0, top, screenSize.Width, height);
-				this.Control.ContainerAddSubView(t);
+
+				var bottom = toolBar.Dock == ToolBarDock.Bottom;
+				var frame = new sd.RectangleF(0, 0, screenSize.Width, height);
+				var mask = UIViewAutoresizing.FlexibleWidth;
+				if (bottom)
+				{
+					frame.Y = screenSize.Height - height;
+					mask |= UIViewAutoresizing.FlexibleTopMargin;
+				}
+				else
+					frame.Y = ApplicationHandler.Instance.StatusBarAdjustment;
+
+				control.Frame = frame;
+				control.AutoresizingMask = mask;
+
+				this.AddChild(value);
+				LayoutChildren();
 			}
 		}
 
@@ -93,7 +113,7 @@ namespace Eto.iOS.Forms
 
 		public bool Topmost { get { return false; } set { } }
 
-		public WindowState WindowState { get { return WindowState.Maximized; } set { } }
+		public WindowState WindowState { get; set; }
 
 		public Rectangle? RestoreBounds
 		{
@@ -102,11 +122,11 @@ namespace Eto.iOS.Forms
 
 		public WindowStyle WindowStyle { get { return WindowStyle.Default; } set { } }
 
-		public void BringToFront()
+		public virtual void BringToFront()
 		{
 		}
 
-		public void SendToBack()
+		public virtual void SendToBack()
 		{
 		}
 

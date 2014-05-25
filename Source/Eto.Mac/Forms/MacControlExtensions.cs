@@ -54,7 +54,7 @@ namespace Eto.Mac.Forms
 			return child == null ? null : child.GetMacControl();
 		}
 
-		public static NSView GetContainerView(this Control control)
+		public static NSView GetContainerView(this Widget control)
 		{
 			if (control == null)
 				return null;

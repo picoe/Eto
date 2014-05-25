@@ -17,33 +17,41 @@ namespace Eto.iOS.Forms.Controls
 			Control = new UIButton(UIButtonType.RoundedRect);
 		}
 
-		public void Create (RadioButton controller)
+		public void Create(RadioButton controller)
 		{
 			this.controller = (RadioButtonHandler)(controller != null ? controller.Handler : this);
 			if (this.controller != this)
-				this.controller.children.Add (this);
+				this.controller.children.Add(this);
 			else
-				children = new List<RadioButtonHandler>();
+				children = new List<RadioButtonHandler> { this };
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			Control.ShowsTouchWhenHighlighted = false;
-			Control.TouchUpInside += (sender, e) => {
-				this.Checked = true;
-				Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+			Control.TouchUpInside += (sender, e) =>
+			{
+				Checked = true;
 			};
 		}
 
-		public bool Checked {
+		public bool Checked
+		{
 			get { return Control.Selected; }
-			set { 
-				Control.Highlighted = value;
-				if (value && controller != null) {
-					foreach (var b in controller.children.Where(r => r != this)) {
-						b.Control.Highlighted = false;
+			set
+			{ 
+				if (Control.Selected != value)
+				{
+					Control.Selected = value;
+					if (value && controller != null)
+					{
+						foreach (var b in controller.children.Where(r => r != this))
+						{
+							b.Control.Selected = false;
+						}
 					}
+					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}

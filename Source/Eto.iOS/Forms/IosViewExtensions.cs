@@ -9,29 +9,44 @@ namespace Eto.iOS.Forms
 {
 	public static class IosViewExtensions
 	{
-		public static UIViewController GetViewController(this Control control, bool force = true)
+		public static UIViewController GetViewController(this Widget control, bool force = true)
 		{
 			if (control == null)
 				return null;
 			
-			var controller = control.Handler as IIosView;
-			if (controller != null)
+			var iosView = control.Handler as IIosView;
+			if (iosView != null)
 			{
-				return controller.Controller;
+				var controller = iosView.Controller;
+				if (controller != null)
+					return controller;
 			}
 			if (force)
 			{
 				var view = control.GetContainerView();
 				if (view != null)
 				{
-					var viewcontroller = new RotatableViewController
-					{
-						View = view
-					};
+					var viewcontroller = new RotatableViewController { View = view };
+					if (iosView != null)
+						iosView.Controller = viewcontroller;
 					return viewcontroller;
 				}
 			}
 			return null;
+		}
+
+		public static void AddChild(this IIosView parent, Widget control)
+		{
+			var parentViewController = parent.Controller;
+			if (parentViewController != null)
+			{
+				// wire up view controllers, if both have one
+				var childController = control.GetViewController(false);
+				if (childController != null)
+					parentViewController.AddChildViewController(childController);
+			}
+
+			parent.ContentControl.AddSubview(control.GetContainerView());
 		}
 	}
 }

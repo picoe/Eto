@@ -41,7 +41,7 @@ namespace Eto.iOS.Forms.Controls
 				// this is due to how xamarin.ios keeps the controllers in an array
 				// and this resets that array
 				var controllers = Handler.Navigation.ViewControllers;
-				Handler.items.RemoveAll(r => !controllers.Contains(r.Content.GetViewController()));
+				Handler.items.RemoveAll(r => !controllers.Contains(r.Content.GetViewController(false)));
 				/* for testing garbage collection after a view is popped
 				#if DEBUG
 				GC.Collect();

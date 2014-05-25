@@ -15,7 +15,7 @@ namespace Eto.iOS.Forms
 	{
 		Size PositionOffset { get; }
 
-		UIViewController Controller { get; }
+		UIViewController Controller { get; set; }
 	}
 
 	public abstract class IosView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IIosView
@@ -31,12 +31,12 @@ namespace Eto.iOS.Forms
 		public UIViewController Controller
 		{ 
 			get { return controller ?? (controller = CreateController()); } 
-			protected set { controller = value; }
+			set { controller = value; }
 		}
 
 		protected virtual UIViewController CreateController()
 		{
-			return new RotatableViewController { View = ContainerControl };
+			return null;
 		}
 
 		public virtual UIView ContentControl { get { return ContainerControl; } }

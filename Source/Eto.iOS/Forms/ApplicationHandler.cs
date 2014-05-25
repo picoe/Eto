@@ -28,6 +28,19 @@ namespace Eto.iOS.Forms
 			Control = UIApplication.SharedApplication;
 		}
 
+		public float StatusBarAdjustment
+		{
+			get
+			{
+				if (UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
+				{
+					var statusBarFrame = UIApplication.SharedApplication.StatusBarFrame;
+					return Math.Min(statusBarFrame.Height, statusBarFrame.Width);
+				}
+				return 0f;
+			}
+		}
+
 		public void Run(string[] args)
 		{
 			if (!attached)
@@ -72,14 +85,10 @@ namespace Eto.iOS.Forms
 
 		public void AsyncInvoke(Action action)
 		{
-			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread)
-				action();
-			else
-				UIApplication.SharedApplication.BeginInvokeOnMainThread(delegate
-				{
-					action(); 
-				});
+			UIApplication.SharedApplication.BeginInvokeOnMainThread(delegate
+			{
+				action(); 
+			});
 		}
 
 		public IEnumerable<Command> GetSystemCommands()

@@ -63,7 +63,7 @@ namespace Eto.iOS
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
-			//g.Add<DateTimePicker> (() => new DateTimePickerHandler ());
+			p.Add<DateTimePicker.IHandler> (() => new DateTimePickerHandler ());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
 			p.Add<GridView.IHandler>(() => new GridViewHandler());
@@ -80,7 +80,8 @@ namespace Eto.iOS
 			p.Add<SearchBox.IHandler>(() => new SearchBoxHandler());
 			p.Add<Slider.IHandler>(() => new SliderHandler());
 			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
-			p.Add<Splitter.IHandler>(() => new SplitterHandler());
+			if (IsIpad)
+				p.Add<Splitter.IHandler>(() => new SplitterHandler());
 			//p.Add<TabControl.IHandler>(() => new TabControlHandler ());
 			//p.Add<TabPage.IHandler>(() => new TabPageHandler ());
 			p.Add<TextArea.IHandler>(() => new TextAreaHandler());
@@ -114,9 +115,9 @@ namespace Eto.iOS
 			//p.Add<Clipboard.IHandler>(() => new ClipboardHandler ());
 			//p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler ());
 			//p.Add<Cursor.IHandler>(() => new CursorHandler ());
-			p.Add<Dialog.IHandler>(() => new DialogHandler());
+			p.Add<Dialog.IHandler>(() => new DialogHandler<Dialog, Dialog.ICallback>());
 			//p.Add<FontDialog.IHandler>(() => new FontDialogHandler ());
-			p.Add<Form.IHandler>(() => new FormHandler());
+			p.Add<Form.IHandler>(() => UIApplication.SharedApplication.KeyWindow == null ? (Form.IHandler)new FormHandler() : new DialogHandler<Form, Form.ICallback>());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			//p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler ());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
@@ -131,19 +132,6 @@ namespace Eto.iOS
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
 			p.Add<Thread.IHandler>(() => new ThreadHandler());
-		}
-
-		public override bool Supports<T>()
-		{
-			var type = typeof(T);
-			if (UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad)
-			{
-				// all iPad-only stuff is not supported on other idioms..
-				if (type == typeof(Splitter.IHandler))
-					return false;
-				
-			}
-			return base.Supports<T>();
 		}
 
 		public override IDisposable ThreadStart()

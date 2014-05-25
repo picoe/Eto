@@ -34,6 +34,8 @@ namespace Eto.iOS.Forms.Controls
 			Control = new NSToolbar();
 			Control.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 			Control.BarStyle = UIBarStyle.Default;
+			if (!Platform.IsIpad)
+				Dock = ToolBarDock.Bottom;
 		}
 
 		public void AddButton(ToolItem button, int index)
