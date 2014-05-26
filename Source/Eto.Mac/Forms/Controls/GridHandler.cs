@@ -284,7 +284,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var colHandler = (GridColumnHandler)col.Handler;
 				colHandler.Loaded(this, i++);
-				colHandler.Resize();
+				colHandler.Resize(true);
 			}
 		}
 
