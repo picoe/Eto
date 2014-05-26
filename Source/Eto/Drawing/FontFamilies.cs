@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// These font families are "guaranteed" to be available, mainly by using pre-installed fonts on each
 	/// platform.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class FontFamilies
 	{
 		/// <summary>

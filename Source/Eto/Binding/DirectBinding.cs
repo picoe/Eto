@@ -12,6 +12,8 @@ namespace Eto
 	/// This differs from the <see cref="IndirectBinding{T}"/>, which requires that the caller pass in the
 	/// object to get/set the value from/to.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class DirectBinding<T> : Binding
 	{
 		#region Events

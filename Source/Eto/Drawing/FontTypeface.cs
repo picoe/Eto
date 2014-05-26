@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// This class represents each supported typeface of a particular font family, and can be used
 	/// to create a <see cref="Font"/> instance that uses this typeface, using the <see cref="M:Font(FontTypeface,float,FontDecoration,Generator)"/> constructor.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class FontTypeface : Widget
 	{
 		new IHandler Handler  { get { return (IHandler)base.Handler; } }

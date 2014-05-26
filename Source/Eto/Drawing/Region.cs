@@ -7,6 +7,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Defines a region to use for clipping
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Region.IHandler))]
 	public class Region : Widget
 	{

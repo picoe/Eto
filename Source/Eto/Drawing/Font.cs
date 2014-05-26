@@ -9,6 +9,8 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// This is useful when you want to use a font that is the same as standard UI elements.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum SystemFont
 	{
 		/// <summary>
@@ -56,6 +58,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Syles for a <see cref="Font"/>
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Flags]
 	public enum FontStyle
 	{
@@ -79,6 +83,8 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// These specify the different decorations to apply to a font, and are not related to the style.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Flags]
 	public enum FontDecoration
 	{
@@ -106,6 +112,8 @@ namespace Eto.Drawing
 	/// You can get a list of <see cref="FontFamily"/> objects available in the current system using
 	/// <see cref="Fonts.AvailableFontFamilies"/>, which can then be used to create an instance of a font.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Font.IHandler))]
 	public class Font : Widget
 	{

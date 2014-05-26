@@ -10,7 +10,7 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// This class allows you to draw on either a <see cref="Bitmap"/> or a <see cref="T:Eto.Forms.Drawable"/> control.
 	/// </remarks>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Graphics.IHandler))]
 	public class Graphics : Widget
@@ -934,7 +934,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Platform handler interface for the <see cref="Graphics"/> class
 		/// </summary>
-		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		[AutoInitialize(false)]
 		public new interface IHandler : Widget.IHandler

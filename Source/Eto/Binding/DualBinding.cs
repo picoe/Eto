@@ -10,6 +10,8 @@ namespace Eto
 	/// Only properties that have a Changed event, or objects that implement <see cref="System.ComponentModel.INotifyPropertyChanged"/>
 	/// will handle automatically updating the binding.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum DualBindingMode
 	{
 		/// <summary>

@@ -11,7 +11,7 @@ namespace Eto
 	/// <summary>
 	/// Interface for widgets that have a control object
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IControlObjectSource
 	{
@@ -25,7 +25,7 @@ namespace Eto
 	/// <summary>
 	/// Interface for widgets that have a handler
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IHandlerSource
 	{
@@ -62,7 +62,7 @@ namespace Eto
 	///
 	/// To implement the handler for a widget, use the <see cref="Eto.WidgetHandler{TWidget}"/> as the base class.
 	/// </remarks>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 	{
@@ -113,7 +113,7 @@ namespace Eto
 		/// <summary>
 		/// Handler interface for the <see cref="Widget"/> class
 		/// </summary>
-		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public interface IHandler
 		{

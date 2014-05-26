@@ -8,7 +8,7 @@ namespace Eto.Test.Sections.Drawing
 	/// <summary>
 	/// Test for different brushes and options
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BrushSection : Scrollable
 	{

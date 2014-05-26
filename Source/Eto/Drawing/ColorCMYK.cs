@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// converted to a <see cref="Color"/> struct first, either by using <see cref="ColorCMYK.ToColor"/>
 	/// or the implicit conversion.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public struct ColorCMYK : IEquatable<ColorCMYK>
 	{
 		/// <summary>

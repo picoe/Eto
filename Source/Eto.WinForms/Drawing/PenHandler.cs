@@ -8,7 +8,7 @@ namespace Eto.WinForms.Drawing
 	/// <summary>
 	/// Handler for <see cref="Pen"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PenHandler : Pen.IHandler
 	{

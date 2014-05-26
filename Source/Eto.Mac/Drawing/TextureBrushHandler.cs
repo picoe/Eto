@@ -15,7 +15,7 @@ namespace Eto.iOS.Drawing
 	/// <summary>
 	/// Handler for <see cref="TextureBrush"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class TextureBrushHandler : BrushHandler, TextureBrush.IHandler
 	{

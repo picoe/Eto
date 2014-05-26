@@ -5,7 +5,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Base brush class to use when calling fill methods of a <see cref="Graphics"/> object
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Brush : IHandlerSource, IControlObjectSource, IDisposable
 	{
@@ -51,7 +51,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Base interface for brush handlers of type <see cref="Brush"/>
 		/// </summary>
-		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public interface IHandler
 		{

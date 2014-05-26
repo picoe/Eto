@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Represents a color with RGBA (Red, Green, Blue, and Alpha) components
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter (typeof (ColorConverter))]
 	public struct Color : IEquatable<Color>
 	{

@@ -14,7 +14,7 @@ namespace Eto
 	/// 
 	/// If you wish to embed Eto.dll as well, you will have to copy this class to your executable.
 	/// </remarks>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class EmbeddedAssemblyLoader
 	{

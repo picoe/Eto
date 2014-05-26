@@ -167,7 +167,7 @@ namespace Eto.Test.UnitTests
 
 				}, timeout);
 			}
-			catch (Exception ex)
+			catch
 			{
 				if (form != null)
 				{

@@ -5,7 +5,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Wrap mode for a gradient
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum GradientWrapMode
 	{
@@ -23,7 +23,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Brush with a linear gradient at an angle
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class LinearGradientBrush : Brush, ITransformBrush
 	{
@@ -143,7 +143,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Handler interface for the <see cref="LinearGradientBrush"/>
 		/// </summary>
-		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public new interface IHandler : Brush.IHandler
 		{

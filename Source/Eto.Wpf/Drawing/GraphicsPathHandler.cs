@@ -10,7 +10,7 @@ namespace Eto.Wpf.Drawing
 	/// <summary>
 	/// Handler for <see cref="IGraphicsPath"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GraphicsPathHandler : GraphicsPath.IHandler
 	{

@@ -5,6 +5,8 @@ namespace Eto.Drawing
 	/// Interpolation modes when drawing images using the <see cref="Graphics"/> object
 	/// </summary>
 	/// <seealso cref="Graphics.ImageInterpolation"/>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ImageInterpolation
 	{
 		/// <summary>

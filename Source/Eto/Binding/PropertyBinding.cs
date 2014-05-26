@@ -31,6 +31,8 @@ namespace Eto
 	/// This can be used to get/set values from any object.  If you want to bind to a particular object
 	/// directly, use the <see cref="ObjectBinding{T}"/> with this class as its inner binding.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PropertyBinding<T> : IndirectBinding<T>
 	{
 #if PCL

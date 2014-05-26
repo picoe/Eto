@@ -9,7 +9,7 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// A graphics path can contain multiple figures comprised of various components such as line, arc, curve, etc.
 	/// </remarks>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IGraphicsPath : IDisposable, IControlObjectSource
 	{
@@ -184,7 +184,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Extensions for the <see cref="IGraphicsPath"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class GraphicsPathExtensions
 	{
@@ -290,7 +290,7 @@ namespace Eto.Drawing
 	/// This is a thin wrapper around the <see cref="IGraphicsPath"/> interface, which is created via
 	/// <see cref="GraphicsPath.Create()"/>.
 	/// </remarks>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(IGraphicsPath))]
 	public class GraphicsPath : IGraphicsPath, IHandlerSource
@@ -729,7 +729,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Handler interface for the <see cref="IGraphicsPath"/>
 		/// </summary>
-		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public interface IHandler : IGraphicsPath
 		{

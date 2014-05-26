@@ -4,6 +4,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// List of common colors
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class Colors
 	{
 		/// <summary>Gets a color with an ARGB value of #</summary>

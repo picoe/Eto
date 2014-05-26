@@ -7,6 +7,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Xml extensions to read/write Eto.Drawing structs to xml
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class XmlExtensions
 	{
 		/// <summary>

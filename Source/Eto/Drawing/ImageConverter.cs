@@ -7,6 +7,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Converter to convert a string to an <see cref="Image"/>
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ImageConverter : TypeConverter
 	{
 		/// <summary>

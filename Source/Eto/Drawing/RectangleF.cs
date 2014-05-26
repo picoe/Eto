@@ -11,6 +11,8 @@ namespace Eto.Drawing
 	/// A rectangle is defined by a location (X, Y) and a size (Width, Height).
 	/// The width and/or height can be negative.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter (typeof(RectangleFConverter))]
 	public struct RectangleF : IEquatable<RectangleF>
 	{

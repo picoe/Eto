@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// The point struct is used for drawing and positioning of elements and widgets
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter (typeof(PointFConverter))]
 	public struct PointF : IEquatable<PointF>
 	{

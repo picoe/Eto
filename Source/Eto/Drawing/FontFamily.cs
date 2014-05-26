@@ -13,6 +13,8 @@ namespace Eto.Drawing
 	/// The variations can include Light, Bold, Italic, Oblique, etc.  Only the styles in <see cref="FontStyle"/> are 
 	/// discoverable, other than looking at the <see cref="FontTypeface.Name"/> for hints as to what the variation will look like.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(FontFamily.IHandler))]
 	public class FontFamily : Widget, IEquatable<FontFamily>
 	{

@@ -7,6 +7,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Represents an amount of padding to apply to an object at the top, left, right, and bottom.
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter(typeof(PaddingConverter))]
 	public struct Padding : IEquatable<Padding>
 	{

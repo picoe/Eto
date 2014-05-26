@@ -5,7 +5,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Defines attributes for line drawing methods in <see cref="Graphics"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public sealed class Pen : IHandlerSource, IDisposable, IControlObjectSource
 	{
@@ -163,7 +163,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Defines a pen to be used with the <see cref="Graphics"/> drawing methods
 		/// </summary>
-		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public interface IHandler
 		{

@@ -15,6 +15,8 @@ namespace Eto.Drawing
 	/// 
 	/// For HiDPI/Retina displays (e.g. on OS X), this will allow using a higher resolution image automatically.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Icon.IHandler))]
 	public class Icon : Image
 	{

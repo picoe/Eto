@@ -8,6 +8,8 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// The transform is used to specify how the brush will be applied to the drawing.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface ITransformBrush
 	{
 		/// <summary>
@@ -20,7 +22,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Defines a brush with an image texture for use with <see cref="Graphics"/> fill operations
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public sealed class TextureBrush : Brush, ITransformBrush
 	{
@@ -118,7 +120,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Platform handler interface for <see cref="TextureBrush"/>
 		/// </summary>
-		/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public new interface IHandler : Brush.IHandler
 		{

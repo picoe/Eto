@@ -22,6 +22,8 @@ namespace Eto
 	/// Typically one would use <see cref="PropertyBinding"/> or <see cref="ColumnBinding{T}"/>
 	/// which are ways to retrieve either a property value or column/index-based value.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class IndirectBinding<T> : Binding, IIndirectBinding<T>
 	{
 		/// <summary>

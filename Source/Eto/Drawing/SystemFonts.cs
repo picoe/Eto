@@ -7,6 +7,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Methods to get information about current fonts installed the running system
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class SystemFonts
 	{
 		static readonly object cacheKey = new object();

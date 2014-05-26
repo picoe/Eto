@@ -45,6 +45,8 @@ namespace Eto
 	/// </remarks>
 	/// <typeparam name="T">The type of object to bind to.</typeparam>
 	/// <typeparam name="TValue">The type of value for the binding.</typeparam>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ObjectBinding<T, TValue> : DirectBinding<TValue>
 	{
 		object dataValueChangedReference;
