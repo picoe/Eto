@@ -244,6 +244,10 @@ namespace Eto.Forms
 			Handler.Quit();
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Eto.Forms.Application"/> supports the <see cref="Quit"/> operation.
+		/// </summary>
+		/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
 		public bool QuitIsSupported
 		{
 			get { return Handler.QuitIsSupported; }
@@ -415,6 +419,10 @@ namespace Eto.Forms
 			/// </remarks>
 			void Quit();
 
+			/// <summary>
+			/// Gets a value indicating whether the application supports the <see cref="Quit"/> operation.
+			/// </summary>
+			/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
 			bool QuitIsSupported { get ; }
 
 			/// <summary>

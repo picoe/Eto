@@ -400,7 +400,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Sets <see cref="WindowState"/> to <see cref="WindowState.Minimized"/>
+        /// Sets <see cref="WindowState"/> to <see cref="Eto.Forms.WindowState.Minimized"/>
 		/// </summary>
 		public void Minimize()
 		{
@@ -408,7 +408,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Sets <see cref="WindowState"/> to <see cref="WindowState.Maximized"/>
+		/// Sets <see cref="WindowState"/> to <see cref="Eto.Forms.WindowState.Maximized"/>
 		/// </summary>
 		public void Maximize()
 		{

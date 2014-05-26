@@ -230,13 +230,25 @@ namespace Eto.Forms
 		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for the <see cref="Scrollable"/>
+		/// </summary>
 		public new interface ICallback : Panel.ICallback
 		{
+			/// <summary>
+			/// Raises the scroll event.
+			/// </summary>
 			void OnScroll(Scrollable widget, ScrollEventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for the <see cref="Scrollable"/>
+		/// </summary>
 		protected new class Callback : Panel.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the scroll event.
+			/// </summary>
 			public void OnScroll(Scrollable widget, ScrollEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnScroll(e));

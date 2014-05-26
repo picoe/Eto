@@ -3,16 +3,37 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Orientation of a <see cref="Splitter"/> control.
+	/// </summary>
 	public enum SplitterOrientation
 	{
+		/// <summary>
+		/// Controls are in horizontal orientation, with a vertical divider between them.
+		/// </summary>
 		Horizontal,
+		/// <summary>
+		/// Controls are in vertical orientation, with a horizontal divider betwen them.
+		/// </summary>
 		Vertical
 	}
 
+	/// <summary>
+	/// Specifies which panel has a fixed size the parent container is resized.
+	/// </summary>
 	public enum SplitterFixedPanel
 	{
+		/// <summary>
+		/// The first panel will be fixed size, where the second will resize along with the splitter's container.
+		/// </summary>
 		Panel1,
+		/// <summary>
+		/// The second panel will be fixed size, where the first will resize along with the splitter's container.
+		/// </summary>
 		Panel2,
+		/// <summary>
+		/// Both panels will resize along with the splitter's container.
+		/// </summary>
 		None
 	}
 
