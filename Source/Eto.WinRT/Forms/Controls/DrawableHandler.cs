@@ -227,7 +227,7 @@ namespace Eto.WinRT.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			graphics = new Graphics(Eto.Platform.Instance, new GraphicsHandler(this));
+			graphics = new Graphics(new GraphicsHandler(this));
 		}
 
 		public void Create()
@@ -258,7 +258,7 @@ namespace Eto.WinRT.Forms.Controls
 
 		public virtual Graphics CreateGraphics()
 		{
-			return graphics != null ? new Graphics(null, graphics.Handler as Graphics.IHandler) : null;
+			return graphics != null ? new Graphics((Graphics.IHandler)graphics.Handler) : null;
 		}
 
 		void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)

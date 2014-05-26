@@ -19,9 +19,8 @@ namespace Eto.WinRT.Forms.Controls
 		readonly swc.TextBlock label;
 		readonly swc.Grid grid;
 		ButtonImagePosition imagePosition;
-		readonly Size defaultSize = Button.DefaultSize;
 
-		protected override Size DefaultSize { get { return defaultSize; } }
+        protected override Size DefaultSize { get { return new Size(80, 26); } }
 
 		public ButtonHandler ()
 		{
