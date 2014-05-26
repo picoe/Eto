@@ -87,13 +87,13 @@ namespace Eto.iOS.Forms.Controls
 
 		static UIColor ButtonTextColor = new UIButton(UIButtonType.RoundedRect).TitleColor(UIControlState.Normal);
 		static UIColor DisabledTextColor = new UIButton(UIButtonType.RoundedRect).TitleColor(UIControlState.Disabled);
-
+	
 		protected BasePickerHandler()
 		{
 			Control = new EtoLabel { Handler = this };
+			Control.AccessibilityTraits = UIAccessibilityTrait.Button;
 			Control.UserInteractionEnabled = true;
 			Control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
-			Control.Text = EmptyText;
 			Control.TextColor = ButtonTextColor;
 		}
 
@@ -105,6 +105,12 @@ namespace Eto.iOS.Forms.Controls
 				base.Enabled = value;
 				Control.TextColor = value ? ButtonTextColor : DisabledTextColor;
 			}
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			UpdateText();
 		}
 
 		protected abstract string GetTextValue();
@@ -132,7 +138,7 @@ namespace Eto.iOS.Forms.Controls
 			yield return new UIBarButtonItem(UIBarButtonSystemItem.Done, (s, ee) =>
 			{
 				UpdateValue((TPicker)Control.InputView);
-				Control.Text = GetTextValue();
+				UpdateText();
 				Control.ResignFirstResponder();
 			});
 		}
@@ -144,9 +150,7 @@ namespace Eto.iOS.Forms.Controls
 
 		protected void UpdateText()
 		{
-			var oldSize = GetPreferredSize(SizeF.MaxValue);
-			Control.Text = GetTextValue() ?? EmptyText;
-			LayoutIfNeeded(oldSize);
+			LayoutIfNeeded(() => Control.Text = GetTextValue() ?? EmptyText);
 		}
 
 		public override Font Font
@@ -154,8 +158,11 @@ namespace Eto.iOS.Forms.Controls
 			get { return base.Font; }
 			set
 			{
-				base.Font = value;
-				Control.Font = value.ToUI();
+				LayoutIfNeeded(() =>
+				{
+					base.Font = value;
+					Control.Font = value.ToUI();
+				});
 			}
 		}
 

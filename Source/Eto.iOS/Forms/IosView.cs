@@ -100,6 +100,18 @@ namespace Eto.iOS.Forms
 			return false;
 		}
 
+		protected virtual void LayoutIfNeeded(Action action)
+		{
+			if (Widget.Loaded)
+			{
+				var size = GetPreferredSize(SizeF.MaxValue);
+				action();
+				LayoutIfNeeded(size);
+			}
+			else
+				action();
+		}
+
 		protected virtual SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (naturalSize != null)
@@ -255,7 +267,11 @@ namespace Eto.iOS.Forms
 		public bool Visible
 		{
 			get { return !ContainerControl.Hidden; }
-			set { ContainerControl.Hidden = !value; }
+			set
+			{ 
+				ContainerControl.Hidden = !value;
+				LayoutIfNeeded();
+			}
 		}
 
 		public virtual Font Font

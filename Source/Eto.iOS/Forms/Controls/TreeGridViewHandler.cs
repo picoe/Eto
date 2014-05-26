@@ -116,9 +116,9 @@ namespace Eto.iOS.Forms.Controls
 					return null;
 			}
 			set {
+
 				// traverse datastore to find item
 				//var index = store.IndexOf (value);
-
 			}
 		}
 

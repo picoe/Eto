@@ -16,15 +16,11 @@ namespace Eto.iOS.Forms.Controls
 
 		public override UIView ContainerControl { get { return Control.View; } }
 
-		protected override UIViewController CreateController()
-		{
-			return Control;
-		}
-
 		public TabControlHandler()
 		{
 			Control = new UITabBarController();
 			Control.CustomizableViewControllers = null;
+			Controller = Control;
 		}
 
 		public void InsertTab(int index, TabPage page)

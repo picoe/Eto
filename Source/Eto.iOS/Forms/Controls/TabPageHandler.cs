@@ -10,14 +10,10 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class TabPageHandler : MacPanel<UIViewController, TabPage, TabPage.ICallback>, TabPage.IHandler
 	{
-		protected override UIViewController CreateController()
-		{
-			return Control;
-		}
-
 		public TabPageHandler()
 		{
 			Control = new UIViewController();
+			Controller = Control;
 		}
 
 		public string Text
@@ -41,6 +37,29 @@ namespace Eto.iOS.Forms.Controls
 		public override UIView ContainerControl
 		{
 			get { return Control.View; }
+		}
+
+		public override void LayoutChildren()
+		{
+			if (Content != null && Widget.Parent != null && Control.EdgesForExtendedLayoutIsSupported())
+			{
+				var child = Content.Handler as ScrollableHandler;
+				if (child != null)
+				{
+					// need to manually adjust content insets for scrollable children
+					var tabs = Widget.Parent.Handler as TabControlHandler;
+					var inset = new UIEdgeInsets(0, 0, tabs.Control.TabBar.Bounds.Height, 0);
+					child.Control.ContentInset = inset;
+					child.Control.ScrollIndicatorInsets = inset;
+					Control.EdgesForExtendedLayout = UIRectEdge.All;
+				}
+				else
+				{
+					// otherwise, show everything
+					Control.EdgesForExtendedLayout = UIRectEdge.None;
+				}
+			}
+			base.LayoutChildren();
 		}
 	}
 }

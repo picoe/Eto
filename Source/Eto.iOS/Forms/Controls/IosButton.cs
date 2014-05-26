@@ -21,7 +21,7 @@ namespace Eto.iOS.Forms.Controls
 			}
 			set
 			{
-				Control.SetTitle(value, UIControlState.Normal);
+				LayoutIfNeeded(() => Control.SetTitle(value, UIControlState.Normal));
 			}
 		}
 

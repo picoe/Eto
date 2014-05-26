@@ -4,6 +4,7 @@ using MonoTouch.UIKit;
 using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Mac.Forms;
+using System.ComponentModel;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -15,6 +16,8 @@ namespace Eto.iOS.Forms.Controls
 		UIView Child { get; set; }
 
 		public override UIView ContainerControl { get { return Control; } }
+
+		public bool ShouldCenterContent { get; set; }
 
 		BorderType border;
 
@@ -62,15 +65,31 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
+		class ScrollViewController : UIViewController
+		{
+			public ScrollableHandler Handler { get; set; }
+
+			public override void DidRotate(UIInterfaceOrientation fromInterfaceOrientation)
+			{
+				base.DidRotate(fromInterfaceOrientation);
+				Handler.UpdateScrollSizes();
+			}
+
+		}
+
 		void Adjust()
 		{
+			if (!ShouldCenterContent)
+				return;
+
+			// keep content in the center of the scroll area, if smaller than the scrollable region
+
 			var scrollBounds = Control.Bounds;
 			var contentSize = Control.ContentSize;
 			var insets = Control.ContentInset;
 			scrollBounds.Width -= insets.Left + insets.Right;
 			scrollBounds.Height -= insets.Top + insets.Bottom;
 
-			// keep content in the center of the scroll area, if smaller
 			var location = new sd.PointF(Math.Max(0, (scrollBounds.Width - contentSize.Width) / 2f), Math.Max(0, (scrollBounds.Height - contentSize.Height) / 2f));
 
 			IsResizing = true;
@@ -119,6 +138,7 @@ namespace Eto.iOS.Forms.Controls
 			Control.AddSubview(Child);
 			ExpandContentHeight = ExpandContentWidth = true;
 
+			Controller = new ScrollViewController { View = Control, Handler = this };
 			/*
 			foreach (var gestureRecognizer in Control.GestureRecognizers.OfType<UIPanGestureRecognizer>()) {
 				gestureRecognizer.MinimumNumberOfTouches = 2;
@@ -183,10 +203,12 @@ namespace Eto.iOS.Forms.Controls
 				contentSize.Width = Math.Max(contentSize.Width, MinimumSize.Width);
 				contentSize.Height = Math.Max(contentSize.Height, MinimumSize.Height);
 			}
+			var inset = Control.ContentInset;
 			if (ExpandContentWidth)
-				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
+				contentSize.Width = Math.Max(ClientSize.Width - inset.Left - inset.Right, contentSize.Width);
 			if (ExpandContentHeight)
-				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
+				contentSize.Height = Math.Max(ClientSize.Height - inset.Top - inset.Bottom, contentSize.Height);
+
 			Control.ContentSize = contentSize;
 			Child.SetFrameSize(contentSize);
 			Adjust();

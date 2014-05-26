@@ -4,6 +4,7 @@ using System.Drawing;
 using Eto.Forms;
 using Eto.iOS.Forms;
 using MonoTouch.Foundation;
+using MonoTouch.ObjCRuntime;
 
 namespace Eto.iOS
 {
@@ -37,6 +38,27 @@ namespace Eto.iOS
 				return null;
 			else
 				return new Uri(url.AbsoluteString);
+		}
+
+		static readonly Selector selAutomaticallyAdjustsScrollViewInsets = new Selector("automaticallyAdjustsScrollViewInsets");
+
+		public static bool AutomaticallyAdjustsScrollViewInsetsIsSupported(this UIViewController controller)
+		{
+			return controller.RespondsToSelector(selAutomaticallyAdjustsScrollViewInsets);
+		}
+
+		static readonly Selector selExtendLayoutIncludesOpaqueBars = new Selector("extendedLayoutIncludesOpaqueBars");
+
+		public static bool ExtendLayoutIncludesOpaqueBarsIsSupported(this UIViewController controller)
+		{
+			return controller.RespondsToSelector(selExtendLayoutIncludesOpaqueBars);
+		}
+
+		static readonly Selector selEdgesForExtendedLayout = new Selector("edgesForExtendedLayout");
+
+		public static bool EdgesForExtendedLayoutIsSupported(this UIViewController controller)
+		{
+			return controller.RespondsToSelector(selEdgesForExtendedLayout);
 		}
 	}
 }

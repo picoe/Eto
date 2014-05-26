@@ -47,7 +47,6 @@ namespace Eto.Test
 				ClientSize = new Size(900, 650);
 			//Opacity = 0.5;
 
-			// Commenting the next line on iOS displays just the toolbar. Otherwise it is hidden for some reason.
 			Content = MainContent();
 
 			CreateMenuToolBar();

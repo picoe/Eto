@@ -32,7 +32,7 @@ namespace Eto.iOS.Forms
 		{
 			get
 			{
-				if (UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
+				if (Platform.IsIos7)
 				{
 					var statusBarFrame = UIApplication.SharedApplication.StatusBarFrame;
 					return Math.Min(statusBarFrame.Height, statusBarFrame.Width);

@@ -321,6 +321,7 @@ namespace Eto.Forms
 
 			/// <summary>
 			/// Raises the collapsing event.
+			/// </summary>
 			void OnCollapsing(TreeGridView widget, TreeGridViewItemCancelEventArgs e);
 
 			/// <summary>
@@ -388,6 +389,9 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Handler interface for the <see cref="TreeGridView"/>
+		/// </summary>
 		public new interface IHandler : Grid.IHandler, IContextMenuHost
 		{
 			/// <summary>

@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using MonoTouch.UIKit;
 using NSCell = MonoTouch.UIKit.UITableViewCell;
+using System.Collections.Generic;
 
 namespace Eto.iOS.Forms.Cells
 {
@@ -30,8 +31,8 @@ namespace Eto.iOS.Forms.Cells
 			return null;
 		}
 
-		IListStore dataStore;
-		public IListStore DataStore
+		IEnumerable<object> dataStore;
+		public IEnumerable<object> DataStore
 		{
 			get { return dataStore; }
 			set { dataStore = value; }

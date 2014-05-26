@@ -26,6 +26,8 @@ namespace Eto.iOS
 
 		public static bool IsIpad { get { return UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad; } }
 
+		public static bool IsIos7 { get { return UIDevice.CurrentDevice.CheckSystemVersion(7, 0); } }
+
 		public override bool IsIos { get { return true; } }
 
 		public override bool IsMobile { get { return true; } }

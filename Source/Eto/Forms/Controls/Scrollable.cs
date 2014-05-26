@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -173,6 +174,7 @@ namespace Eto.Forms
 		/// Content that is larger than the available space will make the horizontal scrollbar appear, regardless of this setting.
 		/// </remarks>
 		/// <value><c>true</c> to expand content to the width of the control; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public bool ExpandContentWidth
 		{
 			get { return Handler.ExpandContentWidth; }
@@ -187,6 +189,7 @@ namespace Eto.Forms
 		/// Content that is larger than the available space will make the vertical scrollbar appear, regardless of this setting.
 		/// </remarks>
 		/// <value><c>true</c> to expand content to the height of the control; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public bool ExpandContentHeight
 		{
 			get { return Handler.ExpandContentHeight; }
@@ -197,6 +200,7 @@ namespace Eto.Forms
 		/// Hint to get or set the minimum zoom of the scrollable region, if the platform supports it
 		/// </summary>
 		/// <value>The minimum zoom.</value>
+		[DefaultValue(1f)]
 		public float MinimumZoom
 		{
 			get { return Handler.MinimumZoom; }
@@ -207,6 +211,7 @@ namespace Eto.Forms
 		/// Hint to get or set the maximum zoom of the scrollable region, if the platform supports it
 		/// </summary>
 		/// <value>The maximum zoom.</value>
+		[DefaultValue(1f)]
 		public float MaximumZoom
 		{
 			get { return Handler.MaximumZoom; }
@@ -217,11 +222,14 @@ namespace Eto.Forms
 		/// Hint to set the zoom level of the scrollable region, if the platform supports it
 		/// </summary>
 		/// <value>The current zoom level</value>
+		[DefaultValue(1f)]
 		public float Zoom
 		{
 			get { return Handler.Zoom; }
 			set { Handler.Zoom = value; }
 		}
+
+		#region Callback
 
 		static readonly object callback = new Callback();
 		/// <summary>
@@ -254,6 +262,8 @@ namespace Eto.Forms
 				widget.Platform.Invoke(() => widget.OnScroll(e));
 			}
 		}
+
+		#endregion
 
 		#region Handler
 

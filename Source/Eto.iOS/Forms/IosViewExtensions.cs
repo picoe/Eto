@@ -48,6 +48,19 @@ namespace Eto.iOS.Forms
 
 			parent.ContentControl.AddSubview(control.GetContainerView());
 		}
+		public static void RemoveChild(this IIosView parent, Widget control)
+		{
+			var parentViewController = parent.Controller;
+			if (parentViewController != null)
+			{
+				// wire up view controllers, if both have one
+				var childController = control.GetViewController(false);
+				if (childController != null)
+					childController.RemoveFromParentViewController();
+			}
+
+			control.GetContainerView().RemoveFromSuperview();
+		}
 	}
 }
 

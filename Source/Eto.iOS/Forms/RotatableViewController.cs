@@ -7,16 +7,14 @@ using MonoTouch.ObjCRuntime;
 
 namespace Eto.iOS.Forms
 {
-	internal class RotatableViewController : UIViewController
+	class RotatableViewController : UIViewController
 	{
-		static readonly Selector selAutomaticallyAdjustsScrollViewInsets = new Selector("automaticallyAdjustsScrollViewInsets");
-		static readonly Selector selExtendLayoutIncludesOpaqueBars = new Selector("extendedLayoutIncludesOpaqueBars");
 
 		public RotatableViewController()
 		{
-			if (RespondsToSelector(selAutomaticallyAdjustsScrollViewInsets))
+			if (this.AutomaticallyAdjustsScrollViewInsetsIsSupported())
 				AutomaticallyAdjustsScrollViewInsets = true;
-			if (RespondsToSelector(selExtendLayoutIncludesOpaqueBars))
+			if (this.ExtendLayoutIncludesOpaqueBarsIsSupported())
 				ExtendedLayoutIncludesOpaqueBars = true;
 		}
 

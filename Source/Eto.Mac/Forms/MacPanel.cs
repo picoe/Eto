@@ -64,6 +64,7 @@ namespace Eto.Mac.Forms
 					container.AddSubview(control); // default
 #elif IOS
 					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+					control.Frame = new SD.RectangleF(0, 0, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
 					this.AddChild(value);
 #endif
 				}
@@ -127,6 +128,7 @@ namespace Eto.Mac.Forms
 			if (content == null)
 				return;
 
+			/*
 			NSView childControl = content.GetContainerView();
 			var frame = GetContentBounds();
 
@@ -145,7 +147,7 @@ namespace Eto.Mac.Forms
 			frame = AdjustContent(frame);
 
 			if (childControl.Frame != frame)
-				childControl.Frame = frame;
+				childControl.Frame = frame;*/
 		}
 
 		public override void SetContentSize(SD.SizeF contentSize)

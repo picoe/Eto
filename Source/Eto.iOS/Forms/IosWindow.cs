@@ -15,6 +15,8 @@ namespace Eto.iOS.Forms
 	{
 		public override UIView ContainerControl { get { return Control; } }
 
+		public bool DisableNavigationToolbar { get; set; }
+
 		public new Point Location
 		{
 			get
@@ -60,21 +62,52 @@ namespace Eto.iOS.Forms
 		}
 
 		ToolBar toolBar;
+
 		public ToolBar ToolBar
 		{
 			get { return toolBar; }
 			set
 			{
 				toolBar = value;
-				var control = (UIToolbar)value.ControlObject;
+				SetToolbar();
+			}
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			SetToolbar(true);
+		}
+
+		NavigationHandler GetTopNavigation()
+		{
+			var content = Widget.Content;
+			while (content is Panel)
+			{
+				content = ((Panel)content).Content;
+			}
+			return content == null ? null : content.Handler as NavigationHandler;
+		}
+
+		void SetToolbar(bool force = false)
+		{
+			if (toolBar == null)
+				return;
+			var control = ToolBarHandler.GetControl(toolBar);
+			var topNav = GetTopNavigation();
+			if (!DisableNavigationToolbar && topNav != null)
+			{
+				topNav.MainToolBar = control.Items;
+			}
+			else if (Widget.Loaded || force)
+			{
 				control.SizeToFit();
 				var height = control.Frame.Height;
 				sd.SizeF screenSize;
-				if (UIDevice.CurrentDevice.CheckSystemVersion(7,0))
+				if (Platform.IsIos7)
 					screenSize = UIScreen.MainScreen.Bounds.Size;
 				else
 					screenSize = UIScreen.MainScreen.ApplicationFrame.Size;
-
 				var bottom = toolBar.Dock == ToolBarDock.Bottom;
 				var frame = new sd.RectangleF(0, 0, screenSize.Width, height);
 				var mask = UIViewAutoresizing.FlexibleWidth;
@@ -85,11 +118,9 @@ namespace Eto.iOS.Forms
 				}
 				else
 					frame.Y = ApplicationHandler.Instance.StatusBarAdjustment;
-
 				control.Frame = frame;
 				control.AutoresizingMask = mask;
-
-				this.AddChild(value);
+				this.AddChild(toolBar);
 				LayoutChildren();
 			}
 		}
