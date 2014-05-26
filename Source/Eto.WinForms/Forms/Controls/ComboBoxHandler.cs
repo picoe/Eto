@@ -49,8 +49,6 @@ namespace Eto.WinForms
 			Control = new EtoComboBox
 			{
 				DropDownStyle = swf.ComboBoxStyle.DropDownList,
-				ValueMember = "Key",
-				DisplayMember = "Text",
 				AutoSize = true,
 				Size = new sd.Size(20, 0)
 			};
@@ -91,27 +89,24 @@ namespace Eto.WinForms
 		{
 			public ComboBoxHandler Handler { get; set; }
 
-			public override int IndexOf(object item)
-			{
-				return Handler.Control.Items.IndexOf(item);
-			}
-
 			public override void AddRange(IEnumerable<object> items)
 			{
 				var binding = Handler.Widget.TextBinding;
-				Handler.Control.Items.AddRange(items.Select(r => new Item(binding, r)).ToArray());
+				Handler.Control.Items.AddRange(items.Select(r => (object)new Item(binding, r)).ToArray());
 				Handler.UpdateSizes();
 			}
 
 			public override void AddItem(object item)
 			{
-				Handler.Control.Items.Add(item);
+				var binding = Handler.Widget.TextBinding;
+				Handler.Control.Items.Add(new Item(binding, item));
 				Handler.UpdateSizes();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				Handler.Control.Items.Insert(index, item);
+				var binding = Handler.Widget.TextBinding;
+				Handler.Control.Items.Insert(index, new Item(binding, item));
 				Handler.UpdateSizes();
 			}
 

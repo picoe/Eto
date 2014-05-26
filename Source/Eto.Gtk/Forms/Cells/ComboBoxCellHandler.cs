@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
@@ -135,18 +136,18 @@ namespace Eto.GtkSharp.Forms.Cells
 			}
 		}
 
-		public class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
+		public class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ComboBoxCellHandler Handler { get; set; }
 
-			public override void AddItem(IListItem item)
+			public override void AddItem(object item)
 			{
-				Handler.listStore.AppendValues(item.Text, item.Key);
+				Handler.listStore.AppendValues(Handler.Widget.ComboTextBinding.GetValue(item), Handler.Widget.ComboKeyBinding.GetValue(item));
 			}
 
-			public override void InsertItem(int index, IListItem item)
+			public override void InsertItem(int index, object item)
 			{
-				Handler.listStore.InsertWithValues(index, item.Text, item.Key);
+				Handler.listStore.InsertWithValues(index, Handler.Widget.ComboTextBinding.GetValue(item), Handler.Widget.ComboKeyBinding.GetValue(item));
 			}
 
 			public override void RemoveItem(int index)
@@ -162,7 +163,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			}
 		}
 
-		public IListStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection != null ? collection.Collection : null; }
 			set

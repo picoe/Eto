@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 
 namespace Eto.Forms
@@ -7,35 +8,46 @@ namespace Eto.Forms
 	public class ComboBoxCell : SingleValueCell<object>
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
-		
-		public ComboBoxCell (int column)
+
+		public IIndirectBinding<string> ComboTextBinding { get; set; }
+
+		public IIndirectBinding<string> ComboKeyBinding { get; set; }
+
+		public ComboBoxCell(int column)
+			: this()
 		{
-			Binding = new ColumnBinding<object> (column);
+			Binding = new ColumnBinding<object>(column);
 		}
-		
-		public ComboBoxCell (string property)
+
+		public ComboBoxCell(string property)
+			: this()
 		{
-			Binding = new PropertyBinding (property);
+			Binding = new PropertyBinding(property);
 		}
 
 		public ComboBoxCell()
 		{
+			ComboTextBinding = new ListItemTextBinding();
+			ComboKeyBinding = new ListItemKeyBinding();
 		}
 
 		[Obsolete("Use default constructor instead")]
-		public ComboBoxCell (Generator generator)
-			: base (generator, typeof(IHandler), true)
+		public ComboBoxCell(Generator generator)
+			: base(generator, typeof(IHandler), true)
 		{
+			ComboTextBinding = new ListItemTextBinding();
+			ComboKeyBinding = new ListItemKeyBinding();
 		}
-		
-		public IListStore DataStore {
+
+		public IEnumerable<object> DataStore
+		{
 			get { return Handler.DataStore; }
 			set { Handler.DataStore = value; }
 		}
 
 		public new interface IHandler : SingleValueCell<object>.IHandler
 		{
-			IListStore DataStore { get; set; }
+			IEnumerable<object> DataStore { get; set; }
 		}
 	}
 }

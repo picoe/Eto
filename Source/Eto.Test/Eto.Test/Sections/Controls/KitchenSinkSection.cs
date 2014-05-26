@@ -100,7 +100,7 @@ namespace Eto.Test.Sections.Controls
 			return layout;
 		}
 
-		IListStore ComboCellItems()
+		IEnumerable<object> ComboCellItems()
 		{
 			var items = new ListItemCollection();
 			items.Add(new ListItem { Text = "Grid Combo 1", Key = "1" });

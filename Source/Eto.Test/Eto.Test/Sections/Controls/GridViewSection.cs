@@ -125,8 +125,8 @@ namespace Eto.Test.Sections.Controls
 
 				if (dropDown != null)
 				{
-					val = rand.Next(dropDown.DataStore.Count + 1);
-					dropDownKey = val == 0 ? null : dropDown.DataStore[val - 1].Key;
+					val = rand.Next(dropDown.DataStore.Count() + 1);
+					dropDownKey = val == 0 ? null : dropDown.ComboKeyBinding.GetValue(dropDown.DataStore.ElementAt(val - 1));
 				}
 			}
 		}
