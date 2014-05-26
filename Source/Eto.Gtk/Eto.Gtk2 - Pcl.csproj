@@ -237,6 +237,7 @@
     <Compile Include="Platform.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\GtkEnumerableModel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
