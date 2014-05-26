@@ -22,8 +22,8 @@ namespace Eto.Test.Sections.Controls
 		Control Tabs()
 		{
 			var control = new TabControl();
-			control.TabPages.Add(MainContent(new TabPage { Text = "Tab 1", Image = icon1 }));
-			control.TabPages.Add(new TabPage { Text = "Tab 2", Image = bitmap1 });
+			control.Pages.Add(MainContent(new TabPage { Text = "Tab 1", Image = icon1 }));
+			control.Pages.Add(new TabPage { Text = "Tab 2", Image = bitmap1 });
 			return control;
 		}
 

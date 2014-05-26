@@ -29,10 +29,10 @@ namespace Eto.Test.Sections.Controls
 			{
 				var tab = new TabPage
 				{ 
-					Text = "Tab " + (tabControl.TabPages.Count + 1),
-					Content = tabControl.TabPages.Count % 2 == 0 ? TabOne() : TabTwo()
+					Text = "Tab " + (tabControl.Pages.Count + 1),
+					Content = tabControl.Pages.Count % 2 == 0 ? TabOne() : TabTwo()
 				};
-				tabControl.TabPages.Add(tab);
+				tabControl.Pages.Add(tab);
 			};
 			return control;
 		}
@@ -42,9 +42,9 @@ namespace Eto.Test.Sections.Controls
 			var control = new Button { Text = "Remove Tab" };
 			control.Click += (s, e) =>
 			{
-				if (tabControl.SelectedIndex >= 0 && tabControl.TabPages.Count > 0)
+				if (tabControl.SelectedIndex >= 0 && tabControl.Pages.Count > 0)
 				{
-					tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
+					tabControl.Pages.RemoveAt(tabControl.SelectedIndex);
 				}
 			};
 			return control;
@@ -56,9 +56,9 @@ namespace Eto.Test.Sections.Controls
 			var rnd = new Random();
 			control.Click += (s, e) =>
 			{
-				if (tabControl.TabPages.Count > 0)
+				if (tabControl.Pages.Count > 0)
 				{
-					tabControl.SelectedIndex = rnd.Next(tabControl.TabPages.Count);
+					tabControl.SelectedIndex = rnd.Next(tabControl.Pages.Count);
 				}
 			};
 			return control;
@@ -69,18 +69,18 @@ namespace Eto.Test.Sections.Controls
 			var control = CreateTabControl();
 			LogEvents(control);
 
-			control.TabPages.Add(new TabPage { Text = "Tab 1", Content = TabOne() });
+			control.Pages.Add(new TabPage { Text = "Tab 1", Content = TabOne() });
 
-			control.TabPages.Add(new TabPage
+			control.Pages.Add(new TabPage
 			{ 
 				Text = "Tab 2",
 				Image = TestIcons.TestIcon,
 				Content = TabTwo()
 			});
 
-			control.TabPages.Add(new TabPage { Text = "Tab 3" });
+			control.Pages.Add(new TabPage { Text = "Tab 3" });
 
-			foreach (var page in control.TabPages)
+			foreach (var page in control.Pages)
 				LogEvents(page);
 
 			return control;

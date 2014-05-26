@@ -51,7 +51,7 @@ namespace Eto.Mac.Forms.Controls
 		static bool HandleShouldSelectTabViewItem(NSTabView tabView, NSTabViewItem item)
 		{
 			var handler = ((EtoTabView)tabView).WeakHandler.Target as TabControlHandler;
-			var tab = handler.Widget.TabPages.FirstOrDefault (r => ((TabPageHandler)r.Handler).TabViewItem == item);
+			var tab = handler.Widget.Pages.FirstOrDefault (r => ((TabPageHandler)r.Handler).TabViewItem == item);
 			return tab == null || tab.Enabled;
 		}
 
@@ -105,7 +105,7 @@ namespace Eto.Mac.Forms.Controls
 		protected override SizeF GetNaturalSize (SizeF availableSize)
 		{
 			var size = base.GetNaturalSize(availableSize);
-			foreach (var tab in Widget.TabPages.Where(r => r.Visible)) {
+			foreach (var tab in Widget.Pages.Where(r => r.Visible)) {
 				size = SizeF.Max (size, tab.GetPreferredSize(availableSize));
 			}
 			return size;

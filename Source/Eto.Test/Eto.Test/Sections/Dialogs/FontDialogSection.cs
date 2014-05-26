@@ -27,8 +27,8 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddSeparateRow(null, new Label { Text = "Style:" }, BoldFont(), ItalicFont(), UnderlineFont(), StrikeoutFont(), null);
 
 			var tabs = new TabControl();
-			tabs.TabPages.Add(new TabPage(Preview()) { Text = "Preview" });
-			tabs.TabPages.Add(new TabPage(Metrics()) { Text = "Metrics" });
+			tabs.Pages.Add(new TabPage(Preview()) { Text = "Preview" });
+			tabs.Pages.Add(new TabPage(Metrics()) { Text = "Metrics" });
 
 			layout.Add(tabs, yscale: true);
 			UpdatePreview(Fonts.Serif(18, FontStyle.Bold));

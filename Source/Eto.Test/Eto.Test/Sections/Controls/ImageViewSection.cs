@@ -9,8 +9,8 @@ namespace Eto.Test.Sections.Controls
 		{
 			var tabs = new TabControl();
 
-			tabs.TabPages.Add(FixedSize());
-			tabs.TabPages.Add(ScaledSize());
+			tabs.Pages.Add(FixedSize());
+			tabs.Pages.Add(ScaledSize());
 
 			Content = tabs;
 		}
