@@ -5,6 +5,11 @@ using System.Linq;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Menu item for a button / submenu
+	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(ButtonMenuItem.IHandler))]
 	public class ButtonMenuItem : MenuItem, ISubmenu
 	{
@@ -12,6 +17,10 @@ namespace Eto.Forms
 
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// Gets the collection of menu items.
+		/// </summary>
+		/// <value>The items.</value>
 		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
 
 		public bool Trim { get; set; }

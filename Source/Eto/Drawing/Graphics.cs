@@ -17,6 +17,9 @@ namespace Eto.Drawing
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.Graphics"/> class.
+		/// </summary>
 		protected Graphics()
 		{
 			Initialize();

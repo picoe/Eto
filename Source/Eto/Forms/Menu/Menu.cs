@@ -5,6 +5,8 @@ namespace Eto.Forms
 	/// <summary>
 	/// Base class for menu items
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Menu : Widget
 	{
 		/// <summary>

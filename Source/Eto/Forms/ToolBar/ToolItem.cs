@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public abstract class ToolItem : Widget, ICommandItemWidget
+	public abstract class ToolItem : Widget, ICommandItem
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -78,10 +78,18 @@ namespace Eto.Forms
 
 		public object Tag { get; set; }
 
+		/// <summary>
+		/// Called when the tool item is loaded to be shown on the form.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		internal protected virtual void OnLoad(EventArgs e)
 		{
 		}
 
+		/// <summary>
+		/// Called when the tool item is removed from a form.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		internal protected virtual void OnUnLoad(EventArgs e)
 		{
 		}

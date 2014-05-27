@@ -139,6 +139,14 @@ namespace Eto.Drawing
 
 		#pragma warning disable 612,618
 
+		/// <summary>
+		/// Cached the specified familyName, size, style, decoration and generator.
+		/// </summary>
+		/// <param name="familyName">Family name.</param>
+		/// <param name="size">Size.</param>
+		/// <param name="style">Style.</param>
+		/// <param name="decoration">Decoration.</param>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use variation without generator instead")]
 		public static Font Cached(string familyName, float size, FontStyle style, FontDecoration decoration, Generator generator)
 		{

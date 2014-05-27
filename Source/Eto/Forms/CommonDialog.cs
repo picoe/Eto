@@ -5,6 +5,8 @@ namespace Eto.Forms
 	/// <summary>
 	/// Result codes for <see cref="CommonDialog"/> or <see cref="MessageBox"/> dialogs
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum DialogResult
 	{
 		/// <summary>
@@ -41,35 +43,64 @@ namespace Eto.Forms
 		Retry
 	}
 
+	/// <summary>
+	/// Base class for common dialogs
+	/// </summary>
 	public abstract class CommonDialog : Widget
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.CommonDialog"/> class.
+		/// </summary>
 		protected CommonDialog()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.CommonDialog"/> class.
+		/// </summary>
+		/// <param name="g">The green component.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected CommonDialog (Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+		protected CommonDialog(Generator g, Type type, bool initialize = true)
+			: base(g, type, initialize)
 		{
 		}
 
-		public DialogResult ShowDialog (Control parent)
+		/// <summary>
+		/// Shows the dialog with the specified parent, blocking until a result is returned.
+		/// </summary>
+		/// <returns>The dialog result.</returns>
+		/// <param name="parent">Parent control</param>
+		public DialogResult ShowDialog(Control parent)
 		{
-			return ShowDialog (parent.ParentWindow);
+			return ShowDialog(parent.ParentWindow);
 		}
-		
-		public DialogResult ShowDialog (Window parent)
+
+		/// <summary>
+		/// Shows the dialog with the specified parent window, blocking until a result is returned.
+		/// </summary>
+		/// <returns>The dialog result.</returns>
+		/// <param name="parent">Parent window.</param>
+		public DialogResult ShowDialog(Window parent)
 		{
-			return Handler.ShowDialog (parent);
+			return Handler.ShowDialog(parent);
 		}
-		
+
+		/// <summary>
+		/// Handler interface for the <see cref="CommonDialog"/>
+		/// </summary>
 		public new interface IHandler : Widget.IHandler
 		{
-			DialogResult ShowDialog (Window parent);
+			/// <summary>
+			/// Shows the dialog with the specified parent window, blocking until a result is returned.
+			/// </summary>
+			/// <returns>The dialog result.</returns>
+			/// <param name="parent">Parent window.</param>
+			DialogResult ShowDialog(Window parent);
 		}
-
 	}
 }
 

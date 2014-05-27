@@ -288,7 +288,7 @@ namespace Eto.Forms
 				var menu = Handler.Menu;
 				if (menu != null)
 					menu.OnUnLoad(EventArgs.Empty);
-				if (value != null && value.AutoTrim)
+				if (value != null && value.Trim)
 				{
 					value.Items.Trim();
 				}

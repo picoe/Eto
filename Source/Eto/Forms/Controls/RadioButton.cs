@@ -3,7 +3,7 @@ using System;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Control to present a button that can be toggled on
+	/// Control to present a button to choose from a set of options
 	/// </summary>
 	/// <remarks>
 	/// The RadioButton works with other radio buttons to present a list of options that the user can select from.

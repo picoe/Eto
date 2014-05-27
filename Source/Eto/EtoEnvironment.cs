@@ -15,7 +15,7 @@ namespace Eto
 		/// This will return a different folder, depending on the platform:
 		///   OS X:    ~/Library/Application Settings/[Name Of Application]
 		///   Windows: [User's Home]/AppSettings
-		///   Linux:   
+		///   Linux:   ~/.config
 		/// </remarks>
 		ApplicationSettings,
 

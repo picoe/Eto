@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -30,6 +31,10 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// The default mode for all new date/time pickers.
+		/// </summary>
+		[Obsolete("Set the mode of your picker directly")]
 		public static DateTimePickerMode DefaultMode = DateTimePickerMode.Date;
 
 		/// <summary>
@@ -110,6 +115,7 @@ namespace Eto.Forms
 		/// Gets or sets the mode of the date/time picker.
 		/// </summary>
 		/// <value>The picker mode.</value>
+		[DefaultValue(DateTimePickerMode.Date)]
 		public DateTimePickerMode Mode
 		{
 			get { return Handler.Mode; }
@@ -123,13 +129,25 @@ namespace Eto.Forms
 		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for the <see cref="DateTimePicker"/>.
+		/// </summary>
 		public new interface ICallback : CommonControl.ICallback
 		{
+			/// <summary>
+			/// Raises the value changed event.
+			/// </summary>
 			void OnValueChanged(DateTimePicker widget, EventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for handlers of the <see cref="DateTimePicker"/>.
+		/// </summary>
 		protected new class Callback : CommonControl.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the value changed event.
+			/// </summary>
 			public void OnValueChanged(DateTimePicker widget, EventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnValueChanged(e));

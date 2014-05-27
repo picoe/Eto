@@ -35,6 +35,11 @@ namespace Eto.Forms
 		/// <value>The items.</value>
 		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
 
+		/// <summary>
+		/// Gets a value indicating whether this sub menu should trim its child menu items when loaded onto a form
+		/// </summary>
+		/// <remarks>Trimming will collapse any duplicate splitter items. This is done so that you can easily merge your menus.</remarks>
+		/// <value><c>true</c> to trim the child menu items; otherwise, <c>false</c>.</value>
 		public bool Trim { get; set; }
 
 		/// <summary>
