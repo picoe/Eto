@@ -87,11 +87,7 @@ namespace Eto
 			var current = type;
 			while (current != null)
 			{
-#if PCL
-				if (current.GetTypeInfo().Assembly == etoAssembly)
-#else
-				if (current.Assembly == etoAssembly)
-#endif
+				if (current.GetAssembly() == etoAssembly)
 				{
 					List<EventDeclaration> declarations;
 					if (registeredEvents.TryGetValue(current, out declarations))
@@ -119,11 +115,7 @@ namespace Eto
 				}
 				else
 					externalTypes.Add(current);
-#if PCL
-				current = current.GetTypeInfo().BaseType;
-#else
-				current = current.BaseType;
-#endif
+				current = current.GetBaseType();
 			}
 		}
 
