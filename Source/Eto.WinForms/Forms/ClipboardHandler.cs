@@ -11,73 +11,82 @@ namespace Eto.WinForms.Forms
 {
 	public class ClipboardHandler : WidgetHandler<swf.DataObject, Clipboard>, Clipboard.IHandler
 	{
-		public ClipboardHandler ()
+		public ClipboardHandler()
 		{
 			Control = new swf.DataObject();
 		}
-		
+
 		void Update()
 		{
-			swf.Clipboard.SetDataObject (Control);
+			swf.Clipboard.SetDataObject(Control);
 		}
 
-		public void SetData (byte[] value, string type)
+		public void SetData(byte[] value, string type)
 		{
-			Control.SetData (type, value);
+			Control.SetData(type, value);
 			Update();
 		}
-		
-		public void SetString (string value, string type)
+
+		public void SetString(string value, string type)
 		{
-			Control.SetData (type, value);
+			Control.SetData(type, value);
 			Update();
 		}
-		
+
 		public string Html
 		{
-			set {
-				Control.SetText (value, System.Windows.Forms.TextDataFormat.Html);
+			set
+			{
+				Control.SetText(value ?? string.Empty, System.Windows.Forms.TextDataFormat.Html);
 				Update();
 			}
-			get {
-				return swf.Clipboard.GetText (swf.TextDataFormat.Html);
+			get
+			{
+				return swf.Clipboard.GetText(swf.TextDataFormat.Html);
 			}
 		}
-		
+
 		public string Text
 		{
-			set {
-				Control.SetText(value);
+			set
+			{
+				Control.SetText(value ?? string.Empty);
 				Update();
 			}
-			get {
-				return swf.Clipboard.GetText ();				
+			get
+			{
+				return swf.Clipboard.GetText();				
 			}
 		}
-		
+
 		public Image Image
 		{
 			set
 			{
 				var sdimage = value.ControlObject as sd.Image;
-				if (sdimage != null) {
-					Control.SetImage (sdimage);
-					Update ();
+				if (sdimage != null)
+				{
+					Control.SetImage(sdimage);
+					Update();
 				}
 			}
 			get
 			{
 				Image result = null;
 				
-				try {
-					var sdimage = GetImageFromClipboard () as sd.Bitmap;
+				try
+				{
+					var sdimage = GetImageFromClipboard() as sd.Bitmap;
 					
-					if (sdimage != null) {
-						var handler = new BitmapHandler (sdimage);
+					if (sdimage != null)
+					{
+						var handler = new BitmapHandler(sdimage);
 						
 						result = new Bitmap(handler);
 					}
-				} catch {
+				}
+				catch
+				{
 				}
 				
 				return result;
@@ -87,40 +96,45 @@ namespace Eto.WinForms.Forms
 		/// <summary>
 		/// see http://stackoverflow.com/questions/11273669/how-to-paste-a-transparent-image-from-the-clipboard-in-a-c-sharp-winforms-app
 		/// </summary>
-		static sd.Image GetImageFromClipboard ()
+		static sd.Image GetImageFromClipboard()
 		{
-			if (swf.Clipboard.GetDataObject () == null)
+			if (swf.Clipboard.GetDataObject() == null)
 				return null;
 
-			if (swf.Clipboard.GetDataObject ().GetDataPresent (swf.DataFormats.Dib)) {
-				var dib = ((System.IO.MemoryStream)swf.Clipboard.GetData (swf.DataFormats.Dib)).ToArray ();
+			if (swf.Clipboard.GetDataObject().GetDataPresent(swf.DataFormats.Dib))
+			{
+				var dib = ((System.IO.MemoryStream)swf.Clipboard.GetData(swf.DataFormats.Dib)).ToArray();
 
-				var width = BitConverter.ToInt32 (dib, 4);
-				var height = BitConverter.ToInt32 (dib, 8);
-				var bpp = BitConverter.ToInt16 (dib, 14);
+				var width = BitConverter.ToInt32(dib, 4);
+				var height = BitConverter.ToInt32(dib, 8);
+				var bpp = BitConverter.ToInt16(dib, 14);
 
-				if (bpp == 32) {
-					var gch = GCHandle.Alloc (dib, GCHandleType.Pinned);
+				if (bpp == 32)
+				{
+					var gch = GCHandle.Alloc(dib, GCHandleType.Pinned);
 
 					sd.Bitmap bmp = null;
 
-					try {
-						var ptr = new IntPtr ((long)gch.AddrOfPinnedObject () + 40);
+					try
+					{
+						var ptr = new IntPtr((long)gch.AddrOfPinnedObject() + 40);
 
-						bmp = new sd.Bitmap (width, height, width * 4, sdi.PixelFormat.Format32bppArgb, ptr);
+						bmp = new sd.Bitmap(width, height, width * 4, sdi.PixelFormat.Format32bppArgb, ptr);
 
-						var result = new sd.Bitmap (bmp);
+						var result = new sd.Bitmap(bmp);
 
 						// Images are rotated and flipped for some reason.
 						// This rotates them back.
-						result.RotateFlip (sd.RotateFlipType.Rotate180FlipX);
+						result.RotateFlip(sd.RotateFlipType.Rotate180FlipX);
 
 						return result;
-					} finally {
-						gch.Free ();
+					}
+					finally
+					{
+						gch.Free();
 
 						if (bmp != null)
-							bmp.Dispose ();
+							bmp.Dispose();
 					}
 				}
 			}
@@ -148,34 +162,35 @@ namespace Eto.WinForms.Forms
 				}
 			}
 
-			return swf.Clipboard.ContainsImage () ? swf.Clipboard.GetImage () : null;
+			return swf.Clipboard.ContainsImage() ? swf.Clipboard.GetImage() : null;
 		}
 
-		public byte[] GetData (string type)
+		public byte[] GetData(string type)
 		{
 			if (swf.Clipboard.ContainsData(type))
 				return swf.Clipboard.GetData(type) as byte[];
 			return null;
 		}
-		
-		public string GetString (string type)
+
+		public string GetString(string type)
 		{
 			if (swf.Clipboard.ContainsData(type))
 				return swf.Clipboard.GetData(type) as string;
 			return null;
 		}
 
-		public string[] Types {
+		public string[] Types
+		{
 			get
 			{
 				var data = swf.Clipboard.GetDataObject();
 				return data != null ? data.GetFormats() : null;
 			}
 		}
-		
-		public void Clear ()
+
+		public void Clear()
 		{
-			swf.Clipboard.Clear ();
+			swf.Clipboard.Clear();
 			Control = new swf.DataObject();
 		}
 	}

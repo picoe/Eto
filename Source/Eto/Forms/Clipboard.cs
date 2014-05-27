@@ -61,12 +61,12 @@ namespace Eto.Forms
 		
 		public string Text {
 			get { return Handler.Text; }
-			set { Handler.Text = value ?? ""; } // null check for consistency across platforms (Winforms throws an exception)
+			set { Handler.Text = value; }
 		}
 		
 		public string Html {
 			get { return Handler.Html; }
-			set { Handler.Html = value ?? ""; } // null check for consistency across platforms (Winforms throws an exception)
+			set { Handler.Html = value; }
 		}
 		
 		public Image Image {
