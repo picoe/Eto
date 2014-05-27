@@ -51,7 +51,7 @@ namespace Eto.Forms
 				else
 					trimSeparator = false;
 
-				var subMenu = item as ButtonMenuItem;
+				var subMenu = item as ISubmenu;
 				if (subMenu != null && subMenu.Trim)
 				{
 					subMenu.Items.Trim();

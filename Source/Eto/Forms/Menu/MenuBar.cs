@@ -22,7 +22,7 @@ namespace Eto.Forms
 		/// it can effect performance.
 		/// </remarks>
 		/// <value><c>true</c> to auto trim; otherwise, <c>false</c>.</value>
-		public bool AutoTrim { get; set; }
+		public bool Trim { get; set; }
 
 		/// <summary>
 		/// Gets the collection of menu items
@@ -46,41 +46,71 @@ namespace Eto.Forms
 			return menu;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
+		/// </summary>
 		public MenuBar()
 		{
-			AutoTrim = true;
+			Trim = true;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class with the specified items.
+		/// </summary>
+		/// <param name="items">Items to add to the menu bar initially.</param>
 		public MenuBar(IEnumerable<MenuItem> items)
 			: this()
 		{
 			Items.AddRange(items);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class with the specified items.
+		/// </summary>
+		/// <param name="items">Items to add to the menu bar initially.</param>
 		public MenuBar(params MenuItem[] items)
 			: this()
 		{
 			Items.AddRange(items);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use default constructor instead")]
 		public MenuBar(Generator generator) : this(generator, typeof(MenuBar.IHandler))
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected MenuBar(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			AutoTrim = true;
+			Trim = true;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
+		/// </summary>
+		/// <param name="g">The green component.</param>
+		/// <param name="items">Items.</param>
 		[Obsolete("Use constructor without generator instead")]
 		public MenuBar(Generator g, IEnumerable<MenuItem> items) : this(g)
 		{
 			Items.AddRange(items);
 		}
 
+		/// <summary>
+		/// Called when the menu is assigned to a control/window
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		internal protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
@@ -88,6 +118,10 @@ namespace Eto.Forms
 				item.OnLoad(e);
 		}
 
+		/// <summary>
+		/// Called when the menu is removed from a control/window
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		internal protected override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
@@ -95,6 +129,9 @@ namespace Eto.Forms
 				item.OnLoad(e);
 		}
 
+		/// <summary>
+		/// Handler interface for the <see cref="MenuBar"/>
+		/// </summary>
 		public new interface IHandler : Menu.IHandler, ISubmenuHandler
 		{
 		}

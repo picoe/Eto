@@ -35,11 +35,14 @@ namespace Eto.Forms
 		/// <value>The items.</value>
 		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
 
+		public bool Trim { get; set; }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class.
 		/// </summary>
 		public ContextMenu()
 		{
+			Trim = true;
 		}
 
 		/// <summary>
@@ -47,6 +50,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="items">Items to populate the menu</param>
 		public ContextMenu(IEnumerable<MenuItem> items)
+			: this()
 		{
 			Items.AddRange(items);
 		}
@@ -56,6 +60,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="items">Items to populate the menu</param>
 		public ContextMenu(params MenuItem[] items)
+			: this()
 		{
 			Items.AddRange(items);
 		}
@@ -79,6 +84,7 @@ namespace Eto.Forms
 		protected ContextMenu(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
+			Trim = true;
 		}
 
 		/// <summary>
@@ -98,6 +104,8 @@ namespace Eto.Forms
 		/// <param name="relativeTo">Control to show the menu relative to</param>
 		public void Show(Control relativeTo)
 		{
+			if (Trim)
+				Items.Trim();
 			Handler.Show(relativeTo);
 		}
 
