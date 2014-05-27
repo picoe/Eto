@@ -4,6 +4,7 @@ using Eto.Forms;
 using System.Linq;
 using Eto.iOS.Forms.Controls;
 using sd = System.Drawing;
+using Eto.iOS.Forms.Toolbar;
 
 namespace Eto.iOS.Forms
 {
@@ -36,19 +37,14 @@ namespace Eto.iOS.Forms
 
 		protected override sd.RectangleF AdjustContent(sd.RectangleF rect)
 		{
-			if (Platform.IsIpad)
+			rect = base.AdjustContent(rect);
+			// only navigation can take full height of a form, otherwise adjust for status bar
+			if (!(Content is Navigation) || UseTopToolBar)
 			{
-				// need to adjust content outside of status bar for ipad, unlike iphone
+				// adjust content outside of status bar
 				var sbheight = ApplicationHandler.Instance.StatusBarAdjustment;
 				rect.Y += sbheight;
 				rect.Height -= sbheight;
-			}
-			if (ToolBar != null)
-			{
-				var tbheight = ToolBarHandler.GetControl(ToolBar).Frame.Height;
-				rect.Height -= tbheight;
-				if (ToolBar.Dock == ToolBarDock.Top)
-					rect.Y += tbheight;
 			}
 			return rect;
 		}

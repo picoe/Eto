@@ -95,7 +95,7 @@ namespace Eto.iOS.Forms
 			inNav = false;
 			if (parent != null && (DisplayMode.HasFlag(DialogDisplayMode.Navigation) || DisplayMode == DialogDisplayMode.Default))
 			{
-				var iosView = parent.Handler as IIosView;
+				var iosView = parent.Handler as IIosViewControllerSource;
 				if (iosView != null && iosView.Controller != null)
 				{
 					var nav = iosView.Controller.NavigationController;

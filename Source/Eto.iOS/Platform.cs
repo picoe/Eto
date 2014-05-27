@@ -12,6 +12,7 @@ using Eto.iOS.Forms;
 using Eto.Mac.Forms;
 using Eto.Threading;
 using Eto.iOS.Threading;
+using Eto.iOS.Forms.Toolbar;
 
 namespace Eto.iOS
 {

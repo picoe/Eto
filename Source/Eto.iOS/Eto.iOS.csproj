@@ -99,7 +99,6 @@
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ToolbarHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
@@ -187,6 +186,11 @@
     <Compile Include="Forms\Controls\TabPageHandler.cs" />
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Forms\Toolbar\ToolbarHandler.cs" />
+    <Compile Include="Forms\Toolbar\ToolItemHandler.cs" />
+    <Compile Include="Forms\Toolbar\ButtonToolItemHandler.cs" />
+    <Compile Include="Forms\Toolbar\CheckToolItemHandler.cs" />
+    <Compile Include="Forms\Toolbar\SeparatorToolItemHandler.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -204,5 +208,8 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - Pcl</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Forms\Toolbar\" />
   </ItemGroup>
 </Project>

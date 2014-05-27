@@ -14,7 +14,7 @@ namespace Eto.iOS.Forms
 			if (control == null)
 				return null;
 			
-			var iosView = control.Handler as IIosView;
+			var iosView = control.Handler as IIosViewControllerSource;
 			if (iosView != null)
 			{
 				var controller = iosView.Controller;

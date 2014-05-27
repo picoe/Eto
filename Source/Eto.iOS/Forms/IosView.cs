@@ -11,11 +11,14 @@ using System.Linq;
 
 namespace Eto.iOS.Forms
 {
-	public interface IIosView : IMacControlHandler
+	public interface IIosViewControllerSource 
+	{
+		UIViewController Controller { get; set; }
+	}
+
+	public interface IIosView : IMacControlHandler, IIosViewControllerSource
 	{
 		Size PositionOffset { get; }
-
-		UIViewController Controller { get; set; }
 	}
 
 	public abstract class IosView<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>

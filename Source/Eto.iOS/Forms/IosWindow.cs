@@ -5,6 +5,7 @@ using Eto.iOS.Forms.Controls;
 using Eto.Drawing;
 using Eto.Mac.Forms;
 using sd = System.Drawing;
+using Eto.iOS.Forms.Toolbar;
 
 namespace Eto.iOS.Forms
 {
@@ -69,14 +70,22 @@ namespace Eto.iOS.Forms
 			set
 			{
 				toolBar = value;
+				if (toolBar != null)
+				{
+					var toolbarHandler = toolBar.Handler as ToolBarHandler;
+					if (toolbarHandler != null)
+					{
+						toolbarHandler.UpdateContentSize = () => LayoutAllChildren();
+					}
+				}
 				SetToolbar();
 			}
 		}
 
 		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoad(e);
 			SetToolbar(true);
+			base.OnLoad(e);
 		}
 
 		NavigationHandler GetTopNavigation()
@@ -89,13 +98,38 @@ namespace Eto.iOS.Forms
 			return content == null ? null : content.Handler as NavigationHandler;
 		}
 
+		protected override sd.RectangleF AdjustContent(sd.RectangleF rect)
+		{
+			rect = base.AdjustContent(rect);
+			if (ToolBar != null)
+			{
+				var toolbarHandler = toolBar.Handler as ToolBarHandler;
+				if (toolbarHandler != null)
+				{
+					var tbheight = toolbarHandler.Control.Frame.Height;
+					rect.Height -= tbheight;
+					if (ToolBar.Dock == ToolBarDock.Top)
+						rect.Y += tbheight;
+				}
+			}
+			return rect;
+		}
+
+		protected bool UseTopToolBar
+		{
+			get
+			{
+				return toolBar != null && toolBar.Dock == ToolBarDock.Top;
+			}
+		}
+
 		void SetToolbar(bool force = false)
 		{
 			if (toolBar == null)
 				return;
 			var control = ToolBarHandler.GetControl(toolBar);
 			var topNav = GetTopNavigation();
-			if (!DisableNavigationToolbar && topNav != null)
+			if (!DisableNavigationToolbar && topNav != null && toolBar.Dock == ToolBarDock.Bottom)
 			{
 				topNav.MainToolBar = control.Items;
 			}
@@ -121,7 +155,8 @@ namespace Eto.iOS.Forms
 				control.Frame = frame;
 				control.AutoresizingMask = mask;
 				this.AddChild(toolBar);
-				LayoutChildren();
+				if (Widget.Loaded)
+					LayoutChildren();
 			}
 		}
 
