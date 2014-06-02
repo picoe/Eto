@@ -100,7 +100,7 @@ namespace Eto.Mac.Forms
 					c.Release();
 				isNotification = false;
 			}
-			if (isControl && c != null)
+			if (isControl && c != null && KeyPath != null)
 			{
 				//Console.WriteLine ("{0}: 4. Removing observer! {1}, {2}", ((IRef)this.Handler).WidgetID, Handler.GetType (), Control.GetHashCode ());
 				c.RemoveObserver(this, KeyPath);
