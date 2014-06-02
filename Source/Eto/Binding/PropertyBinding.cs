@@ -92,6 +92,13 @@ namespace Eto
 #endif
 		}
 
+		protected bool HasProperty(object dataItem)
+		{
+			EnsureProperty(dataItem);
+			return descriptor != null;
+		}
+
+
 		/// <summary>
 		/// Implements the logic to get the value from the specified object
 		/// </summary>
