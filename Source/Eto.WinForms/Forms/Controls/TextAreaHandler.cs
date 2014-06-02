@@ -10,12 +10,13 @@ namespace Eto.WinForms
 	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
-		Size defaultSize;
 		swf.TableLayoutPanel container;
+
+		public static Size DefaultMinimumSize = new Size(100, 60);
 
 		public override Size? DefaultSize
 		{
-			get { return defaultSize; }
+			get { return DefaultMinimumSize; }
 		}
 
 		public override swf.Control ContainerControl
@@ -25,7 +26,6 @@ namespace Eto.WinForms
 
 		public TextAreaHandler()
 		{
-			defaultSize = TextArea.DefaultSize;
 			Control = new swf.RichTextBox
 			{
 				Size = sd.Size.Empty,
@@ -39,16 +39,16 @@ namespace Eto.WinForms
 			{
 				MinimumSize = sd.Size.Empty,
 				BorderStyle = swf.BorderStyle.FixedSingle,
-				Size = defaultSize.ToSD()
+				Size = DefaultMinimumSize.ToSD()
 			};
 			container.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.AutoSize, 1));
 			container.RowStyles.Add(new swf.RowStyle(swf.SizeType.AutoSize, 1));
 			container.Controls.Add(Control, 0, 0);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TextArea.SelectionChangedEvent:
 					Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
@@ -65,7 +65,7 @@ namespace Eto.WinForms
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
