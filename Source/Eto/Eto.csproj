@@ -292,6 +292,7 @@
     <Compile Include="..\Shared\EnumerableExtensions.cs">
       <Link>EnumerableExtensions.cs</Link>
     </Compile>
+    <Compile Include="Forms\Controls\ColorPicker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

@@ -116,12 +116,14 @@
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
+    <Compile Include="Forms\ColorDialogHandlerXceed.cs" />
     <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Cells\CellHandler.cs" />
     <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
+    <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SwfWebViewHandler.cs" />
@@ -213,9 +215,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
+    <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
       <Link>CustomControls\Assemblies\ColorPicker.dll</Link>
-    </EmbeddedResource>
+    </None>
     <EmbeddedResource Include="..\..\Libraries\SHDocVw\Interop.SHDocVw.dll">
       <Link>CustomControls\Assemblies\Interop.SHDocVw.dll</Link>
     </EmbeddedResource>

@@ -63,6 +63,7 @@ namespace Eto.Wpf
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
+			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
@@ -112,7 +113,8 @@ namespace Eto.Wpf
 			// Forms
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
-			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+			//p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandlerXceed());
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
 			p.Add<FontDialog.IHandler>(() => new FontDialogHandler());

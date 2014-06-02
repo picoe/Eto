@@ -147,6 +147,7 @@
     <Compile Include="MainForm.cs" />
     <Compile Include="UnitTests\TestUtils.cs" />
     <Compile Include="UnitTests\Handlers\TestPlatform.cs" />
+    <Compile Include="Sections\Controls\ColorPickerSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />

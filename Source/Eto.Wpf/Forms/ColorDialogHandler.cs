@@ -1,3 +1,4 @@
+#if CUSTOM_COLOR_DIALOG
 using System;
 using Eto.Forms;
 using Eto.Drawing;
@@ -40,3 +41,4 @@ namespace Eto.Wpf.Forms
 	}
 }
 
+#endif

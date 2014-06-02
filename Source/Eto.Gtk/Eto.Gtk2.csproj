@@ -241,6 +241,7 @@
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Forms\Controls\GtkEnumerableModel.cs" />
+    <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

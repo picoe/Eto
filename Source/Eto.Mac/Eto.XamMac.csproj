@@ -190,6 +190,7 @@
     <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
     <Compile Include="Forms\MacPanel.cs" />
     <Compile Include="Platform.cs" />
+    <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

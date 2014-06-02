@@ -290,6 +290,7 @@
     <Compile Include="..\Shared\EnumerableExtensions.cs">
       <Link>EnumerableExtensions.cs</Link>
     </Compile>
+    <Compile Include="Forms\Controls\ColorPicker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

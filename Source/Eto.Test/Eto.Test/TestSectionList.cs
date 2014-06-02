@@ -28,6 +28,7 @@ namespace Eto.Test
 			yield return new Section<LabelSection> { Text = "Label" };
 			yield return new Section<ButtonSection> { Text = "Button" };
 			yield return new Section<CheckBoxSection> { Text = "Check Box" };
+			yield return new Section<ColorPickerSection> { Text = "Color Picker" };
 			yield return new Section<RadioButtonSection> { Text = "Radio Button" };
 			yield return new Section<ScrollableSection> { Text = "Scrollable" };
 			yield return new Section<TextBoxSection> { Text = "Text Box" };

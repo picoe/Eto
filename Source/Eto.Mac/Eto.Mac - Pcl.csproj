@@ -190,6 +190,7 @@
     <Compile Include="Platform.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

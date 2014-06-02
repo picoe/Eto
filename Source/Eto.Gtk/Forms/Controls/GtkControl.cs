@@ -376,7 +376,7 @@ namespace Eto.GtkSharp
 		/// </summary>
 		protected class GtkControlConnector : WeakConnector
 		{
-			public new GtkControl<TControl, TWidget, TCallback> Handler { get { return (GtkControl<TControl, TWidget, TCallback>)base.Handler; } }
+			new GtkControl<TControl, TWidget, TCallback> Handler { get { return (GtkControl<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
 			{

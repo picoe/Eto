@@ -59,6 +59,7 @@ namespace Eto.WinForms
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
+			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
