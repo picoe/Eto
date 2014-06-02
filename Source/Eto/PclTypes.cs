@@ -11,14 +11,14 @@ using System.ComponentModel;
 // as a Portable Class Library, in the project Eto.Pcl.csproj.
 namespace Eto
 {
-	public interface ISupportInitialize
+	interface ISupportInitialize
 	{
 		void BeginInit();
 
 		void EndInit();
 	}
 
-	public abstract class BaseNumberConverter : TypeConverter
+	abstract class BaseNumberConverter : TypeConverter
 	{
 		internal virtual bool AllowHex { get { return true; } }
 
@@ -82,7 +82,7 @@ namespace Eto
 		}
 	}
 
-	public class Int32Converter : BaseNumberConverter
+	class Int32Converter : BaseNumberConverter
 	{
 		internal override Type NumberType { get { return typeof(int); } }
 
@@ -106,7 +106,7 @@ namespace Eto
 	{
 	}
 
-	public class SingleConverter : BaseNumberConverter
+	class SingleConverter : BaseNumberConverter
 	{
 		internal override bool AllowHex { get { return false; } }
 
@@ -302,7 +302,7 @@ namespace Eto
 		}
 	}
 
-	internal class SerializableAttribute : Attribute
+	class SerializableAttribute : Attribute
 	{
 	}
 }
