@@ -24,16 +24,19 @@
     	<Exec Command="$(mdtool) build -p:'Eto.XamMac - Pcl' -c:'$(Configuration)|Mac' '$(BaseDir)\Eto - Pcl.sln'" />
 	</Target>
     <Target Name="Package">
-    	
     	<MSBuild Projects="$(BaseDir)\Eto.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Windows" />
     	<MSBuild Projects="$(BaseDir)\Eto - Pcl.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Windows" />
     	<MSBuild Projects="$(BaseDir)\Eto - WinRT.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+
+		<!-- build XamMac separately if it hasn't been built on mac -->
+    	<MSBuild Projects="$(BaseDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" Condition="! Exists('$(SourceDir)\Eto.XamMac.dll')" />
+    	<MSBuild Projects="$(BaseDir)\Eto.Mac\Eto.XamMac - Pcl.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" Condition="! Exists('$(SourcePclDir)\Eto.XamMac.dll')" />
     	
 		<GetAssemblyInformationVersion AssemblyFileName="$(SourceDir)\Eto.dll">
 			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
 		</GetAssemblyInformationVersion>
 
-		<!-- Nuget has problems with files that have no extension -->		
+		<!-- Nuget has problems with files that have no extension -->
 		<Copy SourceFiles="$(SourceDir)\LICENSE" DestinationFiles="$(SourceDir)\LICENSE.txt" />
 		
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
@@ -46,7 +49,7 @@
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.WinRT.nuspec;NuspecInfoAssembly=$(SourcePclDir)\Eto.WinRT.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Serialization.Json.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Serialization.Json.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Serialization.Xaml.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Serialization.Xaml.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
-    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.MacTemplate\Eto.Platform.Mac.Template.nuspec;NugetBuildOptions=-Version $(AssemblyVersion);TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.MacAppTemplate\Eto.Platform.Mac.Template.nuspec;NugetBuildOptions=-Version $(AssemblyVersion);TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Forms.Sample\Eto.Forms.Sample.nuspec;NugetBuildOptions=-Version $(AssemblyVersion);TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     </Target>
     <Target Name="Publish">
@@ -64,7 +67,7 @@
     	<!--MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.WinRT.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/-->
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Serialization.Json.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Serialization.Xaml.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
-    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.MacTemplate\Eto.Platform.Mac.Template.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.Template.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.Sample.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     </Target>
 </Project>
