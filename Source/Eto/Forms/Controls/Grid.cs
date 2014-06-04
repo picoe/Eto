@@ -112,7 +112,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Occurs before a cell is being edited to allow canceling based on application logic
 		/// </summary>
-		public event EventHandler<GridViewCellArgs> CellEditing
+		public event EventHandler<GridViewCellEventArgs> CellEditing
 		{
 			add { Properties.AddHandlerEvent(CellEditingEvent, value); }
 			remove { Properties.RemoveEvent(CellEditingEvent, value); }
@@ -122,7 +122,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="CellEditing"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected virtual void OnCellEditing(GridViewCellArgs e)
+		protected virtual void OnCellEditing(GridViewCellEventArgs e)
 		{
 			Properties.TriggerEvent(CellEditingEvent, this, e);
 		}
@@ -135,7 +135,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Occurs after a cell has been edited
 		/// </summary>
-		public event EventHandler<GridViewCellArgs> CellEdited
+		public event EventHandler<GridViewCellEventArgs> CellEdited
 		{
 			add { Properties.AddHandlerEvent(CellEditedEvent, value); }
 			remove { Properties.RemoveEvent(CellEditedEvent, value); }
@@ -145,7 +145,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.CellEdited"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected virtual void OnCellEdited(GridViewCellArgs e)
+		protected virtual void OnCellEdited(GridViewCellEventArgs e)
 		{
 			Properties.TriggerEvent(CellEditedEvent, this, e);
 		}
@@ -389,11 +389,11 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the cell editing event.
 			/// </summary>
-			void OnCellEditing(Grid widget, GridViewCellArgs e);
+			void OnCellEditing(Grid widget, GridViewCellEventArgs e);
 			/// <summary>
 			/// Raises the cell edited event.
 			/// </summary>
-			void OnCellEdited(Grid widget, GridViewCellArgs e);
+			void OnCellEdited(Grid widget, GridViewCellEventArgs e);
 			/// <summary>
 			/// Raises the selection changed event.
 			/// </summary>
@@ -416,14 +416,14 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the cell editing event.
 			/// </summary>
-			public void OnCellEditing(Grid widget, GridViewCellArgs e)
+			public void OnCellEditing(Grid widget, GridViewCellEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnCellEditing(e));
 			}
 			/// <summary>
 			/// Raises the cell edited event.
 			/// </summary>
-			public void OnCellEdited(Grid widget, GridViewCellArgs e)
+			public void OnCellEdited(Grid widget, GridViewCellEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnCellEdited(e));
 			}

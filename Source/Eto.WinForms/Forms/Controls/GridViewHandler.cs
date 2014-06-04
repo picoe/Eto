@@ -29,7 +29,7 @@ namespace Eto.WinForms.Forms.Controls
 				Control.CellClick += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
-					Callback.OnCellClick(Widget, new GridViewCellArgs(column, e.RowIndex, e.ColumnIndex, item));
+					Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
 			default:

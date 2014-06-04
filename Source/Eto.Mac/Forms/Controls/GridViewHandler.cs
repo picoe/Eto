@@ -60,8 +60,8 @@ namespace Eto.Mac.Forms.Controls
 				var colHandler = Handler.GetColumn (tableColumn);
 				if (colHandler != null) {
 					colHandler.SetObjectValue (item, theObject);
-					
-					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellArgs(colHandler.Widget, row, colHandler.Column, item));
+
+					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, row, colHandler.Column, item));
 				}
 			}
 		}
@@ -75,7 +75,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var colHandler = Handler.GetColumn (tableColumn);
 				var item = Handler.collection.Collection [row];
-				var args = new GridViewCellArgs (colHandler.Widget, row, colHandler.Column, item);
+				var args = new GridViewCellEventArgs(colHandler.Widget, row, colHandler.Column, item);
 				Handler.Callback.OnCellEditing(Handler.Widget, args);
 				return true;
 			}
@@ -90,7 +90,7 @@ namespace Eto.Mac.Forms.Controls
 				var col = tableView.SelectedColumn;
 				if (row >= 0) // && col >= 0) TODO: Fix the column
 					Handler.Callback.OnCellClick (Handler.Widget,
-						new GridViewCellArgs (null, // TODO: col is always -1 currently, so this does not work: Handler.GetColumn (tableView.ClickedColumn).Widget,
+						new GridViewCellEventArgs(null, // TODO: col is always -1 currently, so this does not work: Handler.GetColumn (tableView.ClickedColumn).Widget,
 		                     row, col, Handler.collection.Collection [row]));					
 			}
 

@@ -193,7 +193,7 @@ namespace Eto.iOS.Forms.Controls
 			base.RowSelected(tableView, indexPath);
 
 			// CellClick event
-			Handler.Callback.OnCellClick(Handler.Widget, new GridViewCellArgs(
+			Handler.Callback.OnCellClick(Handler.Widget, new GridViewCellEventArgs(
 				null, // TODO
 				indexPath.Row,
 				0, // Is this correct?

@@ -183,7 +183,7 @@ namespace Eto.WinForms.Forms.Controls
 					{
 						var item = GetItemAtRow(e.RowIndex);
 						var column = Widget.Columns[e.ColumnIndex];
-						Callback.OnCellEditing(Widget, new GridViewCellArgs(column, e.RowIndex, e.ColumnIndex, item));
+						Callback.OnCellEditing(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
 					};
 					break;
 				case Grid.CellEditedEvent:
@@ -191,7 +191,7 @@ namespace Eto.WinForms.Forms.Controls
 					{
 						var item = GetItemAtRow(e.RowIndex);
 						var column = Widget.Columns[e.ColumnIndex];
-						Callback.OnCellEdited(Widget, new GridViewCellArgs(column, e.RowIndex, e.ColumnIndex, item));
+						Callback.OnCellEdited(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
 					};
 					break;
 				case Grid.SelectionChangedEvent:

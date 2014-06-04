@@ -203,14 +203,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var row = path.Indices.Length > 0 ? path.Indices[0] : -1;
 			var item = GetItem(path);
-			Callback.OnCellEdited(Widget, new GridViewCellArgs(Widget.Columns[column], row, column, item));
+			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(Widget.Columns[column], row, column, item));
 		}
 
 		public void BeginCellEditing(Gtk.TreePath path, int column)
 		{
 			var row = path.Indices.Length > 0 ? path.Indices[0] : -1;
 			var item = GetItem(path);
-			Callback.OnCellEditing(Widget, new GridViewCellArgs(Widget.Columns[column], row, column, item));
+			Callback.OnCellEditing(Widget, new GridViewCellEventArgs(Widget.Columns[column], row, column, item));
 		}
 
 		public void ColumnClicked(GridColumnHandler column)

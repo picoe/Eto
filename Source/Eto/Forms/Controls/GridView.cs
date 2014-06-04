@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use GridViewCellEventArgs instead")]
 	public class GridViewCellArgs : EventArgs
 	{
 		public GridColumn GridColumn { get; private set; }
@@ -22,6 +23,28 @@ namespace Eto.Forms
 			this.Item = item;
 		}
 	}
+
+	#pragma warning disable 612,618
+
+	/// <summary>
+	/// Event arguments for cell-based events of a <see cref="GridView"/>
+	/// </summary>
+	public class GridViewCellEventArgs : GridViewCellArgs
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridViewCellEventArgs"/> class.
+		/// </summary>
+		/// <param name="gridColumn">Grid column that triggered the event.</param>
+		/// <param name="row">The row that triggered the event, or -1 if no row.</param>
+		/// <param name="column">Column that triggered the event, or -1 if no column.</param>
+		/// <param name="item">Item of the row that triggered the event, or null if no item.</param>
+		public GridViewCellEventArgs(GridColumn gridColumn, int row, int column, object item)
+			: base(gridColumn, row, column, item)
+		{
+		}
+	}
+
+	#pragma warning restore 612,618
 
 	[Handler(typeof(GridView.IHandler))]
 	public class GridView : Grid

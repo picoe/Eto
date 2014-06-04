@@ -53,7 +53,7 @@ namespace Eto.Wpf.Forms.Controls
 					var row = e.Row.GetIndex ();
 					var item = GetItemAtRow (row);
 					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Callback.OnCellEditing(Widget, new GridViewCellArgs(gridColumn, row, e.Column.DisplayIndex, item));
+					Callback.OnCellEditing(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
 				};
 				break;
 			case Grid.CellEditedEvent:
@@ -61,7 +61,7 @@ namespace Eto.Wpf.Forms.Controls
 					var row = e.Row.GetIndex ();
 					var item = GetItemAtRow(row);
 					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Callback.OnCellEdited(Widget, new GridViewCellArgs(gridColumn, row, e.Column.DisplayIndex, item));
+					Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
 				};
 				break;
 			case Grid.SelectionChangedEvent:
