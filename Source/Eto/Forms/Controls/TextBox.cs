@@ -113,7 +113,7 @@ namespace Eto.Forms
 			/// Gets or sets the maximum length of the text that can be entered in the control.
 			/// </summary>
 			/// <remarks>
-			/// This typically does not affect the value set using <see cref="Text"/>, only the limit of what the user can 
+			/// This typically does not affect the value set using <see cref="TextControl.Text"/>, only the limit of what the user can 
 			/// enter into the control.
 			/// </remarks>
 			/// <value>The maximum length of the text in the control.</value>

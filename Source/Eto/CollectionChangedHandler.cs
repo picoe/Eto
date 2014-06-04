@@ -92,6 +92,11 @@ namespace Eto
 			return InternalIndexOf(item);
 		}
 
+		/// <summary>
+		/// Gets the element at the specified index of the current registered collection.
+		/// </summary>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
 		public virtual TItem ElementAt(int index)
 		{
 			var list = Collection as IList<TItem>;
@@ -100,18 +105,30 @@ namespace Eto
 			return InternalElementAt(index);
 		}
 
+		/// <summary>
+		/// Gets the count of the items in the current registered collection.
+		/// </summary>
+		/// <value>The count of items.</value>
 		public abstract int Count { get; }
 
 		/// <summary>
 		/// Gets the index of the item from the collection
 		/// </summary>
 		/// <remarks>
-		/// Implementors should implement this to get the index of the item
+		/// Derived classes should implement this to get the index of the item.
 		/// </remarks>
 		/// <param name="item">Item to find the index</param>
 		/// <returns>index of the item in the collection, or -1 if the item is not found</returns>
 		protected abstract int InternalIndexOf(TItem item);
 
+		/// <summary>
+		/// Gets the element at the specified index.
+		/// </summary>
+		/// <remarks>
+		/// Derived classes should implement this to get the item at the specified index.
+		/// </remarks>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
 		protected abstract TItem InternalElementAt(int index);
 
 		/// <summary>
@@ -266,8 +283,17 @@ namespace Eto
 		}
 	}
 
+	/// <summary>
+	/// Helper class to handle collection change events of an <see cref="IEnumerable{T}"/> of the specified item type.
+	/// </summary>
 	public abstract class EnumerableChangedHandler<TItem> : EnumerableChangedHandler<TItem, IEnumerable<TItem>>
 	{
+		/// <summary>
+		/// Gets the element at the specified index.
+		/// </summary>
+		/// <remarks>Derived classes should implement this to get the item at the specified index.</remarks>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
 		protected override TItem InternalElementAt(int index)
 		{
 			return Collection.StoreElementAt(index);
@@ -275,7 +301,7 @@ namespace Eto
 	}
 
 	/// <summary>
-	/// Class to help implement change handling on an <see cref="IEnumerable"/>
+	/// Helper class to handle collection change events of an <see cref="IEnumerable"/>
 	/// </summary>
 	/// <remarks>
 	/// This is used for the platform handler of controls that use collections.
@@ -315,6 +341,10 @@ namespace Eto
 			return -1;
 		}
 
+		/// <summary>
+		/// Gets the count of the items in the current registered collection.
+		/// </summary>
+		/// <value>The count of items.</value>
 		public override int Count
 		{
 			get
@@ -324,6 +354,12 @@ namespace Eto
 			}
 		}
 
+		/// <summary>
+		/// Gets the element at the specified index.
+		/// </summary>
+		/// <remarks>Derived classes should implement this to get the item at the specified index.</remarks>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
 		protected override TItem InternalElementAt(int index)
 		{
 			var coll = Collection as IList<TItem>;
@@ -359,6 +395,10 @@ namespace Eto
 	public abstract class DataStoreChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>, IEnumerable<TItem>
 		where TCollection: class, IDataStore<TItem>
 	{
+		/// <summary>
+		/// Gets the enumerator.
+		/// </summary>
+		/// <returns>The enumerator.</returns>
 		public IEnumerator<TItem> GetEnumerator()
 		{
 			return new DataStoreVirtualCollection<TItem>(Collection).GetEnumerator();
@@ -397,14 +437,21 @@ namespace Eto
 			return -1;
 		}
 
+		/// <summary>
+		/// Gets the count of the items in the current registered collection.
+		/// </summary>
+		/// <value>The count of items.</value>
 		public override int Count
 		{
-			get
-			{
-				return Collection.Count;
-			}
+			get { return Collection.Count; }
 		}
 
+		/// <summary>
+		/// Gets the element at the specified index.
+		/// </summary>
+		/// <remarks>Derived classes should implement this to get the item at the specified index.</remarks>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
 		protected override TItem InternalElementAt(int index)
 		{
 			return Collection[index];

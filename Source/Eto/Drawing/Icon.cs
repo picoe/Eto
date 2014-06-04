@@ -76,6 +76,12 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Loads an icon from a resource in the same assembly as the specified <paramref name="type"/>
+		/// </summary>
+		/// <returns>The icon instance.</returns>
+		/// <param name="resourceName">Full name of the resource in the type's assembly.</param>
+		/// <param name="type">Type of the assembly to get the resource.</param>
 		public static Icon FromResource (string resourceName, Type type)
 		{
 			#if PCL
@@ -148,6 +154,13 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Gets an icon from the specified resource.
+		/// </summary>
+		/// <returns>The resource.</returns>
+		/// <param name="resourceName">Resource name.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use variation without generator instead")]
 		public static Icon FromResource (string resourceName, Type type, Generator generator)
 		{

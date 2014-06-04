@@ -4,17 +4,43 @@ using System.Linq;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Event arguments for cell-based events of a <see cref="GridView"/>
+	/// </summary>
 	[Obsolete("Use GridViewCellEventArgs instead")]
 	public class GridViewCellArgs : EventArgs
 	{
+		/// <summary>
+		/// Gets the grid column that triggered the event.
+		/// </summary>
+		/// <value>The grid column.</value>
 		public GridColumn GridColumn { get; private set; }
 
+		/// <summary>
+		/// Gets the row that triggered the event, or -1 if no row.
+		/// </summary>
+		/// <value>The grid row.</value>
 		public int Row { get; private set; }
 
+		/// <summary>
+		/// Gets the index of the column that triggered the event, or -1 if no column.
+		/// </summary>
+		/// <value>The column index.</value>
 		public int Column { get; private set; }
 
+		/// <summary>
+		/// Gets the item of the row that triggered the event, or null if there was no item.
+		/// </summary>
+		/// <value>The row item.</value>
 		public object Item { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridViewCellArgs"/> class.
+		/// </summary>
+		/// <param name="gridColumn">Grid column.</param>
+		/// <param name="row">Row.</param>
+		/// <param name="column">Column.</param>
+		/// <param name="item">Item.</param>
 		public GridViewCellArgs(GridColumn gridColumn, int row, int column, object item)
 		{
 			this.GridColumn = gridColumn;
@@ -46,6 +72,10 @@ namespace Eto.Forms
 
 	#pragma warning restore 612,618
 
+	/// <summary>
+	/// Control to present data in a grid in columns and rows.
+	/// </summary>
+	/// <see cref="TreeGridView"/>
 	[Handler(typeof(GridView.IHandler))]
 	public class GridView : Grid
 	{
@@ -84,38 +114,61 @@ namespace Eto.Forms
 			EventLookup.Register<GridView>(c => c.OnCellClick(null), GridView.CellClickEvent);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class.
+		/// </summary>
 		public GridView()
 		{
-			Initialize();
+			InitializeGrid();
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class with the specified handler.
+		/// </summary>
+		/// <param name="handler">Platform handler to use for the implementation of this GridView instance.</param>
 		protected GridView(IHandler handler)
 			: base(handler)
 		{
-			Initialize();
+			InitializeGrid();
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use default constructor instead")]
 		public GridView(Generator generator)
 			: this(generator, typeof(IHandler))
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected GridView(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			Initialize();
+			InitializeGrid();
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
+		/// <param name="handler">Handler.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use GridView(IGridView) instead")]
 		public GridView(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
-			Initialize();
+			InitializeGrid();
 		}
 
-		new void Initialize()
+		void InitializeGrid()
 		{
 			// Always attach the SelectionChangedEvent
 			// since it is always handled in the GridView.
@@ -152,9 +205,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// If true, there is a 1-pixel space between cells.
-		/// If false, there is no space between cells.
+		/// Gets or sets a value indicating whether to show a border around each cell.
 		/// </summary>
+		/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
 		public bool ShowCellBorders
 		{
 			get { return Handler.ShowCellBorders; }
@@ -163,21 +216,35 @@ namespace Eto.Forms
 
 		#region Events
 
+		/// <summary>
+		/// Event identifier for the <see cref="CellClick"/> event.
+		/// </summary>
 		public const string CellClickEvent = "GridView.CellClick";
 
-		public event EventHandler<GridViewCellArgs> CellClick
+		/// <summary>
+		/// Occurs when an individual cell is clicked.
+		/// </summary>
+		public event EventHandler<GridViewCellEventArgs> CellClick
 		{
 			add { Properties.AddHandlerEvent(CellClickEvent, value); }
 			remove { Properties.RemoveEvent(CellClickEvent, value); }
 		}
 
-		protected virtual void OnCellClick(GridViewCellArgs e)
+		/// <summary>
+		/// Raises the <see cref="CellClick"/> event.
+		/// </summary>
+		/// <param name="e">Grid cell event arguments.</param>
+		protected virtual void OnCellClick(GridViewCellEventArgs e)
 		{
 			Properties.TriggerEvent(CellClickEvent, this, e);
 		}
 
 		#endregion
 
+		/// <summary>
+		/// Raises the <see cref="Grid.SelectionChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected internal override void OnSelectionChanged(EventArgs e)
 		{
 			if (selection != null && !selection.SuppressSelectionChanged)
@@ -186,6 +253,14 @@ namespace Eto.Forms
 
 		Comparison<object> sortComparer;
 
+		/// <summary>
+		/// Gets or sets the comparer to sort the data through code.
+		/// </summary>
+		/// <remarks>
+		/// This is used to sort data programatically. If you have data coming from a database, it is usually more
+		/// efficient to sort the data on the server. 
+		/// </remarks>
+		/// <value>The sort comparer.</value>
 		public Comparison<object> SortComparer
 		{
 			get { return sortComparer; }
@@ -202,6 +277,14 @@ namespace Eto.Forms
 
 		Func<object, bool> filter;
 
+		/// <summary>
+		/// Gets or sets the filter of the data.
+		/// </summary>
+		/// <remarks>
+		/// This is used to filter the data programatically.  If you have data coming from a database, it is usually
+		/// more efficient to filter from the server.
+		/// </remarks>
+		/// <value>The data filter.</value>
 		public Func<object, bool> Filter
 		{
 			get { return filter; }
@@ -216,6 +299,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets an enumeration of the currently selected items
+		/// </summary>
+		/// <value>The selected items.</value>
 		public override IEnumerable<object> SelectedItems
 		{
 			get
@@ -264,12 +351,18 @@ namespace Eto.Forms
 				selection.UnselectRow(row);
 		}
 
+		/// <summary>
+		/// Selects all rows
+		/// </summary>
 		public override void SelectAll()
 		{
 			if (selection != null)
 				selection.SelectAll();
 		}
 
+		/// <summary>
+		/// Clears the selection
+		/// </summary>
 		public override void UnselectAll()
 		{
 			if (selection != null)
@@ -285,6 +378,10 @@ namespace Eto.Forms
 			SelectNextViewRow(next: true);
 		}
 
+		/// <summary>
+		/// Selects the previous item in the view (not the model.)
+		/// This can be used to cursor up/down the view
+		/// </summary>
 		public void SelectPreviousViewRow()
 		{
 			SelectNextViewRow(next: false);
@@ -332,6 +429,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the context menu when right clicking or pressing the menu button on the control.
+		/// </summary>
+		/// <value>The context menu.</value>
 		public ContextMenu ContextMenu
 		{
 			get { return Handler.ContextMenu; }
@@ -345,26 +446,48 @@ namespace Eto.Forms
 		/// <returns>The callback instance to use for this widget</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for the <see cref="GridView"/>
+		/// </summary>
 		public new interface ICallback : Grid.ICallback
 		{
-			void OnCellClick(GridView widget, GridViewCellArgs e);
+			/// <summary>
+			/// Raises the cell click event.
+			/// </summary>
+			void OnCellClick(GridView widget, GridViewCellEventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for handlers of the <see cref="GridView"/>.
+		/// </summary>
 		protected new class Callback : Grid.Callback, ICallback
 		{
-			public void OnCellClick(GridView widget, GridViewCellArgs e)
+			/// <summary>
+			/// Raises the cell click event.
+			/// </summary>
+			public void OnCellClick(GridView widget, GridViewCellEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnCellClick(e));
 			}
 		}
 
+		/// <summary>
+		/// Handler interface for the <see cref="GridView"/>.
+		/// </summary>
 		public new interface IHandler : Grid.IHandler, IContextMenuHost
 		{
+			/// <summary>
+			/// Gets or sets the data store for the items to show in the grid.
+			/// </summary>
+			/// <value>The grid's data store.</value>
 			IDataStore DataStore { get; set; }
 
+			/// <summary>
+			/// Gets or sets a value indicating whether to show a border around each cell.
+			/// </summary>
+			/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
 			bool ShowCellBorders { get; set; }
 		}
-
 	}
 }
 

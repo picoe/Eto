@@ -104,6 +104,12 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Loads a bitmap from a resource in the same assembly as the specified <paramref name="type"/>
+		/// </summary>
+		/// <returns>The bitmap instance.</returns>
+		/// <param name="resourceName">Full name of the resource in the type's assembly.</param>
+		/// <param name="type">Type of the assembly to get the resource.</param>
 		public static Bitmap FromResource (string resourceName, Type type)
 		{
 			#if PCL
@@ -318,6 +324,13 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Gets a bitmap from the specified resource.
+		/// </summary>
+		/// <returns>The resource.</returns>
+		/// <param name="resourceName">Resource name.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use variation without generator instead")]
 		public static Bitmap FromResource(string resourceName, Type type, Generator generator)
 		{
