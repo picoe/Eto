@@ -33,6 +33,10 @@ namespace Eto.Mac.Forms.Controls
 		GridColumn Widget { get; }
 
 		IDataViewHandler DataViewHandler { get; }
+
+		void Resize(bool force = false);
+
+		void Loaded(IDataViewHandler handler, int column);
 	}
 
 	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn, GridColumn.ICallback>, GridColumn.IHandler, IDataColumnHandler

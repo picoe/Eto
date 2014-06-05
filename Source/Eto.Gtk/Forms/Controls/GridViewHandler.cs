@@ -1,22 +1,24 @@
 using Eto.Forms;
 using System.Collections.Generic;
 using Eto.GtkSharp.Forms.Cells;
+using System.Collections;
+using System.Linq;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler, ICellDataSource, IGtkListModelHandler<object, IDataStore>
+	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler, ICellDataSource, IGtkEnumerableModelHandler<object>
 	{
-		GtkListModel<object, IDataStore> model;
+		GtkEnumerableModel<object> model;
 		CollectionHandler collection;
 		bool showCellBorders;
 
 		protected override ITreeModelImplementor CreateModelImplementor()
 		{
-			model = new GtkListModel<object, IDataStore> { Handler = this };
+			model = new GtkEnumerableModel<object> { Handler = this, Count = collection != null ? collection.Count : 0 };
 			return model;
 		}
 
-		public class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
+		public class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public GridViewHandler Handler { get; set; }
 
@@ -27,8 +29,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public override void AddItem(object item)
 			{
-				var iter = Handler.model.GetIterAtRow(Collection.Count);
-				var path = Handler.model.GetPathAtRow(Collection.Count);
+				var count = Count;
+				var iter = Handler.model.GetIterAtRow(count);
+				var path = Handler.model.GetPathAtRow(count);
+				Handler.model.Count++;
 				Handler.Tree.Model.EmitRowInserted(path, iter);
 			}
 
@@ -36,12 +40,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				var iter = Handler.model.GetIterAtRow(index);
 				var path = Handler.model.GetPathAtRow(index);
+				Handler.model.Count++;
 				Handler.Tree.Model.EmitRowInserted(path, iter);
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var path = Handler.model.GetPathAtRow(index);
+				Handler.model.Count--;
 				Handler.Tree.Model.EmitRowDeleted(path);
 			}
 
@@ -51,7 +57,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public IDataStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection != null ? collection.Collection : null; }
 			set
@@ -91,9 +97,60 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		public IEnumerable<object> SelectedItems
+		{
+			get
+			{
+				if (collection != null)
+				{
+					foreach (var row in SelectedRows)
+						yield return collection.ElementAt(row);
+				}
+			}
+		}
+
 		public override Gtk.TreeIter GetIterAtRow(int row)
 		{
 			return model.GetIterAtRow(row);
+		}
+
+		public override Gtk.TreePath GetPathAtRow(int row)
+		{
+			return model.GetPathAtRow(row);
+		}
+
+		protected override void SetSelectedRows(IEnumerable<int> value)
+		{
+			Tree.Selection.UnselectAll();
+			if (value != null && collection != null)
+			{
+				int start = -1;
+				int end = -1;
+				var count = collection.Count;
+
+				foreach (var row in value.Where(r => r < count).OrderBy(r => r))
+				{
+					if (start == -1)
+						start = end = row;
+					else if (row == end + 1)
+						end = row;
+					else
+					{
+						if (start == end)
+							Tree.Selection.SelectIter(GetIterAtRow(start));
+						else
+							Tree.Selection.SelectRange(GetPathAtRow(start), GetPathAtRow(end));
+						start = end = -1;
+					}
+				}
+				if (start != -1)
+				{
+					if (start == end)
+						Tree.Selection.SelectIter(GetIterAtRow(start));
+					else
+						Tree.Selection.SelectRange(GetPathAtRow(start), GetPathAtRow(end));
+				}
+			}
 		}
 
 		public override object GetItem(Gtk.TreePath path)
@@ -115,6 +172,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int GetRowOfItem(object item)
 		{
 			return collection != null ? collection.IndexOf(item) : -1;
+		}
+
+		public EnumerableChangedHandler<object> Collection
+		{
+			get { return collection; }
 		}
 	}
 }

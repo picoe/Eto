@@ -119,7 +119,9 @@ namespace Eto.Test.UnitTests
 			else
 				run();
 			if (!ev.WaitOne(timeout))
+			{
 				Assert.Fail("Test did not complete in time");
+			}
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
@@ -211,6 +213,14 @@ namespace Eto.Test.UnitTests
 			}, timeout);
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
+		}
+
+		public static Task<TEventArgs> WaitEventAsync<TEventArgs>(Action<EventHandler<TEventArgs>> hookEvent)
+			where TEventArgs : EventArgs
+		{
+			var tcs = new TaskCompletionSource<TEventArgs>();
+			hookEvent((sender, e) => tcs.SetResult(e));
+			return tcs.Task;
 		}
 	}
 }

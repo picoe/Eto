@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.WinForms.Drawing;
+using System.Diagnostics;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -23,6 +24,15 @@ namespace Eto.WinForms.Forms.Controls
 		where TCallback: Grid.ICallback
 	{
 		ColumnCollection columns;
+		bool isFirstSelection = true;
+		protected int SupressSelectionChanged { get; set; }
+		protected bool clearColumns;
+
+		protected void ResetSelection()
+		{
+			if (!SelectedRows.Any())
+				isFirstSelection = true;
+		}
 
 		protected abstract object GetItemAtRow(int row);
 
@@ -82,16 +92,26 @@ namespace Eto.WinForms.Forms.Controls
 			};
 			Control.RowPostPaint += HandleRowPostPaint;
 
-			// The DataGridView automatically selects the first row, which
-			// is problematic and also not consistent across platforms.
-			// So we always get rid of the first selection.
-			var isFirstSelection = true;
-			Control.SelectionChanged += (s, e) =>
+			Control.SelectionChanged += HandleFirstSelection;
+			Control.DataError += HandleDataError;
+		}
+
+		void HandleDataError(object sender, swf.DataGridViewDataErrorEventArgs e)
+		{
+			// ignore errors to prevent ugly popup when clearing data
+			Debug.WriteLine("Data Error: {0}", e.Exception);
+		}
+
+		void HandleFirstSelection(object sender, EventArgs e)
+		{
+			// don't select the first row on selection
+			if (Widget.Loaded && isFirstSelection)
 			{
-				if (isFirstSelection)
-					Control.ClearSelection();
+				Control.ClearSelection();
 				isFirstSelection = false;
-			};
+			}
+			else if (SupressSelectionChanged == 0)
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -195,10 +215,7 @@ namespace Eto.WinForms.Forms.Controls
 					};
 					break;
 				case Grid.SelectionChangedEvent:
-					Control.SelectionChanged += delegate
-					{
-						Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-					};
+					// handled automatically
 					break;
 				case Grid.CellFormattingEvent:
 					Control.CellFormatting += (sender, e) =>
@@ -230,6 +247,11 @@ namespace Eto.WinForms.Forms.Controls
 				var colhandler = (GridColumnHandler)item.Handler;
 				colhandler.Setup(Handler);
 				Handler.Control.Columns.Add(colhandler.Control);
+				if (Handler.clearColumns)
+				{
+					Handler.Control.Columns.RemoveAt(0);
+					Handler.clearColumns = false;
+				}
 			}
 
 			public override void InsertItem(int index, GridColumn item)
@@ -237,6 +259,11 @@ namespace Eto.WinForms.Forms.Controls
 				var colhandler = (GridColumnHandler)item.Handler;
 				colhandler.Setup(Handler);
 				Handler.Control.Columns.Insert(index, colhandler.Control);
+				if (Handler.clearColumns && Handler.Control.Columns.Count == 2 && index == 0)
+				{
+					Handler.Control.Columns.RemoveAt(Handler.Control.Columns.Count - 1);
+					Handler.clearColumns = false;
+				}
 			}
 
 			public override void RemoveItem(int index)
@@ -270,7 +297,19 @@ namespace Eto.WinForms.Forms.Controls
 
 		public IEnumerable<int> SelectedRows
 		{
-			get { return Control.SelectedRows.OfType<swf.DataGridViewRow>().Select(r => r.Index); }
+			get { return Control.SelectedRows.OfType<swf.DataGridViewRow>().Where(r => r.Index >= 0).Select(r => r.Index); }
+			set
+			{
+				SupressSelectionChanged++;
+				UnselectAll();
+				foreach (var row in value)
+				{
+					SelectRow(row);
+				}
+				SupressSelectionChanged--;
+				if (SupressSelectionChanged == 0)
+					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			}
 		}
 
 		public int RowHeight

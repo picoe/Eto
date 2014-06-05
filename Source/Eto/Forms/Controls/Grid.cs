@@ -90,9 +90,10 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class Grid : Control
+	public abstract class Grid : Control, ISelectable<object>
 	{
 		GridColumnCollection columns;
+		internal bool supressSelectionChanged;
 
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -219,6 +220,19 @@ namespace Eto.Forms
 			Properties.TriggerEvent(CellFormattingEvent, this, e);
 		}
 
+		public event EventHandler<EventArgs> SelectedItemsChanged
+		{
+			add { SelectionChanged += value; }
+			remove { SelectionChanged -= value; }
+		}
+
+		public event EventHandler<EventArgs> SelectedRowsChanged
+		{
+			add { SelectionChanged += value; }
+			remove { SelectionChanged -= value; }
+		}
+
+
 		#endregion
 
 		static Grid()
@@ -310,6 +324,10 @@ namespace Eto.Forms
 		/// If there is exactly one selected item, returns it, otherwise
 		/// returns null.
 		/// </summary>
+		/// <remarks>
+		/// Typically, you would use <see cref="SelectedItems"/> when <see cref="AllowMultipleSelection"/> is <c>true</c>.
+		/// </remarks>
+		/// <seealso cref="SelectedItems"/>
 		public object SelectedItem
 		{
 			get
@@ -328,6 +346,7 @@ namespace Eto.Forms
 		public virtual IEnumerable<int> SelectedRows
 		{
 			get { return Handler.SelectedRows; }
+			set { Handler.SelectedRows = value; }
 		}
 
 		/// <summary>
@@ -375,11 +394,15 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
 		/// </summary>
 		/// <returns>The callback instance to use for this widget</returns>
-		protected override object GetCallback() { return callback; }
+		protected override object GetCallback()
+		{
+			return callback;
+		}
 
 		/// <summary>
 		/// Callback interface for instances of <see cref="Grid"/>
@@ -390,18 +413,22 @@ namespace Eto.Forms
 			/// Raises the cell editing event.
 			/// </summary>
 			void OnCellEditing(Grid widget, GridViewCellEventArgs e);
+
 			/// <summary>
 			/// Raises the cell edited event.
 			/// </summary>
 			void OnCellEdited(Grid widget, GridViewCellEventArgs e);
+
 			/// <summary>
 			/// Raises the selection changed event.
 			/// </summary>
 			void OnSelectionChanged(Grid widget, EventArgs e);
+
 			/// <summary>
 			/// Raises the column header click event.
 			/// </summary>
 			void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e);
+
 			/// <summary>
 			/// Raises the cell formatting event.
 			/// </summary>
@@ -420,6 +447,7 @@ namespace Eto.Forms
 			{
 				widget.Platform.Invoke(() => widget.OnCellEditing(e));
 			}
+
 			/// <summary>
 			/// Raises the cell edited event.
 			/// </summary>
@@ -427,13 +455,16 @@ namespace Eto.Forms
 			{
 				widget.Platform.Invoke(() => widget.OnCellEdited(e));
 			}
+
 			/// <summary>
 			/// Raises the selection changed event.
 			/// </summary>
 			public void OnSelectionChanged(Grid widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSelectionChanged(e));
+				if (!widget.supressSelectionChanged)
+					widget.Platform.Invoke(() => widget.OnSelectionChanged(e));
 			}
+
 			/// <summary>
 			/// Raises the column header click event.
 			/// </summary>
@@ -441,6 +472,7 @@ namespace Eto.Forms
 			{
 				widget.Platform.Invoke(() => widget.OnColumnHeaderClick(e));
 			}
+
 			/// <summary>
 			/// Raises the cell formatting event.
 			/// </summary>
@@ -487,7 +519,7 @@ namespace Eto.Forms
 			/// Gets the selected rows indexes
 			/// </summary>
 			/// <value>The selected rows.</value>
-			IEnumerable<int> SelectedRows { get; }
+			IEnumerable<int> SelectedRows { get; set; }
 
 			/// <summary>
 			/// Selects the row to the specified <paramref name="row"/>, clearing other selections

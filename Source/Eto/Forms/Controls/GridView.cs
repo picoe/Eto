@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 namespace Eto.Forms
 {
@@ -72,20 +73,24 @@ namespace Eto.Forms
 
 	#pragma warning restore 612,618
 
+
+	public class GridView<T> : GridView, ISelectableControl<T>
+		where T: class
+	{
+		public new IEnumerable<T> DataStore { get { return (IEnumerable<T>)base.DataStore; } set { base.DataStore = value; } }
+
+		public new IEnumerable<T> SelectedItems { get { return base.SelectedItems.Cast<T>(); } }
+	}
+
 	/// <summary>
 	/// Control to present data in a grid in columns and rows.
 	/// </summary>
 	/// <see cref="TreeGridView"/>
 	[Handler(typeof(GridView.IHandler))]
-	public class GridView : Grid
+	public class GridView : Grid, ISelectableControl<object>
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		// provides sorting and filtering on the model.
-		internal IDataStoreView DataStoreView { get; private set; }
-		// manages the selection
-		GridViewSelection selection;
-		
 		/// <summary>
 		/// A delegate method to delete an item in response to a user's
 		/// request. The method should return true after deleting the
@@ -119,7 +124,6 @@ namespace Eto.Forms
 		/// </summary>
 		public GridView()
 		{
-			InitializeGrid();
 		}
 
 		/// <summary>
@@ -129,7 +133,6 @@ namespace Eto.Forms
 		protected GridView(IHandler handler)
 			: base(handler)
 		{
-			InitializeGrid();
 		}
 
 		/// <summary>
@@ -152,7 +155,6 @@ namespace Eto.Forms
 		protected GridView(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			InitializeGrid();
 		}
 
 		/// <summary>
@@ -165,18 +167,6 @@ namespace Eto.Forms
 		public GridView(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
-			InitializeGrid();
-		}
-
-		void InitializeGrid()
-		{
-			// Always attach the SelectionChangedEvent
-			// since it is always handled in the GridView.
-			HandleEvent(Grid.SelectionChangedEvent);
-
-			// Create a selection so that Filter and SortComparer
-			// can be set before DataStore.
-			selection = new GridViewSelection(this, null);
 		}
 
 		/// <summary>
@@ -184,24 +174,10 @@ namespace Eto.Forms
 		/// Setting this creates a DataStoreView, and the handler's
 		/// DataStore is set to the view collection of the DataStoreView.
 		/// </summary>
-		public IDataStore DataStore
+		public IEnumerable<object> DataStore
 		{
-			get { return DataStoreView == null ? null : DataStoreView.Model; }
-			set
-			{
-				// initialize the selection
-				selection = new GridViewSelection(this, value);
-
-				// Create a data store view wrapping the model
-				DataStoreView = value == null ? null : new DataStoreView { Model = value };
-
-				// Initialize the sort comparer and filter since a new view has been created.
-				SortComparer = sortComparer;
-				Filter = filter;				
-
-				// Set the handler's data store to the sorted and filtered view.
-				Handler.DataStore = DataStoreView == null ? null : DataStoreView.View;
-			}
+			get { return Handler.DataStore; }
+			set { Handler.DataStore = value; }
 		}
 
 		/// <summary>
@@ -241,61 +217,99 @@ namespace Eto.Forms
 
 		#endregion
 
-		/// <summary>
-		/// Raises the <see cref="Grid.SelectionChanged"/> event.
-		/// </summary>
-		/// <param name="e">Event arguments.</param>
-		protected internal override void OnSelectionChanged(EventArgs e)
+		class SelectionPreserverHelper : ISelectionPreserver
 		{
-			if (selection != null && !selection.SuppressSelectionChanged)
-				base.OnSelectionChanged(e);
+			readonly int selectedCount;
+			HashSet<object> selected;
+			readonly GridView grid;
+
+			public SelectionPreserverHelper(GridView grid)
+			{
+				this.grid = grid;
+				selected = new HashSet<object>(grid.SelectedItems);
+				selectedCount = selected.Count;
+				grid.supressSelectionChanged = true;
+			}
+
+			public IEnumerable<object> SelectedItems
+			{
+				get { return selected; }
+				set { selected = new HashSet<object>(value); }
+			}
+
+			public void Dispose()
+			{
+				if (selected.Count > 0)
+				{
+					var finalSelected = new List<int>();
+					var dataStore = grid.DataStore;
+					if (dataStore != null)
+					{
+						// go through list to find indexes of previously selected items
+						int row = 0;
+						foreach (var item in dataStore)
+						{
+							if (selected.Contains(item))
+								finalSelected.Add(row);
+							row++;
+						}
+					}
+					grid.SelectedRows = finalSelected;
+					if (finalSelected.Count != selectedCount)
+						grid.OnSelectionChanged(EventArgs.Empty);
+				}
+				grid.supressSelectionChanged = false;
+			}
 		}
 
-		Comparison<object> sortComparer;
+		public Func<ISelectionPreserver> SelectionPreserver
+		{
+			get { return () => new SelectionPreserverHelper(this); }
+		}
 
 		/// <summary>
-		/// Gets or sets the comparer to sort the data through code.
+		/// Gets or sets the comparer to sort the data through code. Obsolete. Use <see cref="FilterCollection{T}.Sort"/> instead.
 		/// </summary>
 		/// <remarks>
 		/// This is used to sort data programatically. If you have data coming from a database, it is usually more
 		/// efficient to sort the data on the server. 
 		/// </remarks>
 		/// <value>The sort comparer.</value>
+		[Obsolete("Use FilterCollection.SortComparer instead")]
 		public Comparison<object> SortComparer
 		{
-			get { return sortComparer; }
+			get
+			{ 
+				var filter = DataStore as IFilterableSource<object>;
+				return filter != null ? filter.Sort : null;
+			}
 			set
 			{
-				using (selection.PreserveSelection())
-				{
-					sortComparer = value;
-					if (DataStoreView != null)
-						DataStoreView.SortComparer = value;
-				}
+				var filter = DataStore as IFilterable<object> ?? new FilterCollection<object>(DataStore);
+				filter.Sort = value;
 			}
 		}
 
-		Func<object, bool> filter;
-
 		/// <summary>
-		/// Gets or sets the filter of the data.
+		/// Gets or sets the filter of the data. Obsolete. Use <see cref="FilterCollection{T}.Filter"/> instead.
 		/// </summary>
 		/// <remarks>
 		/// This is used to filter the data programatically.  If you have data coming from a database, it is usually
 		/// more efficient to filter from the server.
 		/// </remarks>
 		/// <value>The data filter.</value>
+		[Obsolete("Use FilterCollection.Filter instead")]
 		public Func<object, bool> Filter
 		{
-			get { return filter; }
+			get
+			{ 
+				var filter = DataStore as IFilterableSource<object>;
+				return filter != null ? filter.Filter : null;
+			}
 			set
 			{
-				using (selection.PreserveSelection())
-				{
-					filter = value;
-					if (DataStoreView != null)
-						DataStoreView.Filter = value;
-				}
+				var filter = DataStore as IFilterable<object> ?? new FilterCollection<object>(DataStore);
+				filter.Filter = value;
 			}
 		}
 
@@ -305,128 +319,7 @@ namespace Eto.Forms
 		/// <value>The selected items.</value>
 		public override IEnumerable<object> SelectedItems
 		{
-			get
-			{
-				if (DataStore == null)
-					yield break;
-				if (SelectedRows != null)
-					foreach (var row in SelectedRows)
-						yield return DataStore[row];
-			}
-		}
-
-		/// <summary>
-		/// Does view to model mapping of the selected row indexes.
-		/// </summary>
-		public override IEnumerable<int> SelectedRows
-		{
-			get { return selection != null ? selection.SelectedRows : new List<int>(); }
-		}
-
-		/// <summary>
-		/// The model indexes of the displayed rows.
-		/// E.g. ViewRows[5] is the index in the data store of
-		/// the 6th displayed item.
-		/// </summary>		
-		public IEnumerable<int> ViewRows
-		{
-			get { return DataStoreView.ViewRows; }
-		}
-
-		/// <summary>
-		/// Selects the view row of the specified model row index
-		/// </summary>
-		public override void SelectRow(int row)
-		{
-			if (selection != null)
-				selection.SelectRow(row);
-		}
-
-		/// <summary>
-		/// Unselects the view row of the specified model row index
-		/// </summary>
-		public override void UnselectRow(int row)
-		{
-			if (selection != null)
-				selection.UnselectRow(row);
-		}
-
-		/// <summary>
-		/// Selects all rows
-		/// </summary>
-		public override void SelectAll()
-		{
-			if (selection != null)
-				selection.SelectAll();
-		}
-
-		/// <summary>
-		/// Clears the selection
-		/// </summary>
-		public override void UnselectAll()
-		{
-			if (selection != null)
-				selection.UnselectAll();
-		}
-
-		/// <summary>
-		/// Selects the next item in the view (not the model.)
-		/// This can be used to cursor up/down the view
-		/// </summary>
-		public void SelectNextViewRow()
-		{
-			SelectNextViewRow(next: true);
-		}
-
-		/// <summary>
-		/// Selects the previous item in the view (not the model.)
-		/// This can be used to cursor up/down the view
-		/// </summary>
-		public void SelectPreviousViewRow()
-		{
-			SelectNextViewRow(next: false);
-		}
-
-		void SelectNextViewRow(bool next)
-		{
-			var increment = next ? 1 : -1;
-			int? modelRowToSelect = null; // If there are no selected rows, this is the default
-
-			var rows = SelectedRows.ToArray();
-			if (DataStoreView != null && rows.Length > 0)
-			{
-				// Get the last (or first, if moving back) selected view row.
-				// This handles multiselection.
-				int? currentRowViewIndex = null;
-				foreach (var x in rows)
-				{
-					var temp = DataStoreView.ModelToView(x);
-					if (temp != null &&
-					    (currentRowViewIndex == null || Math.Sign(temp.Value - currentRowViewIndex.Value) == Math.Sign(increment)))
-						currentRowViewIndex = temp;
-				}
-
-				if (currentRowViewIndex != null)
-				{
-					var newRow = currentRowViewIndex.Value + increment; // view index
-					if (newRow >= 0 &&
-					    DataStore.Count > newRow)
-						modelRowToSelect = DataStoreView.ViewToModel(newRow);
-				}
-			}
-
-			if (modelRowToSelect == null)
-			{
-				var viewRows = ViewRows.ToArray();
-				if (viewRows.Length > 0)
-					modelRowToSelect = next ? viewRows[0] : viewRows.Last();
-			}
-
-			if (modelRowToSelect != null)
-			{
-				UnselectAll();
-				SelectRow(modelRowToSelect.Value);
-			}
+			get { return Handler.SelectedItems; }
 		}
 
 		/// <summary>
@@ -440,11 +333,15 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
 		/// </summary>
 		/// <returns>The callback instance to use for this widget</returns>
-		protected override object GetCallback() { return callback; }
+		protected override object GetCallback()
+		{
+			return callback;
+		}
 
 		/// <summary>
 		/// Callback interface for the <see cref="GridView"/>
@@ -480,13 +377,15 @@ namespace Eto.Forms
 			/// Gets or sets the data store for the items to show in the grid.
 			/// </summary>
 			/// <value>The grid's data store.</value>
-			IDataStore DataStore { get; set; }
+			IEnumerable<object> DataStore { get; set; }
 
 			/// <summary>
 			/// Gets or sets a value indicating whether to show a border around each cell.
 			/// </summary>
 			/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
 			bool ShowCellBorders { get; set; }
+
+			IEnumerable<object> SelectedItems { get; }
 		}
 	}
 }

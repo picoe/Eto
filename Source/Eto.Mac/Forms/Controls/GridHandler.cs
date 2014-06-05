@@ -8,6 +8,7 @@ using Eto.Drawing;
 using Eto.Mac.Drawing;
 using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
+using MonoMac.Foundation;
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -16,6 +17,8 @@ namespace Eto.Mac.Forms.Controls
 		Grid Widget { get; }
 
 		NSTableView Table { get; }
+
+		bool AutoSizeColumns();
 	}
 
 	class EtoGridScrollView : NSScrollView
@@ -29,17 +32,10 @@ namespace Eto.Mac.Forms.Controls
 		public override void SetFrameSize(sd.SizeF newSize)
 		{
 			base.SetFrameSize(newSize);
-			if (!autoSized && Handler.Widget.Loaded)
+
+			if (!autoSized)
 			{
-				var rect = Handler.Table.VisibleRect();
-				if (!rect.IsEmpty)
-				{
-					foreach (var col in Handler.Widget.Columns)
-					{
-						((GridColumnHandler)col.Handler).Resize();
-					}
-					autoSized = true;
-				}
+				autoSized = Handler.AutoSizeColumns();
 			}
 		}
 	}
@@ -118,6 +114,10 @@ namespace Eto.Mac.Forms.Controls
 		ColumnCollection columns;
 		ContextMenu contextMenu;
 
+		protected int SuppressSelectionChanged { get; set; }
+
+		protected bool IsAutoSizingColumns { get; private set; }
+
 		public NSTableView Table
 		{
 			get { return Control; }
@@ -133,21 +133,6 @@ namespace Eto.Mac.Forms.Controls
 
 		protected virtual void UpdateColumns()
 		{
-		}
-
-		protected void UpdateColumnSizes()
-		{
-			if (Widget.Loaded)
-			{
-				var rect = Table.VisibleRect();
-				if (!rect.IsEmpty)
-				{
-					foreach (var col in Widget.Columns)
-					{
-						((GridColumnHandler)col.Handler).Resize();
-					}
-				}
-			}
 		}
 
 		public GridColumnHandler GetColumn(NSTableColumn tableColumn)
@@ -252,7 +237,7 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleScrolled(ObserverActionEventArgs e)
 		{
 			var handler = (GridHandler<TControl,TWidget,TCallback>)e.Handler;
-			handler.UpdateColumnSizes();
+			handler.AutoSizeColumns();
 		}
 
 		public override void AttachEvent(string id)
@@ -280,20 +265,32 @@ namespace Eto.Mac.Forms.Controls
 			base.OnLoadComplete(e);
 			
 			int i = 0;
-			foreach (var col in Widget.Columns)
+			IsAutoSizingColumns = true;
+			foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
 			{
-				var colHandler = (GridColumnHandler)col.Handler;
-				colHandler.Loaded(this, i++);
-				colHandler.Resize(true);
+				col.Loaded(this, i++);
+				col.Resize(true);
 			}
+			IsAutoSizingColumns = false;
 		}
 
-		public void ResizeAllColumns()
+		public bool AutoSizeColumns()
 		{
-			foreach (var col in Widget.Columns.Select (r => r.Handler as GridColumnHandler))
+			if (Widget.Loaded)
 			{
-				col.Resize();
+				var rect = Table.VisibleRect();
+				if (!rect.IsEmpty)
+				{
+					IsAutoSizingColumns = true;
+					foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
+					{
+						col.Resize();
+					}
+					IsAutoSizingColumns = false;
+					return true;
+				}
 			}
+			return false;
 		}
 
 		public bool ShowHeader
@@ -341,9 +338,20 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{ 
-				if (Control.SelectedRows != null && Control.SelectedRows.Count > 0)
-					return Control.SelectedRows.Select(r => (int)r);
+				var rows = Control.SelectedRows;
+				if (rows != null && rows.Count > 0)
+					return rows.Select(r => (int)r);
 				return Enumerable.Empty<int>();
+			}
+			set
+			{
+				SuppressSelectionChanged++;
+				UnselectAll();
+				var indexes = NSIndexSet.FromArray(value.ToArray());
+				Control.SelectRows(indexes, AllowMultipleSelection);
+				SuppressSelectionChanged--;
+				if (SuppressSelectionChanged == 0)
+					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -354,7 +362,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void SelectRow(int row)
 		{
-			Control.SelectRow(row, false);
+			Control.SelectRow(row, AllowMultipleSelection);
 		}
 
 		public void UnselectRow(int row)

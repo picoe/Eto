@@ -2,82 +2,116 @@ using System;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.WinForms.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler
 	{
 		CollectionHandler collection;
-		
+
 		public bool ShowCellBorders
 		{
 			get { return Control.CellBorderStyle != swf.DataGridViewCellBorderStyle.None; }
 			set { Control.CellBorderStyle = value ? swf.DataGridViewCellBorderStyle.Single : swf.DataGridViewCellBorderStyle.None; }
 		}
 
-		protected override object GetItemAtRow (int row)
+		protected override object GetItemAtRow(int row)
 		{
-			if (collection != null && collection.Collection != null && collection.Collection.Count > row) 			
-				return collection.Collection[row];
+			if (collection != null && collection.Collection != null && collection.Count > row)
+				return collection.ElementAt(row);
 			return null;
 		}
 
 		public override void AttachEvent(string id)
 		{
-			switch (id) {
-			case GridView.CellClickEvent:
-				Control.CellClick += (sender, e) => {
-					var item = GetItemAtRow (e.RowIndex);
-					var column = Widget.Columns [e.ColumnIndex];
-					Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
-				};
-				break;
-			default:
-				base.AttachEvent(id);
-				break;
+			switch (id)
+			{
+				case GridView.CellClickEvent:
+					Control.CellClick += (sender, e) =>
+					{
+						var item = GetItemAtRow(e.RowIndex);
+						var column = Widget.Columns[e.ColumnIndex];
+						Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
+					};
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public GridViewHandler Handler { get; set; }
-			
-			public override void AddRange (IEnumerable<object> items)
+
+			public override void AddRange(IEnumerable<object> items)
 			{
 				Handler.SetRowCount();
 			}
-			
-			public override void AddItem (object item)
+
+			public override void AddItem(object item)
 			{
 				Handler.IncrementRowCountBy(1);
 			}
 
-			public override void InsertItem (int index, object item)
+			public override void InsertItem(int index, object item)
 			{
+				Handler.SupressSelectionChanged++;
+				var rows = Handler.SelectedRows.Select(r => r >= index ? r + 1 : r).ToArray();
 				Handler.IncrementRowCountBy(1);
+				Handler.SelectedRows = rows;
+				Handler.SupressSelectionChanged--;
 			}
 
 			public override void InsertRange(int index, IEnumerable<object> items)
 			{
+				Handler.SupressSelectionChanged++;
+				var last = index + items.Count();
+				var rows = Handler.SelectedRows.Select(r => r >= last ? r - 1 : r).ToArray();
 				Handler.SetRowCount();
+				Handler.SelectedRows = rows;
+				Handler.SupressSelectionChanged--;
 			}
 
-			public override void RemoveItem (int index)
+			public override void RemoveItem(int index)
 			{
+				bool isSelected = false;
+				Handler.SupressSelectionChanged++;
+				var rows = Handler.SelectedRows.Where(r =>
+				{
+					if (r != index)
+						return true;
+					isSelected = true;
+					return false;
+				}).Select(r => r > index ? r - 1 : r).ToArray();
 				Handler.IncrementRowCountBy(-1);
+				Handler.SelectedRows = rows;
+				Handler.SupressSelectionChanged--;
+				if (isSelected)
+					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 			}
 
 			public override void RemoveRange(int index, int count)
 			{
-				Handler.SetRowCount();				
-			}
-
-			public override void RemoveRange(IEnumerable<object> items)
-			{
+				var last = index + count;
+				bool isSelected = false;
+				Handler.SupressSelectionChanged++;
+				var rows = Handler.SelectedRows.Where(r =>
+				{
+					if (r < index || r >= last)
+						return true;
+					isSelected = true;
+					return false;
+				}).Select(r => r >= last ? r - count : r).ToArray();
 				Handler.SetRowCount();
+				Handler.SelectedRows = rows;
+				Handler.SupressSelectionChanged--;
+				if (isSelected)
+					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 			}
 
-			public override void RemoveAllItems ()
+			public override void RemoveAllItems()
 			{
 				Handler.SetRowCount();
 			}
@@ -85,7 +119,44 @@ namespace Eto.WinForms.Forms.Controls
 
 		void SetRowCount()
 		{
-			Control.RowCount = collection.Collection != null ? collection.Collection.Count : 0;
+			var columns = Control.Columns.Count;
+			if (collection != null)
+			{
+				var count = collection.Count;
+				var oldCount = Control.RowCount;
+				// if we shrink by more than 50 items, we set count to 0 first to avoid performance issues with winforms
+				const int MinDifference = 50;
+				if (count < oldCount - MinDifference) 
+				{
+					// When going from a large dataset to a small one, DataGridView removes the rows one by one going very slow.
+					// We fix this by setting the count to zero first, then setting the count.
+					// However, we need to save/restore the selection in that case.
+					SupressSelectionChanged++;
+					var selectedRows = SelectedRows;
+					Control.RowCount = 0;
+					if (count > 0)
+					{
+						ResetSelection();
+						Control.RowCount = count;
+					}
+					SelectedRows = selectedRows.Where(r => r < count);
+					SupressSelectionChanged--;
+				}
+				else
+				{
+					// when we go from nothing to something, the DataGridView automatically selects the first item.
+					// this prevents that
+					if (oldCount == 0 && count > 0)
+						ResetSelection();
+					Control.RowCount = count;
+				}
+			}
+			else
+				Control.RowCount = 0;
+
+			// winforms will add a column when setting the count, so when we add a column later, clear it out.
+			if (columns == 0 && Control.Columns.Count > 0)
+				clearColumns = true;
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
 		}
 
@@ -95,13 +166,29 @@ namespace Eto.WinForms.Forms.Controls
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
 		}
 
-		public IDataStore DataStore {
+		public IEnumerable<object> DataStore
+		{
 			get { return collection != null ? collection.Collection : null; }
-			set {
+			set
+			{
 				if (collection != null)
-					collection.Unregister ();
+					collection.Unregister();
 				collection = new CollectionHandler { Handler = this };
-				collection.Register (value);
+				collection.Register(value);
+			}
+		}
+
+		public IEnumerable<object> SelectedItems
+		{
+			get
+			{
+				if (collection != null)
+				{
+					foreach (var row in SelectedRows)
+					{
+						yield return collection.ElementAt(row);
+					}
+				}
 			}
 		}
 	}

@@ -13,10 +13,23 @@ using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoDataGrid : swc.DataGrid
+	{
+		public new void BeginUpdateSelectedItems()
+		{
+			base.BeginUpdateSelectedItems();
+		}
+		public new void EndUpdateSelectedItems()
+		{
+			base.EndUpdateSelectedItems();
+		}
+	}
+
+
 	public abstract class GridHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, Grid.IHandler, IGridHandler
-		where TControl: swc.DataGrid
-		where TWidget: Grid
-		where TCallback: Grid.ICallback
+		where TControl : EtoDataGrid
+		where TWidget : Grid
+		where TCallback : Grid.ICallback
 	{
 		ContextMenu contextMenu;
 		bool hasFocus;
@@ -25,7 +38,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected GridHandler()
 		{
-			Control = (TControl)new swc.DataGrid {
+			Control = (TControl)new EtoDataGrid
+			{
 				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
 				AutoGenerateColumns = false,
 				CanUserAddRows = false,
@@ -36,46 +50,51 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected ColumnCollection Columns { get; private set; }
 
-		protected abstract object GetItemAtRow (int row);
+		protected abstract object GetItemAtRow(int row);
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
-			case Grid.ColumnHeaderClickEvent:
-				Control.Sorting += (sender, e) => {
-					var column = Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, e.Column));
-					Callback.OnColumnHeaderClick(Widget, new GridColumnEventArgs(column));
-					e.Handled = true;
-				};
-				break;
-			case Grid.CellEditingEvent:
-				Control.PreparingCellForEdit += (sender, e) => {
-					var row = e.Row.GetIndex ();
-					var item = GetItemAtRow (row);
-					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Callback.OnCellEditing(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
-				};
-				break;
-			case Grid.CellEditedEvent:
-				Control.CellEditEnding += (sender, e) => {
-					var row = e.Row.GetIndex ();
-					var item = GetItemAtRow(row);
-					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
-				};
-				break;
-			case Grid.SelectionChangedEvent:
-				Control.SelectedCellsChanged += (sender, e) => {
-					if (!SkipSelectionChanged)
-						Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-				};
-				break;
-			case Grid.CellFormattingEvent:
-				// handled by FormatCell method
-				break;
-			default:
-				base.AttachEvent (id);
-				break;
+			switch (id)
+			{
+				case Grid.ColumnHeaderClickEvent:
+					Control.Sorting += (sender, e) =>
+					{
+						var column = Widget.Columns.First(r => object.ReferenceEquals(r.ControlObject, e.Column));
+						Callback.OnColumnHeaderClick(Widget, new GridColumnEventArgs(column));
+						e.Handled = true;
+					};
+					break;
+				case Grid.CellEditingEvent:
+					Control.PreparingCellForEdit += (sender, e) =>
+					{
+						var row = e.Row.GetIndex();
+						var item = GetItemAtRow(row);
+						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
+						Callback.OnCellEditing(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
+					};
+					break;
+				case Grid.CellEditedEvent:
+					Control.CellEditEnding += (sender, e) =>
+					{
+						var row = e.Row.GetIndex();
+						var item = GetItemAtRow(row);
+						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
+						Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
+					};
+					break;
+				case Grid.SelectionChangedEvent:
+					Control.SelectedCellsChanged += (sender, e) =>
+					{
+						if (!SkipSelectionChanged)
+							Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					};
+					break;
+				case Grid.CellFormattingEvent:
+					// handled by FormatCell method
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
@@ -98,35 +117,35 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.Initialize();
 			Columns = new ColumnCollection { Handler = this };
-			Columns.Register (Widget.Columns);
+			Columns.Register(Widget.Columns);
 		}
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<TControl,TWidget,TCallback> Handler { get; set; }
+			public GridHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
-			public override void AddItem (GridColumn item)
+			public override void AddItem(GridColumn item)
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
 				colhandler.GridHandler = Handler;
-				Handler.Control.Columns.Add (colhandler.Control);
+				Handler.Control.Columns.Add(colhandler.Control);
 			}
 
-			public override void InsertItem (int index, GridColumn item)
+			public override void InsertItem(int index, GridColumn item)
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
 				colhandler.GridHandler = Handler;
-				Handler.Control.Columns.Insert (index, colhandler.Control);
+				Handler.Control.Columns.Insert(index, colhandler.Control);
 			}
 
-			public override void RemoveItem (int index)
+			public override void RemoveItem(int index)
 			{
-				Handler.Control.Columns.RemoveAt (index);
+				Handler.Control.Columns.RemoveAt(index);
 			}
 
-			public override void RemoveAllItems ()
+			public override void RemoveAllItems()
 			{
-				Handler.Control.Columns.Clear ();
+				Handler.Control.Columns.Clear();
 			}
 		}
 
@@ -152,10 +171,38 @@ namespace Eto.Wpf.Forms.Controls
 			get
 			{
 				var list = Control.ItemsSource as IList;
-				if (list != null) {
-					foreach (var item in Control.SelectedItems.OfType<object> ()) {
-						yield return list.IndexOf (item);
+				if (list != null)
+				{
+					foreach (object item in Control.SelectedItems)
+					{
+						yield return list.IndexOf(item);
 					}
+				}
+			}
+			set
+			{
+				if (AllowMultipleSelection)
+				{
+					var list = Control.ItemsSource as IList;
+					if (list != null)
+					{
+						Control.BeginUpdateSelectedItems();
+
+						Control.SelectedItems.Clear();
+						foreach (int row in value)
+						{
+							Control.SelectedItems.Add(list[row]);
+						}
+
+						Control.EndUpdateSelectedItems();
+					}
+				}
+				else if (value == null)
+					UnselectAll();
+				else
+				{
+					UnselectAll();
+					SelectRow(value.FirstOrDefault());
 				}
 			}
 		}
@@ -166,15 +213,16 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.RowHeight = value; }
 		}
 
-		public void SelectAll ()
+		public void SelectAll()
 		{
-			Control.SelectAll ();
+			Control.SelectAll();
 		}
 
-		public void SelectRow (int row)
+		public void SelectRow(int row)
 		{
 			var list = Control.ItemsSource as IList;
-			if (list != null) {
+			if (list != null)
+			{
 				if (AllowMultipleSelection)
 					Control.SelectedItems.Add(list[row]);
 				else
@@ -186,10 +234,11 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void UnselectRow (int row)
+		public void UnselectRow(int row)
 		{
 			var list = Control.ItemsSource as IList;
-			if (list != null) {
+			if (list != null)
+			{
 				if (AllowMultipleSelection)
 					Control.SelectedItems.Remove(list[row]);
 				else
@@ -197,12 +246,12 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void UnselectAll ()
+		public void UnselectAll()
 		{
-			Control.UnselectAll ();
+			Control.UnselectAll();
 		}
 
-		public virtual sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent)
+		public virtual sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent)
 		{
 			return defaultContent;
 		}
@@ -214,7 +263,7 @@ namespace Eto.Wpf.Forms.Controls
 			public swc.DataGridCell Cell { get; private set; }
 			Font font;
 
-			public FormatEventArgs (GridColumn column, swc.DataGridCell gridcell, object item, int row, sw.FrameworkElement element)
+			public FormatEventArgs(GridColumn column, swc.DataGridCell gridcell, object item, int row, sw.FrameworkElement element)
 				: base(column, item, row)
 			{
 				this.Element = element;
@@ -223,7 +272,8 @@ namespace Eto.Wpf.Forms.Controls
 
 			public override Font Font
 			{
-				get {
+				get
+				{
 					if (font == null)
 						font = new Font(new FontHandler(Cell));
 					return font;
@@ -231,7 +281,7 @@ namespace Eto.Wpf.Forms.Controls
 				set
 				{
 					font = value;
-					FontHandler.Apply (Cell, null, font);
+					FontHandler.Apply(Cell, null, font);
 				}
 			}
 
@@ -244,7 +294,7 @@ namespace Eto.Wpf.Forms.Controls
 				}
 				set
 				{
-					Cell.Background = new swm.SolidColorBrush (value.ToWpf ());
+					Cell.Background = new swm.SolidColorBrush(value.ToWpf());
 				}
 			}
 
@@ -257,7 +307,7 @@ namespace Eto.Wpf.Forms.Controls
 				}
 				set
 				{
-					Cell.Foreground = new swm.SolidColorBrush (value.ToWpf ());
+					Cell.Foreground = new swm.SolidColorBrush(value.ToWpf());
 				}
 			}
 		}
@@ -272,61 +322,62 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public override void Focus ()
+		public override void Focus()
 		{
-			SaveColumnFocus ();
-			base.Focus ();
-			RestoreColumnFocus ();
+			SaveColumnFocus();
+			base.Focus();
+			RestoreColumnFocus();
 		}
 
-		public override void Invalidate ()
+		public override void Invalidate()
 		{
-			SaveColumnFocus ();
-			Control.Items.Refresh ();
-			RestoreColumnFocus ();
-			base.Invalidate ();
+			SaveColumnFocus();
+			Control.Items.Refresh();
+			RestoreColumnFocus();
+			base.Invalidate();
 		}
 
-		public override void Invalidate (Rectangle rect)
+		public override void Invalidate(Rectangle rect)
 		{
-			SaveColumnFocus ();
-			Control.Items.Refresh ();
-			RestoreColumnFocus ();
-			base.Invalidate (rect);
+			SaveColumnFocus();
+			Control.Items.Refresh();
+			RestoreColumnFocus();
+			base.Invalidate(rect);
 		}
 
-		public virtual void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
+		public virtual void FormatCell(IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
 		{
-			if (IsEventHandled (Grid.CellFormattingEvent)) {
-				var row = Control.Items.IndexOf (dataItem);
-				Callback.OnCellFormatting(Widget, new FormatEventArgs (column.Widget as GridColumn, gridcell, dataItem, row, element));
+			if (IsEventHandled(Grid.CellFormattingEvent))
+			{
+				var row = Control.Items.IndexOf(dataItem);
+				Callback.OnCellFormatting(Widget, new FormatEventArgs(column.Widget as GridColumn, gridcell, dataItem, row, element));
 			}
 		}
 
-		protected void SaveColumnFocus ()
+		protected void SaveColumnFocus()
 		{
 			CurrentColumn = Control.CurrentColumn;
 		}
 
-		protected void RestoreColumnFocus ()
+		protected void RestoreColumnFocus()
 		{
 			Control.CurrentColumn = null;
-			Control.CurrentCell = new swc.DataGridCellInfo (Control.SelectedItem, CurrentColumn ?? Control.CurrentColumn ?? Control.Columns[0]);
+			Control.CurrentCell = new swc.DataGridCellInfo(Control.SelectedItem, CurrentColumn ?? Control.CurrentColumn ?? Control.Columns[0]);
 			CurrentColumn = null;
 		}
 
-		protected void SaveFocus ()
+		protected void SaveFocus()
 		{
-			SaveColumnFocus ();
+			SaveColumnFocus();
 			hasFocus = HasFocus;
 		}
 
-		protected void RestoreFocus ()
+		protected void RestoreFocus()
 		{
 			if (hasFocus)
 			{
 				Focus();
-				RestoreColumnFocus ();
+				RestoreColumnFocus();
 			}
 		}
 

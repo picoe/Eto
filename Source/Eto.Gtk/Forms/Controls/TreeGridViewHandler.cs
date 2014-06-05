@@ -243,6 +243,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			throw new NotImplementedException();
 		}
 
+		public override Gtk.TreePath GetPathAtRow(int row)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected override void SetSelectedRows(IEnumerable<int> value)
+		{
+		}
+
 		public GLib.Value GetColumnValue(ITreeGridItem item, int dataColumn, int row)
 		{
 			int column;

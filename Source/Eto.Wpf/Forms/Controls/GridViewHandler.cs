@@ -1,12 +1,15 @@
 using swc = System.Windows.Controls;
 using Eto.Forms;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<swc.DataGrid, GridView, GridView.ICallback>, GridView.IHandler
+	public class GridViewHandler : GridHandler<EtoDataGrid, GridView, GridView.ICallback>, GridView.IHandler
 	{
-		IDataStore store;
+		IEnumerable<object> store;
 
 		protected override void Initialize()
 		{
@@ -16,21 +19,28 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override object GetItemAtRow (int row)
 		{
-			return store == null ? null : store[row];
+			return store != null ? store.ElementAt(row) : null;
 		}
 
-		public IDataStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return store; }
 			set
 			{
 				store = value;
 				// must use observable collection for editing and collection update notifications
-				var source = store as ObservableCollection<object>;
-				if (source != null)
-					Control.ItemsSource = source;
+				if (store is INotifyCollectionChanged)
+					Control.ItemsSource = store;
 				else
-					Control.ItemsSource = new ObservableCollection<object>(store.AsEnumerable());
+					Control.ItemsSource = store != null ? new ObservableCollection<object>(store) : null;
+			}
+		}
+
+		public IEnumerable<object> SelectedItems
+		{
+			get
+			{
+				return Control.SelectedItems.OfType<object>();
 			}
 		}
 

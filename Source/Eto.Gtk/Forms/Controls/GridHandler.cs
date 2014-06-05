@@ -32,7 +32,11 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected void UpdateModel()
 		{
+			SkipSelectedChange = true;
+			var selected = SelectedRows;
 			Tree.Model = new Gtk.TreeModelAdapter(CreateModelImplementor());
+			SetSelectedRows(selected);
+			SkipSelectedChange = false;
 		}
 
 		protected override void Initialize()
@@ -74,10 +78,38 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 			}
 
+			int[] selectedRows;
+
+			static bool ArraysEqual<T>(T[] a1, T[] a2)
+			{
+				if (ReferenceEquals(a1, a2))
+					return true;
+
+				if (a1 == null || a2 == null)
+					return false;
+
+				if (a1.Length != a2.Length)
+					return false;
+
+				EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+				for (int i = 0; i < a1.Length; i++)
+				{
+					if (!comparer.Equals(a1[i], a2[i])) return false;
+				}
+				return true;
+			}
+
 			public void HandleGridSelectionChanged(object sender, EventArgs e)
 			{
 				if (!Handler.SkipSelectedChange)
-					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+				{
+					var selected = Handler.SelectedRows.ToArray();
+					if (!ArraysEqual(selectedRows, selected))
+					{
+						Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+						selectedRows = selected;
+					}
+				}
 			}
 		}
 
@@ -187,6 +219,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public abstract object GetItem(Gtk.TreePath path);
 
 		public abstract Gtk.TreeIter GetIterAtRow(int row);
+		public abstract Gtk.TreePath GetPathAtRow(int row);
 
 		public void SetColumnMap(int dataIndex, int column)
 		{
@@ -228,13 +261,18 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				var rows = Tree.Selection.GetSelectedRows();
-				foreach (var row in rows)
-				{
-					yield return row.Indices[0];
-				}
+				return Tree.Selection.GetSelectedRows().Select(r => r.Indices[0]);
+			}
+			set
+			{
+				SkipSelectedChange = true;
+				SetSelectedRows(value);
+				SkipSelectedChange = false;
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 			}
 		}
+
+		protected abstract void SetSelectedRows(IEnumerable<int> value);
 
 		public int RowHeight
 		{

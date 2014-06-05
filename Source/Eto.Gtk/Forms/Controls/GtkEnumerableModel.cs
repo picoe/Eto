@@ -20,8 +20,10 @@ namespace Eto.GtkSharp
 	public class GtkEnumerableModel<TItem> : GLib.Object, ITreeModelImplementor
 		where TItem: class
 	{
-		WeakReference handler;
-		public IGtkEnumerableModelHandler<TItem> Handler { get { return (IGtkEnumerableModelHandler<TItem>)handler.Target; } set { handler = new WeakReference(value); } }
+		WeakReference weakHandler;
+		public IGtkEnumerableModelHandler<TItem> Handler { get { return (IGtkEnumerableModelHandler<TItem>)weakHandler.Target; } set { weakHandler = new WeakReference(value); } }
+
+		public int Count { get; set; }
 
 		public Gtk.TreeIter GetIterAtRow (int row)
 		{
@@ -54,8 +56,8 @@ namespace Eto.GtkSharp
 
 		int GetRow (Gtk.TreePath path)
 		{
-			var h = Handler;
-			if (h != null && path.Indices.Length > 0 && h.Collection != null && h.Collection.Collection.Any())
+			var handler = Handler;
+			if (handler != null && path.Indices.Length > 0 && Count > 0)
 				return path.Indices[0];
 			return -1;
 		}
@@ -117,7 +119,7 @@ namespace Eto.GtkSharp
 		public bool IterNext (ref Gtk.TreeIter iter)
 		{
 			var row = ((int)iter.UserData) - 1;
-			if (row >= 0 && Handler.Collection != null && row < Handler.Collection.Count - 1)
+			if (row >= 0 && Handler.Collection != null && row < Count - 1)
 			{
 				iter = new Gtk.TreeIter { UserData = (IntPtr)(row + 2) };
 				return true;
@@ -139,7 +141,7 @@ namespace Eto.GtkSharp
 
 		public bool IterChildren (out Gtk.TreeIter child, Gtk.TreeIter parent)
 		{
-			if (parent.UserData == IntPtr.Zero && Handler.Collection != null && Handler.Collection.Collection.Any())
+			if (parent.UserData == IntPtr.Zero && Count > 0)
 			{
 				child = new Gtk.TreeIter { UserData = (IntPtr)1 };
 				return true;
@@ -155,18 +157,18 @@ namespace Eto.GtkSharp
 
 		public int IterNChildren (Gtk.TreeIter iter)
 		{
-			var h = Handler;
-			if (iter.UserData == IntPtr.Zero && h.Collection != null)
-				return h.Collection.Count;
+			var handler = Handler;
+			if (iter.UserData == IntPtr.Zero && handler.Collection != null)
+				return handler.Collection.Count;
 			return 0;
 		}
 
 		public bool IterNthChild (out Gtk.TreeIter child, Gtk.TreeIter parent, int n)
 		{
-			var h = Handler;
-			if (parent.UserData == IntPtr.Zero && h != null && h.Collection != null)
+			var handler = Handler;
+			if (parent.UserData == IntPtr.Zero && handler != null && handler.Collection != null)
 			{
-				if (n < h.Collection.Count)
+				if (n < handler.Collection.Count)
 				{
 					child = new Gtk.TreeIter { UserData = (IntPtr)(n+1) };
 					return true;

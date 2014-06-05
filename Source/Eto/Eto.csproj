@@ -60,7 +60,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Grid.cs" />
-    <Compile Include="Forms\Controls\GridViewSelection.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\SearchBox.cs" />
     <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
@@ -68,7 +67,6 @@
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Controls\TreeView.cs" />
-    <Compile Include="Forms\DataStoreView.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
@@ -293,6 +291,7 @@
       <Link>EnumerableExtensions.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\ColorPicker.cs" />
+    <Compile Include="Forms\FilterCollection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Eto;
 using Eto.Drawing;
 using Eto.Forms;
+using System.Collections;
 
 namespace Eto.Test.UnitTests.Handlers.Controls
 {
@@ -17,14 +18,20 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 	class TestGridViewHandler : TestControlHandler, GridView.IHandler
 	{
 		CollectionHandler collection;
+
 		GridView GridView { get { return Widget as GridView; } }
 
 		// Boilerplate
 		public ContextMenu ContextMenu { get; set; }
+
 		public bool ShowCellBorders { get; set; }
+
 		public bool ShowHeader { get; set; }
+
 		public int RowHeight { get; set; }
+
 		public bool AllowColumnReordering { get; set; }
+
 		public bool AllowMultipleSelection { get; set; }
 
 		/// <summary>
@@ -32,7 +39,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 		/// </summary>
 		int RowCount { get; set; }
 
-		public IDataStore DataStore
+		public IEnumerable<object> DataStore
 		{
 			get { return collection != null ? collection.Collection : null; }
 			set
@@ -45,12 +52,28 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 		}
 
 		HashSet<int> selectedRows = new HashSet<int>();
+
 		/// <summary>
 		/// Indexes of rows selected in the UI.
 		/// </summary>
 		public IEnumerable<int> SelectedRows
 		{
-			get { return selectedRows; }			
+			get { return selectedRows; }
+			set { selectedRows = new HashSet<int>(value); }
+		}
+
+		public IEnumerable<object> SelectedItems
+		{
+			get
+			{
+				if (collection != null)
+				{
+					foreach (var row in selectedRows)
+					{
+						yield return collection.ElementAt(row);
+					}
+				}
+			}
 		}
 
 		public void SelectRow(int row)
@@ -78,7 +101,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 
 		void SetRowCount()
 		{
-			RowCount = collection.Collection != null ? collection.Collection.Count : 0;
+			RowCount = collection.Collection != null ? collection.Count : 0;
 		}
 
 		void IncrementRowCountBy(int increment)
@@ -86,7 +109,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			RowCount += increment;
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public TestGridViewHandler Handler { get; set; }
 

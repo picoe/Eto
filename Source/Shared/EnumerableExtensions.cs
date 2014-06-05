@@ -39,9 +39,12 @@ namespace Eto
 		{
 			if (items == null)
 				throw new ArgumentNullException("items");
-			var list = items as IList;
+			var list = items as IList<T>;
 			if (list != null)
 				return list.IndexOf(item);
+			var list2 = items as IList;
+			if (list2 != null)
+				return list2.IndexOf(item);
 			return items.FindIndex(i => EqualityComparer<T>.Default.Equals(item, i));
 		}
 	}

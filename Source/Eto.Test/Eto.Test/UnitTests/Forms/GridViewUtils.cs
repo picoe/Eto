@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Eto.Forms;
+using System.Collections.ObjectModel;
 
 namespace Eto.Test.UnitTests.Forms
 {
@@ -18,7 +19,7 @@ namespace Eto.Test.UnitTests.Forms
 
 		public override string ToString()
 		{
-			return Id.ToString();
+			return "Item " + Id;
 		}
 	}
 
@@ -29,41 +30,41 @@ namespace Eto.Test.UnitTests.Forms
 		/// <summary>
 		/// Creates a model with 100 items, with index as Id.
 		/// </summary>
-		public static DataStoreCollection CreateModel()
+		public static ObservableCollection<DataItem> CreateModel()
 		{
-			var model = new DataStoreCollection();
+			var model = new ObservableCollection<DataItem>();
 			for (var i = 0; i < ItemCount; ++i)
 				model.Add(new DataItem(i));
 			return model;
 		}
 
-		public static int SortEvenItemsBeforeOdd(object x, object y)
+		public static int SortEvenItemsBeforeOdd(DataItem x, DataItem y)
 		{
-			var a = ((DataItem)x).Id;
-			var b = ((DataItem)y).Id;
+			var a = x.Id;
+			var b = y.Id;
 			return (a % 2 == b % 2) ? a - b : (a % 2 == 0 ? -1 : 1);
 		}
 
-		public static int SortItemsAscending(object x, object y)
+		public static int SortItemsAscending(DataItem x, DataItem y)
 		{
-			var a = ((DataItem)x).Id;
-			var b = ((DataItem)y).Id;
+			var a = x.Id;
+			var b = y.Id;
 			return a - b;
 		}
 
-		public static int SortItemsDescending(object x, object y)
+		public static int SortItemsDescending(DataItem x, DataItem y)
 		{
 			return -SortItemsAscending(x, y);
 		}
 
-		public static bool KeepOddItemsFilter(object o)
+		public static bool KeepOddItemsFilter(DataItem o)
 		{
-			return ((DataItem)o).Id % 2 == 1; // keep all odd items only.
+			return o.Id % 2 == 1; // keep all odd items only.
 		}
 
-		public static bool KeepFirstHalfOfItemsFilter(object o)
+		public static bool KeepFirstHalfOfItemsFilter(DataItem o)
 		{
-			return ((DataItem)o).Id < ItemCount / 2;
+			return o.Id < ItemCount / 2;
 		}
 	}
 }

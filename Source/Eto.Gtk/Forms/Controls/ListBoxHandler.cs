@@ -4,6 +4,7 @@ using Eto.GtkSharp.Drawing;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace Eto.GtkSharp
 {
@@ -151,7 +152,7 @@ namespace Eto.GtkSharp
 
 			protected override void OnRegisterCollection(EventArgs e)
 			{
-				Handler.model = new GtkEnumerableModel<object>{ Handler = Handler };
+				Handler.model = new GtkEnumerableModel<object>{ Handler = Handler, Count = Count };
 				Handler.Control.Model = new Gtk.TreeModelAdapter(Handler.model);
 			}
 
@@ -162,9 +163,10 @@ namespace Eto.GtkSharp
 
 			public override void AddItem(object item)
 			{
-				var count = Collection.Count();
+				var count = Count;
 				var iter = Handler.model.GetIterAtRow(count);
 				var path = Handler.model.GetPathAtRow(count);
+				Handler.model.Count++;
 				Handler.Control.Model.EmitRowInserted(path, iter);
 			}
 
@@ -172,12 +174,14 @@ namespace Eto.GtkSharp
 			{
 				var iter = Handler.model.GetIterAtRow(index);
 				var path = Handler.model.GetPathAtRow(index);
+				Handler.model.Count++;
 				Handler.Control.Model.EmitRowInserted(path, iter);
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var path = Handler.model.GetPathAtRow(index);
+				Handler.model.Count--;
 				Handler.Control.Model.EmitRowDeleted(path);
 			}
 

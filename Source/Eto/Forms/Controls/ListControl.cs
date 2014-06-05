@@ -205,7 +205,7 @@ namespace Eto.Forms
 		/// <value>The selected value.</value>
 		public object SelectedValue
 		{
-			get { return (SelectedIndex >= 0 && Handler.DataStore != null) ? Handler.DataStore.StoreElementAt(SelectedIndex) : null; }
+			get { return (SelectedIndex >= 0 && Handler.DataStore != null) ? Handler.DataStore.StoreElementAt<object>(SelectedIndex) : null; }
 			set
 			{
 				EnsureDataStore();
@@ -226,7 +226,7 @@ namespace Eto.Forms
 			set
 			{
 				EnsureDataStore();
-				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.FindIndex(r => KeyBinding.GetValue(r) == value) : -1;
+				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.FindIndex<object>(r => KeyBinding.GetValue(r) == value) : -1;
 			}
 		}
 

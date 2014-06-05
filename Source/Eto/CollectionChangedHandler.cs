@@ -26,7 +26,7 @@ namespace Eto
 		/// <summary>
 		/// Gets the collection that this handler is observing
 		/// </summary>
-		public TCollection Collection { get; private set; }
+		public TCollection Collection { get; protected set; }
 
 		/// <summary>
 		/// Called when the object has been registered (attached) to a collection
@@ -48,7 +48,7 @@ namespace Eto
 		/// </summary>
 		/// <param name="collection">collection to observe</param>
 		/// <returns>true if the collection was registered, false otherwise</returns>
-		public bool Register(TCollection collection)
+		public virtual bool Register(TCollection collection)
 		{
 			Collection = collection;
 			
@@ -64,7 +64,7 @@ namespace Eto
 		/// <summary>
 		/// Unregisters the current registered collection
 		/// </summary>
-		public void Unregister()
+		public virtual void Unregister()
 		{
 			if (Collection == null)
 				return;
@@ -246,17 +246,30 @@ namespace Eto
 			{
 				case NotifyCollectionChangedAction.Add:
 					if (e.NewStartingIndex != -1)
-						InsertRange(e.NewStartingIndex, e.NewItems.Cast<TItem>());
+					{
+						if (e.NewItems.Count == 1)
+							InsertItem(e.NewStartingIndex, (TItem)e.NewItems[0]);
+						else
+							InsertRange(e.NewStartingIndex, e.NewItems.Cast<TItem>());
+					}
 					else
 						AddRange(e.NewItems.Cast<TItem>());
 					break;
 				case NotifyCollectionChangedAction.Move:
-					RemoveRange(e.OldItems.Cast<TItem>());
+					if (e.OldStartingIndex != -1)
+						RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+					else
+						RemoveRange(e.OldItems.Cast<TItem>());
 					InsertRange(e.NewStartingIndex, e.NewItems.Cast<TItem>());
 					break;
 				case NotifyCollectionChangedAction.Remove:
 					if (e.OldStartingIndex != -1)
-						RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+					{
+						if (e.OldItems.Count == 1)
+							RemoveItem(e.OldStartingIndex);
+						else
+							RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+					}
 					else
 						RemoveRange(e.OldItems.Cast<TItem>());
 					break;
@@ -283,21 +296,8 @@ namespace Eto
 		}
 	}
 
-	/// <summary>
-	/// Helper class to handle collection change events of an <see cref="IEnumerable{T}"/> of the specified item type.
-	/// </summary>
 	public abstract class EnumerableChangedHandler<TItem> : EnumerableChangedHandler<TItem, IEnumerable<TItem>>
 	{
-		/// <summary>
-		/// Gets the element at the specified index.
-		/// </summary>
-		/// <remarks>Derived classes should implement this to get the item at the specified index.</remarks>
-		/// <returns>The item at the specified index.</returns>
-		/// <param name="index">Index of the item to get.</param>
-		protected override TItem InternalElementAt(int index)
-		{
-			return Collection.StoreElementAt(index);
-		}
 	}
 
 	/// <summary>
@@ -313,10 +313,10 @@ namespace Eto
 	/// otherwise you must register a new collection each time.
 	/// </remarks>
 	/// <typeparam name="TItem">Type of each item in the enumerable</typeparam>
-	/// <typeparam name="TCollection">Type of collection</typeparam>
 	public abstract class EnumerableChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>
-		where TCollection: class, IEnumerable
+		where TCollection: class, IEnumerable<TItem>
 	{
+
 		/// <summary>
 		/// Implements the mechanism for finding the index of an item (the slow way)
 		/// </summary>
@@ -328,17 +328,7 @@ namespace Eto
 		/// <returns>Index of the item, or -1 if not found</returns>
 		protected override int InternalIndexOf(TItem item)
 		{
-			int index = 0;
-			var coll = Collection as IList<TItem>;
-			if (coll != null)
-				return coll.IndexOf(item);
-			foreach (var child in Collection)
-			{
-				if (object.ReferenceEquals(item, child))
-					return index;
-				index++;
-			}
-			return -1;
+			return Collection.IndexOf(item);
 		}
 
 		/// <summary>
@@ -349,8 +339,11 @@ namespace Eto
 		{
 			get
 			{
-				var list = Collection as ICollection<TItem>;
-				return list != null ? list.Count : Collection.OfType<object>().Count();
+				// mono doesn't test for ICollection, causing performance issues
+				var coll = Collection as ICollection;
+				if (coll != null)
+					return coll.Count;
+				return Collection.Count();
 			}
 		}
 
@@ -362,10 +355,13 @@ namespace Eto
 		/// <param name="index">Index of the item to get.</param>
 		protected override TItem InternalElementAt(int index)
 		{
-			var coll = Collection as IList<TItem>;
-			if (coll != null)
-				return coll[index];
-			return Collection.OfType<TItem>().ElementAt(index);
+			var list = Collection as IList<TItem>;
+			if (list != null)
+				return (TItem)list[index];
+			var list2 = Collection as IList;
+			if (list2 != null)
+				return (TItem)list2[index];
+			return Collection.ElementAt(index);
 		}
 
 		/// <summary>
@@ -374,7 +370,13 @@ namespace Eto
 		protected override void OnRegisterCollection(EventArgs e)
 		{
 			base.OnRegisterCollection(e);
-			AddRange(Collection.Cast<TItem>());
+			InitializeCollection();
+		}
+
+		protected virtual void InitializeCollection()
+		{
+			if (Collection != null)
+				AddRange(Collection);
 		}
 	}
 

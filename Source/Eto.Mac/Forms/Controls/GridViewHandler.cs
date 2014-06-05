@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using MonoMac.Foundation;
 using Eto.Drawing;
 using sd = System.Drawing;
+using System.Collections;
+using MonoMac.ObjCRuntime;
+using System.Linq;
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -21,7 +24,7 @@ namespace Eto.Mac.Forms.Controls
 				get { return (GridViewHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
-			
+
 			/// <summary>
 			/// The area to the right and below the rows is not filled with the background
 			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
@@ -29,37 +32,41 @@ namespace Eto.Mac.Forms.Controls
 			public override void DrawBackground(sd.RectangleF clipRect)
 			{
 				var backgroundColor = Handler.BackgroundColor;
-				if (backgroundColor != Colors.Transparent) {
-					backgroundColor.ToNSUI ().Set ();
-					NSGraphics.RectFill (clipRect);
-				} else
-					base.DrawBackground (clipRect);
+				if (backgroundColor != Colors.Transparent)
+				{
+					backgroundColor.ToNSUI().Set();
+					NSGraphics.RectFill(clipRect);
+				}
+				else
+					base.DrawBackground(clipRect);
 			}
 		}
-		
+
 		class EtoTableViewDataSource : NSTableViewDataSource
 		{
 			WeakReference handler;
+
 			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
-			
-			public override int GetRowCount (NSTableView tableView)
+
+			public override int GetRowCount(NSTableView tableView)
 			{
-				return (Handler.collection != null && Handler.collection.Collection != null) ? Handler.collection.Collection.Count : 0;
+				return (Handler.collection != null && Handler.collection.Collection != null) ? Handler.collection.Count : 0;
 			}
 
-			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
+			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				var item = Handler.collection.Collection [row];
-				var colHandler = Handler.GetColumn (tableColumn);
+				var item = Handler.collection.ElementAt(row);
+				var colHandler = Handler.GetColumn(tableColumn);
 				return colHandler == null ? null : colHandler.GetObjectValue(item);
 			}
 
-			public override void SetObjectValue (NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)
+			public override void SetObjectValue(NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)
 			{
-				var item = Handler.collection.Collection [row];
-				var colHandler = Handler.GetColumn (tableColumn);
-				if (colHandler != null) {
-					colHandler.SetObjectValue (item, theObject);
+				var item = Handler.collection.ElementAt(row);
+				var colHandler = Handler.GetColumn(tableColumn);
+				if (colHandler != null)
+				{
+					colHandler.SetObjectValue(item, theObject);
 
 					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, row, colHandler.Column, item));
 				}
@@ -69,43 +76,52 @@ namespace Eto.Mac.Forms.Controls
 		class EtoTableDelegate : NSTableViewDelegate
 		{
 			WeakReference handler;
+
 			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 
-			public override bool ShouldEditTableColumn (NSTableView tableView, NSTableColumn tableColumn, int row)
+			public override bool ShouldEditTableColumn(NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				var colHandler = Handler.GetColumn (tableColumn);
-				var item = Handler.collection.Collection [row];
+				var colHandler = Handler.GetColumn(tableColumn);
+				var item = Handler.collection.ElementAt(row);
 				var args = new GridViewCellEventArgs(colHandler.Widget, row, colHandler.Column, item);
 				Handler.Callback.OnCellEditing(Handler.Widget, args);
 				return true;
 			}
-					
-			public override void SelectionDidChange (NSNotification notification)
-			{
-				Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
 
-				// Trigger CellClick
-				var tableView = Handler.Control;
-				var row = tableView.SelectedRow;
-				var col = tableView.SelectedColumn;
-				if (row >= 0) // && col >= 0) TODO: Fix the column
-					Handler.Callback.OnCellClick (Handler.Widget,
-						new GridViewCellEventArgs(null, // TODO: col is always -1 currently, so this does not work: Handler.GetColumn (tableView.ClickedColumn).Widget,
-		                     row, col, Handler.collection.Collection [row]));					
+			public override void SelectionDidChange(NSNotification notification)
+			{
+				if (Handler.SuppressSelectionChanged == 0)
+				{
+					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+				}
 			}
 
-			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)
+			public override void DidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn)
 			{
-				var colHandler = Handler.GetColumn (tableColumn);
-				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs (colHandler.Widget));
+				var colHandler = Handler.GetColumn(tableColumn);
+				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(colHandler.Widget));
 			}
 
-			public override void WillDisplayCell (NSTableView tableView, NSObject cell, NSTableColumn tableColumn, int row)
+			public override void WillDisplayCell(NSTableView tableView, NSObject cell, NSTableColumn tableColumn, int row)
 			{
-				var colHandler = Handler.GetColumn (tableColumn);
-				var item = Handler.GetItem (row);
+				var colHandler = Handler.GetColumn(tableColumn);
+				var item = Handler.GetItem(row);
 				Handler.OnCellFormatting(colHandler.Widget, item, row, cell as NSCell);
 
+			}
+
+			public override void ColumnDidResize(NSNotification notification)
+			{
+				if (!Handler.IsAutoSizingColumns)
+				{
+					// when the user resizes the column, don't autosize anymore when data/scroll changes
+					var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
+					if (column != null)
+					{
+						var colHandler = Handler.GetColumn(column);
+						colHandler.AutoSize = false;
+					}
+				}
 			}
 		}
 
@@ -115,10 +131,11 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : sd.SizeF.Empty; } 
 		}
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
-			case Grid.CellEditingEvent:
+			switch (id)
+			{
+				case Grid.CellEditingEvent:
 				// handled by delegate
 				/* following should work, but internal delegate to trigger event does not work
 				table.ShouldEditTableColumn = (tableView, tableColumn, row) => {
@@ -128,29 +145,29 @@ namespace Eto.Mac.Forms.Controls
 					this.Widget.OnBeginCellEdit (args);
 					return true;
 				};*/
-				break;
-			case Grid.CellEditedEvent:
+					break;
+				case Grid.CellEditedEvent:
 				// handled after object value is set
-				break;
-			case Grid.SelectionChangedEvent:
+					break;
+				case Grid.SelectionChangedEvent:
 				/* handled by delegate, for now
 				table.SelectionDidChange += delegate {
 					Widget.OnSelectionChanged (EventArgs.Empty);
 				};*/
-				break;
-			case Grid.ColumnHeaderClickEvent:
+					break;
+				case Grid.ColumnHeaderClickEvent:
 				/*
 				table.DidClickTableColumn += delegate(object sender, NSTableViewTableEventArgs e) {
 					var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
 					Handler.Widget.OnHeaderClick (new GridColumnEventArgs (column));
 				};
 				*/
-				break;
-			case Grid.CellFormattingEvent:
-				break;
-			default:
-				base.AttachEvent (id);
-				break;
+					break;
+				case Grid.CellFormattingEvent:
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
@@ -166,56 +183,120 @@ namespace Eto.Mac.Forms.Controls
 			};
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
+		public IEnumerable<object> SelectedItems
+		{
+			get
+			{ 
+				if (collection != null)
+				{
+					foreach (var row in SelectedRows)
+						yield return collection.ElementAt(row);
+				}
+			}
+		}
+
+		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public GridViewHandler Handler { get; set; }
 
-			public override int IndexOf (object item)
+			public override void AddRange(IEnumerable<object> items)
 			{
-				return -1; // not needed
-			}
-			
-			public override void AddRange (IEnumerable<object> items)
-			{
-				Handler.Control.ReloadData ();
+				Handler.Control.ReloadData();
+				Handler.AutoSizeColumns();
 			}
 
-			public override void AddItem (object item)
+			static Selector selInsertRowsWithAnimation = new Selector("insertRowsAtIndexes:withAnimation:");
+			static Selector selRemoveRowsWithAnimation = new Selector("removeRowsAtIndexes:withAnimation:");
+
+			public override void AddItem(object item)
 			{
-				Handler.Control.ReloadData ();
+				if (Handler.Control.RespondsToSelector(selInsertRowsWithAnimation))
+				{
+					Handler.Control.BeginUpdates();
+					Handler.Control.InsertRows(new NSIndexSet(Count), NSTableViewAnimation.SlideDown);
+					Handler.Control.EndUpdates();
+				}
+				else
+					Handler.Control.ReloadData();
+
+				Handler.AutoSizeColumns();
 			}
 
-			public override void InsertItem (int index, object item)
+			public override void InsertItem(int index, object item)
 			{
-				Handler.Control.ReloadData ();
+				if (Handler.Control.RespondsToSelector(selInsertRowsWithAnimation))
+				{
+					Handler.Control.BeginUpdates();
+					Handler.Control.InsertRows(new NSIndexSet(index), NSTableViewAnimation.SlideDown);
+					Handler.Control.EndUpdates();
+				}
+				else
+				{
+					var rows = Handler.SelectedRows.Select(r => r >= index ? r + 1 : r).ToArray();
+					Handler.SuppressSelectionChanged++;
+					Handler.Control.ReloadData();
+					Handler.SelectedRows = rows;
+					Handler.SuppressSelectionChanged--;
+				}
+
+				Handler.AutoSizeColumns();
 			}
 
-			public override void RemoveItem (int index)
+			public override void RemoveItem(int index)
 			{
-				Handler.Control.ReloadData ();
+				if (Handler.Control.RespondsToSelector(selRemoveRowsWithAnimation))
+				{
+					Handler.Control.BeginUpdates();
+					Handler.Control.RemoveRows(new NSIndexSet(index), NSTableViewAnimation.SlideUp);
+					Handler.Control.EndUpdates();
+				}
+				else
+				{
+					// need to adjust selected rows to shift them up
+					bool isSelected = false;
+					var rows = Handler.SelectedRows.Where(r =>
+					{
+						if (r != index)
+							return true;
+						isSelected = true;
+						return false;
+					}).Select(r => r > index ? r - 1 : r).ToArray();
+					Handler.SuppressSelectionChanged++;
+					Handler.Control.ReloadData();
+					Handler.SelectedRows = rows;
+					Handler.SuppressSelectionChanged--;
+					// item being removed was selected, so trigger change
+					if (isSelected)
+						Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+				}
+
+				Handler.AutoSizeColumns();
 			}
 
-			public override void RemoveAllItems ()
+			public override void RemoveAllItems()
 			{
-				Handler.Control.ReloadData ();
+				Handler.Control.ReloadData();
+				Handler.AutoSizeColumns();
 			}
 		}
 
-		public IDataStore DataStore {
-			get { return collection != null ? collection.Collection : null; }
-			set {
-				if (collection != null)
-					collection.Unregister ();
-				collection = new CollectionHandler{ Handler = this };
-				collection.Register (value);
-				if (Widget.Loaded)
-					ResizeAllColumns ();
-			}
-		}
-		
-		public override object GetItem (int row)
+		public IEnumerable<object> DataStore
 		{
-			return collection.Collection [row];
+			get { return collection != null ? collection.Collection : null; }
+			set
+			{
+				if (collection != null)
+					collection.Unregister();
+				collection = new CollectionHandler{ Handler = this };
+				collection.Register(value);
+				if (Widget.Loaded)
+					AutoSizeColumns();
+			}
+		}
+
+		public override object GetItem(int row)
+		{
+			return collection.ElementAt(row);
 		}
 	}
 }
