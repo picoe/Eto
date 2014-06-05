@@ -29,8 +29,8 @@
     	<MSBuild Projects="$(BaseDir)\Eto - WinRT.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Any CPU" />
 
 		<!-- build XamMac separately if it hasn't been built on mac -->
-    	<MSBuild Projects="$(BaseDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" Condition="! Exists('$(SourceDir)\Eto.XamMac.dll')" />
-    	<MSBuild Projects="$(BaseDir)\Eto.Mac\Eto.XamMac - Pcl.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration)" Condition="! Exists('$(SourcePclDir)\Eto.XamMac.dll')" />
+    	<MSBuild Projects="$(BaseDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(SourceDir)\Eto.XamMac.dll')" />
+    	<MSBuild Projects="$(BaseDir)\Eto.Mac\Eto.XamMac - Pcl.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(SourcePclDir)\Eto.XamMac.dll')" />
     	
 		<GetAssemblyInformationVersion AssemblyFileName="$(SourceDir)\Eto.dll">
 			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
