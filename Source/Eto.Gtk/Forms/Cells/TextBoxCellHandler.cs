@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
-	public class TextBoxCellHandler : SingleCellHandler<Gtk.CellRendererText, TextBoxCell>, TextBoxCell.IHandler
+	public class TextBoxCellHandler : SingleCellHandler<Gtk.CellRendererText, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
 	{
 		class Renderer : Gtk.CellRendererText
 		{

@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class CheckBoxCellHandler : CellHandler<swf.DataGridViewCheckBoxCell, CheckBoxCell>, CheckBoxCell.IHandler
+	public class CheckBoxCellHandler : CellHandler<swf.DataGridViewCheckBoxCell, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
 	{
 
 		class EtoCell : swf.DataGridViewCheckBoxCell

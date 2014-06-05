@@ -157,17 +157,31 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Editable = true, Sortable = true });
 			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Editable = true, Sortable = true });
 
-#if Windows // Drawable cells - need to implement on other platforms.
-			var drawableCell = new DrawableCell
+			if (Platform.Supports<DrawableCell>())
 			{
-				PaintHandler = args => {
-					var m = args.Item as MyGridItem;
+				var drawableCell = new DrawableCell();
+				drawableCell.Paint += (sender, e) =>
+				{
+					var m = e.Item as MyGridItem;
 					if (m != null)
-						args.Graphics.FillRectangle(Brushes.Cached(m.Color) as SolidBrush, args.CellBounds);
-				}
-			};
-			control.Columns.Add(new GridColumn { HeaderText = "Owner drawn", DataCell = drawableCell });
-#endif
+					{
+						if (e.CellState.HasFlag(DrawableCellStates.Selected))
+							e.Graphics.FillRectangle(Colors.Blue, e.ClipRectangle);
+						else
+							e.Graphics.FillRectangle(Brushes.Cached(m.Color), e.ClipRectangle);
+						var rect = e.ClipRectangle;
+						rect.Inflate(-5, -5);
+						e.Graphics.DrawRectangle(Colors.White, rect);
+						e.Graphics.DrawLine(Colors.White, rect.Left, rect.Bottom, rect.MiddleX, rect.Top);
+						e.Graphics.DrawLine(Colors.White, rect.Right, rect.Bottom, rect.MiddleX, rect.Top);
+					}
+				};
+				control.Columns.Add(new GridColumn
+				{ 
+					HeaderText = "Owner drawn", 
+					DataCell = drawableCell
+				});
+			}
 
 			if (addItems)
 			{

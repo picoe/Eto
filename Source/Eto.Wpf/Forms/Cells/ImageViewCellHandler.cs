@@ -8,7 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ImageViewCellHandler : CellHandler<swc.DataGridColumn, ImageViewCell>, ImageViewCell.IHandler
+	public class ImageViewCellHandler : CellHandler<swc.DataGridColumn, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
 	{
 		public static int ImageSize = 16;
 

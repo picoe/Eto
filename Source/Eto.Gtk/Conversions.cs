@@ -530,5 +530,12 @@ namespace Eto.GtkSharp
 					return MouseButtons.None;
 			}
 		}
+
+		public static DrawableCellStates ToEto(this Gtk.CellRendererState value)
+		{
+			if (value.HasFlag(Gtk.CellRendererState.Selected))
+				return DrawableCellStates.Selected;
+			return DrawableCellStates.None;
+		}
 	}
 }

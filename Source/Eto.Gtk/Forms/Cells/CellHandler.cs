@@ -39,7 +39,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		internal static extern void gtksharp_cellrenderer_invoke_render(IntPtr gtype, IntPtr handle, IntPtr window, IntPtr widget, ref Gdk.Rectangle backgroundArea, ref Gdk.Rectangle cellArea, ref Gdk.Rectangle exposeArea, Gtk.CellRendererState flags);
 	}
 
-	public abstract class SingleCellHandler<TControl, TWidget> : CellHandler<TControl, TWidget>
+	public abstract class SingleCellHandler<TControl, TWidget, TCallback> : CellHandler<TControl, TWidget, TCallback>
 		where TControl: Gtk.CellRenderer
 		where TWidget: Cell
 	{
@@ -70,7 +70,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		protected class SingleCellConnector : WeakConnector
 		{
-			public new SingleCellHandler<TControl, TWidget> Handler { get { return (SingleCellHandler<TControl, TWidget>)base.Handler; } }
+			public new SingleCellHandler<TControl, TWidget, TCallback> Handler { get { return (SingleCellHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
 			{
@@ -79,7 +79,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		}
 	}
 
-	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, Cell.IHandler, ICellHandler
+	public abstract class CellHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Cell.IHandler, ICellHandler
 		where TWidget: Cell
 		where TControl: Gtk.CellRenderer
 	{

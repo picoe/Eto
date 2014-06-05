@@ -6,7 +6,7 @@ using sw = System.Windows;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class CheckBoxCellHandler : CellHandler<swc.DataGridCheckBoxColumn, CheckBoxCell>, CheckBoxCell.IHandler
+	public class CheckBoxCellHandler : CellHandler<swc.DataGridCheckBoxColumn, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
 	{
 		bool? GetValue(object dataItem)
 		{

@@ -5,7 +5,7 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
-	public class ImageTextCellHandler : CellHandler<Gtk.CellRendererText, ImageTextCell>, ImageTextCell.IHandler
+	public class ImageTextCellHandler : CellHandler<Gtk.CellRendererText, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
 	{
 		readonly Gtk.CellRendererPixbuf imageCell;
 		int imageDataIndex;

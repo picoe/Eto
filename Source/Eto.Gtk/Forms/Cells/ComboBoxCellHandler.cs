@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
-	public class ComboBoxCellHandler : SingleCellHandler<Gtk.CellRendererCombo, ComboBoxCell>, ComboBoxCell.IHandler
+	public class ComboBoxCellHandler : SingleCellHandler<Gtk.CellRendererCombo, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
 	{
 		CollectionHandler collection;
 		readonly Gtk.ListStore listStore;

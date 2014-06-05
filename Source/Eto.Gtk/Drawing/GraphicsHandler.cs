@@ -18,11 +18,12 @@ namespace Eto.GtkSharp.Drawing
 		#if GTK2
 		readonly Gdk.Drawable drawable;
 
-		public GraphicsHandler(Gtk.Widget widget, Gdk.Drawable drawable)
+		public GraphicsHandler(Gtk.Widget widget, Gdk.Drawable drawable, bool dispose = true)
 		{
 			this.widget = widget;
 			this.drawable = drawable;
 			this.Control = Gdk.CairoHelper.Create(drawable);
+			disposeControl = dispose;
 		}
 		#else
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Window drawable)

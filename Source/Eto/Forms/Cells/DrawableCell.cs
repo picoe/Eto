@@ -3,35 +3,40 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public enum DrawableCellState
+	/// <summary>
+	/// Cell state for the <see cref="DrawableCell"/>
+	/// </summary>
+	[Flags]
+	public enum DrawableCellStates
 	{
-		Normal,
-		Selected,
-		// TODO: add Hover
+		/// <summary>
+		/// Normal state
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Row is selected
+		/// </summary>
+		Selected = 1,
 	}
 
-	public class DrawableCellPaintArgs
+	public class DrawableCellPaintEventArgs : PaintEventArgs
 	{
-		/// <summary>
-		/// The Graphics to render the cell into
-		/// </summary>
-		public Graphics Graphics { get; set; }
-
-		/// <summary>
-		/// The bounds of the cell to be painted.
-		/// Drawing code should not draw outside these bounds.
-		/// </summary>
-		public RectangleF CellBounds { get; set; }
-
 		/// <summary>
 		/// The state of the cell to be painted.
 		/// </summary>
-		public DrawableCellState CellState { get; set; }
+		public DrawableCellStates CellState { get; private set; }
 
 		/// <summary>
 		/// The model data item
 		/// </summary>
-		public object Item { get; set; }
+		public object Item { get; private set; }
+
+		public DrawableCellPaintEventArgs(Graphics graphics, RectangleF clipRectangle, DrawableCellStates cellState, object item)
+			: base(graphics, clipRectangle)
+		{
+			CellState = cellState;
+			Item = item;
+		}
 	}
 
 	/// <summary>
@@ -40,7 +45,13 @@ namespace Eto.Forms
 	[Handler(typeof(DrawableCell.IHandler))]
 	public class DrawableCell : Cell
 	{
-		public Action<DrawableCellPaintArgs> PaintHandler { get; set; }
+		public event EventHandler<DrawableCellPaintEventArgs> Paint;
+
+		protected virtual void OnPaint(DrawableCellPaintEventArgs e)
+		{
+			if (Paint != null)
+				Paint(this, e);
+		}
 
 		public DrawableCell()
 		{
@@ -50,6 +61,23 @@ namespace Eto.Forms
 		public DrawableCell(Generator generator)
 			: base(generator, typeof(IHandler), true)
 		{
+		}
+
+		static readonly object callback = new Callback();
+
+		protected override object GetCallback() { return callback; }
+
+		public new interface ICallback : Cell.ICallback
+		{
+			void OnPaint(DrawableCell widget, DrawableCellPaintEventArgs e);
+		}
+
+		protected new class Callback : ICallback
+		{
+			public void OnPaint(DrawableCell widget, DrawableCellPaintEventArgs e)
+			{
+				widget.OnPaint(e);
+			}
 		}
 
 		public new interface IHandler : Cell.IHandler

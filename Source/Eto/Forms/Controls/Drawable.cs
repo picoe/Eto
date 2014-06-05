@@ -13,7 +13,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="graphics">Graphics for the paint event</param>
 		/// <param name="clipRectangle">Rectangle of the region being painted</param>
-		public PaintEventArgs(Graphics graphics, Rectangle clipRectangle)
+		public PaintEventArgs(Graphics graphics, RectangleF clipRectangle)
 		{
 			ClipRectangle = clipRectangle;
 			Graphics = graphics;
@@ -45,7 +45,7 @@ namespace Eto.Forms
 		/// This should be used to optimize what is drawn by only drawing content that intersects with this rectangle.
 		/// </remarks>
 		/// <value>The clip rectangle for the current paint operation</value>
-		public Rectangle ClipRectangle { get; private set; }
+		public RectangleF ClipRectangle { get; private set; }
 	}
 
 	/// <summary>

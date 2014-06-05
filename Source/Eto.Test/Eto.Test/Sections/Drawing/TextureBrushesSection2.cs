@@ -42,7 +42,7 @@ namespace Eto.Test.Sections.Drawing
 					if (OffscreenBitmap != null)
 						OffscreenBitmap.Dispose();
 
-					OffscreenBitmap = new Bitmap(e.ClipRectangle.Size, PixelFormat.Format32bppRgba);
+					OffscreenBitmap = new Bitmap(Size.Round(e.ClipRectangle.Size), PixelFormat.Format32bppRgba);
 				}
 				bitmapGraphics = new Graphics(OffscreenBitmap);
 				bitmapGraphics.TranslateTransform(-e.ClipRectangle.Location);

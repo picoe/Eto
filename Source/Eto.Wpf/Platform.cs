@@ -58,6 +58,7 @@ namespace Eto.Wpf
 			p.Add<ImageTextCell.IHandler>(() => new ImageTextCellHandler());
 			p.Add<ImageViewCell.IHandler>(() => new ImageViewCellHandler());
 			p.Add<TextBoxCell.IHandler>(() => new TextBoxCellHandler());
+			p.Add<DrawableCell.IHandler>(() => new DrawableCellHandler());
 			
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());

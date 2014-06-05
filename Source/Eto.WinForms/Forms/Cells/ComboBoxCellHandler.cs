@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class ComboBoxCellHandler : CellHandler<swf.DataGridViewComboBoxCell, ComboBoxCell>, ComboBoxCell.IHandler
+	public class ComboBoxCellHandler : CellHandler<swf.DataGridViewComboBoxCell, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
 	{
 		CollectionHandler collection;
 

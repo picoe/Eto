@@ -7,7 +7,7 @@ using swm = System.Windows.Media;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextBoxCellHandler : CellHandler<swc.DataGridTextColumn, TextBoxCell>, TextBoxCell.IHandler
+	public class TextBoxCellHandler : CellHandler<swc.DataGridTextColumn, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
 	{
 		string GetValue (object dataItem)
 		{

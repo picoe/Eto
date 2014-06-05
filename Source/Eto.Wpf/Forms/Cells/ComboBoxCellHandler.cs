@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ComboBoxCellHandler : CellHandler<swc.DataGridComboBoxColumn, ComboBoxCell>, ComboBoxCell.IHandler
+	public class ComboBoxCellHandler : CellHandler<swc.DataGridComboBoxColumn, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
 	{
 		CollectionHandler collection;
 
