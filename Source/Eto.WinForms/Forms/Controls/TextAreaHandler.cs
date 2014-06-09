@@ -84,12 +84,17 @@ namespace Eto.WinForms
 
 		public void Append(string text, bool scrollToCursor)
 		{
-			Control.AppendText(text);
 			if (scrollToCursor)
 			{
-				Control.SelectionStart = Control.Text.Length;
-				Control.ScrollToCaret();
+				Control.SelectionStart = Control.TextLength;
+				Control.SelectedText = text;
+				if (EtoEnvironment.Platform.IsMono)
+					Control.ScrollToCaret();
+				else
+					Control.FastScrollToCaret(); // use a faster method for large amounts of text
 			}
+			else
+				Control.AppendText(text);
 		}
 
 		public string SelectedText

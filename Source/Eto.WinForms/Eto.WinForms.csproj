@@ -302,6 +302,7 @@
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>
     <Compile Include="Platform.cs" />
+    <Compile Include="Win32TextBox.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
