@@ -302,6 +302,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
+    <Compile Include="Win32TextBox.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

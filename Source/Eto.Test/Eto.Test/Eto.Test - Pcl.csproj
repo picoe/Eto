@@ -130,9 +130,6 @@
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
     <Compile Include="UnitTests\Drawing\ClipTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
-    <Compile Include="UnitTests\Forms\DataStoreViewTests.cs" />
-    <Compile Include="UnitTests\Forms\GridViewSelectionTests.cs" />
-    <Compile Include="UnitTests\Forms\GridViewTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestControlHandler.cs" />
@@ -148,6 +145,14 @@
     <Compile Include="UnitTests\TestUtils.cs" />
     <Compile Include="UnitTests\Handlers\TestPlatform.cs" />
     <Compile Include="Sections\Controls\ColorPickerSection.cs" />
+    <Compile Include="UnitTests\Forms\FilterCollectionTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewFilterTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewSelectableFilterTests.cs" />
+    <Compile Include="UnitTests\Forms\GridViewSelectTests.cs" />
+    <Compile Include="UnitTests\Forms\Layout\TableLayoutTests.cs" />
+    <Compile Include="UnitTests\Forms\Binding\ObjectBindingChangedTests.cs" />
+    <Compile Include="UnitTests\Forms\Binding\ObjectBindingObjectChangedTests.cs" />
+    <Compile Include="UnitTests\Drawing\ColorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
