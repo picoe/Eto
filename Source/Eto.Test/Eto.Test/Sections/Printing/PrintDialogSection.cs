@@ -4,6 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Printing
 {
+	[Section("Printing", "Print Dialog")]
 	public class PrintDialogSection : Panel
 	{
 		PrintSettings settings = new PrintSettings();

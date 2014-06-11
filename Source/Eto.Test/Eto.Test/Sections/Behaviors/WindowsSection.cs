@@ -4,6 +4,7 @@ using System;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Windows")]
 	public class WindowsSection : Panel
 	{
 		Form child;

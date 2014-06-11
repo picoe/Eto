@@ -3,6 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "IndexedBitmap")]
 	public class IndexedBitmapSection : Scrollable
 	{
 		public IndexedBitmapSection()

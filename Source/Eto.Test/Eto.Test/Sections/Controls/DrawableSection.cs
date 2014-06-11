@@ -4,6 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(Drawable))]
 	public class DrawableSection : Scrollable
 	{
 		public DrawableSection()

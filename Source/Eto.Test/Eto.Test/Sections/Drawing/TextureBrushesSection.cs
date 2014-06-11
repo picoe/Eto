@@ -5,6 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "TextureBrush")]
 	class TextureBrushesSection : Panel
 	{
 		public TextureBrushesSection()

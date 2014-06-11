@@ -3,6 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(TextBox))]
 	public class TextBoxSection : Scrollable
 	{
 		public TextBoxSection()

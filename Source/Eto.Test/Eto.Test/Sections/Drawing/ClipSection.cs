@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Clip")]
 	public class ClipSection : Scrollable, INotifyPropertyChanged
 	{
 		bool resetClip;

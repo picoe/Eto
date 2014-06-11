@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(Button))]
 	public class ButtonSection : Scrollable, INotifyPropertyChanged
 	{
 		Bitmap smallImage = new Bitmap(TestIcons.TestImage, 16, 16);

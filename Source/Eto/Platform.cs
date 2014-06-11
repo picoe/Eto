@@ -169,10 +169,15 @@ namespace Eto
 		/// </summary>
 		/// <typeparam name="T">type to test for</typeparam>
 		/// <returns>true if the specified type is supported, false otherwise</returns>
-		public virtual bool Supports<T>()
+		public bool Supports<T>()
 			where T: class
 		{
-			return Find(typeof(T)) != null;
+			return Supports(typeof(T));
+		}
+
+		public virtual bool Supports(Type type)
+		{
+			return Find(type) != null;
 		}
 
 		/// <summary>

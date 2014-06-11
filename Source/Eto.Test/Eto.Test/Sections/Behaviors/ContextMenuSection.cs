@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "ContextMenu")]
 	public class ContextMenuSection : Panel
 	{
 		public ContextMenuSection()

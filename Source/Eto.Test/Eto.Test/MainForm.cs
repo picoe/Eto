@@ -33,7 +33,7 @@ namespace Eto.Test
 		{
 			Title = "Test Application";
 			Style = "main";
-			topNodes = topNodes ?? TestSectionList.TopNodes();
+			topNodes = topNodes ?? TestSections.Get();
 			//SectionList = new SectionListGridView(topNodes);
 			//SectionList = new SectionListTreeView(topNodes);
 			if (Platform.IsAndroid)
@@ -127,13 +127,14 @@ namespace Eto.Test
 
 		Control EventLogSection()
 		{
-			var layout = new DynamicLayout { Size = new Size(100, 120) };
+			var layout = new DynamicLayout { Size = new Size(100, 120), Spacing = Size.Empty };
 			
 			layout.BeginHorizontal();
 			layout.Add(EventLog, true);
 			
-			layout.BeginVertical();
+			layout.BeginVertical(Padding.Empty);
 			layout.Add(ClearButton());
+			layout.Add(MemoryButton());
 			layout.Add(null);
 			layout.EndVertical();
 			layout.EndHorizontal();
@@ -147,6 +148,21 @@ namespace Eto.Test
 				Text = "Clear"
 			};
 			control.Click += (sender, e) => EventLog.Text = string.Empty;
+			return control;
+		}
+
+		Control MemoryButton()
+		{
+			var control = new Button
+			{
+				Text = "Memory"
+			};
+			control.Click += (sender, e) =>
+			{
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				Log.Write(null, "Memory: {0}", GC.GetTotalMemory(true));
+			};
 			return control;
 		}
 

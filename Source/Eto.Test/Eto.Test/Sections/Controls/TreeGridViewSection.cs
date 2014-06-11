@@ -5,6 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(TreeGridView))]
 	public class TreeGridViewSection : Scrollable
 	{
 		int expanded;

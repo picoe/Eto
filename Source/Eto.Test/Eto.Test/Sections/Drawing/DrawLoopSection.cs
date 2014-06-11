@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Draw Loop")]
 	public class DrawLoopSection : Scrollable
 	{
 		readonly Drawable drawable;

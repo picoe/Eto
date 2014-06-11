@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Screen")]
 	public class ScreenSection : Scrollable
 	{
 		readonly RectangleF displayBounds = Screen.DisplayBounds;

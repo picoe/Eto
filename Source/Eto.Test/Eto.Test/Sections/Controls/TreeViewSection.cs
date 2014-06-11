@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(TreeView))]
 	public class TreeViewSection : Scrollable
 	{
 		int expanded;

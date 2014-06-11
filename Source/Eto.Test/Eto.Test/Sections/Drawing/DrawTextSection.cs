@@ -5,6 +5,7 @@ using System;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "DrawText")]
 	public class DrawTextSection : Scrollable
 	{
 		public DrawTextSection()

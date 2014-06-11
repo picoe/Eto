@@ -3,6 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Pixel Offset")]
 	public class PixelOffsetSection : Scrollable
 	{
 		Size canvasSize = new Size(501, 221);

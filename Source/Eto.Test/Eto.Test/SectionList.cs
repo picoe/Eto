@@ -63,31 +63,29 @@ namespace Eto.Test
 			}
 		}
 	}
-
-	public class Section<T> : Section, ISection
-		where T: Control, new()
+	public class SectionItem : Section, ISection
 	{
-		public Func<T> Creator { get; set; }
+		public Func<Control> Creator { get; set; }
 
 		public Control CreateContent()
 		{
-			return Creator != null ? Creator() : new T();
+			return Creator();
 		}
 	}
 
 	/// <summary>
 	/// Tests for dialogs and forms use this.
 	/// </summary>
-	public class WindowSectionMethod : Section, ISection
+	public class WindowSection : Section, ISection
 	{
 		Func<Window> Func { get; set; }
 
-		public WindowSectionMethod(string text = null)
+		public WindowSection(string text = null)
 		{
 			Text = text;
 		}
 
-		public WindowSectionMethod(string text, Func<Window> f)
+		public WindowSection(string text, Func<Window> f)
 		{
 			Func = f;
 			Text = text;

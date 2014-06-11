@@ -7,6 +7,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Static methods to get the current mouse state
 	/// </summary>
+	[Handler(typeof(IHandler))]
 	public static class Mouse
 	{
 		/// <summary>

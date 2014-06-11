@@ -10,6 +10,7 @@ namespace Eto.Test.Sections.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Section("Drawing", "Brush")]
 	public class BrushSection : Scrollable
 	{
 		readonly Image image = TestIcons.TestImage;

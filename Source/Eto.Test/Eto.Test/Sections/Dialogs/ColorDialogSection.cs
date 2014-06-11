@@ -3,6 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Dialogs
 {
+	[Section("Dialogs", typeof(ColorDialog))]
 	public class ColorDialogSection : Panel
 	{
 		public ColorDialogSection()

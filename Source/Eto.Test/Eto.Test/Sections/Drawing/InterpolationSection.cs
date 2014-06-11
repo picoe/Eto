@@ -4,6 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "ImageInterpolation")]
 	public class InterpolationSection : Scrollable
 	{
 		public InterpolationSection()

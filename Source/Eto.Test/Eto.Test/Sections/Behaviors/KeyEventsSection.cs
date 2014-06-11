@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Key Events")]
 	public class KeyEventsSection : AllControlsBase
 	{
 		CheckBox handleEvents;

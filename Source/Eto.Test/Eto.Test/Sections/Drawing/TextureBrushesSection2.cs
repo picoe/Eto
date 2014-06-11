@@ -76,6 +76,7 @@ namespace Eto.Test.Sections.Drawing
 		}
 	}
 
+	[Section("Drawing", "TextureBrush 2")]
 	class TextureBrushesSection2 : Panel
 	{
 		readonly Bitmap image;

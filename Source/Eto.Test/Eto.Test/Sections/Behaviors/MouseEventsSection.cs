@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Mouse Events")]
 	public class MouseEventsSection : AllControlsBase
 	{
 		CheckBox handleEvents;

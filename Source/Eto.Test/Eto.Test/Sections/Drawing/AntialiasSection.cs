@@ -3,6 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Antialias")]
 	public class AntialiasSection : Panel
 	{
 		public AntialiasSection()

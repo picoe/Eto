@@ -3,6 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Dialogs
 {
+	[Section("Dialogs", typeof(Dialog), "Custom Dialog")]
 	public class CustomDialogSection : Scrollable
 	{
 		public bool UseAsync { get; set; }

@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(RadioButtonList))]
 	public class RadioButtonListSection : Scrollable
 	{
 		public RadioButtonListSection()

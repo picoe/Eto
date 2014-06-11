@@ -5,6 +5,7 @@ using System;
 
 namespace Eto.Test.Sections.Dialogs
 {
+	[Section("Dialogs", typeof(SelectFolderDialog))]
 	public class SelectFolderSection : Panel
 	{
 		public SelectFolderSection()

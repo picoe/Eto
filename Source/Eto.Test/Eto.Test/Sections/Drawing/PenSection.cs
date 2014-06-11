@@ -9,6 +9,7 @@ namespace Eto.Test.Sections.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Section("Drawing", "Pen")]
 	public class PenSection : Scrollable
 	{
 		Drawable drawable;

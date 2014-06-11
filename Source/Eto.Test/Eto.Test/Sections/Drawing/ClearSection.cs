@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Clear")]
 	public class ClearSection : Scrollable, INotifyPropertyChanged
 	{
 		bool useClearColor;

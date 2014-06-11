@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(NumericUpDown))]
 	public class NumericUpDownSection : Panel
 	{
 		public NumericUpDownSection()

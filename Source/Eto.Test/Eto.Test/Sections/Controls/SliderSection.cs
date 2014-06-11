@@ -3,6 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(Slider))]
 	public class SliderSection : Panel
 	{
 		public SliderSection()

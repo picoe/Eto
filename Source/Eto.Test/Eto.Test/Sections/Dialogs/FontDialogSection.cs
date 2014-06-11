@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Dialogs
 {
+	[Section("Dialogs", typeof(FontDialog))]
 	public class FontDialogSection : Scrollable
 	{
 		Font selectedFont;

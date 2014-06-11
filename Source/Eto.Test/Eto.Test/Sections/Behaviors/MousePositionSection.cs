@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Mouse Position", Requires = typeof(Mouse))]
 	public class MousePositionSection : Panel
 	{
 		Label mousePositionLabel;

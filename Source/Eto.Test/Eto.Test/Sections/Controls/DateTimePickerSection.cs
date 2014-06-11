@@ -4,6 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(DateTimePicker))]
 	public class DateTimePickerSection : Panel
 	{
 		public DateTimePickerSection()

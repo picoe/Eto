@@ -4,6 +4,7 @@ using Eto.Test.Sections.Behaviors;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Control Fonts")]
 	public class FontsSection : AllControlsBase
 	{
 		protected override void LogEvents (Control control)

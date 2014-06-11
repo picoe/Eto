@@ -4,6 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Dialogs
 {
+	[Section("Dialogs", typeof(MessageBox))]
 	public class MessageBoxSection : Scrollable
 	{
 		public string MessageBoxText { get; set; }

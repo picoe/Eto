@@ -3,6 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
+	[Section("TableLayout", "Spacing")]
 	public class SpacingSection : Panel
 	{
 		Size SquareSize = new Size(30, 40);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", "Kitchen Sink")]
 	public class KitchenSinkSection : Panel
 	{
 		Bitmap bitmap1 = TestIcons.TestImage;

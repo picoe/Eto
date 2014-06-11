@@ -23,6 +23,7 @@ namespace Eto.Test.Sections.Controls
 		}
 	}
 
+	[Section("Controls", typeof(GridView))]
 	public class GridViewSection : Panel
 	{
 		static readonly Image image1 = TestIcons.TestImage;

@@ -16,6 +16,7 @@ namespace Eto.Test.Sections.Layouts.PixelLayoutSection
 		Vertical = Top | Bottom
 	}
 
+	[Section("PixelLayout", "Anchor")]
 	class AnchorSection : Panel
 	{
 		Anchor anchor;

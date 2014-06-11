@@ -1,6 +1,5 @@
 using Eto.Forms;
 using Eto.Drawing;
-using ImageView = Eto.Test.Sections.Drawing.DrawableImageView;
 using System;
 
 namespace Eto.Test.Sections.Drawing
@@ -32,6 +31,7 @@ namespace Eto.Test.Sections.Drawing
 		}
 	}
 
+	[Section("Drawing", "Bitmap")]
 	public class BitmapSection : Scrollable
 	{
 		public BitmapSection()

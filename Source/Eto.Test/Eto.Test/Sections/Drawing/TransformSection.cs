@@ -4,6 +4,7 @@ using System;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Transforms")]
 	public class TransformSection : Scrollable
 	{
 		Image image;

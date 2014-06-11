@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(ListBox))]
 	public class ListBoxSection : Scrollable
 	{
 		public ListBoxSection()

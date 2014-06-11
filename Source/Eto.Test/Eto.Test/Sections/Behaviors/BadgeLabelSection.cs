@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Badge Label")]
 	public class BadgeLabelSection : Scrollable
 	{
 		public BadgeLabelSection()

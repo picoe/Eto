@@ -5,6 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "GraphicsPath")]
 	public class GraphicsPathSection : Scrollable
 	{
 		public bool StartFigures { get; set; }

@@ -90,6 +90,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Methods to show a standard message box with display text, buttons, and typically an icon indicating the type
 	/// </summary>
+	[Handler(typeof(IHandler))]
 	public static class MessageBox
 	{
 		/// <summary>

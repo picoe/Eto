@@ -3,6 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(ImageView))]
 	public class ImageViewSection : Panel
 	{
 		public ImageViewSection()

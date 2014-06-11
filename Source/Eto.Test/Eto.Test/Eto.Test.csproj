@@ -74,7 +74,6 @@
     <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
     <Compile Include="Sections\UnitTestSection.cs" />
-    <Compile Include="Sections\FormsSection\ImageViewFormSection.cs" />
     <Compile Include="Sections\Layouts\PixelLayoutSection\AnchorSection.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\DockLayoutExpansion.cs" />
@@ -127,7 +126,6 @@
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
     <Compile Include="TestIcons.cs" />
-    <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
     <Compile Include="Sections\Behaviors\ScreenSection.cs" />
@@ -161,6 +159,7 @@
     <Compile Include="Sections\Controls\ColorPickerSection.cs" />
     <Compile Include="UnitTests\Forms\FilterCollectionTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewSelectTests.cs" />
+    <Compile Include="TestSections.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
