@@ -7,6 +7,7 @@ using MonoTouch.Foundation;
 using Eto.Drawing;
 using Eto.iOS.Drawing;
 using NSCell = MonoTouch.UIKit.UITableViewCell;
+using System.Collections.Generic;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -14,7 +15,7 @@ namespace Eto.iOS.Forms.Controls
 	{
 		Collection store;
 
-		class Collection : DataStoreChangedHandler<object, IDataStore>
+		class Collection : EnumerableChangedHandler<object>
 		{
 			public GridViewHandler Handler { get; set; }
 
@@ -61,7 +62,7 @@ namespace Eto.iOS.Forms.Controls
 
 			public override int RowsInSection (UITableView tableView, int section)
 			{
-				var result = Handler.store.Collection != null ? Handler.store.Collection.Count : 0;
+				var result = Handler.store.Count;
 				return result;
 			}
 
@@ -107,7 +108,7 @@ namespace Eto.iOS.Forms.Controls
 
 		public object GetItem(NSIndexPath indexPath)
 		{
-			return store.Collection[indexPath.Row];
+			return store.ElementAt(indexPath.Row);
 		}
 
 		protected override void Initialize ()
@@ -117,11 +118,22 @@ namespace Eto.iOS.Forms.Controls
 			Control.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 		}
 
-		public IDataStore DataStore {
+		public IEnumerable<object> DataStore {
 			get { return store.Collection; }
 			set {
 				store.Register(value);
 				ReloadData();
+			}
+		}
+
+		public IEnumerable<object> SelectedItems
+		{
+			get
+			{
+				foreach (var row in SelectedRows)
+				{
+					yield return store.ElementAt(row);
+				}
 			}
 		}
 

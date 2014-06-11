@@ -85,6 +85,10 @@ namespace Eto.iOS.Forms.Controls
 					foreach (var s in i)
 						yield return s.Row;
 			}
+			set
+			{
+
+			}
 		}
 	}
 
