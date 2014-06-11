@@ -343,7 +343,7 @@ namespace Eto
 				var coll = Collection as ICollection;
 				if (coll != null)
 					return coll.Count;
-				return Collection.Count();
+				return Collection != null ? Collection.Count() : 0;
 			}
 		}
 
