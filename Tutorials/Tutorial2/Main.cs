@@ -16,7 +16,7 @@ namespace Tutorial2
 			Shortcut = Application.Instance.CommonModifier | Keys.M;  // control+M or cmd+M
 		}
 
-		public override void OnExecuted(EventArgs e)
+		protected override void OnExecuted(EventArgs e)
 		{
 			base.OnExecuted(e);
 
