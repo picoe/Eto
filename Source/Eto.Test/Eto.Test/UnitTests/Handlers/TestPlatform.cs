@@ -6,6 +6,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.Test.UnitTests.Handlers.Controls;
 using Eto.Test.UnitTests.Handlers.Layout;
+using Eto.Test.UnitTests.Handlers.Cells;
 
 namespace Eto.Test.UnitTests.Handlers
 {
@@ -29,7 +30,12 @@ namespace Eto.Test.UnitTests.Handlers
 			p.Add<Graphics.IHandler>(() => new TestGraphicsHandler()); 
 			p.Add<Matrix.IHandler>(() => new TestMatrixHandler());
 
+			// Cells
+			p.Add<TextBoxCell.IHandler>(() => new TestTextBoxCellHandler());
+
+			// Controls
 			p.Add<GridView.IHandler>(() => new TestGridViewHandler());
+			p.Add<GridColumn.IHandler>(() => new TestGridColumnHandler());
 			p.Add<Label.IHandler>(() => new TestLabelHandler());
 			p.Add<TextBox.IHandler>(() => new TestTextBoxHandler());
 

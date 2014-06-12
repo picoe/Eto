@@ -3,7 +3,8 @@ using Eto.Forms;
 
 namespace Eto.Test.UnitTests.Handlers.Controls
 {
-	public class TestControlHandler : Control.IHandler
+
+	public class TestControlHandler : TestWidgetHandler, Control.IHandler
 	{
 		public void Invalidate()
 		{
@@ -159,24 +160,6 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			{
 				throw new NotImplementedException();
 			}
-		}
-
-		public virtual void Initialize()
-		{
-		}
-
-		public void HandleEvent(string id, bool defaultEvent = false)
-		{
-		}
-
-		public string ID { get; set; }
-
-		public Widget Widget { get; set; }
-
-		public Platform Platform { get; set; }
-
-		public TestControlHandler()
-		{
 		}
 	}
 }

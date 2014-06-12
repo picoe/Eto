@@ -7,7 +7,6 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class ColorTests
 	{
-		[TestCase((int)0xAABBCC)]
 		[TestCase(unchecked((int)0xFFAABBCC))]
 		[TestCase(unchecked((int)0xFF000000))]
 		[TestCase(unchecked((int)0xFFFFFFFF))]
@@ -23,7 +22,6 @@ namespace Eto.Test.UnitTests.Drawing
 			Assert.AreEqual(argb, color.ToArgb(), "Color {0} does not roundtrip", argb);
 		}
 
-		[TestCase((int)0xAABBCC)]
 		[TestCase(unchecked((int)0xFFAABBCC))]
 		[TestCase(unchecked((int)0xFF000000))]
 		[TestCase(unchecked((int)0xFFFFFFFF))]

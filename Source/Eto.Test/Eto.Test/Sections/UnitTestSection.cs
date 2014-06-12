@@ -10,6 +10,7 @@ using NUnit.Framework.Api;
 using System.Threading.Tasks;
 using Eto.Drawing;
 using System.Linq;
+using Eto.Test.UnitTests.Handlers;
 
 namespace Eto.Test.Sections
 {
@@ -85,11 +86,16 @@ namespace Eto.Test.Sections
 	{
 		TreeView tree;
 		Button startButton;
+		CheckBox useTestPlatform;
 
 		public UnitTestSection()
 		{
-			startButton = new Button { Text = "Start Tests", Size = new Size(200, 100) };
-			var buttons = new TableLayout(new TableRow(null, startButton, null));
+			startButton = new Button { Text = "Start Tests", Size = new Size(200, 80) };
+			useTestPlatform = new CheckBox { Text = "Use Test Platform" };
+			var buttons = new TableLayout(
+				              TableLayout.AutoSized(startButton, centered: true),
+				              TableLayout.AutoSized(useTestPlatform, centered: true)
+			              );
 
 			if (Platform.Supports<TreeView>())
 			{
@@ -121,6 +127,7 @@ namespace Eto.Test.Sections
 				return;
 			startButton.Enabled = false;
 			Log.Write(null, "Starting tests...");
+			var testPlatform = useTestPlatform.Checked == true ? new TestPlatform() : Platform;
 			try
 			{
 				await Task.Run(() =>
@@ -136,8 +143,12 @@ namespace Eto.Test.Sections
 								Log.Write(null, "Failed to load test assembly");
 								return;
 							}
-							var listener = new TestListener();
-							var result = runner.Run(listener, filter ?? TestFilter.Empty);
+							ITestResult result;
+							using (testPlatform.Context)
+							{
+								var listener = new TestListener();
+								result = runner.Run(listener, filter ?? TestFilter.Empty);
+							}
 							var writer = new StringWriter();
 							writer.WriteLine(result.FailCount > 0 ? "FAILED" : "PASSED");
 							writer.WriteLine("\tPass: {0}, Fail: {1}, Skipped: {2}, Inconclusive: {3}", result.PassCount, result.FailCount, result.SkipCount, result.InconclusiveCount);

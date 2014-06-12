@@ -132,7 +132,7 @@ namespace Eto.Test
 			layout.BeginHorizontal();
 			layout.Add(EventLog, true);
 			
-			layout.BeginVertical(Padding.Empty);
+			layout.BeginVertical(new Padding(5, 0));
 			layout.Add(ClearButton());
 			layout.Add(MemoryButton());
 			layout.Add(null);

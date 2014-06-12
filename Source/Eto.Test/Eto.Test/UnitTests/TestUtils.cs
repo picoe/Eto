@@ -100,6 +100,8 @@ namespace Eto.Test.UnitTests
 			Initialize();
 			var ev = new ManualResetEvent(false);
 			var application = Application.Instance;
+			if (application.Platform != Platform.Instance)
+				application = null;
 			Exception exception = null;
 			Action finished = () => ev.Set();
 			Action run = () =>
@@ -130,14 +132,8 @@ namespace Eto.Test.UnitTests
 		{
 			Run((app, finished) =>
 			{
-				try
-				{
-					test();
-				}
-				finally
-				{
-					finished();
-				}
+				test();
+				finished();
 			}, timeout);
 		}
 

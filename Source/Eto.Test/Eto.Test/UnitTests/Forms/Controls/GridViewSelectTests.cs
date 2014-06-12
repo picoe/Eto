@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using Eto.Drawing;
 using System.Threading.Tasks;
 
-namespace Eto.Test.UnitTests.Forms
+namespace Eto.Test.UnitTests.Forms.Controls
 {
 	/// <summary>
 	/// Unit tests for GridView's select functionality

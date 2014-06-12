@@ -19,7 +19,9 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 	{
 		CollectionHandler collection;
 
-		GridView GridView { get { return Widget as GridView; } }
+		new GridView.ICallback Callback { get { return base.Callback as GridView.ICallback; } }
+
+		new GridView Widget { get { return base.Widget as GridView; } }
 
 		// Boilerplate
 		public ContextMenu ContextMenu { get; set; }
@@ -78,25 +80,40 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 
 		public void SelectRow(int row)
 		{
-			selectedRows.Add(row);
+			if (!selectedRows.Contains(row))
+			{
+				selectedRows.Add(row);
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			}
 		}
 
 		public void UnselectRow(int row)
 		{
 			if (selectedRows.Contains(row))
+			{
 				selectedRows.Remove(row);
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			}
 		}
 
 		public void SelectAll()
 		{
-			selectedRows.Clear();
-			for (var i = 0; i < RowCount; ++i)
-				selectedRows.Add(i);
+			if (collection != null && selectedRows.Count != collection.Count)
+			{
+				selectedRows.Clear();
+				for (var i = 0; i < RowCount; ++i)
+					selectedRows.Add(i);
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			}
 		}
 
 		public void UnselectAll()
 		{
-			selectedRows.Clear();
+			if (selectedRows.Count > 0)
+			{
+				selectedRows.Clear();
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			}
 		}
 
 		void SetRowCount()
@@ -107,6 +124,26 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 		void IncrementRowCountBy(int increment)
 		{
 			RowCount += increment;
+		}
+
+		void RemoveSelected(int index, int count)
+		{
+			var selectedCount = selectedRows.Count;
+			var selected = (IEnumerable<int>)selectedRows;
+			int last = index + count - 1;
+			selected = selected.Where(r => r < index || r > last);
+			selected = selected.Select(r => r > last ? r - count : r);
+			selectedRows = new HashSet<int>(selected);
+			if (selectedRows.Count != selectedCount)
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+		}
+
+		void InsertSelected(int index, int count)
+		{
+			var selected = (IEnumerable<int>)selectedRows;
+			int last = index + count - 1;
+			selected = selected.Select(r => r >= last ? r + count : r);
+			selectedRows = new HashSet<int>(selected);
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<object>
@@ -126,31 +163,31 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			public override void InsertItem(int index, object item)
 			{
 				Handler.IncrementRowCountBy(1);
+				Handler.InsertSelected(index, 1);
 			}
 
 			public override void InsertRange(int index, IEnumerable<object> items)
 			{
 				Handler.SetRowCount();
+				Handler.InsertSelected(index, items.Count());
 			}
 
 			public override void RemoveItem(int index)
 			{
+				Handler.RemoveSelected(index, 1);
 				Handler.IncrementRowCountBy(-1);
 			}
 
 			public override void RemoveRange(int index, int count)
 			{
-				Handler.SetRowCount();
-			}
-
-			public override void RemoveRange(IEnumerable<object> items)
-			{
+				Handler.RemoveSelected(index, count);
 				Handler.SetRowCount();
 			}
 
 			public override void RemoveAllItems()
 			{
 				Handler.SetRowCount();
+				Handler.selectedRows.Clear();
 			}
 		}
 	}

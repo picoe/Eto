@@ -7,22 +7,23 @@ using System.Collections.ObjectModel;
 using Eto.Drawing;
 using System.Threading.Tasks;
 
-namespace Eto.Test.UnitTests.Forms
+namespace Eto.Test.UnitTests.Forms.Controls
 {
 	/// <summary>
-	/// Unit tests for a GridView using a <see cref="FilterCollection"/>
+	/// Unit tests for a GridView using a <see cref="SelectableFilterCollection{T}"/>
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TestFixture]
-	public class GridViewFilterTests
+	public class GridViewSelectableFilterTests
 	{
 		GridView grid;
 		ObservableCollection<DataItem> model;
-		FilterCollection<DataItem> filtered;
+		SelectableFilterCollection<DataItem> filtered;
 
 		// incremented when grid.SelectionChanged fires
-		int selectionChangedCount;
+		int modelSelectionChangedCount;
+		int viewSelectionChangedCount;
 
 		[SetUp]
 		public void Setup()
@@ -35,11 +36,11 @@ namespace Eto.Test.UnitTests.Forms
 				model = GridViewUtils.CreateModel();
 
 				// create our filtered collection
-				filtered = new FilterCollection<DataItem>(model);
-				filtered.Change = grid.SelectionPreserver;
+				filtered = new SelectableFilterCollection<DataItem>(grid, model);
+				filtered.SelectionChanged += (s, e) => modelSelectionChangedCount++;
 				grid.DataStore = filtered;
-				grid.SelectionChanged += (s, e) => selectionChangedCount++;
-				selectionChangedCount = 0;
+				grid.SelectionChanged += (s, e) => viewSelectionChangedCount++;
+				modelSelectionChangedCount = viewSelectionChangedCount = 0;
 			});
 		}
 
@@ -69,11 +70,11 @@ namespace Eto.Test.UnitTests.Forms
 					grid.SelectRow(i);
 
 				Assert.AreEqual(initialCount / 2, grid.SelectedRows.Count(), "Number of selected items should be half of the items");
-
-				Assert.AreEqual(initialCount / 2, selectionChangedCount, "SelectionChanged event should fire for each item selected");
+				Assert.AreEqual(initialCount / 2, viewSelectionChangedCount, "View SelectionChanged event should fire for each item selected");
+				Assert.AreEqual(initialCount / 2, modelSelectionChangedCount, "Model SelectionChanged event should fire for each item selected");
 
 				// reset to test events fired when removing
-				selectionChangedCount = 0;
+				modelSelectionChangedCount = viewSelectionChangedCount = 0;
 
 				// Delete alternate items
 				for (var i = initialCount - 1; i >= 0; i -= 2)
@@ -85,7 +86,8 @@ namespace Eto.Test.UnitTests.Forms
 					expectedSelectedItemIds.Add(i);
 				Assert.IsTrue(expectedSelectedItemIds.SequenceEqual(grid.SelectedItems.OfType<DataItem>().Select(x => x.Id).OrderBy(r => r)), "Items don't match");
 
-				Assert.AreEqual(initialCount / 4, selectionChangedCount, "SelectionChanged event should fire for each selected item removed");
+				Assert.AreEqual(initialCount / 4, viewSelectionChangedCount, "View SelectionChanged event should fire for each selected item removed");
+				Assert.AreEqual(initialCount / 4, modelSelectionChangedCount, "Model SelectionChanged event should fire for each selected item removed");
 			});
 		}
 
@@ -101,20 +103,20 @@ namespace Eto.Test.UnitTests.Forms
 
 				Assert.AreEqual(1, grid.SelectedRows.Count(), "The row was not selected");
 				Assert.AreEqual(selectedItem, grid.SelectedItem, "The correct item was not selected");
-				Assert.AreEqual(1, selectionChangedCount, "SelectionChanged event should fire once for the selected row");
+				Assert.AreEqual(1, viewSelectionChangedCount, "SelectionChanged event should fire once for the selected row");
 
-				selectionChangedCount = 0; // reset the count
+				viewSelectionChangedCount = 0; // reset the count
 				filtered.Sort = GridViewUtils.SortItemsDescending;
 
 				Assert.AreEqual(1, grid.SelectedRows.Count(), "There should still only be a single selected row");
 				Assert.AreEqual(selectedItem, grid.SelectedItem, "The selected item should remain the same");
 
-				Assert.AreEqual(0, selectionChangedCount, "SelectionChanged event should not fire when changing the Sort");
+				Assert.AreEqual(0, viewSelectionChangedCount, "SelectionChanged event should not fire when changing the Sort");
 			});
 		}
 
 		[Test]
-		public void FilterItemsShouldUnselectFilteredItems()
+		public void FilterItemsShouldNotChangeSelection()
 		{
 			TestUtils.Invoke(() =>
 			{
@@ -124,16 +126,22 @@ namespace Eto.Test.UnitTests.Forms
 				for (var i = 0; i < model.Count / 2; i++)
 					grid.SelectRow(i);
 
-				selectionChangedCount = 0; // reset the count
+				viewSelectionChangedCount = modelSelectionChangedCount = 0; // reset the counts
 				filtered.Filter = GridViewUtils.KeepOddItemsFilter;
 
 				Assert.AreEqual(model.Count / 4, grid.SelectedRows.Count(), "A quarter of the items should be selected");
 
+				// view's selected items should change
 				var selectedItems = grid.SelectedItems.OfType<DataItem>().OrderBy(r => r.Id).ToList();
 				var expectedItems = model.Where((item, row) => row < model.Count / 2 && (row % 2) == 1).ToList();
 				Assert.IsTrue(expectedItems.SequenceEqual(selectedItems), "Selected items should only contain items left after filtering");
+				Assert.AreEqual(1, viewSelectionChangedCount, "View SelectionChanged event should fire when changing the Filter which removes items");
 
-				Assert.AreEqual(1, selectionChangedCount, "SelectionChanged event should fire when changing the Filter which removes items");
+				// model's selected items should not have changed
+				selectedItems = filtered.SelectedItems.OfType<DataItem>().OrderBy(r => r.Id).ToList();
+				expectedItems = model.Where((item, row) => row < model.Count / 2).ToList();
+				Assert.IsTrue(expectedItems.SequenceEqual(selectedItems), "Model's selected items should not have changed");
+				Assert.AreEqual(0, modelSelectionChangedCount, "Model SelectionChanged event should not fire when changing filter");
 			});
 		}
 	}
