@@ -109,7 +109,8 @@ namespace Eto.GtkSharp
 			Control.Hide ();
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
-			if (response == DialogResult.Ok) System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
+			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))
+				System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
 			
 			return response;
 		}

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Dialogs
 {
-	[Section("Dialogs", typeof(FileDialog))]
+	[Section("Dialogs", "File Dialog")]
 	public class FileDialogSection : Panel
 	{
 		public FileDialogSection()
