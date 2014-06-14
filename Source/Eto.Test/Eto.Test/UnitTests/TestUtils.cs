@@ -100,7 +100,7 @@ namespace Eto.Test.UnitTests
 			Initialize();
 			var ev = new ManualResetEvent(false);
 			var application = Application.Instance;
-			if (application.Platform != Platform.Instance)
+			if (application != null && application.Platform != Platform.Instance)
 				application = null;
 			Exception exception = null;
 			Action finished = () => ev.Set();
