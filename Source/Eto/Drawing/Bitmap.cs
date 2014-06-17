@@ -29,7 +29,7 @@ namespace Eto.Drawing
 		/// </summary>
 		Format32bppRgba
 	}
-	
+
 	/// <summary>
 	/// Format of the image to use when saving, loading, etc.
 	/// </summary>
@@ -85,7 +85,7 @@ namespace Eto.Drawing
 		#if PCL
 		public static Bitmap FromResource (string resourceName, Assembly assembly)
 		#else
-		public static Bitmap FromResource (string resourceName, Assembly assembly = null)
+		public static Bitmap FromResource(string resourceName, Assembly assembly = null)
 		#endif
 		{
 
@@ -94,13 +94,14 @@ namespace Eto.Drawing
 #if PCL
 				throw new ArgumentNullException("assembly");
 #else
-				assembly = Assembly.GetCallingAssembly ();
+				assembly = Assembly.GetCallingAssembly();
 #endif
 			}
-			using (var stream = assembly.GetManifestResourceStream (resourceName)) {
+			using (var stream = assembly.GetManifestResourceStream(resourceName))
+			{
 				if (stream == null)
-					throw new ResourceNotFoundException (assembly, resourceName);
-				return new Bitmap (stream);
+					throw new ResourceNotFoundException(assembly, resourceName);
+				return new Bitmap(stream);
 			}
 		}
 
@@ -110,7 +111,7 @@ namespace Eto.Drawing
 		/// <returns>The bitmap instance.</returns>
 		/// <param name="resourceName">Full name of the resource in the type's assembly.</param>
 		/// <param name="type">Type of the assembly to get the resource.</param>
-		public static Bitmap FromResource (string resourceName, Type type)
+		public static Bitmap FromResource(string resourceName, Type type)
 		{
 			#if PCL
 			return FromResource(resourceName, type.GetTypeInfo().Assembly);
@@ -125,7 +126,7 @@ namespace Eto.Drawing
 		/// <param name="fileName">File to load as a bitmap</param>
 		public Bitmap(string fileName)
 		{
-			Handler.Create (fileName);
+			Handler.Create(fileName);
 			Initialize();
 		}
 
@@ -135,7 +136,7 @@ namespace Eto.Drawing
 		/// <param name="stream">Stream to load from the bitmap</param>
 		public Bitmap(Stream stream)
 		{
-			Handler.Create (stream);
+			Handler.Create(stream);
 			Initialize();
 		}
 
@@ -157,7 +158,7 @@ namespace Eto.Drawing
 		/// <param name="pixelFormat">Format of each pixel</param>
 		public Bitmap(int width, int height, PixelFormat pixelFormat)
 		{
-			Handler.Create (width, height, pixelFormat);
+			Handler.Create(width, height, pixelFormat);
 			Initialize();
 		}
 
@@ -169,10 +170,10 @@ namespace Eto.Drawing
 		/// <param name="graphics">Graphics context the bitmap is intended to be drawn on</param>
 		public Bitmap(int width, int height, Graphics graphics)
 		{
-			Handler.Create (width, height, graphics);
+			Handler.Create(width, height, graphics);
 			Initialize();
 		}
-		
+
 		/// <summary>
 		/// Create a new scaled bitmap with the specified <paramref name="width"/> and <paramref name="height"/>
 		/// </summary>
@@ -182,10 +183,10 @@ namespace Eto.Drawing
 		/// <param name="interpolation">Interpolation quality</param>
 		public Bitmap(Image image, int? width = null, int? height = null, ImageInterpolation interpolation = ImageInterpolation.Default)
 		{
-			Handler.Create (image, width ?? image.Size.Width, height ?? image.Size.Height, interpolation);
+			Handler.Create(image, width ?? image.Size.Width, height ?? image.Size.Height, interpolation);
 			Initialize();
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
 		/// </summary>
@@ -202,7 +203,7 @@ namespace Eto.Drawing
 		/// This is intended to be used by platform specific code to return bitmap instances with a particular handler
 		/// </remarks>
 		/// <param name="handler">Platform handler to use for this instance</param>
-		public Bitmap (IHandler handler)
+		public Bitmap(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -223,9 +224,9 @@ namespace Eto.Drawing
 		/// </code>
 		/// </remarks>
 		/// <returns>A BitmapData object that carries a pointer and functions for manipulating the data directly</returns>
-		public BitmapData Lock ()
+		public BitmapData Lock()
 		{
-			return Handler.Lock ();
+			return Handler.Lock();
 		}
 
 		#if !PCL
@@ -234,10 +235,11 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="fileName">File to save the bitmap to</param>
 		/// <param name="format">Format to save as</param>
-		public void Save (string fileName, ImageFormat format)
+		public void Save(string fileName, ImageFormat format)
 		{
-			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
-				Save (stream, format);
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
 			}
 		}
 		#endif
@@ -247,9 +249,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="stream">Stream to save the bitmap to</param>
 		/// <param name="format">Format to save as</param>
-		public void Save (Stream stream, ImageFormat format)
+		public void Save(Stream stream, ImageFormat format)
 		{
-			Handler.Save (stream, format);	
+			Handler.Save(stream, format);	
 		}
 
 		/// <summary>
@@ -260,35 +262,86 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="imageFormat"></param>
 		/// <returns></returns>
-		public byte[] ToByteArray (ImageFormat imageFormat)
+		public byte[] ToByteArray(ImageFormat imageFormat)
 		{
-			using (var memoryStream = new MemoryStream ()) {
+			using (var memoryStream = new MemoryStream())
+			{
 				Save(memoryStream, imageFormat);
-				return memoryStream.ToArray ();
+				return memoryStream.ToArray();
 			}
 		}
 
 		/// <summary>
 		/// Creates a clone of the bitmap
 		/// </summary>
-		public Bitmap Clone (Rectangle? rectangle = null)
+		public Bitmap Clone(Rectangle? rectangle = null)
 		{
-			return Handler.Clone (rectangle);
+			return Handler.Clone(rectangle);
 		}
 
 		/// <summary>
-		/// Gets the color of the pixel at the specified coordinates
+		/// Gets the color of the pixel at the specified <paramref name="position"/>
 		/// </summary>
 		/// <remarks>
 		/// Note that this method can be extremely slow to go through each pixel of a bitmap.
-		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly.
+		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
+		/// then optionally use <see cref="BitmapData.GetPixel"/> to get each pixel value.
+		/// </remarks>
+		/// <returns>The color of the pixel.</returns>
+		/// <param name="position">Position to get the color of the pixel.</param>
+		public Color GetPixel(Point position)
+		{
+			return GetPixel(position.X, position.Y);
+		}
+
+		/// <summary>
+		/// Gets the color of the pixel at the specified coordinates.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method can be extremely slow to go through each pixel of a bitmap.
+		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
+		/// then optionally use <see cref="BitmapData.GetPixel"/> to get each pixel value.
 		/// </remarks>
 		/// <returns>The color of the pixel at the specified coordinates</returns>
 		/// <param name="x">The x coordinate</param>
 		/// <param name="y">The y coordinate</param>
-		public Color GetPixel (int x, int y)
+		public Color GetPixel(int x, int y)
 		{
-			return Handler.GetPixel (x, y);
+			return Handler.GetPixel(x, y);
+		}
+
+		/// <summary>
+		/// Sets the pixel color at the specified <paramref name="position"/>.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method can be extremely slow to set each pixel of a bitmap.
+		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
+		/// then optionally use <see cref="BitmapData.SetPixel"/> to set each pixel value.
+		/// </remarks>
+		/// <param name="position">Position to set the pixel color.</param>
+		/// <param name="color">Color to set.</param>
+		public void SetPixel(Point position, Color color)
+		{
+			SetPixel(position.X, position.Y, color);
+		}
+
+		/// <summary>
+		/// Sets the color of the pixel at the specified coordinates.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method can be extremely slow to set each pixel of a bitmap.
+		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
+		/// then optionally use <see cref="BitmapData.SetPixel"/> to set each pixel value.
+		/// </remarks>
+		/// <param name="x">The x coordinate of the pixel to set.</param>
+		/// <param name="y">The y coordinate of the pixel to set.</param>
+		/// <param name="color">Color to set the pixel to.</param>
+		public void SetPixel(int x, int y, Color color)
+		{
+			using (var bd = Lock())
+			{
+				bd.SetPixel(x, y, color);
+			}
 		}
 
 		#pragma warning disable 612,618
@@ -304,7 +357,7 @@ namespace Eto.Drawing
 		#if PCL
 		public static Bitmap FromResource(string resourceName, Assembly assembly, Generator generator)
 		#else
-		public static Bitmap FromResource (string resourceName, Assembly assembly, Generator generator)
+		public static Bitmap FromResource(string resourceName, Assembly assembly, Generator generator)
 		#endif
 		{
 
@@ -313,7 +366,7 @@ namespace Eto.Drawing
 				#if PCL
 				throw new ArgumentNullException("assembly");
 				#else
-				assembly = Assembly.GetCallingAssembly ();
+				assembly = Assembly.GetCallingAssembly();
 				#endif
 			}
 			using (var stream = assembly.GetManifestResourceStream(resourceName))
@@ -468,13 +521,13 @@ namespace Eto.Drawing
 			/// Create a bitmap from a file
 			/// </summary>
 			/// <param name="fileName">File to load as a bitmap</param>
-			void Create (string fileName);
+			void Create(string fileName);
 
 			/// <summary>
 			/// Create a bitmap from a specified stream
 			/// </summary>
 			/// <param name="stream">Stream to load from the bitmap</param>
-			void Create (Stream stream);
+			void Create(Stream stream);
 
 			/// <summary>
 			/// Creates a new bitmap in-memory with the specified format
@@ -482,7 +535,7 @@ namespace Eto.Drawing
 			/// <param name="width">Initial width of the bitmap</param>
 			/// <param name="height">Initial height of the bitmap</param>
 			/// <param name="pixelFormat">Format of each of the pixels in the bitmap</param>
-			void Create (int width, int height, PixelFormat pixelFormat);
+			void Create(int width, int height, PixelFormat pixelFormat);
 
 			/// <summary>
 			/// Creates a new bitmap optimized for drawing on the specified <paramref name="graphics"/>
@@ -490,7 +543,7 @@ namespace Eto.Drawing
 			/// <param name="width">Width of the bitmap</param>
 			/// <param name="height">Height of the bitmap</param>
 			/// <param name="graphics">Graphics context the bitmap is intended to be drawn on</param>
-			void Create (int width, int height, Graphics graphics);
+			void Create(int width, int height, Graphics graphics);
 
 			/// <summary>
 			/// Create a new scaled bitmap with the specified <paramref name="width"/> and <paramref name="height"/>
@@ -499,14 +552,14 @@ namespace Eto.Drawing
 			/// <param name="width">Width to scale the source image to</param>
 			/// <param name="height">Height to scale the source image to</param>
 			/// <param name="interpolation">Interpolation quality</param>
-			void Create (Image image, int width, int height, ImageInterpolation interpolation);
+			void Create(Image image, int width, int height, ImageInterpolation interpolation);
 
 			/// <summary>
 			/// Saves the bitmap to a stream in the specified format
 			/// </summary>
 			/// <param name="stream">Stream to save the bitmap to</param>
 			/// <param name="format">Format to save as</param>
-			void Save (Stream stream, ImageFormat format);
+			void Save(Stream stream, ImageFormat format);
 
 			/// <summary>
 			/// Creates a clone of the bitmap
@@ -521,7 +574,7 @@ namespace Eto.Drawing
 			/// <returns>The color of the pixel at the specified coordinates</returns>
 			/// <param name="x">The x coordinate</param>
 			/// <param name="y">The y coordinate</param>
-			Color GetPixel (int x, int y);
+			Color GetPixel(int x, int y);
 		}
 
 		#endregion

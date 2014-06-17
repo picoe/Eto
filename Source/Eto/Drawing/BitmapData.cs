@@ -131,6 +131,75 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Gets the color of the pixel at the specified <paramref name="position"/>
+		/// </summary>
+		/// <returns>The color of the pixel.</returns>
+		/// <param name="position">Position to get the color of the pixel.</param>
+		public Color GetPixel(Point position)
+		{
+			return GetPixel(position.X, position.Y);
+		}
+
+		/// <summary>
+		/// Gets the color of the pixel at the specified coordinates.
+		/// </summary>
+		/// <returns>The color of the pixel.</returns>
+		/// <param name="x">The x coordinate to get the color from.</param>
+		/// <param name="y">The y coordinate to get the color from.</param>
+		public unsafe virtual Color GetPixel(int x, int y)
+		{
+			var pos = (byte*)Data;
+			pos += x * BytesPerPixel + y * ScanWidth;
+
+			var col = TranslateDataToArgb(*((int*)pos));
+			if (BytesPerPixel == 4)
+			{
+				return Color.FromArgb(col);
+			}
+			if (BytesPerPixel == 3)
+			{
+				return Color.FromRgb(col);
+			}
+			throw new NotSupportedException("This PixelFormat is not supported by GetPixel. Must be 3 or 4 bytes per pixel");
+		}
+
+		/// <summary>
+		/// Sets the pixel color at the specified <paramref name="position"/>.
+		/// </summary>
+		/// <param name="position">Position to set the pixel color.</param>
+		/// <param name="color">Color to set.</param>
+		public void SetPixel(Point position, Color color)
+		{
+			SetPixel(position.X, position.Y, color);
+		}
+
+		/// <summary>
+		/// Sets the pixel color at the specified coordinates.
+		/// </summary>
+		/// <param name="x">The x coordinate of the pixel to set.</param>
+		/// <param name="y">The y coordinate of the pixel to set.</param>
+		/// <param name="color">Color to set the pixel to.</param>
+		public unsafe virtual void SetPixel(int x, int y, Color color)
+		{
+			var pos = (byte*)Data;
+			pos += x * BytesPerPixel + y * ScanWidth;
+
+			var col = TranslateArgbToData(color.ToArgb());
+			if (BytesPerPixel == 4)
+			{
+				*((int*)pos) = col;
+			}
+			else if (BytesPerPixel == 3)
+			{
+				*(pos++) = (byte)(col & 0xFF);
+				*(pos++) = (byte)((col >> 8) & 0xFF);
+				*(pos++) = (byte)((col >> 16) & 0xFF);
+			}
+			else
+				throw new NotSupportedException("This PixelFormat is not supported by SetPixel. Must be 3 or 4 bytes per pixel");
+		}
+
+		/// <summary>
 		/// Gets the width (in bytes) of each scan line (row) of pixel data
 		/// </summary>
 		/// <remarks>
