@@ -15,14 +15,20 @@ namespace Eto.WinForms
 			HorizontalAlign horizontalAlign;
 			sd.SizeF? measuredSize;
 			sd.Size proposedSizeCache;
+			sd.SizeF? measuredSizeMax;
 			VerticalAlign verticalAlign;
+
+			void ClearSize()
+			{
+				measuredSize = measuredSizeMax = null;
+			}
 
 			public override sd.Font Font
 			{
 				get { return base.Font; }
 				set
 				{
-					measuredSize = null;
+					ClearSize();
 					base.Font = value;
 				}
 			}
@@ -32,7 +38,7 @@ namespace Eto.WinForms
 				get { return base.Text; }
 				set
 				{
-					measuredSize = null;
+					ClearSize();
 					base.Text = value;
 				}
 			}
@@ -44,7 +50,7 @@ namespace Eto.WinForms
 				{
 					wrapMode = value;
 					SetStringFormat();
-					measuredSize = null;
+					ClearSize();
 				}
 			}
 
@@ -55,7 +61,7 @@ namespace Eto.WinForms
 				{
 					horizontalAlign = value;
 					SetStringFormat();
-					measuredSize = null;
+					ClearSize();
 				}
 			}
 
@@ -65,7 +71,7 @@ namespace Eto.WinForms
 				set
 				{
 					verticalAlign = value;
-					measuredSize = null;
+					ClearSize();
 				}
 			}
 
@@ -80,14 +86,24 @@ namespace Eto.WinForms
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var bordersAndPadding = Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
-				if (measuredSize == null || proposedSizeCache != proposedSize)
+				if (proposedSize.Width <= 1)
+					proposedSize.Width = int.MaxValue;
+				if (proposedSize.Width == int.MaxValue)
 				{
+					if (measuredSizeMax == null)
+					{
+						proposedSize -= bordersAndPadding;
+						proposedSize.Height = Math.Max(0, proposedSize.Height);
+						measuredSizeMax = graphics.MeasureString(Text, Font, proposedSize.Width, stringFormat);
+					}
+					measuredSize = measuredSizeMax;
+				}
+				else if (measuredSize == null || proposedSizeCache != proposedSize)
+				{
+					proposedSizeCache = proposedSize;
 					proposedSize -= bordersAndPadding;
 					proposedSize.Height = Math.Max(0, proposedSize.Height);
-					if (proposedSize.Width <= 1)
-						proposedSize.Width = int.MaxValue;
 					measuredSize = graphics.MeasureString(Text, Font, proposedSize.Width, stringFormat);
-					proposedSizeCache = proposedSize;
 				}
 				var size = measuredSize.Value;
 				size += bordersAndPadding;

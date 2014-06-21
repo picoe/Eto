@@ -21,7 +21,7 @@ namespace Eto.WinForms
 
 		Size GetPreferredSize(Size availableSize);
 
-		bool SetMinimumSize(bool force = false);
+		bool SetMinimumSize(bool updateParent = false);
 
 		void SetScale(bool xscale, bool yscale);
 
@@ -157,14 +157,26 @@ namespace Eto.WinForms
 			get { return swf.DockStyle.Fill; }
 		}
 
-		public bool SetMinimumSize(bool force = false)
+		public bool SetMinimumSize(bool updateParent = false)
 		{
-			if (!force && !Widget.Loaded)
+			if (!Widget.Loaded)
 				return false;
+			return SetMinimumSizeInternal(updateParent);
+		}
+
+		bool SetMinimumSizeInternal(bool updateParent)
+		{
 			var size = GetPreferredSize(Size.Empty);
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
-			return SetMinimumSize(size);
+			var ret = SetMinimumSize(size);
+			if (updateParent && Widget.Loaded)
+			{
+				var parent = Widget.Parent.GetWindowsHandler();
+				if (parent != null)
+					parent.SetMinimumSize(updateParent);
+			}
+			return ret;
 		}
 
 		protected virtual bool SetMinimumSize(Size size)
@@ -438,8 +450,12 @@ namespace Eto.WinForms
 			get { return ContainerControl.Visible; }
 			set
 			{
-				internalVisible = value;
-				ContainerControl.Visible = value;
+				if (ContainerControl.Visible != value)
+				{
+					internalVisible = value;
+					ContainerControl.Visible = value;
+					SetMinimumSize(updateParent: true);
+				}
 			}
 		}
 
@@ -458,7 +474,7 @@ namespace Eto.WinForms
 
 		public virtual void OnLoad(EventArgs e)
 		{
-			SetMinimumSize(true);
+			SetMinimumSizeInternal(false);
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)

@@ -152,7 +152,7 @@ namespace Eto.Test.Sections.Controls
 					Panels[i].Content = getContent(i);
 
 				var p0_1 = new Splitter { Panel1 = Panels[0], Panel2 = Panels[1], Orientation = SplitterOrientation.Vertical, Position = 200 };
-				var p2_3 = new Splitter { Panel1 = Panels[2], Panel2 = Panels[3], Orientation = SplitterOrientation.Vertical, Position = 200 };
+				var p2_3 = new Splitter { Panel1 = Panels[2], Panel2 = Panels[3], Orientation = SplitterOrientation.Vertical, Position = 200, FixedPanel = SplitterFixedPanel.Panel2 };
 				var p01_23 = new Splitter { Panel1 = p0_1, Panel2 = p2_3, Orientation = SplitterOrientation.Horizontal, Position = 200 };
 				var p0123_4 = new Splitter { Panel1 = p01_23, Panel2 = Panels[4], Orientation = SplitterOrientation.Horizontal, Position = 400 };
 				return this.Root = p0123_4;

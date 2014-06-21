@@ -96,12 +96,14 @@ namespace Eto.WinForms
 
 			Control.Load += (sender, e) =>
 			{
+				// ensure we auto size to the content
+				if (Control.AutoSize)
+					ContainerContentControl.MinimumSize = Content.GetPreferredSize().ToSD();
 				Control.MinimumSize = Control.Size;
 				Control.AutoSize = false;
 				Control.MinimumSize = sd.Size.Empty;
 				content.MinimumSize = content.MaximumSize = sd.Size.Empty;
-				if (ContainerContentControl.HasChildren)
-					ContainerContentControl.Controls[0].Dock = swf.DockStyle.Fill;
+				ContainerContentControl.MinimumSize = sd.Size.Empty;
 			};
 			Control.Size = sd.Size.Empty;
 
@@ -113,7 +115,7 @@ namespace Eto.WinForms
 
 		protected override void SetContent(swf.Control contentControl)
 		{
-			contentControl.Dock = Widget.Loaded ? swf.DockStyle.Fill : swf.DockStyle.None;
+			contentControl.Dock = swf.DockStyle.Fill;
 			ContainerContentControl.Controls.Add(contentControl);
 		}
 

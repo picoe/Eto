@@ -25,11 +25,22 @@ namespace Eto.WinForms
 		{
 			get
 			{
-				var min = ContainerControl.MinimumSize;
-				ContainerControl.MinimumSize = sd.Size.Empty;
-				var size = ContainerControl.GetPreferredSize(Size.MaxValue.ToSD()).ToEto();
-				ContainerControl.MinimumSize = min;
-				return size;
+				var container = ContainerControl;
+				var min = container.MinimumSize;
+				if (min != sd.Size.Empty)
+				{
+					var parent = container.Parent;
+					if (parent != null)
+						parent.SuspendLayout();
+					container.MinimumSize = sd.Size.Empty;
+					var size = container.GetPreferredSize(Size.MaxValue.ToSD()).ToEto();
+					container.MinimumSize = min;
+					if (parent != null)
+						parent.ResumeLayout();
+					return size;
+				}
+				else
+					return ContainerControl.GetPreferredSize(Size.MaxValue.ToSD()).ToEto();
 			}
 		}
 

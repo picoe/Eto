@@ -31,11 +31,11 @@ namespace Eto.WinForms
 					foreach (object item in Items)
 					{
 						var text = GetItemText(item);
-						var itemSize = graphics.MeasureString(text, font).ToEtoSize();
-						// for drop down glyph and border
-						size.Width = Math.Max(size.Width, itemSize.Width);
-						size.Height = Math.Max(size.Height, itemSize.Height);
+						var itemSize = graphics.MeasureString(text, font);
+						size.Width = Math.Max(size.Width, (int)itemSize.Width);
+						size.Height = Math.Max(size.Height, (int)itemSize.Height);
 					}
+					// for drop down glyph and border
 					size.Width += 18;
 					size.Height += 4;
 					cachedSize = size;
