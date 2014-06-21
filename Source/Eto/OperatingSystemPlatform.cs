@@ -1,5 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Reflection;
+using System.IO;
+using System.Linq;
 
 namespace Eto
 {
@@ -26,7 +29,6 @@ namespace Eto
 		/// </summary>
 		public bool IsWinRT { get; private set; }
 
-		#if !PCL
 		/// <summary>
 		/// Gets a value indicating that the current OS is a unix-based system
 		/// </summary>
@@ -45,31 +47,31 @@ namespace Eto
 		/// </summary>
 		public bool IsLinux { get; private set; }
 
-		[DllImport("libc")]
-		static extern int uname(IntPtr buf);
+		#if PCL
 
 		static string GetUnixType()
 		{
-			IntPtr buf = IntPtr.Zero;
-			string osName = "";
-			try
+			// need at least one of these platforms if we're detecting the unix type (mac/linux) in PCL
+			var detectType = Type.GetType("Eto.PlatformDetect, Eto.XamMac")
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac")
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk2")
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk3");
+			if (detectType != null)
 			{
-				buf = Marshal.AllocHGlobal(8192);
-				if (uname(buf) == 0)
-					osName = Marshal.PtrToStringAnsi(buf);
+				var getUnixTypeMethod = detectType.GetRuntimeMethod("GetUnixType", new Type[] { });
+				if (getUnixTypeMethod != null)
+					return (string)getUnixTypeMethod.Invoke(null, null);
 			}
-			// Analysis disable once EmptyGeneralCatchClause
-			catch
-			{
-			}
-			finally
-			{
-				if (buf != IntPtr.Zero)
-					Marshal.FreeHGlobal(buf);
-			}
-			return osName;
-
+			return string.Empty;
 		}
+
+		#else
+		
+		static string GetUnixType()
+		{
+			return PlatformDetect.GetUnixType();
+		}
+
 		#endif
 
 		/// <summary>
@@ -88,15 +90,31 @@ namespace Eto
 			var windowsType = Type.GetType("System.ComponentModel.DesignerProperties, PresentationFramework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
 			IsWindows = windowsType != null || IsWinRT;
 
-			#else
-
-			switch (Environment.OSVersion.Platform)
+			// get Environment.OSVersion.Platform using reflection
+			int platform = -1;
+			var envType = typeof(Environment);
+			var osVersionProp = envType.GetRuntimeProperty("OSVersion");
+			if (osVersionProp != null)
 			{
-				case PlatformID.MacOSX:
+				var osVal = osVersionProp.GetValue(null);
+				if (osVal != null)
+				{
+					var platProp = osVal.GetType().GetRuntimeProperty("Platform");
+					platform = (int)platProp.GetValue(osVal);
+				}
+			}
+
+			#else
+			var platform = (int)Environment.OSVersion.Platform;
+			#endif
+
+			switch (platform)
+			{
+				case 6: // PlatformID.MacOSX:
 					IsMac = true;
 					IsUnix = true;
 					break;
-				case PlatformID.Unix:
+				case 4: // PlatformID.Unix:
 					IsUnix = true;
 					switch (GetUnixType().ToUpperInvariant())
 					{
@@ -108,10 +126,11 @@ namespace Eto
 							break;
 					}
 					break;
-				case PlatformID.Win32NT:
-				case PlatformID.Win32S:
-				case PlatformID.Win32Windows:
-				case PlatformID.WinCE:
+				case 0: // PlatformID.Win32S:
+				case 1: // PlatformID.Win32Windows:
+				case 2: // PlatformID.Win32NT:
+				case 3: // PlatformID.WinCE:
+				case 5: // PlatformID.Xbox:
 					IsWindows = true;
 					break;
 				default:
@@ -119,7 +138,6 @@ namespace Eto
 					IsWindows = true;
 					break;
 			}
-			#endif
 		}
 	}
 }

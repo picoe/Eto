@@ -109,15 +109,6 @@ namespace Eto.Forms
 			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
 		}
 
-#if !PCL
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
-		/// </summary>
-		public Application()
-			: this(Platform.Detect)
-		{
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
 		/// </summary>
@@ -131,21 +122,6 @@ namespace Eto.Forms
 			Application.Instance = this;
 			Platform.Initialize(generator as Platform ?? Platform.Detect); // make everything use this by default
 		}
-#else
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use Application(Platform) and HandlerAttribute instead")]
-		protected Application(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-			Application.Instance = this;
-			Platform.Initialize(generator as Platform);
-		}
-#endif
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
@@ -154,6 +130,14 @@ namespace Eto.Forms
 		[Obsolete("Use Application(Platform) instead")]
 		public Application(Generator generator)
 			: this((Platform)generator)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
+		/// </summary>
+		public Application()
+			: this(Platform.Detect)
 		{
 		}
 

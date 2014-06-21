@@ -294,6 +294,9 @@
     </Compile>
     <Compile Include="Forms\Controls\ColorPicker.cs" />
     <Compile Include="Forms\FilterCollection.cs" />
+    <Compile Include="..\Shared\PlatformDetect.cs">
+      <Link>PlatformDetect.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
