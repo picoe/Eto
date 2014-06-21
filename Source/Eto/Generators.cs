@@ -17,7 +17,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the Direct2D platform
 		/// </summary>
-		public const string Direct2DAssembly = "Eto.Platform.Direct2D.Generator, Eto.Platform.Direct2D";
+		public const string Direct2DAssembly = "Eto.Direct2D.Platform, Eto.Direct2D";
 
 		/// <summary>
 		/// ID of the iOS platform
@@ -27,7 +27,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the iOS platform
 		/// </summary>
-		public const string IosAssembly = "Eto.Platform.iOS.Generator, Eto.Platform.iOS";
+		public const string IosAssembly = "Eto.iOS.Platform, Eto.iOS";
 
 		/// <summary>
 		/// ID of the GTK platform
@@ -37,7 +37,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the GTK platform
 		/// </summary>
-		public const string GtkAssembly = "Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk";
+		public const string GtkAssembly = "Eto.GtkSharp.Platform, Eto.Gtk2";
 
 		/// <summary>
 		/// ID of the GTK 3.0 platform
@@ -47,7 +47,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the GTK platform
 		/// </summary>
-		public const string Gtk3Assembly = "Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk3";
+		public const string Gtk3Assembly = "Eto.GtkSharp.Platform, Eto.Gtk3";
 
 		/// <summary>
 		/// ID of the Mac OS X platform
@@ -57,7 +57,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the Mac OS X platform
 		/// </summary>
-		public const string MacAssembly = "Eto.Platform.Mac.Generator, Eto.Platform.Mac";
+		public const string MacAssembly = "Eto.Mac.Platform, Eto.Mac";
 
 		/// <summary>
 		/// ID of the Mac OS X platform
@@ -67,7 +67,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the Mac OS X platform
 		/// </summary>
-		public const string XamMacAssembly = "Eto.Platform.Mac.Generator, Eto.Platform.XamMac";
+		public const string XamMacAssembly = "Eto.Mac.Platform, Eto.XamMac";
 		
 		/// <summary>
 		/// ID of the Windows forms platform
@@ -77,7 +77,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the Windows Forms platform
 		/// </summary>
-		public const string WinAssembly = "Eto.Platform.Windows.Generator, Eto.Platform.Windows";
+		public const string WinAssembly = "Eto.WinForms.Platform, Eto.WinForms";
 
 		/// <summary>
 		/// ID of the WPF platform
@@ -87,7 +87,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the WPF platform
 		/// </summary>
-		public const string WpfAssembly = "Eto.Platform.Wpf.Generator, Eto.Platform.Wpf";
+		public const string WpfAssembly = "Eto.Wpf.Platform, Eto.Wpf";
 		
 		/// <summary>
 		/// ID of the Android platform
@@ -97,6 +97,6 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the Android platform
 		/// </summary>
-		public const string AndroidAssembly = "Eto.Platform.Android.Generator, Eto.Platform.Android";
+		public const string AndroidAssembly = "Eto.Android.Platform, Eto.Android";
 	}
 }

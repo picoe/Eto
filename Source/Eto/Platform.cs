@@ -249,48 +249,6 @@ namespace Eto
 		}
 		#endif
 		/// <summary>
-		/// Can be used by apps that switch between generators.
-		/// 
-		/// Set this property at the start of a block of code.
-		/// All objects created after that point are verified to
-		/// use this generator.
-		/// 
-		/// If null, no validation is performed.
-		/// </summary>
-		public static Platform ValidatePlatform { get; set; }
-
-		/// <summary>
-		/// Called by handlers to make sure they use the generator specified by ValidateGenerator
-		/// </summary>
-		/// <param name="platform">Platform instance to validate with</param>
-		[Conditional("DEBUG")]
-		public static void Validate(Platform platform)
-		{
-			if (ValidatePlatform != null && !object.ReferenceEquals(platform, ValidatePlatform))
-			{
-				throw new EtoException(string.Format(CultureInfo.InvariantCulture, "Expected to use generator {0}", ValidatePlatform));
-			}
-		}
-
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Called by handlers to make sure they use the generator specified by ValidateGenerator
-		/// </summary>
-		/// <param name="generator"></param>
-		[Conditional("DEBUG")]
-		[Obsolete("Use variation with Platform instead")]
-		public static void Validate(Generator generator)
-		{
-			if (ValidatePlatform != null && !object.ReferenceEquals(generator, ValidatePlatform))
-			{
-				throw new EtoException(string.Format(CultureInfo.InvariantCulture, "Expected to use generator {0}", ValidatePlatform));
-			}
-		}
-
-		#pragma warning restore 612,618
-
-		/// <summary>
 		/// Initializes the specified <paramref name="platform"/> as the current generator, for the current thread
 		/// </summary>
 		/// <remarks>

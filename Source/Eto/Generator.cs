@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace Eto
 {
@@ -89,11 +91,8 @@ namespace Eto
 		/// <summary>
 		/// Obsolete
 		/// </summary>
-		[Obsolete("Use Platform.ValidatePlatform instead")]
-		public static Platform ValidateGenerator
-		{
-			get { return Platform.ValidatePlatform; }
-		}
+		[Obsolete("No longer available. Use Platform.WidgetCreated event to do validation if required")]
+		public static Platform ValidateGenerator { get; set; }
 
 		/// <summary>
 		/// Obsolete
@@ -114,45 +113,63 @@ namespace Eto
 		}
 
 		/// <summary>
+		/// Called by handlers to make sure they use the generator specified by ValidateGenerator
+		/// </summary>
+		/// <param name="generator"></param>
+		[Conditional("DEBUG")]
+		[Obsolete("No longer available. Use Platform.WidgetCreated event to do validation if required")]
+		public static void Validate(Generator generator)
+		{
+			if (ValidateGenerator != null && !object.ReferenceEquals(generator, ValidateGenerator))
+			{
+				throw new EtoException(string.Format(CultureInfo.InvariantCulture, "Expected to use generator {0}", ValidateGenerator));
+			}
+		}
+
+		#region Move to Platform when removing Generator
+
+		/// <summary>
+		/// Gets the ID of this platform
+		/// </summary>
+		/// <remarks>
+		/// The platform ID can be used to determine which platform is currently in use.  The platform
+		/// does not necessarily correspond to the OS that it is running on, as for example the GTK platform
+		/// can run on OS X and Windows.
+		/// </remarks>
+		public abstract string ID { get; }
+
+		/// <summary>
 		/// Gets a value indicating whether this platform is a mac based platform (MonoMac/XamMac)
 		/// </summary>
 		/// <value><c>true</c> if this platform is mac; otherwise, <c>false</c>.</value>
-		public virtual bool IsMac { get { return ((Platform)this).IsMac; } }
+		public virtual bool IsMac { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on Windows Forms
 		/// </summary>
 		/// <value><c>true</c> if this platform is window forms; otherwise, <c>false</c>.</value>
-		public virtual bool IsWinForms { get { return ((Platform)this).IsWinForms; } }
+		public virtual bool IsWinForms { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on WPF
 		/// </summary>
 		/// <value><c>true</c> if this platform is wpf; otherwise, <c>false</c>.</value>
-		public virtual bool IsWpf { get { return ((Platform)this).IsWpf; } }
+		public virtual bool IsWpf { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on GTK# (2 or 3)
 		/// </summary>
 		/// <value><c>true</c> if this platform is gtk; otherwise, <c>false</c>.</value>
-		public virtual bool IsGtk { get { return ((Platform)this).IsGtk; } }
+		public virtual bool IsGtk { get { return false; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this platform is based on Xamarin.iOS
 		/// </summary>
 		/// <value><c>true</c> if this platform is ios; otherwise, <c>false</c>.</value>
-		public virtual bool IsIos { get { return ((Platform)this).IsIos; } }
+		public virtual bool IsIos { get { return false; } }
 
-		#if PCL
-		/// <summary>
-		/// Obsolete
-		/// </summary>
-		[Obsolete("This will now throw an exception on .net 45/pcl. Create your platform manually or use Platform.Get()")]
-		public static Generator Detect
-		{
-			get { throw new NotImplementedException(); }
-		}
-		#else
+		#endregion
+
 		/// <summary>
 		/// Obsolete
 		/// </summary>
@@ -161,7 +178,6 @@ namespace Eto
 		{
 			get { return Platform.Detect; }
 		}
-		#endif
 
 		/// <summary>
 		/// Returns true if the current generator has been set.

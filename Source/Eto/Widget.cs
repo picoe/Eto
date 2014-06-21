@@ -82,7 +82,7 @@ namespace Eto
 		/// </summary>
 		/// <value>The generator.</value>
 		[Obsolete("Use Platform instead")]
-		public Platform Generator { get { return Platform; } }
+		public Generator Generator { get { return Platform; } }
 
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
