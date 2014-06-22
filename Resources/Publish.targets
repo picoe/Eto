@@ -26,7 +26,9 @@
     <Target Name="Package">
     	<MSBuild Projects="$(BaseDir)\Eto.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Windows" />
     	<MSBuild Projects="$(BaseDir)\Eto - Pcl.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Windows" />
-    	<MSBuild Projects="$(BaseDir)\Eto - WinRT.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+    	<!--MSBuild Projects="$(BaseDir)\Eto - WinRT.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Any CPU" /-->
+    	<MSBuild Projects="$(BaseDir)\Eto.WinRT\Eto.WinRT.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" />
+    	<MSBuild Projects="$(BaseDir)\Eto.Test\Eto.Test.WinRT\Eto.Test.WinRT.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" />
 
 		<!-- build XamMac separately if it hasn't been built on mac -->
     	<MSBuild Projects="$(BaseDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(SourceDir)\Eto.XamMac.dll')" />
