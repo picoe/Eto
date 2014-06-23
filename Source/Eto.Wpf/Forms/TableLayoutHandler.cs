@@ -11,7 +11,7 @@ namespace Eto.Wpf.Forms
 {
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
-		swc.Border border;
+		swc.Border border = new swc.Border();
 		Size spacing;
 		Control[,] controls;
 		bool[] columnScale;
@@ -72,7 +72,7 @@ namespace Eto.Wpf.Forms
 				for (int x = 0; x < cols; x++)
 					Control.Children.Add(EmptyCell(x, y));
 
-			border = new swc.Border { Child = Control };
+			border.Child = Control;
 
 			Spacing = TableLayout.DefaultSpacing;
 			Padding = TableLayout.DefaultPadding;
@@ -112,6 +112,8 @@ namespace Eto.Wpf.Forms
 
 		void SetScale()
 		{
+			if (Control == null)
+				return;
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{
 				for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
