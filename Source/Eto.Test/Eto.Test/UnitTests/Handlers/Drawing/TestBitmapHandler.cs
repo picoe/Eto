@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 
-namespace Eto.Test.UnitTests.Handlers
+namespace Eto.Test.UnitTests.Handlers.Drawing
 {
 	/// <summary>
 	/// A mock IBitmap implementation.
+	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
 	class TestBitmapHandler : Bitmap.IHandler
 	{
 		public Eto.Platform Platform { get; set; }

@@ -9,11 +9,13 @@ namespace Eto.Test.UnitTests.Drawing
 		[Test, Category("ui")]
 		public void ClipBoundsShouldMatchClientSize()
 		{
+			var size = new Size(200, 200);
 			TestUtils.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
+				Assert.AreEqual(drawable.ClientSize, size, "Drawable client size should be 200x200");
 				Assert.AreEqual(Size.Round(drawable.ClientSize), Size.Round(graphics.ClipBounds.Size), "Clip bounds should match drawable client size");
-			});
+			}, size);
 		}
 
 		[Test, Category("ui")]

@@ -139,10 +139,6 @@
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestGridColumnHandler.cs" />
-    <Compile Include="UnitTests\Handlers\TestBitmapHandler.cs" />
-    <Compile Include="UnitTests\Handlers\TestFontHandler.cs" />
-    <Compile Include="UnitTests\Handlers\TestGraphicsHandler.cs" />
-    <Compile Include="UnitTests\Handlers\TestMatrixHandler.cs" />
     <Compile Include="UnitTests\TestUtils.cs" />
     <Compile Include="UnitTests\Handlers\TestPlatform.cs" />
     <Compile Include="UnitTests\Drawing\ColorTests.cs" />
@@ -163,6 +159,12 @@
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
     <Compile Include="UnitTests\Handlers\Cells\TestTextBoxCellHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestWidgetHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestFormHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Drawing\TestBitmapHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Drawing\TestFontHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Drawing\TestGraphicsHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Drawing\TestMatrixHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Controls\TestDrawableHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

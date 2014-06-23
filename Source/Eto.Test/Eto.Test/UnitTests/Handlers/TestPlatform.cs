@@ -7,6 +7,7 @@ using Eto.Forms;
 using Eto.Test.UnitTests.Handlers.Controls;
 using Eto.Test.UnitTests.Handlers.Layout;
 using Eto.Test.UnitTests.Handlers.Cells;
+using Eto.Test.UnitTests.Handlers.Drawing;
 
 namespace Eto.Test.UnitTests.Handlers
 {
@@ -40,6 +41,9 @@ namespace Eto.Test.UnitTests.Handlers
 			p.Add<TextBox.IHandler>(() => new TestTextBoxHandler());
 
 			p.Add<TableLayout.IHandler>(() => new TestTableLayoutHandler());
+			p.Add<Form.IHandler>(() => new TestFormHandler());
+			p.Add<Panel.IHandler>(() => new TestPanelHandler());
+			p.Add<Drawable.IHandler>(() => new TestDrawableHandler());
 		}
 
 		public override string ID

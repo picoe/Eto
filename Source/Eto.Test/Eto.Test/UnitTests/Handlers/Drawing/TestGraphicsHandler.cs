@@ -4,22 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
+using Eto.Forms;
 
-namespace Eto.Test.UnitTests.Handlers
+namespace Eto.Test.UnitTests.Handlers.Drawing
 {
 	/// <summary>
 	/// A mock IGraphics implementation.
+	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
-	class TestGraphicsHandler : Graphics.IHandler
+	class TestGraphicsHandler : TestWidgetHandler, Graphics.IHandler
 	{
-		public Eto.Platform Platform { get; set; }
-		public Widget Widget { get; set; }
-		public Size Size { get; set; }
-		public string ID { get; set; }
-		public object ControlObject { get; set; }
-
+		Drawable drawable;
+		IMatrix transform = Matrix.Create();
+		Stack<IMatrix> transforms = new Stack<IMatrix>();
 
 		public float PointsPerPixel
 		{
@@ -38,9 +37,19 @@ namespace Eto.Test.UnitTests.Handlers
 			}
 		}
 
+		public TestGraphicsHandler()
+		{
+		}
+
+		public TestGraphicsHandler(Drawable drawable)
+		{
+			this.drawable = drawable;
+			ResetClip();
+		}
+
 		public void CreateFromImage(Bitmap image)
 		{
-			
+
 		}
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
@@ -150,42 +159,48 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public void TranslateTransform(float offsetX, float offsetY)
 		{
-			throw new NotImplementedException();
+			transform.Translate(offsetX, offsetY);
 		}
 
 		public void RotateTransform(float angle)
 		{
-			throw new NotImplementedException();
+			transform.Rotate(angle);
 		}
 
 		public void ScaleTransform(float scaleX, float scaleY)
 		{
-			throw new NotImplementedException();
+			transform.Scale(scaleX, scaleY);
 		}
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
-			throw new NotImplementedException();
+			transform.Append(matrix);
 		}
 
 		public void SaveTransform()
 		{
-			throw new NotImplementedException();
+			transforms.Push(transform);
 		}
 
 		public void RestoreTransform()
 		{
-			throw new NotImplementedException();
+			transform = transforms.Pop();
 		}
 
+		RectangleF clipBounds;
 		public RectangleF ClipBounds
 		{
-			get { throw new NotImplementedException(); }
+			get
+			{
+				var t = transform.Clone();
+				t.Invert();
+				return t.TransformRectangle(clipBounds);
+			}
 		}
 
 		public void SetClip(RectangleF rectangle)
 		{
-			throw new NotImplementedException();
+			clipBounds = rectangle;
 		}
 
 		public void SetClip(IGraphicsPath path)
@@ -195,7 +210,8 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public void ResetClip()
 		{
-			throw new NotImplementedException();
+			if (drawable != null)
+				clipBounds = new RectangleF(drawable.Size);
 		}
 
 		public void Clear(SolidBrush brush)

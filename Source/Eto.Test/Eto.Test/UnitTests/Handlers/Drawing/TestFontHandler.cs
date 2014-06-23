@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 
-namespace Eto.Test.UnitTests.Handlers
+namespace Eto.Test.UnitTests.Handlers.Drawing
 {
 	/// <summary>
 	/// A mock IFont implementation.
+	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	/// </summary>
 	public class TestFontHandler : WidgetHandler<Font>, Font.IHandler
 	{
 		const float PointsToPixels = 96f / 72f;

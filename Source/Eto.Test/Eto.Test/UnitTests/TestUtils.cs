@@ -90,6 +90,18 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
+		static Application Application
+		{
+			get
+			{
+				var application = Application.Instance;
+				if (application != null && application.Platform != Platform.Instance)
+					application = null;
+				return application;
+			}
+
+		}
+
 		/// <summary>
 		/// Run a test on by invoking the test on the application
 		/// </summary>
@@ -99,9 +111,7 @@ namespace Eto.Test.UnitTests
 		{
 			Initialize();
 			var ev = new ManualResetEvent(false);
-			var application = Application.Instance;
-			if (application != null && application.Platform != Platform.Instance)
-				application = null;
+			var application = Application;
 			Exception exception = null;
 			Action finished = () => ev.Set();
 			Action run = () =>
@@ -145,6 +155,7 @@ namespace Eto.Test.UnitTests
 		public static void Form(Action<Form> test, int timeout = DefaultTimeout)
 		{
 			Form form = null;
+			bool shown = false;
 			try
 			{
 				Run((app, finished) =>
@@ -161,16 +172,18 @@ namespace Eto.Test.UnitTests
 						form = null;
 						finished();
 					};
+					shown = true;
 					form.Show();
 
 				}, timeout);
 			}
 			catch
 			{
-				if (form != null)
+				if (form != null && shown)
 				{
-					if (Application.Instance != null)
-						Application.Instance.Invoke(form.Close);
+					var application = Application;
+					if (application != null)
+						application.Invoke(form.Close);
 					else
 						form.Close();
 				}
@@ -186,6 +199,8 @@ namespace Eto.Test.UnitTests
 		/// <param name="timeout">Timeout to wait for the operation to complete</param>
 		public static void Paint(Action<Drawable, PaintEventArgs> paint, Size? size = null, int timeout = DefaultTimeout)
 		{
+			var application = Application;
+			bool finished = false;
 			Exception exception = null;
 			Form(form =>
 			{
@@ -195,6 +210,7 @@ namespace Eto.Test.UnitTests
 					try
 					{
 						paint(drawable, e);
+						finished = true;
 					}
 					catch (Exception ex)
 					{
@@ -202,13 +218,18 @@ namespace Eto.Test.UnitTests
 					}
 					finally
 					{
-						Application.Instance.AsyncInvoke(form.Close);
+						if (application != null)
+							application.AsyncInvoke(form.Close);
+						else
+							form.Close();
 					}
 				};
 				form.Content = drawable;
 			}, timeout);
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
+			if (!finished)
+				Assert.Fail("Paint event did not finish");
 		}
 
 		public static Task<TEventArgs> WaitEventAsync<TEventArgs>(Action<EventHandler<TEventArgs>> hookEvent)

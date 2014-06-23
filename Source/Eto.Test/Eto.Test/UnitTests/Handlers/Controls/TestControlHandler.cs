@@ -1,19 +1,29 @@
 ﻿using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test.UnitTests.Handlers.Controls
 {
 
-	public class TestControlHandler : TestWidgetHandler, Control.IHandler
+	public class TestControlHandler : TestWidgetHandler, Control.IHandler, IControlHandler
 	{
-		public void Invalidate()
+		new Control.ICallback Callback { get { return (Control.ICallback)base.Callback; } }
+		new Control Widget { get { return (Control)base.Widget; } }
+
+		protected bool AutoSize { get; set; }
+
+		public TestControlHandler()
 		{
-			throw new NotImplementedException();
+			AutoSize = true;
 		}
 
-		public void Invalidate(Eto.Drawing.Rectangle rect)
+		public virtual void Invalidate()
 		{
-			throw new NotImplementedException();
+			Invalidate(new Rectangle(Point.Empty, Size));
+		}
+
+		public virtual void Invalidate(Rectangle rect)
+		{
 		}
 
 		public void SuspendLayout()
@@ -31,19 +41,19 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			throw new NotImplementedException();
 		}
 
-		public void OnPreLoad(EventArgs e)
+		public virtual void OnPreLoad(EventArgs e)
 		{
 		}
 
-		public void OnLoad(EventArgs e)
+		public virtual void OnLoad(EventArgs e)
 		{
 		}
 
-		public void OnLoadComplete(EventArgs e)
+		public virtual void OnLoadComplete(EventArgs e)
 		{
 		}
 
-		public void OnUnLoad(EventArgs e)
+		public virtual void OnUnLoad(EventArgs e)
 		{
 		}
 
@@ -56,17 +66,17 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			throw new NotImplementedException();
 		}
 
-		public Eto.Drawing.PointF PointFromScreen(Eto.Drawing.PointF point)
+		public PointF PointFromScreen(PointF point)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Eto.Drawing.PointF PointToScreen(Eto.Drawing.PointF point)
+		public PointF PointToScreen(PointF point)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Eto.Drawing.Color BackgroundColor
+		public Color BackgroundColor
 		{
 			get
 			{
@@ -78,15 +88,17 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			}
 		}
 
-		public Eto.Drawing.Size Size
+		Size? size;
+		Size desiredSize;
+		public virtual Size Size
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get { return size ?? desiredSize; }
 			set
 			{
-				throw new NotImplementedException();
+				if (Widget.Loaded)
+					size = value;
+				desiredSize = value;
+				AutoSize = value.Width == -1 && value.Height == -1;
 			}
 		}
 
@@ -130,13 +142,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			}
 		}
 
-		public Eto.Drawing.Point Location
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public Point Location { get; set; }
 
 		public string ToolTip
 		{
@@ -160,6 +166,22 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			{
 				throw new NotImplementedException();
 			}
+		}
+
+		public virtual void OnShown()
+		{
+			Invalidate();
+		}
+
+		public virtual Size GetPreferredSize()
+		{
+			return desiredSize;
+		}
+
+		public virtual void SetBounds(Rectangle rect)
+		{
+			size = rect.Size;
+			Location = rect.Location;
 		}
 	}
 }
