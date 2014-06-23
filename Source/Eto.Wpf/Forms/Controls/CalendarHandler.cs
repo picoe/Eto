@@ -31,6 +31,7 @@ namespace Eto.Wpf.Forms.Controls
 							if (suppressChanged == 0 && date != last)
 							{
 								last = date;
+								oldRange = null;
 								Callback.OnSelectedDateChanged(Widget, EventArgs.Empty);
 							}
 						};
@@ -45,6 +46,7 @@ namespace Eto.Wpf.Forms.Controls
 							if (suppressChanged == 0 && last != range)
 							{
 								last = range;
+								oldRange = null;
 								Callback.OnSelectedRangeChanged(Widget, EventArgs.Empty);
 							}
 						};
@@ -96,7 +98,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		DateRange oldRange;
+		Range<DateTime>? oldRange;
 		public CalendarMode Mode
 		{
 			get { return Control.SelectionMode.ToEto(); }
@@ -107,17 +109,19 @@ namespace Eto.Wpf.Forms.Controls
 					suppressChanged++;
 					var range = SelectedRange;
 					Control.SelectionMode = value.ToWpf();
+					Control.SelectedDates.Clear();
 					if (value == CalendarMode.Range)
 					{
-						if (range != null && oldRange != null && range.Start <= oldRange.End)
-							SelectedRange = new DateRange(range.Start, oldRange.End);
+						if (oldRange != null)
+							Control.SelectedDates.AddRange(oldRange.Value.Start, oldRange.Value.End);
 						else
-							SelectedRange = range;
+							Control.SelectedDates.AddRange(range.Start, range.End);
 					}
-					else if (range != null)
-						SelectedRange = new DateRange(range.Start, range.Start);
-					if (value == CalendarMode.Single)
+					else
+					{
 						oldRange = range;
+						Control.SelectedDates.Add(range.Start);
+					}
 					suppressChanged--;
 					if (range != SelectedRange)
 						Callback.OnSelectedRangeChanged(Widget, EventArgs.Empty);
@@ -125,13 +129,13 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public DateRange SelectedRange
+		public Range<DateTime> SelectedRange
 		{
 			get
 			{
 				return Control.SelectedDates.Count == 0
-					? null
-					: new DateRange(Control.SelectedDates.Min(), Control.SelectedDates.Max());
+					? new Range<DateTime>(DateTime.Today)
+					: new Range<DateTime>(Control.SelectedDates.Min(), Control.SelectedDates.Max());
 			}
 			set
 			{
@@ -143,17 +147,14 @@ namespace Eto.Wpf.Forms.Controls
 					if (Mode == CalendarMode.Range)
 					{
 						Control.SelectedDates.Clear();
-						if (value != null)
-						{
-							Control.SelectedDates.AddRange(value.Start, value.End);
-						}
+						Control.SelectedDates.AddRange(value.Start, value.End);
 					}
 					else
-						Control.SelectedDate = value != null ? (DateTime?)value.Start : null;
+						Control.SelectedDate = value.Start;
 					suppressChanged--;
 					if (suppressChanged == 0)
 					{
-						if (old == null || value == null || old.Start != value.Start)
+						if (old.Start != value.Start)
 							Callback.OnSelectedDateChanged(Widget, EventArgs.Empty);
 						Callback.OnSelectedRangeChanged(Widget, EventArgs.Empty);
 					}
