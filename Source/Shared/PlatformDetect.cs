@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Eto
 {
+	#if OSX
+	[MonoMac.Foundation.Preserve(AllMembers = true)]
+	#endif
 	static class PlatformDetect
 	{
 		[DllImport("libc")]
