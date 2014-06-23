@@ -61,7 +61,7 @@ namespace Eto.GtkSharp
 				label.UseUnderline = true;
 			}
 		}
-		
+
 		public string ToolTip
 		{
 			get { return tooltip; }
@@ -71,11 +71,20 @@ namespace Eto.GtkSharp
 				//label.TooltipText = value;
 			}
 		}
-		
+
 		public Keys Shortcut
 		{
 			get { return shortcut; }
-			set { shortcut = value; }
+			set
+			{ 
+				shortcut = value;
+				SetAccelerator();
+			}
+		}
+
+		protected override Keys GetShortcut()
+		{
+			return Shortcut;
 		}
 
 		bool isBeingChecked;
@@ -90,7 +99,7 @@ namespace Eto.GtkSharp
 				isBeingChecked = false;
 			}
 		}
-		
+
 		public bool Enabled
 		{
 			get { return Control.Sensitive; }

@@ -4,7 +4,6 @@ namespace Eto.GtkSharp
 {
 	public class ContextMenuHandler : MenuHandler<Gtk.Menu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
 	{
-
 		public ContextMenuHandler()
 		{
 			Control = new Gtk.Menu();
@@ -13,7 +12,7 @@ namespace Eto.GtkSharp
 		public void AddMenu(int index, MenuItem item)
 		{
 			Control.Insert((Gtk.Widget)item.ControlObject, index);
-			
+			SetChildAccelGroup(item);
 		}
 
 		public void RemoveMenu(MenuItem item)
@@ -28,13 +27,17 @@ namespace Eto.GtkSharp
 				Control.Remove(w);
 			}
 		}
-		
-		public void Show (Control relativeTo)
+
+		protected override Keys GetShortcut()
 		{
-			ValidateItems ();
-			Control.ShowAll ();
-			Control.Popup ();
+			return Keys.None;
 		}
 
+		public void Show(Control relativeTo)
+		{
+			ValidateItems();
+			Control.ShowAll();
+			Control.Popup();
+		}
 	}
 }

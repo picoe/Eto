@@ -321,27 +321,13 @@ namespace Eto.GtkSharp
 				Control.AddAccelGroup(accelGroup);
 				// set accelerators
 				menuBar = value;
-				SetAccelerators(menuBar);
+				var handler = menuBar != null ? menuBar.Handler as IMenuHandler : null;
+				if (handler != null)
+					handler.SetAccelGroup(accelGroup);
+
 				menuBox.PackStart((Gtk.Widget)value.ControlObject, true, true, 0);
 				((Gtk.Widget)value.ControlObject).ShowAll();
 			}
-		}
-
-		void SetAccelerators(ISubmenu item)
-		{
-			if (item != null && item.Items != null)
-				foreach (var child in item.Items)
-				{
-					var actionItem = child;
-					if (actionItem != null && actionItem.Shortcut != Keys.None)
-					{
-						var widget = (Gtk.Widget)actionItem.ControlObject;
-						var key = new Gtk.AccelKey(actionItem.Shortcut.ToGdkKey(), actionItem.Shortcut.ToGdkModifier(), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
-						widget.AddAccelerator("activate", accelGroup, key);
-					}
-					SetAccelerators(child as ISubmenu);
-				}
-			
 		}
 
 		protected override void SetContainerContent(Gtk.Widget content)

@@ -84,7 +84,13 @@ namespace Eto.GtkSharp
 			set
 			{
 				shortcut = value;
+				SetAccelerator();
 			}
+		}
+
+		protected override Keys GetShortcut()
+		{
+			return Shortcut;
 		}
 
 		public Image Image
@@ -101,6 +107,7 @@ namespace Eto.GtkSharp
 		{
 			if (Control.Submenu == null) Control.Submenu = new Gtk.Menu();
 			((Gtk.Menu)Control.Submenu).Insert((Gtk.Widget)item.ControlObject, index);
+			SetChildAccelGroup(item);
 		}
 
 		public void RemoveMenu(MenuItem item)

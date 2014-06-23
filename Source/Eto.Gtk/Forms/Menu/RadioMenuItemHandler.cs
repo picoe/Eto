@@ -91,7 +91,13 @@ namespace Eto.GtkSharp
 				shortcut = value;
 				accelLabel.Text = value.ToShortcutString();
 				accelLabel.Visible = accelLabel.Text.Length > 0;
+				SetAccelerator();
 			}
+		}
+
+		protected override Keys GetShortcut()
+		{
+			return Shortcut;
 		}
 
 		public bool Checked

@@ -14,6 +14,11 @@ namespace Eto.GtkSharp
 		{
 		}
 
+		protected override Keys GetShortcut()
+		{
+			return Keys.None;
+		}
+
 		public string Text
 		{
 			get { return null; }

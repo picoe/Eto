@@ -13,15 +13,23 @@ namespace Eto.GtkSharp
 			Control = new Gtk.MenuBar();
 		}
 
+		protected override Keys GetShortcut()
+		{
+			return Keys.None;
+		}
+
 		public void AddMenu(int index, MenuItem item)
 		{
 			Control.Insert((Gtk.Widget)item.ControlObject, index);
-			
+			SetChildAccelGroup(item);
 		}
 
 		public void RemoveMenu(MenuItem item)
 		{
 			Control.Remove((Gtk.Widget)item.ControlObject);
+			var handler = item.Handler as IMenuHandler;
+			if (handler != null)
+				handler.SetAccelGroup(null);
 		}
 
 		public void Clear()
