@@ -154,6 +154,9 @@ namespace Eto.GtkSharp.Drawing
 			context.Fill();
 			context.Restore();
 
+			if (EtoEnvironment.Platform.IsMac)
+				pattern.Dispose();
+
 			/*
 			Gdk.Pixbuf pb = Control;
 			

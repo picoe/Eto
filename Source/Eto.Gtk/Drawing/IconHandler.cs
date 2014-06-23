@@ -63,6 +63,9 @@ namespace Eto.GtkSharp.Drawing
 			pattern.Filter = graphics.ImageInterpolation.ToCairo();
 			context.Fill();
 			context.Restore();
+
+			if (EtoEnvironment.Platform.IsMac)
+				pattern.Dispose();
 		}
 
 		protected override void Dispose(bool disposing)

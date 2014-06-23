@@ -36,6 +36,8 @@ namespace Eto.GtkSharp.Drawing
 				}
 				else
 					graphics.Control.Fill();
+				if (EtoEnvironment.Platform.IsMac && surfacePattern != null)
+					surfacePattern.Dispose();
 			}
 		}
 
