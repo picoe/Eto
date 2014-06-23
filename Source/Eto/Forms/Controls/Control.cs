@@ -603,7 +603,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		[Obsolete("Use Control(IControl) instead")]
+		[Obsolete("Use Control(IHandler) instead")]
 		protected Control(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{

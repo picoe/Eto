@@ -285,7 +285,7 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Note that this method can be extremely slow to go through each pixel of a bitmap.
 		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
-		/// then optionally use <see cref="BitmapData.GetPixel"/> to get each pixel value.
+		/// then optionally use <see cref="BitmapData.GetPixel(Point)"/> to get each pixel value.
 		/// </remarks>
 		/// <returns>The color of the pixel.</returns>
 		/// <param name="position">Position to get the color of the pixel.</param>
@@ -300,7 +300,7 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Note that this method can be extremely slow to go through each pixel of a bitmap.
 		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
-		/// then optionally use <see cref="BitmapData.GetPixel"/> to get each pixel value.
+		/// then optionally use <see cref="BitmapData.GetPixel(int,int)"/> to get each pixel value.
 		/// </remarks>
 		/// <returns>The color of the pixel at the specified coordinates</returns>
 		/// <param name="x">The x coordinate</param>
@@ -316,7 +316,7 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Note that this method can be extremely slow to set each pixel of a bitmap.
 		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
-		/// then optionally use <see cref="BitmapData.SetPixel"/> to set each pixel value.
+		/// then optionally use <see cref="BitmapData.SetPixel(Point,Color)"/> to set each pixel value.
 		/// </remarks>
 		/// <param name="position">Position to set the pixel color.</param>
 		/// <param name="color">Color to set.</param>
@@ -331,7 +331,7 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Note that this method can be extremely slow to set each pixel of a bitmap.
 		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
-		/// then optionally use <see cref="BitmapData.SetPixel"/> to set each pixel value.
+		/// then optionally use <see cref="BitmapData.SetPixel(int,int,Color)"/> to set each pixel value.
 		/// </remarks>
 		/// <param name="x">The x coordinate of the pixel to set.</param>
 		/// <param name="y">The y coordinate of the pixel to set.</param>

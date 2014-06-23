@@ -28,8 +28,8 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddSeparateRow(null, new Label { Text = "Style:" }, BoldFont(), ItalicFont(), UnderlineFont(), StrikeoutFont(), null);
 
 			var tabs = new TabControl();
-			tabs.Pages.Add(new TabPage(Preview()) { Text = "Preview" });
-			tabs.Pages.Add(new TabPage(Metrics()) { Text = "Metrics" });
+			tabs.Pages.Add(new TabPage { Text = "Preview", Content = Preview() });
+			tabs.Pages.Add(new TabPage { Text = "Metrics", Content = Metrics() });
 
 			layout.Add(new Panel { MinimumSize = new Size(100, 150), Content = tabs}, yscale: true);
 			UpdatePreview(Fonts.Serif(18, FontStyle.Bold));

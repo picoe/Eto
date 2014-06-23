@@ -72,7 +72,7 @@ namespace Eto.Forms
 			void OnPaint(DrawableCell widget, DrawableCellPaintEventArgs e);
 		}
 
-		protected new class Callback : ICallback
+		protected class Callback : ICallback
 		{
 			public void OnPaint(DrawableCell widget, DrawableCellPaintEventArgs e)
 			{

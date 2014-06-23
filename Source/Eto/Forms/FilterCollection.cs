@@ -38,6 +38,10 @@ namespace Eto.Forms
 		IEnumerable<object> SelectedItems { get; set; }
 	}
 
+	/// <summary>
+	/// Interface for an object that can select multiple items and rows.
+	/// </summary>
+	/// <seealso cref="SelectableFilterCollection{T}"/>
 	public interface ISelectable<out T>
 	{
 		IEnumerable<T> SelectedItems { get; }
@@ -499,6 +503,11 @@ namespace Eto.Forms
 
 		#region IList<T> implementation
 
+		/// <summary>
+		/// Determines the index of a specific item in the collection.
+		/// </summary>
+		/// <returns>Index of the item if found, or -1 if not found.</returns>
+		/// <param name="item">Item to find the index of.</param>
 		public int IndexOf(T item)
 		{
 			return filtered != null ? filtered.IndexOf(item) : items.IndexOf(item);

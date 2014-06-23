@@ -32,9 +32,9 @@ namespace Eto.Test
 		public Section()
 		{
 		}
-	
+
 		public Section(string text, IEnumerable<Section> sections)
-			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase).ToArray())
+			: base(sections.OrderBy(r => r.Text, StringComparer.CurrentCultureIgnoreCase).ToArray())
 		{
 			this.Text = text;
 		}
@@ -101,7 +101,8 @@ namespace Eto.Test
 			var button = new Button { Text = string.Format("Show the {0} test", Text) };
 			var layout = new DynamicLayout();
 			layout.AddCentered(button);
-			button.Click += (sender, e) => {
+			button.Click += (sender, e) =>
+			{
 
 				try
 				{
@@ -242,7 +243,7 @@ namespace Eto.Test
 			get
 			{
 				var item = gridView.SelectedItem as MyItem;
-				return item != null ? item.Section as ISection: null;
+				return item != null ? item.Section as ISection : null;
 			}
 		}
 
@@ -253,14 +254,15 @@ namespace Eto.Test
 			gridView = new GridView { ShowCellBorders = false };
 			gridView.Columns.Add(new GridColumn { HeaderText = "Name", Width = 100, AutoSize = false, DataCell = new TextBoxCell("Name"), Sortable = true });
 			gridView.Columns.Add(new GridColumn { HeaderText = "Section", DataCell = new TextBoxCell("SectionName"), Sortable = true });
-			var items = new DataStoreCollection();
+			var items = new FilterCollection<MyItem>();
 			foreach (var section in topNodes)
-			{				
+			{
 				foreach (var test in section)
 				{
-					items.Add(new MyItem { 
-						Name = (test as ISectionName).Text,
-						SectionName = (section as ISectionName).Text, 
+					items.Add(new MyItem
+					{
+						Name = test.Text,
+						SectionName = section.Text,
 						Section = test,
 					});
 				}
@@ -273,26 +275,26 @@ namespace Eto.Test
 			layout.Add(gridView);
 
 			// Filter
-			filterText.TextChanged += (s, e) => {
+			filterText.TextChanged += (s, e) =>
+			{
 				var filterItems = (filterText.Text ?? "").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-				// Set the filter delegate on the GridView
-				gridView.Filter = (filterItems.Length == 0) ? (Func<object, bool>)null : o => {
-					var i = o as MyItem;
-					var matches = true;
+				if (filterItems.Length == 0)
+					items.Filter = null;
+				else
+					items.Filter = i =>
+					{
+						// Every item in the split filter string should be within the Text property
+						foreach (var filterItem in filterItems)
+							if (i.Name.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1 &&
+								i.SectionName.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
+							{
+								return false;
+							}
 
-					// Every item in the split filter string should be within the Text property
-					foreach (var filterItem in filterItems)
-						if (i.Name.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1 &&
-							i.SectionName.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
-						{
-							matches = false;
-							break;
-						}
-
-					return matches;
-				};
-			};			
+						return true;
+					};
+			};
 		}
 	}
 }
