@@ -173,7 +173,7 @@ namespace Eto.Mac
 
 		public static CGImage ToCG(this Image image)
 		{
-			using (var imageSource = CGImageSource.FromData (image.ToNS ().AsTiff ()))
+			using (var imageSource = CGImageSource.FromData(image.ToNS().AsTiff()))
 			{
 				return imageSource.CreateImage(0, null);
 			}
@@ -298,6 +298,32 @@ namespace Eto.Mac
 		public static SizeF ToEtoSize(this NSEdgeInsets insets)
 		{
 			return new SizeF(insets.Left + insets.Right, insets.Top + insets.Bottom);
+		}
+
+		public static CalendarMode ToEto(this NSDatePickerMode mode)
+		{
+			switch (mode)
+			{
+				case NSDatePickerMode.Single:
+					return CalendarMode.Single;
+				case NSDatePickerMode.Range:
+					return CalendarMode.Range;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static NSDatePickerMode ToNS(this CalendarMode mode)
+		{
+			switch (mode)
+			{
+				case CalendarMode.Single:
+					return NSDatePickerMode.Single;
+				case CalendarMode.Range:
+					return NSDatePickerMode.Range;
+				default:
+					throw new NotSupportedException();
+			}
 		}
 	}
 }

@@ -292,6 +292,7 @@
     </Compile>
     <Compile Include="Forms\Controls\ColorPicker.cs" />
     <Compile Include="Forms\FilterCollection.cs" />
+    <Compile Include="Forms\Controls\Calendar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

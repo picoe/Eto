@@ -303,6 +303,7 @@
     </Compile>
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
     <Compile Include="Win32TextBox.cs" />
+    <Compile Include="Forms\Controls\CalendarHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

@@ -122,6 +122,7 @@
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Cells\CellHandler.cs" />
     <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
+    <Compile Include="Forms\Controls\CalendarHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />

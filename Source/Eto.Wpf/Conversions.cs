@@ -525,5 +525,33 @@ namespace Eto.Wpf
 					throw new NotSupportedException();
 			}
 		}
+
+		public static CalendarMode ToEto(this swc.CalendarSelectionMode mode)
+		{
+			switch (mode)
+			{
+				case System.Windows.Controls.CalendarSelectionMode.SingleDate:
+					return CalendarMode.Single;
+				case System.Windows.Controls.CalendarSelectionMode.SingleRange:
+					return CalendarMode.Range;
+				case System.Windows.Controls.CalendarSelectionMode.MultipleRange:
+				case System.Windows.Controls.CalendarSelectionMode.None:
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static swc.CalendarSelectionMode ToWpf(this CalendarMode mode)
+		{
+			switch (mode)
+			{
+				case CalendarMode.Single:
+					return swc.CalendarSelectionMode.SingleDate;
+				case CalendarMode.Range:
+					return swc.CalendarSelectionMode.SingleRange;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

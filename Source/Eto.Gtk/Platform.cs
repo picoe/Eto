@@ -70,6 +70,7 @@ namespace Eto.GtkSharp
 
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
+			p.Add<Calendar.IHandler>(() => new CalendarHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());

@@ -243,6 +243,7 @@
     <Compile Include="Forms\Controls\GtkEnumerableModel.cs" />
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
+    <Compile Include="Forms\Controls\CalendarHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

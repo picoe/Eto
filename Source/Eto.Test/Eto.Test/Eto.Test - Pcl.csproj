@@ -151,9 +151,12 @@
     <Compile Include="UnitTests\Forms\Binding\ObjectBindingObjectChangedTests.cs" />
     <Compile Include="UnitTests\Drawing\ColorTests.cs" />
     <Compile Include="TestSections.cs" />
+    <Compile Include="Sections\Controls\CalendarSection.cs" />
     <Compile Include="UnitTests\Handlers\TestWidgetHandler.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestGridColumnHandler.cs" />
     <Compile Include="UnitTests\Handlers\Cells\TestTextBoxCellHandler.cs" />
+    <Compile Include="UnitTests\Handlers\Controls\TestCalendarHandler.cs" />
+    <Compile Include="UnitTests\Forms\Controls\CalendarTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\GridViewFilterTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\GridViewSelectableFilterTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\GridViewSelectTests.cs" />

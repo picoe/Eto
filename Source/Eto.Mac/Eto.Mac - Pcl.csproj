@@ -191,6 +191,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
+    <Compile Include="Forms\Controls\CalendarHandler.cs" />
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>
     </Compile>

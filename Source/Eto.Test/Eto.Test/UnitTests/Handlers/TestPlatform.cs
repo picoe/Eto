@@ -39,6 +39,7 @@ namespace Eto.Test.UnitTests.Handlers
 			p.Add<GridColumn.IHandler>(() => new TestGridColumnHandler());
 			p.Add<Label.IHandler>(() => new TestLabelHandler());
 			p.Add<TextBox.IHandler>(() => new TestTextBoxHandler());
+			p.Add<Calendar.IHandler>(() => new TestCalendarHandler());
 
 			p.Add<TableLayout.IHandler>(() => new TestTableLayoutHandler());
 			p.Add<Form.IHandler>(() => new TestFormHandler());

@@ -680,5 +680,15 @@ namespace Eto.WinForms
 		{
 			return document == null ? null : ((PrintDocumentHandler)document.Handler).Control;
 		}
+
+		public static Range<DateTime> ToEto(this swf.SelectionRange range)
+		{
+			return new Range<DateTime>(range.Start, range.End);
+		}
+
+		public static swf.SelectionRange ToSWF(this Range<DateTime> range)
+		{
+			return range != null ? new swf.SelectionRange(range.Start, range.End) : null;
+		}
 	}
 }

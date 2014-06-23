@@ -25,7 +25,7 @@ namespace Eto.Mac
 		public static DateTime? ToEto (this NSDate date)
 		{
 			if (date == null) return null;
-			return new DateTime ((long)(date.SecondsSinceReferenceDate * TimeSpan.TicksPerSecond + ReferenceDate.Ticks), DateTimeKind.Utc).ToLocalTime ();
+			return new DateTime ((long)(date.SecondsSinceReferenceDate * (double)TimeSpan.TicksPerSecond + (double)ReferenceDate.Ticks), DateTimeKind.Utc).ToLocalTime ();
 		}
 		
 	}
