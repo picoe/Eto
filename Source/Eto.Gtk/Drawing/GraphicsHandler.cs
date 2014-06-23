@@ -119,11 +119,11 @@ namespace Eto.GtkSharp.Drawing
 					{
 						var srcrow = (byte*)surface.DataPtr;
 						var destrow = (byte*)bd.Data;
-						for (int y=0; y<image.Size.Height; y++)
+						for (int y = 0; y < image.Size.Height; y++)
 						{
 							var src = (int*)srcrow;
 							var dest = (int*)destrow;
-							for (int x=0; x<image.Size.Width; x++)
+							for (int x = 0; x < image.Size.Width; x++)
 							{
 								*dest = bd.TranslateArgbToData(*src);
 								dest++;
@@ -284,7 +284,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
-			using (var layout = CreateLayout ())
+			using (var layout = CreateLayout())
 			{
 				font.Apply(layout);
 				layout.SetText(text);
@@ -299,7 +299,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public SizeF MeasureString(Font font, string text)
 		{
-			using (var layout = CreateLayout ())
+			using (var layout = CreateLayout())
 			{
 				font.Apply(layout);
 				layout.SetText(text);
@@ -381,7 +381,16 @@ namespace Eto.GtkSharp.Drawing
 
 		public RectangleF ClipBounds
 		{
-			get { return clipBounds ?? RectangleF.Empty; }
+			get
+			{ 
+				var bounds = clipBounds ?? (widget != null ? (RectangleF)widget.Allocation.ToEto() : RectangleF.Empty);
+				var matrix = Control.Matrix;
+				if (matrix.IsIdentity())
+					return bounds;
+				var etoMatrix = matrix.ToEto();
+				etoMatrix.Invert();
+				return etoMatrix.TransformRectangle(bounds);
+			}
 		}
 
 		public void SetClip(RectangleF rectangle)

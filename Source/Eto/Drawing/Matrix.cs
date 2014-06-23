@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Eto.Drawing
 {
@@ -391,7 +392,7 @@ namespace Eto.Drawing
 		{
 			matrix.Translate (offset.X, offset.Y);
 		}
-		
+
 		/// <summary>
 		/// Prepend a scale to the matrix from the origin (0, 0)
 		/// </summary>
@@ -474,6 +475,28 @@ namespace Eto.Drawing
 		public static PointF GetScale(this IMatrix matrix)
 		{
 			return new PointF(matrix.Xx, matrix.Yy);
+		}
+
+		/// <summary>
+		/// Transforms the rectangle with the current matrix.
+		/// </summary>
+		/// <remarks>
+		/// This returns a rectangle that encompasses the specified <paramref name="rect"/> after it is translated.
+		/// When rotating, this means that the new rectangle may be larger in size to encompass the translated rectangle.
+		/// </remarks>
+		/// <returns>A new rectangle that encompasses the translated <paramref name="rect"/>.</returns>
+		/// <param name="matrix">Matrix to transform each point of the rectangle.</param>
+		/// <param name="rect">Rectangle to transform.</param>
+		public static RectangleF TransformRectangle(this IMatrix matrix, RectangleF rect)
+		{
+			var points = new[]
+			{
+				matrix.TransformPoint(rect.TopLeft),
+				matrix.TransformPoint(rect.TopRight),
+				matrix.TransformPoint(rect.BottomLeft),
+				matrix.TransformPoint(rect.BottomRight)
+			};
+			return RectangleF.FromSides(points.Min(r => r.X), points.Min(r => r.Y), points.Max(r => r.X), points.Max(r => r.Y));
 		}
 
 		#pragma warning disable 612,618
