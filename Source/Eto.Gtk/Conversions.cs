@@ -281,14 +281,14 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public static Gtk.PageRange ToGtkPageRange(this Range range)
+		public static Gtk.PageRange ToGtkPageRange(this Range<int> range)
 		{
 			return new Gtk.PageRange { Start = range.Start - 1, End = range.End - 1 };
 		}
 
-		public static Range ToEto(this Gtk.PageRange range)
+		public static Range<int> ToEto(this Gtk.PageRange range)
 		{
-			return new Range(range.Start + 1, range.End - range.Start + 1);
+			return new Range<int>(range.Start + 1, range.End);
 		}
 
 		public static Gtk.PrintPages ToGtk(this PrintSelection value)

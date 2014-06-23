@@ -100,7 +100,7 @@ namespace Eto.Forms
 		/// Gets or sets the maximum page range the user can select.
 		/// </summary>
 		/// <value>The maximum page range.</value>
-		public Range MaximumPageRange
+		public Range<int> MaximumPageRange
 		{
 			get { return Handler.MaximumPageRange; }
 			set { Handler.MaximumPageRange = value; }
@@ -113,7 +113,7 @@ namespace Eto.Forms
 		/// This will control which pages get rendered with the <see cref="PrintDocument.PrintPage"/>
 		/// </remarks>
 		/// <value>The selected page range.</value>
-		public Range SelectedPageRange
+		public Range<int> SelectedPageRange
 		{
 			get { return Handler.SelectedPageRange; }
 			set { Handler.SelectedPageRange = value; }
@@ -185,13 +185,13 @@ namespace Eto.Forms
 			/// Gets or sets the maximum page range the user can select.
 			/// </summary>
 			/// <value>The maximum page range.</value>
-			Range MaximumPageRange { get; set; }
+			Range<int> MaximumPageRange { get; set; }
 
 			/// <summary>
 			/// Gets or sets the user's selected page range.
 			/// </summary>
 			/// <value>The selected page range.</value>
-			Range SelectedPageRange { get; set; }
+			Range<int> SelectedPageRange { get; set; }
 
 			/// <summary>
 			/// Gets or sets the print selection mode

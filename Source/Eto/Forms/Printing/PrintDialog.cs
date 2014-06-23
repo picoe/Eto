@@ -46,7 +46,7 @@ namespace Eto.Forms
 		public DialogResult ShowDialog(Control parent, PrintDocument document)
 		{
 			PrintSettings = document.PrintSettings;
-			PrintSettings.MaximumPageRange = new Range(1, document.PageCount);
+			PrintSettings.MaximumPageRange = new Range<int>(1, document.PageCount);
 			Handler.Document = document;
 			var result = ShowDialog(parent);
 			if (result == DialogResult.Ok)

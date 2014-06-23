@@ -235,8 +235,7 @@ namespace Eto.Test.Sections.Printing
 			{
 				var range = settings.MaximumPageRange;
 				var end = range.End;
-				range.Start = (int)control.Value;
-				range.End = Math.Max(end, range.Start);
+				range = new Range<int>((int)control.Value, Math.Max(end, range.Start));
 				maximumEnd.MinValue = control.Value;
 				maximumEnd.Value = range.End;
 				settings.MaximumPageRange = range;
@@ -254,8 +253,7 @@ namespace Eto.Test.Sections.Printing
 			control.ValueChanged += delegate
 			{
 				var range = settings.MaximumPageRange;
-				range.End = (int)control.Value;
-				settings.MaximumPageRange = range;
+				settings.MaximumPageRange = new Range<int>(range.Start, (int)control.Value);
 			};
 			return control;
 		}
@@ -271,8 +269,7 @@ namespace Eto.Test.Sections.Printing
 			{
 				var range = settings.SelectedPageRange;
 				var end = range.End;
-				range.Start = (int)control.Value;
-				range.End = Math.Max(range.Start, end);
+				range = new Range<int>((int)control.Value, Math.Max(range.Start, end));
 				selectedEnd.MinValue = control.Value;
 				selectedEnd.Value = range.End;
 				settings.SelectedPageRange = range;
@@ -290,8 +287,7 @@ namespace Eto.Test.Sections.Printing
 			control.ValueChanged += delegate
 			{
 				var range = settings.SelectedPageRange;
-				range.End = (int)control.Value;
-				settings.SelectedPageRange = range;
+				settings.SelectedPageRange = new Range<int>(range.Start, (int)control.Value);
 			};
 			return control;
 		}

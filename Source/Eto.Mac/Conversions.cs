@@ -27,14 +27,14 @@ namespace Eto.Mac
 			return new Color(red, green, blue, alpha);
 		}
 
-		public static NSRange ToNS(this Range range)
+		public static NSRange ToNS(this Range<int> range)
 		{
-			return new NSRange(range.Start, range.Length);
+			return new NSRange(range.Start, range.End - range.Start + 1);
 		}
 
-		public static Range ToEto(this NSRange range)
+		public static Range<int> ToEto(this NSRange range)
 		{
-			return new Range(range.Location, range.Length);
+			return new Range<int>(range.Location, range.Location + range.Length - 1);
 		}
 
 		public static NSImageInterpolation ToNS(this ImageInterpolation value)

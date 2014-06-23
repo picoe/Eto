@@ -55,7 +55,7 @@ namespace Eto.GtkSharp
 
 		protected class TextAreaConnector : GtkControlConnector
 		{
-			Range? lastSelection;
+			Range<int> lastSelection;
 			int? lastCaretIndex;
 			public new TextAreaHandler Handler { get { return (TextAreaHandler)base.Handler; } }
 
@@ -164,20 +164,20 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public Range Selection
+		public Range<int> Selection
 		{
 			get
 			{
 				Gtk.TextIter start, end;
 				if (Control.Buffer.GetSelectionBounds(out start, out end))
-					return new Range(start.Offset, end.Offset - start.Offset);
-				return new Range(Control.Buffer.CursorPosition, 0);
+					return new Range<int>(start.Offset, end.Offset);
+				return new Range<int>(Control.Buffer.CursorPosition, 0);
 			}
 			set
 			{
 				sendSelectionChanged = false;
 				var start = Control.Buffer.GetIterAtOffset(value.Start);
-				var end = Control.Buffer.GetIterAtOffset(value.Start + value.Length);
+				var end = Control.Buffer.GetIterAtOffset(value.End);
 				Control.Buffer.SelectRange(start, end);
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				sendSelectionChanged = true;

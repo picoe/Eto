@@ -155,7 +155,7 @@ namespace Eto.Forms
 		/// </remarks>
 		/// <seealso cref="SelectAll"/>
 		/// <value>The text selection.</value>
-		public Range Selection
+		public Range<int> Selection
 		{
 			get { return Handler.Selection; }
 			set { Handler.Selection = value; }
@@ -297,7 +297,7 @@ namespace Eto.Forms
 			/// </summary>
 			/// <seealso cref="SelectAll"/>
 			/// <value>The text selection.</value>
-			Range Selection { get; set; }
+			Range<int> Selection { get; set; }
 
 			/// <summary>
 			/// Selects all text.

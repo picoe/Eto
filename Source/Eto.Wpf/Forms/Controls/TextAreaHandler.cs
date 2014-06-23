@@ -100,10 +100,10 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.SelectedText = value; }
 		}
 
-		public Range Selection
+		public Range<int> Selection
 		{
-			get { return new Range (Control.SelectionStart, Control.SelectionLength); }
-			set { Control.Select (value.Start, value.Length); }
+			get { return new Range<int>(Control.SelectionStart, Control.SelectionStart + Control.SelectionLength - 1); }
+			set { Control.Select (value.Start, value.End - value.Start + 1); }
 		}
 
 		public void SelectAll ()

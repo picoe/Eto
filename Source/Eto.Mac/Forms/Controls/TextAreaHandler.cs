@@ -11,7 +11,7 @@ namespace Eto.Mac.Forms.Controls
 	public class TextAreaHandler : MacView<NSTextView, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
-		Range? lastSelection;
+		Range<int> lastSelection;
 
 		public class EtoTextView : NSTextView, IMacControl
 		{
@@ -225,7 +225,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public Range Selection
+		public Range<int> Selection
 		{
 			get { return Control.SelectedRange.ToEto(); }
 			set { Control.SelectedRange = value.ToNS(); }

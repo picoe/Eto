@@ -274,14 +274,14 @@ namespace Eto.Wpf
 			}
 		}
 
-		public static swc.PageRange ToPageRange(this Range range)
+		public static swc.PageRange ToPageRange(this Range<int> range)
 		{
 			return new swc.PageRange(range.Start, range.End);
 		}
 
-		public static Range ToEto(this swc.PageRange range)
+		public static Range<int> ToEto(this swc.PageRange range)
 		{
-			return new Range(range.PageFrom, range.PageTo - range.PageFrom + 1);
+			return new Range<int>(range.PageFrom, range.PageTo);
 		}
 
 		public static swc.PageRangeSelection ToSWC(this PrintSelection value)

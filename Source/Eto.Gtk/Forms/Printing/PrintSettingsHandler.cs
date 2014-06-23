@@ -32,13 +32,13 @@ namespace Eto.GtkSharp.Forms.Printing
 		{
 			Control = new Gtk.PrintSettings();
 			PageSetup = new Gtk.PageSetup();
-			MaximumPageRange = new Range(1, 1);
+			MaximumPageRange = new Range<int>(1, 1);
 			Collate = true;
 		}
 
 		public PrintSettingsHandler (Gtk.PrintSettings settings, Gtk.PageSetup setup, bool selectionOnly)
 		{
-			MaximumPageRange = new Range(1, 1);
+			MaximumPageRange = new Range<int>(1, 1);
 			Set (settings, setup, selectionOnly);
 		}
 
@@ -54,11 +54,13 @@ namespace Eto.GtkSharp.Forms.Printing
 			set { Control.NCopies = value; }
 		}
 
-		public Range MaximumPageRange {
+		public Range<int> MaximumPageRange
+		{
 			get; set;
 		}
 
-		public Range SelectedPageRange {
+		public Range<int> SelectedPageRange
+		{
 			get {
 				int num_ranges;
 				return Control.GetPageRanges (out num_ranges).ToEto ();

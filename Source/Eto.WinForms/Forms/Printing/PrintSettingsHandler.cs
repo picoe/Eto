@@ -27,9 +27,9 @@ namespace Eto.WinForms.Forms.Printing
 			set { Control.Copies = (short)value; }
 		}
 
-		public Range MaximumPageRange
+		public Range<int> MaximumPageRange
 		{
-			get { return new Range(Control.MinimumPage, Control.MaximumPage - Control.MinimumPage + 1); }
+			get { return new Range<int>(Control.MinimumPage, Control.MaximumPage); }
 			set
 			{
 				Control.MinimumPage = value.Start;
@@ -37,9 +37,9 @@ namespace Eto.WinForms.Forms.Printing
 			}
 		}
 
-		public Range SelectedPageRange
+		public Range<int> SelectedPageRange
 		{
-			get { return new Range(Control.FromPage, Control.ToPage - Control.FromPage + 1); }
+			get { return new Range<int>(Control.FromPage, Control.ToPage); }
 			set
 			{
 				Control.FromPage = value.Start;

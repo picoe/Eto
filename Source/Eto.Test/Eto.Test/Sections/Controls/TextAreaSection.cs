@@ -63,7 +63,7 @@ namespace Eto.Test.Sections.Controls
 			control.Click += (sender, e) => {
 				var text = textArea.Text;
 				// select the last half of the text
-				textArea.Selection = new Range(text.Length / 2, text.Length / 2 + 1);
+				textArea.Selection = new Range<int>(text.Length / 2, text.Length / 2 + 1);
 				textArea.Focus();
 			};
 			return control;

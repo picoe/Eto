@@ -44,7 +44,7 @@ namespace Eto.Wpf.Forms.Printing
 			{
 				var handler = (PrintSettingsHandler)settings.Handler;
 				handler.PrintQueue = dialog.PrintQueue;
-				handler.MaximumPageRange = new Range((int)dialog.MinPage, (int)dialog.MaxPage);
+				handler.MaximumPageRange = new Range<int>((int)dialog.MinPage, (int)dialog.MaxPage);
 				handler.SelectedPageRange = dialog.PageRange.ToEto();
 				handler.PrintSelection = dialog.PageRangeSelection.ToEto();
 			}
@@ -62,7 +62,7 @@ namespace Eto.Wpf.Forms.Printing
 		{
 			Control = dialog.PrintTicket;
 			PrintQueue = dialog.PrintQueue;
-			MaximumPageRange = new Range((int)dialog.MinPage, (int)(dialog.MaxPage - dialog.MinPage) + 1);
+			MaximumPageRange = new Range<int>((int)dialog.MinPage, (int)dialog.MaxPage);
 			SelectedPageRange = dialog.PageRange.ToEto();
 			PrintSelection = dialog.PageRangeSelection.ToEto();
 		}
@@ -71,8 +71,8 @@ namespace Eto.Wpf.Forms.Printing
 		{
 			Control = new sp.PrintTicket();
 			PrintQueue = new swc.PrintDialog().PrintQueue;
-			MaximumPageRange = new Range(1, 1);
-			SelectedPageRange = new Range(1, 1);
+			MaximumPageRange = new Range<int>(1, 1);
+			SelectedPageRange = new Range<int>(1, 1);
 			Collate = true;
 			PrintSelection = PrintSelection.AllPages;
 		}
@@ -83,9 +83,9 @@ namespace Eto.Wpf.Forms.Printing
 			set { Control.CopyCount = value; }
 		}
 
-		public Range MaximumPageRange { get; set; }
+		public Range<int> MaximumPageRange { get; set; }
 
-		public Range SelectedPageRange { get; set; }
+		public Range<int> SelectedPageRange { get; set; }
 
 		public bool Collate
 		{

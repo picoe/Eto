@@ -18,8 +18,8 @@ namespace Eto.Mac.Forms.Printing
 		public PrintSettingsHandler()
 		{
 			Control = new NSPrintInfo();
-			MaximumPageRange = new Range(1, 1);
-			SelectedPageRange = new Range(1, 1);
+			MaximumPageRange = new Range<int>(1, 1);
+			SelectedPageRange = new Range<int>(1, 1);
 		}
 
 		public int Copies
@@ -28,14 +28,14 @@ namespace Eto.Mac.Forms.Printing
 			set { Control.PrintSettings["com_apple_print_PrintSettings_PMCopies"] = new NSNumber(value); }
 		}
 
-		public Range MaximumPageRange
+		public Range<int> MaximumPageRange
 		{
 			get
 			{
 				var range = ((NSArray)Control.PrintSettings["com_apple_print_PrintSettings_PMPageRange"]);
 				var firstPage = new NSNumber(range.ValueAt(0)).Int32Value;
 				var lastPage = new NSNumber(range.ValueAt(1)).Int32Value;
-				return new Range(firstPage, lastPage - firstPage + 1);
+				return new Range<int>(firstPage, lastPage - firstPage + 1);
 			}
 			set
 			{
@@ -44,19 +44,19 @@ namespace Eto.Mac.Forms.Printing
 			}
 		}
 
-		public Range SelectedPageRange
+		public Range<int> SelectedPageRange
 		{
 			get
 			{
 				if (IsAllPages)
 				{
-					return new Range(firstSelectedPage, lastSelectedPage - firstSelectedPage + 1);
+					return new Range<int>(firstSelectedPage, lastSelectedPage);
 				}
 				else
 				{
 					var firstPage = ((NSNumber)Control.PrintSettings["com_apple_print_PrintSettings_PMFirstPage"]).Int32Value;
 					var lastPage = ((NSNumber)Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"]).Int32Value;
-					return new Range(firstPage, lastPage - firstPage + 1);
+					return new Range<int>(firstPage, lastPage);
 				}
 			}
 			set
