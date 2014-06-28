@@ -22,11 +22,11 @@ namespace Eto.WinForms.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IWindowsImage : IWindowsImageSource
 	{
-		void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
+		void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination);
 
-		void DrawImage (GraphicsHandler graphics, float x, float y);
+		void DrawImage(GraphicsHandler graphics, float x, float y);
 
-		void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height);
+		void DrawImage(GraphicsHandler graphics, float x, float y, float width, float height);
 	}
 
 	/// <summary>
@@ -37,7 +37,7 @@ namespace Eto.WinForms.Drawing
 	public class BitmapDataHandler : BitmapData
 	{
 		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
-			: base (image, data, scanWidth, bitsPerPixel, controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -99,7 +99,7 @@ namespace Eto.WinForms.Drawing
 				case PixelFormat.Format24bppRgb:
 					sdPixelFormat = SD.Imaging.PixelFormat.Format24bppRgb;
 					break;
-				/*case PixelFormat.Format16bppRgb555:
+			/*case PixelFormat.Format16bppRgb555:
 					sdPixelFormat = SD.Imaging.PixelFormat.Format16bppRgb555;
 					break;*/
 				case PixelFormat.Format32bppRgba:
@@ -116,23 +116,23 @@ namespace Eto.WinForms.Drawing
 			Control = new SD.Bitmap(width, height, GraphicsHandler.GetControl(graphics));
 		}
 
-		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
+		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
-			var source = image.ToSD ();
+			var source = image.ToSD();
 			var pixelFormat = source.PixelFormat;
-			if (EtoEnvironment.Platform.IsMono && (
+			if (
 				pixelFormat == SD.Imaging.PixelFormat.Indexed
 				|| pixelFormat == SD.Imaging.PixelFormat.Format1bppIndexed
 				|| pixelFormat == SD.Imaging.PixelFormat.Format4bppIndexed
-				|| pixelFormat == SD.Imaging.PixelFormat.Format8bppIndexed
-			))
+				|| pixelFormat == SD.Imaging.PixelFormat.Format8bppIndexed)
 				pixelFormat = SD.Imaging.PixelFormat.Format32bppRgb;
-			Control = new SD.Bitmap (width, height, pixelFormat);
-			using (var graphics = SD.Graphics.FromImage(Control)) {
-				graphics.InterpolationMode = interpolation.ToSD ();
-				var rect = new SD.Rectangle (0, 0, width, height);
-				graphics.FillRectangle (SD.Brushes.Transparent, rect);
-				graphics.DrawImage (source, rect);
+			Control = new SD.Bitmap(width, height, pixelFormat);
+			using (var graphics = SD.Graphics.FromImage(Control))
+			{
+				graphics.InterpolationMode = interpolation.ToSD();
+				var rect = new SD.Rectangle(0, 0, width, height);
+				graphics.FillRectangle(SD.Brushes.Transparent, rect);
+				graphics.DrawImage(source, rect);
 			}
 		}
 
@@ -151,19 +151,20 @@ namespace Eto.WinForms.Drawing
 		{
 			Control.UnlockBits((SD.Imaging.BitmapData)bitmapData.ControlObject);
 		}
-		
+
 		public void Save(Stream stream, ImageFormat format)
 		{
 			if (format == ImageFormat.Gif)
 			{
-				var quantizer = new OctreeQuantizer (255, 8);
+				var quantizer = new OctreeQuantizer(255, 8);
 				var gif = quantizer.Quantize(Control);
-				gif.Save(stream, format.ToSD ());
+				gif.Save(stream, format.ToSD());
 			}
-			else  Control.Save(stream, format.ToSD ());
+			else
+				Control.Save(stream, format.ToSD());
 		}
 
-		public SD.Image GetImageWithSize (int? size)
+		public SD.Image GetImageWithSize(int? size)
 		{
 			if (size != null)
 			{
@@ -178,9 +179,9 @@ namespace Eto.WinForms.Drawing
 		{
 			SD.Bitmap copy;
 			if (rectangle == null)
-				copy = (SD.Bitmap)Control.Clone ();
+				copy = (SD.Bitmap)Control.Clone();
 			else
-				copy = Control.Clone (rectangle.Value.ToSD(), Control.PixelFormat);
+				copy = Control.Clone(rectangle.Value.ToSD(), Control.PixelFormat);
 
 			return new Bitmap(new BitmapHandler(copy));
 		}
@@ -190,19 +191,19 @@ namespace Eto.WinForms.Drawing
 			return Control.GetPixel(x, y).ToEto();
 		}
 
-		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		public void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			graphics.Control.DrawImage (Control, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
+			graphics.Control.DrawImage(Control, destination.ToSD(), source.ToSD(), SD.GraphicsUnit.Pixel);
 		}
 
-		public void DrawImage (GraphicsHandler graphics, float x, float y)
+		public void DrawImage(GraphicsHandler graphics, float x, float y)
 		{
-			graphics.Control.DrawImage (Control, x, y);
+			graphics.Control.DrawImage(Control, x, y);
 		}
 
-		public void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
+		public void DrawImage(GraphicsHandler graphics, float x, float y, float width, float height)
 		{
-			graphics.Control.DrawImage (Control, x, y, width, height);
+			graphics.Control.DrawImage(Control, x, y, width, height);
 		}
 	}
 }
