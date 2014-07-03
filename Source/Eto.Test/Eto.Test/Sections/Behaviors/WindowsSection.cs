@@ -1,6 +1,7 @@
 using Eto.Drawing;
 using Eto.Forms;
 using System;
+using System.Linq;
 
 namespace Eto.Test.Sections.Behaviors
 {
@@ -167,64 +168,66 @@ namespace Eto.Test.Sections.Behaviors
 			child.SizeChanged += child_SizeChanged;
 			bringToFrontButton.Enabled = true;
 			child.Show();
+			// show that the child is now referenced
+			Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count());
 		}
 
 		void child_Closed(object sender, EventArgs e)
 		{
 			Log.Write(child, "Closed");
-			child.WindowStateChanged -= child_WindowStateChanged;
 			child.Closed -= child_Closed;
-			child.Closing -= child_Closing;
-			child.Shown -= child_Shown;
-			child.GotFocus -= child_GotFocus;
-			child.LostFocus -= child_LostFocus;
-			child.LocationChanged -= child_LocationChanged;
-			child.SizeChanged -= child_SizeChanged;
 			bringToFrontButton.Enabled = false;
 			child = null;
+			// write out number of open windows after the closed event is called
+			Application.Instance.AsyncInvoke(() => Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count()));
 		}
 
-		void child_Closing(object sender, EventArgs e)
+		static void child_Closing(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "Closing");
 		}
 
-		void child_LocationChanged(object sender, EventArgs e)
+		static void child_LocationChanged(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "LocationChanged: {0}", child.Location);
 		}
 
-		void child_SizeChanged(object sender, EventArgs e)
+		static void child_SizeChanged(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "SizeChanged: {0}", child.Size);
 		}
 
-		void child_LostFocus(object sender, EventArgs e)
+		static void child_LostFocus(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "LostFocus");
 		}
 
-		void child_GotFocus(object sender, EventArgs e)
+		static void child_GotFocus(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "GotFocus");
 		}
 
-		void child_Shown(object sender, EventArgs e)
+		static void child_Shown(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "Shown");
 		}
 
-		void child_WindowStateChanged(object sender, EventArgs e)
+		static void child_WindowStateChanged(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "StateChanged: {0}", child.WindowState);
 		}
 
 		Control CreateChildWindowButton()
 		{
 			var control = new Button { Text = "Create Child Window" };
-			control.Click += (sender, e) => {
-				CreateChild();
-			};
+			control.Click += (sender, e) => CreateChild();
 			return control;
 		}
 

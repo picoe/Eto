@@ -98,6 +98,24 @@ namespace Eto.Forms
 			}
 		}
 
+		List<Window> windows = new List<Window>();
+
+		internal void AddWindow(Window window)
+		{
+			window.Closed += HandleClosed;
+			windows.Add(window);
+		}
+
+		void HandleClosed(object sender, EventArgs e)
+		{
+			var window = (Window)sender;
+			window.Closed -= HandleClosed;
+			if (windows.Contains(window))
+				windows.Remove(window);
+		}
+
+		public IEnumerable<Window> Windows { get { return windows; } }
+
 		/// <summary>
 		/// Gets or sets the name of your application
 		/// </summary>

@@ -209,6 +209,7 @@ namespace Eto.Forms
 				OnLoadComplete(EventArgs.Empty);
 			}
 
+			Application.Instance.AddWindow(this);
 			Handler.ShowModal(parent);
 		}
 

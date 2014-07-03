@@ -52,7 +52,8 @@ namespace Eto.Forms
 				OnDataContextChanged(EventArgs.Empty);
 				OnLoadComplete(EventArgs.Empty);
 			}
-			
+
+			Application.Instance.AddWindow(this);
 			Handler.Show();
 		}
 

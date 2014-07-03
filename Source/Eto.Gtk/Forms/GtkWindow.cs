@@ -246,6 +246,8 @@ namespace Eto.GtkSharp
 			public void HandleWindowStateEvent(object o, Gtk.WindowStateEventArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				var windowState = handler.WindowState;
 				if (windowState == WindowState.Normal)
 				{

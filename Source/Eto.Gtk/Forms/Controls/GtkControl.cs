@@ -497,7 +497,10 @@ namespace Eto.GtkSharp
 
 			public void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
 			{
-				Handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
+				// Handler can be null here after window is closed
+				var handler = Handler;
+				if (handler != null)
+					handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
 			}
 
 			public void VisibilityNotifyEvent(object o, Gtk.VisibilityNotifyEventArgs args)
