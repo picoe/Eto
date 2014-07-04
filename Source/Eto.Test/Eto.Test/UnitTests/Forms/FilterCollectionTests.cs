@@ -9,6 +9,7 @@ namespace Eto.Test.UnitTests.Forms
 	/// <summary>
 	/// <see cref="FilterCollection{T}"/> tests
 	/// </summary>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TestFixture]

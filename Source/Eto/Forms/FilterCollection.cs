@@ -76,6 +76,7 @@ namespace Eto.Forms
 	/// or from this class directly.
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SelectableFilterCollection<T> : FilterCollection<T>, ISelectable<T>
 	{

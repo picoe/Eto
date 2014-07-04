@@ -13,6 +13,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	/// Unit tests for a GridView using a <see cref="FilterCollection{T}"/>
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TestFixture]
 	public class GridViewFilterTests
