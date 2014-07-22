@@ -22,6 +22,8 @@ namespace Eto.Mac
 		{
 			if (color == null)
 				return Colors.Black;
+			if (color.ColorSpace.ColorSpaceModel != NSColorSpaceModel.RGB)
+				color = color.UsingColorSpace(NSColorSpace.CalibratedRGB);
 			float red, green, blue, alpha;
 			color.GetRgba(out red, out green, out blue, out alpha);
 			return new Color(red, green, blue, alpha);
