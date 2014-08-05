@@ -4,6 +4,12 @@ using Eto.Drawing;
 
 namespace Eto.Test.UnitTests.Handlers.Controls
 {
+	interface IControlHandler
+	{
+		void OnShown();
+		Size GetPreferredSize();
+		void SetBounds(Rectangle rect);
+	}
 
 	public class TestControlHandler : TestWidgetHandler, Control.IHandler, IControlHandler
 	{
