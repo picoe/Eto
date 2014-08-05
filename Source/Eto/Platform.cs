@@ -74,6 +74,14 @@ namespace Eto
 			return (T)value;
 		}
 
+		internal void SetSharedProperty(object key, object value)
+		{
+			lock (properties)
+			{
+				properties[key] = value;
+			}
+		}
+
 		#region Events
 
 		/// <summary>

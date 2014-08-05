@@ -16,11 +16,21 @@ namespace Eto.Forms
 	[Handler(typeof(Application.IHandler))]
 	public class Application : Widget
 	{
+		static readonly object ApplicationKey = new object();
+
 		/// <summary>
 		/// Gets the current application instance
 		/// </summary>
 		/// <value>The instance.</value>
-		public static Application Instance { get; private set; }
+		public static Application Instance
+		{
+			get
+			{ 
+				var platform = Platform.Instance;
+				return platform != null ? platform.GetSharedProperty<Application>(ApplicationKey, () => null) : null;
+			}
+			private set { Platform.Instance.SetSharedProperty(ApplicationKey, value); }
+		}
 
 		/// <summary>
 		/// Occurs when the application is initialized
