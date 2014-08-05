@@ -126,7 +126,11 @@ namespace Eto.Test.Sections.Controls
 				Log.Write(control, "Click, Item: {0}", control.Text);
 			};
 		}
+	}
 
+	[Section("Controls", "Tab Control (themed)")]
+	public class ThemedTabControlSection : TabControlSection
+	{
 		/// <summary>
 		/// Gets the platform with a themed tab control.
 		/// </summary>
@@ -143,6 +147,14 @@ namespace Eto.Test.Sections.Controls
 				platform.Add<TabPage.IHandler>(() => new Eto.Test.Handlers.TabPageHandler());
 
 				return platform;
+			}
+		}
+
+		public override Control Create()
+		{
+			using (ThemedPlatform.Context)
+			{
+				return base.Create();
 			}
 		}
 	}
