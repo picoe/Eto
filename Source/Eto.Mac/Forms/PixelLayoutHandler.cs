@@ -6,6 +6,19 @@ using SD = System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Mac.Forms.Controls;
+using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -20,13 +33,13 @@ namespace Eto.Mac.Forms
 			Control = new MacEventView { Handler = this };
 		}
 
-		public SD.RectangleF GetPosition(Control control)
+		public NSRect GetPosition(Control control)
 		{
 			PointF point;
 			if (points.TryGetValue(control, out point))
 			{
 				var frameSize = ((NSView)control.ControlObject).Frame.Size;
-				return new SD.RectangleF(point.ToSD(), frameSize);
+				return new NSRect(point.ToNS(), frameSize);
 			}
 			return control.GetContainerView().Frame;
 		}
@@ -67,19 +80,19 @@ namespace Eto.Mac.Forms
 			
 			var preferredSize = control.GetPreferredSize(Control.Frame.Size.ToEtoSize());
 
-			SD.PointF origin;
+			NSPoint origin;
 			if (flipped)
-				origin = new System.Drawing.PointF(
+				origin = new NSPoint(
 					point.X + offset.Width,
 					point.Y + offset.Height
 				);
 			else
-				origin = new System.Drawing.PointF(
+				origin = new NSPoint(
 					point.X + offset.Width,
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
 				);
-			
-			var frame = new SD.RectangleF(origin, preferredSize.ToSD());
+
+			var frame = new NSRect(origin, preferredSize.ToNS());
 			if (frame != childView.Frame)
 			{
 				childView.Frame = frame;
@@ -95,7 +108,7 @@ namespace Eto.Mac.Forms
 			var flipped = Control.IsFlipped;
 			foreach (var item in controlPoints)
 			{
-				SetPosition(item.Key, item.Value, frameHeight, flipped);
+				SetPosition(item.Key, item.Value, (float)frameHeight, flipped);
 			}
 		}
 
@@ -107,7 +120,7 @@ namespace Eto.Mac.Forms
 			if (Widget.Loaded)
 			{
 				var frameHeight = Control.Frame.Height;
-				SetPosition(child, location, frameHeight, Control.IsFlipped);
+				SetPosition(child, location, (float)frameHeight, Control.IsFlipped);
 			}
 			Control.AddSubview(childView);
 			if (Widget.Loaded)
@@ -123,7 +136,7 @@ namespace Eto.Mac.Forms
 				if (Widget.Loaded)
 				{
 					var frameHeight = Control.Frame.Height;
-					SetPosition(child, location, frameHeight, Control.IsFlipped);
+					SetPosition(child, location, (float)frameHeight, Control.IsFlipped);
 					LayoutParent();
 				}
 			}

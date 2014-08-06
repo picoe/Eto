@@ -4,6 +4,18 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -17,7 +29,7 @@ namespace Eto.Mac.Forms.Controls
 
 		int RowCount { get; }
 
-		System.Drawing.RectangleF GetVisibleRect();
+		NSRect GetVisibleRect();
 
 		void OnCellFormatting(GridColumn column, object item, int row, NSCell cell);
 	}
@@ -70,7 +82,7 @@ namespace Eto.Mac.Forms.Controls
 			var handler = DataViewHandler;
 			if (AutoSize && handler != null)
 			{
-				float width = Control.DataCell.CellSize.Width;
+				var width = Control.DataCell.CellSize.Width;
 				var outlineView = handler.Table as NSOutlineView;
 				if (handler.ShowHeader)
 					width = Math.Max(Control.HeaderCell.CellSize.Width, width);
@@ -83,12 +95,12 @@ namespace Eto.Mac.Forms.Controls
 
 					var cellSize = Control.DataCell.CellSize;
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
-					for (int i = range.Location; i < range.Location + range.Length; i++)
+					for (var i = range.Location; i < range.Location + range.Length; i++)
 					{
-						var cellWidth = GetRowWidth(dataCellHandler, i, cellSize) + 4;
+						var cellWidth = GetRowWidth(dataCellHandler, (int)i, cellSize) + 4;
 						if (outlineView != null && Column == 0)
 						{
-							cellWidth += (outlineView.LevelForRow(i) + 1) * outlineView.IndentationPerLevel;
+							cellWidth += (float)((outlineView.LevelForRow((NSInteger)i) + 1) * outlineView.IndentationPerLevel);
 						}
 						width = Math.Max(width, cellWidth);
 					}
@@ -98,7 +110,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected virtual float GetRowWidth(ICellHandler cell, int row, System.Drawing.SizeF cellSize)
+		protected virtual float GetRowWidth(ICellHandler cell, int row, NSSize cellSize)
 		{
 			var item = DataViewHandler.GetItem(row);
 			var val = GetObjectValue(item);

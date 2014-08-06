@@ -7,6 +7,19 @@ using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -32,7 +45,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Frame.Size), cursor.ControlObject as NSCursor);
+					AddCursorRect(new NSRect(new NSPoint(), Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 
@@ -52,7 +65,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			#endif
 			#if !USE_FLIPPED
-			public override void SetFrameSize(SD.SizeF newSize)
+			public override void SetFrameSize(NSSize newSize)
 			{
 				base.SetFrameSize(newSize);
 				Handler.SetPosition(Handler.scrollPosition, true);
@@ -177,7 +190,7 @@ namespace Eto.Mac.Forms.Controls
 			return SizeF.Min(availableSize, base.GetNaturalSize(availableSize) + GetBorderSize());
 		}
 
-		protected override SD.RectangleF GetContentBounds()
+		protected override NSRect GetContentBounds()
 		{
 			var contentSize = Content.GetPreferredSize(SizeF.MaxValue);
 
@@ -185,7 +198,7 @@ namespace Eto.Mac.Forms.Controls
 				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
 				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
-			return new RectangleF(contentSize).ToSD();
+			return new RectangleF(contentSize).ToNS();
 		}
 
 		protected override NSViewResizingMask ContentResizingMask()
@@ -193,7 +206,7 @@ namespace Eto.Mac.Forms.Controls
 			return ContentControl.IsFlipped ? base.ContentResizingMask() : (NSViewResizingMask)0;
 		}
 
-		void InternalSetFrameSize(SD.SizeF size)
+		void InternalSetFrameSize(NSSize size)
 		{
 			var view = ContentControl;
 			if (!view.IsFlipped)
@@ -202,7 +215,7 @@ namespace Eto.Mac.Forms.Controls
 				if (ctl != null)
 				{
 					var clientHeight = Control.DocumentVisibleRect.Size.Height;
-					ctl.Frame = new SD.RectangleF(new SD.PointF(0, Math.Max(0, clientHeight - size.Height)), size);
+					ctl.Frame = new NSRect(new NSPoint(0, Math.Max(0, clientHeight - size.Height)), size);
 					size.Height = Math.Max(clientHeight, size.Height);
 				}
 			}
@@ -253,9 +266,9 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var view = ContentControl;
 				if (view.IsFlipped)
-					Control.ContentView.ScrollToPoint(value.ToSDPointF());
+					Control.ContentView.ScrollToPoint(value.ToNS());
 				else if (Control.ContentView.Frame.Height > 0)
-					Control.ContentView.ScrollToPoint(new SD.PointF(value.X, Math.Max(0, view.Frame.Height - Control.ContentView.Frame.Height - value.Y)));
+					Control.ContentView.ScrollToPoint(new NSPoint(value.X, Math.Max(0, view.Frame.Height - Control.ContentView.Frame.Height - value.Y)));
 				Control.ReflectScrolledClipView(Control.ContentView);
 			}
 			scrollPosition = value;
@@ -266,7 +279,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return ContentControl.Frame.Size.ToEtoSize(); }
 			set
 			{ 
-				InternalSetFrameSize(value.ToSDSizeF());
+				InternalSetFrameSize(value.ToNS());
 			}
 		}
 
@@ -284,7 +297,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public override bool Enabled { get; set; }
 
-		public override void SetContentSize(SD.SizeF contentSize)
+		public override void SetContentSize(NSSize contentSize)
 		{
 			if (MinimumSize != Size.Empty)
 			{

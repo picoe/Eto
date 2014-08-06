@@ -4,6 +4,20 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using System.Collections.Generic;
 using System.Linq;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using NSNInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSNInteger = System.Int32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -175,23 +189,23 @@ namespace Eto.Mac.Forms.Controls
 				return myitem != null && myitem.Item.Expandable;
 			}
 			
-			public override NSObject GetChild (NSOutlineView outlineView, int childIndex, NSObject item)
+			public override NSObject GetChild (NSOutlineView outlineView, NSInteger childIndex, NSObject item)
 			{
 				Dictionary<int, EtoTreeItem> items;
 				var myitem = item as EtoTreeItem;
 				items = myitem == null ? Handler.topitems : myitem.Items;
 				
 				EtoTreeItem etoItem;
-				if (!items.TryGetValue (childIndex, out etoItem)) {
+				if (!items.TryGetValue((int)childIndex, out etoItem)) {
 					var parentItem = myitem != null ? (ITreeGridStore<ITreeGridItem>)myitem.Item : Handler.store;
-					etoItem = new EtoTreeItem{ Item = parentItem [childIndex] };
+					etoItem = new EtoTreeItem{ Item = parentItem [(int)childIndex] };
 					Handler.cachedItems.Add (etoItem.Item, etoItem);
-					items.Add (childIndex, etoItem);
+					items.Add((int)childIndex, etoItem);
 				}
 				return etoItem;
 			}
 			
-			public override int GetChildrenCount (NSOutlineView outlineView, NSObject item)
+			public override NSInteger GetChildrenCount (NSOutlineView outlineView, NSObject item)
 			{
 				if (Handler.store == null)
 					return 0;
@@ -353,7 +367,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set {
 				if (value == null)
-					Control.SelectRow (-1, false);
+					Control.DeselectAll(Control);
 				else {
 					
 					EtoTreeItem myitem;
@@ -361,7 +375,7 @@ namespace Eto.Mac.Forms.Controls
 						var cachedRow = Control.RowForItem (myitem);
 						if (cachedRow >= 0) {
 							Control.ScrollRowToVisible (cachedRow);
-							Control.SelectRow (cachedRow, false);
+							Control.SelectRow ((NSNInteger)cachedRow, false);
 							return;
 						}
 					}
@@ -369,7 +383,7 @@ namespace Eto.Mac.Forms.Controls
 					var row = ExpandToItem (value);
 					if (row != null) {
 						Control.ScrollRowToVisible (row.Value);
-						Control.SelectRow (row.Value, false);
+						Control.SelectRow ((NSNInteger)row.Value, false);
 					}
 				}
 			}

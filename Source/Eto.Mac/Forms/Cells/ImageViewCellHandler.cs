@@ -6,6 +6,18 @@ using Eto.Mac.Drawing;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreGraphics;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -44,7 +56,7 @@ namespace Eto.Mac.Forms.Controls
 				return new EtoCell (ptr) { Handler = Handler };
 			}
 
-			public override void DrawInteriorWithFrame (System.Drawing.RectangleF cellFrame, NSView inView)
+			public override void DrawInteriorWithFrame (NSRect cellFrame, NSView inView)
 			{
 
 				if (DrawsBackground) {
@@ -106,11 +118,11 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 		
-		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize, NSCell cell)
+		public override float GetPreferredSize (object value, NSSize cellSize, NSCell cell)
 		{
 			var img = value as Image;
 			if (img != null) {
-				return cellSize.Height / (float)img.Size.Height * (float)img.Size.Width;
+				return (float)(cellSize.Height / (float)img.Size.Height * (float)img.Size.Width);
 			}
 			return 16;
 		}

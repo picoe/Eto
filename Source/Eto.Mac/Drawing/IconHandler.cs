@@ -4,6 +4,18 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using sd = System.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Drawing
 {
@@ -43,8 +55,8 @@ namespace Eto.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = new sd.RectangleF(source.X, Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
-			var destRect = graphics.TranslateView(destination.ToSD(), true, true);
+			var sourceRect = new NSRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
+			var destRect = graphics.TranslateView(destination.ToNS(), true, true);
 			Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 		}
 	}

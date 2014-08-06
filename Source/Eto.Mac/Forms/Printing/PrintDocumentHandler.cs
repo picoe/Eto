@@ -6,6 +6,18 @@ using Eto.Drawing;
 using Eto.Mac.Drawing;
 using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Printing
 {
@@ -37,19 +49,19 @@ namespace Eto.Mac.Forms.Printing
 				get { return Handler.Name ?? string.Empty; }
 			}
 
-			public override sd.RectangleF RectForPage(int pageNumber)
+			public override NSRect RectForPage(NSInteger pageNumber)
 			{
 				var operation = NSPrintOperation.CurrentOperation;
 				if (Frame.Size != operation.PrintInfo.PaperSize)
 					SetFrameSize(operation.PrintInfo.PaperSize);
-				return new sd.RectangleF(new sd.PointF(0, 0), operation.PrintInfo.PaperSize);
+				return new NSRect(new NSPoint(0, 0), operation.PrintInfo.PaperSize);
 				//return this.Frame;
 			}
 
 			static readonly IntPtr selCurrentContext = Selector.GetHandle("currentContext");
 			static readonly IntPtr classNSGraphicsContext = Class.GetHandle("NSGraphicsContext");
 
-			public override void DrawRect(sd.RectangleF dirtyRect)
+			public override void DrawRect(NSRect dirtyRect)
 			{
 				var operation = NSPrintOperation.CurrentOperation;
 
@@ -57,9 +69,9 @@ namespace Eto.Mac.Forms.Printing
 				// this causes monomac to hang for some reason:
 				//var context = NSGraphicsContext.CurrentContext;
 
-				using (var graphics = new Graphics(new GraphicsHandler(this, context, Frame.Height, IsFlipped)))
+				using (var graphics = new Graphics(new GraphicsHandler(this, context, (float)Frame.Height, IsFlipped)))
 				{
-					Handler.Callback.OnPrintPage(Handler.Widget, new PrintPageEventArgs(graphics, operation.PrintInfo.PaperSize.ToEto(), operation.CurrentPage - 1));
+					Handler.Callback.OnPrintPage(Handler.Widget, new PrintPageEventArgs(graphics, operation.PrintInfo.PaperSize.ToEto(), (int)operation.CurrentPage - 1));
 				}
 			}
 

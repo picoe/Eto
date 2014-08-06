@@ -3,6 +3,19 @@ using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -23,7 +36,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public Color? Color { get; set; }
 
-			public override void DrawBezelWithFrame(System.Drawing.RectangleF frame, NSView controlView)
+			public override void DrawBezelWithFrame(NSRect frame, NSView controlView)
 			{
 				if (Color != null)
 				{
@@ -62,7 +75,7 @@ namespace Eto.Mac.Forms.Controls
 				setBezel = true;
 			}
 
-			public override void SetFrameSize(SD.SizeF newSize)
+			public override void SetFrameSize(NSSize newSize)
 			{
 				base.SetFrameSize(newSize);
 				if (setBezel)

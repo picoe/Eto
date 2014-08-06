@@ -7,6 +7,20 @@ using Eto.Mac.Forms.Menu;
 using System.Linq;
 using sd = System.Drawing;
 using Eto.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using NSNInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSNInteger = System.Int32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -177,24 +191,24 @@ namespace Eto.Mac.Forms.Controls
 				return myitem != null && myitem.Item.Expandable;
 			}
 
-			public override NSObject GetChild(NSOutlineView outlineView, int childIndex, NSObject item)
+			public override NSObject GetChild(NSOutlineView outlineView, NSInteger childIndex, NSObject item)
 			{
 				Dictionary<int, EtoTreeItem> items;
 				var myitem = item as EtoTreeItem;
 				items = myitem == null ? Handler.topitems : myitem.Items;
 				
 				EtoTreeItem etoItem;
-				if (!items.TryGetValue(childIndex, out etoItem))
+				if (!items.TryGetValue((int)childIndex, out etoItem))
 				{
 					var parentItem = myitem != null ? myitem.Item : Handler.top;
-					etoItem = new EtoTreeItem { Item = parentItem [childIndex] };
+					etoItem = new EtoTreeItem { Item = parentItem [(int)childIndex] };
 					Handler.cachedItems[etoItem.Item] = etoItem;
-					items[childIndex] = etoItem;
+					items[(int)childIndex] = etoItem;
 				}
 				return etoItem;
 			}
 
-			public override int GetChildrenCount(NSOutlineView outlineView, NSObject item)
+			public override NSInteger GetChildrenCount(NSOutlineView outlineView, NSObject item)
 			{
 				if (Handler.top == null)
 					return 0;
@@ -233,7 +247,7 @@ namespace Eto.Mac.Forms.Controls
 			/// The area to the right and below the rows is not filled with the background
 			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
 			/// </summary>
-			public override void DrawBackground(sd.RectangleF clipRect)
+			public override void DrawBackground(NSRect clipRect)
 			{
 				var backgroundColor = Handler.BackgroundColor;
 				if (backgroundColor != Colors.Transparent) {
@@ -370,7 +384,7 @@ namespace Eto.Mac.Forms.Controls
 		void PerformSelect(ITreeItem item, bool scrollToRow)
 		{
 			if (item == null)
-				Control.SelectRow(-1, false);
+				Control.DeselectAll(Control);
 			else
 			{
 				
@@ -382,7 +396,7 @@ namespace Eto.Mac.Forms.Controls
 					{
 						if (scrollToRow)
 							Control.ScrollRowToVisible(cachedRow);
-						Control.SelectRow(cachedRow, false);
+						Control.SelectRow((NSNInteger)cachedRow, false);
 						return;
 					}
 				}
@@ -392,7 +406,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					if (scrollToRow)
 						Control.ScrollRowToVisible(row.Value);
-					Control.SelectRow(row.Value, false);
+					Control.SelectRow((NSNInteger)row.Value, false);
 				}
 			}
 		}
@@ -544,7 +558,7 @@ namespace Eto.Mac.Forms.Controls
 			if (Control.IsFlipped)
 				Scroll.ContentView.ScrollToPoint(loc);
 			else
-				Scroll.ContentView.ScrollToPoint(new sd.PointF(loc.X, Control.Frame.Height - Scroll.ContentView.Frame.Height - loc.Y));
+				Scroll.ContentView.ScrollToPoint(new NSPoint(loc.X, Control.Frame.Height - Scroll.ContentView.Frame.Height - loc.Y));
 			
 			Scroll.ReflectScrolledClipView(Scroll.ContentView);
 			
@@ -558,7 +572,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var row = Control.RowForItem(myitem);
 				if (row >= 0)
-					topitems.Remove(row);
+					topitems.Remove((int)row);
 				myitem.Items.Clear();
 				SetItemExpansion(myitem);
 				Control.ReloadItem(myitem, true);
@@ -570,7 +584,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public ITreeItem GetNodeAt(PointF point)
 		{
-			var row = Control.GetRow(point.ToSD());
+			var row = Control.GetRow(point.ToNS());
 			if (row >= 0)
 			{
 				var item = Control.ItemAtRow(row) as EtoTreeItem;

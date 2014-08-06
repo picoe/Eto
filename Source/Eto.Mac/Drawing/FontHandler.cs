@@ -1,6 +1,20 @@
 using System;
 using Eto.Drawing;
 
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
+
+
 #if IOS
 
 using MonoTouch.UIKit;
@@ -53,39 +67,39 @@ namespace Eto.Mac.Drawing
 			switch (systemFont)
 			{
 				case SystemFont.Default:
-					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.SystemFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Bold:
-					Control = NSFont.BoldSystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.BoldSystemFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Label:
 #if IOS
 					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.LabelFontSize);
 #elif OSX
-					Control = NSFont.LabelFontOfSize(fontSize ?? NSFont.LabelFontSize + 2); // labels get a size of 12 
+					Control = NSFont.LabelFontOfSize((CGFloat)(fontSize ?? NSFont.LabelFontSize + 2)); // labels get a size of 12 
 #endif
 					break;
 #if OSX
 				case SystemFont.TitleBar:
-					Control = NSFont.TitleBarFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.TitleBarFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.ToolTip:
-					Control = NSFont.ToolTipsFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.ToolTipsFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.MenuBar:
-					Control = NSFont.MenuBarFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.MenuBarFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Menu:
-					Control = NSFont.MenuFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.MenuFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Message:
-					Control = NSFont.MessageFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.MessageFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Palette:
-					Control = NSFont.PaletteFontOfSize(fontSize ?? NSFont.SmallSystemFontSize);
+					Control = NSFont.PaletteFontOfSize((CGFloat)(fontSize ?? NSFont.SmallSystemFontSize));
 					break;
 				case SystemFont.StatusBar:
-					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.SystemFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 #endif
 				default:
@@ -142,7 +156,7 @@ namespace Eto.Mac.Drawing
 
 		public float Size
 		{
-			get { return Control.PointSize; }
+			get { return (float)Control.PointSize; }
 		}
 
 		public string FamilyName
@@ -191,18 +205,18 @@ namespace Eto.Mac.Drawing
 
 		public float Ascent
 		{
-			get { return Control.Ascender; }
+			get { return (float)Control.Ascender; }
 		}
 
 		public float Descent
 		{
-			get { return -Control.Descender; }
+			get { return (float)-Control.Descender; }
 		}
 
 		public float XHeight
 		{
 #if OSX
-			get { return Control.XHeight; }
+			get { return (float)Control.XHeight; }
 #elif IOS
 			get { return Control.xHeight; }
 #endif
@@ -210,7 +224,7 @@ namespace Eto.Mac.Drawing
 
 		public float Leading
 		{
-			get { return Control.Leading; }
+			get { return (float)Control.Leading; }
 		}
 
 		public float Baseline

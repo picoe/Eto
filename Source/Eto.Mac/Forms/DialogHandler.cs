@@ -4,6 +4,18 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using System.Threading.Tasks;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -23,7 +35,7 @@ namespace Eto.Mac.Forms
 			}
 
 			public DialogWindow()
-				: base(new SD.Rectangle(0, 0, 200, 200), NSWindowStyle.Closable | NSWindowStyle.Titled, NSBackingStore.Buffered, false)
+				: base(new NSRect(0, 0, 200, 200), NSWindowStyle.Closable | NSWindowStyle.Titled, NSBackingStore.Buffered, false)
 			{
 			}
 

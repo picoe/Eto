@@ -193,7 +193,10 @@ namespace Eto
 			
 				if (EtoEnvironment.Platform.IsMac)
 				{
-					detected = Platform.Get(Platforms.XamMac, true);
+					if (EtoEnvironment.Is64BitProcess)
+						detected = Platform.Get(Platforms.Mac64, true);
+					if (detected == null)
+						detected = Platform.Get(Platforms.XamMac, true);
 					if (detected == null)
 						detected = Platform.Get(Platforms.Mac, true);
 				}

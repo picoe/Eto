@@ -6,6 +6,18 @@ using MonoMac.Foundation;
 using MonoMac.CoreImage;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -27,7 +39,7 @@ namespace Eto.Mac.Forms.Controls
 
 			var ciImage = CIImage.FromCGImage(image.CGImage);
 
-			SD.SizeF realSize;
+			NSSize realSize;
 			if (control.RespondsToSelector(selConvertSizeToBacking))
 				realSize = control.ConvertSizeToBacking(size);
 			else
@@ -49,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 
 			// create separate context so we can force using the software renderer, which is more than fast enough for this
 			var ciContext = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, new CIContextOptions { UseSoftwareRenderer = true });
-			ciContext.DrawImage(ciImage, new SD.RectangleF(SD.PointF.Empty, size), new SD.RectangleF(SD.PointF.Empty, realSize));
+			ciContext.DrawImage(ciImage, new NSRect(NSPoint.Empty, size), new NSRect(NSPoint.Empty, realSize));
 		}
 
 		public WeakReference WeakHandler { get; set; }
@@ -100,7 +112,7 @@ namespace Eto.Mac.Forms.Controls
 			var cursor = Handler.Cursor;
 			if (cursor != null)
 			{
-				AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Frame.Size), cursor.ControlObject as NSCursor);
+				AddCursorRect(new NSRect(NSPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 	}

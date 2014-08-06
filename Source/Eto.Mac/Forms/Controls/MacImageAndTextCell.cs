@@ -5,6 +5,18 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Mac.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -121,7 +133,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					textShadow = new NSShadow();
 					textShadow.ShadowColor = NSColor.FromDeviceWhite(1F, 0.5F);
-					textShadow.ShadowOffset = new SD.SizeF(0F, -1.0F);
+					textShadow.ShadowOffset = new NSSize(0F, -1.0F);
 					textShadow.ShadowBlurRadius = 0F;
 				}
 				return textShadow;
@@ -137,7 +149,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					textHighlightShadow = new NSShadow();
 					textHighlightShadow.ShadowColor = NSColor.FromDeviceWhite(0F, 0.5F);
-					textHighlightShadow.ShadowOffset = new SD.SizeF(0F, -1.0F);
+					textHighlightShadow.ShadowOffset = new NSSize(0F, -1.0F);
 					textHighlightShadow.ShadowBlurRadius = 2F;
 				}
 				return textHighlightShadow;
@@ -150,7 +162,9 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
-		public override SD.SizeF CellSizeForBounds(SD.RectangleF bounds)
+		// TODO: Mac64
+		#if !Mac64
+		public override NSSize CellSizeForBounds(NSRect bounds)
 		{
 			var size = base.CellSizeForBounds(bounds);
 			var data = ObjectValue as MacImageData;
@@ -164,8 +178,9 @@ namespace Eto.Mac.Forms.Controls
 			size.Width = Math.Min(size.Width, bounds.Width);
 			return size;
 		}
+		#endif
 
-		public override void DrawInteriorWithFrame(SD.RectangleF cellFrame, NSView inView)
+		public override void DrawInteriorWithFrame(NSRect cellFrame, NSView inView)
 		{
 			var data = ObjectValue as MacImageData;
 			if (data != null)
@@ -179,19 +194,19 @@ namespace Eto.Mac.Forms.Controls
 						var newHeight = Math.Min(imageSize.Height, cellFrame.Height);
 						var newWidth = imageSize.Width * newHeight / imageSize.Height;
 						
-						var imageRect = new SD.RectangleF(cellFrame.X, cellFrame.Y, newWidth, newHeight);
+						var imageRect = new NSRect(cellFrame.X, cellFrame.Y, newWidth, newHeight);
 						imageRect.Y += (cellFrame.Height - newHeight) / 2;
 
 						if (data.Image.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
 							// 10.6+
-							data.Image.Draw(imageRect, new SD.RectangleF(SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
+							data.Image.Draw(imageRect, new NSRect(new NSPoint(), data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
 						else
 						{
 							// 10.5-
 							#pragma warning disable 618
 							data.Image.Flipped = ControlView.IsFlipped; 
 							#pragma warning restore 618
-							data.Image.Draw(imageRect, new SD.RectangleF(SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
+							data.Image.Draw(imageRect, new NSRect(new NSPoint(), data.Image.Size), NSCompositingOperation.SourceOver, 1);
 						}
 						cellFrame.Width -= newWidth + ImagePadding;
 						cellFrame.X += newWidth + ImagePadding;
@@ -199,7 +214,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 
-			SD.SizeF titleSize = AttributedStringValue.Size;
+			var titleSize = AttributedStringValue.Size;
 			
 			// test to see if the text height is bigger then the cell, if it is,
 			// don't try to center it or it will be pushed up out of the cell!
@@ -211,7 +226,7 @@ namespace Eto.Mac.Forms.Controls
 			if (UseTextShadow)
 			{
 				var str = new NSMutableAttributedString(StringValue);
-				str.AddAttribute(NSAttributedString.ShadowAttributeName, Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, str.Length));
+				str.AddAttribute(NSAttributedString.ShadowAttributeName, Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, (int)str.Length));
 				AttributedStringValue = str;
 			}
 			

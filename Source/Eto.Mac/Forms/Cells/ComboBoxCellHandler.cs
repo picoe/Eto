@@ -7,6 +7,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using MonoMac.CoreGraphics;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -43,7 +55,7 @@ namespace Eto.Mac.Forms.Controls
 				return new EtoCell(ptr) { Handler = Handler };
 			}
 
-			public override void DrawBorderAndBackground(System.Drawing.RectangleF cellFrame, NSView controlView)
+			public override void DrawBorderAndBackground(NSRect cellFrame, NSView controlView)
 			{
 				if (DrawsBackground)
 				{
@@ -57,12 +69,12 @@ namespace Eto.Mac.Forms.Controls
 				base.DrawBorderAndBackground(cellFrame, controlView);
 			}
 
-			public override System.Drawing.RectangleF DrawTitle(NSAttributedString title, System.Drawing.RectangleF frame, NSView controlView)
+			public override NSRect DrawTitle(NSAttributedString title, NSRect frame, NSView controlView)
 			{
 				if (TextColor != null)
 				{
 					var newtitle = (NSMutableAttributedString)title.MutableCopy();
-					var range = new NSRange(0, title.Length);
+					var range = new NSRange(0, (int)title.Length);
 					newtitle.RemoveAttribute(NSAttributedString.ForegroundColorAttributeName, range);
 					newtitle.AddAttribute(NSAttributedString.ForegroundColorAttributeName, TextColor, range);
 					title = newtitle;
@@ -179,7 +191,7 @@ namespace Eto.Mac.Forms.Controls
 			return null;
 		}
 
-		public override float GetPreferredSize(object value, System.Drawing.SizeF cellSize, NSCell cell)
+		public override float GetPreferredSize(object value, NSSize cellSize, NSCell cell)
 		{
 			return 100;
 		}

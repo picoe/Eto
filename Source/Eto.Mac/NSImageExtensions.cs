@@ -4,22 +4,34 @@ using MonoMac.CoreImage;
 using sd = System.Drawing;
 using MonoMac.Foundation;
 using Eto.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac
 {
 	public static class NSImageExtensions
 	{
-		public static NSImage Resize(this NSImage image, sd.Size newsize, ImageInterpolation interpolation = ImageInterpolation.Default)
+		public static NSImage Resize(this NSImage image, NSSize newsize, ImageInterpolation interpolation = ImageInterpolation.Default)
 		{
 			var newimage = new NSImage(newsize);
-			var newrep = new NSBitmapImageRep(IntPtr.Zero, newsize.Width, newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * newsize.Width, 32);
+			var newrep = new NSBitmapImageRep(IntPtr.Zero, (NSInteger)newsize.Width, (NSInteger)newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * (NSInteger)newsize.Width, 32);
 			newimage.AddRepresentation(newrep);
 
 			var graphics = NSGraphicsContext.FromBitmap(newrep);
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-			image.DrawInRect(new sd.RectangleF(sd.PointF.Empty, newimage.Size), new sd.RectangleF(sd.PointF.Empty, image.Size), NSCompositingOperation.SourceOver, 1f);
+			image.DrawInRect(new NSRect(new NSPoint(), newimage.Size), new NSRect(new NSPoint(), image.Size), NSCompositingOperation.SourceOver, 1f);
 			NSGraphicsContext.GlobalRestoreGraphicsState();
 			return newimage;
 		}
@@ -55,11 +67,11 @@ namespace Eto.Mac
 			var outputImage = (CIImage)compositingFilter.ValueForKey(CIFilterOutputKey.Image);
 			var extent = outputImage.Extent;
 
-			var newsize = sd.Size.Truncate(extent.Size);
+			var newsize = sd.Size.Truncate(extent.Size.ToSD());
 			if (newsize.IsEmpty)
 				return image;
 
-			var tintedImage = new NSImage(newsize);
+			var tintedImage = new NSImage(newsize.ToNS());
 			tintedImage.LockFocus();
 			try
 			{

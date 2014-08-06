@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{451A0C
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64 - Pcl", "Eto.Mac\Eto.Mac64 - Pcl.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Linux = Debug|Linux
@@ -124,6 +126,18 @@ Global
 		{543B2F90-CA56-11E3-9C1A-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
 		{543B2F90-CA56-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
 		{543B2F90-CA56-11E3-9C1A-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Debug|Linux.Build.0 = Debug|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Release|Linux.Build.0 = Release|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
+		{55DAB390-1CFC-11E4-8C21-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
 		{63137FA0-CA55-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{63137FA0-CA55-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{63137FA0-CA55-11E3-9C1A-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU

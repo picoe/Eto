@@ -5,6 +5,18 @@ using MonoMac.Foundation;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -75,11 +87,11 @@ namespace Eto.Mac.Forms
 					Control.Update ();
 				};
 				fileTypeView.AddSubview(fileTypes);
-				fileTypes.SetFrameOrigin(new System.Drawing.PointF(label.Frame.Width + 10, padding));
+				fileTypes.SetFrameOrigin(new NSPoint(label.Frame.Width + 10, padding));
 	
-				label.SetFrameOrigin(new System.Drawing.PointF(0, padding + (fileTypes.Frame.Height - label.Frame.Height) / 2));
+				label.SetFrameOrigin(new NSPoint(0, padding + (fileTypes.Frame.Height - label.Frame.Height) / 2));
 				
-				fileTypeView.Frame = new System.Drawing.RectangleF(0, 0, fileTypes.Frame.Width + label.Frame.Width + 10, fileTypes.Frame.Height + padding*2);
+				fileTypeView.Frame = new NSRect(0, 0, fileTypes.Frame.Width + label.Frame.Width + 10, fileTypes.Frame.Height + padding*2);
 				
 				Control.AccessoryView = fileTypeView;
 			}

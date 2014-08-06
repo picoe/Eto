@@ -2,6 +2,19 @@ using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 using sd = System.Drawing;
+using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 #if IOS
 using NSView = MonoTouch.UIKit.UIView;
@@ -74,7 +87,7 @@ namespace Eto.Mac.Forms
 			{
 				var superFrame = super.Frame;
 				var size = view.Frame.Size;
-				view.SetFrameOrigin(new sd.PointF((superFrame.Width - size.Width) / 2, (superFrame.Height - size.Height) / 2));
+				view.SetFrameOrigin(new NSPoint((superFrame.Width - size.Width) / 2, (superFrame.Height - size.Height) / 2));
 			}
 		}
 	}

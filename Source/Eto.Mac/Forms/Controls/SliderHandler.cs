@@ -85,7 +85,7 @@ namespace Eto.Mac.Forms.Controls
 			get
 			{ 
 				if (Control.TickMarksCount > 1)
-					return ((MaxValue - MinValue) / (Control.TickMarksCount - 1));
+					return (int)((MaxValue - MinValue) / (Control.TickMarksCount - 1));
 				return MaxValue - MinValue;
 			}
 			set

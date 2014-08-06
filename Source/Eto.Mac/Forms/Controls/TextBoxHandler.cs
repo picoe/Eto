@@ -39,7 +39,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (Handler.MaxLength >= 0)
 			{
-				int size = value.Length;
+				int size = (int)value.Length;
 				if (size > Handler.MaxLength)
 				{
 					return false;

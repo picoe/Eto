@@ -9,6 +9,20 @@ using Eto.Mac.Drawing;
 using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
 using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using NSNInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSNInteger = System.Int32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -29,7 +43,7 @@ namespace Eto.Mac.Forms.Controls
 
 		bool autoSized;
 
-		public override void SetFrameSize(sd.SizeF newSize)
+		public override void SetFrameSize(NSSize newSize)
 		{
 			base.SetFrameSize(newSize);
 
@@ -48,6 +62,13 @@ namespace Eto.Mac.Forms.Controls
 
 		static readonly Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
 
+		#if Mac64
+		NSPoint ConvertPointFromBacking(NSPoint point)
+		{
+			return Messaging.NSPoint_objc_msgSend_NSPoint(Handle, selConvertPointFromBacking.Handle, point);
+		}
+		#endif
+
 		public override void MouseDown(NSEvent theEvent)
 		{
 			var point = theEvent.LocationInWindow;
@@ -58,7 +79,7 @@ namespace Eto.Mac.Forms.Controls
 			var col = GetColumn(point);
 			if (col >= 0)
 			{
-				var column = Handler.Widget.Columns[col];
+				var column = Handler.Widget.Columns[(int)col];
 				if (!column.Sortable)
 					return;
 			}
@@ -163,7 +184,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
 				Handler.Control.AddColumn(colhandler.Control);
-				colhandler.Setup(Handler.Control.ColumnCount - 1);
+				colhandler.Setup((int)(Handler.Control.ColumnCount - 1));
 				
 				Handler.UpdateColumns();
 			}
@@ -279,7 +300,7 @@ namespace Eto.Mac.Forms.Controls
 			if (Widget.Loaded)
 			{
 				var rect = Table.VisibleRect();
-				if (!rect.IsEmpty)
+				if (rect.Width > 0 || rect.Height > 0)
 				{
 					IsAutoSizingColumns = true;
 					foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
@@ -362,7 +383,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void SelectRow(int row)
 		{
-			Control.SelectRow(row, AllowMultipleSelection);
+			Control.SelectRow((NSNInteger)row, AllowMultipleSelection);
 		}
 
 		public void UnselectRow(int row)
@@ -385,7 +406,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public virtual int RowCount
 		{
-			get { return Control.RowCount; }
+			get { return (int)Control.RowCount; }
 		}
 
 		Grid IGridHandler.Widget
@@ -393,12 +414,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		public sd.RectangleF GetVisibleRect()
+		public NSRect GetVisibleRect()
 		{
 			var rect = ScrollView.VisibleRect();
 			var loc = ScrollView.ContentView.Bounds.Location;
-			rect.Offset(loc);
-			return rect;
+			return new NSRect(rect.X + loc.X, rect.Y + loc.Y, rect.Width, rect.Height);
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

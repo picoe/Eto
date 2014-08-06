@@ -5,6 +5,18 @@ using SD = System.Drawing;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
@@ -61,7 +73,7 @@ namespace Eto.Mac.Forms
 					var container = ContentControl;
 #if OSX
 					control.AutoresizingMask = ContentResizingMask();
-					control.Frame = new SD.RectangleF(ContentControl.Bounds.X, ContentControl.Bounds.Y, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
+					control.Frame = new NSRect(ContentControl.Bounds.X, ContentControl.Bounds.Y, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
 					container.AddSubview(control); // default
 #elif IOS
 					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
@@ -112,12 +124,12 @@ namespace Eto.Mac.Forms
 			return Padding.Size;
 		}
 
-		protected virtual SD.RectangleF GetContentBounds()
+		protected virtual NSRect GetContentBounds()
 		{
 			return ContentControl.Bounds;
 		}
 
-		protected virtual SD.RectangleF AdjustContent(SD.RectangleF rect)
+		protected virtual NSRect AdjustContent(NSRect rect)
 		{
 			return rect;
 		}
@@ -150,7 +162,7 @@ namespace Eto.Mac.Forms
 				childControl.Frame = frame;
 		}
 
-		public override void SetContentSize(SD.SizeF contentSize)
+		public override void SetContentSize(NSSize contentSize)
 		{
 			base.SetContentSize(contentSize);
 			if (MinimumSize != Size.Empty)

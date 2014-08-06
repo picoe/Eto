@@ -3,6 +3,19 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Drawing;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -22,7 +35,7 @@ namespace Eto.Mac.Forms.Controls
 				get { return Widget as Drawable; }
 			}
 
-			public override void DrawRect(sd.RectangleF dirtyRect)
+			public override void DrawRect(NSRect dirtyRect)
 			{
 				var drawable = Drawable;
 				if (drawable == null)
@@ -106,7 +119,7 @@ namespace Eto.Mac.Forms.Controls
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null)
 			{
-				var handler = new GraphicsHandler(Control, context, Control.Frame.Height, Control.IsFlipped);
+				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height, Control.IsFlipped);
 				using (var graphics = new Graphics(handler))
 				{
 					if (backgroundBrush != null)

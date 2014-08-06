@@ -5,6 +5,20 @@ using MonoMac.Foundation;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using sd = System.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using NSNInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSNInteger = System.Int32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -71,8 +85,8 @@ namespace Eto.Mac.Forms.Controls
 				Editable = true,
 				Selectable = true,
 				AllowsUndo = true,
-				MinSize = sd.SizeF.Empty,
-				MaxSize = new sd.SizeF(float.MaxValue, float.MaxValue)
+				MinSize = NSSize.Empty,
+				MaxSize = new NSSize(float.MaxValue, float.MaxValue)
 			};
 			Control.TextContainer.WidthTracksTextView = true;
 
@@ -198,7 +212,7 @@ namespace Eto.Mac.Forms.Controls
 				else
 				{
 					Control.TextContainer.WidthTracksTextView = false;
-					Control.TextContainer.ContainerSize = new sd.SizeF(float.MaxValue, float.MaxValue);
+					Control.TextContainer.ContainerSize = new NSSize(float.MaxValue, float.MaxValue);
 				}
 			}
 		}
@@ -209,7 +223,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var range = Control.SelectedRange;
 				if (range.Location >= 0 && range.Length > 0)
-					return Control.Value.Substring(range.Location, range.Length);
+					return Control.Value.Substring((int)range.Location, (int)range.Length);
 				return null;
 			}
 			set
@@ -218,8 +232,8 @@ namespace Eto.Mac.Forms.Controls
 				Control.TextStorage.DeleteRange(range);
 				if (value != null)
 				{
-					range.Length = value.Length;
-					Control.TextStorage.Insert(new NSAttributedString(value), range.Location);
+					range.Length = (NSNInteger)value.Length;
+					Control.TextStorage.Insert(new NSAttributedString(value), (NSNInteger)range.Location);
 					Control.SelectedRange = range;
 				}
 			}
@@ -238,7 +252,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public int CaretIndex
 		{
-			get { return Control.SelectedRange.Location; }
+			get { return (int)Control.SelectedRange.Location; }
 			set { Control.SelectedRange = new NSRange(value, 0); }
 		}
 

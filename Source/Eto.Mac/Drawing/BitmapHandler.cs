@@ -7,6 +7,18 @@ using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using sd = System.Drawing;
 using Eto.Mac.Forms;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Drawing
 {
@@ -72,7 +84,7 @@ namespace Eto.Mac.Drawing
 			Control = new NSImage(fileName);
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new NSSize(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create(Stream stream)
@@ -80,7 +92,7 @@ namespace Eto.Mac.Drawing
 			Control = new NSImage(NSData.FromStream(stream));
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new NSSize(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
@@ -145,7 +157,7 @@ namespace Eto.Mac.Drawing
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
 			var source = image.ToNS();
-			Control = source.Resize(new sd.Size(width, height), interpolation);
+			Control = source.Resize(new NSSize(width, height), interpolation);
 		}
 
 		public override NSImage GetImage()
@@ -155,7 +167,7 @@ namespace Eto.Mac.Drawing
 
 		public BitmapData Lock()
 		{
-			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
+			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control);
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -220,8 +232,8 @@ namespace Eto.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = new sd.RectangleF(source.X, Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
-			var destRect = graphics.TranslateView(destination.ToSD(), true, true);
+			var sourceRect = new NSRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
+			var destRect = graphics.TranslateView(destination.ToNS(), true, true);
 			if (alpha)
 				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 			else
@@ -234,9 +246,9 @@ namespace Eto.Mac.Drawing
 				return new Bitmap(new BitmapHandler((NSImage)Control.Copy()));
 			else
 			{
-				var rect = new sd.RectangleF (sd.PointF.Empty, this.Control.Size);
+				var rect = new NSRect(new NSPoint(), Control.Size);
 				var temp = Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
-				var image = new NSImage (temp, new sd.SizeF (temp.Width, temp.Height));
+				var image = new NSImage (temp, new NSSize(temp.Width, temp.Height));
 				return new Bitmap(new BitmapHandler(image));
 			}
 		}

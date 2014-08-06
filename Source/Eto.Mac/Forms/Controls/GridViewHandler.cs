@@ -8,6 +8,18 @@ using sd = System.Drawing;
 using System.Collections;
 using MonoMac.ObjCRuntime;
 using System.Linq;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -29,7 +41,7 @@ namespace Eto.Mac.Forms.Controls
 			/// The area to the right and below the rows is not filled with the background
 			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
 			/// </summary>
-			public override void DrawBackground(sd.RectangleF clipRect)
+			public override void DrawBackground(NSRect clipRect)
 			{
 				var backgroundColor = Handler.BackgroundColor;
 				if (backgroundColor != Colors.Transparent)
@@ -48,27 +60,27 @@ namespace Eto.Mac.Forms.Controls
 
 			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 
-			public override int GetRowCount(NSTableView tableView)
+			public override NSInteger GetRowCount(NSTableView tableView)
 			{
 				return (Handler.collection != null && Handler.collection.Collection != null) ? Handler.collection.Count : 0;
 			}
 
-			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, int row)
+			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, NSInteger row)
 			{
-				var item = Handler.collection.ElementAt(row);
+				var item = Handler.collection.ElementAt((int)row);
 				var colHandler = Handler.GetColumn(tableColumn);
 				return colHandler == null ? null : colHandler.GetObjectValue(item);
 			}
 
-			public override void SetObjectValue(NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)
+			public override void SetObjectValue(NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, NSInteger row)
 			{
-				var item = Handler.collection.ElementAt(row);
+				var item = Handler.collection.ElementAt((int)row);
 				var colHandler = Handler.GetColumn(tableColumn);
 				if (colHandler != null)
 				{
 					colHandler.SetObjectValue(item, theObject);
 
-					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, row, colHandler.Column, item));
+					Handler.Callback.OnCellEdited(Handler.Widget, new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item));
 				}
 			}
 		}
@@ -79,11 +91,11 @@ namespace Eto.Mac.Forms.Controls
 
 			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 
-			public override bool ShouldEditTableColumn(NSTableView tableView, NSTableColumn tableColumn, int row)
+			public override bool ShouldEditTableColumn(NSTableView tableView, NSTableColumn tableColumn, NSInteger row)
 			{
 				var colHandler = Handler.GetColumn(tableColumn);
-				var item = Handler.collection.ElementAt(row);
-				var args = new GridViewCellEventArgs(colHandler.Widget, row, colHandler.Column, item);
+				var item = Handler.collection.ElementAt((int)row);
+				var args = new GridViewCellEventArgs(colHandler.Widget, (int)row, colHandler.Column, item);
 				Handler.Callback.OnCellEditing(Handler.Widget, args);
 				return true;
 			}
@@ -102,11 +114,11 @@ namespace Eto.Mac.Forms.Controls
 				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(colHandler.Widget));
 			}
 
-			public override void WillDisplayCell(NSTableView tableView, NSObject cell, NSTableColumn tableColumn, int row)
+			public override void WillDisplayCell(NSTableView tableView, NSObject cell, NSTableColumn tableColumn, NSInteger row)
 			{
 				var colHandler = Handler.GetColumn(tableColumn);
-				var item = Handler.GetItem(row);
-				Handler.OnCellFormatting(colHandler.Widget, item, row, cell as NSCell);
+				var item = Handler.GetItem((int)row);
+				Handler.OnCellFormatting(colHandler.Widget, item, (int)row, cell as NSCell);
 
 			}
 
@@ -128,7 +140,7 @@ namespace Eto.Mac.Forms.Controls
 		public bool ShowCellBorders
 		{
 			get { return Control.IntercellSpacing.Width > 0 || Control.IntercellSpacing.Height > 0; }
-			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : sd.SizeF.Empty; } 
+			set { Control.IntercellSpacing = value ? new NSSize(1, 1) : new NSSize(); } 
 		}
 
 		public override void AttachEvent(string id)

@@ -8,6 +8,20 @@ using Eto.Drawing;
 using Eto.Mac.Drawing;
 using System.Collections;
 using System.Linq;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+using NSNInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+using NSNInteger = System.Int32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -41,10 +55,10 @@ namespace Eto.Mac.Forms.Controls
 
 			public ListBoxHandler Handler { get { return (ListBoxHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, int row)
+			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, NSInteger row)
 			{
 				var w = Handler.Widget;
-				var item = Handler.collection.ElementAt(row);
+				var item = Handler.collection.ElementAt((int)row);
 				return new MacImageData
 				{
 					Text = new NSString(Convert.ToString(w.TextBinding.GetValue(item))),
@@ -52,7 +66,7 @@ namespace Eto.Mac.Forms.Controls
 				};
 			}
 
-			public override int GetRowCount(NSTableView tableView)
+			public override NSInteger GetRowCount(NSTableView tableView)
 			{
 				return Handler.collection.Collection == null ? 0 : Handler.collection.Collection.Count();
 			}
@@ -64,7 +78,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public ListBoxHandler Handler { get { return (ListBoxHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override bool ShouldSelectRow(NSTableView tableView, int row)
+			public override bool ShouldSelectRow(NSTableView tableView, NSInteger row)
 			{
 				return true;
 			}
@@ -219,14 +233,14 @@ namespace Eto.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return Control.SelectedRow; }
+			get { return (int)Control.SelectedRow; }
 			set
 			{
 				if (value == -1)
 					Control.DeselectAll(Control);
 				else
 				{
-					Control.SelectRow(value, false);
+					Control.SelectRow((NSNInteger)value, false);
 					Control.ScrollRowToVisible(value);
 				}
 			}

@@ -5,6 +5,18 @@ using SD = System.Drawing;
 using MonoMac.Foundation;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -23,18 +35,18 @@ namespace Eto.Mac.Forms.Controls
 			WeakReference handler;
 			public TabPageHandler Handler { get { return (TabPageHandler)handler.Target; } set { handler = new WeakReference(value); } }
 			
-			public override void DrawLabel (bool shouldTruncateLabel, SD.RectangleF labelRect)
+			public override void DrawLabel (bool shouldTruncateLabel, NSRect labelRect)
 			{
 				if (Handler.image != null) {
 					var nsimage = (NSImage)Handler.image.ControlObject;
 
 					if (nsimage.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
-						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
+						nsimage.Draw (new NSRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new NSRect (new NSPoint(), nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
 					else {
 						#pragma warning disable 618
 						nsimage.Flipped = View.IsFlipped;
 						#pragma warning restore 618
-						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1);
+						nsimage.Draw (new NSRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new NSRect (new NSPoint(), nsimage.Size), NSCompositingOperation.SourceOver, 1);
 					}
 					
 					labelRect.X += labelRect.Height + ICON_PADDING;
@@ -43,8 +55,10 @@ namespace Eto.Mac.Forms.Controls
 				}
 				base.DrawLabel (shouldTruncateLabel, labelRect);
 			}
-			
-			public override SD.SizeF SizeOfLabel (bool computeMin)
+
+			// TODO: Mac64
+			#if !Mac64
+			public override NSSize SizeOfLabel (bool computeMin)
 			{
 				var size = base.SizeOfLabel (computeMin);
 				if (Handler.image != null) {
@@ -52,6 +66,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 				return size;
 			}
+			#endif
 		}
 		
 		public TabPageHandler ()

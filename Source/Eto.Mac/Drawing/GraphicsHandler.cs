@@ -3,6 +3,19 @@ using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
+using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 #if OSX
 using Eto.Mac.Forms;
@@ -38,7 +51,7 @@ namespace Eto.iOS.Drawing
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		float offset = 0.5f;
 		float inverseoffset;
-		SD.RectangleF? clipBounds;
+		NSRect? clipBounds;
 		IGraphicsPath clipPath;
 		int transformSaveCount;
 		Stack<CGAffineTransform> transforms;
@@ -172,10 +185,10 @@ namespace Eto.iOS.Drawing
 #if OSX
 			var rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
 			graphicsContext = NSGraphicsContext.FromBitmap(rep);
-			this.graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
+			graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
 			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
-			scale = rep.PixelsWide / handler.Control.Size.Width;
+			scale = (float)(rep.PixelsWide / handler.Control.Size.Width);
 #elif IOS
 			var cgimage = handler.Control.CGImage;
 			Control = new CGBitmapContext(handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
@@ -208,7 +221,7 @@ namespace Eto.iOS.Drawing
 
 		public float ViewHeight
 		{
-			get { return view != null ? view.Bounds.Height : height; }
+			get { return (float)(view != null ? view.Bounds.Height : height); }
 		}
 
 		void SetDefaults()
@@ -227,10 +240,10 @@ namespace Eto.iOS.Drawing
 			{
 				// we have a view (drawing directly to the screen), so adjust to where it is
 				Control.ClipToRect(view.ConvertRectToView(view.VisibleRect(), null));
-				var pos = view.ConvertPointToView(SD.PointF.Empty, null);
+				var pos = view.ConvertPointToView(new NSPoint(), null);
 				if (!viewFlipped)
 					pos.Y += view.Frame.Height;
-				currentTransform = new CGAffineTransform(1, 0, 0, -1, pos.X, pos.Y);
+				currentTransform = new CGAffineTransform(1, 0, 0, -1, (float)pos.X, (float)pos.Y);
 				Control.ConcatCTM(currentTransform);
 			}
 			else
@@ -250,7 +263,7 @@ namespace Eto.iOS.Drawing
 			#endif
 		}
 
-		public SD.PointF TranslateView(SD.PointF point, bool halfers = false, bool inverse = false)
+		public NSPoint TranslateView(NSPoint point, bool halfers = false, bool inverse = false)
 		{
 			if (halfers)
 			{
@@ -268,7 +281,7 @@ namespace Eto.iOS.Drawing
 			return point;
 		}
 
-		public SD.RectangleF TranslateView(SD.RectangleF rect, bool halfers = false, bool inverse = false)
+		public NSRect TranslateView(NSRect rect, bool halfers = false, bool inverse = false)
 		{
 			if (halfers)
 			{
@@ -313,8 +326,8 @@ namespace Eto.iOS.Drawing
 			pen.Apply(this);
 			Control.StrokeLineSegments(new []
 			{
-				TranslateView(new SD.PointF(startx, starty), true),
-				TranslateView(new SD.PointF(endx, endy), true)
+				TranslateView(new NSPoint(startx, starty), true),
+				TranslateView(new NSPoint(endx, endy), true)
 			});
 			EndDrawing();
 		}
@@ -322,7 +335,7 @@ namespace Eto.iOS.Drawing
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			StartDrawing();
-			var rect = TranslateView(new SD.RectangleF(x, y, width, height), true);
+			var rect = TranslateView(new NSRect(x, y, width, height), true);
 			pen.Apply(this);
 			Control.StrokeRect(rect);
 			EndDrawing();
@@ -332,14 +345,14 @@ namespace Eto.iOS.Drawing
 		{
 			StartDrawing();
 			brush.Apply(this);
-			Control.FillRect(TranslateView(new SD.RectangleF(x, y, width, height), width > 1 || height > 1, true));
+			Control.FillRect(TranslateView(new NSRect(x, y, width, height), width > 1 || height > 1, true));
 			EndDrawing();
 		}
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
 			StartDrawing();
-			System.Drawing.RectangleF rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height), true);
+			var rect = TranslateView(new NSRect(x, y, width, height), true);
 			pen.Apply(this);
 			Control.StrokeEllipseInRect(rect);
 			EndDrawing();
@@ -355,7 +368,7 @@ namespace Eto.iOS.Drawing
 			}*/
 
 			brush.Apply(this);
-			Control.FillEllipseInRect(TranslateView(new SD.RectangleF(x, y, width, height), true, true));
+			Control.FillEllipseInRect(TranslateView(new NSRect(x, y, width, height), true, true));
 			EndDrawing();
 		}
 
@@ -363,7 +376,7 @@ namespace Eto.iOS.Drawing
 		{
 			StartDrawing();
 
-			var rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height), true);
+			var rect = TranslateView(new NSRect(x, y, width, height), true);
 			pen.Apply(this);
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
@@ -378,7 +391,7 @@ namespace Eto.iOS.Drawing
 		{
 			StartDrawing();
 
-			var rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height), true, true);
+			var rect = TranslateView(new NSRect(x, y, width, height), true, true);
 			brush.Apply(this);
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
@@ -542,7 +555,7 @@ namespace Eto.iOS.Drawing
 		public void SetClip(RectangleF rectangle)
 		{
 			ResetClip();
-			clipBounds = rectangle.ToSD();
+			clipBounds = rectangle.ToNS();
 			ReplayClip();
 		}
 
@@ -630,7 +643,7 @@ namespace Eto.iOS.Drawing
 			var rect = Control.GetClipBoundingBox();
 			Control.ClearRect(rect);
 			if (brush != null)
-				FillRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height);
+				FillRectangle(brush, (float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);
 		}
 
 		public void SetFillColorSpace()

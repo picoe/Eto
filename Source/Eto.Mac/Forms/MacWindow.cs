@@ -9,19 +9,31 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Mac.Forms.Controls;
 using System.Threading;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms
 {
 	public class MyWindow : NSWindow, IMacControl
 	{
-		SD.RectangleF oldFrame;
+		NSRect oldFrame;
 		bool zoom;
 
 		public WeakReference WeakHandler { get; set; }
 
 		public IMacWindow Handler { get { return (IMacWindow)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
-		public MyWindow(SD.Rectangle rect, NSWindowStyle style, NSBackingStore store, bool flag)
+		public MyWindow(NSRect rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
 		{
 		}
@@ -33,7 +45,7 @@ namespace Eto.Mac.Forms
 			{
 				var parentFrame = ParentWindow.Frame;
 				var frame = Frame;
-				var location = new SD.PointF((parentFrame.Width - frame.Width) / 2 + parentFrame.X, (parentFrame.Height - frame.Height) / 2 + parentFrame.Y);
+				var location = new NSPoint((parentFrame.Width - frame.Width) / 2 + parentFrame.X, (parentFrame.Height - frame.Height) / 2 + parentFrame.Y);
 				SetFrameOrigin(location);
 			}
 			else
@@ -148,19 +160,22 @@ namespace Eto.Mac.Forms
 			set
 			{
 				base.MinimumSize = value;
+				// TODO: Mac64
+				#if !Mac64
 				if (value != Size.Empty)
 				{
 					Control.WillResize = (sender, frameSize) =>
 					{
 						if (value != Size.Empty)
 						{
-							return new SD.SizeF(Math.Max(frameSize.Width, value.Width), Math.Max(frameSize.Height, value.Height));
+							return new NSSize((float)Math.Max(frameSize.Width, value.Width), (float)Math.Max(frameSize.Height, value.Height));
 						}
 						return frameSize;
 					};
 				}
 				else
 					Control.WillResize = null;
+				#endif
 			}
 		}
 
@@ -292,7 +307,7 @@ namespace Eto.Mac.Forms
 			if (Cursor != null)
 			{
 				Control.ContentView.DiscardCursorRects();
-				Control.ContentView.AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Control.Frame.Size), Cursor.ControlObject as NSCursor);
+				Control.ContentView.AddCursorRect(new NSRect(new NSPoint(), Control.Frame.Size), Cursor.ControlObject as NSCursor);
 			}
 			else
 				Control.ContentView.DiscardCursorRects();
@@ -525,8 +540,8 @@ namespace Eto.Mac.Forms
 			{ 
 				var oldFrame = Control.Frame;
 				var oldSize = Control.ContentView.Frame;
-				Control.SetFrameOrigin(new SD.PointF(oldFrame.X, Math.Max(0, oldFrame.Y - (value.Height - oldSize.Height))));
-				Control.SetContentSize(value.ToSDSizeF());
+				Control.SetFrameOrigin(new NSPoint(oldFrame.X, Math.Max(0, oldFrame.Y - (value.Height - oldSize.Height))));
+				Control.SetContentSize(value.ToNS());
 				AutoSize = false;
 			}
 		}
@@ -575,7 +590,7 @@ namespace Eto.Mac.Forms
 				// location is relative to the main screen, translate to bottom left, inversed
 				var mainFrame = NSScreen.Screens[0].Frame;
 				var frame = Control.Frame;
-				var point = new SD.PointF(value.X, mainFrame.Height - value.Y - frame.Height);
+				var point = new NSPoint((CGFloat)value.X, (CGFloat)(mainFrame.Height - value.Y - frame.Height));
 				Control.SetFrameOrigin(point);
 				if (Control.Screen == null)
 				{
@@ -652,7 +667,7 @@ namespace Eto.Mac.Forms
 			if (AutoSize)
 			{
 				var size = GetPreferredSize(Size.MaxValue);
-				SetContentSize(size.ToSD());
+				SetContentSize(size.ToNS());
 				setInitialSize = true;
 
 				PositionWindow();
@@ -683,7 +698,7 @@ namespace Eto.Mac.Forms
 
 		#region IMacContainer implementation
 
-		public override void SetContentSize(SD.SizeF contentSize)
+		public override void SetContentSize(NSSize contentSize)
 		{
 			if (MinimumSize != Size.Empty)
 			{
@@ -746,7 +761,7 @@ namespace Eto.Mac.Forms
 
 		public override PointF PointFromScreen(PointF point)
 		{
-			var sdpoint = point.ToSD();
+			var sdpoint = point.ToNS();
 			sdpoint = Control.ConvertBaseToScreen(sdpoint);
 			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
 			return sdpoint.ToEto();
@@ -754,7 +769,7 @@ namespace Eto.Mac.Forms
 
 		public override PointF PointToScreen(PointF point)
 		{
-			var sdpoint = point.ToSD();
+			var sdpoint = point.ToNS();
 			sdpoint = Control.ConvertBaseToScreen(sdpoint);
 			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
 			return sdpoint.ToEto();

@@ -7,6 +7,11 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreGraphics;
 using sd = System.Drawing;
+#if !Mac64
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -55,10 +60,13 @@ namespace Eto.Mac.Forms.Controls
 
 			public bool DrawsBackground { get; set; }
 
-			public override sd.SizeF CellSizeForBounds(sd.RectangleF bounds)
+			// TODO: Mac64
+			#if !Mac64
+			public override NSSize CellSizeForBounds(NSRect bounds)
 			{
-				return sd.SizeF.Empty;
+				return new NSSize();
 			}
+			#endif
 
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone(IntPtr zone)
@@ -71,7 +79,7 @@ namespace Eto.Mac.Forms.Controls
 				return new EtoCell(ptr) { Handler = Handler };
 			}
 
-			public override void DrawInteriorWithFrame(sd.RectangleF cellFrame, NSView inView)
+			public override void DrawInteriorWithFrame(NSRect cellFrame, NSView inView)
 			{
 				var nscontext = NSGraphicsContext.CurrentContext;
 
@@ -83,7 +91,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 
 				var handler = Handler;
-				var graphicsHandler = new GraphicsHandler(null, nscontext, cellFrame.Height, flipped: true);
+				var graphicsHandler = new GraphicsHandler(null, nscontext, (float)cellFrame.Height, flipped: true);
 				using (var graphics = new Graphics(graphicsHandler))
 				{
 					var state = Highlighted ? DrawableCellStates.Selected : DrawableCellStates.None;
@@ -135,7 +143,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
-		public override float GetPreferredSize(object value, sd.SizeF cellSize, NSCell cell)
+		public override float GetPreferredSize(object value, NSSize cellSize, NSCell cell)
 		{
 			return 10f;
 		}

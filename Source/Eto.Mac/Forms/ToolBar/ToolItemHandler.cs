@@ -6,6 +6,18 @@ using Eto.Drawing;
 using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
 using Eto.Mac.Forms.Actions;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac
 {
@@ -108,7 +120,7 @@ namespace Eto.Mac
 					button = new NSButton {
 						BezelStyle = NSBezelStyle.TexturedRounded,
 						Bordered = toolBarItemStyle == MacToolBarItemStyle.StandardButton, // no border or bezel in the large button style
-						Frame = new sd.RectangleF(sd.PointF.Empty, ButtonSize),
+						Frame = new NSRect(NSPoint.Empty, ButtonSize.ToNS()),
 						Target = Control.Target,
 						Action = Control.Action,
 					};

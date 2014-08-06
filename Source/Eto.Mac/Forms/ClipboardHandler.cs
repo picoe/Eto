@@ -61,7 +61,7 @@ namespace Eto.Mac.Forms
 			{
 				var data = Control.GetDataForType(availableType);
 				var bytes = new byte[data.Length];
-				var stream = new UnmanagedMemoryStream((byte*)data.Bytes, data.Length);
+				var stream = new UnmanagedMemoryStream((byte*)data.Bytes, (long)data.Length);
 				stream.Read(bytes, 0, (int)data.Length);
 				return bytes;
 			}

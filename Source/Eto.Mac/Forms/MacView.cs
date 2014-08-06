@@ -9,6 +9,18 @@ using Eto.Mac.Forms.Controls;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Printing;
 using MonoMac.CoreAnimation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -150,7 +162,7 @@ namespace Eto.Mac.Forms
 			var control = Control as NSControl;
 			if (control != null)
 			{
-				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
+				var size = (Widget.Loaded) ? (NSSize?)control.Frame.Size : null;
 				control.SizeToFit();
 				naturalSize = control.Frame.Size.ToEto();
 				if (size != null)
@@ -186,7 +198,7 @@ namespace Eto.Mac.Forms
 			if (mouseDelegate == null)
 				mouseDelegate = new MouseDelegate { Handler = this };
 			var options = mouseOptions | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect;
-			tracking = new NSTrackingArea(new SD.RectangleF(SD.PointF.Empty, EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
+			tracking = new NSTrackingArea(new NSRect(new NSPoint(), EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
 			EventControl.AddTrackingArea(tracking);
 		}
 
@@ -418,7 +430,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void Invalidate(Rectangle rect)
 		{
-			var region = rect.ToSDRectangleF();
+			var region = rect.ToSDRectangleF().ToNS();
 			region.Y = EventControl.Frame.Height - region.Y - region.Height;
 			EventControl.SetNeedsDisplayInRect(region);
 		}
@@ -540,7 +552,7 @@ namespace Eto.Mac.Forms
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
-			var sdpoint = point.ToSD();
+			var sdpoint = point.ToNS();
 			if (EventControl.Window != null)
 			{
 				sdpoint.Y = ContentControl.Window.Screen.Frame.Height - sdpoint.Y;
@@ -553,7 +565,7 @@ namespace Eto.Mac.Forms
 
 		public virtual PointF PointToScreen(PointF point)
 		{
-			var sdpoint = point.ToSD();
+			var sdpoint = point.ToNS();
 			sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
 			sdpoint = ContentControl.ConvertPointToView(sdpoint, null);
 			if (ContentControl.Window != null)

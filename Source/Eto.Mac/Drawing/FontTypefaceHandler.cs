@@ -58,7 +58,7 @@ namespace Eto.Mac.Drawing
 			var descriptor = font.FontDescriptor;
 			PostScriptName = descriptor.PostscriptName;
 			var manager = NSFontManager.SharedFontManager;
-			Weight = manager.WeightOfFont(font);
+			Weight = (int)manager.WeightOfFont(font);
 			Traits = manager.TraitsOfFont(font);
 			name = (NSString)descriptor.FontAttributes[NSFontFaceAttribute];
 		}

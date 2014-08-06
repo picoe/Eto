@@ -21,8 +21,8 @@ namespace Eto.Mac.Forms
 			get
 			{
 				if (Control.RespondsToSelector(selBackingScaleFactor))
-					return Control.BackingScaleFactor;
-				return Control.UserSpaceScaleFactor;
+					return (float)Control.BackingScaleFactor;
+				return (float)Control.UserSpaceScaleFactor;
 			}
 		}
 #pragma warning restore 612, 618

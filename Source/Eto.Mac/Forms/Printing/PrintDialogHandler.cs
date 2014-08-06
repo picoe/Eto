@@ -44,10 +44,10 @@ namespace Eto.Mac.Forms.Printing
 					var parentHandler = (IMacWindow)parent.Handler;
 					var closeSheet = new SheetHelper();
 					Control.BeginSheet(printInfo, parentHandler.Control, closeSheet, new Selector("printPanelDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
-					ret = NSApplication.SharedApplication.RunModalForWindow(parentHandler.Control);
+					ret = (int)NSApplication.SharedApplication.RunModalForWindow(parentHandler.Control);
 				}
 				else
-					ret = Control.RunModalWithPrintInfo(printInfo);
+					ret = (int)Control.RunModalWithPrintInfo(printInfo);
 			}
 
 			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;

@@ -42,7 +42,7 @@ namespace Eto.Mac.Forms.Controls
 			public override int IndexOf(object item)
 			{
 				var binding = Handler.Widget.TextBinding;
-				return Handler.Control.Menu.IndexOf(binding.GetValue(item));
+				return (int)Handler.Control.Menu.IndexOf(binding.GetValue(item));
 			}
 
 			public override void AddRange(IEnumerable<object> items)
@@ -117,7 +117,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get	{ return Control.IndexOfSelectedItem; }
+			get	{ return (int)Control.IndexOfSelectedItem; }
 			set
 			{
 				if (value != SelectedIndex)

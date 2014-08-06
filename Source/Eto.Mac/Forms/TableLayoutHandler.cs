@@ -141,8 +141,8 @@ namespace Eto.Mac.Forms
 			var controlFrame = ContentControl.Frame;
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
 			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
-			var totalx = controlFrame.Width - totalxpadding;
-			var totaly = controlFrame.Height - totalypadding;
+			var totalx = (float)controlFrame.Width - totalxpadding;
+			var totaly = (float)controlFrame.Height - totalypadding;
 			var requiredx = totalxpadding;
 			var requiredy = totalypadding;
 			var numx = 0;
@@ -246,7 +246,7 @@ namespace Eto.Mac.Forms
 				}
 				starty += heights[y] + Spacing.Height;
 			}
-			oldFrameSize = controlFrame.Size;
+			oldFrameSize = controlFrame.Size.ToSD();
 		}
 
 		public void Add(Control child, int x, int y)

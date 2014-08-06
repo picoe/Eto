@@ -4,6 +4,19 @@ using MonoMac.AppKit;
 using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -48,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 				return view.Frame.Size.ToEtoSize ();
 			}
 			set {
-				Control.SetFrameFromContentFrame (new System.Drawing.RectangleF (0, 0, value.Width, value.Height));
+				Control.SetFrameFromContentFrame (new NSRect(0, 0, value.Width, value.Height));
 			}
 		}
 
@@ -74,9 +87,9 @@ namespace Eto.Mac.Forms.Controls
 			return base.GetPreferredSize (availableSize) + new SizeF (14, Control.TitleFont.LineHeight () + 9);
 		}
 		
-		public override void SetContentSize (SD.SizeF contentSize)
+		public override void SetContentSize (NSSize contentSize)
 		{
-			Control.SetFrameFromContentFrame (new System.Drawing.RectangleF (0, 0, contentSize.Width, contentSize.Height));
+			Control.SetFrameFromContentFrame (new NSRect(0, 0, contentSize.Width, contentSize.Height));
 		}
 	}
 }

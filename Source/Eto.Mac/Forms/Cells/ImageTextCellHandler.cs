@@ -5,6 +5,18 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -94,7 +106,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 		
-		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize, NSCell cell)
+		public override float GetPreferredSize (object value, NSSize cellSize, NSCell cell)
 		{
 			var val = value as MacImageData;
 			if (val == null) return 0;
@@ -104,7 +116,7 @@ namespace Eto.Mac.Forms.Controls
 			var attrs = NSDictionary.FromObjectAndKey (font, NSAttributedString.FontAttributeName);
 			
 			var size = str.StringSize (attrs).Width + 4 + 16 + MacImageListItemCell.ImagePadding * 2; // for border + image
-			return size;
+			return (float)size;
 			
 		}
 	}

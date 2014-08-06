@@ -8,6 +8,18 @@ using Eto.Mac.Drawing;
 using MonoMac.ImageIO;
 using sd = System.Drawing;
 using Eto.Mac.Forms.Printing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac
 {
@@ -24,9 +36,9 @@ namespace Eto.Mac
 				return Colors.Black;
 			if (color.ColorSpace.ColorSpaceModel != NSColorSpaceModel.RGB)
 				color = color.UsingColorSpace(NSColorSpace.CalibratedRGB);
-			float red, green, blue, alpha;
+			CGFloat red, green, blue, alpha;
 			color.GetRgba(out red, out green, out blue, out alpha);
-			return new Color(red, green, blue, alpha);
+			return new Color((float)red, (float)green, (float)blue, (float)alpha);
 		}
 
 		public static NSRange ToNS(this Range<int> range)
@@ -36,7 +48,7 @@ namespace Eto.Mac
 
 		public static Range<int> ToEto(this NSRange range)
 		{
-			return new Range<int>(range.Location, range.Location + range.Length - 1);
+			return new Range<int>((int)range.Location, (int)(range.Location + range.Length - 1));
 		}
 
 		public static NSImageInterpolation ToNS(this ImageInterpolation value)
@@ -141,7 +153,7 @@ namespace Eto.Mac
 			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
 			if (includeWheel)
-				delta = new SizeF(theEvent.DeltaX, theEvent.DeltaY);
+				delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
 			return new MouseEventArgs(buttons, modifiers, pt, delta);
 		}
 
@@ -192,11 +204,11 @@ namespace Eto.Mac
 
 			if (size != null)
 			{
-				var rep = nsimage.BestRepresentation(new sd.RectangleF(0, 0, size.Value, size.Value), null, null);
+				var rep = nsimage.BestRepresentation(new NSRect(0, 0, size.Value, size.Value), null, null);
 				if (rep.PixelsWide > size.Value || rep.PixelsHigh > size.Value)
 				{
 					var max = Math.Max(nsimage.Size.Width, nsimage.Size.Height);
-					var newsize = new sd.Size((int)(size.Value * nsimage.Size.Width / max), (int)(size.Value * nsimage.Size.Height / max));
+					var newsize = new NSSize((int)(size.Value * nsimage.Size.Width / max), (int)(size.Value * nsimage.Size.Height / max));
 					nsimage = nsimage.Resize(newsize);
 				}
 				else
@@ -299,7 +311,7 @@ namespace Eto.Mac
 
 		public static SizeF ToEtoSize(this NSEdgeInsets insets)
 		{
-			return new SizeF(insets.Left + insets.Right, insets.Top + insets.Bottom);
+			return new SizeF((float)(insets.Left + insets.Right), (float)(insets.Top + insets.Bottom));
 		}
 
 		public static CalendarMode ToEto(this NSDatePickerMode mode)

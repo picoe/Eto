@@ -67,7 +67,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return Control.Selected == null ? -1 : Control.IndexOf(Control.Selected); }
+			get { return (int)(Control.Selected == null ? -1 : Control.IndexOf(Control.Selected)); }
 			set { Control.SelectAt (value); }
 		}
 

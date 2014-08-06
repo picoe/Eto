@@ -2,6 +2,11 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using Eto.Drawing;
+#if !Mac64
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -17,7 +22,7 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetObjectValue (object dataItem, NSObject val);
 		
-		float GetPreferredSize (object value, System.Drawing.SizeF cellSize, int row, object dataItem);
+		float GetPreferredSize (object value, NSSize cellSize, int row, object dataItem);
 		
 		void HandleEvent (string handler, bool defaultEvent = false);
 
@@ -70,9 +75,9 @@ namespace Eto.Mac.Forms.Controls
 
 		public abstract void SetObjectValue (object dataItem, NSObject value);
 		
-		public abstract float GetPreferredSize (object value, System.Drawing.SizeF cellSize, NSCell cell);
+		public abstract float GetPreferredSize (object value, NSSize cellSize, NSCell cell);
 
-		public float GetPreferredSize (object value, System.Drawing.SizeF cellSize, int row, object dataItem)
+		public float GetPreferredSize (object value, NSSize cellSize, int row, object dataItem)
 		{
 			if (copy == null)
 				copy = Control.Copy () as NSCell;

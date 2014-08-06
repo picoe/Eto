@@ -6,6 +6,18 @@ using System.Linq;
 using Eto.Drawing;
 using MonoTouch.Foundation;
 using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
@@ -17,7 +29,7 @@ namespace Eto.Mac.Forms
 {
 	public interface IMacContainer : IMacControlHandler
 	{
-		void SetContentSize(SD.SizeF contentSize);
+		void SetContentSize(NSSize contentSize);
 
 		void LayoutParent(bool updateSize = true);
 
@@ -66,7 +78,7 @@ namespace Eto.Mac.Forms
 			return false;
 		}
 
-		public virtual void SetContentSize(SD.SizeF contentSize)
+		public virtual void SetContentSize(NSSize contentSize)
 		{
 		}
 
@@ -109,7 +121,7 @@ namespace Eto.Mac.Forms
 			if (updateSize && !Widget.Loaded && AutoSize)
 			{
 				var size = GetPreferredSize(Size.MaxValue);
-				SetContentSize(size.ToSD());
+				SetContentSize(size.ToNS());
 			}
 
 			// layout everything!

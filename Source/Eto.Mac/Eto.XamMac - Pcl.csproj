@@ -198,6 +198,7 @@
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>
     </Compile>
+    <Compile Include="Mac64Extensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

@@ -3,6 +3,18 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using Eto.Drawing;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -13,7 +25,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public class EtoDatePicker : NSDatePicker, IMacControl
 		{
-			public override void DrawRect(System.Drawing.RectangleF dirtyRect)
+			public override void DrawRect(NSRect dirtyRect)
 			{
 				if (Handler.curValue != null)
 					base.DrawRect(dirtyRect);

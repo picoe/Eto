@@ -3,6 +3,19 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using Eto.Drawing;
 using sd = System.Drawing;
+using MonoMac.Foundation;
+#if Mac64
+using CGFloat = System.Double;
+using NSInteger = System.Int64;
+using NSUInteger = System.UInt64;
+#else
+using NSSize = System.Drawing.SizeF;
+using NSRect = System.Drawing.RectangleF;
+using NSPoint = System.Drawing.PointF;
+using CGFloat = System.Single;
+using NSInteger = System.Int32;
+using NSUInteger = System.UInt32;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -32,7 +45,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static void ResizeSubviews(SplitterHandler handler, sd.SizeF oldSize)
+		static void ResizeSubviews(SplitterHandler handler, NSSize oldSize)
 		{
 			var splitView = handler.Control;
 			var dividerThickness = splitView.DividerThickness;
@@ -40,14 +53,14 @@ namespace Eto.Mac.Forms.Controls
 			var panel2Rect = splitView.Subviews[1].Frame;
 			var newFrame = splitView.Frame;
 				
-			if (oldSize.IsEmpty)
+			if (oldSize.Height == 0 && oldSize.Width == 0)
 				oldSize = newFrame.Size;
 	
 			if (splitView.IsVertical)
 			{
 				panel2Rect.Y = 0;
 				panel2Rect.Height = panel1Rect.Height = newFrame.Height;
-				panel1Rect.Location = new sd.PointF(0, 0);
+				panel1Rect = new NSRect(new NSPoint(0, 0), panel1Rect.Size);
 				if (handler.position == null)
 				{
 					panel1Rect.Width = Math.Max(0, newFrame.Width / 2);
@@ -79,7 +92,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				panel2Rect.X = 0;
 				panel2Rect.Width = panel1Rect.Width = newFrame.Width;
-				panel1Rect.Location = new sd.PointF(0, 0);
+				panel1Rect = new NSRect(new NSPoint(0, 0), panel1Rect.Size);
 				if (handler.position == null)
 				{
 					panel1Rect.Height = Math.Max(0, newFrame.Height / 2);
@@ -118,12 +131,12 @@ namespace Eto.Mac.Forms.Controls
 
 			public SplitterHandler Handler { get { return (SplitterHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override void Resize(NSSplitView splitView, sd.SizeF oldSize)
+			public override void Resize(NSSplitView splitView, NSSize oldSize)
 			{
 				SplitterHandler.ResizeSubviews(Handler, oldSize);
 			}
 
-			public override float ConstrainSplitPosition(NSSplitView splitView, float proposedPosition, int subviewDividerIndex)
+			public override CGFloat ConstrainSplitPosition(NSSplitView splitView, CGFloat proposedPosition, NSInteger subviewDividerIndex)
 			{
 				return Handler.Enabled ? proposedPosition : Handler.Position;
 			}
@@ -192,7 +205,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				position = value;
 				if (Widget.Loaded)
-					Control.ResizeSubviewsWithOldSize(sd.SizeF.Empty);
+					Control.ResizeSubviewsWithOldSize(new NSSize());
 			}
 		}
 
@@ -206,7 +219,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Control.IsVertical = value == SplitterOrientation.Horizontal;
 				if (Widget.Loaded)
-					Control.ResizeSubviewsWithOldSize(sd.SizeF.Empty);
+					Control.ResizeSubviewsWithOldSize(new NSSize());
 			}
 		}
 
@@ -219,7 +232,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				fixedPanel = value;
 				if (Widget.Loaded)
-					Control.ResizeSubviewsWithOldSize(sd.SizeF.Empty);
+					Control.ResizeSubviewsWithOldSize(new NSSize());
 			}
 		}
 
@@ -276,7 +289,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.OnLoadComplete(e);
 			SetInitialSplitPosition();
-			Control.ResizeSubviewsWithOldSize(sd.SizeF.Empty);
+			Control.ResizeSubviewsWithOldSize(new NSSize());
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
@@ -302,7 +315,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 				if (position != null)
 					p1size.Width = position.Value;
-				size.Width = p1size.Width + p2size.Width + Control.DividerThickness;
+				size.Width = (float)(p1size.Width + p2size.Width + Control.DividerThickness);
 				size.Height = Math.Max(p1size.Height, p2size.Height);
 			}
 			else
@@ -322,7 +335,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 				if (position != null)
 					p1size.Height = position.Value;
-				size.Height = p1size.Height + p2size.Height + Control.DividerThickness;
+				size.Height = (float)(p1size.Height + p2size.Height + Control.DividerThickness);
 				size.Width = Math.Max(p1size.Width, p2size.Width);
 			}
 			return size;
