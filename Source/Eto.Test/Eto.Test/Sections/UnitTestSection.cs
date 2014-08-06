@@ -16,13 +16,15 @@ namespace Eto.Test.Sections
 {
 	public class TestListener : ITestListener
 	{
+		public Application Application { get; set; }
+
 		public void TestFinished(ITestResult result)
 		{
 			if (!result.HasChildren)
 			{
 				if (result.FailCount > 0)
 				{
-					Application.Instance.Invoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
+					Application.Invoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
 				}
 			}
 		}
@@ -35,7 +37,7 @@ namespace Eto.Test.Sections
 		public void TestStarted(ITest test)
 		{
 			if (!test.HasChildren)
-				Application.Instance.Invoke(() => Log.Write(null, test.FullName));
+				Application.Invoke(() => Log.Write(null, test.FullName));
 		}
 	}
 
@@ -144,9 +146,9 @@ namespace Eto.Test.Sections
 								return;
 							}
 							ITestResult result;
+							var listener = new TestListener { Application = Application.Instance }; // use running application for logging
 							using (testPlatform.Context)
 							{
-								var listener = new TestListener();
 								result = runner.Run(listener, filter ?? TestFilter.Empty);
 							}
 							var writer = new StringWriter();
