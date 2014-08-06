@@ -17,7 +17,7 @@
 
         https://github.com/picoe/Eto/wiki		
 		</description>
-		<copyright>Copyright 2014 by Curtis Wensley</copyright>
+		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop json eto.forms</tags>
 		<dependencies>
 			<group>
