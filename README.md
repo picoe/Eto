@@ -7,7 +7,8 @@ Links
 
 * Join the [forums](http://groups.google.com/group/eto-forms)
 * Chat in [#eto.forms](http://chat.mibbit.com/?server=irc.gimp.org&channel=%23eto.forms) on irc.gimp.org
-* Download using [nuget](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or [Xamarin Studio nuget addin](https://github.com/mrward/monodevelop-nuget-addin)
+* Download binaries using [nuget](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or Xamarin Studio.
+* For bleeding edge nuget packages, add the [development nuget feed](https://ci.appveyor.com/nuget/eto-2j6bnerswliq) to your sources list.
 
 
 Description
