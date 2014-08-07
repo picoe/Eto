@@ -63,6 +63,8 @@ Your project only needs to reference Eto.dll, and include the corresponding plat
 * Eto.WinForms.dll - Windows Forms platform using GDI+ for graphics
 * Eto.Direct2D.dll - Windows Forms platform using Direct2D for graphics
 * Eto.Wpf.dll - Windows Presentation Foundation platform
+* Eto.Gtk2.dll - Gtk2 platform
+* Eto.Gtk3.dll - Gtk3 platform
 * Eto.iOS.dll - Xamarin.iOS platform
 * Eto.Android.dll - Xamarin.Android platform
 
