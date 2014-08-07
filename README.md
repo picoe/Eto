@@ -27,7 +27,7 @@ This framework was built so that using it in .NET is natural. For example, a sim
 	{
 		public MyForm ()
 		{
-			Text = "My Cross-Platform App";
+			Title = "My Cross-Platform App";
 			Size = new Size (200, 200);
 			Content = new Label { Text = "Hello World!" };
 		}
@@ -51,12 +51,20 @@ Applications
 * [Notedown](https://github.com/modmonkeys/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
 
-Namespaces
+Assemblies
 ----------
 
-* [Eto.Forms](https://github.com/picoe/Eto/tree/master/Source/Eto/Forms) - User interface 
-* [Eto.Drawing](https://github.com/picoe/Eto/tree/master/Source/Eto/Drawing) - Drawing/graphical routines
-* Eto.Platform.[Platform] - platform implementations
+Your project only needs to reference Eto.dll, and include the corresponding platform assembly that you wish to target. To run on a Mac platform, you need to [bundle your app](https://github.com/picoe/Eto/wiki/Running-your-application).
+
+* Eto.dll - Eto.Forms (UI), Eto.Drawing (Graphics), and platform loading
+* Eto.Mac.dll - MonoMac platform for OS X using 32-bit mono
+* Eto.Mac64.dll - MonoMac platform for OS X using 64-bit mono
+* Eto.XamMac.dll - Xamarin.Mac platform for OS X to embed mono
+* Eto.WinForms.dll - Windows Forms platform using GDI+ for graphics
+* Eto.Direct2D.dll - Windows Forms platform using Direct2D for graphics
+* Eto.Wpf.dll - Windows Presentation Foundation platform
+* Eto.iOS.dll - Xamarin.iOS platform
+* Eto.Android.dll - Xamarin.Android platform
 
 Currently supported targets
 ---------------------------
@@ -71,5 +79,5 @@ Under development
 
 These platforms are currently in development. Any eager bodies willing to help feel free to do so!
 
-* Android using Xamarin.Android (Eto.Platform.Android)
-* Windows 8.x and Windows Phone (Eto.Platform.Xaml)
+* Android using Xamarin.Android (Eto.Android)
+* Windows 8.x and Windows Phone (Eto.WinRT)
