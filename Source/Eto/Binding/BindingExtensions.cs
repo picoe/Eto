@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Eto.Forms;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Extensions for bindings
