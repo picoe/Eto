@@ -13,6 +13,7 @@ namespace Eto.WinForms
 	{
 		string badgeLabel;
 		bool attached;
+		bool quitting;
 		readonly Thread mainThread;
 		SynchronizationContext context;
 		public static bool EnableScrollingUnderMouse = true;
@@ -88,10 +89,13 @@ namespace Eto.WinForms
 
 				Callback.OnInitialized(Widget, EventArgs.Empty);
 
-				if (Widget.MainForm != null && Widget.MainForm.Loaded)
-					swf.Application.Run((swf.Form)Widget.MainForm.ControlObject);
-				else
-					swf.Application.Run();
+				if (!quitting)
+				{
+					if (Widget.MainForm != null && Widget.MainForm.Loaded)
+						swf.Application.Run((swf.Form)Widget.MainForm.ControlObject);
+					else
+						swf.Application.Run();
+				}
 			}
 			else
 			{
@@ -145,6 +149,7 @@ namespace Eto.WinForms
 
 		public void Quit()
 		{
+			quitting = true;
 			swf.Application.Exit();
 		}
 
