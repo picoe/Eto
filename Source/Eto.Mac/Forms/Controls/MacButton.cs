@@ -18,7 +18,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				var oldSize = GetPreferredSize(Size.MaxValue);
-				Control.SetTitleWithMnemonic(value);
+				Control.SetTitleWithMnemonic(value ?? string.Empty);
 				LayoutIfNeeded(oldSize);
 			}
 		}
