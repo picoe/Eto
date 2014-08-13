@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using MonoMac.CoreGraphics;
 
 #if Mac64
 using CGFloat = System.Double;
@@ -38,6 +39,7 @@ namespace Eto.Mac.Drawing
 		FontStyle? style;
 		FontDecoration decoration;
 		NSDictionary _attributes;
+		NSFontTraitMask? traits;
 
 		public FontHandler()
 		{
@@ -116,6 +118,31 @@ namespace Eto.Mac.Drawing
 			}
 		}
 
+		public static NSFont CreateFont(FontFamilyHandler familyHandler, float size, NSFontTraitMask traits, int weight = 5)
+		{
+			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, weight, size);
+			if (font == null)
+			{
+				if (traits.HasFlag(NSFontTraitMask.Italic))
+				{
+					// fake italics by transforming the font
+					const float kRotationForItalicText = 14.0f;
+					var fontTransform = new NSAffineTransform();
+					fontTransform.Scale(size);
+					var italicTransform = new NSAffineTransform();
+					italicTransform.TransformStruct = Matrix.FromSkew(0, kRotationForItalicText).ToCG();
+					fontTransform.AppendTransform(italicTransform);
+					traits &= ~NSFontTraitMask.Italic;
+					font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, 5, size);
+					if (font != null)
+					{
+						font = NSFont.FromDescription(font.FontDescriptor, fontTransform);
+					}
+				}
+			}
+			return font;
+		}
+
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
 			this.style = style;
@@ -123,8 +150,9 @@ namespace Eto.Mac.Drawing
 			this.decoration = decoration;
 #if OSX
 			var familyHandler = (FontFamilyHandler)family.Handler;
-			NSFontTraitMask traits = style.ToNS() & familyHandler.TraitMask;
-			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, 5, size);
+			traits = style.ToNS() & familyHandler.TraitMask;
+			var font = CreateFont(familyHandler, size, traits.Value);
+
 			if (font == null || font.Handle == IntPtr.Zero)
 				throw new ArgumentOutOfRangeException(string.Empty, string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
@@ -150,7 +178,7 @@ namespace Eto.Mac.Drawing
 			familyString.Append (suffix);
 			var font = UIFont.FromName (familyString.ToString (), size);
 			*/
-#endif
+			#endif
 			Control = font;
 		}
 
@@ -179,7 +207,7 @@ namespace Eto.Mac.Drawing
 			get
 			{
 				if (typeface == null)
-					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control);
+					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control, traits);
 				return typeface;
 			}
 		}
