@@ -504,10 +504,32 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		static readonly IntPtr selResetCursorRects = Selector.GetHandle("resetCursorRects");
+
+		static void TriggerResetCursorRects(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var handler = GetHandler(obj) as IMacViewHandler;
+			if (handler != null)
+			{
+				var cursor = handler.Cursor;
+				if (cursor != null)
+				{
+					handler.EventControl.AddCursorRect(new NSRect(NSPoint.Empty, handler.EventControl.Frame.Size), cursor.ControlObject as NSCursor);
+				}
+			}
+		}
+
 		public virtual Cursor Cursor
 		{
 			get { return cursor; }
-			set { cursor = value; }
+			set {
+				if (cursor != value)
+				{
+					cursor = value;
+					AddMethod(selResetCursorRects, new Action<IntPtr, IntPtr>(TriggerResetCursorRects), "v@:");
+				}
+			}
 		}
 
 		public string ToolTip
