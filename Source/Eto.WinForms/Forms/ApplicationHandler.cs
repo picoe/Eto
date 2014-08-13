@@ -22,6 +22,7 @@ namespace Eto.WinForms
 		public ApplicationHandler()
 		{
 			mainThread = Thread.CurrentThread;
+			swf.Application.EnableVisualStyles();
 		}
 
 		public void RunIteration()
@@ -75,7 +76,6 @@ namespace Eto.WinForms
 		{
 			if (!attached)
 			{
-				swf.Application.EnableVisualStyles();
 				if (!EtoEnvironment.Platform.IsMono)
 					swf.Application.DoEvents();
 
