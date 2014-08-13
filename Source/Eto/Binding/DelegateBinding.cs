@@ -78,7 +78,7 @@ namespace Eto
 
 		public TValue DefaultSetValue { get; set; }
 
-		public DelegateBinding(Func<T, TValue> getValue, Action<T, TValue> setValue = null, Action<T, EventHandler<EventArgs>> addChangeEvent = null, Action<T, EventHandler<EventArgs>> removeChangeEvent = null, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		public DelegateBinding(Func<T, TValue> getValue = null, Action<T, TValue> setValue = null, Action<T, EventHandler<EventArgs>> addChangeEvent = null, Action<T, EventHandler<EventArgs>> removeChangeEvent = null, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
 		{
 			GetValue = getValue;
 			DefaultGetValue = defaultGetValue;
