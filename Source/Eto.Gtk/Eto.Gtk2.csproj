@@ -244,6 +244,7 @@
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
+    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

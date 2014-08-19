@@ -244,6 +244,7 @@
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>
     </Compile>
+    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

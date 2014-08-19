@@ -172,6 +172,7 @@
     <Compile Include="UnitTests\Handlers\TestPanelHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestContainerHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestWindowHandler.cs" />
+    <Compile Include="Sections\Controls\LinkButtonSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

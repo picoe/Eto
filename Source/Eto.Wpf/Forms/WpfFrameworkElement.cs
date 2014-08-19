@@ -157,7 +157,7 @@ namespace Eto.Wpf.Forms
 			return size;
 		}
 
-		public bool Enabled
+		public virtual bool Enabled
 		{
 			get { return Control.IsEnabled; }
 			set { Control.IsEnabled = value; }

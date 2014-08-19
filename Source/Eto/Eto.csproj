@@ -298,6 +298,7 @@
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>
     </Compile>
+    <Compile Include="Forms\Controls\LinkButton.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

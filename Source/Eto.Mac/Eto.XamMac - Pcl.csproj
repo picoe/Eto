@@ -199,6 +199,7 @@
       <Link>PlatformDetect.cs</Link>
     </Compile>
     <Compile Include="Mac64Extensions.cs" />
+    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
