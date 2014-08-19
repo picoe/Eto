@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -22,6 +24,18 @@ namespace Eto
 		void HandleChangedEvent(object sender, EventArgs e)
 		{
 			OnDataValueChanged(e);
+		}
+
+		public DelegateBinding()
+		{
+		}
+
+		public DelegateBinding(Func<TValue> getValue = null, Action<TValue> setValue = null, Action<EventHandler<EventArgs>> addChangeEvent = null, Action<EventHandler<EventArgs>> removeChangeEvent = null)
+		{
+			GetValue = getValue;
+			SetValue = setValue;
+			AddChangeEvent = addChangeEvent;
+			RemoveChangeEvent = removeChangeEvent;
 		}
 
 		/// <summary>
@@ -95,14 +109,16 @@ namespace Eto
 
 		protected override TValue InternalGetValue(object dataItem)
 		{
-			if (GetValue != null && dataItem != null)
+			if (GetValue != null && dataItem is T)
+			{
 				return GetValue((T)dataItem);
+			}
 			return DefaultGetValue;
 		}
 
 		protected override void InternalSetValue(object dataItem, TValue value)
 		{
-			if (SetValue != null && dataItem != null)
+			if (SetValue != null && dataItem is T)
 				SetValue((T)dataItem, value);
 		}
 
@@ -114,7 +130,7 @@ namespace Eto
 		/// <returns>binding reference used to track the event hookup, to pass to <see cref="RemoveValueChangedHandler"/> when removing the handler</returns>
 		public override object AddValueChangedHandler(object dataItem, EventHandler<EventArgs> handler)
 		{
-			if (AddChangeEvent != null && dataItem != null)
+			if (AddChangeEvent != null && dataItem is T)
 			{
 				AddChangeEvent((T)dataItem, handler);
 				return dataItem;
