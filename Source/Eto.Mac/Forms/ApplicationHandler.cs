@@ -110,7 +110,7 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			if (!attached)
 			{
@@ -118,7 +118,7 @@ namespace Eto.Mac.Forms
 
 				if (Control.Delegate == null)
 					Control.Delegate = AppDelegate ?? new AppDelegate();
-				NSApplication.Main(args);
+				NSApplication.Main(new string[0]);
 			}
 			else
 				Initialize(Control.Delegate);

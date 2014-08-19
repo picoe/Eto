@@ -126,7 +126,7 @@ namespace Eto.GtkSharp
 		{
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			//if (!Platform.IsWindows) Gdk.Threads.Init(); // do this in windows, and it stalls!  ugh
 			MainThreadID = Thread.CurrentThread.ManagedThreadId;

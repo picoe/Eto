@@ -158,7 +158,7 @@ namespace Eto.Wpf.Forms
 			Process.Start(url);
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)

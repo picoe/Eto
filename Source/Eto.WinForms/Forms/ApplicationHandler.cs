@@ -73,7 +73,7 @@ namespace Eto.WinForms
 			graphics.DrawString(badgeLabel, font, sd.Brushes.White, pt, sd.StringFormat.GenericTypographic);
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			if (!attached)
 			{

@@ -22,7 +22,7 @@ namespace Eto.Test.Mac
 			// use this to use your own app delegate:
 			// ApplicationHandler.Instance.AppDelegate = new MyAppDelegate();
 
-			app.Run (args);
+			app.Run();
 		}
 
 		static void AddStyles ()

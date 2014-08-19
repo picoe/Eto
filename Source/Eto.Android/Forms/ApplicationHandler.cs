@@ -41,7 +41,7 @@ namespace Eto.Android.Forms
 			}
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 		}

@@ -49,7 +49,7 @@ namespace Eto.Test.UnitTests.Handlers
 		}
 
 
-		public async void Run(string[] args)
+		public async void Run()
 		{
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			mainThread = GetThreadId();

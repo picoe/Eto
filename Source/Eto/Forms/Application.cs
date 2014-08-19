@@ -208,9 +208,50 @@ namespace Eto.Forms
 		/// Runs the application with the specified arguments
 		/// </summary>
 		/// <param name="args">Arguments to run the application</param>
+		[Obsolete("Use Run() instead")]
 		public virtual void Run(params string[] args)
 		{
-			Handler.Run(args);
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Runs the application and begins the main loop.
+		/// </summary>
+		public virtual void Run()
+		{
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Runs the application with the specified <paramref name="mainForm"/> and begins the main loop.
+		/// </summary>
+		/// <seealso cref="MainForm"/>
+		/// <param name="mainForm">Main form for the application.</param>
+		public virtual void Run(Form mainForm)
+		{
+			Initialized += (sender, e) =>
+			{
+				MainForm = mainForm;
+				MainForm.Show();
+			};
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Runs the application with the specified <paramref name="dialog"/> and begins the main loop.
+		/// </summary>
+		/// <remarks>
+		/// When the dialog is closed, the application will exit.
+		/// </remarks>
+		/// <param name="dialog">Dialog to show for the application.</param>
+		public virtual void Run(Dialog dialog)
+		{
+			Initialized += (sender, e) =>
+			{
+				dialog.ShowModal();
+				Quit();
+			};
+			Handler.Run();
 		}
 
 		/// <summary>
@@ -420,7 +461,7 @@ namespace Eto.Forms
 			/// Runs the application with the specified arguments
 			/// </summary>
 			/// <param name="args">Arguments to run the application</param>
-			void Run(string[] args);
+			void Run();
 
 			/// <summary>
 			/// Quits the application

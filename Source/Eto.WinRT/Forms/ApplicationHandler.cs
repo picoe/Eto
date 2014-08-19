@@ -193,7 +193,7 @@ namespace Eto.WinRT.Forms
 #endif
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			dispatcher = wuc.CoreWindow.GetForCurrentThread().Dispatcher;
 			Callback.OnInitialized(Widget, EventArgs.Empty);
