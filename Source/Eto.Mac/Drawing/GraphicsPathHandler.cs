@@ -4,7 +4,35 @@ using System.Collections.Generic;
 using sd = System.Drawing;
 
 #if OSX
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
 using Eto.Mac;
 namespace Eto.Mac.Drawing
 #elif IOS
@@ -86,7 +114,7 @@ namespace Eto.iOS.Drawing
 
 		public void AddRectangle (float x, float y, float width, float height)
 		{
-			Control.AddRect (new sd.RectangleF (x, y, width, height));
+			Control.AddRect (new sd.RectangleF(x, y, width, height));
 			startFigure = true;
 			isFirstFigure = false;
 		}
@@ -218,7 +246,11 @@ namespace Eto.iOS.Drawing
 
 		public void AddEllipse (float x, float y, float width, float height)
 		{
+			#if XAMMAC2
+			Control.AddEllipseInRect(new CGRect(x, y, width, height));
+			#else
 			Control.AddElipseInRect (new sd.RectangleF (x, y, width, height));
+			#endif
 			startFigure = true;
 			isFirstFigure = false;
 		}

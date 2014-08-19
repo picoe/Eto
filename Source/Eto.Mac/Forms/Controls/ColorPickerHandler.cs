@@ -2,12 +2,22 @@ using System;
 using sd = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
-using MonoMac.AppKit;
 using Eto.Mac.Drawing;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 using System.Text.RegularExpressions;
 using System.Linq;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {

@@ -1,9 +1,19 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
-using MonoMac.ObjCRuntime;
-using MonoMac.Foundation;
 using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms
 {

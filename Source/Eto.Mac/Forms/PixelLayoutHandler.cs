@@ -1,23 +1,40 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
 using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Mac.Forms.Controls;
-using MonoMac.Foundation;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms
@@ -33,13 +50,13 @@ namespace Eto.Mac.Forms
 			Control = new MacEventView { Handler = this };
 		}
 
-		public NSRect GetPosition(Control control)
+		public CGRect GetPosition(Control control)
 		{
 			PointF point;
 			if (points.TryGetValue(control, out point))
 			{
 				var frameSize = ((NSView)control.ControlObject).Frame.Size;
-				return new NSRect(point.ToNS(), frameSize);
+				return new CGRect(point.ToNS(), frameSize);
 			}
 			return control.GetContainerView().Frame;
 		}
@@ -80,19 +97,19 @@ namespace Eto.Mac.Forms
 			
 			var preferredSize = control.GetPreferredSize(Control.Frame.Size.ToEtoSize());
 
-			NSPoint origin;
+			CGPoint origin;
 			if (flipped)
-				origin = new NSPoint(
+				origin = new CGPoint(
 					point.X + offset.Width,
 					point.Y + offset.Height
 				);
 			else
-				origin = new NSPoint(
+				origin = new CGPoint(
 					point.X + offset.Width,
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
 				);
 
-			var frame = new NSRect(origin, preferredSize.ToNS());
+			var frame = new CGRect(origin, preferredSize.ToNS());
 			if (frame != childView.Frame)
 			{
 				childView.Frame = frame;

@@ -1,21 +1,34 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
 using SD = System.Drawing;
-using MonoMac.Foundation;
 using Eto.Drawing;
-using MonoMac.ObjCRuntime;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#elif !XAMMAC2
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -35,18 +48,18 @@ namespace Eto.Mac.Forms.Controls
 			WeakReference handler;
 			public TabPageHandler Handler { get { return (TabPageHandler)handler.Target; } set { handler = new WeakReference(value); } }
 			
-			public override void DrawLabel (bool shouldTruncateLabel, NSRect labelRect)
+			public override void DrawLabel (bool shouldTruncateLabel, CGRect labelRect)
 			{
 				if (Handler.image != null) {
 					var nsimage = (NSImage)Handler.image.ControlObject;
 
 					if (nsimage.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
-						nsimage.Draw (new NSRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new NSRect (new NSPoint(), nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
+						nsimage.Draw (new CGRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect (new CGPoint(), nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
 					else {
 						#pragma warning disable 618
 						nsimage.Flipped = View.IsFlipped;
 						#pragma warning restore 618
-						nsimage.Draw (new NSRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new NSRect (new NSPoint(), nsimage.Size), NSCompositingOperation.SourceOver, 1);
+						nsimage.Draw (new CGRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect (new CGPoint(), nsimage.Size), NSCompositingOperation.SourceOver, 1);
 					}
 					
 					labelRect.X += labelRect.Height + ICON_PADDING;
@@ -57,8 +70,8 @@ namespace Eto.Mac.Forms.Controls
 			}
 
 			// TODO: Mac64
-			#if !Mac64
-			public override NSSize SizeOfLabel (bool computeMin)
+			#if !Mac64 && !XAMMAC2
+			public override CGSize SizeOfLabel (bool computeMin)
 			{
 				var size = base.SizeOfLabel (computeMin);
 				if (Handler.image != null) {

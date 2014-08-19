@@ -1,11 +1,34 @@
-using MonoMac.AppKit;
 using Eto.Forms;
-using MonoMac.Foundation;
 using Eto.Drawing;
-#if !Mac64
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
+using System;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -22,7 +45,7 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetObjectValue (object dataItem, NSObject val);
 		
-		float GetPreferredSize (object value, NSSize cellSize, int row, object dataItem);
+		nfloat GetPreferredSize (object value, CGSize cellSize, int row, object dataItem);
 		
 		void HandleEvent (string handler, bool defaultEvent = false);
 
@@ -75,9 +98,9 @@ namespace Eto.Mac.Forms.Controls
 
 		public abstract void SetObjectValue (object dataItem, NSObject value);
 		
-		public abstract float GetPreferredSize (object value, NSSize cellSize, NSCell cell);
+		public abstract nfloat GetPreferredSize (object value, CGSize cellSize, NSCell cell);
 
-		public float GetPreferredSize (object value, NSSize cellSize, int row, object dataItem)
+		public nfloat GetPreferredSize (object value, CGSize cellSize, int row, object dataItem)
 		{
 			if (copy == null)
 				copy = Control.Copy () as NSCell;

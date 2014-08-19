@@ -1,17 +1,40 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreGraphics;
 using sd = System.Drawing;
-#if !Mac64
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
 #endif
+#endif
+
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -33,7 +56,7 @@ namespace Eto.Mac.Forms.Controls
 			NSObject CopyWithZone(IntPtr zone)
 			{
 				var val = new EtoCellValue { Item = Item };
-				val.Retain();
+				val.DangerousRetain();
 				return val;
 			}
 		}
@@ -61,10 +84,10 @@ namespace Eto.Mac.Forms.Controls
 			public bool DrawsBackground { get; set; }
 
 			// TODO: Mac64
-			#if !Mac64
-			public override NSSize CellSizeForBounds(NSRect bounds)
+			#if !Mac64 && !XAMMAC2
+			public override CGSize CellSizeForBounds(CGRect bounds)
 			{
-				return new NSSize();
+				return new CGSize();
 			}
 			#endif
 
@@ -79,7 +102,7 @@ namespace Eto.Mac.Forms.Controls
 				return new EtoCell(ptr) { Handler = Handler };
 			}
 
-			public override void DrawInteriorWithFrame(NSRect cellFrame, NSView inView)
+			public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 			{
 				var nscontext = NSGraphicsContext.CurrentContext;
 
@@ -143,7 +166,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
-		public override float GetPreferredSize(object value, NSSize cellSize, NSCell cell)
+		public override nfloat GetPreferredSize(object value, CGSize cellSize, NSCell cell)
 		{
 			return 10f;
 		}

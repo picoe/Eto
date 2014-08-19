@@ -1,20 +1,35 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Drawing;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac
@@ -30,12 +45,12 @@ namespace Eto.Mac
 		static readonly IntPtr selBoundingRectWithSize = Selector.GetHandle("boundingRectWithSize:options:");
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend_stret")]
-		static extern void RectangleF_objc_msgSend_stret_SizeF_int(out NSRect retval, IntPtr receiver, IntPtr selector, NSSize arg1, NSInteger arg2);
+		static extern void RectangleF_objc_msgSend_stret_SizeF_int(out CGRect retval, IntPtr receiver, IntPtr selector, CGSize arg1, nint arg2);
 
 		// not bound
-		public static NSRect BoundingRect(this NSAttributedString str, NSSize size, NSStringDrawingOptions options)
+		public static CGRect BoundingRect(this NSAttributedString str, CGSize size, NSStringDrawingOptions options)
 		{
-			NSRect rect;
+			CGRect rect;
 			RectangleF_objc_msgSend_stret_SizeF_int(out rect, str.Handle, selBoundingRectWithSize, size, (int)options);
 			return rect;
 		}
@@ -43,24 +58,37 @@ namespace Eto.Mac
 		static readonly IntPtr selNextEventMatchingMask = Selector.GetHandle("nextEventMatchingMask:untilDate:inMode:dequeue:");
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		static extern IntPtr IntPtr_objc_msgSend_NSUInteger_IntPtr_IntPtr_bool(IntPtr receiver, IntPtr selector, NSUInteger mask, IntPtr untilDate, IntPtr mode, bool dequeue);
+		static extern IntPtr IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(IntPtr receiver, IntPtr selector, nuint mask, IntPtr untilDate, IntPtr mode, bool dequeue);
 
 		// untilDate isn't allowed null
 		public static NSEvent NextEventEx(this NSApplication app, NSEventMask mask, NSDate untilDate, NSString mode, bool dequeue)
 		{
-			return (NSEvent)Runtime.GetNSObject(IntPtr_objc_msgSend_NSUInteger_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (NSUInteger)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
+			return (NSEvent)Runtime.GetNSObject(IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (nuint)(uint)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
 		}
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		static extern void void_objc_msgSend_NSRange_NSPoint(IntPtr receiver, IntPtr selector, NSRange arg1, NSPoint arg2);
+		static extern void void_objc_msgSend_NSRange_CGPoint(IntPtr receiver, IntPtr selector, NSRange arg1, CGPoint arg2);
 
 		static readonly IntPtr selDrawGlyphs = Selector.GetHandle("drawGlyphsForGlyphRange:atPoint:");
 
 		// not bound
-		public static void DrawGlyphs(this NSLayoutManager layout, NSRange range, NSPoint point)
+		public static void DrawGlyphs(this NSLayoutManager layout, NSRange range, CGPoint point)
 		{
-			void_objc_msgSend_NSRange_NSPoint(layout.Handle, selDrawGlyphs, range, point);
+			void_objc_msgSend_NSRange_CGPoint(layout.Handle, selDrawGlyphs, range, point);
 		}
+
+		#if !XAMMAC
+		public static void DangerousRetain(this NSObject obj)
+		{
+			obj.Retain();
+		}
+
+		public static void DangerousRelease(this NSObject obj)
+		{
+			obj.Release();
+		}
+		#endif
+
 	}
 }
 

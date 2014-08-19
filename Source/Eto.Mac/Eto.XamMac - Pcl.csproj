@@ -200,6 +200,7 @@
     </Compile>
     <Compile Include="Mac64Extensions.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
+    <Compile Include="Messaging.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

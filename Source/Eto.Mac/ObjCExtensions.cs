@@ -1,7 +1,20 @@
 using System;
-using MonoMac.ObjCRuntime;
 using System.Runtime.InteropServices;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#elif OSX
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#elif IOS
 using MonoTouch.ObjCRuntime;
+#endif
 
 namespace Eto.Mac
 {

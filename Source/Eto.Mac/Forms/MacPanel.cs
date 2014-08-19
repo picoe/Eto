@@ -2,28 +2,43 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using SD = System.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoMac.Foundation;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
 using NSView = MonoTouch.UIKit.UIView;
 using Eto.iOS.Forms;
+using MonoTouch.UIKit;
+using MonoTouch.Foundation;
 #elif OSX
-using MonoMac.AppKit;
 using Eto.Mac.Forms.Menu;
 #endif
 
@@ -73,7 +88,7 @@ namespace Eto.Mac.Forms
 					var container = ContentControl;
 #if OSX
 					control.AutoresizingMask = ContentResizingMask();
-					control.Frame = new NSRect(ContentControl.Bounds.X, ContentControl.Bounds.Y, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
+					control.Frame = new CGRect(ContentControl.Bounds.X, ContentControl.Bounds.Y, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
 					container.AddSubview(control); // default
 #elif IOS
 					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
@@ -124,12 +139,12 @@ namespace Eto.Mac.Forms
 			return Padding.Size;
 		}
 
-		protected virtual NSRect GetContentBounds()
+		protected virtual CGRect GetContentBounds()
 		{
 			return ContentControl.Bounds;
 		}
 
-		protected virtual NSRect AdjustContent(NSRect rect)
+		protected virtual CGRect AdjustContent(CGRect rect)
 		{
 			return rect;
 		}
@@ -162,13 +177,13 @@ namespace Eto.Mac.Forms
 				childControl.Frame = frame;
 		}
 
-		public override void SetContentSize(NSSize contentSize)
+		public override void SetContentSize(CGSize contentSize)
 		{
 			base.SetContentSize(contentSize);
 			if (MinimumSize != Size.Empty)
 			{
-				contentSize.Width = Math.Max(contentSize.Width, MinimumSize.Width);
-				contentSize.Height = Math.Max(contentSize.Height, MinimumSize.Height);
+				contentSize.Width = (nfloat)Math.Max(contentSize.Width, MinimumSize.Width);
+				contentSize.Height = (nfloat)Math.Max(contentSize.Height, MinimumSize.Height);
 			}
 			if (Widget.Content != null)
 			{

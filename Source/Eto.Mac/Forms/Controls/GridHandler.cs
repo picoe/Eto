@@ -1,27 +1,41 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
-using MonoMac.Foundation;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
-using NSNInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using nnint = System.Int32;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
-using NSNInteger = System.Int32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+using nnint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+using nnint = System.Int32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -43,7 +57,7 @@ namespace Eto.Mac.Forms.Controls
 
 		bool autoSized;
 
-		public override void SetFrameSize(NSSize newSize)
+		public override void SetFrameSize(CGSize newSize)
 		{
 			base.SetFrameSize(newSize);
 
@@ -63,15 +77,16 @@ namespace Eto.Mac.Forms.Controls
 		static readonly Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
 
 		#if Mac64
-		NSPoint ConvertPointFromBacking(NSPoint point)
+		CGPoint ConvertPointFromBacking(CGPoint point)
 		{
-			return Messaging.NSPoint_objc_msgSend_NSPoint(Handle, selConvertPointFromBacking.Handle, point);
+			return base.ConvertNSPointromBacking(point);
 		}
 		#endif
 
 		public override void MouseDown(NSEvent theEvent)
 		{
 			var point = theEvent.LocationInWindow;
+
 			if (RespondsToSelector(selConvertPointFromBacking))
 				point = ConvertPointFromBacking(point);
 			else
@@ -383,7 +398,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void SelectRow(int row)
 		{
-			Control.SelectRow((NSNInteger)row, AllowMultipleSelection);
+			Control.SelectRow((nnint)row, AllowMultipleSelection);
 		}
 
 		public void UnselectRow(int row)
@@ -414,11 +429,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		public NSRect GetVisibleRect()
+		public CGRect GetVisibleRect()
 		{
 			var rect = ScrollView.VisibleRect();
 			var loc = ScrollView.ContentView.Bounds.Location;
-			return new NSRect(rect.X + loc.X, rect.Y + loc.Y, rect.Width, rect.Height);
+			return new CGRect(rect.X + loc.X, rect.Y + loc.Y, rect.Width, rect.Height);
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

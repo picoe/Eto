@@ -2,22 +2,38 @@ using System;
 using System.IO;
 using System.Linq;
 using Eto.Drawing;
+using sd = System.Drawing;
+using Eto.Mac.Forms;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
-using sd = System.Drawing;
-using Eto.Mac.Forms;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
 #if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Drawing
@@ -84,7 +100,7 @@ namespace Eto.Mac.Drawing
 			Control = new NSImage(fileName);
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new NSSize(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create(Stream stream)
@@ -92,7 +108,7 @@ namespace Eto.Mac.Drawing
 			Control = new NSImage(NSData.FromStream(stream));
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new NSSize(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
@@ -157,7 +173,7 @@ namespace Eto.Mac.Drawing
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
 			var source = image.ToNS();
-			Control = source.Resize(new NSSize(width, height), interpolation);
+			Control = source.Resize(new CGSize(width, height), interpolation);
 		}
 
 		public override NSImage GetImage()
@@ -232,7 +248,7 @@ namespace Eto.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = new NSRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
+			var sourceRect = new CGRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
 			var destRect = graphics.TranslateView(destination.ToNS(), true, true);
 			if (alpha)
 				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
@@ -246,9 +262,9 @@ namespace Eto.Mac.Drawing
 				return new Bitmap(new BitmapHandler((NSImage)Control.Copy()));
 			else
 			{
-				var rect = new NSRect(new NSPoint(), Control.Size);
+				var rect = new CGRect(new CGPoint(), Control.Size);
 				var temp = Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
-				var image = new NSImage (temp, new NSSize(temp.Width, temp.Height));
+				var image = new NSImage (temp, new CGSize(temp.Width, temp.Height));
 				return new Bitmap(new BitmapHandler(image));
 			}
 		}

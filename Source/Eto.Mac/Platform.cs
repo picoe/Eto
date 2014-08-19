@@ -2,9 +2,7 @@ using System;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.IO;
-using MonoMac.AppKit;
 using Eto.Mac.Drawing;
-using MonoMac.Foundation;
 using Eto.Mac.IO;
 using Eto.Mac.Forms.Controls;
 using Eto.Mac.Forms.Printing;
@@ -12,6 +10,19 @@ using Eto.Mac.Forms;
 using Eto.Mac.Forms.Menu;
 using Eto.Mac.Threading;
 using Eto.Threading;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac
 {

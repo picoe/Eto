@@ -1,6 +1,9 @@
 using System.Reflection;
 
-#if XAMMAC
+#if XAMMAC2
+[assembly: AssemblyTitle("Eto.Forms - Xamarin.Mac v2.0 Platform")]
+[assembly: AssemblyDescription("OS X Platform for the Eto.Forms UI Framework using Xamarin.Mac v2.0")]
+#elif XAMMAC
 [assembly: AssemblyTitle("Eto.Forms - Xamarin.Mac Platform")]
 [assembly: AssemblyDescription("OS X Platform for the Eto.Forms UI Framework using Xamarin.Mac")]
 #elif Mac64

@@ -1,21 +1,35 @@
 using System;
 using Eto.Forms;
 using SD = System.Drawing;
-using MonoMac.AppKit;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using MonoMac.Foundation;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -36,17 +50,17 @@ namespace Eto.Mac.Forms.Controls
 
 		class EtoNumericUpDownView : MacEventView
 		{
-			public override void SetFrameSize(NSSize newSize)
+			public override void SetFrameSize(CGSize newSize)
 			{
 				base.SetFrameSize(newSize);
 				var views = Subviews;
 				var text = views[0];
 				var splitter = views[1];
 				var offset = (newSize.Height - text.Frame.Height) / 2;
-				text.SetFrameOrigin(new NSPoint(0, offset));
-				text.SetFrameSize(new NSSize((float)(newSize.Width - splitter.Frame.Width), (float)text.Frame.Height));
+				text.SetFrameOrigin(new CGPoint(0, offset));
+				text.SetFrameSize(new CGSize((float)(newSize.Width - splitter.Frame.Width), (float)text.Frame.Height));
 				offset = (newSize.Height - splitter.Frame.Height) / 2;
-				splitter.SetFrameOrigin(new NSPoint(newSize.Width - splitter.Frame.Width, offset));
+				splitter.SetFrameOrigin(new CGPoint(newSize.Width - splitter.Frame.Width, offset));
 			}
 		}
 
@@ -119,7 +133,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.Initialize();
 			var size = GetNaturalSize(Size.MaxValue);
-			Control.Frame = new NSRect(0, 0, size.Width, size.Height);
+			Control.Frame = new CGRect(0, 0, size.Width, size.Height);
 			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 		}
 

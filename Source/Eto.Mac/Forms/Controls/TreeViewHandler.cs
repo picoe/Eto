@@ -1,25 +1,46 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
-using MonoMac.Foundation;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Menu;
 using System.Linq;
 using sd = System.Drawing;
 using Eto.Drawing;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
-using NSNInteger = System.UInt64;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
-using NSNInteger = System.Int32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
+#if Mac64
+using nnint = System.UInt64;
+#else
+using nnint = System.Int32;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -191,7 +212,7 @@ namespace Eto.Mac.Forms.Controls
 				return myitem != null && myitem.Item.Expandable;
 			}
 
-			public override NSObject GetChild(NSOutlineView outlineView, NSInteger childIndex, NSObject item)
+			public override NSObject GetChild(NSOutlineView outlineView, nint childIndex, NSObject item)
 			{
 				Dictionary<int, EtoTreeItem> items;
 				var myitem = item as EtoTreeItem;
@@ -208,7 +229,7 @@ namespace Eto.Mac.Forms.Controls
 				return etoItem;
 			}
 
-			public override NSInteger GetChildrenCount(NSOutlineView outlineView, NSObject item)
+			public override nint GetChildrenCount(NSOutlineView outlineView, NSObject item)
 			{
 				if (Handler.top == null)
 					return 0;
@@ -247,7 +268,7 @@ namespace Eto.Mac.Forms.Controls
 			/// The area to the right and below the rows is not filled with the background
 			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
 			/// </summary>
-			public override void DrawBackground(NSRect clipRect)
+			public override void DrawBackground(CGRect clipRect)
 			{
 				var backgroundColor = Handler.BackgroundColor;
 				if (backgroundColor != Colors.Transparent) {
@@ -396,7 +417,7 @@ namespace Eto.Mac.Forms.Controls
 					{
 						if (scrollToRow)
 							Control.ScrollRowToVisible(cachedRow);
-						Control.SelectRow((NSNInteger)cachedRow, false);
+						Control.SelectRow((nnint)cachedRow, false);
 						return;
 					}
 				}
@@ -406,7 +427,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					if (scrollToRow)
 						Control.ScrollRowToVisible(row.Value);
-					Control.SelectRow((NSNInteger)row.Value, false);
+					Control.SelectRow((nnint)row.Value, false);
 				}
 			}
 		}
@@ -558,7 +579,7 @@ namespace Eto.Mac.Forms.Controls
 			if (Control.IsFlipped)
 				Scroll.ContentView.ScrollToPoint(loc);
 			else
-				Scroll.ContentView.ScrollToPoint(new NSPoint(loc.X, Control.Frame.Height - Scroll.ContentView.Frame.Height - loc.Y));
+				Scroll.ContentView.ScrollToPoint(new CGPoint(loc.X, Control.Frame.Height - Scroll.ContentView.Frame.Height - loc.Y));
 			
 			Scroll.ReflectScrolledClipView(Scroll.ContentView);
 			

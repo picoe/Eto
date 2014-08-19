@@ -1,20 +1,34 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
-using MonoMac.Foundation;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -29,7 +43,7 @@ namespace Eto.Mac.Forms.Controls
 
 		int RowCount { get; }
 
-		NSRect GetVisibleRect();
+		CGRect GetVisibleRect();
 
 		void OnCellFormatting(GridColumn column, object item, int row, NSCell cell);
 	}
@@ -85,7 +99,7 @@ namespace Eto.Mac.Forms.Controls
 				var width = Control.DataCell.CellSize.Width;
 				var outlineView = handler.Table as NSOutlineView;
 				if (handler.ShowHeader)
-					width = Math.Max(Control.HeaderCell.CellSize.Width, width);
+					width = (nfloat)Math.Max(Control.HeaderCell.CellSize.Width, width);
 					
 				if (dataCell != null)
 				{
@@ -100,9 +114,9 @@ namespace Eto.Mac.Forms.Controls
 						var cellWidth = GetRowWidth(dataCellHandler, (int)i, cellSize) + 4;
 						if (outlineView != null && Column == 0)
 						{
-							cellWidth += (float)((outlineView.LevelForRow((NSInteger)i) + 1) * outlineView.IndentationPerLevel);
+							cellWidth += (float)((outlineView.LevelForRow((nint)i) + 1) * outlineView.IndentationPerLevel);
 						}
-						width = Math.Max(width, cellWidth);
+						width = (nfloat)Math.Max(width, cellWidth);
 					}
 				}
 				if (force || width > Control.Width)
@@ -110,7 +124,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		protected virtual float GetRowWidth(ICellHandler cell, int row, NSSize cellSize)
+		protected virtual nfloat GetRowWidth(ICellHandler cell, int row, CGSize cellSize)
 		{
 			var item = DataViewHandler.GetItem(row);
 			var val = GetObjectValue(item);

@@ -3,18 +3,20 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{15490F6C-C579-4A86-AD16-8D9B5B41EB87}</ProjectGuid>
-    <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{856E8C70-2702-11E4-8C21-0800200C9A66}</ProjectGuid>
+    <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Mac</RootNamespace>
-    <AssemblyName>Eto.XamMac</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AssemblyName>Eto.XamMac2</AssemblyName>
+    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
   </PropertyGroup>
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC</DefineConstants>
+    <OutputPath>..\..\BuildOutput\Pcl\Debug\</OutputPath>
+    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;XAMMAC2</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -29,12 +31,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\BuildOutput\Release\</OutputPath>
+    <OutputPath>..\..\BuildOutput\Pcl\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>OSX;DESKTOP;XAMMAC</DefineConstants>
+    <DefineConstants>OSX;DESKTOP;XAMMAC;XAMMAC2</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>false</CreatePackage>
@@ -44,9 +46,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Core" />
-    <Reference Include="XamMac, Version=0.0.0.0, Culture=neutral, PublicKeyToken=84e04ff9cfb79065" />
+    <Reference Include="Xamarin.Mac" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Drawing\BrushHandler.cs" />
@@ -189,21 +190,19 @@
     <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
     <Compile Include="Forms\MacPanel.cs" />
-    <Compile Include="Platform.cs" />
+    <Compile Include="Platform.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
+    <Compile Include="..\Shared\PlatformDetect.cs">
+      <Link>PlatformDetect.cs</Link>
+    </Compile>
     <Compile Include="Mac64Extensions.cs" />
-    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="Messaging.cs" />
+    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -217,4 +216,11 @@
   </ProjectExtensions>
   <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto - Pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - Pcl</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

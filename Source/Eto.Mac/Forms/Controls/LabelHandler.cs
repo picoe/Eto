@@ -2,25 +2,47 @@ using System;
 using sd = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
-using MonoMac.AppKit;
 using Eto.Mac.Drawing;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 using System.Text.RegularExpressions;
 using System.Linq;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
-using NSNInteger = System.UInt64;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
-using NSNInteger = System.Int32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
+#if XAMMAC2
+using nnint = System.nint;
+#elif Mac64
+using nnint = System.UInt64;
+#else
+using nnint = System.Int32;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -51,8 +73,12 @@ namespace Eto.Mac.Forms.Controls
 				return Size.Empty;
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
+				#if XAMMAC2 // TODO: Fix when Xamarin.Mac2 NSEdgeInsets is fixed to use nfloat instead of float
+				var insets = new Size(4, 2);
+				#else
 				var insets = Control.RespondsToSelector(selAlignmentRectInsets) ? Control.AlignmentRectInsets.ToEtoSize() : new Size(4, 2);
-				var size = Control.Cell.CellSizeForBounds(new NSRect(new NSPoint(), availableSize.ToNS())).ToEto();
+				#endif
+				var size = Control.Cell.CellSizeForBounds(new CGRect(new CGPoint(), availableSize.ToNS())).ToEto();
 
 				NaturalSize = Size.Round(size + insets);
 				availableSizeCached = availableSize;
@@ -65,7 +91,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public VerticalAlign VerticalAlign { get; set; }
 
-			public override NSRect DrawingRectForBounds(NSRect theRect)
+			public override CGRect DrawingRectForBounds(CGRect theRect)
 			{
 				var rect = base.DrawingRectForBounds(theRect);
 				var titleSize = CellSizeForBounds(theRect);
@@ -271,8 +297,8 @@ namespace Eto.Mac.Forms.Controls
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{
-						var num = (NSNumber)str.GetAttribute(NSAttributedString.UnderlineStyleAttributeName, (NSNInteger)underlineIndex, out range);
-						var newStyle = (num != null && (NSUnderlineStyle)num.IntValue == NSUnderlineStyle.Single) ? NSUnderlineStyle.Double : NSUnderlineStyle.Single;
+						var num = (NSNumber)str.GetAttribute(NSAttributedString.UnderlineStyleAttributeName, (nnint)underlineIndex, out range);
+						var newStyle = (num != null && (NSUnderlineStyle)num.Int64Value == NSUnderlineStyle.Single) ? NSUnderlineStyle.Double : NSUnderlineStyle.Single;
 						str.AddAttribute(NSAttributedString.UnderlineStyleAttributeName, new NSNumber((int)newStyle), new NSRange(underlineIndex, 1));
 					}
 				}

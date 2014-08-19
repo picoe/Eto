@@ -22,6 +22,7 @@
     	<Exec Command="$(mdtool) build -t:Clean -p:'Eto.XamMac - Pcl' -c:'$(Configuration)' '$(BaseDir)\Eto - Pcl.sln'" />
     	<Exec Command="$(mdtool) build -t:Clean -p:'Eto - Pcl' -c:'$(Configuration)' '$(BaseDir)\Eto - Pcl.sln'" />
     	<Exec Command="$(mdtool) build -p:'Eto.XamMac - Pcl' -c:'$(Configuration)|Mac' '$(BaseDir)\Eto - Pcl.sln'" />
+    	<Exec Command="$(mdtool) build -p:'Eto.XamMac2 - Pcl' -c:'$(Configuration)|Mac' '$(BaseDir)\Eto - Pcl.sln'" />
 	</Target>
     <Target Name="Package">
     	<MSBuild Projects="$(BaseDir)\Eto.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Windows" />
@@ -49,6 +50,7 @@
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.Windows.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.WinForms.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.Wpf.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Wpf.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.XamMac.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.XamMac.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.XamMac2.nuspec;NuspecInfoAssembly=$(SourcePclDir)\Eto.XamMac2.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Platform.WinRT.nuspec;NuspecInfoAssembly=$(SourcePclDir)\Eto.WinRT.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Serialization.Json.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Serialization.Json.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\Eto.Serialization.Xaml.nuspec;NuspecInfoAssembly=$(SourceDir)\Eto.Serialization.Xaml.dll;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
@@ -68,6 +70,7 @@
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Windows.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Wpf.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac2.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<!--MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.WinRT.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/-->
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Serialization.Json.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Serialization.Xaml.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>

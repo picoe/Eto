@@ -1,23 +1,38 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using sd = System.Drawing;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
-using NSNInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using nnint = System.Int32;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
-using NSNInteger = System.Int32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+using nnint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+using nnint = System.Int32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -85,8 +100,8 @@ namespace Eto.Mac.Forms.Controls
 				Editable = true,
 				Selectable = true,
 				AllowsUndo = true,
-				MinSize = NSSize.Empty,
-				MaxSize = new NSSize(float.MaxValue, float.MaxValue)
+				MinSize = CGSize.Empty,
+				MaxSize = new CGSize(float.MaxValue, float.MaxValue)
 			};
 			Control.TextContainer.WidthTracksTextView = true;
 
@@ -212,7 +227,7 @@ namespace Eto.Mac.Forms.Controls
 				else
 				{
 					Control.TextContainer.WidthTracksTextView = false;
-					Control.TextContainer.ContainerSize = new NSSize(float.MaxValue, float.MaxValue);
+					Control.TextContainer.ContainerSize = new CGSize(float.MaxValue, float.MaxValue);
 				}
 			}
 		}
@@ -232,8 +247,8 @@ namespace Eto.Mac.Forms.Controls
 				Control.TextStorage.DeleteRange(range);
 				if (value != null)
 				{
-					range.Length = (NSNInteger)value.Length;
-					Control.TextStorage.Insert(new NSAttributedString(value), (NSNInteger)range.Location);
+					range.Length = (nnint)value.Length;
+					Control.TextStorage.Insert(new NSAttributedString(value), (nnint)range.Location);
 					Control.SelectedRange = range;
 				}
 			}

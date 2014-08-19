@@ -1,37 +1,52 @@
 using System;
-using MonoMac.AppKit;
-using MonoMac.CoreImage;
 using sd = System.Drawing;
-using MonoMac.Foundation;
 using Eto.Drawing;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac
 {
 	public static class NSImageExtensions
 	{
-		public static NSImage Resize(this NSImage image, NSSize newsize, ImageInterpolation interpolation = ImageInterpolation.Default)
+		public static NSImage Resize(this NSImage image, CGSize newsize, ImageInterpolation interpolation = ImageInterpolation.Default)
 		{
 			var newimage = new NSImage(newsize);
-			var newrep = new NSBitmapImageRep(IntPtr.Zero, (NSInteger)newsize.Width, (NSInteger)newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * (NSInteger)newsize.Width, 32);
+			var newrep = new NSBitmapImageRep(IntPtr.Zero, (nint)newsize.Width, (nint)newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * (nint)newsize.Width, 32);
 			newimage.AddRepresentation(newrep);
 
 			var graphics = NSGraphicsContext.FromBitmap(newrep);
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-			image.DrawInRect(new NSRect(new NSPoint(), newimage.Size), new NSRect(new NSPoint(), image.Size), NSCompositingOperation.SourceOver, 1f);
+			image.DrawInRect(new CGRect(new CGPoint(), newimage.Size), new CGRect(new CGPoint(), image.Size), NSCompositingOperation.SourceOver, 1f);
 			NSGraphicsContext.GlobalRestoreGraphicsState();
 			return newimage;
 		}

@@ -1,8 +1,35 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
 using System.Linq;
 using System.Collections.Generic;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac
 {
@@ -22,12 +49,12 @@ namespace Eto.Mac
 				return Handler.items.Where(r => r.Selectable).Select(r => r.Identifier).ToArray();
 			}
 
-			public override void WillAddItem(MonoMac.Foundation.NSNotification notification)
+			public override void WillAddItem(NSNotification notification)
 			{
 				
 			}
 
-			public override void DidRemoveItem(MonoMac.Foundation.NSNotification notification)
+			public override void DidRemoveItem(NSNotification notification)
 			{
 			}
 

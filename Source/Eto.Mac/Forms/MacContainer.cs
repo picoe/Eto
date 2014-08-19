@@ -1,25 +1,43 @@
 using System;
 using Eto.Forms;
 using SD = System.Drawing;
-using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
-using MonoTouch.Foundation;
-using MonoMac.Foundation;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 #if IOS
+using MonoTouch.Foundation;
+
 using NSResponder = MonoTouch.UIKit.UIResponder;
 using NSView = MonoTouch.UIKit.UIView;
 using Eto.iOS.Forms;
@@ -29,7 +47,7 @@ namespace Eto.Mac.Forms
 {
 	public interface IMacContainer : IMacControlHandler
 	{
-		void SetContentSize(NSSize contentSize);
+		void SetContentSize(CGSize contentSize);
 
 		void LayoutParent(bool updateSize = true);
 
@@ -78,7 +96,7 @@ namespace Eto.Mac.Forms
 			return false;
 		}
 
-		public virtual void SetContentSize(NSSize contentSize)
+		public virtual void SetContentSize(CGSize contentSize)
 		{
 		}
 

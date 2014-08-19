@@ -6,19 +6,33 @@ using System;
 using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
 #if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -45,7 +59,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					AddCursorRect(new NSRect(new NSPoint(), Frame.Size), cursor.ControlObject as NSCursor);
+					AddCursorRect(new CGRect(new CGPoint(), Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 
@@ -65,7 +79,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			#endif
 			#if !USE_FLIPPED
-			public override void SetFrameSize(NSSize newSize)
+			public override void SetFrameSize(CGSize newSize)
 			{
 				base.SetFrameSize(newSize);
 				Handler.SetPosition(Handler.scrollPosition, true);
@@ -190,7 +204,7 @@ namespace Eto.Mac.Forms.Controls
 			return SizeF.Min(availableSize, base.GetNaturalSize(availableSize) + GetBorderSize());
 		}
 
-		protected override NSRect GetContentBounds()
+		protected override CGRect GetContentBounds()
 		{
 			var contentSize = Content.GetPreferredSize(SizeF.MaxValue);
 
@@ -206,7 +220,7 @@ namespace Eto.Mac.Forms.Controls
 			return ContentControl.IsFlipped ? base.ContentResizingMask() : (NSViewResizingMask)0;
 		}
 
-		void InternalSetFrameSize(NSSize size)
+		void InternalSetFrameSize(CGSize size)
 		{
 			var view = ContentControl;
 			if (!view.IsFlipped)
@@ -215,8 +229,8 @@ namespace Eto.Mac.Forms.Controls
 				if (ctl != null)
 				{
 					var clientHeight = Control.DocumentVisibleRect.Size.Height;
-					ctl.Frame = new NSRect(new NSPoint(0, Math.Max(0, clientHeight - size.Height)), size);
-					size.Height = Math.Max(clientHeight, size.Height);
+					ctl.Frame = new CGRect(new CGPoint(0, (nfloat)Math.Max(0, clientHeight - size.Height)), size);
+					size.Height = (nfloat)Math.Max(clientHeight, size.Height);
 				}
 			}
 			if (size != view.Frame.Size)
@@ -268,7 +282,7 @@ namespace Eto.Mac.Forms.Controls
 				if (view.IsFlipped)
 					Control.ContentView.ScrollToPoint(value.ToNS());
 				else if (Control.ContentView.Frame.Height > 0)
-					Control.ContentView.ScrollToPoint(new NSPoint(value.X, Math.Max(0, view.Frame.Height - Control.ContentView.Frame.Height - value.Y)));
+					Control.ContentView.ScrollToPoint(new CGPoint(value.X, (nfloat)Math.Max(0, view.Frame.Height - Control.ContentView.Frame.Height - value.Y)));
 				Control.ReflectScrolledClipView(Control.ContentView);
 			}
 			scrollPosition = value;
@@ -297,17 +311,17 @@ namespace Eto.Mac.Forms.Controls
 
 		public override bool Enabled { get; set; }
 
-		public override void SetContentSize(NSSize contentSize)
+		public override void SetContentSize(CGSize contentSize)
 		{
 			if (MinimumSize != Size.Empty)
 			{
-				contentSize.Width = Math.Max(contentSize.Width, MinimumSize.Width);
-				contentSize.Height = Math.Max(contentSize.Height, MinimumSize.Height);
+				contentSize.Width = (nfloat)Math.Max(contentSize.Width, MinimumSize.Width);
+				contentSize.Height = (nfloat)Math.Max(contentSize.Height, MinimumSize.Height);
 			}
 			if (ExpandContentWidth)
-				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
+				contentSize.Width = (nfloat)Math.Max(ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
-				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
+				contentSize.Height = (nfloat)Math.Max(ClientSize.Height, contentSize.Height);
 			InternalSetFrameSize(contentSize);
 		}
 

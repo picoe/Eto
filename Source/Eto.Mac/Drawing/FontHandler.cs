@@ -1,20 +1,36 @@
 using System;
 using Eto.Drawing;
-using MonoMac.CoreGraphics;
 
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
 #endif
-
+#endif
 
 #if IOS
 
@@ -25,9 +41,6 @@ using NSFont = MonoTouch.UIKit.UIFont;
 namespace Eto.iOS.Drawing
 
 #elif OSX
-	
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 
 namespace Eto.Mac.Drawing
 #endif
@@ -39,7 +52,6 @@ namespace Eto.Mac.Drawing
 		FontStyle? style;
 		FontDecoration decoration;
 		NSDictionary _attributes;
-		NSFontTraitMask? traits;
 
 		public FontHandler()
 		{
@@ -69,39 +81,39 @@ namespace Eto.Mac.Drawing
 			switch (systemFont)
 			{
 				case SystemFont.Default:
-					Control = NSFont.SystemFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Bold:
-					Control = NSFont.BoldSystemFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.BoldSystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Label:
 #if IOS
 					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.LabelFontSize);
 #elif OSX
-					Control = NSFont.LabelFontOfSize((CGFloat)(fontSize ?? NSFont.LabelFontSize + 2)); // labels get a size of 12 
+					Control = NSFont.LabelFontOfSize((nfloat)(fontSize ?? NSFont.LabelFontSize + 2)); // labels get a size of 12 
 #endif
 					break;
 #if OSX
 				case SystemFont.TitleBar:
-					Control = NSFont.TitleBarFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.TitleBarFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.ToolTip:
-					Control = NSFont.ToolTipsFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.ToolTipsFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.MenuBar:
-					Control = NSFont.MenuBarFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.MenuBarFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Menu:
-					Control = NSFont.MenuFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.MenuFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Message:
-					Control = NSFont.MessageFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.MessageFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Palette:
-					Control = NSFont.PaletteFontOfSize((CGFloat)(fontSize ?? NSFont.SmallSystemFontSize));
+					Control = NSFont.PaletteFontOfSize((nfloat)(fontSize ?? NSFont.SmallSystemFontSize));
 					break;
 				case SystemFont.StatusBar:
-					Control = NSFont.SystemFontOfSize((CGFloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 #endif
 				default:
@@ -118,6 +130,8 @@ namespace Eto.Mac.Drawing
 			}
 		}
 
+		#if OSX
+		NSFontTraitMask? traits;
 		public static NSFont CreateFont(FontFamilyHandler familyHandler, float size, NSFontTraitMask traits, int weight = 5)
 		{
 			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, weight, size);
@@ -142,6 +156,7 @@ namespace Eto.Mac.Drawing
 			}
 			return font;
 		}
+		#endif
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
@@ -207,7 +222,11 @@ namespace Eto.Mac.Drawing
 			get
 			{
 				if (typeface == null)
+					#if IOS
+					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control);
+					#else
 					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control, traits);
+					#endif
 				return typeface;
 			}
 		}

@@ -1,22 +1,37 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
-using MonoMac.Foundation;
 using System.Collections.Generic;
 using System.Linq;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
-using NSNInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using nnint = System.Int32;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
-using NSNInteger = System.Int32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+using nnint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+using nnint = System.Int32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -189,7 +204,7 @@ namespace Eto.Mac.Forms.Controls
 				return myitem != null && myitem.Item.Expandable;
 			}
 			
-			public override NSObject GetChild (NSOutlineView outlineView, NSInteger childIndex, NSObject item)
+			public override NSObject GetChild (NSOutlineView outlineView, nint childIndex, NSObject item)
 			{
 				Dictionary<int, EtoTreeItem> items;
 				var myitem = item as EtoTreeItem;
@@ -205,7 +220,7 @@ namespace Eto.Mac.Forms.Controls
 				return etoItem;
 			}
 			
-			public override NSInteger GetChildrenCount (NSOutlineView outlineView, NSObject item)
+			public override nint GetChildrenCount (NSOutlineView outlineView, NSObject item)
 			{
 				if (Handler.store == null)
 					return 0;
@@ -217,7 +232,7 @@ namespace Eto.Mac.Forms.Controls
 				return ((ITreeGridStore<ITreeGridItem>)myitem.Item).Count;
 			}
 		}
-		
+
 		public class EtoOutlineView : NSOutlineView, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -375,7 +390,7 @@ namespace Eto.Mac.Forms.Controls
 						var cachedRow = Control.RowForItem (myitem);
 						if (cachedRow >= 0) {
 							Control.ScrollRowToVisible (cachedRow);
-							Control.SelectRow ((NSNInteger)cachedRow, false);
+							Control.SelectRow ((nnint)cachedRow, false);
 							return;
 						}
 					}
@@ -383,7 +398,7 @@ namespace Eto.Mac.Forms.Controls
 					var row = ExpandToItem (value);
 					if (row != null) {
 						Control.ScrollRowToVisible (row.Value);
-						Control.SelectRow ((NSNInteger)row.Value, false);
+						Control.SelectRow ((nnint)row.Value, false);
 					}
 				}
 			}

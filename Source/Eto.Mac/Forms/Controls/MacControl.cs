@@ -1,8 +1,20 @@
 using Eto.Forms;
-using MonoMac.AppKit;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using sd = System.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -11,7 +23,7 @@ namespace Eto.Mac.Forms.Controls
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
-		Font font;
+		internal Font font;
 
 		public override NSView ContainerControl { get { return Control; } }
 

@@ -1,22 +1,35 @@
 using System;
 using Eto.Forms;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
 using Eto.Drawing;
-using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
 using Eto.Mac.Forms.Actions;
-#if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac
@@ -95,15 +108,15 @@ namespace Eto.Mac
 		NSMenuItem menuItem;
 		Color? tint;
 
-		private sd.SizeF ButtonSize
+		private CGSize ButtonSize
 		{
 			get { 
 				if (toolBarItemStyle == MacToolBarItemStyle.Default)
-					return new sd.SizeF (42, 32);
+					return new CGSize (42, 32);
 				else if (toolBarItemStyle == MacToolBarItemStyle.StandardButton)
-					return new sd.SizeF (42, 24);
+					return new CGSize (42, 24);
 				else // large button
-					return new sd.SizeF (42, 32); 
+					return new CGSize (42, 32); 
 			}
 		}
 
@@ -120,7 +133,7 @@ namespace Eto.Mac
 					button = new NSButton {
 						BezelStyle = NSBezelStyle.TexturedRounded,
 						Bordered = toolBarItemStyle == MacToolBarItemStyle.StandardButton, // no border or bezel in the large button style
-						Frame = new NSRect(NSPoint.Empty, ButtonSize.ToNS()),
+						Frame = new CGRect(CGPoint.Empty, ButtonSize),
 						Target = Control.Target,
 						Action = Control.Action,
 					};

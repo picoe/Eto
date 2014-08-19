@@ -1,22 +1,36 @@
 using System;
 using SD = System.Drawing;
 using Eto.Forms;
+using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
-using MonoMac.CoreImage;
-using Eto.Drawing;
+using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
 #if Mac64
-using CGFloat = System.Double;
-using NSInteger = System.Int64;
-using NSUInteger = System.UInt64;
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
 #else
-using NSSize = System.Drawing.SizeF;
-using NSRect = System.Drawing.RectangleF;
-using NSPoint = System.Drawing.PointF;
-using CGFloat = System.Single;
-using NSInteger = System.Int32;
-using NSUInteger = System.UInt32;
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -39,7 +53,7 @@ namespace Eto.Mac.Forms.Controls
 
 			var ciImage = CIImage.FromCGImage(image.CGImage);
 
-			NSSize realSize;
+			CGSize realSize;
 			if (control.RespondsToSelector(selConvertSizeToBacking))
 				realSize = control.ConvertSizeToBacking(size);
 			else
@@ -61,7 +75,7 @@ namespace Eto.Mac.Forms.Controls
 
 			// create separate context so we can force using the software renderer, which is more than fast enough for this
 			var ciContext = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, new CIContextOptions { UseSoftwareRenderer = true });
-			ciContext.DrawImage(ciImage, new NSRect(NSPoint.Empty, size), new NSRect(NSPoint.Empty, realSize));
+			ciContext.DrawImage(ciImage, new CGRect(CGPoint.Empty, size), new CGRect(CGPoint.Empty, realSize));
 		}
 
 		public WeakReference WeakHandler { get; set; }
@@ -112,7 +126,7 @@ namespace Eto.Mac.Forms.Controls
 			var cursor = Handler.Cursor;
 			if (cursor != null)
 			{
-				AddCursorRect(new NSRect(NSPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
+				AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 	}
