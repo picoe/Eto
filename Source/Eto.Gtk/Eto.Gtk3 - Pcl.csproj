@@ -254,7 +254,6 @@
     <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DllMap.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="EtoWebView.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
