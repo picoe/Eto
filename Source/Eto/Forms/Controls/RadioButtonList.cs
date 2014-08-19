@@ -19,7 +19,7 @@ namespace Eto.Forms
 		readonly List<RadioButton> buttons = new List<RadioButton>();
 		RadioButton controller;
 		RadioButton selectedButton;
-		Size spacing = TableLayout.DefaultSpacing;
+		Size spacing = new Size(5, 5);
 		bool settingChecked;
 
 		public IIndirectBinding<string> TextBinding { get; set; }

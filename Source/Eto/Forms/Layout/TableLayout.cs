@@ -159,6 +159,30 @@ namespace Eto.Forms
 		{
 			return new TableRow(cells);
 		}
+
+		/// <summary>
+		/// Implicitly converts a TableRow to a control
+		/// </summary>
+		/// <remarks>
+		/// Used to make defining a table's contents easier by allowing you to pass a table row as a control.
+		/// </remarks>
+		/// <param name="row">Row to convert.</param>
+		public static implicit operator Control(TableRow row)
+		{
+			return new TableLayout(row);
+		}
+		/// <summary>
+		/// Implicitly converts a TableRow to a cell
+		/// </summary>
+		/// <remarks>
+		/// Used to make defining a table's contents easier by allowing you to pass a table row as a cell
+		/// without having to create a table layout and cell manually.
+		/// </remarks>
+		/// <param name="row">Row to convert.</param>
+		public static implicit operator TableCell(TableRow row)
+		{
+			return new TableCell(new TableLayout(row));
+		}
 	}
 
 	/// <summary>
@@ -182,12 +206,14 @@ namespace Eto.Forms
 		/// <summary>
 		/// The default spacing for all tables
 		/// </summary>
-		public static Size DefaultSpacing = new Size(5, 5);
+		[Obsolete("Use styles to set control defaults, e.g. Style.Add<TableLayout>(null, table => table.Spacing = new Size(5));")]
+		public static Size DefaultSpacing = Size.Empty;
 
 		/// <summary>
 		/// The default padding for all tables
 		/// </summary>
-		public static Padding DefaultPadding = new Padding(5);
+		[Obsolete("Use styles to set control defaults, e.g. Style.Add<TableLayout>(null, table => table.Padding = new Padding(5));")]
+		public static Padding DefaultPadding = Padding.Empty;
 
 		/// <summary>
 		/// Gets an enumeration of controls that are directly contained by this container

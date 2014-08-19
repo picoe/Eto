@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using System.ComponentModel;
 using System.Diagnostics;
+using Eto.Drawing;
 
 namespace Eto.Test
 {
@@ -12,6 +13,12 @@ namespace Eto.Test
 		{
 			this.Name = "Test Application";
 			this.Style = "application";
+
+			Eto.Style.Add<TableLayout>(null, table =>
+			{
+				table.Padding = new Padding(5);
+				table.Spacing = new Size(5, 5);
+			});
 		}
 
 		protected override void OnInitialized(EventArgs e)
