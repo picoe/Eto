@@ -16,7 +16,18 @@ namespace Eto.Android.Forms.Controls
 {
 	public class GridViewHandler : AndroidControl<aw.GridView, GridView, GridView.ICallback>, GridView.IHandler
 	{
-		public IDataStore DataStore { get; set; }
+		public IEnumerable<int> SelectedRows
+		{
+			get { yield break; }
+			set { }
+		}
+
+		public IEnumerable<object> SelectedItems
+		{
+			get { yield break; }
+		}
+
+		public IEnumerable<object> DataStore { get; set; }
 
 		public bool ShowCellBorders { get; set; }
 
@@ -27,11 +38,6 @@ namespace Eto.Android.Forms.Controls
 		public bool AllowColumnReordering { get; set; }
 
 		public bool AllowMultipleSelection { get; set; }
-
-		public IEnumerable<int> SelectedRows
-		{
-			get { if (false) yield return 1; }
-		}
 
 		public void SelectRow(int row)
 		{
