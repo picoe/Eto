@@ -59,7 +59,7 @@ namespace Eto.Forms
 
 	public interface ISelectableControl<out T> : ISelectable<T>
 	{
-		Func<ISelectionPreserver> SelectionPreserver { get; }
+		ISelectionPreserver SelectionPreserver { get; }
 
 		event EventHandler<EventArgs> SelectedItemsChanged;
 	}
@@ -109,7 +109,7 @@ namespace Eto.Forms
 		{
 			Parent = parent;
 			Parent.SelectedItemsChanged += HandleSelectionChanged;
-			Change = () => new SelectionPreserverHelper { Collection = this, Preserver = Parent.SelectionPreserver() };
+			Change = () => new SelectionPreserverHelper { Collection = this, Preserver = Parent.SelectionPreserver };
 		}
 
 		class SelectionPreserverHelper : IDisposable
@@ -385,7 +385,7 @@ namespace Eto.Forms
 				items = new List<T>(collection);
 		}
 
-		protected class CollectionHandler : EnumerableChangedHandler<T>
+		class CollectionHandler : EnumerableChangedHandler<T>
 		{
 			public FilterCollection<T> List { get; set; }
 

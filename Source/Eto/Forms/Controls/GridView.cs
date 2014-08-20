@@ -262,9 +262,9 @@ namespace Eto.Forms
 			}
 		}
 
-		public Func<ISelectionPreserver> SelectionPreserver
+		public ISelectionPreserver SelectionPreserver
 		{
-			get { return () => new SelectionPreserverHelper(this); }
+			get { return new SelectionPreserverHelper(this); }
 		}
 
 		/// <summary>

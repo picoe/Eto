@@ -37,7 +37,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 				// create our filtered collection
 				filtered = new FilterCollection<DataItem>(model);
-				filtered.Change = grid.SelectionPreserver;
+				filtered.Change = () => grid.SelectionPreserver;
 				grid.DataStore = filtered;
 				grid.SelectionChanged += (s, e) => selectionChangedCount++;
 				selectionChangedCount = 0;
