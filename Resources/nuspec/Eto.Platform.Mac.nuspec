@@ -33,7 +33,7 @@
 	</metadata>
 	<files>
 		<file src="..\..\Libraries\MonoMac\MonoMac.dll" target="lib\net40\" />
-		<file src="..\..\Libraries\MonoMac\MonoMac.dll" target="lib\net40\" />
+		<file src="..\..\Libraries\MonoMac\MonoMac.dll" target="lib\net45\" />
 		<file src="..\..\Libraries\MonoMac\MonoMac-License.txt" target="MonoMac-License.txt" />
 		<file src="..\..\BuildOutput\$configuration$\Eto.Mac.dll" target="lib\net40\" />
 		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Mac.dll" target="lib\net45\" />
