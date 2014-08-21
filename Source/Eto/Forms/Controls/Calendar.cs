@@ -158,6 +158,9 @@ namespace Eto.Forms
 			return callback;
 		}
 
+		/// <summary>
+		/// Callback interface for handlers of the <see cref="Calendar"/>.
+		/// </summary>
 		public new interface ICallback : Control.ICallback
 		{
 			/// <summary>

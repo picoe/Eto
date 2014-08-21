@@ -514,6 +514,11 @@ namespace Eto.Forms
 			return filtered != null ? filtered.IndexOf(item) : items.IndexOf(item);
 		}
 
+		/// <summary>
+		/// Insert the item at the specified index.
+		/// </summary>
+		/// <param name="index">Index to insert at.</param>
+		/// <param name="item">Item to insert.</param>
 		public virtual void Insert(int index, T item)
 		{
 			using (CreateChange())
@@ -553,6 +558,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Removes the item at the specified index.
+		/// </summary>
+		/// <param name="index">Index of the item to remove.</param>
 		public virtual void RemoveAt(int index)
 		{
 			using (CreateChange())
@@ -573,6 +582,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the <see cref="FilterCollection{T}"/> at the specified index.
+		/// </summary>
+		/// <param name="index">Index of the item to get/set.</param>
 		public virtual T this [int index]
 		{
 			get { return filtered != null ? filtered[index] : items[index]; }

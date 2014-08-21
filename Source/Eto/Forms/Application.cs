@@ -124,6 +124,10 @@ namespace Eto.Forms
 				windows.Remove(window);
 		}
 
+		/// <summary>
+		/// Gets an enumeration of windows currently open in the application.
+		/// </summary>
+		/// <value>The enumeration of open windows.</value>
 		public IEnumerable<Window> Windows { get { return windows; } }
 
 		/// <summary>
@@ -458,9 +462,8 @@ namespace Eto.Forms
 			void Attach(object context);
 
 			/// <summary>
-			/// Runs the application with the specified arguments
+			/// Runs the application and starts a main loop.
 			/// </summary>
-			/// <param name="args">Arguments to run the application</param>
 			void Run();
 
 			/// <summary>

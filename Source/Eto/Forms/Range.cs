@@ -165,7 +165,7 @@ namespace Eto.Forms
 		/// Gets the union of this instance and the specified <paramref name="range"/>, including touching ranges.
 		/// </summary>
 		/// <remarks>
-		/// This is similar to <see cref="Union(Range{t})"/>, however this handles when the two ranges are touching.
+		/// This is similar to <see cref="Union(Range{T})"/>, however this handles when the two ranges are touching.
 		/// The <paramref name="increment"/> delegate is used to determine if the ranges are touching by incrementing the ends
 		/// of the ranges and comparing that value to the start of the other range.
 		/// </remarks>
