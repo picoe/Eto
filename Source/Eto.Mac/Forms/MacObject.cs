@@ -31,6 +31,10 @@ using nuint = System.UInt32;
 #endif
 #endif
 
+#if IOS
+using MonoTouch.Foundation;
+#endif
+
 namespace Eto.Mac.Forms
 {
 	public class MacObject<TControl, TWidget, TCallback> : MacBase<TControl, TWidget, TCallback>
