@@ -134,15 +134,6 @@ namespace Eto.Wpf.Forms
 			Control.Dispatcher.BeginInvoke(action);
 		}
 
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield break;
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
-		{
-		}
-
 		public Keys CommonModifier
 		{
 			get { return Keys.Control; }

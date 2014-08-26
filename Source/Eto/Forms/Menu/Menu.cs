@@ -29,6 +29,14 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Called before the menu is assigned to a control/window
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected internal virtual void OnPreLoad(EventArgs e)
+		{
+		}
+
+		/// <summary>
 		/// Called when the menu is assigned to a control/window
 		/// </summary>
 		/// <param name="e">Event arguments</param>

@@ -165,15 +165,6 @@ namespace Eto.WinRT.Forms
 			dispatcher.RunAsync(wuc.CoreDispatcherPriority.Normal, () => action());
 		}
 
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield break;
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
-		{
-		}
-
 		public Keys CommonModifier
 		{
 			get { return Keys.Control; }

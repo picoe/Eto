@@ -188,15 +188,6 @@ namespace Eto.WinForms
 				context.Post(state => action(), null);
 		}
 
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield break;
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
-		{
-		}
-
 		public Keys CommonModifier
 		{
 			get

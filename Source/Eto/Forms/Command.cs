@@ -184,5 +184,15 @@ namespace Eto.Forms
 		}
 
 		#pragma warning restore 612,618
+
+		public static implicit operator MenuItem(Command command)
+		{
+			return command.CreateMenuItem();
+		}
+
+		public static implicit operator ToolItem(Command command)
+		{
+			return command.CreateToolItem();
+		}
 	}
 }

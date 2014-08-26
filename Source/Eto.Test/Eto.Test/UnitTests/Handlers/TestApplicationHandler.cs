@@ -70,11 +70,6 @@ namespace Eto.Test.UnitTests.Handlers
 			}
 		}
 
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			throw new NotImplementedException();
-		}
-
 		public void Open(string url)
 		{
 			throw new NotImplementedException();
@@ -122,11 +117,6 @@ namespace Eto.Test.UnitTests.Handlers
 		}
 
 		public void RunIteration()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
 		{
 			throw new NotImplementedException();
 		}

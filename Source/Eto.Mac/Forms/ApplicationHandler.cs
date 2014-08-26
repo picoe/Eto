@@ -11,6 +11,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
+
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -18,6 +19,7 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
+
 #if Mac64
 using CGSize = MonoMac.Foundation.NSSize;
 using CGRect = MonoMac.Foundation.NSRect;
@@ -25,6 +27,7 @@ using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
+
 #else
 using CGSize = System.Drawing.SizeF;
 using CGRect = System.Drawing.RectangleF;
@@ -46,8 +49,6 @@ namespace Eto.Mac.Forms
 		public NSApplicationDelegate AppDelegate { get; set; }
 
 		public bool AddFullScreenMenuItem { get; set; }
-
-		public bool AddPrintingMenuItems { get; set; }
 
 		public bool AllowClosingMainForm { get; set; }
 
@@ -189,109 +190,6 @@ namespace Eto.Mac.Forms
 			{
 				AddFullScreenMenuItem = true;
 			}
-		}
-
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield return new Command((sender, e) => NSApplication.SharedApplication.Hide(NSApplication.SharedApplication))
-			{ 
-				ID = "mac_hide", 
-				MenuText = string.Format("Hide {0}", Widget.Name),
-				ToolBarText = "Hide",
-				ToolTip = string.Format("Hides the main {0} window", Widget.Name), 
-				Shortcut = Keys.H | Keys.Application
-			};
-
-			yield return new Command((sender, e) => NSApplication.SharedApplication.HideOtherApplications(NSApplication.SharedApplication))
-			{
-				ID = "mac_hideothers", 
-				MenuText = "Hide Others",
-				ToolBarText = "Hide Others",
-				ToolTip = "Hides all other application windows",
-				Shortcut = Keys.H | Keys.Application | Keys.Alt
-			};
-
-			yield return new Command((sender, e) => NSApplication.SharedApplication.UnhideAllApplications(NSApplication.SharedApplication))
-			{
-				ID = "mac_showall",
-				MenuText = "Show All",
-				ToolBarText = "Show All",
-				ToolTip = "Show All Windows"
-			};
-
-			yield return new MacCommand("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Shortcut = Keys.Application | Keys.M };
-			yield return new MacCommand("mac_performZoom", "Zoom", "performZoom:");
-			yield return new MacCommand("mac_performClose", "Close", "performClose:") { Shortcut = Keys.Application | Keys.W };
-			yield return new MacCommand("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:");
-			yield return new MacCommand("mac_cut", "Cut", "cut:") { Shortcut = Keys.Application | Keys.X };
-			yield return new MacCommand("mac_copy", "Copy", "copy:") { Shortcut = Keys.Application | Keys.C };
-			yield return new MacCommand("mac_paste", "Paste", "paste:") { Shortcut = Keys.Application | Keys.V };
-			yield return new MacCommand("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Shortcut = Keys.Application | Keys.Alt | Keys.Shift | Keys.V };
-			yield return new MacCommand("mac_delete", "Delete", "delete:");
-			yield return new MacCommand("mac_selectAll", "Select All", "selectAll:") { Shortcut = Keys.Application | Keys.A };
-			yield return new MacCommand("mac_undo", "Undo", "undo:") { Shortcut = Keys.Application | Keys.Z };
-			yield return new MacCommand("mac_redo", "Redo", "redo:") { Shortcut = Keys.Application | Keys.Shift | Keys.Z };
-			yield return new MacCommand("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Shortcut = Keys.Application | Keys.Control | Keys.F };
-			yield return new MacCommand("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Shortcut = Keys.Application | Keys.Shift | Keys.P };
-			yield return new MacCommand("mac_print", "Print...", "print:") { Shortcut = Keys.Application | Keys.P };
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menu, IEnumerable<Command> commands)
-		{
-			var lookup = commands.ToLookup(r => r.ID);
-			var application = menu.GetSubmenu(Widget.Name ?? "Application", 100);
-			application.Items.AddSeparator(800);
-			application.Items.AddRange(lookup["mac_hide"], 800);
-			application.Items.AddRange(lookup["mac_hideothers"], 800);
-			application.Items.AddRange(lookup["mac_showall"], 800);
-			application.Items.AddSeparator(801);
-
-			var file = menu.GetSubmenu("&File", 100);
-			file.Items.AddSeparator(900);
-			file.Items.AddRange(lookup["mac_performClose"], 900);
-
-			if (AddPrintingMenuItems)
-			{
-				file.Items.AddSeparator(1000);
-				file.Items.AddRange(lookup["mac_runPageLayout"], 1000);
-				file.Items.AddRange(lookup["mac_print"], 1000);
-			}
-
-			var edit = menu.GetSubmenu("&Edit", 200);
-			edit.Items.AddSeparator(100);
-			edit.Items.AddRange(lookup["mac_undo"], 100);
-			edit.Items.AddRange(lookup["mac_redo"], 100);
-			edit.Items.AddSeparator(101);
-			
-			edit.Items.AddSeparator(200);
-			edit.Items.AddRange(lookup["mac_cut"], 200);
-			edit.Items.AddRange(lookup["mac_copy"], 200);
-			edit.Items.AddRange(lookup["mac_paste"], 200);
-			edit.Items.AddRange(lookup["mac_delete"], 200);
-			edit.Items.AddRange(lookup["mac_selectAll"], 200);
-			edit.Items.AddSeparator(201);
-			
-			var window = menu.GetSubmenu("&Window", 900);
-			window.Items.AddSeparator(100);
-			window.Items.AddRange(lookup["mac_performMiniaturize"], 100);
-			window.Items.AddRange(lookup["mac_performZoom"], 100);
-			window.Items.AddSeparator(101);
-
-			window.Items.AddSeparator(200);
-			window.Items.AddRange(lookup["mac_arrangeInFront"], 200);
-			window.Items.AddSeparator(201);
-
-			if (AddFullScreenMenuItem)
-			{
-				var view = menu.GetSubmenu("&View", 300);
-				view.Items.AddSeparator(900);
-				view.Items.AddRange(lookup["mac_toggleFullScreen"], 900);
-				view.Items.AddSeparator(901);
-			}
-			
-			var help = menu.GetSubmenu("&Help", 900);
-			// always show help menu
-			help.Trim = false;
 		}
 
 		public Keys CommonModifier

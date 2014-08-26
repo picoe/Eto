@@ -181,15 +181,6 @@ namespace Eto.GtkSharp
 			Process.Start(info);
 		}
 
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield break;
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menu, IEnumerable<Command> commands)
-		{
-		}
-
 		public Keys CommonModifier { get { return Keys.Control; } }
 
 		public Keys AlternateModifier { get { return Keys.Alt; } }
