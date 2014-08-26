@@ -168,48 +168,42 @@ namespace Eto.Test
 
 		void CreateMenuToolBar()
 		{
-			var about = new Actions.About();
-			var quit = new Actions.Quit();
+			var about = new Commands.About();
+			var quit = new Commands.Quit();
 
 			if (Platform.Supports<MenuBar>())
 			{
-				// create standard system menu (e.g. for OS X)
-				var menu = MenuBar.CreateStandardMenu();
-
-				// add our own items to the menu
-
-				var file = menu.Items.GetSubmenu("&File", 100);
-				menu.Items.GetSubmenu("&Edit", 200);
-				menu.Items.GetSubmenu("&Window", 900);
-				var help = menu.Items.GetSubmenu("&Help", 1000);
-
-				if (Platform.IsMac)
+				Menu = new MenuBar
 				{
-					// have a nice OS X style menu
-					var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
-					main.Items.Add(about, 0);
-					main.Items.Add(quit, 1000);
-				}
-				else
-				{
-					// windows/gtk style window
-					file.Items.Add(quit);
-					help.Items.Add(about);
-				}
-
-				Menu = menu;
+					Items = {
+						// custom top-level menu items
+						new ButtonMenuItem { Text = "&File", Items = { new Command { MenuText = "File Command" } } },
+						new ButtonMenuItem { Text = "&Edit", Items = { new Command { MenuText = "Edit Command" } } },
+						new ButtonMenuItem { Text = "&View", Items = { new Command { MenuText = "View Command" } } },
+						new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { new Command { MenuText = "Window Command" } } },
+					},
+					ApplicationItems = {
+						// custom menu items for the application menu (Application on OS X, File on others)
+						new Command { MenuText = "Application command" },
+						new ButtonMenuItem { Text = "Application menu item" }
+					},
+					HelpItems = {
+						new Command { MenuText = "Help Command" }
+					},
+					QuitItem = quit,
+					AboutItem = about
+				};
 			}
 
 			if (Platform.Supports<ToolBar>())
 			{
 				// create and set the toolbar
-				var toolBar = new ToolBar();
-				if (Application.Instance.QuitIsSupported)
-					toolBar.Items.Add(quit);
-				toolBar.Items.Add(about);
-
-				ToolBar = toolBar;
+				ToolBar = new ToolBar
+				{
+					Items = { about }
+				};
 			}
+
 		}
 
 		protected override void OnWindowStateChanged(EventArgs e)

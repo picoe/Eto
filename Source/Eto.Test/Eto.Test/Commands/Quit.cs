@@ -2,7 +2,7 @@ using System;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.Test.Actions
+namespace Eto.Test.Commands
 {
 	public class Quit : Command
 	{
