@@ -228,7 +228,7 @@ namespace Eto.Wpf.Drawing
 					var rect = rectangle.Value;
 					var data = new byte[Stride * Control.PixelHeight];
 					Control.CopyPixels(data, Stride, 0);
-					var target = new swmi.WriteableBitmap(rect.Width, rect.Height, Control.DpiX, Control.DpiY, Control.Format, null);
+					var target = new swmi.WriteableBitmap(rect.Width, rect.Height, Control.DpiX, Control.DpiY, Control.Format, Control.Palette);
 					target.WritePixels(rect.ToWpfInt32(), data, Stride, destinationX: 0, destinationY: 0);
 					clone = target;
 				}
