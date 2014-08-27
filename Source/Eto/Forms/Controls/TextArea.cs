@@ -133,6 +133,19 @@ namespace Eto.Forms
 			set { Handler.Wrap = value; }
 		}
 
+        /// <summary>
+        /// Gets or sets the color of the text.
+        /// </summary>
+        /// <remarks>
+        /// By default, the label will get a color based on the user's theme. However, this is usually black.
+        /// </remarks>
+        /// <value>The color of the text.</value>
+        public Color TextColor
+        {
+            get { return Handler.TextColor; }
+            set { Handler.TextColor = value; }
+        }
+
 		/// <summary>
 		/// Gets or sets the selected text.
 		/// </summary>
@@ -271,6 +284,15 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value><c>true</c> to wrap the text; otherwise, <c>false</c>.</value>
 			bool Wrap { get; set; }
+
+            /// <summary>
+            /// Gets or sets the color of the text.
+            /// </summary>
+            /// <remarks>
+            /// By default, the label will get a color based on the user's theme. However, this is usually black.
+            /// </remarks>
+            /// <value>The color of the text.</value>
+            Color TextColor { get; set; }
 
 			/// <summary>
 			/// Append the specified text to the control and optionally scrolls to make the inserted text visible.

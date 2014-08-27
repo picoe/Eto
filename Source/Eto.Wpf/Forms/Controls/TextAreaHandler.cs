@@ -86,6 +86,12 @@ namespace Eto.Wpf.Forms.Controls
 			set	{ Control.Text = value;	}
 		}
 
+        public Color TextColor
+        {
+            get { return Control.Foreground.ToEtoColor(); }
+            set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
+        }
+
 		public bool Wrap
 		{
 			get { return Control.TextWrapping == sw.TextWrapping.Wrap; }

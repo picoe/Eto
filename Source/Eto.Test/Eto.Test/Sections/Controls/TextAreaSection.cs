@@ -28,6 +28,9 @@ namespace Eto.Test.Sections.Controls
 		Control Default()
 		{
 			var text = new TextArea { Text = "Some Text" };
+		    text.BackgroundColor = Colors.Black;
+		    text.TextColor = Colors.Gray;
+
 			LogEvents(text);
 
 			var layout = new DynamicLayout();
