@@ -207,7 +207,13 @@ namespace Eto
 			OnDataValueChanged(e);
 		}
 
+		[Obsolete("Use BindDataContext() instead")]
 		public DualBinding<TValue> Bind(IndirectBinding<TValue> dataContextBinding, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
+		{
+			return BindDataContext(dataContextBinding, mode, defaultControlValue, defaultContextValue);
+		}
+
+		public DualBinding<TValue> BindDataContext(IndirectBinding<TValue> dataContextBinding, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
 		{
 			var control = DataItem as Control;
 			if (control == null)
