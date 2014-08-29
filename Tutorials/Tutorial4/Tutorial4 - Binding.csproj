@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0844A0AD-778A-4DB3-8332-03AC50A17D05}</ProjectGuid>
+    <ProjectGuid>{DDC8A290-2F20-11E4-8C21-0800200C9A66}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Tutorial2</RootNamespace>
-    <AssemblyName>Tutorial2</AssemblyName>
+    <RootNamespace>Tutorial4</RootNamespace>
+    <AssemblyName>Tutorial4</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,7 +34,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
+    <Compile Include="Main.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Source\Eto.Gtk\Eto.Gtk2.csproj">
