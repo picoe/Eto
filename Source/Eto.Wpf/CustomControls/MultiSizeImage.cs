@@ -160,7 +160,7 @@ namespace Eto.Wpf.CustomControls
 			if (Source == null)
 				return Size.Empty;
 			var first = _availableFrames.LastOrDefault ();
-			var size = new Size (Source.Width, Source.Width);
+			var size = new Size (Source.Width, Source.Height);
 			if (first == null)
 				return size;
 
