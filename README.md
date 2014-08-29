@@ -2,6 +2,8 @@ Eto.Forms
 =========
 ### A cross platform desktop and mobile user interface framework
 
+[![Build status](https://ci.appveyor.com/api/projects/status/rftjjnd9lq2rxc7h/branch/develop)](https://ci.appveyor.com/project/cwensley/eto/branch/develop)
+
 Links
 -----
 
