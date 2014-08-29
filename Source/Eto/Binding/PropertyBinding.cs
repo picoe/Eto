@@ -60,6 +60,9 @@ namespace Eto
 		/// </summary>
 		public bool IgnoreCase { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.PropertyBinding{T}"/> class.
+		/// </summary>
 		public PropertyBinding()
 		{
 		}
@@ -92,6 +95,11 @@ namespace Eto
 #endif
 		}
 
+		/// <summary>
+		/// Determines whether the dataItem contains the property this binding is bound to.
+		/// </summary>
+		/// <returns><c>true</c> if the dataItem instance has the correct property to bind to, otherwise, <c>false</c>.</returns>
+		/// <param name="dataItem">Data item to find the property.</param>
 		protected bool HasProperty(object dataItem)
 		{
 			EnsureProperty(dataItem);

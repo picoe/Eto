@@ -88,6 +88,12 @@ namespace Eto.Forms
 		{
 		}
 
+		/// <summary>
+		/// Creates the default data store for the list.
+		/// </summary>
+		/// <remarks>This is used to create a data store if one is not specified by the user.
+		/// This can be used by subclasses to provide default items to populate the list.</remarks>
+		/// <returns>The default data store.</returns>
 		protected override IEnumerable<object> CreateDefaultDataStore()
 		{
 			var type = typeof (T);

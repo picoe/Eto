@@ -135,7 +135,7 @@ namespace Eto
 		/// <summary>
 		/// Gets a value indicating that the specified type is supported by this platform
 		/// </summary>
-		/// <typeparam name="T">type to test for</typeparam>
+		/// <typeparam name="T">Type of the handler or class with HandlerAttribute to test for.</typeparam>
 		/// <returns>true if the specified type is supported, false otherwise</returns>
 		public bool Supports<T>()
 			where T: class
@@ -143,6 +143,11 @@ namespace Eto
 			return Supports(typeof(T));
 		}
 
+		/// <summary>
+		/// Gets a value indicating that the specified <paramref name="type"/> is supported by this platform
+		/// </summary>
+		/// <param name="type">Type of the handler or class with HandlerAttribute to test for.</param>
+		/// <returns>true if the specified type is supported, false otherwise</returns>
 		public virtual bool Supports(Type type)
 		{
 			return Find(type) != null;

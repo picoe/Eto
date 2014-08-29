@@ -27,10 +27,23 @@ namespace Eto
 	/// </remarks>
 	public class AttachableMemberIdentifier : IEquatable<AttachableMemberIdentifier>
 	{
+		/// <summary>
+		/// Gets the type that declared the member.
+		/// </summary>
+		/// <value>The type of the declaring class.</value>
 		public Type DeclaringType { get; private set; }
 
+		/// <summary>
+		/// Gets the name of the member.
+		/// </summary>
+		/// <value>The name of the member.</value>
 		public string MemberName { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.AttachableMemberIdentifier"/> class.
+		/// </summary>
+		/// <param name="declaringType">Declaring type.</param>
+		/// <param name="memberName">Name of the member.</param>
 		public AttachableMemberIdentifier(Type declaringType, string memberName)
 		{
 			this.DeclaringType = declaringType;
@@ -39,7 +52,7 @@ namespace Eto
 
 		static bool IsNull(AttachableMemberIdentifier a)
 		{
-			return object.ReferenceEquals(a, null);
+			return ReferenceEquals(a, null);
 		}
 
 		public override bool Equals(object obj)
@@ -50,7 +63,7 @@ namespace Eto
 
 		public bool Equals(AttachableMemberIdentifier other)
 		{
-			return !AttachableMemberIdentifier.IsNull(other) && DeclaringType == other.DeclaringType && MemberName == other.MemberName;
+			return !IsNull(other) && DeclaringType == other.DeclaringType && MemberName == other.MemberName;
 		}
 
 		public override int GetHashCode()
@@ -65,12 +78,12 @@ namespace Eto
 
 		public static bool operator ==(AttachableMemberIdentifier left, AttachableMemberIdentifier right)
 		{
-			return (!AttachableMemberIdentifier.IsNull(left)) ? left.Equals(right) : AttachableMemberIdentifier.IsNull(right);
+			return (!IsNull(left)) ? left.Equals(right) : IsNull(right);
 		}
 
 		public static bool operator !=(AttachableMemberIdentifier left, AttachableMemberIdentifier right)
 		{
-			return (!AttachableMemberIdentifier.IsNull(left)) ? (AttachableMemberIdentifier.IsNull(right) || left.DeclaringType != right.DeclaringType || left.MemberName != right.MemberName) : (!AttachableMemberIdentifier.IsNull(right));
+			return (!IsNull(left)) ? (IsNull(right) || left.DeclaringType != right.DeclaringType || left.MemberName != right.MemberName) : (!IsNull(right));
 		}
 	}
 }
