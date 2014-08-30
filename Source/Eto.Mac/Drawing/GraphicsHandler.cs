@@ -262,7 +262,7 @@ namespace Eto.iOS.Drawing
 			{
 				// we have a view (drawing directly to the screen), so adjust to where it is
 				Control.ClipToRect(view.ConvertRectToView(view.VisibleRect(), null));
-				var pos = view.ConvertPointToView(new CGPoint(), null);
+				var pos = view.ConvertPointToView(CGPoint.Empty, null);
 				if (!viewFlipped)
 					pos.Y += view.Frame.Height;
 				currentTransform = new CGAffineTransform(1, 0, 0, -1, (float)pos.X, (float)pos.Y);

@@ -54,12 +54,12 @@ namespace Eto.Mac.Forms.Controls
 					var nsimage = (NSImage)Handler.image.ControlObject;
 
 					if (nsimage.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
-						nsimage.Draw (new CGRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect (new CGPoint(), nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
+						nsimage.Draw (new CGRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect (CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
 					else {
 						#pragma warning disable 618
 						nsimage.Flipped = View.IsFlipped;
 						#pragma warning restore 618
-						nsimage.Draw (new CGRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect (new CGPoint(), nsimage.Size), NSCompositingOperation.SourceOver, 1);
+						nsimage.Draw (new CGRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect (CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1);
 					}
 					
 					labelRect.X += labelRect.Height + ICON_PADDING;

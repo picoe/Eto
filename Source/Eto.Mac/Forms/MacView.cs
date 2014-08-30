@@ -213,7 +213,7 @@ namespace Eto.Mac.Forms
 			if (mouseDelegate == null)
 				mouseDelegate = new MouseDelegate { Handler = this };
 			var options = mouseOptions | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect;
-			tracking = new NSTrackingArea(new CGRect(new CGPoint(), EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
+			tracking = new NSTrackingArea(new CGRect(CGPoint.Empty, EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
 			EventControl.AddTrackingArea(tracking);
 		}
 

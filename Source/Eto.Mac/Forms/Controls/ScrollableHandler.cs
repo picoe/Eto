@@ -59,7 +59,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					AddCursorRect(new CGRect(new CGPoint(), Frame.Size), cursor.ControlObject as NSCursor);
+					AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 

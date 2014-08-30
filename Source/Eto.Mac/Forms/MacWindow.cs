@@ -323,7 +323,7 @@ namespace Eto.Mac.Forms
 			if (Cursor != null)
 			{
 				Control.ContentView.DiscardCursorRects();
-				Control.ContentView.AddCursorRect(new CGRect(new CGPoint(), Control.Frame.Size), Cursor.ControlObject as NSCursor);
+				Control.ContentView.AddCursorRect(new CGRect(CGPoint.Empty, Control.Frame.Size), Cursor.ControlObject as NSCursor);
 			}
 			else
 				Control.ContentView.DiscardCursorRects();

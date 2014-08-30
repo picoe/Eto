@@ -46,7 +46,7 @@ namespace Eto.Mac
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-			image.DrawInRect(new CGRect(new CGPoint(), newimage.Size), new CGRect(new CGPoint(), image.Size), NSCompositingOperation.SourceOver, 1f);
+			image.DrawInRect(new CGRect(CGPoint.Empty, newimage.Size), new CGRect(CGPoint.Empty, image.Size), NSCompositingOperation.SourceOver, 1f);
 			NSGraphicsContext.GlobalRestoreGraphicsState();
 			return newimage;
 		}

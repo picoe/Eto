@@ -78,7 +78,7 @@ namespace Eto.Mac.Forms.Controls
 				#else
 				var insets = Control.RespondsToSelector(selAlignmentRectInsets) ? Control.AlignmentRectInsets.ToEtoSize() : new Size(4, 2);
 				#endif
-				var size = Control.Cell.CellSizeForBounds(new CGRect(new CGPoint(), availableSize.ToNS())).ToEto();
+				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSize.ToNS())).ToEto();
 
 				NaturalSize = Size.Round(size + insets);
 				availableSizeCached = availableSize;

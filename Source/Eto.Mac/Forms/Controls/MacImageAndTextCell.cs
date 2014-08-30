@@ -212,14 +212,14 @@ namespace Eto.Mac.Forms.Controls
 
 						if (data.Image.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
 							// 10.6+
-							data.Image.Draw(imageRect, new CGRect(new CGPoint(), data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
+							data.Image.Draw(imageRect, new CGRect(CGPoint.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
 						else
 						{
 							// 10.5-
 							#pragma warning disable 618
 							data.Image.Flipped = ControlView.IsFlipped; 
 							#pragma warning restore 618
-							data.Image.Draw(imageRect, new CGRect(new CGPoint(), data.Image.Size), NSCompositingOperation.SourceOver, 1);
+							data.Image.Draw(imageRect, new CGRect(CGPoint.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
 						}
 						cellFrame.Width -= newWidth + ImagePadding;
 						cellFrame.X += newWidth + ImagePadding;
