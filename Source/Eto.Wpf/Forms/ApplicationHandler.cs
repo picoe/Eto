@@ -33,6 +33,21 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		public static T InvokeIfNecessary<T>(Func<T> action)
+		{
+			if (sw.Application.Current == null || Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
+				return action();
+			else
+			{
+				T ret = default(T);
+				sw.Application.Current.Dispatcher.Invoke(new Action(() =>
+				{
+					ret = action();
+				}));
+				return ret;
+			}
+		}
+
 		public List<sw.Window> DelayShownWindows
 		{
 			get

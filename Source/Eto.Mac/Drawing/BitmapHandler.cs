@@ -91,6 +91,8 @@ namespace Eto.Mac.Drawing
 		public BitmapHandler(NSImage image)
 		{
 			Control = image;
+			rep = Control.BestRepresentationForDevice(null);
+			bmprep = rep as NSBitmapImageRep;
 		}
 
 		public void Create(string fileName)
@@ -262,9 +264,10 @@ namespace Eto.Mac.Drawing
 				return new Bitmap(new BitmapHandler((NSImage)Control.Copy()));
 			else
 			{
-				var rect = new CGRect(new CGPoint(), Control.Size);
-				var temp = Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
-				var image = new NSImage (temp, new CGSize(temp.Width, temp.Height));
+				var rect = new CGRect(CGPoint.Empty, Control.Size);
+				var image = new NSImage();
+				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToSDRectangleF());
+				image.AddRepresentation(new NSBitmapImageRep(cgimage));
 				return new Bitmap(new BitmapHandler(image));
 			}
 		}

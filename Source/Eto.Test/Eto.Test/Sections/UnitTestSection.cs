@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Eto.Drawing;
 using System.Linq;
 using Eto.Test.UnitTests.Handlers;
+using NUnit;
 
 namespace Eto.Test.Sections
 {
@@ -41,46 +42,79 @@ namespace Eto.Test.Sections
 		}
 	}
 
-	class SingleTestFilter : ITestFilter
+	class SingleTestFilter : CategoryFilter
 	{
 		public ITest Test { get; set; }
 
-		public bool Pass(ITest test)
+		public override bool Pass(ITest test)
 		{
 			var parent = Test;
 			// check if it is a parent of the test
 			while (parent != null)
 			{
 				if (test.FullName == parent.FullName)
-					return true;
+					return base.Pass(test);
 				parent = parent.Parent;
 			}
 			// execute all children of the test
 			while (test != null)
 			{
 				if (test.FullName == Test.FullName)
-					return true;
+					return base.Pass(test);
 				test = test.Parent;
 			}
 			return false;
 		}
-
-		public bool IsEmpty { get { return false; } }
 	}
 
-	class NamespaceTestFilter : ITestFilter
+	class NamespaceTestFilter : CategoryFilter
 	{
 		public string Namespace { get; set; }
 
-		public bool Pass(ITest test)
+		public override bool Pass(ITest test)
 		{
 			if (test.FixtureType == null && test.Parent != null)
 				return Pass(test.Parent);
 			var ns = test.FixtureType.Namespace;
-			return ns == Namespace || ns.StartsWith(Namespace + ".", StringComparison.Ordinal);
+			var pass = ns == Namespace || ns.StartsWith(Namespace + ".", StringComparison.Ordinal);
+			return pass && base.Pass(test);
+		}
+	}
+
+	class CategoryFilter : ITestFilter
+	{
+		public Application Application { get; set; }
+
+		public List<string> IncludeCategories { get; private set; }
+
+		public List<string> ExcludeCategories { get; private set; }
+
+		public CategoryFilter()
+		{
+			IncludeCategories = new List<string>();
+			ExcludeCategories = new List<string>();
 		}
 
-		public bool IsEmpty { get { return false; } }
+		public virtual bool Pass(ITest test)
+		{
+			var categoryList = test.Properties["Category"] as ObjectList;
+
+			bool pass = true;
+			if (categoryList != null)
+			{
+				var categories = categoryList.OfType<string>().ToList();
+				if (IncludeCategories.Count > 0)
+					pass = categories.Any(IncludeCategories.Contains);
+
+				if (ExcludeCategories.Count > 0)
+					pass &= !categories.Any(ExcludeCategories.Contains);
+			}
+			if (!pass)
+				Application.Invoke(() => Log.Write(null, "Skipping {0} (excluded)", test.FullName));
+			return pass;
+		}
+
+		public virtual bool IsEmpty { get { return false; } }
 	}
 
 	[Section("Tests", "Unit Tests")]
@@ -108,7 +142,7 @@ namespace Eto.Test.Sections
 					var item = (TreeItem)tree.SelectedItem;
 					if (item != null)
 					{
-						RunTests(item.Tag as ITestFilter);
+						RunTests(item.Tag as CategoryFilter);
 					}
 				};
 
@@ -123,7 +157,7 @@ namespace Eto.Test.Sections
 			startButton.Click += (s, e) => RunTests();
 		}
 
-		async void RunTests(ITestFilter filter = null)
+		async void RunTests(CategoryFilter filter = null)
 		{
 			if (!startButton.Enabled)
 				return;
@@ -147,9 +181,15 @@ namespace Eto.Test.Sections
 							}
 							ITestResult result;
 							var listener = new TestListener { Application = Application.Instance }; // use running application for logging
+							filter = filter ?? new CategoryFilter();
+							filter.Application = Application.Instance;
+							if (testPlatform is TestPlatform)
+							{
+								filter.ExcludeCategories.Add(UnitTests.TestUtils.NoTestPlatformCategory);
+							}
 							using (testPlatform.Context)
 							{
-								result = runner.Run(listener, filter ?? TestFilter.Empty);
+								result = runner.Run(listener, filter);
 							}
 							var writer = new StringWriter();
 							writer.WriteLine(result.FailCount > 0 ? "FAILED" : "PASSED");

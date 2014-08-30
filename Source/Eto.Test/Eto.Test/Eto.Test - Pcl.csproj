@@ -165,6 +165,7 @@
     <Compile Include="UnitTests\Handlers\TestContainerHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestPanelHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestWindowHandler.cs" />
+    <Compile Include="UnitTests\Drawing\BitmapTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
@@ -174,6 +175,7 @@
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Textures.gif" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestImage.png" />

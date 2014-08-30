@@ -123,45 +123,46 @@ namespace Eto.Wpf.Drawing
 
 		public Color GetPixel(int x, int y)
 		{
-			var rect = new sw.Int32Rect(x, y, 1, 1);
+			return ApplicationHandler.InvokeIfNecessary(() =>
+			{
+				var rect = new sw.Int32Rect(x, y, 1, 1);
 
-			var pixelStride = (rect.Width * Control.Format.BitsPerPixel + 7) / 8;
+				var pixelStride = (rect.Width * Control.Format.BitsPerPixel + 7) / 8;
 
-			var pixels = new byte[pixelStride * rect.Height];
+				var pixels = new byte[pixelStride * rect.Height];
 
-			Control.CopyPixels(rect, pixels, stride: pixelStride, offset: 0);
+				Control.CopyPixels(rect, pixels, stride: pixelStride, offset: 0);
 
-			if (Control.Format == swm.PixelFormats.Rgb24)
-				return Color.FromArgb(red: pixels[0], green: pixels[1], blue: pixels[2]);
-			if (Control.Format == swm.PixelFormats.Bgr32)
-				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2]);
-			if (Control.Format == swm.PixelFormats.Bgra32)
-				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
-			if (Control.Format == swm.PixelFormats.Pbgra32)
-				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
-			throw new NotSupportedException();
+				if (Control.Format == swm.PixelFormats.Rgb24)
+					return Color.FromArgb(red: pixels[0], green: pixels[1], blue: pixels[2]);
+				if (Control.Format == swm.PixelFormats.Bgr32)
+					return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2]);
+				if (Control.Format == swm.PixelFormats.Bgra32)
+					return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
+				if (Control.Format == swm.PixelFormats.Pbgra32)
+					return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
+				throw new NotSupportedException();
+			});
 		}
 
 		public BitmapData Lock()
 		{
-			BitmapDataHandler handler = null;
-			ApplicationHandler.InvokeIfNecessary(() =>
+			return ApplicationHandler.InvokeIfNecessary(() =>
 			{
 				var wb = Control as swm.Imaging.WriteableBitmap;
 				if (wb != null)
 				{
 					wb.Lock();
-					handler = new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, Control);
+					return new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, Control);
 				}
 				else
 				{
 					wb = new swm.Imaging.WriteableBitmap(Control);
 					wb.Lock();
 					Control = wb;
-					handler = new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, wb);
+					return new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, wb);
 				}
 			});
-			return handler;
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -210,7 +211,7 @@ namespace Eto.Wpf.Drawing
 
 		public Size Size
 		{
-			get { return new Size(Control.PixelWidth, Control.PixelHeight); }
+			get { return ApplicationHandler.InvokeIfNecessary(() => new Size(Control.PixelWidth, Control.PixelHeight)); }
 		}
 
 		public swmi.BitmapSource GetImageClosestToSize(int? width)
@@ -220,8 +221,7 @@ namespace Eto.Wpf.Drawing
 
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
-			swmi.BitmapSource clone = null;
-			ApplicationHandler.InvokeIfNecessary(() =>
+			var clone = ApplicationHandler.InvokeIfNecessary(() =>
 			{
 				if (rectangle != null)
 				{
@@ -230,10 +230,10 @@ namespace Eto.Wpf.Drawing
 					Control.CopyPixels(data, Stride, 0);
 					var target = new swmi.WriteableBitmap(rect.Width, rect.Height, Control.DpiX, Control.DpiY, Control.Format, Control.Palette);
 					target.WritePixels(rect.ToWpfInt32(), data, Stride, destinationX: 0, destinationY: 0);
-					clone = target;
+					return target;
 				}
 				else
-					clone = Control.Clone();
+					return Control.Clone();
 			});
 
 			return new Bitmap(new BitmapHandler(clone));
