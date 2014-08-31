@@ -275,11 +275,11 @@ namespace Eto.Forms
 		/// Gets the binding to the <see cref="SelectedIndex"/> property.
 		/// </summary>
 		/// <value>The selected index binding.</value>
-		public ObjectBinding<ListControl, int> SelectedIndexBinding
+		public ControlBinding<ListControl, int> SelectedIndexBinding
 		{
 			get
 			{
-				return new ObjectBinding<ListControl, int>(
+				return new ControlBinding<ListControl, int>(
 					this, 
 					c => c.SelectedIndex, 
 					(c, v) => c.SelectedIndex = v, 
@@ -293,11 +293,11 @@ namespace Eto.Forms
 		/// Gets the binding to the <see cref="SelectedKey"/> property.
 		/// </summary>
 		/// <value>The selected key binding.</value>
-		public ObjectBinding<ListControl, string> SelectedKeyBinding
+		public ControlBinding<ListControl, string> SelectedKeyBinding
 		{
 			get
 			{
-				return new ObjectBinding<ListControl, string>(
+				return new ControlBinding<ListControl, string>(
 					this, 
 					c => c.SelectedKey, 
 					(c, v) => c.SelectedKey = v, 
@@ -311,11 +311,11 @@ namespace Eto.Forms
 		/// Gets the binding to the <see cref="SelectedValue"/> property.
 		/// </summary>
 		/// <value>The selected value binding.</value>
-		public ObjectBinding<ListControl, object> SelectedValueBinding
+		public ControlBinding<ListControl, object> SelectedValueBinding
 		{
 			get
 			{
-				return new ObjectBinding<ListControl, object>(
+				return new ControlBinding<ListControl, object>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 

@@ -62,11 +62,11 @@ namespace Eto.Forms
 			return items;
 		}
 
-		public new ObjectBinding<EnumRadioButtonList<T>, T> SelectedValueBinding
+		public new ControlBinding<EnumRadioButtonList<T>, T> SelectedValueBinding
 		{
 			get
 			{
-				return new ObjectBinding<EnumRadioButtonList<T>, T>(
+				return new ControlBinding<EnumRadioButtonList<T>, T>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 

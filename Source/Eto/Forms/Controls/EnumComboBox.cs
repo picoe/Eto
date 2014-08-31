@@ -116,11 +116,15 @@ namespace Eto.Forms
 			return items;
 		}
 
-		public new ObjectBinding<EnumComboBox<T>, T> SelectedValueBinding
+		/// <summary>
+		/// Gets a new binding for the <see cref="SelectedValue"/> property.
+		/// </summary>
+		/// <value>A new selected value binding.</value>
+		public new ControlBinding<EnumComboBox<T>, T> SelectedValueBinding
 		{
 			get
 			{
-				return new ObjectBinding<EnumComboBox<T>, T>(
+				return new ControlBinding<EnumComboBox<T>, T>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 

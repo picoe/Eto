@@ -224,7 +224,6 @@
     <Compile Include="Binding\DirectBinding.cs" />
     <Compile Include="Binding\ObjectBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
-    <Compile Include="Binding\BindingExtensions.cs" />
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
@@ -298,6 +297,8 @@
       <Link>PlatformDetect.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\LinkButton.cs" />
+    <Compile Include="Forms\BindingExtensions.cs" />
+    <Compile Include="Forms\ControlBinding.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

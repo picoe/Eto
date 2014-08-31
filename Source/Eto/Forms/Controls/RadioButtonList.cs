@@ -307,11 +307,11 @@ namespace Eto.Forms
 			return new ListItemCollection();
 		}
 
-		public ObjectBinding<RadioButtonList, object> SelectedValueBinding
+		public ControlBinding<RadioButtonList, object> SelectedValueBinding
 		{
 			get
 			{
-				return new ObjectBinding<RadioButtonList, object>(
+				return new ControlBinding<RadioButtonList, object>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 
