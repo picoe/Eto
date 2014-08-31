@@ -82,11 +82,11 @@ namespace Eto.WinForms
 			set { Control.WordWrap = value; }
 		}
 
-        public Color TextColor
-        {
-            get { return Control.ForeColor.ToEto(); }
-            set { Control.ForeColor = value.ToSD(); }
-        }
+		public Color TextColor
+		{
+			get { return Control.ForeColor.ToEto(); }
+			set { Control.ForeColor = value.ToSD(); }
+		}
 
 		public void Append(string text, bool scrollToCursor)
 		{

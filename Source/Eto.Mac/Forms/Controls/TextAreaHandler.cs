@@ -193,11 +193,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-        public Color TextColor
-        {
-            get { return Control.TextColor.ToEto(); }
-            set { Control.TextColor = value.ToNSUI(); }
-        }
+		public Color TextColor
+		{
+			get { return Control.TextColor.ToEto(); }
+			set { Control.TextColor = value.ToNSUI(); }
+		}
 
 		Font font;
 

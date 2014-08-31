@@ -90,6 +90,7 @@ namespace Eto.GtkSharp
 				SetImagePosition();
 			}
 		}
+
 		public Image Image
 		{
 			get { return image; }

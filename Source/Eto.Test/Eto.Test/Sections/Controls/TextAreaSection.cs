@@ -28,16 +28,13 @@ namespace Eto.Test.Sections.Controls
 		Control Default()
 		{
 			var text = new TextArea { Text = "Some Text" };
-		    text.BackgroundColor = Colors.Black;
-		    text.TextColor = Colors.Gray;
-
 			LogEvents(text);
 
 			var layout = new DynamicLayout();
 
 			layout.Add(text);
 			layout.BeginVertical(Padding.Empty, Size.Empty);
-			layout.AddRow(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), SetCaret(text), null);
+			layout.AddRow(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), SetCaret(text),ChangeColor(text), null);
 			layout.EndVertical();
 
 			return layout;
@@ -88,6 +85,17 @@ namespace Eto.Test.Sections.Controls
 			control.Click += (sender, e) => {
 				textArea.CaretIndex = textArea.Text.Length / 2;
 				textArea.Focus();
+			};
+			return control;
+		}
+
+		Control ChangeColor(TextArea textArea)
+		{
+			var control = new Button { Text = "Change Color" };
+			control.Click += (sender, e) =>
+			{
+				textArea.BackgroundColor = Colors.Black;
+				textArea.TextColor = Colors.Blue;
 			};
 			return control;
 		}
