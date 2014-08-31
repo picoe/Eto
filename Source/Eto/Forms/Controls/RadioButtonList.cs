@@ -6,12 +6,29 @@ using System.Collections;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Orientation of buttons in a <see cref="RadioButtonList"/>
+	/// </summary>
 	public enum RadioButtonListOrientation
 	{
+		/// <summary>
+		/// Radio buttons are displayed horizontally.
+		/// </summary>
 		Horizontal,
+
+		/// <summary>
+		/// Radio buttons are displayed vertically.
+		/// </summary>
 		Vertical
 	}
 
+	/// <summary>
+	/// Shows a list of radio buttons.
+	/// </summary>
+	/// <remarks>
+	/// The list of items can be added manually using <see cref="RadioButtonList.Items"/>, or 
+	/// use the <see cref="RadioButtonList.DataStore"/> to have a dynamic list of items controlled by a custom collection.
+	/// </remarks>
 	public class RadioButtonList : Panel
 	{
 		RadioButtonListOrientation orientation;
@@ -22,11 +39,33 @@ namespace Eto.Forms
 		Size spacing = new Size(5, 5);
 		bool settingChecked;
 
+		/// <summary>
+		/// Gets or sets the binding to get the text for each radio button.
+		/// </summary>
+		/// <remarks>
+		/// By default, this will bind to a "Text" property, or <see cref="IListItem.Text"/> when implemented.
+		/// </remarks>
+		/// <value>The text binding.</value>
 		public IIndirectBinding<string> TextBinding { get; set; }
+
+		/// <summary>
+		/// Gets or sets the binding to get the key for each radio button.
+		/// </summary>
+		/// <remarks>
+		/// By default, this will bind to a "Key" property, or <see cref="IListItem.Key"/> when implemented.
+		/// </remarks>
+		/// <value>The key binding.</value>
 		public IIndirectBinding<string> KeyBinding { get; set; }
 
+		/// <summary>
+		/// Occurs when the <see cref="SelectedIndex"/> changes.
+		/// </summary>
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
+		/// <summary>
+		/// Raises the <see cref="SelectedIndexChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
 			if (SelectedIndexChanged != null)
@@ -34,14 +73,25 @@ namespace Eto.Forms
 			OnSelectedValueChanged(e);
 		}
 
+		/// <summary>
+		/// Occurs when <see cref="SelectedValue"/> changes.
+		/// </summary>
 		public event EventHandler<EventArgs> SelectedValueChanged;
 
+		/// <summary>
+		/// Raises the <see cref="SelectedValueChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedValueChanged(EventArgs e)
 		{
 			if (SelectedValueChanged != null)
 				SelectedValueChanged(this, e);
 		}
 
+		/// <summary>
+		/// Gets or sets the selected key of the currently selected item using the <see cref="KeyBinding"/>.
+		/// </summary>
+		/// <value>The selected key.</value>
 		public string SelectedKey
 		{
 			get { return SelectedValue == null ? null : KeyBinding.GetValue(SelectedValue); }
@@ -54,6 +104,14 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.RadioButtonList"/> is enabled.
+		/// </summary>
+		/// <remarks>
+		/// When the control is disabled, the user will not be able to change the selected radio button.
+		/// However, you can still programatically change the selection.
+		/// </remarks>
+		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 		public override bool Enabled
 		{
 			get { return base.Enabled; }
@@ -67,6 +125,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the selected value, which is the <see cref="ListItem"/> or object in your custom data store.
+		/// </summary>
+		/// <value>The selected value.</value>
 		public object SelectedValue
 		{
 			get { return selectedButton == null ? null : selectedButton.Tag; }
@@ -82,6 +144,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the index of the selected item.
+		/// </summary>
+		/// <value>The index of the selected item.</value>
 		public int SelectedIndex
 		{
 			get { return selectedButton == null ? -1 : buttons.IndexOf(selectedButton); }
@@ -139,6 +205,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the orientation of the radio buttons.
+		/// </summary>
+		/// <value>The radio button orientation.</value>
 		public RadioButtonListOrientation Orientation
 		{
 			get { return orientation; }
@@ -152,6 +222,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the spacing between each radio button.
+		/// </summary>
+		/// <value>The spacing between radio buttons.</value>
 		public Size Spacing
 		{
 			get { return spacing; }
@@ -165,6 +239,14 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets the item collection, when adding items programatically.
+		/// </summary>
+		/// <remarks>
+		/// This is used when you want to add items manually.  Use the <see cref="DataStore"/>
+		/// when you have an existing collection you want to bind to directly.
+		/// </remarks>
+		/// <value>The item collection.</value>
 		public ListItemCollection Items
 		{
 			get
@@ -179,6 +261,14 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the data store of the items shown in the list.
+		/// </summary>
+		/// <remarks>
+		/// When using a custom object collection, you can use the <see cref="TextBinding"/> and <see cref="KeyBinding"/> 
+		/// to specify how to get the text/key values for each item.
+		/// </remarks>
+		/// <value>The data store.</value>
 		public IEnumerable<object> DataStore
 		{
 			get { return dataStore == null ? null : dataStore.Collection; }
@@ -189,12 +279,19 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.RadioButtonList"/> class.
+		/// </summary>
 		public RadioButtonList()
 		{
 			TextBinding = new ListItemTextBinding();
 			KeyBinding = new ListItemKeyBinding();
 		}
 
+		/// <summary>
+		/// Raises the load event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
@@ -302,11 +399,19 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Creates the default items.
+		/// </summary>
+		/// <returns>The default items.</returns>
 		protected virtual ListItemCollection CreateDefaultItems()
 		{
 			return new ListItemCollection();
 		}
 
+		/// <summary>
+		/// Gets a binding to the <see cref="SelectedValue"/> property.
+		/// </summary>
+		/// <value>The selected value binding.</value>
 		public ControlBinding<RadioButtonList, object> SelectedValueBinding
 		{
 			get

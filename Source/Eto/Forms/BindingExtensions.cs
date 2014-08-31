@@ -51,6 +51,7 @@ namespace Eto.Forms
 		/// <param name="defaultContextValue">Default context value, if the context value is null.</param>
 		/// <typeparam name="TWidget">The type of control.</typeparam>
 		/// <typeparam name="TContext">The type of the data context object.</typeparam>
+		/// <typeparam name="TValue">The type of the binding value.</typeparam>
 		[Obsolete("Use BindDataContext instead")]
 		public static DualBinding<TValue> Bind<TWidget,TContext,TValue>(this TWidget control, Expression<Func<TWidget, TValue>> controlProperty, Expression<Func<TContext, TValue>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
 			where TWidget : Control

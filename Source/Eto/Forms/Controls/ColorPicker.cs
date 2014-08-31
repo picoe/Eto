@@ -4,24 +4,41 @@ using System.ComponentModel;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Control to show and pick a color.
+	/// </summary>
 	[Handler(typeof(ColorPicker.IHandler))]
 	public class ColorPicker : Control
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="ValueChanged"/> event.
+		/// </summary>
 		public const string ColorChangedEvent = "ColorPicker.ValueChanged";
 
+		/// <summary>
+		/// Occurs when the <see cref="Value"/> is changed.
+		/// </summary>
 		public event EventHandler<EventArgs> ValueChanged
 		{
 			add { Properties.AddHandlerEvent(ColorChangedEvent, value); }
 			remove { Properties.RemoveEvent(ColorChangedEvent, value); }
 		}
 
+		/// <summary>
+		/// Raises the <see name="ValueChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected virtual void OnColorChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(ColorChangedEvent, this, e);
 		}
 
+		/// <summary>
+		/// Gets or sets the selected color value.
+		/// </summary>
+		/// <value>The currently selected color value.</value>
 		public Color Value
 		{
 			get { return Handler.Color; }
@@ -67,6 +84,10 @@ namespace Eto.Forms
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public new interface IHandler : Control.IHandler
 		{
+			/// <summary>
+			/// Gets or sets the selected color.
+			/// </summary>
+			/// <value>The selected color.</value>
 			Color Color { get; set; }
 		}
 	}

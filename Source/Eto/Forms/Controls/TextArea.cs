@@ -18,7 +18,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// The default size of text area controls.
 		/// </summary>
-		[Obsolete("Set the size of the control directly")]
+		[Obsolete("Set the size of the control directly or use styles")]
 		public static Size DefaultSize = new Size(100, 60);
 
 		#region Events

@@ -3,6 +3,9 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Button that is visually represented like a hyperlink on a web page.
+	/// </summary>
 	[Handler(typeof(LinkButton.IHandler))]
 	public class LinkButton : TextControl
 	{
@@ -31,6 +34,10 @@ namespace Eto.Forms
 			Properties.TriggerEvent(ClickEvent, this, e);
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		/// <value>The color of the text.</value>
 		public Color TextColor
 		{
 			get { return Handler.TextColor; }
@@ -76,6 +83,9 @@ namespace Eto.Forms
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public new interface IHandler : TextControl.IHandler
 		{
+			/// <summary>
+			/// Gets or sets the color of the text.
+			/// </summary>
 			Color TextColor { get; set; }
 		}
 	}

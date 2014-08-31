@@ -34,7 +34,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// The default mode for all new date/time pickers.
 		/// </summary>
-		[Obsolete("Set the mode of your picker directly")]
+		[Obsolete("Set the mode of your picker directly or use styles")]
 		public static DateTimePickerMode DefaultMode = DateTimePickerMode.Date;
 
 		/// <summary>

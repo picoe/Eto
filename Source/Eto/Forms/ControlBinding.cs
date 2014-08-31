@@ -93,7 +93,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// This is a shortcut to use the <see cref="DelegateBinding{T,TValue}"/> to bind to a control's <see cref="Control.DataContext"/> property.
-		/// When the data context type is <typeparamref cref="TValue"/>, then the delegates will be called to get/set the value.
+		/// When the data context type is <typeparamref name="TValue"/>, then the delegates will be called to get/set the value.
 		/// Otherwise, if the data context is null or a different type, the <paramref name="defaultGetValue"/> will be used.
 		/// </remarks>
 		/// <returns>A new dual binding that binds the control to this object binding.</returns>
