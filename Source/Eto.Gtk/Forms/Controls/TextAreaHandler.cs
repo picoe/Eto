@@ -105,6 +105,25 @@ namespace Eto.GtkSharp
 			}
 		}
 
+		public virtual Color TextColor
+		{
+			get { return Control.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			set { Control.ModifyText(Gtk.StateType.Normal, value.ToGdk()); }
+		}
+
+		public override Color BackgroundColor
+		{
+			get
+			{
+				return base.BackgroundColor;
+			}
+			set
+			{
+				//base.BackgroundColor = value;
+				Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
+			}
+		}
+
 		public bool ReadOnly
 		{
 			get { return !Control.Editable; }
