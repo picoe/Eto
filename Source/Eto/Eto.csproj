@@ -299,6 +299,8 @@
     <Compile Include="Forms\Controls\LinkButton.cs" />
     <Compile Include="Forms\BindingExtensions.cs" />
     <Compile Include="Forms\ControlBinding.cs" />
+    <Compile Include="Forms\Layout\TableRow.cs" />
+    <Compile Include="Forms\Layout\TableCell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

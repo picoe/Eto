@@ -296,6 +296,8 @@
     <Compile Include="Forms\Controls\LinkButton.cs" />
     <Compile Include="Forms\BindingExtensions.cs" />
     <Compile Include="Forms\ControlBinding.cs" />
+    <Compile Include="Forms\Layout\TableCell.cs" />
+    <Compile Include="Forms\Layout\TableRow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">
