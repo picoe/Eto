@@ -11,6 +11,13 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture, Category(TestUtils.NoTestPlatformCategory)]
 	public class BitmapTests
 	{
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			// initialize test generator if running through IDE or nunit-gui
+			TestUtils.Initialize();
+		}
+
 		[Test]
 		public void TestClone32Bit()
 		{
