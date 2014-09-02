@@ -49,7 +49,6 @@ namespace Eto.Mac.Forms.Controls
 
 	public class ListBoxHandler : MacControl<NSTableView, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
-		Font font;
 		readonly NSScrollView scroll;
 		readonly CollectionHandler collection;
 		readonly MacImageListItemCell cell;

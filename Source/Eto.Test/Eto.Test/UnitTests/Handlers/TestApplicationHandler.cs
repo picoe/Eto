@@ -39,7 +39,6 @@ namespace Eto.Test.UnitTests.Handlers
 
 		async Task<Action> GetNextAction()
 		{
-			Action action;
 			tcsInvoke.Task.Wait();
 			lock (invoke_lock)
 			{
