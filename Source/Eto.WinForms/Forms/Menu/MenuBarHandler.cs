@@ -11,7 +11,7 @@ namespace Eto.WinForms
 	{
 		public MenuBarHandler()
 		{
-			Control = new SWF.MenuStrip();
+			Control = new SWF.MenuStrip { Visible = false };
 		}
 
 		#region IMenu Members
@@ -19,16 +19,19 @@ namespace Eto.WinForms
 		public void AddMenu(int index, MenuItem item)
 		{
 			Control.Items.Insert(index, (SWF.ToolStripItem)item.ControlObject);
+			Control.Visible = true;
 		}
 
 		public void RemoveMenu(MenuItem item)
 		{
 			Control.Items.Remove((SWF.ToolStripItem)item.ControlObject);
+			Control.Visible = Control.Items.Count > 0;
 		}
 
 		public void Clear()
 		{
 			Control.Items.Clear();
+			Control.Visible = false;
 		}
 
 		#endregion
