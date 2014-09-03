@@ -20,6 +20,12 @@ namespace Eto.Wpf.Forms
 		int lastRowScale;
 		bool inGroupBox;
 
+		public TableLayoutHandler()
+		{
+			spacing = TableLayout.DefaultSpacing;
+			border.Padding = TableLayout.DefaultPadding.ToWpf();
+		}
+
 		public Size Adjust { get; set; }
 
 		public override sw.FrameworkElement ContainerControl
@@ -74,9 +80,6 @@ namespace Eto.Wpf.Forms
 
 			border.Child = Control;
 
-			Spacing = TableLayout.DefaultSpacing;
-			Padding = TableLayout.DefaultPadding;
-
 			Control.SizeChanged += Control_SizeChanged;
 			Control.Loaded += Control_SizeChanged;
 		}
@@ -95,10 +98,16 @@ namespace Eto.Wpf.Forms
 			return empty;
 		}
 
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+		}
+
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 			inGroupBox = Widget.FindParent<GroupBox>() != null;
+			SetMargins();
 
 			if (Control.IsLoaded)
 				SetScale();
@@ -166,11 +175,14 @@ namespace Eto.Wpf.Forms
 
 		void SetMargins()
 		{
-			foreach (var child in Control.Children.OfType<sw.FrameworkElement>())
+			if (Widget.Loaded)
 			{
-				var x = swc.Grid.GetColumn(child);
-				var y = swc.Grid.GetRow(child);
-				SetMargins(child, x, y);
+				foreach (var child in Control.Children.OfType<sw.FrameworkElement>())
+				{
+					var x = swc.Grid.GetColumn(child);
+					var y = swc.Grid.GetRow(child);
+					SetMargins(child, x, y);
+				}
 			}
 		}
 
