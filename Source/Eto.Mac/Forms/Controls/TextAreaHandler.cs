@@ -199,6 +199,19 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.TextColor = value.ToNSUI(); }
 		}
 
+		public override Color BackgroundColor
+		{
+			get
+			{
+				return base.BackgroundColor;
+			}
+			set
+			{
+				//base.BackgroundColor = value;
+				Control.BackgroundColor = value.ToNSUI();
+			}
+		}
+
 		Font font;
 
 		public Font Font

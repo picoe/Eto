@@ -300,6 +300,19 @@ namespace Eto.GtkSharp.Forms.Controls
 			Tree.Selection.UnselectAll();
 		}
 
+		public void BeginEdit(int row, int column)
+		{
+			var nameColumn = Tree.Columns[column];
+			#if GTK2
+			var cellRenderer = nameColumn.CellRenderers[0];
+			#else
+			var cellRenderer = nameColumn.Cells[0];
+			#endif
+			var path = Tree.Model.GetPath(GetIterAtRow(row));
+			Tree.Model.IterNChildren();
+			Tree.SetCursorOnCell(path, nameColumn, cellRenderer, true);
+		}
+
 		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
 			Callback.OnCellFormatting(Widget, args);

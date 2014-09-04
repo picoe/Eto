@@ -345,6 +345,12 @@ namespace Eto.WinForms.Forms.Controls
 			Control.ClearSelection();
 		}
 
+		public void BeginEdit(int row, int column)
+		{
+			Control.CurrentCell = Control.Rows[row].Cells[column];
+			Control.BeginEdit(true);
+		}
+
 		public virtual void Paint(GridColumnHandler column, System.Drawing.Graphics graphics, System.Drawing.Rectangle clipBounds, System.Drawing.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)
 		{
 		}
