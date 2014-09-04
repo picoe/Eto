@@ -67,8 +67,7 @@ namespace Eto.WinForms.Forms.Controls
 				AllowUserToResizeRows = false,
 				AutoSize = true,
 				AutoSizeColumnsMode = swf.DataGridViewAutoSizeColumnsMode.DisplayedCells,
-				ColumnHeadersHeightSizeMode = swf.DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
-				ColumnHeadersBorderStyle = swf.DataGridViewHeaderBorderStyle.None
+				ColumnHeadersHeightSizeMode = swf.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
 			};
 			Control.CellValueNeeded += (sender, e) =>
 			{
