@@ -105,7 +105,7 @@ namespace Eto.Forms
 		/// <param name="item">Item to push onto the navigation stack.</param>
 		public void Push(INavigationItem item)
 		{
-			SetParent(item.Content, () => Handler.Push(item));
+			SetParent(item.Content, () => Handler.Push(item), null);
 		}
 
 		/// <summary>

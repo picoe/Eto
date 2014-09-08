@@ -137,18 +137,7 @@ namespace Eto.Forms
 			get { return Handler.Content; }
 			set
 			{
-				var old = Handler.Content;
-				if (old != value)
-				{
-					if (old != null)
-						RemoveParent(old);
-					if (value != null)
-					{
-						SetParent(value, () => Handler.Content = value);
-					}
-					else
-						Handler.Content = value;
-				}
+				SetParent(value, () => Handler.Content = value, Handler.Content);
 			}
 		}
 

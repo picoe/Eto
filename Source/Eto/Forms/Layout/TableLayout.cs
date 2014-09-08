@@ -435,17 +435,11 @@ namespace Eto.Forms
 			if (dimensions.IsEmpty)
 				throw new InvalidOperationException("You must set the size of the TableLayout before adding controls");
 			var cell = Rows[y].Cells[x];
-			if (cell.Control != null)
-				RemoveParent(cell.Control);
-			cell.Control = control;
-			if (control != null)
-			{
-				SetParent(control, () => Handler.Add(control, x, y));
-			}
-			else
-			{
-				Handler.Add(null, x, y);
-			}
+
+			SetParent(control, () => {
+				cell.Control = control;
+				Handler.Add(control, x, y);
+			}, cell.Control);
 		}
 
 		/// <summary>
