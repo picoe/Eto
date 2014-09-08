@@ -286,9 +286,11 @@ namespace Eto.WinForms
 					Control.Panel1.Controls.Clear();
 					if (panel1 != null)
 					{
-						var control = panel1.GetContainerControl();
+						var controlHandler = panel1.GetWindowsHandler();
+						var control = controlHandler.ContainerControl;
 						control.Dock = swf.DockStyle.Fill;
 						control.VisibleChanged += c1_VisibleChanged;
+						controlHandler.BeforeAddControl();
 						Control.Panel1.Controls.Add(control);
 					}
 					if (Widget.Loaded)
@@ -315,9 +317,11 @@ namespace Eto.WinForms
 					Control.Panel2.Controls.Clear();
 					if (panel2 != null)
 					{
-						var control = panel2.GetContainerControl();
+						var controlHandler = panel2.GetWindowsHandler();
+						var control = controlHandler.ContainerControl;
 						control.Dock = swf.DockStyle.Fill;
 						control.VisibleChanged += c2_VisibleChanged;
+						controlHandler.BeforeAddControl();
 						Control.Panel2.Controls.Add(control);
 					}
 					if (Widget.Loaded)

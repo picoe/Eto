@@ -43,13 +43,15 @@ namespace Eto.WinForms
 			System.Drawing.Size lastClientSize;
 			protected override void OnLayout(swf.LayoutEventArgs levent)
 			{
+				lastClientSize = ClientSize;
+
 				var contentControl = Handler.Content.GetWindowsHandler();
 				if (contentControl != null)
 				{
 					var minSize = new Size();
 
-					var clientSize = lastClientSize = ClientSize;
-					if (!Handler.finalLayoutPass)
+					var clientSize = lastClientSize;
+					if (Handler.finalLayoutPass)
 					{
 						var preferred = contentControl.GetPreferredSize(Eto.Drawing.Size.Empty);
 						if (Handler.ExpandContentWidth && preferred.Height > ClientSize.Height)
@@ -77,19 +79,10 @@ namespace Eto.WinForms
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		protected override void ResumeControl(bool top = true)
 		{
-			base.OnLoadComplete(e);
-			// ensure we don't show scrollbars unnecessarily:
-			// perform layout excluding both scrollbars so we don't show them unless necessary 
-			Control.ResumeLayout();
 			finalLayoutPass = true;
-		}
-
-		public override void OnUnLoad(EventArgs e)
-		{
-			base.OnUnLoad(e);
-			Control.SuspendLayout();
+			base.ResumeControl(top);
 			finalLayoutPass = false;
 		}
 
@@ -110,10 +103,10 @@ namespace Eto.WinForms
 			base.SetContentScale(!ExpandContentWidth, !ExpandContentHeight);
 		}
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
 			var baseSize = UserDesiredSize;
-			var size = base.GetPreferredSize(availableSize);
+			var size = base.GetPreferredSize(availableSize, useCache);
 			// if we have set to a specific size, then try to use that
 			if (baseSize.Width >= 0)
 				size.Width = baseSize.Width;
@@ -169,7 +162,6 @@ namespace Eto.WinForms
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};
-			Control.SuspendLayout();
 			Control.VerticalScroll.SmallChange = 5;
 			Control.VerticalScroll.LargeChange = 10;
 			Control.HorizontalScroll.SmallChange = 5;

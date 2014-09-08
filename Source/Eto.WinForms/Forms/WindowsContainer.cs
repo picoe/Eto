@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
@@ -17,6 +18,15 @@ namespace Eto.WinForms
 		protected WindowsContainer()
 		{
 			EnableRedrawDuringSuspend = false;
+		}
+
+		public override void BeforeAddControl(bool top = true)
+		{
+			foreach (var h in Widget.Controls.Select(r => r.GetWindowsHandler()).Where(r => r != null))
+			{
+				h.BeforeAddControl(false);
+			}
+			base.BeforeAddControl(top);
 		}
 
 		public bool RecurseToChildren { get { return true; } }
@@ -46,9 +56,9 @@ namespace Eto.WinForms
 
 		public bool EnableRedrawDuringSuspend { get; set; }
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
-			var size = base.GetPreferredSize(availableSize);
+			var size = base.GetPreferredSize(availableSize, useCache);
 			return Size.Max(minimumSize, size);
 		}
 
@@ -58,8 +68,18 @@ namespace Eto.WinForms
 			set
 			{
 				minimumSize = value;
-				SetMinimumSize();
+				SetMinimumSize(useCache: true);
 			}
+		}
+
+		protected override void SuspendControl()
+		{
+			Control.SuspendLayout();
+		}
+
+		protected override void ResumeControl(bool top = true)
+		{
+			Control.ResumeLayout(top);
 		}
 
 		bool restoreRedraw;

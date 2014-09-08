@@ -19,9 +19,9 @@ namespace Eto.WinForms
 
 		Size ParentMinimumSize { get; set; }
 
-		Size GetPreferredSize(Size availableSize);
+		Size GetPreferredSize(Size availableSize, bool useCache = false);
 
-		bool SetMinimumSize(bool updateParent = false);
+		bool SetMinimumSize(bool updateParent = false, bool useCache = false);
 
 		void SetScale(bool xscale, bool yscale);
 
@@ -32,6 +32,8 @@ namespace Eto.WinForms
 		bool YScale { get; }
 
 		Control.ICallback Callback { get; }
+
+		void BeforeAddControl(bool top = true);
 	}
 
 	public static class WindowsControlExtensions
@@ -101,10 +103,15 @@ namespace Eto.WinForms
 
 		public virtual Size? DefaultSize { get { return null; } }
 
-		public virtual Size GetPreferredSize(Size availableSize)
+		Size? cachedDefaultSize;
+		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
 			var size = UserDesiredSize;
-			var defSize = DefaultSize;
+			Size? defSize;
+			if (useCache)
+				defSize = cachedDefaultSize ?? DefaultSize;
+			else
+				defSize = DefaultSize;
 			if (defSize != null)
 			{
 				if (size.Width == -1) size.Width = defSize.Value.Width;
@@ -127,8 +134,11 @@ namespace Eto.WinForms
 			get { return parentMinimumSize; }
 			set
 			{
-				parentMinimumSize = value;
-				SetMinimumSize();
+				if (parentMinimumSize != value)
+				{
+					parentMinimumSize = value;
+					SetMinimumSize(useCache: true);
+				}
 			}
 		}
 
@@ -150,6 +160,7 @@ namespace Eto.WinForms
 			YScale = true;
 			Control.Margin = swf.Padding.Empty;
 			Control.Tag = this;
+			SuspendControl();
 		}
 
 		public virtual swf.DockStyle DockStyle
@@ -157,18 +168,22 @@ namespace Eto.WinForms
 			get { return swf.DockStyle.Fill; }
 		}
 
-		public bool SetMinimumSize(bool updateParent = false)
+		public bool SetMinimumSize(bool updateParent = false, bool useCache = false)
 		{
 			if (!Widget.Loaded)
 				return false;
-			return SetMinimumSizeInternal(updateParent);
+			return SetMinimumSizeInternal(updateParent, useCache);
 		}
 
-		bool SetMinimumSizeInternal(bool updateParent)
+		bool SetMinimumSizeInternal(bool updateParent, bool useCached = false)
 		{
-			var size = GetPreferredSize(Size.Empty);
-			if (XScale) size.Width = 0;
-			if (YScale) size.Height = 0;
+			Size size = Size.Empty;
+			if (!XScale || !YScale)
+			{
+				var preferredSize = GetPreferredSize(Size.Empty, useCached);
+				if (!XScale) size.Width = preferredSize.Width;
+				if (!YScale) size.Height = preferredSize.Height;
+			}
 			var ret = SetMinimumSize(size);
 			if (updateParent && Widget.Loaded)
 			{
@@ -195,7 +210,7 @@ namespace Eto.WinForms
 		{
 			XScale = xscale;
 			YScale = yscale;
-			SetMinimumSize();
+			SetMinimumSize(false, useCache: true);
 		}
 
 		public void SetScale()
@@ -468,6 +483,24 @@ namespace Eto.WinForms
 			Callback.OnSizeChanged(Widget, e);
 		}
 
+		bool resumed;
+		protected virtual void ResumeControl(bool top = true)
+		{
+		}
+
+		protected virtual void SuspendControl()
+		{
+		}
+
+		public virtual void BeforeAddControl(bool top = true)
+		{
+			if (!resumed && Widget.Loaded)
+			{
+				ResumeControl(top);
+				resumed = true;
+			}
+		}
+
 		public virtual void OnPreLoad(EventArgs e)
 		{
 		}
@@ -480,10 +513,20 @@ namespace Eto.WinForms
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			SetToolTip();
+			if (!resumed)
+			{
+				ResumeControl();
+				resumed = true;
+			}
 		}
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
+			if (resumed)
+			{
+				SuspendControl();
+				resumed = false;
+			}
 		}
 
 		void SetToolTip()

@@ -51,19 +51,6 @@ namespace Eto.WinForms
 			};
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
-			Control.SuspendLayout();
-		}
-
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			Control.ResumeLayout();
-		}
-
-		public override void OnUnLoad(EventArgs e)
-		{
-			base.OnUnLoad(e);
-			Control.SuspendLayout();
 		}
 
 		public void Update()
@@ -142,11 +129,13 @@ namespace Eto.WinForms
 			views[x, y] = child;
 			if (child != null)
 			{
-				var childControl = child.GetContainerControl();
+				var childHandler = child.GetWindowsHandler();
+				var childControl = childHandler.ContainerControl;
 				childControl.Parent = null;
-				childControl.Dock = child.GetWindowsHandler().DockStyle;
+				childControl.Dock = childHandler.DockStyle;
 				childControl.Margin = GetPadding(x, y);
 				SetScale(child, x, y);
+				childHandler.BeforeAddControl();
 
 				Control.Controls.Add(childControl, x, y);
 			}
