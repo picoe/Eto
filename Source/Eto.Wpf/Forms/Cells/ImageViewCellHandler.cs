@@ -26,10 +26,19 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			public ImageViewCellHandler Handler { get; set; }
 
+			public swm.BitmapScalingMode ScalingMode { get; set; }
+
+			public Column()
+			{
+				ScalingMode = swm.BitmapScalingMode.HighQuality;
+			}
+
 			swc.Image Image (swc.DataGridCell cell)
 			{
 				var image = new swc.Image { MaxWidth = 16, MaxHeight = 16, StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
-				image.DataContextChanged += (sender, e) => {
+				swm.RenderOptions.SetBitmapScalingMode(image, ScalingMode);
+				image.DataContextChanged += (sender, e) =>
+				{
 					var img = sender as swc.Image;
 					img.Source = Handler.GetValue (img.DataContext) as swm.ImageSource;
 					Handler.FormatCell (img, cell, img.DataContext);
