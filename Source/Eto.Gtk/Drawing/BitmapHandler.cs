@@ -74,7 +74,7 @@ namespace Eto.GtkSharp.Drawing
 				case PixelFormat.Format24bppRgb:
 					Control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, width, height);
 					break;
-				/*case PixelFormat.Format16bppRgb555:
+			/*case PixelFormat.Format16bppRgb555:
 						control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
 						break;*/
 				default:
@@ -197,14 +197,14 @@ namespace Eto.GtkSharp.Drawing
 			}
 		}
 
-		public Gdk.Pixbuf GetPixbuf(Size maxSize)
+		public Gdk.Pixbuf GetPixbuf(Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear)
 		{
 			Gdk.Pixbuf pixbuf = Control;
 			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height)
 			{
 				if (!sizes.TryGetValue(maxSize, out pixbuf))
 				{
-					pixbuf = Control.ScaleSimple(maxSize.Width, maxSize.Height, Gdk.InterpType.Bilinear);
+					pixbuf = Control.ScaleSimple(maxSize.Width, maxSize.Height, interpolation);
 					sizes[maxSize] = pixbuf;
 				}
 			}

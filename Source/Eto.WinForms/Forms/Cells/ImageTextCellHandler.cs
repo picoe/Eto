@@ -7,14 +7,16 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class ImageTextCellHandler : CellHandler<swf.DataGridViewTextBoxCell, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
+	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.EtoCell, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
 	{
 		public static int IconSize = 16;
 		public static int IconPadding = 2;
 
-		class EtoCell : swf.DataGridViewTextBoxCell
+		public class EtoCell : swf.DataGridViewTextBoxCell
 		{
 			public ImageTextCellHandler Handler { get; set; }
+
+			public sd.Drawing2D.InterpolationMode InterpolationMode { get; set; }
 
 			public override void PositionEditingControl(bool setLocation, bool setSize, sd.Rectangle cellBounds, sd.Rectangle cellClip, swf.DataGridViewCellStyle cellStyle, bool singleVerticalBorderAdded, bool singleHorizontalBorderAdded, bool isFirstDisplayedColumn, bool isFirstDisplayedRow)
 			{
@@ -48,7 +50,7 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					var container = graphics.BeginContainer();
 					graphics.SetClip(cellBounds);
-
+					graphics.InterpolationMode = InterpolationMode;
 					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + IconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(img.Height, cellBounds.Height)) / 2, IconSize, IconSize));
 					graphics.EndContainer(container);
 					cellBounds.X += IconSize + IconPadding * 2;
@@ -67,6 +69,7 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				var val = (EtoCell)base.Clone();
 				val.Handler = Handler;
+				val.InterpolationMode = InterpolationMode;
 				return val;
 			}
 		}
@@ -106,6 +109,11 @@ namespace Eto.WinForms.Forms.Controls
 			return obj;
 		}
 
+		public ImageInterpolation ImageInterpolation
+		{
+			get { return Control.InterpolationMode.ToEto(); }
+			set { Control.InterpolationMode = value.ToSD(); }
+		}
 	}
 }
 

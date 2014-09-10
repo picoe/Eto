@@ -8,7 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ImageViewCellHandler : CellHandler<swc.DataGridColumn, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
+	public class ImageViewCellHandler : CellHandler<ImageViewCellHandler.Column, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
 	{
 		public static int ImageSize = 16;
 
@@ -26,7 +26,20 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			public ImageViewCellHandler Handler { get; set; }
 
-			public swm.BitmapScalingMode ScalingMode { get; set; }
+			swm.BitmapScalingMode scalingMode;
+			public swm.BitmapScalingMode ScalingMode
+			{
+				get { return scalingMode; }
+				set
+				{
+					if (scalingMode != value)
+					{
+						scalingMode = value;
+						if (DataGridOwner != null)
+							DataGridOwner.UpdateLayout();
+					}
+				}
+			}
 
 			public Column()
 			{
@@ -66,6 +79,12 @@ namespace Eto.Wpf.Forms.Controls
 		public ImageViewCellHandler ()
 		{
 			Control = new Column { Handler = this };
+		}
+
+		public ImageInterpolation ImageInterpolation
+		{
+			get { return Control.ScalingMode.ToEto(); }
+			set { Control.ScalingMode = value.ToWpf(); }
 		}
 	}
 }

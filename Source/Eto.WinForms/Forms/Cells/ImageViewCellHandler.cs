@@ -7,13 +7,15 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class ImageViewCellHandler : CellHandler<swf.DataGridViewImageCell, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
+	public class ImageViewCellHandler : CellHandler<ImageViewCellHandler.EtoCell, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
 	{
 		static readonly sd.Bitmap transparent;
 
-		class EtoCell : swf.DataGridViewImageCell
+		public class EtoCell : swf.DataGridViewImageCell
 		{
 			public ImageViewCellHandler Handler { get; set; }
+
+			public sd.Drawing2D.InterpolationMode InterpolationMode { get; set; }
 
 			public override void PositionEditingControl(bool setLocation, bool setSize, sd.Rectangle cellBounds, sd.Rectangle cellClip, swf.DataGridViewCellStyle cellStyle, bool singleVerticalBorderAdded, bool singleHorizontalBorderAdded, bool isFirstDisplayedColumn, bool isFirstDisplayedRow)
 			{
@@ -30,6 +32,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			protected override void Paint(sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates elementState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
 			{
+				graphics.InterpolationMode = InterpolationMode;
 				Handler.Paint(graphics, clipBounds, ref cellBounds, rowIndex, elementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
 				base.Paint(graphics, clipBounds, cellBounds, rowIndex, elementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 			}
@@ -44,6 +47,7 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				var val = (EtoCell)base.Clone();
 				val.Handler = Handler;
+				val.InterpolationMode = InterpolationMode;
 				return val;
 			}
 		}
@@ -87,6 +91,12 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				Widget.Binding.SetValue(dataItem, value as Image);
 			}
+		}
+
+		public ImageInterpolation ImageInterpolation
+		{
+			get { return Control.InterpolationMode.ToEto(); }
+			set { Control.InterpolationMode = value.ToSD(); }
 		}
 	}
 }

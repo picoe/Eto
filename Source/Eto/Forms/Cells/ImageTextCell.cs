@@ -10,6 +10,8 @@ namespace Eto.Forms
 	[Handler(typeof(ImageTextCell.IHandler))]
 	public class ImageTextCell : Cell
 	{
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
+
 		/// <summary>
 		/// Gets or sets the binding of the image to display for the cell.
 		/// </summary>
@@ -62,10 +64,25 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the interpolation mode when scaling images to fit into the cell.
+		/// </summary>
+		/// <value>The image interpolation.</value>
+		public ImageInterpolation ImageInterpolation
+		{
+			get { return Handler.ImageInterpolation; }
+			set { Handler.ImageInterpolation = value; }
+		}
+
+		/// <summary>
 		/// Handler interface for the <see cref="ImageTextCell"/>.
 		/// </summary>
 		public new interface IHandler : Cell.IHandler
 		{
+			/// <summary>
+			/// Gets or sets the interpolation mode when scaling images to fit into the cell.
+			/// </summary>
+			/// <value>The image interpolation.</value>
+			ImageInterpolation ImageInterpolation { get; set; }
 		}
 	}
 }

@@ -9,6 +9,8 @@ namespace Eto.Forms
 	[Handler(typeof(ImageViewCell.IHandler))]
 	public class ImageViewCell : SingleValueCell<Image>
 	{
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ImageViewCell"/> class when binding to an indexed-based data item.
 		/// </summary>
@@ -45,10 +47,25 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the interpolation mode when scaling images to fit into the cell.
+		/// </summary>
+		/// <value>The image interpolation.</value>
+		public ImageInterpolation ImageInterpolation
+		{
+			get { return Handler.ImageInterpolation; }
+			set { Handler.ImageInterpolation = value; }
+		}
+
+		/// <summary>
 		/// Handler interface for the <see cref="ImageViewCell"/>.
 		/// </summary>
 		public new interface IHandler : SingleValueCell<Image>.IHandler
 		{
+			/// <summary>
+			/// Gets or sets the interpolation mode when scaling images to fit into the cell.
+			/// </summary>
+			/// <value>The image interpolation.</value>
+			ImageInterpolation ImageInterpolation { get; set; }
 		}
 	}
 }
