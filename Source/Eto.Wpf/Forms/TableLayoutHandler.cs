@@ -115,8 +115,11 @@ namespace Eto.Wpf.Forms
 
 		public override void SetScale(bool xscale, bool yscale)
 		{
-			base.SetScale(xscale, yscale);
-			SetScale();
+			if (Widget.Loaded)
+			{
+				base.SetScale(xscale, yscale);
+				SetScale();
+			}
 		}
 
 		void SetScale()
