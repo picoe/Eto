@@ -11,8 +11,6 @@ namespace Eto.Wpf.Forms
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
-		Font font;
-
 		public override Color BackgroundColor
 		{
 			get { return (ContainerControl as swc.Control ?? Control).Background.ToEtoColor(); }
@@ -23,18 +21,18 @@ namespace Eto.Wpf.Forms
 		{
 		}
 
+		static readonly object FontKey = new object();
+
 		public Font Font
 		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(Control));
-				return font;
-			}
+			get { return Widget.Properties.Create<Font>(FontKey, () => new Font(new FontHandler(Control))); }
 			set
 			{
-				font = value;
-				FontHandler.Apply (Control, SetDecorations, font);
+				if (Widget.Properties.Get<Font>(FontKey) != value)
+				{
+					Widget.Properties[FontKey] = value;
+					FontHandler.Apply(Control, SetDecorations, value);
+				}
 			}
 		}
 
