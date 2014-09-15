@@ -83,7 +83,7 @@ namespace Eto.Mac.Forms
 
 		Control.ICallback Callback { get; }
 
-		Cursor Cursor { get; set; }
+		Cursor CurrentCursor { get; }
 
 		void PostKeyDown(KeyEventArgs e);
 
@@ -527,12 +527,17 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var cursor = handler.Cursor;
+				var cursor = handler.CurrentCursor;
 				if (cursor != null)
 				{
 					handler.EventControl.AddCursorRect(new CGRect(CGPoint.Empty, handler.EventControl.Frame.Size), cursor.ControlObject as NSCursor);
 				}
 			}
+		}
+
+		public virtual Cursor CurrentCursor
+		{
+			get { return Cursor; }
 		}
 
 		public virtual Cursor Cursor

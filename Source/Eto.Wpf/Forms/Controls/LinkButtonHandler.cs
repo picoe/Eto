@@ -19,32 +19,46 @@ namespace Eto.Wpf.Forms.Controls
 		public LinkButtonHandler()
 		{
 			Hyperlink = new swd.Hyperlink();
-			Control = new swc.TextBlock { Inlines = { Hyperlink } };
-			SetStyle();
+			Control = new swc.TextBlock { Inlines = { Hyperlink }, TextWrapping = sw.TextWrapping.Wrap };
 		}
 
-		void SetStyle()
+		public override void OnLoad(EventArgs e)
 		{
-			var style = new sw.Style();
-			if (textColor != null)
+			base.OnLoad(e);
+			SetStyle(true);
+		}
+
+		void SetStyle(bool force = false)
+		{
+			if (Widget.Loaded || force)
 			{
-				style.Setters.Add(new sw.Setter(swd.Hyperlink.ForegroundProperty, textColor.Value.ToWpfBrush()));
-			}
-			/*
-				Triggers =
+				var style = new sw.Style();
+				if (textColor != null)
 				{
-					new sw.Trigger
-					{
-						Property = swd.Hyperlink.IsMouseOverProperty,
-						Value = true,
-						Setters =
-						{
-							new sw.Setter(swd.Hyperlink.ForegroundProperty, Colors.Green.ToWpfBrush()) 
-						}
-					}
+					style.Setters.Add(new sw.Setter(swd.Hyperlink.ForegroundProperty, textColor.Value.ToWpfBrush()));
 				}
-			};*/
-			Hyperlink.Style = style;
+				/**/
+				style.Triggers.Add(new sw.Trigger
+				{
+					Property = swd.Hyperlink.IsMouseOverProperty,
+					Value = true,
+					Setters = { new sw.Setter(swd.Hyperlink.ForegroundProperty, (textColor ?? TextColor).ToWpfBrush()) }
+				});
+				style.Triggers.Add(new sw.Trigger
+				{
+					Property = swd.Hyperlink.IsEnabledProperty,
+					Value = false,
+					Setters = { new sw.Setter(swd.Hyperlink.ForegroundProperty, DisabledTextColor.ToWpfBrush()) }
+				});
+				/**
+				style.Triggers.Add(new sw.Trigger
+				{
+					Property = swd.Hyperlink.IsMouseCaptureWithinProperty,
+					Value = true,
+					Setters = { new sw.Setter(swd.Hyperlink.ForegroundProperty, Colors.Red.ToWpfBrush()) }
+				});/**/
+				Hyperlink.Style = style;
+			}
 		}
 
 		Color? textColor;
@@ -73,14 +87,17 @@ namespace Eto.Wpf.Forms.Controls
 			set { Hyperlink.IsEnabled = value; }
 		}
 
-		Font font;
+		static readonly object FontKey = new object();
 		public Font Font
 		{
-			get { return font ?? (font = new Font(new FontHandler(Control))); }
+			get { return Widget.Properties.Create<Font>(FontKey, () => new Font(new FontHandler(Control))); }
 			set
 			{
-				font = value;
-				FontHandler.Apply(Control, null, font);
+				if (Widget.Properties.Get<Font>(FontKey) != value)
+				{
+					Widget.Properties[FontKey] = value;
+					FontHandler.Apply(Control, null, value);
+				}
 			}
 		}
 
@@ -105,7 +122,21 @@ namespace Eto.Wpf.Forms.Controls
 					base.AttachEvent(id);
 					break;
 			}
+		}
 
+		static readonly object DisabledTextColorKey = new object();
+
+		public Color DisabledTextColor
+		{
+			get { return Widget.Properties.Get<Color?>(DisabledTextColorKey) ?? sw.SystemColors.GrayTextColor.ToEto(); }
+			set
+			{
+				if (value != DisabledTextColor)
+				{
+					Widget.Properties[DisabledTextColorKey] = value;
+					SetStyle();
+				}
+			}
 		}
 	}
 }

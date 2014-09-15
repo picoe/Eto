@@ -44,6 +44,16 @@ namespace Eto.Forms
 			set { Handler.TextColor = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the text when the control is disabled.
+		/// </summary>
+		/// <value>The color of the text when disabled.</value>
+		public Color DisabledTextColor
+		{
+			get { return Handler.DisabledTextColor; }
+			set { Handler.DisabledTextColor = value; }
+		}
+
 		static readonly object callback = new Callback();
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
@@ -87,6 +97,11 @@ namespace Eto.Forms
 			/// Gets or sets the color of the text.
 			/// </summary>
 			Color TextColor { get; set; }
+
+			/// <summary>
+			/// Gets or sets the color of the text when the control is disabled.
+			/// </summary>
+			Color DisabledTextColor { get; set; }
 		}
 	}
 }

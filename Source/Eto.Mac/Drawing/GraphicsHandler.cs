@@ -3,6 +3,7 @@ using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 #if XAMMAC2
 using AppKit;
@@ -18,6 +19,7 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
+using MonoMac;
 #if Mac64
 using CGSize = MonoMac.Foundation.NSSize;
 using CGRect = MonoMac.Foundation.NSRect;
@@ -57,8 +59,16 @@ using GraphicsBase = Eto.WidgetHandler<MonoTouch.CoreGraphics.CGContext, Eto.Dra
 namespace Eto.iOS.Drawing
 #endif
 {
+	#if OSX
+	public static class GraphicsExtensions
+	{
+		[DllImport(Constants.AppKitLibrary, EntryPoint = "NSSetFocusRingStyle")]
+		public extern static void SetFocusRingStyle(NSFocusRingPlacement placement);
+	}
+	#endif
+
 	/// <summary>
-	/// Handler for the <see cref="IGraphics"/>
+	/// Handler for the <see cref="Graphics.IHandler"/>
 	/// </summary>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
