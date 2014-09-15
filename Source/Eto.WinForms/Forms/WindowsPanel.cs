@@ -77,7 +77,7 @@ namespace Eto.WinForms
 						desiredSize.Height = desiredContentSize.Height;
 				}
 			}
-			return desiredSize + Padding.Size;
+      return desiredSize + Padding.Size;
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
@@ -92,7 +92,7 @@ namespace Eto.WinForms
 				content.SetScale(xscale, yscale);
 		}
 
-		public Padding Padding
+		public virtual Padding Padding
 		{
 			get { return ContainerContentControl.Padding.ToEto(); }
 			set { ContainerContentControl.Padding = value.ToSWF(); }

@@ -41,6 +41,7 @@ namespace Eto.WinForms
 			}
 
 			System.Drawing.Size lastClientSize;
+
 			protected override void OnLayout(swf.LayoutEventArgs levent)
 			{
 				lastClientSize = ClientSize;
@@ -65,7 +66,7 @@ namespace Eto.WinForms
 						minSize.Height = Math.Max(0, clientSize.Height);
 
 					// set minimum size for the content if we want to extend to the size of the scrollable width/height
-					contentControl.ParentMinimumSize = minSize;
+					contentControl.ParentMinimumSize = minSize - Handler.Padding.Size;
 				}
 				base.OnLayout(levent);
 			}
@@ -76,6 +77,19 @@ namespace Eto.WinForms
 				// when scrollbar is shown/hidden, need to perform layout
 				if (ClientSize != lastClientSize)
 					PerformLayout();
+			}
+		}
+
+    
+		public override Padding Padding
+		{
+			get
+			{
+				return Control.Padding.ToEto();
+			}
+			set
+			{
+				Control.Padding = value.ToSWF();
 			}
 		}
 
@@ -107,6 +121,7 @@ namespace Eto.WinForms
 		{
 			var baseSize = UserDesiredSize;
 			var size = base.GetPreferredSize(availableSize, useCache);
+			size -= Padding.Size;
 			// if we have set to a specific size, then try to use that
 			if (baseSize.Width >= 0)
 				size.Width = baseSize.Width;
@@ -187,7 +202,8 @@ namespace Eto.WinForms
 			switch (id)
 			{
 				case Scrollable.ScrollEvent:
-					Control.Scroll += delegate {
+					Control.Scroll += delegate
+					{
 						Callback.OnScroll(Widget, new ScrollEventArgs(ScrollPosition));
 					};
 					break;
