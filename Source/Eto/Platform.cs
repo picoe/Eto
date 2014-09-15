@@ -269,8 +269,9 @@ namespace Eto
 			{
 				return (Platform)Activator.CreateInstance(type);
 			}
-			catch
+			catch (Exception ex)
 			{
+				Debug.WriteLine(string.Format("Error creating instance of generator '{0}'\n{1}", generatorType, ex));
 				if (allowNull)
 					return null;
 				throw;
