@@ -25,23 +25,22 @@ There is a Mobile/iOS port in the works, but is considered incomplete.
 
 This framework was built so that using it in .NET is natural. For example, a simple hello-world application might look like:
 
+	using Eto.Forms;
+	using Eto.Drawing;
+	
 	public class MyForm : Form
 	{
 		public MyForm ()
 		{
 			Title = "My Cross-Platform App";
-			Size = new Size (200, 200);
+			ClientSize = new Size(200, 200);
 			Content = new Label { Text = "Hello World!" };
 		}
 		
 		[STAThread]
-		static void Main () {
-			var app = new Application();
-			app.Initialized += delegate {
-				app.MainForm = new MyForm ();
-				app.MainForm.Show ();
-			};
-			app.Run ();
+		static void Main()
+		{
+			new Application().Run(new MyForm());
 		}
 	}
 
