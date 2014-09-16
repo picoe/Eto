@@ -174,8 +174,8 @@ namespace Eto.Mac.Forms.Controls
 				}
 				else
 				{
-					Control.TextColor = NSColor.ControlText;
-					Control.BackgroundColor = NSColor.TextBackground;
+					Control.TextColor = TextColor.ToNSUI();
+					Control.BackgroundColor = BackgroundColor.ToNSUI();
 				}
 			}
 		}
@@ -193,24 +193,37 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		Color? textColor;
 		public Color TextColor
 		{
-			get { return Control.TextColor.ToEto(); }
-			set { Control.TextColor = value.ToNSUI(); }
-		}
-
-		public override Color BackgroundColor
-		{
-			get
-			{
-				return base.BackgroundColor;
-			}
+			get { return textColor ?? Colors.Black; }
 			set
 			{
-				//base.BackgroundColor = value;
-				Control.BackgroundColor = value.ToNSUI();
+				textColor = value;
+				if (textColor != null)
+					Control.TextColor = textColor.Value.ToNSUI();
 			}
 		}
+
+		Color? backgroundColor;
+		public override Color BackgroundColor
+		{
+			get { return backgroundColor ?? Colors.White; }
+			set
+			{
+				backgroundColor = value;
+				if (backgroundColor != null)
+					Control.BackgroundColor = backgroundColor.Value.ToNSUI();
+			}
+		}
+
+		//public void SetBackgroundColor()
+		//{
+		//	if (base.backgroundColor != null)
+		//	{
+		//		Control.BackgroundColor = base.backgroundColor.Value.ToNSUI();
+		//	}
+		//}
 
 		Font font;
 

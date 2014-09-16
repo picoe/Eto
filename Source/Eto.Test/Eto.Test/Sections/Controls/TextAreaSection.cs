@@ -34,7 +34,7 @@ namespace Eto.Test.Sections.Controls
 
 			layout.Add(text);
 			layout.BeginVertical(Padding.Empty, Size.Empty);
-			layout.AddRow(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), SetCaret(text),ChangeColor(text), null);
+			layout.AddRow(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), SetCaret(text),ChangeColor(text),Disable(text), null);
 			layout.EndVertical();
 
 			return layout;
@@ -97,6 +97,14 @@ namespace Eto.Test.Sections.Controls
 				textArea.BackgroundColor = Colors.Black;
 				textArea.TextColor = Colors.Blue;
 			};
+			return control;
+		}
+
+		Control Disable(TextArea textArea)
+		{
+			var control = new CheckBox {Text = "Enable/Disable", Checked = true};
+			//control.Bindings.Add("Checked",)
+			textArea.Bind<bool>("Enabled", control, "Checked",DualBindingMode.OneWay);
 			return control;
 		}
 

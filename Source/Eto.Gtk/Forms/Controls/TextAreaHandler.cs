@@ -118,20 +118,24 @@ namespace Eto.GtkSharp
 			}
 		}
 
+		Color? backgroundColor;
 		public override Color BackgroundColor
 		{
 			get
 			{
-				return base.BackgroundColor;
+				return backgroundColor ?? Colors.White;
 			}
 			set
 			{
-				//base.BackgroundColor = value;
-				#if GTK2
-				Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
-				#else
-				Control.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
-				#endif
+				backgroundColor = value;
+				if (backgroundColor != null)
+				{
+					#if GTK2
+					Control.ModifyBase(Gtk.StateType.Normal, backgroundColor.Value.ToGdk());
+					#else
+					Control.ModifyBg(Gtk.StateType.Normal, backgroundColor.Value.ToGdk());
+					#endif
+				}
 			}
 		}
 
