@@ -6,6 +6,7 @@ using System.ComponentModel;
 using Eto.GtkSharp.Drawing;
 using Eto.Drawing;
 using System.Collections.Generic;
+using Eto.GtkSharp.Forms;
 
 namespace Eto.GtkSharp
 {
@@ -19,6 +20,9 @@ namespace Eto.GtkSharp
 		{
 			base.Initialize();
 			Helper.Init();
+
+			if (SynchronizationContext.Current == null)
+				SynchronizationContext.SetSynchronizationContext(new GtkSynchronizationContext());
 		}
 
 		public static int MainThreadID { get; set; }

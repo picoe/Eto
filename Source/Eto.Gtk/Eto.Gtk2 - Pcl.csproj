@@ -238,6 +238,7 @@
       <Link>PlatformDetect.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
+    <Compile Include="Forms\GtkSynchronizationContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
