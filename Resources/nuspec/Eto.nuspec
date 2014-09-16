@@ -37,12 +37,10 @@
 		<tags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</tags>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.dll" target="lib\portable-net45+wp80+win8+monotouch+monoandroid\" />
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.xml" target="lib\portable-net45+wp80+win8+monotouch+monoandroid\" />
+		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.dll" target="lib\portable-net45+wp80+win8+monotouch+monoandroid+xamarin.mac\" />
+		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.xml" target="lib\portable-net45+wp80+win8+monotouch+monoandroid+xamarin.mac\" />
 		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.dll" target="lib\net45\" />
 		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.xml" target="lib\net45\" />
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.dll" target="lib\" />
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.xml" target="lib\" />
 		<file src="..\..\BuildOutput\$configuration$\Eto.dll" target="lib\net40\" />
 		<file src="..\..\BuildOutput\$configuration$\Eto.xml" target="lib\net40\" />
 		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />

@@ -30,7 +30,7 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.XamMac2.dll" target="lib\" />
+		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.XamMac2.dll" target="lib\xamarin.mac\" />
 		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>
