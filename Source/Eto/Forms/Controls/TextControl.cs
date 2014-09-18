@@ -75,11 +75,11 @@ namespace Eto.Forms
 		/// Gets the binding for the <see cref="Text"/> property.
 		/// </summary>
 		/// <value>The text binding.</value>
-		public ObjectBinding<TextControl, string> TextBinding
+		public ControlBinding<TextControl, string> TextBinding
 		{
 			get
 			{
-				return new ObjectBinding<TextControl, string>(
+				return new ControlBinding<TextControl, string>(
 					this,
 					c => c.Text,
 					(c, v) => c.Text = v,

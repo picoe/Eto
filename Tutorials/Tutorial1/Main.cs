@@ -8,27 +8,23 @@ namespace Tutorial1
 	{
 		public MyForm()
 		{
+			// Set ClientSize instead of Size, as each platform has different window border sizes
 			ClientSize = new Size(600, 400);
-			
+
+			// Title to show in the title bar
 			Title = "Hello, Eto.Forms";
 
+			// Content of the form
 			Content = new Label { Text = "Some content" };
 		}
 	}
 
-	class MainClass
+	class Program
 	{
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			var app = new Application();
-			
-			app.Initialized += delegate
-			{
-				app.MainForm = new MyForm();
-				app.MainForm.Show();
-			};
-			app.Run(args);
+			new Application().Run(new MyForm());
 		}
 	}
 }

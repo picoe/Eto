@@ -2,8 +2,38 @@ using System;
 using Eto.Drawing;
 using SD = System.Drawing;
 
-#if OSX
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
+#if OSX
 
 namespace Eto.Mac.Drawing
 #elif IOS
@@ -47,27 +77,27 @@ namespace Eto.iOS.Drawing
 			get
 			{
 				return new float[] {
-					control.xx,
-					control.yx,
-					control.xy,
-					control.yy,
-					control.x0,
-					control.y0
+					(float)control.xx,
+					(float)control.yx,
+					(float)control.xy,
+					(float)control.yy,
+					(float)control.x0,
+					(float)control.y0
 				};
 			}
 		}
 		
-		public float X0 { get { return control.x0; } set { control.x0 = value; } }
+		public float X0 { get { return (float)control.x0; } set { control.x0 = value; } }
 		
-		public float Y0 { get { return control.y0; } set { control.y0 = value; } }
+		public float Y0 { get { return (float)control.y0; } set { control.y0 = value; } }
 		
-		public float Xx { get { return control.xx; } set { control.xx = value; } }
+		public float Xx { get { return (float)control.xx; } set { control.xx = value; } }
 		
-		public float Xy { get { return control.xy; } set { control.xy = value; } }
+		public float Xy { get { return (float)control.xy; } set { control.xy = value; } }
 		
-		public float Yx { get { return control.yx; } set { control.yx = value; } }
+		public float Yx { get { return (float)control.yx; } set { control.yx = value; } }
 		
-		public float Yy { get { return  control.yy; } set { control.yy = value; } }
+		public float Yy { get { return (float)control.yy; } set { control.yy = value; } }
 		
 		public void Rotate (float angle)
 		{

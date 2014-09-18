@@ -2,7 +2,34 @@ using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -22,7 +49,7 @@ namespace Eto.Mac.Forms.Controls
 				get { return Widget as Drawable; }
 			}
 
-			public override void DrawRect(sd.RectangleF dirtyRect)
+			public override void DrawRect(CGRect dirtyRect)
 			{
 				var drawable = Drawable;
 				if (drawable == null)
@@ -106,7 +133,7 @@ namespace Eto.Mac.Forms.Controls
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null)
 			{
-				var handler = new GraphicsHandler(Control, context, Control.Frame.Height, Control.IsFlipped);
+				var handler = new GraphicsHandler(Control, context, (float)Control.Frame.Height, Control.IsFlipped);
 				using (var graphics = new Graphics(handler))
 				{
 					if (backgroundBrush != null)

@@ -1,12 +1,40 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
-using MonoMac.CoreGraphics;
 using sd = System.Drawing;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -28,7 +56,7 @@ namespace Eto.Mac.Forms.Controls
 			NSObject CopyWithZone(IntPtr zone)
 			{
 				var val = new EtoCellValue { Item = Item };
-				val.Retain();
+				val.DangerousRetain();
 				return val;
 			}
 		}
@@ -55,10 +83,13 @@ namespace Eto.Mac.Forms.Controls
 
 			public bool DrawsBackground { get; set; }
 
-			public override sd.SizeF CellSizeForBounds(sd.RectangleF bounds)
+			// TODO: Mac64
+			#if !Mac64 && !XAMMAC2
+			public override CGSize CellSizeForBounds(CGRect bounds)
 			{
-				return sd.SizeF.Empty;
+				return CGSize.Empty;
 			}
+			#endif
 
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone(IntPtr zone)
@@ -71,7 +102,7 @@ namespace Eto.Mac.Forms.Controls
 				return new EtoCell(ptr) { Handler = Handler };
 			}
 
-			public override void DrawInteriorWithFrame(sd.RectangleF cellFrame, NSView inView)
+			public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 			{
 				var nscontext = NSGraphicsContext.CurrentContext;
 
@@ -83,7 +114,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 
 				var handler = Handler;
-				var graphicsHandler = new GraphicsHandler(null, nscontext, cellFrame.Height, flipped: true);
+				var graphicsHandler = new GraphicsHandler(null, nscontext, (float)cellFrame.Height, flipped: true);
 				using (var graphics = new Graphics(graphicsHandler))
 				{
 					var state = Highlighted ? DrawableCellStates.Selected : DrawableCellStates.None;
@@ -135,7 +166,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
-		public override float GetPreferredSize(object value, sd.SizeF cellSize, NSCell cell)
+		public override nfloat GetPreferredSize(object value, CGSize cellSize, NSCell cell)
 		{
 			return 10f;
 		}

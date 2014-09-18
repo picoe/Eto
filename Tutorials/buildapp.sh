@@ -5,9 +5,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 target_dir="$1"
 assembly="$2"
 project_name="$3"
+configuration="$4"
 
 eto_dir="$DIR/.."
-eto_bin_dir="$eto_dir/BuildOutput/Release"
+eto_bin_dir="$eto_dir/BuildOutput/$configuration"
 
 input_app="$eto_dir/Resources/MacAppTemplate.app"
 output_app="$target_dir/$project_name.app"
@@ -39,3 +40,5 @@ cp "$eto_bin_dir"/MonoMac.dll "$output_mono"
 # update Info.plist to use our project name as the app name
 sed -i -e "s/>MyApp</>$project_name</" "$output_app/Contents/Info.plist"
 sed -i -e "s/>MyApp.exe</>$assembly</" "$output_app/Contents/Info.plist"
+
+chmod +x "$output_app/Contents/MacOS/Launcher"

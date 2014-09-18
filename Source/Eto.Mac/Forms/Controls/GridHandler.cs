@@ -1,14 +1,42 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using nnint = System.Int32;
+#else
+using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+using nnint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+using nnint = System.Int32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -29,7 +57,7 @@ namespace Eto.Mac.Forms.Controls
 
 		bool autoSized;
 
-		public override void SetFrameSize(sd.SizeF newSize)
+		public override void SetFrameSize(CGSize newSize)
 		{
 			base.SetFrameSize(newSize);
 
@@ -48,9 +76,17 @@ namespace Eto.Mac.Forms.Controls
 
 		static readonly Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
 
+		#if Mac64
+		CGPoint ConvertPointFromBacking(CGPoint point)
+		{
+			return base.ConvertNSPointromBacking(point);
+		}
+		#endif
+
 		public override void MouseDown(NSEvent theEvent)
 		{
 			var point = theEvent.LocationInWindow;
+
 			if (RespondsToSelector(selConvertPointFromBacking))
 				point = ConvertPointFromBacking(point);
 			else
@@ -58,7 +94,7 @@ namespace Eto.Mac.Forms.Controls
 			var col = GetColumn(point);
 			if (col >= 0)
 			{
-				var column = Handler.Widget.Columns[col];
+				var column = Handler.Widget.Columns[(int)col];
 				if (!column.Sortable)
 					return;
 			}
@@ -163,7 +199,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
 				Handler.Control.AddColumn(colhandler.Control);
-				colhandler.Setup(Handler.Control.ColumnCount - 1);
+				colhandler.Setup((int)(Handler.Control.ColumnCount - 1));
 				
 				Handler.UpdateColumns();
 			}
@@ -279,7 +315,7 @@ namespace Eto.Mac.Forms.Controls
 			if (Widget.Loaded)
 			{
 				var rect = Table.VisibleRect();
-				if (!rect.IsEmpty)
+				if (rect.Width > 0 || rect.Height > 0)
 				{
 					IsAutoSizingColumns = true;
 					foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
@@ -362,7 +398,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void SelectRow(int row)
 		{
-			Control.SelectRow(row, AllowMultipleSelection);
+			Control.SelectRow((nnint)row, AllowMultipleSelection);
 		}
 
 		public void UnselectRow(int row)
@@ -385,7 +421,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public virtual int RowCount
 		{
-			get { return Control.RowCount; }
+			get { return (int)Control.RowCount; }
 		}
 
 		Grid IGridHandler.Widget
@@ -393,12 +429,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		public sd.RectangleF GetVisibleRect()
+		public CGRect GetVisibleRect()
 		{
 			var rect = ScrollView.VisibleRect();
 			var loc = ScrollView.ContentView.Bounds.Location;
-			rect.Offset(loc);
-			return rect;
+			return new CGRect(rect.X + loc.X, rect.Y + loc.Y, rect.Width, rect.Height);
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

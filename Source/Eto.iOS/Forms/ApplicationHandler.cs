@@ -41,11 +41,11 @@ namespace Eto.iOS.Forms
 			}
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			if (!attached)
 			{
-				UIApplication.Main(args, null, DelegateClassName);
+				UIApplication.Main(new string[0], null, DelegateClassName);
 			}
 			else
 			{
@@ -89,11 +89,6 @@ namespace Eto.iOS.Forms
 			{
 				action(); 
 			});
-		}
-
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield break;
 		}
 
 		public void Quit()
@@ -146,11 +141,6 @@ namespace Eto.iOS.Forms
 		}
 
 		public void RunIteration()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
 		{
 			throw new NotImplementedException();
 		}

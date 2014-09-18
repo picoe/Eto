@@ -36,7 +36,7 @@ namespace Eto.Forms
 		{
 			var binding = new DualBinding<T>(
 				sourceBinding,
-				new ObjectBinding<T>(this, widgetPropertyName),
+				new ControlBinding<Control,T>(this, new PropertyBinding<T>(widgetPropertyName)),
 				mode
 			);
 			Bindings.Add(binding);
@@ -94,8 +94,8 @@ namespace Eto.Forms
 		/// <param name="mode">Mode of the binding</param>
 		public DualBinding<T> Bind<T>(IndirectBinding<T> controlBinding, DirectBinding<T> valueBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			var binding = new ObjectBinding<T>(this, controlBinding);
-			return binding.Bind(valueBinding: valueBinding, mode: mode);
+			var binding = new ControlBinding<Control,T>(this, controlBinding);
+			return binding.Bind(sourceBinding: valueBinding, mode: mode);
 		}
 
 		/// <summary>
@@ -109,7 +109,7 @@ namespace Eto.Forms
 		/// <param name="defaultContextValue">Default context value to set to the control, if the objectValue or value of the objectBinding is null.</param>
 		public DualBinding<T> Bind<T>(IndirectBinding<T> controlBinding, object objectValue, IndirectBinding<T> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay, T defaultControlValue = default(T), T defaultContextValue = default(T))
 		{
-			var valueBinding = new ObjectBinding<T>(objectValue, objectBinding) {
+			var valueBinding = new ObjectBinding<object,T>(objectValue, objectBinding) {
 				SettingNullValue = defaultContextValue,
 				GettingNullValue = defaultControlValue
 			};
@@ -127,7 +127,7 @@ namespace Eto.Forms
 		[Obsolete("Use BindDataContext(..) instead")]
 		public DualBinding<T> Bind<T>(IndirectBinding<T> controlBinding, IndirectBinding<T> dataContextBinding, DualBindingMode mode = DualBindingMode.TwoWay, T defaultControlValue = default(T), T defaultContextValue = default(T))
 		{
-			var binding = new ObjectBinding<T>(this, controlBinding);
+			var binding = new ControlBinding<Control, T>(this, controlBinding);
 			return binding.Bind(dataContextBinding, mode, defaultControlValue, defaultContextValue);
 		}
 
@@ -141,8 +141,8 @@ namespace Eto.Forms
 		/// <param name="defaultContextValue">Default context value to set to the control, if the objectValue or value of the objectBinding is null.</param>
 		public DualBinding<T> BindDataContext<T>(IndirectBinding<T> controlBinding, IndirectBinding<T> dataContextBinding, DualBindingMode mode = DualBindingMode.TwoWay, T defaultControlValue = default(T), T defaultContextValue = default(T))
 		{
-			var binding = new ObjectBinding<T>(this, controlBinding);
-			return binding.Bind(dataContextBinding, mode, defaultControlValue, defaultContextValue);
+			var binding = new ControlBinding<Control, T>(this, controlBinding);
+			return binding.BindDataContext(dataContextBinding, mode, defaultControlValue, defaultContextValue);
 		}
 	}
 }

@@ -1,8 +1,18 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -22,16 +32,16 @@ namespace Eto.Mac.Forms
 				if (window == null && parent.ControlObject is NSView)
 					window = ((NSView)parent.ControlObject).Window;
 				if (window == null || !view.RespondsToSelector (new Selector ("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:")))
-					ret = view.RunModal ();
+					ret = (int)view.RunModal ();
 				else {
 					ret = 0;
 					NSApplication.SharedApplication.InvokeOnMainThread (delegate {
 						view.BeginSheet (window, new MacModal (), new Selector ("alertDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
-						ret = NSApplication.SharedApplication.RunModalForWindow (window);
+						ret = (int)NSApplication.SharedApplication.RunModalForWindow (window);
 					});
 				}
 			} else
-				ret = view.RunModal ();
+				ret = (int)view.RunModal ();
 			return ret;
 		}
 
@@ -43,15 +53,15 @@ namespace Eto.Mac.Forms
 				if (window == null && parent.ControlObject is NSView)
 					window = ((NSView)parent.ControlObject).Window;
 				if (window == null || !panel.RespondsToSelector (new Selector ("beginSheetModalForWindow:completionHandler:")))
-					ret = panel.RunModal ();
+					ret = (int)panel.RunModal ();
 				else {
 					panel.BeginSheet (window, delegate(int result) { 
 						NSApplication.SharedApplication.StopModalWithCode (result); 
 					});
-					ret = NSApplication.SharedApplication.RunModalForWindow (window);
+					ret = (int)NSApplication.SharedApplication.RunModalForWindow (window);
 				}
 			} else
-				ret = panel.RunModal ();
+				ret = (int)panel.RunModal ();
 			return ret;
 		}
 
@@ -96,7 +106,7 @@ namespace Eto.Mac.Forms
 			// Loop until some result other than continues:
 			do {
 				// Run the window modally until there are no events to process:
-				result = app.RunModalSession (session);
+				result = (int)app.RunModalSession (session);
 
 				// Give the main loop some time:
 				NSRunLoop.Current.RunUntil (NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);
@@ -121,7 +131,7 @@ namespace Eto.Mac.Forms
 			// Loop until some result other than continues:
 			do {
 				// Run the window modally until there are no events to process:
-				result = app.RunModalSession (session);
+				result = (int)app.RunModalSession (session);
 				
 				// Give the main loop some time:
 				NSRunLoop.Current.RunUntil (NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);

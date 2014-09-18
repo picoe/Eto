@@ -73,6 +73,7 @@ namespace Eto.Wpf
 			p.Add<GroupBox.IHandler>(() => new GroupBoxHandler());
 			p.Add<ImageView.IHandler>(() => new ImageViewHandler());
 			p.Add<Label.IHandler>(() => new LabelHandler());
+			p.Add<LinkButton.IHandler>(() => new LinkButtonHandler());
 			p.Add<ListBox.IHandler>(() => new ListBoxHandler());
 			p.Add<NumericUpDown.IHandler>(() => new NumericUpDownHandler());
 			p.Add<Panel.IHandler>(() => new PanelHandler());

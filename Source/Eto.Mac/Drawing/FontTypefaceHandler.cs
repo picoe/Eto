@@ -1,8 +1,18 @@
 using System;
 using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Drawing
 {
@@ -53,13 +63,13 @@ namespace Eto.Mac.Drawing
 			Traits = (NSFontTraitMask)new NSNumber(descriptor.ValueAt(3)).Int32Value;
 		}
 
-		public FontTypefaceHandler(NSFont font)
+		public FontTypefaceHandler(NSFont font, NSFontTraitMask? traits = null)
 		{
 			var descriptor = font.FontDescriptor;
 			PostScriptName = descriptor.PostscriptName;
 			var manager = NSFontManager.SharedFontManager;
-			Weight = manager.WeightOfFont(font);
-			Traits = manager.TraitsOfFont(font);
+			Weight = (int)manager.WeightOfFont(font);
+			Traits = traits ?? manager.TraitsOfFont(font);
 			name = (NSString)descriptor.FontAttributes[NSFontFaceAttribute];
 		}
 
@@ -84,7 +94,7 @@ namespace Eto.Mac.Drawing
 		public NSFont CreateFont(float size)
 		{
 			var family = (FontFamilyHandler)Widget.Family.Handler;
-			return NSFontManager.SharedFontManager.FontWithFamily(family.MacName, Traits, Weight, size);
+			return FontHandler.CreateFont(family, size, Traits, Weight);
 		}
 	}
 }

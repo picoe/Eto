@@ -25,6 +25,8 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public static void AddTo(Eto.Platform p)
 		{
+			p.Add<Application.IHandler>(() => new TestApplicationHandler());
+
 			// Drawing
 			p.Add<Bitmap.IHandler>(() => new TestBitmapHandler());
 			p.Add<Font.IHandler>(() => new TestFontHandler()); 

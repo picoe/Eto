@@ -144,17 +144,14 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					minDate = value;
 					var range = SelectedRange;
-					if (range != null)
-					{
-						var start = range.Start;
-						var end = range.End;
-						if (start < minDate)
-							start = minDate;
-						if (end < minDate)
-							end = minDate;
+					var start = range.Start;
+					var end = range.End;
+					if (start < minDate)
+						start = minDate;
+					if (end < minDate)
+						end = minDate;
 
-						SelectedRange = new Range<DateTime>(start, end);
-					}
+					SelectedRange = new Range<DateTime>(start, end);
 				}
 			}
 		}
@@ -168,17 +165,14 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					maxDate = value;
 					var range = SelectedRange;
-					if (range != null)
-					{
-						var start = range.Start;
-						var end = range.End;
-						if (start > maxDate)
-							start = maxDate;
-						if (end > maxDate)
-							end = maxDate;
+					var start = range.Start;
+					var end = range.End;
+					if (start > maxDate)
+						start = maxDate;
+					if (end > maxDate)
+						end = maxDate;
 
-						SelectedRange = new Range<DateTime>(start, end);
-					}
+					SelectedRange = new Range<DateTime>(start, end);
 				}
 			}
 		}
@@ -208,7 +202,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					}
 					else
 					{
-						Control.Date = value != null ? value.Start : DateTime.MinValue;
+						Control.Date = value.Start;
 					}
 				}
 			}

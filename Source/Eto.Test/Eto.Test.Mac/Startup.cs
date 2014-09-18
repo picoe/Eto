@@ -1,8 +1,12 @@
-using MonoMac.AppKit;
 using Eto.Mac.Forms.Controls;
 using Eto.Mac.Forms;
 using Eto.Mac;
 using System.Diagnostics;
+#if XAMMAC2
+using AppKit;
+#else
+using MonoMac.AppKit;
+#endif
 
 namespace Eto.Test.Mac
 {
@@ -10,7 +14,7 @@ namespace Eto.Test.Mac
 	{
 		static void Main (string[] args)
 		{
-#if DEBUG
+#if DEBUG && !XAMMAC2
 			Debug.Listeners.Add (new ConsoleTraceListener ());
 #endif
 			AddStyles ();
@@ -22,7 +26,7 @@ namespace Eto.Test.Mac
 			// use this to use your own app delegate:
 			// ApplicationHandler.Instance.AppDelegate = new MyAppDelegate();
 
-			app.Run (args);
+			app.Run();
 		}
 
 		static void AddStyles ()

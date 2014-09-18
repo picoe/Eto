@@ -218,14 +218,5 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 		{
 			throw new NotImplementedException();
 		}
-
-		public void HandleEvent(string id, bool defaultEvent = false)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Initialize()
-		{
-		}
 	}
 }

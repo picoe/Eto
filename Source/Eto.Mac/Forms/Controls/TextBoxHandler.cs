@@ -1,9 +1,20 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 using Eto.Mac.Forms.Controls;
 using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -39,7 +50,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (Handler.MaxLength >= 0)
 			{
-				int size = value.Length;
+				int size = (int)value.Length;
 				if (size > Handler.MaxLength)
 				{
 					return false;

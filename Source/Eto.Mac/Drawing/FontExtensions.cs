@@ -1,6 +1,34 @@
 using Eto.Drawing;
-using MonoMac.Foundation;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 #if OSX
 namespace Eto.Mac.Drawing
@@ -9,6 +37,7 @@ namespace Eto.Mac.Drawing
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
+using Eto.Mac;
 using NSFont = MonoTouch.UIKit.UIFont;
 
 namespace Eto.iOS.Drawing
@@ -43,7 +72,7 @@ namespace Eto.iOS.Drawing
 			if (font != null)
 			{
 				var handler = (FontHandler)font.Handler;
-				str.AddAttributes(handler.Attributes, new NSRange(0, str.Length));
+				str.AddAttributes(handler.Attributes, new NSRange(0, (int)str.Length));
 			}
 		}
 
@@ -90,7 +119,7 @@ namespace Eto.iOS.Drawing
 		public static float LineHeight(this NSFont font)
 		{
 			#if OSX
-			return layout.DefaultLineHeightForFont(font);
+			return (float)layout.DefaultLineHeightForFont(font);
 			#elif IOS
 			return font.LineHeight;
 			#endif
@@ -120,14 +149,14 @@ namespace Eto.iOS.Drawing
 		{
 			SetContainerSize(availableSize);
 			storage.SetString(str);
-			return layout.BoundingRectForGlyphRange(new NSRange(0, str.Length), container).Size.ToEto();
+			return layout.BoundingRectForGlyphRange(new NSRange(0, (int)str.Length), container).Size.ToEto();
 		}
 
 		public static void DrawString(NSAttributedString str, PointF point, SizeF? availableSize = null)
 		{
 			SetContainerSize(availableSize);
 			storage.SetString(str);
-			layout.DrawGlyphs(new NSRange(0, str.Length), point.ToSD());
+			layout.DrawGlyphs(new NSRange(0, (int)str.Length), point.ToNS());
 		}
 
 		public static void DrawString(string text, PointF point, Color color, Font font = null, SizeF? availableSize = null)
@@ -140,7 +169,7 @@ namespace Eto.iOS.Drawing
 		static void SetContainerSize(SizeF? availableSize)
 		{
 			#if OSX
-			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
+			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToNS();
 			#elif IOS
 			if (container.RespondsToSelector(selSetSize))
 				container.Size = (availableSize ?? SizeF.MaxValue).ToSD();

@@ -74,11 +74,27 @@ namespace Eto.Forms
 	#pragma warning restore 612,618
 
 
+	/// <summary>
+	/// Grid view with a data store of a specific type
+	/// </summary>
+	/// <typeparam name="T">Type of the objects in the grid view's data store</typeparam> 
 	public class GridView<T> : GridView, ISelectableControl<T>
 		where T: class
 	{
+		/// <summary>
+		/// The data store for the grid.
+		/// </summary>
+		/// <remarks>
+		/// This defines what data to show in the grid. If the source implements <see cref="System.Collections.Specialized.INotifyCollectionChanged"/>, such
+		/// as an <see cref="System.Collections.ObjectModel.ObservableCollection{T}"/>, then changes to the collection will be reflected in the grid.
+		/// </remarks>
+		/// <value>The data store for the grid.</value>
 		public new IEnumerable<T> DataStore { get { return (IEnumerable<T>)base.DataStore; } set { base.DataStore = value; } }
 
+		/// <summary>
+		/// Gets an enumeration of the currently selected items
+		/// </summary>
+		/// <value>The selected items.</value>
 		public new IEnumerable<T> SelectedItems { get { return base.SelectedItems.Cast<T>(); } }
 	}
 
@@ -170,10 +186,13 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// The model data store.
-		/// Setting this creates a DataStoreView, and the handler's
-		/// DataStore is set to the view collection of the DataStoreView.
+		/// The data store for the grid.
 		/// </summary>
+		/// <remarks>
+		/// This defines what data to show in the grid. If the source implements <see cref="System.Collections.Specialized.INotifyCollectionChanged"/>, such
+		/// as an <see cref="System.Collections.ObjectModel.ObservableCollection{T}"/>, then changes to the collection will be reflected in the grid.
+		/// </remarks>
+		/// <value>The data store for the grid.</value>
 		public IEnumerable<object> DataStore
 		{
 			get { return Handler.DataStore; }
@@ -262,9 +281,18 @@ namespace Eto.Forms
 			}
 		}
 
-		public Func<ISelectionPreserver> SelectionPreserver
+		/// <summary>
+		/// Gets a new selection preserver instance for the grid.
+		/// </summary>
+		/// <remarks>
+		/// This is used to keep the selected items consistent for a grid when changing the <see cref="DataStore"/>
+		/// collection dramatically, such as filtering or sorting the collection.  Events such as removing or adding rows
+		/// will always keep the selection of existing rows.
+		/// </remarks>
+		/// <value>A new instance of the selection preserver.</value>
+		public ISelectionPreserver SelectionPreserver
 		{
-			get { return () => new SelectionPreserverHelper(this); }
+			get { return new SelectionPreserverHelper(this); }
 		}
 
 		/// <summary>
@@ -385,6 +413,10 @@ namespace Eto.Forms
 			/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
 			bool ShowCellBorders { get; set; }
 
+			/// <summary>
+			/// Gets an enumeration of the currently selected items
+			/// </summary>
+			/// <value>The selected items.</value>
 			IEnumerable<object> SelectedItems { get; }
 		}
 	}

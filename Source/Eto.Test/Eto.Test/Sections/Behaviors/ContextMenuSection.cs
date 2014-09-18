@@ -27,6 +27,9 @@ namespace Eto.Test.Sections.Behaviors
 			menu.Items.Add(new ButtonMenuItem { Text = "Item 2" });
 			menu.Items.Add(new ButtonMenuItem { Text = "Item 3" });
 			menu.Items.Add(new ButtonMenuItem { Text = "Item 4" });
+			var subMenu = menu.Items.GetSubmenu("Sub Menu");
+			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 5" });
+			subMenu.Items.Add(new ButtonMenuItem { Text = "Item 6" });
 			LogEvents(menu);
 			return menu;
 		}
@@ -50,16 +53,17 @@ namespace Eto.Test.Sections.Behaviors
 			return label;
 		}
 
-		void LogEvents(ContextMenu menu)
+		void LogEvents(ISubmenu menu)
 		{
 			foreach (var item in menu.Items.OfType<ButtonMenuItem>())
 			{
-				LogEvents(item);
+				LogClickEvents(item);
 			}
 		}
 
-		void LogEvents(ButtonMenuItem item)
+		void LogClickEvents(ButtonMenuItem item)
 		{
+			LogEvents(item);
 			item.Click += delegate
 			{
 				Log.Write(item, "Click, Item: {0}", item.Text);

@@ -40,7 +40,6 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Binding\ColumnBinding.cs" />
@@ -225,7 +224,6 @@
     <Compile Include="Binding\DirectBinding.cs" />
     <Compile Include="Binding\ObjectBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
-    <Compile Include="Binding\BindingExtensions.cs" />
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
@@ -298,6 +296,11 @@
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>
     </Compile>
+    <Compile Include="Forms\Controls\LinkButton.cs" />
+    <Compile Include="Forms\BindingExtensions.cs" />
+    <Compile Include="Forms\ControlBinding.cs" />
+    <Compile Include="Forms\Layout\TableRow.cs" />
+    <Compile Include="Forms\Layout\TableCell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

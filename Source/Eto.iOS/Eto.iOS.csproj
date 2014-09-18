@@ -191,6 +191,9 @@
     <Compile Include="Forms\Toolbar\ButtonToolItemHandler.cs" />
     <Compile Include="Forms\Toolbar\CheckToolItemHandler.cs" />
     <Compile Include="Forms\Toolbar\SeparatorToolItemHandler.cs" />
+    <Compile Include="..\Eto.Mac\Mac64Extensions.cs">
+      <Link>Mac64Extensions.cs</Link>
+    </Compile>
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

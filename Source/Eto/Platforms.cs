@@ -28,6 +28,10 @@ namespace Eto
 		/// </summary>
 		public static readonly string Mac = "Eto.Mac.Platform, Eto.Mac";
 		/// <summary>
+		/// Type of the Mac OS X platform on 64-bit mono
+		/// </summary>
+		public static readonly string Mac64 = "Eto.Mac.Platform, Eto.Mac64";
+		/// <summary>
 		/// Type of the Mac OS X platform
 		/// </summary>
 		public static readonly string XamMac = "Eto.Mac.Platform, Eto.XamMac";

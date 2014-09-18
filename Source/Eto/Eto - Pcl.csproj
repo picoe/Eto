@@ -34,6 +34,7 @@
     <DocumentationFile>..\..\BuildOutput\Pcl\Release\Eto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
@@ -221,7 +222,6 @@
     <Compile Include="Binding\DirectBinding.cs" />
     <Compile Include="Binding\ObjectBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
-    <Compile Include="Binding\BindingExtensions.cs" />
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
@@ -293,6 +293,11 @@
     <Compile Include="Forms\Controls\ColorPicker.cs" />
     <Compile Include="Forms\FilterCollection.cs" />
     <Compile Include="Forms\Controls\Calendar.cs" />
+    <Compile Include="Forms\Controls\LinkButton.cs" />
+    <Compile Include="Forms\BindingExtensions.cs" />
+    <Compile Include="Forms\ControlBinding.cs" />
+    <Compile Include="Forms\Layout\TableCell.cs" />
+    <Compile Include="Forms\Layout\TableRow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

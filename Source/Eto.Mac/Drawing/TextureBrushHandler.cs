@@ -1,8 +1,39 @@
+using System;
 using Eto.Drawing;
 using sd = System.Drawing;
 
-#if OSX
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
+#if OSX
 
 namespace Eto.Mac.Drawing
 #else
@@ -24,7 +55,7 @@ namespace Eto.iOS.Drawing
 			CGImage image;
 			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
 			CGAffineTransform viewTransform = CGAffineTransform.MakeIdentity();
-			readonly float[] alpha = { 1f };
+			readonly nfloat[] alpha = { 1 };
 			CGPattern pattern;
 
 			public void Apply(GraphicsHandler graphics)
@@ -35,8 +66,8 @@ namespace Eto.iOS.Drawing
 				if (graphics.DisplayView != null)
 				{
 					// adjust for position of the current view relative to the window
-					var pos = graphics.DisplayView.ConvertPointToView(sd.PointF.Empty, null);
-					graphics.Control.SetPatternPhase(new sd.SizeF(pos.X, pos.Y));
+					var pos = graphics.DisplayView.ConvertPointToView(CGPoint.Empty, null);
+					graphics.Control.SetPatternPhase(new CGSize(pos.X, pos.Y));
 				}
 				#endif
 
@@ -63,7 +94,7 @@ namespace Eto.iOS.Drawing
 
 			public float Opacity
 			{
-				get { return alpha[0]; }
+				get { return (float)alpha[0]; }
 				set { alpha[0] = value; }
 			}
 
@@ -86,7 +117,7 @@ namespace Eto.iOS.Drawing
 
 			void DrawPattern(CGContext context)
 			{
-				var destRect = new sd.RectangleF(0, 0, image.Width, image.Height);
+				var destRect = new CGRect(0, 0, image.Width, image.Height);
 				context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, image.Height));
 				context.DrawImage(destRect, image);
 			}
@@ -95,7 +126,7 @@ namespace Eto.iOS.Drawing
 			{
 				var t = CGAffineTransform.Multiply(transform, viewTransform);
 				ClearPattern();
-				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.NoDistortion, true, DrawPattern);
+				pattern = new CGPattern(new CGRect(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.NoDistortion, true, DrawPattern);
 			}
 		}
 

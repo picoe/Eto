@@ -52,10 +52,11 @@ namespace Eto
 		static string GetUnixType()
 		{
 			// need at least one of these platforms if we're detecting the unix type (mac/linux) in PCL
-			var detectType = Type.GetType("Eto.PlatformDetect, Eto.XamMac")
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac")
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk2")
-			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk3");
+			var detectType = Type.GetType("Eto.PlatformDetect, Eto.XamMac2", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.XamMac", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk2", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk3", false);
 			if (detectType != null)
 			{
 				var getUnixTypeMethod = detectType.GetRuntimeMethod("GetUnixType", new Type[] { });

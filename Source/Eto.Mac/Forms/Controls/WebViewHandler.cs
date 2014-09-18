@@ -1,11 +1,22 @@
 using System;
 using Eto.Forms;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 using System.Linq;
 using Eto.Drawing;
-using wk = MonoMac.WebKit;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using wk = WebKit;
+#else
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using wk = MonoMac.WebKit;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {

@@ -1,9 +1,35 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 using Eto.Drawing;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -91,12 +117,12 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 		
-		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize, NSCell cell)
+		public override nfloat GetPreferredSize (object value, CGSize cellSize, NSCell cell)
 		{
 			var font = cell.Font ?? NSFont.BoldSystemFontOfSize (NSFont.SystemFontSize);
 			var str = new NSString (Convert.ToString (value));
 			var attrs = NSDictionary.FromObjectAndKey (font, NSAttributedString.FontAttributeName);
-			return str.StringSize (attrs).Width + 8; // for border
+			return (float)str.StringSize (attrs).Width + 8; // for border
 			
 		}
 	}

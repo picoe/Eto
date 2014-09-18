@@ -58,11 +58,11 @@ namespace Eto.WinForms
 			};
 		}
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
 			if (Control.AutoSize)
 				return Control.GetPreferredSize(sd.Size.Empty).ToEto();
-			return base.GetPreferredSize(availableSize);
+			return base.GetPreferredSize(availableSize, useCache);
 		}
 
 		public int SelectedIndex

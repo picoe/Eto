@@ -23,7 +23,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 						            new TextBox()
 					            )
 				            );
-				Assert.AreEqual(layout.CellSize, new Size(2, 2), "Table size should be 2x2");
+				Assert.AreEqual(layout.Dimensions, new Size(2, 2), "Table size should be 2x2");
 			});
 		}
 	}

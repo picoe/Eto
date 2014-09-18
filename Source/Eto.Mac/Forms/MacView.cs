@@ -1,14 +1,41 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Drawing;
 using Eto.Forms;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 using SD = System.Drawing;
 using Eto.Mac.Forms.Controls;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Printing;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -56,7 +83,7 @@ namespace Eto.Mac.Forms
 
 		Control.ICallback Callback { get; }
 
-		Cursor Cursor { get; set; }
+		Cursor CurrentCursor { get; }
 
 		void PostKeyDown(KeyEventArgs e);
 
@@ -150,7 +177,7 @@ namespace Eto.Mac.Forms
 			var control = Control as NSControl;
 			if (control != null)
 			{
-				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
+				var size = (Widget.Loaded) ? (CGSize?)control.Frame.Size : null;
 				control.SizeToFit();
 				naturalSize = control.Frame.Size.ToEto();
 				if (size != null)
@@ -186,7 +213,7 @@ namespace Eto.Mac.Forms
 			if (mouseDelegate == null)
 				mouseDelegate = new MouseDelegate { Handler = this };
 			var options = mouseOptions | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect;
-			tracking = new NSTrackingArea(new SD.RectangleF(SD.PointF.Empty, EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
+			tracking = new NSTrackingArea(new CGRect(CGPoint.Empty, EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
 			EventControl.AddTrackingArea(tracking);
 		}
 
@@ -229,7 +256,7 @@ namespace Eto.Mac.Forms
 					AddMethod(selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, SD.SizeF>(SetFrameSizeAction), "v@:{CGSize=ff}", ContainerControl);
+					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), "v@:{CGSize=ff}", ContainerControl);
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					AddMethod(selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
@@ -267,7 +294,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		static void SetFrameSizeAction(IntPtr sender, IntPtr sel, SD.SizeF size)
+		static void SetFrameSizeAction(IntPtr sender, IntPtr sel, CGSize size)
 		{
 			var obj = Runtime.GetNSObject(sender);
 			Messaging.void_objc_msgSendSuper_SizeF(obj.SuperHandle, sel, size);
@@ -418,7 +445,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void Invalidate(Rectangle rect)
 		{
-			var region = rect.ToSDRectangleF();
+			var region = rect.ToSDRectangleF().ToNS();
 			region.Y = EventControl.Frame.Height - region.Y - region.Height;
 			EventControl.SetNeedsDisplayInRect(region);
 		}
@@ -492,10 +519,37 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		static readonly IntPtr selResetCursorRects = Selector.GetHandle("resetCursorRects");
+
+		static void TriggerResetCursorRects(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var handler = GetHandler(obj) as IMacViewHandler;
+			if (handler != null)
+			{
+				var cursor = handler.CurrentCursor;
+				if (cursor != null)
+				{
+					handler.EventControl.AddCursorRect(new CGRect(CGPoint.Empty, handler.EventControl.Frame.Size), cursor.ControlObject as NSCursor);
+				}
+			}
+		}
+
+		public virtual Cursor CurrentCursor
+		{
+			get { return Cursor; }
+		}
+
 		public virtual Cursor Cursor
 		{
 			get { return cursor; }
-			set { cursor = value; }
+			set {
+				if (cursor != value)
+				{
+					cursor = value;
+					AddMethod(selResetCursorRects, new Action<IntPtr, IntPtr>(TriggerResetCursorRects), "v@:");
+				}
+			}
 		}
 
 		public string ToolTip
@@ -540,7 +594,7 @@ namespace Eto.Mac.Forms
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
-			var sdpoint = point.ToSD();
+			var sdpoint = point.ToNS();
 			if (EventControl.Window != null)
 			{
 				sdpoint.Y = ContentControl.Window.Screen.Frame.Height - sdpoint.Y;
@@ -553,7 +607,7 @@ namespace Eto.Mac.Forms
 
 		public virtual PointF PointToScreen(PointF point)
 		{
-			var sdpoint = point.ToSD();
+			var sdpoint = point.ToNS();
 			sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
 			sdpoint = ContentControl.ConvertPointToView(sdpoint, null);
 			if (ContentControl.Window != null)

@@ -1,10 +1,35 @@
 using System;
-using MonoMac.AppKit;
 using SD = System.Drawing;
 using Eto.Forms;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 using Eto.Mac.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -52,7 +77,7 @@ namespace Eto.Mac.Forms.Controls
 		public virtual NSObject CopyWithZone(IntPtr zone)
 		{
 			var clone = (MacImageData)Clone();
-			clone.Retain();
+			clone.DangerousRetain();
 			return clone;
 		}
 
@@ -121,7 +146,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					textShadow = new NSShadow();
 					textShadow.ShadowColor = NSColor.FromDeviceWhite(1F, 0.5F);
-					textShadow.ShadowOffset = new SD.SizeF(0F, -1.0F);
+					textShadow.ShadowOffset = new CGSize(0F, -1.0F);
 					textShadow.ShadowBlurRadius = 0F;
 				}
 				return textShadow;
@@ -137,7 +162,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					textHighlightShadow = new NSShadow();
 					textHighlightShadow.ShadowColor = NSColor.FromDeviceWhite(0F, 0.5F);
-					textHighlightShadow.ShadowOffset = new SD.SizeF(0F, -1.0F);
+					textHighlightShadow.ShadowOffset = new CGSize(0F, -1.0F);
 					textHighlightShadow.ShadowBlurRadius = 2F;
 				}
 				return textHighlightShadow;
@@ -150,7 +175,9 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
-		public override SD.SizeF CellSizeForBounds(SD.RectangleF bounds)
+		// TODO: Mac64
+		#if !Mac64 && !XAMMAC2
+		public override CGSize CellSizeForBounds(CGRect bounds)
 		{
 			var size = base.CellSizeForBounds(bounds);
 			var data = ObjectValue as MacImageData;
@@ -159,13 +186,14 @@ namespace Eto.Mac.Forms.Controls
 				var imageSize = data.Image.Size;
 				var newHeight = Math.Min(imageSize.Height, size.Height);
 				var newWidth = imageSize.Width * newHeight / imageSize.Height;
-				size.Width += newWidth + ImagePadding;
+				size.Width += (nfloat)(newWidth + ImagePadding);
 			}
-			size.Width = Math.Min(size.Width, bounds.Width);
+			size.Width = (nfloat)Math.Min(size.Width, bounds.Width);
 			return size;
 		}
+		#endif
 
-		public override void DrawInteriorWithFrame(SD.RectangleF cellFrame, NSView inView)
+		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 		{
 			var data = ObjectValue as MacImageData;
 			if (data != null)
@@ -176,22 +204,22 @@ namespace Eto.Mac.Forms.Controls
 					var imageSize = data.Image.Size;
 					if (imageSize.Width > 0 && imageSize.Height > 0)
 					{
-						var newHeight = Math.Min(imageSize.Height, cellFrame.Height);
-						var newWidth = imageSize.Width * newHeight / imageSize.Height;
+						var newHeight = (nfloat)Math.Min(imageSize.Height, cellFrame.Height);
+						var newWidth = (nfloat)(imageSize.Width * newHeight / imageSize.Height);
 						
-						var imageRect = new SD.RectangleF(cellFrame.X, cellFrame.Y, newWidth, newHeight);
+						var imageRect = new CGRect(cellFrame.X, cellFrame.Y, newWidth, newHeight);
 						imageRect.Y += (cellFrame.Height - newHeight) / 2;
 
 						if (data.Image.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
 							// 10.6+
-							data.Image.Draw(imageRect, new SD.RectangleF(SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
+							data.Image.Draw(imageRect, new CGRect(CGPoint.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
 						else
 						{
 							// 10.5-
 							#pragma warning disable 618
 							data.Image.Flipped = ControlView.IsFlipped; 
 							#pragma warning restore 618
-							data.Image.Draw(imageRect, new SD.RectangleF(SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
+							data.Image.Draw(imageRect, new CGRect(CGPoint.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
 						}
 						cellFrame.Width -= newWidth + ImagePadding;
 						cellFrame.X += newWidth + ImagePadding;
@@ -199,7 +227,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 
-			SD.SizeF titleSize = AttributedStringValue.Size;
+			var titleSize = AttributedStringValue.Size;
 			
 			// test to see if the text height is bigger then the cell, if it is,
 			// don't try to center it or it will be pushed up out of the cell!
@@ -211,7 +239,7 @@ namespace Eto.Mac.Forms.Controls
 			if (UseTextShadow)
 			{
 				var str = new NSMutableAttributedString(StringValue);
-				str.AddAttribute(NSAttributedString.ShadowAttributeName, Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, str.Length));
+				str.AddAttribute(NSAttributedString.ShadowAttributeName, Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, (int)str.Length));
 				AttributedStringValue = str;
 			}
 			

@@ -13,6 +13,7 @@ namespace Eto.WinForms
 	{
 		string badgeLabel;
 		bool attached;
+		bool quitting;
 		readonly Thread mainThread;
 		SynchronizationContext context;
 		public static bool EnableScrollingUnderMouse = true;
@@ -22,6 +23,7 @@ namespace Eto.WinForms
 		public ApplicationHandler()
 		{
 			mainThread = Thread.CurrentThread;
+			swf.Application.EnableVisualStyles();
 		}
 
 		public void RunIteration()
@@ -71,11 +73,10 @@ namespace Eto.WinForms
 			graphics.DrawString(badgeLabel, font, sd.Brushes.White, pt, sd.StringFormat.GenericTypographic);
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			if (!attached)
 			{
-				swf.Application.EnableVisualStyles();
 				if (!EtoEnvironment.Platform.IsMono)
 					swf.Application.DoEvents();
 
@@ -88,10 +89,13 @@ namespace Eto.WinForms
 
 				Callback.OnInitialized(Widget, EventArgs.Empty);
 
-				if (Widget.MainForm != null && Widget.MainForm.Loaded)
-					swf.Application.Run((swf.Form)Widget.MainForm.ControlObject);
-				else
-					swf.Application.Run();
+				if (!quitting)
+				{
+					if (Widget.MainForm != null && Widget.MainForm.Loaded)
+						swf.Application.Run((swf.Form)Widget.MainForm.ControlObject);
+					else
+						swf.Application.Run();
+				}
 			}
 			else
 			{
@@ -145,6 +149,7 @@ namespace Eto.WinForms
 
 		public void Quit()
 		{
+			quitting = true;
 			swf.Application.Exit();
 		}
 
@@ -181,15 +186,6 @@ namespace Eto.WinForms
 		{
 			if (context != null)
 				context.Post(state => action(), null);
-		}
-
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield break;
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
-		{
 		}
 
 		public Keys CommonModifier

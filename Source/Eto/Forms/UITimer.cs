@@ -22,7 +22,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// The default interval.
 		/// </summary>
-		[Obsolete("Set Interval of timer directly")]
+		[Obsolete("Set Interval of timer directly or use styles")]
 		public static double DefaultInterval = 1.0;
 
 		/// <summary>

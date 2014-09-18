@@ -1,13 +1,42 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Controls;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using System.Collections;
 using System.Linq;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using nnint = System.Int32;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+using nnint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+using nnint = System.Int32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -20,7 +49,6 @@ namespace Eto.Mac.Forms.Controls
 
 	public class ListBoxHandler : MacControl<NSTableView, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
-		Font font;
 		readonly NSScrollView scroll;
 		readonly CollectionHandler collection;
 		readonly MacImageListItemCell cell;
@@ -41,10 +69,10 @@ namespace Eto.Mac.Forms.Controls
 
 			public ListBoxHandler Handler { get { return (ListBoxHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, int row)
+			public override NSObject GetObjectValue(NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
 				var w = Handler.Widget;
-				var item = Handler.collection.ElementAt(row);
+				var item = Handler.collection.ElementAt((int)row);
 				return new MacImageData
 				{
 					Text = new NSString(Convert.ToString(w.TextBinding.GetValue(item))),
@@ -52,7 +80,7 @@ namespace Eto.Mac.Forms.Controls
 				};
 			}
 
-			public override int GetRowCount(NSTableView tableView)
+			public override nint GetRowCount(NSTableView tableView)
 			{
 				return Handler.collection.Collection == null ? 0 : Handler.collection.Collection.Count();
 			}
@@ -64,7 +92,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public ListBoxHandler Handler { get { return (ListBoxHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override bool ShouldSelectRow(NSTableView tableView, int row)
+			public override bool ShouldSelectRow(NSTableView tableView, nint row)
 			{
 				return true;
 			}
@@ -219,14 +247,14 @@ namespace Eto.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return Control.SelectedRow; }
+			get { return (int)Control.SelectedRow; }
 			set
 			{
 				if (value == -1)
 					Control.DeselectAll(Control);
 				else
 				{
-					Control.SelectRow(value, false);
+					Control.SelectRow((nnint)value, false);
 					Control.ScrollRowToVisible(value);
 				}
 			}

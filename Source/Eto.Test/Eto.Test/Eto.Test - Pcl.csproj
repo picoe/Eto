@@ -39,10 +39,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <ItemGroup>
     <Compile Include="..\..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\About.cs" />
+    <Compile Include="Commands\Quit.cs" />
     <Compile Include="Handlers\TabControlHandler.cs" />
     <Compile Include="Handlers\TabPageHandler.cs" />
     <Compile Include="Log.cs" />
@@ -75,8 +78,6 @@
     <Compile Include="Sections\Printing\PrintDialogSection.cs" />
     <Compile Include="TestApplication.cs" />
     <Compile Include="Dialogs\About.cs" />
-    <Compile Include="Actions\About.cs" />
-    <Compile Include="Actions\Quit.cs" />
     <Compile Include="Sections\Controls\ButtonSection.cs" />
     <Compile Include="Sections\Controls\CheckBoxSection.cs" />
     <Compile Include="Sections\Controls\ComboBoxSection.cs" />
@@ -160,6 +161,11 @@
     <Compile Include="UnitTests\Forms\Controls\GridViewFilterTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\GridViewSelectableFilterTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\GridViewSelectTests.cs" />
+    <Compile Include="UnitTests\Handlers\TestApplicationHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestContainerHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestPanelHandler.cs" />
+    <Compile Include="UnitTests\Handlers\TestWindowHandler.cs" />
+    <Compile Include="UnitTests\Drawing\BitmapTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
@@ -169,6 +175,7 @@
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Textures.gif" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestImage.png" />

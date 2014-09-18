@@ -4,6 +4,37 @@ using System.Linq;
 using Eto.Drawing;
 using sd = System.Drawing;
 
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
 #if IOS
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
@@ -11,9 +42,14 @@ using IMacView = Eto.iOS.Forms.IIosView;
 using MacContainer = Eto.iOS.Forms.IosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
 
 #elif OSX
-using MonoMac.AppKit;
 using Eto.Mac.Forms.Controls;
+
+#if XAMMAC2
+using MacContainer = Eto.Mac.Forms.MacContainer<AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
+#else
 using MacContainer = Eto.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
+#endif
+
 #endif
 namespace Eto.Mac.Forms
 {
@@ -59,14 +95,14 @@ namespace Eto.Mac.Forms
 #elif IOS
 			Control = new NSView();
 #endif
+			spacing = TableLayout.DefaultSpacing;
+			padding = TableLayout.DefaultPadding;
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
 
-			Spacing = TableLayout.DefaultSpacing;
-			Padding = TableLayout.DefaultPadding;
 			Widget.SizeChanged += HandleSizeChanged;
 		}
 
@@ -141,8 +177,8 @@ namespace Eto.Mac.Forms
 			var controlFrame = ContentControl.Frame;
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
 			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
-			var totalx = controlFrame.Width - totalxpadding;
-			var totaly = controlFrame.Height - totalypadding;
+			var totalx = (float)controlFrame.Width - totalxpadding;
+			var totaly = (float)controlFrame.Height - totalypadding;
 			var requiredx = totalxpadding;
 			var requiredy = totalypadding;
 			var numx = 0;
@@ -246,7 +282,7 @@ namespace Eto.Mac.Forms
 				}
 				starty += heights[y] + Spacing.Height;
 			}
-			oldFrameSize = controlFrame.Size;
+			oldFrameSize = controlFrame.Size.ToSD();
 		}
 
 		public void Add(Control child, int x, int y)

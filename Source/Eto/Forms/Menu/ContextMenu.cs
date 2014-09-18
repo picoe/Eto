@@ -33,7 +33,7 @@ namespace Eto.Forms
 		/// Gets the menu items in the context menu
 		/// </summary>
 		/// <value>The items.</value>
-		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler)); } }
+		public MenuItemCollection Items { get { return items ?? (items = new MenuItemCollection(Handler, this)); } }
 
 		/// <summary>
 		/// Gets a value indicating whether this sub menu should trim its child menu items when loaded onto a form

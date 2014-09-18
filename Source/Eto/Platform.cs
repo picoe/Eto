@@ -74,6 +74,14 @@ namespace Eto
 			return (T)value;
 		}
 
+		internal void SetSharedProperty(object key, object value)
+		{
+			lock (properties)
+			{
+				properties[key] = value;
+			}
+		}
+
 		#region Events
 
 		/// <summary>
@@ -127,7 +135,7 @@ namespace Eto
 		/// <summary>
 		/// Gets a value indicating that the specified type is supported by this platform
 		/// </summary>
-		/// <typeparam name="T">type to test for</typeparam>
+		/// <typeparam name="T">Type of the handler or class with HandlerAttribute to test for.</typeparam>
 		/// <returns>true if the specified type is supported, false otherwise</returns>
 		public bool Supports<T>()
 			where T: class
@@ -135,6 +143,11 @@ namespace Eto
 			return Supports(typeof(T));
 		}
 
+		/// <summary>
+		/// Gets a value indicating that the specified <paramref name="type"/> is supported by this platform
+		/// </summary>
+		/// <param name="type">Type of the handler or class with HandlerAttribute to test for.</param>
+		/// <returns>true if the specified type is supported, false otherwise</returns>
 		public virtual bool Supports(Type type)
 		{
 			return Find(type) != null;
@@ -185,7 +198,10 @@ namespace Eto
 			
 				if (EtoEnvironment.Platform.IsMac)
 				{
-					detected = Platform.Get(Platforms.XamMac, true);
+					if (EtoEnvironment.Is64BitProcess)
+						detected = Platform.Get(Platforms.Mac64, true);
+					if (detected == null)
+						detected = Platform.Get(Platforms.XamMac, true);
 					if (detected == null)
 						detected = Platform.Get(Platforms.Mac, true);
 				}
@@ -253,8 +269,9 @@ namespace Eto
 			{
 				return (Platform)Activator.CreateInstance(type);
 			}
-			catch
+			catch (Exception ex)
 			{
+				Debug.WriteLine(string.Format("Error creating instance of generator '{0}'\n{1}", generatorType, ex));
 				if (allowNull)
 					return null;
 				throw;

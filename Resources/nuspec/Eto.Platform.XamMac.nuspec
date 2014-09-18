@@ -21,7 +21,7 @@
     	
     	You do not need to use any of the classes of this assembly (unless customizing the Xamarin.Mac functionality of the platform), and should just use the UI controls from the Eto assembly.
 		</description>
-		<copyright>Copyright 2014 by Curtis Wensley</copyright>
+		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop osx xamarin.mac mac eto.forms</tags>
 		<dependencies>
 			<group>

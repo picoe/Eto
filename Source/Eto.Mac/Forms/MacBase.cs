@@ -1,11 +1,21 @@
 using System;
 using System.Collections.Generic;
 using Eto.Drawing;
-using MonoMac.ObjCRuntime;
-using MonoMac.Foundation;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
 using MonoTouch.ObjCRuntime;
 using MonoTouch.Foundation;
+#endif
 using Eto.Forms;
 
 #if IOS
@@ -73,7 +83,7 @@ namespace Eto.Mac.Forms
 			if (!isNotification && c != null)
 			{
 				NSNotificationCenter.DefaultCenter.AddObserver(this, selPerformAction, KeyPath, c);
-				c.Retain();
+				c.DangerousRetain();
 				isNotification = true;
 			}
 		}
@@ -85,7 +95,7 @@ namespace Eto.Mac.Forms
 			{
 				//Console.WriteLine ("{0}: 3. Adding observer! {1}, {2}", ((IRef)this.Handler).WidgetID, this.GetType (), Control.GetHashCode ());
 				c.AddObserver(this, KeyPath, NSKeyValueObservingOptions.New, IntPtr.Zero);
-				c.Retain();
+				c.DangerousRetain();
 				isControl = true;
 			}
 		}
@@ -97,14 +107,14 @@ namespace Eto.Mac.Forms
 			{
 				NSNotificationCenter.DefaultCenter.RemoveObserver(this);
 				if (c != null)
-					c.Release();
+					c.DangerousRelease();
 				isNotification = false;
 			}
 			if (isControl && c != null && KeyPath != null)
 			{
 				//Console.WriteLine ("{0}: 4. Removing observer! {1}, {2}", ((IRef)this.Handler).WidgetID, Handler.GetType (), Control.GetHashCode ());
 				c.RemoveObserver(this, KeyPath);
-				c.Release();
+				c.DangerousRelease();
 				isControl = false;
 			}
 		}

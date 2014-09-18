@@ -177,15 +177,8 @@ namespace Eto.Forms
 		{
 			get { return Handler.Panel1; }
 			set
-			{ 
-				if (Handler.Panel1 != null)
-					RemoveParent(Handler.Panel1);
-				if (value != null)
-				{
-					SetParent(value, () => Handler.Panel1 = value);
-				}
-				else
-					Handler.Panel1 = value;
+			{
+				SetParent(value, () => Handler.Panel1 = value, Handler.Panel1);
 			}
 		}
 
@@ -198,14 +191,7 @@ namespace Eto.Forms
 			get { return Handler.Panel2; }
 			set
 			{
-				if (Handler.Panel2 != null)
-					RemoveParent(Handler.Panel2);
-				if (value != null)
-				{
-					SetParent(value, () => Handler.Panel2 = value);
-				}
-				else
-					Handler.Panel2 = value;
+				SetParent(value, () => Handler.Panel2 = value, Handler.Panel2);
 			}
 		}
 

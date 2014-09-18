@@ -16,11 +16,21 @@ namespace Eto.Forms
 	[Handler(typeof(Application.IHandler))]
 	public class Application : Widget
 	{
+		static readonly object ApplicationKey = new object();
+
 		/// <summary>
 		/// Gets the current application instance
 		/// </summary>
 		/// <value>The instance.</value>
-		public static Application Instance { get; private set; }
+		public static Application Instance
+		{
+			get
+			{ 
+				var platform = Platform.Instance;
+				return platform != null ? platform.GetSharedProperty<Application>(ApplicationKey, () => null) : null;
+			}
+			private set { Platform.Instance.SetSharedProperty(ApplicationKey, value); }
+		}
 
 		/// <summary>
 		/// Occurs when the application is initialized
@@ -114,6 +124,10 @@ namespace Eto.Forms
 				windows.Remove(window);
 		}
 
+		/// <summary>
+		/// Gets an enumeration of windows currently open in the application.
+		/// </summary>
+		/// <value>The enumeration of open windows.</value>
 		public IEnumerable<Window> Windows { get { return windows; } }
 
 		/// <summary>
@@ -198,9 +212,50 @@ namespace Eto.Forms
 		/// Runs the application with the specified arguments
 		/// </summary>
 		/// <param name="args">Arguments to run the application</param>
+		[Obsolete("Use Run() instead")]
 		public virtual void Run(params string[] args)
 		{
-			Handler.Run(args);
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Runs the application and begins the main loop.
+		/// </summary>
+		public virtual void Run()
+		{
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Runs the application with the specified <paramref name="mainForm"/> and begins the main loop.
+		/// </summary>
+		/// <seealso cref="MainForm"/>
+		/// <param name="mainForm">Main form for the application.</param>
+		public virtual void Run(Form mainForm)
+		{
+			Initialized += (sender, e) =>
+			{
+				MainForm = mainForm;
+				MainForm.Show();
+			};
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Runs the application with the specified <paramref name="dialog"/> and begins the main loop.
+		/// </summary>
+		/// <remarks>
+		/// When the dialog is closed, the application will exit.
+		/// </remarks>
+		/// <param name="dialog">Dialog to show for the application.</param>
+		public virtual void Run(Dialog dialog)
+		{
+			Initialized += (sender, e) =>
+			{
+				dialog.ShowModal();
+				Quit();
+			};
+			Handler.Run();
 		}
 
 		/// <summary>
@@ -292,14 +347,15 @@ namespace Eto.Forms
 		/// Gets the system commands used for standard menu items
 		/// </summary>
 		/// <remarks>
-		/// The system commands are used for the <see cref="MenuBar.CreateStandardMenu"/>.
+		/// The system commands are used when creating a <see cref="MenuBar"/>.
 		/// This is useful to be able to access the system command list to build your own menu instead of using the standard
 		/// menu.
 		/// </remarks>
 		/// <returns>The system commands.</returns>
+		[Obsolete("Use MenuBar.SystemCommands instead")]
 		public IEnumerable<Command> GetSystemCommands()
 		{
-			return Handler.GetSystemCommands();
+			return new MenuBar().SystemCommands;
 		}
 
 		/// <summary>
@@ -335,22 +391,20 @@ namespace Eto.Forms
 			Handler.Restart();
 		}
 
-		internal void InternalCreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands = null)
-		{
-			Handler.CreateStandardMenu(menuItems, commands ?? GetSystemCommands());
-		}
-
 		/// <summary>
 		/// Creates the standard menu.
 		/// </summary>
 		/// <param name="menuItems">Menu items.</param>
 		/// <param name="commands">Commands.</param>
-		[Obsolete("Use MenuBar.CreateStandardMenu() instead")]
+		[Obsolete("Use MenuBar.IncludeSystemItems to specify which actions to create instead")]
 		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands = null)
 		{
-			Handler.CreateStandardMenu(menuItems, commands ?? GetSystemCommands());
+			var menuBar = menuItems.parentItem as MenuBar;
+			if (menuBar != null)
+			{
+				menuBar.CreateLegacySystemMenu();
+			}
 		}
-
 
 		static readonly object callback = new Callback();
 		/// <summary>
@@ -407,10 +461,9 @@ namespace Eto.Forms
 			void Attach(object context);
 
 			/// <summary>
-			/// Runs the application with the specified arguments
+			/// Runs the application and starts a main loop.
 			/// </summary>
-			/// <param name="args">Arguments to run the application</param>
-			void Run(string[] args);
+			void Run();
 
 			/// <summary>
 			/// Quits the application
@@ -426,17 +479,6 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
 			bool QuitIsSupported { get ; }
-
-			/// <summary>
-			/// Gets the system commands used for standard menu items
-			/// </summary>
-			/// <remarks>
-			/// The system commands are used for the <see cref="MenuBar.CreateStandardMenu"/>.
-			/// This is useful to be able to access the system command list to build your own menu instead of using the standard
-			/// menu.
-			/// </remarks>
-			/// <returns>The system commands.</returns>
-			IEnumerable<Command> GetSystemCommands();
 
 			/// <summary>
 			/// Gets the common modifier for shortcuts.
@@ -508,18 +550,6 @@ namespace Eto.Forms
 			/// This is not recommended to use and you should use asynchronous calls instead via Task.Run or threads.
 			/// </remarks>
 			void RunIteration();
-
-			/// <summary>
-			/// Creates a standard menu for the platform.
-			/// </summary>
-			/// <remarks>
-			/// This should only create menu items that are required for the platform.  For example, on OS X cut/copy/paste
-			/// will not work via shortcuts unless they are added to the menu.  All other platforms have no standard menu
-			/// defined.
-			/// </remarks>
-			/// <param name="menuItems">Menu item collection to add the standard menu to</param>
-			/// <param name="commands">Commands for the standard menu, usually returned from <see cref="GetSystemCommands"/></param>
-			void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands);
 		}
 	}
 }

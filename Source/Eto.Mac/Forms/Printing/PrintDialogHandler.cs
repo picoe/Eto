@@ -1,8 +1,18 @@
 using System;
-using MonoMac.AppKit;
 using Eto.Forms;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms.Printing
 {
@@ -44,10 +54,10 @@ namespace Eto.Mac.Forms.Printing
 					var parentHandler = (IMacWindow)parent.Handler;
 					var closeSheet = new SheetHelper();
 					Control.BeginSheet(printInfo, parentHandler.Control, closeSheet, new Selector("printPanelDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
-					ret = NSApplication.SharedApplication.RunModalForWindow(parentHandler.Control);
+					ret = (int)NSApplication.SharedApplication.RunModalForWindow(parentHandler.Control);
 				}
 				else
-					ret = Control.RunModalWithPrintInfo(printInfo);
+					ret = (int)Control.RunModalWithPrintInfo(printInfo);
 			}
 
 			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;

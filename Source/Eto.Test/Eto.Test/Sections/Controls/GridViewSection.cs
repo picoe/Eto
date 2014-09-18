@@ -29,12 +29,15 @@ namespace Eto.Test.Sections.Controls
 		static readonly Image image1 = TestIcons.TestImage;
 		static readonly Image image2 = TestIcons.TestIcon;
 		readonly SearchBox filterText;
+		GridView defaultGrid;
 
 		public GridViewSection()
 		{
 			var layout = new DynamicLayout();
-
-			layout.AddRow(new Label { Text = "Default" }, Default(CreateItems().ToArray()));
+			var button = new Button { Text = "Click!" };
+			button.Click += (sender, e) => defaultGrid.DataStore = CreateItems().ToArray();
+			layout.AddRow(new Panel(), button);
+			layout.AddRow(new Label { Text = "Default" }, defaultGrid = Default(CreateItems().ToArray()));
 			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
 			if (Platform.Supports<ContextMenu>())
 			{
@@ -265,6 +268,14 @@ namespace Eto.Test.Sections.Controls
 					filtered.Insert(0, new MyGridItem(new Random(), 0));
 			};
 			menu.Items.Add(insertItem);
+
+			var subMenu = menu.Items.GetSubmenu("Sub Menu");
+			item = new ButtonMenuItem { Text = "Item 5" };
+			item.Click += (s,e) => Log.Write(item, "Clicked");
+			subMenu.Items.Add(item);
+			item = new ButtonMenuItem { Text = "Item 6" };
+			item.Click += (s,e) => Log.Write(item, "Clicked");
+			subMenu.Items.Add(item);
 
 			control.ContextMenu = menu;
 			return control;

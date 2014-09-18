@@ -1,11 +1,43 @@
+using System;
 using Eto.Drawing;
 using sd = System.Drawing;
 
-#if OSX
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
+#if OSX
 
 namespace Eto.Mac.Drawing
 #else
+using Eto.Mac;
 using MonoTouch.CoreGraphics;
 using MonoTouch.ImageIO;
 
@@ -23,19 +55,19 @@ namespace Eto.iOS.Drawing
 		{
 			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
 			CGAffineTransform viewTransform = CGAffineTransform.MakeIdentity();
-			readonly float[] alpha = { 1f };
+			readonly nfloat[] alpha = { 1 };
 			CGPattern pattern;
 			GradientWrapMode wrap;
-			sd.SizeF tileSize;
-			sd.SizeF sectionSize;
+			CGSize tileSize;
+			CGSize sectionSize;
 
 			public CGGradient InverseGradient { get; set; }
 
 			public CGGradient Gradient { get; set; }
 
-			public sd.PointF StartPoint { get; set; }
+			public CGPoint StartPoint { get; set; }
 
-			public sd.PointF EndPoint { get; set; }
+			public CGPoint EndPoint { get; set; }
 
 			public GradientWrapMode Wrap
 			{
@@ -55,8 +87,8 @@ namespace Eto.iOS.Drawing
 				if (graphics.DisplayView != null)
 				{
 					// adjust for position of the current view relative to the window
-					var pos = graphics.DisplayView.ConvertPointToView(sd.PointF.Empty, null);
-					graphics.Control.SetPatternPhase(new sd.SizeF(pos.X, pos.Y));
+					var pos = graphics.DisplayView.ConvertPointToView(CGPoint.Empty, null);
+					graphics.Control.SetPatternPhase(new CGSize(pos.X, pos.Y));
 				}
 				#endif
 
@@ -73,7 +105,7 @@ namespace Eto.iOS.Drawing
 
 			public float Opacity
 			{
-				get { return alpha[0]; }
+				get { return (float)alpha[0]; }
 				set { alpha[0] = value; }
 			}
 
@@ -89,10 +121,10 @@ namespace Eto.iOS.Drawing
 
 			void DrawPattern(CGContext context)
 			{
-				var start = new sd.PointF(0, 0);
+				var start = new CGPoint(0, 0);
 				var end = start + sectionSize;
 
-				context.ClipToRect(sd.RectangleF.Inflate(new sd.RectangleF(start, tileSize), 4, 4));
+				context.ClipToRect(new CGRect(start, tileSize).Inset(-4, -4));
 
 				if (Wrap == GradientWrapMode.Reflect)
 				{
@@ -117,12 +149,12 @@ namespace Eto.iOS.Drawing
 
 			void SetPattern()
 			{
-				sectionSize = new sd.SizeF((EndPoint.X - StartPoint.X) + 1, (EndPoint.Y - StartPoint.Y) + 1);
+				sectionSize = new CGSize((EndPoint.X - StartPoint.X) + 1, (EndPoint.Y - StartPoint.Y) + 1);
 				if (Wrap == GradientWrapMode.Reflect)
-					tileSize = new sd.SizeF(sectionSize.Width * 4, sectionSize.Height * 4);
+					tileSize = new CGSize(sectionSize.Width * 4, sectionSize.Height * 4);
 				else
-					tileSize = new sd.SizeF(sectionSize.Width * 2, sectionSize.Height * 2);
-				var rect = new sd.RectangleF(StartPoint, tileSize);
+					tileSize = new CGSize(sectionSize.Width * 2, sectionSize.Height * 2);
+				var rect = new CGRect(StartPoint, tileSize);
 				var t = CGAffineTransform.Multiply(transform, viewTransform);
 				pattern = new CGPattern(rect, t, rect.Width, rect.Height, CGPatternTiling.NoDistortion, true, DrawPattern);
 			}
@@ -142,8 +174,8 @@ namespace Eto.iOS.Drawing
 					endColor.ToCGColor(),
 					startColor.ToCGColor()
 				}),
-				StartPoint = startPoint.ToSD(),
-				EndPoint = endPoint.ToSD()
+				StartPoint = startPoint.ToNS(),
+				EndPoint = endPoint.ToNS()
 			};
 		}
 

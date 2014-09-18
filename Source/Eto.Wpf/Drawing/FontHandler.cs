@@ -25,6 +25,18 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
+		public void Apply(swc.TextBlock control, Action<sw.TextDecorationCollection> setDecorations)
+		{
+			control.FontFamily = WpfFamily;
+			control.FontStyle = WpfFontStyle;
+			control.FontWeight = WpfFontWeight;
+			control.FontSize = PixelSize;
+			if (setDecorations != null && WpfTextDecorations != null)
+			{
+				setDecorations(WpfTextDecorations);
+			}
+		}
+
 		sd.Font SDFont
 		{
 			get
@@ -65,7 +77,7 @@ namespace Eto.Wpf.Drawing
 			return points * (96.0 / 72.0);
 		}
 
-		public static double PixelsToPoints(double points, swc.Control control = null)
+		public static double PixelsToPoints(double points, sw.FrameworkElement control = null)
 		{
 			if (control != null)
 			{
@@ -90,7 +102,23 @@ namespace Eto.Wpf.Drawing
 				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
 			}
 			return font;
+		}
 
+		public static Font Apply(swc.TextBlock control, Action<sw.TextDecorationCollection> setDecorations, Font font)
+		{
+			if (control == null) return font;
+			if (font != null)
+			{
+				((FontHandler)font.Handler).Apply(control, setDecorations);
+			}
+			else
+			{
+				control.SetValue(swc.Control.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
+			}
+			return font;
 		}
 
 		public sw.FontStyle WpfFontStyle { get; set; }
@@ -106,6 +134,14 @@ namespace Eto.Wpf.Drawing
 		}
 
 		public FontHandler(swc.Control control)
+		{
+			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
+			this.Size = PixelsToPoints(control.FontSize, control);
+			this.WpfFontStyle = control.FontStyle;
+			this.WpfFontWeight = control.FontWeight;
+		}
+
+		public FontHandler(swc.TextBlock control)
 		{
 			this.Family = new FontFamily(new FontFamilyHandler(control.FontFamily));
 			this.Size = PixelsToPoints(control.FontSize, control);

@@ -36,7 +36,7 @@ namespace Eto.WinForms
 					if (!c.HasChildren)
 						break;
 
-					c = c.GetChildAtPoint(c.PointToClient(cp));
+					c = c.GetChildAtPoint(c.PointToClient(cp), GetChildAtPointSkip.Invisible);
 				}
 
 				if (scrollChild == null)

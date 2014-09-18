@@ -1,8 +1,45 @@
 using System;
 using Eto.Drawing;
 
-#if OSX
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
+#if XAMMAC2
+using nnfloat = System.nfloat;
+#else
+using nnfloat = System.Single;
+#endif
+
+
+#if OSX
 
 namespace Eto.Mac.Drawing
 #elif IOS
@@ -19,7 +56,7 @@ namespace Eto.iOS.Drawing
 	public class PenHandler : Pen.IHandler
 	{
 		class PenControl {
-			float[] cgdashes;
+			nnfloat[] cgdashes;
 			DashStyle dashStyle;
 			CGLineCap lineCap;
 			float thickness;
@@ -69,11 +106,11 @@ namespace Eto.iOS.Drawing
 					cgoffset = DashStyle.Offset * Thickness;
 					
 					if (LineCap == CGLineCap.Butt)
-						cgdashes = Array.ConvertAll (dashes, x => x * Thickness);
+						cgdashes = Array.ConvertAll (dashes, x => (nnfloat)(x * Thickness));
 					else {
 						if (Math.Abs(Thickness - 1) < 0.01f)
 							cgoffset += Thickness / 2;
-						cgdashes = new float[dashes.Length];
+						cgdashes = new nnfloat[dashes.Length];
 						for (int i = 0; i < cgdashes.Length; i++) {
 							var dash = dashes [i] * Thickness;
 							if ((i % 2) == 1) {

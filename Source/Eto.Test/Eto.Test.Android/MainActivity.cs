@@ -14,8 +14,8 @@ namespace Eto.Test.Android
 	{
 		public class SimpleApplication : Forms.Application
 		{
-			public SimpleApplication(Generator generator = null)
-				: base(generator)
+			public SimpleApplication(Platform platform = null)
+				: base(platform)
 			{
 			}
 
@@ -40,9 +40,9 @@ namespace Eto.Test.Android
 		{
 			base.OnCreate(savedInstanceState);
 
-			var generator = new Eto.Android.Platform();
-			//new TestApplication(generator).Attach(this).Run();
-			new SimpleApplication(generator).Attach(this).Run();
+			var platform = new Eto.Android.Platform();
+			//new TestApplication(platform).Attach(this).Run();
+			new SimpleApplication(platform).Attach(this).Run();
 		}
 	}
 }

@@ -32,6 +32,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Interface for an object-based data store
 	/// </summary>
+	[Obsolete("No longer needed, use standard collections instead")]
 	public interface IDataStore : IDataStore<object>
 	{
 	}
@@ -164,7 +165,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// A data store of plain objects, that can be bound to a grid view.
 	/// </summary>
-	public class DataStoreCollection : DataStoreCollection<object>, IDataStore
+	public class DataStoreCollection : DataStoreCollection<object>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.DataStoreCollection"/> class.

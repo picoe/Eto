@@ -4,6 +4,7 @@ using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using ImageManipulation;
+using System.Runtime.InteropServices;
 
 namespace Eto.WinForms.Drawing
 {
@@ -178,10 +179,40 @@ namespace Eto.WinForms.Drawing
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			SD.Bitmap copy;
-			if (rectangle == null)
-				copy = (SD.Bitmap)Control.Clone();
-			else
-				copy = Control.Clone(rectangle.Value.ToSD(), Control.PixelFormat);
+			// copy data directly to avoid odd System.Drawing symantics of locking/sharing data.
+			// this allows us to use the Bitmap.Lock() method after cloning. Using Clone() variations
+			// will cause a GDI+ exception.
+			var rect = rectangle ?? new Rectangle(Size);
+			var srcbits = Control.LockBits(rect.ToSD(), SD.Imaging.ImageLockMode.ReadOnly, Control.PixelFormat);
+			try
+			{
+				copy = new SD.Bitmap(rect.Width, rect.Height, Control.PixelFormat);
+				var copybits = copy.LockBits(new Rectangle(rect.Size).ToSD(), SD.Imaging.ImageLockMode.WriteOnly, Control.PixelFormat);
+				try
+				{
+					IntPtr srcptr = srcbits.Scan0;
+					IntPtr copyptr = copybits.Scan0;
+					var len = copybits.Stride;
+					var temp = new byte[len]; // temp scanline buffer
+					for (int y = 0; y < rect.Height; y++)
+					{
+						Marshal.Copy(srcptr, temp, 0, len);
+						Marshal.Copy(temp, 0, copyptr, len);
+						srcptr += srcbits.Stride;
+						copyptr += copybits.Stride;
+					}
+				}
+				finally
+				{
+					copy.UnlockBits(copybits);
+				}
+			}
+			finally
+			{
+				Control.UnlockBits(srcbits);
+			}
+			if ((copy.PixelFormat & SD.Imaging.PixelFormat.Indexed) != 0)
+				copy.Palette = Control.Palette;
 
 			return new Bitmap(new BitmapHandler(copy));
 		}

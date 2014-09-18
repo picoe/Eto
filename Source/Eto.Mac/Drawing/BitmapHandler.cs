@@ -2,11 +2,39 @@ using System;
 using System.IO;
 using System.Linq;
 using Eto.Drawing;
+using sd = System.Drawing;
+using Eto.Mac.Forms;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
-using sd = System.Drawing;
-using Eto.Mac.Forms;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac.Drawing
 {
@@ -63,6 +91,8 @@ namespace Eto.Mac.Drawing
 		public BitmapHandler(NSImage image)
 		{
 			Control = image;
+			rep = Control.BestRepresentationForDevice(null);
+			bmprep = rep as NSBitmapImageRep;
 		}
 
 		public void Create(string fileName)
@@ -72,7 +102,7 @@ namespace Eto.Mac.Drawing
 			Control = new NSImage(fileName);
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create(Stream stream)
@@ -80,7 +110,7 @@ namespace Eto.Mac.Drawing
 			Control = new NSImage(NSData.FromStream(stream));
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new CGSize(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
@@ -145,7 +175,7 @@ namespace Eto.Mac.Drawing
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
 			var source = image.ToNS();
-			Control = source.Resize(new sd.Size(width, height), interpolation);
+			Control = source.Resize(new CGSize(width, height), interpolation);
 		}
 
 		public override NSImage GetImage()
@@ -155,7 +185,7 @@ namespace Eto.Mac.Drawing
 
 		public BitmapData Lock()
 		{
-			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
+			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control);
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -220,8 +250,8 @@ namespace Eto.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = new sd.RectangleF(source.X, Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
-			var destRect = graphics.TranslateView(destination.ToSD(), true, true);
+			var sourceRect = new CGRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
+			var destRect = graphics.TranslateView(destination.ToNS(), true, true);
 			if (alpha)
 				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 			else
@@ -234,9 +264,10 @@ namespace Eto.Mac.Drawing
 				return new Bitmap(new BitmapHandler((NSImage)Control.Copy()));
 			else
 			{
-				var rect = new sd.RectangleF (sd.PointF.Empty, this.Control.Size);
-				var temp = Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
-				var image = new NSImage (temp, new sd.SizeF (temp.Width, temp.Height));
+				var rect = new CGRect(CGPoint.Empty, Control.Size);
+				var image = new NSImage();
+				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToSDRectangleF());
+				image.AddRepresentation(new NSBitmapImageRep(cgimage));
 				return new Bitmap(new BitmapHandler(image));
 			}
 		}

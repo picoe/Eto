@@ -48,18 +48,12 @@
     <Optimize>false</Optimize>
     <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.Data">
-      <Name>System.Data</Name>
-    </Reference>
-    <Reference Include="System.Xml">
-      <Name>System.Xml</Name>
-    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
     <Reference Include="atk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <HintPath>..\..\Libraries\GtkSharp3\atk-sharp.dll</HintPath>
       <Private>False</Private>
@@ -258,7 +252,6 @@
     <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DllMap.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="EtoWebView.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
@@ -269,6 +262,8 @@
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
+    <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
+    <Compile Include="Forms\GtkSynchronizationContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -280,7 +275,4 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Content Include="Eto.Platform.Gtk3.dll.config" />
-  </ItemGroup>
 </Project>

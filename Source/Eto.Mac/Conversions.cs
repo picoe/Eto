@@ -1,13 +1,41 @@
 using System;
-using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
 using Eto.Drawing;
-using MonoMac.Foundation;
 using Eto.Forms;
 using Eto.Mac.Drawing;
-using MonoMac.ImageIO;
 using sd = System.Drawing;
 using Eto.Mac.Forms.Printing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+using ImageIO;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+using MonoMac.ImageIO;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac
 {
@@ -22,11 +50,11 @@ namespace Eto.Mac
 		{
 			if (color == null)
 				return Colors.Black;
-			if (color.ColorSpace.ColorSpaceModel != NSColorSpaceModel.RGB)
+			//if (color.ColorSpace.ColorSpaceModel != NSColorSpaceModel.RGB)
 				color = color.UsingColorSpace(NSColorSpace.CalibratedRGB);
-			float red, green, blue, alpha;
+			nfloat red, green, blue, alpha;
 			color.GetRgba(out red, out green, out blue, out alpha);
-			return new Color(red, green, blue, alpha);
+			return new Color((float)red, (float)green, (float)blue, (float)alpha);
 		}
 
 		public static NSRange ToNS(this Range<int> range)
@@ -36,7 +64,7 @@ namespace Eto.Mac
 
 		public static Range<int> ToEto(this NSRange range)
 		{
-			return new Range<int>(range.Location, range.Location + range.Length - 1);
+			return new Range<int>((int)range.Location, (int)(range.Location + range.Length - 1));
 		}
 
 		public static NSImageInterpolation ToNS(this ImageInterpolation value)
@@ -141,7 +169,7 @@ namespace Eto.Mac
 			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
 			if (includeWheel)
-				delta = new SizeF(theEvent.DeltaX, theEvent.DeltaY);
+				delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
 			return new MouseEventArgs(buttons, modifiers, pt, delta);
 		}
 
@@ -192,11 +220,11 @@ namespace Eto.Mac
 
 			if (size != null)
 			{
-				var rep = nsimage.BestRepresentation(new sd.RectangleF(0, 0, size.Value, size.Value), null, null);
+				var rep = nsimage.BestRepresentation(new CGRect(0, 0, size.Value, size.Value), null, null);
 				if (rep.PixelsWide > size.Value || rep.PixelsHigh > size.Value)
 				{
 					var max = Math.Max(nsimage.Size.Width, nsimage.Size.Height);
-					var newsize = new sd.Size((int)(size.Value * nsimage.Size.Width / max), (int)(size.Value * nsimage.Size.Height / max));
+					var newsize = new CGSize((int)(size.Value * nsimage.Size.Width / max), (int)(size.Value * nsimage.Size.Height / max));
 					nsimage = nsimage.Resize(newsize);
 				}
 				else
@@ -299,7 +327,7 @@ namespace Eto.Mac
 
 		public static SizeF ToEtoSize(this NSEdgeInsets insets)
 		{
-			return new SizeF(insets.Left + insets.Right, insets.Top + insets.Bottom);
+			return new SizeF((float)(insets.Left + insets.Right), (float)(insets.Top + insets.Bottom));
 		}
 
 		public static CalendarMode ToEto(this NSDatePickerMode mode)

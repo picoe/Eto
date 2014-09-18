@@ -1,11 +1,37 @@
 using System;
 using SD = System.Drawing;
 using Eto.Forms;
+using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
-using MonoMac.CoreImage;
-using Eto.Drawing;
+using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -27,7 +53,7 @@ namespace Eto.Mac.Forms.Controls
 
 			var ciImage = CIImage.FromCGImage(image.CGImage);
 
-			SD.SizeF realSize;
+			CGSize realSize;
 			if (control.RespondsToSelector(selConvertSizeToBacking))
 				realSize = control.ConvertSizeToBacking(size);
 			else
@@ -49,7 +75,7 @@ namespace Eto.Mac.Forms.Controls
 
 			// create separate context so we can force using the software renderer, which is more than fast enough for this
 			var ciContext = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, new CIContextOptions { UseSoftwareRenderer = true });
-			ciContext.DrawImage(ciImage, new SD.RectangleF(SD.PointF.Empty, size), new SD.RectangleF(SD.PointF.Empty, realSize));
+			ciContext.DrawImage(ciImage, new CGRect(CGPoint.Empty, size), new CGRect(CGPoint.Empty, realSize));
 		}
 
 		public WeakReference WeakHandler { get; set; }
@@ -97,10 +123,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void ResetCursorRects()
 		{
-			var cursor = Handler.Cursor;
+			var cursor = Handler.CurrentCursor;
 			if (cursor != null)
 			{
-				AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Frame.Size), cursor.ControlObject as NSCursor);
+				AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 	}

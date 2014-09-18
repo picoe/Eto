@@ -1,8 +1,18 @@
 ﻿using System;
-using MonoMac.Foundation;
 using Eto.Forms;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -93,8 +103,6 @@ namespace Eto.Mac.Forms.Controls
 					Callback.OnSelectedRangeChanged(Widget, EventArgs.Empty);
 			}
 		}
-
-		static IntPtr selSetDateValueHandle = Selector.GetHandle("setDateValue:");
 
 		public DateTime SelectedDate
 		{

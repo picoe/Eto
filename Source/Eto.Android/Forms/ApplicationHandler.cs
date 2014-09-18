@@ -41,7 +41,7 @@ namespace Eto.Android.Forms
 			}
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 		}
@@ -109,23 +109,12 @@ namespace Eto.Android.Forms
 		}
 
 
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			throw new NotImplementedException();
-		}
-
-
 		public void Restart()
 		{
 			throw new NotImplementedException();
 		}
 
 		public void RunIteration()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
 		{
 			throw new NotImplementedException();
 		}

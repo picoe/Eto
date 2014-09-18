@@ -1,25 +1,52 @@
 using System;
-using MonoMac.AppKit;
-using MonoMac.CoreImage;
 using sd = System.Drawing;
-using MonoMac.Foundation;
 using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac
 {
 	public static class NSImageExtensions
 	{
-		public static NSImage Resize(this NSImage image, sd.Size newsize, ImageInterpolation interpolation = ImageInterpolation.Default)
+		public static NSImage Resize(this NSImage image, CGSize newsize, ImageInterpolation interpolation = ImageInterpolation.Default)
 		{
 			var newimage = new NSImage(newsize);
-			var newrep = new NSBitmapImageRep(IntPtr.Zero, newsize.Width, newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * newsize.Width, 32);
+			var newrep = new NSBitmapImageRep(IntPtr.Zero, (nint)newsize.Width, (nint)newsize.Height, 8, 4, true, false, NSColorSpace.DeviceRGB, 4 * (nint)newsize.Width, 32);
 			newimage.AddRepresentation(newrep);
 
 			var graphics = NSGraphicsContext.FromBitmap(newrep);
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphics;
 			graphics.GraphicsPort.InterpolationQuality = interpolation.ToCG();
-			image.DrawInRect(new sd.RectangleF(sd.PointF.Empty, newimage.Size), new sd.RectangleF(sd.PointF.Empty, image.Size), NSCompositingOperation.SourceOver, 1f);
+			image.DrawInRect(new CGRect(CGPoint.Empty, newimage.Size), new CGRect(CGPoint.Empty, image.Size), NSCompositingOperation.SourceOver, 1f);
 			NSGraphicsContext.GlobalRestoreGraphicsState();
 			return newimage;
 		}
@@ -55,11 +82,11 @@ namespace Eto.Mac
 			var outputImage = (CIImage)compositingFilter.ValueForKey(CIFilterOutputKey.Image);
 			var extent = outputImage.Extent;
 
-			var newsize = sd.Size.Truncate(extent.Size);
+			var newsize = sd.Size.Truncate(extent.Size.ToSD());
 			if (newsize.IsEmpty)
 				return image;
 
-			var tintedImage = new NSImage(newsize);
+			var tintedImage = new NSImage(newsize.ToNS());
 			tintedImage.LockFocus();
 			try
 			{

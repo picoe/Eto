@@ -19,7 +19,7 @@
     	
     	On Linux, mono framework 2.10 or higher and gtk-sharp2 are required.
 		</description>
-		<copyright>Copyright 2014 by Curtis Wensley</copyright>
+		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop gtk eto.forms</tags>
 		<dependencies>
 			<group>

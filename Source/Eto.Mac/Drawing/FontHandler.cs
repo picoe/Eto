@@ -1,6 +1,37 @@
 using System;
 using Eto.Drawing;
 
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
 #if IOS
 
 using MonoTouch.UIKit;
@@ -10,9 +41,6 @@ using NSFont = MonoTouch.UIKit.UIFont;
 namespace Eto.iOS.Drawing
 
 #elif OSX
-	
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 
 namespace Eto.Mac.Drawing
 #endif
@@ -53,39 +81,39 @@ namespace Eto.Mac.Drawing
 			switch (systemFont)
 			{
 				case SystemFont.Default:
-					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Bold:
-					Control = NSFont.BoldSystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.BoldSystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Label:
 #if IOS
 					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.LabelFontSize);
 #elif OSX
-					Control = NSFont.LabelFontOfSize(fontSize ?? NSFont.LabelFontSize + 2); // labels get a size of 12 
+					Control = NSFont.LabelFontOfSize((nfloat)(fontSize ?? NSFont.LabelFontSize + 2)); // labels get a size of 12 
 #endif
 					break;
 #if OSX
 				case SystemFont.TitleBar:
-					Control = NSFont.TitleBarFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.TitleBarFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.ToolTip:
-					Control = NSFont.ToolTipsFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.ToolTipsFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.MenuBar:
-					Control = NSFont.MenuBarFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.MenuBarFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Menu:
-					Control = NSFont.MenuFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.MenuFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Message:
-					Control = NSFont.MessageFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.MessageFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 				case SystemFont.Palette:
-					Control = NSFont.PaletteFontOfSize(fontSize ?? NSFont.SmallSystemFontSize);
+					Control = NSFont.PaletteFontOfSize((nfloat)(fontSize ?? NSFont.SmallSystemFontSize));
 					break;
 				case SystemFont.StatusBar:
-					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.SystemFontSize);
+					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
 					break;
 #endif
 				default:
@@ -102,6 +130,34 @@ namespace Eto.Mac.Drawing
 			}
 		}
 
+		#if OSX
+		NSFontTraitMask? traits;
+		public static NSFont CreateFont(FontFamilyHandler familyHandler, float size, NSFontTraitMask traits, int weight = 5)
+		{
+			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, weight, size);
+			if (font == null)
+			{
+				if (traits.HasFlag(NSFontTraitMask.Italic))
+				{
+					// fake italics by transforming the font
+					const float kRotationForItalicText = 14.0f;
+					var fontTransform = new NSAffineTransform();
+					fontTransform.Scale(size);
+					var italicTransform = new NSAffineTransform();
+					italicTransform.TransformStruct = Matrix.FromSkew(0, kRotationForItalicText).ToCG();
+					fontTransform.AppendTransform(italicTransform);
+					traits &= ~NSFontTraitMask.Italic;
+					font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, 5, size);
+					if (font != null)
+					{
+						font = NSFont.FromDescription(font.FontDescriptor, fontTransform);
+					}
+				}
+			}
+			return font;
+		}
+		#endif
+
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
 			this.style = style;
@@ -109,8 +165,9 @@ namespace Eto.Mac.Drawing
 			this.decoration = decoration;
 #if OSX
 			var familyHandler = (FontFamilyHandler)family.Handler;
-			NSFontTraitMask traits = style.ToNS() & familyHandler.TraitMask;
-			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, 5, size);
+			traits = style.ToNS() & familyHandler.TraitMask;
+			var font = CreateFont(familyHandler, size, traits.Value);
+
 			if (font == null || font.Handle == IntPtr.Zero)
 				throw new ArgumentOutOfRangeException(string.Empty, string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
@@ -136,13 +193,13 @@ namespace Eto.Mac.Drawing
 			familyString.Append (suffix);
 			var font = UIFont.FromName (familyString.ToString (), size);
 			*/
-#endif
+			#endif
 			Control = font;
 		}
 
 		public float Size
 		{
-			get { return Control.PointSize; }
+			get { return (float)Control.PointSize; }
 		}
 
 		public string FamilyName
@@ -165,7 +222,11 @@ namespace Eto.Mac.Drawing
 			get
 			{
 				if (typeface == null)
+					#if IOS
 					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control);
+					#else
+					typeface = ((FontFamilyHandler)Family.Handler).GetFace(Control, traits);
+					#endif
 				return typeface;
 			}
 		}
@@ -191,18 +252,18 @@ namespace Eto.Mac.Drawing
 
 		public float Ascent
 		{
-			get { return Control.Ascender; }
+			get { return (float)Control.Ascender; }
 		}
 
 		public float Descent
 		{
-			get { return -Control.Descender; }
+			get { return (float)-Control.Descender; }
 		}
 
 		public float XHeight
 		{
 #if OSX
-			get { return Control.XHeight; }
+			get { return (float)Control.XHeight; }
 #elif IOS
 			get { return Control.xHeight; }
 #endif
@@ -210,7 +271,7 @@ namespace Eto.Mac.Drawing
 
 		public float Leading
 		{
-			get { return Control.Leading; }
+			get { return (float)Control.Leading; }
 		}
 
 		public float Baseline

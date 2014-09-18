@@ -19,6 +19,9 @@ namespace Eto.Forms
 		Selected = 1,
 	}
 
+	/// <summary>
+	/// Event arguments for a <see cref="DrawableCell.Paint"/> event
+	/// </summary>
 	public class DrawableCellPaintEventArgs : PaintEventArgs
 	{
 		/// <summary>
@@ -27,10 +30,17 @@ namespace Eto.Forms
 		public DrawableCellStates CellState { get; private set; }
 
 		/// <summary>
-		/// The model data item
+		/// The model data item for the row being painted.
 		/// </summary>
 		public object Item { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DrawableCellPaintEventArgs"/> class.
+		/// </summary>
+		/// <param name="graphics">Graphics context for drawing.</param>
+		/// <param name="clipRectangle">Clip rectangle for the cell's region.</param>
+		/// <param name="cellState">State of the cell.</param>
+		/// <param name="item">Item from the data store for the row that is being painted.</param>
 		public DrawableCellPaintEventArgs(Graphics graphics, RectangleF clipRectangle, DrawableCellStates cellState, object item)
 			: base(graphics, clipRectangle)
 		{
@@ -45,18 +55,32 @@ namespace Eto.Forms
 	[Handler(typeof(DrawableCell.IHandler))]
 	public class DrawableCell : Cell
 	{
+		/// <summary>
+		/// Occurs when the cell needs painting.
+		/// </summary>
 		public event EventHandler<DrawableCellPaintEventArgs> Paint;
 
+		/// <summary>
+		/// Raises the <see cref="Paint"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected virtual void OnPaint(DrawableCellPaintEventArgs e)
 		{
 			if (Paint != null)
 				Paint(this, e);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DrawableCell"/> class.
+		/// </summary>
 		public DrawableCell()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DrawableCell"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
 		[Obsolete("Use default constructor instead")]
 		public DrawableCell(Generator generator)
 			: base(generator, typeof(IHandler), true)
@@ -65,21 +89,40 @@ namespace Eto.Forms
 
 		static readonly object callback = new Callback();
 
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback.</returns>
 		protected override object GetCallback() { return callback; }
 
+		/// <summary>
+		/// Callback interface for handlers of the <see cref="DrawableCell"/> cell.
+		/// </summary>
 		public new interface ICallback : Cell.ICallback
 		{
+			/// <summary>
+			/// Raises the paint event.
+			/// </summary>
 			void OnPaint(DrawableCell widget, DrawableCellPaintEventArgs e);
 		}
 
+		/// <summary>
+		/// Callback implementation for the <see cref="DrawableCell"/> cell.
+		/// </summary>
 		protected class Callback : ICallback
 		{
+			/// <summary>
+			/// Raises the paint event.
+			/// </summary>
 			public void OnPaint(DrawableCell widget, DrawableCellPaintEventArgs e)
 			{
-				widget.OnPaint(e);
+				widget.Platform.Invoke(() => widget.OnPaint(e));
 			}
 		}
 
+		/// <summary>
+		/// Handler interface for the <see cref="DrawableCell"/>.
+		/// </summary>
 		public new interface IHandler : Cell.IHandler
 		{
 		}

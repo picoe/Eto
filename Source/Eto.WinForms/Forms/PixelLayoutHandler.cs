@@ -23,19 +23,20 @@ namespace Eto.WinForms
 			// do not call base class - pixel layout never scales the content
 		}
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
-			return Size.Max(base.GetPreferredSize(availableSize), Control.PreferredSize.ToEto());
+			return Size.Max(base.GetPreferredSize(availableSize, useCache), Control.PreferredSize.ToEto());
 		}
 
 		public void Add(Control child, int x, int y)
 		{
-			var ctl = child.GetContainerControl();
-			var pt = new sd.Point(x, y);
-			ctl.Dock = swf.DockStyle.None;
-			ctl.Location = pt;
-			Control.Controls.Add(ctl);
-			ctl.BringToFront();
+			var childHandler = child.GetWindowsHandler();
+			var childControl = childHandler.ContainerControl;
+			childControl.Dock = swf.DockStyle.None;
+			childControl.Location = new sd.Point(x, y);
+			childHandler.BeforeAddControl();
+			Control.Controls.Add(childControl);
+			childControl.BringToFront();
 		}
 
 		public void Move(Control child, int x, int y)

@@ -1,11 +1,41 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
 using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Mac.Forms.Controls;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -20,13 +50,13 @@ namespace Eto.Mac.Forms
 			Control = new MacEventView { Handler = this };
 		}
 
-		public SD.RectangleF GetPosition(Control control)
+		public CGRect GetPosition(Control control)
 		{
 			PointF point;
 			if (points.TryGetValue(control, out point))
 			{
 				var frameSize = ((NSView)control.ControlObject).Frame.Size;
-				return new SD.RectangleF(point.ToSD(), frameSize);
+				return new CGRect(point.ToNS(), frameSize);
 			}
 			return control.GetContainerView().Frame;
 		}
@@ -67,19 +97,19 @@ namespace Eto.Mac.Forms
 			
 			var preferredSize = control.GetPreferredSize(Control.Frame.Size.ToEtoSize());
 
-			SD.PointF origin;
+			CGPoint origin;
 			if (flipped)
-				origin = new System.Drawing.PointF(
+				origin = new CGPoint(
 					point.X + offset.Width,
 					point.Y + offset.Height
 				);
 			else
-				origin = new System.Drawing.PointF(
+				origin = new CGPoint(
 					point.X + offset.Width,
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
 				);
-			
-			var frame = new SD.RectangleF(origin, preferredSize.ToSD());
+
+			var frame = new CGRect(origin, preferredSize.ToNS());
 			if (frame != childView.Frame)
 			{
 				childView.Frame = frame;
@@ -95,7 +125,7 @@ namespace Eto.Mac.Forms
 			var flipped = Control.IsFlipped;
 			foreach (var item in controlPoints)
 			{
-				SetPosition(item.Key, item.Value, frameHeight, flipped);
+				SetPosition(item.Key, item.Value, (float)frameHeight, flipped);
 			}
 		}
 
@@ -107,7 +137,7 @@ namespace Eto.Mac.Forms
 			if (Widget.Loaded)
 			{
 				var frameHeight = Control.Frame.Height;
-				SetPosition(child, location, frameHeight, Control.IsFlipped);
+				SetPosition(child, location, (float)frameHeight, Control.IsFlipped);
 			}
 			Control.AddSubview(childView);
 			if (Widget.Loaded)
@@ -123,7 +153,7 @@ namespace Eto.Mac.Forms
 				if (Widget.Loaded)
 				{
 					var frameHeight = Control.Frame.Height;
-					SetPosition(child, location, frameHeight, Control.IsFlipped);
+					SetPosition(child, location, (float)frameHeight, Control.IsFlipped);
 					LayoutParent();
 				}
 			}

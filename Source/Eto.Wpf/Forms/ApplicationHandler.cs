@@ -33,6 +33,21 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		public static T InvokeIfNecessary<T>(Func<T> action)
+		{
+			if (sw.Application.Current == null || Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
+				return action();
+			else
+			{
+				T ret = default(T);
+				sw.Application.Current.Dispatcher.Invoke(new Action(() =>
+				{
+					ret = action();
+				}));
+				return ret;
+			}
+		}
+
 		public List<sw.Window> DelayShownWindows
 		{
 			get
@@ -134,15 +149,6 @@ namespace Eto.Wpf.Forms
 			Control.Dispatcher.BeginInvoke(action);
 		}
 
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield break;
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
-		{
-		}
-
 		public Keys CommonModifier
 		{
 			get { return Keys.Control; }
@@ -158,7 +164,7 @@ namespace Eto.Wpf.Forms
 			Process.Start(url);
 		}
 
-		public void Run(string[] args)
+		public void Run()
 		{
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)

@@ -42,7 +42,7 @@ namespace Eto.Forms
 		public ComboBoxCell(string property)
 			: this()
 		{
-			Binding = new PropertyBinding(property);
+			Binding = new PropertyBinding<object>(property);
 		}
 
 		/// <summary>

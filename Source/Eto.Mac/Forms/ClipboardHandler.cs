@@ -1,10 +1,21 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 using System.IO;
 using Eto.Mac.Drawing;
 using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -61,7 +72,7 @@ namespace Eto.Mac.Forms
 			{
 				var data = Control.GetDataForType(availableType);
 				var bytes = new byte[data.Length];
-				var stream = new UnmanagedMemoryStream((byte*)data.Bytes, data.Length);
+				var stream = new UnmanagedMemoryStream((byte*)data.Bytes, (long)data.Length);
 				stream.Read(bytes, 0, (int)data.Length);
 				return bytes;
 			}

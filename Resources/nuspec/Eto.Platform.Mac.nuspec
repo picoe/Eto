@@ -23,7 +23,7 @@
     	
     	You do not need to use any of the classes of this assembly (unless customizing the MonoMac functionality of the platform), and should just use the UI controls from the Eto assembly.
 		</description>
-		<copyright>Copyright 2014 by Curtis Wensley</copyright>
+		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop monomac osx mac eto.forms</tags>
 		<dependencies>
 			<group>
@@ -32,9 +32,9 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\$configuration$\MonoMac.dll" target="lib\net40\" />
-		<file src="..\..\BuildOutput\$configuration$\MonoMac.dll" target="lib\net45\" />
-		<file src="..\..\BuildOutput\$configuration$\MonoMac-License.txt" target="MonoMac-License.txt" />
+		<file src="..\..\Libraries\MonoMac\MonoMac.dll" target="lib\net40\" />
+		<file src="..\..\Libraries\MonoMac\MonoMac.dll" target="lib\net45\" />
+		<file src="..\..\Libraries\MonoMac\MonoMac-License.txt" target="MonoMac-License.txt" />
 		<file src="..\..\BuildOutput\$configuration$\Eto.Mac.dll" target="lib\net40\" />
 		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Mac.dll" target="lib\net45\" />
 		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />

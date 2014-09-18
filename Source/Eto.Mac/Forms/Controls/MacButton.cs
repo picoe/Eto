@@ -1,6 +1,18 @@
 using Eto.Forms;
-using MonoMac.AppKit;
 using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -18,7 +30,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				var oldSize = GetPreferredSize(Size.MaxValue);
-				Control.SetTitleWithMnemonic(value);
+				Control.SetTitleWithMnemonic(value ?? string.Empty);
 				LayoutIfNeeded(oldSize);
 			}
 		}

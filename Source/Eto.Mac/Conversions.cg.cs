@@ -1,8 +1,36 @@
 using System;
 using Eto.Drawing;
 
-#if OSX
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Single;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
+
+#if OSX
 using Eto.Mac.Drawing;
 
 namespace Eto.Mac
@@ -29,12 +57,12 @@ namespace Eto.iOS
 		
 		public static CGColor ToCGColor (this Color color)
 		{
-			return new CGColor (CreateDeviceRGB (), new float[] { color.R, color.G, color.B, color.A });
+			return new CGColor (CreateDeviceRGB (), new nfloat[] { color.R, color.G, color.B, color.A });
 		}
 		
 		public static Color ToEtoColor (this CGColor color)
 		{
-			return new Color (color.Components [0], color.Components [1], color.Components [2], color.Alpha);
+			return new Color ((float)color.Components [0], (float)color.Components [1], (float)color.Components [2], (float)color.Alpha);
 		}
 		
 		public static CGInterpolationQuality ToCG (this ImageInterpolation value)

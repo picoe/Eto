@@ -1,10 +1,39 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
+#endif
 
 namespace Eto.Mac.Forms
 {
@@ -75,11 +104,11 @@ namespace Eto.Mac.Forms
 					Control.Update ();
 				};
 				fileTypeView.AddSubview(fileTypes);
-				fileTypes.SetFrameOrigin(new System.Drawing.PointF(label.Frame.Width + 10, padding));
+				fileTypes.SetFrameOrigin(new CGPoint((nfloat)label.Frame.Width + 10, padding));
 	
-				label.SetFrameOrigin(new System.Drawing.PointF(0, padding + (fileTypes.Frame.Height - label.Frame.Height) / 2));
+				label.SetFrameOrigin(new CGPoint(0, (nfloat)(padding + (fileTypes.Frame.Height - label.Frame.Height) / 2)));
 				
-				fileTypeView.Frame = new System.Drawing.RectangleF(0, 0, fileTypes.Frame.Width + label.Frame.Width + 10, fileTypes.Frame.Height + padding*2);
+				fileTypeView.Frame = new CGRect(0, 0, (nfloat)(fileTypes.Frame.Width + label.Frame.Width + 10), (nfloat)(fileTypes.Frame.Height + padding * 2));
 				
 				Control.AccessoryView = fileTypeView;
 			}

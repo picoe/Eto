@@ -1,8 +1,20 @@
 using System;
 using System.Linq;
 using Eto.Forms;
-using MonoMac.AppKit;
 using Eto.Drawing;
+#if XAMMAC2
+using AppKit;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.CoreAnimation;
+#endif
 
 namespace Eto.Mac.Forms.Controls
 {
@@ -67,7 +79,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return Control.Selected == null ? -1 : Control.IndexOf(Control.Selected); }
+			get { return (int)(Control.Selected == null ? -1 : Control.IndexOf(Control.Selected)); }
 			set { Control.SelectAt (value); }
 		}
 
