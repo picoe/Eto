@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+	<metadata>
+		<id>Eto.Platform.iOS</id>
+		<version>$version$</version>
+		<title>$title$</title>
+		<authors>$author$</authors>
+		<owners>$author$</owners>
+		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/picoe/Eto</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>$description$</summary>
+		<description>
+    	This is the iOS mobile platform for Eto.Forms UI Framework.
+    	
+    	Include this along with your Eto.Forms application to provide an iOS interface for iPhone/iPad/iPod touch users using Xamarin.iOS.
+    	
+    	You do not need to use any of the classes of this assembly (unless customizing the iOS functionality of the platform), and should just use the UI controls from the Eto assembly.
+		</description>
+		<copyright>$copyright$</copyright>
+		<tags>cross platform gui ui framework desktop ios eto.forms</tags>
+		<dependencies>
+			<group>
+				<dependency id="Eto.Forms" version="$version$" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.iOS.dll" target="lib\monotouch\" />
+		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
+	</files>
+</package>
