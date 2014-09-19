@@ -116,6 +116,15 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			}
 		}
 
+		public void BeginEdit(int row, int column)
+		{
+			if (RowCount >= row)
+			{
+				Widget.BeginEdit(row, column);
+				Callback.OnCellEditing(Widget, (GridViewCellEventArgs)GridViewCellEventArgs.Empty);
+			}
+		}
+
 		void SetRowCount()
 		{
 			RowCount = collection.Collection != null ? collection.Count : 0;

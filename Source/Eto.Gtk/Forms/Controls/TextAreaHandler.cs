@@ -108,19 +108,34 @@ namespace Eto.GtkSharp
 		public virtual Color TextColor
 		{
 			get { return Control.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
-			set { Control.ModifyText(Gtk.StateType.Normal, value.ToGdk()); }
+			set
+			{
+				#if GTK2
+				Control.ModifyText(Gtk.StateType.Normal, value.ToGdk());
+				#else
+				Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				#endif
+			}
 		}
 
+		Color? backgroundColor;
 		public override Color BackgroundColor
 		{
 			get
 			{
-				return base.BackgroundColor;
+				return backgroundColor ?? Colors.White;
 			}
 			set
 			{
-				//base.BackgroundColor = value;
-				Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
+				backgroundColor = value;
+				if (backgroundColor != null)
+				{
+					#if GTK2
+					Control.ModifyBase(Gtk.StateType.Normal, backgroundColor.Value.ToGdk());
+					#else
+					Control.ModifyBg(Gtk.StateType.Normal, backgroundColor.Value.ToGdk());
+					#endif
+				}
 			}
 		}
 

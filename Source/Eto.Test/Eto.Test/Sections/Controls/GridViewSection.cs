@@ -29,15 +29,15 @@ namespace Eto.Test.Sections.Controls
 		static readonly Image image1 = TestIcons.TestImage;
 		static readonly Image image2 = TestIcons.TestIcon;
 		readonly SearchBox filterText;
-		GridView defaultGrid;
+		GridView defaultGridView;
 
 		public GridViewSection()
 		{
 			var layout = new DynamicLayout();
 			var button = new Button { Text = "Click!" };
-			button.Click += (sender, e) => defaultGrid.DataStore = CreateItems().ToArray();
+			button.Click += (sender, e) => defaultGridView.DataStore = CreateItems().ToArray();
 			layout.AddRow(new Panel(), button);
-			layout.AddRow(new Label { Text = "Default" }, defaultGrid = Default(CreateItems().ToArray()));
+			layout.AddRow(new Label { Text = "Default" }, defaultGridView = Default(CreateItems().ToArray()));
 			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
 			if (Platform.Supports<ContextMenu>())
 			{
@@ -45,6 +45,7 @@ namespace Eto.Test.Sections.Controls
 				layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
 				layout.BeginVertical();
 				layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
+				layout.Add(BeginEdit());
 				var withContextMenuAndFilter = WithContextMenuAndFilter();
 				layout.Add(withContextMenuAndFilter);
 				layout.EndVertical();
@@ -210,7 +211,7 @@ namespace Eto.Test.Sections.Controls
 
 		GridView WithContextMenuAndFilter()
 		{
-			var control = Default(null);
+			var control = defaultGridView = Default(null);
 			var filtered = new SelectableFilterCollection<MyGridItem>(control, CreateItems().ToArray());
 			control.DataStore = filtered;
 			control.AllowMultipleSelection = true;
@@ -304,6 +305,16 @@ namespace Eto.Test.Sections.Controls
 		static string SelectedRowsString(GridView control)
 		{
 			return string.Join(",", control.SelectedRows.Select(r => r.ToString()).OrderBy(r => r));
+		}
+
+		Button BeginEdit()
+		{
+			var control = new Button {Text = "Begin Edit Row:1, Column:2"};
+			control.Click += delegate
+			{
+				defaultGridView.BeginEdit(1, 2);
+			};
+			return control;
 		}
 	}
 }

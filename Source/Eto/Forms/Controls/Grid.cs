@@ -398,6 +398,16 @@ namespace Eto.Forms
 			Handler.UnselectAll();
 		}
 
+		/// <summary>
+		/// Begin to edit one cell
+		/// </summary>
+		/// <param name="row">Row to edit</param>
+		/// <param name="column">Column to edit</param>
+		public void BeginEdit(int row, int column)
+		{
+			Handler.BeginEdit(row, column);
+		}
+
 		static readonly object callback = new Callback();
 
 		/// <summary>
@@ -547,6 +557,13 @@ namespace Eto.Forms
 			/// Clears the selection
 			/// </summary>
 			void UnselectAll();
+
+			/// <summary>
+			/// Begin to edit one cell
+			/// </summary>
+			/// <param name="row">Row to edit</param>
+			/// <param name="column">Column to edit</param>
+			void BeginEdit(int row, int column);
 		}
 
 		#endregion
