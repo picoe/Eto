@@ -78,7 +78,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				var ret = Widget.Binding.GetValue (dataItem);
 				var image = ret as Image;
 				if (image != null)
-					return new GLib.Value(((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16)));
+					return new GLib.Value(((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16), ImageInterpolation.ToGdk()));
 			}
 			return new GLib.Value((Gdk.Pixbuf)null);
 		}
@@ -94,6 +94,8 @@ namespace Eto.GtkSharp.Forms.Cells
 				break;
 			}
 		}
+
+		public ImageInterpolation ImageInterpolation { get; set; }
 	}
 }
 

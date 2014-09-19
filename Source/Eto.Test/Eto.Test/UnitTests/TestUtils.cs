@@ -21,6 +21,8 @@ namespace Eto.Test.UnitTests
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class TestUtils
 	{
+		public const string NoTestPlatformCategory = "NoTestPlatform";
+
 		/// <summary>
 		/// Default timeout for form operations
 		/// </summary>

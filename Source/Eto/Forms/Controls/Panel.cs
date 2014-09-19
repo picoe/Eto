@@ -71,7 +71,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// The default padding for panels.
 		/// </summary>
-		[Obsolete("Set the padding of your panel directly")]
+		[Obsolete("Set the padding of your panel directly or use styles")]
 		public static Padding DefaultPadding = Padding.Empty;
 
 		/// <summary>
@@ -137,18 +137,7 @@ namespace Eto.Forms
 			get { return Handler.Content; }
 			set
 			{
-				var old = Handler.Content;
-				if (old != value)
-				{
-					if (old != null)
-						RemoveParent(old);
-					if (value != null)
-					{
-						SetParent(value, () => Handler.Content = value);
-					}
-					else
-						Handler.Content = value;
-				}
+				SetParent(value, () => Handler.Content = value, Handler.Content);
 			}
 		}
 

@@ -11,7 +11,13 @@ namespace Eto.Forms.ThemedControls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ThemedSpinnerMode
 	{
+		/// <summary>
+		/// Shows lines for each element in the spinner
+		/// </summary>
 		Line,
+		/// <summary>
+		/// Shows dots for each element in the spinner
+		/// </summary>
 		Circle,
 	}
 
@@ -22,7 +28,13 @@ namespace Eto.Forms.ThemedControls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ThemedSpinnerDirection
 	{
+		/// <summary>
+		/// Spins clockwise
+		/// </summary>
 		Clockwise = 1,
+		/// <summary>
+		/// Spins counter-clockwise
+		/// </summary>
 		CounterClockwise = -1
 	}
 
@@ -155,6 +167,10 @@ namespace Eto.Forms.ThemedControls
 			Control.Invalidate();
 		}
 
+		/// <summary>
+		/// Called after all other controls have been loaded
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
@@ -162,6 +178,10 @@ namespace Eto.Forms.ThemedControls
 				timer.Start();
 		}
 
+		/// <summary>
+		/// Called when the control is unloaded, which is when it is not currently on a displayed window
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);

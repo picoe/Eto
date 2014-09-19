@@ -688,7 +688,7 @@ namespace Eto.WinForms
 
 		public static swf.SelectionRange ToSWF(this Range<DateTime> range)
 		{
-			return range != null ? new swf.SelectionRange(range.Start, range.End) : null;
+			return new swf.SelectionRange(range.Start, range.End);
 		}
 	}
 }

@@ -273,8 +273,23 @@ namespace Eto.Forms
 		/// <returns><c>true</c>, if parent was set, <c>false</c> otherwise.</returns>
 		/// <param name="child">Child to set the parent</param>
 		/// <param name="assign">Method to assign the child to the handler</param>
-		protected void SetParent(Control child, Action assign)
+		/// <param name="previousChild">Previous child that the new child is replacing.</param>
+		protected void SetParent(Control child, Action assign, Control previousChild = null)
 		{
+			bool triggerPrevious = false;
+			if (previousChild != null && !ReferenceEquals(previousChild.Parent, null) && (!ReferenceEquals(previousChild, child) || !ReferenceEquals(child.Parent, this)))
+			{
+#if DEBUG
+				if (!ReferenceEquals(previousChild.Parent, this))
+					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
+#endif
+				if (previousChild.Loaded)
+				{
+					previousChild.TriggerUnLoad(EventArgs.Empty);
+				}
+				previousChild.Parent = null;
+				triggerPrevious = true;
+			}
 			if (child != null && !ReferenceEquals(child.Parent, this))
 			{
 				// Detach so parent can remove from controls collection if necessary.
@@ -293,10 +308,14 @@ namespace Eto.Forms
 						assign();
 						child.TriggerLoadComplete(EventArgs.Empty);
 					}
+					if (triggerPrevious)
+						previousChild.TriggerDataContextChanged(EventArgs.Empty);
 					return;
 				}
 			}
 			assign();
+			if (triggerPrevious)
+				previousChild.TriggerDataContextChanged(EventArgs.Empty);
 		}
 
 		/// <summary>

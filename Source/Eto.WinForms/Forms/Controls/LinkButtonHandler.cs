@@ -8,7 +8,6 @@ namespace Eto.WinForms
 {
 	public class LinkButtonHandler : WindowsControl<swf.LinkLabel, LinkButton, LinkButton.ICallback>, LinkButton.IHandler
 	{
-
 		public LinkButtonHandler()
 		{
 			Control = new swf.LinkLabel
@@ -36,5 +35,11 @@ namespace Eto.WinForms
 			}
 		}
 
+
+		public Color DisabledTextColor
+		{
+			get { return Control.DisabledLinkColor.ToEto(); }
+			set { Control.DisabledLinkColor = value.ToSD(); }
+		}
 	}
 }

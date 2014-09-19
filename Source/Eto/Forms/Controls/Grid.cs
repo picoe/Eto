@@ -220,18 +220,23 @@ namespace Eto.Forms
 			Properties.TriggerEvent(CellFormattingEvent, this, e);
 		}
 
+		/// <summary>
+		/// Occurs when the <see cref="SelectedItems"/> is changed.
+		/// </summary>
 		public event EventHandler<EventArgs> SelectedItemsChanged
 		{
 			add { SelectionChanged += value; }
 			remove { SelectionChanged -= value; }
 		}
 
+		/// <summary>
+		/// Occurs when the <see cref="SelectedRows"/> is changed.
+		/// </summary>
 		public event EventHandler<EventArgs> SelectedRowsChanged
 		{
 			add { SelectionChanged += value; }
 			remove { SelectionChanged -= value; }
 		}
-
 
 		#endregion
 

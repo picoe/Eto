@@ -22,6 +22,7 @@ namespace Eto.Drawing
 		readonly object controlObject;
 		readonly Image image;
 		readonly int bitsPerPixel;
+		readonly int bytesPerPixel;
 
 		/// <summary>
 		/// Initializes a new instance of the BitmapData class
@@ -38,6 +39,7 @@ namespace Eto.Drawing
 			this.scanWidth = scanWidth;
 			this.bitsPerPixel = bitsPerPixel;
 			this.controlObject = controlObject;
+			this.bytesPerPixel = (bitsPerPixel + 7) / 8;
 		}
 
 		/// <summary>
@@ -64,7 +66,7 @@ namespace Eto.Drawing
 		/// <value>The bytes per pixel</value>
 		public int BytesPerPixel
 		{
-			get { return (bitsPerPixel + 7) / 8;}
+			get { return bytesPerPixel; }
 		}
 
 		/// <summary>
@@ -151,16 +153,26 @@ namespace Eto.Drawing
 			var pos = (byte*)Data;
 			pos += x * BytesPerPixel + y * ScanWidth;
 
-			var col = TranslateDataToArgb(*((int*)pos));
 			if (BytesPerPixel == 4)
 			{
+				var col = TranslateDataToArgb(*((int*)pos));
 				return Color.FromArgb(col);
 			}
 			if (BytesPerPixel == 3)
 			{
+				var col = TranslateDataToArgb(*((int*)pos));
 				return Color.FromRgb(col);
 			}
-			throw new NotSupportedException("This PixelFormat is not supported by GetPixel. Must be 3 or 4 bytes per pixel");
+			var bmp = Image as IndexedBitmap;
+			if (bmp != null)
+			{
+				if (BytesPerPixel == 1)
+				{
+					var col = *pos;
+					return bmp.Palette[col];
+				}
+			}
+			throw new NotSupportedException("This PixelFormat is not supported by GetPixel. Must be 24 or 32 bits per pixel, or 8 bit indexed");
 		}
 
 		/// <summary>

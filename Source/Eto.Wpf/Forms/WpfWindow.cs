@@ -440,8 +440,8 @@ namespace Eto.Wpf.Forms
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Background.ToEtoColor(); }
-			set { Control.Background = value.ToWpfBrush(Control.Background); }
+			get { return content.Background.ToEtoColor(); }
+			set { content.Background = value.ToWpfBrush(content.Background); }
 		}
 
 		public Screen Screen

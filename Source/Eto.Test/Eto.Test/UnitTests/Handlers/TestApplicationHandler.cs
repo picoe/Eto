@@ -39,7 +39,6 @@ namespace Eto.Test.UnitTests.Handlers
 
 		async Task<Action> GetNextAction()
 		{
-			Action action;
 			tcsInvoke.Task.Wait();
 			lock (invoke_lock)
 			{
@@ -68,11 +67,6 @@ namespace Eto.Test.UnitTests.Handlers
 				running = false;
 				tcsInvoke.SetResult(true);
 			}
-		}
-
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			throw new NotImplementedException();
 		}
 
 		public void Open(string url)
@@ -122,11 +116,6 @@ namespace Eto.Test.UnitTests.Handlers
 		}
 
 		public void RunIteration()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
 		{
 			throw new NotImplementedException();
 		}

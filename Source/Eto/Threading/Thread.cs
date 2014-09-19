@@ -4,7 +4,7 @@ namespace Eto.Threading
 {
 	/// <summary>
 	/// Provides access to platform-specific threading.
-	/// Not all platforms implement this as you can use <see cref="System.Threading.Thread"/> instead in most cases.
+	/// Not all platforms implement this as you can use System.Threading.Thread instead in most cases.
 	/// </summary>
 	/// <remarks>
 	/// Most platforms have a concept of threads, though some (e.g. WinRT) do not.

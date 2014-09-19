@@ -3,6 +3,9 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Button that is visually represented like a hyperlink on a web page.
+	/// </summary>
 	[Handler(typeof(LinkButton.IHandler))]
 	public class LinkButton : TextControl
 	{
@@ -31,10 +34,24 @@ namespace Eto.Forms
 			Properties.TriggerEvent(ClickEvent, this, e);
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		/// <value>The color of the text.</value>
 		public Color TextColor
 		{
 			get { return Handler.TextColor; }
 			set { Handler.TextColor = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the text when the control is disabled.
+		/// </summary>
+		/// <value>The color of the text when disabled.</value>
+		public Color DisabledTextColor
+		{
+			get { return Handler.DisabledTextColor; }
+			set { Handler.DisabledTextColor = value; }
 		}
 
 		static readonly object callback = new Callback();
@@ -76,7 +93,15 @@ namespace Eto.Forms
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public new interface IHandler : TextControl.IHandler
 		{
+			/// <summary>
+			/// Gets or sets the color of the text.
+			/// </summary>
 			Color TextColor { get; set; }
+
+			/// <summary>
+			/// Gets or sets the color of the text when the control is disabled.
+			/// </summary>
+			Color DisabledTextColor { get; set; }
 		}
 	}
 }

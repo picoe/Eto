@@ -33,8 +33,20 @@ namespace Eto.Forms
 
 	#endregion
 
+	/// <summary>
+	/// Interface for a control that can preserve selected items
+	/// </summary>
+	/// <remarks>
+	/// A selection preserver is used to save and restore the selected items when the data store changes
+	/// dramatically after a sort or server-side filtering.
+	/// Controls should implement <see cref="ISelectableControl{T}"/> to create instances of the selection preserver.
+	/// </remarks>
 	public interface ISelectionPreserver : IDisposable
 	{
+		/// <summary>
+		/// Gets or sets the selected items in the control.
+		/// </summary>
+		/// <value>The selected items.</value>
 		IEnumerable<object> SelectedItems { get; set; }
 	}
 
@@ -44,23 +56,59 @@ namespace Eto.Forms
 	/// <seealso cref="SelectableFilterCollection{T}"/>
 	public interface ISelectable<out T>
 	{
+		/// <summary>
+		/// Gets the selected items.
+		/// </summary>
+		/// <value>The selected items.</value>
 		IEnumerable<T> SelectedItems { get; }
 
+		/// <summary>
+		/// Gets or sets the selected rows.
+		/// </summary>
+		/// <value>The selected rows.</value>
 		IEnumerable<int> SelectedRows { get; set; }
 
+		/// <summary>
+		/// Selects the specified <paramref name="row"/>.
+		/// </summary>
+		/// <param name="row">Row to select.</param>
 		void SelectRow(int row);
 
+		/// <summary>
+		/// Unselects the specified <paramref name="row"/>.
+		/// </summary>
+		/// <param name="row">Row to unselected.</param>
 		void UnselectRow(int row);
 
+		/// <summary>
+		/// Selects all rows represented in the data store.
+		/// </summary>
 		void SelectAll();
 
+		/// <summary>
+		/// Unselects all rows.
+		/// </summary>
 		void UnselectAll();
 	}
 
+	/// <summary>
+	/// Interface for a control that can preserve its selection.
+	/// </summary>
 	public interface ISelectableControl<out T> : ISelectable<T>
 	{
+		/// <summary>
+		/// Gets a new instance of a selection preserver.
+		/// </summary>
+		/// <remarks>
+		/// This returns a selection preserver that can be used to save the selected items of a control.
+		/// Typically, this is used when the selection may encompass items that are not visible in the control.
+		/// </remarks>
+		/// <value>The selection preserver.</value>
 		ISelectionPreserver SelectionPreserver { get; }
 
+		/// <summary>
+		/// Occurs when the <see cref="ISelectable{T}.SelectedItems"/> is changed.
+		/// </summary>
 		event EventHandler<EventArgs> SelectedItemsChanged;
 	}
 
@@ -86,20 +134,38 @@ namespace Eto.Forms
 		Dictionary<T, int> viewToModel;
 		Dictionary<int, int> modelToView;
 
+		/// <summary>
+		/// Gets the parent that this collection is attached to.
+		/// </summary>
+		/// <value>The parent selectable control.</value>
 		public ISelectableControl<object> Parent { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.SelectableFilterCollection{T}"/> class.
+		/// </summary>
+		/// <param name="parent">Parent to attach this instance to.</param>
+		/// <param name="collection">Collection for the source of this collection.</param>
 		public SelectableFilterCollection(ISelectableControl<object> parent, IList<T> collection)
 			: base(collection)
 		{
 			Initialize(parent);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.SelectableFilterCollection{T}"/> class.
+		/// </summary>
+		/// <param name="parent">Parent to attach this instance to.</param>
+		/// <param name="collection">Collection for the source of this collection.</param>
 		public SelectableFilterCollection(ISelectableControl<object> parent, IEnumerable<T> collection)
 			: base(collection)
 		{
 			Initialize(parent);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.SelectableFilterCollection{T}"/> class.
+		/// </summary>
+		/// <param name="parent">Parent to attach this instance to.</param>
 		public SelectableFilterCollection(ISelectableControl<object> parent)
 		{
 			Initialize(parent);
@@ -127,6 +193,9 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Rebuilds the filtered/sorted view of this collection
+		/// </summary>
 		protected override void Rebuild()
 		{
 			base.Rebuild();
@@ -164,19 +233,34 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Occurs when the selection changes.
+		/// </summary>
 		public event EventHandler<EventArgs> SelectionChanged;
 
+		/// <summary>
+		/// Raises the <see cref="SelectionChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectionChanged(EventArgs e)
 		{
 			if (SelectionChanged != null)
 				SelectionChanged(this, e);
 		}
 
+		/// <summary>
+		/// Gets the selected items.
+		/// </summary>
+		/// <value>The selected items.</value>
 		public IEnumerable<T> SelectedItems
 		{
 			get { return selectedAll ? Items : selectedItems ?? Enumerable.Empty<T>(); }
 		}
 
+		/// <summary>
+		/// Gets or sets the selected rows in the underlying list.
+		/// </summary>
+		/// <value>The selected rows in the underlying list.</value>
 		public IEnumerable<int> SelectedRows
 		{
 			get
@@ -203,6 +287,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Selects the specified <paramref name="row"/> in the underlying list.
+		/// </summary>
+		/// <param name="row">Row to select.</param>
 		public void SelectRow(int row)
 		{
 			if (HasFilterOrSort)
@@ -220,6 +308,10 @@ namespace Eto.Forms
 				Parent.SelectRow(row);
 		}
 
+		/// <summary>
+		/// Unselects the specified <paramref name="row"/> in the underlying list.
+		/// </summary>
+		/// <param name="row">Row to unselect.</param>
 		public void UnselectRow(int row)
 		{
 			selectedAll = false;
@@ -237,6 +329,9 @@ namespace Eto.Forms
 				Parent.UnselectRow(row);
 		}
 
+		/// <summary>
+		/// Unselects all rows.
+		/// </summary>
 		public void UnselectAll()
 		{
 			selectedItems = null;
@@ -244,6 +339,9 @@ namespace Eto.Forms
 			Parent.UnselectAll();
 		}
 
+		/// <summary>
+		/// Selects all rows in the underlying list.
+		/// </summary>
 		public void SelectAll()
 		{
 			selectedAll = true;
@@ -251,6 +349,9 @@ namespace Eto.Forms
 			Parent.SelectAll();
 		}
 
+		/// <summary>
+		/// Clear this collection.
+		/// </summary>
 		public override void Clear()
 		{
 			if (selectedAll || (selectedItems != null && selectedItems.Count > 0))
@@ -262,6 +363,10 @@ namespace Eto.Forms
 			base.Clear();
 		}
 
+		/// <summary>
+		/// Remove the specified item from this collection.
+		/// </summary>
+		/// <param name="item">Item to remove.</param>
 		public override bool Remove(T item)
 		{
 			RemoveSelectedItem(item);
@@ -284,6 +389,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Removes the item at the specified <paramref name="index"/>.
+		/// </summary>
+		/// <param name="index">Index of the item to remove in this collection.</param>
 		public override void RemoveAt(int index)
 		{
 			RemoveSelectedItem(this[index]);
@@ -301,30 +410,53 @@ namespace Eto.Forms
 		List<T> items;
 		List<T> filtered;
 		Func<T, bool> filter;
-		SortComparer sort;
+		Comparison<T> sort;
 		CollectionHandler changedHandler;
 
+		/// <summary>
+		/// Gets the underlying list of items that the filtered collection is based off.
+		/// </summary>
+		/// <value>The underlying items.</value>
 		public IList<T> Items { get { return items; } }
 
+		/// <summary>
+		/// Gets a value indicating whether this instance has filtering or sorting.
+		/// </summary>
+		/// <value><c>true</c> if this instance is filtered or sorted; otherwise, <c>false</c>.</value>
 		protected bool HasFilterOrSort { get { return filtered != null; } }
 
-		class SortComparer : IComparer<T>
-		{
-			public Comparison<T> Comparison { get; set; }
-
-			public int Compare(T x, T y)
-			{
-				return Comparison(x, y);
-			}
-		}
-
+		/// <summary>
+		/// Gets or sets the delegate to create a change object each time the collection is filtered.
+		/// </summary>
+		/// <remarks>
+		/// This is used so you can perform operations before or after a change has been made to the collection.
+		/// The return value of the delegate is disposed after the change, allowing the object to perform any operations
+		/// afterwards.
+		/// </remarks>
+		/// <value>The change delegate.</value>
 		public Func<IDisposable> Change { get; set; }
 
+		/// <summary>
+		/// Creates a change object before any change is made to the filter collection.
+		/// </summary>
+		/// <remarks>
+		/// This should be disposed after the change is completed.
+		/// </remarks>
+		/// <returns>The change instance.</returns>
 		protected IDisposable CreateChange()
 		{
 			return Change != null ? Change() : null;
 		}
 
+		/// <summary>
+		/// Gets or sets the filter delegate for items in this collection.
+		/// </summary>
+		/// <remarks>
+		/// This will update this collection to contain only items that match the specified filter from the underlying list.
+		/// This triggers a collection changed event, so any control that is using this collection as its data store should
+		/// automatically update to show the new results.
+		/// </remarks>
+		/// <value>The filter delegate.</value>
 		public Func<T, bool> Filter
 		{
 			get { return filter; }
@@ -339,28 +471,42 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the sort.
+		/// </summary>
+		/// <value>The sort.</value>
 		public Comparison<T> Sort
 		{
-			get { return sort != null ? sort.Comparison : null; }
+			get { return sort; }
 			set
 			{
 				using (CreateChange())
 				{
-					sort = value != null ? new SortComparer { Comparison = value } : null;
+					sort = value;
 					Rebuild();
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 				}
 			}
 		}
 
+		/// <summary>
+		/// Occurs when the collection is changed.
+		/// </summary>
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
+		/// <summary>
+		/// Raises the <see cref="CollectionChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
 		protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			if (CollectionChanged != null)
 				CollectionChanged(this, e);
 		}
 
+		/// <summary>
+		/// Rebuilds the filtered/sorted view of this collection
+		/// </summary>
 		protected virtual void Rebuild()
 		{
 			if (filter != null || sort != null)
@@ -373,6 +519,10 @@ namespace Eto.Forms
 				filtered = null;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.FilterCollection{T}"/> class with the specified <paramref name="collection"/>.
+		/// </summary>
+		/// <param name="collection">Collection of items as the source of this collection.</param>
 		public FilterCollection(IEnumerable<T> collection)
 		{
 			var changed = collection as INotifyCollectionChanged;
@@ -425,11 +575,22 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.FilterCollection{T}"/> class.
+		/// </summary>
 		public FilterCollection()
 		{
 			items = new List<T>();
 		}
 
+		/// <summary>
+		/// Adds the specified <paramref name="items"/> to the collection.
+		/// </summary>
+		/// <remarks>
+		/// Any item that does not match the existing <see cref="Filter"/> will be only added to the underlying collection
+		/// and not be visible in the filtered collection.
+		/// </remarks>
+		/// <param name="items">Items to add to the collection.</param>
 		public void AddRange(IEnumerable<T> items)
 		{
 			if (filtered != null)
@@ -444,6 +605,15 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Inserts the <paramref name="items"/> to the collection at the specified <paramref name="index"/>.
+		/// </summary>
+		/// <remarks>
+		/// Any item that does not match the existing <see cref="Filter"/> will be only added to the underlying collection
+		/// and not be visible in the filtered collection.
+		/// </remarks>
+		/// <param name="index">Index to start adding the items.</param>
+		/// <param name="items">Items to add to the collection.</param>
 		public void InsertRange(int index, IEnumerable<T> items)
 		{
 			using (CreateChange())
@@ -514,6 +684,11 @@ namespace Eto.Forms
 			return filtered != null ? filtered.IndexOf(item) : items.IndexOf(item);
 		}
 
+		/// <summary>
+		/// Insert the item at the specified index.
+		/// </summary>
+		/// <param name="index">Index to insert at.</param>
+		/// <param name="item">Item to insert.</param>
 		public virtual void Insert(int index, T item)
 		{
 			using (CreateChange())
@@ -553,6 +728,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Removes the item at the specified index.
+		/// </summary>
+		/// <param name="index">Index of the item to remove.</param>
 		public virtual void RemoveAt(int index)
 		{
 			using (CreateChange())
@@ -573,6 +752,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the <see cref="FilterCollection{T}"/> at the specified index.
+		/// </summary>
+		/// <param name="index">Index of the item to get/set.</param>
 		public virtual T this [int index]
 		{
 			get { return filtered != null ? filtered[index] : items[index]; }
@@ -599,6 +782,10 @@ namespace Eto.Forms
 
 		#region ICollection<T> implementation
 
+		/// <summary>
+		/// Add the specified item to the collection.
+		/// </summary>
+		/// <param name="item">Item to add.</param>
 		public virtual void Add(T item)
 		{
 			using (CreateChange())
@@ -611,6 +798,9 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Clears the items from the collection.
+		/// </summary>
 		public virtual void Clear()
 		{
 			using (CreateChange())
@@ -622,17 +812,30 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating that the specified <paramref name="item"/> is contained within this collection.
+		/// </summary>
+		/// <param name="item">Item to find.</param>
 		public bool Contains(T item)
 		{
 			return filtered != null ? filtered.Contains(item) : items.Contains(item);
 		}
 
+		/// <summary>
+		/// Copies the current filtered collection to the specified array.
+		/// </summary>
+		/// <param name="array">Array to copy to.</param>
+		/// <param name="arrayIndex">Index in the array to start copying to.</param>
 		public void CopyTo(T[] array, int arrayIndex)
 		{
 			if (filtered != null)
 				filtered.CopyTo(array, arrayIndex);
 		}
 
+		/// <summary>
+		/// Remove the specified item from the collection.
+		/// </summary>
+		/// <param name="item">Item to remove.</param>
 		public virtual bool Remove(T item)
 		{
 			using (CreateChange())
@@ -646,11 +849,19 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets the count of items in the collection.
+		/// </summary>
+		/// <value>The count of items.</value>
 		public int Count
 		{
 			get { return filtered != null ? filtered.Count : items.Count; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this collection is read only.
+		/// </summary>
+		/// <value><c>true</c> if this collection is read only; otherwise, <c>false</c>.</value>
 		public bool IsReadOnly
 		{
 			get { return ((IList<T>)items).IsReadOnly; }
@@ -660,6 +871,10 @@ namespace Eto.Forms
 
 		#region IEnumerable<T> implementation
 
+		/// <summary>
+		/// Gets the enumerator for the collection.
+		/// </summary>
+		/// <returns>The enumerator.</returns>
 		public IEnumerator<T> GetEnumerator()
 		{
 			return filtered != null ? filtered.GetEnumerator() : items.GetEnumerator();
@@ -735,35 +950,6 @@ namespace Eto.Forms
 		}
 
 		#endregion
-
-		#region IFilterable implementation
-
-		/*
-		Func<object, bool> IFilterable.Filter
-		{
-			get { return Filter != null ? new Func<object, bool>(o => Filter((T)o)) : null; }
-			set
-			{
-				Filter = o => value(o);
-			}
-		}
-
-
-		Comparison<object> IFilterable.Sort2
-		{
-			get
-			{
-				return Sort != null ? new Comparison<object>((x,y) => Sort((T)x, (T)y)) : null;
-			}
-			set
-			{
-				Sort = value;
-			}
-		}*/
-
-
-		#endregion
-
 	}
 }
 

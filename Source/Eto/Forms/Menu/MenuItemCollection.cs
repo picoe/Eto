@@ -13,10 +13,12 @@ namespace Eto.Forms
 	public class MenuItemCollection : Collection<MenuItem>
 	{
 		internal readonly Menu.ISubmenuHandler parent;
+		internal readonly Menu parentItem;
 
-		internal MenuItemCollection(Menu.ISubmenuHandler parent)
+		internal MenuItemCollection(Menu.ISubmenuHandler parent, Menu parentItem)
 		{
 			this.parent = parent;
+			this.parentItem = parentItem;
 		}
 
 		/// <summary>
@@ -93,20 +95,15 @@ namespace Eto.Forms
 		/// <param name="item">Menu item to add</param>
 		public new void Add(MenuItem item)
 		{
-			if (item.Order >= 0)
+			int previousIndex = -1;
+			for (var i = 0; i < Count; ++i)
 			{
-				int previousIndex = -1;
-				for (var i = 0; i < Count; ++i)
-				{
-					if (this[i].Order <= item.Order)
-						previousIndex = i;
-					else
-						break;
-				}
-				Insert(previousIndex + 1, item);
+				if (this[i].Order <= item.Order)
+					previousIndex = i;
+				else
+					break;
 			}
-			else
-				base.Add(item);
+			Insert(previousIndex + 1, item);
 		}
 
 		/// <summary>
@@ -114,18 +111,19 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="command">Command to add.</param>
 		/// <param name="order">Order of the command to add.</param>
-		public void Add(Command command, int order = -1)
+		public MenuItem Add(Command command, int order = 0)
 		{
 			var item = command.CreateMenuItem();
 			item.Order = order;
 			Add(item);
+			return item;
 		}
 
 		/// <summary>
 		/// Adds the separator with the specified order.
 		/// </summary>
 		/// <param name="order">Order of the separator to add.</param>
-		public void AddSeparator(int order = -1)
+		public void AddSeparator(int order = 0)
 		{
 			Add(new SeparatorMenuItem { Order = order });
 		}
@@ -169,7 +167,7 @@ namespace Eto.Forms
 		/// <param name="order">Order of the submenu item to add. Not used if there is already a submenu with the specified text.</param>
 		/// <param name="plaintextMatch">If set to <c>true</c>, matches excluding any mnemonic symbol idenfifiers.</param>
 		/// <param name="create">If set to <c>true</c>, creates the menu if it doesn't exist in the collection, otherwise <c>false</c>.</param>
-		public ButtonMenuItem GetSubmenu(string submenuText, int order = -1, bool plaintextMatch = true, bool create = true)
+		public ButtonMenuItem GetSubmenu(string submenuText, int order = 0, bool plaintextMatch = true, bool create = true)
 		{
 			// replace accelerators if plaintextMatch is true
 			Func<string, string> convert = s => plaintextMatch ? s.Replace("&", "") : s;

@@ -15,6 +15,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddAutoSized(LongerButton(), centered: true);
 			layout.AddAutoSized(ColourButton(), centered: true);
 			layout.AddAutoSized(DisabledButton(), centered: true);
+			layout.AddAutoSized(DisabledButtonWithColor(), centered: true);
 			layout.Add(StretchedButton());
 			layout.Add(null);
 
@@ -52,6 +53,13 @@ namespace Eto.Test.Sections.Controls
 		Control DisabledButton()
 		{
 			var control = new LinkButton { Text = "Disabled Button", Enabled = false };
+			LogEvents(control);
+			return control;
+		}
+
+		Control DisabledButtonWithColor()
+		{
+			var control = new LinkButton { Text = "Disabled Button with color", DisabledTextColor = Colors.Yellow, Enabled = false };
 			LogEvents(control);
 			return control;
 		}

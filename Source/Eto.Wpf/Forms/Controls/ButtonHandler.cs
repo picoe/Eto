@@ -23,29 +23,30 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override Size DefaultSize { get { return MinimumSize; } }
 
-		public ButtonHandler ()
+		public ButtonHandler()
 		{
 			Control = new swc.Button();
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
-			label = new swc.Label {
+			label = new swc.Label
+			{
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				HorizontalAlignment = sw.HorizontalAlignment.Center,
-				Padding = new sw.Thickness (3, 0, 3, 0),
+				Padding = new sw.Thickness(3, 0, 3, 0),
 				Visibility = sw.Visibility.Collapsed
 			};
-			swc.Grid.SetColumn (label, 1);
-			swc.Grid.SetRow (label, 1);
-			swcimage = new swc.Image ();
-			SetImagePosition ();
-			grid = new swc.Grid ();
-			grid.ColumnDefinitions.Add (new swc.ColumnDefinition { Width = sw.GridLength.Auto });
-			grid.ColumnDefinitions.Add (new swc.ColumnDefinition { Width = new sw.GridLength (1, sw.GridUnitType.Star) });
-			grid.ColumnDefinitions.Add (new swc.ColumnDefinition { Width = sw.GridLength.Auto });
-			grid.RowDefinitions.Add (new swc.RowDefinition { Height = sw.GridLength.Auto });
-			grid.RowDefinitions.Add (new swc.RowDefinition { Height = new sw.GridLength (1, sw.GridUnitType.Star) });
-			grid.RowDefinitions.Add (new swc.RowDefinition { Height = sw.GridLength.Auto });
-			grid.Children.Add (swcimage);
-			grid.Children.Add (label);
+			swc.Grid.SetColumn(label, 1);
+			swc.Grid.SetRow(label, 1);
+			swcimage = new swc.Image();
+			SetImagePosition();
+			grid = new swc.Grid();
+			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
+			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Star) });
+			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
+			grid.RowDefinitions.Add(new swc.RowDefinition { Height = sw.GridLength.Auto });
+			grid.RowDefinitions.Add(new swc.RowDefinition { Height = new sw.GridLength(1, sw.GridUnitType.Star) });
+			grid.RowDefinitions.Add(new swc.RowDefinition { Height = sw.GridLength.Auto });
+			grid.Children.Add(swcimage);
+			grid.Children.Add(label);
 
 			/*
 			var panel = new swc.Control { IsTabStop = false };
@@ -65,9 +66,10 @@ namespace Eto.Wpf.Forms.Controls
 		public string Text
 		{
 			get { return (label.Content as string).ToEtoMneumonic(); }
-			set {
-				label.Content = value.ToWpfMneumonic ();
-				SetImagePosition ();
+			set
+			{
+				label.Content = value.ToWpfMneumonic();
+				SetImagePosition();
 			}
 		}
 
@@ -77,46 +79,47 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				image = value;
-				swcimage.Source = image.ToWpf ();
+				swcimage.Source = image.ToWpf();
 			}
 		}
 
-		void SetImagePosition ()
+		void SetImagePosition()
 		{
-			bool hideLabel = string.IsNullOrEmpty ((string)label.Content);
+			bool hideLabel = string.IsNullOrEmpty((string)label.Content);
 			int col, row;
-			switch (imagePosition) {
-			case ButtonImagePosition.Left:
-				col = 0; row = 1;
-				Control.HorizontalContentAlignment = sw.HorizontalAlignment.Stretch;
-				Control.VerticalContentAlignment = sw.VerticalAlignment.Center;
-				break;
-			case ButtonImagePosition.Right:
-				col = 2; row = 1;
-				Control.HorizontalContentAlignment = sw.HorizontalAlignment.Stretch;
-				Control.VerticalContentAlignment = sw.VerticalAlignment.Center;
-				break;
-			case ButtonImagePosition.Above:
-				col = 1; row = 0;
-				Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
-				Control.VerticalContentAlignment = hideLabel ? sw.VerticalAlignment.Center : sw.VerticalAlignment.Stretch;
-				break;
-			case ButtonImagePosition.Below:
-				col = 1; row = 2;
-				Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
-				Control.VerticalContentAlignment = hideLabel ? sw.VerticalAlignment.Center : sw.VerticalAlignment.Stretch;
-				break;
-			case ButtonImagePosition.Overlay:
-				col = 1; row = 1;
-				Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
-				Control.VerticalContentAlignment = sw.VerticalAlignment.Center;
-				break;
-			default:
-				throw new NotSupportedException ();
+			switch (imagePosition)
+			{
+				case ButtonImagePosition.Left:
+					col = 0; row = 1;
+					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Stretch;
+					Control.VerticalContentAlignment = sw.VerticalAlignment.Center;
+					break;
+				case ButtonImagePosition.Right:
+					col = 2; row = 1;
+					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Stretch;
+					Control.VerticalContentAlignment = sw.VerticalAlignment.Center;
+					break;
+				case ButtonImagePosition.Above:
+					col = 1; row = 0;
+					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
+					Control.VerticalContentAlignment = hideLabel ? sw.VerticalAlignment.Center : sw.VerticalAlignment.Stretch;
+					break;
+				case ButtonImagePosition.Below:
+					col = 1; row = 2;
+					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
+					Control.VerticalContentAlignment = hideLabel ? sw.VerticalAlignment.Center : sw.VerticalAlignment.Stretch;
+					break;
+				case ButtonImagePosition.Overlay:
+					col = 1; row = 1;
+					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
+					Control.VerticalContentAlignment = sw.VerticalAlignment.Center;
+					break;
+				default:
+					throw new NotSupportedException();
 			}
 
-			swc.Grid.SetColumn (swcimage, col);
-			swc.Grid.SetRow (swcimage, row);
+			swc.Grid.SetColumn(swcimage, col);
+			swc.Grid.SetRow(swcimage, row);
 			label.Visibility = hideLabel ? sw.Visibility.Collapsed : sw.Visibility.Visible;
 		}
 
@@ -125,10 +128,24 @@ namespace Eto.Wpf.Forms.Controls
 			get { return imagePosition; }
 			set
 			{
-				if (imagePosition != value) {
+				if (imagePosition != value)
+				{
 					imagePosition = value;
-					SetImagePosition ();
+					SetImagePosition();
 				}
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Button.TextChangedEvent:
+					// text is never changed
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 	}

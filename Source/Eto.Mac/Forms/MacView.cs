@@ -83,7 +83,7 @@ namespace Eto.Mac.Forms
 
 		Control.ICallback Callback { get; }
 
-		Cursor Cursor { get; set; }
+		Cursor CurrentCursor { get; }
 
 		void PostKeyDown(KeyEventArgs e);
 
@@ -213,7 +213,7 @@ namespace Eto.Mac.Forms
 			if (mouseDelegate == null)
 				mouseDelegate = new MouseDelegate { Handler = this };
 			var options = mouseOptions | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect;
-			tracking = new NSTrackingArea(new CGRect(new CGPoint(), EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
+			tracking = new NSTrackingArea(new CGRect(CGPoint.Empty, EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
 			EventControl.AddTrackingArea(tracking);
 		}
 
@@ -527,12 +527,17 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var cursor = handler.Cursor;
+				var cursor = handler.CurrentCursor;
 				if (cursor != null)
 				{
 					handler.EventControl.AddCursorRect(new CGRect(CGPoint.Empty, handler.EventControl.Frame.Size), cursor.ControlObject as NSCursor);
 				}
 			}
+		}
+
+		public virtual Cursor CurrentCursor
+		{
+			get { return Cursor; }
 		}
 
 		public virtual Cursor Cursor

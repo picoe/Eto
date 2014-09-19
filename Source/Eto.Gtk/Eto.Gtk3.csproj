@@ -53,14 +53,7 @@
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.Data">
-      <Name>System.Data</Name>
-    </Reference>
-    <Reference Include="System.Xml">
-      <Name>System.Xml</Name>
-    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
     <Reference Include="atk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <HintPath>..\..\Libraries\GtkSharp3\atk-sharp.dll</HintPath>
       <Private>False</Private>
@@ -270,6 +263,7 @@
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
+    <Compile Include="Forms\GtkSynchronizationContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

@@ -296,6 +296,19 @@ namespace Eto
 		}
 	}
 
+	/// <summary>
+	/// Helper class to handle collection change events of an <see cref="IEnumerable"/>
+	/// </summary>
+	/// <remarks>
+	/// This is used for the platform handler of controls that use collections.
+	/// This class helps detect changes to a collection so that the appropriate action
+	/// can be taken to update the UI with the changes.
+	/// 
+	/// Use this class as a base when you only have an <see cref="IEnumerable"/>.  If the object
+	/// also implements <see cref="INotifyCollectionChanged"/> it will get changed events
+	/// otherwise you must register a new collection each time.
+	/// </remarks>
+	/// <typeparam name="TItem">Type of each item in the enumerable</typeparam>
 	public abstract class EnumerableChangedHandler<TItem> : EnumerableChangedHandler<TItem, IEnumerable<TItem>>
 	{
 	}
@@ -313,6 +326,7 @@ namespace Eto
 	/// otherwise you must register a new collection each time.
 	/// </remarks>
 	/// <typeparam name="TItem">Type of each item in the enumerable</typeparam>
+	/// <typeparam name="TCollection">Type of the collection to handle the change events for</typeparam>
 	public abstract class EnumerableChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>
 		where TCollection: class, IEnumerable<TItem>
 	{
@@ -373,6 +387,9 @@ namespace Eto
 			InitializeCollection();
 		}
 
+		/// <summary>
+		/// Initializes the collection, usually by adding the collection to the underlying handler.
+		/// </summary>
 		protected virtual void InitializeCollection()
 		{
 			if (Collection != null)

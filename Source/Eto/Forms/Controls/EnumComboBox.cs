@@ -88,6 +88,12 @@ namespace Eto.Forms
 		{
 		}
 
+		/// <summary>
+		/// Creates the default data store for the list.
+		/// </summary>
+		/// <remarks>This is used to create a data store if one is not specified by the user.
+		/// This can be used by subclasses to provide default items to populate the list.</remarks>
+		/// <returns>The default data store.</returns>
 		protected override IEnumerable<object> CreateDefaultDataStore()
 		{
 			var type = typeof (T);
@@ -110,11 +116,15 @@ namespace Eto.Forms
 			return items;
 		}
 
-		public new ObjectBinding<EnumComboBox<T>, T> SelectedValueBinding
+		/// <summary>
+		/// Gets a new binding for the <see cref="SelectedValue"/> property.
+		/// </summary>
+		/// <value>A new selected value binding.</value>
+		public new ControlBinding<EnumComboBox<T>, T> SelectedValueBinding
 		{
 			get
 			{
-				return new ObjectBinding<EnumComboBox<T>, T>(
+				return new ControlBinding<EnumComboBox<T>, T>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 

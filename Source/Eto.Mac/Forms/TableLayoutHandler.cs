@@ -95,14 +95,14 @@ namespace Eto.Mac.Forms
 #elif IOS
 			Control = new NSView();
 #endif
+			spacing = TableLayout.DefaultSpacing;
+			padding = TableLayout.DefaultPadding;
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
 
-			Spacing = TableLayout.DefaultSpacing;
-			Padding = TableLayout.DefaultPadding;
 			Widget.SizeChanged += HandleSizeChanged;
 		}
 

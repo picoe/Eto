@@ -14,34 +14,24 @@ namespace Eto.Test
 		static string prefix;
 		public static string Prefix { get { return prefix = prefix ?? Assembly.GetName().Name + "."; } }
 
-
-		public static string TestIconName = "TestIcon.ico";
-		public static string TestImageName = "TestImage.png";
-		public static string TexturesName = "Textures.png";
-
-		/// <summary>
-		/// An app can set this to translate resource names if they are linking them in.
-		/// </summary>
-		public static Func<string, string> TranslateResourceName { get; set; }
-
-		static string GetTranslatedResourceName(string s)
-		{
-			return TranslateResourceName != null ? TranslateResourceName(s) : s;
-		}
-
 		public static Icon TestIcon
 		{
-			get { return Icon.FromResource(GetTranslatedResourceName(Prefix + TestIconName), Assembly); }
+			get { return Icon.FromResource(Prefix + "TestIcon.ico", Assembly); }
 		}
 
 		public static Bitmap TestImage
 		{
-			get { return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TestImageName), Assembly); }
+			get { return Bitmap.FromResource(Prefix + "TestImage.png", Assembly); }
 		}
 
 		public static Bitmap Textures
 		{
-			get { return Bitmap.FromResource(GetTranslatedResourceName(Prefix + TexturesName), Assembly); }
+			get { return Bitmap.FromResource(Prefix + "Textures.png", Assembly); }
+		}
+
+		public static Bitmap TexturesIndexed
+		{
+			get { return Bitmap.FromResource(Prefix + "Textures.gif", Assembly); }
 		}
 	}
 }

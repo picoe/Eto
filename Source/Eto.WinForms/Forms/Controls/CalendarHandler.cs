@@ -60,7 +60,7 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					var oldRange = SelectedRange;
 					Control.MinDate = value == DateTime.MinValue ? swf.DateTimePicker.MinimumDateTime : value;
-					if (oldRange != null && oldRange.Start != SelectedRange.Start)
+					if (oldRange.Start != SelectedRange.Start)
 						Callback.OnSelectedDateChanged(Widget, EventArgs.Empty);
 					if (oldRange != SelectedRange)
 						Callback.OnSelectedRangeChanged(Widget, EventArgs.Empty);
@@ -80,7 +80,7 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					var oldRange = SelectedRange;
 					Control.MaxDate = value == DateTime.MaxValue ? swf.DateTimePicker.MaximumDateTime : value;
-					if (oldRange != null && oldRange.Start != SelectedRange.Start)
+					if (oldRange.Start != SelectedRange.Start)
 						Callback.OnSelectedDateChanged(Widget, EventArgs.Empty);
 					if (oldRange != SelectedRange)
 						Callback.OnSelectedRangeChanged(Widget, EventArgs.Empty);

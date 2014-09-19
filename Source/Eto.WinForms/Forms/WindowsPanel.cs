@@ -17,18 +17,15 @@ namespace Eto.WinForms
 		{
 			base.Initialize();
 			Padding = Panel.DefaultPadding;
-			ContainerContentControl.SuspendLayout();
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		protected override void ResumeControl(bool top = true)
 		{
-			base.OnLoadComplete(e);
-			ContainerContentControl.ResumeLayout();
+			ContainerContentControl.ResumeLayout(top);
 		}
 
-		public override void OnUnLoad(EventArgs e)
+		protected override void SuspendControl()
 		{
-			base.OnUnLoad(e);
 			ContainerContentControl.SuspendLayout();
 		}
 
@@ -56,9 +53,9 @@ namespace Eto.WinForms
 			}
 		}
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
-			var desiredSize = base.GetPreferredSize(availableSize);
+			var desiredSize = base.GetPreferredSize(availableSize, useCache);
 
 			var handler = content.GetWindowsHandler();
 			if (handler != null)
@@ -80,7 +77,7 @@ namespace Eto.WinForms
 						desiredSize.Height = desiredContentSize.Height;
 				}
 			}
-			return desiredSize + Padding.Size;
+      return desiredSize + Padding.Size;
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
@@ -95,7 +92,7 @@ namespace Eto.WinForms
 				content.SetScale(xscale, yscale);
 		}
 
-		public Padding Padding
+		public virtual Padding Padding
 		{
 			get { return ContainerContentControl.Padding.ToEto(); }
 			set { ContainerContentControl.Padding = value.ToSWF(); }
@@ -120,7 +117,9 @@ namespace Eto.WinForms
 				if (content != null)
 				{
 					SetContentScale(XScale, YScale);
-					SetContent(content.GetContainerControl());
+					var childHandler = content.GetWindowsHandler();
+					childHandler.BeforeAddControl();
+					SetContent(childHandler.ContainerControl);
 				}
 
 				if (Widget.Loaded)

@@ -6,11 +6,25 @@ using System.Linq;
 
 namespace Eto
 {
+	/// <summary>
+	/// Indirect binding to get/set values using a property of a specified object
+	/// </summary>
+	/// <remarks>
+	/// This is used when you are binding to a particular property of an object.
+	/// 
+	/// This can be used to get/set values from any object.  If you want to bind to a particular object
+	/// directly, use the <see cref="ObjectBinding{T}"/> with this class as its inner binding.
+	/// </remarks>
+	[Obsolete("Use PropertyBinding<object> instead")]
 	public class PropertyBinding : PropertyBinding<object>
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.PropertyBinding"/> class.
+		/// </summary>
 		public PropertyBinding()
 		{
 		}
+
 		/// <summary>
 		/// Initializes a new instance of the PropertyBinding with the specified property
 		/// </summary>
@@ -60,6 +74,9 @@ namespace Eto
 		/// </summary>
 		public bool IgnoreCase { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.PropertyBinding{T}"/> class.
+		/// </summary>
 		public PropertyBinding()
 		{
 		}
@@ -92,6 +109,11 @@ namespace Eto
 #endif
 		}
 
+		/// <summary>
+		/// Determines whether the dataItem contains the property this binding is bound to.
+		/// </summary>
+		/// <returns><c>true</c> if the dataItem instance has the correct property to bind to, otherwise, <c>false</c>.</returns>
+		/// <param name="dataItem">Data item to find the property.</param>
 		protected bool HasProperty(object dataItem)
 		{
 			EnsureProperty(dataItem);

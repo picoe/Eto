@@ -77,7 +77,7 @@ namespace Eto.Forms
 		{
 			var comparer = Comparer<T>.Default;
 			return comparer.Compare(Start, value) <= 0
-				&& comparer.Compare(End, value) >= 0;
+			&& comparer.Compare(End, value) >= 0;
 		}
 
 		/// <summary>
@@ -132,7 +132,7 @@ namespace Eto.Forms
 		{
 			var comparer = Comparer<T>.Default;
 			return comparer.Compare(Start, increment(range.End)) == 0
-				|| comparer.Compare(increment(End), range.Start) == 0;
+			|| comparer.Compare(increment(End), range.Start) == 0;
 		}
 
 		/// <summary>
@@ -165,7 +165,7 @@ namespace Eto.Forms
 		/// Gets the union of this instance and the specified <paramref name="range"/>, including touching ranges.
 		/// </summary>
 		/// <remarks>
-		/// This is similar to <see cref="Union(Range{t})"/>, however this handles when the two ranges are touching.
+		/// This is similar to <see cref="Union(Range{T})"/>, however this handles when the two ranges are touching.
 		/// The <paramref name="increment"/> delegate is used to determine if the ranges are touching by incrementing the ends
 		/// of the ranges and comparing that value to the start of the other range.
 		/// </remarks>
@@ -226,7 +226,7 @@ namespace Eto.Forms
 		{
 			var comparer = Comparer<T>.Default;
 			return comparer.Compare(range1.Start, range2.Start) == 0
-				&& comparer.Compare(range1.End, range2.End) == 0;
+			&& comparer.Compare(range1.End, range2.End) == 0;
 		}
 
 		/// <summary>
@@ -301,81 +301,152 @@ namespace Eto.Forms
 	[Obsolete("Use Range<int> instead")]
 	public struct Range : IEquatable<Range>
 	{
+		/// <summary>
+		/// Gets the start value of the range
+		/// </summary>
 		public int Start { get; set; }
 
+		/// <summary>
+		/// Gets or sets the length of the range.
+		/// </summary>
 		public int Length { get; set; }
 
+		/// <summary>
+		/// Gets a value indicating whether this instance is empty.
+		/// </summary>
+		/// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
 		public bool IsEmpty { get { return Length == 0; } }
 
-		public Range (int start, int length)
-			: this ()
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Range"/> struct.
+		/// </summary>
+		/// <param name="start">Start of the range.</param>
+		/// <param name="length">Length of the range.</param>
+		public Range(int start, int length)
+			: this()
 		{
 			this.Start = start;
 			this.Length = length;
 		}
 
+		/// <summary>
+		/// Creates a new instance of the <see cref="Range"/> struct with the specified start and end.
+		/// </summary>
+		/// <returns>A new instance of the Range struct.</returns>
+		/// <param name="start">Start value of the range.</param>
+		/// <param name="end">End value of the range.</param>
 		public static Range FromStartEnd(int start, int end)
 		{
 			return new Range(start, end - start + 1);
 		}
 
-		public int End {
+		/// <summary>
+		/// Gets or sets the end of the range, which is the Start + Length - 1.
+		/// </summary>
+		/// <value>The end of the range.</value>
+		public int End
+		{
 			get { return Start + Length - 1; }
-			set {
-				Length = value - Start + 1;
-			}
+			set { Length = value - Start + 1; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this range contains the specified <paramref name="value"/>
+		/// </summary>
+		/// <param name="value">Value to test.</param>
 		public bool Contains(int value)
 		{
 			return Start <= value && value <= End;
 		}
 
+		/// <summary>
+		/// Gets the intersection of this instance and the specified <paramref name="range"/>.
+		/// </summary>
+		/// <param name="range">Range to intersect with.</param>
+		/// <returns>A new instance of a range that is the intersection of this instance and the specified range, or null if they do not intersect.</returns>
 		public Range Intersect(Range range)
 		{
 			var start = Start >= range.Start ? Start : range.Start;
 			var end = End <= range.End ? End : range.End;
-            return start <= end ? Range.FromStartEnd(start, end) : default(Range);
+			return start <= end ? Range.FromStartEnd(start, end) : default(Range);
 		}
 
-		public override bool Equals (object obj)
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="Eto.Forms.Range"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with the current <see cref="Eto.Forms.Range"/>.</param>
+		/// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current <see cref="Eto.Forms.Range"/>;
+		/// otherwise, <c>false</c>.</returns>
+		public override bool Equals(object obj)
 		{
 			return obj is Range && (Range)obj == this;
 		}
 
-		public static bool operator == (Range value1, Range value2)
+		/// <summary>
+		/// Operator to compare two ranges for equality
+		/// </summary>
+		/// <param name="value1">First range to compare.</param>
+		/// <param name="value2">Second range to compare.</param>
+		/// <returns><c>true</c> if the two ranges are equal, <c>false</c> if they are not.</returns>
+		public static bool operator ==(Range value1, Range value2)
 		{
 			return (value1.Start == value2.Start) && (value1.Length == value2.Length);
 		}
 
-		public static bool operator != (Range value1, Range value2)
+		/// <summary>
+		/// Operator to compare two ranges for inequality.
+		/// </summary>
+		/// <param name="value1">First range to compare.</param>
+		/// <param name="value2">Second range to compare.</param>
+		/// <returns><c>true</c> if the two ranges are not equal, <c>false</c> if they are.</returns>
+		public static bool operator !=(Range value1, Range value2)
 		{
 			return (value1.Start != value2.Start) || (value1.Length != value2.Length);
 		}
 
-		public override int GetHashCode ()
+		/// <summary>
+		/// Serves as a hash function for a <see cref="Eto.Forms.Range"/> object.
+		/// </summary>
+		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+		public override int GetHashCode()
 		{
 			return Start ^ Length;
 		}
 
-		public override string ToString ()
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="Eto.Forms.Range"/>.
+		/// </summary>
+		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Eto.Forms.Range"/>.</returns>
+		public override string ToString()
 		{
-			return string.Format (CultureInfo.InvariantCulture, "Start={0}, Length={1}", Start, Length);
+			return string.Format(CultureInfo.InvariantCulture, "Start={0}, Length={1}", Start, Length);
 		}
 
-		public bool Equals (Range other)
+		/// <summary>
+		/// Determines whether the specified <see cref="Eto.Forms.Range"/> is equal to the current <see cref="Eto.Forms.Range"/>.
+		/// </summary>
+		/// <param name="other">The <see cref="Eto.Forms.Range"/> to compare with the current <see cref="Eto.Forms.Range"/>.</param>
+		/// <returns><c>true</c> if the specified <see cref="Eto.Forms.Range"/> is equal to the current <see cref="Eto.Forms.Range"/>;
+		/// otherwise, <c>false</c>.</returns>
+		public bool Equals(Range other)
 		{
 			return other == this;
 		}
 
+		/// <summary>
+		/// Converts a range to a <see cref="Range{T}"/> for compatibility.
+		/// </summary>
 		public static implicit operator Range<int>(Range value)
 		{
 			return new Range<int>(value.Start, value.End);
 		}
+
+		/// <summary>
+		/// Converts a <see cref="Range{T}"/> to a Range for compatibility.
+		/// </summary>
 		public static implicit operator Range(Range<int> value)
 		{
 			return Range.FromStartEnd(value.Start, value.End);
 		}
 	}
 }
-

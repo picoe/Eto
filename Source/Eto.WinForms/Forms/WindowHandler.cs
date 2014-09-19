@@ -29,6 +29,7 @@ namespace Eto.WinForms
 		swf.Panel toolbarHolder;
 		readonly swf.ToolTip tooltips = new swf.ToolTip();
 		bool resizable;
+		bool clientSizeSet;
 
 		public override swf.Control ContainerContentControl
 		{
@@ -62,6 +63,7 @@ namespace Eto.WinForms
 				{
 					content.MinimumSize = content.MaximumSize = value.ToSD();
 				}
+				clientSizeSet = value.Width != -1 || value.Height != -1;
 			}
 		}
 
@@ -97,7 +99,7 @@ namespace Eto.WinForms
 			Control.Load += (sender, e) =>
 			{
 				// ensure we auto size to the content
-				if (Control.AutoSize)
+				if (!clientSizeSet && Control.AutoSize)
 					ContainerContentControl.MinimumSize = Content.GetPreferredSize().ToSD();
 				Control.MinimumSize = Control.Size;
 				Control.AutoSize = false;
@@ -133,8 +135,8 @@ namespace Eto.WinForms
 						Callback.OnClosing(Widget, args);
 
 						if (!e.Cancel && swf.Application.OpenForms.Count <= 1
-							|| e.CloseReason == swf.CloseReason.ApplicationExitCall
-							|| e.CloseReason == swf.CloseReason.WindowsShutDown)
+						    || e.CloseReason == swf.CloseReason.ApplicationExitCall
+						    || e.CloseReason == swf.CloseReason.WindowsShutDown)
 						{
 							var app = ((ApplicationHandler)Application.Instance.Handler);
 							app.Callback.OnTerminating(app.Widget, args);

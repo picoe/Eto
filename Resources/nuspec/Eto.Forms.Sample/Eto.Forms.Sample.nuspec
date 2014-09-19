@@ -31,8 +31,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="MyEtoApplication.cs.pp" target="content" /> 
-    <file src="MyEtoForm.cs.pp" target="content" /> 
+    <file src="Program.cs.pp" target="content" /> 
+    <file src="MainForm.cs.pp" target="content" /> 
     <file src="README.txt" target="" /> 
   </files>
 </package>

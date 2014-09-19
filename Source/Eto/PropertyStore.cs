@@ -55,10 +55,22 @@ namespace Eto
 		public T Create<T>(object key)
 			where T: new()
 		{
+			return Create<T>(key, () => new T());
+		}
+
+		/// <summary>
+		/// Gets a value from the property store with the specified key of a concrete type, and creates a new instance if it doesn't exist yet.
+		/// </summary>
+		/// <param name="key">Key of the property to get</param>
+		/// <param name="create">Delegate to create the object, if it doesn't already exist</param>
+		/// <typeparam name="T">Type type of property to get.</typeparam>
+		/// <returns>Value of the property with the given key, or a new instance if not already added</returns>
+		public T Create<T>(object key, Func<T> create)
+		{
 			object value;
 			if (!TryGetValue(key, out value))
 			{
-				value = new T();
+				value = create();
 				Add(key, value);
 			}
 			return (T)value;

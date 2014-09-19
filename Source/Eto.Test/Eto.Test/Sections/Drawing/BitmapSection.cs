@@ -1,6 +1,7 @@
 using Eto.Forms;
 using Eto.Drawing;
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Drawing
 {
@@ -48,13 +49,12 @@ namespace Eto.Test.Sections.Drawing
 
 			layout.AddRow(
 				new Label { Text = "Clone" }, Cloning(),
-				new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloningRectangle(), centered: true),
+				new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloneRectangle(), centered: true),
 				null);
 
 			layout.AddRow(
-				new Label { Text = "Clone using tiles" }, TableLayout.AutoSized(CloneTiles(), centered: true),
-				new Label { Text = "Draw to a rect" }, TableLayout.AutoSized(DrawImageToRect(), centered: true),
-				null);
+				new Label { Text = "Draw to a rect" }, TableLayout.AutoSized(DrawImageToRect(), centered: true)
+				);
 
 			layout.Add(null);
 
@@ -102,28 +102,27 @@ namespace Eto.Test.Sections.Drawing
 			return new DrawableImageView { Image = image };
 		}
 
-		Control CloningRectangle()
+		IEnumerable<Rectangle> GetTiles(Image image)
 		{
-			var image = TestIcons.TestImage;
-			image = image.Clone(new Rectangle(32, 32, 64, 64));
-			return new DrawableImageView { Image = image };
+			yield return new Rectangle(0, 0, 32, image.Height);
+			yield return new Rectangle(32, 0, image.Width - 32, 32);
+			yield return new Rectangle(32, 32, 64, 64);
+			yield return new Rectangle(image.Width - 32, 32, 32, image.Height - 64);
+			yield return new Rectangle(32, 96, 64, image.Height - 96);
+			yield return new Rectangle(image.Width - 32, 96, 32, image.Height - 96);
 		}
 
-		Control CloneTiles()
+		Control CloneRectangle()
 		{
-			// Creates a duplicate of the bitmap by cloning tiles of it
-			// and drawing them in the same location in the duplicate.
 			var image = TestIcons.TestImage;
-			var bitmap = new Bitmap(new Size(image.Size), PixelFormat.Format32bppRgba);
-			var tile = 64; // the test image is 128x128 so this produces 4 tiles.
+			var bitmap = new Bitmap(image.Size, PixelFormat.Format32bppRgba);
 			using (var g = new Graphics(bitmap))
 			{
-				for (var x = 0; x < image.Width; x += tile)
-					for (var y = 0; y < image.Height; y += tile)
-					{
-						var clone = image.Clone(new Rectangle(x, y, tile, tile));
-						g.DrawImage(clone, x, y);
-					}
+				foreach (var tile in GetTiles(image))
+				{
+					using (var clone = image.Clone(tile))
+						g.DrawImage(clone, tile.X, tile.Y);
+				}
 			}
 			return new DrawableImageView { Image = bitmap };
 		}

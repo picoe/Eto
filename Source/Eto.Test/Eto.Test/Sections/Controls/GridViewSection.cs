@@ -34,8 +34,10 @@ namespace Eto.Test.Sections.Controls
 		public GridViewSection()
 		{
 			var layout = new DynamicLayout();
-
-			layout.AddRow(new Label { Text = "Default" }, Default(CreateItems().ToArray()));
+			var button = new Button { Text = "Click!" };
+			button.Click += (sender, e) => defaultGridView.DataStore = CreateItems().ToArray();
+			layout.AddRow(new Panel(), button);
+			layout.AddRow(new Label { Text = "Default" }, defaultGridView = Default(CreateItems().ToArray()));
 			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
 			if (Platform.Supports<ContextMenu>())
 			{
@@ -267,6 +269,14 @@ namespace Eto.Test.Sections.Controls
 					filtered.Insert(0, new MyGridItem(new Random(), 0));
 			};
 			menu.Items.Add(insertItem);
+
+			var subMenu = menu.Items.GetSubmenu("Sub Menu");
+			item = new ButtonMenuItem { Text = "Item 5" };
+			item.Click += (s,e) => Log.Write(item, "Clicked");
+			subMenu.Items.Add(item);
+			item = new ButtonMenuItem { Text = "Item 6" };
+			item.Click += (s,e) => Log.Write(item, "Clicked");
+			subMenu.Items.Add(item);
 
 			control.ContextMenu = menu;
 			return control;

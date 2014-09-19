@@ -76,8 +76,8 @@ namespace Eto
 		/// <param name="mode">Mode of the binding</param>
 		public DualBinding (object source, string sourceProperty, object destination, string destinationProperty, DualBindingMode mode = DualBindingMode.TwoWay)
 			: this (
-				new ObjectBinding<T>(source, sourceProperty),
-				new ObjectBinding<T>(destination, destinationProperty),
+				new ObjectBinding<object, T>(source, sourceProperty),
+				new ObjectBinding<object, T>(destination, destinationProperty),
 				mode
 				)
 		{

@@ -18,6 +18,7 @@ namespace Eto
 	/// child objects when you implement this interface which makes reading/writing to xml
 	/// super easy.
 	/// </remarks>
+	[Obsolete("No longer provided by this library")]
 	public interface IXmlReadable
 	{
 		/// <summary>
@@ -45,6 +46,7 @@ namespace Eto
 	/// <typeparam name="T">Type of object to create based on the element</typeparam>
 	/// <param name="element">Element to create the object from</param>
 	/// <returns>A new instance of the specified type for the element</returns>
+	[Obsolete("No longer provided by this library")]
 	public delegate T CreateFromXml<T>(XmlElement element);
 	
 	/// <summary>
@@ -54,11 +56,13 @@ namespace Eto
 	/// <param name="attribute">Attribute value to translate from</param>
 	/// <param name="result">Resulting value from the attribute type</param>
 	/// <returns>True if the translation was sucessful, false otherwise</returns>
+	[Obsolete("No longer provided by this library")]
 	public delegate bool XmlToValue<T>(string attribute, out T result);
 	
 	/// <summary>
 	/// Extensions for reading/writing xml values
 	/// </summary>
+	[Obsolete("No longer provided by this library")]
 	public static class XmlExtensions
 	{
 		/// <summary>

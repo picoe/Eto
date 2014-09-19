@@ -123,7 +123,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void ResetCursorRects()
 		{
-			var cursor = Handler.Cursor;
+			var cursor = Handler.CurrentCursor;
 			if (cursor != null)
 			{
 				AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);

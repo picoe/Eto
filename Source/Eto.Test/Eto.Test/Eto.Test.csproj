@@ -84,8 +84,6 @@
     <Compile Include="TestApplication.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="Dialogs\About.cs" />
-    <Compile Include="Actions\About.cs" />
-    <Compile Include="Actions\Quit.cs" />
     <Compile Include="Sections\Controls\ButtonSection.cs" />
     <Compile Include="Sections\Controls\CheckBoxSection.cs" />
     <Compile Include="Sections\Controls\ComboBoxSection.cs" />
@@ -135,6 +133,7 @@
     <Compile Include="Sections\Controls\SplitterSection.cs" />
     <Compile Include="Sections\Controls\SpinnerSection.cs" />
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
+    <Compile Include="UnitTests\Drawing\BitmapTests.cs" />
     <Compile Include="UnitTests\Drawing\ClipTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
@@ -173,6 +172,8 @@
     <Compile Include="UnitTests\Handlers\TestContainerHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestWindowHandler.cs" />
     <Compile Include="Sections\Controls\LinkButtonSection.cs" />
+    <Compile Include="Commands\About.cs" />
+    <Compile Include="Commands\Quit.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
@@ -206,6 +207,9 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Textures.gif" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

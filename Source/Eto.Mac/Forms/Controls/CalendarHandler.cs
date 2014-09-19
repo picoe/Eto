@@ -104,8 +104,6 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static IntPtr selSetDateValueHandle = Selector.GetHandle("setDateValue:");
-
 		public DateTime SelectedDate
 		{
 			get

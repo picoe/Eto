@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using System.Web;
 using System.Threading;
 #if GTK3
 using NewWindowPolicyDecisionRequestedArgs = WebKit.NewWindowPolicyDecisionRequestedArgs;
@@ -116,7 +115,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (args.Request.Uri.StartsWith(EtoReturnPrefix, StringComparison.Ordinal))
 				{
 					// pass back the response to ExecuteScript()
-					handler.scriptReturnValue = HttpUtility.UrlDecode(args.Request.Uri.Substring(EtoReturnPrefix.Length));
+					handler.scriptReturnValue = Uri.UnescapeDataString(args.Request.Uri.Substring(EtoReturnPrefix.Length).Replace('+', ' '));
 					handler.returnResetEvent.Set();
 					args.RetVal = WebKit.NavigationResponse.Ignore;
 				}
@@ -135,7 +134,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (args.Request.Uri.StartsWith(EtoReturnPrefix, StringComparison.Ordinal))
 				{
 					// pass back the response to ExecuteScript()
-					handler.scriptReturnValue = HttpUtility.UrlDecode(args.Request.Uri.Substring(EtoReturnPrefix.Length));
+					handler.scriptReturnValue = Uri.UnescapeDataString(args.Request.Uri.Substring(EtoReturnPrefix.Length).Replace('+', ' '));
 					handler.returnResetEvent.Set();
 					args.PolicyDecision.Ignore();
 				}
@@ -201,7 +200,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public string ExecuteScript(string script)
 		{
 			// no access to DOM or return value, so get return value via URL (limited length, but better than nothing)
-			var getResultScript = @"try {{ var fn = function () {{ {0} }}; window.location.href = '" + EtoReturnPrefix + @"' + encodeURI(fn()); }} catch (e) {{ window.location.href = '" + EtoReturnPrefix + @"'; }}";
+			var getResultScript = @"try {{ var fn = function () {{ {0} }}; window.location.href = '" + EtoReturnPrefix + @"' + encodeURIComponent(fn()); }} catch (e) {{ window.location.href = '" + EtoReturnPrefix + @"'; }}";
 			returnResetEvent.Reset();
 			Control.ExecuteScript(string.Format(getResultScript, script));
 			while (!returnResetEvent.Wait(0))

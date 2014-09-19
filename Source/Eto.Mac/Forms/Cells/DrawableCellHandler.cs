@@ -87,7 +87,7 @@ namespace Eto.Mac.Forms.Controls
 			#if !Mac64 && !XAMMAC2
 			public override CGSize CellSizeForBounds(CGRect bounds)
 			{
-				return new CGSize();
+				return CGSize.Empty;
 			}
 			#endif
 

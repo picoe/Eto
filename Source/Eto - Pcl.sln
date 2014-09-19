@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac - Pcl", "Et
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Direct2D - Pcl", "Eto.Test\Eto.Test.Direct2D\Eto.Test.Direct2D - Pcl.csproj", "{74328428-C412-4BC3-BD0C-E1DBC43FB479}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtoTestXamMac2", "Eto.Test\Eto.Test.Mac\EtoTestXamMac2.csproj", "{689E4C20-2702-11E4-8C21-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac2.csproj", "{689E4C20-2702-11E4-8C21-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{451A0C58-A0FE-4DAE-9B57-FB1450C2071B}"
 	ProjectSection(SolutionItems) = preProject

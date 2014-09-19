@@ -91,11 +91,6 @@ namespace Eto.iOS.Forms
 			});
 		}
 
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			yield break;
-		}
-
 		public void Quit()
 		{
 			//UIApplication.SharedApplication...SharedApplication.Terminate((NSObject)NSApplication.SharedApplication.KeyWindow ?? AppDelegate);
@@ -146,11 +141,6 @@ namespace Eto.iOS.Forms
 		}
 
 		public void RunIteration()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
 		{
 			throw new NotImplementedException();
 		}

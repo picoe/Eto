@@ -2,9 +2,34 @@ using System;
 
 namespace Eto
 {
+	/// <summary>
+	/// Base interface for an indirect binding.
+	/// </summary>
+	/// <remarks>
+	/// An indirect binding is passed the data item to get/set values on the object.
+	/// This is used for things like the <see cref="Forms.Grid"/>, <see cref="Forms.ListBox"/>, etc when
+	/// binding to values for each item in the data store.
+	/// </remarks>
 	public interface IIndirectBinding<T> : IBinding
 	{
+		/// <summary>
+		/// Gets the value from the specified object using this binding
+		/// </summary>
+		/// <remarks>
+		/// When values are needed from this binding, this method will be called.
+		/// </remarks>
+		/// <param name="dataItem">object to retrieve the value from</param>
+		/// <returns>value from the specified object</returns>
 		T GetValue(object dataItem);
+
+		/// <summary>
+		/// Sets the specified value to an object using this binding
+		/// </summary>
+		/// <remarks>
+		/// This is called to set the value to the object.
+		/// </remarks>
+		/// <param name="dataItem">object to set the value to</param>
+		/// <param name="value">value to set to the object</param>
 		void SetValue(object dataItem, T value);
 	}
 

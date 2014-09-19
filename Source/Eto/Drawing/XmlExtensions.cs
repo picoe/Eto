@@ -9,6 +9,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Obsolete("No longer provided by this library")]
 	public static class XmlExtensions
 	{
 		/// <summary>
@@ -102,12 +103,24 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Writes the child rectangle xml.
+		/// </summary>
+		/// <param name="element">Element.</param>
+		/// <param name="elementName">Element name.</param>
+		/// <param name="rect">Rect.</param>
 		public static void WriteChildRectangleXml(this XmlElement element, string elementName, Rectangle? rect)
 		{
 			if (rect != null)
 				element.WriteChildXml(elementName, new RectSaver { Rectangle = rect.Value });
 		}
 
+		/// <summary>
+		/// Reads the child rectangle xml.
+		/// </summary>
+		/// <returns>The child rectangle xml.</returns>
+		/// <param name="element">Element.</param>
+		/// <param name="elementName">Element name.</param>
 		public static Rectangle? ReadChildRectangleXml(this XmlElement element, string elementName)
 		{
 			var rect = element.ReadChildXml<RectSaver>(elementName);
@@ -136,12 +149,24 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Writes the child point xml.
+		/// </summary>
+		/// <param name="element">Element.</param>
+		/// <param name="elementName">Element name.</param>
+		/// <param name="point">Point.</param>
 		public static void WriteChildPointXml(this XmlElement element, string elementName, Point? point)
 		{
 			if (point != null)
 				element.WriteChildXml(elementName, new PointSaver { Point = point.Value });
 		}
 
+		/// <summary>
+		/// Reads the child point xml.
+		/// </summary>
+		/// <returns>The child point xml.</returns>
+		/// <param name="element">Element.</param>
+		/// <param name="elementName">Element name.</param>
 		public static Point? ReadChildPointXml(this XmlElement element, string elementName)
 		{
 			var point = element.ReadChildXml<PointSaver>(elementName);

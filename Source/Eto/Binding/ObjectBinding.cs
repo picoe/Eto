@@ -3,6 +3,20 @@ using Eto.Forms;
 
 namespace Eto
 {
+	/// <summary>
+	/// Binding for a particular object to get/set values from/to
+	/// </summary>
+	/// <remarks>
+	/// This binding provides a way to get/set values for a particular object.  This uses
+	/// a <see cref="IndirectBinding{T}"/> as its logic to actually retrieve/set the values.
+	/// 
+	/// This acts as a bridge between the <see cref="IndirectBinding{T}"/> and <see cref="DirectBinding{T}"/>
+	/// so that you can utilize the <see cref="DirectBinding{T}.DataValueChanged"/> method.
+	/// 
+	/// Typically, one would use the <see cref="PropertyBinding{T}"/>, or the <see cref="C:ObjectBinding{T,TValue}(T, string)"/>
+	/// constructor to hook up this binding to a particular property of the specified object
+	/// </remarks>
+	/// <typeparam name="TValue">The type of value for the binding.</typeparam>
 	public class ObjectBinding<TValue> : ObjectBinding<object, TValue>
 	{
 		/// <summary>
@@ -88,6 +102,14 @@ namespace Eto
 			set;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.ObjectBinding{T,TValue}"/> class.
+		/// </summary>
+		/// <param name="dataItem">Data item to get/set the values from/to.</param>
+		/// <param name="getValue">Delegate to get the value from the object.</param>
+		/// <param name="setValue">Delegate to set the value to the object.</param>
+		/// <param name="addChangeEvent">Delegate to add the change event.</param>
+		/// <param name="removeChangeEvent">Delegate to remove the chang event.</param>
 		public ObjectBinding(T dataItem, Func<T, TValue> getValue, Action<T, TValue> setValue = null, Action<T, EventHandler<EventArgs>> addChangeEvent = null, Action<T, EventHandler<EventArgs>> removeChangeEvent = null)
 			: this(dataItem, new DelegateBinding<T, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent))
 		{
@@ -207,76 +229,72 @@ namespace Eto
 			OnDataValueChanged(e);
 		}
 
-		public DualBinding<TValue> Bind(IndirectBinding<TValue> dataContextBinding, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
+		/// <summary>
+		/// Creates a new dual binding between the specified <paramref name="sourceBinding"/> and this binding.
+		/// </summary>
+		/// <remarks>
+		/// This creates a <see cref="DualBinding{TValue}"/> between the specified <paramref name="sourceBinding"/> and this binding.
+		/// You must keep a reference to the binding to unbind when finished.
+		/// </remarks>
+		/// <param name="sourceBinding">Source binding to bind from.</param>
+		/// <param name="mode">Dual binding mode.</param>
+		public virtual DualBinding<TValue> Bind(DirectBinding<TValue> sourceBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			var control = DataItem as Control;
-			if (control == null)
-				throw new InvalidOperationException("Binding must be attached to a control");
-			var contextBinding = new ObjectBinding<object>(control, new DelegateBinding<Control, object>(w => w.DataContext, null, (w, h) => w.DataContextChanged += h, (w, h) => w.DataContextChanged -= h));
-			var valueBinding = new ObjectBinding<TValue>(control.DataContext, dataContextBinding)
-			{
-				GettingNullValue = defaultControlValue,
-				SettingNullValue = defaultContextValue
-			};
-			DualBinding<TValue> binding = Bind(valueBinding: valueBinding, mode: mode);
-			contextBinding.DataValueChanged += delegate
-			{
-				((ObjectBinding<TValue>)binding.Source).DataItem = contextBinding.DataValue;
-			};
-			control.Bindings.Add(contextBinding);
-			return binding;
+			return new DualBinding<TValue>(sourceBinding, this, mode);
 		}
 
-		public DualBinding<TValue> Bind(DirectBinding<TValue> valueBinding, DualBindingMode mode = DualBindingMode.TwoWay)
-		{
-			var binding = new DualBinding<TValue>(
-				              valueBinding,
-				              this,
-				              mode
-			              );
-			var control = DataItem as Control;
-			if (control != null)
-				control.Bindings.Add(binding);
-			return binding;
-		}
-
+		/// <summary>
+		/// Creates a new dual binding using a <see cref="DelegateBinding{TValue}"/> with the specified delegates and this binding.
+		/// </summary>
+		/// <remarks>
+		/// This creates a <see cref="DualBinding{TValue}"/> between a new <see cref="DelegateBinding{TValue}"/> and this binding.
+		/// This does not require an object instance for the delegates to get/set the value.
+		/// You must keep a reference to the binding to unbind when finished.
+		/// </remarks>
+		/// <param name="getValue">Delegate to get the value.</param>
+		/// <param name="setValue">Delegate to set the value when changed.</param>
+		/// <param name="addChangeEvent">Delegate to add a change event when the value changes.</param>
+		/// <param name="removeChangeEvent">Delegate to remove the change event.</param>
+		/// <param name="mode">Dual binding mode.</param>
 		public DualBinding<TValue> Bind(Func<TValue> getValue, Action<TValue> setValue = null, Action<EventHandler<EventArgs>> addChangeEvent = null, Action<EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			return Bind(new DelegateBinding<TValue> { GetValue = getValue, SetValue = setValue, AddChangeEvent = addChangeEvent, RemoveChangeEvent = removeChangeEvent }, mode);
 		}
 
-		[Obsolete("Use BindDataContext<T> instead")]
-		public DualBinding<TValue> Bind<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
-		{
-			return BindDataContext(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
-		}
-
-		[Obsolete("Use BindDataContext<T> instead")]
-		public DualBinding<TValue> Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
-		{
-			return Bind(dataContextBinding: binding, mode: mode);
-		}
-
-		public DualBinding<TValue> BindDataContext<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
-		{
-			return BindDataContext(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
-		}
-
-		public DualBinding<TValue> BindDataContext<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
-		{
-			return Bind(dataContextBinding: binding, mode: mode);
-		}
-
+		/// <summary>
+		/// Creates a new dual binding using a <see cref="DelegateBinding{T,TValue}"/> with the specified delegates and this binding.
+		/// </summary>
+		/// <remarks>
+		/// This creates a <see cref="DualBinding{TValue}"/> between a new <see cref="DelegateBinding{T,TValue}"/> and this binding.
+		/// This uses an <see cref="ObjectBinding{T,TValue}"/> to store the specified <paramref name="objectValue"/>, since the DelegateBinding created
+		/// is an indirect binding (requires an object instance to get/set the value).
+		/// </remarks>
+		/// <param name="objectValue">Object to get/set the values from/to.</param>
+		/// <param name="getValue">Delegate to get the value from the <paramref name="objectValue"/>.</param>
+		/// <param name="setValue">Delegate to set the value to the <paramref name="objectValue"/> when changed.</param>
+		/// <param name="addChangeEvent">Delegate to add a change event when the value on the <paramref name="objectValue"/> changes.</param>
+		/// <param name="removeChangeEvent">Delegate to remove the change event.</param>
+		/// <param name="mode">Dual binding mode.</param>
+		/// <param name="defaultGetValue">Default value to get when the value or object is null.</param>
+		/// <param name="defaultSetValue">Default set value when this binding's value or DataItem is null.</param>
+		/// <typeparam name="TObject">The type of the object that is being bound to.</typeparam>
+		[Obsolete("Use Bind() without an object value instead, as the delegates can access your object value directly. Or, use Bind<TObject>(TObject, DelegateBinding<TValue>)")]
 		public DualBinding<TValue> Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
 		{
 			return Bind(objectValue, new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
 		}
 
-		public DualBinding<TValue> Bind<TObject>(TObject objectValue, DelegateBinding<TObject, TValue> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay)
+		/// <summary>
+		/// Creates a new dual binding between the specified <paramref name="objectBinding"/> and this binding.
+		/// </summary>
+		/// <param name="objectValue">Object to get/set the values from/to.</param>
+		/// <param name="objectBinding">Indirect binding to get/set the values from the <paramref name="objectValue"/>.</param>
+		/// <param name="mode">Dual binding mode.</param>
+		/// <typeparam name="TObject">The type of the object that is being bound to.</typeparam>
+		public DualBinding<TValue> Bind<TObject>(TObject objectValue, IndirectBinding<TValue> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			var valueBinding = new ObjectBinding<TValue>(objectValue, objectBinding);
-			return Bind(valueBinding: valueBinding, mode: mode);
+			var valueBinding = new ObjectBinding<TObject, TValue>(objectValue, objectBinding);
+			return Bind(sourceBinding: valueBinding, mode: mode);
 		}
-
 	}
 }

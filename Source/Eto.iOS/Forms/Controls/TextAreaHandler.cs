@@ -9,7 +9,6 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class TextAreaHandler : IosView<UITextView, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
-
 		public class EtoTextView : UITextView
 		{
 
@@ -101,6 +100,11 @@ namespace Eto.iOS.Forms.Controls
 				Control.SelectedRange = new NSRange(value, 0);
 			}
 		}
+
+		public Color TextColor
+		{
+			get { return Control.TextColor.ToEto(); }
+			set { Control.TextColor = value.ToNSUI(); }
+		}
 	}
 }
-
