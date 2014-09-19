@@ -44,6 +44,13 @@ namespace Eto.Mac
 
 		public Platform()
 		{
+			#if Mac64
+			unsafe
+			{
+				if (sizeof(IntPtr) != 8)
+					throw new EtoException("You can only run this platform in 64-bit mode. Use the 32-bit Eto.Mac platform instead.");
+			}
+			#endif
 			if (!initialized)
 			{
 				NSApplication.Init();

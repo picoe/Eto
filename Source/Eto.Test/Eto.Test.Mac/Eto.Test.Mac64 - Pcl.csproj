@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}</ProjectGuid>
+    <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Eto.Test.Mac</RootNamespace>
+    <LastXamMacNagTime>14/12/2100 1:15:16 AM</LastXamMacNagTime>
+    <SuppressXamMacMigration>True</SuppressXamMacMigration>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>Eto.Test.Mac64</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <FileAlignment>512</FileAlignment>
+    <DebugSymbols>True</DebugSymbols>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputRoot>..\..\..\..</OutputRoot>
+    <LibrariesPath>..\..\..\Libraries</LibrariesPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\..\BuildOutput\Pcl\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <ConsolePause>False</ConsolePause>
+    <EnableCodeSigning>False</EnableCodeSigning>
+    <CreatePackage>False</CreatePackage>
+    <EnablePackageSigning>False</EnablePackageSigning>
+    <IncludeMonoRuntime>False</IncludeMonoRuntime>
+    <UseSGen>False</UseSGen>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\BuildOutput\Pcl\Release</OutputPath>
+    <DebugType>full</DebugType>
+    <Optimize>True</Optimize>
+    <ConsolePause>False</ConsolePause>
+    <EnableCodeSigning>False</EnableCodeSigning>
+    <CreatePackage>False</CreatePackage>
+    <EnablePackageSigning>False</EnablePackageSigning>
+    <IncludeMonoRuntime>False</IncludeMonoRuntime>
+    <UseSGen>False</UseSGen>
+  </PropertyGroup>
+  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="MonoMac">
+      <HintPath>..\..\..\Libraries\MonoMac64\MonoMac.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.plist" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" Condition="Exists('$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets')" />
+  <ItemGroup>
+    <Content Include="TestIcon.icns" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - Pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
+      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
+      <Name>Eto.Test - Pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json - Pcl.csproj">
+      <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>
+      <Name>Eto.Serialization.Json - Pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Mac\Eto.Mac64 - Pcl.csproj">
+      <Project>{55DAB390-1CFC-11E4-8C21-0800200C9A66}</Project>
+      <Name>Eto.Mac64 - Pcl</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Direct2D - Pcl", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac2.csproj", "{689E4C20-2702-11E4-8C21-0800200C9A66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac64 - Pcl", "Eto.Test\Eto.Test.Mac\Eto.Test.Mac64 - Pcl.csproj", "{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{451A0C58-A0FE-4DAE-9B57-FB1450C2071B}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -212,6 +214,18 @@ Global
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Linux.Build.0 = Debug|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Mac.Build.0 = Debug|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Debug|Windows.Build.0 = Debug|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Linux.ActiveCfg = Release|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Linux.Build.0 = Release|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Mac.ActiveCfg = Release|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Mac.Build.0 = Release|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Windows.ActiveCfg = Release|Any CPU
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Windows.Build.0 = Release|Any CPU
 		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
@@ -287,6 +301,7 @@ Global
 		{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{74328428-C412-4BC3-BD0C-E1DBC43FB479} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{689E4C20-2702-11E4-8C21-0800200C9A66} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
+		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Eto.Test\Eto.Test.Mac\Eto.Test.Mac - Pcl.csproj
