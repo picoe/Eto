@@ -494,8 +494,12 @@ namespace Eto.WinForms
 
 		public virtual void BeforeAddControl(bool top = true)
 		{
-			if (!resumed && Widget.Loaded)
+			if (!resumed)
 			{
+				// if we're the top level control being added, resume on load
+				if (top && !Widget.Loaded)
+					return;
+				// resume all non-top level controls
 				ResumeControl(top);
 				resumed = true;
 			}
@@ -507,17 +511,18 @@ namespace Eto.WinForms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			if (!resumed)
+			{
+				// resume (and perform) layout if needed before we're shown
+				ResumeControl();
+				resumed = true;
+			}
 			SetMinimumSizeInternal(false);
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			SetToolTip();
-			if (!resumed)
-			{
-				ResumeControl();
-				resumed = true;
-			}
 		}
 
 		public virtual void OnUnLoad(EventArgs e)

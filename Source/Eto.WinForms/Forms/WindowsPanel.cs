@@ -77,7 +77,7 @@ namespace Eto.WinForms
 						desiredSize.Height = desiredContentSize.Height;
 				}
 			}
-      return desiredSize + Padding.Size;
+			return desiredSize + Padding.Size;
 		}
 
 		public override void SetScale(bool xscale, bool yscale)

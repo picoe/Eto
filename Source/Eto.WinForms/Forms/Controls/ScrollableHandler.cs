@@ -96,7 +96,7 @@ namespace Eto.WinForms
 		protected override void ResumeControl(bool top = true)
 		{
 			finalLayoutPass = true;
-			base.ResumeControl(top);
+			base.ResumeControl(true); // if scrollable's size is not changed, then the children don't get laid out
 			finalLayoutPass = false;
 		}
 
