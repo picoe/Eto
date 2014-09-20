@@ -188,58 +188,48 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				Control.TextStorage.SetString(font.AttributedString(value ?? string.Empty));
+				Control.Value = value;
 				Control.DisplayIfNeeded();
 			}
 		}
 
-		Color? textColor;
 		public Color TextColor
 		{
-			get { return textColor ?? Colors.Black; }
+			get { return Control.TextColor.ToEto(); }
 			set
 			{
-				textColor = value;
-				if (textColor != null)
-					Control.TextColor = textColor.Value.ToNSUI();
+				if (value != TextColor)
+				{
+					Control.TextColor = value.ToNSUI();
+					Control.InsertionPointColor = value.ToNSUI();
+				}
 			}
 		}
 
-		Color? backgroundColor;
 		public override Color BackgroundColor
 		{
-			get { return backgroundColor ?? Colors.White; }
+			get { return Control.BackgroundColor.ToEto(); }
 			set
 			{
-				backgroundColor = value;
-				if (backgroundColor != null)
-					Control.BackgroundColor = backgroundColor.Value.ToNSUI();
+				if (value != BackgroundColor)
+				{
+					Control.BackgroundColor = value.ToNSUI();
+				}
 			}
 		}
-
-		//public void SetBackgroundColor()
-		//{
-		//	if (base.backgroundColor != null)
-		//	{
-		//		Control.BackgroundColor = base.backgroundColor.Value.ToNSUI();
-		//	}
-		//}
-
-		Font font;
 
 		public Font Font
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(new FontHandler(Control.Font));
-				return font;
+				return new Font(new FontHandler(Control.Font));
 			}
 			set
 			{
-				font = value;
-				Control.TextStorage.SetString(font.AttributedString(Control.Value));
-				Control.TypingAttributes = font.Attributes();
+				if (value != Font)
+				{
+					Control.Font = value.ToNSFont();
+				}
 				LayoutIfNeeded();
 			}
 		}
@@ -276,11 +266,10 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				var range = Control.SelectedRange;
-				Control.TextStorage.DeleteRange(range);
 				if (value != null)
 				{
+					Control.Replace(range, value);
 					range.Length = (nnint)value.Length;
-					Control.TextStorage.Insert(new NSAttributedString(value), (nnint)range.Location);
 					Control.SelectedRange = range;
 				}
 			}
