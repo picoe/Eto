@@ -193,42 +193,50 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		Color? textColor;
 		public Color TextColor
 		{
-			get { return Control.TextColor.ToEto(); }
+			get { return textColor ?? NSColor.ControlText.ToEto(); }
 			set
 			{
-				if (value != TextColor)
+				if (value != textColor)
 				{
-					Control.TextColor = value.ToNSUI();
-					Control.InsertionPointColor = value.ToNSUI();
+					textColor = value;
+					Control.TextColor = textColor.Value.ToNSUI();
+					Control.InsertionPointColor = textColor.Value.ToNSUI();
 				}
 			}
 		}
 
+		Color? backgroundColor;
 		public override Color BackgroundColor
 		{
-			get { return Control.BackgroundColor.ToEto(); }
+			get { return backgroundColor ?? NSColor.ControlBackground.ToEto(); }
 			set
 			{
-				if (value != BackgroundColor)
+				if (value != backgroundColor)
 				{
-					Control.BackgroundColor = value.ToNSUI();
+					backgroundColor = value;
+					Control.BackgroundColor = backgroundColor.Value.ToNSUI();
 				}
 			}
 		}
 
+		Font font;
 		public Font Font
 		{
 			get
 			{
-				return new Font(new FontHandler(Control.Font));
+				if (font == null)
+					font = new Font(new FontHandler(Control.Font));
+				return font;
 			}
 			set
 			{
-				if (value != Font)
+				if (value != font)
 				{
-					Control.Font = value.ToNSFont();
+					font = value;
+					Control.Font = font.ToNSFont();
 				}
 				LayoutIfNeeded();
 			}
@@ -265,9 +273,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				var range = Control.SelectedRange;
 				if (value != null)
 				{
+					var range = Control.SelectedRange;
 					Control.Replace(range, value);
 					range.Length = (nnint)value.Length;
 					Control.SelectedRange = range;
