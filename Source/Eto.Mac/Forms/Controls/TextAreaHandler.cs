@@ -188,7 +188,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				Control.TextStorage.SetString(font.AttributedString(value ?? string.Empty));
+				Control.Value = value;
 				Control.DisplayIfNeeded();
 			}
 		}
@@ -196,37 +196,33 @@ namespace Eto.Mac.Forms.Controls
 		Color? textColor;
 		public Color TextColor
 		{
-			get { return textColor ?? Colors.Black; }
+			get { return textColor ?? NSColor.ControlText.ToEto(); }
 			set
 			{
-				textColor = value;
-				if (textColor != null)
+				if (value != textColor)
+				{
+					textColor = value;
 					Control.TextColor = textColor.Value.ToNSUI();
+					Control.InsertionPointColor = textColor.Value.ToNSUI();
+				}
 			}
 		}
 
 		Color? backgroundColor;
 		public override Color BackgroundColor
 		{
-			get { return backgroundColor ?? Colors.White; }
+			get { return backgroundColor ?? NSColor.ControlBackground.ToEto(); }
 			set
 			{
-				backgroundColor = value;
-				if (backgroundColor != null)
+				if (value != backgroundColor)
+				{
+					backgroundColor = value;
 					Control.BackgroundColor = backgroundColor.Value.ToNSUI();
+				}
 			}
 		}
 
-		//public void SetBackgroundColor()
-		//{
-		//	if (base.backgroundColor != null)
-		//	{
-		//		Control.BackgroundColor = base.backgroundColor.Value.ToNSUI();
-		//	}
-		//}
-
 		Font font;
-
 		public Font Font
 		{
 			get
@@ -237,9 +233,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				font = value;
-				Control.TextStorage.SetString(font.AttributedString(Control.Value));
-				Control.TypingAttributes = font.Attributes();
+				if (value != font)
+				{
+					font = value;
+					Control.Font = font.ToNSFont();
+				}
 				LayoutIfNeeded();
 			}
 		}
@@ -275,12 +273,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				var range = Control.SelectedRange;
-				Control.TextStorage.DeleteRange(range);
 				if (value != null)
 				{
+					var range = Control.SelectedRange;
+					Control.Replace(range, value);
 					range.Length = (nnint)value.Length;
-					Control.TextStorage.Insert(new NSAttributedString(value), (nnint)range.Location);
 					Control.SelectedRange = range;
 				}
 			}
