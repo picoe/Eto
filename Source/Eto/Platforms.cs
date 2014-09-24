@@ -32,9 +32,13 @@ namespace Eto
 		/// </summary>
 		public static readonly string Mac64 = "Eto.Mac.Platform, Eto.Mac64";
 		/// <summary>
-		/// Type of the Mac OS X platform
+		/// Type of the Xamarin.Mac v1 OS X platform
 		/// </summary>
 		public static readonly string XamMac = "Eto.Mac.Platform, Eto.XamMac";
+		/// <summary>
+		/// Type of the Xamarin.Mac v2 OS X platform
+		/// </summary>
+		public static readonly string XamMac2 = "Eto.Mac.Platform, Eto.XamMac2";
 		/// <summary>
 		/// Type of the Windows forms platform
 		/// </summary>
