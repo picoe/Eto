@@ -81,39 +81,39 @@ namespace Eto.Mac.Drawing
 			switch (systemFont)
 			{
 				case SystemFont.Default:
-					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
 				case SystemFont.Bold:
-					Control = NSFont.BoldSystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.BoldSystemFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
 				case SystemFont.Label:
 #if IOS
 					Control = NSFont.SystemFontOfSize(fontSize ?? NSFont.LabelFontSize);
 #elif OSX
-					Control = NSFont.LabelFontOfSize((nfloat)(fontSize ?? NSFont.LabelFontSize + 2)); // labels get a size of 12 
+					Control = NSFont.LabelFontOfSize((nfloat)(fontSize ?? (float)(NSFont.LabelFontSize + 2))); // labels get a size of 12 
 #endif
 					break;
 #if OSX
 				case SystemFont.TitleBar:
-					Control = NSFont.TitleBarFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.TitleBarFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
 				case SystemFont.ToolTip:
-					Control = NSFont.ToolTipsFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.ToolTipsFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
 				case SystemFont.MenuBar:
-					Control = NSFont.MenuBarFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.MenuBarFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
 				case SystemFont.Menu:
-					Control = NSFont.MenuFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.MenuFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
 				case SystemFont.Message:
-					Control = NSFont.MessageFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.MessageFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
 				case SystemFont.Palette:
-					Control = NSFont.PaletteFontOfSize((nfloat)(fontSize ?? NSFont.SmallSystemFontSize));
+					Control = NSFont.PaletteFontOfSize((nfloat)(fontSize ?? (float)NSFont.SmallSystemFontSize));
 					break;
 				case SystemFont.StatusBar:
-					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? NSFont.SystemFontSize));
+					Control = NSFont.SystemFontOfSize((nfloat)(fontSize ?? (float)NSFont.SystemFontSize));
 					break;
 #endif
 				default:
