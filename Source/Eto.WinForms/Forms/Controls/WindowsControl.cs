@@ -103,6 +103,11 @@ namespace Eto.WinForms
 
 		public virtual Size? DefaultSize { get { return null; } }
 
+		protected void ClearCachedDefaultSize()
+		{
+			cachedDefaultSize = null;
+		}
+
 		Size? cachedDefaultSize;
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
@@ -160,7 +165,6 @@ namespace Eto.WinForms
 			YScale = true;
 			Control.Margin = swf.Padding.Empty;
 			Control.Tag = this;
-			SuspendControl();
 		}
 
 		public virtual swf.DockStyle DockStyle
@@ -483,27 +487,6 @@ namespace Eto.WinForms
 			Callback.OnSizeChanged(Widget, e);
 		}
 
-		bool resumed;
-		protected virtual void ResumeControl(bool top = true)
-		{
-		}
-
-		protected virtual void SuspendControl()
-		{
-		}
-
-		public virtual void BeforeAddControl(bool top = true)
-		{
-			if (!resumed)
-			{
-				// if we're the top level control being added, resume on load
-				if (top && !Widget.Loaded)
-					return;
-				// resume all non-top level controls
-				ResumeControl(top);
-				resumed = true;
-			}
-		}
 
 		public virtual void OnPreLoad(EventArgs e)
 		{
@@ -511,12 +494,6 @@ namespace Eto.WinForms
 
 		public virtual void OnLoad(EventArgs e)
 		{
-			if (!resumed)
-			{
-				// resume (and perform) layout if needed before we're shown
-				ResumeControl();
-				resumed = true;
-			}
 			SetMinimumSizeInternal(false);
 		}
 
@@ -527,11 +504,10 @@ namespace Eto.WinForms
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
-			if (resumed)
-			{
-				SuspendControl();
-				resumed = false;
-			}
+		}
+
+		public virtual void BeforeAddControl(bool top = true)
+		{
 		}
 
 		void SetToolTip()

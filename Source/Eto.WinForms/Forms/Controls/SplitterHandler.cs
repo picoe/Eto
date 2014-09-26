@@ -276,7 +276,8 @@ namespace Eto.WinForms
 			{
 				if (panel1 != value)
 				{
-					Control.SuspendLayout();
+					if (Widget.Loaded)
+						Control.SuspendLayout();
 					var old = panel1.GetContainerControl();
 					if (old != null)
 					{
@@ -290,12 +291,14 @@ namespace Eto.WinForms
 						var control = controlHandler.ContainerControl;
 						control.Dock = swf.DockStyle.Fill;
 						control.VisibleChanged += c1_VisibleChanged;
-						controlHandler.BeforeAddControl();
+						controlHandler.BeforeAddControl(Widget.Loaded);
 						Control.Panel1.Controls.Add(control);
 					}
 					if (Widget.Loaded)
+					{
 						Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsHandler()).InternalVisible;
-					Control.ResumeLayout();
+						Control.ResumeLayout();
+					}
 				}
 			}
 		}
@@ -307,7 +310,8 @@ namespace Eto.WinForms
 			{
 				if (panel2 != value)
 				{
-					Control.SuspendLayout();
+					if (Widget.Loaded)
+						Control.SuspendLayout();
 					var old = panel2.GetContainerControl();
 					if (old != null)
 					{
@@ -321,12 +325,14 @@ namespace Eto.WinForms
 						var control = controlHandler.ContainerControl;
 						control.Dock = swf.DockStyle.Fill;
 						control.VisibleChanged += c2_VisibleChanged;
-						controlHandler.BeforeAddControl();
+						controlHandler.BeforeAddControl(Widget.Loaded);
 						Control.Panel2.Controls.Add(control);
 					}
 					if (Widget.Loaded)
+					{
 						Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
-					Control.ResumeLayout();
+						Control.ResumeLayout();
+					}
 				}
 			}
 		}

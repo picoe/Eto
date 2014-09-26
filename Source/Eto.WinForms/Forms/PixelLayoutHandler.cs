@@ -34,7 +34,7 @@ namespace Eto.WinForms
 			var childControl = childHandler.ContainerControl;
 			childControl.Dock = swf.DockStyle.None;
 			childControl.Location = new sd.Point(x, y);
-			childHandler.BeforeAddControl();
+			childHandler.BeforeAddControl(Widget.Loaded);
 			Control.Controls.Add(childControl);
 			childControl.BringToFront();
 		}
