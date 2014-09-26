@@ -90,6 +90,10 @@ namespace Eto.iOS.Forms.Controls
 
 			}
 		}
+
+		public void BeginEdit(int row, int column)
+		{
+		}
 	}
 
 	public class GridHandlerTableDelegate : UITableViewDelegate
