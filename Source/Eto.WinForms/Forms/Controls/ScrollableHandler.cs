@@ -21,6 +21,7 @@ namespace Eto.WinForms
 			{
 				var e = new swf.KeyEventArgs(keyData);
 				OnKeyDown(e);
+                e.Handled |= base.ProcessDialogKey(keyData);
 				if (!e.Handled)
 				{
 					// Prevent firing the keydown event twice for the same key
