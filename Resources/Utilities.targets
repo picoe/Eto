@@ -11,8 +11,8 @@
 		
 		<!-- UsingTask is not implemented in mono -->
 		<ItemGroup>
-			<GetAssemblyInfo Include="lines"><Text><![CDATA[
-			using System;
+			<Utilities Include="GetAssemblyInfo"><Text><![CDATA[
+using System;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
@@ -76,15 +76,15 @@ public class GetAssemblyInfo : Task
 			return false;
 		}
 	}
-}]]></Text></GetAssemblyInfo>
-			<GetAssemblyInfoText Include="%(GetAssemblyInfo.Text)" />
+}]]></Text></Utilities>
 		</ItemGroup>
-		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\GetAssemblyInfo.cs" Lines="@(GetAssemblyInfoText)" Overwrite="true" />
+		
+		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\Utilities.cs" Lines="@(Utilities->'%(Text)')" Overwrite="true" />
 	
 		<Csc
-			Sources="$(UtilitiesAssemblyPath)\GetAssemblyInfo.cs"
+			Sources="$(UtilitiesAssemblyPath)\Utilities.cs"
 			OutputAssembly="$(UtilitiesAssemblyPath)\Utilities.dll"
-			References="Microsoft.Build.Framework;Microsoft.Build;Microsoft.Build.Utilities.v4.0.dll;" 
+			References="Microsoft.Build.Framework.dll;Microsoft.Build.Utilities.v4.0.dll;" 
 			TargetType="library"
 			/>
 	</Target>
