@@ -82,6 +82,7 @@ Global
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Windows.Build.0 = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Linux.ActiveCfg = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Mac.ActiveCfg = Release|Any CPU
+		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Mac.Build.0 = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Windows.ActiveCfg = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Release|Windows.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Linux.ActiveCfg = Debug|Any CPU

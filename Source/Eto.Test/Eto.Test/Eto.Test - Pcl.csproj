@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Test</RootNamespace>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
-    <BaseDir>$(ProjectDir)..\..</BaseDir>
+    <PackagesDir>$(ProjectDir)..\..</PackagesDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -39,7 +39,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Compile Include="..\..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -216,4 +216,5 @@
       <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

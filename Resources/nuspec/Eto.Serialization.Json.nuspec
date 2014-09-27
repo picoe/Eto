@@ -21,14 +21,15 @@
 		<tags>cross platform gui ui framework desktop json eto.forms</tags>
 		<dependencies>
 			<group>
+				<dependency id="Eto.Forms" version="[$version$]" />
 				<dependency id="Newtonsoft.Json" version="6.0.0" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Serialization.Json.dll" target="lib\portable-net45+wp80+win8+monotouch+monoandroid\" />
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Serialization.Json.dll" target="lib\net45\" />
-		<file src="..\..\BuildOutput\$configuration$\Eto.Serialization.Json.dll" target="lib\net40\" />
-		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/Pcl/$configuration$/Eto.Serialization.Json.dll" target="lib\portable-net45+wp80+win8+monotouch+monoandroid" />
+		<file src="BuildOutput/Pcl/$configuration$/Eto.Serialization.Json.dll" target="lib\net45" />
+		<file src="BuildOutput/$configuration$/Eto.Serialization.Json.dll" target="lib\net40" />
+		<file src="BuildOutput/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

@@ -36,7 +36,7 @@
   <PropertyGroup>
     <OutputRoot>..\..\..</OutputRoot>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="MonoMac">
       <HintPath>..\..\Libraries\MonoMac\MonoMac.dll</HintPath>
@@ -200,7 +200,6 @@
     <Compile Include="Forms\Controls\MacLabel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
   <ItemGroup>
     <Content Include="..\..\Libraries\MonoMac\MonoMac-License.txt">
       <Link>MonoMac-License.txt</Link>
@@ -227,4 +226,5 @@
       <Name>Eto - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../Shared/Build.targets" />
 </Project>

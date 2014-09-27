@@ -34,7 +34,7 @@
   <PropertyGroup>
     <OutputRoot>..</OutputRoot>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -104,4 +104,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="../Shared/Build.targets" />
 </Project>

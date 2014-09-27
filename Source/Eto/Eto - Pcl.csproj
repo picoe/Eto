@@ -34,7 +34,7 @@
     <DocumentationFile>..\..\BuildOutput\Pcl\Release\Eto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
@@ -305,4 +305,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Import Project="../Shared/Build.targets" />
 </Project>

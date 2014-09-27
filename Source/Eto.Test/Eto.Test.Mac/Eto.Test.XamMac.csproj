@@ -51,7 +51,7 @@
     <MonoBundlingExtraArgs>--xml="${ProjectDir}/linker.xml"</MonoBundlingExtraArgs>
     <LinkMode>SdkOnly</LinkMode>
   </PropertyGroup>
-  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -102,4 +102,5 @@
   <ItemGroup>
     <Content Include="TestIcon.icns" />
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

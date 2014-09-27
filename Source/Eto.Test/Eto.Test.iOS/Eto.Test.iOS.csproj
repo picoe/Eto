@@ -92,6 +92,7 @@
     <IpaPackageName>
     </IpaPackageName>
   </PropertyGroup>
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -130,4 +131,5 @@
       <Name>Eto.iOS</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

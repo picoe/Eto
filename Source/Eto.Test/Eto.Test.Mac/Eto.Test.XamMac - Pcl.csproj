@@ -45,7 +45,7 @@
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
     <LinkMode>SdkOnly</LinkMode>
   </PropertyGroup>
-  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -92,4 +92,5 @@
       <Name>Eto.Serialization.Json - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

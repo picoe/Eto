@@ -34,6 +34,7 @@
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -212,7 +213,5 @@
       <Name>Eto - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Forms\Toolbar\" />
-  </ItemGroup>
+  <Import Project="../Shared/Build.targets" />
 </Project>

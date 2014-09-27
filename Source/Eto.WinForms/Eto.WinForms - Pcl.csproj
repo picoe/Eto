@@ -36,7 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\Libraries\SHDocVw\Interop.SHDocVw.dll</HintPath>
@@ -342,4 +342,5 @@
       <Name>Eto - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../Shared/Build.targets" />
 </Project>

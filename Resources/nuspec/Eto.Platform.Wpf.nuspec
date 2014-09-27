@@ -21,13 +21,13 @@
 		<tags>cross platform gui ui framework desktop wpf eto.forms</tags>
 		<dependencies>
 			<group>
-				<dependency id="Eto.Forms" version="$version$" />
+				<dependency id="Eto.Forms" version="[$version$]" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Wpf.dll" target="lib\net45\" />
-		<file src="..\..\BuildOutput\$configuration$\Eto.Wpf.dll" target="lib\net40\" />
-		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/Pcl/$configuration$/Eto.Wpf.dll" target="lib\net45" />
+		<file src="BuildOutput/$configuration$/Eto.Wpf.dll" target="lib\net40" />
+		<file src="BuildOutput/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

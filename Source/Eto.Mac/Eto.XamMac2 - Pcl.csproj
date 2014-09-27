@@ -44,6 +44,7 @@
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>false</UseSGen>
   </PropertyGroup>
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -224,4 +225,5 @@
       <Name>Eto - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../Shared/Build.targets" />
 </Project>

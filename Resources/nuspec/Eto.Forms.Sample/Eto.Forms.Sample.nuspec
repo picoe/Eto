@@ -21,12 +21,12 @@
     <tags>cross platform gui framework desktop winforms wpf mac osx gtk eto.forms sample</tags>
     <dependencies>
       <group>
-        <dependency id="Eto.Forms" version="$version$" />
-        <dependency id="Eto.Platform.Mac" version="$version$" />
-        <dependency id="Eto.Platform.Mac.Template" version="$version$" />
-        <dependency id="Eto.Platform.Wpf" version="$version$" />
-        <dependency id="Eto.Platform.Windows" version="$version$" />
-        <dependency id="Eto.Platform.Gtk" version="$version$" />
+        <dependency id="Eto.Forms" version="[$version$]" />
+        <dependency id="Eto.Platform.Mac" version="[$version$]" />
+        <dependency id="Eto.Platform.Mac.Template" version="[$version$]" />
+        <dependency id="Eto.Platform.Wpf" version="[$version$]" />
+        <dependency id="Eto.Platform.Windows" version="[$version$]" />
+        <dependency id="Eto.Platform.Gtk" version="[$version$]" />
       </group>
     </dependencies>
   </metadata>

@@ -35,7 +35,7 @@
   <PropertyGroup>
     <OutputRoot>..\..\..</OutputRoot>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="MonoMac">
       <HintPath>..\..\Libraries\MonoMac64\MonoMac.dll</HintPath>
@@ -195,7 +195,6 @@
     <Compile Include="Forms\Controls\MacLabel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
@@ -222,4 +221,5 @@
   </ProjectExtensions>
   <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
+  <Import Project="../Shared/Build.targets" />
 </Project>

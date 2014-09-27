@@ -27,6 +27,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
@@ -55,4 +56,5 @@
       <Name>Eto.Gtk3 - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

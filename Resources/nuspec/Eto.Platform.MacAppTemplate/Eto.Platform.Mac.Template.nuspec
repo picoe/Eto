@@ -22,12 +22,12 @@
 		<tags>cross platform gui ui framework desktop monomac osx mac eto.forms</tags>
 		<dependencies>
 			<group>
-				<dependency id="Eto.Platform.Mac" version="$version$" />
+				<dependency id="Eto.Platform.Mac" version="[$version$]" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\MacAppTemplate.app\**" target="content\Mac\MyApp.app" />
+		<file src="MacAppTemplate.app/**" target="content\Mac\MyApp.app" />
 		<file src="buildapp.cmd" target="content\Mac\buildapp.cmd" />
 		<file src="README.txt" target="content\Mac\README.txt" />
 		<file src="install.ps1" target="tools\install.ps1" />

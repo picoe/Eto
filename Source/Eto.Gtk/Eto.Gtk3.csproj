@@ -48,7 +48,7 @@
     <Optimize>false</Optimize>
     <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -272,7 +272,5 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <ItemGroup />
-  <ItemGroup />
-  <ItemGroup />
+  <Import Project="../Shared/Build.targets" />
 </Project>
