@@ -44,7 +44,7 @@
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <PropertyGroup>
-  	<CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
+    <CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -205,6 +205,7 @@
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="Messaging.cs" />
     <Compile Include="Forms\Controls\MacLabel.cs" />
+    <Compile Include="MacHelpers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
