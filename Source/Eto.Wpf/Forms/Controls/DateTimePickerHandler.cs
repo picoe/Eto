@@ -24,7 +24,9 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				ShowButtonSpinner = false,
 				AutoCloseCalendar = true,
-				ClipValueToMinMax = true
+				ClipValueToMinMax = true,
+				Focusable = true,
+				IsTabStop = true
 			};
 			Mode = DateTimePicker.DefaultMode;
 			DateTime? last = Value;

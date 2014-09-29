@@ -438,19 +438,15 @@ namespace Eto.WinForms
 
 		public void Focus()
 		{
-			if (Control.IsHandleCreated)
-			{
-				if (!Control.Visible)
-					Control.TabIndex = 0;
+			if (Widget.Loaded && Control.IsHandleCreated)
 				Control.Focus();
-			}
 			else
-				Control.HandleCreated += Control_HandleCreated;
+                Widget.LoadComplete += Widget_LoadComplete;
 		}
 
-		void Control_HandleCreated(object sender, EventArgs e)
-		{
-			Control.HandleCreated -= Control_HandleCreated;
+        void Widget_LoadComplete(object sender, EventArgs e)
+        {
+            Widget.LoadComplete -= Widget_LoadComplete;
 			Control.Focus();
 		}
 

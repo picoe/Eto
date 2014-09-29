@@ -34,6 +34,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		protected override void GrabFocus()
+		{
+			Control.Entry.GrabFocus();
+		}
+
 		protected override Gtk.Widget FontControl
 		{
 			get { return Control.Entry; }

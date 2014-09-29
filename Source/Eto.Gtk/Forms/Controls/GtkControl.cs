@@ -238,9 +238,23 @@ namespace Eto.GtkSharp
 		{
 		}
 
-		public virtual void Focus()
+		public void Focus()
+		{
+			if (Widget.Loaded)
+				GrabFocus();
+			else
+				Widget.LoadComplete += Widget_LoadComplete;
+		}
+
+		protected virtual void GrabFocus()
 		{
 			Control.GrabFocus();
+		}
+
+		void Widget_LoadComplete(object sender, EventArgs e)
+		{
+			Widget.LoadComplete -= Widget_LoadComplete;
+			GrabFocus();
 		}
 
 		public bool HasFocus
