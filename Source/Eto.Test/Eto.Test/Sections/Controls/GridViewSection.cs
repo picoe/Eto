@@ -300,6 +300,10 @@ namespace Eto.Test.Sections.Controls
 			{
 				Log.Write(control, "Column Header Clicked: {0}", e.Column.HeaderText);
 			};
+			control.CellDoubleClick += (s, e) =>
+			{
+				Log.Write(control, "Cell Double Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			};
 		}
 
 		static string SelectedRowsString(GridView control)

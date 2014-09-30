@@ -190,6 +190,19 @@ namespace Eto.Mac.Forms.Controls
 					break;
 				case Grid.CellFormattingEvent:
 					break;
+				case GridView.CellDoubleClickEvent:
+					Control.DoubleClick += (sender, e) =>
+					{
+						int rowIndex;
+						if ((rowIndex = Control.ClickedRow) >= 0)
+						{
+							var columnIndex = Control.ClickedColumn;
+							var item = GetItem(rowIndex);
+							var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
+							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						}
+					};
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
