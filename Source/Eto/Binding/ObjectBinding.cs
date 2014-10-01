@@ -79,8 +79,13 @@ namespace Eto
 			get { return dataItem; }
 			set
 			{
+				var updateEvent = dataValueChangedReference != null;
+				if (updateEvent)
+					RemoveEvent(DataValueChangedEvent);
 				dataItem = value;
 				OnDataValueChanged(EventArgs.Empty);
+				if (updateEvent)
+					HandleEvent(DataValueChangedEvent);
 			}
 		}
 
@@ -295,6 +300,22 @@ namespace Eto
 		{
 			var valueBinding = new ObjectBinding<TObject, TValue>(objectValue, objectBinding);
 			return Bind(sourceBinding: valueBinding, mode: mode);
+		}
+
+		/// <summary>
+		/// Creates a binding to the <paramref name="propertyName"/> of the specified <paramref name="objectValue"/>.
+		/// </summary>
+		/// <remarks>
+		/// This is a shortcut to using the <see cref="PropertyBinding{TValue}"/>.
+		/// This has the advantage of registering automatically to <see cref="System.ComponentModel.INotifyPropertyChanged"/> 
+		/// or to an event named after the property with a "Changed" suffix.
+		/// </remarks>
+		/// <param name="objectValue">Object to bind to.</param>
+		/// <param name="propertyName">Name of the property to bind to on the <paramref name="objectValue"/>.</param>
+		/// <param name="mode">Direction of the binding.</param>
+		public DualBinding<TValue> Bind(object objectValue, string propertyName, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return Bind<object>(objectValue, new PropertyBinding<TValue>(propertyName), mode: mode);
 		}
 	}
 }

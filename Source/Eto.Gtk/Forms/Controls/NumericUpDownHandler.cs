@@ -7,9 +7,10 @@ namespace Eto.GtkSharp
 	{
 		public NumericUpDownHandler()
 		{
-			Control = new Gtk.SpinButton(0, 100, 1);
+			Control = new Gtk.SpinButton(double.MinValue, double.MaxValue, 1);
 			Control.WidthRequest = 80;
 			Control.Wrap = true;
+			Value = 0;
 		}
 
 		protected override void Initialize()
@@ -62,6 +63,25 @@ namespace Eto.GtkSharp
 		{
 			get { return Control.Adjustment.Lower; }
 			set { Control.Adjustment.Lower = value; }
+		}
+
+		public double Increment
+		{
+			get { 
+				double step, page;
+				Control.GetIncrements(out step, out page);
+				return step;
+			}
+			set
+			{
+				Control.SetIncrements(value, value * 2);
+			}
+		}
+
+		public int DecimalPlaces
+		{
+			get { return (int)Control.Digits; }
+			set { Control.Digits = (uint)value; }
 		}
 	}
 }

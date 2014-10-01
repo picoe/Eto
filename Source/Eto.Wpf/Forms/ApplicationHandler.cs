@@ -63,7 +63,7 @@ namespace Eto.Wpf.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control = new sw.Application();
+			Control = sw.Application.Current ?? new sw.Application { ShutdownMode = sw.ShutdownMode.OnExplicitShutdown };
 			instance = this;
 			Control.Startup += HandleStartup;
 		}
@@ -169,12 +169,15 @@ namespace Eto.Wpf.Forms
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
-				if (shutdown) return;
+				if (shutdown)
+					return;
 				if (Widget.MainForm != null)
+				{
+					Control.ShutdownMode = sw.ShutdownMode.OnMainWindowClose;
 					Control.Run((System.Windows.Window)Widget.MainForm.ControlObject);
+				}
 				else
 				{
-					Control.ShutdownMode = sw.ShutdownMode.OnExplicitShutdown;
 					Control.Run();
 				}
 			}

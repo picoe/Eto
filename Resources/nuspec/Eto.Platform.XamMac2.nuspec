@@ -25,12 +25,12 @@
 		<tags>cross platform gui ui framework desktop osx xamarin.mac mac eto.forms</tags>
 		<dependencies>
 			<group>
-				<dependency id="Eto.Forms" version="$version$" />
+				<dependency id="Eto.Forms" version="[$version$]" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.XamMac2.dll" target="lib\" />
-		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/Pcl/$configuration$/Eto.XamMac2.dll" target="lib\xamarin.mac" />
+		<file src="BuildOutput/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

@@ -122,6 +122,7 @@ Global
 		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Debug|Windows.Build.0 = Debug|Any CPU
 		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Release|Linux.ActiveCfg = Release|Any CPU
 		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Release|Mac.ActiveCfg = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Release|Mac.Build.0 = Release|Any CPU
 		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Release|Windows.ActiveCfg = Release|Any CPU
 		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Release|Windows.Build.0 = Release|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Debug|Linux.ActiveCfg = Debug|Any CPU

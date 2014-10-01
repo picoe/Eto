@@ -81,11 +81,6 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public override void Focus()
-		{
-			Control.GrabFocus();
-		}
-
 		public int SelectedIndex
 		{
 			get

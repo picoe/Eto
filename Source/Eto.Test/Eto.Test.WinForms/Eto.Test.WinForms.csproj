@@ -10,7 +10,7 @@
     <AssemblyName>Eto.Test.WinForms</AssemblyName>
     <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
-    <BaseDir Condition="$(BaseDir) == '' Or $(BaseDir) == '*Undefined*'">..\..</BaseDir>
+    <PackagesDir Condition="$(PackagesDir) == '' Or $(PackagesDir) == '*Undefined*'">..\..</PackagesDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -34,7 +34,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="nunitlite">
       <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\nunitlite.dll</HintPath>
@@ -82,7 +82,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(BaseDir)\.nuget\NuGet.targets" Condition="Exists('$(BaseDir)\.nuget\NuGet.targets')" />
+  <Import Project="$(PackagesDir)\.nuget\NuGet.targets" Condition="Exists('$(PackagesDir)\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -91,4 +91,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="../../Shared/Build.targets" />
 </Project>

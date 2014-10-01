@@ -251,6 +251,17 @@ namespace Eto.Wpf.Forms.Controls
 			Control.UnselectAll();
 		}
 
+		public void BeginEdit(int row, int column)
+		{
+			Control.UnselectAll();
+			//sometimes couldn't focus to cell, so use ScrollIntoView
+			Control.ScrollIntoView(Control.Items[row]);
+			//set current cell
+			Control.CurrentCell = new swc.DataGridCellInfo(Control.Items[row], Control.Columns[column]);	
+			Control.Focus();
+			Control.BeginEdit();
+		}
+
 		public virtual sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent)
 		{
 			return defaultContent;

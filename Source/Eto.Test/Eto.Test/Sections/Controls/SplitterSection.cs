@@ -17,6 +17,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddCentered(Test1FullScreenAndAutoSize());
 			layout.AddCentered(Test2WithSize());
 			layout.AddCentered(Test2AutoSize());
+			layout.AddCentered(TestDynamic());
 			layout.Add(null);
 			Content = layout;
 		}
@@ -89,31 +90,75 @@ namespace Eto.Test.Sections.Controls
 			return form;
 		}
 
-		private static void LayoutContent(Label[] status, Panel mainPanel)
+		static Control TestDynamic()
+		{
+			var control = new Button { Text = "Dynamic splitter creation" };
+			control.Click += (sender, e) =>
+			{
+				var tabcontrol = new TabControl();
+				tabcontrol.Pages.Add(new TabPage{ Text = "Index" });
+
+				var addTabButton = new Button { Text = "Add Tab With Splitter" };
+				addTabButton.Click += (ss, ee) =>
+				{
+					var newTabpage = new TabPage
+					{
+						Text = "test",
+						Content = new Splitter
+						{
+							Panel1 = new TreeView { Size = new Size(100, 100) },
+							Panel2 = new GridView(),
+							Orientation = SplitterOrientation.Horizontal,
+							FixedPanel = SplitterFixedPanel.Panel1,                         
+							Position = 100,
+						}
+					};
+					tabcontrol.Pages.Add(newTabpage);
+					tabcontrol.SelectedPage = newTabpage;
+				};
+
+				var form = new Form
+				{
+					Padding = new Padding(5),
+					Content = new TableLayout(
+						TableLayout.AutoSized(addTabButton, centered: true),
+						tabcontrol
+					)
+				};
+				form.Size = new Size(600, 400);
+				form.Show();
+			};
+			return control;
+		}
+
+		static void LayoutContent(Label[] status, Panel mainPanel)
 		{
 			var count = 0;
 			var splitLayout = new SplitLayout();
 			mainPanel.Content = splitLayout.Layout(
-				i => {
+				i =>
+				{
 					var button = new Button { Text = "Click to update status " + i, BackgroundColor = splitLayout.PanelColors[i] };
 					button.Click += (s, e) => status[i].Text = "New count: " + (count++);
 					return button;
 				});
 		}
 
-		private static void LayoutContent2(Label[] status, Panel mainPanel)
+		static void LayoutContent2(Label[] status, Panel mainPanel)
 		{
 			LayoutContent2(status, mainPanel, null);
 		}
 
-		private static void LayoutContent2(Label[] status, Panel mainPanel, Panel[] panels)
+		static void LayoutContent2(Label[] status, Panel mainPanel, Panel[] panels)
 		{
 			var splitLayout = new SplitLayout(panels);
 			var isFullScreen = false;
 			mainPanel.Content = splitLayout.Layout(
-				i => {
+				i =>
+				{
 					var button = new Button { Text = "Click to make full screen" + i, BackgroundColor = splitLayout.PanelColors[i] };
-					button.Click += (s, e) => {
+					button.Click += (s, e) =>
+					{
 						if (isFullScreen)
 							LayoutContent2(status, mainPanel, splitLayout.Panels); // recursive
 						else
@@ -124,17 +169,19 @@ namespace Eto.Test.Sections.Controls
 				});
 		}
 
-		private class SplitLayout
+		class SplitLayout
 		{
 			public Control Root { get; private set; }
+
 			public Panel[] Panels { get; private set; }
+
 			public Color[] PanelColors = { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
 
 			public SplitLayout(Panel[] panels = null)
 			{
 				this.Panels = panels ?? new Panel[] { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
 			}
-			
+
 			public Control Layout(Func<int, Control>getContent)
 			{
 				// Add splitters like this:

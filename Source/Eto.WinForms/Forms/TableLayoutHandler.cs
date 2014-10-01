@@ -135,7 +135,7 @@ namespace Eto.WinForms
 				childControl.Dock = childHandler.DockStyle;
 				childControl.Margin = GetPadding(x, y);
 				SetScale(child, x, y);
-				childHandler.BeforeAddControl();
+				childHandler.BeforeAddControl(Widget.Loaded);
 
 				Control.Controls.Add(childControl, x, y);
 			}
@@ -152,6 +152,12 @@ namespace Eto.WinForms
 			SetScale(child, x, y);
 			if (Widget.Loaded)
 				ResumeLayout();
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			SetMinimumSize(useCache: true); // when created during pre-load, we need this to ensure the scale is set on the children properly
+			base.OnLoad(e);
 		}
 
 		public void Remove(Control child)

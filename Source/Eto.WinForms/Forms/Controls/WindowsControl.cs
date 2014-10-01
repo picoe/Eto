@@ -103,6 +103,11 @@ namespace Eto.WinForms
 
 		public virtual Size? DefaultSize { get { return null; } }
 
+		protected void ClearCachedDefaultSize()
+		{
+			cachedDefaultSize = null;
+		}
+
 		Size? cachedDefaultSize;
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
@@ -160,7 +165,6 @@ namespace Eto.WinForms
 			YScale = true;
 			Control.Margin = swf.Padding.Empty;
 			Control.Tag = this;
-			SuspendControl();
 		}
 
 		public virtual swf.DockStyle DockStyle
@@ -434,19 +438,15 @@ namespace Eto.WinForms
 
 		public void Focus()
 		{
-			if (Control.IsHandleCreated)
-			{
-				if (!Control.Visible)
-					Control.TabIndex = 0;
+			if (Widget.Loaded && Control.IsHandleCreated)
 				Control.Focus();
-			}
 			else
-				Control.HandleCreated += Control_HandleCreated;
+                Widget.LoadComplete += Widget_LoadComplete;
 		}
 
-		void Control_HandleCreated(object sender, EventArgs e)
-		{
-			Control.HandleCreated -= Control_HandleCreated;
+        void Widget_LoadComplete(object sender, EventArgs e)
+        {
+            Widget.LoadComplete -= Widget_LoadComplete;
 			Control.Focus();
 		}
 
@@ -483,23 +483,6 @@ namespace Eto.WinForms
 			Callback.OnSizeChanged(Widget, e);
 		}
 
-		bool resumed;
-		protected virtual void ResumeControl(bool top = true)
-		{
-		}
-
-		protected virtual void SuspendControl()
-		{
-		}
-
-		public virtual void BeforeAddControl(bool top = true)
-		{
-			if (!resumed && Widget.Loaded)
-			{
-				ResumeControl(top);
-				resumed = true;
-			}
-		}
 
 		public virtual void OnPreLoad(EventArgs e)
 		{
@@ -513,20 +496,14 @@ namespace Eto.WinForms
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			SetToolTip();
-			if (!resumed)
-			{
-				ResumeControl();
-				resumed = true;
-			}
 		}
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
-			if (resumed)
-			{
-				SuspendControl();
-				resumed = false;
-			}
+		}
+
+		public virtual void BeforeAddControl(bool top = true)
+		{
 		}
 
 		void SetToolTip()

@@ -36,11 +36,47 @@ namespace Eto.WinForms
 						size.Height = Math.Max(size.Height, (int)itemSize.Height);
 					}
 					// for drop down glyph and border
+					if (DrawMode == swf.DrawMode.OwnerDrawFixed)
+						size.Width += 4;
 					size.Width += 18;
 					size.Height += 4;
 					cachedSize = size;
 				}
 				return cachedSize.Value;
+			}
+
+			sd.Color? backColor;
+			public new sd.Color BackColor
+			{
+				get { return backColor ?? base.BackColor; }
+				set
+				{
+					backColor = value;
+					DrawMode = swf.DrawMode.OwnerDrawFixed;
+				}
+			}
+
+			protected override void OnDrawItem(swf.DrawItemEventArgs e)
+			{
+				if (e.State.HasFlag(swf.DrawItemState.ComboBoxEdit))
+				{
+					// only show the background color for the drop down, not for each item
+					e.Graphics.FillRectangle(new sd.SolidBrush(BackColor), e.Bounds);
+				}
+				else
+				{
+					e.DrawBackground();
+				}
+
+				if (e.Index >= 0)
+				{
+					string text = Items[e.Index].ToString();
+
+					// Determine the forecolor based on whether or not the item is selected    
+					e.Graphics.DrawString(text, Font, new sd.SolidBrush(ForeColor), e.Bounds.X, e.Bounds.Y);
+				}
+
+				e.DrawFocusRectangle();
 			}
 		}
 
@@ -56,6 +92,18 @@ namespace Eto.WinForms
 			{
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
+		}
+
+		public override Color BackgroundColor
+		{
+			get
+			{
+				return Control.BackColor.ToEto();
+			}
+			set
+			{
+				Control.BackColor = value.ToSD();
+			}
 		}
 
 		public override Size GetPreferredSize(Size availableSize, bool useCache)

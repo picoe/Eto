@@ -11,6 +11,7 @@ namespace Eto.Wpf.Forms
 	{
 		Button defaultButton;
 		Button abortButton;
+		Window parentWindow;
 
 		public DialogHandler()
 		{
@@ -27,11 +28,11 @@ namespace Eto.Wpf.Forms
 		{
 			if (parent != null)
 			{
-				var parentWindow = parent.ParentWindow;
+				parentWindow = parent.ParentWindow;
 				if (parentWindow != null)
 				{
-					var owner = ((IWpfWindow)parentWindow.Handler).Control;
-					Control.Owner = owner;
+					var handler = (IWpfWindow)parentWindow.Handler;
+					handler.SetOwnerFor(Control);
 					// CenterOwner does not work in certain cases (e.g. with autosizing)
 					Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
 					Control.SourceInitialized += HandleSourceInitialized;
@@ -54,9 +55,12 @@ namespace Eto.Wpf.Forms
 
 		void HandleSourceInitialized(object sender, EventArgs e)
 		{
-			var owner = Control.Owner;
-			Control.Left = owner.Left + (owner.ActualWidth - Control.ActualWidth) / 2;
-			Control.Top = owner.Top + (owner.ActualHeight - Control.ActualHeight) / 2;
+			if (parentWindow != null)
+			{
+				var bounds = parentWindow.Bounds;
+				Control.Left = bounds.Left + (bounds.Width - Control.ActualWidth) / 2;
+				Control.Top = bounds.Top + (bounds.Height - Control.ActualHeight) / 2;
+			}
 			Control.SourceInitialized -= HandleSourceInitialized;
 		}
 

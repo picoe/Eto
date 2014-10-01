@@ -74,6 +74,12 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback.</returns>
+		protected override object GetCallback() { return new Callback(); }
+
+		/// <summary>
 		/// Callback interface for handlers of the <see cref="FontDialog"/>.
 		/// </summary>
 		public new interface ICallback : CommonDialog.ICallback

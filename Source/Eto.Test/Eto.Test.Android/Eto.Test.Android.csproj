@@ -45,6 +45,7 @@
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -81,4 +82,5 @@
       <Name>Eto.Android</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

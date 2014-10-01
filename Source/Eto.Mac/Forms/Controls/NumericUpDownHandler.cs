@@ -9,6 +9,7 @@ using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+using nnint = System.nint;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -22,6 +23,7 @@ using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
+using nnint = System.UInt64;
 #else
 using CGSize = System.Drawing.SizeF;
 using CGRect = System.Drawing.RectangleF;
@@ -29,6 +31,7 @@ using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+using nnint = System.Int32;
 #endif
 #endif
 
@@ -97,6 +100,7 @@ namespace Eto.Mac.Forms.Controls
 			MinValue = 0;
 			MaxValue = 100;
 			Value = 0;
+			DecimalPlaces = 0;
 			Control.AddSubview(text);
 			Control.AddSubview(stepper);
 		}
@@ -251,6 +255,30 @@ namespace Eto.Mac.Forms.Controls
 				text.Font = font == null ? null : font.ControlObject as NSFont;
 				text.SizeToFit();
 				LayoutIfNeeded();
+			}
+		}
+
+		public double Increment
+		{
+			get { return stepper.Increment; }
+			set { stepper.Increment = value; }
+		}
+
+		int decimalPlaces;
+		public int DecimalPlaces
+		{
+			get { return decimalPlaces; }
+			set
+			{
+				if (value != decimalPlaces)
+				{
+					decimalPlaces = value;
+					var formatter = new NSNumberFormatter();
+					formatter.NumberStyle = NSNumberFormatterStyle.Decimal;
+					formatter.MinimumFractionDigits = (nnint)decimalPlaces;
+					formatter.MaximumFractionDigits = (nnint)decimalPlaces;
+					text.Formatter = formatter;
+				}
 			}
 		}
 	}

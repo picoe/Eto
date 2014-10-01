@@ -49,7 +49,7 @@
     <Optimize>false</Optimize>
     <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -264,6 +264,7 @@
     </Compile>
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="Forms\GtkSynchronizationContext.cs" />
+    <Compile Include="GtkHelpers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -281,4 +282,5 @@
       <Name>Eto - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../Shared/Build.targets" />
 </Project>

@@ -8,10 +8,11 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
-		public NumericUpDownHandler ()
+		public NumericUpDownHandler()
 		{
-			Control = new mwc.DoubleUpDown ();
+			Control = new mwc.DoubleUpDown();
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
+			DecimalPlaces = 0;
 		}
 
 		public override bool UseMousePreview { get { return true; } }
@@ -42,5 +43,25 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.Maximum = value; }
 		}
 
+		int decimalPlaces = 0;
+
+		public int DecimalPlaces
+		{
+			get { return decimalPlaces; }
+			set
+			{
+				if (value != decimalPlaces)
+				{
+					decimalPlaces = value;
+					Control.FormatString = "0." + new string('0', decimalPlaces);
+				}
+			}
+		}
+
+		public double Increment
+		{
+			get { return Control.Increment ?? 1; }
+			set { Control.Increment = value; }
+		}
 	}
 }

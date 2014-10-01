@@ -21,6 +21,7 @@ namespace Eto.WinForms
 			{
 				var e = new swf.KeyEventArgs(keyData);
 				OnKeyDown(e);
+                e.Handled |= base.ProcessDialogKey(keyData);
 				if (!e.Handled)
 				{
 					// Prevent firing the keydown event twice for the same key
@@ -93,10 +94,10 @@ namespace Eto.WinForms
 			}
 		}
 
-		protected override void ResumeControl(bool top = true)
+		protected override void ResumeControl(bool performLayout = true)
 		{
 			finalLayoutPass = true;
-			base.ResumeControl(top);
+			base.ResumeControl(performLayout);
 			finalLayoutPass = false;
 		}
 

@@ -22,10 +22,15 @@
 		<frameworkAssemblies>
 			<frameworkAssembly assemblyName="System.Xaml" />
 		</frameworkAssemblies>
+		<dependencies>
+			<group>
+				<dependency id="Eto.Forms" version="[$version$]" />
+			</group>
+		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\BuildOutput\Pcl\$configuration$\Eto.Serialization.Xaml.dll" target="lib\net45\" />
-		<file src="..\..\BuildOutput\$configuration$\Eto.Serialization.Xaml.dll" target="lib\net40\" />
-		<file src="..\..\BuildOutput\$configuration$\LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/Pcl/$configuration$/Eto.Serialization.Xaml.dll" target="lib\net45" />
+		<file src="BuildOutput/$configuration$/Eto.Serialization.Xaml.dll" target="lib\net40" />
+		<file src="BuildOutput/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

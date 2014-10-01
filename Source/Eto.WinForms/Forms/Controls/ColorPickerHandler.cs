@@ -13,7 +13,7 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		public ColorPickerHandler()
 		{
-			Control = new swf.Button();
+			Control = new swf.Button { Width = 40 };
 			Control.Click += HandleClick;
 			Control.BackColor = sd.Color.Black;
 		}

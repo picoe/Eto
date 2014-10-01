@@ -31,7 +31,7 @@
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="ColorPicker">
       <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
@@ -73,6 +73,9 @@
     </Compile>
     <Compile Include="..\Eto.WinForms\CustomControls\TreeController.cs">
       <Link>CustomControls\TreeGridView\TreeController.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.WinForms\Forms\HwndFormHandler.cs">
+      <Link>Forms\HwndFormHandler.cs</Link>
     </Compile>
     <Compile Include="..\Eto.WinForms\Win32.cs">
       <Link>Win32.cs</Link>
@@ -216,6 +219,7 @@
     <Compile Include="..\Shared\EmbeddedAssemblyLoader.cs">
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>
+    <Compile Include="WpfHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
@@ -306,4 +310,5 @@
   </ProjectExtensions>
   <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
+  <Import Project="../Shared/Build.targets" />
 </Project>

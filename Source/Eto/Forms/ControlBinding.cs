@@ -77,7 +77,8 @@ namespace Eto.Forms
 			var valueBinding = new ObjectBinding<object, TValue>(control.DataContext, dataContextBinding)
 			{
 				GettingNullValue = defaultControlValue,
-				SettingNullValue = defaultContextValue
+				SettingNullValue = defaultContextValue,
+				DataItem = contextBinding.DataValue
 			};
 			DualBinding<TValue> binding = Bind(sourceBinding: valueBinding, mode: mode);
 			contextBinding.DataValueChanged += delegate
@@ -110,10 +111,26 @@ namespace Eto.Forms
 			return BindDataContext(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
 		}
 
+		/// <summary>
+		/// Binds to the specified <paramref name="propertyName"/> of the current data context.
+		/// </summary>
+		/// <remarks>
+		/// This is a shortcut to using the <see cref="PropertyBinding{TValue}"/>.
+		/// This has the advantage of registering automatically to <see cref="System.ComponentModel.INotifyPropertyChanged"/> 
+		/// or to an event named after the property with a "Changed" suffix.
+		/// </remarks>
+		/// <returns>The binding between the data context and this binding.</returns>
+		/// <param name="propertyName">Name of the property on the data context to bind to.</param>
+		/// <param name="mode">Direction of the binding.</param>
+		public DualBinding<TValue> BindDataContext(string propertyName, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return BindDataContext(new PropertyBinding<TValue>(propertyName), mode);
+		}
+
 		#region Obsolete
 
 		/// <summary>
-		/// Obsolete. Use <see cref="BindDataContext"/> instead.
+		/// Obsolete. Use BindDataContext(...) instead.
 		/// </summary>
 		[Obsolete("Use BindDataContext() instead")]
 		public DualBinding<TValue> Bind(IndirectBinding<TValue> dataContextBinding, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))

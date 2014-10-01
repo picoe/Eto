@@ -40,6 +40,7 @@ namespace Eto.Mac.Forms.Controls
 		Control panel2;
 		int? position;
 		SplitterFixedPanel fixedPanel;
+		bool initialPositionSet;
 
 		public bool RecurseToChildren { get { return true; } }
 
@@ -159,7 +160,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void DidResizeSubviews(NSNotification notification)
 			{
 				var subview = Handler.Control.Subviews[0];
-				if (subview != null && Handler.position != null && Handler.Widget.Loaded && Handler.Widget.ParentWindow != null && Handler.Widget.ParentWindow.Loaded)
+				if (subview != null && Handler.position != null && Handler.initialPositionSet && Handler.Widget.Loaded && Handler.Widget.ParentWindow != null && Handler.Widget.ParentWindow.Loaded)
 				{
 					Handler.position = Handler.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
 					Handler.Callback.OnPositionChanged(Handler.Widget, EventArgs.Empty);
@@ -305,6 +306,13 @@ namespace Eto.Mac.Forms.Controls
 			base.OnLoadComplete(e);
 			SetInitialSplitPosition();
 			Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+			initialPositionSet = true;
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			initialPositionSet = false;
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

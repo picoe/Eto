@@ -411,6 +411,12 @@ namespace Eto.Mac.Forms.Controls
 			Control.DeselectAll(Control);
 		}
 
+		public void BeginEdit(int row, int column)
+		{
+			Control.SelectRow((nnint)row, false);
+			Control.EditColumn((nint)column, (nint)row, new NSEvent(), true);
+		}
+
 		public int RowHeight
 		{
 			get { return (int)Control.RowHeight; }

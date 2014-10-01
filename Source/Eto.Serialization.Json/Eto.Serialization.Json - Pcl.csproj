@@ -39,8 +39,8 @@
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
+  <Import Project="../Shared/Common.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Compile Include="JsonReader.cs" />
     <Compile Include="DynamicLayoutConverter.cs" />
@@ -89,4 +89,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="../Shared/Build.targets" />
 </Project>

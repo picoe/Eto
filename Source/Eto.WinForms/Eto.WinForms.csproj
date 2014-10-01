@@ -32,7 +32,7 @@
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\Libraries\SHDocVw\Interop.SHDocVw.dll</HintPath>
@@ -98,6 +98,7 @@
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
+    <Compile Include="Forms\HwndFormHandler.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
     <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
@@ -299,6 +300,7 @@
     <Compile Include="Platform.cs" />
     <Compile Include="Win32TextBox.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
+    <Compile Include="WinFormsHelpers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -336,4 +338,5 @@
   </ProjectExtensions>
   <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
+  <Import Project="../Shared/Build.targets" />
 </Project>

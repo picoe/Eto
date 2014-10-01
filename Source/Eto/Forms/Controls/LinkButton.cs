@@ -11,6 +11,11 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		static LinkButton()
+		{
+			EventLookup.Register<LinkButton>(c => c.OnClick(null), ClickEvent);
+		}
+
 		/// <summary>
 		/// Event identifier for the <see cref="Click"/> event.
 		/// </summary>

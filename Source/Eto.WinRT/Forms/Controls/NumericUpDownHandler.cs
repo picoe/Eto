@@ -9,9 +9,9 @@ namespace Eto.WinRT.Forms.Controls
 {
 	public class NumericUpDownHandler : WpfControl<mwc.NumericUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
-		public NumericUpDownHandler ()
+		public NumericUpDownHandler()
 		{
-			Control = new mwc.NumericUpDown { ValueBarVisibility = mwc.NumericUpDownValueBarVisibility.Visible};
+			Control = new mwc.NumericUpDown { ValueBarVisibility = mwc.NumericUpDownValueBarVisibility.Visible };
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 		}
 
@@ -41,6 +41,26 @@ namespace Eto.WinRT.Forms.Controls
 		{
 			get { return Control.Maximum; }
 			set { Control.Maximum = value; }
+		}
+
+		public double Increment
+		{
+			get { return Control.SmallChange; }
+			set { Control.SmallChange = value; }
+		}
+
+		int decimalPlaces;
+		public int DecimalPlaces
+		{
+			get { return decimalPlaces; }
+			set
+			{
+				if (value != decimalPlaces)
+				{
+					decimalPlaces = value;
+					Control.ValueFormat = decimalPlaces == 0 ? "0" : "0." + new string('0', decimalPlaces);
+				}
+			}
 		}
 	}
 }

@@ -19,16 +19,6 @@ namespace Eto.WinForms
 			Padding = Panel.DefaultPadding;
 		}
 
-		protected override void ResumeControl(bool top = true)
-		{
-			ContainerContentControl.ResumeLayout(top);
-		}
-
-		protected override void SuspendControl()
-		{
-			ContainerContentControl.SuspendLayout();
-		}
-
 		public virtual swf.Control ContainerContentControl
 		{
 			get { return Control; }
@@ -77,7 +67,7 @@ namespace Eto.WinForms
 						desiredSize.Height = desiredContentSize.Height;
 				}
 			}
-      return desiredSize + Padding.Size;
+			return desiredSize + Padding.Size;
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
@@ -118,7 +108,7 @@ namespace Eto.WinForms
 				{
 					SetContentScale(XScale, YScale);
 					var childHandler = content.GetWindowsHandler();
-					childHandler.BeforeAddControl();
+					childHandler.BeforeAddControl(Widget.Loaded);
 					SetContent(childHandler.ContainerControl);
 				}
 

@@ -112,6 +112,26 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the number of digits to display after the decimal.
+		/// </summary>
+		/// <value>The number of decimal places.</value>
+		public int DecimalPlaces
+		{
+			get { return Handler.DecimalPlaces; }
+			set { Handler.DecimalPlaces = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the value to increment when the user clicks on the stepper buttons.
+		/// </summary>
+		/// <value>The step increment.</value>
+		public double Increment
+		{
+			get { return Handler.Increment; }
+			set { Handler.Increment = value; }
+		}
+
+		/// <summary>
 		/// Gets the binding for the <see cref="Value"/> property.
 		/// </summary>
 		/// <value>The value binding.</value>
@@ -133,11 +153,15 @@ namespace Eto.Forms
 		}
 
 		static readonly object callback = new Callback();
+
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
 		/// </summary>
 		/// <returns>The callback instance to use for this widget</returns>
-		protected override object GetCallback() { return callback; }
+		protected override object GetCallback()
+		{
+			return callback;
+		}
 
 		/// <summary>
 		/// Callback interface for the <see cref="NumericUpDown"/>
@@ -204,6 +228,18 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The maximum value.</value>
 			double MaxValue { get; set; }
+
+			/// <summary>
+			/// Gets or sets the number of digits to display after the decimal.
+			/// </summary>
+			/// <value>The number of decimal places.</value>
+			int DecimalPlaces { get; set; }
+
+			/// <summary>
+			/// Gets or sets the value to increment when the user clicks on the stepper buttons.
+			/// </summary>
+			/// <value>The step increment.</value>
+			double Increment { get; set; }
 		}
 	}
 }

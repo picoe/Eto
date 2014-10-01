@@ -51,7 +51,7 @@
     <MonoBundlingExtraArgs>--xml="${ProjectDir}/linker.xml"</MonoBundlingExtraArgs>
     <LinkMode>SdkOnly</LinkMode>
   </PropertyGroup>
-  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -76,7 +76,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" Condition="Exists('$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets')" />
   <ItemGroup>
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
       <Project>{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}</Project>
@@ -102,4 +102,5 @@
   <ItemGroup>
     <Content Include="TestIcon.icns" />
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

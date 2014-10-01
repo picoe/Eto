@@ -49,7 +49,7 @@
     <XamMacArch>x86_64</XamMacArch>
     <DefineConstants>XAMMAC2</DefineConstants>
   </PropertyGroup>
-  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
+  <Import Project="../../Shared/Common.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
   <ItemGroup>
     <Reference Include="System" />
@@ -93,4 +93,5 @@
       <Name>Eto.Serialization.Json - Pcl</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

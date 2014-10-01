@@ -1,13 +1,13 @@
 ﻿This file lists the breaking changes made to Eto, most recent first.
 
-1.4.0
+2.0.0
 -----
 - All obsolete code in 1.3 has been removed
 - Renamed Generator to Platform
 - Renamed platform assemblies from Eto.Platform.[Gtk|Mac|Windows|etc] to Eto.[Gtk|Mac|WinForms|etc]
 	- "Windows" platform is renamed to "WinForms"
 	- Platform generators were renamed as well. E.g. Eto.Platform.Mac.Generator is now Eto.Mac.Platform
-- BREAKING: All static methods with a Generator as a platform are now static properties.
+- BREAKING: All static methods with a Generator as its single parameter are now static properties.
 	E.g. Pens.White() now becomes Pens.White
 	Changes:
 		- x.IsSupported() -> x.IsSupported
