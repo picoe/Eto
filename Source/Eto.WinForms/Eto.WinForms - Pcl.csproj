@@ -300,6 +300,7 @@
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="WinFormsHelpers.cs" />
+    <Compile Include="Forms\HwndFormHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

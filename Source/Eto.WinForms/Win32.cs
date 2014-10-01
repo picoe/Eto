@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Eto
 {
@@ -28,10 +29,10 @@ namespace Eto
 			SHOWWINDOW = 0x0040,
 		}
 
-		public static readonly IntPtr HWND_TOPMOST = new IntPtr (-1);
-		public static readonly IntPtr HWND_NOTOPMOST = new IntPtr (-2);
-		public static readonly IntPtr HWND_TOP = new IntPtr (0);
-		public static readonly IntPtr HWND_BOTTOM = new IntPtr (1);
+		public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+		public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+		public static readonly IntPtr HWND_TOP = new IntPtr(0);
+		public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
 
 		public enum GWL
 		{
@@ -109,23 +110,50 @@ namespace Eto
 			MOUSEWHEEL = 0x20A,
 		}
 
-		public static ushort LOWORD (IntPtr word) { return (ushort)(((long)word) & 0xffff); }
+		public static ushort LOWORD(IntPtr word)
+		{
+			return (ushort)(((long)word) & 0xffff);
+		}
 
-		public static ushort LOWORD (int word) { return (ushort)(word & 0xFFFF); }
+		public static ushort LOWORD(int word)
+		{
+			return (ushort)(word & 0xFFFF);
+		}
 
-		public static ushort HIWORD (IntPtr dwValue) { return (ushort)((((long)dwValue) >> 0x10) & 0xffff); }
+		public static ushort HIWORD(IntPtr dwValue)
+		{
+			return (ushort)((((long)dwValue) >> 0x10) & 0xffff);
+		}
 
-		public static ushort HIWORD (uint dwValue) { return (ushort)(dwValue >> 0x10); }
+		public static ushort HIWORD(uint dwValue)
+		{
+			return (ushort)(dwValue >> 0x10);
+		}
 
-		public static int SignedHIWORD (IntPtr n) { return SignedHIWORD ((int)((long)n)); }
+		public static int SignedHIWORD(IntPtr n)
+		{
+			return SignedHIWORD((int)((long)n));
+		}
 
-		public static int SignedLOWORD (IntPtr n) { return SignedLOWORD ((int)((long)n)); }
+		public static int SignedLOWORD(IntPtr n)
+		{
+			return SignedLOWORD((int)((long)n));
+		}
 
-		public static int SignedHIWORD (int n) { return (short)((n >> 16) & 0xFFFF); }
+		public static int SignedHIWORD(int n)
+		{
+			return (short)((n >> 16) & 0xFFFF);
+		}
 
-		public static int SignedLOWORD (int n) { return (short)(n & 0xFFFF); }
+		public static int SignedLOWORD(int n)
+		{
+			return (short)(n & 0xFFFF);
+		}
 
-		public static int GetWheelDeltaWParam (IntPtr wParam) { return SignedHIWORD (wParam); }
+		public static int GetWheelDeltaWParam(IntPtr wParam)
+		{
+			return SignedHIWORD(wParam);
+		}
 
 		[Flags]
 		public enum MK
@@ -140,36 +168,39 @@ namespace Eto
 			XBUTTON2 = 0x0040
 		}
 
-		public static MouseButtons GetMouseButtonWParam (IntPtr wParam)
+		public static MouseButtons GetMouseButtonWParam(IntPtr wParam)
 		{
-			var mask = (MK)LOWORD (wParam);
+			var mask = (MK)LOWORD(wParam);
 			var buttons = MouseButtons.None;
 
-			if (mask.HasFlag (MK.LBUTTON))
+			if (mask.HasFlag(MK.LBUTTON))
 				buttons |= MouseButtons.Left;
-			if (mask.HasFlag (MK.RBUTTON))
+			if (mask.HasFlag(MK.RBUTTON))
 				buttons |= MouseButtons.Right;
-			if (mask.HasFlag (MK.MBUTTON))
+			if (mask.HasFlag(MK.MBUTTON))
 				buttons |= MouseButtons.Middle;
-			if (mask.HasFlag (MK.XBUTTON1))
+			if (mask.HasFlag(MK.XBUTTON1))
 				buttons |= MouseButtons.XButton1;
-			if (mask.HasFlag (MK.XBUTTON2))
+			if (mask.HasFlag(MK.XBUTTON2))
 				buttons |= MouseButtons.XButton2;
 			return buttons;
 		}
 
-		[DllImport ("user32.dll")]
-		static extern int ShowWindow (IntPtr hWnd, uint msg);
+		[DllImport("user32.dll")]
+		static extern int ShowWindow(IntPtr hWnd, uint msg);
 
-		[DllImport ("user32.dll")]
-		[return: MarshalAs (UnmanagedType.Bool)]
-		public static extern bool SetWindowPos (IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags);
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags);
 
-		[DllImport ("user32.dll", SetLastError = true)]
-		public static extern uint GetWindowLong (IntPtr hWnd, GWL nIndex);
+		[DllImport("user32.dll")]
+		public static extern long GetWindowRect(IntPtr hWnd, ref Rectangle lpRect);
 
-		[DllImport ("user32.dll")]
-		public static extern int SetWindowLong (IntPtr hWnd, GWL nIndex, uint dwNewLong);
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern uint GetWindowLong(IntPtr hWnd, GWL nIndex);
+
+		[DllImport("user32.dll")]
+		public static extern int SetWindowLong(IntPtr hWnd, GWL nIndex, uint dwNewLong);
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);

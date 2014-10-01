@@ -6,6 +6,11 @@ namespace Eto.Wpf.Forms
 {
 	public class FormHandler : WpfWindow<sw.Window, Form, Form.ICallback>, Form.IHandler
 	{
+		public FormHandler(sw.Window window)
+		{
+			Control = window;
+		}
+
 		public FormHandler()
 		{
 			Control = new sw.Window();
@@ -15,10 +20,10 @@ namespace Eto.Wpf.Forms
 		{
 			Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
 			if (ApplicationHandler.Instance.IsStarted)
-				Control.Show ();
+				Control.Show();
 			else
-				ApplicationHandler.Instance.DelayShownWindows.Add (Control);
-            WpfFrameworkElementHelper.ShouldCaptureMouse = false;
-        }
+				ApplicationHandler.Instance.DelayShownWindows.Add(Control);
+			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+		}
 	}
 }

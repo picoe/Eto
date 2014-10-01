@@ -74,6 +74,9 @@
     <Compile Include="..\Eto.WinForms\CustomControls\TreeController.cs">
       <Link>CustomControls\TreeGridView\TreeController.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.WinForms\Forms\HwndFormHandler.cs">
+      <Link>Forms\HwndFormHandler.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.WinForms\Win32.cs">
       <Link>Win32.cs</Link>
     </Compile>

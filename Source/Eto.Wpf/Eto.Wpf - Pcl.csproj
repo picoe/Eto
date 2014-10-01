@@ -217,6 +217,9 @@
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="WpfHelpers.cs" />
+    <Compile Include="..\Eto.WinForms\Forms\HwndFormHandler.cs">
+      <Link>Forms\HwndFormHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll">

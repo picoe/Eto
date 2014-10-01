@@ -14,7 +14,8 @@ namespace Eto.WinForms
 		
 		public DialogHandler()
 		{
-			Control = new swf.Form {
+			Control = new swf.Form
+			{
 				StartPosition = swf.FormStartPosition.CenterParent,
 				AutoSize = true,
 				Size = sd.Size.Empty,
@@ -26,18 +27,22 @@ namespace Eto.WinForms
 			};
 		}
 
-        protected override swf.FormBorderStyle DefaultWindowStyle
-        {
-            get { return swf.FormBorderStyle.FixedDialog; }
-        }
+		protected override swf.FormBorderStyle DefaultWindowStyle
+		{
+			get { return swf.FormBorderStyle.FixedDialog; }
+		}
 
-		public Button AbortButton {
-			get {
+		public Button AbortButton
+		{
+			get
+			{
 				return abortButton;
 			}
-			set {
+			set
+			{
 				abortButton = value;
-				if (abortButton != null) {
+				if (abortButton != null)
+				{
 					var b = abortButton.ControlObject as swf.IButtonControl;
 					Control.CancelButton = b;
 				}
@@ -45,15 +50,18 @@ namespace Eto.WinForms
 					Control.CancelButton = null;
 			}
 		}
-		
+
 		public Button DefaultButton
 		{
-			get {
+			get
+			{
 				return button;
 			}
-			set {
+			set
+			{
 				button = value;
-				if (button != null) {
+				if (button != null)
+				{
 					var b = button.ControlObject as swf.IButtonControl;
 					Control.AcceptButton = b;
 				}
@@ -66,8 +74,20 @@ namespace Eto.WinForms
 
 		public void ShowModal(Control parent)
 		{
-			if (parent != null) Control.ShowDialog((swf.Control)parent.ControlObject);
-			else Control.ShowDialog ();
+			if (parent != null)
+			{
+				var parentWindow = parent.ParentWindow;
+				if (parentWindow != null)
+				{
+					var parentHandler = parentWindow.Handler as IWindowHandler;
+					if (parentHandler != null)
+					{
+						Control.ShowDialog(parentHandler.Win32Window);
+						return;
+					}
+				}
+			}
+			Control.ShowDialog();
 		}
 
 		public Task ShowModalAsync(Control parent)

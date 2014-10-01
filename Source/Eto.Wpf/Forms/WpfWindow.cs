@@ -15,6 +15,8 @@ namespace Eto.Wpf.Forms
 	public interface IWpfWindow
 	{
 		sw.Window Control { get; }
+
+		void SetOwnerFor(sw.Window child);
 	}
 
 	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow
@@ -46,11 +48,11 @@ namespace Eto.Wpf.Forms
 			menuHolder = new swc.ContentControl { IsTabStop = false };
 			toolBarHolder = new swc.ContentControl { IsTabStop = false };
 			content.Background = System.Windows.SystemColors.ControlBrush;
-			swc.DockPanel.SetDock (menuHolder, swc.Dock.Top);
-			swc.DockPanel.SetDock (toolBarHolder, swc.Dock.Top);
-			main.Children.Add (menuHolder);
-			main.Children.Add (toolBarHolder);
-			main.Children.Add (content);
+			swc.DockPanel.SetDock(menuHolder, swc.Dock.Top);
+			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
+			main.Children.Add(menuHolder);
+			main.Children.Add(toolBarHolder);
+			main.Children.Add(content);
 			Control.Content = main;
 			Control.Loaded += delegate
 			{
@@ -65,7 +67,7 @@ namespace Eto.Wpf.Forms
 				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 			};
 			// needed to handle Application.Terminating event
-			HandleEvent (Window.ClosingEvent);
+			HandleEvent(Window.ClosingEvent);
 		}
 
 		protected override void SetContentScale(bool xscale, bool yscale)
@@ -73,45 +75,49 @@ namespace Eto.Wpf.Forms
 			base.SetContentScale(true, true);
 		}
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
-			case Window.ClosedEvent:
-				Control.Closed += delegate {
-					Callback.OnClosed(Widget, EventArgs.Empty);
-				};
-				break;
-			case Window.ClosingEvent:
-				Control.Closing += (sender, e) => {
-					var args = new CancelEventArgs { Cancel = e.Cancel };
-					Callback.OnClosing(Widget, args);
-					if (!args.Cancel && sw.Application.Current.Windows.Count == 1) {
-						// last window closing, so call OnTerminating to let the app abort terminating
-						var app = ((ApplicationHandler)Application.Instance.Handler);
-						app.Callback.OnTerminating(app.Widget, args);
-						e.Cancel = args.Cancel;
-					}
-				};
-				break;
-			case Window.WindowStateChangedEvent:
-				Control.StateChanged += (sender, e) => Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
-				break;
-			case Eto.Forms.Control.GotFocusEvent:
-				Control.Activated += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
-				break;
-			case Eto.Forms.Control.LostFocusEvent:
-				Control.Deactivated += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
-				break;
-			case Window.LocationChangedEvent:
-				Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
-				break;
-			default:
-				base.AttachEvent (id);
-				break;
+			switch (id)
+			{
+				case Window.ClosedEvent:
+					Control.Closed += delegate
+					{
+						Callback.OnClosed(Widget, EventArgs.Empty);
+					};
+					break;
+				case Window.ClosingEvent:
+					Control.Closing += (sender, e) =>
+					{
+						var args = new CancelEventArgs { Cancel = e.Cancel };
+						Callback.OnClosing(Widget, args);
+						if (!args.Cancel && sw.Application.Current.Windows.Count == 1)
+						{
+							// last window closing, so call OnTerminating to let the app abort terminating
+							var app = ((ApplicationHandler)Application.Instance.Handler);
+							app.Callback.OnTerminating(app.Widget, args);
+							e.Cancel = args.Cancel;
+						}
+					};
+					break;
+				case Window.WindowStateChangedEvent:
+					Control.StateChanged += (sender, e) => Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
+					break;
+				case Eto.Forms.Control.GotFocusEvent:
+					Control.Activated += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
+					break;
+				case Eto.Forms.Control.LostFocusEvent:
+					Control.Deactivated += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
+					break;
+				case Window.LocationChangedEvent:
+					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
-		protected virtual void UpdateClientSize (Size size)
+		protected virtual void UpdateClientSize(Size size)
 		{
 			var xdiff = Control.ActualWidth - content.ActualWidth;
 			var ydiff = Control.ActualHeight - content.ActualHeight;
@@ -139,17 +145,18 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public void Close ()
+		public void Close()
 		{
-			Control.Close ();
+			Control.Close();
 		}
 
-		void CopyKeyBindings (swc.ItemCollection items)
+		void CopyKeyBindings(swc.ItemCollection items)
 		{
-			foreach (var item in items.OfType<swc.MenuItem>()) {
-				Control.InputBindings.AddRange (item.InputBindings);
+			foreach (var item in items.OfType<swc.MenuItem>())
+			{
+				Control.InputBindings.AddRange(item.InputBindings);
 				if (item.HasItems)
-					CopyKeyBindings (item.Items);
+					CopyKeyBindings(item.Items);
 			}
 		}
 
@@ -159,13 +166,15 @@ namespace Eto.Wpf.Forms
 			set
 			{
 				menu = value;
-				if (menu != null) {
+				if (menu != null)
+				{
 					var handler = (MenuBarHandler)menu.Handler;
 					menuHolder.Content = handler.Control;
-					Control.InputBindings.Clear ();
-					CopyKeyBindings (handler.Control.Items);
+					Control.InputBindings.Clear();
+					CopyKeyBindings(handler.Control.Items);
 				}
-				else {
+				else
+				{
 					menuHolder.Content = null;
 				}
 			}
@@ -177,7 +186,8 @@ namespace Eto.Wpf.Forms
 			set
 			{
 				icon = value;
-				if (value != null) {
+				if (value != null)
+				{
 					Control.Icon = (swm.ImageSource)icon.ControlObject;
 				}
 			}
@@ -188,9 +198,10 @@ namespace Eto.Wpf.Forms
 			get { return resizable; }
 			set
 			{
-				if (resizable != value) {
+				if (resizable != value)
+				{
 					resizable = value;
-					SetResizeMode ();
+					SetResizeMode();
 				}
 			}
 		}
@@ -200,9 +211,10 @@ namespace Eto.Wpf.Forms
 			get { return maximizable; }
 			set
 			{
-				if (maximizable != value) {
+				if (maximizable != value)
+				{
 					maximizable = value;
-					SetResizeMode ();
+					SetResizeMode();
 				}
 			}
 		}
@@ -212,21 +224,26 @@ namespace Eto.Wpf.Forms
 			get { return minimizable; }
 			set
 			{
-				if (minimizable != value) {
+				if (minimizable != value)
+				{
 					minimizable = value;
-					SetResizeMode ();
+					SetResizeMode();
 				}
 			}
 		}
 
-		protected virtual void SetResizeMode ()
+		protected virtual void SetResizeMode()
 		{
-			if (resizable) Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
-			else if (minimizable) Control.ResizeMode = sw.ResizeMode.CanMinimize;
-			else Control.ResizeMode = sw.ResizeMode.NoResize;
+			if (resizable)
+				Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
+			else if (minimizable)
+				Control.ResizeMode = sw.ResizeMode.CanMinimize;
+			else
+				Control.ResizeMode = sw.ResizeMode.NoResize;
 
-			var hwnd = new sw.Interop.WindowInteropHelper (Control).Handle;
-			if (hwnd != IntPtr.Zero) {
+			var hwnd = new sw.Interop.WindowInteropHelper(Control).Handle;
+			if (hwnd != IntPtr.Zero)
+			{
 				var val = Win32.GetWindowLong(hwnd, Win32.GWL.STYLE);
 				if (maximizable)
 					val |= (uint)Win32.WS.MAXIMIZEBOX;
@@ -236,7 +253,7 @@ namespace Eto.Wpf.Forms
 					val |= (uint)Win32.WS.MINIMIZEBOX;
 				else
 					val &= ~(uint)Win32.WS.MINIMIZEBOX;
-				Win32.SetWindowLong (hwnd, Win32.GWL.STYLE, val);
+				Win32.SetWindowLong(hwnd, Win32.GWL.STYLE, val);
 			}
 		}
 
@@ -252,7 +269,7 @@ namespace Eto.Wpf.Forms
 			set { Control.Topmost = value; }
 		}
 
-		public void Minimize ()
+		public void Minimize()
 		{
 			Control.WindowState = sw.WindowState.Minimized;
 		}
@@ -320,7 +337,7 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				return new Point ((int)Control.Left, (int)Control.Top);
+				return new Point((int)Control.Left, (int)Control.Top);
 			}
 			set
 			{
@@ -333,7 +350,8 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				switch (Control.WindowState) {
+				switch (Control.WindowState)
+				{
 					case sw.WindowState.Maximized:
 						return WindowState.Maximized;
 					case sw.WindowState.Minimized:
@@ -341,36 +359,37 @@ namespace Eto.Wpf.Forms
 					case sw.WindowState.Normal:
 						return WindowState.Normal;
 					default:
-						throw new NotSupportedException ();
+						throw new NotSupportedException();
 				}
 			}
 			set
 			{
-				switch (value) {
-				case WindowState.Maximized:
-					Control.WindowState = sw.WindowState.Maximized;
-					if (!Control.IsLoaded)
-						Control.SizeToContent = sw.SizeToContent.Manual;
-					break;
-				case WindowState.Minimized:
-					Control.WindowState = sw.WindowState.Minimized;
-					if (!Control.IsLoaded)
-						Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
-					break;
-				case WindowState.Normal:
-					Control.WindowState = sw.WindowState.Normal;
-					if (!Control.IsLoaded)
-						Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
-					break;
-				default:
-					throw new NotSupportedException ();
+				switch (value)
+				{
+					case WindowState.Maximized:
+						Control.WindowState = sw.WindowState.Maximized;
+						if (!Control.IsLoaded)
+							Control.SizeToContent = sw.SizeToContent.Manual;
+						break;
+					case WindowState.Minimized:
+						Control.WindowState = sw.WindowState.Minimized;
+						if (!Control.IsLoaded)
+							Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+						break;
+					case WindowState.Normal:
+						Control.WindowState = sw.WindowState.Normal;
+						if (!Control.IsLoaded)
+							Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+						break;
+					default:
+						throw new NotSupportedException();
 				}
 			}
 		}
 
 		public Rectangle? RestoreBounds
 		{
-			get { return Control.RestoreBounds.ToEto (); }
+			get { return Control.RestoreBounds.ToEto(); }
 		}
 
 		sw.Window IWpfWindow.Control
@@ -413,29 +432,29 @@ namespace Eto.Wpf.Forms
 			get { return Control.IsActive && ((ApplicationHandler)Application.Instance.Handler).IsActive; }
 		}
 
-        public WindowStyle WindowStyle
-        {
-			get { return Control.WindowStyle.ToEto (); }
-			set { Control.WindowStyle = value.ToWpf (); }
-        }
+		public WindowStyle WindowStyle
+		{
+			get { return Control.WindowStyle.ToEto(); }
+			set { Control.WindowStyle = value.ToWpf(); }
+		}
 
-		public void BringToFront ()
+		public void BringToFront()
 		{
 			if (Control.WindowState == sw.WindowState.Minimized)
 				Control.WindowState = sw.WindowState.Normal;
-			Control.Activate ();
+			Control.Activate();
 		}
 
-		public void SendToBack ()
+		public void SendToBack()
 		{
 			if (Topmost)
 				return;
-			var hWnd = new sw.Interop.WindowInteropHelper (Control).Handle;
+			var hWnd = new sw.Interop.WindowInteropHelper(Control).Handle;
 			if (hWnd != IntPtr.Zero)
-				Win32.SetWindowPos (hWnd, Win32.HWND_BOTTOM, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE);
-			var window = sw.Application.Current.Windows.OfType<sw.Window> ().FirstOrDefault (r => r != Control);
+				Win32.SetWindowPos(hWnd, Win32.HWND_BOTTOM, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE);
+			var window = sw.Application.Current.Windows.OfType<sw.Window>().FirstOrDefault(r => r != Control);
 			if (window != null)
-				window.Focus ();
+				window.Focus();
 		}
 
 		public override Color BackgroundColor
@@ -446,12 +465,19 @@ namespace Eto.Wpf.Forms
 
 		public Screen Screen
 		{
-			get { return new Screen(new ScreenHandler (Control)); }
+			get { return new Screen(new ScreenHandler(Control)); }
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
 			this.content.Children.Add(content);
 		}
-    }
+
+
+		public void SetOwnerFor(sw.Window child)
+		{
+			child.Owner = Control;
+			// CenterOwner does not work in certain cases (e.g. with autosizing)
+		}
+	}
 }
