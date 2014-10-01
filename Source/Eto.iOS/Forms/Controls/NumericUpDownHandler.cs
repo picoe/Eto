@@ -75,5 +75,17 @@ namespace Eto.iOS.Forms.Controls
 				Control.Font = value.ToUI();
 			}
 		}
+
+		public double Increment
+		{
+			get;
+			set;
+		}
+
+		public int DecimalPlaces
+		{
+			get;
+			set;
+		}
 	}
 }

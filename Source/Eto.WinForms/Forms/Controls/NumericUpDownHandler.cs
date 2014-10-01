@@ -11,8 +11,8 @@ namespace Eto.WinForms
 		{
 			Control = new swf.NumericUpDown
 			{
-				Maximum = 100,
-				Minimum = 0,
+				Maximum = decimal.MaxValue,
+				Minimum = decimal.MinValue,
 				Width = 80
 			};
 			Control.ValueChanged += delegate
@@ -49,6 +49,18 @@ namespace Eto.WinForms
 		{
 			get { return (double)Control.Maximum; }
 			set { Control.Maximum = (decimal)value; }
+		}
+
+		public int DecimalPlaces
+		{
+			get { return Control.DecimalPlaces; }
+			set { Control.DecimalPlaces = value; }
+		}
+
+		public double Increment
+		{
+			get { return (double)Control.Increment; }
+			set { Control.Increment = (decimal)value; }
 		}
 	}
 }
