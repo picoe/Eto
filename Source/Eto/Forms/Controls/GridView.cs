@@ -234,6 +234,29 @@ namespace Eto.Forms
 			Properties.TriggerEvent(CellClickEvent, this, e);
 		}
 
+		/// <summary>
+		/// Event identifier for the <see cref="CellDoubleClick"/> event.
+		/// </summary>
+		public const string CellDoubleClickEvent = "GridView.CellDoubleClick";
+
+		/// <summary>
+		/// Occurs when an individual cell is double clicked.
+		/// </summary>
+		public event EventHandler<GridViewCellEventArgs> CellDoubleClick
+		{
+			add { Properties.AddHandlerEvent(CellDoubleClickEvent, value); }
+			remove { Properties.RemoveEvent(CellDoubleClickEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="CellDoubleClick"/> event.
+		/// </summary>
+		/// <param name="e">Grid cell event arguments.</param>
+		protected virtual void OnCellDoubleClick(GridViewCellEventArgs e)
+		{
+			Properties.TriggerEvent(CellDoubleClickEvent, this, e);
+		}
+
 		#endregion
 
 		class SelectionPreserverHelper : ISelectionPreserver
@@ -380,6 +403,11 @@ namespace Eto.Forms
 			/// Raises the cell click event.
 			/// </summary>
 			void OnCellClick(GridView widget, GridViewCellEventArgs e);
+
+			/// <summary>
+			/// Raises the cell double click event.
+			/// </summary>
+			void OnCellDoubleClick(GridView widget, GridViewCellEventArgs e);
 		}
 
 		/// <summary>
@@ -393,6 +421,14 @@ namespace Eto.Forms
 			public void OnCellClick(GridView widget, GridViewCellEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnCellClick(e));
+			}
+
+			/// <summary>
+			/// Raises the cell double click event.
+			/// </summary>
+			public void OnCellDoubleClick(GridView widget, GridViewCellEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCellDoubleClick(e));
 			}
 		}
 
