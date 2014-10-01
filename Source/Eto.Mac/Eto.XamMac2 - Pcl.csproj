@@ -11,7 +11,6 @@
     <AssemblyName>Eto.XamMac2</AssemblyName>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
