@@ -78,7 +78,11 @@ namespace Eto.Forms
 		protected override string InternalGetValue(object dataItem)
 		{
 			var item = dataItem as IListItem;
-			return item != null ? item.Key : base.InternalGetValue(dataItem);
+			if (item != null)
+				return item.Key;
+			if (HasProperty(dataItem))
+				return base.InternalGetValue(dataItem);
+			return Convert.ToString(dataItem);
 		}
 	}
 
