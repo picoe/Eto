@@ -368,10 +368,7 @@ namespace Eto.WinForms
 			var buttons = ToEto(e.Button);
 			var modifiers = swf.Control.ModifierKeys.ToEto();
 
-			var result = new MouseEventArgs(buttons, modifiers, point);
-			result.Delta = new SizeF(0, (float)e.Delta / WheelDelta);
-
-			return result;
+			return new MouseEventArgs(buttons, modifiers, point, new SizeF(0, (float)e.Delta / WheelDelta));
 		}
 
 		public static MouseButtons ToEto(this swf.MouseButtons button)
