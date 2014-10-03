@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using System.Linq.Expressions;
 
 namespace Eto.Forms
 {
@@ -106,7 +107,7 @@ namespace Eto.Forms
 		/// <param name="defaultGetValue">Default get value.</param>
 		/// <param name="defaultSetValue">Default set value.</param>
 		/// <typeparam name="TObject">Type of the data context object to bind with.</typeparam>
-		public DualBinding<TValue> BindDataContext<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		public DualBinding<TValue> BindDataContext<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
 		{
 			return BindDataContext(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
 		}
@@ -127,6 +128,30 @@ namespace Eto.Forms
 			return BindDataContext(new PropertyBinding<TValue>(propertyName), mode);
 		}
 
+		/// <summary>
+		/// Binds to a specified property of the control's current data context.
+		/// </summary>
+		/// <remarks>
+		/// This has the advantage of registering automatically to <see cref="System.ComponentModel.INotifyPropertyChanged"/> 
+		/// or to an event named after the property with a "Changed" suffix, if the expression is a property.
+		/// When the expression does not evaluate to a property, it will not be able to bind to the changed events and will
+		/// use the expression as a delegate directly.
+		/// </remarks>
+		/// <typeparam name="TObject">Type of the data context to bind to</typeparam>
+		/// <param name="propertyExpression">Expression for a property of the data context, or a non-property expression with no change event binding.</param>
+		/// <param name="mode">Direction of the binding</param>
+		/// <returns>The binding between the data context and this binding</returns>
+		public DualBinding<TValue> BindDataContext<TObject>(Expression<Func<TObject, TValue>> propertyExpression, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			var memberInfo = GetMemberInfo(propertyExpression);
+			if (memberInfo == null)
+			{
+				var getValue = propertyExpression.Compile();
+				return BindDataContext<TObject>(getValue, null, null, null, mode);
+			}
+			return BindDataContext(new PropertyBinding<TValue>(memberInfo.Member.Name), mode);
+		}
+
 		#region Obsolete
 
 		/// <summary>
@@ -139,7 +164,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Obsolete. Use <see cref="BindDataContext{TObject}"/> instead.
+		/// Obsolete. Use BindDataContext(...) instead.
 		/// </summary>
 		[Obsolete("Use BindDataContext<T> instead")]
 		public DualBinding<TValue> Bind<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
@@ -148,7 +173,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Obsolete. Use <see cref="BindDataContext{TObject}"/> instead.
+		/// Obsolete. Use BindDataContext(...) instead.
 		/// </summary>
 		[Obsolete("Use BindDataContext<T> instead")]
 		public DualBinding<TValue> Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)

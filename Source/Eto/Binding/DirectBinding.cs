@@ -63,5 +63,26 @@ namespace Eto
 		/// Gets or sets the value of this binding
 		/// </summary>
 		public abstract T DataValue { get; set; }
+
+		/// <summary>
+		/// Creates a new binding with a specified parameter type of <typeparamref name="TValue"/> based on this binding's value.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you want to cast one binding to another, or perform logic when getting/setting a value from a particular
+		/// binding.
+		/// </remarks>
+		/// <typeparam name="TValue">Type of the value for the new binding</typeparam>
+		/// <param name="getValue">Delegate to translate the value when getting it for the new binding</param>
+		/// <param name="setValue">Delegate to translate the value when setting it to this binding</param>
+		/// <returns>A new binding with the specified <typeparamref name="TValue"/> type.</returns>
+		public DirectBinding<TValue> Select<TValue>(Func<T,TValue> getValue, Action<TValue> setValue = null)
+		{
+			return new DelegateBinding<TValue>(
+				() => getValue != null ? getValue(DataValue) : default(TValue),
+				r => { if (setValue != null) setValue(r); },
+				addChangeEvent: ev => DataValueChanged += ev,
+				removeChangeEvent: ev => DataValueChanged -= ev
+			);
+		}
 	}
 }
