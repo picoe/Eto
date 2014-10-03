@@ -20,7 +20,7 @@ namespace Eto.GtkSharp.CustomControls
 		}
 		#if GTK2
 		int vpadding;
-		static readonly int DefaultEntryHeight = new Entry().SizeRequest().Height;
+		static readonly int DefaultEntryHeight = new ComboBoxEntry().SizeRequest().Height;
 
 		protected override void OnSizeRequested(ref Requisition requisition)
 		{
