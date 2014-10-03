@@ -55,7 +55,7 @@ namespace Eto.Forms
 				return item.Text;
 			if (HasProperty(dataItem))
 				return base.InternalGetValue(dataItem);
-			return Convert.ToString(dataItem);
+			return dataItem != null ? Convert.ToString(dataItem) : null;
 		}
 		protected override void InternalSetValue(object dataItem, string value)
 		{
@@ -82,7 +82,7 @@ namespace Eto.Forms
 				return item.Key;
 			if (HasProperty(dataItem))
 				return base.InternalGetValue(dataItem);
-			return Convert.ToString(dataItem);
+			return dataItem != null ? Convert.ToString(dataItem) : null;
 		}
 	}
 
