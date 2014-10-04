@@ -298,6 +298,7 @@
     <Compile Include="Forms\ControlBinding.cs" />
     <Compile Include="Forms\Layout\TableCell.cs" />
     <Compile Include="Forms\Layout\TableRow.cs" />
+    <Compile Include="ExtendedObservableCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

@@ -301,6 +301,7 @@
     <Compile Include="Forms\ControlBinding.cs" />
     <Compile Include="Forms\Layout\TableRow.cs" />
     <Compile Include="Forms\Layout\TableCell.cs" />
+    <Compile Include="ExtendedObservableCollection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

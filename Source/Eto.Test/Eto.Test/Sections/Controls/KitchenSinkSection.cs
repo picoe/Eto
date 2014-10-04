@@ -119,7 +119,7 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(2), HeaderText = "Text", Editable = true });
 			control.Columns.Add(new GridColumn { DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
 			
-			var items = new DataStoreCollection();
+			var items = new List<GridItem>();
 			items.Add(new GridItem(bitmap1, true, "Text in Grid 1", "1"));
 			items.Add(new GridItem(icon1, false, "Text in Grid 2", "2"));
 			items.Add(new GridItem(bitmap1, null, "Text in Grid 3", "3"));

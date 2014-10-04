@@ -434,7 +434,7 @@ namespace Eto
 		protected override void OnRegisterCollection(EventArgs e)
 		{
 			base.OnRegisterCollection(e);
-			AddRange(Collection.AsEnumerable());
+			AddRange(this);
 		}
 
 		/// <summary>
