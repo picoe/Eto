@@ -2,6 +2,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using swf = System.Windows.Forms;
 
 namespace Eto.WinForms
@@ -132,6 +133,10 @@ namespace Eto.WinForms
 
 		static bool MouseEvent(BubbleEventArgs be, Action<Control, Control.ICallback, MouseEventArgs> action, bool? capture, Func<MouseButtons, MouseButtons> modifyButtons = null)
 		{
+			var mainControl = be.Control;
+			if (mainControl == null)
+				return false;
+
 			var modifiers = swf.Control.ModifierKeys.ToEto();
 			var delta = new SizeF(0, Win32.GetWheelDeltaWParam(be.Message.WParam) / Conversions.WheelDelta);
 			var buttons = Win32.GetMouseButtonWParam(be.Message.WParam).ToEto();
@@ -139,22 +144,22 @@ namespace Eto.WinForms
 				buttons = modifyButtons(buttons);
 			var handler = be.WindowsControl;
 			var mousePosition = swf.Control.MousePosition.ToEto();
-			var ret = false;
-			foreach (var control in be.Controls)
+
+			var msg = be.Message;
+			var me = new MouseEventArgs(buttons, modifiers, mainControl.PointFromScreen(mousePosition), delta);
+			action(mainControl, handler.Callback, me);
+
+			if (!me.Handled && handler != null && handler.ShouldBubbleEvent(msg))
 			{
-				var me = new MouseEventArgs(buttons, modifiers, control.PointFromScreen(mousePosition), delta);
-				action(control, handler.Callback, me);
-				if (me.Handled)
+				foreach (var control in be.Parents)
 				{
-					ret = true;
-					break;
+					me = new MouseEventArgs(buttons, modifiers, control.PointFromScreen(mousePosition), delta);
+					action(control, handler.Callback, me);
+					if (me.Handled)
+						return true;
 				}
 			}
-			if (capture != null && ret || (handler != null && handler.ShouldCaptureMouse))
-			{
-				//be.WinControl.Capture = capture.Value;
-			}
-			return ret;
+			return false;
 		}
 
 		static bool KeyEvent(BubbleEventArgs be, Action<Control, Control.ICallback, KeyEventArgs> action, KeyEventType keyEventType)

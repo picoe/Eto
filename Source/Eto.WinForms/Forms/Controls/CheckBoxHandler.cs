@@ -1,15 +1,16 @@
 using System;
-using SWF = System.Windows.Forms;
-using SD = System.Drawing;
+using System.Linq;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class CheckBoxHandler : WindowsControl<SWF.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
+	public class CheckBoxHandler : WindowsControl<swf.CheckBox, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
 		public CheckBoxHandler()
 		{
-			Control = new SWF.CheckBox();
+			Control = new swf.CheckBox();
 			Control.AutoSize = true;
 			Control.CheckStateChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
@@ -20,9 +21,9 @@ namespace Eto.WinForms
 			{
 				switch (Control.CheckState)
 				{
-					case SWF.CheckState.Checked:
+					case swf.CheckState.Checked:
 						return true;
-					case SWF.CheckState.Unchecked:
+					case swf.CheckState.Unchecked:
 						return false;
 					default:
 						return null;
@@ -31,11 +32,11 @@ namespace Eto.WinForms
 			set
 			{
 				if (value == null)
-					Control.CheckState = SWF.CheckState.Indeterminate;
+					Control.CheckState = swf.CheckState.Indeterminate;
 				else if (value.Value)
-					Control.CheckState = SWF.CheckState.Checked;
+					Control.CheckState = swf.CheckState.Checked;
 				else
-					Control.CheckState = SWF.CheckState.Unchecked;
+					Control.CheckState = swf.CheckState.Unchecked;
 			}
 		}
 
@@ -43,6 +44,12 @@ namespace Eto.WinForms
 		{
 			get { return Control.ThreeState; }
 			set { Control.ThreeState = value; }
+		}
+
+		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
+		public override bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 	}
 }

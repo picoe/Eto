@@ -128,5 +128,14 @@ namespace Eto.WinForms.Forms.Controls
 				}
 			}
 		}
+
+		static readonly Win32.WM[] intrinsicEvents = {
+														 Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK,
+														 Win32.WM.RBUTTONDOWN, Win32.WM.RBUTTONUP, Win32.WM.RBUTTONDBLCLK
+													 };
+		public override bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
+		}
 	}
 }

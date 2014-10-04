@@ -34,6 +34,8 @@ namespace Eto.WinForms
 		Control.ICallback Callback { get; }
 
 		void BeforeAddControl(bool top = true);
+
+		bool ShouldBubbleEvent(swf.Message msg);
 	}
 
 	public static class WindowsControlExtensions
@@ -621,6 +623,12 @@ namespace Eto.WinForms
 		public Point Location
 		{
 			get { return Control.Location.ToEto(); }
+		}
+
+
+		public virtual bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return true;
 		}
 	}
 }

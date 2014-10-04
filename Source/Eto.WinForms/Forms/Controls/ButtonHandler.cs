@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
@@ -100,6 +101,12 @@ namespace Eto.WinForms
 				Control.TextImageRelation = value.ToSD();
 				SetAlign();
 			}
+		}
+
+		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
+		public override bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 	}
 }
