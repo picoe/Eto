@@ -21,14 +21,14 @@
     <LibrariesPath>..\..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\Pcl\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\Pcl\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
