@@ -141,6 +141,7 @@ namespace Eto.Forms
 		{
 			ID = command.ID;
 			Text = command.MenuText;
+			Tag = command.Tag;
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
 			Click += (sender, e) => command.Execute();
@@ -177,6 +178,12 @@ namespace Eto.Forms
 			get { return Handler.Text; }
 			set { Handler.Text = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets a user-defined tag for the menu item.
+		/// </summary>
+		/// <value>The user-defined tag.</value>
+		public object Tag { get; set; }
 
 		/// <summary>
 		/// Gets or sets the tool tip of the item.
