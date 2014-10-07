@@ -20,6 +20,7 @@ namespace Eto.WinForms
 			{
 				Font = sd.SystemFonts.DefaultFont,
 				Dock = swf.DockStyle.Fill,
+				ForeColor = sd.SystemColors.ControlText,
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};

@@ -73,6 +73,9 @@
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
     <Compile Include="Conversions.cs" />
+    <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\TreeController.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
@@ -324,6 +327,9 @@
     <EmbeddedResource Include="..\packages\Windows7APICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll">
       <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.Shell.dll</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CustomControls\CalendarPicker.png" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

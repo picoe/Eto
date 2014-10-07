@@ -209,9 +209,13 @@ namespace Eto.GtkSharp
 		protected virtual void SetBackgroundColor(Color? color)
 		{
 			if (color != null)
+			{
 				ContainerContentControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+			}
 			else
+			{
 				ContainerContentControl.ModifyBg(Gtk.StateType.Normal);
+			}
 		}
 
 		public virtual Color BackgroundColor

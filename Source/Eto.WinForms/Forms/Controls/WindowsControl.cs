@@ -630,5 +630,11 @@ namespace Eto.WinForms
 		{
 			return true;
 		}
+
+		public virtual Color TextColor
+		{
+			get { return Control.ForeColor.ToEto(); }
+			set { Control.ForeColor = value.ToSD(); }
+		}
 	}
 }

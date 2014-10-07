@@ -40,16 +40,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the color of the text.
-		/// </summary>
-		/// <value>The color of the text.</value>
-		public Color TextColor
-		{
-			get { return Handler.TextColor; }
-			set { Handler.TextColor = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the color of the text when the control is disabled.
 		/// </summary>
 		/// <value>The color of the text when disabled.</value>
@@ -98,11 +88,6 @@ namespace Eto.Forms
 		/// <license type="BSD-3">See LICENSE for full terms</license>
 		public new interface IHandler : TextControl.IHandler
 		{
-			/// <summary>
-			/// Gets or sets the color of the text.
-			/// </summary>
-			Color TextColor { get; set; }
-
 			/// <summary>
 			/// Gets or sets the color of the text when the control is disabled.
 			/// </summary>

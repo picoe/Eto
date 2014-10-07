@@ -111,6 +111,33 @@ namespace Eto.GtkSharp.Forms.Controls
 				collection.Register(value);
 			}
 		}
+
+		public Color TextColor
+		{
+			get { return text.ForegroundGdk.ToEto(); }
+			set
+			{
+				text.ForegroundGdk = value.ToGdk();
+				if (Widget.Loaded)
+					Control.QueueDraw();
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return Control.Child.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			set
+			{ 
+				Control.Child.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
+				Control.Child.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
+				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				Control.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
+				Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
+				Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				if (Widget.Loaded)
+					Control.QueueDraw();
+			}
+		}
 	}
 }
 

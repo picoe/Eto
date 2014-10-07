@@ -51,12 +51,12 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
-		
-		public GroupBoxHandler ()
+
+		public GroupBoxHandler()
 		{
 			Control = new EtoBox { Handler = this };
 			Control.Title = string.Empty;
-			Control.ContentView = new NSView ();
+			Control.ContentView = new NSView();
 			Enabled = true;
 		}
 
@@ -69,44 +69,58 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return (NSView)Control.ContentView; }
 		}
-		
+
 		public override bool Enabled { get; set; }
-		
-		public override Size ClientSize {
-			get {
+
+		public override Size ClientSize
+		{
+			get
+			{
 				var view = Control.ContentView as NSView;
-				return view.Frame.Size.ToEtoSize ();
+				return view.Frame.Size.ToEtoSize();
 			}
-			set {
-				Control.SetFrameFromContentFrame (new CGRect(0, 0, value.Width, value.Height));
+			set
+			{
+				Control.SetFrameFromContentFrame(new CGRect(0, 0, value.Width, value.Height));
 			}
 		}
 
 		public Font Font
 		{
-			get {
+			get
+			{
 				return font ?? (font = new Font(new FontHandler(Control.TitleFont)));
 			}
-			set {
+			set
+			{
 				font = value;
 				Control.TitleFont = font == null ? null : ((FontHandler)font.Handler).Control;
-				LayoutIfNeeded ();
+				LayoutIfNeeded();
 			}
 		}
 
-		public virtual string Text {
+		public virtual string Text
+		{
 			get { return Control.Title; }
 			set { Control.Title = value; }
 		}
-		
-		public override SizeF GetPreferredSize (SizeF availableSize)
+
+		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			return base.GetPreferredSize (availableSize) + new SizeF (14, Control.TitleFont.LineHeight () + 9);
+			return base.GetPreferredSize(availableSize) + new SizeF(14, Control.TitleFont.LineHeight() + 9);
 		}
-		
-		public override void SetContentSize (CGSize contentSize)
+
+		public override void SetContentSize(CGSize contentSize)
 		{
-			Control.SetFrameFromContentFrame (new CGRect(0, 0, contentSize.Width, contentSize.Height));
+			Control.SetFrameFromContentFrame(new CGRect(0, 0, contentSize.Width, contentSize.Height));
+		}
+
+		NSTextFieldCell TitleCell { get { return (NSTextFieldCell)Control.TitleCell; } }
+
+		public Color TextColor
+		{
+			get { return TitleCell.TextColor.ToEto(); }
+			set { TitleCell.TextColor = value.ToNSUI(); }
 		}
 	}
 }

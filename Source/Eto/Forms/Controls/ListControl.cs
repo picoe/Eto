@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -259,6 +260,19 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		/// <remarks>
+		/// By default, the text will get a color based on the user's theme. However, this is usually black.
+		/// </remarks>
+		/// <value>The color of the text.</value>
+		public Color TextColor
+		{
+			get { return Handler.TextColor; }
+			set { Handler.TextColor = value; }
+		}
+
+		/// <summary>
 		/// Raises the <see cref="Eto.Forms.Control.LoadComplete"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
@@ -405,6 +419,15 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The index of the selected item.</value>
 			int SelectedIndex { get; set; }
+
+			/// <summary>
+			/// Gets or sets the color of the text.
+			/// </summary>
+			/// <remarks>
+			/// By default, the text will get a color based on the user's theme. However, this is usually black.
+			/// </remarks>
+			/// <value>The color of the text.</value>
+			Color TextColor { get; set; }
 		}
 	}
 }

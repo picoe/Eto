@@ -7,11 +7,21 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class LinkButtonHandler : GtkControl<Gtk.LinkButton, LinkButton, LinkButton.ICallback>, LinkButton.IHandler
 	{
+
+		Gtk.EventBox box;
+
+		public override Gtk.Widget ContainerControl
+		{
+			get { return box; }
+		}
+
 		public LinkButtonHandler()
 		{
 			Control = new Gtk.LinkButton(string.Empty);
 			Control.SetAlignment(0f, .5f);
 			Control.TooltipText = null;
+			box = new Gtk.EventBox();
+			box.Child = Control;
 		}
 
 		public Color TextColor
@@ -20,7 +30,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			set
 			{
 				Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				Control.ModifyText(Gtk.StateType.Normal, value.ToGdk());
 				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				Control.Child.ModifyText(Gtk.StateType.Normal, value.ToGdk());
 			}
 		}
 

@@ -183,6 +183,26 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 		}
+
+		public Color TextColor
+		{
+			get { return Control.TextColor.ToEto(); }
+			set { Control.TextColor = value.ToNSUI(); }
+		}
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			if (color != null)
+			{
+				Control.Cell.BackgroundColor = color.Value.ToNSUI();
+				Control.Cell.DrawsBackground = true;
+			}
+			else
+			{
+				Control.Cell.BackgroundColor = NSColor.ControlBackground;
+				Control.Cell.DrawsBackground = true;
+			}
+		}
 	}
 }
 

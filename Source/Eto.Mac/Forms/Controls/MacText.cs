@@ -33,6 +33,12 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control.AttributedStringValue.Value; }
 			set { Control.AttributedStringValue = Font.AttributedString(value ?? string.Empty, Control.AttributedStringValue); }
 		}
+
+		public virtual Color TextColor
+		{
+			get { return Control.TextColor.ToEto(); }
+			set { Control.TextColor = value.ToNSUI(); }
+		}
 	}
 }
 

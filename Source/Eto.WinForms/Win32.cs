@@ -41,9 +41,8 @@ namespace Eto
 			ID = -12,
 			STYLE = -16,
 			USERDATA = -21,
-			WNDPROC = -4}
-
-		;
+			WNDPROC = -4
+		}
 
 		[Flags]
 		public enum WS : uint
@@ -108,6 +107,8 @@ namespace Eto
 			MBUTTONUP = 0x0208,
 			MBUTTONDBLCLK = 0x0209,
 			MOUSEWHEEL = 0x20A,
+
+			ERASEBKGND = 0x14
 		}
 
 		public static ushort LOWORD(IntPtr word)

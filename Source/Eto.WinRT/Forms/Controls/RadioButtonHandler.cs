@@ -1,6 +1,7 @@
 using System;
 using swc = Windows.UI.Xaml.Controls;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.WinRT.Forms.Controls
 {
@@ -41,6 +42,12 @@ namespace Eto.WinRT.Forms.Controls
 		{
 			get { return (Control.Content as string).ToEtoMneumonic(); }
 			set { Control.Content = value.ToWpfMneumonic(); }
+		}
+
+		public Color TextColor
+		{
+			get { return Control.Foreground.ToEtoColor(); }
+			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
 	}
 }

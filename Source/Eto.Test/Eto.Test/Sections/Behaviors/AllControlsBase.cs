@@ -8,7 +8,6 @@ namespace Eto.Test.Sections.Behaviors
 	{
 		protected override void OnPreLoad(EventArgs e)
 		{
-
 			var layout = new DynamicLayout();
 			
 			var options = CreateOptions();
@@ -25,6 +24,7 @@ namespace Eto.Test.Sections.Behaviors
 				layout.AddRow(null, ListBoxControl(), DrawableControl(), null);
 			if (Platform.Supports<GroupBox>())
 				layout.AddRow(null, GroupBoxControl(), new Panel(), null);
+			layout.AddRow(null, LinkButtonControl(), SliderControl(), null);
 			layout.EndVertical();
 			layout.Add(null);
 
@@ -107,6 +107,7 @@ namespace Eto.Test.Sections.Behaviors
 			control.Items.Add(new ListItem{ Text = "Item 1" });
 			control.Items.Add(new ListItem{ Text = "Item 2" });
 			control.Items.Add(new ListItem{ Text = "Item 3" });
+			control.SelectedKey = "Item 1";
 			LogEvents(control);
 			return control;
 		}
@@ -127,6 +128,8 @@ namespace Eto.Test.Sections.Behaviors
 			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
 				pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
+				var size = pe.Graphics.MeasureString(SystemFonts.Label(), "Drawable");
+				pe.Graphics.DrawText(SystemFonts.Label(), Brushes.White, (PointF)((control.Size - size) / 2), "Drawable");
 			};
 			LogEvents(control);
 			return control;
@@ -140,13 +143,37 @@ namespace Eto.Test.Sections.Behaviors
 			return control;
 		}
 
+		Control LinkButtonControl()
+		{
+			var control = new LinkButton { Text = "Link Button" };
+			LogEvents(control);
+			return control;
+		}
+
+		Control SliderControl()
+		{
+			var control = new Slider();
+			LogEvents(control);
+			return control;
+		}
+
 		protected virtual void LogEvents(Button control)
 		{
 			control.Click += delegate
 			{
 				Log.Write(control, "Click");
 			};
-			
+
+			LogEvents((Control)control);	
+		}
+
+		protected virtual void LogEvents(LinkButton control)
+		{
+			control.Click += delegate
+			{
+				Log.Write(control, "Click");
+			};
+
 			LogEvents((Control)control);	
 		}
 
@@ -167,6 +194,16 @@ namespace Eto.Test.Sections.Behaviors
 				Log.Write(control, "CheckedChanged");
 			};
 			
+			LogEvents((Control)control);	
+		}
+
+		protected virtual void LogEvents(Slider control)
+		{
+			control.ValueChanged += delegate
+			{
+				Log.Write(control, "ValueChanged");
+			};
+
 			LogEvents((Control)control);	
 		}
 

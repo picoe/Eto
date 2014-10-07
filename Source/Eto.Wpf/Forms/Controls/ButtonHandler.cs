@@ -148,5 +148,11 @@ namespace Eto.Wpf.Forms.Controls
 					break;
 			}
 		}
+
+		public virtual Color TextColor
+		{
+			get { return label.Foreground.ToEtoColor(); }
+			set { label.Foreground = value.ToWpfBrush(Control.Foreground); }
+		}
 	}
 }

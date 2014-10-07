@@ -34,6 +34,12 @@ namespace Eto.iOS.Forms.Controls
 				Control.Font = font.ToUI();
 			}
 		}
+
+		public virtual Color TextColor
+		{
+			get { return Control.CurrentTitleColor.ToEto(); }
+			set { Control.SetTitleColor(value.ToNSUI(), UIControlState.Normal); }
+		}
 	}
 }
 

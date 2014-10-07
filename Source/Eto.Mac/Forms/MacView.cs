@@ -473,18 +473,19 @@ namespace Eto.Mac.Forms
 			set
 			{
 				backgroundColor = value;
-				SetBackgroundColor();
+				if (Widget.Loaded)
+					SetBackgroundColor(backgroundColor);
 			}
 		}
 
-		private void SetBackgroundColor() 
+		protected virtual void SetBackgroundColor(Color? color)
 		{
-			if (backgroundColor != null && Widget.Loaded) {
-				if (backgroundColor.Value.A > 0) {
+			if (color != null) {
+				if (color.Value.A > 0) {
 					ContainerControl.WantsLayer = true;
 					var layer = ContainerControl.Layer;
 					if (layer != null)
-						layer.BackgroundColor = backgroundColor.Value.ToCGColor();
+						layer.BackgroundColor = color.Value.ToCGColor();
 				}
 				else {
 					ContainerControl.WantsLayer = false;
@@ -579,7 +580,7 @@ namespace Eto.Mac.Forms
 		{
 			if (focus && EventControl.Window != null)
 				EventControl.Window.MakeFirstResponder(EventControl);
-			SetBackgroundColor();
+			SetBackgroundColor(backgroundColor);
 		}
 
 		public virtual void OnUnLoad(EventArgs e)

@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
     <Compile Include="Conversions.cs" />
+    <Compile Include="CustomControls\ExtendedDateTimePicker.cs" />
     <Compile Include="CustomControls\TreeController.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
@@ -343,6 +344,9 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - Pcl</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CustomControls\CalendarPicker.png" />
   </ItemGroup>
   <Import Project="../Shared/Build.targets" />
 </Project>

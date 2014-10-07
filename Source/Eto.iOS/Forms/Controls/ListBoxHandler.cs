@@ -6,6 +6,7 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using System.Linq;
 using Eto.iOS.Drawing;
+using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -139,6 +140,12 @@ namespace Eto.iOS.Forms.Controls
 			{
 				throw new NotImplementedException();
 			}
+		}
+
+		public Color TextColor
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
 		}
 	}
 }

@@ -4,6 +4,7 @@ using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using Eto.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -42,6 +43,48 @@ namespace Eto.Mac.Forms.Controls
 	{
 		CollectionHandler collection;
 
+		public class EtoPopUpButtonCell : NSPopUpButtonCell
+		{
+			NSDictionary textAttributes;
+			Color? textColor;
+
+			public Color? Color { get; set; }
+
+			public Color? TextColor
+			{
+				get { return textColor; }
+				set
+				{
+					textColor = value;
+					textAttributes = textColor != null ? NSDictionary.FromObjectAndKey(textColor.Value.ToNSUI(), NSAttributedString.ForegroundColorAttributeName) : null;
+				}
+			}
+
+			public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
+			{
+				if (Color != null)
+				{
+					MacEventView.Colourize(controlView, Color.Value, delegate
+					{
+						base.DrawBezelWithFrame(frame, controlView);
+					});
+				}
+				else
+					base.DrawBezelWithFrame(frame, controlView);
+			}
+
+			public override CGRect DrawTitle(NSAttributedString title, CGRect frame, NSView controlView)
+			{
+				if (textAttributes != null)
+				{
+					var str = new NSMutableAttributedString(title);
+					str.AddAttributes(textAttributes, new NSRange(0, title.Length)); 
+					title = str;
+				}
+				return base.DrawTitle(title, frame, controlView);
+			}
+		}
+
 		public class EtoPopUpButton : NSPopUpButton, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -55,7 +98,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public ComboBoxHandler()
 		{
-			Control = new EtoPopUpButton { Handler = this };
+			Control = new EtoPopUpButton { Handler = this, Cell = new EtoPopUpButtonCell() };
 			Control.Activated += HandleActivated;
 		}
 
@@ -155,6 +198,32 @@ namespace Eto.Mac.Forms.Controls
 					Control.SelectItem(value);
 					if (Widget.Loaded)
 						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				}
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return ((EtoPopUpButtonCell)Control.Cell).Color ?? Colors.Transparent; }
+			set
+			{
+				if (value != BackgroundColor)
+				{
+					((EtoPopUpButtonCell)Control.Cell).Color = value;
+					Control.SetNeedsDisplay();
+				}
+			}
+		}
+
+		public Color TextColor
+		{
+			get { return ((EtoPopUpButtonCell)Control.Cell).TextColor ?? NSColor.ControlText.ToEto(); }
+			set
+			{
+				if (value != TextColor)
+				{
+					((EtoPopUpButtonCell)Control.Cell).TextColor = value;
+					Control.SetNeedsDisplay();
 				}
 			}
 		}

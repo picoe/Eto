@@ -67,6 +67,12 @@ namespace Eto.iOS.Forms.Controls
 			get;
 			set;
 		}
+
+		public Color TextColor
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 	}
 }
 

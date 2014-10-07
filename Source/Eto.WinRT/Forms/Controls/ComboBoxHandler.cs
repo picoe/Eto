@@ -9,6 +9,7 @@ using Eto.Forms;
 using System.Collections;
 using Windows.UI.Xaml.Markup;
 using System.Collections.Generic;
+using Eto.Drawing;
 
 namespace Eto.WinRT.Forms.Controls
 {
@@ -132,6 +133,12 @@ namespace Eto.WinRT.Forms.Controls
 		{
 			get { return Control.SelectedIndex; }
 			set { Control.SelectedIndex = value; }
+		}
+
+		public Color TextColor
+		{
+			get { return Control.Foreground.ToEtoColor(); }
+			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
 	}
 }

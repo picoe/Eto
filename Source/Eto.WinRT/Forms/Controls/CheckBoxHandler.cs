@@ -2,6 +2,7 @@ using System;
 using sw = Windows.UI.Xaml;
 using swc = Windows.UI.Xaml.Controls;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.WinRT.Forms.Controls
 {
@@ -58,6 +59,12 @@ namespace Eto.WinRT.Forms.Controls
 		{
 			get { return Control.IsThreeState; }
 			set { Control.IsThreeState = value; }
+		}
+
+		public Color TextColor
+		{
+			get { return Control.Foreground.ToEtoColor(); }
+			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
 	}
 }

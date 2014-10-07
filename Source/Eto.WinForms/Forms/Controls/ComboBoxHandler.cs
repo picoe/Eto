@@ -53,6 +53,7 @@ namespace Eto.WinForms
 				{
 					backColor = value;
 					DrawMode = swf.DrawMode.OwnerDrawFixed;
+					Invalidate();
 				}
 			}
 
@@ -60,8 +61,10 @@ namespace Eto.WinForms
 			{
 				if (e.State.HasFlag(swf.DrawItemState.ComboBoxEdit))
 				{
+					var bounds = e.Bounds;
+					bounds.Inflate(2, 2);
 					// only show the background color for the drop down, not for each item
-					e.Graphics.FillRectangle(new sd.SolidBrush(BackColor), e.Bounds);
+					e.Graphics.FillRectangle(new sd.SolidBrush(BackColor), bounds);
 				}
 				else
 				{
