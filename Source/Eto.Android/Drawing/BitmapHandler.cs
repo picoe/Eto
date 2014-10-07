@@ -62,17 +62,10 @@ namespace Eto.Android.Drawing
 			ag.Bitmap.Config config = ag.Bitmap.Config.Argb8888;
 			switch(pixelFormat)
 			{
-				case PixelFormat.Format32bppRgb:
-					throw new NotImplementedException(); // TODO
-					//config = ag.Bitmap.Config.Argb8888;
-					break;
-				case PixelFormat.Format24bppRgb:
-					throw new NotImplementedException(); // TODO
-					//config = ag.Bitmap.Config.Argb8888;
-					break;
-				/*case PixelFormat.Format16bppRgb555:
+				/*case PixelFormat.Format24bppRgb:
 					config = ag.Bitmap.Config.Argb8888;
 					break;*/
+				case PixelFormat.Format32bppRgb:
 				case PixelFormat.Format32bppRgba:
 					config = ag.Bitmap.Config.Argb8888;
 					break;
@@ -90,7 +83,7 @@ namespace Eto.Android.Drawing
 
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
-			throw new NotImplementedException();
+			Control = ag.Bitmap.CreateScaledBitmap(image.ToAndroid(), width, height, false);
 		}
 
 		public void Save(System.IO.Stream stream, ImageFormat format)
@@ -139,7 +132,7 @@ namespace Eto.Android.Drawing
 
 		public ag.Bitmap GetImageWithSize(int? size)
 		{
-			throw new NotImplementedException();
+			return Control;
 		}
 
 		public void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)

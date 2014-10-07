@@ -50,6 +50,8 @@ namespace Eto
 		/// <returns>true if the collection was registered, false otherwise</returns>
 		public virtual bool Register(TCollection collection)
 		{
+			if (Collection != null)
+				Unregister();
 			Collection = collection;
 			
 			var notify = Collection as INotifyCollectionChanged;

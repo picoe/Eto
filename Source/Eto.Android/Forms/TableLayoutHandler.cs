@@ -44,9 +44,9 @@ namespace Eto.Android.Forms
 				var row = new aw.TableRow(aa.Application.Context);
 				for (int x = 0; x < cols; x++)
 				{
-					row.AddView(new av.View(aa.Application.Context), new aw.TableRow.LayoutParams(av.ViewGroup.LayoutParams.FillParent, av.ViewGroup.LayoutParams.FillParent) { Column = x });
+					row.AddView(new aw.FrameLayout(aa.Application.Context), new aw.TableRow.LayoutParams(x));
 				}
-				Control.AddView(row, new aw.TableLayout.LayoutParams(av.ViewGroup.LayoutParams.FillParent, av.ViewGroup.LayoutParams.FillParent, y == lastRowScale ? 1f : 0f));
+				Control.AddView(row, new aw.TableLayout.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent, y == lastRowScale ? 1f : 0f));
 			}
 			Control.SetColumnStretchable(cols - 1, true);
 		}
@@ -97,10 +97,16 @@ namespace Eto.Android.Forms
 
 		public void Add(Control child, int x, int y)
 		{
-			var control = child.GetContainerView() ?? new av.View(aa.Application.Context);
 			var row = (aw.TableRow)Control.GetChildAt(y);
-			row.RemoveViewAt(x);
-			row.AddView(control, x, new aw.TableRow.LayoutParams(av.ViewGroup.LayoutParams.FillParent, av.ViewGroup.LayoutParams.FillParent) { Column = x });
+
+			var cell = (aw.FrameLayout)row.GetChildAt(x);
+			cell.RemoveAllViews();
+			var control = child.GetContainerView();
+			if (control != null)
+			{
+				control.LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent);
+				cell.AddView(control);
+			}
 		}
 
 		public void Move(Control child, int x, int y)
@@ -117,7 +123,7 @@ namespace Eto.Android.Forms
 			{
 				var x = row.IndexOfChild(control);
 				row.RemoveView(control);
-				row.AddView(new av.View(aa.Application.Context), new aw.TableRow.LayoutParams(av.ViewGroup.LayoutParams.FillParent, av.ViewGroup.LayoutParams.FillParent) { Column = x });
+				row.AddView(new av.View(aa.Application.Context), new aw.TableRow.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent) { Column = x });
 			}
 		}
 

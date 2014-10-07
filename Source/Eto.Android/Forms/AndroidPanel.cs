@@ -47,7 +47,7 @@ namespace Eto.Android.Forms
 				if (content != null)
 				{
 					var view = content.GetContainerView();
-					view.LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.FillParent, av.ViewGroup.LayoutParams.FillParent);
+					view.LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent);
 					frame.AddView(view);
 				}
 			}

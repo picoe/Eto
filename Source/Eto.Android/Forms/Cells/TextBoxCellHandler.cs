@@ -3,17 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+using aa = Android.App;
+using ac = Android.Content;
+using ao = Android.OS;
+using ar = Android.Runtime;
+using av = Android.Views;
+using aw = Android.Widget;
+using ag = Android.Graphics;
 using Eto.Forms;
 
 namespace Eto.Android.Forms.Cells
 {
-	public class TextBoxCellHandler : WidgetHandler<TextBoxCell>, TextBoxCell.IHandler
+	public interface ICellHandler
 	{
+		av.View CreateView(av.View view, object item);
+	}
+
+	public abstract class CellHandler<TWidget> : WidgetHandler<TWidget>, Cell.IHandler, ICellHandler
+		where TWidget: Cell
+	{
+		public abstract av.View CreateView(av.View view, object item);
+	}
+
+	public class TextBoxCellHandler : CellHandler<TextBoxCell>, TextBoxCell.IHandler
+	{
+		public override av.View CreateView(av.View view, object item)
+		{
+			var tv = view as aw.TextView ?? new aw.TextView(aa.Application.Context);
+
+			tv.Text = Widget.Binding != null ? Widget.Binding.GetValue(item) : null;
+			return tv;
+		}
 	}
 }

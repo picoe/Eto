@@ -10,6 +10,7 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using Eto.Drawing;
 
 namespace Eto.Android.Forms.Controls
 {
@@ -42,6 +43,12 @@ namespace Eto.Android.Forms.Controls
 		{
 			get { return Control.Text; }
 			set { Control.Text = value; }
+		}
+
+		public Color TextColor
+		{
+			get { return Control.TextColors.ToEto(); }
+			set { Control.SetTextColor(value.ToAndroid()); }
 		}
 	}
 }

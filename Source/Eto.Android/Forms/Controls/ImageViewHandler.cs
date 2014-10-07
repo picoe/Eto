@@ -11,10 +11,28 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using Eto.Drawing;
 
 namespace Eto.Android.Forms.Controls
 {
-	class ImageViewHandler
+	public class ImageViewHandler : AndroidControl<aw.ImageView, ImageView, ImageView.ICallback>, ImageView.IHandler
 	{
+		public override av.View ContainerControl { get { return Control; } }
+
+		public ImageViewHandler()
+		{
+			Control = new aw.ImageView(aa.Application.Context);
+		}
+
+		Image image;
+		public Image Image
+		{
+			get { return image; }
+			set
+			{
+				image = value;
+				Control.SetImageBitmap(image.ToAndroid());
+			}
+		}
 	}
 }

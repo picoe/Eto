@@ -11,6 +11,7 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using Eto.Drawing;
 
 namespace Eto.Android.Forms.Controls
 {
@@ -27,34 +28,33 @@ namespace Eto.Android.Forms.Controls
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
-		public Eto.Drawing.Image Image
+		Image image;
+		public Image Image
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get { return image; }
 			set
 			{
-				throw new NotImplementedException();
+				image = value;
+				Control.SetCompoundDrawablesWithIntrinsicBounds(image.ToAndroidDrawable(), null, null, null);
 			}
 		}
 
 		public ButtonImagePosition ImagePosition
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public string Text
 		{
 			get { return Control.Text; }
 			set { Control.Text = value; }
+		}
+
+		public Color TextColor
+		{
+			get { return Control.TextColors.ToEto(); }
+			set { Control.SetTextColor(value.ToAndroid()); }
 		}
 	}
 }
