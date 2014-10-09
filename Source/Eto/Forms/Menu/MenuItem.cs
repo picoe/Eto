@@ -179,6 +179,12 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a user-defined tag for the menu item.
+		/// </summary>
+		/// <value>The user-defined tag.</value>
+		public object Tag { get; set; }
+
+		/// <summary>
 		/// Gets or sets the tool tip of the item.
 		/// </summary>
 		/// <value>The tool tip.</value>
