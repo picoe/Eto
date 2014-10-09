@@ -141,7 +141,6 @@ namespace Eto.Forms
 		{
 			ID = command.ID;
 			Text = command.MenuText;
-			Tag = command.Tag;
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
 			Click += (sender, e) => command.Execute();
