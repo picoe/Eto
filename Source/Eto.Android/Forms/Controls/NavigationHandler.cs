@@ -12,8 +12,34 @@ using System.Collections.Generic;
 
 namespace Eto.Android.Forms.Controls
 {
+	[aa.Activity]
+	public class EtoNavigationActivity : aa.Activity
+	{
+		INavigationItem content;
+
+		protected override void OnCreate(ao.Bundle savedInstanceState)
+		{
+			base.OnCreate(savedInstanceState);
+			var key = Intent.GetStringExtra("item");
+
+			content = NavigationHandler.GetItem(key);
+			if (content != null && content.Content != null)
+			{
+				SetContentView(content.Content.GetContainerView());
+			}
+		}
+	}
+
 	public class NavigationHandler : AndroidContainer<aw.FrameLayout, Navigation, Navigation.ICallback>, Navigation.IHandler
 	{
+		static Dictionary<string, INavigationItem> itemsLookup = new Dictionary<string, INavigationItem>();
+
+		public static INavigationItem GetItem(string key)
+		{
+			INavigationItem item;
+			return itemsLookup.TryGetValue(key, out item) ? item : null;
+		}
+
 		readonly Stack<INavigationItem> items = new Stack<INavigationItem>();
 
 		public override av.View ContainerControl { get { return Control; } }
@@ -25,8 +51,20 @@ namespace Eto.Android.Forms.Controls
 
 		public void Push(INavigationItem item)
 		{
+			if (items.Count > 0)
+			{
+				var intent = new ac.Intent(Control.Context, typeof(EtoNavigationActivity));
+				var key = Guid.NewGuid().ToString();
+				itemsLookup.Add(key, item);
+				intent.PutExtra("item", key);
+				intent.SetFlags(ac.ActivityFlags.NewTask);
+				aa.Application.Context.StartActivity(intent);
+			}
+			else
+			{
+				SetContent(item.Content);
+			}
 			items.Push(item);
-			SetContent(item.Content);
 		}
 
 		public void Pop()

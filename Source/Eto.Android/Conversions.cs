@@ -315,5 +315,15 @@ namespace Eto.Android
 			var bmp = image.ToAndroid();
 			return bmp != null ? new ag.Drawables.BitmapDrawable(aa.Application.Context.Resources, bmp) : null;
 		}
+
+		public static ag.Typeface ToAndroid(this Font font)
+		{
+			return FontHandler.GetControl(font);
+		}
+
+		public static Font ToEto(this ag.Typeface typeface)
+		{
+			return new Font(new FontHandler(typeface));
+		}
 	}
 }

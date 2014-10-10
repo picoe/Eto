@@ -27,16 +27,11 @@ namespace Eto.Android.Forms.Controls
 			set { Control.Checked = value ?? false; }
 		}
 
+		// TODO:
 		public bool ThreeState
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public string Text

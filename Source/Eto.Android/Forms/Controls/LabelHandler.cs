@@ -41,15 +41,24 @@ namespace Eto.Android.Forms.Controls
 			}
 		}
 
+		// TODO
 		public WrapMode Wrap
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
+		}
+
+		Font font;
+		public override Font Font
+		{
+			get { return font ?? (font = Control.Typeface.ToEto()); }
 			set
 			{
-				throw new NotImplementedException();
+				if (font != value)
+				{
+					font = value;
+					Control.Typeface = font.ToAndroid();
+				}
 			}
 		}
 

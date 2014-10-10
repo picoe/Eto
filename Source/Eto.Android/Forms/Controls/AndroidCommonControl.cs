@@ -17,16 +17,11 @@ namespace Eto.Android.Forms.Controls
 			get { return Control; }
 		}
 
-		public Font Font
+		// TODO
+		public virtual Font Font
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public override Size Size

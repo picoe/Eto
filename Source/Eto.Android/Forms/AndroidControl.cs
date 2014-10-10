@@ -20,6 +20,7 @@ namespace Eto.Android.Forms
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class AndroidControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IAndroidControl
+		where TControl: av.View
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
@@ -37,17 +38,15 @@ namespace Eto.Android.Forms
 
 		public void SuspendLayout()
 		{
-			throw new NotImplementedException();
 		}
 
 		public void ResumeLayout()
 		{
-			throw new NotImplementedException();
 		}
 
 		public void Focus()
 		{
-			throw new NotImplementedException();
+			Control.RequestFocus();
 		}
 
 		public virtual void OnPreLoad(EventArgs e)
@@ -81,6 +80,7 @@ namespace Eto.Android.Forms
 		}
 
 		Color? backgroundColor;
+
 		public Color BackgroundColor
 		{
 			get { return backgroundColor ?? Colors.Transparent; }
@@ -93,46 +93,29 @@ namespace Eto.Android.Forms
 
 		public virtual Size Size
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get { return new Size(ContainerControl.Width, ContainerControl.Height); }
 			set
 			{
-				throw new NotImplementedException();
+				Control.SetMinimumWidth(value.Width);
+				Control.SetMinimumHeight(value.Height);
 			}
 		}
 
 		public virtual bool Enabled
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
 		}
 
 		public bool HasFocus
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get { return Control.IsFocused; }
 		}
 
 		public bool Visible
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get { return Control.Visibility == av.ViewStates.Visible; }
+			set { Control.Visibility = value ? av.ViewStates.Visible : av.ViewStates.Invisible; }
 		}
 
 		public virtual Point Location

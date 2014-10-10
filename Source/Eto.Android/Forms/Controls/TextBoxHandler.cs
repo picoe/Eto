@@ -30,16 +30,11 @@ namespace Eto.Android.Forms.Controls
 			Control.SelectAll();
 		}
 
+		// TODO
 		public bool ReadOnly
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
 		}
 
 		public override void AttachEvent(string id)
