@@ -25,6 +25,7 @@ namespace Eto.Test.Sections.Behaviors
 			if (Platform.Supports<GroupBox>())
 				layout.AddRow(null, GroupBoxControl(), new Panel(), null);
 			layout.AddRow(null, LinkButtonControl(), SliderControl(), null);
+			layout.AddRow(null, ColorPickerControl(), ImageViewControl(), null);
 			layout.EndVertical();
 			layout.Add(null);
 
@@ -153,6 +154,21 @@ namespace Eto.Test.Sections.Behaviors
 		Control SliderControl()
 		{
 			var control = new Slider();
+			LogEvents(control);
+			return control;
+		}
+
+		Control ColorPickerControl()
+		{
+			var control = new ColorPicker();
+			LogEvents(control);
+			return TableLayout.AutoSized(control, centered: true);
+		}
+
+		Control ImageViewControl()
+		{
+			var control = new ImageView();
+			control.Image = TestIcons.TestImage;
 			LogEvents(control);
 			return control;
 		}

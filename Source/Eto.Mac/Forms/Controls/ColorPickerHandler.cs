@@ -23,9 +23,14 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class ColorPickerHandler : MacControl<NSColorWell, ColorPicker, ColorPicker.ICallback>, ColorPicker.IHandler
 	{
+		public class EtoColorWell : NSColorWell, IMacControl
+		{
+			public WeakReference WeakHandler { get; set; }
+		}
+
 		public ColorPickerHandler()
 		{
-			Control = new NSColorWell();
+			Control = new EtoColorWell { WeakHandler = new WeakReference(this) };
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

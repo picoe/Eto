@@ -162,7 +162,6 @@ namespace Eto.WinForms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.TabIndex = 100;
 			XScale = true;
 			YScale = true;
 			Control.Margin = swf.Padding.Empty;
