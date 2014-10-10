@@ -106,5 +106,17 @@ namespace Eto.iOS.Forms.Controls
 			get { return Control.TextColor.ToEto(); }
 			set { Control.TextColor = value.ToNSUI(); }
 		}
+
+		public bool AcceptsTab
+		{
+			get;
+			set;
+		}
+
+		public bool AcceptsReturn
+		{
+			get;
+			set;
+		}
 	}
 }

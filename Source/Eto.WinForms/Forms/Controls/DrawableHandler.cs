@@ -58,6 +58,8 @@ namespace Eto.WinForms
 				OnKeyDown(e);
 				if (!e.Handled) {
 					// Prevent firing the keydown event twice for the same key
+					if (CanFocusMe && keyData == swf.Keys.Tab || keyData == (swf.Keys.Tab | swf.Keys.Shift))
+						return base.ProcessDialogKey(keyData);
 					Handler.LastKeyDown = e.KeyData.ToEto ();
 				}
 				return e.Handled;

@@ -122,5 +122,17 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Control.CaretIndex; }
 			set { Control.CaretIndex = value; }
 		}
+
+		public bool AcceptsTab
+		{
+			get { return Control.AcceptsTab; }
+			set { Control.AcceptsTab = value; }
+		}
+
+		public bool AcceptsReturn
+		{
+			get { return Control.AcceptsReturn; }
+			set { Control.AcceptsReturn = value; }
+		}
 	}
 }

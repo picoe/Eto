@@ -1,5 +1,6 @@
 using Eto.Drawing;
 using System;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -185,6 +186,29 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the tab key is inserted into the text area, or if it should be ignored by this control and used
+		/// for navigating to the next control.
+		/// </summary>
+		/// <value><c>true</c> if the TextArea accepts tab key characters; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
+		public bool AcceptsTab
+		{
+			get { return Handler.AcceptsTab; }
+			set { Handler.AcceptsTab = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the return key is inserted into the text area, or if it should be ignored by this control.
+		/// </summary>
+		/// <value><c>true</c> if the TextArea accepts the return key; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
+		public bool AcceptsReturn
+		{
+			get { return Handler.AcceptsReturn; }
+			set { Handler.AcceptsReturn = value; }
+		}
+
+		/// <summary>
 		/// Append the specified text to the control and optionally scrolls to make the inserted text visible.
 		/// </summary>
 		/// <remarks>
@@ -314,6 +338,19 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The index of the insertion caret.</value>
 			int CaretIndex { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the tab key is inserted into the text area, or if it should be ignored by this control and used
+			/// for navigating to the next control.
+			/// </summary>
+			/// <value><c>true</c> if the TextArea accepts tab key characters; otherwise, <c>false</c>.</value>
+			bool AcceptsTab { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the return key is inserted into the text area, or if it should be ignored by this control.
+			/// </summary>
+			/// <value><c>true</c> if the TextArea accepts the return key; otherwise, <c>false</c>.</value>
+			bool AcceptsReturn { get; set; }
 		}
 	}
 }

@@ -8,10 +8,29 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
+	public class TextAreaHandler : WindowsControl<TextAreaHandler.EtoRichTextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
 		swf.TableLayoutPanel container;
+
+		public class EtoRichTextBox : swf.RichTextBox
+		{
+			public bool AcceptsReturn { get; set; }
+
+			protected override bool IsInputKey(swf.Keys keyData)
+			{
+				if (!AcceptsTab &&
+					(keyData & ~swf.Keys.Modifiers) == swf.Keys.Tab &&
+					(keyData & (swf.Keys.Control | swf.Keys.Alt)) == 0
+				)
+					return false;
+
+				if (!AcceptsReturn && keyData == swf.Keys.Return)
+					return false;
+
+				return base.IsInputKey(keyData);
+			}
+		}
 
 		public static Size DefaultMinimumSize = new Size(100, 60);
 
@@ -27,11 +46,12 @@ namespace Eto.WinForms
 
 		public TextAreaHandler()
 		{
-			Control = new swf.RichTextBox
+			Control = new EtoRichTextBox
 			{
 				Size = sd.Size.Empty,
 				Multiline = true,
 				AcceptsTab = true,
+				AcceptsReturn = true,
 				Dock = swf.DockStyle.Fill,
 				BorderStyle = swf.BorderStyle.None,
 				ScrollBars = swf.RichTextBoxScrollBars.Both,
@@ -131,6 +151,18 @@ namespace Eto.WinForms
 		{
 			get { return Control.SelectionStart; }
 			set { Control.Select(value, 0); }
+		}
+
+		public bool AcceptsTab
+		{
+			get { return Control.AcceptsTab; }
+			set { Control.AcceptsTab = value; }
+		}
+
+		public bool AcceptsReturn
+		{
+			get { return Control.AcceptsReturn; }
+			set { Control.AcceptsReturn = value; }
 		}
 
 		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
