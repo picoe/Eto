@@ -10,6 +10,9 @@ using Eto.Mac.Forms;
 using Eto.Mac.Forms.Menu;
 using Eto.Mac.Threading;
 using Eto.Threading;
+using System.Reflection;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -53,7 +56,10 @@ namespace Eto.Mac
 			#endif
 			if (!initialized)
 			{
-				NSApplication.Init();
+				var appType = typeof(NSApplication);
+				var initField = appType.GetField("initialized", BindingFlags.Static | BindingFlags.NonPublic);
+				if (initField == null || Equals(initField.GetValue(null), false))
+					NSApplication.Init();
 				// until everything is marked as thread safe correctly in monomac
 				// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
 				NSApplication.CheckForIllegalCrossThreadCalls = false;

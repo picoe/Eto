@@ -17,7 +17,7 @@ namespace Eto.Forms
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
-	public abstract partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
+	public partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -622,7 +622,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the Container with the specified handler
 		/// </summary>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		protected Control(IHandler handler)
+		public Control(IHandler handler)
 			: base(handler)
 		{
 		}

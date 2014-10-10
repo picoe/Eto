@@ -220,6 +220,7 @@
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>
     <Compile Include="WpfHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">

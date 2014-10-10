@@ -130,7 +130,7 @@ namespace Eto.Mac.Forms
 	}
 
 	public abstract class MacWindow<TControl, TWidget, TCallback> : MacPanel<TControl, TWidget, TCallback>, Window.IHandler, IMacContainer, IMacWindow
-		where TControl: MyWindow
+		where TControl: NSWindow
 		where TWidget: Window
 		where TCallback: Window.ICallback
 	{
@@ -365,7 +365,9 @@ namespace Eto.Mac.Forms
 
 		protected void ConfigureWindow()
 		{
-			Control.Handler = this;
+			var myWindow = Control as MyWindow;
+			if (myWindow != null)
+				myWindow.Handler = this;
 			Control.ContentView = new NSView();
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
