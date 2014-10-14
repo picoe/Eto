@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">"$(MSBuildThisFileDirectory)buildapp.cmd" "$(TargetDir)" "$(TargetFileName)" "$(MSBuildProjectName)" "$(Configuration)"</PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' != 'Windows_NT'">"$(MSBuildThisFileDirectory)buildapp.sh" "$(TargetDir)" "$(TargetFileName)" "$(MSBuildProjectName)" "$(Configuration)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

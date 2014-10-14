@@ -7,7 +7,7 @@ IF %target_dir:~-1%==\ SET target_dir=%target_dir:~0,-1%
 SET assembly=%~2
 SET project_name=%~3
 
-SET eto_dir=%DIR%\..
+SET eto_dir=%DIR%\..\..
 SET eto_bin_dir=%eto_dir%\BuildOutput\Release
 
 SET input_app=%eto_dir%\Resources\MacAppTemplate.app

@@ -7,7 +7,7 @@ assembly="$2"
 project_name="$3"
 configuration="$4"
 
-eto_dir="$DIR/.."
+eto_dir="$DIR/../.."
 eto_bin_dir="$eto_dir/BuildOutput/$configuration"
 
 input_app="$eto_dir/Resources/MacAppTemplate.app"
@@ -41,4 +41,4 @@ cp "$eto_bin_dir"/MonoMac.dll "$output_mono"
 sed -i -e "s/>MyApp</>$project_name</" "$output_app/Contents/Info.plist"
 sed -i -e "s/>MyApp.exe</>$assembly</" "$output_app/Contents/Info.plist"
 
-chmod +x "$output_app/Contents/MacOS/Launcher"
+chmod +x "$output_app/Contents/MacOS/Launcher.exec"
