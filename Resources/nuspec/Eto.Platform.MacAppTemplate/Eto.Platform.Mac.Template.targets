@@ -9,7 +9,7 @@
 	<Target Name="_CreateAppBundle">
 		<PropertyGroup>
 			<AppBundleName Condition="'$(AppBundleName)'==''">$(MSBuildProjectName)</AppBundleName>
-			<InputAppPath Condition="'$(InputAppPath)'==''">$(MSBuildThisFileDirectory)\..\..\Resources\MacAppTemplate.app</InputAppPath>
+			<InputAppPath Condition="'$(InputAppPath)'==''">$(MSBuildProjectDirectory)\Mac\MyApp.app</InputAppPath>
 		</PropertyGroup>
 		<!-- Using CreateProperty to compute properly on xbuild -->
 		<CreateProperty Value="$(TargetDir)\$(AppBundleName).app" Condition="'$(OutputAppPath)'==''">
