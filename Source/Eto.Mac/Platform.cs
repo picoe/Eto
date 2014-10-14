@@ -176,5 +176,13 @@ namespace Eto.Mac
 		{
 			return new NSAutoreleasePool();
 		}
+
+		public override bool IsValid
+		{
+			get
+			{
+				return Assembly.GetEntryAssembly().Location.StartsWith(NSBundle.MainBundle.BundlePath, StringComparison.Ordinal);
+			}
+		}
 	}
 }
