@@ -153,6 +153,8 @@ namespace Eto.Test.Sections.Behaviors
 			};
 			var layout = new DynamicLayout();
 			layout.Add(null);
+			layout.AddCentered(TestChangeSizeButton());
+			layout.AddCentered(TestChangeClientSizeButton());
 			layout.AddCentered(SendToBackButton());
 			layout.AddCentered(CloseButton());
 			layout.Add(null);
@@ -257,6 +259,28 @@ namespace Eto.Test.Sections.Behaviors
 			control.Click += (sender, e) => {
 				if (child != null)
 					child.SendToBack();
+			};
+			return control;
+		}
+
+		Control TestChangeSizeButton()
+		{
+			var control = new Button { Text = "TestChangeSize" };
+			control.Click += (sender, e) =>
+			{
+				if (child != null)
+					child.Size = new Size(500, 500);
+			};
+			return control;
+		}
+
+		Control TestChangeClientSizeButton()
+		{
+			var control = new Button { Text = "TestChangeClientSize" };
+			control.Click += (sender, e) =>
+			{
+				if (child != null)
+					child.Size = new Size(500, 500);
 			};
 			return control;
 		}
