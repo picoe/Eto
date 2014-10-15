@@ -280,7 +280,7 @@ namespace Eto.Test.Sections.Behaviors
 			control.Click += (sender, e) =>
 			{
 				if (child != null)
-					child.Size = new Size(500, 500);
+					child.ClientSize = new Size(500, 500);
 			};
 			return control;
 		}
