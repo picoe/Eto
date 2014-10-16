@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="ProjectGroup" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Eto.Forms App (portable, separate platforms)</Name>
+    <Description>
+<![CDATA[A new Eto.Forms cross-platform application with a shared PCL library, , and separate startup projects for each native platform allowing for platform-specific functionality.
+
+Preferred for maximum portability between all platforms.]]>
+    </Description>
+    <Icon>Eto.PCL.Separate.ico</Icon>
+    <ProjectType>CSharp</ProjectType>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <SortOrder>1000</SortOrder>
+    <TemplateID>8af0b680-f3ff-4094-92cb-a91c45a4d7fe</TemplateID>
+    <DefaultName>EtoApp</DefaultName>
+    <CreateNewFolder>true</CreateNewFolder>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem>AssemblyInfo.cs</ProjectItem>
+    <ProjectItem>Eto\Eto.vstemplate</ProjectItem>
+    <ProjectItem>Eto\Eto.csproj</ProjectItem>
+    <ProjectItem>Eto\MainForm.cs</ProjectItem>
+    <ProjectItem>Eto.Gtk2\Eto.Gtk2.vstemplate</ProjectItem>
+    <ProjectItem>Eto.Gtk2\Eto.Gtk2.csproj</ProjectItem>
+    <ProjectItem>Eto.Gtk2\Program.cs</ProjectItem>
+    <ProjectItem>Eto.Gtk3\Eto.Gtk3.vstemplate</ProjectItem>
+    <ProjectItem>Eto.Gtk3\Eto.Gtk3.csproj</ProjectItem>
+    <ProjectItem>Eto.Gtk3\Program.cs</ProjectItem>
+    <ProjectItem>Eto.Wpf\Eto.Wpf.vstemplate</ProjectItem>
+    <ProjectItem>Eto.Wpf\Eto.Wpf.csproj</ProjectItem>
+    <ProjectItem>Eto.Wpf\Program.cs</ProjectItem>
+    <ProjectItem>Eto.WinForms\Eto.WinForms.vstemplate</ProjectItem>
+    <ProjectItem>Eto.WinForms\Eto.WinForms.csproj</ProjectItem>
+    <ProjectItem>Eto.WinForms\Program.cs</ProjectItem>
+    <ProjectItem>Eto.Mac\Eto.Mac.vstemplate</ProjectItem>
+    <ProjectItem>Eto.Mac\Eto.Mac.csproj</ProjectItem>
+    <ProjectItem>Eto.Mac\Program.cs</ProjectItem>
+    <ProjectItem>Eto.XamMac2\Eto.XamMac2.vstemplate</ProjectItem>
+    <ProjectItem>Eto.XamMac2\Eto.XamMac2.csproj</ProjectItem>
+    <ProjectItem>Eto.XamMac2\Program.cs</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.VisualStudioTemplates, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6a46172bb98be483</Assembly>
+    <FullClassName>Eto.VisualStudioTemplates.RootWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.VisualStudioTemplates, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6a46172bb98be483</Assembly>
+    <FullClassName>Eto.VisualStudioTemplates.MultiProjectWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <Projects>
+      <Project Name="$safeprojectname$">Eto\Eto.vstemplate</Project>
+      <Project Name="$safeprojectname$.Gtk2">Eto.Gtk2\Eto.Gtk2.vstemplate</Project>
+      <Project Name="$safeprojectname$.Gtk3">Eto.Gtk3\Eto.Gtk3.vstemplate</Project>
+      <Project Name="$safeprojectname$.Wpf" Startup="true">Eto.Wpf\Eto.Wpf.vstemplate</Project>
+      <Project Name="$safeprojectname$.WinForms">Eto.WinForms\Eto.WinForms.vstemplate</Project>
+      <Project Name="$safeprojectname$.Mac">Eto.Mac\Eto.Mac.vstemplate</Project>
+      <!--Project name="$safeprojectname$.XamMac2">Eto.XamMac2\Eto.XamMac2.vstemplate</Project-->
+    </Projects>
+  </WizardData>
+</VSTemplate>
