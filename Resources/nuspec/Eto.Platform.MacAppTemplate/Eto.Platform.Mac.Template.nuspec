@@ -27,7 +27,10 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="MacAppTemplate.app/**" target="content\Mac\MyApp.app" />
+		<!-- windows, ignored on *nix due to back slash, copies entire path if using forward slash on windows -->
+		<file src="MacAppTemplate.app\**" target="content/Mac/MyApp.app/" />
+		<!-- *nix, ignored on windows due to beginning forward slash  -->
+		<file src="/MacAppTemplate.app/**" target="content/Mac/MyApp.app/" />
 		<file src="Eto.Platform.Mac.Template.targets" target="build\Eto.Platform.Mac.Template.targets" />
 		<file src="README.txt" target="content\Mac\README.txt" />
 	</files>
