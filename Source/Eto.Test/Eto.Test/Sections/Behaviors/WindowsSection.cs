@@ -177,7 +177,14 @@ namespace Eto.Test.Sections.Behaviors
 		void child_Closed(object sender, EventArgs e)
 		{
 			Log.Write(child, "Closed");
+			child.WindowStateChanged -= child_WindowStateChanged;
 			child.Closed -= child_Closed;
+			child.Closing -= child_Closing;
+			child.Shown -= child_Shown;
+			child.GotFocus -= child_GotFocus;
+			child.LostFocus -= child_LostFocus;
+			child.LocationChanged -= child_LocationChanged;
+			child.SizeChanged -= child_SizeChanged;
 			bringToFrontButton.Enabled = false;
 			child = null;
 			// write out number of open windows after the closed event is called

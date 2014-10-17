@@ -208,78 +208,118 @@ namespace Eto.Mac.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.DidBecomeKey += delegate
-			{
-				if (MenuBar != null)
-				{
-					NSApplication.SharedApplication.MainMenu = MenuBar;
-				}
-			};
-			Control.ShouldZoom = (window, newFrame) =>
-			{
-				if (!Maximizable)
-					return false;
-				if (!window.IsZoomed && window.Screen != null)
-				{
-					RestoreBounds = Widget.Bounds;
-				}
-				return true;
-			};
-			Control.WillMiniaturize += delegate
-			{
-				RestoreBounds = Widget.Bounds;
-			};
+			Control.DidBecomeKey += HandleDidBecomeKey;
+			Control.ShouldZoom = HandleShouldZoom;
+			Control.WillMiniaturize += HandleWillMiniaturize;
 		}
+
+		static void HandleDidBecomeKey(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return;
+			if (handler.MenuBar != null)
+			{
+				NSApplication.SharedApplication.MainMenu = handler.MenuBar;
+			}
+
+		}
+
+		static bool HandleShouldZoom(NSWindow window, CGRect newFrame)
+		{
+			var handler = GetHandler(window) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return true;
+			if (!handler.Maximizable)
+				return false;
+			if (!window.IsZoomed && window.Screen != null)
+			{
+				handler.RestoreBounds = handler.Widget.Bounds;
+			}
+			return true;
+
+		}
+
+		static void HandleWillMiniaturize(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return;
+			handler.RestoreBounds = handler.Widget.Bounds;
+		}
+
+		static void HandleWillClose(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return;
+			if (ApplicationHandler.Instance.ShouldCloseForm(handler.Widget, true))
+				handler.Callback.OnClosed(handler.Widget, EventArgs.Empty);
+		}
+
+		static bool HandleWindowShouldClose(NSObject sender)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return true;
+			var args = new CancelEventArgs();
+			if (ApplicationHandler.Instance.ShouldCloseForm(handler.Widget, false))
+				handler.Callback.OnClosing(handler.Widget, args);
+			return !args.Cancel;
+		}
+
+		static void HandleWindowStateChanged(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return;
+			handler.Callback.OnWindowStateChanged(handler.Widget, EventArgs.Empty);
+		}
+
+		static void HandleGotFocus(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return;
+			handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
+		}
+
+		static void HandleLostFocus(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return;
+			handler.Callback.OnLostFocus(handler.Widget, EventArgs.Empty);
+		}
+
 
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case Window.ClosedEvent:
-					Control.WillClose += delegate
-					{
-						if (ApplicationHandler.Instance.ShouldCloseForm(Widget, true))
-							Callback.OnClosed(Widget, EventArgs.Empty);
-					};
+					Control.WillClose += HandleWillClose;
 					break;
 				case Window.ClosingEvent:
-					Control.WindowShouldClose = sender =>
-					{
-						var args = new CancelEventArgs();
-						if (ApplicationHandler.Instance.ShouldCloseForm(Widget, false))
-							Callback.OnClosing(Widget, args);
-						return !args.Cancel;
-					};
+					Control.WindowShouldClose = HandleWindowShouldClose;
 					break;
 				case Window.WindowStateChangedEvent:
-					Control.DidMiniaturize += delegate
-					{
-						Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
-					};
-					Control.DidDeminiaturize += delegate
-					{
-						Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
-					};
+					Control.DidMiniaturize += HandleWindowStateChanged;
+					Control.DidDeminiaturize += HandleWindowStateChanged;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 				// handled when shown
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.DidBecomeKey += delegate
-					{
-						Callback.OnGotFocus(Widget, EventArgs.Empty);
-					};
+					Control.DidBecomeKey += HandleGotFocus;
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.DidResignKey += delegate
-					{
-						Callback.OnLostFocus(Widget, EventArgs.Empty);
-					};
+					Control.DidResignKey += HandleLostFocus;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					{
 						Size? oldSize = null;
-						AddControlObserver((NSString)"frame", e =>
+						AddObserver(NSWindow.DidResizeNotification, e =>
 						{
 							var handler = (MacWindow<TControl,TWidget,TCallback>)e.Handler;
 							var newSize = handler.Size;
@@ -293,17 +333,17 @@ namespace Eto.Mac.Forms
 					break;
 				case Window.LocationChangedEvent:
 					{
-						AddControlObserver((NSString)"frame", e =>
+						AddObserver(NSWindow.DidMoveNotification, e =>
 						{
 							var handler = e.Handler as MacWindow<TControl,TWidget,TCallback>;
 							if (handler != null)
 							{
-								var old = oldLocation;
-								oldLocation = null;
+								var old = handler.oldLocation;
+								handler.oldLocation = null;
 								var newLocation = handler.Location;
 								if (old != newLocation)
 								{
-									oldLocation = newLocation;
+									handler.oldLocation = newLocation;
 									handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
 								}
 							}
@@ -371,28 +411,33 @@ namespace Eto.Mac.Forms
 			Control.ContentView = new NSView();
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-			Control.ReleasedWhenClosed = false;
+			Control.ReleasedWhenClosed = true;
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
 			Control.AutorecalculatesKeyViewLoop = true;
 			//Control.Delegate = new MacWindowDelegate{ Handler = this };
-			Control.WillReturnFieldEditor = (sender, forObject) =>
-			{
-				FieldEditorObject = forObject;
-				var control = forObject as IMacControl;
-				if (control != null)
-				{
-					var handler = control.WeakHandler.Target as IMacViewHandler;
-					if (handler != null && handler.IsEventHandled(Eto.Forms.Control.KeyDownEvent))
-					{
-						if (fieldEditor == null)
-							fieldEditor = new CustomFieldEditor();
-						fieldEditor.Widget = handler.Widget;
-						return fieldEditor;
-					}
-				}
+			Control.WillReturnFieldEditor = HandleWillReturnFieldEditor;
+		}
+
+		static NSObject HandleWillReturnFieldEditor(NSWindow sender, NSObject client)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
+			if (handler == null)
 				return null;
-			};
+			handler.FieldEditorObject = client;
+			var control = client as IMacControl;
+			if (control != null)
+			{
+				var childHandler = control.WeakHandler.Target as IMacViewHandler;
+				if (childHandler != null && childHandler.IsEventHandled(Eto.Forms.Control.KeyDownEvent))
+				{
+					if (handler.fieldEditor == null)
+						handler.fieldEditor = new CustomFieldEditor();
+					handler.fieldEditor.Widget = childHandler.Widget;
+					return handler.fieldEditor;
+				}
+			}
+			return null;
 		}
 
 		public override NSView ContentControl { get { return Control.ContentView; } }
@@ -446,7 +491,6 @@ namespace Eto.Mac.Forms
 				if (maximizable != value)
 				{
 					maximizable = value;
-					HandleEvent(Window.WindowStateChangedEvent);
 					SetButtonStates();
 				}
 			}

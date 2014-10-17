@@ -462,7 +462,7 @@ namespace Eto
 				Handler = null;
 			}
 			#if TRACK_GC
-			Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", GetType().Name);
+			System.Diagnostics.Debug.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", GetType().Name);
 			#endif
 		}
 	}
