@@ -223,7 +223,11 @@ namespace Eto
 				}
 
 				if (detected == null && EtoEnvironment.Platform.IsUnix)
-					detected = Platform.Get(Platforms.Gtk2, true);
+				{
+					detected = Platform.Get(Platforms.Gtk3, true);
+					if (detected == null)
+						detected = Platform.Get(Platforms.Gtk2, true);
+				}
 				
 				if (detected == null)
 					throw new EtoException("Could not detect platform. Are you missing a platform assembly?");
