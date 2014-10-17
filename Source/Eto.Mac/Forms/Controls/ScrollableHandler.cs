@@ -130,7 +130,7 @@ namespace Eto.Mac.Forms.Controls
 							{
 								var contentBounds = handler.Control.ContentView.Bounds;
 								if (contentBounds.Height > 0)
-									handler.scrollPosition = new Point((int)contentBounds.X, (int)(view.Frame.Height - contentBounds.Height - contentBounds.Y));
+									handler.scrollPosition = new Point((int)contentBounds.X, (int)Math.Max(0, (view.Frame.Height - contentBounds.Height - contentBounds.Y)));
 							}
 							handler.Callback.OnScroll(handler.Widget, new ScrollEventArgs(handler.ScrollPosition));
 						}
@@ -329,6 +329,7 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnSizeChanged(EventArgs e)
 		{
 			base.OnSizeChanged(e);
+			UpdateScrollSizes();
 			SetPosition(scrollPosition, true);
 		}
 		#endif
