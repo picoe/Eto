@@ -1,9 +1,10 @@
 using System;
 using Eto.Forms;
+using System.Linq;
 
 namespace Eto.GtkSharp
 {
-	public class CheckToolItemHandler : ToolItemHandler<Gtk.ToggleToolButton, CheckToolItem>, CheckToolItem.IHandler
+	public class RadioToolItemHandler : ToolItemHandler<Gtk.RadioToolButton, RadioToolItem>, RadioToolItem.IHandler
 	{
 		bool ischecked;
 
@@ -24,8 +25,8 @@ namespace Eto.GtkSharp
 		public override void CreateControl(ToolBarHandler handler, int index)
 		{
 			Gtk.Toolbar tb = handler.Control;
-			
-			Control = new Gtk.ToggleToolButton();
+
+			Control = new Gtk.RadioToolButton(handler.RadioGroup);
 			Control.Active = ischecked;
 			Control.Label = Text;
 			//Control.TooltipText = this.ToolTip;
@@ -39,16 +40,16 @@ namespace Eto.GtkSharp
 			Control.Toggled += Connector.HandleToggled;
 		}
 
-		protected new CheckToolItemConnector Connector { get { return (CheckToolItemConnector)base.Connector; } }
+		protected new RadioToolItemConnector Connector { get { return (RadioToolItemConnector)base.Connector; } }
 
 		protected override WeakConnector CreateConnector()
 		{
-			return new CheckToolItemConnector();
+			return new RadioToolItemConnector();
 		}
 
-		protected class CheckToolItemConnector : WeakConnector
+		protected class RadioToolItemConnector : WeakConnector
 		{
-			public new CheckToolItemHandler Handler { get { return (CheckToolItemHandler)base.Handler; } }
+			public new RadioToolItemHandler Handler { get { return (RadioToolItemHandler)base.Handler; } }
 
 			public void HandleToggled(object sender, EventArgs e)
 			{

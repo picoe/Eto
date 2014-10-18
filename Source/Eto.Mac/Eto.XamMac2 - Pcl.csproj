@@ -204,6 +204,7 @@
     <Compile Include="Forms\Controls\MacLabel.cs" />
     <Compile Include="MacHelpers.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

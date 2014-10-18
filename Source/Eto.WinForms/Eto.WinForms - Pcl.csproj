@@ -104,6 +104,7 @@
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="KeyMap.cs">
       <SubType>Code</SubType>
     </Compile>

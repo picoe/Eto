@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -74,12 +75,13 @@ namespace Eto.Mac
 				return Handler.items.Select(r => r.Identifier)
 				.Union(
 					new string[]
-				{ 
-					NSToolbar.NSToolbarSeparatorItemIdentifier, 
-					NSToolbar.NSToolbarSpaceItemIdentifier,
-					NSToolbar.NSToolbarFlexibleSpaceItemIdentifier,
-					NSToolbar.NSToolbarCustomizeToolbarItemIdentifier
-				}).ToArray();
+					{ 
+						SeparatorToolItemHandler.DividerIdentifier,
+						NSToolbar.NSToolbarSeparatorItemIdentifier, 
+						NSToolbar.NSToolbarSpaceItemIdentifier,
+						NSToolbar.NSToolbarFlexibleSpaceItemIdentifier,
+						NSToolbar.NSToolbarCustomizeToolbarItemIdentifier
+					}).ToArray();
 			}
 		}
 
@@ -148,7 +150,7 @@ namespace Eto.Mac
 
 		public void Clear()
 		{
-			for (int i = Control.Items.Length - 1; i >=0; i--)
+			for (int i = Control.Items.Length - 1; i >= 0; i--)
 			{
 				Control.RemoveItem(i);
 			}

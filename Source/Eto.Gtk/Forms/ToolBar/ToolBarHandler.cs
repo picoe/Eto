@@ -5,6 +5,20 @@ namespace Eto.GtkSharp
 	public class ToolBarHandler : WidgetHandler<Gtk.Toolbar, ToolBar>, ToolBar.IHandler
 	{
 		ToolBarDock dock = ToolBarDock.Top;
+
+		#if GTK2
+		Gtk.RadioButton radioGroup;
+		public GLib.SList RadioGroup
+		{
+			get { return (radioGroup ?? (radioGroup = new Gtk.RadioButton("g"))).Group; }
+		}
+		#elif GTK3
+		Gtk.RadioToolButton radioGroup;
+		public Gtk.RadioToolButton RadioGroup
+		{
+			get { return (radioGroup ?? (radioGroup = new Gtk.RadioToolButton(new Gtk.RadioToolButton[0]))); }
+		}
+		#endif
 		
 		public ToolBarHandler()
 		{

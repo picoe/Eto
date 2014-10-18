@@ -1,13 +1,14 @@
 using System;
+using System.Linq;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 
 namespace Eto.WinForms
 {
-	public class CheckToolItemHandler : ToolItemHandler<SWF.ToolStripButton, CheckToolItem>, CheckToolItem.IHandler
+	public class RadioToolItemHandler : ToolItemHandler<SWF.ToolStripButton, RadioToolItem>, RadioToolItem.IHandler
 	{
-		public CheckToolItemHandler()
+		public RadioToolItemHandler()
 		{
 			Control = new SWF.ToolStripButton();
 			Control.Tag = this;
@@ -16,7 +17,15 @@ namespace Eto.WinForms
 
 		void control_Click(object sender, EventArgs e)
 		{
-			Control.Checked = !Control.Checked;
+			var parent = Control.GetCurrentParent();
+			if (parent != null)
+			{
+				foreach (var button in parent.Items.OfType<SWF.ToolStripButton>().Select(r => r.Tag).OfType<RadioToolItemHandler>().Where(r => r != this))
+				{
+					button.Checked = false;
+				}
+			}
+			Control.Checked = true;
 			Widget.OnClick(EventArgs.Empty);
 		}
 

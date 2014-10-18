@@ -2,6 +2,9 @@ using Eto.Mac.Forms.Controls;
 using Eto.Mac.Forms;
 using Eto.Mac;
 using System.Diagnostics;
+using Eto.Drawing;
+
+
 #if XAMMAC2
 using AppKit;
 #else
@@ -47,8 +50,8 @@ namespace Eto.Test.Mac
 			});
 
 			Style.Add<ButtonToolItemHandler> (null, handler => {
-				// use standard textured/round buttons, and make the image grayscale
-				handler.UseStandardButton (grayscale: true);
+				// tint the images in grayscale
+				handler.Tint = Colors.Gray;
 			});
 
 			Style.Add<ToolBarHandler> (null, handler => { 

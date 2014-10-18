@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using swc = System.Windows.Controls;
+using swm = System.Windows.Media;
 using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
@@ -38,7 +39,7 @@ namespace Eto.Wpf.Forms
 				switch (value)
 				{
 					case SeparatorToolItemType.Divider:
-						control = new swc.Separator();
+						control = new swc.Separator { LayoutTransform = new swm.RotateTransform(90) };
 						break;
 					case SeparatorToolItemType.FlexibleSpace:
 					case SeparatorToolItemType.Space:

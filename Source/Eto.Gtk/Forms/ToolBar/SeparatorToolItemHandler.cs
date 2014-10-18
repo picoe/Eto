@@ -5,16 +5,24 @@ namespace Eto.GtkSharp
 	public class SeparatorToolItemHandler : ToolItemHandler<Gtk.SeparatorToolItem, SeparatorToolItem>, SeparatorToolItem.IHandler
 	{
 		SeparatorToolItemType type;
-		bool expand;
 
 		public override void CreateControl(ToolBarHandler handler, int index)
 		{
 			Gtk.Toolbar tb = handler.Control;
 			Control = new Gtk.SeparatorToolItem();
-			Control.Expand = expand;
+			SetType();
 			tb.Insert(Control, index);
 			if (tb.Visible)
 				Control.ShowAll();
+		}
+
+		void SetType()
+		{
+			if (Control != null)
+			{
+				Control.Expand = type == SeparatorToolItemType.FlexibleSpace;
+				Control.Draw = type == SeparatorToolItemType.Divider;
+			}
 		}
 
 		public SeparatorToolItemType Type
@@ -23,9 +31,7 @@ namespace Eto.GtkSharp
 			set
 			{
 				type = value;
-				expand = type == SeparatorToolItemType.FlexibleSpace;
-				if (Control != null)
-					Control.Expand = expand;
+				SetType();
 			}
 		}
 	}
