@@ -11,6 +11,7 @@ namespace Eto.WinForms
 	public class ComboBoxHandler : WindowsControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		CollectionHandler collection;
+		bool editable;
 
 		public class EtoComboBox : swf.ComboBox
 		{
@@ -78,6 +79,25 @@ namespace Eto.WinForms
 
 				e.DrawFocusRectangle();
 			}
+
+			string oldText;
+			int oldIndex;
+
+			protected override void OnTextChanged(EventArgs e)
+			{
+				base.OnTextChanged(e);
+				if (SelectedIndex == -1 && oldIndex != -1 && oldText != Text)
+				{
+					OnSelectedIndexChanged(e);
+				}
+			}
+
+			protected override void OnSelectedIndexChanged(EventArgs e)
+			{
+				base.OnSelectedIndexChanged(e);
+				oldText = Text;
+				oldIndex = SelectedIndex;
+			}
 		}
 
 		public ComboBoxHandler()
@@ -92,6 +112,28 @@ namespace Eto.WinForms
 			{
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
+		}
+
+		public void Create(bool isEditable)
+		{
+			editable = isEditable;
+			if (editable)
+				Control.DropDownStyle = swf.ComboBoxStyle.DropDown;
+		}
+
+		public override string Text
+		{
+			get
+			{
+				return editable ? Control.Text : "";
+			}
+			set
+			{
+				if (editable && value != null)
+				{
+					Control.Text = value;
+				}
+			}
 		}
 
 		public override Color BackgroundColor

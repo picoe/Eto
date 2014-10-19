@@ -38,11 +38,12 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class ComboBoxHandler : MacControl<NSComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		CollectionHandler collection;
+		bool editable;
 
-		public class EtoPopUpButton : NSPopUpButton, IMacControl
+		public class EtoComboBox : NSComboBox, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -53,15 +54,18 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public ComboBoxHandler()
+		public void Create(bool isEditable)
 		{
-			Control = new EtoPopUpButton { Handler = this };
-			Control.Activated += HandleActivated;
+			editable = isEditable;
+			Control = new EtoComboBox { Handler = this ,Cell=new NSComboBoxCell()};
+			Control.Editable = editable;
+			// Add Observer to monitor SelectionDidChangeNotification, but no response. May be a bug?
+			this.AddObserver(NSComboBox.SelectionDidChangeNotification, SelectionDidChanged, Control);
 		}
 
-		static void HandleActivated(object sender, EventArgs e)
+		static void SelectionDidChanged(ObserverActionEventArgs e)
 		{
-			var handler = GetHandler(sender) as ComboBoxHandler;
+			var handler = e.Handler as ComboBoxHandler;
 			handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 		}
 
@@ -72,16 +76,16 @@ namespace Eto.Mac.Forms.Controls
 			public override int IndexOf(object item)
 			{
 				var binding = Handler.Widget.TextBinding;
-				return (int)Handler.Control.Menu.IndexOf(binding.GetValue(item));
+				return (int)Handler.Control.IndexOf(NSObject.FromObject(binding.GetValue(item)));
 			}
 
 			public override void AddRange(IEnumerable<object> items)
 			{
-				var oldIndex = Handler.Control.IndexOfSelectedItem;
+				var oldIndex = Handler.Control.SelectedIndex;
 				var binding = Handler.Widget.TextBinding;
 				foreach (var item in items.Select(r => binding.GetValue(r)))
 				{
-					Handler.Control.Menu.AddItem(new NSMenuItem(item));
+					Handler.Control.Add(NSObject.FromObject(item));
 				}
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
@@ -90,9 +94,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void AddItem(object item)
 			{
-				var oldIndex = Handler.Control.IndexOfSelectedItem;
+				var oldIndex = Handler.Control.SelectedIndex;
 				var binding = Handler.Widget.TextBinding;
-				Handler.Control.Menu.AddItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))));
+				Handler.Control.Add(NSObject.FromObject(binding.GetValue(item)));
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
@@ -100,9 +104,9 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void InsertItem(int index, object item)
 			{
-				var oldIndex = Handler.Control.IndexOfSelectedItem;
+				var oldIndex = Handler.Control.SelectedIndex;
 				var binding = Handler.Widget.TextBinding;
-				Handler.Control.Menu.InsertItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))), index);
+				Handler.Control.Insert(NSObject.FromObject(binding.GetValue(item)), index);
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
@@ -111,7 +115,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void RemoveItem(int index)
 			{
 				var selected = Handler.SelectedIndex;
-				Handler.Control.RemoveItem(index);
+				Handler.Control.RemoveAt(index);
 				Handler.LayoutIfNeeded();
 				if (Handler.Widget.Loaded && selected == index)
 				{
@@ -123,7 +127,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void RemoveAllItems()
 			{
 				var change = Handler.SelectedIndex != -1;
-				Handler.Control.RemoveAllItems();
+				Handler.Control.RemoveAll();
 				Handler.LayoutIfNeeded();
 				if (Handler.Widget.Loaded && change)
 				{
@@ -147,7 +151,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get	{ return (int)Control.IndexOfSelectedItem; }
+			get	{ return (int)Control.SelectedIndex; }
 			set
 			{
 				if (value != SelectedIndex)
@@ -155,6 +159,21 @@ namespace Eto.Mac.Forms.Controls
 					Control.SelectItem(value);
 					if (Widget.Loaded)
 						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				}
+			}
+		}
+
+		public string Text
+		{
+			get
+			{
+				return editable ? Control.StringValue: "";
+			}
+			set
+			{
+				if (editable && value != null)
+				{
+					Control.StringValue = value;
 				}
 			}
 		}

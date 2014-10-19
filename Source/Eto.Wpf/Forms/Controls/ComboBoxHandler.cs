@@ -13,6 +13,7 @@ namespace Eto.Wpf.Forms.Controls
 	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		IEnumerable<object> store;
+		bool editable;
 
 		public class EtoComboBox : swc.ComboBox
 		{
@@ -92,6 +93,12 @@ namespace Eto.Wpf.Forms.Controls
 			};
 		}
 
+		public void Create(bool isEditable)
+		{
+			editable = isEditable;
+			Control.IsEditable = editable;
+		}
+
 		public override bool UseMousePreview { get { return true; } }
 
 		public override bool UseKeyPreview { get { return true; } }
@@ -111,6 +118,21 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Control.SelectedIndex; }
 			set { Control.SelectedIndex = value; }
+		}
+
+		public string Text
+		{
+			get
+			{
+				return editable ? Control.Text : "";
+			}
+			set
+			{
+				if (editable && value != null)
+				{
+					Control.Text = value;
+				}
+			}
 		}
 	}
 }

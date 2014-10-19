@@ -1,4 +1,5 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -20,6 +21,8 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow(new Label { Text = "EnumComboBox<Key>" }, TableLayout.AutoSized(EnumCombo()));
 
+			layout.AddRow(new Label { Text = "EditableCombo" }, TableLayout.AutoSized(EditableCombo()));
+
 			layout.Add(null, null, true);
 
 			Content = layout;
@@ -34,6 +37,7 @@ namespace Eto.Test.Sections.Controls
 			layout.Add(TableLayout.AutoSized(control));
 			layout.BeginVertical();
 			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
+			layout.AddRow(null, SetComboFont(control), null);
 			layout.EndVertical();
 			
 			return layout;
@@ -123,6 +127,51 @@ namespace Eto.Test.Sections.Controls
 			var control = new EnumComboBox<Keys>();
 			LogEvents(control);
 			control.SelectedKey = ((int)Keys.E).ToString();
+			return control;
+		}
+
+		Control EditableCombo()
+		{
+			var control = new ComboBox(true);
+			LogEvents(control);			
+
+			var layout = new DynamicLayout();
+			layout.Add(TableLayout.AutoSized(control));
+			layout.BeginVertical();
+			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
+			layout.AddRow(null, ShowComboText(control), SetComboText(control),SetComboFont(control), null);
+			layout.EndVertical();
+
+			return layout;
+		}
+
+		Control ShowComboText(ComboBox list)
+		{
+			var control = new Button { Text = "Show ComboText" };
+			control.Click += delegate
+			{
+				MessageBox.Show(list.Text);
+			};
+			return control;
+		}
+
+		Control SetComboText(ComboBox list)
+		{
+			var control = new Button { Text = "Set ComboText" };
+			control.Click += delegate
+			{
+				list.Text = "New ComboText";
+			};
+			return control;
+		}
+
+		Control SetComboFont(ComboBox list)
+		{
+			var control = new Button { Text = "Set ComboFont" };
+			control.Click += delegate
+			{
+				list.Font = Fonts.Serif(10, FontStyle.Bold);
+			};
 			return control;
 		}
 

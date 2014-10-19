@@ -11,21 +11,37 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		Font font;
 		CollectionHandler collection;
-		readonly Gtk.ListStore listStore;
-		readonly Gtk.CellRendererText text;
+		Gtk.ListStore listStore;
+		Gtk.CellRendererText text;
+		Gtk.Entry entry;
+		bool editable;
 
-		public ComboBoxHandler()
+		public void Create(bool isEditable)
 		{
+			editable = isEditable;
 			listStore = new Gtk.ListStore(typeof(string));
-			Control = new Gtk.ComboBox(listStore);
-			text = new Gtk.CellRendererText();
-			Control.PackStart(text, false);
-			Control.AddAttribute(text, "text", 0);
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
+			if (isEditable)
+			{
+#if GTK2
+				Control = new Gtk.ComboBoxEntry(listStore, 0);			
+				text = Control.Cells[0] as Gtk.CellRendererText;
+				Control.SetAttributes(text, "text", 0);
+				entry = Control.Child as Gtk.Entry;
+#else
+				Control = Gtk.ComboBox.NewWithModelAndEntry(listStore);
+				Control.EntryTextColumn = 0;
+				text = Control.Cells[0] as Gtk.CellRendererText;
+				Control.SetAttributes(text, "text", 0);
+				entry = Control.Child as Gtk.Entry;
+#endif
+			}
+			else
+			{
+				Control = new Gtk.ComboBox(listStore);
+				text = new Gtk.CellRendererText();
+				Control.PackStart(text, false);
+				Control.SetAttributes(text, "text", 0);
+			}
 			Control.Changed += Connector.HandleChanged;
 		}
 
@@ -56,14 +72,35 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(new FontHandler(text.FontDesc));
-				return font;
+				return font ?? (font = new Font(new FontHandler(text.FontDesc)));
 			}
 			set
 			{
 				font = value;
-				text.FontDesc = font != null ? ((FontHandler)font.Handler).Control : null;
+				if (font != null)
+				{
+					var newfont = ((FontHandler) font.Handler).Control;
+					if (editable)
+					{
+						entry.ModifyFont(newfont);
+					}
+					text.FontDesc = newfont;
+				}
+			}
+		}
+
+		public override string Text
+		{
+			get
+			{
+				return editable ? entry.Text : "";
+			}
+			set
+			{
+				if (editable && value != null)
+				{
+					entry.Text = value;
+				}
 			}
 		}
 
