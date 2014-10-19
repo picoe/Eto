@@ -265,5 +265,10 @@ namespace Eto.WinForms
 			}
 		}
 
+		public override void SetFilledContent()
+		{
+			base.SetFilledContent();
+			Control.AutoSize = false;
+		}
 	}
 }

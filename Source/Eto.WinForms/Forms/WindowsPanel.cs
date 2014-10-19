@@ -70,6 +70,16 @@ namespace Eto.WinForms
 			return desiredSize + Padding.Size;
 		}
 
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			var contentHandler = content.GetWindowsHandler();
+			if (contentHandler != null)
+			{
+				contentHandler.SetFilledContent();
+			}
+		}
+
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
