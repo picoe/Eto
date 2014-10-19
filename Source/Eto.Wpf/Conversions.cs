@@ -173,7 +173,7 @@ namespace Eto.Wpf
 				buttons |= MouseButtons.Alternate;
 			if (e.ChangedButton == swi.MouseButton.Middle && e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
-			var modifiers = Keys.None;
+			var modifiers = KeyMap.Convert(swi.Key.None, swi.Keyboard.Modifiers);
 			var location = e.GetPosition(control).ToEto();
 
 			return new MouseEventArgs(buttons, modifiers, location);
@@ -188,7 +188,7 @@ namespace Eto.Wpf
 				buttons |= MouseButtons.Alternate;
 			if (e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
-			var modifiers = Keys.None;
+			var modifiers = KeyMap.Convert(swi.Key.None, swi.Keyboard.Modifiers);
 			var location = e.GetPosition(control).ToEto();
 
 			return new MouseEventArgs(buttons, modifiers, location);
@@ -203,7 +203,7 @@ namespace Eto.Wpf
 				buttons |= MouseButtons.Alternate;
 			if (e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
-			var modifiers = Keys.None;
+			var modifiers = KeyMap.Convert(swi.Key.None, swi.Keyboard.Modifiers);
 			var location = e.GetPosition(control).ToEto();
 			var delta = new SizeF(0, (float)e.Delta / WheelDelta);
 
