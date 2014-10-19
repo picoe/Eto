@@ -201,19 +201,19 @@ namespace Eto.Test
 			if (Platform.Supports<ToolBar>())
 			{
 				// create and set the toolbar
-				ToolBar = new ToolBar
+				ToolBar = new ToolBar();
+
+				ToolBar.Items.Add(about);
+				if (Platform.Supports<CheckToolItem>())
 				{
-					Items =
-					{ 
-						about, 
-						new SeparatorToolItem { Type = SeparatorToolItemType.Divider }, 
-						new CheckToolItem { Text = "Check", Image = TestIcons.TestImage },
-						new SeparatorToolItem { Type = SeparatorToolItemType.Space }, 
-						new ButtonToolItem { Text = "Button", Image = TestIcons.TestImage },
-						new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace },
-						new RadioToolItem { Text = "Radio1", Image = TestIcons.TestIcon, Checked = true },
-						new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage },
-					}
+					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
+					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
+				}
+				if (Platform.Supports<RadioToolItem>())
+				{
+					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
+					ToolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.TestIcon, Checked = true });
+					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
 				};
 			}
 

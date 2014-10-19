@@ -197,6 +197,7 @@
     <Compile Include="..\Eto.Mac\Mac64Extensions.cs">
       <Link>Mac64Extensions.cs</Link>
     </Compile>
+    <Compile Include="Forms\Toolbar\RadioToolItemHandler.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -10,7 +10,7 @@ using sd = System.Drawing;
 namespace Eto.iOS.Forms.Toolbar
 {
 
-	public class CheckToolItemHandler : ToolItemHandler<UIBarButtonItem, CheckToolItem>, CheckToolItem.IHandler
+	public class RadioToolItemHandler : ToolItemHandler<UIBarButtonItem, RadioToolItem>, RadioToolItem.IHandler
 	{
 		public bool Checked
 		{
@@ -28,15 +28,13 @@ namespace Eto.iOS.Forms.Toolbar
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Button.ShowsTouchWhenHighlighted = false;
 			Selectable = true;
 		}
 
 		public override void InvokeButton()
 		{
-			Checked = !Checked;
 			Widget.OnClick(EventArgs.Empty);
+			Checked = true;
 		}
 	}
-	
 }
