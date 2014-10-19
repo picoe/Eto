@@ -206,9 +206,9 @@ namespace Eto.Test.Sections.Controls
 			}
 		}
 
-		static ComboBox ComboWithItems()
+		static DropDown ComboWithItems()
 		{
-			var combo = new ComboBox();
+			var combo = new DropDown();
 			combo.Items.Add("hello");
 			combo.Items.Add("there");
 			return combo;
@@ -223,7 +223,7 @@ namespace Eto.Test.Sections.Controls
 			rightTop.AddColumn(ComboWithItems(), new Panel());
 
 			var rightBottom = new DynamicLayout();
-			rightBottom.AddRow(new ComboBox(), ComboWithItems(), new Button(), new CheckBox(), null);
+			rightBottom.AddRow(new DropDown(), ComboWithItems(), new Button(), new CheckBox(), null);
 
 			var rightPane = new Splitter
 			{

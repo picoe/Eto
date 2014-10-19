@@ -50,6 +50,10 @@
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
@@ -96,7 +100,6 @@
     <Compile Include="IO\SystemIconsHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />

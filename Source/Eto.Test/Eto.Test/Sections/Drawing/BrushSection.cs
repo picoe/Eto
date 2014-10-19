@@ -87,7 +87,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control BrushControl()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			control.Items.Add(new BrushItem { Text = "Solid", Brush = solidBrush });
 			control.Items.Add(new BrushItem { Text = "Texture", Brush = textureBrush, SupportsMatrix = true });
 			control.Items.Add(new BrushItem { Text = "Gradient", Brush = gradientBrush, SupportsMatrix = true, SupportsGradient = true });
@@ -168,7 +168,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control GradientWrapControl()
 		{
-			var control = new EnumComboBox<GradientWrapMode>();
+			var control = new EnumDropDown<GradientWrapMode>();
 			control.SelectedValueBinding.Bind(() => GradientWrap, v =>
 			{
 				GradientWrap = v;

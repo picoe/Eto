@@ -91,14 +91,14 @@ namespace Eto.Test.Sections.Drawing
 
 		Control PenJoinControl()
 		{
-			var control = new EnumComboBox<PenLineJoin>();
+			var control = new EnumDropDown<PenLineJoin>();
 			control.SelectedValueBinding.Bind(() => LineJoin, val => { LineJoin = val; Refresh(); });
 			return control;
 		}
 
 		Control PenCapControl()
 		{
-			var control = new EnumComboBox<PenLineCap>();
+			var control = new EnumDropDown<PenLineCap>();
 			control.SelectedValueBinding.Bind(() => LineCap, val => { LineCap = val; Refresh(); });
 			return control;
 		}

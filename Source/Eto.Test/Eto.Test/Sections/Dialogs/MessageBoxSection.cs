@@ -76,7 +76,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control MessageBoxTypeCombo()
 		{
-			var control = new EnumComboBox<MessageBoxType>();
+			var control = new EnumDropDown<MessageBoxType>();
 			var binding = new ControlBinding<MessageBoxSection, MessageBoxType>(this, r => r.MessageBoxType, (r, val) => r.MessageBoxType = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;
@@ -84,7 +84,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control MessageBoxButtonsCombo()
 		{
-			var control = new EnumComboBox<MessageBoxButtons>();
+			var control = new EnumDropDown<MessageBoxButtons>();
 			var binding = new ControlBinding<MessageBoxSection, MessageBoxButtons>(this, r => r.MessageBoxButtons, (r, val) => r.MessageBoxButtons = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;
@@ -92,7 +92,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control MessageBoxDefaultButtonCombo()
 		{
-			var control = new EnumComboBox<MessageBoxDefaultButton>();
+			var control = new EnumDropDown<MessageBoxDefaultButton>();
 			var binding = new ControlBinding<MessageBoxSection, MessageBoxDefaultButton>(this, r => r.MessageBoxDefaultButton, (r, val) => r.MessageBoxDefaultButton = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;

@@ -105,7 +105,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control ImagePositionControl()
 		{
-			var control = new EnumComboBox<ButtonImagePosition>();
+			var control = new EnumDropDown<ButtonImagePosition>();
 			control.Bind(r => r.SelectedValue, this, r => r.ImagePosition);
 			return control;
 		}

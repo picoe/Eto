@@ -89,6 +89,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />

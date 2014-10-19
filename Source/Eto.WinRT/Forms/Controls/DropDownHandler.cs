@@ -1,30 +1,38 @@
-using System;
-using swc = System.Windows.Controls;
-using sw = System.Windows;
-using swd = System.Windows.Data;
-using swa = System.Windows.Automation;
-using swm = System.Windows.Media;
+﻿using System;
+using swc = Windows.UI.Xaml.Controls;
+using sw = Windows.UI.Xaml;
+using wf = Windows.Foundation;
+using swd = Windows.UI.Xaml.Data;
+using swa = Windows.UI.Xaml.Automation;
+using swm = Windows.UI.Xaml.Media;
 using Eto.Forms;
 using System.Collections;
+using Windows.UI.Xaml.Markup;
 using System.Collections.Generic;
 using Eto.Drawing;
 
-namespace Eto.Wpf.Forms.Controls
+namespace Eto.WinRT.Forms.Controls
 {
-	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	/// <summary>
+	/// Combobox handler.
+	/// </summary>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class DropDownHandler : WpfControl<DropDownHandler.EtoDropDown, DropDown, DropDown.ICallback>, DropDown.IHandler
 	{
 		IEnumerable<object> store;
 
-		public class EtoComboBox : swc.ComboBox
+		public class EtoDropDown : swc.ComboBox
 		{
 			int? _selected;
 
-			public EtoComboBox()
+			public EtoDropDown()
 			{
 				Loaded += ComboBoxEx_Loaded;
 			}
 
-			public override void OnApplyTemplate()
+			protected override void OnApplyTemplate()
 			{
 				base.OnApplyTemplate();
 
@@ -32,16 +40,20 @@ namespace Eto.Wpf.Forms.Controls
 				SelectedIndex = -1;
 			}
 
+#if TODO_XAML
 			protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
 			{
 				if (_selected == null)
 					base.OnSelectionChanged(e);
 			}
+#endif
 
-			protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+			protected override void OnItemsChanged(object e)
 			{
 				base.OnItemsChanged(e);
+#if TODO_XAML
 				if (IsLoaded)
+#endif
 				{
 					InvalidateMeasure();
 				}
@@ -56,10 +68,11 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 
-			protected override sw.Size MeasureOverride(sw.Size constraint)
+			protected override wf.Size MeasureOverride(wf.Size constraint)
 			{
 				var size = base.MeasureOverride(constraint);
-				var popup = (swc.Primitives.Popup)GetTemplateChild("PART_Popup");
+				var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
+#if TODO_XAML
 				popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
 				if (ItemContainerGenerator.Status == swc.Primitives.GeneratorStatus.ContainersGenerated)
 				{
@@ -77,24 +90,34 @@ namespace Eto.Wpf.Forms.Controls
 						maxWidth += 20; // windows 7 doesn't name the toggle button, so hack it
 					size.Width = Math.Max(maxWidth, size.Width);
 				}
+#endif
 				return size;
 			}
 		}
 
-		public ComboBoxHandler()
+		public void Create()
 		{
-			Control = new EtoComboBox();
-			Control.SelectionChanged += delegate
-			{
-				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
-			};
-			CreateTemplate();
+			Control = new EtoDropDown();
+			var str = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">" +
+				"<TextBlock Text=\"{Binding Text}\" />" +
+				"</DataTemplate>";
+			var template = (sw.DataTemplate)XamlReader.Load(str);
+			Control.ItemTemplate = template;
 		}
 
 		public override bool UseMousePreview { get { return true; } }
 
 		public override bool UseKeyPreview { get { return true; } }
 
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.SelectionChanged += delegate
+			{
+				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+			};
+		}
 
 		public IEnumerable<object> DataStore
 		{
@@ -112,45 +135,10 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.SelectedIndex = value; }
 		}
 
-		public override Color BackgroundColor
+		public Color TextColor
 		{
-			get
-			{
-				var border = Control.FindChild<swc.Border>();
-				return border != null ? border.Background.ToEtoColor() : base.BackgroundColor;
-			}
-			set
-			{
-				var border = Control.FindChild<swc.Border>();
-				if (border != null)
-				{
-					border.Background = value.ToWpfBrush(border.Background);
-				}
-			}
-		}
-
-		public override Color TextColor
-		{
-			get
-			{
-				var block = Control.FindChild<swc.TextBlock>();
-				return block != null ? block.Foreground.ToEtoColor() : base.TextColor;
-			}
-			set
-			{
-				var block = Control.FindChild<swc.TextBlock>();
-				if (block != null)
-					block.Foreground = value.ToWpfBrush();
-				else
-					base.TextColor = value;
-			}
-		}
-
-		void CreateTemplate()
-		{
-			var template = new sw.DataTemplate();
-			template.VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false);
-			Control.ItemTemplate = template;
+			get { return Control.Foreground.ToEtoColor(); }
+			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
 	}
 }

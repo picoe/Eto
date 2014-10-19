@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <Panel x:Class="Eto.Test.Sections.Serialization.Xaml.Test" 
 	   xmlns="http://schema.picoe.ca/eto.forms" 
 	   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -33,12 +33,12 @@
 						<Label Text="Combo Box" />
 					</TableCell>
 					<TableCell>
-						<ComboBox>
+						<DropDown>
 							<ListItem Text="Item 1" />
 							<ListItem Text="Item 2" />
 							<ListItem Text="Item 3" />
 							<ListItem Text="Item 4" />
-						</ComboBox>
+						</DropDown>
 					</TableCell>
 				</TableRow>
 				<TableRow>

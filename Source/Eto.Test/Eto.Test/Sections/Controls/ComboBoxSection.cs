@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
-	[Section("Controls", typeof(ComboBox))]
+	[Section("Controls", typeof(DropDown))]
 	public class ComboBoxSection : Scrollable
 	{
 		public ComboBoxSection()
@@ -19,9 +19,11 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow(new Label { Text = "Set Initial Value" }, TableLayout.AutoSized(SetInitialValue()));
 			
-			layout.AddRow(new Label { Text = "EnumComboBox<Key>" }, TableLayout.AutoSized(EnumCombo()));
+			layout.AddRow(new Label { Text = "EnumDropDown<Key>" }, TableLayout.AutoSized(EnumCombo()));
 
-			layout.AddRow(new Label { Text = "EditableCombo" }, TableLayout.AutoSized(EditableCombo()));
+			layout.AddRow(new Label { Text = "ComboBox" }, TableLayout.AutoSized(ComboBox()));
+
+			layout.AddRow(new Label { Text = "Editable ComboBox" }, TableLayout.AutoSized(EditableComboBox()));
 
 			layout.Add(null, null, true);
 
@@ -30,20 +32,19 @@ namespace Eto.Test.Sections.Controls
 
 		Control Default()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			LogEvents(control);
 			
 			var layout = new DynamicLayout();
 			layout.Add(TableLayout.AutoSized(control));
 			layout.BeginVertical();
 			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
-			layout.AddRow(null, SetComboFont(control), null);
 			layout.EndVertical();
 			
 			return layout;
 		}
 
-		Control AddRowsButton(ComboBox list)
+		Control AddRowsButton(DropDown list)
 		{
 			var control = new Button { Text = "Add Rows" };
 			control.Click += delegate
@@ -54,7 +55,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control RemoveRowsButton(ComboBox list)
+		Control RemoveRowsButton(DropDown list)
 		{
 			var control = new Button { Text = "Remove Rows" };
 			control.Click += delegate
@@ -65,7 +66,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control ClearButton(ComboBox list)
+		Control ClearButton(DropDown list)
 		{
 			var control = new Button { Text = "Clear" };
 			control.Click += delegate
@@ -75,7 +76,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control SetSelected(ComboBox list)
+		Control SetSelected(DropDown list)
 		{
 			var control = new Button { Text = "Set Selected" };
 			control.Click += delegate
@@ -87,7 +88,7 @@ namespace Eto.Test.Sections.Controls
 		}
 
 
-		Control ClearSelected(ComboBox list)
+		Control ClearSelected(DropDown list)
 		{
 			var control = new Button { Text = "Clear Selected" };
 			control.Click += delegate
@@ -97,9 +98,9 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		ComboBox Items()
+		DropDown Items()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			LogEvents(control);
 			for (int i = 0; i < 20; i++)
 			{
@@ -108,14 +109,14 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		ComboBox Disabled()
+		DropDown Disabled()
 		{
 			var control = Items();
 			control.Enabled = false;
 			return control;
 		}
 
-		ComboBox SetInitialValue()
+		DropDown SetInitialValue()
 		{
 			var control = Items();
 			control.SelectedKey = "Item 8";
@@ -124,25 +125,45 @@ namespace Eto.Test.Sections.Controls
 
 		Control EnumCombo()
 		{
-			var control = new EnumComboBox<Keys>();
+			var control = new EnumDropDown<Keys>();
 			LogEvents(control);
 			control.SelectedKey = ((int)Keys.E).ToString();
 			return control;
 		}
 
-		Control EditableCombo()
+		Control ComboBox()
+		{
+			var control = new ComboBox(false);
+			LogEvents(control);
+			for (int i = 0; i < 20; i++)
+			{
+				control.Items.Add(new ListItem { Text = "Item " + i });
+			}
+			return control;
+		}
+
+		Control EditableComboBox()
 		{
 			var control = new ComboBox(true);
-			LogEvents(control);			
+			LogEvents(control);
 
 			var layout = new DynamicLayout();
 			layout.Add(TableLayout.AutoSized(control));
 			layout.BeginVertical();
 			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
-			layout.AddRow(null, ShowComboText(control), SetComboText(control),SetComboFont(control), null);
+			layout.AddRow(null, Editable(control), ShowComboText(control), SetComboText(control), SetComboFont(control), null);
 			layout.EndVertical();
 
 			return layout;
+		}
+		Control Editable(ComboBox list)
+		{
+			var control = new Button { Text = "Editable/Disable" };
+			control.Click += delegate
+			{
+				list.IsEditable = !list.IsEditable;
+			};
+			return control;
 		}
 
 		Control ShowComboText(ComboBox list)
@@ -175,7 +196,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		void LogEvents(ComboBox control)
+		void LogEvents(DropDown control)
 		{
 			control.SelectedIndexChanged += delegate
 			{

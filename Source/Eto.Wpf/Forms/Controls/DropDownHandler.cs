@@ -7,51 +7,22 @@ using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
 using System.Collections.Generic;
+using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class DropDownHandler : WpfControl<DropDownHandler.EtoComboBox, DropDown, DropDown.ICallback>, DropDown.IHandler
 	{
 		IEnumerable<object> store;
 
 		public class EtoComboBox : swc.ComboBox
 		{
-			int? _selected;
-
-			public EtoComboBox()
-			{
-				Loaded += ComboBoxEx_Loaded;
-			}
-
-			public override void OnApplyTemplate()
-			{
-				base.OnApplyTemplate();
-
-				_selected = SelectedIndex;
-				SelectedIndex = -1;
-			}
-
-			protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
-			{
-				if (_selected == null)
-					base.OnSelectionChanged(e);
-			}
-
 			protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 			{
 				base.OnItemsChanged(e);
 				if (IsLoaded)
 				{
 					InvalidateMeasure();
-				}
-			}
-
-			void ComboBoxEx_Loaded(object sender, sw.RoutedEventArgs e)
-			{
-				if (_selected != null)
-				{
-					SelectedIndex = _selected.Value;
-					_selected = null;
 				}
 			}
 
@@ -80,16 +51,14 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public ComboBoxHandler()
+		public void Create()
 		{
 			Control = new EtoComboBox();
-			var template = new sw.DataTemplate();
-			template.VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false);
-			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate
 			{
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
+			CreateTemplate();
 		}
 
 		public override bool UseMousePreview { get { return true; } }
@@ -111,6 +80,47 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Control.SelectedIndex; }
 			set { Control.SelectedIndex = value; }
+		}
+
+		public override Color BackgroundColor
+		{
+			get
+			{
+				var border = Control.FindChild<swc.Border>();
+				return border != null ? border.Background.ToEtoColor() : base.BackgroundColor;
+			}
+			set
+			{
+				var border = Control.FindChild<swc.Border>();
+				if (border != null)
+				{
+					border.Background = value.ToWpfBrush(border.Background);
+				}
+			}
+		}
+
+		public override Color TextColor
+		{
+			get
+			{
+				var block = Control.FindChild<swc.TextBlock>();
+				return block != null ? block.Foreground.ToEtoColor() : base.TextColor;
+			}
+			set
+			{
+				var block = Control.FindChild<swc.TextBlock>();
+				if (block != null)
+					block.Foreground = value.ToWpfBrush();
+				else
+					base.TextColor = value;
+			}
+		}
+
+		void CreateTemplate()
+		{
+			var template = new sw.DataTemplate();
+			template.VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false);
+			Control.ItemTemplate = template;
 		}
 	}
 }

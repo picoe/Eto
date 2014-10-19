@@ -39,7 +39,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control ComboBox()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			control.Items.Add(new ListItem { Text = "Combo Box" });
 			control.Items.Add(new ListItem { Text = "Item 2" });
 			control.Items.Add(new ListItem { Text = "Item 3" });

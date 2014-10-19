@@ -102,6 +102,7 @@
     <Compile Include="IO\SystemIconsHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
