@@ -196,14 +196,14 @@ namespace Eto.Mac.Forms
 		}
 
 		bool isResizing;
-		static void HandleSizeChanged (object sender, EventArgs e)
+
+		void HandleSizeChanged(object sender, EventArgs e)
 		{
-			var handler = GetHandler(sender) as MacPanel<TControl, TWidget, TCallback>;
-			if (handler != null && !handler.isResizing)
+			if (!isResizing)
 			{
-				handler.isResizing = true;
-				handler.LayoutChildren();
-				handler.isResizing = false;
+				isResizing = true;
+				LayoutChildren();
+				isResizing = false;
 			}
 		}
 
