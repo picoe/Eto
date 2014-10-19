@@ -46,6 +46,7 @@
 		-->
 		<ItemGroup>
 			<ExecutableFiles Include="$(TargetDir)\**" Exclude="$(OutputAppPath)\**\*"/>
+			<ExecutableFiles Remove="$(TargetDir)\*.vshost.*"/>
 			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk2.*"/>
 			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk3.*"/>
 			<ExecutableFiles Remove="$(TargetDir)\Eto.Wpf.*"/>
