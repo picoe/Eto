@@ -18,13 +18,13 @@ namespace Eto.WinForms.Drawing
 
 		public bool IsRetained { get { return false; } }
 
-		static sd.StringFormat defaultStringFormat;
+		public static sd.StringFormat DefaultStringFormat { get; private set; }
 
 		static GraphicsHandler ()
 		{
 			// Set the StringFormat
-			defaultStringFormat = new sd.StringFormat (sd.StringFormat.GenericTypographic);
-			defaultStringFormat.FormatFlags |= 
+			DefaultStringFormat = new sd.StringFormat (sd.StringFormat.GenericTypographic);
+			DefaultStringFormat.FormatFlags |= 
 				sd.StringFormatFlags.MeasureTrailingSpaces
 				| sd.StringFormatFlags.NoWrap
 				| sd.StringFormatFlags.NoClip;
@@ -250,25 +250,30 @@ namespace Eto.WinForms.Drawing
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
-			Control.DrawString(text, (sd.Font)font.ControlObject, brush.ControlObject as sd.Brush, x, y, defaultStringFormat);
+			Control.DrawString(text, (sd.Font)font.ControlObject, brush.ControlObject as sd.Brush, x, y, DefaultStringFormat);
 		}
 
-		public SizeF MeasureString (Font font, string text)
+		public static SizeF MeasureString(sd.Graphics g, string text, sd.Font font, sd.RectangleF? layoutRect = null)
 		{
 			/* BAD (but not really!?)
 			 *
 			return this.Control.MeasureString (text, FontHandler.GetControl (font), sd.PointF.Empty, defaultStringFormat).ToEto ();
 			/**/
-			if (string.IsNullOrEmpty (text))
+			if (string.IsNullOrEmpty(text))
 				return Size.Empty;
-			sd.CharacterRange[] ranges = { new sd.CharacterRange (0, text.Length) };
-			defaultStringFormat.SetMeasurableCharacterRanges (ranges);
+			sd.CharacterRange[] ranges = { new sd.CharacterRange(0, text.Length) };
+			DefaultStringFormat.SetMeasurableCharacterRanges(ranges);
 
-			var regions = this.Control.MeasureCharacterRanges (text, FontHandler.GetControl (font), sd.Rectangle.Empty, defaultStringFormat);
-			var rect = regions [0].GetBounds (this.Control);
+			var regions = g.MeasureCharacterRanges(text, font, layoutRect ?? sd.RectangleF.Empty, DefaultStringFormat);
+			var rect = regions[0].GetBounds(g);
 
-			return rect.Size.ToEto ();
+			return rect.Size.ToEto();
 			/**/
+		}
+
+		public SizeF MeasureString (Font font, string text)
+		{
+			return MeasureString(Control, text, FontHandler.GetControl(font), sd.RectangleF.Empty);
 		}
 
 		public void Flush ()

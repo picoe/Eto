@@ -7,6 +7,7 @@ using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
 using System.Collections.Generic;
+using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -84,13 +85,11 @@ namespace Eto.Wpf.Forms.Controls
 		public ComboBoxHandler()
 		{
 			Control = new EtoComboBox();
-			var template = new sw.DataTemplate();
-			template.VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false);
-			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate
 			{
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
+			CreateTemplate();
 		}
 
 		public void Create(bool isEditable)
@@ -133,6 +132,47 @@ namespace Eto.Wpf.Forms.Controls
 					Control.Text = value;
 				}
 			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get
+			{
+				var border = Control.FindChild<swc.Border>();
+				return border != null ? border.Background.ToEtoColor() : base.BackgroundColor;
+			}
+			set
+			{
+				var border = Control.FindChild<swc.Border>();
+				if (border != null)
+				{
+					border.Background = value.ToWpfBrush(border.Background);
+				}
+			}
+		}
+
+		public override Color TextColor
+		{
+			get
+			{
+				var block = Control.FindChild<swc.TextBlock>();
+				return block != null ? block.Foreground.ToEtoColor() : base.TextColor;
+			}
+			set
+			{
+				var block = Control.FindChild<swc.TextBlock>();
+				if (block != null)
+					block.Foreground = value.ToWpfBrush();
+				else
+					base.TextColor = value;
+			}
+		}
+
+		void CreateTemplate()
+		{
+			var template = new sw.DataTemplate();
+			template.VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false);
+			Control.ItemTemplate = template;
 		}
 	}
 }

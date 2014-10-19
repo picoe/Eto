@@ -126,6 +126,16 @@ namespace Eto
 		public virtual bool IsMobile { get { return false; } }
 
 		/// <summary>
+		/// Gets a value indicating that this platform is valid on the running device
+		/// </summary>
+		/// <remarks>
+		/// This is used in platform detection to ensure that the correct platform is loaded.
+		/// For example, the Mac platforms are only valid when run in an .app bundle.
+		/// </remarks>
+		/// <value><c>true</c> if this platform is valid and can be run; otherwise, <c>false</c>.</value>
+		public virtual bool IsValid { get { return true; } }
+
+		/// <summary>
 		/// Initializes a new instance of the Platform class
 		/// </summary>
 		protected Platform()
@@ -213,7 +223,11 @@ namespace Eto
 				}
 
 				if (detected == null && EtoEnvironment.Platform.IsUnix)
-					detected = Platform.Get(Platforms.Gtk2, true);
+				{
+					detected = Platform.Get(Platforms.Gtk3, true);
+					if (detected == null)
+						detected = Platform.Get(Platforms.Gtk2, true);
+				}
 				
 				if (detected == null)
 					throw new EtoException("Could not detect platform. Are you missing a platform assembly?");
@@ -238,12 +252,12 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Initialize the generator with the specified <paramref name="generatorType"/> as the current generator
+		/// Initialize the generator with the specified <paramref name="platformType"/> as the current generator
 		/// </summary>
-		/// <param name="generatorType">Type of the generator to set as the current generator</param>
-		public static new void Initialize(string generatorType)
+		/// <param name="platformType">Type of the generator to set as the current generator</param>
+		public static new void Initialize(string platformType)
 		{
-			Initialize(Get(generatorType));
+			Initialize(Get(platformType));
 		}
 
 		/// <summary>
@@ -256,22 +270,32 @@ namespace Eto
 			return Get(generatorType, true);
 		}
 
-		internal static Platform Get(string generatorType, bool allowNull)
+		internal static Platform Get(string platformType, bool allowNull)
 		{
-			Type type = Type.GetType(generatorType);
+			Type type = Type.GetType(platformType);
 			if (type == null)
 			{
 				if (allowNull)
 					return null;
-				throw new EtoException("Generator not found. Are you missing the platform assembly?");
+				throw new EtoException("Platform not found. Are you missing the platform assembly?");
 			}
 			try
 			{
-				return (Platform)Activator.CreateInstance(type);
+				var platform = (Platform)Activator.CreateInstance(type);
+				if (!platform.IsValid)
+				{
+					var message = string.Format("Platform type {0} was loaded but is not valid in the current context.  E.g. Mac platforms require to be in an .app bundle to run", platformType);
+					if (allowNull)
+						Debug.WriteLine(message);
+					else
+						throw new EtoException(message);
+					return null;
+				}
+				return platform;
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine(string.Format("Error creating instance of generator '{0}'\n{1}", generatorType, ex));
+				Debug.WriteLine(string.Format("Error creating instance of platform type '{0}'\n{1}", platformType, ex));
 				if (allowNull)
 					return null;
 				throw;

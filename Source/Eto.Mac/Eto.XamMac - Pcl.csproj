@@ -206,6 +206,8 @@
     <Compile Include="Messaging.cs" />
     <Compile Include="Forms\Controls\MacLabel.cs" />
     <Compile Include="MacHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

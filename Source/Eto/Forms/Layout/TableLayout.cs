@@ -266,6 +266,7 @@ namespace Eto.Forms
 		/// </summary>
 		public TableLayout()
 		{
+			Initialize();
 		}
 
 		/// <summary>
@@ -285,6 +286,7 @@ namespace Eto.Forms
 		public TableLayout(Size dimensions)
 		{
 			SetCellSize(dimensions, true);
+			Initialize();
 		}
 
 		/// <summary>
@@ -295,6 +297,7 @@ namespace Eto.Forms
 		{
 			Rows = new TableRowCollection(rows);
 			Create();
+			Initialize();
 		}
 
 		/// <summary>
@@ -305,6 +308,7 @@ namespace Eto.Forms
 		{
 			Rows = new TableRowCollection(rows);
 			Create();
+			Initialize();
 		}
 
 		void Create()
@@ -354,6 +358,7 @@ namespace Eto.Forms
 			: base(generator, typeof(IHandler), false)
 		{
 			SetCellSize(size, true);
+			Initialize();
 		}
 
 		void SetCellSize(Size value, bool createRows)
@@ -364,7 +369,6 @@ namespace Eto.Forms
 			if (!dimensions.IsEmpty)
 			{
 				Handler.CreateControl(dimensions.Width, dimensions.Height);
-				Initialize();
 				if (createRows)
 				{
 					var rows = Enumerable.Range(0, value.Height).Select(r => new TableRow(Enumerable.Range(0, value.Width).Select(c => new TableCell())));

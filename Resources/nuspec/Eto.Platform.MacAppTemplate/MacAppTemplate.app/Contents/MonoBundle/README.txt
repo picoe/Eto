@@ -3,7 +3,7 @@ Next Steps:
 
 1. Copy your .exe, .dll's, and any external resources here
 
-  - Make sure to include Eto.dll, Eto.Platform.Mac.dll, and MonoMac.dll
+  - Make sure to include Eto.dll, Eto.Mac.dll, and MonoMac.dll
 	
 2. Modify Contents/Info.plist and update these properties:
 	

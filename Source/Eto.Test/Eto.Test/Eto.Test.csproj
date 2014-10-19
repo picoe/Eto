@@ -175,6 +175,7 @@
     <Compile Include="Sections\Controls\LinkButtonSection.cs" />
     <Compile Include="Commands\About.cs" />
     <Compile Include="Commands\Quit.cs" />
+    <Compile Include="Sections\Controls\ControlColorsSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

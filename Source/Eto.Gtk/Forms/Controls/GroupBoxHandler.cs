@@ -51,5 +51,11 @@ namespace Eto.GtkSharp
 				clientSize = null;
 			}*/
 		}
+
+		public Color TextColor
+		{
+			get { return Control.LabelWidget.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			set { Control.LabelWidget.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
+		}
 	}
 }

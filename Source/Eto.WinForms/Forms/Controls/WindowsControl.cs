@@ -36,6 +36,8 @@ namespace Eto.WinForms
 		void BeforeAddControl(bool top = true);
 
 		bool ShouldBubbleEvent(swf.Message msg);
+
+		void SetFilledContent();
 	}
 
 	public static class WindowsControlExtensions
@@ -162,7 +164,6 @@ namespace Eto.WinForms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.TabIndex = 100;
 			XScale = true;
 			YScale = true;
 			Control.Margin = swf.Padding.Empty;
@@ -629,6 +630,16 @@ namespace Eto.WinForms
 		public virtual bool ShouldBubbleEvent(swf.Message msg)
 		{
 			return true;
+		}
+
+		public virtual Color TextColor
+		{
+			get { return Control.ForeColor.ToEto(); }
+			set { Control.ForeColor = value.ToSD(); }
+		}
+
+		public virtual void SetFilledContent()
+		{
 		}
 	}
 }

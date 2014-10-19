@@ -16,36 +16,22 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac
 {
-
 	public class CheckToolItemHandler : ToolItemHandler<NSToolbarItem, CheckToolItem>, CheckToolItem.IHandler
 	{
-		bool isChecked;
-		ToolBarHandler toolbarHandler;
-
 		public bool Checked
 		{
-			get { return isChecked; }
+			get { return Button.State == NSCellStateValue.On; }
 			set { 
-				isChecked = value;
-				if (isChecked && Control != null && toolbarHandler != null && toolbarHandler.Control != null)
-					toolbarHandler.Control.SelectedItemIdentifier = Identifier;
+				Button.State = value ? NSCellStateValue.On : NSCellStateValue.Off;
 			}
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Selectable = true;
+			Button.SetButtonType(NSButtonType.PushOnPushOff);
 		}
 
-		public override void ControlAdded (ToolBarHandler toolbar)
-		{
-			base.ControlAdded (toolbar);
-			toolbarHandler = toolbar;
-			if (isChecked)
-				toolbar.Control.SelectedItemIdentifier = Identifier;
-		}
-		
 		public override void InvokeButton()
 		{
 			Widget.OnClick(EventArgs.Empty);

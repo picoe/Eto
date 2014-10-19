@@ -217,7 +217,7 @@ namespace Eto.WinForms
 			};
 		}
 
-		public Color TextColor
+		public override Color TextColor
 		{
 			get { return Control.ForeColor.ToEto(); }
 			set { Control.ForeColor = value.ToSD(); }
@@ -265,5 +265,10 @@ namespace Eto.WinForms
 			}
 		}
 
+		public override void SetFilledContent()
+		{
+			base.SetFilledContent();
+			Control.AutoSize = false;
+		}
 	}
 }

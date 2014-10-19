@@ -8,7 +8,7 @@ namespace Eto.Wpf.Forms
 	{
 		public ToolBarHandler()
 		{
-			Control = new swc.ToolBar { IsTabStop = false };
+			Control = new swc.ToolBar { IsTabStop = false, Tag = this };
 			swi.KeyboardNavigation.SetTabNavigation(Control, swi.KeyboardNavigationMode.Continue);
 		}
 

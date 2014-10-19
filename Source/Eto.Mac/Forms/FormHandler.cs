@@ -35,9 +35,21 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms
 {
-	public class FormHandler : MacWindow<MyWindow, Form, Form.ICallback>, Form.IHandler
+	public class FormHandler : MacWindow<NSWindow, Form, Form.ICallback>, Form.IHandler
 	{
+		NSWindowController controller;
 		protected override bool DisposeControl { get { return false; } }
+
+		public FormHandler(NSWindow window)
+		{
+			Control = window;
+		}
+
+		public FormHandler(NSWindowController controller)
+		{
+			this.controller = controller;
+			Control = controller.Window;
+		}
 
 		public FormHandler()
 		{

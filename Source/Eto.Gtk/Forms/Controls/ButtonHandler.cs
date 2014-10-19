@@ -164,5 +164,11 @@ namespace Eto.GtkSharp
 				}
 			}
 		}
+
+		public Color TextColor
+		{
+			get { return label.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			set { label.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
+		}
 	}
 }

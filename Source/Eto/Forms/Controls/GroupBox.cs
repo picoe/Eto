@@ -60,6 +60,19 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		/// <remarks>
+		/// By default, the text will get a color based on the user's theme. However, this is usually black.
+		/// </remarks>
+		/// <value>The color of the text.</value>
+		public Color TextColor
+		{
+			get { return Handler.TextColor; }
+			set { Handler.TextColor = value; }
+		}
+
+		/// <summary>
 		/// Handler interface for the <see cref="GroupBox"/>
 		/// </summary>
 		public new interface IHandler : Panel.IHandler
@@ -75,6 +88,15 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The title text.</value>
 			string Text { get; set; }
+
+			/// <summary>
+			/// Gets or sets the color of the text.
+			/// </summary>
+			/// <remarks>
+			/// By default, the text will get a color based on the user's theme. However, this is usually black.
+			/// </remarks>
+			/// <value>The color of the text.</value>
+			Color TextColor { get; set; }
 		}
 	}
 }

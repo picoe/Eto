@@ -2,18 +2,23 @@ using Eto.Drawing;
 using Eto.Forms;
 using System;
 using sd = System.Drawing;
+using System.Text.RegularExpressions;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+using CoreText;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
+using MonoMac.CoreText;
 #if Mac64
 using CGSize = MonoMac.Foundation.NSSize;
 using CGRect = MonoMac.Foundation.NSRect;
@@ -34,6 +39,8 @@ using nuint = System.UInt32;
 #if IOS
 using NSView = MonoTouch.UIKit.UIView;
 using NSControl = MonoTouch.UIKit.UIControl;
+using MonoTouch.Foundation;
+using MonoTouch.CoreText;
 #endif
 namespace Eto.Mac.Forms
 {
@@ -93,6 +100,28 @@ namespace Eto.Mac.Forms
 			if (childControl != null)
 				return childControl.GetContainerView();
 			return control.ControlObject as NSView;
+		}
+
+		public static NSAttributedString ToAttributedStringWithMnemonic(this string value, NSDictionary attributes = null)
+		{
+			if (value == null)
+				return null;
+			var match = Regex.Match(value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
+			if (match.Success)
+			{
+				value = value.Remove(match.Index, 1);
+				value = value.Replace("&&", "&");
+				var str = attributes != null ? new NSMutableAttributedString(value, attributes) : new NSMutableAttributedString(value);
+				var attr = new CTStringAttributes();
+				attr.UnderlineStyle = CTUnderlineStyle.Single;
+				str.AddAttributes(attr, new NSRange(match.Index, 1));
+				return str;
+			}
+			else
+			{
+				value = value.Replace("&&", "&");
+				return attributes != null ? new NSAttributedString(value, attributes) : new NSAttributedString(value);
+			}
 		}
 
 		public static void CenterInParent(this NSView view)

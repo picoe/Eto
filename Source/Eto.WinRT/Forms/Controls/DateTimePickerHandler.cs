@@ -106,5 +106,11 @@ namespace Eto.WinRT.Forms.Controls
 #endif
 			}
 		}
+
+		public Color TextColor
+		{
+			get { return Control.Foreground.ToEtoColor(); }
+			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
+		}
 	}
 }

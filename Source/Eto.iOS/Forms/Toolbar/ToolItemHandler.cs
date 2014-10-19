@@ -99,9 +99,14 @@ namespace Eto.iOS.Forms.Toolbar
 			get { return Control; }
 		}
 
-		public UIBarButtonItem Button
+		public UIBarButtonItem ButtonItem
 		{
 			get { return Control; }
+		}
+
+		public UIButton Button
+		{
+			get { return button; }
 		}
 	}
 	

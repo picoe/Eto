@@ -3,6 +3,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using sd = System.Drawing;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -51,6 +52,33 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public bool AcceptsTab { get; set; }
+
+			public bool AcceptsReturn { get; set; }
+
+			public override void KeyDown(NSEvent theEvent)
+			{
+				var ev = theEvent.ToEtoKeyEventArgs();
+				if (!AcceptsTab)
+				{
+					if (ev.KeyData == Keys.Tab)
+					{
+						Window.SelectNextKeyView(this);
+						return;
+					}
+					if (ev.KeyData == (Keys.Tab | Keys.Shift))
+					{
+						Window.SelectPreviousKeyView(this);
+						return;
+					}
+				}
+				if (!AcceptsReturn && ev.KeyData == Keys.Enter)
+				{
+					return;
+				}
+				base.KeyDown(theEvent);
+			}
 		}
 
 		public NSScrollView Scroll { get; private set; }
@@ -98,6 +126,10 @@ namespace Eto.Mac.Forms.Controls
 				HorizontallyResizable = true,
 				VerticallyResizable = true,
 				Editable = true,
+				AcceptsTab = true,
+				AcceptsReturn = true,
+				RichText = false,
+				AllowsDocumentBackgroundColorChange = false,
 				Selectable = true,
 				AllowsUndo = true,
 				MinSize = CGSize.Empty,
@@ -194,6 +226,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		Color? textColor;
+
 		public Color TextColor
 		{
 			get { return textColor ?? NSColor.ControlText.ToEto(); }
@@ -209,6 +242,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		Color? backgroundColor;
+
 		public override Color BackgroundColor
 		{
 			get { return backgroundColor ?? NSColor.ControlBackground.ToEto(); }
@@ -223,6 +257,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		Font font;
+
 		public Font Font
 		{
 			get
@@ -298,6 +333,36 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return (int)Control.SelectedRange.Location; }
 			set { Control.SelectedRange = new NSRange(value, 0); }
+		}
+
+		public bool AcceptsTab
+		{
+			get
+			{ 
+				var ctl = Control as EtoTextView;
+				return ctl == null || ctl.AcceptsTab;
+			}
+			set
+			{ 
+				var ctl = Control as EtoTextView;
+				if (ctl != null)
+					ctl.AcceptsTab = value;
+			}
+		}
+
+		public bool AcceptsReturn
+		{
+			get
+			{ 
+				var ctl = Control as EtoTextView;
+				return ctl == null || ctl.AcceptsReturn;
+			}
+			set
+			{ 
+				var ctl = Control as EtoTextView;
+				if (ctl != null)
+					ctl.AcceptsReturn = value;
+			}
 		}
 
 		public void Append(string text, bool scrollToCursor)

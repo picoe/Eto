@@ -68,5 +68,11 @@ namespace Eto.WinForms
 		{
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
+
+		public override void SetFilledContent()
+		{
+			base.SetFilledContent();
+			Control.AutoSize = false;
+		}
 	}
 }

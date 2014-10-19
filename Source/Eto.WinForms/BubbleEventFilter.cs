@@ -159,7 +159,7 @@ namespace Eto.WinForms
 						return true;
 				}
 			}
-			return false;
+			return me.Handled;
 		}
 
 		static bool KeyEvent(BubbleEventArgs be, Action<Control, Control.ICallback, KeyEventArgs> action, KeyEventType keyEventType)

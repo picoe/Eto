@@ -3,6 +3,7 @@ using System.Linq;
 using Eto.Forms;
 using System.Globalization;
 using swf = System.Windows.Forms;
+using Eto.WinForms.CustomControls;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -10,7 +11,7 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		public DateTimePickerHandler()
 		{
-			Control = new swf.DateTimePicker();
+			Control = new ExtendedDateTimePicker { ExtendedMode = true };
 			Control.ShowCheckBox = true;
 			Mode = DateTimePicker.DefaultMode;
 			Value = null;

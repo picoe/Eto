@@ -107,5 +107,11 @@ namespace Eto.iOS.Forms.Controls
 		public DateTime MaxDate { get; set; }
 
 		public DateTimePickerMode Mode { get; set; }
+
+		public Color TextColor
+		{
+			get { return Control.TextColor.ToEto(); }
+			set { Control.TextColor = value.ToNSUI(); }
+		}
 	}
 }

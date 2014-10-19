@@ -16,6 +16,7 @@ namespace Eto.GtkSharp
 		int lastRowScale;
 		Control[,] controls;
 		Gtk.Widget[,] blank;
+		Size? spacing;
 
 		public override Gtk.Widget ContainerControl
 		{
@@ -24,11 +25,16 @@ namespace Eto.GtkSharp
 
 		public Size Spacing
 		{
-			get { return new Size((int)Control.ColumnSpacing, (int)Control.RowSpacing); }
+			get { return Control != null ? new Size((int)Control.ColumnSpacing, (int)Control.RowSpacing) : spacing ?? Size.Empty; }
 			set
 			{ 
-				Control.ColumnSpacing = (uint)value.Width;
-				Control.RowSpacing = (uint)value.Height;
+				if (Control == null)
+					spacing = value;
+				else
+				{
+					Control.ColumnSpacing = (uint)value.Width;
+					Control.RowSpacing = (uint)value.Height;
+				}
 			}
 		}
 
@@ -73,21 +79,30 @@ namespace Eto.GtkSharp
 			return scale ? SCALED_OPTIONS : Gtk.AttachOptions.Fill;
 		}
 
+		public TableLayoutHandler()
+		{
+			align = new Gtk.Alignment(0, 0, 1.0F, 1.0F);
+			box = new Gtk.EventBox { Child = align };
+			Spacing = TableLayout.DefaultSpacing;
+			Padding = TableLayout.DefaultPadding;
+		}
+
 		public void CreateControl(int cols, int rows)
 		{
 			columnScale = new bool[cols];
 			lastColumnScale = cols - 1;
 			rowScale = new bool[rows];
 			lastRowScale = rows - 1;
-			align = new Gtk.Alignment(0, 0, 1.0F, 1.0F);
 			Control = new Gtk.Table((uint)rows, (uint)cols, false);
 			controls = new Control[rows, cols];
 			blank = new Gtk.Widget[rows, cols];
 			align.Add(Control);
-			box = new Gtk.EventBox { Child = align };
-
-			Spacing = TableLayout.DefaultSpacing;
-			Padding = TableLayout.DefaultPadding;
+			if (spacing != null)
+			{
+				Control.ColumnSpacing = (uint)spacing.Value.Width;
+				Control.RowSpacing = (uint)spacing.Value.Height;
+				spacing = null;
+			}
 		}
 
 		public void SetColumnScale(int column, bool scale)

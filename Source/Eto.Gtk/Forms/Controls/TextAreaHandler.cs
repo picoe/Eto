@@ -57,6 +57,7 @@ namespace Eto.GtkSharp
 		{
 			Range<int> lastSelection;
 			int? lastCaretIndex;
+
 			public new TextAreaHandler Handler { get { return (TextAreaHandler)base.Handler; } }
 
 			public void HandleBufferChanged(object sender, EventArgs e)
@@ -119,6 +120,7 @@ namespace Eto.GtkSharp
 		}
 
 		Color? backgroundColor;
+
 		public override Color BackgroundColor
 		{
 			get
@@ -231,6 +233,44 @@ namespace Eto.GtkSharp
 				var ins = Control.Buffer.GetIterAtOffset(value);
 				Control.Buffer.SelectRange(ins, ins);
 			}
+		}
+
+		public bool AcceptsTab
+		{
+			get { return Control.AcceptsTab; }
+			set { Control.AcceptsTab = value; }
+		}
+
+		bool acceptsReturn = true;
+
+		public bool AcceptsReturn
+		{
+			get { return acceptsReturn; }
+			set
+			{
+				if (value != acceptsReturn)
+				{
+					if (!acceptsReturn)
+						Widget.KeyDown -= HandleKeyDown;
+						//Control.KeyPressEvent -= PreventEnterKey;
+					acceptsReturn = value;
+					if (!acceptsReturn)
+						Widget.KeyDown += HandleKeyDown;
+						//Control.KeyPressEvent += PreventEnterKey;
+				}
+			}
+		}
+
+		void HandleKeyDown (object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Enter)
+				e.Handled = true;
+		}
+
+		static void PreventEnterKey(object o, Gtk.KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Return)
+				args.RetVal = false;
 		}
 
 		public override Font Font

@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -12,6 +14,7 @@ namespace Eto.Forms
 	/// Note that you should use an <see cref="System.Collections.ObjectModel.ObservableCollection{T}"/> if you are using a
 	/// POCO, or the <see cref="ListItemCollection"/> if you want to add items without custom objects.
 	/// </remarks>
+	[Obsolete("Use IList<IListItem>/IList instead if you want a virtual collection, or ObservableCollection<IListItem> to have change tracking")]
 	public interface IListStore : IDataStore<IListItem>
 	{
 	}
@@ -19,8 +22,30 @@ namespace Eto.Forms
 	/// <summary>
 	/// A collection of <see cref="ListItem"/> objects for use with <see cref="ListControl"/> objects
 	/// </summary>
-	public class ListItemCollection : DataStoreCollection<IListItem>, IListStore
+	/// <remarks>
+	/// This is used to provide an easy way to add items to a <see cref="ListControl"/>.
+	/// It is not mandatory to use this collection, however, since each control can specify bindings to your own
+	/// model objects using <see cref="ListControl.KeyBinding"/>, <see cref="ListControl.TextBinding"/>, or other
+	/// subclass bindings.
+	/// </remarks>
+	public class ListItemCollection : ExtendedObservableCollection<IListItem>
 	{
+		/// <summary>
+		/// Initializes a new instance of the ListItemCollection class.
+		/// </summary>
+		public ListItemCollection()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the ListItemCollection class with the specified collection.
+		/// </summary>
+		/// <param name="collection">Collection of items to populate this collection with</param>
+		public ListItemCollection(IEnumerable<IListItem> collection)
+			: base(collection)
+		{
+		}
+
 		/// <summary>
 		/// Adds a new item to the list with the specified text
 		/// </summary>
@@ -235,6 +260,19 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		/// <remarks>
+		/// By default, the text will get a color based on the user's theme. However, this is usually black.
+		/// </remarks>
+		/// <value>The color of the text.</value>
+		public Color TextColor
+		{
+			get { return Handler.TextColor; }
+			set { Handler.TextColor = value; }
+		}
+
+		/// <summary>
 		/// Raises the <see cref="Eto.Forms.Control.LoadComplete"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
@@ -381,6 +419,15 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The index of the selected item.</value>
 			int SelectedIndex { get; set; }
+
+			/// <summary>
+			/// Gets or sets the color of the text.
+			/// </summary>
+			/// <remarks>
+			/// By default, the text will get a color based on the user's theme. However, this is usually black.
+			/// </remarks>
+			/// <value>The color of the text.</value>
+			Color TextColor { get; set; }
 		}
 	}
 }

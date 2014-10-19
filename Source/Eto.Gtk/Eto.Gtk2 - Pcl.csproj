@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Forms\Controls\GridHandler.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
@@ -240,6 +241,9 @@
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="Forms\GtkSynchronizationContext.cs" />
     <Compile Include="GtkHelpers.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

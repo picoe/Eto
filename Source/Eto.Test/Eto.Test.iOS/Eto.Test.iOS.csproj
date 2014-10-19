@@ -30,6 +30,7 @@
     <MtouchI18n>
     </MtouchI18n>
     <MtouchUseSGen>True</MtouchUseSGen>
+    <MtouchProfiling>true</MtouchProfiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Release\iPhoneSimulator</OutputPath>

@@ -90,6 +90,7 @@
     <Compile Include="Forms\MacWindow.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="KeyMap.cs" />
     <Compile Include="Forms\MacFileDialog.cs" />
     <Compile Include="InvokeHelper.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="Messaging.cs" />
     <Compile Include="Forms\Controls\MacLabel.cs" />
     <Compile Include="MacHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -233,11 +233,11 @@ namespace Eto.Test
 			public Section Section { get; set; }
 		}
 
-		DynamicLayout layout;
+		TableLayout layout;
 		GridView gridView;
 		SearchBox filterText;
 
-		public override Control Control { get { return this.layout; } }
+		public override Control Control { get { return layout; } }
 		public override ISection SelectedItem
 		{
 			get
@@ -270,9 +270,10 @@ namespace Eto.Test
 			gridView.DataStore = items;
 			gridView.SelectionChanged += OnSelectedItemChanged;
 
-			layout = new DynamicLayout();
-			layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
-			layout.Add(gridView);
+			layout = new TableLayout(
+				filterText = new SearchBox { PlaceholderText = "Filter" },
+				gridView
+			);
 
 			// Filter
 			filterText.TextChanged += (s, e) =>

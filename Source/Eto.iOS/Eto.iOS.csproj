@@ -25,6 +25,8 @@
     <DebugType>full</DebugType>
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <MtouchDebug>true</MtouchDebug>
+    <MtouchProfiling>true</MtouchProfiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Pcl\Release</OutputPath>
@@ -195,6 +197,7 @@
     <Compile Include="..\Eto.Mac\Mac64Extensions.cs">
       <Link>Mac64Extensions.cs</Link>
     </Compile>
+    <Compile Include="Forms\Toolbar\RadioToolItemHandler.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

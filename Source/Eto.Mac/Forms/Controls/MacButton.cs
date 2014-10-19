@@ -1,17 +1,21 @@
 using Eto.Forms;
 using Eto.Drawing;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+using CoreText;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
+using MonoMac.CoreText;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -21,17 +25,44 @@ namespace Eto.Mac.Forms.Controls
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
+		static readonly object textKey = new object();
+
 		public virtual string Text
 		{
-			get
-			{
-				return Control.Title;
-			}
+			get { return Widget.Properties.Get<string>(textKey); }
 			set
 			{
+				Widget.Properties[textKey] = value;
 				var oldSize = GetPreferredSize(Size.MaxValue);
-				Control.SetTitleWithMnemonic(value ?? string.Empty);
+				SetText(value);
 				LayoutIfNeeded(oldSize);
+			}
+		}
+
+		static readonly object textColorKey = new object();
+
+		public virtual Color TextColor
+		{
+			get { return Widget.Properties.Get<Color?>(textColorKey) ?? NSColor.ControlText.ToEto(); }
+			set {
+				if (value != TextColor)
+				{
+					Widget.Properties[textColorKey] = value;
+					SetText(Text);
+				}
+			}
+		}
+
+		void SetText(string text)
+		{
+			Control.SetTitleWithMnemonic(text ?? string.Empty);
+			var color = Widget.Properties.Get<Color?>(textColorKey);
+			if (color != null)
+			{
+				var attr = NSDictionary.FromObjectAndKey(color.Value.ToNSUI(), NSAttributedString.ForegroundColorAttributeName);
+				var str = new NSMutableAttributedString(Control.AttributedTitle);
+				str.AddAttributes(attr, new NSRange(0, str.Length));
+				Control.AttributedTitle = str;
 			}
 		}
 	}

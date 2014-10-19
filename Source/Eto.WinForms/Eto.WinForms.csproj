@@ -73,6 +73,9 @@
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
     <Compile Include="Conversions.cs" />
+    <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\TreeController.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
@@ -301,6 +304,10 @@
     <Compile Include="Win32TextBox.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="WinFormsHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -324,6 +331,9 @@
     <EmbeddedResource Include="..\packages\Windows7APICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll">
       <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.Shell.dll</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CustomControls\CalendarPicker.png" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.GtkSharp
 {
@@ -55,6 +56,12 @@ namespace Eto.GtkSharp
 			set { Control.Text = value ?? string.Empty; }
 		}
 
+		public Color TextColor
+		{
+			get { return Control.Style.Text(Gtk.StateType.Normal).ToEto(); }
+			set { Control.ModifyText(Gtk.StateType.Normal, value.ToGdk()); }
+		}
+
 		public bool ReadOnly
 		{
 			get { return !Control.IsEditable; }
@@ -65,6 +72,12 @@ namespace Eto.GtkSharp
 		{
 			get { return Control.MaxLength; }
 			set { Control.MaxLength = value; }
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return Control.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			set { Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk()); }
 		}
 	}
 }

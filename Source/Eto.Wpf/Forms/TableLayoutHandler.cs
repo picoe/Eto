@@ -11,7 +11,7 @@ namespace Eto.Wpf.Forms
 {
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
-		swc.Border border = new swc.Border();
+		swc.Border border;
 		Size spacing;
 		Control[,] controls;
 		bool[] columnScale;
@@ -22,6 +22,8 @@ namespace Eto.Wpf.Forms
 
 		public TableLayoutHandler()
 		{
+			Control = new swc.Grid { SnapsToDevicePixels = true };
+			border = new swc.Border();
 			spacing = TableLayout.DefaultSpacing;
 			border.Padding = TableLayout.DefaultPadding.ToWpf();
 		}
@@ -70,7 +72,6 @@ namespace Eto.Wpf.Forms
 			rowScale = new bool[rows];
 			lastColumnScale = cols - 1;
 			lastRowScale = rows - 1;
-			Control = new swc.Grid { SnapsToDevicePixels = true };
 			for (int i = 0; i < cols; i++) Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = GetColumnWidth(i) });
 			for (int i = 0; i < rows; i++) Control.RowDefinitions.Add(new swc.RowDefinition { Height = GetRowHeight(i) });
 

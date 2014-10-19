@@ -67,10 +67,22 @@ namespace Eto.WinForms
 			set
 			{
 				spacing = value;
-				var newpadding = new swf.Padding(0, 0, spacing.Width, spacing.Height);
-				foreach (swf.Control control in Control.Controls)
+				SetChildPadding();
+			}
+		}
+
+		void SetChildPadding()
+		{
+			if (views != null && rowScale != null && columnScale != null)
+			{
+				for (int y = 0; y < rowScale.Length; y++)
 				{
-					control.Margin = newpadding;
+					for (int x = 0; x < columnScale.Length; x++)
+					{
+						var control = views[x, y].GetContainerControl();
+						if (control != null)
+							control.Margin = GetPadding(x, y);
+					}
 				}
 			}
 		}

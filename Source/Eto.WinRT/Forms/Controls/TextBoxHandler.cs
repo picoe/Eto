@@ -105,5 +105,11 @@ namespace Eto.WinRT.Forms.Controls
 			Control.Focus (FocusState.Programmatic);
 			Control.SelectAll ();
 		}
+
+		public Color TextColor
+		{
+			get { return Control.Foreground.ToEtoColor(); }
+			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
+		}
     }
 }

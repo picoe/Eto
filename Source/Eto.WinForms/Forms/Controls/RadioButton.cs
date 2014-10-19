@@ -21,7 +21,7 @@ namespace Eto.WinForms
 
 		public RadioButtonHandler()
 		{
-			Control = new EtoRadioButton();
+			Control = new EtoRadioButton { TabStop = true };
 			Control.AutoSize = true;
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 			Control.CheckedChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);

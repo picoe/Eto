@@ -104,6 +104,7 @@ namespace Eto.WinForms
 			
 			// Forms.ToolBar
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
+			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolBarItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());

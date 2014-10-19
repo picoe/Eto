@@ -209,9 +209,13 @@ namespace Eto.GtkSharp
 		protected virtual void SetBackgroundColor(Color? color)
 		{
 			if (color != null)
+			{
 				ContainerContentControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+			}
 			else
+			{
 				ContainerContentControl.ModifyBg(Gtk.StateType.Normal);
+			}
 		}
 
 		public virtual Color BackgroundColor
@@ -420,6 +424,7 @@ namespace Eto.GtkSharp
 				Handler.Callback.OnMouseWheel(Handler.Widget, new MouseEventArgs(buttons, modifiers, p, delta));
 			}
 
+			[GLib.ConnectBefore]
 			public void HandleControlLeaveNotifyEvent(object o, Gtk.LeaveNotifyEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
@@ -429,6 +434,7 @@ namespace Eto.GtkSharp
 				Handler.Callback.OnMouseLeave(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
+			[GLib.ConnectBefore]
 			public void HandleControlEnterNotifyEvent(object o, Gtk.EnterNotifyEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
@@ -438,6 +444,7 @@ namespace Eto.GtkSharp
 				Handler.Callback.OnMouseEnter(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
+			[GLib.ConnectBefore]
 			public void HandleMotionNotifyEvent(System.Object o, Gtk.MotionNotifyEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);

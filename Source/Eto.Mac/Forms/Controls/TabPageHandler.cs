@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using SD = System.Drawing;
 using Eto.Drawing;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -37,36 +38,39 @@ namespace Eto.Mac.Forms.Controls
 	{
 		const int ICON_PADDING = 2;
 		Image image;
-		static readonly IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
+		static readonly IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
 		public override NSView ContainerControl { get { return Control; } }
 
 		public NSTabViewItem TabViewItem { get; private set; }
-		
+
 		class MyTabViewItem : NSTabViewItem
 		{
 			WeakReference handler;
+
 			public TabPageHandler Handler { get { return (TabPageHandler)handler.Target; } set { handler = new WeakReference(value); } }
-			
-			public override void DrawLabel (bool shouldTruncateLabel, CGRect labelRect)
+
+			public override void DrawLabel(bool shouldTruncateLabel, CGRect labelRect)
 			{
-				if (Handler.image != null) {
+				if (Handler.image != null)
+				{
 					var nsimage = (NSImage)Handler.image.ControlObject;
 
 					if (nsimage.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
-						nsimage.Draw (new CGRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect (CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
-					else {
+						nsimage.Draw(new CGRect(labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect(CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
+					else
+					{
 						#pragma warning disable 618
 						nsimage.Flipped = View.IsFlipped;
 						#pragma warning restore 618
-						nsimage.Draw (new CGRect (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect (CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1);
+						nsimage.Draw(new CGRect(labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new CGRect(CGPoint.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1);
 					}
 					
 					labelRect.X += labelRect.Height + ICON_PADDING;
 					labelRect.Width -= labelRect.Height + ICON_PADDING;
-					base.DrawLabel (shouldTruncateLabel, labelRect);
+					base.DrawLabel(shouldTruncateLabel, labelRect);
 				}
-				base.DrawLabel (shouldTruncateLabel, labelRect);
+				base.DrawLabel(shouldTruncateLabel, labelRect);
 			}
 
 			// TODO: Mac64
@@ -81,28 +85,33 @@ namespace Eto.Mac.Forms.Controls
 			}
 			#endif
 		}
-		
-		public TabPageHandler ()
+
+		public TabPageHandler()
 		{
-			TabViewItem = new MyTabViewItem {
+			TabViewItem = new MyTabViewItem
+			{
 				Handler = this,
-				Identifier = new NSString (Guid.NewGuid ().ToString ()),
+				Identifier = new NSString(Guid.NewGuid().ToString()),
 				View = new MacEventView { Handler = this }
 			};
 			Control = TabViewItem.View;
 			Enabled = true;
 		}
 
-		public string Text {
+		public string Text
+		{
 			get { return TabViewItem.Label; }
 			set { TabViewItem.Label = value; }
 		}
-		
-		public Image Image {
+
+		public Image Image
+		{
 			get { return image; }
-			set {
+			set
+			{
 				image = value;
-				if (image != null) {
+				if (image != null)
+				{
 				}
 			}
 		}

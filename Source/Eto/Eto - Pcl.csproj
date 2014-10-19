@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Eto</RootNamespace>
-    <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -75,6 +75,7 @@
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItem.cs" />
     <Compile Include="Int32ArrayConverter.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
@@ -298,6 +299,7 @@
     <Compile Include="Forms\ControlBinding.cs" />
     <Compile Include="Forms\Layout\TableCell.cs" />
     <Compile Include="Forms\Layout\TableRow.cs" />
+    <Compile Include="ExtendedObservableCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

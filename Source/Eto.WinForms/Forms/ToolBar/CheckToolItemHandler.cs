@@ -7,42 +7,34 @@ namespace Eto.WinForms
 {
 	public class CheckToolItemHandler : ToolItemHandler<SWF.ToolStripButton, CheckToolItem>, CheckToolItem.IHandler
 	{
-		readonly SWF.ToolStripButton control;
-
 		public CheckToolItemHandler()
 		{
-			control = new SWF.ToolStripButton();
-			control.Tag = this;
-			control.Click += control_Click;
-			Control = control;
+			Control = new SWF.ToolStripButton();
+			Control.Tag = this;
+			Control.Click += control_Click;
 		}
 
 		void control_Click(object sender, EventArgs e)
 		{
+			Control.Checked = !Control.Checked;
 			Widget.OnClick(EventArgs.Empty);
 		}
 
 		public bool Checked
 		{
-			get { return control.Checked; }
-			set { control.Checked = value; }
+			get { return Control.Checked; }
+			set { Control.Checked = value; }
 		}
 
 		public override void CreateControl(ToolBarHandler handler, int index)
 		{
-			handler.Control.Items.Insert(index, control);
-		}
-
-
-		public override void InvokeButton()
-		{
-			Widget.OnClick(EventArgs.Empty);
+			handler.Control.Items.Insert(index, Control);
 		}
 
 		public override bool Enabled
 		{
-			get { return control.Enabled; }
-			set { control.Enabled = value; }
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
 		}
 	}
 }

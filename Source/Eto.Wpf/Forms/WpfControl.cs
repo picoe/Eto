@@ -36,5 +36,10 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		public virtual Color TextColor
+		{
+			get { return Control.Foreground.ToEtoColor(); }
+			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
+		}
 	}
 }

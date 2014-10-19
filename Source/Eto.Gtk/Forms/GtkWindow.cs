@@ -32,6 +32,7 @@ namespace Eto.GtkSharp
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		Point? currentLocation;
+		Size? initialSize;
 		WindowState state;
 		WindowStyle style;
 		bool topmost;
@@ -138,44 +139,63 @@ namespace Eto.GtkSharp
 		{
 			get
 			{
-				return (Control.Visible ? Control.Allocation.Size : Control.DefaultSize).ToEto();
+				return Control.GdkWindow != null ? Control.GdkWindow.FrameExtents.Size.ToEto() : initialSize ?? Control.DefaultSize.ToEto();
 			}
 			set
 			{
-				if (Control.Visible)
-					Control.SizeAllocate(new Gdk.Rectangle(Control.Allocation.Location, value.ToGdk()));
+				if (Control.GdkWindow != null)
+				{
+					var diff = Control.GdkWindow.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
+					Control.Resize(value.Width - diff.Width, value.Height - diff.Height);
+				}
 				else
-					Control.SetDefaultSize(value.Width, value.Height);
+				{
+					Control.Resize(value.Width, value.Height);
+					if (initialSize == null)
+						Control.Shown += HandleControlShown;
+					initialSize = value;
+				}
 			}
+		}
+
+		void HandleControlShown(object sender, EventArgs e)
+		{
+			Control.Shown -= HandleControlShown;
+			var frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
+			// HACK: get twice to get 'real' size? Ubuntu 14.04 returns inflated size the first call.
+			frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
+
+			var diff = frameExtents - Control.Allocation.Size.ToEto();
+			Control.Resize(initialSize.Value.Width - diff.Width, initialSize.Value.Height - diff.Height);
+			initialSize = null;
 		}
 
 		public override Size ClientSize
 		{
 			get
 			{
-				int width, height;
-				containerBox.GetSizeRequest(out width, out height);
-				return new Size(width, height);
+				return containerBox.IsRealized ? containerBox.Allocation.Size.ToEto() : containerBox.SizeRequest().ToEto();
 			}
 			set
 			{
 				if (Control.IsRealized)
 				{
-					int width, height;
-					Control.GetSize(out width, out height);
-
-					var size = new Size(width, height);
-					containerBox.GetSizeRequest(out width, out height);
-					size -= new Size(width, height);
-					size += value;
-					Control.Resize(size.Width, size.Height);
+					var diff = vbox.Allocation.Size.ToEto() - containerBox.Allocation.Size.ToEto();
+					Control.Resize(value.Width + diff.Width, value.Height + diff.Height);
 				}
 				else
 				{
 					Control.SetSizeRequest(-1, -1);
 					containerBox.SetSizeRequest(value.Width, value.Height);
+					containerBox.Realized += HandleContainerRealized;
 				}
 			}
+		}
+
+		void HandleContainerRealized(object sender, EventArgs e)
+		{
+			containerBox.SetSizeRequest(-1, -1);
+			containerBox.Realized -= HandleContainerRealized;
 		}
 
 		protected override void Initialize()
@@ -229,6 +249,7 @@ namespace Eto.GtkSharp
 		protected class GtkWindowConnector : GtkPanelEventConnector
 		{
 			Size? oldSize;
+
 			public WindowState OldState { get; set; }
 
 			public new GtkWindow<TControl, TWidget, TCallback> Handler { get { return (GtkWindow<TControl, TWidget, TCallback>)base.Handler; } }

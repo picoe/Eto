@@ -14,7 +14,45 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Forms.Controls
 {
-	class ComboBoxHandler
+	public class ComboBoxHandler : AndroidControl<aw.Spinner, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
+		public override av.View ContainerControl { get { return Control; } }
+
+		public ComboBoxHandler()
+		{
+			Control = new aw.Spinner(aa.Application.Context);
+		}
+
+		public IEnumerable<object> DataStore
+		{
+			get;
+			set;
+		}
+
+		public int SelectedIndex { get; set; }
+
+		public Eto.Drawing.Font Font
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public Eto.Drawing.Color TextColor
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

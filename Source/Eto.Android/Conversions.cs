@@ -1,7 +1,10 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using a = Android;
+using aa = Android.App;
+using ac = Android.Content;
+using ao = Android.OS;
+using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
@@ -19,6 +22,11 @@ namespace Eto.Android
 		public static void SetPadding(this av.View view, Padding padding)
 		{
 			view.SetPadding(padding.Left, padding.Top, padding.Right, padding.Bottom);
+		}
+
+		public static Color ToEto(this global::Android.Content.Res.ColorStateList colors)
+		{
+			return Color.FromArgb(colors.DefaultColor);
 		}
 
 		public static Color ToEto(this ag.Color color)
@@ -295,6 +303,27 @@ namespace Eto.Android
 				default:
 					throw new NotSupportedException();
 			}
+		}
+
+		public static ag.Bitmap ToAndroid(this Image image)
+		{
+			var handler = (IAndroidImage)image.Handler;
+			return handler.GetImageWithSize(null);
+		}
+		public static ag.Drawables.BitmapDrawable ToAndroidDrawable(this Image image)
+		{
+			var bmp = image.ToAndroid();
+			return bmp != null ? new ag.Drawables.BitmapDrawable(aa.Application.Context.Resources, bmp) : null;
+		}
+
+		public static ag.Typeface ToAndroid(this Font font)
+		{
+			return FontHandler.GetControl(font);
+		}
+
+		public static Font ToEto(this ag.Typeface typeface)
+		{
+			return new Font(new FontHandler(typeface));
 		}
 	}
 }

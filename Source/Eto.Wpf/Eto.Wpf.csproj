@@ -162,6 +162,7 @@
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
     <Compile Include="Forms\EnableThemingInScope.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
@@ -220,6 +221,7 @@
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>
     <Compile Include="WpfHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">

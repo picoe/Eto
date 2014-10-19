@@ -103,7 +103,9 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
+		#if !XAMMAC2
 		static readonly Selector selAlignmentRectInsets = new Selector("alignmentRectInsets");
+		#endif
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{

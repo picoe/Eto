@@ -121,11 +121,11 @@ namespace Eto.Mac.Forms.Controls
 		public void SetGroupItem(bool isGroupItem, NSTableView tableView, float? groupSize = null, float? normalSize = null)
 		{
 			if (isGroupItem)
-				Font = NSFont.BoldSystemFontOfSize(groupSize ?? NSFont.SystemFontSize);
+				Font = NSFont.BoldSystemFontOfSize(groupSize ?? (float)NSFont.SystemFontSize);
 			else if (Highlighted)
-				Font = NSFont.BoldSystemFontOfSize(normalSize ?? NSFont.SystemFontSize);
+				Font = NSFont.BoldSystemFontOfSize(normalSize ?? (float)NSFont.SystemFontSize);
 			else
-				Font = NSFont.SystemFontOfSize(normalSize ?? NSFont.SystemFontSize);
+				Font = NSFont.SystemFontOfSize(normalSize ?? (float)NSFont.SystemFontSize);
 			
 			if (Highlighted)
 				TextColor = NSColor.Highlight;

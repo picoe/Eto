@@ -107,5 +107,16 @@ namespace Eto.GtkSharp
 			get;
 			set;
 		}
+
+		public Color TextColor
+		{
+			get { return Control.Child.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			set
+			{
+				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				Control.Child.ModifyFg(Gtk.StateType.Active, value.ToGdk());
+				Control.Child.ModifyFg(Gtk.StateType.Prelight, value.ToGdk());
+			}
+		}
 	}
 }

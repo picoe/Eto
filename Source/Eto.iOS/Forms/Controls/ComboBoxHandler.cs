@@ -135,5 +135,11 @@ namespace Eto.iOS.Forms.Controls
 			picker.ReloadAllComponents();
 			picker.Select(Math.Max(0, SelectedIndex), 0, false);
 		}
+
+		public Color TextColor
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 	}
 }

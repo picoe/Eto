@@ -17,7 +17,7 @@ namespace Eto.WinForms
 			};
 		}
 
-		public Color TextColor
+		public override Color TextColor
 		{
 			get { return Control.LinkColor.ToEto(); }
 			set { Control.LinkColor = value.ToSD(); }

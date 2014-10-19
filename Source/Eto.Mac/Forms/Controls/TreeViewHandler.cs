@@ -605,6 +605,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public ITreeItem GetNodeAt(PointF point)
 		{
+			point += Scroll.ContentView.Bounds.Location.ToEto();
 			var row = Control.GetRow(point.ToNS());
 			if (row >= 0)
 			{

@@ -18,7 +18,7 @@ namespace Eto.Android.Drawing
 	{
 		public string Name
 		{
-			get { throw new NotImplementedException(); }
+			get { return Control.Class.Name; }
 		}
 
 		public IEnumerable<FontTypeface> Typefaces

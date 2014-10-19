@@ -19,10 +19,6 @@ namespace Eto.WinForms
 
 		public abstract void CreateControl(ToolBarHandler handler, int index);
 
-		public virtual void InvokeButton()
-		{
-		}
-
 		public int ImageSize
 		{
 			get { return imageSize; }

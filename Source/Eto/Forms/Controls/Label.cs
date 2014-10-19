@@ -118,19 +118,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the color of the text.
-		/// </summary>
-		/// <remarks>
-		/// By default, the label will get a color based on the user's theme. However, this is usually black.
-		/// </remarks>
-		/// <value>The color of the text.</value>
-		public Color TextColor
-		{
-			get { return Handler.TextColor; }
-			set { Handler.TextColor = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the horizontal alignment of the text.
 		/// </summary>
 		/// <remarks>
@@ -192,15 +179,6 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The wrapping mode for the text.</value>
 			WrapMode Wrap { get; set; }
-
-			/// <summary>
-			/// Gets or sets the color of the text.
-			/// </summary>
-			/// <remarks>
-			/// By default, the label will get a color based on the user's theme. However, this is usually black.
-			/// </remarks>
-			/// <value>The color of the text.</value>
-			Color TextColor { get; set; }
 		}
 	}
 }

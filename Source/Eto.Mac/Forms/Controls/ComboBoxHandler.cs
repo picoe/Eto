@@ -4,6 +4,7 @@ using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using Eto.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -165,15 +166,38 @@ namespace Eto.Mac.Forms.Controls
 
 		public string Text
 		{
-			get
-			{
-				return editable ? Control.StringValue: "";
-			}
+			get { return editable ? Control.StringValue : ""; }
 			set
 			{
 				if (editable && value != null)
 				{
 					Control.StringValue = value;
+				}
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return ((NSComboBoxCell) Control.Cell).BackgroundColor.ToEto(); }
+			set
+			{
+				if (value != BackgroundColor)
+				{
+					((NSComboBoxCell)Control.Cell).BackgroundColor = value.ToNSUI();
+					Control.SetNeedsDisplay();
+				}
+			}
+		}
+
+		public Color TextColor
+		{
+			get { return ((NSComboBoxCell) Control.Cell).TextColor.ToEto(); }
+			set
+			{
+				if (value != TextColor)
+				{
+					((NSComboBoxCell)Control.Cell).TextColor = value.ToNSUI();
+					Control.SetNeedsDisplay();
 				}
 			}
 		}

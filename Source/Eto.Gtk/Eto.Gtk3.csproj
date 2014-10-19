@@ -265,6 +265,8 @@
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="Forms\GtkSynchronizationContext.cs" />
     <Compile Include="GtkHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

@@ -12,40 +12,29 @@ namespace Eto.iOS.Forms.Toolbar
 
 	public class CheckToolItemHandler : ToolItemHandler<UIBarButtonItem, CheckToolItem>, CheckToolItem.IHandler
 	{
-		bool isChecked;
-		ToolBarHandler toolbarHandler;
-
 		public bool Checked
 		{
-			get { return isChecked; }
+			get { return Button.Selected; }
 			set
 			{
-				isChecked = value;
-#if TODO				
-				if (isChecked && Control != null && toolbarHandler != null && toolbarHandler.Control != null)
-					toolbarHandler.Control.SelectedItemIdentifier = Identifier;
-#endif
+				if (value != Button.Selected)
+				{
+					Button.Selected = value;
+					Widget.OnCheckedChanged(EventArgs.Empty);
+				}
 			}
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Button.ShowsTouchWhenHighlighted = false;
 			Selectable = true;
-		}
-
-		public override void ControlAdded(ToolBarHandler toolbar)
-		{
-			base.ControlAdded(toolbar);
-			toolbarHandler = toolbar;
-#if TODO
-			if (isChecked)
-				toolbar.Control.SelectedItemIdentifier = Identifier;
-#endif
 		}
 
 		public override void InvokeButton()
 		{
+			Checked = !Checked;
 			Widget.OnClick(EventArgs.Empty);
 		}
 	}
