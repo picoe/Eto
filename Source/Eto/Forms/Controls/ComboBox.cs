@@ -49,7 +49,7 @@ namespace Eto.Forms
 		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected ComboBox(Generator generator, Type type, bool isEditable = false, bool initialize = true)
-			: base(generator, type, initialize)
+			: base(generator, type, false)
 		{
 			Handler.Create(isEditable);
 			Initialize();
