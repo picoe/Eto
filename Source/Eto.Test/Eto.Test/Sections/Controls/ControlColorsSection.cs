@@ -15,10 +15,18 @@ namespace Eto.Test.Sections.Controls
 		protected override Control CreateOptions()
 		{
 			var foregroundPicker = new ColorPicker();
-			foregroundPicker.ValueChanged += (sender, e) => foregroundUpdates.ForEach(r => r(foregroundPicker.Value));
+			foregroundPicker.ValueChanged += (sender, e) =>
+			{
+				foreach (var update in foregroundUpdates)
+					update(foregroundPicker.Value);
+			};
 
 			var backgroundPicker = new ColorPicker();
-			backgroundPicker.ValueChanged += (sender, e) => backgroundUpdates.ForEach(r => r(backgroundPicker.Value));
+			backgroundPicker.ValueChanged += (sender, e) =>
+			{
+				foreach (var update in backgroundUpdates)
+					update(backgroundPicker.Value);
+			};
 
 			var formColorPicker = new ColorPicker { Value = BackgroundColor };
 			formColorPicker.ValueChanged += (sender, e) => BackgroundColor = formColorPicker.Value;

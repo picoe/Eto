@@ -167,6 +167,8 @@
     <Compile Include="UnitTests\Handlers\TestPanelHandler.cs" />
     <Compile Include="UnitTests\Handlers\TestWindowHandler.cs" />
     <Compile Include="UnitTests\Drawing\BitmapTests.cs" />
+    <Compile Include="Sections\Controls\ControlColorsSection.cs" />
+    <Compile Include="Sections\Controls\LinkButtonSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
