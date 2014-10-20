@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Dialogs
 		}
 		Control DisplayModeDropDown()
 		{
-			var control = new EnumComboBox<DialogDisplayMode>();
+			var control = new EnumDropDown<DialogDisplayMode>();
 			control.SelectedValueBinding.Bind(() => DisplayMode, val => DisplayMode = val);
 			return control;
 		}

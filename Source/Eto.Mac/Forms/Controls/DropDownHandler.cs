@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SD = System.Drawing;
 using Eto.Forms;
 using System.Linq;
@@ -39,12 +39,53 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ComboBoxHandler : MacControl<NSComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class DropDownHandler : MacControl<NSPopUpButton, DropDown, DropDown.ICallback>, DropDown.IHandler
 	{
 		CollectionHandler collection;
-		bool editable;
 
-		public class EtoComboBox : NSComboBox, IMacControl
+		public class EtoPopUpButtonCell : NSPopUpButtonCell
+		{
+			NSDictionary textAttributes;
+			Color? textColor;
+
+			public Color? Color { get; set; }
+
+			public Color? TextColor
+			{
+				get { return textColor; }
+				set
+				{
+					textColor = value;
+					textAttributes = textColor != null ? NSDictionary.FromObjectAndKey(textColor.Value.ToNSUI(), NSAttributedString.ForegroundColorAttributeName) : null;
+				}
+			}
+
+			public override void DrawBezelWithFrame(CGRect frame, NSView controlView)
+			{
+				if (Color != null)
+				{
+					MacEventView.Colourize(controlView, Color.Value, delegate
+					{
+						base.DrawBezelWithFrame(frame, controlView);
+					});
+				}
+				else
+					base.DrawBezelWithFrame(frame, controlView);
+			}
+
+			public override CGRect DrawTitle(NSAttributedString title, CGRect frame, NSView controlView)
+			{
+				if (textAttributes != null)
+				{
+					var str = new NSMutableAttributedString(title);
+					str.AddAttributes(textAttributes, new NSRange(0, title.Length));
+					title = str;
+				}
+				return base.DrawTitle(title, frame, controlView);
+			}
+		}
+
+		public class EtoPopUpButton : NSPopUpButton, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -57,67 +98,67 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Create()
 		{
+			Control = new EtoPopUpButton { Handler = this, Cell = new EtoPopUpButtonCell() };
+			Control.Activated += HandleActivated;
 		}
 
-		public void Create(bool isEditable)
+		static void HandleActivated(object sender, EventArgs e)
 		{
-			editable = isEditable;
-			Control = new EtoComboBox { Handler = this, Cell = new NSComboBoxCell() };
-			Control.Editable = editable;
-			// Add Observer to monitor SelectionDidChangeNotification, but no response. May be a bug?
-			this.AddObserver(NSComboBox.SelectionDidChangeNotification, SelectionDidChanged, Control);
-		}
-
-		static void SelectionDidChanged(ObserverActionEventArgs e)
-		{
-			var handler = e.Handler as ComboBoxHandler;
+			var handler = GetHandler(sender) as DropDownHandler;
 			handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
-			public ComboBoxHandler Handler { get; set; }
+			public DropDownHandler Handler { get; set; }
 
 			public override int IndexOf(object item)
 			{
 				var binding = Handler.Widget.TextBinding;
-				return (int)Handler.Control.IndexOf(NSObject.FromObject(binding.GetValue(item)));
+				return (int)Handler.Control.Menu.IndexOf(binding.GetValue(item));
 			}
 
 			public override void AddRange(IEnumerable<object> items)
 			{
-				var oldIndex = Handler.Control.SelectedIndex;
+				var oldIndex = Handler.Control.IndexOfSelectedItem;
 				var binding = Handler.Widget.TextBinding;
 				foreach (var item in items.Select(r => binding.GetValue(r)))
 				{
-					Handler.Control.Add(NSObject.FromObject(item));
+					Handler.Control.Menu.AddItem(new NSMenuItem(item));
 				}
+				if (oldIndex == -1)
+					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
 			}
 
 			public override void AddItem(object item)
 			{
-				var oldIndex = Handler.Control.SelectedIndex;
+				var oldIndex = Handler.Control.IndexOfSelectedItem;
 				var binding = Handler.Widget.TextBinding;
-				Handler.Control.Add(NSObject.FromObject(binding.GetValue(item)));
+				Handler.Control.Menu.AddItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))));
+				if (oldIndex == -1)
+					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var oldIndex = Handler.Control.SelectedIndex;
+				var oldIndex = Handler.Control.IndexOfSelectedItem;
 				var binding = Handler.Widget.TextBinding;
-				Handler.Control.Insert(NSObject.FromObject(binding.GetValue(item)), index);
+				Handler.Control.Menu.InsertItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))), index);
+				if (oldIndex == -1)
+					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var selected = Handler.SelectedIndex;
-				Handler.Control.RemoveAt(index);
+				Handler.Control.RemoveItem(index);
 				Handler.LayoutIfNeeded();
 				if (Handler.Widget.Loaded && selected == index)
 				{
+					Handler.Control.SelectItem(-1);
 					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 				}
 			}
@@ -125,10 +166,11 @@ namespace Eto.Mac.Forms.Controls
 			public override void RemoveAllItems()
 			{
 				var change = Handler.SelectedIndex != -1;
-				Handler.Control.RemoveAll();
+				Handler.Control.RemoveAllItems();
 				Handler.LayoutIfNeeded();
 				if (Handler.Widget.Loaded && change)
 				{
+					Handler.Control.SelectItem(-1);
 					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 				}
 			}
@@ -148,7 +190,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return (int)Control.SelectedIndex; }
+			get { return (int)Control.IndexOfSelectedItem; }
 			set
 			{
 				if (value != SelectedIndex)
@@ -162,12 +204,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public override Color BackgroundColor
 		{
-			get { return ((NSComboBoxCell)Control.Cell).BackgroundColor.ToEto(); }
+			get { return ((EtoPopUpButtonCell)Control.Cell).Color ?? Colors.Transparent; }
 			set
 			{
 				if (value != BackgroundColor)
 				{
-					((NSComboBoxCell)Control.Cell).BackgroundColor = value.ToNSUI();
+					((EtoPopUpButtonCell)Control.Cell).Color = value;
 					Control.SetNeedsDisplay();
 				}
 			}
@@ -175,36 +217,14 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return ((NSComboBoxCell)Control.Cell).TextColor.ToEto(); }
+			get { return ((EtoPopUpButtonCell)Control.Cell).TextColor ?? NSColor.ControlText.ToEto(); }
 			set
 			{
 				if (value != TextColor)
 				{
-					((NSComboBoxCell)Control.Cell).TextColor = value.ToNSUI();
+					((EtoPopUpButtonCell)Control.Cell).TextColor = value;
 					Control.SetNeedsDisplay();
 				}
-			}
-		}
-
-		public string Text
-		{
-			get { return editable ? Control.StringValue : ""; }
-			set
-			{
-				if (editable && value != null)
-				{
-					Control.StringValue = value;
-				}
-			}
-		}
-
-		public bool IsEditable
-		{
-			get { return editable; }
-			set
-			{
-				editable = value;
-				Control.Editable = editable;
 			}
 		}
 	}

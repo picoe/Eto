@@ -7,7 +7,7 @@ namespace Eto.Forms
 	/// Represents a list item that can have an image associated with each item.
 	/// </summary>
 	/// <remarks>
-	/// Not all controls that use the <see cref="IListItem"/> can support images, for example the <see cref="ComboBox"/>.
+	/// Not all controls that use the <see cref="IListItem"/> can support images, for example the <see cref="DropDown"/>.
 	/// </remarks>
 	public interface IImageListItem : IListItem
 	{

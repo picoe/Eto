@@ -35,7 +35,7 @@ namespace Eto.Forms
 	/// Combo box for an enumeration
 	/// </summary>
 	/// <typeparam name="T">Enumeration type to fill the values with</typeparam>
-	public class EnumComboBox<T> : ComboBox
+	public class EnumDropDown<T> : DropDown
 		where T : struct
 	{
 		class EnumValue : IListItem
@@ -72,18 +72,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the EnumComboBox
+		/// Initializes a new instance of the EnumDropDown
 		/// </summary>
-		public EnumComboBox()
+		public EnumDropDown()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the EnumComboBox with the specified generator
+		/// Initializes a new instance of the EnumDropDown with the specified generator
 		/// </summary>
 		/// <param name="generator">Generator generator</param>
 		[Obsolete("Use default constructor instead")]
-		public EnumComboBox (Generator generator)
+		public EnumDropDown (Generator generator)
 			: base (generator)
 		{
 		}
@@ -120,11 +120,11 @@ namespace Eto.Forms
 		/// Gets a new binding for the <see cref="SelectedValue"/> property.
 		/// </summary>
 		/// <value>A new selected value binding.</value>
-		public new ControlBinding<EnumComboBox<T>, T> SelectedValueBinding
+		public new ControlBinding<EnumDropDown<T>, T> SelectedValueBinding
 		{
 			get
 			{
-				return new ControlBinding<EnumComboBox<T>, T>(
+				return new ControlBinding<EnumDropDown<T>, T>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 

@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 using Eto.Forms;
+using System.Collections.Generic;
+using System.Linq;
+using Eto.Drawing;
 
-namespace Eto.Wpf.Forms.Controls
+namespace Eto.WinForms.Forms
 {
 	public class ComboBoxHandler : DropDownHandler, ComboBox.IHandler
 	{
@@ -13,10 +18,10 @@ namespace Eto.Wpf.Forms.Controls
 		public void Create(bool isEditable)
 		{
 			Create();
-			Control.IsEditable = editable = isEditable;
+			IsEditable = editable = isEditable;
 		}
 
-		public string Text
+		public override string Text
 		{
 			get
 			{
@@ -37,7 +42,7 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				editable = value;
-				Control.IsEditable = editable;
+				Control.DropDownStyle = editable ? swf.ComboBoxStyle.DropDown : swf.ComboBoxStyle.DropDownList;
 			}
 		}
 	}

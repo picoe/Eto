@@ -8,10 +8,9 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class ComboBoxHandler : WindowsControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class DropDownHandler : WindowsControl<DropDownHandler.EtoComboBox, DropDown, DropDown.ICallback>, DropDown.IHandler
 	{
 		CollectionHandler collection;
-		bool editable;
 
 		public class EtoComboBox : swf.ComboBox
 		{
@@ -103,7 +102,7 @@ namespace Eto.WinForms
 			}
 		}
 
-		public ComboBoxHandler()
+		public void Create()
 		{
 			Control = new EtoComboBox
 			{
@@ -115,28 +114,6 @@ namespace Eto.WinForms
 			{
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
-		}
-
-		public void Create(bool isEditable)
-		{
-			editable = isEditable;
-			if (editable)
-				Control.DropDownStyle = swf.ComboBoxStyle.DropDown;
-		}
-
-		public override string Text
-		{
-			get
-			{
-				return editable ? Control.Text : "";
-			}
-			set
-			{
-				if (editable && value != null)
-				{
-					Control.Text = value;
-				}
-			}
 		}
 
 		public override Color BackgroundColor
@@ -163,6 +140,7 @@ namespace Eto.WinForms
 			get { return Control.SelectedIndex; }
 			set { Control.SelectedIndex = value; }
 		}
+
 		class Item
 		{
 			public IIndirectBinding<string> Binding { get; set; }
@@ -180,7 +158,7 @@ namespace Eto.WinForms
 
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
-			public ComboBoxHandler Handler { get; set; }
+			public DropDownHandler Handler { get; set; }
 
 			public override void AddRange(IEnumerable<object> items)
 			{

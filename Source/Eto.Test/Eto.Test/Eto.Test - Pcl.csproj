@@ -217,5 +217,8 @@
       <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
 </Project>
