@@ -8,13 +8,13 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Addin.XamarinStudio</RootNamespace>
     <AssemblyName>Eto.Addin.XamarinStudio</AssemblyName>
-    <EtoVersion>1.99.0</EtoVersion>
+    <UseMSBuildEngine>True</UseMSBuildEngine>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\Addins\Debug\XamarinStudio</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -23,7 +23,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\Addins\Release\XamarinStudio</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -61,6 +61,7 @@
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="packages\MonoDevelop.Addins.0.1.4\build\net40\MonoDevelop.Addins.targets" Condition="Exists('packages\MonoDevelop.Addins.0.1.4\build\net40\MonoDevelop.Addins.targets')" />
   <ItemGroup>
     <Folder Include="Templates\" />
     <Folder Include="Packages\" />
@@ -104,67 +105,67 @@
     <None Include="Templates\Projects\Eto-SAL-Separate.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.1.99.0.nupkg')">
       <Link>Packages\Eto.Forms.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.1.99.0.nupkg')">
       <Link>Packages\Eto.Forms.Sample.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.Direct2D.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.Gtk.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.Gtk3.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.iOS.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.Mac.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.Mac.Template.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.Mac64.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.Windows.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.WinRT.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.Wpf.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.XamMac.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.1.99.0.nupkg')">
       <Link>Packages\Eto.Platform.XamMac2.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.1.99.0.nupkg')">
       <Link>Packages\Eto.Serialization.Json.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.1.99.0.nupkg">
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.1.99.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.1.99.0.nupkg')">
       <Link>Packages\Eto.Serialization.Xaml.1.99.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -174,5 +175,6 @@
     <None Include="Templates\Projects\Shared\MyPanel.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
