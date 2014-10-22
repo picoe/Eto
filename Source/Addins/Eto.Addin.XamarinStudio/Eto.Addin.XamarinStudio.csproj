@@ -9,6 +9,8 @@
     <RootNamespace>Eto.Addin.XamarinStudio</RootNamespace>
     <AssemblyName>Eto.Addin.XamarinStudio</AssemblyName>
     <UseMSBuildEngine>True</UseMSBuildEngine>
+    <NugetDir>..\..</NugetDir>
+    <PackagesDir>.</PackagesDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,18 +36,23 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Addins">
       <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/Mono.Addins.dll</Package>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.Core">
       <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/MonoDevelop.Core.dll</Package>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/MonoDevelop.Ide.dll</Package>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.TextEditor">
       <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/Mono.TextEditor.dll</Package>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/ICSharpCode.NRefactory.dll</Package>
+      <Private>False</Private>
     </Reference>
     <Reference Include="gtk-sharp" />
     <Reference Include="glib-sharp" />
@@ -177,4 +184,6 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="$(ProjectDir)\..\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\..\.nuget\NuGet.targets')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
 </Project>
