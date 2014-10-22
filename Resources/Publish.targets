@@ -52,21 +52,6 @@
 
 	</Target>
 	
-	<Target Name="PrepareMac" DependsOnTargets="UpdateAssemblyInfo">
-        		
-            
-    	<Exec Command="$(mdtool) build -t:Clean -p:Eto.XamMac -c:'$(Configuration)' $(SourceDir)\Eto.sln" />
-    	<Exec Command="$(mdtool) build -t:Clean -p:Eto -c:'$(Configuration)' $(SourceDir)\Eto.sln" />
-    	<Exec Command="$(mdtool) build -p:Eto.XamMac -c:'$(Configuration)|Mac' $(SourceDir)\Eto.sln" />
-
-    	<!-- need to clean between non-pcl and pcl otherwise xbuild gets confused -->
-    	<Exec Command="$(mdtool) build -t:Clean -p:'Eto.XamMac - Pcl' -c:'$(Configuration)' '$(SourceDir)\Eto - Pcl.sln'" />
-    	<Exec Command="$(mdtool) build -t:Clean -p:'Eto - Pcl' -c:'$(Configuration)' '$(SourceDir)\Eto - Pcl.sln'" />
-    	<Exec Command="$(mdtool) build -p:'Eto.XamMac - Pcl' -c:'$(Configuration)|Mac' '$(SourceDir)\Eto - Pcl.sln'" />
-    	<Exec Command="$(mdtool) build -p:'Eto.XamMac2 - Pcl' -c:'$(Configuration)|Mac' '$(SourceDir)\Eto - Pcl.sln'" />
-    	<Exec Command="$(mdtool) build -p:'Eto.iOS' -c:'$(Configuration)|iPhoneSimulator' '$(SourceDir)\Eto - iOS.sln'" />
-	</Target>
-	
     <Target Name="Package" DependsOnTargets="UpdateAssemblyInfo">
 
     	<!-- using exec since xbuild messes up properties when using msbuild task -->
@@ -150,8 +135,8 @@
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\%(StandalonePackage.RelativeDir)\;ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(TargetDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="$(MSBuildProjectFile)" Condition="$(Platform) == 'Windows'"/>
     	
     	<!-- addins -->
-    	<!--
     	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<!--
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="$(Platform) == 'Windows'" />
     	-->
     	

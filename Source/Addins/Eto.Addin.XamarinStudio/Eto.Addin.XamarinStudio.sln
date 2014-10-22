@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.XamarinStudio", "Eto.Addin.XamarinStudio.csproj", "{54A88D77-39C6-49E5-971E-05451209F2A9}"
 EndProject
