@@ -9,6 +9,5 @@ namespace Eto.WinForms
 		{
 			Control = new SWF.Control();
 		}
-
 	}
 }

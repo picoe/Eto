@@ -71,6 +71,15 @@ namespace Eto.Forms
 		/// </summary>
 		/// <value>The custom data.</value>
 		public object Tag { get; set; }
+
+		/// <summary>
+		/// Gets the listItem's string
+		/// </summary>
+		/// <returns>The string</returns>
+		public override string ToString()
+		{
+			return Text;
+		}
 	}
 
 	/// <summary>

@@ -90,6 +90,10 @@
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
@@ -176,9 +180,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\CheckBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ControlHandler.cs">

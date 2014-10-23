@@ -60,6 +60,7 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\ComboBox.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\SearchBox.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="Forms\Window.cs" />
     <Compile Include="Forms\Controls\Button.cs" />
     <Compile Include="Forms\Controls\CheckBox.cs" />
-    <Compile Include="Forms\Controls\ComboBox.cs" />
+    <Compile Include="Forms\Controls\DropDown.cs" />
     <Compile Include="Forms\Controls\Control.cs" />
     <Compile Include="Forms\Controls\Drawable.cs" />
     <Compile Include="Forms\Controls\GroupBox.cs" />
@@ -214,7 +215,7 @@
     <Compile Include="Forms\Cells\TextBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageViewCell.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
-    <Compile Include="Forms\Controls\EnumComboBox.cs" />
+    <Compile Include="Forms\Controls\EnumDropDown.cs" />
     <Compile Include="Binding\Binding.cs" />
     <Compile Include="Binding\BindingCollection.cs" />
     <Compile Include="Binding\BindingChangingEventArgs.cs" />

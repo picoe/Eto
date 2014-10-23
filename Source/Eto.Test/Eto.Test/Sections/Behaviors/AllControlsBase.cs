@@ -104,7 +104,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control ComboBoxControl()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			control.Items.Add(new ListItem{ Text = "Item 1" });
 			control.Items.Add(new ListItem{ Text = "Item 2" });
 			control.Items.Add(new ListItem{ Text = "Item 3" });

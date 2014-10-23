@@ -1,143 +1,80 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using Eto.GtkSharp.Drawing;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Eto.Drawing;
+using Eto.Forms;
+using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class ComboBoxHandler : GtkControl<Gtk.ComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class ComboBoxHandler : DropDownHandler, ComboBox.IHandler
 	{
-		Font font;
-		CollectionHandler collection;
-		readonly Gtk.ListStore listStore;
-		readonly Gtk.CellRendererText text;
+		Gtk.Entry entry;
+		bool editable;
 
-		public ComboBoxHandler()
+		public void Create(bool isEditable)
 		{
+			editable = isEditable;
 			listStore = new Gtk.ListStore(typeof(string));
-			Control = new Gtk.ComboBox(listStore);
-			text = new Gtk.CellRendererText();
-			Control.PackStart(text, false);
-			Control.AddAttribute(text, "text", 0);
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
+#if GTK2
+			Control = new Gtk.ComboBoxEntry(listStore, 0);
+			text = Control.Cells[0] as Gtk.CellRendererText;
+#else
+			Control = Gtk.ComboBox.NewWithModelAndEntry(listStore);
+			Control.EntryTextColumn = 0;
+#endif
+			text = Control.Cells[0] as Gtk.CellRendererText;
+			Control.SetAttributes(text, "text", 0);
+			entry = Control.Child as Gtk.Entry;
+			entry.IsEditable = editable;
 			Control.Changed += Connector.HandleChanged;
-		}
-
-		protected new ComboBoxConnector Connector { get { return (ComboBoxConnector)base.Connector; } }
-
-		protected override WeakConnector CreateConnector()
-		{
-			return new ComboBoxConnector();
-		}
-
-		protected class ComboBoxConnector : GtkControlConnector
-		{
-			public new ComboBoxHandler Handler { get { return (ComboBoxHandler)base.Handler; } }
-
-			public void HandleChanged(object sender, EventArgs e)
-			{
-				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
-			}
-		}
-
-		public int SelectedIndex
-		{
-			get { return Control.Active; }
-			set { Control.Active = value; }
 		}
 
 		public override Font Font
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(new FontHandler(text.FontDesc));
-				return font;
+				return font ?? (font = new Font(new FontHandler(text.FontDesc)));
 			}
 			set
 			{
 				font = value;
-				text.FontDesc = font != null ? ((FontHandler)font.Handler).Control : null;
+				if (font != null)
+				{
+					var newfont = ((FontHandler)font.Handler).Control;
+					if (editable)
+					{
+						entry.ModifyFont(newfont);
+					}
+					text.FontDesc = newfont;
+				}
 			}
 		}
 
-		public class CollectionHandler : EnumerableChangedHandler<object>
+		public override string Text
 		{
-			public ComboBoxHandler Handler { get; set; }
-
-			public override void AddItem(object item)
+			get
 			{
-				var binding = Handler.Widget.TextBinding;
-				Handler.listStore.AppendValues(binding.GetValue(item));
-				Handler.Control.QueueResize();
+				return editable ? entry.Text : "";
 			}
-
-			public override void InsertItem(int index, object item)
-			{
-				var binding = Handler.Widget.TextBinding;
-				Handler.listStore.InsertWithValues(index, binding.GetValue(item));
-				Handler.Control.QueueResize();
-			}
-
-			public override void RemoveItem(int index)
-			{
-				Gtk.TreeIter iter;
-				if (Handler.listStore.IterNthChild(out iter, index))
-					Handler.listStore.Remove(ref iter);
-				Handler.Control.QueueResize();
-			}
-
-			public override void RemoveAllItems()
-			{
-				Handler.listStore.Clear();
-				Handler.Control.QueueResize();
-			}
-		}
-
-		public IEnumerable<object> DataStore
-		{
-			get { return collection != null ? collection.Collection : null; }
 			set
 			{
-				if (collection != null)
-					collection.Unregister();
-				collection = new CollectionHandler{ Handler = this };
-				collection.Register(value);
+				if (editable && value != null)
+				{
+					entry.Text = value;
+				}
 			}
 		}
 
-		public Color TextColor
+		public bool IsEditable
 		{
-			get { return text.ForegroundGdk.ToEto(); }
+			get { return editable; }
 			set
 			{
-				text.ForegroundGdk = value.ToGdk();
-				if (Widget.Loaded)
-					Control.QueueDraw();
-			}
-		}
-
-		public override Color BackgroundColor
-		{
-			get { return Control.Child.Style.Base(Gtk.StateType.Normal).ToEto(); }
-			set
-			{ 
-				Control.Child.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				if (Widget.Loaded)
-					Control.QueueDraw();
+				editable = value;
+				entry.IsEditable = editable;
 			}
 		}
 	}
 }
-

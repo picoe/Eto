@@ -72,6 +72,7 @@ namespace Eto.GtkSharp
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<Calendar.IHandler>(() => new CalendarHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
