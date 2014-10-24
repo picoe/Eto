@@ -6,6 +6,8 @@ root = true
 # use tabs by default for everything
 [*.cs]
 indent_style = tab
+indent_size = 4
+tab_size = 4
 charset=utf-8
 
 # packages.config uses spaces
