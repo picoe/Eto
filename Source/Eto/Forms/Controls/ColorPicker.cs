@@ -45,6 +45,24 @@ namespace Eto.Forms
 			set { Handler.Color = value; }
 		}
 
+		/// <summary>
+		/// Gets a binding to the <see cref="Value"/> property.
+		/// </summary>
+		/// <value>The value binding.</value>
+		public ControlBinding<ColorPicker, Color> ValueBinding
+		{
+			get
+			{
+				return new ControlBinding<ColorPicker,Color>(
+					this,
+					r => r.Value,
+					(r,val) => r.Value = val,
+					(r, ev) => r.ValueChanged += ev,
+					(r, ev) => r.ValueChanged -= ev
+				);
+			}
+		}
+
 		static readonly object callback = new Callback();
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
