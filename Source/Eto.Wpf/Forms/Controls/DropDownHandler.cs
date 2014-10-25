@@ -17,6 +17,27 @@ namespace Eto.Wpf.Forms.Controls
 
 		public class EtoComboBox : swc.ComboBox
 		{
+			int? selected;
+
+			public EtoComboBox()
+			{
+				Loaded += ComboBoxEx_Loaded;
+			}
+
+			public override void OnApplyTemplate()
+			{
+				base.OnApplyTemplate();
+
+				selected = SelectedIndex;
+				SelectedIndex = -1;
+			}
+
+			protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
+			{
+				if (selected == null)
+					base.OnSelectionChanged(e);
+			}
+
 			protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 			{
 				base.OnItemsChanged(e);
@@ -26,27 +47,35 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 
+			void ComboBoxEx_Loaded(object sender, sw.RoutedEventArgs e)
+			{
+				if (selected == null) return;
+				SelectedIndex = selected.Value;
+				selected = null;
+			}
+
 			protected override sw.Size MeasureOverride(sw.Size constraint)
 			{
 				var size = base.MeasureOverride(constraint);
-				var popup = (swc.Primitives.Popup)GetTemplateChild("PART_Popup");
+				var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
+				if (popup == null)
+					return size;
 				popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
-				if (ItemContainerGenerator.Status == swc.Primitives.GeneratorStatus.ContainersGenerated)
+				if (ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
+					return size;
+				double maxWidth = 0;
+				foreach (var item in Items)
 				{
-					double maxWidth = 0;
-					foreach (var item in Items)
-					{
-						var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
-						comboBoxItem.Measure(Conversions.PositiveInfinitySize);
-						maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
-					}
-					var toggle = GetTemplateChild("toggleButton") as sw.UIElement;
-					if (toggle != null)
-						maxWidth += toggle.DesiredSize.Width; // add room for the toggle button
-					else
-						maxWidth += 20; // windows 7 doesn't name the toggle button, so hack it
-					size.Width = Math.Max(maxWidth, size.Width);
+					var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
+					comboBoxItem.Measure(Conversions.PositiveInfinitySize);
+					maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
 				}
+
+				var toggle = GetTemplateChild("toggleButton") as sw.UIElement;
+				maxWidth += toggle != null ? toggle.DesiredSize.Width : 20;
+				size.Width = Math.Max(maxWidth, size.Width);
+				if (!double.IsNaN(constraint.Width))
+					size.Width = Math.Min(size.Width, constraint.Width);
 				return size;
 			}
 		}
