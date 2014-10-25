@@ -131,10 +131,16 @@ namespace Eto.Forms
 		/// <value>The key binding.</value>
 		public IIndirectBinding<string> KeyBinding { get; set; }
 
+		static readonly object SelectedIndexChangedKey = new object();
+
 		/// <summary>
 		/// Occurs when the <see cref="SelectedIndex"/> changed.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedIndexChanged;
+		public event EventHandler<EventArgs> SelectedIndexChanged
+		{
+			add { Properties.AddEvent(SelectedIndexChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedIndexChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedIndexChanged"/> event.
@@ -142,15 +148,21 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
-			if (SelectedIndexChanged != null)
-				SelectedIndexChanged(this, e);
+			Properties.TriggerEvent(SelectedIndexChangedKey, this, e);
 			OnSelectedValueChanged(e);
+			OnSelectedKeyChanged(e);
 		}
+
+		static readonly object SelectedValueChangedKey = new object();
 
 		/// <summary>
 		/// Occurs when the <see cref="SelectedValue"/> changed.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedValueChanged;
+		public event EventHandler<EventArgs> SelectedValueChanged
+		{
+			add { Properties.AddEvent(SelectedValueChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedValueChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedValueChanged"/> event.
@@ -158,8 +170,27 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedValueChanged(EventArgs e)
 		{
-			if (SelectedValueChanged != null)
-				SelectedValueChanged(this, e);
+			Properties.TriggerEvent(SelectedValueChangedKey, this, e);
+		}
+
+		static readonly object SelectedKeyChangedKey = new object();
+
+		/// <summary>
+		/// Occurs when the <see cref="SelectedValue"/> changed.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedKeyChanged
+		{
+			add { Properties.AddEvent(SelectedKeyChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedKeyChangedKey, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="SelectedValueChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnSelectedKeyChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(SelectedKeyChangedKey, this, e);
 		}
 
 		/// <summary>
