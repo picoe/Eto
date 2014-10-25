@@ -332,6 +332,13 @@ namespace Eto.Wpf.Forms
 			set { Control.Title = value; }
 		}
 
+		static readonly object locationSetKey = new object();
+
+		protected bool LocationSet
+		{
+			get { return Widget.Properties.Get<bool?>(locationSetKey) ?? false; }
+			set { Widget.Properties[locationSetKey] = value; }
+		}
 
 		public new Point Location
 		{
@@ -343,6 +350,8 @@ namespace Eto.Wpf.Forms
 			{
 				Control.Left = value.X;
 				Control.Top = value.Y;
+				if (!Widget.Loaded)
+					LocationSet = true;
 			}
 		}
 
