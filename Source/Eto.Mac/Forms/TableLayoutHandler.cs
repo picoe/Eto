@@ -168,9 +168,7 @@ namespace Eto.Mac.Forms
 
 		public override void LayoutChildren()
 		{
-			if (!Widget.Loaded)
-				return;
-			if (NeedsQueue())
+			if (!Widget.Loaded || views == null || NeedsQueue())
 				return;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
