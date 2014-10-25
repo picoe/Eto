@@ -118,5 +118,11 @@ namespace Eto.iOS.Forms.Controls
 			get;
 			set;
 		}
+
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.TextAlignment.ToEto(); }
+			set { Control.TextAlignment = value.ToUI(); }
+		}
 	}
 }

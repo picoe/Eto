@@ -687,5 +687,35 @@ namespace Eto.WinForms
 		{
 			return new swf.SelectionRange(range.Start, range.End);
 		}
+
+		public static swf.HorizontalAlignment ToSWF(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Left:
+					return swf.HorizontalAlignment.Left;
+				case HorizontalAlign.Center:
+					return swf.HorizontalAlignment.Center;
+				case HorizontalAlign.Right:
+					return swf.HorizontalAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static HorizontalAlign ToEto(this swf.HorizontalAlignment align)
+		{
+			switch (align)
+			{
+				case swf.HorizontalAlignment.Center:
+					return HorizontalAlign.Center;
+				case swf.HorizontalAlignment.Left:
+					return HorizontalAlign.Left;
+				case swf.HorizontalAlignment.Right:
+					return HorizontalAlign.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

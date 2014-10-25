@@ -158,6 +158,12 @@ namespace Eto.WinRT.Forms.Controls
 			set { Control.AcceptsReturn = value; }
 		}
 
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.TextAlignment.ToEto(); }
+			set { Control.TextAlignment = value.ToWpfTextAlignment(); }
+		}
+
 		bool acceptsTab = true;
 		public bool AcceptsTab
 		{

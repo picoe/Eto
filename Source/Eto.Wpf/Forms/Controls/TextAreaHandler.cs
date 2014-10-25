@@ -22,6 +22,7 @@ namespace Eto.Wpf.Forms.Controls
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto
 			};
+			Wrap = true;
 		}
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
@@ -133,6 +134,18 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Control.AcceptsReturn; }
 			set { Control.AcceptsReturn = value; }
+		}
+
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.HorizontalContentAlignment.ToEto(); }
+			set { Control.HorizontalContentAlignment = value.ToWpf(); }
+		}
+
+		public VerticalAlign VerticalAlign
+		{
+			get { return Control.VerticalContentAlignment.ToEto(); }
+			set { Control.VerticalContentAlignment = value.ToWpf(); }
 		}
 	}
 }

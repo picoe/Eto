@@ -544,6 +544,37 @@ namespace Eto.WinRT
 			}
 		}
 
+		public static HorizontalAlign ToEto(this sw.TextAlignment align)
+		{
+			switch (align)
+			{
+				case sw.TextAlignment.Left:
+					return HorizontalAlign.Left;
+				case sw.TextAlignment.Right:
+					return HorizontalAlign.Right;
+				case sw.TextAlignment.Center:
+					return HorizontalAlign.Center;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static sw.TextAlignment ToWpfTextAlignment(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Center:
+					return sw.TextAlignment.Center;
+				case HorizontalAlign.Left:
+					return sw.TextAlignment.Left;
+				case HorizontalAlign.Right:
+					return sw.TextAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+
 #if TODO_XAML
 		public static WindowStyle ToEto(this sw.WindowStyle style)
 		{

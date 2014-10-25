@@ -249,32 +249,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public HorizontalAlign HorizontalAlign
 		{
-			get
-			{
-				switch (paragraphStyle.Alignment)
-				{
-					case NSTextAlignment.Center:
-						return HorizontalAlign.Center;
-					case NSTextAlignment.Right:
-						return HorizontalAlign.Right;
-					default:
-						return HorizontalAlign.Left;
-				}
-			}
+			get { return paragraphStyle.Alignment.ToEto(); }
 			set
 			{
-				switch (value)
-				{
-					case HorizontalAlign.Center:
-						paragraphStyle.Alignment = NSTextAlignment.Center;
-						break;
-					case HorizontalAlign.Right:
-						paragraphStyle.Alignment = NSTextAlignment.Right;
-						break;
-					case HorizontalAlign.Left:
-						paragraphStyle.Alignment = NSTextAlignment.Left;
-						break;
-				}
+				paragraphStyle.Alignment = value.ToNS();
 				SetAttributes();
 			}
 		}

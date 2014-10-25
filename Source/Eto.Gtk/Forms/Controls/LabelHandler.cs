@@ -158,20 +158,16 @@ namespace Eto.GtkSharp
 		{
 			float xalignment;
 			float yalignment;
-			Gtk.Justification justify;
 			switch (horizontalAlign)
 			{
 				default:
 					xalignment = 0F;
-					justify = Gtk.Justification.Left;
 					break;
 				case HorizontalAlign.Center:
 					xalignment = 0.5F;
-					justify = Gtk.Justification.Center;
 					break;
 				case HorizontalAlign.Right:
 					xalignment = 1F;
-					justify = Gtk.Justification.Right;
 					break;
 			}
 			switch (verticalAlign)
@@ -187,7 +183,7 @@ namespace Eto.GtkSharp
 					break;
 			}
 			Control.SetAlignment(xalignment, yalignment);
-			Control.Justify = justify;
+			Control.Justify = horizontalAlign.ToGtk();
 		}
 
 		public VerticalAlign VerticalAlign

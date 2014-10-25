@@ -51,7 +51,7 @@ namespace Eto.Mac
 			if (color == null)
 				return Colors.Black;
 			//if (color.ColorSpace.ColorSpaceModel != NSColorSpaceModel.RGB)
-				color = color.UsingColorSpace(NSColorSpace.CalibratedRGB);
+			color = color.UsingColorSpace(NSColorSpace.CalibratedRGB);
 			nfloat red, green, blue, alpha;
 			color.GetRgba(out red, out green, out blue, out alpha);
 			return new Color((float)red, (float)green, (float)blue, (float)alpha);
@@ -351,6 +351,35 @@ namespace Eto.Mac
 					return NSDatePickerMode.Single;
 				case CalendarMode.Range:
 					return NSDatePickerMode.Range;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static HorizontalAlign ToEto(this NSTextAlignment align)
+		{
+			switch (align)
+			{
+				default:
+				case NSTextAlignment.Left:
+					return HorizontalAlign.Left;
+				case NSTextAlignment.Right:
+					return HorizontalAlign.Right;
+				case NSTextAlignment.Center:
+					return HorizontalAlign.Center;
+			}
+		}
+
+		public static NSTextAlignment ToNS(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Left:
+					return NSTextAlignment.Left;
+				case HorizontalAlign.Center:
+					return NSTextAlignment.Center;
+				case HorizontalAlign.Right:
+					return NSTextAlignment.Right;
 				default:
 					throw new NotSupportedException();
 			}

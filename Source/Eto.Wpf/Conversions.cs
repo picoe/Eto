@@ -553,5 +553,80 @@ namespace Eto.Wpf
 					throw new NotSupportedException();
 			}
 		}
+
+		public static HorizontalAlign ToEto(this sw.HorizontalAlignment align)
+		{
+			switch (align)
+			{
+				case sw.HorizontalAlignment.Left:
+					return HorizontalAlign.Left;
+				case sw.HorizontalAlignment.Right:
+					return HorizontalAlign.Right;
+				case sw.HorizontalAlignment.Center:
+					return HorizontalAlign.Center;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static sw.HorizontalAlignment ToWpf(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Center:
+					return sw.HorizontalAlignment.Center;
+				case HorizontalAlign.Left:
+					return sw.HorizontalAlignment.Left;
+				case HorizontalAlign.Right:
+					return sw.HorizontalAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static sw.TextAlignment ToWpfTextAlignment(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Center:
+					return sw.TextAlignment.Center;
+				case HorizontalAlign.Left:
+					return sw.TextAlignment.Left;
+				case HorizontalAlign.Right:
+					return sw.TextAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static VerticalAlign ToEto(this sw.VerticalAlignment align)
+		{
+			switch (align)
+			{
+				case sw.VerticalAlignment.Top:
+					return VerticalAlign.Top;
+				case sw.VerticalAlignment.Bottom:
+					return VerticalAlign.Bottom;
+				case sw.VerticalAlignment.Center:
+					return VerticalAlign.Middle;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static sw.VerticalAlignment ToWpf(this VerticalAlign align)
+		{
+			switch (align)
+			{
+				case VerticalAlign.Top:
+					return sw.VerticalAlignment.Top;
+				case VerticalAlign.Bottom:
+					return sw.VerticalAlignment.Bottom;
+				case VerticalAlign.Middle:
+					return sw.VerticalAlignment.Center;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

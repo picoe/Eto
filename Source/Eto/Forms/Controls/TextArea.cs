@@ -128,6 +128,7 @@ namespace Eto.Forms
 		/// Typically, a platform will word wrap the text.
 		/// </remarks>
 		/// <value><c>true</c> to wrap the text; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public bool Wrap
 		{
 			get { return Handler.Wrap; }
@@ -206,6 +207,16 @@ namespace Eto.Forms
 		{
 			get { return Handler.AcceptsReturn; }
 			set { Handler.AcceptsReturn = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the horizontal alignment of the text.
+		/// </summary>
+		/// <value>The horizontal alignment.</value>
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Handler.HorizontalAlign; }
+			set { Handler.HorizontalAlign = value; }
 		}
 
 		/// <summary>
@@ -351,6 +362,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if the TextArea accepts the return key; otherwise, <c>false</c>.</value>
 			bool AcceptsReturn { get; set; }
+
+			/// <summary>
+			/// Gets or sets the horizontal alignment of the text.
+			/// </summary>
+			/// <value>The horizontal alignment.</value>
+			HorizontalAlign HorizontalAlign { get; set; }
 		}
 	}
 }

@@ -288,6 +288,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value)
 				{
 					Control.TextContainer.WidthTracksTextView = true;
+					Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
 				}
 				else
 				{
@@ -373,6 +374,12 @@ namespace Eto.Mac.Forms.Controls
 			Control.SelectedRange = range;
 			if (scrollToCursor)
 				Control.ScrollRangeToVisible(range);
+		}
+
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.Alignment.ToEto(); }
+			set { Control.Alignment = value.ToNS(); }
 		}
 	}
 }

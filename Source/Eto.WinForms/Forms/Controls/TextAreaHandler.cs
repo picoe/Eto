@@ -30,6 +30,17 @@ namespace Eto.WinForms
 
 				return base.IsInputKey(keyData);
 			}
+
+			protected override void OnKeyDown(swf.KeyEventArgs e)
+			{
+				if (!AcceptsReturn && e.KeyData == swf.Keys.Return)
+				{
+					e.Handled = true;
+					return;
+				}
+
+				base.OnKeyDown(e);
+			}
 		}
 
 		public static Size DefaultMinimumSize = new Size(100, 60);
@@ -169,6 +180,19 @@ namespace Eto.WinForms
 		public override bool ShouldBubbleEvent(swf.Message msg)
 		{
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
+		}
+
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.SelectionAlignment.ToEto(); }
+			set
+			{
+				if (value == HorizontalAlign) return;
+				var sel = Selection;
+				Control.SelectAll();
+				Control.SelectionAlignment = value.ToSWF();
+				Selection = sel;
+			}
 		}
 	}
 }

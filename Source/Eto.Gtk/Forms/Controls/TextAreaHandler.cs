@@ -25,6 +25,7 @@ namespace Eto.GtkSharp
 			Control = new Gtk.TextView();
 			Size = TextArea.DefaultSize;
 			scroll.Add(Control);
+			Wrap = true;
 		}
 
 		public override void AttachEvent(string id)
@@ -296,5 +297,12 @@ namespace Eto.GtkSharp
 				}
 			}
 		}
+
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.Justification.ToEto(); }
+			set { Control.Justification = value.ToGtk(); }
+		}
+
 	}
 }
