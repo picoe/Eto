@@ -70,7 +70,6 @@
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\ClipSection.cs" />
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
-    <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
     <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />

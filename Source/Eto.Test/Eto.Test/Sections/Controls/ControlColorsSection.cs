@@ -6,9 +6,10 @@ using System;
 
 namespace Eto.Test.Sections.Controls
 {
-	[Section("Controls", "Control Colors")]
+	[Section("Controls", "Control Font & Colors")]
 	public class ControlColorsSection : AllControlsBase
 	{
+		readonly List<Action<Font>> fontUpdates = new List<Action<Font>>();
 		readonly List<Action<Color>> foregroundUpdates = new List<Action<Color>>();
 		readonly List<Action<Color>> backgroundUpdates = new List<Action<Color>>();
 
@@ -31,6 +32,17 @@ namespace Eto.Test.Sections.Controls
 			var formColorPicker = new ColorPicker { Value = BackgroundColor };
 			formColorPicker.ValueChanged += (sender, e) => BackgroundColor = formColorPicker.Value;
 
+			var fontPicker = new Button { Text = "Pick Font" };
+			fontPicker.Click += (sender, e) => {
+				var dlg = new FontDialog();
+				dlg.FontChanged += (sender2, e2) => {
+					var font = dlg.Font;
+					foreach (var update in fontUpdates)
+						update(font);
+				};
+				dlg.ShowDialog(this);
+			};
+
 			return new TableLayout(
 				new TableRow(
 					null, 
@@ -40,15 +52,10 @@ namespace Eto.Test.Sections.Controls
 					backgroundPicker,
 					new Label { Text = "Form", VerticalAlign = VerticalAlign.Middle },
 					formColorPicker,
+					fontPicker,
 					null
 				)
 			);
-		}
-
-		protected override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			//backgroundUpdates.ForEach(r => r(Colors.White));
 		}
 
 		protected override void LogEvents(Control control)
@@ -75,11 +82,19 @@ namespace Eto.Test.Sections.Controls
 
 			var groupBox = control as GroupBox;
 			if (groupBox != null)
+			{
 				foregroundUpdates.Add(c => groupBox.TextColor = c);
+				fontUpdates.Add(c => groupBox.Font = c);
+			}
 
 			var listControl = control as ListControl;
 			if (listControl != null)
 				foregroundUpdates.Add(c => listControl.TextColor = c);
+
+			var commonControl = control as CommonControl;
+			if (commonControl != null)
+				fontUpdates.Add(c => commonControl.Font = c);
+
 		}
 	}
 }
