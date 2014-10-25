@@ -301,6 +301,7 @@
     <Compile Include="Forms\Layout\TableCell.cs" />
     <Compile Include="Forms\Layout\TableRow.cs" />
     <Compile Include="ExtendedObservableCollection.cs" />
+    <Compile Include="Forms\WidgetExtensions.cs" />
     <Compile Include="Binding\Binding.helpers.cs" />
     <Compile Include="Binding\PropertyNotifyHelper.cs" />
   </ItemGroup>
