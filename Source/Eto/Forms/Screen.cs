@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Eto.Drawing;
 using System;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -31,7 +32,7 @@ namespace Eto.Forms
 		{
 		}
 
-		#pragma warning disable 612,618
+#pragma warning disable 612,618
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Screen"/> class.
@@ -54,7 +55,7 @@ namespace Eto.Forms
 		{
 		}
 
-		#pragma warning restore 612,618
+#pragma warning restore 612,618
 
 		/// <summary>
 		/// Gets an enumerable of display screens available on the current system.
@@ -259,6 +260,76 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The primary screen.</value>
 			Screen PrimaryScreen { get; }
+		}
+
+		/// <summary>
+		/// Gets the screen that contains the specified <paramref name="point"/>,
+		/// or the closest screen to the point if it is outside the bounds of all screens.
+		/// </summary>
+		/// <returns>The screen encompassing or closest the specified point.</returns>
+		/// <param name="point">Point to find the screen.</param>
+		public static Screen FromPoint(PointF point)
+		{
+			var screens = Screens.ToArray();
+			foreach (var screen in screens)
+			{
+				if (screen.Bounds.Contains(point))
+					return screen;
+			}
+
+			Screen foundScreen = null;
+			float foundDistance = float.MaxValue;
+			foreach (var screen in screens)
+			{
+				var diff = RectangleF.Distance(screen.Bounds, point);
+				var distance = (float)Math.Sqrt(diff.Width * diff.Width + diff.Height * diff.Height);
+				if (distance < foundDistance)
+				{
+					foundScreen = screen;
+					foundDistance = distance;
+				}
+			}
+			return foundScreen ?? PrimaryScreen;
+		}
+
+		/// <summary>
+		/// Gets the screen that encompases the biggest part of the specified <paramref name="rectangle"/>,
+		/// or the closest screen to the rectangle if it is outside the bounds of all screens..
+		/// </summary>
+		/// <returns>The screen encompassing or closest to the specified rectangle.</returns>
+		/// <param name="rectangle">Rectangle to find the screen.</param>
+		public static Screen FromRectangle(RectangleF rectangle)
+		{
+			Screen foundScreen = null;
+			float foundArea = 0;
+			var screens = Screens.ToArray();
+			foreach (var screen in screens)
+			{
+				var rect = rectangle;
+				rect.Intersect(screen.Bounds);
+				var area = rect.Size.Width * rect.Size.Height;
+				if (area > foundArea)
+				{
+					foundScreen = screen;
+					foundArea = area;
+				}
+			}
+			if (foundScreen != null)
+				return foundScreen;
+
+			// find by distance
+			float foundDistance = float.MaxValue;
+			foreach (var screen in screens)
+			{
+				var diff = RectangleF.Distance(rectangle, screen.Bounds);
+				var distance = (float)Math.Sqrt(diff.Width * diff.Width + diff.Height * diff.Height);
+				if (distance < foundDistance)
+				{
+					foundScreen = screen;
+					foundDistance = distance;
+				}
+			}
+			return foundScreen ?? PrimaryScreen;
 		}
 	}
 }
