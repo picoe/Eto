@@ -143,7 +143,7 @@ namespace Eto.Forms
 		/// <returns>The binding between the data context and this binding</returns>
 		public DualBinding<TValue> BindDataContext<TObject>(Expression<Func<TObject, TValue>> propertyExpression, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			var memberInfo = GetMemberInfo(propertyExpression);
+			var memberInfo = propertyExpression.GetMemberInfo();
 			if (memberInfo == null)
 			{
 				var getValue = propertyExpression.Compile();

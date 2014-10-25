@@ -42,7 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Binding\Binding.helpers.cs" />
     <Compile Include="Binding\ColumnBinding.cs" />
+    <Compile Include="Binding\PropertyNotifyHelper.cs" />
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\DashStyle.cs" />

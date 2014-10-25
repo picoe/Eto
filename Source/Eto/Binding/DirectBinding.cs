@@ -65,17 +65,17 @@ namespace Eto
 		public abstract T DataValue { get; set; }
 
 		/// <summary>
-		/// Creates a new binding with a specified parameter type of <typeparamref name="TValue"/> based on this binding's value.
+		/// Converts this binding's value to another value using delegates.
 		/// </summary>
 		/// <remarks>
-		/// This is useful when you want to cast one binding to another, or perform logic when getting/setting a value from a particular
-		/// binding.
+		/// This is useful when you want to cast one binding to another, perform logic when getting/setting a value from a particular
+		/// binding, or get/set a preoperty of the value.
 		/// </remarks>
 		/// <typeparam name="TValue">Type of the value for the new binding</typeparam>
 		/// <param name="getValue">Delegate to translate the value when getting it for the new binding</param>
 		/// <param name="setValue">Delegate to translate the value when setting it to this binding</param>
 		/// <returns>A new binding with the specified <typeparamref name="TValue"/> type.</returns>
-		public DirectBinding<TValue> Select<TValue>(Func<T,TValue> getValue, Action<TValue> setValue = null)
+		public DirectBinding<TValue> Convert<TValue>(Func<T, TValue> getValue, Action<TValue> setValue = null)
 		{
 			return new DelegateBinding<TValue>(
 				() => getValue != null ? getValue(DataValue) : default(TValue),
@@ -83,6 +83,70 @@ namespace Eto
 				addChangeEvent: ev => DataValueChanged += ev,
 				removeChangeEvent: ev => DataValueChanged -= ev
 			);
+		}
+
+		/// <summary>
+		/// Casts this binding value to another (compatible) type.
+		/// </summary>
+		/// <typeparam name="TValue">The type to cast the values of this binding to.</typeparam>
+		public DirectBinding<TValue> Cast<TValue>()
+		{
+			return new DelegateBinding<TValue>(
+				() => (TValue)(object)DataValue,
+				val => DataValue = (T)(object)val,
+				addChangeEvent: ev => DataValueChanged += ev,
+				removeChangeEvent: ev => DataValueChanged -= ev
+			);
+		}
+
+		/// <summary>
+		/// Converts this binding to return a nullable boolean binding
+		/// </summary>
+		/// <remarks>
+		/// This is useful when converting a binding to be used for a checkbox's Checked binding for example.
+		/// When the binding's value matches the <paramref name="trueValue"/>, it will return true.
+		/// </remarks>
+		/// <returns>Boolean binding.</returns>
+		/// <param name="trueValue">Value when the binding is true.</param>
+		/// <param name="falseValue">Value when the binding is false.</param>
+		/// <param name="nullValue">Value when the binding is null.</param>
+		public DirectBinding<bool?> ToBool(T trueValue, T falseValue, T nullValue)
+		{
+			return new DelegateBinding<bool?>(
+				() => Equals(DataValue, trueValue),
+				val => { DataValue = val == true ? trueValue : val == false ? falseValue : nullValue; },
+				addChangeEvent: ev => DataValueChanged += ev,
+				removeChangeEvent: ev => DataValueChanged -= ev
+			);
+		}
+
+		/// <summary>
+		/// Converts this binding to return a nullable boolean binding
+		/// </summary>
+		/// <remarks>
+		/// This is useful when converting a binding to be used for a checkbox's Checked binding for example.
+		/// When the binding's value matches the <paramref name="trueValue"/>, it will return true.
+		/// </remarks>
+		/// <returns>Boolean binding.</returns>
+		/// <param name="trueValue">Value when the binding is true.</param>
+		/// <param name="falseValue">Value when the binding is false or null.</param>
+		public DirectBinding<bool?> ToBool(T trueValue, T falseValue)
+		{
+			return ToBool(trueValue, falseValue, falseValue);
+		}
+
+		/// <summary>
+		/// Converts this binding to return a nullable boolean binding
+		/// </summary>
+		/// <remarks>
+		/// This is useful when converting a binding to be used for a checkbox's Checked binding for example.
+		/// When the binding's value matches the <paramref name="trueValue"/>, it will return true.
+		/// </remarks>
+		/// <returns>Boolean binding.</returns>
+		/// <param name="trueValue">Value when the binding is true, false, or null.</param>
+		public DirectBinding<bool?> ToBool(T trueValue)
+		{
+			return ToBool(trueValue, trueValue, trueValue);
 		}
 	}
 }

@@ -335,7 +335,7 @@ namespace Eto
 		/// <returns>The binding between the data context and this binding</returns>
 		public DualBinding<TValue> Bind<TObject>(TObject objectValue, Expression<Func<TObject, TValue>> propertyExpression, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			var memberInfo = GetMemberInfo(propertyExpression);
+			var memberInfo = propertyExpression.GetMemberInfo();
 			if (memberInfo == null)
 			{
 				var getValue = propertyExpression.Compile();
@@ -344,22 +344,5 @@ namespace Eto
 			return Bind(objectValue, new PropertyBinding<TValue>(memberInfo.Member.Name), mode);
 		}
 
-		internal static MemberExpression GetMemberInfo(Expression method)
-		{
-			var lambda = method as LambdaExpression;
-			if (lambda == null)
-				return null;
-
-			if (lambda.Body.NodeType == ExpressionType.Convert)
-			{
-				return ((UnaryExpression)lambda.Body).Operand as MemberExpression;
-			}
-			if (lambda.Body.NodeType == ExpressionType.MemberAccess)
-			{
-				return lambda.Body as MemberExpression;
-			}
-
-			return null;
-		}
 	}
 }

@@ -42,7 +42,7 @@ namespace Eto
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class Binding : IBinding
+	public abstract partial class Binding : IBinding
 	{
 		#region Events
 

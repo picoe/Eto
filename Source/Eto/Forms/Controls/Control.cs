@@ -729,8 +729,11 @@ namespace Eto.Forms
 			get { return Properties.Get<object>(DataContextKey) ?? (Parent == null ? null : Parent.DataContext); }
 			set
 			{
-				Properties[DataContextKey] = value;
-				OnDataContextChanged(EventArgs.Empty);
+				if (!ReferenceEquals(value, Properties.Get<object>(DataContextKey)))
+				{
+					Properties[DataContextKey] = value;
+					OnDataContextChanged(EventArgs.Empty);
+				}
 			}
 		}
 

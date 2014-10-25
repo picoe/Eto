@@ -80,13 +80,13 @@ namespace Eto.Forms
 				return item.Text;
 			if (HasProperty(dataItem))
 				return base.InternalGetValue(dataItem);
-			return dataItem != null ? Convert.ToString(dataItem) : null;
+			return dataItem != null ? System.Convert.ToString(dataItem) : null;
 		}
 		protected override void InternalSetValue(object dataItem, string value)
 		{
 			var item = dataItem as IListItem;
 			if (item != null)
-				item.Text = Convert.ToString(value);
+				item.Text = System.Convert.ToString(value);
 			else
 				base.InternalSetValue(dataItem, value);
 		}
@@ -107,7 +107,7 @@ namespace Eto.Forms
 				return item.Key;
 			if (HasProperty(dataItem))
 				return base.InternalGetValue(dataItem);
-			return dataItem != null ? Convert.ToString(dataItem) : null;
+			return dataItem != null ? System.Convert.ToString(dataItem) : null;
 		}
 	}
 

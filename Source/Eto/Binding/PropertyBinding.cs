@@ -136,7 +136,7 @@ namespace Eto
 				if (val != null && !propertyType.IsInstanceOfType(val))
 				{
 					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-					val = Convert.ChangeType(val, propertyType, CultureInfo.InvariantCulture);
+					val = System.Convert.ChangeType(val, propertyType, CultureInfo.InvariantCulture);
 				}
 				return (T)val;
 			}
@@ -160,7 +160,7 @@ namespace Eto
 					#if PCL
 					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 					#endif
-					val = Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
+					val = System.Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
 				}
 				descriptor.SetValue(dataItem, val);
 			}
