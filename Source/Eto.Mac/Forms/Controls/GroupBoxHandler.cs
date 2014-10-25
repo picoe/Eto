@@ -120,7 +120,11 @@ namespace Eto.Mac.Forms.Controls
 		public Color TextColor
 		{
 			get { return TitleCell.TextColor.ToEto(); }
-			set { TitleCell.TextColor = value.ToNSUI(); }
+			set
+			{ 
+				TitleCell.TextColor = value.ToNSUI(); 
+				Control.SetNeedsDisplay();
+			}
 		}
 	}
 }
