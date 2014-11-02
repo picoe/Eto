@@ -141,9 +141,11 @@ namespace Eto.Mac.Forms.Controls
 			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 		}
 
-		public override void PostKeyDown(KeyEventArgs e)
+		public override void OnKeyDown(KeyEventArgs e)
 		{
-			base.PostKeyDown(e);
+			base.OnKeyDown(e);
+			if (e.Handled)
+				return;
 			if (e.KeyData == Keys.Down)
 			{
 				var val = Value;

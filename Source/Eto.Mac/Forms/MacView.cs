@@ -85,7 +85,7 @@ namespace Eto.Mac.Forms
 
 		Cursor CurrentCursor { get; }
 
-		void PostKeyDown(KeyEventArgs e);
+		void OnKeyDown(KeyEventArgs e);
 
 		void OnSizeChanged(EventArgs e);
 	}
@@ -587,8 +587,9 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public virtual void PostKeyDown(KeyEventArgs e)
+		public virtual void OnKeyDown(KeyEventArgs e)
 		{
+			Callback.OnKeyDown(Widget, e);
 		}
 
 		Control IMacViewHandler.Widget { get { return Widget; } }

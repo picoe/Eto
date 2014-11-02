@@ -122,9 +122,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override void PostKeyDown(KeyEventArgs e)
+		public override void OnKeyDown(KeyEventArgs e)
 		{
-			if (e.Key == Keys.Enter)
+			base.OnKeyDown(e);
+
+			if (!e.Handled && e.Key == Keys.Enter)
 			{
 				Callback.OnActivated(Widget, EventArgs.Empty);
 				e.Handled = true;
