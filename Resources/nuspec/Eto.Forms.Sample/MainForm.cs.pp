@@ -27,7 +27,7 @@ namespace $rootnamespace$
 			};
 
 			// create a few commands that can be used for the menu and toolbar
-			var clickMe = new Command { MenuText = "Click Me!", ShowLabel = true, ToolBarText = "Click Me!" };
+			var clickMe = new Command { MenuText = "Click Me!", ToolBarText = "Click Me!" };
 			clickMe.Executed += (sender, e) => MessageBox.Show(this, "I was clicked!");
 
 			var quitCommand = new Command { MenuText = "Quit", Shortcut = Application.Instance.CommonModifier | Keys.Q };
