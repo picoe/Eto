@@ -15,8 +15,6 @@ namespace Eto
 	/// </remarks>
 	class PropertyNotifyHelper
 	{
-		public INotifyPropertyChanged Object { get; private set; }
-
 		public string PropertyName { get; private set; }
 
 		public event EventHandler<EventArgs> Changed;
