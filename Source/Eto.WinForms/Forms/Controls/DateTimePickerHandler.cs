@@ -13,7 +13,9 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			Control = new ExtendedDateTimePicker { ExtendedMode = true };
 			Control.ShowCheckBox = true;
+			#pragma warning disable 612,618
 			Mode = DateTimePicker.DefaultMode;
+			#pragma warning restore 612,618
 			Value = null;
 			Control.ValueChanged += delegate
 			{

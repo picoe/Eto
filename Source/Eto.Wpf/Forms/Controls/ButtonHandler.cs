@@ -149,7 +149,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public virtual Color TextColor
+		public override Color TextColor
 		{
 			get { return label.Foreground.ToEtoColor(); }
 			set { label.Foreground = value.ToWpfBrush(Control.Foreground); }

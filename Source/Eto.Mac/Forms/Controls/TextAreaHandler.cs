@@ -146,7 +146,9 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
+			#pragma warning disable 612,618
 			return TextArea.DefaultSize;
+			#pragma warning restore 612,618
 		}
 
 		public override void AttachEvent(string id)

@@ -111,7 +111,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public Color TextColor
+		public override Color TextColor
 		{
 			get { return text.Foreground.ToEtoColor(); }
 			set { text.Foreground = value.ToWpfBrush(text.Foreground); }

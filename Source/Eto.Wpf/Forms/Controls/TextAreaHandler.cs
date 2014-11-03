@@ -9,7 +9,9 @@ namespace Eto.Wpf.Forms.Controls
 	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
+		#pragma warning disable 612,618
 		readonly Size defaultSize = TextArea.DefaultSize;
+		#pragma warning restore 612,618
 
 		protected override Size DefaultSize { get { return defaultSize; } }
 
@@ -85,12 +87,6 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get	{ return Control.Text; }
 			set	{ Control.Text = value;	}
-		}
-
-		public Color TextColor
-		{
-			get { return Control.Foreground.ToEtoColor(); }
-			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
 
 		public bool Wrap

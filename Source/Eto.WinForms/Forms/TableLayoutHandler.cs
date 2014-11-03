@@ -49,8 +49,10 @@ namespace Eto.WinForms
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};
-			this.Spacing = TableLayout.DefaultSpacing;
-			this.Padding = TableLayout.DefaultPadding;
+			#pragma warning disable 612,618
+			Spacing = TableLayout.DefaultSpacing;
+			Padding = TableLayout.DefaultPadding;
+			#pragma warning restore 612,618
 		}
 
 		public void Update()

@@ -71,7 +71,9 @@ namespace Eto.Mac.Forms.Controls
 				Calendar = NSCalendar.CurrentCalendar,
 				DateValue = DateTime.Now.ToNS()
 			};
+			#pragma warning disable 612,618
 			this.Mode = DateTimePicker.DefaultMode;
+			#pragma warning restore 612,618
 			// apple+backspace clears the value
 			Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
 		}
