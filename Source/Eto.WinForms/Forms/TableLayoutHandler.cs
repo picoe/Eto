@@ -18,6 +18,8 @@ namespace Eto.WinForms
 
 		protected override bool SetMinimumSize(Size size)
 		{
+			if (columnScale == null || rowScale == null)
+				return base.SetMinimumSize(size);
 			// ensure that our width doesn't get smaller than the non-scaled child controls
 			// to make it so the child controls are left-justified when the container
 			// is smaller than all the children
