@@ -64,7 +64,7 @@ namespace Eto.GtkSharp
 
 		protected GtkControl()
 		{
-			size = Size.Empty;
+			size = new Size(-1, -1);
 		}
 
 		public virtual Size DefaultSize { get { return new Size(-1, -1); } }

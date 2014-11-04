@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 
-namespace Eto.WinForms.Forms
+namespace Eto.WinForms
 {
 	public class ComboBoxHandler : DropDownHandler, ComboBox.IHandler
 	{
