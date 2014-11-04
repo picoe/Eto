@@ -695,6 +695,7 @@ namespace Eto.Forms
 		/// allows the user to select text, but not change its contents.
 		/// </remarks>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public virtual bool Enabled
 		{
 			get { return Handler.Enabled; }
@@ -710,6 +711,7 @@ namespace Eto.Forms
 		/// of one of the panels is changed.
 		/// </remarks>
 		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public virtual bool Visible
 		{
 			get { return Handler.Visible; }
