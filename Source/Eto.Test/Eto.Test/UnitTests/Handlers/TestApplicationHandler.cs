@@ -37,7 +37,7 @@ namespace Eto.Test.UnitTests.Handlers
 			throw new NotImplementedException();
 		}
 
-		async Task<Action> GetNextAction()
+		Action GetNextAction()
 		{
 			tcsInvoke.Task.Wait();
 			lock (invoke_lock)
@@ -47,14 +47,13 @@ namespace Eto.Test.UnitTests.Handlers
 			}
 		}
 
-
-		public async void Run()
+		public void Run()
 		{
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			mainThread = GetThreadId();
 			while (running)
 			{
-				var action = await GetNextAction();
+				var action = GetNextAction();
 				if (action != null)
 					action();
 			}
