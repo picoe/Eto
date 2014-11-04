@@ -21,6 +21,9 @@ namespace Eto.Test.UnitTests
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class TestUtils
 	{
+		/// <summary>
+		/// Category to exclude when using the Test platform, and only run when on a "real" platform.
+		/// </summary>
 		public const string NoTestPlatformCategory = "NoTestPlatform";
 
 		/// <summary>

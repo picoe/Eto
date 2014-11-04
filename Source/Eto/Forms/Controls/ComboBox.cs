@@ -2,44 +2,55 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Presents a comboBox to select from a list of items
+	/// Presents a combination of an editable text box and drop down to select from a list of items and enter text.
 	/// </summary>
-	[Handler(typeof(ComboBox.IHandler))]
+	[Handler(typeof(IHandler))]
 	public class ComboBox : DropDown
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DropDown"/> class.
+		/// Event identifier for handlers when attaching the <see cref="TextChanged"/> event.
 		/// </summary>
-		public ComboBox()
+		public const string TextChangedEvent = "ComboBox.TextChanged";
+
+		/// <summary>
+		/// Occurs when the Text property is changed either by the user or programatically.
+		/// </summary>
+		public event EventHandler<EventArgs> TextChanged
 		{
-			Handler.Create(false);
-			Initialize();
+			add { Properties.AddHandlerEvent(TextChangedEvent, value); }
+			remove { Properties.RemoveEvent(TextChangedEvent, value); }
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DropDown"/> class.
+		/// Raises the <see cref="TextChanged"/> event.
 		/// </summary>
-		/// <param name="isEditable">If isEditable=true, the comboBox allow input text.</param>
-		public ComboBox(bool isEditable = false)
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnTextChanged(EventArgs e)
 		{
-			Handler.Create(isEditable);
-			Initialize();
+			Properties.TriggerEvent(TextChangedEvent, this, e);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ComboBox"/> class.
+		/// </summary>
+		public ComboBox()
+		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ComboBox"/> class.
 		/// </summary>
 		/// <param name="generator">Generator.</param>
-		/// <param name="isEditable"></param>
 		[Obsolete("Use default constructor instead")]
-		public ComboBox(Generator generator, bool isEditable = false)
-			: this(generator, typeof(IHandler), isEditable)
+		public ComboBox(Generator generator)
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -48,47 +59,91 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="generator">Generator.</param>
 		/// <param name="type">Type.</param>
-		/// <param name="isEditable"></param>
 		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ComboBox(Generator generator, Type type, bool isEditable = false, bool initialize = true)
-			: base(generator, type, false)
+		protected ComboBox(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
-			Handler.Create(isEditable);
-			Initialize();
 		}
 
 		/// <summary>
-		/// Gets or sets the text of the DropDown.
+		/// Gets or sets the text of the ComboBox.
 		/// </summary>
 		/// <value>The text content.</value>
-		public virtual string Text
+		public string Text
 		{
 			get { return Handler.Text; }
 			set { Handler.Text = value; }
 		}
 
 		/// <summary>
-		/// Gets or sets the editable of ComboBox.
+		/// Gets or sets whether the user can change the text in the combo box.
 		/// </summary>
-		public virtual bool IsEditable
+		/// <remarks>
+		/// When <c>true</c>, the user will still be able to select/copy the text, select items from the drop down, etc.
+		/// To disable the control, use the <see cref="Control.Enabled"/> property.
+		/// </remarks>
+		public bool ReadOnly
 		{
-			get { return Handler.IsEditable; }
-			set { Handler.IsEditable = value; }
+			get { return Handler.ReadOnly; }
+			set { Handler.ReadOnly = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets a value indicating that the text should autocomplete when the user types in a value.
+		/// </summary>
+		/// <remarks>
+		/// The autocomplete will be based off of the items in the combo box.
+		/// </remarks>
+		/// <value><c>true</c> to auto complete the text; otherwise, <c>false</c>.</value>
+		public bool AutoComplete
+		{
+			get { return Handler.AutoComplete; }
+			set { Handler.AutoComplete = value; }
+		}
+
+		static readonly object callback = new Callback();
+
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
+		protected override object GetCallback()
+		{
+			return callback;
+		}
+
+		/// <summary>
+		/// Callback interface for the <see cref="ComboBox"/>
+		/// </summary>
+		public new interface ICallback : DropDown.ICallback
+		{
+			/// <summary>
+			/// Raises the text changed event.
+			/// </summary>
+			void OnTextChanged(ComboBox widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for handlers of <see cref="ListControl"/>
+		/// </summary>
+		protected new class Callback : DropDown.Callback, ICallback
+		{
+			/// <summary>
+			/// Raises the text changed event.
+			/// </summary>
+			public void OnTextChanged(ComboBox widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnTextChanged(e));
+			}
+		}
+
 
 		/// <summary>
 		/// Handler interface for the <see cref="ComboBox"/>
 		/// </summary>
-		[AutoInitialize(false)]
 		public new interface IHandler : DropDown.IHandler
 		{
-			/// <summary>
-			/// Used when creating a new instance of the DropDown to specify isEditable
-			/// </summary>
-			/// <param name="isEditable">If isEditable=true, the comboBox allow input text.</param>
-			void Create(bool isEditable);
-
 			/// <summary>
 			/// Gets or sets the text of the ComboBox.
 			/// </summary>
@@ -98,7 +153,16 @@ namespace Eto.Forms
 			/// <summary>
 			/// Gets or sets the editable of ComboBox.
 			/// </summary>
-			bool IsEditable { get; set; }
+			bool ReadOnly { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating that the text should autocomplete when the user types in a value.
+			/// </summary>
+			/// <remarks>
+			/// The autocomplete will be based off of the items in the combo box.
+			/// </remarks>
+			/// <value><c>true</c> to auto complete the text; otherwise, <c>false</c>.</value>
+			bool AutoComplete { get; set; }
 		}
 	}
 }

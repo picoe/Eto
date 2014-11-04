@@ -8,111 +8,129 @@ using Eto.Drawing;
 
 namespace Eto.WinForms
 {
-	public class DropDownHandler : WindowsControl<DropDownHandler.EtoComboBox, DropDown, DropDown.ICallback>, DropDown.IHandler
+	public class DropDownHandler : DropDownHandler<EtoComboBox, DropDown, DropDown.ICallback>, DropDown.IHandler
 	{
-		CollectionHandler collection;
 
-		public class EtoComboBox : swf.ComboBox
+	}
+
+	public class EtoComboBox : swf.ComboBox
+	{
+		sd.Size? cachedSize;
+		public void ResetSize()
 		{
-			sd.Size? cachedSize;
-			public void ResetSize()
+			cachedSize = null;
+		}
+
+		public sd.Size MinSize { get; set; }
+
+		static readonly sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
+
+		public override sd.Size GetPreferredSize(sd.Size proposedSize)
+		{
+			if (cachedSize == null)
 			{
-				cachedSize = null;
+				var size = new sd.Size(16, 20);
+				var font = Font;
+
+				foreach (object item in Items)
+				{
+					var text = GetItemText(item);
+					var itemSize = graphics.MeasureString(text, font);
+					size.Width = Math.Max(size.Width, (int)itemSize.Width);
+					size.Height = Math.Max(size.Height, (int)itemSize.Height);
+				}
+				// for drop down glyph and border
+				if (DrawMode == swf.DrawMode.OwnerDrawFixed)
+					size.Width += 4;
+				size.Width += 18;
+				size.Height += 4;
+				size.Width = Math.Max(size.Width, MinSize.Width);
+				size.Height = Math.Max(size.Height, MinSize.Height);
+				cachedSize = size;
 			}
-			static readonly sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
+			return cachedSize.Value;
+		}
 
-			public override sd.Size GetPreferredSize(sd.Size proposedSize)
+		sd.Color? backColor;
+		public new sd.Color BackColor
+		{
+			get { return backColor ?? base.BackColor; }
+			set
 			{
-				if (cachedSize == null)
-				{
-					var size = new sd.Size(16, 20);
-					var font = Font;
-
-					foreach (object item in Items)
-					{
-						var text = GetItemText(item);
-						var itemSize = graphics.MeasureString(text, font);
-						size.Width = Math.Max(size.Width, (int)itemSize.Width);
-						size.Height = Math.Max(size.Height, (int)itemSize.Height);
-					}
-					// for drop down glyph and border
-					if (DrawMode == swf.DrawMode.OwnerDrawFixed)
-						size.Width += 4;
-					size.Width += 18;
-					size.Height += 4;
-					cachedSize = size;
-				}
-				return cachedSize.Value;
-			}
-
-			sd.Color? backColor;
-			public new sd.Color BackColor
-			{
-				get { return backColor ?? base.BackColor; }
-				set
-				{
-					backColor = value;
-					DrawMode = swf.DrawMode.OwnerDrawFixed;
-					Invalidate();
-				}
-			}
-
-			protected override void OnDrawItem(swf.DrawItemEventArgs e)
-			{
-				if (e.State.HasFlag(swf.DrawItemState.ComboBoxEdit))
-				{
-					var bounds = e.Bounds;
-					bounds.Inflate(2, 2);
-					// only show the background color for the drop down, not for each item
-					e.Graphics.FillRectangle(new sd.SolidBrush(BackColor), bounds);
-				}
-				else
-				{
-					e.DrawBackground();
-				}
-
-				if (e.Index >= 0)
-				{
-					string text = Items[e.Index].ToString();
-
-					// Determine the forecolor based on whether or not the item is selected    
-					e.Graphics.DrawString(text, Font, new sd.SolidBrush(ForeColor), e.Bounds.X, e.Bounds.Y);
-				}
-
-				e.DrawFocusRectangle();
-			}
-
-			string oldText;
-			int oldIndex;
-
-			protected override void OnTextChanged(EventArgs e)
-			{
-				base.OnTextChanged(e);
-				if (SelectedIndex == -1 && oldIndex != -1 && oldText != Text)
-				{
-					OnSelectedIndexChanged(e);
-				}
-			}
-
-			protected override void OnSelectedIndexChanged(EventArgs e)
-			{
-				base.OnSelectedIndexChanged(e);
-				oldText = Text;
-				oldIndex = SelectedIndex;
+				backColor = value;
+				DrawMode = swf.DrawMode.OwnerDrawFixed;
+				Invalidate();
 			}
 		}
 
-		public void Create()
+		protected override void OnDrawItem(swf.DrawItemEventArgs e)
 		{
-			Control = new EtoComboBox
+			if (e.State.HasFlag(swf.DrawItemState.ComboBoxEdit))
+			{
+				var bounds = e.Bounds;
+				bounds.Inflate(2, 2);
+				// only show the background color for the drop down, not for each item
+				e.Graphics.FillRectangle(new sd.SolidBrush(BackColor), bounds);
+			}
+			else
+			{
+				e.DrawBackground();
+			}
+
+			if (e.Index >= 0)
+			{
+				string text = Items[e.Index].ToString();
+
+				// Determine the forecolor based on whether or not the item is selected    
+				e.Graphics.DrawString(text, Font, new sd.SolidBrush(ForeColor), e.Bounds.X, e.Bounds.Y);
+			}
+
+			e.DrawFocusRectangle();
+		}
+
+		string oldText;
+		int oldIndex;
+
+		protected override void OnTextChanged(EventArgs e)
+		{
+			base.OnTextChanged(e);
+			if (SelectedIndex == -1 && oldIndex != -1 && oldText != Text)
+			{
+				OnSelectedIndexChanged(e);
+			}
+		}
+
+		protected override void OnSelectedIndexChanged(EventArgs e)
+		{
+			base.OnSelectedIndexChanged(e);
+			oldText = Text;
+			oldIndex = SelectedIndex;
+		}
+	}
+
+	public class DropDownHandler<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, DropDown.IHandler
+		where TControl: EtoComboBox
+		where TWidget: DropDown
+		where TCallback: DropDown.ICallback
+	{
+		CollectionHandler collection;
+
+		public DropDownHandler()
+		{
+			Control = (TControl)new EtoComboBox
 			{
 				DropDownStyle = swf.ComboBoxStyle.DropDownList,
 				AutoSize = true,
 				Size = new sd.Size(20, 0)
 			};
-			Control.SelectedIndexChanged += delegate
+			int lastSelected = -1;
+			Control.SelectedIndexChanged += (sender, e) =>
 			{
-				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				if (SelectedIndex != lastSelected)
+				{
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+					lastSelected = SelectedIndex;
+				}
 			};
 		}
 
@@ -158,7 +176,7 @@ namespace Eto.WinForms
 
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
-			public DropDownHandler Handler { get; set; }
+			public DropDownHandler<TControl, TWidget, TCallback> Handler { get; set; }
 
 			public override void AddRange(IEnumerable<object> items)
 			{
@@ -194,7 +212,7 @@ namespace Eto.WinForms
 			}
 		}
 
-		protected void UpdateSizes()
+		protected virtual void UpdateSizes()
 		{
 			if (Widget.Loaded)
 				SetMinimumSize();

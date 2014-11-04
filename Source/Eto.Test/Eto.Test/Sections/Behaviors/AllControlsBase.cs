@@ -15,17 +15,29 @@ namespace Eto.Test.Sections.Behaviors
 				layout.Add(options);
 
 			layout.BeginVertical();
-			layout.AddRow(null, LabelControl(), ButtonControl(), null);
-			layout.AddRow(null, TextBoxControl(), TextAreaControl(), null);
-			layout.AddRow(null, CheckBoxControl(), RadioButtonControl(), null);
-			layout.AddRow(null, DateTimeControl(), NumericUpDownControl(), null);
-			layout.AddRow(null, ComboBoxControl(), PasswordBoxControl(), null);
+			layout.AddRow(null, LabelControl(), ButtonControl(), new Panel(), null);
+			layout.AddRow(null, TextBoxControl(), PasswordBoxControl());
+
+			layout.BeginHorizontal();
+			layout.Add(null);
+			layout.Add(TextAreaControl());
 			if (Platform.Supports<ListBox>())
-				layout.AddRow(null, ListBoxControl(), DrawableControl(), null);
+				layout.Add(ListBoxControl());
+			layout.EndHorizontal();
+
+			layout.AddRow(null, CheckBoxControl(), RadioButtonControl());
+			layout.AddRow(null, DateTimeControl(), NumericUpDownControl());
+			layout.AddRow(null, DropDownControl(), ComboBoxControl());
+
+			layout.BeginHorizontal();
+			layout.Add(null);
+			layout.Add(ColorPickerControl());
 			if (Platform.Supports<GroupBox>())
-				layout.AddRow(null, GroupBoxControl(), new Panel(), null);
-			layout.AddRow(null, LinkButtonControl(), SliderControl(), null);
-			layout.AddRow(null, ColorPickerControl(), ImageViewControl(), null);
+				layout.Add(GroupBoxControl());
+			layout.EndHorizontal();
+
+			layout.AddRow(null, LinkButtonControl(), SliderControl());
+			layout.AddRow(null, DrawableControl(), ImageViewControl());
 			layout.EndVertical();
 			layout.Add(null);
 
@@ -102,9 +114,20 @@ namespace Eto.Test.Sections.Behaviors
 			return control;
 		}
 
-		Control ComboBoxControl()
+		Control DropDownControl()
 		{
 			var control = new DropDown();
+			control.Items.Add(new ListItem{ Text = "Item 1" });
+			control.Items.Add(new ListItem{ Text = "Item 2" });
+			control.Items.Add(new ListItem{ Text = "Item 3" });
+			control.SelectedKey = "Item 1";
+			LogEvents(control);
+			return control;
+		}
+
+		Control ComboBoxControl()
+		{
+			var control = new ComboBox();
 			control.Items.Add(new ListItem{ Text = "Item 1" });
 			control.Items.Add(new ListItem{ Text = "Item 2" });
 			control.Items.Add(new ListItem{ Text = "Item 3" });

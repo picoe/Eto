@@ -13,27 +13,12 @@ using Eto.Drawing;
 
 namespace Eto.WinRT.Forms.Controls
 {
-	public class ComboBoxHandler : DropDownHandler, ComboBox.IHandler
+	public class ComboBoxHandler : DropDownHandler<EtoDropDown, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
-		bool editable;
+		public string Text { get; set; }
 
-		public void Create(bool isEditable)
-		{
-			// In Silverlight, the Control.IsEditable always return false
-			editable = false;
-			Create();
-		}
+		public bool ReadOnly { get; set; }
 
-		public string Text
-		{
-			get { return ""; }
-			set { ; }
-		}
-
-		public bool IsEditable
-		{
-			get { return false; }
-			set { ; }
-		}
+		public bool AutoComplete { get; set; }
 	}
 }

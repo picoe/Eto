@@ -1,49 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Drawing;
 
 namespace Eto.WinForms.Forms
 {
-	public class ComboBoxHandler : DropDownHandler, ComboBox.IHandler
+	public class ComboBoxHandler : DropDownHandler<EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
-		bool editable;
+		bool readOnly;
 
-		public void Create(bool isEditable)
+		public ComboBoxHandler()
 		{
-			Create();
-			IsEditable = editable = isEditable;
+			Control.DropDownStyle = swf.ComboBoxStyle.DropDown;
+			Control.MinSize = new sd.Size(100, 0);
+			Control.TextChanged += ControlOnTextChanged;
+		}
+
+		void ControlOnTextChanged(object sender, EventArgs e)
+		{
+			var selected = SelectedIndex;
+			var text = Text;
+			var item = Control.Items.Cast<object>().FirstOrDefault(r => Widget.TextBinding.GetValue(r) == text);
+			var newIndex = item != null ? Control.Items.IndexOf(item) : -1;
+			if (selected != newIndex)
+			{
+				var selectionStart = Control.SelectionStart;
+				var selectionLength = Control.SelectionLength;
+				SelectedIndex = newIndex;
+				Text = text;
+				Control.SelectionStart = selectionStart;
+				Control.SelectionLength = selectionLength;
+			}
+			Callback.OnTextChanged(Widget, EventArgs.Empty);
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case ComboBox.TextChangedEvent:
+					// handled intrinically
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 
 		public override string Text
 		{
-			get
-			{
-				return editable ? Control.Text : "";
-			}
+			get { return Control.Text; }
+			set { Control.Text = value; }
+		}
+
+		public bool ReadOnly
+		{
+			get { return readOnly; }
 			set
 			{
-				if (editable && value != null)
+				if (readOnly != value)
 				{
-					Control.Text = value;
+					if (readOnly)
+						Control.KeyPress -= ControlOnKeyPress;
+					readOnly = value;
+					if (readOnly)
+						Control.KeyPress += ControlOnKeyPress;
 				}
 			}
 		}
 
-		public bool IsEditable
+		public bool AutoComplete
 		{
-			get { return editable; }
+			get { return Control.AutoCompleteMode != swf.AutoCompleteMode.None; }
 			set
 			{
-				editable = value;
-				Control.DropDownStyle = editable ? swf.ComboBoxStyle.DropDown : swf.ComboBoxStyle.DropDownList;
+				Control.AutoCompleteMode = value ? swf.AutoCompleteMode.Append : swf.AutoCompleteMode.None;
+				Control.AutoCompleteSource = swf.AutoCompleteSource.ListItems;
 			}
+		}
+
+		static void ControlOnKeyPress(object sender, swf.KeyPressEventArgs e)
+		{
+			e.Handled = true;
 		}
 	}
 }

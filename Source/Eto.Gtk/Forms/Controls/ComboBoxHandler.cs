@@ -8,27 +8,55 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class ComboBoxHandler : DropDownHandler, ComboBox.IHandler
+	public class ComboBoxHandler : DropDownHandler<Gtk.ComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		Gtk.Entry entry;
-		bool editable;
+		Gtk.EntryCompletion completion;
 
-		public void Create(bool isEditable)
+		protected override void Create()
 		{
-			editable = isEditable;
 			listStore = new Gtk.ListStore(typeof(string));
 #if GTK2
 			Control = new Gtk.ComboBoxEntry(listStore, 0);
-			text = Control.Cells[0] as Gtk.CellRendererText;
 #else
 			Control = Gtk.ComboBox.NewWithModelAndEntry(listStore);
 			Control.EntryTextColumn = 0;
 #endif
 			text = Control.Cells[0] as Gtk.CellRendererText;
 			Control.SetAttributes(text, "text", 0);
-			entry = Control.Child as Gtk.Entry;
-			entry.IsEditable = editable;
+			entry = (Gtk.Entry)Control.Child;
+			entry.IsEditable = true;
 			Control.Changed += Connector.HandleChanged;
+		}
+
+		protected new ComboBoxConnector Connector { get { return (ComboBoxConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new ComboBoxConnector();
+		}
+
+		protected class ComboBoxConnector : DropDownConnector
+		{
+			public new ComboBoxHandler Handler { get { return (ComboBoxHandler)base.Handler; } }
+
+			public void HandleTextChanged(object sender, EventArgs e)
+			{
+				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case ComboBox.TextChangedEvent:
+					entry.Changed += Connector.HandleTextChanged;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 
 		public override Font Font
@@ -43,10 +71,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (font != null)
 				{
 					var newfont = ((FontHandler)font.Handler).Control;
-					if (editable)
-					{
-						entry.ModifyFont(newfont);
-					}
+					entry.ModifyFont(newfont);
 					text.FontDesc = newfont;
 				}
 			}
@@ -54,26 +79,53 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override string Text
 		{
+			get { return entry.Text; }
+			set { entry.Text = value ?? string.Empty; }
+		}
+
+		public bool ReadOnly
+		{
+			get { return !entry.IsEditable; }
+			set { entry.IsEditable = !value; }
+		}
+
+		public override int SelectedIndex
+		{
 			get
 			{
-				return editable ? entry.Text : "";
+				return base.SelectedIndex;
 			}
 			set
 			{
-				if (editable && value != null)
+				base.SelectedIndex = value;
+				if (value == -1)
 				{
-					entry.Text = value;
+					Text = null;
 				}
 			}
 		}
 
-		public bool IsEditable
+		public bool AutoComplete
 		{
-			get { return editable; }
+			get { return completion != null; }
 			set
 			{
-				editable = value;
-				entry.IsEditable = editable;
+				if (AutoComplete != value)
+				{
+					if (value)
+					{
+						completion = new Gtk.EntryCompletion();
+						completion.Model = listStore;
+						completion.MinimumKeyLength = 1;
+						completion.TextColumn = 0;
+						entry.Completion = completion;
+					}
+					else
+					{
+						completion = null;
+						entry.Completion = null;
+					}
+				}
 			}
 		}
 	}

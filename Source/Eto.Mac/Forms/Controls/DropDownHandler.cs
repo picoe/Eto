@@ -96,7 +96,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public void Create()
+		public DropDownHandler()
 		{
 			Control = new EtoPopUpButton { Handler = this, Cell = new EtoPopUpButtonCell() };
 			Control.Activated += HandleActivated;

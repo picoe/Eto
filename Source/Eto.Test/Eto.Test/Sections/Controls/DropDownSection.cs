@@ -4,10 +4,10 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
-	[Section("Controls", typeof(ComboBox))]
-	public class ComboBoxSection : Scrollable
+	[Section("Controls", typeof(DropDown))]
+	public class DropDownSection : Scrollable
 	{
-		public ComboBoxSection()
+		public DropDownSection()
 		{
 			var layout = new DynamicLayout();
 			
@@ -15,7 +15,11 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow(new Label { Text = "With Items" }, TableLayout.AutoSized(Items()));
 
+			layout.AddRow(new Label { Text = "Disabled" }, TableLayout.AutoSized(Disabled()));
+			
 			layout.AddRow(new Label { Text = "Set Initial Value" }, TableLayout.AutoSized(SetInitialValue()));
+			
+			layout.AddRow(new Label { Text = "EnumDropDown<Key>" }, TableLayout.AutoSized(EnumCombo()));
 
 			layout.Add(null, null, true);
 
@@ -24,14 +28,15 @@ namespace Eto.Test.Sections.Controls
 
 		Control Default()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			LogEvents(control);
 			
 			var layout = new DynamicLayout();
 			layout.Add(TableLayout.AutoSized(control));
-			layout.AddSeparateRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
-			layout.AddSeparateRow(null, GetEnabled(control), GetReadOnly(control), AutoComplete(control), ShowComboText(control), SetComboText(control), null);
-
+			layout.BeginVertical();
+			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
+			layout.EndVertical();
+			
 			return layout;
 		}
 
@@ -91,7 +96,7 @@ namespace Eto.Test.Sections.Controls
 
 		DropDown Items()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			LogEvents(control);
 			for (int i = 0; i < 20; i++)
 			{
@@ -114,52 +119,20 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control GetEnabled(ComboBox list)
+		Control EnumCombo()
 		{
-			var control = new CheckBox { Text = "Enabled" };
-			control.CheckedBinding.Bind(list, l => l.Enabled);
-			return control;
-		}
-		
-		Control GetReadOnly(ComboBox list)
-		{
-			var control = new CheckBox { Text = "ReadOnly" };
-			control.CheckedBinding.Bind(list, l => l.ReadOnly);
+			var control = new EnumDropDown<Keys>();
+			LogEvents(control);
+			control.SelectedKey = ((int)Keys.E).ToString();
 			return control;
 		}
 
-		Control AutoComplete(ComboBox list)
+		void LogEvents(DropDown control)
 		{
-			var control = new CheckBox { Text = "AutoComplete" };
-			control.CheckedBinding.Bind(list, l => l.AutoComplete);
-			return control;
-		}
-
-		Control ShowComboText(ComboBox list)
-		{
-			var control = new Button { Text = "Show ComboText" };
-			control.Click += delegate
+			control.SelectedIndexChanged += delegate
 			{
-				MessageBox.Show(list.Text);
+				Log.Write(control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
 			};
-			return control;
-		}
-
-		Control SetComboText(ComboBox list)
-		{
-			var control = new Button { Text = "Set ComboText" };
-			control.Click += delegate
-			{
-				list.Text = "New ComboText";
-			};
-			return control;
-		}
-
-		void LogEvents(ComboBox control)
-		{
-			control.SelectedIndexChanged += (sender, e) => Log.Write(control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
-
-			control.TextChanged += (sender, e) => Log.Write(control, "TextChanged, Value: {0}", control.Text);
 		}
 	}
 }

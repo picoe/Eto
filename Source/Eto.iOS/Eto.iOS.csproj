@@ -145,7 +145,6 @@
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
     <Compile Include="..\Eto.Mac\Drawing\TextureBrushHandler.cs">
       <Link>Drawing\TextureBrushHandler.cs</Link>
@@ -198,6 +197,8 @@
       <Link>Mac64Extensions.cs</Link>
     </Compile>
     <Compile Include="Forms\Toolbar\RadioToolItemHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

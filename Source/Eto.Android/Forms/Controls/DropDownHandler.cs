@@ -14,11 +14,11 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Forms.Controls
 {
-	public class ComboBoxHandler : AndroidControl<aw.Spinner, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class DropDownHandler : AndroidControl<aw.Spinner, DropDown, DropDown.ICallback>, DropDown.IHandler
 	{
 		public override av.View ContainerControl { get { return Control; } }
 
-		public ComboBoxHandler()
+		public DropDownHandler()
 		{
 			Control = new aw.Spinner(aa.Application.Context);
 		}
@@ -44,42 +44,6 @@ namespace Eto.Android.Forms.Controls
 		}
 
 		public Eto.Drawing.Color TextColor
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public string Text
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public bool ReadOnly
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public bool AutoComplete
 		{
 			get
 			{

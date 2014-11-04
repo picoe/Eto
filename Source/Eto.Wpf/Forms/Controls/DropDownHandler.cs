@@ -11,78 +11,99 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class DropDownHandler : WpfControl<DropDownHandler.EtoComboBox, DropDown, DropDown.ICallback>, DropDown.IHandler
+	public class DropDownHandler : DropDownHandler<EtoComboBox, DropDown, DropDown.ICallback>
 	{
-		IEnumerable<object> store;
+	}
 
-		public class EtoComboBox : swc.ComboBox
+	public class EtoComboBox : swc.ComboBox
+	{
+		int? selected;
+
+		public EtoComboBox()
 		{
-			int? selected;
+			Loaded += ComboBoxEx_Loaded;
+		}
 
-			public EtoComboBox()
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+
+			selected = SelectedIndex;
+			SelectedIndex = -1;
+		}
+
+		public swc.TextBox TextBox
+		{
+			get { return GetTemplateChild("PART_EditableTextBox") as swc.TextBox; }
+		}
+
+		protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
+		{
+			if (selected == null)
+				base.OnSelectionChanged(e);
+		}
+
+		protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			base.OnItemsChanged(e);
+			if (IsLoaded)
 			{
-				Loaded += ComboBoxEx_Loaded;
-			}
-
-			public override void OnApplyTemplate()
-			{
-				base.OnApplyTemplate();
-
-				selected = SelectedIndex;
-				SelectedIndex = -1;
-			}
-
-			protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
-			{
-				if (selected == null)
-					base.OnSelectionChanged(e);
-			}
-
-			protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-			{
-				base.OnItemsChanged(e);
-				if (IsLoaded)
-				{
-					InvalidateMeasure();
-				}
-			}
-
-			void ComboBoxEx_Loaded(object sender, sw.RoutedEventArgs e)
-			{
-				if (selected == null) return;
-				SelectedIndex = selected.Value;
-				selected = null;
-			}
-
-			protected override sw.Size MeasureOverride(sw.Size constraint)
-			{
-				var size = base.MeasureOverride(constraint);
-				var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
-				if (popup == null)
-					return size;
-				popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
-				if (ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
-					return size;
-				double maxWidth = 0;
-				foreach (var item in Items)
-				{
-					var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
-					comboBoxItem.Measure(Conversions.PositiveInfinitySize);
-					maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
-				}
-
-				var toggle = GetTemplateChild("toggleButton") as sw.UIElement;
-				maxWidth += toggle != null ? toggle.DesiredSize.Width : 20;
-				size.Width = Math.Max(maxWidth, size.Width);
-				if (!double.IsNaN(constraint.Width))
-					size.Width = Math.Min(size.Width, constraint.Width);
-				return size;
+				InvalidateMeasure();
 			}
 		}
 
-		public void Create()
+		void ComboBoxEx_Loaded(object sender, sw.RoutedEventArgs e)
 		{
-			Control = new EtoComboBox();
+			if (selected == null) return;
+			SelectedIndex = selected.Value;
+			selected = null;
+		}
+
+		public bool RetainSize { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			if (RetainSize && IsLoaded && IsVisible)
+			{
+				constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
+				constraint.Height = !double.IsNaN(constraint.Height) ? Math.Min(constraint.Height, ActualHeight) : ActualHeight;
+			}
+
+			var size = base.MeasureOverride(constraint);
+			var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
+			if (popup == null)
+				return size;
+			popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
+			if (ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
+				return size;
+			double maxWidth = 0;
+			foreach (var item in Items)
+			{
+				var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
+				comboBoxItem.Measure(Conversions.PositiveInfinitySize);
+				maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
+			}
+
+			var toggle = GetTemplateChild("toggleButton") as sw.UIElement;
+			maxWidth += toggle != null ? toggle.DesiredSize.Width : 20;
+			size.Width = Math.Max(maxWidth, size.Width);
+			if (!double.IsNaN(constraint.Width))
+				size.Width = Math.Min(size.Width, constraint.Width);
+			return size;
+		}
+	}
+
+
+	public class DropDownHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, DropDown.IHandler
+		where TControl: EtoComboBox
+		where TWidget: DropDown
+		where TCallback: DropDown.ICallback
+	{
+		IEnumerable<object> store;
+
+		public DropDownHandler()
+		{
+			Control = (TControl)new EtoComboBox();
 			Control.SelectionChanged += delegate
 			{
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
@@ -147,9 +168,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		void CreateTemplate()
 		{
-			var template = new sw.DataTemplate();
-			template.VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false);
-			Control.ItemTemplate = template;
+			Control.ItemTemplate = new sw.DataTemplate
+			{
+				VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false)
+			};
 		}
 	}
 }

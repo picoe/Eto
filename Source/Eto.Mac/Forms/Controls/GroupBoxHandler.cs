@@ -107,7 +107,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			return base.GetPreferredSize(availableSize) + new SizeF(14, Control.TitleFont.LineHeight() + 9);
+			return base.GetPreferredSize(availableSize) + new SizeF(14, (float)TitleCell.CellSize.Height * 1.1f + 6);
 		}
 
 		public override void SetContentSize(CGSize contentSize)
