@@ -11,7 +11,7 @@ namespace Eto.Wpf.Forms
 {
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
-		swc.Border border;
+		readonly swc.Border border;
 		Size spacing;
 		Control[,] controls;
 		bool[] columnScale;
@@ -64,7 +64,12 @@ namespace Eto.Wpf.Forms
 				height += maxHeight;
 			}
 
-			return new sw.Size(widths.Sum() + border.Padding.Horizontal(), height + border.Padding.Vertical());
+			var size = new sw.Size(widths.Sum() + border.Padding.Horizontal(), height + border.Padding.Vertical());
+			if (!double.IsNaN(PreferredSize.Width))
+				size.Width = Math.Max(size.Width, PreferredSize.Width);
+			if (!double.IsNaN(PreferredSize.Height))
+				size.Height = Math.Max(size.Height, PreferredSize.Height);
+			return size;
 		}
 
 		public void CreateControl(int cols, int rows)
@@ -99,11 +104,6 @@ namespace Eto.Wpf.Forms
 			swc.Grid.SetRow(empty, y);
 			SetMargins(empty, x, y);
 			return empty;
-		}
-
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
 		}
 
 		public override void OnLoadComplete(EventArgs e)
@@ -149,7 +149,6 @@ namespace Eto.Wpf.Forms
 		void SetChildrenSizes()
 		{
 			var inGroupBoxCurrent = inGroupBox;
-			var widths = new double[Control.ColumnDefinitions.Count];
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{
 				var rowdef = Control.RowDefinitions[y];
