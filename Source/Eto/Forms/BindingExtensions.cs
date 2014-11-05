@@ -26,7 +26,8 @@ namespace Eto.Forms
 			where TWidget : Control
 		{
 			var controlExpression = controlProperty.GetMemberInfo();
-			var binding = control.Bind<TValue>(controlExpression.Member.Name, source, controlExpression.Member.Name, mode);
+			var sourceExpression = sourceProperty.GetMemberInfo();
+			var binding = control.Bind<TValue>(controlExpression.Member.Name, source, sourceExpression.Member.Name, mode);
 
 			return binding;
 		}
