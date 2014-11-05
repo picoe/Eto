@@ -247,18 +247,26 @@ namespace Eto.Forms
 		/// <param name="centered">If set to <c>true</c> center the control, otherwise control is upper left of the container.</param>
 		public static TableLayout AutoSized(Control control, Padding? padding = null, bool centered = false)
 		{
-			var layout = new TableLayout(3, 3);
-			layout.Padding = padding ?? Padding.Empty;
-			layout.Spacing = Size.Empty;
 			if (centered)
 			{
+				var layout = new TableLayout(3, 3);
+				layout.Padding = padding ?? Padding.Empty;
+				layout.Spacing = Size.Empty;
 				layout.SetColumnScale(0);
 				layout.SetColumnScale(2);
 				layout.SetRowScale(0);
 				layout.SetRowScale(2);
+				layout.Add(control, 1, 1);
+				return layout;
 			}
-			layout.Add(control, 1, 1);
-			return layout;
+			else
+			{
+				var layout = new TableLayout(2, 2);
+				layout.Padding = padding ?? Padding.Empty;
+				layout.Spacing = Size.Empty;
+				layout.Add(control, 0, 0);
+				return layout;
+			}
 		}
 
 		/// <summary>
