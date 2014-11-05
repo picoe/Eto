@@ -15,9 +15,22 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override Size DefaultSize { get { return defaultSize; } }
 
+		class EtoTextBox : swc.TextBox
+		{
+			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				if (IsLoaded && IsVisible)
+				{
+					constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
+					constraint.Height = !double.IsNaN(constraint.Height) ? Math.Min(constraint.Height, ActualHeight) : ActualHeight;
+				}
+				return base.MeasureOverride(constraint);
+			}
+		}
+
 		public TextAreaHandler ()
 		{
-			Control = new swc.TextBox
+			Control = new EtoTextBox
 			{
 				AcceptsReturn = true,
 				AcceptsTab = true,
