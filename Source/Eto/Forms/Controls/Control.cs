@@ -669,6 +669,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the width of the control size.
+		/// </summary>
+		public virtual int Width
+		{
+			get { return Handler.Size.Width; }
+			set { Size = new Size(value, Size.Height); }
+		}
+
+		/// <summary>
+		/// Gets or sets the height of the control size.
+		/// </summary>
+		public virtual int Height
+		{
+			get { return Handler.Size.Height; }
+			set { Size = new Size(Size.Width, value); }
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
 		/// </summary>
 		/// <remarks>
