@@ -14,7 +14,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public Gtk.ListStore listStore;
 		public Gtk.CellRendererText text;
 
-		public void Create()
+		public virtual void Create()
 		{
 			listStore = new Gtk.ListStore(typeof(string));
 			Control = new Gtk.ComboBox(listStore);

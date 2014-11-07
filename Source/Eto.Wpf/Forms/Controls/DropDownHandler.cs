@@ -51,7 +51,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public void Create()
+		public virtual void Create()
 		{
 			Control = new EtoComboBox();
 			Control.SelectionChanged += delegate

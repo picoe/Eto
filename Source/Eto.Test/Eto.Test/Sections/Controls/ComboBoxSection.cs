@@ -133,7 +133,8 @@ namespace Eto.Test.Sections.Controls
 
 		Control ComboBox()
 		{
-			var control = new ComboBox(false);
+			var control = new ComboBox();
+			control.IsEditable = false;
 			LogEvents(control);
 			for (int i = 0; i < 20; i++)
 			{
@@ -144,7 +145,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control EditableComboBox()
 		{
-			var control = new ComboBox(true);
+			var control = new ComboBox();
 			LogEvents(control);
 
 			var layout = new DynamicLayout();

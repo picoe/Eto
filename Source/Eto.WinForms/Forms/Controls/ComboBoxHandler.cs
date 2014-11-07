@@ -15,10 +15,10 @@ namespace Eto.WinForms.Forms
 	{
 		bool editable;
 
-		public void Create(bool isEditable)
+		public override void Create()
 		{
-			Create();
-			IsEditable = editable = isEditable;
+			base.Create();
+			IsEditable = editable = true;
 		}
 
 		public override string Text

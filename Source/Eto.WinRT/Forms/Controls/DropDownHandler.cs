@@ -95,7 +95,7 @@ namespace Eto.WinRT.Forms.Controls
 			}
 		}
 
-		public void Create()
+		public virtual void Create()
 		{
 			Control = new EtoDropDown();
 			var str = "<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">" +
