@@ -102,7 +102,7 @@ namespace Eto.WinForms
 			}
 		}
 
-		public void Create()
+		public virtual void Create()
 		{
 			Control = new EtoComboBox
 			{

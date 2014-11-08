@@ -10,10 +10,10 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		bool editable;
 
-		public void Create(bool isEditable)
+		public override void Create()
 		{
-			Create();
-			Control.IsEditable = editable = isEditable;
+			base.Create();
+			Control.IsEditable = editable = true;
 		}
 
 		public string Text

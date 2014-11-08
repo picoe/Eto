@@ -17,11 +17,11 @@ namespace Eto.WinRT.Forms.Controls
 	{
 		bool editable;
 
-		public void Create(bool isEditable)
+		public override void Create()
 		{
 			// In Silverlight, the Control.IsEditable always return false
 			editable = false;
-			Create();
+			base.Create();
 		}
 
 		public string Text

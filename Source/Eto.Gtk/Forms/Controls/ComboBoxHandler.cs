@@ -13,9 +13,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		Gtk.Entry entry;
 		bool editable;
 
-		public void Create(bool isEditable)
+		public override void Create()
 		{
-			editable = isEditable;
+			editable = true;
 			listStore = new Gtk.ListStore(typeof(string));
 #if GTK2
 			Control = new Gtk.ComboBoxEntry(listStore, 0);

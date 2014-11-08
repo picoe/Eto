@@ -57,11 +57,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Create()
 		{
-		}
-
-		public void Create(bool isEditable)
-		{
-			editable = isEditable;
+			editable = true;
 			Control = new EtoComboBox { Handler = this, Cell = new NSComboBoxCell() };
 			Control.Editable = editable;
 			// Add Observer to monitor SelectionDidChangeNotification, but no response. May be a bug?
