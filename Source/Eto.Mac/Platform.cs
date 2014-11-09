@@ -11,6 +11,8 @@ using Eto.Mac.Forms.Menu;
 using Eto.Mac.Threading;
 using Eto.Threading;
 using System.Reflection;
+using Eto.Mac.Forms.Cells;
+using Eto.Mac.Forms.ToolBar;
 
 
 #if XAMMAC2

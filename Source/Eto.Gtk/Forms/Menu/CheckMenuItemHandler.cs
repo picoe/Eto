@@ -1,7 +1,8 @@
 using System;
 using Eto.Forms;
+using Eto.GtkSharp.Forms.Controls;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Menu
 {
 	public class CheckMenuItemHandler : MenuActionItemHandler<Gtk.CheckMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler
 	{

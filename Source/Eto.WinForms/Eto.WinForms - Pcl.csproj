@@ -227,9 +227,6 @@
     <Compile Include="Forms\Controls\TextBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\WindowsControl.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -307,6 +304,9 @@
     <Compile Include="WinFormsHelpers.cs" />
     <Compile Include="Forms\HwndFormHandler.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\WindowsControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

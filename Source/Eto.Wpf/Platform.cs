@@ -1,5 +1,7 @@
 using Eto.Drawing;
 using Eto.Forms;
+using Eto.Wpf.Forms.Cells;
+using Eto.Wpf.Forms.ToolBar;
 using swi = System.Windows.Input;
 using swm = System.Windows.Media;
 using sw = System.Windows;

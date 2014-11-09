@@ -2,6 +2,9 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+using Eto.Mac.Forms.Cells;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;

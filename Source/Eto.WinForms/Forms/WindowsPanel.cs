@@ -4,7 +4,7 @@ using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public abstract class WindowsPanel<TControl, TWidget, TCallback> : WindowsContainer<TControl, TWidget, TCallback>, Panel.IHandler
 		where TControl : swf.Control

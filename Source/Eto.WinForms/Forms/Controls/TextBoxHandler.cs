@@ -5,7 +5,7 @@ using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Runtime.InteropServices;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class TextBoxHandler : WindowsControl<TextBoxHandler.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{

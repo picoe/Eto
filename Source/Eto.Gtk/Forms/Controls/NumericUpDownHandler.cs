@@ -2,7 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class NumericUpDownHandler : GtkControl<Gtk.SpinButton, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{

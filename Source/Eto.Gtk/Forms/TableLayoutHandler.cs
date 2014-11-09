@@ -3,7 +3,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using System.Linq;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public class TableLayoutHandler : GtkContainer<Gtk.Table, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{

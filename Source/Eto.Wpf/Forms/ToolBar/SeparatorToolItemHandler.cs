@@ -4,7 +4,7 @@ using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using Eto.Drawing;
 
-namespace Eto.Wpf.Forms
+namespace Eto.Wpf.Forms.ToolBar
 {
 	public class SeparatorToolItemHandler : ToolItemHandler<swc.ContentControl, SeparatorToolItem>, SeparatorToolItem.IHandler
 	{

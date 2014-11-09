@@ -6,7 +6,7 @@ using swm = System.Windows.Media;
 using Eto.Wpf.Drawing;
 using Eto.Drawing;
 
-namespace Eto.Wpf.Forms.Controls
+namespace Eto.Wpf.Forms.Cells
 {
 	public class DrawableCellHandler : CellHandler<swc.DataGridColumn, DrawableCell, DrawableCell.ICallback>, DrawableCell.IHandler
 	{

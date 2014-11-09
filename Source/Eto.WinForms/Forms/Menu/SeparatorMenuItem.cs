@@ -3,7 +3,7 @@ using SWF = System.Windows.Forms;
 using Eto.Forms;
 using System;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Menu
 {
 	/// <summary>
 	/// Summary description for MenuBarHandler.

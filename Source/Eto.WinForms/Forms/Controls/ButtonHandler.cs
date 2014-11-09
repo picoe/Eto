@@ -5,7 +5,7 @@ using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	/// <summary>
 	/// Button handler.

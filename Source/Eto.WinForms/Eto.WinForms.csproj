@@ -110,6 +110,7 @@
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Forms\WindowsControl.cs" />
     <Compile Include="KeyMap.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -227,9 +228,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\WindowsControl.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">

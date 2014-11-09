@@ -4,7 +4,7 @@ using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class LabelHandler : WindowsControl<LabelHandler.MyLabel, Label, Label.ICallback>, Label.IHandler
 	{

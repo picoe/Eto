@@ -14,7 +14,7 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #endif
 
-namespace Eto.Mac
+namespace Eto.Mac.Forms.ToolBar
 {
 	public class CheckToolItemHandler : ToolItemHandler<NSToolbarItem, CheckToolItem>, CheckToolItem.IHandler
 	{

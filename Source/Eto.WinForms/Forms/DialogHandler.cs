@@ -4,7 +4,7 @@ using Eto.Forms;
 using System;
 using System.Threading.Tasks;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public class DialogHandler : WindowHandler<swf.Form, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{

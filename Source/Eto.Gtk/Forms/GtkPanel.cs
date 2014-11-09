@@ -2,7 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkPanel<TControl, TWidget, TCallback> : GtkContainer<TControl, TWidget, TCallback>
 		where TControl: Gtk.Widget

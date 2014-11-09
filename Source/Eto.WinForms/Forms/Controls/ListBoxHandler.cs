@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.WinForms.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{

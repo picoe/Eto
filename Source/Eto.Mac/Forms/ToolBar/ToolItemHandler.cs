@@ -32,7 +32,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-namespace Eto.Mac
+namespace Eto.Mac.Forms.ToolBar
 {
 	public interface IToolBarBaseItemHandler
 	{

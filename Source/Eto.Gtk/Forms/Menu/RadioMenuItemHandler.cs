@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Menu
 {
 	/// <summary>
 	/// Summary description for MenuBarHandler.

@@ -5,7 +5,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.WinForms.Drawing;
 
-namespace Eto.WinForms.Forms.Controls
+namespace Eto.WinForms.Forms.Cells
 {
 	public class DrawableCellHandler : CellHandler<DrawableCellHandler.EtoCell, DrawableCell, DrawableCell.ICallback>, DrawableCell.IHandler
 	{

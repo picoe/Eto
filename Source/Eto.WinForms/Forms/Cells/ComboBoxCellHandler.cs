@@ -4,7 +4,7 @@ using sd = System.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
 
-namespace Eto.WinForms.Forms.Controls
+namespace Eto.WinForms.Forms.Cells
 {
 	public class ComboBoxCellHandler : CellHandler<swf.DataGridViewComboBoxCell, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
 	{

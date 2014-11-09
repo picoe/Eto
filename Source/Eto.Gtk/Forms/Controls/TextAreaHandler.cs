@@ -3,7 +3,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TextAreaHandler : GtkControl<Gtk.TextView, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{

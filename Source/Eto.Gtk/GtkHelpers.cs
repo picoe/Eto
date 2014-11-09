@@ -2,6 +2,7 @@
 using Eto.Forms;
 using Eto.GtkSharp;
 using Eto.GtkSharp.Forms.Controls;
+using Eto.GtkSharp.Forms;
 
 namespace Eto.Forms
 {

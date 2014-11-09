@@ -26,7 +26,7 @@ namespace Eto.Wpf.Forms
 	{
 		Icon icon;
 		MenuBar menu;
-		ToolBar toolBar;
+		Eto.Forms.ToolBar toolBar;
 		swc.DockPanel main;
 		swc.ContentControl menuHolder;
 		swc.ContentControl toolBarHolder;
@@ -135,7 +135,7 @@ namespace Eto.Wpf.Forms
 			ContainerControl.MinHeight = MinimumSize.Height;
 		}
 
-		public ToolBar ToolBar
+		public Eto.Forms.ToolBar ToolBar
 		{
 			get { return toolBar; }
 			set

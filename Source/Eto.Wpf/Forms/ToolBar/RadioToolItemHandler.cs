@@ -5,7 +5,7 @@ using swm = System.Windows.Media;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.Wpf.Forms
+namespace Eto.Wpf.Forms.ToolBar
 {
 	public class RadioToolItemHandler : ToolItemHandler<swc.Primitives.ToggleButton, RadioToolItem>, RadioToolItem.IHandler
 	{

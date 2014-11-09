@@ -172,9 +172,6 @@
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
-    <Compile Include="Forms\Controls\GtkControl.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -268,6 +265,7 @@
     <Compile Include="GtkHelpers.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
+    <Compile Include="Forms\GtkControl.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

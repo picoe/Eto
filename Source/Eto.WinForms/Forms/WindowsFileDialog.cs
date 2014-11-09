@@ -5,7 +5,7 @@ using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public abstract class WindowsFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
 		where TControl : swf.FileDialog

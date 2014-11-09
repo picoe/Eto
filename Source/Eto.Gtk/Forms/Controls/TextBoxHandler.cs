@@ -2,7 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{

@@ -6,7 +6,7 @@ using Eto.Forms;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class TextAreaHandler : WindowsControl<TextAreaHandler.EtoRichTextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{

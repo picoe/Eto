@@ -7,7 +7,7 @@ using Eto.Forms;
 using Eto.WinForms.Forms;
 using Eto.WinForms.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public interface IWindowHandler
 	{
@@ -23,7 +23,7 @@ namespace Eto.WinForms
 	{
 		MenuBar menu;
 		Icon icon;
-		ToolBar toolBar;
+		Eto.Forms.ToolBar toolBar;
 		swf.Panel menuHolder;
 		swf.Panel content;
 		swf.Panel toolbarHolder;
@@ -253,7 +253,7 @@ namespace Eto.WinForms
 			set { Control.TopMost = value; }
 		}
 
-		public ToolBar ToolBar
+		public Eto.Forms.ToolBar ToolBar
 		{
 			get
 			{
@@ -275,12 +275,12 @@ namespace Eto.WinForms
 			}
 		}
 
-		public void AddToolbar(ToolBar toolBar)
+		public void AddToolbar(Eto.Forms.ToolBar toolBar)
 		{
 			Control.Controls.Add((swf.Control)toolBar.ControlObject);
 		}
 
-		public void RemoveToolbar(ToolBar toolBar)
+		public void RemoveToolbar(Eto.Forms.ToolBar toolBar)
 		{
 			Control.Controls.Remove((swf.Control)toolBar.ControlObject);
 		}

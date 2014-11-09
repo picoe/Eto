@@ -32,9 +32,9 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-namespace Eto.Mac
+namespace Eto.Mac.Forms.ToolBar
 {
-	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, ToolBar.IHandler
+	public class ToolBarHandler : WidgetHandler<NSToolbar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
 	{
 		ToolBarDock dock = ToolBarDock.Top;
 		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();

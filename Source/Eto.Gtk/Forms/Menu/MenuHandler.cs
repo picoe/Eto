@@ -2,16 +2,16 @@ using System;
 using Eto.Forms;
 using System.Linq;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Menu
 {
 	public interface IMenuHandler
 	{
 		void SetAccelGroup(Gtk.AccelGroup accel);
 	}
 
-	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Menu.IHandler, IMenuHandler
-		where TWidget: Menu
-		where TCallback : Menu.ICallback
+	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Eto.Forms.Menu.IHandler, IMenuHandler
+		where TWidget: Eto.Forms.Menu
+		where TCallback : Eto.Forms.Menu.ICallback
 	{
 		protected void ValidateItems()
 		{

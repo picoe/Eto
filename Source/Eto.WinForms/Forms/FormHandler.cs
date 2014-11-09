@@ -4,7 +4,7 @@ using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public class FormHandler : WindowHandler<swf.Form, Form, Form.ICallback>, Form.IHandler
 	{

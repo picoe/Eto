@@ -3,8 +3,9 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 using System.Collections.Generic;
+using Eto.GtkSharp.Forms.Menu;
 
-namespace Eto.GtkSharp.Forms
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, TreeView.IHandler, IGtkListModelHandler<ITreeItem, ITreeStore>
 	{

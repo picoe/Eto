@@ -6,8 +6,9 @@ using Eto.Forms;
 using Eto.WinForms.Drawing;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.WinForms.Forms.Menu;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public interface IWindowsControl
 	{

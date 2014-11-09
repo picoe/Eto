@@ -5,7 +5,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using System.Linq;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public class TableLayoutHandler : WindowsContainer<swf.TableLayoutPanel, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{

@@ -5,8 +5,9 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 using Eto.GtkSharp.Forms;
+using Eto.GtkSharp.Forms.Menu;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public interface IGtkWindow
 	{
@@ -28,7 +29,7 @@ namespace Eto.GtkSharp
 		readonly Gtk.Box bottomToolbarBox;
 		MenuBar menuBar;
 		Icon icon;
-		ToolBar toolBar;
+		Eto.Forms.ToolBar toolBar;
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		Point? currentLocation;
@@ -426,7 +427,7 @@ namespace Eto.GtkSharp
 			base.Dispose(disposing);
 		}
 
-		public ToolBar ToolBar
+		public Eto.Forms.ToolBar ToolBar
 		{
 			get
 			{

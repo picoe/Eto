@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+using Eto.Mac.Forms.Controls;
 
 #if XAMMAC2
 using AppKit;
@@ -32,7 +33,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-namespace Eto.Mac.Forms.Controls
+namespace Eto.Mac.Forms.Cells
 {
 	public class ImageTextCellHandler : CellHandler<ImageTextCellHandler.EtoCell, ImageTextCell, ImageTextCell.ICallback>, ImageTextCell.IHandler
 	{

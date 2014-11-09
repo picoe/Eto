@@ -2,7 +2,7 @@ using System;
 using Eto.Forms;
 using System.Linq;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.ToolBar
 {
 	public class RadioToolItemHandler : ToolItemHandler<Gtk.RadioToolButton, RadioToolItem>, RadioToolItem.IHandler
 	{

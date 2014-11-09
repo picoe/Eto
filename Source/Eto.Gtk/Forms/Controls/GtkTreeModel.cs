@@ -4,7 +4,7 @@ using System.Linq;
 using Eto.Forms;
 using System.Runtime.InteropServices;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class GtkTreeModel<TItem, TStore> : GLib.Object, ITreeModelImplementor
 		where TStore: class, IDataStore<TItem>

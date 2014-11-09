@@ -1,7 +1,7 @@
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.ToolBar
 {
 	public interface IToolBarItemHandler
 	{

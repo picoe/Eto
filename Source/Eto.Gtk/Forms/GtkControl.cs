@@ -8,7 +8,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public interface IGtkControl
 	{

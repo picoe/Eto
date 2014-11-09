@@ -2,7 +2,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TabPageHandler : GtkPanel<Gtk.VBox, TabPage, TabPage.ICallback>, TabPage.IHandler
 	{

@@ -7,7 +7,7 @@ using sw = SharpDX.DirectWrite;
 using Eto.Forms;
 using System.Diagnostics;
 #if WINFORMS
-using Eto.WinForms;
+using Eto.WinForms.Forms.Controls;
 #endif
 
 namespace Eto.Direct2D.Drawing

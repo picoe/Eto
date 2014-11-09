@@ -3,7 +3,7 @@ using System.Linq;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Menu
 {
 	public class ContextMenuHandler : WidgetHandler<swf.ContextMenuStrip, ContextMenu>, ContextMenu.IHandler
 	{

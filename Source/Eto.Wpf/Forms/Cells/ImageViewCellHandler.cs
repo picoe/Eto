@@ -6,7 +6,7 @@ using swm = System.Windows.Media;
 using Eto.Wpf.Drawing;
 using Eto.Drawing;
 
-namespace Eto.Wpf.Forms.Controls
+namespace Eto.Wpf.Forms.Cells
 {
 	public class ImageViewCellHandler : CellHandler<ImageViewCellHandler.Column, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
 	{

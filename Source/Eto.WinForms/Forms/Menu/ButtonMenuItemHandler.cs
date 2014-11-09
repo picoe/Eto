@@ -5,7 +5,7 @@ using SWF = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Menu
 {
 	public class ButtonMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
 	{

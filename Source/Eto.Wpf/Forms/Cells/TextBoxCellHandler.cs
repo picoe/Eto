@@ -5,7 +5,7 @@ using swd = System.Windows.Data;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 
-namespace Eto.Wpf.Forms.Controls
+namespace Eto.Wpf.Forms.Cells
 {
 	public class TextBoxCellHandler : CellHandler<swc.DataGridTextColumn, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
 	{

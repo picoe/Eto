@@ -3,7 +3,7 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
 	{

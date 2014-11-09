@@ -5,7 +5,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.WinForms.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class DrawableHandler : WindowsPanel<DrawableHandler.EtoDrawable, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{

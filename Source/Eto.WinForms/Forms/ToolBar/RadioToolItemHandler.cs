@@ -4,7 +4,7 @@ using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.ToolBar
 {
 	public class RadioToolItemHandler : ToolItemHandler<SWF.ToolStripButton, RadioToolItem>, RadioToolItem.IHandler
 	{

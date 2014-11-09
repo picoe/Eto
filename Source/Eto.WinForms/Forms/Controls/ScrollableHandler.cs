@@ -4,7 +4,7 @@ using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class ScrollableHandler : WindowsPanel<ScrollableHandler.CustomScrollable, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{

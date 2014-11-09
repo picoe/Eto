@@ -3,7 +3,7 @@ using SD = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.ToolBar
 {
 	public interface IToolBarItemHandler
 	{

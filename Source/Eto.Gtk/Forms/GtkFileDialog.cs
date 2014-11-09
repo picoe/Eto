@@ -4,7 +4,7 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler
 		where TControl: Gtk.FileChooserDialog

@@ -8,7 +8,7 @@ using Eto.Drawing;
 using System.Collections.Generic;
 using Eto.GtkSharp.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
 	{

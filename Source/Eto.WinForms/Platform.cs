@@ -9,6 +9,9 @@ using Eto.WinForms.Forms.Printing;
 using Eto.WinForms.Forms.Controls;
 using Eto.WinForms.IO;
 using Eto.Forms.ThemedControls;
+using Eto.WinForms.Forms.Cells;
+using Eto.WinForms.Forms.Menu;
+using Eto.WinForms.Forms.ToolBar;
 
 namespace Eto.WinForms
 {

@@ -94,6 +94,7 @@
     <Compile Include="Forms\GtkContainer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\GtkControl.cs" />
     <Compile Include="Forms\GtkFileDialog.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -136,9 +137,6 @@
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
-    <Compile Include="Forms\Controls\GtkControl.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
