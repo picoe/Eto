@@ -32,6 +32,21 @@ namespace Eto.GtkSharp
 
 		public override bool IsGtk { get { return true; } }
 
+		public override bool IsValid
+		{
+			get
+			{
+				try
+				{
+					return typeof(Gtk.Application) != null;
+				}
+				catch
+				{
+					return false;
+				}
+			}
+		}
+
 		#if GTK2
 		public override string ID { get { return "gtk2"; } }
 		#else
