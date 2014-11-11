@@ -6,32 +6,24 @@ namespace Eto.Test
 {
 	public static class TestIcons
 	{
-#if PCL
-		static Assembly Assembly { get { return typeof(TestIcons).GetTypeInfo().Assembly; } }
-#else
-		static Assembly Assembly { get { return typeof(TestIcons).Assembly; } }
-#endif
-		static string prefix;
-		public static string Prefix { get { return prefix = prefix ?? Assembly.GetName().Name + "."; } }
-
 		public static Icon TestIcon
 		{
-			get { return Icon.FromResource(Prefix + "TestIcon.ico", Assembly); }
+			get { return Icon.FromResource("Eto.Test.TestIcon.ico"); }
 		}
 
 		public static Bitmap TestImage
 		{
-			get { return Bitmap.FromResource(Prefix + "TestImage.png", Assembly); }
+			get { return Bitmap.FromResource("Eto.Test.TestImage.png"); }
 		}
 
 		public static Bitmap Textures
 		{
-			get { return Bitmap.FromResource(Prefix + "Textures.png", Assembly); }
+			get { return Bitmap.FromResource("Eto.Test.Textures.png"); }
 		}
 
 		public static Bitmap TexturesIndexed
 		{
-			get { return Bitmap.FromResource(Prefix + "Textures.gif", Assembly); }
+			get { return Bitmap.FromResource("Eto.Test.Textures.gif"); }
 		}
 	}
 }

@@ -13,6 +13,12 @@ namespace Eto
 	/// </summary>
 	static class TypeHelper
 	{
+		#if PCL
+		static MethodInfo getCallingAssembly = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
+
+		public static MethodInfo GetCallingAssembly { get { return getCallingAssembly; } }
+		#endif
+
 		public static Assembly GetAssembly(this Type type)
 		{
 #if PCL

@@ -55,16 +55,14 @@ namespace Eto.Drawing
 		/// <param name="assembly">Assembly to load the resource from</param>
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
-		#if PCL
-		public static Icon FromResource (string resourceName, Assembly assembly)
-		#else
-		public static Icon FromResource (string resourceName, Assembly assembly = null)
-		#endif
+		public static Icon FromResource(string resourceName, Assembly assembly = null)
 		{
 			if (assembly == null)
 			{
 				#if PCL
-				throw new ArgumentNullException("assembly");
+				if (TypeHelper.GetCallingAssembly == null)
+					throw new ArgumentNullException("assembly", "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly");
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
 				#else
 				assembly = Assembly.GetCallingAssembly();
 				#endif
@@ -82,8 +80,10 @@ namespace Eto.Drawing
 		/// <returns>The icon instance.</returns>
 		/// <param name="resourceName">Full name of the resource in the type's assembly.</param>
 		/// <param name="type">Type of the assembly to get the resource.</param>
-		public static Icon FromResource (string resourceName, Type type)
+		public static Icon FromResource(string resourceName, Type type)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
 			#if PCL
 			return FromResource(resourceName, type.GetTypeInfo().Assembly);
 			#else
@@ -133,16 +133,12 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
 		[Obsolete("Use variation without generator instead")]
-		#if PCL
 		public static Icon FromResource (string resourceName, Assembly assembly, Generator generator)
-		#else
-		public static Icon FromResource (string resourceName, Assembly assembly, Generator generator)
-		#endif
 		{
 			if (assembly == null)
 			{
 				#if PCL
-				throw new ArgumentNullException("assembly");
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
 				#else
 				assembly = Assembly.GetCallingAssembly();
 				#endif

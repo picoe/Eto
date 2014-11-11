@@ -82,17 +82,15 @@ namespace Eto.Drawing
 		/// <param name="resourceName">Name of the resource in the caller's assembly to load</param>
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
-		#if PCL
-		public static Bitmap FromResource (string resourceName, Assembly assembly)
-		#else
 		public static Bitmap FromResource(string resourceName, Assembly assembly = null)
-		#endif
 		{
 
 			if (assembly == null)
 			{
 #if PCL
-				throw new ArgumentNullException("assembly");
+				if (TypeHelper.GetCallingAssembly == null)
+					throw new ArgumentNullException("assembly", "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly");
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
 #else
 				assembly = Assembly.GetCallingAssembly();
 #endif
@@ -113,6 +111,8 @@ namespace Eto.Drawing
 		/// <param name="type">Type of the assembly to get the resource.</param>
 		public static Bitmap FromResource(string resourceName, Type type)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
 			#if PCL
 			return FromResource(resourceName, type.GetTypeInfo().Assembly);
 			#else
@@ -364,7 +364,9 @@ namespace Eto.Drawing
 			if (assembly == null)
 			{
 				#if PCL
-				throw new ArgumentNullException("assembly");
+				if (TypeHelper.GetCallingAssembly == null)
+					throw new ArgumentNullException("assembly", "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly");
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
 				#else
 				assembly = Assembly.GetCallingAssembly();
 				#endif
