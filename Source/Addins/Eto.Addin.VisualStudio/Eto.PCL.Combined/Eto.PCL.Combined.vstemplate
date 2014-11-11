@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" Type="ProjectGroup" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
-    <Name>Blank Eto.Forms App (portable, combined platforms)</Name>
+    <Name>Eto.Forms App (portable, combined platforms)</Name>
     <Description>
 <![CDATA[A new Eto.Forms cross-platform application with a shared PCL library, and a combined desktop project that detects the platform.
 
