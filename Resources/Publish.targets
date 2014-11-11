@@ -131,7 +131,8 @@
 		
     	<Exec Command="xbuild /t:'BuildPackage' /p:'ProjectPath=nuspec/%(StandalonePackage.RelativeDir);ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(TargetDir);NugetBuildOptions=-Version $(AssemblyVersion)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows'"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\%(StandalonePackage.RelativeDir)\;ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(TargetDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="$(MSBuildProjectFile)" Condition="$(Platform) == 'Windows'"/>
-    	
+    </Target>
+    <Target Name="BuildAddins" DependsOnTargets="Package">
     	<!-- addins -->
     	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
     	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
@@ -140,7 +141,6 @@
 
 		<!-- Visual Studio Addin -->
     	<MSBuild Projects="$(VisualStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
-    	
     </Target>
     <Target Name="Publish">
 		<GetAssemblyInfo AssemblyFileName="$(BuildOutputDir)\Eto.dll">
