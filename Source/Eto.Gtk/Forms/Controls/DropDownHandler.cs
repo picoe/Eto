@@ -32,8 +32,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected override void Initialize()
 		{
-			base.Initialize();
 			Create();
+			base.Initialize();
 		}
 
 		protected abstract void Create();
