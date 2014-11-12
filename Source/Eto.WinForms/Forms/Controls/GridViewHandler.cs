@@ -38,9 +38,12 @@ namespace Eto.WinForms.Forms.Controls
 				case GridView.CellDoubleClickEvent:
 					Control.CellDoubleClick += (sender, e) =>
 					{
-						var item = GetItemAtRow(e.RowIndex);
-						var column = Widget.Columns[e.ColumnIndex];
-						Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
+						if (e.RowIndex > -1)
+						{
+							var item = GetItemAtRow(e.RowIndex);
+							var column = Widget.Columns[e.ColumnIndex];
+							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
+						}
 					};
 					break;
 				default:
