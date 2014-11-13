@@ -154,7 +154,7 @@ namespace Eto
 					var handler = Parent.Handler as Widget.IHandler;
 					if (handler != null)
 					{
-						handler.HandleEvent(key, true);
+						handler.HandleEvent(key);
 					}
 				}
 				Add(key, value);

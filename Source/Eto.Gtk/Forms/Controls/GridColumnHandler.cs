@@ -16,6 +16,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		GLib.Value GetValue(object dataItem, int dataColumn, int row);
 
 		void BindCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex);
+
+		void SetupEvents();
 	}
 
 	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, GridColumn.IHandler, IGridColumnHandler
@@ -125,7 +127,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				SetCellAttributes();
 				cellhandler.BindCell(source, this, columnIndex, ref dataIndex);
 			}
-			SetupEvents();
 		}
 
 		public void SetupEvents()
@@ -151,7 +152,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.Clicked += (sender, e) =>
 					{
 						var h = ((GridColumnHandler)handler.Target);
-						if (h.grid != null)
+						if (h != null && h.grid != null)
 							h.grid.ColumnClicked(h);
 					};
 					break;

@@ -137,11 +137,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			base.OnLoadComplete(e);
 			Tree.AppendColumn(new Gtk.TreeViewColumn());
+			UpdateColumns();
 		}
 
 		void SetupColumnEvents()
 		{
-			foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<GridColumnHandler>())
+			if (!Widget.Loaded)
+				return;
+			foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IGridColumnHandler>())
 			{
 				col.SetupEvents();
 			}
@@ -149,12 +152,15 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected virtual void UpdateColumns()
 		{
+			if (!Widget.Loaded)
+				return;
 			columnMap.Clear();
 			int columnIndex = 0;
 			int dataIndex = 0;
 			foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IGridColumnHandler>())
 			{
 				col.BindCell(this, this, columnIndex++, ref dataIndex);
+				col.SetupEvents();
 			}
 		}
 
