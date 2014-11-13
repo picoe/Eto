@@ -121,12 +121,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			public ComboBoxHandler Handler { get; set; }
 
-			public override int IndexOf(object item)
-			{
-				var binding = Handler.Widget.TextBinding;
-				return (int)Handler.Control.IndexOf(NSObject.FromObject(binding.GetValue(item)));
-			}
-
 			public override void AddRange(IEnumerable<object> items)
 			{
 				var oldIndex = Handler.Control.SelectedIndex;
@@ -249,7 +243,22 @@ namespace Eto.Mac.Forms.Controls
 		public string Text
 		{
 			get { return Control.StringValue; }
-			set { Control.StringValue = value ?? string.Empty; }
+			set
+			{ 
+				if (Text != value)
+				{
+					Control.StringValue = value ?? string.Empty;
+					if (collection != null)
+					{
+						var binding = Widget.TextBinding;
+						var item = collection.Collection.FirstOrDefault(r => binding.GetValue(r) == value);
+						var index = item != null ? collection.IndexOf(item) : -1;
+
+						SelectedIndex = index;
+					}
+
+				}
+			}
 		}
 
 		public bool ReadOnly
