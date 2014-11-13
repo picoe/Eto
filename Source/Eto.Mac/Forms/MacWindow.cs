@@ -411,7 +411,7 @@ namespace Eto.Mac.Forms
 			Control.ContentView = new NSView();
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-			Control.ReleasedWhenClosed = true;
+			Control.ReleasedWhenClosed = false;
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
 			Control.AutorecalculatesKeyViewLoop = true;
