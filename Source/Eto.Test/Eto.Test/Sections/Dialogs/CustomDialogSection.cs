@@ -3,24 +3,45 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Dialogs
 {
-	public class CustomDialogSection : Panel
+	[Section("Dialogs", typeof(Dialog), "Custom Dialog")]
+	public class CustomDialogSection : Scrollable
 	{
+		public bool UseAsync { get; set; }
+		public DialogDisplayMode DisplayMode { get; set; }
+
 		public CustomDialogSection()
 		{
-			var layout = new DynamicLayout(new Size(20, 20));
+			var layout = new DynamicLayout { Spacing = new Size(20, 20) };
 
+			layout.AddSeparateRow(null, UseAsyncCheckBox(), DisplayModeDropDown(), null);
+			layout.BeginVertical();
 			layout.AddRow(null, Standard(), null);
 			layout.AddRow(null, Resizable(), null);
 			layout.AddRow(null, KitchenSink(), null);
+			layout.EndVertical();
 
 			layout.Add(null);
 
 			Content = layout;
 		}
 
+		Control UseAsyncCheckBox()
+		{
+			var control = new CheckBox { Text = "Use Async" };
+			control.CheckedBinding.Bind(() => UseAsync, val => UseAsync = val ?? false);
+			return control;
+		}
+		Control DisplayModeDropDown()
+		{
+			var control = new EnumDropDown<DialogDisplayMode>();
+			control.SelectedValueBinding.Bind(() => DisplayMode, val => DisplayMode = val);
+			return control;
+		}
+
 		Dialog CreateDialog()
 		{
 			var dialog = new Dialog();
+			dialog.DisplayMode = DisplayMode;
 
 			var layout = new DynamicLayout();
 
@@ -37,6 +58,7 @@ namespace Eto.Test.Sections.Dialogs
 			dialog.AbortButton.Click += delegate
 			{
 				MessageBox.Show("Abort button clicked");
+				dialog.Close();
 			};
 
 			layout.BeginVertical();
@@ -55,7 +77,7 @@ namespace Eto.Test.Sections.Dialogs
 			{
 				var dialog = CreateDialog();
 				dialog.Title = "Standard Dialog";
-				dialog.ShowDialog(this);
+				Show(dialog, this);
 
 			};
 			return control;
@@ -68,10 +90,9 @@ namespace Eto.Test.Sections.Dialogs
 			{
 				var dialog = CreateDialog();
 				dialog.Title = "Resizable Dialog";
-#if DESKTOP
-				dialog.Resizable = true;
-#endif
-				dialog.ShowDialog(this);
+				if (Platform.IsDesktop)
+					dialog.Resizable = true;
+				Show(dialog, this);
 			};
 
 			return control;
@@ -83,18 +104,39 @@ namespace Eto.Test.Sections.Dialogs
 			control.Click += delegate
 			{
 				var dialog = new Dialog();
-#if DESKTOP
-				dialog.Minimizable = true;
-				dialog.Resizable = true;
-				dialog.Maximizable = true;
-				dialog.WindowState = WindowState.Maximized;
-#endif
+				dialog.DisplayMode = DisplayMode;
+				if (Platform.IsDesktop)
+				{
+					dialog.Minimizable = true;
+					dialog.Resizable = true;
+					dialog.Maximizable = true;
+					dialog.WindowState = WindowState.Maximized;
+				}
+
 				dialog.Title = "Kitchen Sink Dialog";
 				dialog.Content = new Controls.KitchenSinkSection();
-				dialog.ShowDialog(this);
+				Show(dialog, this);
 			};
 
 			return control;
+		}
+
+		public async void Show(Dialog dialog, Control parent)
+		{
+			if (UseAsync)
+			{
+				Log.Write(null, "Showing dialog async...");
+				var dialogTask = dialog.ShowModalAsync(parent);
+				Log.Write(null, "Waiting for dialog to close...");
+				await dialogTask;
+				Log.Write(null, "Dialog closed");
+			}
+			else
+			{
+				Log.Write(null, "Showing dialog (blocking)...");
+				dialog.ShowModal(parent);
+				Log.Write(null, "Dialog closed");
+			}
 		}
 	}
 }

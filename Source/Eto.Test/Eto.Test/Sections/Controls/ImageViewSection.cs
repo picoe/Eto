@@ -3,14 +3,15 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(ImageView))]
 	public class ImageViewSection : Panel
 	{
 		public ImageViewSection()
 		{
 			var tabs = new TabControl();
 
-			tabs.TabPages.Add(FixedSize());
-			tabs.TabPages.Add(ScaledSize());
+			tabs.Pages.Add(FixedSize());
+			tabs.Pages.Add(ScaledSize());
 
 			Content = tabs;
 		}
@@ -58,12 +59,12 @@ namespace Eto.Test.Sections.Controls
 
 		Icon GetIcon()
 		{
-			return TestIcons.TestIcon();
+			return TestIcons.TestIcon;
 		}
 
 		Bitmap GetBitmap()
 		{
-			return TestIcons.TestImage();
+			return TestIcons.TestImage;
 		}
 
 		Control AutoSized(Image image)

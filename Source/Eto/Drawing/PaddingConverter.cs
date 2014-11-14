@@ -7,6 +7,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Converter for the <see cref="Padding"/> class
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PaddingConverter : TypeConverter
 	{
 		/// <summary>

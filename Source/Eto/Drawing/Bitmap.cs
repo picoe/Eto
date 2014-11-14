@@ -10,7 +10,7 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// The format is important when modifying the bytes directly via <see cref="Bitmap.Lock"/>.
 	/// </remarks>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum PixelFormat
 	{
@@ -29,14 +29,14 @@ namespace Eto.Drawing
 		/// </summary>
 		Format32bppRgba
 	}
-	
+
 	/// <summary>
 	/// Format of the image to use when saving, loading, etc.
 	/// </summary>
 	/// <remarks>
-	/// The format is typically used only when saving via <see cref="M:Bitmap.Save"/>
+	/// The format is typically used only when saving via <see cref="M:Eto.Drawing.Bitmap.Save"/>
 	/// </remarks>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ImageFormat
 	{
@@ -67,155 +67,77 @@ namespace Eto.Drawing
 	}
 
 	/// <summary>
-	/// Handler interface for the <see cref="Bitmap"/> class
-	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IBitmap : IImage, ILockableImage
-	{
-		/// <summary>
-		/// Create a bitmap from a file
-		/// </summary>
-		/// <param name="fileName">File to load as a bitmap</param>
-		void Create (string fileName);
-
-		/// <summary>
-		/// Create a bitmap from a specified stream
-		/// </summary>
-		/// <param name="stream">Stream to load from the bitmap</param>
-		void Create (Stream stream);
-
-		/// <summary>
-		/// Creates a new bitmap in-memory with the specified format
-		/// </summary>
-		/// <param name="width">Initial width of the bitmap</param>
-		/// <param name="height">Initial height of the bitmap</param>
-		/// <param name="pixelFormat">Format of each of the pixels in the bitmap</param>
-		void Create (int width, int height, PixelFormat pixelFormat);
-
-		/// <summary>
-		/// Creates a new bitmap optimized for drawing on the specified <paramref name="graphics"/>
-		/// </summary>
-		/// <param name="width">Width of the bitmap</param>
-		/// <param name="height">Height of the bitmap</param>
-		/// <param name="graphics">Graphics context the bitmap is intended to be drawn on</param>
-		void Create (int width, int height, Graphics graphics);
-
-		/// <summary>
-		/// Create a new scaled bitmap with the specified <paramref name="width"/> and <paramref name="height"/>
-		/// </summary>
-		/// <param name="image">Image to scale</param>
-		/// <param name="width">Width to scale the source image to</param>
-		/// <param name="height">Height to scale the source image to</param>
-		/// <param name="interpolation">Interpolation quality</param>
-		void Create (Image image, int width, int height, ImageInterpolation interpolation);
-
-		/// <summary>
-		/// Saves the bitmap to a stream in the specified format
-		/// </summary>
-		/// <param name="stream">Stream to save the bitmap to</param>
-		/// <param name="format">Format to save as</param>
-		void Save (Stream stream, ImageFormat format);
-
-		/// <summary>
-		/// Creates a clone of the bitmap
-		/// </summary>
-		/// <param name="rectangle">If specified, the region of the bitmap to clone</param>
-		/// <returns></returns>
-		Bitmap Clone(Rectangle? rectangle = null);
-
-		/// <summary>
-		/// Gets the color of the pixel at the specified coordinates
-		/// </summary>
-		/// <returns>The color of the pixel at the specified coordinates</returns>
-		/// <param name="x">The x coordinate</param>
-		/// <param name="y">The y coordinate</param>
-		Color GetPixel (int x, int y);
-	}
-	
-	/// <summary>
 	/// Represents an image
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(Bitmap.IHandler))]
 	public class Bitmap : Image
 	{
-		new IBitmap Handler { get { return (IBitmap)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Loads a bitmap from the resource in the specified or caller's assembly
 		/// </summary>
 		/// <param name="resourceName">Name of the resource in the caller's assembly to load</param>
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
-		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
-		public static Bitmap FromResource (string resourceName, Assembly assembly = null, Generator generator = null)
+		public static Bitmap FromResource(string resourceName, Assembly assembly = null)
 		{
-#if !WINRT
-			assembly = assembly ?? Assembly.GetCallingAssembly ();
+
+			if (assembly == null)
+			{
+#if PCL
+				if (TypeHelper.GetCallingAssembly == null)
+					throw new ArgumentNullException("assembly", "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly");
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
+#else
+				assembly = Assembly.GetCallingAssembly();
 #endif
-			using (var stream = assembly.GetManifestResourceStream (resourceName)) {
+			}
+			using (var stream = assembly.GetManifestResourceStream(resourceName))
+			{
 				if (stream == null)
-					throw new ResourceNotFoundException (assembly, resourceName);
-				return new Bitmap (stream, generator);
+					throw new ResourceNotFoundException(assembly, resourceName);
+				return new Bitmap(stream);
 			}
 		}
 
 		/// <summary>
-		/// Loads a bitmap from the resource in the specified assembly
+		/// Loads a bitmap from a resource in the same assembly as the specified <paramref name="type"/>
 		/// </summary>
-		/// <param name="asm">Assembly to load the resource from</param>
-		/// <param name="resourceName">Resource to load in the specified assembly</param>
-		/// <returns>A new instance of the Bitmap loaded from the resource</returns>
-		[Obsolete ("Use FromResource(string, Assembly) instead")]
-		public static Bitmap FromResource (Assembly asm, string resourceName)
+		/// <returns>The bitmap instance.</returns>
+		/// <param name="resourceName">Full name of the resource in the type's assembly.</param>
+		/// <param name="type">Type of the assembly to get the resource.</param>
+		public static Bitmap FromResource(string resourceName, Type type)
 		{
-#if WINRT
-			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
-#else
-			return FromResource (resourceName, asm ?? Assembly.GetCallingAssembly ());
-#endif
-		}
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("use Bitmap.FromResource instead")]
-		public Bitmap (Assembly asm, string resourceName)
-			: this ((Generator)null)
-		{
-#if WINRT
-			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
-#else
-			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			using (var stream = asm.GetManifestResourceStream (resourceName)) {
-				if (stream == null)
-					throw new ResourceNotFoundException (asm, resourceName);
-				Handler.Create (stream);
-			}
-#endif
+			if (type == null)
+				throw new ArgumentNullException("type");
+			#if PCL
+			return FromResource(resourceName, type.GetTypeInfo().Assembly);
+			#else
+			return FromResource(resourceName, type.Assembly);
+			#endif
 		}
 
 		/// <summary>
 		/// Initializes a new instance of a Bitmap from a file
 		/// </summary>
 		/// <param name="fileName">File to load as a bitmap</param>
-		/// <param name="generator">Generator to create the bitmap</param>
-		public Bitmap(string fileName, Generator generator = null)
-			: this (generator)
+		public Bitmap(string fileName)
 		{
-			Handler.Create (fileName);
+			Handler.Create(fileName);
+			Initialize();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of a Bitmap from a stream
 		/// </summary>
 		/// <param name="stream">Stream to load from the bitmap</param>
-		/// <param name="generator">Generator to create the bitmap</param>
-		public Bitmap(Stream stream, Generator generator = null)
-			: this (generator)
+		public Bitmap(Stream stream)
 		{
-			Handler.Create (stream);
+			Handler.Create(stream);
+			Initialize();
 		}
 
 		/// <summary>
@@ -223,9 +145,8 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="size">Size of the bitmap to create</param>
 		/// <param name="pixelFormat">Format of each pixel</param>
-		/// <param name="generator">Generator to create the bitmap</param>
-		public Bitmap(Size size, PixelFormat pixelFormat, Generator generator = null)
-			: this(size.Width, size.Height, pixelFormat, generator)
+		public Bitmap(Size size, PixelFormat pixelFormat)
+			: this(size.Width, size.Height, pixelFormat)
 		{
 		}
 
@@ -235,11 +156,10 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the new bitmap</param>
 		/// <param name="height">Height of the new bitmap</param>
 		/// <param name="pixelFormat">Format of each pixel</param>
-		/// <param name="generator">Generator to create the bitmap</param>
-		public Bitmap(int width, int height, PixelFormat pixelFormat, Generator generator = null)
-			: this (generator)
+		public Bitmap(int width, int height, PixelFormat pixelFormat)
 		{
-			Handler.Create (width, height, pixelFormat);
+			Handler.Create(width, height, pixelFormat);
+			Initialize();
 		}
 
 		/// <summary>
@@ -248,13 +168,12 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the bitmap</param>
 		/// <param name="height">Height of the bitmap</param>
 		/// <param name="graphics">Graphics context the bitmap is intended to be drawn on</param>
-		/// <param name="generator">Generator to create the bitmap</param>
-		public Bitmap(int width, int height, Graphics graphics, Generator generator = null)
-			: this (generator)
+		public Bitmap(int width, int height, Graphics graphics)
 		{
-			Handler.Create (width, height, graphics);
+			Handler.Create(width, height, graphics);
+			Initialize();
 		}
-		
+
 		/// <summary>
 		/// Create a new scaled bitmap with the specified <paramref name="width"/> and <paramref name="height"/>
 		/// </summary>
@@ -262,27 +181,19 @@ namespace Eto.Drawing
 		/// <param name="width">Width to scale the source image to</param>
 		/// <param name="height">Height to scale the source image to</param>
 		/// <param name="interpolation">Interpolation quality</param>
-		/// <param name="generator">Generator to create the bitmap</param>
-		public Bitmap(Image image, int? width = null, int? height = null, ImageInterpolation interpolation = ImageInterpolation.Default, Generator generator = null)
-			: this (generator)
+		public Bitmap(Image image, int? width = null, int? height = null, ImageInterpolation interpolation = ImageInterpolation.Default)
 		{
-			Handler.Create (image, width ?? image.Size.Width, height ?? image.Size.Height, interpolation);
+			Handler.Create(image, width ?? image.Size.Width, height ?? image.Size.Height, interpolation);
+			Initialize();
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
 		/// </summary>
 		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>
-		/// <param name="generator">Generator to create the bitmap</param>
-		public Bitmap(byte[] bytes, Generator generator = null)
-			: this (generator)
+		public Bitmap(byte[] bytes)
 		{
 			Handler.Create(new MemoryStream(bytes, false));
-		}
-
-		Bitmap (Generator generator)
-			: base(generator, typeof(IBitmap))
-		{
 		}
 
 		/// <summary>
@@ -291,10 +202,9 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// This is intended to be used by platform specific code to return bitmap instances with a particular handler
 		/// </remarks>
-		/// <param name="generator">Generator the handler is created from</param>
 		/// <param name="handler">Platform handler to use for this instance</param>
-		public Bitmap (Generator generator, IBitmap handler)
-			: base(generator, handler)
+		public Bitmap(IHandler handler)
+			: base(handler)
 		{
 		}
 
@@ -314,35 +224,34 @@ namespace Eto.Drawing
 		/// </code>
 		/// </remarks>
 		/// <returns>A BitmapData object that carries a pointer and functions for manipulating the data directly</returns>
-		public BitmapData Lock ()
+		public BitmapData Lock()
 		{
-			return Handler.Lock ();
+			return Handler.Lock();
 		}
 
+		#if !PCL
 		/// <summary>
 		/// Saves the bitmap to a file in the specified format
 		/// </summary>
 		/// <param name="fileName">File to save the bitmap to</param>
 		/// <param name="format">Format to save as</param>
-		public void Save (string fileName, ImageFormat format)
+		public void Save(string fileName, ImageFormat format)
 		{
-#if WINRT
-			throw new NotImplementedException();
-#else
-			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
-				Save (stream, format);
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
 			}
-#endif
 		}
+		#endif
 
 		/// <summary>
 		/// Saves the bitmap to a stream in the specified format
 		/// </summary>
 		/// <param name="stream">Stream to save the bitmap to</param>
 		/// <param name="format">Format to save as</param>
-		public void Save (Stream stream, ImageFormat format)
+		public void Save(Stream stream, ImageFormat format)
 		{
-			Handler.Save (stream, format);	
+			Handler.Save(stream, format);	
 		}
 
 		/// <summary>
@@ -353,112 +262,321 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="imageFormat"></param>
 		/// <returns></returns>
-		public byte[] ToByteArray (ImageFormat imageFormat)
+		public byte[] ToByteArray(ImageFormat imageFormat)
 		{
-			using (var memoryStream = new MemoryStream ()) {
+			using (var memoryStream = new MemoryStream())
+			{
 				Save(memoryStream, imageFormat);
-				return memoryStream.ToArray ();
+				return memoryStream.ToArray();
 			}
 		}
 
 		/// <summary>
 		/// Creates a clone of the bitmap
 		/// </summary>
-		public Bitmap Clone (Rectangle? rectangle = null)
+		public Bitmap Clone(Rectangle? rectangle = null)
 		{
-			return Handler.Clone (rectangle);
+			return Handler.Clone(rectangle);
 		}
 
 		/// <summary>
-		/// Gets the color of the pixel at the specified coordinates
+		/// Gets the color of the pixel at the specified <paramref name="position"/>
 		/// </summary>
 		/// <remarks>
 		/// Note that this method can be extremely slow to go through each pixel of a bitmap.
-		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly.
+		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
+		/// then optionally use <see cref="BitmapData.GetPixel(Point)"/> to get each pixel value.
+		/// </remarks>
+		/// <returns>The color of the pixel.</returns>
+		/// <param name="position">Position to get the color of the pixel.</param>
+		public Color GetPixel(Point position)
+		{
+			return GetPixel(position.X, position.Y);
+		}
+
+		/// <summary>
+		/// Gets the color of the pixel at the specified coordinates.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method can be extremely slow to go through each pixel of a bitmap.
+		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
+		/// then optionally use <see cref="BitmapData.GetPixel(int,int)"/> to get each pixel value.
 		/// </remarks>
 		/// <returns>The color of the pixel at the specified coordinates</returns>
 		/// <param name="x">The x coordinate</param>
 		/// <param name="y">The y coordinate</param>
-		public Color GetPixel (int x, int y)
+		public Color GetPixel(int x, int y)
 		{
-			return Handler.GetPixel (x, y);
+			return Handler.GetPixel(x, y);
 		}
 
-		#region Obsolete
+		/// <summary>
+		/// Sets the pixel color at the specified <paramref name="position"/>.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method can be extremely slow to set each pixel of a bitmap.
+		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
+		/// then optionally use <see cref="BitmapData.SetPixel(Point,Color)"/> to set each pixel value.
+		/// </remarks>
+		/// <param name="position">Position to set the pixel color.</param>
+		/// <param name="color">Color to set.</param>
+		public void SetPixel(Point position, Color color)
+		{
+			SetPixel(position.X, position.Y, color);
+		}
+
+		/// <summary>
+		/// Sets the color of the pixel at the specified coordinates.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method can be extremely slow to set each pixel of a bitmap.
+		/// If you need better performance, use <see cref="Lock"/> to get access to the bitmap's pixel buffer directly, 
+		/// then optionally use <see cref="BitmapData.SetPixel(int,int,Color)"/> to set each pixel value.
+		/// </remarks>
+		/// <param name="x">The x coordinate of the pixel to set.</param>
+		/// <param name="y">The y coordinate of the pixel to set.</param>
+		/// <param name="color">Color to set the pixel to.</param>
+		public void SetPixel(int x, int y, Color color)
+		{
+			using (var bd = Lock())
+			{
+				bd.SetPixel(x, y, color);
+			}
+		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Loads a bitmap from the resource in the specified or caller's assembly
+		/// </summary>
+		/// <param name="resourceName">Name of the resource in the caller's assembly to load</param>
+		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
+		/// <param name="generator">Generator for this widget</param>
+		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
+		[Obsolete("Use variation without generator instead")]
+		#if PCL
+		public static Bitmap FromResource(string resourceName, Assembly assembly, Generator generator)
+		#else
+		public static Bitmap FromResource(string resourceName, Assembly assembly, Generator generator)
+		#endif
+		{
+
+			if (assembly == null)
+			{
+				#if PCL
+				if (TypeHelper.GetCallingAssembly == null)
+					throw new ArgumentNullException("assembly", "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly");
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
+				#else
+				assembly = Assembly.GetCallingAssembly();
+				#endif
+			}
+			using (var stream = assembly.GetManifestResourceStream(resourceName))
+			{
+				if (stream == null)
+					throw new ResourceNotFoundException(assembly, resourceName);
+				return new Bitmap(stream, generator);
+			}
+		}
+
+		/// <summary>
+		/// Gets a bitmap from the specified resource.
+		/// </summary>
+		/// <returns>The resource.</returns>
+		/// <param name="resourceName">Resource name.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="generator">Generator.</param>
+		[Obsolete("Use variation without generator instead")]
+		public static Bitmap FromResource(string resourceName, Type type, Generator generator)
+		{
+			#if PCL
+			return FromResource(resourceName, type.GetTypeInfo().Assembly, generator);
+			#else
+			return FromResource(resourceName, type.Assembly, generator);
+			#endif
+		}
 
 		/// <summary>
 		/// Initializes a new instance of a Bitmap from a file
 		/// </summary>
-		/// <param name="generator">Generator to use to create the bitmap</param>
 		/// <param name="fileName">File to load as a bitmap</param>
-		[Obsolete("Use Bitmap(string, Generator) instead")]
-		public Bitmap (Generator generator, string fileName)
-			: this (generator)
+		/// <param name="generator">Generator to create the bitmap</param>
+		[Obsolete("Use variation without generator instead")]
+		public Bitmap(string fileName, Generator generator)
+			: this(generator)
 		{
-			Handler.Create (fileName);
+			Handler.Create(fileName);
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of a Bitmap from a stream
 		/// </summary>
-		/// <param name="generator">Generator to use to create the bitmap</param>
 		/// <param name="stream">Stream to load from the bitmap</param>
-		[Obsolete("Use Bitmap(Stream, Generator) instead")]
-		public Bitmap (Generator generator, Stream stream)
-			: this (generator)
+		/// <param name="generator">Generator to create the bitmap</param>
+		[Obsolete("Use variation without generator instead")]
+		public Bitmap(Stream stream, Generator generator)
+			: this(generator)
 		{
-			Handler.Create (stream);
+			Handler.Create(stream);
 		}
-		
-		/// <summary>
-		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
-		/// </summary>
-		/// <param name="generator">Generator to use to create the bitmap</param>
-		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>
-		[Obsolete("Use Bitmap(byte[], Generator) instead")]
-		public Bitmap(Generator generator, byte[] bytes)
-			: this(generator, new MemoryStream(bytes))
-		{
-		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of a Bitmap with the specified size and format
 		/// </summary>
-		/// <param name="generator">Generator to use to create the bitmap</param>
+		/// <param name="size">Size of the bitmap to create</param>
+		/// <param name="pixelFormat">Format of each pixel</param>
+		/// <param name="generator">Generator to create the bitmap</param>
+		[Obsolete("Use variation without generator instead")]
+		public Bitmap(Size size, PixelFormat pixelFormat, Generator generator)
+			: this(size.Width, size.Height, pixelFormat, generator)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of a Bitmap with the specified size and format
+		/// </summary>
 		/// <param name="width">Width of the new bitmap</param>
 		/// <param name="height">Height of the new bitmap</param>
 		/// <param name="pixelFormat">Format of each pixel</param>
-		[Obsolete("Use Bitmap(int, int, PixelFormat, Generator) instead")]
-		public Bitmap (Generator generator, int width, int height, PixelFormat pixelFormat)
+		/// <param name="generator">Generator to create the bitmap</param>
+		[Obsolete("Use variation without generator instead")]
+		public Bitmap(int width, int height, PixelFormat pixelFormat, Generator generator)
 			: this(generator)
 		{
-			Handler.Create (width, height, pixelFormat);
+			Handler.Create(width, height, pixelFormat);
 		}
 
 		/// <summary>
-		/// Resizes the image to the specified width and height
+		/// Creates a new bitmap optimized for drawing on the specified <paramref name="graphics"/>
+		/// </summary>
+		/// <param name="width">Width of the bitmap</param>
+		/// <param name="height">Height of the bitmap</param>
+		/// <param name="graphics">Graphics context the bitmap is intended to be drawn on</param>
+		/// <param name="generator">Generator to create the bitmap</param>
+		[Obsolete("Use variation without generator instead")]
+		public Bitmap(int width, int height, Graphics graphics, Generator generator)
+			: this(generator)
+		{
+			Handler.Create(width, height, graphics);
+		}
+
+		/// <summary>
+		/// Create a new scaled bitmap with the specified <paramref name="width"/> and <paramref name="height"/>
+		/// </summary>
+		/// <param name="image">Image to scale</param>
+		/// <param name="width">Width to scale the source image to</param>
+		/// <param name="height">Height to scale the source image to</param>
+		/// <param name="interpolation">Interpolation quality</param>
+		/// <param name="generator">Generator to create the bitmap</param>
+		[Obsolete("Use variation without generator instead")]
+		public Bitmap(Image image, int? width, int? height, ImageInterpolation interpolation, Generator generator)
+			: this(generator)
+		{
+			Handler.Create(image, width ?? image.Size.Width, height ?? image.Size.Height, interpolation);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
+		/// </summary>
+		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>
+		/// <param name="generator">Generator to create the bitmap</param>
+		[Obsolete("Use variation without generator instead")]
+		public Bitmap(byte[] bytes, Generator generator)
+			: this(generator)
+		{
+			Handler.Create(new MemoryStream(bytes, false));
+		}
+
+		[Obsolete("Use variation without generator instead")]
+		Bitmap(Generator generator)
+			: base(generator, typeof(IHandler))
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of a Bitmap with the specified handler
 		/// </summary>
 		/// <remarks>
-		/// This will scale the existing image to the desired size
+		/// This is intended to be used by platform specific code to return bitmap instances with a particular handler
 		/// </remarks>
-		/// <param name="width">New width for the resized image</param>
-		/// <param name="height">New height for the resized image</param>
-		[Obsolete ("Use Bitmap(Image, int, int, InterpolationMode, Generator) instead", true)]
-		public void Resize (int width, int height)
+		/// <param name="generator">Generator the handler is created from</param>
+		/// <param name="handler">Platform handler to use for this instance</param>
+		[Obsolete("Use variation without generator instead")]
+		public Bitmap(Generator generator, IHandler handler)
+			: base(generator, handler)
 		{
-			var handler = Generator.Create<IBitmap>();
-			handler.Create (this, width, height, ImageInterpolation.Default);
-			base.Handler = handler;
 		}
 
+		#pragma warning restore 612,618
+
+		#region Handler
+
 		/// <summary>
-		/// Unlocks the bits of the bitmap
+		/// Handler interface for the <see cref="Bitmap"/> class
 		/// </summary>
-		/// <param name="bitmapData">Instance of the bitmap data retrieved from the <see cref="Lock"/> method</param>
-		[Obsolete ("Use BitmapData.Dispose instead")]
-		public void Unlock (BitmapData bitmapData)
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		[AutoInitialize(false)]
+		public new interface IHandler : Image.IHandler, ILockableImage
 		{
-			Handler.Unlock(bitmapData);
+			/// <summary>
+			/// Create a bitmap from a file
+			/// </summary>
+			/// <param name="fileName">File to load as a bitmap</param>
+			void Create(string fileName);
+
+			/// <summary>
+			/// Create a bitmap from a specified stream
+			/// </summary>
+			/// <param name="stream">Stream to load from the bitmap</param>
+			void Create(Stream stream);
+
+			/// <summary>
+			/// Creates a new bitmap in-memory with the specified format
+			/// </summary>
+			/// <param name="width">Initial width of the bitmap</param>
+			/// <param name="height">Initial height of the bitmap</param>
+			/// <param name="pixelFormat">Format of each of the pixels in the bitmap</param>
+			void Create(int width, int height, PixelFormat pixelFormat);
+
+			/// <summary>
+			/// Creates a new bitmap optimized for drawing on the specified <paramref name="graphics"/>
+			/// </summary>
+			/// <param name="width">Width of the bitmap</param>
+			/// <param name="height">Height of the bitmap</param>
+			/// <param name="graphics">Graphics context the bitmap is intended to be drawn on</param>
+			void Create(int width, int height, Graphics graphics);
+
+			/// <summary>
+			/// Create a new scaled bitmap with the specified <paramref name="width"/> and <paramref name="height"/>
+			/// </summary>
+			/// <param name="image">Image to scale</param>
+			/// <param name="width">Width to scale the source image to</param>
+			/// <param name="height">Height to scale the source image to</param>
+			/// <param name="interpolation">Interpolation quality</param>
+			void Create(Image image, int width, int height, ImageInterpolation interpolation);
+
+			/// <summary>
+			/// Saves the bitmap to a stream in the specified format
+			/// </summary>
+			/// <param name="stream">Stream to save the bitmap to</param>
+			/// <param name="format">Format to save as</param>
+			void Save(Stream stream, ImageFormat format);
+
+			/// <summary>
+			/// Creates a clone of the bitmap
+			/// </summary>
+			/// <param name="rectangle">If specified, the region of the bitmap to clone</param>
+			/// <returns></returns>
+			Bitmap Clone(Rectangle? rectangle = null);
+
+			/// <summary>
+			/// Gets the color of the pixel at the specified coordinates
+			/// </summary>
+			/// <returns>The color of the pixel at the specified coordinates</returns>
+			/// <param name="x">The x coordinate</param>
+			/// <param name="y">The y coordinate</param>
+			Color GetPixel(int x, int y);
 		}
 
 		#endregion

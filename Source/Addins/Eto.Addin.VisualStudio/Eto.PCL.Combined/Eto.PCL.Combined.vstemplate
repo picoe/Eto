@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="ProjectGroup" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Eto.Forms App (portable, combined platforms)</Name>
+    <Description>
+<![CDATA[A new Eto.Forms cross-platform application with a shared PCL library, and a combined desktop project that detects the platform.
+
+Preferred for maximum portability between all platforms.]]>
+    </Description>
+    <Icon>Eto.PCL.Combined.ico</Icon>
+    <ProjectType>CSharp</ProjectType>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <SortOrder>1000</SortOrder>
+    <TemplateID>a1848891-012f-4b0c-9917-eaf183fcb6b1</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>EtoApp</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem>AssemblyInfo.cs</ProjectItem>
+    <ProjectItem>Eto\Eto.vstemplate</ProjectItem>
+    <ProjectItem>Eto\Eto.csproj</ProjectItem>
+    <ProjectItem>Eto\MainForm.cs</ProjectItem>
+    <ProjectItem>Eto.Desktop\Eto.Desktop.vstemplate</ProjectItem>
+    <ProjectItem>Eto.Desktop\Eto.Desktop.csproj</ProjectItem>
+    <ProjectItem>Eto.Desktop\Program.cs</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.VisualStudioTemplates, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6a46172bb98be483</Assembly>
+    <FullClassName>Eto.VisualStudioTemplates.RootWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.VisualStudioTemplates, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6a46172bb98be483</Assembly>
+    <FullClassName>Eto.VisualStudioTemplates.MultiProjectWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <Projects>
+      <Project Name="$safeprojectname$">Eto\Eto.vstemplate</Project>
+      <Project Name="$safeprojectname$.Desktop" Startup="true">Eto.Desktop\Eto.Desktop.vstemplate</Project>
+    </Projects>
+  </WizardData>
+</VSTemplate>

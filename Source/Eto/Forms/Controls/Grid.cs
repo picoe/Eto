@@ -6,66 +6,6 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Grid"/> control
-	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGrid : IControl
-	{
-		/// <summary>
-		/// Gets or sets a value indicating that the header should be shown
-		/// </summary>
-		/// <value><c>true</c> to show header; otherwise, <c>false</c>.</value>
-		bool ShowHeader { get; set; }
-
-		/// <summary>
-		/// Gets or sets the height for each row in the grid
-		/// </summary>
-		/// <value>The height of the row.</value>
-		int RowHeight { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the user can re-order columns
-		/// </summary>
-		/// <value><c>true</c> to allow column reordering; otherwise, <c>false</c>.</value>
-		bool AllowColumnReordering { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the user can select multiple rows
-		/// </summary>
-		/// <value><c>true</c> to allow multiple row selection; otherwise, <c>false</c>.</value>
-		bool AllowMultipleSelection { get; set; }
-
-		/// <summary>
-		/// Gets the selected rows indexes
-		/// </summary>
-		/// <value>The selected rows.</value>
-		IEnumerable<int> SelectedRows { get; }
-
-		/// <summary>
-		/// Selects the row to the specified <paramref name="row"/>, clearing other selections
-		/// </summary>
-		/// <param name="row">Row to select</param>
-		void SelectRow(int row);
-
-		/// <summary>
-		/// Unselects the specified <paramref name="row"/>
-		/// </summary>
-		/// <param name="row">Row to unselect</param>
-		void UnselectRow(int row);
-
-		/// <summary>
-		/// Selects all rows
-		/// </summary>
-		void SelectAll();
-
-		/// <summary>
-		/// Clears the selection
-		/// </summary>
-		void UnselectAll();
-	}
-
-	/// <summary>
 	/// Event arguments for <see cref="Grid"/> events relating to a specific column
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
@@ -150,15 +90,18 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class Grid : Control
+	public abstract class Grid : Control, ISelectable<object>
 	{
-		new IGrid Handler { get { return (IGrid)base.Handler; } }
+		GridColumnCollection columns;
+		internal bool supressSelectionChanged;
+
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets the collection of columns to display in the grid
 		/// </summary>
 		/// <value>The column collection</value>
-		public GridColumnCollection Columns { get; private set; }
+		public GridColumnCollection Columns { get { return columns ?? (columns = new GridColumnCollection()); } }
 
 		#region Events
 
@@ -170,7 +113,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Occurs before a cell is being edited to allow canceling based on application logic
 		/// </summary>
-		public event EventHandler<GridViewCellArgs> CellEditing
+		public event EventHandler<GridViewCellEventArgs> CellEditing
 		{
 			add { Properties.AddHandlerEvent(CellEditingEvent, value); }
 			remove { Properties.RemoveEvent(CellEditingEvent, value); }
@@ -180,7 +123,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="CellEditing"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnCellEditing(GridViewCellArgs e)
+		protected virtual void OnCellEditing(GridViewCellEventArgs e)
 		{
 			Properties.TriggerEvent(CellEditingEvent, this, e);
 		}
@@ -193,7 +136,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Occurs after a cell has been edited
 		/// </summary>
-		public event EventHandler<GridViewCellArgs> CellEdited
+		public event EventHandler<GridViewCellEventArgs> CellEdited
 		{
 			add { Properties.AddHandlerEvent(CellEditedEvent, value); }
 			remove { Properties.RemoveEvent(CellEditedEvent, value); }
@@ -203,7 +146,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.CellEdited"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnCellEdited(GridViewCellArgs e)
+		protected virtual void OnCellEdited(GridViewCellEventArgs e)
 		{
 			Properties.TriggerEvent(CellEditedEvent, this, e);
 		}
@@ -226,7 +169,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.SelectionChanged"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnSelectionChanged(EventArgs e)
+		protected internal virtual void OnSelectionChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectionChangedEvent, this, e);
 		}
@@ -249,7 +192,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.ColumnHeaderClick"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnColumnHeaderClick(GridColumnEventArgs e)
+		protected virtual void OnColumnHeaderClick(GridColumnEventArgs e)
 		{
 			Properties.TriggerEvent(ColumnHeaderClickEvent, this, e);
 		}
@@ -272,9 +215,27 @@ namespace Eto.Forms
 		/// Raises the <see cref="Grid.CellFormatting"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnCellFormatting(GridCellFormatEventArgs e)
+		protected virtual void OnCellFormatting(GridCellFormatEventArgs e)
 		{
 			Properties.TriggerEvent(CellFormattingEvent, this, e);
+		}
+
+		/// <summary>
+		/// Occurs when the <see cref="SelectedItems"/> is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedItemsChanged
+		{
+			add { SelectionChanged += value; }
+			remove { SelectionChanged -= value; }
+		}
+
+		/// <summary>
+		/// Occurs when the <see cref="SelectedRows"/> is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedRowsChanged
+		{
+			add { SelectionChanged += value; }
+			remove { SelectionChanged -= value; }
 		}
 
 		#endregion
@@ -291,15 +252,29 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
 		/// </summary>
+		protected Grid()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class with the specified handler
+		/// </summary>
+		/// <param name="handler">Handler implementation for the control</param>
+		protected Grid(IHandler handler)
+			: base(handler)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
+		/// </summary>
 		/// <param name="generator">Generator to instantiate the handler with</param>
 		/// <param name="type">Type of handler to create</param>
 		/// <param name="initialize">If set to <c>true</c> initialize.</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Grid(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
-			Columns = new GridColumnCollection();
-			if (initialize)
-				Initialize();
 		}
 
 		/// <summary>
@@ -308,12 +283,10 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to instantiate the handler with</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		protected Grid(Generator generator, IControl handler, bool initialize = true)
+		[Obsolete("Use Grid(IGrid) instead")]
+		protected Grid(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, false)
 		{
-			Columns = new GridColumnCollection();
-			if (initialize)
-				Initialize();
 		}
 
 		/// <summary>
@@ -356,6 +329,10 @@ namespace Eto.Forms
 		/// If there is exactly one selected item, returns it, otherwise
 		/// returns null.
 		/// </summary>
+		/// <remarks>
+		/// Typically, you would use <see cref="SelectedItems"/> when <see cref="AllowMultipleSelection"/> is <c>true</c>.
+		/// </remarks>
+		/// <seealso cref="SelectedItems"/>
 		public object SelectedItem
 		{
 			get
@@ -374,6 +351,7 @@ namespace Eto.Forms
 		public virtual IEnumerable<int> SelectedRows
 		{
 			get { return Handler.SelectedRows; }
+			set { Handler.SelectedRows = value; }
 		}
 
 		/// <summary>
@@ -419,5 +397,175 @@ namespace Eto.Forms
 		{
 			Handler.UnselectAll();
 		}
+
+		/// <summary>
+		/// Begin to edit one cell
+		/// </summary>
+		/// <param name="row">Row to edit</param>
+		/// <param name="column">Column to edit</param>
+		public void BeginEdit(int row, int column)
+		{
+			Handler.BeginEdit(row, column);
+		}
+
+		static readonly object callback = new Callback();
+
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
+		protected override object GetCallback()
+		{
+			return callback;
+		}
+
+		/// <summary>
+		/// Callback interface for instances of <see cref="Grid"/>
+		/// </summary>
+		public new interface ICallback : Control.ICallback
+		{
+			/// <summary>
+			/// Raises the cell editing event.
+			/// </summary>
+			void OnCellEditing(Grid widget, GridViewCellEventArgs e);
+
+			/// <summary>
+			/// Raises the cell edited event.
+			/// </summary>
+			void OnCellEdited(Grid widget, GridViewCellEventArgs e);
+
+			/// <summary>
+			/// Raises the selection changed event.
+			/// </summary>
+			void OnSelectionChanged(Grid widget, EventArgs e);
+
+			/// <summary>
+			/// Raises the column header click event.
+			/// </summary>
+			void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e);
+
+			/// <summary>
+			/// Raises the cell formatting event.
+			/// </summary>
+			void OnCellFormatting(Grid widget, GridCellFormatEventArgs e);
+		}
+
+		/// <summary>
+		/// Callbacks for instances of <see cref="Grid"/>
+		/// </summary>
+		protected new class Callback : Control.Callback, ICallback
+		{
+			/// <summary>
+			/// Raises the cell editing event.
+			/// </summary>
+			public void OnCellEditing(Grid widget, GridViewCellEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCellEditing(e));
+			}
+
+			/// <summary>
+			/// Raises the cell edited event.
+			/// </summary>
+			public void OnCellEdited(Grid widget, GridViewCellEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCellEdited(e));
+			}
+
+			/// <summary>
+			/// Raises the selection changed event.
+			/// </summary>
+			public void OnSelectionChanged(Grid widget, EventArgs e)
+			{
+				if (!widget.supressSelectionChanged)
+					widget.Platform.Invoke(() => widget.OnSelectionChanged(e));
+			}
+
+			/// <summary>
+			/// Raises the column header click event.
+			/// </summary>
+			public void OnColumnHeaderClick(Grid widget, GridColumnEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnColumnHeaderClick(e));
+			}
+
+			/// <summary>
+			/// Raises the cell formatting event.
+			/// </summary>
+			public void OnCellFormatting(Grid widget, GridCellFormatEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCellFormatting(e));
+			}
+		}
+
+		#region Handler
+
+		/// <summary>
+		/// Handler interface for the <see cref="Grid"/> control
+		/// </summary>
+		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public new interface IHandler : Control.IHandler
+		{
+			/// <summary>
+			/// Gets or sets a value indicating that the header should be shown
+			/// </summary>
+			/// <value><c>true</c> to show header; otherwise, <c>false</c>.</value>
+			bool ShowHeader { get; set; }
+
+			/// <summary>
+			/// Gets or sets the height for each row in the grid
+			/// </summary>
+			/// <value>The height of the row.</value>
+			int RowHeight { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the user can re-order columns
+			/// </summary>
+			/// <value><c>true</c> to allow column reordering; otherwise, <c>false</c>.</value>
+			bool AllowColumnReordering { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the user can select multiple rows
+			/// </summary>
+			/// <value><c>true</c> to allow multiple row selection; otherwise, <c>false</c>.</value>
+			bool AllowMultipleSelection { get; set; }
+
+			/// <summary>
+			/// Gets the selected rows indexes
+			/// </summary>
+			/// <value>The selected rows.</value>
+			IEnumerable<int> SelectedRows { get; set; }
+
+			/// <summary>
+			/// Selects the row to the specified <paramref name="row"/>, clearing other selections
+			/// </summary>
+			/// <param name="row">Row to select</param>
+			void SelectRow(int row);
+
+			/// <summary>
+			/// Unselects the specified <paramref name="row"/>
+			/// </summary>
+			/// <param name="row">Row to unselect</param>
+			void UnselectRow(int row);
+
+			/// <summary>
+			/// Selects all rows
+			/// </summary>
+			void SelectAll();
+
+			/// <summary>
+			/// Clears the selection
+			/// </summary>
+			void UnselectAll();
+
+			/// <summary>
+			/// Begin to edit one cell
+			/// </summary>
+			/// <param name="row">Row to edit</param>
+			/// <param name="column">Column to edit</param>
+			void BeginEdit(int row, int column);
+		}
+
+		#endregion
 	}
 }

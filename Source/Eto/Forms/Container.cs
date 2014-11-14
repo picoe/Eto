@@ -6,37 +6,11 @@ using System.Linq;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Container"/> control
-	/// </summary>
-	public interface IContainer : IControl
-	{
-		/// <summary>
-		/// Gets or sets the size for the client area of the control
-		/// </summary>
-		/// <remarks>
-		/// The client size differs from the <see cref="IControl.Size"/> in that it excludes the decorations of
-		/// the container, such as the title bar and border around a <see cref="Window"/>, or the title and line 
-		/// around a <see cref="GroupBox"/>.
-		/// </remarks>
-		/// <value>The size of the client area</value>
-		Size ClientSize { get; set; }
-
-		/// <summary>
-		/// Gets a value indicating whether PreLoad/Load/LoadComplete/Unload events are propegated to the children controls
-		/// </summary>
-		/// <remarks>
-		/// This is mainly used when you want to use Eto controls in your handler, such as with the <see cref="ThemedContainerHandler{TContainer,TWidget}"/>
-		/// </remarks>
-		/// <value><c>true</c> to recurse events to children; otherwise, <c>false</c>.</value>
-		bool RecurseToChildren { get; }
-	}
-
-	/// <summary>
 	/// Base class for controls that contain children controls
 	/// </summary>
 	public abstract class Container : Control
 	{
-		new IContainer Handler { get { return (IContainer)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets or sets the size for the client area of the control
@@ -89,7 +63,7 @@ namespace Eto.Forms
 		/// on one of the parent control(s).
 		/// </remarks>
 		/// <param name="e">Event arguments</param>
-		protected internal override void OnDataContextChanged(EventArgs e)
+		protected override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
 
@@ -97,7 +71,7 @@ namespace Eto.Forms
 			{
 				foreach (var control in Controls)
 				{
-					control.OnDataContextChanged(e);
+					control.TriggerDataContextChanged(e);
 				}
 			}
 		}
@@ -106,7 +80,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.PreLoad"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public override void OnPreLoad(EventArgs e)
+		protected override void OnPreLoad(EventArgs e)
 		{
 			base.OnPreLoad(e);
 
@@ -114,7 +88,7 @@ namespace Eto.Forms
 			{
 				foreach (Control control in Controls)
 				{
-					control.OnPreLoad(e);
+					control.TriggerPreLoad(e);
 				}
 			}
 		}
@@ -123,13 +97,13 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.Load"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public override void OnLoad(EventArgs e)
+		protected override void OnLoad(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
 			{
 				foreach (Control control in Controls)
 				{
-					control.OnLoad(e);
+					control.TriggerLoad(e);
 				}
 			}
 			
@@ -140,13 +114,13 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.LoadComplete"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public override void OnLoadComplete(EventArgs e)
+		protected override void OnLoadComplete(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
 			{
 				foreach (Control control in Controls)
 				{
-					control.OnLoadComplete(e);
+					control.TriggerLoadComplete(e);
 				}
 			}
 			
@@ -157,13 +131,13 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.UnLoad"/> event, and recurses to this container's children
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public override void OnUnLoad(EventArgs e)
+		protected override void OnUnLoad(EventArgs e)
 		{
-			if (Handler.RecurseToChildren)
+			if (Handler != null && Handler.RecurseToChildren)
 			{
 				foreach (Control control in Controls)
 				{
-					control.OnUnLoad(e);
+					control.TriggerUnLoad(e);
 				}
 			}
 			
@@ -173,9 +147,26 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Container"/> class.
 		/// </summary>
+		protected Container()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Container with the specified handler
+		/// </summary>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		protected Container(IHandler handler)
+			: base(handler)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Container"/> class.
+		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler to create (must implement <see cref="IContainer"/>)</param>
+		/// <param name="type">Type of the handler to create (must implement <see cref="IHandler"/>)</param>
 		/// <param name="initialize"><c>true</c> to initialize the handler, false if the caller will initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Container(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
@@ -187,7 +178,8 @@ namespace Eto.Forms
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		protected Container(Generator generator, IContainer handler, bool initialize = true)
+		[Obsolete("Use Container(IContainer) instead")]
+		protected Container(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 		}
@@ -263,10 +255,10 @@ namespace Eto.Forms
 #endif
 				if (child.Loaded)
 				{
-					child.OnUnLoad(EventArgs.Empty);
+					child.TriggerUnLoad(EventArgs.Empty);
 				}
 				child.Parent = null;
-				child.OnDataContextChanged(EventArgs.Empty);
+				child.TriggerDataContextChanged(EventArgs.Empty);
 			}
 		}
 
@@ -276,13 +268,28 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This is used by container authors to set the parent of a child before it is added to the underlying platform control.
 		/// 
-		/// If this returns <c>true</c>, you should call <see cref="Control.OnLoadComplete"/> after the control has been added
-		/// to the underlying platform control.
+		/// The <paramref name="assign"/> parameter should call the handler method to add the child to the parent.
 		/// </remarks>
 		/// <returns><c>true</c>, if parent was set, <c>false</c> otherwise.</returns>
 		/// <param name="child">Child to set the parent</param>
-		protected bool SetParent(Control child)
+		/// <param name="assign">Method to assign the child to the handler</param>
+		/// <param name="previousChild">Previous child that the new child is replacing.</param>
+		protected void SetParent(Control child, Action assign, Control previousChild = null)
 		{
+			bool triggerPrevious = false;
+			if (previousChild != null && !ReferenceEquals(previousChild.Parent, null) && (!ReferenceEquals(previousChild, child) || !ReferenceEquals(child.Parent, this)))
+			{
+#if DEBUG
+				if (!ReferenceEquals(previousChild.Parent, this))
+					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
+#endif
+				if (previousChild.Loaded)
+				{
+					previousChild.TriggerUnLoad(EventArgs.Empty);
+				}
+				previousChild.Parent = null;
+				triggerPrevious = true;
+			}
 			if (child != null && !ReferenceEquals(child.Parent, this))
 			{
 				// Detach so parent can remove from controls collection if necessary.
@@ -293,13 +300,48 @@ namespace Eto.Forms
 				child.Parent = this;
 				if (Loaded && !child.Loaded)
 				{
-					child.OnPreLoad(EventArgs.Empty);
-					child.OnLoad(EventArgs.Empty);
-					child.OnDataContextChanged(EventArgs.Empty);
-					return true;
+					using (child.Platform.Context)
+					{
+						child.TriggerPreLoad(EventArgs.Empty);
+						child.TriggerLoad(EventArgs.Empty);
+						child.TriggerDataContextChanged(EventArgs.Empty);
+						assign();
+						child.TriggerLoadComplete(EventArgs.Empty);
+					}
+					if (triggerPrevious)
+						previousChild.TriggerDataContextChanged(EventArgs.Empty);
+					return;
 				}
 			}
-			return false;
+			assign();
+			if (triggerPrevious)
+				previousChild.TriggerDataContextChanged(EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Container"/> control
+		/// </summary>
+		public new interface IHandler : Control.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the size for the client area of the control
+			/// </summary>
+			/// <remarks>
+			/// The client size differs from the <see cref="P:Eto.Forms.Control.IHandler.Size"/> in that it excludes the decorations of
+			/// the container, such as the title bar and border around a <see cref="Window"/>, or the title and line 
+			/// around a <see cref="GroupBox"/>.
+			/// </remarks>
+			/// <value>The size of the client area</value>
+			Size ClientSize { get; set; }
+
+			/// <summary>
+			/// Gets a value indicating whether PreLoad/Load/LoadComplete/Unload events are propegated to the children controls
+			/// </summary>
+			/// <remarks>
+			/// This is mainly used when you want to use Eto controls in your handler, such as with the <see cref="ThemedContainerHandler{TContainer,TWidget,TCallback}"/>
+			/// </remarks>
+			/// <value><c>true</c> to recurse events to children; otherwise, <c>false</c>.</value>
+			bool RecurseToChildren { get; }
 		}
 	}
 }

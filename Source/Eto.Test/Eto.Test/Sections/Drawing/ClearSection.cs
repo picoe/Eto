@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Clear")]
 	public class ClearSection : Scrollable, INotifyPropertyChanged
 	{
 		bool useClearColor;
@@ -45,14 +46,14 @@ namespace Eto.Test.Sections.Drawing
 		Control UseClearColorControl()
 		{
 			var control = new CheckBox { Text = "Use Red Clear Color at 0.5 alpha" };
-			control.Bind(r => r.Checked, this, r => r.UseClearColor);
+			control.CheckedBinding.Bind(() => UseClearColor, v => UseClearColor = v ?? false);
 			return control;
 		}
 
 		Control UseGraphicsPathClipControl()
 		{
 			var control = new CheckBox { Text = "Use graphics path clip" };
-			control.Bind(r => r.Checked, this, r => r.UseGraphicsPathClip);
+			control.CheckedBinding.Bind(() => UseGraphicsPathClip, v => UseGraphicsPathClip = v ?? false);
 			return control;
 		}
 
@@ -70,9 +71,9 @@ namespace Eto.Test.Sections.Drawing
 
 		void DrawSample(Graphics graphics)
 		{
-			using (graphics.Generator.Context)
+			using (graphics.Platform.Context)
 			{
-				graphics.FillRectangle(Brushes.Green(), 0, 0, 200, 200);
+				graphics.FillRectangle(Brushes.Green, 0, 0, 200, 200);
 				if (UseGraphicsPathClip)
 				{
 					var path = GraphicsPath.GetRoundRect(new RectangleF(10, 10, 180, 180), 20);
@@ -85,13 +86,13 @@ namespace Eto.Test.Sections.Drawing
 					graphics.Clear(new SolidBrush(new Color(Colors.Red, 0.5f)));
 				else
 					graphics.Clear();
-				graphics.FillEllipse(Brushes.Blue(), 25, 25, 150, 150);
+				graphics.FillEllipse(Brushes.Blue, 25, 25, 150, 150);
 			}
 		}
 
-		Image GenerateImage()
+		Image CreateImage()
 		{
-			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba, generator: Generator);
+			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba);
 			using (var graphics = new Graphics(image))
 			{
 				DrawSample(graphics);
@@ -103,12 +104,12 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new DrawableImageView
 			{
-				Image = GenerateImage (),
+				Image = CreateImage (),
 				Size = new Size (200, 200),
 				BackgroundColor = Colors.Yellow
 			};
 
-			PropertyChanged += (sender, e) => control.Image = GenerateImage();
+			PropertyChanged += (sender, e) => control.Image = CreateImage();
 
 			return control;
 		}

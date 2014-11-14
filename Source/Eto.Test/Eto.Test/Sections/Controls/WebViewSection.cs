@@ -4,6 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(WebView))]
 	public class WebViewSection : Scrollable
 	{
 		WebView webView;
@@ -71,13 +72,13 @@ namespace Eto.Test.Sections.Controls
 			{
 				var control = new Label
 				{ 
-					Text = string.Format ("WebView not supported on this platform with the {0} generator", Generator.ID),
+					Text = string.Format ("WebView not supported on this platform with the {0} generator", Platform.ID),
 					BackgroundColor = Colors.Red,
 					HorizontalAlign = HorizontalAlign.Center,
 					VerticalAlign = VerticalAlign.Middle,
 					TextColor = Colors.White
 				};
-				if (Generator.ID == Generators.Gtk)
+				if (Platform.IsGtk)
 					Log.Write(this, "You must install webkit-sharp for WebView to work under GTK. Note that GTK does not support webkit-sharp on any platform other than Linux.");
 				return control;
 			}
@@ -106,7 +107,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Buttons()
 		{
-			var layout = new DynamicLayout(spacing: Size.Empty);
+			var layout = new DynamicLayout { Spacing = Size.Empty };
 
 			layout.BeginHorizontal();
 			layout.Add(null);
@@ -274,35 +275,38 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate
 			{
-				var dialog = new Dialog();
-#if DESKTOP
-				dialog.MinimumSize = new Size(300, 0);
-#endif
-				var layout = new DynamicLayout();
-				var textBox = new TextBox { Text = "http://google.com" };
-				var goButton = new Button { Text = "Go" };
-				dialog.DefaultButton = goButton;
-				goButton.Click += (sender, e) => {
-					dialog.DialogResult = DialogResult.Ok;
-					dialog.Close();
-				};
-				var cancelButton = new Button { Text = "Cancel" };
-				dialog.AbortButton = cancelButton;
-				cancelButton.Click += (sender, e) => dialog.Close();
-				layout.BeginVertical();
-				layout.AddRow(new Label { Text = "Url" }, textBox);
-				layout.EndBeginVertical();
-				layout.AddRow(null, cancelButton, goButton);
-				layout.EndVertical();
-
-				dialog.Content = layout;
-
-				if (dialog.ShowDialog(this) == DialogResult.Ok)
+				if (Platform.Supports<Dialog>())
 				{
-					Uri uri;
-					if (Uri.TryCreate(textBox.Text, UriKind.Absolute, out uri))
-						webView.Url = uri;
+					var dialog = new Dialog<bool>();
+					if (Platform.IsDesktop)
+						dialog.MinimumSize = new Size(300, 0);
+
+					var layout = new DynamicLayout();
+					var textBox = new TextBox { Text = "http://google.com" };
+					var goButton = new Button { Text = "Go" };
+					dialog.DefaultButton = goButton;
+					goButton.Click += (sender, e) => dialog.Close(true);
+					var cancelButton = new Button { Text = "Cancel" };
+					dialog.AbortButton = cancelButton;
+					cancelButton.Click += (sender, e) => dialog.Close();
+					layout.BeginVertical();
+					layout.AddRow(new Label { Text = "Url" }, textBox);
+					layout.EndBeginVertical();
+					layout.AddRow(null, cancelButton, goButton);
+					layout.EndVertical();
+
+					dialog.Content = layout;
+
+
+					if (dialog.ShowModal(this))
+					{
+						Uri uri;
+						if (Uri.TryCreate(textBox.Text, UriKind.Absolute, out uri))
+							webView.Url = uri;
+					}
 				}
+				else
+					webView.Url = new Uri("http://google.com");
 			};
 			return control;
 		}

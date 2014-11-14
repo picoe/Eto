@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// These font families are "guaranteed" to be available, mainly by using pre-installed fonts on each
 	/// platform.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class FontFamilies
 	{
 		/// <summary>
@@ -24,11 +26,10 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a monospace font family
 		/// </summary>
-		/// <param name="generator">Generator to get the font</param>
 		/// <returns>A font family instance for the monospace font</returns>
-		public static FontFamily Monospace(Generator generator = null)
+		public static FontFamily Monospace
 		{
-			return new FontFamily (generator, MonospaceFamilyName);
+			get { return new FontFamily(MonospaceFamilyName); }
 		}
 
 		/// <summary>
@@ -43,11 +44,10 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a sans-serif font family
 		/// </summary>
-		/// <param name="generator">Generator to get the font</param>
 		/// <returns>A font family instance for the sans font</returns>
-		public static FontFamily Sans(Generator generator = null)
+		public static FontFamily Sans
 		{
-			return new FontFamily (generator, SansFamilyName);
+			get { return new FontFamily(SansFamilyName); }
 		}
 
 		/// <summary>
@@ -62,21 +62,19 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a serif font family
 		/// </summary>
-		/// <param name="generator">Generator to get the font</param>
 		/// <returns>A font family instance for the serif font</returns>
-		public static FontFamily Serif(Generator generator = null)
+		public static FontFamily Serif
 		{
-			return new FontFamily (generator, SerifFamilyName);
+			get { return new FontFamily(SerifFamilyName); }
 		}
 
 		/// <summary>
 		/// Gets a cursive font family
 		/// </summary>
-		/// <param name="generator">Generator to get the font</param>
 		/// <returns>A font family instance for the cursive font</returns>
-		public static FontFamily Cursive (Generator generator = null)
+		public static FontFamily Cursive
 		{
-			return new FontFamily (generator, CursiveFamilyName);
+			get { return new FontFamily(CursiveFamilyName); }
 		}
 
 		/// <summary>
@@ -91,11 +89,10 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a fantasy font family
 		/// </summary>
-		/// <param name="generator">Generator to get the font</param>
 		/// <returns>A font family instance for the fantasy font</returns>
-		public static FontFamily Fantasy(Generator generator = null)
+		public static FontFamily Fantasy
 		{
-			return new FontFamily (generator, FantasyFamilyName);
+			get { return new FontFamily(FantasyFamilyName); }
 		}
 
 		/// <summary>

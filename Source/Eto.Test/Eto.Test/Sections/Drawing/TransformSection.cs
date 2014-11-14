@@ -4,6 +4,7 @@ using System;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Transforms")]
 	public class TransformSection : Scrollable
 	{
 		Image image;
@@ -15,21 +16,21 @@ namespace Eto.Test.Sections.Drawing
 
 		public TransformSection()
 		{
-			image = TestIcons.TestIcon();
+			image = TestIcons.TestIcon;
 			font = Fonts.Sans(10);
 
 			var layout = new DynamicLayout();
 
 			var drawable = new Drawable { Size = canvasSize };
 			drawable.Paint += (sender, pe) => {
-				pe.Graphics.FillRectangle(Brushes.Black(Generator), pe.ClipRectangle);
+				pe.Graphics.FillRectangle(Brushes.Black, pe.ClipRectangle);
 				MatrixTests(pe.Graphics);
 			};
 			layout.AddRow(new Label { Text = "Matrix" }, drawable);
 
 			drawable = new Drawable { Size = canvasSize };
 			drawable.Paint += (sender, pe) => {
-				pe.Graphics.FillRectangle(Brushes.Black(Generator), pe.ClipRectangle);
+				pe.Graphics.FillRectangle(Brushes.Black, pe.ClipRectangle);
 				DirectTests(pe.Graphics);
 			};
 			layout.AddRow(new Label { Text = "Direct" }, drawable);
@@ -50,14 +51,14 @@ namespace Eto.Test.Sections.Drawing
 		{
 			// test matrix RotateAt
 			DrawRotatedLines(g, Colors.SkyBlue, rotatedLineCenter, (center, angle) => {
-				var m = Matrix.Create(Generator);
+				var m = Matrix.Create();
 				m.RotateAt(angle, center);
 				g.MultiplyTransform(m);
 			});
 
 			// test matrix scale/translate/rotate
 			DrawRotatedLines(g, Colors.Salmon, rotatedLineCenter, (center, angle) => {
-				var m = Matrix.Create(Generator);
+				var m = Matrix.Create();
 				m.Translate(center);
 				m.Rotate(angle);
 				m.Translate(-center);
@@ -67,14 +68,14 @@ namespace Eto.Test.Sections.Drawing
 
 			// test rotating arcs
 			DrawRotatedArcs(g, Colors.LightBlue, rotatedLineCenter, (center, angle) => {
-				var m = Matrix.Create(Generator);
+				var m = Matrix.Create();
 				m.RotateAt(angle, center);
 				g.MultiplyTransform(m);
 			});
 
 			// test transformed text
 			DrawRotatedText(g, Colors.Lime, rotatedTextCenter, (center, angle) => {
-				var m = Matrix.Create(Generator);
+				var m = Matrix.Create();
 				m.RotateAt(angle, center - 40);
 				g.MultiplyTransform(m);
 			});
@@ -82,10 +83,10 @@ namespace Eto.Test.Sections.Drawing
 			// test image drawing
 			{
 				g.SaveTransform();
-				g.MultiplyTransform(Matrix.FromScaleAt(new SizeF(1, -1), imageScaleLocation + image.Size / 2, generator: Generator));
+				g.MultiplyTransform(Matrix.FromScaleAt(new SizeF(1, -1), imageScaleLocation + image.Size / 2));
 				g.DrawImage(image, imageScaleLocation);
 
-				var m = Matrix.Create(Generator);
+				var m = Matrix.Create();
 				m.Translate(0, -50);
 				m.ScaleAt(0.3f, imageScaleLocation + image.Size / 2);
 				g.MultiplyTransform(m);
@@ -96,12 +97,12 @@ namespace Eto.Test.Sections.Drawing
 			// test skewing
 			{
 				g.SaveTransform();
-				var m = Matrix.Create(Generator);
+				var m = Matrix.Create();
 				m.Skew(20, 20);
 				g.MultiplyTransform(m);
 				var textSize = g.MeasureString(font, "Skewed Text");
 				g.DrawText(font, Colors.White, new PointF(110, 0), "Skewed Text");
-				g.DrawLine(Pens.White(Generator), 110, textSize.Height + 2, 110 + textSize.Width, textSize.Height + 2);
+				g.DrawLine(Pens.White, 110, textSize.Height + 2, 110 + textSize.Width, textSize.Height + 2);
 
 				g.RestoreTransform();
 			}
@@ -109,7 +110,7 @@ namespace Eto.Test.Sections.Drawing
 			// test more drawing operations
 			{
 				g.SaveTransform();
-				var m = Matrix.Create(Generator);
+				var m = Matrix.Create();
 				m.Translate(480, 20);
 				m.Scale(0.4f);
 				m.Rotate(90);
@@ -166,10 +167,10 @@ namespace Eto.Test.Sections.Drawing
 
 			// test skewing
 			g.SaveTransform();
-			g.MultiplyTransform(Matrix.FromSkew(20, 20, Generator));
+			g.MultiplyTransform(Matrix.FromSkew(20, 20));
 			var textSize = g.MeasureString(font, "Skewed Text");
 			g.DrawText(font, Colors.White, new PointF(110, 0), "Skewed Text");
-			g.DrawLine(Pens.White(Generator), 110, textSize.Height + 2, 110 + textSize.Width, textSize.Height + 2);
+			g.DrawLine(Pens.White, 110, textSize.Height + 2, 110 + textSize.Width, textSize.Height + 2);
 			
 			g.RestoreTransform();
 
@@ -184,7 +185,7 @@ namespace Eto.Test.Sections.Drawing
 
 		void DrawRotatedLines(Graphics g, Color color, PointF center, Action<PointF, float> action)
 		{
-			var pen = new Pen(color, generator: Generator);
+			var pen = new Pen(color);
 			for (float i = 0; i < 360f; i += 10)
 			{
 				g.SaveTransform();
@@ -211,7 +212,7 @@ namespace Eto.Test.Sections.Drawing
 			{
 				g.SaveTransform();
 				action(center, i);
-				g.DrawArc(new Pen(color, generator: Generator), RectangleF.FromCenter(center, new SizeF(50, 50)), 0, 45f);
+				g.DrawArc(new Pen(color), RectangleF.FromCenter(center, new SizeF(50, 50)), 0, 45f);
 				g.RestoreTransform();
 			}
 		}

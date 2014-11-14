@@ -5,6 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "GraphicsPath")]
 	public class GraphicsPathSection : Scrollable
 	{
 		public bool StartFigures { get; set; }
@@ -45,7 +46,8 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
-			layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
+			if (Platform.Instance.Supports<NumericUpDown>())
+				layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
 			layout.AddSeparateRow(null, ShowBounds(), CurrentPoint(), null);
 			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath());
@@ -59,45 +61,45 @@ namespace Eto.Test.Sections.Drawing
 		Control StartFiguresControl()
 		{
 			var control = new CheckBox { Text = "Start Figures" };
-			control.CheckedBinding.Bind(this, r => r.StartFigures, (r,val) => { r.StartFigures = val ?? false; Refresh(); });
+			control.CheckedBinding.Bind(() => StartFigures, val => { StartFigures = val ?? false; Refresh(); });
 			return control;
 		}
 
 		Control CloseFiguresControl()
 		{
 			var control = new CheckBox { Text = "Close Figures" };
-			control.CheckedBinding.Bind(this, r => r.CloseFigures, (r,val) => { r.CloseFigures = val ?? false; Refresh(); });
+			control.CheckedBinding.Bind(() => CloseFigures, val => { CloseFigures = val ?? false; Refresh(); });
 			return control;
 		}
 
 		Control ConnectPathControl()
 		{
 			var control = new CheckBox { Text = "Connect Paths" };
-			control.CheckedBinding.Bind(this, r => r.ConnectPath, (r,val) => { r.ConnectPath = val ?? false; Refresh(); });
+			control.CheckedBinding.Bind(() => ConnectPath, val => { ConnectPath = val ?? false; Refresh(); });
 			return control;
 		}
 
 		Control PenThicknessControl()
 		{
 			var control = new NumericUpDown { MinValue = 1, MaxValue = 100 };
-			control.ValueBinding.Bind(this, r => r.PenThickness, (r,val) => { r.PenThickness = (float)val; Refresh(); });
+			control.ValueBinding.Bind(() => PenThickness, val => { PenThickness = (float)val; Refresh(); });
 
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.AddRow(new Label { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
 			return layout;
 		}
 
 		Control PenJoinControl()
 		{
-			var control = new EnumComboBox<PenLineJoin>();
-			control.SelectedValueBinding.Bind(this, r => r.LineJoin, (r,val) => { r.LineJoin = val; Refresh(); });
+			var control = new EnumDropDown<PenLineJoin>();
+			control.SelectedValueBinding.Bind(() => LineJoin, val => { LineJoin = val; Refresh(); });
 			return control;
 		}
 
 		Control PenCapControl()
 		{
-			var control = new EnumComboBox<PenLineCap>();
-			control.SelectedValueBinding.Bind(this, r => r.LineCap, (r,val) => { r.LineCap = val; Refresh(); });
+			var control = new EnumDropDown<PenLineCap>();
+			control.SelectedValueBinding.Bind(() => LineCap, val => { LineCap = val; Refresh(); });
 			return control;
 		}
 
@@ -129,7 +131,7 @@ namespace Eto.Test.Sections.Drawing
 			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
 			control.Paint += (sender, e) => 
 			{
-				var pen = new Pen(Colors.White, PenThickness, Generator);
+				var pen = new Pen(Colors.White, PenThickness);
 				pen.LineJoin = LineJoin;
 				pen.LineCap = LineCap;
 				e.Graphics.DrawPath(pen, Path);
@@ -140,7 +142,7 @@ namespace Eto.Test.Sections.Drawing
 		Control FillLinePath()
 		{
 			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
-			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.White(Generator), Path);
+			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.White, Path);
 			return control;
 		}
 
@@ -153,7 +155,7 @@ namespace Eto.Test.Sections.Drawing
 
 			// test adding child paths and transforms
 			var childPath = CreatePath();
-			var matrix = Matrix.Create(Generator);
+			var matrix = Matrix.Create();
 			matrix.Translate(240, 120);
 			matrix.Scale(0.25f);
 			childPath.Transform(matrix);
@@ -166,7 +168,7 @@ namespace Eto.Test.Sections.Drawing
 
 		GraphicsPath CreatePath()
 		{
-			var newPath = new GraphicsPath(Generator);
+			var newPath = new GraphicsPath();
 			var start = StartFigures;
 			var close = CloseFigures;
 

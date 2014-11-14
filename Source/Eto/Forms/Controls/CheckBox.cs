@@ -3,29 +3,17 @@ using System;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="CheckBox"/> control
+	/// Control to show a two or three state check box
 	/// </summary>
-	public interface ICheckBox : ITextControl
-	{
-		/// <summary>
-		/// Gets or sets the checked state
-		/// </summary>
-		/// <remarks>
-		/// When <see cref="ThreeState"/> is true, null signifies an indeterminate value.
-		/// </remarks>
-		/// <value>The checked value</value>
-		bool? Checked { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this CheckBox allows three states: true, false, or null
-		/// </summary>
-		/// <value><c>true</c> if three state; otherwise, <c>false</c>.</value>
-		bool ThreeState { get; set; }
-	}
-
+	/// <remarks>
+	/// Two state is either checked (true) or unchecked (false).
+	/// 
+	/// Three state check box can also have a null value.
+	/// </remarks>
+	[Handler(typeof(CheckBox.IHandler))]
 	public class CheckBox : TextControl
 	{
-		new ICheckBox Handler { get { return (ICheckBox)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Occurs when <see cref="Checked"/> property is changed by the user
@@ -42,7 +30,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="CheckedChanged"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnCheckedChanged(EventArgs e)
+		protected virtual void OnCheckedChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(CheckedChangedKey, this, e);
 		}
@@ -51,7 +39,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
 		/// </summary>
 		public CheckBox()
-			: this((Generator)null)
 		{
 		}
 
@@ -59,7 +46,8 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		public CheckBox(Generator generator) : this(generator, typeof(ICheckBox))
+		[Obsolete("Use default constructor instead")]
+		public CheckBox(Generator generator) : this(generator, typeof(IHandler))
 		{
 		}
 
@@ -67,8 +55,9 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Handler type to create, must be an instance of <see cref="ICheckBox"/></param>
+		/// <param name="type">Handler type to create, must be an instance of <see cref="IHandler"/></param>
 		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected CheckBox(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
@@ -101,11 +90,11 @@ namespace Eto.Forms
 		/// Gets a binding for the <see cref="Checked"/> property
 		/// </summary>
 		/// <value>The binding for the checked property.</value>
-		public ObjectBinding<CheckBox, bool?> CheckedBinding
+		public ControlBinding<CheckBox, bool?> CheckedBinding
 		{
 			get
 			{
-				return new ObjectBinding<CheckBox, bool?>(
+				return new ControlBinding<CheckBox, bool?>(
 					this, 
 					c => c.Checked, 
 					(c, v) => c.Checked = v, 
@@ -114,5 +103,59 @@ namespace Eto.Forms
 				);
 			}
 		}
+
+		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
+		protected override object GetCallback() { return callback; }
+
+		/// <summary>
+		/// Callback interface for the <see cref="CheckBox"/>
+		/// </summary>
+		public new interface ICallback : TextControl.ICallback
+		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
+			void OnCheckedChanged(CheckBox widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for handlers of <see cref="CheckBox"/>
+		/// </summary>
+		protected new class Callback : TextControl.Callback, ICallback
+		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
+			public void OnCheckedChanged(CheckBox widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCheckedChanged(e));
+			}
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="CheckBox"/> control
+		/// </summary>
+		public new interface IHandler : TextControl.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the checked state
+			/// </summary>
+			/// <remarks>
+			/// When <see cref="ThreeState"/> is true, null signifies an indeterminate value.
+			/// </remarks>
+			/// <value>The checked value</value>
+			bool? Checked { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this CheckBox allows three states: true, false, or null
+			/// </summary>
+			/// <value><c>true</c> if three state; otherwise, <c>false</c>.</value>
+			bool ThreeState { get; set; }
+		}
+
 	}
 }

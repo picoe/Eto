@@ -1,83 +1,97 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Panel x:Class="Eto.Test.Sections.Serialization.Xaml.Test"
-	xmlns="http://schema.picoe.ca/eto.forms"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test"
-	xmlns:sys="clr-namespace:System;assembly=mscorlib"
-	>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel x:Class="Eto.Test.Sections.Serialization.Xaml.Test" 
+	   xmlns="http://schema.picoe.ca/eto.forms" 
+	   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	   xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 	<TabControl>
-		<TabPage Text="Dynamic Layout &amp; Controls">
-			<DynamicLayout>
-				<DynamicRow>
-					<DynamicControl>
+		<TabPage Text="Table Layout using Rows &amp; Controls">
+			<TableLayout>
+				<TableRow>
+					<TableCell>
 						<Label Text="Text Box" />
-					</DynamicControl>
-					<DynamicControl>
+					</TableCell>
+					<TableCell>
 						<TextBox />
-					</DynamicControl>
-				</DynamicRow>
-				<DynamicRow>
-					<DynamicControl>
+					</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell>
 						<Label Text="Text Area" />
-					</DynamicControl>
-					<DynamicControl>
+					</TableCell>
+					<TableCell>
 						<TextArea ID="MyTextArea" />
-					</DynamicControl>
-				</DynamicRow>
-				<DynamicRow>
-					<DynamicControl />
-					<DynamicControl>
+					</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell />
+					<TableCell>
 						<CheckBox ID="MyCheckBox" Text="Check Box" />
-					</DynamicControl>
-				</DynamicRow>
-				<DynamicRow>
-					<DynamicControl>
+					</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell>
 						<Label Text="Combo Box" />
-					</DynamicControl>
-					<DynamicControl>
-						<ComboBox>
+					</TableCell>
+					<TableCell>
+						<DropDown>
 							<ListItem Text="Item 1" />
 							<ListItem Text="Item 2" />
 							<ListItem Text="Item 3" />
 							<ListItem Text="Item 4" />
-						</ComboBox>
-					</DynamicControl>
-				</DynamicRow>
-				<DynamicRow>
-					<DynamicControl>
+						</DropDown>
+					</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell>
 						<Label Text="Image" VerticalAlign="Middle" />
-					</DynamicControl>
-					<DynamicTable>
-						<DynamicRow>
-							<DynamicControl XScale="True">
-								<!-- mono has bugs using extension {Resource Eto.Test.TestImage.png, Eto.Test} as a source, but it is implemented -->
-								<ImageView Image="resource:Eto.Test.TestImage.png, Eto.Test" />
-							</DynamicControl>
-							<DynamicControl XScale="True">
-								<ImageView Image="resource:Eto.Test.TestIcon.ico, Eto.Test" />
-							</DynamicControl>
-						</DynamicRow>
-					</DynamicTable>
-				</DynamicRow>
-				<DynamicRow>
-					<DynamicControl>
+					</TableCell>
+					<TableCell>
+						<TableLayout>
+							<TableLayout.Rows>
+								<TableRow>
+									<TableCell ScaleWidth="True">
+										<!-- mono has bugs using extension {Resource Eto.Test.TestImage.png, Eto.Test} as a source, but it is implemented -->
+										<ImageView Image="resource:Eto.Test.TestImage.png, Eto.Test" />
+									</TableCell>
+									<TableCell ScaleWidth="True">
+										<ImageView Image="resource:Eto.Test.TestIcon.ico, Eto.Test" />
+									</TableCell>
+								</TableRow>
+							</TableLayout.Rows>
+						</TableLayout>
+					</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell>
 						<Label Text="Button" />
-					</DynamicControl>
-					<DynamicTable>
-						<DynamicRow>
-							<DynamicControl>
-								<Button Text="Bind to Click event in code behind" Click="HandleButtonClick" />
-							</DynamicControl>
-							<DynamicControl XScale="true" />
-						</DynamicRow>
-					</DynamicTable>
-				</DynamicRow>
-				<DynamicRow />
-			</DynamicLayout>
+					</TableCell>
+					<TableCell>
+						<TableLayout>
+							<TableLayout.Rows>
+								<TableRow>
+									<TableCell>
+										<Button Text="Bind to Click event in code behind" Click="HandleButtonClick" />
+									</TableCell>
+									<TableCell ScaleWidth="true" />
+								</TableRow>
+							</TableLayout.Rows>
+						</TableLayout>
+					</TableCell>
+				</TableRow>
+				<TableRow />
+			</TableLayout>
 		</TabPage>
-		<TabPage Text="Table Layout">
-			<TableLayout CellSize="3,3" ColumnScale="0,2" RowScale="0,2">
-				<Label Text="Centered in tab" TableLayout.Location="1,1" />
+		<TabPage Text="Table Layout using Location">
+			<TableLayout>
+				<TableRow ScaleHeight="true"/>
+				<TableRow>
+					<TableCell ScaleWidth="true"/>
+					<TableCell>
+						<Label Text="Centered in tab" />
+					</TableCell>
+					<TableCell ScaleWidth="true"/>
+				</TableRow>
+				<TableRow ScaleHeight="true"/>
 			</TableLayout>
 		</TabPage>
 		<TabPage Text="External Control">

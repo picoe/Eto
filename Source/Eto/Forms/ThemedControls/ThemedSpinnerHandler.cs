@@ -11,7 +11,13 @@ namespace Eto.Forms.ThemedControls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ThemedSpinnerMode
 	{
+		/// <summary>
+		/// Shows lines for each element in the spinner
+		/// </summary>
 		Line,
+		/// <summary>
+		/// Shows dots for each element in the spinner
+		/// </summary>
 		Circle,
 	}
 
@@ -22,7 +28,13 @@ namespace Eto.Forms.ThemedControls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ThemedSpinnerDirection
 	{
+		/// <summary>
+		/// Spins clockwise
+		/// </summary>
 		Clockwise = 1,
+		/// <summary>
+		/// Spins counter-clockwise
+		/// </summary>
 		CounterClockwise = -1
 	}
 
@@ -31,7 +43,7 @@ namespace Eto.Forms.ThemedControls
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ThemedSpinnerHandler : ThemedControlHandler<Drawable, Spinner>, ISpinner
+	public class ThemedSpinnerHandler : ThemedControlHandler<Drawable, Spinner, Spinner.ICallback>, Spinner.IHandler
 	{
 		UITimer timer;
 		bool enabled;
@@ -129,10 +141,10 @@ namespace Eto.Forms.ThemedControls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control = new Drawable(Generator);
+			Control = new Drawable();
 			Control.Size = new Size(16, 16);
 			Control.Paint += HandlePaint;
-			timer = new UITimer(Generator);
+			timer = new UITimer();
 			timer.Interval = 0.05f;
 			timer.Elapsed += HandleElapsed;
 
@@ -155,6 +167,10 @@ namespace Eto.Forms.ThemedControls
 			Control.Invalidate();
 		}
 
+		/// <summary>
+		/// Called after all other controls have been loaded
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
@@ -162,6 +178,10 @@ namespace Eto.Forms.ThemedControls
 				timer.Start();
 		}
 
+		/// <summary>
+		/// Called when the control is unloaded, which is when it is not currently on a displayed window
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
@@ -209,7 +229,7 @@ namespace Eto.Forms.ThemedControls
 				if (alphaValue > 1f)
 					alphaValue = 0f;
 				float alpha = enabled ? alphaValue : DisabledAlpha;
-				Color elementColor = new Color(ElementColor, alpha);
+				var elementColor = new Color(ElementColor, alpha);
 
 				float rate = 5F / ElementSize;
 				float size = controlSize.Width / rate;
@@ -222,13 +242,13 @@ namespace Eto.Forms.ThemedControls
 				switch (Mode)
 				{
 					case ThemedSpinnerMode.Circle:
-						using (var brush = new SolidBrush(elementColor, Generator))
+						using (var brush = new SolidBrush(elementColor))
 						{
 							e.Graphics.FillEllipse(brush, x, y, size, size);
 						}
 						break;
 					case ThemedSpinnerMode.Line:
-						using (var pen = new Pen(elementColor, LineThickness * minSize / 16, Generator))
+						using (var pen = new Pen(elementColor, LineThickness * minSize / 16))
 						{
 							pen.LineCap = LineCap;
 							x -= pen.Thickness / 2;

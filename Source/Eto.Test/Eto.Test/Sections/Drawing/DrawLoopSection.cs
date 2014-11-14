@@ -4,16 +4,17 @@ using Eto.Drawing;
 using Eto.Forms;
 using System.Threading;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "Draw Loop")]
 	public class DrawLoopSection : Scrollable
 	{
 		readonly Drawable drawable;
 		readonly DirectDrawingRenderer renderer;
 		readonly Panel content;
 		bool useCreateGraphics;
-		Thread thread;
 		Action drawFrame;
 		Status status = new Status();
 
@@ -32,13 +33,13 @@ namespace Eto.Test.Sections.Drawing
 			drawable.Paint += (sender, e) => renderer.DrawFrame(e.Graphics, drawable.Size);
 			renderer = new DirectDrawingRenderer();
 
-			var layout = new DynamicLayout(new Padding(10));
+			var layout = new DynamicLayout { Padding = new Padding(10) };
 			layout.AddSeparateRow(null, UseTexturesAndGradients(), UseCreateGraphics(), null);
 			layout.Add(content = new Panel { Content = drawable });
 			this.Content = layout;
 		}
 
-		void DrawLoop(object data)
+		async void DrawLoop(object data)
 		{
 			var currentStatus = (Status)data;
 			renderer.RestartFPS();
@@ -47,7 +48,7 @@ namespace Eto.Test.Sections.Drawing
 				var draw = drawFrame;
 				if (draw != null)
 					Application.Instance.Invoke(draw);
-				Thread.Sleep(0);
+				await Task.Delay(0);
 			}
 		}
 
@@ -75,11 +76,10 @@ namespace Eto.Test.Sections.Drawing
 			}
 			content.Content = drawable;
 			status = new Status();
-			thread = new Thread(DrawLoop);
-			thread.Start(status);
+			Task.Run(() => DrawLoop(status));
 		}
 
-		public override void OnUnLoad(EventArgs e)
+		protected override void OnUnLoad(EventArgs e)
 		{
 			status.Stop = true;
 			base.OnUnLoad(e);
@@ -131,7 +131,7 @@ namespace Eto.Test.Sections.Drawing
 			return control;
 		}
 
-		public override void OnLoadComplete (EventArgs e)
+		protected override void OnLoadComplete (EventArgs e)
 		{
 			base.OnLoadComplete (e);
 			SetMode();
@@ -156,15 +156,13 @@ namespace Eto.Test.Sections.Drawing
 		public long PreviousFrameStartTicks { get; set; }
 		public readonly List<Box> Boxes = new List<Box>();
 		public bool UseTexturesAndGradients { get; set; }
-		public Generator Generator { get; private set; }
 		public bool EraseBoxes { get; set; }
 
-		public DirectDrawingRenderer(Generator generator = null)
+		public DirectDrawingRenderer()
 		{
-			Generator = generator ?? Generator.Current;
-			texture = TestIcons.Textures(generator);
-			font = SystemFonts.Default(generator: generator);
-			textBrush = new SolidBrush(Colors.White, generator);
+			texture = TestIcons.Textures;
+			font = SystemFonts.Default();
+			textBrush = new SolidBrush(Colors.White);
 		}
 
 		public void RestartFPS()
@@ -185,7 +183,6 @@ namespace Eto.Test.Sections.Drawing
 			readonly Brush fillBrush;
 			RectangleF position;
 			IMatrix transform;
-			DirectDrawingRenderer renderer;
 
 			public SizeF Increment { get { return increment; } set { increment = value; } }
 
@@ -196,7 +193,6 @@ namespace Eto.Test.Sections.Drawing
 
 			public Box(Size canvasSize, bool useTexturesAndGradients, DirectDrawingRenderer renderer)
 			{
-				this.renderer = renderer;
 				var size = new SizeF(random.Next(50) + 50, random.Next(50) + 50);
 				var location = new PointF(random.Next(canvasSize.Width - (int)size.Width), random.Next(canvasSize.Height - (int)size.Height));
 				position = new RectangleF(location, size);
@@ -211,9 +207,9 @@ namespace Eto.Test.Sections.Drawing
 
 				var rect = new RectangleF(size);
 				color = GetRandomColor(random);
-				var colorPen = new Pen(color, generator: renderer.Generator);
-				var blackPen = Pens.Black(renderer.Generator);
-				var blackBrush = Brushes.Black(renderer.Generator);
+				var colorPen = new Pen(color);
+				var blackPen = Pens.Black;
+				var blackBrush = Brushes.Black;
 				switch (random.Next(useTexturesAndGradients ? 4 : 2))
 				{
 					case 0:
@@ -228,12 +224,12 @@ namespace Eto.Test.Sections.Drawing
 						switch (random.Next(2))
 						{
 							case 0:
-								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height), renderer.Generator);
+								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height));
 								break;
 							case 1:
-								fillBrush = new TextureBrush(renderer.texture, 1f, renderer.Generator)
+								fillBrush = new TextureBrush(renderer.texture)
 								{
-									Transform = Matrix.FromScale(size / 80, renderer.Generator)
+									Transform = Matrix.FromScale(size / 80)
 								};
 								break;
 						}
@@ -244,12 +240,12 @@ namespace Eto.Test.Sections.Drawing
 						switch (random.Next(2))
 						{
 							case 0:
-								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height), renderer.Generator);
+								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height));
 								break;
 							case 1:
-								fillBrush = new TextureBrush(renderer.texture, 1f, renderer.Generator)
+								fillBrush = new TextureBrush(renderer.texture)
 								{
-									Transform = Matrix.FromScale(size / 80, renderer.Generator)
+									Transform = Matrix.FromScale(size / 80)
 								};
 								break;
 						}
@@ -274,7 +270,7 @@ namespace Eto.Test.Sections.Drawing
 					increment.Height = -increment.Height;
 				angle += rotation;
 
-				transform = Matrix.FromTranslation(position.Location, renderer.Generator);
+				transform = Matrix.FromTranslation(position.Location);
 				transform.RotateAt(angle, position.Width / 2, position.Height / 2);
 			}
 
@@ -316,7 +312,8 @@ namespace Eto.Test.Sections.Drawing
 				var fps = TotalFrames / Watch.Elapsed.TotalSeconds;
 				// The frames per second as determined by the last frame. Measuring a single frame
 				// must include EndDraw, since that is when the pipeline is flushed to the device.
-				var lastFrameFps = Stopwatch.Frequency / (Watch.ElapsedTicks - PreviousFrameStartTicks);
+				var frameTicks = Watch.ElapsedTicks - PreviousFrameStartTicks;
+				var lastFrameFps = Stopwatch.Frequency / Math.Max(frameTicks, 1);
 				PreviousFrameStartTicks = Watch.ElapsedTicks;
 				var fpsText = string.Format("Frames per second since start: {0:0.00}, last: {1:0.00}", fps, lastFrameFps);
 				var start = Watch.ElapsedTicks;
@@ -338,4 +335,3 @@ namespace Eto.Test.Sections.Drawing
 		}
 	}
 }
-

@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// Allows conversion from a string to a <see cref="PointF"/> via json/xaml or other sources.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PointFConverter : TypeConverter
 	{
 		/// <summary>

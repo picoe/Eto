@@ -4,39 +4,67 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Translates an <see cref="IDataStore{T}"/> to a read-only <see cref="IList{T}"/>
+	/// </summary>
+	/// <remarks>
+	/// This is typically used to pass the data store to controls that require a standard collection
+	/// </remarks>
 	public class DataStoreVirtualCollection<T> : IList<T>, IList
 	{
 		const string ReadOnlyErrorMsg = "DataStoreVirtualCollection is a read-only collection.";
 		readonly IDataStore<T> store;
 
-		public DataStoreVirtualCollection (IDataStore<T> store)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.DataStoreVirtualCollection{T}"/> class.
+		/// </summary>
+		/// <param name="store">Store.</param>
+		public DataStoreVirtualCollection(IDataStore<T> store)
 		{
 			this.store = store;
 		}
 
 		#region IList<T> Members
 
-		public int IndexOf (T item)
+		/// <summary>
+		/// Determines the index of a specific item in the collection.
+		/// </summary>
+		/// <returns>The index of the item if found, or -1 if not found</returns>
+		/// <param name="item">Item to find the index</param>
+		public int IndexOf(T item)
 		{
 			return IndexOf(item);
 		}
 
-		public void Insert (int index, T item)
+		/// <summary>
+		/// Inserts an item at the specified index. This collection is read-only so this throws an exception.
+		/// </summary>
+		/// <param name="index">Index to add the item</param>
+		/// <param name="item">Item to add</param>
+		public void Insert(int index, T item)
 		{
-			throw new NotSupportedException (ReadOnlyErrorMsg);
+			throw new NotSupportedException(ReadOnlyErrorMsg);
 		}
 
-		public void RemoveAt (int index)
+		/// <summary>
+		/// Removes the item at the specified index. This collection is read-only so this throws an exception.
+		/// </summary>
+		/// <param name="index">Index of the item to remove</param>
+		public void RemoveAt(int index)
 		{
-			throw new NotSupportedException (ReadOnlyErrorMsg);
+			throw new NotSupportedException(ReadOnlyErrorMsg);
 		}
 
-		public T this [int index] {
-			get {
-				return store[index];
-			}
-			set {
-				throw new NotSupportedException (ReadOnlyErrorMsg);
+		/// <summary>
+		/// Gets or sets the item at the specified index. This collection is read-only so setting the item throws an exception.
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public T this [int index]
+		{
+			get { return store[index]; }
+			set
+			{
+				throw new NotSupportedException(ReadOnlyErrorMsg);
 			}
 		}
 
@@ -44,92 +72,159 @@ namespace Eto.Forms
 
 		#region ICollection<T> Members
 
-		public void Add (T item)
+		/// <summary>
+		/// Adds an item to the current collection. This collection is read-only so this throws an exception.
+		/// </summary>
+		/// <param name="item">The item to add to the current collection.</param>
+		public void Add(T item)
 		{
-			throw new NotSupportedException (ReadOnlyErrorMsg);
+			throw new NotSupportedException(ReadOnlyErrorMsg);
 		}
 
-		public void Clear ()
+		/// <summary>
+		/// Clears all items from the collection. This collection is read-only so this throws an exception.
+		/// </summary>
+		public void Clear()
 		{
-			throw new NotSupportedException (ReadOnlyErrorMsg);
+			throw new NotSupportedException(ReadOnlyErrorMsg);
 		}
 
-		public bool Contains (T item)
+		/// <Docs>The object to locate in the current collection.</Docs>
+		/// <para>Determines whether the current collection contains a specific value.</para>
+		/// <summary>
+		/// Determines whether the current collection contains a specific value.
+		/// </summary>
+		/// <param name="item">The object to locate in the current collection.</param>
+		public bool Contains(T item)
 		{
 			return (IndexOf(item) != -1);
 		}
 
-		public void CopyTo (T[] array, int arrayIndex)
+		/// <summary>
+		/// Copies the contents of the collection to the specified array starting at the specified index
+		/// </summary>
+		/// <param name="array">Array to copy to</param>
+		/// <param name="arrayIndex">Index in the array to start copying to</param>
+		public void CopyTo(T[] array, int arrayIndex)
 		{
-			for (int i = 0; i < Count; i++) {
-				array [arrayIndex + i] = this [i];
+			for (int i = 0; i < Count; i++)
+			{
+				array[arrayIndex + i] = this[i];
 			}
 		}
 
-		public int Count {
+		/// <summary>
+		/// Gets the count of items in this collection
+		/// </summary>
+		/// <value>The count.</value>
+		public int Count
+		{
 			get { return store == null ? 0 : store.Count; }
 		}
 
-		public bool IsReadOnly {
+		/// <summary>
+		/// Gets a value indicating whether this instance is read only.
+		/// </summary>
+		/// <value><c>true</c> if this instance is read only; otherwise, <c>false</c>.</value>
+		public bool IsReadOnly
+		{
 			get { return true; }
 		}
 
-		public bool Remove (T item)
+		/// <summary>
+		/// Remove the specified item. This collection is read-only so this throws an exception.
+		/// </summary>
+		/// <param name="item">Item to remove</param>
+		public bool Remove(T item)
 		{
-			throw new NotSupportedException (ReadOnlyErrorMsg);
+			throw new NotSupportedException(ReadOnlyErrorMsg);
 		}
 
 		#endregion
 
 		#region IEnumerable<T> Members
 
-		public IEnumerator<T> GetEnumerator ()
+		/// <summary>
+		/// Gets the enumerator for the collection
+		/// </summary>
+		/// <returns>The enumerator.</returns>
+		public IEnumerator<T> GetEnumerator()
 		{
-			return new DataStoreEnumerator (this);
+			return new DataStoreEnumerator(this);
 		}
 
 		#endregion
 
 		#region IList Members
 
-		public int Add (object value)
+		/// <summary>
+		/// Adds an item to the current collection.
+		/// </summary>
+		/// <param name="value">The item to add to the current collection</param>
+		public int Add(object value)
 		{
-			throw new NotSupportedException (ReadOnlyErrorMsg);
+			throw new NotSupportedException(ReadOnlyErrorMsg);
 		}
 
-		public bool Contains (object value)
+		/// <summary>
+		/// Determines whether the current collection contains a specific value.
+		/// </summary>
+		/// <param name="value">The object to locate in the current collection.</param>
+		public bool Contains(object value)
 		{
-			throw new NotImplementedException ();
+			throw new NotImplementedException();
 		}
 
-		public int IndexOf (object value)
+		/// <summary>
+		/// Determines the index of a specific item in the current instance.
+		/// </summary>
+		/// <returns>Index of the item if found, or -1 if not in the collection</returns>
+		/// <param name="value">Value to find</param>
+		public int IndexOf(object value)
 		{
 			int count = store.Count;
-			for (int index = 0; index < count; ++index) {
-				if (store[index].Equals (value))
+			for (int index = 0; index < count; ++index)
+			{
+				if (store[index].Equals(value))
 					return index;
 			}
 			return -1;
 		}
 
-		public void Insert (int index, object value)
+		/// <summary>
+		/// Insert a value into the collection with the specified index
+		/// </summary>
+		/// <param name="index">Index to add the item</param>
+		/// <param name="value">Value to add</param>
+		public void Insert(int index, object value)
 		{
-			throw new NotSupportedException (ReadOnlyErrorMsg);
+			throw new NotSupportedException(ReadOnlyErrorMsg);
 		}
 
-		public bool IsFixedSize {
+		/// <summary>
+		/// Gets a value indicating whether this instance is fixed size.
+		/// </summary>
+		/// <value><c>true</c> if this instance is fixed size; otherwise, <c>false</c>.</value>
+		public bool IsFixedSize
+		{
 			get { return true; }
 		}
 
-		public void Remove (object value)
+		/// <summary>
+		/// Removes the first occurrence of an item from the current collection.
+		/// </summary>
+		/// <param name="value">The item to remove from the current collection.</param>
+		public void Remove(object value)
 		{
-			throw new NotSupportedException (ReadOnlyErrorMsg);
+			throw new NotSupportedException(ReadOnlyErrorMsg);
 		}
 
-		object IList.this [int index] {
-			get { return this [index]; }
-			set {
-				throw new NotSupportedException (ReadOnlyErrorMsg);
+		object IList.this [int index]
+		{
+			get { return this[index]; }
+			set
+			{
+				throw new NotSupportedException(ReadOnlyErrorMsg);
 			}
 		}
 
@@ -137,18 +232,34 @@ namespace Eto.Forms
 
 		#region ICollection Members
 
-		public void CopyTo (Array array, int index)
+		/// <summary>
+		/// Copies the contents of the collection to the specified array starting at the specified index
+		/// </summary>
+		/// <param name="array">Array to copy to</param>
+		/// <param name="index">Index in the array to start copying to</param>
+		public void CopyTo(Array array, int index)
 		{
-			for (int i = 0; i < Count; i++) {
-				array.SetValue (this [i], index + i);
+			for (int i = 0; i < Count; i++)
+			{
+				array.SetValue(this[i], index + i);
 			}
 		}
 
-		public bool IsSynchronized {
+		/// <summary>
+		/// Gets a value indicating whether this instance is synchronized.
+		/// </summary>
+		/// <value><c>true</c> if this instance is synchronized; otherwise, <c>false</c>.</value>
+		public bool IsSynchronized
+		{
 			get { return false; }
 		}
 
-		public object SyncRoot {
+		/// <summary>
+		/// Gets the sync root.
+		/// </summary>
+		/// <value>The sync root.</value>
+		public object SyncRoot
+		{
 			get { return this; }
 		}
 
@@ -156,9 +267,9 @@ namespace Eto.Forms
 
 		#region IEnumerable Members
 
-		IEnumerator IEnumerable.GetEnumerator ()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return new DataStoreEnumerator (this);
+			return new DataStoreEnumerator(this);
 		}
 
 		#endregion
@@ -170,7 +281,7 @@ namespace Eto.Forms
 			readonly DataStoreVirtualCollection<T> collection;
 			int cursor;
 
-			public DataStoreEnumerator (DataStoreVirtualCollection<T> collection)
+			public DataStoreEnumerator(DataStoreVirtualCollection<T> collection)
 			{
 				this.collection = collection;
 				this.cursor = -1;
@@ -178,7 +289,8 @@ namespace Eto.Forms
 
 			#region IEnumerator<T> Members
 
-			public T Current {
+			public T Current
+			{
 				get { return collection[cursor]; }
 			}
 
@@ -186,17 +298,18 @@ namespace Eto.Forms
 
 			#region IEnumerator Members
 
-			object IEnumerator.Current {
+			object IEnumerator.Current
+			{
 				get { return Current; }
 			}
 
-			public bool MoveNext ()
+			public bool MoveNext()
 			{
 				cursor++;
 				return cursor != collection.Count;
 			}
 
-			public void Reset ()
+			public void Reset()
 			{
 				cursor = -1;
 			}
@@ -205,7 +318,7 @@ namespace Eto.Forms
 
 			#region IDisposable Members
 
-			public void Dispose ()
+			public void Dispose()
 			{
 			}
 

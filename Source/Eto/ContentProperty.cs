@@ -1,4 +1,3 @@
-#if !XAML
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,4 +36,3 @@ namespace Eto
 		public string Name { get; private set; }
 	}
 }
-#endif

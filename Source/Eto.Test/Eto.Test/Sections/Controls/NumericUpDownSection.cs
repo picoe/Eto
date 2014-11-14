@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(NumericUpDown))]
 	public class NumericUpDownSection : Panel
 	{
 		public NumericUpDownSection()
@@ -13,6 +14,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
 
 			layout.AddRow(new Label { Text = "Set Min/Max" }, SetMinMax());
+
+			layout.AddRow(new Label { Text = "Decimal Places" }, GetWithDecimalPlaces());
 
 			// growing space at end is blank!
 			layout.Add(null);
@@ -41,6 +44,17 @@ namespace Eto.Test.Sections.Controls
 				Value = 24,
 				MinValue = 20,
 				MaxValue = 2000
+			};
+			LogEvents(control);
+			return control;
+		}
+		Control GetWithDecimalPlaces()
+		{
+			var control = new NumericUpDown
+			{
+				Value = 24,
+				DecimalPlaces = 5,
+				Increment = 0.1
 			};
 			LogEvents(control);
 			return control;

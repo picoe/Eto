@@ -1,5 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Reflection;
+using System.IO;
+using System.Linq;
 
 namespace Eto
 {
@@ -44,54 +47,75 @@ namespace Eto
 		/// </summary>
 		public bool IsLinux { get; private set; }
 
-		[DllImport("libc")]
-		static extern int uname(IntPtr buf);
+		#if PCL
 
 		static string GetUnixType()
 		{
-			IntPtr buf = IntPtr.Zero;
-			string osName = "";
-			try
+			// need at least one of these platforms if we're detecting the unix type (mac/linux) in PCL
+			var detectType = Type.GetType("Eto.PlatformDetect, Eto.XamMac2", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.XamMac", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Mac", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk2", false)
+			                 ?? Type.GetType("Eto.PlatformDetect, Eto.Gtk3", false);
+			if (detectType != null)
 			{
-				buf = Marshal.AllocHGlobal(8192);
-				if (uname(buf) == 0)
-					osName = Marshal.PtrToStringAnsi(buf);
+				var getUnixTypeMethod = detectType.GetRuntimeMethod("GetUnixType", new Type[] { });
+				if (getUnixTypeMethod != null)
+					return (string)getUnixTypeMethod.Invoke(null, null);
 			}
-			// Analysis disable once EmptyGeneralCatchClause
-			catch
-			{
-			}
-			finally
-			{
-				if (buf != IntPtr.Zero)
-					Marshal.FreeHGlobal(buf);
-			}
-			return osName;
-
+			return string.Empty;
 		}
+
+		#else
+		
+		static string GetUnixType()
+		{
+			return PlatformDetect.GetUnixType();
+		}
+
+		#endif
 
 		/// <summary>
 		/// Initializes a new instance of the OperatingSystemPlatform class
 		/// </summary>
 		public OperatingSystemPlatform()
 		{
-#if WINRT
-			// System.Environment.OSVersion does not exist on WinRT so
-			// unfortunately we have to rely on a compiler #if directive.
-			// Will need to think about a portable way to do this.
-			IsWinRT = true;
-#else
-
 			if (Type.GetType("Mono.Runtime", false) != null || Type.GetType("Mono.Interop.IDispatch", false) != null)
 				IsMono = true;
 
-			switch (System.Environment.OSVersion.Platform)
+			var winRtType = Type.GetType("Windows.ApplicationModel.DesignMode, Windows, ContentType=WindowsRuntime");
+			IsWinRT = winRtType != null;
+
+			#if PCL
+
+			var windowsType = Type.GetType("System.ComponentModel.DesignerProperties, PresentationFramework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
+			IsWindows = windowsType != null || IsWinRT;
+
+			// get Environment.OSVersion.Platform using reflection
+			int platform = -1;
+			var envType = typeof(Environment);
+			var osVersionProp = envType.GetRuntimeProperty("OSVersion");
+			if (osVersionProp != null)
 			{
-				case PlatformID.MacOSX:
+				var osVal = osVersionProp.GetValue(null);
+				if (osVal != null)
+				{
+					var platProp = osVal.GetType().GetRuntimeProperty("Platform");
+					platform = (int)platProp.GetValue(osVal);
+				}
+			}
+
+			#else
+			var platform = (int)Environment.OSVersion.Platform;
+			#endif
+
+			switch (platform)
+			{
+				case 6: // PlatformID.MacOSX:
 					IsMac = true;
 					IsUnix = true;
 					break;
-				case PlatformID.Unix:
+				case 4: // PlatformID.Unix:
 					IsUnix = true;
 					switch (GetUnixType().ToUpperInvariant())
 					{
@@ -103,10 +127,11 @@ namespace Eto
 							break;
 					}
 					break;
-				case PlatformID.Win32NT:
-				case PlatformID.Win32S:
-				case PlatformID.Win32Windows:
-				case PlatformID.WinCE:
+				case 0: // PlatformID.Win32S:
+				case 1: // PlatformID.Win32Windows:
+				case 2: // PlatformID.Win32NT:
+				case 3: // PlatformID.WinCE:
+				case 5: // PlatformID.Xbox:
 					IsWindows = true;
 					break;
 				default:
@@ -114,7 +139,6 @@ namespace Eto
 					IsWindows = true;
 					break;
 			}
-#endif
 		}
 	}
 }

@@ -5,6 +5,8 @@ namespace Eto
 	/// <summary>
 	/// Arguments to handle when a binding value has changed
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BindingChangedEventArgs : EventArgs
 	{
 		/// <summary>

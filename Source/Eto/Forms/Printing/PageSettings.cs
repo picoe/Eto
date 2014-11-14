@@ -1,24 +1,52 @@
 using Eto.Drawing;
+using System;
 
 namespace Eto.Forms
 {
-	public interface IPageSettings : IInstanceWidget
+	/// <summary>
+	/// Settings for a single printed page. Not currently mapped to any platform.
+	/// </summary>
+	[Handler(typeof(PageSettings.IHandler))]
+	public class PageSettings : Widget
 	{
-		RectangleF PrintableArea { get; set; }
-	}
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-	public class PageSettings : InstanceWidget
-	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.PageSettings"/> class.
+		/// </summary>
 		public PageSettings()
-			: this((Generator)null)
 		{
 		}
 
-		public PageSettings (Generator generator)
-			: base (generator, typeof (IPageSettings))
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.PageSettings"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
+		[Obsolete("Use default constructor instead")]
+		public PageSettings(Generator generator)
+			: base(generator, typeof(IHandler))
 		{
 		}
 
-		public RectangleF PrintableArea { get; set; }
+		/// <summary>
+		/// Gets the printable area for the page
+		/// </summary>
+		/// <value>The printable area.</value>
+		public RectangleF PrintableArea
+		{
+			get { return Handler.PrintableArea; }
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="PageSettings"/> control
+		/// </summary>
+		public new interface IHandler : Widget.IHandler
+		{
+			/// <summary>
+			/// Gets the printable area for the page
+			/// </summary>
+			/// <value>The printable area.</value>
+			RectangleF PrintableArea { get; }
+		}
 	}
 }

@@ -9,7 +9,7 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// A graphics path can contain multiple figures comprised of various components such as line, arc, curve, etc.
 	/// </remarks>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IGraphicsPath : IDisposable, IControlObjectSource
 	{
@@ -182,18 +182,9 @@ namespace Eto.Drawing
 	}
 
 	/// <summary>
-	/// Handler interface for the <see cref="IGraphicsPath"/>
-	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGraphicsPathHandler : IGraphicsPath
-	{
-	}
-
-	/// <summary>
 	/// Extensions for the <see cref="IGraphicsPath"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class GraphicsPathExtensions
 	{
@@ -297,10 +288,11 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <remarks>
 	/// This is a thin wrapper around the <see cref="IGraphicsPath"/> interface, which is created via
-	/// <see cref="GraphicsPath.Create"/>.
+	/// <see cref="GraphicsPath.Create()"/>.
 	/// </remarks>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(IGraphicsPath))]
 	public class GraphicsPath : IGraphicsPath, IHandlerSource
 	{
 		IGraphicsPath Handler { get; set; }
@@ -345,38 +337,30 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Creates a delegate that can be used to create instances of the <see cref="IGraphicsPath"/>
+		/// Creates a delegate that can be used to create instances of the <see cref="IGraphicsPath"/> with little overhead
 		/// </summary>
 		/// <remarks>
 		/// This is useful when creating a very large number of graphics path objects
 		/// </remarks>
-		/// <param name="generator">Generator used to create the graphics path objects</param>
-		public static Func<IGraphicsPath> Instantiator (Generator generator = null)
+		public static Func<IGraphicsPath> Instantiator
 		{
-			return generator.Find<IGraphicsPathHandler>();
+			get { return Platform.Instance.Find<IHandler>(); }
 		}
 		
 		/// <summary>
 		/// Creates a new instance of the IGraphicsPath for the specified generator
 		/// </summary>
-		/// <param name="generator">Platform generator for the object, or null to use the current generator</param>
-		public static IGraphicsPath Create (Generator generator = null)
+		public static IGraphicsPath Create()
 		{
-			return generator.Create<IGraphicsPathHandler> ();
-		}
-
-		public GraphicsPath()
-			: this((Generator)null)
-		{
+			return Platform.Instance.Create<IHandler> ();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the GraphicsPath class
 		/// </summary>
-		/// <param name="generator">Platform generator for the object, or null to use the current generator</param>
-		public GraphicsPath (Generator generator)
+		public GraphicsPath()
 		{
-			Handler = Create (generator);
+			Handler = Create();
 		}
 
 		/// <summary>
@@ -387,6 +371,30 @@ namespace Eto.Drawing
 		{
 			Handler = handler;
 		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Initializes a new instance of the GraphicsPath class
+		/// </summary>
+		/// <param name="generator">Generator generator for the object, or null to use the current generator</param>
+		[Obsolete("Use variation without generator instead")]
+		public GraphicsPath(Generator generator)
+		{
+			Handler = Create(generator);
+		}
+
+		/// <summary>
+		/// Creates a new instance of the IGraphicsPath for the specified generator
+		/// </summary>
+		/// <param name="generator">Generator generator for the object, or null to use the current generator</param>
+		[Obsolete("Use variation without generator instead")]
+		public static IGraphicsPath Create(Generator generator)
+		{
+			return Platform.Instance.Create<IHandler>();
+		}
+
+		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Adds a line to the path with the specified start and end points
@@ -609,11 +617,10 @@ namespace Eto.Drawing
 		/// <returns>The round rect.</returns>
 		/// <param name="rectangle">Rectangle to round</param>
 		/// <param name="radius">Radius for all corners</param>
-		/// <param name="generator">Generator to create the graphics path</param>
 		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
-		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float radius, Generator generator = null)
+		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float radius)
 		{
-			return GetRoundRect (rectangle, radius, radius, radius, radius, generator);
+			return GetRoundRect(rectangle, radius, radius, radius, radius);
 		}
 
 		/// <summary>
@@ -624,16 +631,15 @@ namespace Eto.Drawing
 		/// <param name="neRadius">Radius of the north west corner</param>
 		/// <param name="seRadius">Radius of the south east corner</param>
 		/// <param name="swRadius">Radius of the south west corner</param>
-		/// <param name="generator">Generator to create the graphics path</param>
 		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
-		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius, Generator generator = null)
+		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius)
 		{
 			//  NW-----NE
 			//  |       |
 			//  |       |
 			//  SW-----SE
 
-			var result = GraphicsPath.Create (generator);
+			var result = GraphicsPath.Create();
 
 			nwRadius *= 2;
 			neRadius *= 2;
@@ -683,6 +689,50 @@ namespace Eto.Drawing
 			result.CloseFigure ();
 
 			return result;
+		}
+
+		#pragma warning disable 612,618
+
+
+		/// <summary>
+		/// Creates a rounded rectangle using the specified corner radius
+		/// </summary>
+		/// <returns>The round rect.</returns>
+		/// <param name="rectangle">Rectangle to round</param>
+		/// <param name="radius">Radius for all corners</param>
+		/// <param name="generator">Generator to create the graphics path</param>
+		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
+		[Obsolete("Use variation without generator instead")]
+		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float radius, Generator generator)
+		{
+			return GetRoundRect (rectangle, radius, radius, radius, radius);
+		}
+
+		/// <summary>
+		/// Creates a rounded rectangle using the specified corner radius
+		/// </summary>
+		/// <param name="rectangle">Rectangle to round</param>
+		/// <param name="nwRadius">Radius of the north east corner</param>
+		/// <param name="neRadius">Radius of the north west corner</param>
+		/// <param name="seRadius">Radius of the south east corner</param>
+		/// <param name="swRadius">Radius of the south west corner</param>
+		/// <param name="generator">Generator to create the graphics path</param>
+		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
+		[Obsolete("Use variation without generator instead")]
+		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius, Generator generator)
+		{
+			return GetRoundRect(rectangle, nwRadius, neRadius, seRadius, swRadius);
+		}
+
+		#pragma warning restore 612,618
+
+		/// <summary>
+		/// Handler interface for the <see cref="IGraphicsPath"/>
+		/// </summary>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : IGraphicsPath
+		{
 		}
 	}
 }

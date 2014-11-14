@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -21,39 +23,43 @@ namespace Eto.Test.Sections.Controls
 		}
 	}
 
+	[Section("Controls", typeof(GridView))]
 	public class GridViewSection : Panel
 	{
-		static readonly Image image1 = TestIcons.TestImage();
-		static readonly Image image2 = TestIcons.TestIcon();
+		static readonly Image image1 = TestIcons.TestImage;
+		static readonly Image image2 = TestIcons.TestIcon;
 		readonly SearchBox filterText;
+		GridView defaultGridView;
 
 		public GridViewSection()
 		{
 			var layout = new DynamicLayout();
-
-			layout.AddRow(new Label { Text = "Default" }, Default());
+			var button = new Button { Text = "Click!" };
+			button.Click += (sender, e) => defaultGridView.DataStore = CreateItems().ToArray();
+			layout.AddRow(new Panel(), button);
+			layout.AddRow(new Label { Text = "Default" }, defaultGridView = Default(CreateItems().ToArray()));
 			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
-#if DESKTOP
-			layout.BeginHorizontal();
-			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
-			layout.BeginVertical();
-			layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
-			var withContextMenuAndFilter = WithContextMenuAndFilter();
-			layout.Add(withContextMenuAndFilter);
-			layout.EndVertical();
-			layout.EndHorizontal();
-
-			var selectionGridView = Default(addItems: false);
-			layout.AddRow(new Label { Text = "Selected Items" }, selectionGridView);
-
-			// hook up selection of main grid to the selection grid
-			withContextMenuAndFilter.SelectionChanged += (s, e) =>
+			if (Platform.Supports<ContextMenu>())
 			{
-				var items = new DataStoreCollection();
-				items.AddRange(withContextMenuAndFilter.SelectedItems);
-				selectionGridView.DataStore = items;
-			};
-#endif
+				layout.BeginHorizontal();
+				layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
+				layout.BeginVertical();
+				layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
+				layout.Add(BeginEdit());
+				var withContextMenuAndFilter = WithContextMenuAndFilter();
+				layout.Add(withContextMenuAndFilter);
+				layout.EndVertical();
+				layout.EndHorizontal();
+
+				var selectionGridView = Default(null);
+				layout.AddRow(new Label { Text = "Selected Items" }, selectionGridView);
+
+				// hook up selection of main grid to the selection grid
+				withContextMenuAndFilter.SelectionChanged += (s, e) =>
+				{
+					selectionGridView.DataStore = withContextMenuAndFilter.SelectedItems.ToArray();
+				};
+			}
 
 			Content = layout;
 		}
@@ -108,7 +114,7 @@ namespace Eto.Test.Sections.Controls
 
 			public Color Color { get; set; }
 			// used for owner-drawn cells
-			public MyGridItem(Random rand, int row, ComboBoxCell dropDown)
+			public MyGridItem(Random rand, int row)
 			{
 				// initialize to random values
 				this.Row = row;
@@ -122,31 +128,29 @@ namespace Eto.Test.Sections.Controls
 
 				Color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
 
-				if (dropDown != null)
-				{
-					val = rand.Next(dropDown.DataStore.Count + 1);
-					dropDownKey = val == 0 ? null : dropDown.DataStore[val - 1].Key;
-				}
+				dropDownKey = "Item " + Convert.ToString(rand.Next(4) + 1);
 			}
 		}
 
 		ComboBoxCell MyDropDown(string bindingProperty)
 		{
 			var combo = new ComboBoxCell(bindingProperty);
-			var items = new ListItemCollection();
-			items.Add(new ListItem { Text = "Item 1" });
-			items.Add(new ListItem { Text = "Item 2" });
-			items.Add(new ListItem { Text = "Item 3" });
-			items.Add(new ListItem { Text = "Item 4" });
-			combo.DataStore = items;
+			combo.DataStore = new ListItemCollection
+			{
+				new ListItem { Text = "Item 1" },
+				new ListItem { Text = "Item 2" },
+				new ListItem { Text = "Item 3" },
+				new ListItem { Text = "Item 4" }
+			};
 			return combo;
 		}
 
-		GridView Default(bool addItems = true)
+		GridView Default(IEnumerable<object> items)
 		{
 			var control = new GridView
 			{
-				Size = new Size(300, 100)
+				Size = new Size(300, 100),
+				DataStore = items
 			};
 			LogEvents(control);
 
@@ -156,35 +160,47 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Editable = true, Sortable = true });
 			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Editable = true, Sortable = true });
 
-#if Windows // Drawable cells - need to implement on other platforms.
-			var drawableCell = new DrawableCell
+			if (Platform.Supports<DrawableCell>())
 			{
-				PaintHandler = args => {
-					var m = args.Item as MyGridItem;
-					if (m != null)
-						args.Graphics.FillRectangle(Brushes.Cached(m.Color) as SolidBrush, args.CellBounds);
-				}
-			};
-			control.Columns.Add(new GridColumn { HeaderText = "Owner drawn", DataCell = drawableCell });
-#endif
-
-			if (addItems)
-			{
-				var items = new DataStoreCollection();
-				var rand = new Random();
-				for (int i = 0; i < 10000; i++)
+				var drawableCell = new DrawableCell();
+				drawableCell.Paint += (sender, e) =>
 				{
-					items.Add(new MyGridItem(rand, i, dropDown));
-				}
-				control.DataStore = items;
+					var m = e.Item as MyGridItem;
+					if (m != null)
+					{
+						if (e.CellState.HasFlag(DrawableCellStates.Selected))
+							e.Graphics.FillRectangle(Colors.Blue, e.ClipRectangle);
+						else
+							e.Graphics.FillRectangle(Brushes.Cached(m.Color), e.ClipRectangle);
+						var rect = e.ClipRectangle;
+						rect.Inflate(-5, -5);
+						e.Graphics.DrawRectangle(Colors.White, rect);
+						e.Graphics.DrawLine(Colors.White, rect.Left, rect.Bottom, rect.MiddleX, rect.Top);
+						e.Graphics.DrawLine(Colors.White, rect.Right, rect.Bottom, rect.MiddleX, rect.Top);
+					}
+				};
+				control.Columns.Add(new GridColumn
+				{ 
+					HeaderText = "Owner drawn", 
+					DataCell = drawableCell
+				});
 			}
 
 			return control;
 		}
 
+		IEnumerable<MyGridItem> CreateItems()
+		{
+			var rand = new Random();
+			for (int i = 0; i < 10000; i++)
+			{
+				yield return new MyGridItem(rand, i);
+			}
+		}
+
 		GridView NoHeader()
 		{
-			var control = Default();
+			var control = Default(CreateItems().ToArray());
 			foreach (var col in control.Columns)
 			{
 				col.Editable = false;
@@ -192,34 +208,34 @@ namespace Eto.Test.Sections.Controls
 			control.ShowHeader = false;
 			return control;
 		}
-#if DESKTOP
+
 		GridView WithContextMenuAndFilter()
 		{
-			var control = Default();
+			var control = defaultGridView = Default(null);
+			var filtered = new SelectableFilterCollection<MyGridItem>(control, CreateItems().ToArray());
+			control.DataStore = filtered;
 			control.AllowMultipleSelection = true;
-			var items = control.DataStore as DataStoreCollection;
 
 			// Filter
 			filterText.TextChanged += (s, e) =>
 			{
 				var filterItems = (filterText.Text ?? "").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-				// Set the filter delegate on the GridView
-				control.Filter = (filterItems.Length == 0) ? (Func<object, bool>)null : o =>
-				{
-					var i = o as MyGridItem;
-					var matches = true;
-
-					// Every item in the split filter string should be within the Text property
-					foreach (var filterItem in filterItems)
-						if (i.Text.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
+				if (filterItems.Length == 0)
+					filtered.Filter = null;
+				else
+					filtered.Filter = i =>
+					{
+						// Every item in the split filter string should be within the Text property
+						foreach (var filterItem in filterItems)
 						{
-							matches = false;
-							break;
+							if (i.Text.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
+							{
+								return false;
+							}
 						}
-
-					return matches;
-				};
+						return true;
+					};
 			};
 
 			// Context menu
@@ -240,7 +256,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
-					items.Remove(i);
+					filtered.Remove(i);
 			};
 			menu.Items.Add(deleteItem);
 
@@ -250,14 +266,22 @@ namespace Eto.Test.Sections.Controls
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
-					items.Insert(0, new MyGridItem(new Random(), 0, null));
+					filtered.Insert(0, new MyGridItem(new Random(), 0));
 			};
 			menu.Items.Add(insertItem);
+
+			var subMenu = menu.Items.GetSubmenu("Sub Menu");
+			item = new ButtonMenuItem { Text = "Item 5" };
+			item.Click += (s,e) => Log.Write(item, "Clicked");
+			subMenu.Items.Add(item);
+			item = new ButtonMenuItem { Text = "Item 6" };
+			item.Click += (s,e) => Log.Write(item, "Clicked");
+			subMenu.Items.Add(item);
 
 			control.ContextMenu = menu;
 			return control;
 		}
-#endif
+
 		protected virtual void LogEvents(GridView control)
 		{
 			control.CellEditing += (sender, e) =>
@@ -274,13 +298,27 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.ColumnHeaderClick += delegate(object sender, GridColumnEventArgs e)
 			{
-				Log.Write(control, "Column Header Clicked: {0}", e.Column);
+				Log.Write(control, "Column Header Clicked: {0}", e.Column.HeaderText);
+			};
+			control.CellDoubleClick += (s, e) =>
+			{
+				Log.Write(control, "Cell Double Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
 		}
 
 		static string SelectedRowsString(GridView control)
 		{
 			return string.Join(",", control.SelectedRows.Select(r => r.ToString()).OrderBy(r => r));
+		}
+
+		Button BeginEdit()
+		{
+			var control = new Button {Text = "Begin Edit Row:1, Column:2"};
+			control.Click += delegate
+			{
+				defaultGridView.BeginEdit(1, 2);
+			};
+			return control;
 		}
 	}
 }

@@ -11,6 +11,8 @@ namespace Eto.Drawing
 	/// A rectangle is defined by a location (X, Y) and a size (Width, Height).
 	/// The width and/or height can be negative.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter (typeof(RectangleFConverter))]
 	public struct RectangleF : IEquatable<RectangleF>
 	{
@@ -703,6 +705,46 @@ namespace Eto.Drawing
 		{
 			rectangle.Inflate (width, height);
 			return rectangle;
+		}
+
+		/// <summary>
+		/// Calculates the distance between the specified <paramref name="point"/> and <paramref name="rect"/>.
+		/// </summary>
+		/// <remarks>
+		/// This calculates the horizontal and vertical distance of any of the edges of the rectangle to the specified point.
+		/// </remarks>
+		/// <param name="rect">Rectangle for the source.</param>
+		/// <param name="point">Point to determine the distance from the rectangle.</param>
+		public static SizeF Distance(RectangleF rect, PointF point)
+		{
+			var cx = Math.Max(Math.Min(point.X, rect.X + rect.Width), rect.X);
+			var cy = Math.Max(Math.Min(point.Y, rect.Y + rect.Height), rect.Y);
+			return new SizeF(point.X - cx, point.Y - cy); 
+		}
+
+		/// <summary>
+		/// Calculates the distance between two rectangles.
+		/// </summary>
+		/// <remarks>
+		/// This calculates the horizontal and vertical distance of any of the edges of each rectangle.
+		/// If the rectangles intersect, the distance will be empty.
+		/// </remarks>
+		/// <param name="rect1">First rectangle to compare</param>
+		/// <param name="rect2">Second rectangle to compare</param>
+		public static SizeF Distance(RectangleF rect1, RectangleF rect2)
+		{
+			if (rect1.Intersects(rect2))
+				return SizeF.Empty;
+
+			var left = rect1.X < rect2.X ? rect1 : rect2;
+			var right = rect2.X < rect1.X ? rect1 : rect2;
+			var xdiff = Math.Max(0, right.X - (left.X + left.Width));
+
+			var top = rect1.Y < rect2.Y ? rect1 : rect2;
+			var bottom = rect2.Y < rect1.Y ? rect1 : rect2;
+			var ydiff = Math.Max(0, bottom.Y - (top.Y + top.Height));
+
+			return new SizeF(xdiff, ydiff);
 		}
 
 		/// <summary>

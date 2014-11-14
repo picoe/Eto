@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Eto.Test
 {
@@ -19,7 +20,7 @@ namespace Eto.Test
 				{
 					eventLog = new TextArea
 					{
-						Size = new Size (100, 100),
+						Size = new Size(100, 100),
 						ReadOnly = true,
 						Wrap = false
 					};
@@ -30,26 +31,25 @@ namespace Eto.Test
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
-			this.Title = "Test Application";
-			this.Style = "main";
-			//this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
-			//this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
-#if ANDROID
-			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
-#else
-			this.SectionList = new SectionListTreeGridView(topNodes ?? TestSectionList.TopNodes());
-#endif
+			Title = "Test Application";
+			Style = "main";
+			topNodes = topNodes ?? TestSections.Get();
+			//SectionList = new SectionListGridView(topNodes);
+			//SectionList = new SectionListTreeView(topNodes);
+			if (Platform.IsAndroid)
+				SectionList = new SectionListGridView(topNodes);
+			else
+				SectionList = new SectionListTreeGridView(topNodes);
 
-#if DESKTOP
-			this.Icon = TestIcons.TestIcon();
-			this.ClientSize = new Size(900, 650);
-#endif
-			//this.Opacity = 0.5;
+			this.Icon = TestIcons.TestIcon;
 
-			// Commenting the next line on iOS displays just the toolbar. Otherwise it is hidden for some reason.
+			if (Platform.IsDesktop)
+				ClientSize = new Size(900, 650);
+			//Opacity = 0.5;
+
 			Content = MainContent();
 
-			GenerateMenuToolBar();
+			CreateMenuToolBar();
 		}
 
 		public SectionList SectionList { get; set; }
@@ -92,23 +92,20 @@ namespace Eto.Test
 				#endif
 			};
 
-			if (Splitter.IsSupported())
+			if (Splitter.IsSupported)
 			{
 				var splitter = new Splitter
 				{
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
 					Panel1 = SectionList.Control,
-#if MOBILE
 					// for now, don't show log in mobile
-					Panel2 = contentContainer
-#else
-					Panel2 = RightPane()
-#endif
+					Panel2 = Platform.IsMobile ? contentContainer : RightPane()
 				};
+
 				return splitter;
 			}
-			if (Navigation.IsSupported())
+			if (Navigation.IsSupported)
 			{
 				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
@@ -130,13 +127,14 @@ namespace Eto.Test
 
 		Control EventLogSection()
 		{
-			var layout = new DynamicLayout { Size = new Size(100, 120) };
+			var layout = new DynamicLayout { Size = new Size(100, 120), Spacing = Size.Empty };
 			
 			layout.BeginHorizontal();
 			layout.Add(EventLog, true);
 			
-			layout.BeginVertical();
+			layout.BeginVertical(new Padding(5, 0));
 			layout.Add(ClearButton());
+			layout.Add(MemoryButton());
 			layout.Add(null);
 			layout.EndVertical();
 			layout.EndHorizontal();
@@ -153,59 +151,81 @@ namespace Eto.Test
 			return control;
 		}
 
-		void GenerateMenuToolBar()
+		Control MemoryButton()
 		{
-			var about = new Actions.About();
-			var quit = new Actions.Quit();
-
-#if DESKTOP
-			var menu = new MenuBar();
-			// create standard system menu (e.g. for OS X)
-			Application.Instance.CreateStandardMenu(menu.Items);
-
-			// add our own items to the menu
-
-			var file = menu.Items.GetSubmenu("&File", 100);
-			menu.Items.GetSubmenu("&Edit", 200);
-			menu.Items.GetSubmenu("&Window", 900);
-			var help = menu.Items.GetSubmenu("&Help", 1000);
-
-			if (Generator.IsMac)
+			var control = new Button
 			{
-				// have a nice OS X style menu
-				var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
-				main.Items.Add(about, 0);
-				main.Items.Add(quit, 1000);
-			}
-			else
+				Text = "Memory"
+			};
+			control.Click += (sender, e) =>
 			{
-				// windows/gtk style window
-				file.Items.Add(quit);
-				help.Items.Add(about);
-			}
-
-			// optional, removes empty submenus and duplicate separators
-			menu.Items.Trim();
-
-			Menu = menu;
-#endif
-
-			// generate and set the toolbar
-			var toolBar = new ToolBar();
-			toolBar.Items.Add(quit);
-			toolBar.Items.Add(new ButtonToolItem(about));
-
-			ToolBar = toolBar;
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				Log.Write(null, "Memory: {0}", GC.GetTotalMemory(true));
+			};
+			return control;
 		}
 
-		#if DESKTOP
-		public override void OnWindowStateChanged(EventArgs e)
+		void CreateMenuToolBar()
+		{
+			var about = new Commands.About();
+			var quit = new Commands.Quit();
+
+			if (Platform.Supports<MenuBar>())
+			{
+				Menu = new MenuBar
+				{
+					Items =
+					{
+						// custom top-level menu items
+						new ButtonMenuItem { Text = "&File", Items = { new Command { MenuText = "File Command" } } },
+						new ButtonMenuItem { Text = "&Edit", Items = { new Command { MenuText = "Edit Command" } } },
+						new ButtonMenuItem { Text = "&View", Items = { new Command { MenuText = "View Command" } } },
+						new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { new Command { MenuText = "Window Command" } } },
+					},
+					ApplicationItems =
+					{
+						// custom menu items for the application menu (Application on OS X, File on others)
+						new Command { MenuText = "Application command" },
+						new ButtonMenuItem { Text = "Application menu item" }
+					},
+					HelpItems =
+					{
+						new Command { MenuText = "Help Command" }
+					},
+					QuitItem = quit,
+					AboutItem = about
+				};
+			}
+
+			if (Platform.Supports<ToolBar>())
+			{
+				// create and set the toolbar
+				ToolBar = new ToolBar();
+
+				ToolBar.Items.Add(about);
+				if (Platform.Supports<CheckToolItem>())
+				{
+					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
+					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
+				}
+				if (Platform.Supports<RadioToolItem>())
+				{
+					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
+					ToolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.TestIcon, Checked = true });
+					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
+				};
+			}
+
+		}
+
+		protected override void OnWindowStateChanged(EventArgs e)
 		{
 			base.OnWindowStateChanged(e);
 			Log.Write(this, "StateChanged: {0}", WindowState);
 		}
 
-		public override void OnClosing(System.ComponentModel.CancelEventArgs e)
+		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
 			Log.Write(this, "Closing");
@@ -217,8 +237,8 @@ namespace Eto.Test
 			if (result == DialogResult.No) e.Cancel = true;
 			*/
 		}
-		#endif
-		public override void OnClosed(EventArgs e)
+
+		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
 			Log.Write(this, "Closed");

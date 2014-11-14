@@ -5,35 +5,40 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public partial interface IApplication : IInstanceWidget
+	/// <summary>
+	/// Starting point for any UI application
+	/// </summary>
+	/// <remarks>
+	/// This class is used to start an application.
+	/// 
+	/// When you are using Eto.Forms within an existing application, you can use the <see cref="Attach"/> method.
+	/// </remarks>
+	[Handler(typeof(Application.IHandler))]
+	public class Application : Widget
 	{
-		void Attach(object context);
+		static readonly object ApplicationKey = new object();
 
-		void Run(string[] args);
+		/// <summary>
+		/// Gets the current application instance
+		/// </summary>
+		/// <value>The instance.</value>
+		public static Application Instance
+		{
+			get
+			{ 
+				var platform = Platform.Instance;
+				return platform != null ? platform.GetSharedProperty<Application>(ApplicationKey, () => null) : null;
+			}
+			private set { Platform.Instance.SetSharedProperty(ApplicationKey, value); }
+		}
 
-		void Quit();
-
-		IEnumerable<Command> GetSystemCommands();
-
-		Keys CommonModifier { get; }
-
-		Keys AlternateModifier { get; }
-
-		void Open(string url);
-
-		void Invoke(Action action);
-
-		void AsyncInvoke(Action action);
-
-		string BadgeLabel { get; set; }
-
-		void OnMainFormChanged();
-	}
-
-	public partial class Application : InstanceWidget
-	{
-		public static Application Instance { get; private set; }
-
+		/// <summary>
+		/// Occurs when the application is initialized
+		/// </summary>
+		/// <remarks>
+		/// This is where any of your startup code should be placed, such as creating the main form and showing it.
+		/// If subclassing Application, you can override <see cref="OnInitialized"/> instead.
+		/// </remarks>
 		public event EventHandler<EventArgs> Initialized
 		{
 			add { Properties.AddEvent(InitializedKey, value); }
@@ -42,27 +47,57 @@ namespace Eto.Forms
 
 		static readonly object InitializedKey = new object();
 
-		public virtual void OnInitialized(EventArgs e)
+		/// <summary>
+		/// Raises the <see cref="Initialized"/> event.
+		/// </summary>
+		/// <remarks>
+		/// This is where any of your startup code should be placed, such as creating the main form and showing it.
+		/// If you are not subclassing Application, you can handle the <see cref="Initialized"/> event instead.
+		/// </remarks>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnInitialized(EventArgs e)
 		{
 			Properties.TriggerEvent(InitializedKey, this, e);
 		}
 
+		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="Terminating"/> event
+		/// </summary>
 		public const string TerminatingEvent = "Application.Terminating";
 
+		/// <summary>
+		/// Occurs when the application is terminating.
+		/// </summary>
 		public event EventHandler<CancelEventArgs> Terminating
 		{
 			add { Properties.AddHandlerEvent(TerminatingEvent, value); }
 			remove { Properties.RemoveEvent(TerminatingEvent, value); }
 		}
 
-		public virtual void OnTerminating(CancelEventArgs e)
+		/// <summary>
+		/// Raises the <see cref="Terminating"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnTerminating(CancelEventArgs e)
 		{
 			Properties.TriggerEvent(TerminatingEvent, this, e);
 		}
 
-		new IApplication Handler { get { return (IApplication)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		Form mainForm;
+		/// <summary>
+		/// Gets or sets the main form for your application.
+		/// </summary>
+		/// <remarks>
+		/// When you set this to your main application form, it will get standard platform behaviour applied, such as
+		/// quitting the application when it is closed (on windows, linux), or showing the main form on OS X when clicking
+		/// the application icon if it has been hidden/closed.
+		/// 
+		/// Setting this is optional, however you must then manually call <see cref="Quit"/> when you want your application
+		/// to quit in that case.
+		/// </remarks>
+		/// <value>The main form for your application.</value>
 		public Form MainForm
 		{
 			get { return mainForm; }
@@ -73,6 +108,32 @@ namespace Eto.Forms
 			}
 		}
 
+		List<Window> windows = new List<Window>();
+
+		internal void AddWindow(Window window)
+		{
+			window.Closed += HandleClosed;
+			windows.Add(window);
+		}
+
+		void HandleClosed(object sender, EventArgs e)
+		{
+			var window = (Window)sender;
+			window.Closed -= HandleClosed;
+			if (windows.Contains(window))
+				windows.Remove(window);
+		}
+
+		/// <summary>
+		/// Gets an enumeration of windows currently open in the application.
+		/// </summary>
+		/// <value>The enumeration of open windows.</value>
+		public IEnumerable<Window> Windows { get { return windows; } }
+
+		/// <summary>
+		/// Gets or sets the name of your application
+		/// </summary>
+		/// <value>The name.</value>
 		public string Name { get; set; }
 
 		static Application()
@@ -80,108 +141,415 @@ namespace Eto.Forms
 			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
 		}
 
-		public Application() : this(Generator.Detect)
-		{
-		}
-
-		public Application(Generator g) : this(g, typeof(IApplication))
-		{
-		}
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
+		[Obsolete("Use default constructor or Application(Platform) and HandlerAttribute instead")]
 		protected Application(Generator generator, Type type, bool initialize = true)
-			: base(generator ?? Generator.Detect, type, initialize)
+			: base(generator ?? Platform.Detect, type, initialize)
 		{
 			Application.Instance = this;
-			Generator.Initialize(generator ?? Generator.Detect); // make everything use this by default
+			Platform.Initialize(generator as Platform ?? Platform.Detect); // make everything use this by default
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
+		[Obsolete("Use Application(Platform) instead")]
+		public Application(Generator generator)
+			: this((Platform)generator)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
+		/// </summary>
+		public Application()
+			: this(Platform.Detect)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class with the specified platform type
+		/// </summary>
+		/// <seealso cref="Platforms"/>
+		/// <param name="platformType">Platform type to initialize this application with</param>
+		public Application(string platformType)
+			: this(Platform.Get(platformType))
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class with the specified platform
+		/// </summary>
+		/// <param name="platform">Platform to run the application</param>
+		public Application(Platform platform)
+			: this(InitializePlatform(platform))
+		{
+			Application.Instance = this;
+		}
+
+		Application(InitHelper init)
+		{
+		}
+
+		class InitHelper { }
+
+		/// <summary>
+		/// Helper to call proper constructor for initializing the platform before base class constructor is called
+		/// </summary>
+		static InitHelper InitializePlatform(Platform platform)
+		{
+			Platform.Initialize(platform);
+			return null;
+		}
+
+		/// <summary>
+		/// Runs the application with the specified arguments
+		/// </summary>
+		/// <param name="args">Arguments to run the application</param>
+		[Obsolete("Use Run() instead")]
 		public virtual void Run(params string[] args)
 		{
-			Handler.Run(args);
+			Handler.Run();
 		}
 
+		/// <summary>
+		/// Runs the application and begins the main loop.
+		/// </summary>
+		public virtual void Run()
+		{
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Runs the application with the specified <paramref name="mainForm"/> and begins the main loop.
+		/// </summary>
+		/// <seealso cref="MainForm"/>
+		/// <param name="mainForm">Main form for the application.</param>
+		public virtual void Run(Form mainForm)
+		{
+			Initialized += (sender, e) =>
+			{
+				MainForm = mainForm;
+				MainForm.Show();
+			};
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Runs the application with the specified <paramref name="dialog"/> and begins the main loop.
+		/// </summary>
+		/// <remarks>
+		/// When the dialog is closed, the application will exit.
+		/// </remarks>
+		/// <param name="dialog">Dialog to show for the application.</param>
+		public virtual void Run(Dialog dialog)
+		{
+			Initialized += (sender, e) =>
+			{
+				dialog.ShowModal();
+				Quit();
+			};
+			Handler.Run();
+		}
+
+		/// <summary>
+		/// Attach the application to an already-running native application with the same platform.
+		/// </summary>
+		/// <param name="context">Context of the application</param>
 		public virtual Application Attach(object context = null)
 		{
 			Handler.Attach(context);
 			return this;
 		}
 
-		[Obsolete("Use Invoke instead")]
-		public virtual void InvokeOnMainThread(Action action)
-		{
-			Invoke(action);
-		}
-
+		/// <summary>
+		/// Invoke the specified action on the UI thread, blocking the current execution until it is complete.
+		/// </summary>
+		/// <param name="action">Action to invoke</param>
 		public virtual void Invoke(Action action)
 		{
 			Handler.Invoke(action);
 		}
 
+		/// <summary>
+		/// Invoke the action asynchronously on the UI thread
+		/// </summary>
+		/// <remarks>
+		/// This will return immediately and queue the action to be executed on the UI thread, regardless on whether
+		/// the current thread is the UI thread.
+		/// </remarks>
+		/// <param name="action">Action to queue on the UI thread.</param>
 		public virtual void AsyncInvoke(Action action)
 		{
 			Handler.AsyncInvoke(action);
 		}
 
+		/// <summary>
+		/// Quits the application
+		/// </summary>
+		/// <remarks>
+		/// This will call the <see cref="Terminating"/> event before terminating the application.
+		/// </remarks>
 		public void Quit()
 		{
 			Handler.Quit();
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Eto.Forms.Application"/> supports the <see cref="Quit"/> operation.
+		/// </summary>
+		/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
+		public bool QuitIsSupported
+		{
+			get { return Handler.QuitIsSupported; }
+		}
+
+		/// <summary>
+		/// Open the specified file or url with its associated application.
+		/// </summary>
+		/// <param name="url">url or file path to open</param>
 		public void Open(string url)
 		{
 			Handler.Open(url);
 		}
 
+		/// <summary>
+		/// Gets the common modifier for shortcuts.
+		/// </summary>
+		/// <remarks>
+		/// On Windows/Linux, this will typically return <see cref="Keys.Control"/>, and on OS X this will be <see cref="Keys.Application"/> (the command key).
+		/// </remarks>
+		/// <value>The common modifier.</value>
 		public Keys CommonModifier
 		{
 			get { return Handler.CommonModifier; }
 		}
 
+		/// <summary>
+		/// Gets the alternate modifier for shortcuts.
+		/// </summary>
+		/// <remarks>
+		/// This is usually the <see cref="Keys.Alt"/> key.
+		/// </remarks>
+		/// <value>The alternate modifier.</value>
 		public Keys AlternateModifier
 		{
 			get { return Handler.AlternateModifier; }
 		}
 
+		/// <summary>
+		/// Gets the system commands used for standard menu items
+		/// </summary>
+		/// <remarks>
+		/// The system commands are used when creating a <see cref="MenuBar"/>.
+		/// This is useful to be able to access the system command list to build your own menu instead of using the standard
+		/// menu.
+		/// </remarks>
+		/// <returns>The system commands.</returns>
+		[Obsolete("Use MenuBar.SystemCommands instead")]
 		public IEnumerable<Command> GetSystemCommands()
 		{
-			return Handler.GetSystemCommands();
+			return new MenuBar().SystemCommands;
 		}
 
-		[Obsolete("Use CreateStandardMenu and/or GetSystemCommands instead")]
-		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
-		{
-			// map new commands/menus back to actions for backwards compatibility
-			var commands = GetSystemCommands().ToArray();
-			foreach (var command in commands)
-			{
-				var currentCommand = command;
-				var action = new ButtonAction
-				{
-					ID = currentCommand.ID,
-					MenuText = currentCommand.MenuText,
-					ToolBarText = currentCommand.ToolBarText,
-					TooltipText = currentCommand.ToolTip,
-					Accelerator = currentCommand.Shortcut,
-					command = currentCommand
-				};
-				currentCommand.Executed += (sender, e) => action.Activate();
-				action.EnabledChanged += (sender, e) => currentCommand.Enabled = action.Enabled;
-				args.Actions.Add(action);
-			}
-			#if DESKTOP
-			if (addStandardItems)
-			{
-				var menu = new MenuBar(Generator);
-				CreateStandardMenu(menu.Items, commands);
-				args.Menu.ExtractMenu(menu);
-			}
-			#endif
-		}
-
+		/// <summary>
+		/// Gets or sets the badge label on the application icon in the dock, taskbar, etc.
+		/// </summary>
+		/// <remarks>
+		/// This allows you to specify the text to show as a label to notify the state of your application to the user.
+		/// Note that some platforms (iOS) only support numeric badge labels.
+		/// </remarks>
+		/// <value>The badge label.</value>
 		public string BadgeLabel
 		{
 			get { return Handler.BadgeLabel; }
 			set { Handler.BadgeLabel = value; }
+		}
+
+		/// <summary>
+		/// Advanced. Runs an iteration of the main UI loop when you are blocking the UI thread with logic.
+		/// </summary>
+		/// <remarks>
+		/// This is not recommended to use and you should use asynchronous calls instead via Task.Run or threads.
+		/// </remarks>
+		public void RunIteration()
+		{
+			Handler.RunIteration();
+		}
+
+		/// <summary>
+		/// Restarts the application
+		/// </summary>
+		public void Restart()
+		{
+			Handler.Restart();
+		}
+
+		/// <summary>
+		/// Creates the standard menu.
+		/// </summary>
+		/// <param name="menuItems">Menu items.</param>
+		/// <param name="commands">Commands.</param>
+		[Obsolete("Use MenuBar.IncludeSystemItems to specify which actions to create instead")]
+		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands = null)
+		{
+			var menuBar = menuItems.parentItem as MenuBar;
+			if (menuBar != null)
+			{
+				menuBar.CreateLegacySystemMenu();
+			}
+		}
+
+		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
+		protected override object GetCallback() { return callback; }
+
+		/// <summary>
+		/// Interface for callbacks to the <see cref="Application"/> class
+		/// </summary>
+		public new interface ICallback : Widget.ICallback
+		{
+			/// <summary>
+			/// Raises the initialized event.
+			/// </summary>
+			void OnInitialized(Application widget, EventArgs e);
+			/// <summary>
+			/// Raises the terminating event.
+			/// </summary>
+			void OnTerminating(Application widget, CancelEventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for the <see cref="Application"/> class
+		/// </summary>
+		protected class Callback : ICallback
+		{
+			/// <summary>
+			/// Raises the initialized event.
+			/// </summary>
+			public void OnInitialized(Application widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnInitialized(e));
+			}
+			/// <summary>
+			/// Raises the terminating event.
+			/// </summary>
+			public void OnTerminating(Application widget, CancelEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnTerminating(e));
+			}
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Application"/> class
+		/// </summary>
+		public new interface IHandler : Widget.IHandler
+		{
+			/// <summary>
+			/// Attach the application to an already-running native application with the same platform.
+			/// </summary>
+			/// <param name="context">Context of the application</param>
+			void Attach(object context);
+
+			/// <summary>
+			/// Runs the application and starts a main loop.
+			/// </summary>
+			void Run();
+
+			/// <summary>
+			/// Quits the application
+			/// </summary>
+			/// <remarks>
+			/// This should call the <see cref="ICallback.OnTerminating"/> callback to allow user-defined code to cancel
+			/// the operation.
+			/// </remarks>
+			void Quit();
+
+			/// <summary>
+			/// Gets a value indicating whether the application supports the <see cref="Quit"/> operation.
+			/// </summary>
+			/// <value><c>true</c> if quit is supported; otherwise, <c>false</c>.</value>
+			bool QuitIsSupported { get ; }
+
+			/// <summary>
+			/// Gets the common modifier for shortcuts.
+			/// </summary>
+			/// <remarks>
+			/// On Windows/Linux, this will typically return <see cref="Keys.Control"/>, and on OS X this will be <see cref="Keys.Application"/> (the command key).
+			/// </remarks>
+			/// <value>The common modifier.</value>
+			Keys CommonModifier { get; }
+
+			/// <summary>
+			/// Gets the alternate modifier for shortcuts.
+			/// </summary>
+			/// <remarks>
+			/// This is usually the <see cref="Keys.Alt"/> key.
+			/// </remarks>
+			/// <value>The alternate modifier.</value>
+			Keys AlternateModifier { get; }
+
+			/// <summary>
+			/// Open the specified file or url with its associated application.
+			/// </summary>
+			/// <param name="url">url or file path to open</param>
+			void Open(string url);
+
+			/// <summary>
+			/// Invoke the specified action on the UI thread, blocking the current execution until it is complete.
+			/// </summary>
+			/// <remarks>
+			/// Implementors should be careful to execute the action directly if the current thread is the UI thread.
+			/// </remarks>
+			/// <param name="action">Action to invoke</param>
+			void Invoke(Action action);
+
+			/// <summary>
+			/// Invoke the action asynchronously on the UI thread
+			/// </summary>
+			/// <remarks>
+			/// This will return immediately and queue the action to be executed on the UI thread, regardless on whether
+			/// the current thread is the UI thread.
+			/// </remarks>
+			/// <param name="action">Action to queue on the UI thread.</param>
+			void AsyncInvoke(Action action);
+
+			/// <summary>
+			/// Gets or sets the badge label on the application icon in the dock, taskbar, etc.
+			/// </summary>
+			/// <remarks>
+			/// This allows you to specify the text to show as a label to notify the state of your application to the user.
+			/// Note that some platforms (iOS) only support numeric badge labels.
+			/// </remarks>
+			/// <value>The badge label.</value>
+			string BadgeLabel { get; set; }
+
+			/// <summary>
+			/// Called by the widget when the <see cref="Application.MainForm"/> is changed
+			/// </summary>
+			void OnMainFormChanged();
+
+			/// <summary>
+			/// Restarts the application
+			/// </summary>
+			void Restart();
+
+			/// <summary>
+			/// Advanced. Runs an iteration of the main UI loop when you are blocking the UI thread with logic.
+			/// </summary>
+			/// <remarks>
+			/// This is not recommended to use and you should use asynchronous calls instead via Task.Run or threads.
+			/// </remarks>
+			void RunIteration();
 		}
 	}
 }

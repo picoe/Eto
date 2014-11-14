@@ -4,29 +4,9 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for the <see cref="Button"/> control
-	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IButton : ITextControl
-	{
-		/// <summary>
-		/// Gets or sets the image to display on the button
-		/// </summary>
-		/// <value>The image to display</value>
-		Image Image { get; set; }
-
-		/// <summary>
-		/// Gets or sets the image position
-		/// </summary>
-		/// <value>The image position</value>
-		ButtonImagePosition ImagePosition { get; set; }
-	}
-
-	/// <summary>
 	/// Button image position
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum ButtonImagePosition
 	{
@@ -59,11 +39,12 @@ namespace Eto.Forms
 	/// <summary>
 	/// Button control
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Handler(typeof(Button.IHandler))]
 	public class Button : TextControl
 	{
-		new IButton Handler { get { return (IButton)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// The default minimum size for buttons
@@ -71,7 +52,8 @@ namespace Eto.Forms
 		/// <remarks>
 		/// You can set this size to ensure that all buttons are at least of this size
 		/// </remarks>
-		public static Size DefaultSize = new Size (80, 26);
+		[Obsolete("This is no longer supported. Set the size of your buttons directly or use styles")]
+		public static Size DefaultSize = new Size(80, 26);
 
 		EventHandler<EventArgs> click;
 
@@ -88,17 +70,16 @@ namespace Eto.Forms
 		/// Raises the <see cref="Click"/> event
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnClick (EventArgs e)
+		protected virtual void OnClick(EventArgs e)
 		{
 			if (click != null)
-				click (this, e);
+				click(this, e);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
 		/// </summary>
-		public Button ()
-			: this (null)
+		public Button()
 		{
 		}
 
@@ -106,8 +87,9 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the button</param>
-		public Button (Generator generator)
-			: this (generator, typeof (IButton))
+		[Obsolete("Use default constructor instead")]
+		public Button(Generator generator)
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -121,8 +103,9 @@ namespace Eto.Forms
 		/// <param name="generator">Generator to create the button</param>
 		/// <param name="type">Type of the button handler to use for the subclass</param>
 		/// <param name="initialize">True to initialize the button, false if you will initialize after constructor logic</param>
-		protected Button (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
+		protected Button(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 		}
 
@@ -144,6 +127,58 @@ namespace Eto.Forms
 		{
 			get { return Handler.ImagePosition; }
 			set { Handler.ImagePosition = value; }
+		}
+
+		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
+		protected override object GetCallback() { return callback; }
+
+		/// <summary>
+		/// Callback interface for <see cref="Button"/>
+		/// </summary>
+		public new interface ICallback : TextControl.ICallback
+		{
+			/// <summary>
+			/// Raises the click event.
+			/// </summary>
+			void OnClick(Button widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for handlers of <see cref="Button"/>
+		/// </summary>
+		protected new class Callback : TextControl.Callback, ICallback
+		{
+			/// <summary>
+			/// Raises the click event.
+			/// </summary>
+			public void OnClick(Button widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnClick(e));
+			}
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="Button"/> control
+		/// </summary>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public new interface IHandler : TextControl.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the image to display on the button
+			/// </summary>
+			/// <value>The image to display</value>
+			Image Image { get; set; }
+
+			/// <summary>
+			/// Gets or sets the image position
+			/// </summary>
+			/// <value>The image position</value>
+			ButtonImagePosition ImagePosition { get; set; }
 		}
 	}
 }

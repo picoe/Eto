@@ -7,8 +7,9 @@ namespace Eto.Test.Sections.Drawing
 	/// <summary>
 	/// Tests various aspects of pens
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Section("Drawing", "Pen")]
 	public class PenSection : Scrollable
 	{
 		Drawable drawable;
@@ -28,7 +29,8 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddSeparateRow(null, PenJoinControl(), PenCapControl(), DashStyleControl(), null);
-			layout.AddSeparateRow(null, PenThicknessControl(), null);
+			if (Platform.Supports<NumericUpDown>())
+				layout.AddSeparateRow(null, PenThicknessControl(), null);
 			layout.AddSeparateRow(GetDrawable());
 
 			Content = layout;
@@ -36,7 +38,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control PenJoinControl()
 		{
-			var control = new EnumComboBox<PenLineJoin>();
+			var control = new EnumDropDown<PenLineJoin>();
 			control.Bind(c => c.SelectedValue, this, r => r.LineJoin);
 			control.SelectedValueChanged += Refresh;
 			return control;
@@ -44,7 +46,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control PenCapControl()
 		{
-			var control = new EnumComboBox<PenLineCap>();
+			var control = new EnumDropDown<PenLineCap>();
 			control.Bind(c => c.SelectedValue, this, r => r.LineCap);
 			control.SelectedValueChanged += Refresh;
 			return control;
@@ -56,7 +58,7 @@ namespace Eto.Test.Sections.Drawing
 			control.Bind(c => c.Value, this, r => r.PenThickness);
 			control.ValueChanged += Refresh;
 			
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.AddRow(new Label { Text = "Thickness Step:", VerticalAlign = VerticalAlign.Middle }, control);
 			return layout;
 		}
@@ -68,7 +70,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control DashStyleControl()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			control.Items.Add(new DashStyleItem { Text = "Solid", Style = DashStyles.Solid });
 			control.Items.Add(new DashStyleItem { Text = "Dash", Style = DashStyles.Dash });
 			control.Items.Add(new DashStyleItem { Text = "Dot", Style = DashStyles.Dot });
@@ -76,7 +78,8 @@ namespace Eto.Test.Sections.Drawing
 			control.Items.Add(new DashStyleItem { Text = "Dash Dot Dot", Style = DashStyles.DashDotDot });
 			control.SelectedIndex = 0;
 			control.SelectedIndexChanged += (sender, e) => {
-				DashStyle = ((DashStyleItem)control.SelectedValue).Style;
+				if (control.SelectedValue != null)
+					DashStyle = ((DashStyleItem)control.SelectedValue).Style;
 				Refresh(sender, e);
 			};
 			return control;
@@ -99,13 +102,13 @@ namespace Eto.Test.Sections.Drawing
 
 		void Draw(Graphics g, Action<Pen> action)
 		{
-			var path = new GraphicsPath(Generator);
+			var path = new GraphicsPath();
 			path.AddLines(new PointF(0, 0), new PointF(100, 40), new PointF(0, 30), new PointF(50, 70));
 
 			for (int i = 0; i < 4; i++)
 			{
 				float thickness = 1f + i * PenThickness;
-				var pen = new Pen(Colors.Black, thickness, Generator);
+				var pen = new Pen(Colors.Black, thickness);
 				pen.LineCap = LineCap;
 				pen.LineJoin = LineJoin;
 				pen.DashStyle = DashStyle;

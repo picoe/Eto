@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(TreeView))]
 	public class TreeViewSection : Scrollable
 	{
 		int expanded;
@@ -12,7 +13,7 @@ namespace Eto.Test.Sections.Controls
 		readonly CheckBox allowExpanding;
 		readonly TreeView treeView;
 		int newItemCount;
-		static readonly Image Image = TestIcons.TestIcon();
+		static readonly Image Image = TestIcons.TestIcon;
 		Label hoverNodeLabel;
 		bool cancelLabelEdit;
 
@@ -218,20 +219,21 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150)
 			};
 
-#if DESKTOP
-			var menu = new ContextMenu();
-			var item = new ButtonMenuItem { Text = "Click Me!" };
-			item.Click += delegate
+			if (Platform.Supports<ContextMenu>())
 			{
-				if (control.SelectedItem != null)
-					Log.Write(item, "Click, Rows: {0}", control.SelectedItem.Text);
-				else
-					Log.Write(item, "Click, no item selected");
-			};
-			menu.Items.Add(item);
-			
-			control.ContextMenu = menu;
-#endif
+				var menu = new ContextMenu();
+				var item = new ButtonMenuItem { Text = "Click Me!" };
+				item.Click += delegate
+				{
+					if (control.SelectedItem != null)
+						Log.Write(item, "Click, Rows: {0}", control.SelectedItem.Text);
+					else
+						Log.Write(item, "Click, no item selected");
+				};
+				menu.Items.Add(item);
+
+				control.ContextMenu = menu;
+			}
 
 			control.DataStore = CreateTreeItem(0, "Item", Image);
 			LogEvents(control);

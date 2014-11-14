@@ -5,9 +5,10 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Screen")]
 	public class ScreenSection : Scrollable
 	{
-		readonly RectangleF displayBounds = Screen.DisplayBounds();
+		readonly RectangleF displayBounds = Screen.DisplayBounds;
 		readonly Screen[] screens;
 		Window parentWindow;
 
@@ -15,7 +16,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var layout = new DynamicLayout();
 
-			screens = Screen.Screens().ToArray();
+			screens = Screen.Screens.ToArray();
 			layout.AddSeparateRow(null, new Label { Text = string.Format("Display Bounds: {0}", displayBounds) }, null);
 			layout.BeginVertical(Padding.Empty);
 			var num = 0;
@@ -35,14 +36,14 @@ namespace Eto.Test.Sections.Behaviors
 			Content = layout;
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		protected override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 			parentWindow = ParentWindow;
 			parentWindow.LocationChanged += HandleLocationChanged;
 		}
 
-		public override void OnUnLoad(EventArgs e)
+		protected override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
 			parentWindow.LocationChanged -= HandleLocationChanged;

@@ -32,9 +32,9 @@ namespace Eto.Test
 		public Section()
 		{
 		}
-	
+
 		public Section(string text, IEnumerable<Section> sections)
-			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase).ToArray())
+			: base(sections.OrderBy(r => r.Text, StringComparer.CurrentCultureIgnoreCase).ToArray())
 		{
 			this.Text = text;
 		}
@@ -63,36 +63,29 @@ namespace Eto.Test
 			}
 		}
 	}
-
-	public abstract class SectionBase : Section, ISection
+	public class SectionItem : Section, ISection
 	{
-		public abstract Control CreateContent();
-	}
+		public Func<Control> Creator { get; set; }
 
-	public class Section<T> : SectionBase
-		where T: Control, new()
-	{
-		public Func<T> Creator { get; set; }
-
-		public override Control CreateContent()
+		public Control CreateContent()
 		{
-			return Creator != null ? Creator() : new T();
+			return Creator();
 		}
 	}
 
 	/// <summary>
 	/// Tests for dialogs and forms use this.
 	/// </summary>
-	public class WindowSectionMethod : Section, ISection
+	public class WindowSection : Section, ISection
 	{
 		Func<Window> Func { get; set; }
 
-		public WindowSectionMethod(string text = null)
+		public WindowSection(string text = null)
 		{
 			Text = text;
 		}
 
-		public WindowSectionMethod(string text, Func<Window> f)
+		public WindowSection(string text, Func<Window> f)
 		{
 			Func = f;
 			Text = text;
@@ -108,7 +101,8 @@ namespace Eto.Test
 			var button = new Button { Text = string.Format("Show the {0} test", Text) };
 			var layout = new DynamicLayout();
 			layout.AddCentered(button);
-			button.Click += (sender, e) => {
+			button.Click += (sender, e) =>
+			{
 
 				try
 				{
@@ -119,7 +113,7 @@ namespace Eto.Test
 						var dialog = window as Dialog;
 						if (dialog != null)
 						{
-							dialog.ShowDialog(null);
+							dialog.ShowModal(null);
 							return;
 						}
 						var form = window as Form;
@@ -188,7 +182,7 @@ namespace Eto.Test
 			this.treeView = new TreeGridView();
 			treeView.Style = "sectionList";
 			treeView.ShowHeader = false;
-			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding("Text") } });
+			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new DelegateBinding<SectionTreeItem, string>(r => r.Text) } });
 			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
 			treeView.SelectedItemChanged += OnSelectedItemChanged;
 		}
@@ -239,17 +233,17 @@ namespace Eto.Test
 			public Section Section { get; set; }
 		}
 
-		DynamicLayout layout;
+		TableLayout layout;
 		GridView gridView;
 		SearchBox filterText;
 
-		public override Control Control { get { return this.layout; } }
+		public override Control Control { get { return layout; } }
 		public override ISection SelectedItem
 		{
 			get
 			{
 				var item = gridView.SelectedItem as MyItem;
-				return item != null ? item.Section as ISection: null;
+				return item != null ? item.Section as ISection : null;
 			}
 		}
 
@@ -258,16 +252,17 @@ namespace Eto.Test
 		public SectionListGridView(IEnumerable<Section> topNodes)
 		{
 			gridView = new GridView { ShowCellBorders = false };
-			gridView.Columns.Add(new GridColumn { HeaderText = "Name", Width = 100, AutoSize = false, DataCell = new TextBoxCell("Name"), Sortable = true });
-			gridView.Columns.Add(new GridColumn { HeaderText = "Section", DataCell = new TextBoxCell("SectionName"), Sortable = true });
-			var items = new DataStoreCollection();
+			gridView.Columns.Add(new GridColumn { HeaderText = "Name", Width = 100, AutoSize = false, DataCell = new TextBoxCell { Binding = new DelegateBinding<MyItem, string>(r => r.Name) }, Sortable = true });
+			gridView.Columns.Add(new GridColumn { HeaderText = "Section", DataCell = new TextBoxCell { Binding = new DelegateBinding<MyItem, string>(r => r.SectionName) }, Sortable = true });
+			var items = new FilterCollection<MyItem>();
 			foreach (var section in topNodes)
-			{				
+			{
 				foreach (var test in section)
 				{
-					items.Add(new MyItem { 
-						Name = (test as ISectionName).Text,
-						SectionName = (section as ISectionName).Text, 
+					items.Add(new MyItem
+					{
+						Name = test.Text,
+						SectionName = section.Text,
 						Section = test,
 					});
 				}
@@ -275,31 +270,32 @@ namespace Eto.Test
 			gridView.DataStore = items;
 			gridView.SelectionChanged += OnSelectedItemChanged;
 
-			layout = new DynamicLayout();
-			layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
-			layout.Add(gridView);
+			layout = new TableLayout(
+				filterText = new SearchBox { PlaceholderText = "Filter" },
+				gridView
+			);
 
 			// Filter
-			filterText.TextChanged += (s, e) => {
+			filterText.TextChanged += (s, e) =>
+			{
 				var filterItems = (filterText.Text ?? "").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-				// Set the filter delegate on the GridView
-				gridView.Filter = (filterItems.Length == 0) ? (Func<object, bool>)null : o => {
-					var i = o as MyItem;
-					var matches = true;
+				if (filterItems.Length == 0)
+					items.Filter = null;
+				else
+					items.Filter = i =>
+					{
+						// Every item in the split filter string should be within the Text property
+						foreach (var filterItem in filterItems)
+							if (i.Name.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1 &&
+								i.SectionName.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
+							{
+								return false;
+							}
 
-					// Every item in the split filter string should be within the Text property
-					foreach (var filterItem in filterItems)
-						if (i.Name.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1 &&
-							i.SectionName.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
-						{
-							matches = false;
-							break;
-						}
-
-					return matches;
-				};
-			};			
+						return true;
+					};
+			};
 		}
 	}
 }

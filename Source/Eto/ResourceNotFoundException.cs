@@ -40,13 +40,14 @@ namespace Eto
 		public ResourceNotFoundException (Assembly assembly, string resourceName)
 			: this (string.Format (CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName))
 		{ }
-		
-#if !WINRT
+
+#if !PCL
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:ResourceNotFoundException"/> class
 		/// </summary>
 		/// <param name="context">The contextual information about the source or destination.</param>
 		/// <param name="info">The object that holds the serialized object data.</param>
+		[Obsolete("Do not use this constructor overload")]
 		protected ResourceNotFoundException (SerializationInfo info, StreamingContext context) : base (info, context) { }
 #endif
 	}

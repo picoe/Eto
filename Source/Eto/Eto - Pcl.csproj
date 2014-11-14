@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Eto</RootNamespace>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>Eto</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\BuildOutput\Pcl\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DESKTOP;MOBILE;PCL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\BuildOutput\Pcl\Debug\Eto.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\BuildOutput\Pcl\Release</OutputPath>
+    <DefineConstants>TRACE;DESKTOP;MOBILE;PCL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\BuildOutput\Pcl\Release\Eto.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <Import Project="../Shared/Common.targets" />
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Binding\ColumnBinding.cs" />
+    <Compile Include="ContentProperty.cs" />
+    <Compile Include="Drawing\Colors.cs" />
+    <Compile Include="Drawing\DashStyle.cs" />
+    <Compile Include="Drawing\DashStyles.cs" />
+    <Compile Include="Drawing\FillMode.cs" />
+    <Compile Include="Drawing\ImageConverter.cs" />
+    <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\PenLineJoin.cs" />
+    <Compile Include="Drawing\PixelOffsetMode.cs" />
+    <Compile Include="Drawing\Region.cs" />
+    <Compile Include="Drawing\Matrix.cs" />
+    <Compile Include="EtoEnvironment.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EtoException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\DropDown.cs" />
+    <Compile Include="Forms\Controls\EnumDropDown.cs" />
+    <Compile Include="Forms\Controls\Grid.cs" />
+    <Compile Include="Forms\Controls\PasswordBox.cs" />
+    <Compile Include="Forms\Controls\ProgressBar.cs" />
+    <Compile Include="Forms\Controls\SearchBox.cs" />
+    <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
+    <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
+    <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
+    <Compile Include="Forms\Controls\TreeItem.cs" />
+    <Compile Include="Forms\Controls\TreeView.cs" />
+    <Compile Include="Forms\DataStoreVirtualCollection.cs" />
+    <Compile Include="Forms\Layout\DynamicControl.cs" />
+    <Compile Include="Forms\Layout\DynamicItem.cs" />
+    <Compile Include="Forms\Layout\DynamicTable.cs" />
+    <Compile Include="Forms\Mouse.cs" />
+    <Compile Include="Forms\Printing\PageSettings.cs" />
+    <Compile Include="Forms\Printing\PrintDocument.cs" />
+    <Compile Include="Forms\Printing\PrintSettings.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItem.cs" />
+    <Compile Include="Int32ArrayConverter.cs" />
+    <Compile Include="NamespaceInfo.cs" />
+    <Compile Include="OperatingSystemPlatform.cs" />
+    <Compile Include="PropertyStore.cs" />
+    <Compile Include="ResourceNotFoundException.cs" />
+    <Compile Include="Threading\Thread.cs" />
+    <Compile Include="TypeHelper.cs" />
+    <Compile Include="Widget.cs" />
+    <Compile Include="WidgetHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Application.cs" />
+    <Compile Include="Forms\Container.cs" />
+    <Compile Include="Forms\Dialog.cs" />
+    <Compile Include="Forms\FileDialog.cs" />
+    <Compile Include="Forms\Form.cs" />
+    <Compile Include="Forms\Key.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Layout\Layout.cs" />
+    <Compile Include="Forms\MessageBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\OpenFileDialog.cs" />
+    <Compile Include="Forms\Layout\PixelLayout.cs" />
+    <Compile Include="Forms\SaveFileDialog.cs" />
+    <Compile Include="Forms\SelectFolderDialog.cs" />
+    <Compile Include="Forms\Layout\TableLayout.cs" />
+    <Compile Include="Forms\UITimer.cs" />
+    <Compile Include="Forms\Window.cs" />
+    <Compile Include="Forms\Controls\Button.cs" />
+    <Compile Include="Forms\Controls\CheckBox.cs" />
+    <Compile Include="Forms\Controls\ComboBox.cs" />
+    <Compile Include="Forms\Controls\Control.cs" />
+    <Compile Include="Forms\Controls\Drawable.cs" />
+    <Compile Include="Forms\Controls\GroupBox.cs" />
+    <Compile Include="Forms\Controls\ImageView.cs" />
+    <Compile Include="Forms\Controls\Label.cs" />
+    <Compile Include="Forms\Controls\ListBox.cs" />
+    <Compile Include="Forms\Controls\ListControl.cs" />
+    <Compile Include="Forms\Controls\MouseEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\NumericUpDown.cs" />
+    <Compile Include="Forms\Controls\Panel.cs" />
+    <Compile Include="Forms\Controls\RadioButton.cs" />
+    <Compile Include="Forms\Controls\Scrollable.cs" />
+    <Compile Include="Forms\Controls\Splitter.cs" />
+    <Compile Include="Forms\Controls\TabControl.cs" />
+    <Compile Include="Forms\Controls\TabPage.cs" />
+    <Compile Include="Forms\Controls\TextArea.cs" />
+    <Compile Include="Forms\Controls\TextBox.cs" />
+    <Compile Include="Forms\Controls\TextControl.cs" />
+    <Compile Include="Forms\Controls\TreeGridView.cs" />
+    <Compile Include="Forms\Menu\CheckMenuItem.cs" />
+    <Compile Include="Forms\Menu\Menu.cs" />
+    <Compile Include="Forms\Menu\MenuBar.cs" />
+    <Compile Include="Forms\Menu\MenuItem.cs" />
+    <Compile Include="Forms\Menu\RadioMenuItem.cs" />
+    <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
+    <Compile Include="Forms\ToolBar\ToolBar.cs" />
+    <Compile Include="IO\SystemIcons.cs" />
+    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\WebView.cs" />
+    <Compile Include="Forms\Clipboard.cs" />
+    <Compile Include="Forms\CommonDialog.cs" />
+    <Compile Include="Forms\ColorDialog.cs" />
+    <Compile Include="Forms\Controls\DateTimePicker.cs" />
+    <Compile Include="Style.cs" />
+    <Compile Include="Forms\Menu\ContextMenu.cs" />
+    <Compile Include="Forms\Layout\DynamicLayout.cs" />
+    <Compile Include="Forms\ListItem.cs" />
+    <Compile Include="Forms\Controls\CommonControl.cs" />
+    <Compile Include="Forms\Controls\Slider.cs" />
+    <Compile Include="Forms\Cursor.cs" />
+    <Compile Include="Drawing\Bitmap.cs" />
+    <Compile Include="Drawing\Color.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Font.cs" />
+    <Compile Include="Drawing\Graphics.cs" />
+    <Compile Include="Drawing\Icon.cs" />
+    <Compile Include="Drawing\Image.cs" />
+    <Compile Include="Drawing\IndexedBitmap.cs" />
+    <Compile Include="Drawing\Padding.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Palette.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Point.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\PointF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Rectangle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\RectangleF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Size.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\SizeF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\BitmapData.cs" />
+    <Compile Include="Drawing\GraphicsPath.cs" />
+    <Compile Include="Drawing\ColorHSB.cs" />
+    <Compile Include="Drawing\ColorHSL.cs" />
+    <Compile Include="Drawing\ColorCMYK.cs" />
+    <Compile Include="Drawing\ColorConverter.cs" />
+    <Compile Include="Drawing\SizeConverter.cs" />
+    <Compile Include="Drawing\SizeFConverter.cs" />
+    <Compile Include="Drawing\RectangleConverter.cs" />
+    <Compile Include="Drawing\RectangleFConverter.cs" />
+    <Compile Include="Drawing\PointConverter.cs" />
+    <Compile Include="Drawing\PointFConverter.cs" />
+    <Compile Include="Drawing\PaddingConverter.cs" />
+    <Compile Include="Forms\Controls\GridView.cs" />
+    <Compile Include="Forms\Controls\GridItem.cs" />
+    <Compile Include="Forms\IDataStore.cs" />
+    <Compile Include="CollectionChangedHandler.cs" />
+    <Compile Include="Forms\Controls\GridColumn.cs" />
+    <Compile Include="Forms\Cells\Cell.cs" />
+    <Compile Include="Forms\Cells\ComboBoxCell.cs" />
+    <Compile Include="Forms\Cells\DrawableCell.cs" />
+    <Compile Include="Forms\Cells\ImageTextCell.cs" />
+    <Compile Include="Forms\Cells\SingleValueCell.cs" />
+    <Compile Include="Forms\Controls\TreeGridItem.cs" />
+    <Compile Include="Forms\Cells\TextBoxCell.cs" />
+    <Compile Include="Forms\Cells\ImageViewCell.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCell.cs" />
+    <Compile Include="Binding\Binding.cs" />
+    <Compile Include="Binding\BindingCollection.cs" />
+    <Compile Include="Binding\BindingChangingEventArgs.cs" />
+    <Compile Include="Binding\BindingChangedEventArgs.cs" />
+    <Compile Include="Binding\IndirectBinding.cs" />
+    <Compile Include="Binding\PropertyBinding.cs" />
+    <Compile Include="Binding\DirectBinding.cs" />
+    <Compile Include="Binding\ObjectBinding.cs" />
+    <Compile Include="Binding\DualBinding.cs" />
+    <Compile Include="Forms\Printing\PrintDialog.cs" />
+    <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
+    <Compile Include="EtoMemberIdentifier.cs" />
+    <Compile Include="HandlerInvalidException.cs" />
+    <Compile Include="Forms\Range.cs" />
+    <Compile Include="Forms\Controls\Navigation.cs" />
+    <Compile Include="Forms\Controls\NavigationItem.cs" />
+    <Compile Include="Forms\FontDialog.cs" />
+    <Compile Include="Drawing\FontFamily.cs" />
+    <Compile Include="Drawing\FontTypeface.cs" />
+    <Compile Include="Drawing\Fonts.cs" />
+    <Compile Include="Drawing\FontFamilies.cs" />
+    <Compile Include="Forms\Cursors.cs" />
+    <Compile Include="Drawing\Pen.cs" />
+    <Compile Include="Drawing\Pens.cs" />
+    <Compile Include="Drawing\Brushes.cs" />
+    <Compile Include="Drawing\SolidBrush.cs" />
+    <Compile Include="Drawing\Brush.cs" />
+    <Compile Include="Drawing\PenLineCap.cs" />
+    <Compile Include="Drawing\TextureBrush.cs" />
+    <Compile Include="Drawing\LinearGradientBrush.cs" />
+    <Compile Include="Forms\Screen.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="Forms\Controls\RadioButtonList.cs" />
+    <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />
+    <Compile Include="Forms\Controls\KeyEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Binding\DelegateBinding.cs" />
+    <Compile Include="Forms\IKeyboardInputSource.cs" />
+    <Compile Include="Forms\IMouseInputSource.cs" />
+    <Compile Include="XmlExtensions.cs" />
+    <Compile Include="Drawing\XmlExtensions.cs" />
+    <Compile Include="Drawing\SystemFonts.cs" />
+    <Compile Include="Forms\Controls\Control.binding.cs" />
+    <Compile Include="EventLookup.cs" />
+    <Compile Include="Forms\Layout\DynamicItemConverter.cs" />
+    <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
+    <Compile Include="Forms\Controls\Spinner.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
+    <Compile Include="Forms\Command.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\SubMenu.cs" />
+    <Compile Include="Forms\Menu\MenuItemCollection.cs" />
+    <Compile Include="Forms\ToolBar\ToolItem.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItem.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItem.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
+    <Compile Include="PclTypes.cs" />
+    <Compile Include="RuntimeNamePropertyAttribute.cs" />
+    <Compile Include="Platforms.cs" />
+    <Compile Include="Platform.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlatformContext.cs" />
+    <Compile Include="Generator.cs" />
+    <Compile Include="Generators.cs" />
+    <Compile Include="HandlerAttribute.cs" />
+    <Compile Include="AutoInitializeAttribute.cs" />
+    <Compile Include="..\Shared\EnumerableExtensions.cs">
+      <Link>EnumerableExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\ColorPicker.cs" />
+    <Compile Include="Forms\FilterCollection.cs" />
+    <Compile Include="Forms\Controls\Calendar.cs" />
+    <Compile Include="Forms\Controls\LinkButton.cs" />
+    <Compile Include="Forms\BindingExtensions.cs" />
+    <Compile Include="Forms\ControlBinding.cs" />
+    <Compile Include="Forms\Layout\TableCell.cs" />
+    <Compile Include="Forms\Layout\TableRow.cs" />
+    <Compile Include="ExtendedObservableCollection.cs" />
+    <Compile Include="Forms\WidgetExtensions.cs" />
+    <Compile Include="Binding\Binding.helpers.cs" />
+    <Compile Include="Binding\PropertyNotifyHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Link>LICENSE</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="../Shared/Build.targets" />
+</Project>

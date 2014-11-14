@@ -2,16 +2,16 @@ using System;
 using Eto;
 using Eto.Test;
 
-namespace Eto.Test.WinForms
+namespace Eto.Test.Direct2D
 {
 	class Startup
 	{
 		[STAThread]
-		static void Main (string [] args)
+		static void Main(string[] args)
 		{
-			var generator = Generator.GetGenerator(Generators.Direct2DAssembly);
-			var app = new TestApplication (generator);
-			app.Run (args);
+			var generator = Platform.Get(Platforms.Direct2D);
+			var app = new TestApplication(generator);
+			app.Run();
 		}
 	}
 }

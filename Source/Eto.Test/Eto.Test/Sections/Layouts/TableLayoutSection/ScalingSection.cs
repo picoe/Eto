@@ -3,6 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
+	[Section("TableLayout", "Scaling")]
 	public class ScalingSection : Scrollable
 	{
 		public ScalingSection()

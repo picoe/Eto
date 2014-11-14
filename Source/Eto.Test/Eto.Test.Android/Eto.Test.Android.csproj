@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,10 +12,12 @@
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
     <AssemblyName>Eto.Test.Android</AssemblyName>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
+    <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
+    <MandroidI18n />
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,6 +30,7 @@
     <AndroidLinkMode>None</AndroidLinkMode>
     <ConsolePause>false</ConsolePause>
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    <AndroidSupportedAbis>armeabi;armeabi-v7a;x86</AndroidSupportedAbis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -37,7 +40,14 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <ConsolePause>false</ConsolePause>
+    <AndroidStoreUncompressedFileExtensions>
+    </AndroidStoreUncompressedFileExtensions>
+    <JavaMaximumHeapSize>
+    </JavaMaximumHeapSize>
+    <JavaOptions>
+    </JavaOptions>
   </PropertyGroup>
+  <!--Import Project="../../Shared/Common.targets" /-->
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -61,21 +71,18 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto\Eto - Android.csproj">
-      <Project>{73A5AD74-68BC-448C-A38C-CFBAF014A311}</Project>
-      <Name>Eto - Android</Name>
+    <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - Pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Platform.Android\Eto.Platform.Android.csproj">
+    <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
+      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
+      <Name>Eto.Test - Pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Android\Eto.Android.csproj">
       <Project>{7A02E771-D30B-41A1-8A35-C78D3940FC33}</Project>
-      <Name>Eto.Platform.Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test - Android.csproj">
-      <Project>{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}</Project>
-      <Name>Eto.Test - Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Json\Eto.Json - Android.csproj">
-      <Project>{757FCF9A-E2D0-4031-9A11-82A2A49FA892}</Project>
-      <Name>Eto.Json - Android</Name>
+      <Name>Eto.Android</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="../../Shared/Build.targets" />
 </Project>

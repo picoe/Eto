@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using Eto.Drawing;
 
@@ -5,26 +6,24 @@ namespace Eto.Test
 {
 	public static class TestIcons
 	{
-		static string prefix;
-		public static string Prefix { get { return prefix = prefix ?? Assembly.GetExecutingAssembly().GetName().Name + "."; } }
-
-		public static string TestIconName = "TestIcon.ico";
-		public static string TestImageName = "TestImage.png";
-		public static string TexturesName = "Textures.png";
-
-		public static Icon TestIcon(Generator generator = null)
+		public static Icon TestIcon
 		{
-			return Icon.FromResource(Prefix + TestIconName, generator);
+			get { return Icon.FromResource("Eto.Test.TestIcon.ico"); }
 		}
 
-		public static Bitmap TestImage(Generator generator = null)
+		public static Bitmap TestImage
 		{
-			return Bitmap.FromResource(Prefix + TestImageName, generator: generator);
+			get { return Bitmap.FromResource("Eto.Test.TestImage.png"); }
 		}
 
-		public static Bitmap Textures(Generator generator = null)
+		public static Bitmap Textures
 		{
-			return Bitmap.FromResource(Prefix + TexturesName, generator: generator);
+			get { return Bitmap.FromResource("Eto.Test.Textures.png"); }
+		}
+
+		public static Bitmap TexturesIndexed
+		{
+			get { return Bitmap.FromResource("Eto.Test.Textures.gif"); }
 		}
 	}
 }

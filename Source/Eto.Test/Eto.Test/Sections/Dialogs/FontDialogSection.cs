@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Dialogs
 {
+	[Section("Dialogs", typeof(FontDialog))]
 	public class FontDialogSection : Scrollable
 	{
 		Font selectedFont;
@@ -18,7 +19,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		public FontDialogSection()
 		{
-			var layout = new DynamicLayout(new Size(5, 5));
+			var layout = new DynamicLayout { Spacing = new Size(5, 5) };
 
 			layout.AddSeparateRow(null, PickFont(), PickFontWithStartingFont(), SetToFontFamily(), null);
 			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlign = VerticalAlign.Middle }, PickFontFamily(), null);
@@ -27,10 +28,10 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddSeparateRow(null, new Label { Text = "Style:" }, BoldFont(), ItalicFont(), UnderlineFont(), StrikeoutFont(), null);
 
 			var tabs = new TabControl();
-			tabs.TabPages.Add(new TabPage(Preview()) { Text = "Preview" });
-			tabs.TabPages.Add(new TabPage(Metrics()) { Text = "Metrics" });
+			tabs.Pages.Add(new TabPage { Text = "Preview", Content = Preview() });
+			tabs.Pages.Add(new TabPage { Text = "Metrics", Content = Metrics() });
 
-			layout.Add(tabs, yscale: true);
+			layout.Add(new Panel { MinimumSize = new Size(100, 150), Content = tabs}, yscale: true);
 			UpdatePreview(Fonts.Serif(18, FontStyle.Bold));
 
 			Content = layout;
@@ -54,9 +55,9 @@ namespace Eto.Test.Sections.Dialogs
 				}
 			};
 
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.BeginHorizontal();
-			layout.AddCentered(fontFamilyName, Padding.Empty, Size.Empty);
+			layout.AddCentered(fontFamilyName, padding: Padding.Empty, spacing: Size.Empty);
 			layout.AddCentered(button, Padding.Empty, Size.Empty);
 			return layout;
 		}
@@ -64,42 +65,42 @@ namespace Eto.Test.Sections.Dialogs
 		static Control Descender()
 		{
 			var control = new Label { TextColor = Colors.Red };
-			control.TextBinding.Bind<Font>(r => r.Descent.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.Descent.ToString());
 			return control;
 		}
 
 		static Control Ascender()
 		{
 			var control = new Label { TextColor = Colors.Blue };
-			control.TextBinding.Bind<Font>(r => r.Ascent.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.Ascent.ToString());
 			return control;
 		}
 
 		static Control XHeight()
 		{
 			var control = new Label { TextColor = Colors.Green };
-			control.TextBinding.Bind<Font>(r => r.XHeight.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.XHeight.ToString());
 			return control;
 		}
 
 		static Control LineHeight()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.TextBinding.Bind<Font>(r => r.LineHeight.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.LineHeight.ToString());
 			return control;
 		}
 
 		static Control Leading()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.TextBinding.Bind<Font>(r => r.Leading.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.Leading.ToString());
 			return control;
 		}
 
 		static Control BaseLine()
 		{
 			var control = new Label { TextColor = Colors.Black };
-			control.TextBinding.Bind<Font>(r => r.Baseline.ToString());
+			control.TextBinding.BindDataContext<Font>(r => r.Baseline.ToString());
 			return control;
 		}
 
@@ -158,7 +159,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control FontList()
 		{
 			fontList = new ListBox { Size = new Size(300, 180) };
-			var lookup = Fonts.AvailableFontFamilies().ToDictionary(r => r.Name);
+			var lookup = Fonts.AvailableFontFamilies.ToDictionary(r => r.Name);
 			fontList.Items.AddRange(lookup.Values.OrderBy(r => r.Name).Select(r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
 			fontList.SelectedIndexChanged += (sender, e) =>
 			{
@@ -210,21 +211,21 @@ namespace Eto.Test.Sections.Dialogs
 		static Control BoldFont()
 		{
 			var control = new CheckBox { Text = "Bold", Enabled = false };
-			control.CheckedBinding.Bind<Font>(r => r.Bold);
+			control.CheckedBinding.BindDataContext<Font>(r => r.Bold);
 			return control;
 		}
 
 		static Control ItalicFont()
 		{
 			var control = new CheckBox { Text = "Italic", Enabled = false };
-			control.CheckedBinding.Bind<Font>(r => r.Italic);
+			control.CheckedBinding.BindDataContext<Font>(r => r.Italic);
 			return control;
 		}
 
 		Control UnderlineFont()
 		{
 			var control = new CheckBox { Text = "Underline" };
-			control.CheckedBinding.Bind<Font>(f => f.Underline, (f,val) => {
+			control.CheckedBinding.BindDataContext<Font>(f => f.Underline, (f,val) => {
 				var decoration = selectedFont.FontDecoration;
 				if (val ?? false) decoration |= FontDecoration.Underline;
 				else decoration &= ~FontDecoration.Underline;
@@ -236,7 +237,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control StrikeoutFont()
 		{
 			var control = new CheckBox { Text = "Strikethrough" };
-			control.CheckedBinding.Bind<Font>(f => f.Strikethrough, (f,val) => {
+			control.CheckedBinding.BindDataContext<Font>(f => f.Strikethrough, (f,val) => {
 				var decoration = selectedFont.FontDecoration;
 				if (val ?? false) decoration |= FontDecoration.Strikethrough;
 				else decoration &= ~FontDecoration.Strikethrough;
@@ -272,7 +273,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control Metrics()
 		{
-			var layout = new DynamicLayout(Padding.Empty);
+			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.BeginHorizontal();
 			layout.BeginVertical();
 			layout.Add(null);
@@ -310,24 +311,24 @@ namespace Eto.Test.Sections.Dialogs
 
 				var ypos = Math.Max(0, (metricsPreview.Size.Height - size.Height) / 2);
 
-				pe.Graphics.FillRectangle(Brushes.GhostWhite(), new RectangleF(new PointF(0, ypos), size));
+				pe.Graphics.FillRectangle(Brushes.GhostWhite, new RectangleF(new PointF(0, ypos), size));
 
 				pe.Graphics.DrawText(selectedFont, Colors.Black, 0, ypos, preview.Text);
 
 				var baseline = ypos + selectedFont.Baseline * scale;
-				pe.Graphics.DrawLine(Pens.Black(), 0, baseline, width, baseline);
+				pe.Graphics.DrawLine(Pens.Black, 0, baseline, width, baseline);
 
 				var ascender = baseline - selectedFont.Ascent * scale;
-				pe.Graphics.DrawLine(Pens.Blue(), 0, ascender, width, ascender);
+				pe.Graphics.DrawLine(Pens.Blue, 0, ascender, width, ascender);
 
 				var descender = baseline + selectedFont.Descent * scale;
-				pe.Graphics.DrawLine(Pens.Red(), 0, descender, width, descender);
+				pe.Graphics.DrawLine(Pens.Red, 0, descender, width, descender);
 
 				var xheight = baseline - selectedFont.XHeight * scale;
-				pe.Graphics.DrawLine(Pens.Green(), 0, xheight, width, xheight);
+				pe.Graphics.DrawLine(Pens.Green, 0, xheight, width, xheight);
 
 				var lineheight = ypos + selectedFont.LineHeight * scale;
-				pe.Graphics.DrawLine(Pens.Orange(), 0, lineheight, width, lineheight);
+				pe.Graphics.DrawLine(Pens.Orange, 0, lineheight, width, lineheight);
 			};
 			return metricsPreview;
 		}

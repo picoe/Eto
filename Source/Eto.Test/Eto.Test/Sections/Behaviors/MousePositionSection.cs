@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Mouse Position", Requires = typeof(Mouse))]
 	public class MousePositionSection : Panel
 	{
 		Label mousePositionLabel;
@@ -46,7 +47,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		void SetLabels ()
 		{
-			var position = Mouse.GetPosition();
+			var position = Mouse.Position;
 			mousePositionLabel.Text = position.ToString ();
 
 			// convert to control co-ordinates
@@ -57,22 +58,22 @@ namespace Eto.Test.Sections.Behaviors
 			position = PointToScreen(position);
 			pointToScreenLabel.Text = position.ToString ();
 			
-			buttonsLabel.Text = Mouse.GetButtons ().ToString ();
+			buttonsLabel.Text = Mouse.Buttons.ToString ();
 		}
 
-		public override void OnMouseMove (MouseEventArgs e)
+		protected override void OnMouseMove (MouseEventArgs e)
 		{
 			base.OnMouseMove (e);
 			SetLabels ();
 		}
 
-		public override void OnMouseDown (MouseEventArgs e)
+		protected override void OnMouseDown (MouseEventArgs e)
 		{
 			base.OnMouseDown (e);
 			SetLabels ();
 		}
 
-		public override void OnMouseUp (MouseEventArgs e)
+		protected override void OnMouseUp (MouseEventArgs e)
 		{
 			base.OnMouseUp (e);
 			SetLabels ();

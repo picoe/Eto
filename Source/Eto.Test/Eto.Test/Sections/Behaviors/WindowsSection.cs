@@ -1,10 +1,11 @@
-#if DESKTOP
 using Eto.Drawing;
 using Eto.Forms;
 using System;
+using System.Linq;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Windows")]
 	public class WindowsSection : Panel
 	{
 		Form child;
@@ -31,7 +32,7 @@ namespace Eto.Test.Sections.Behaviors
 			Content = layout;
 		}
 
-		public override void OnUnLoad(EventArgs e)
+		protected override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
 			if (child != null)
@@ -152,6 +153,8 @@ namespace Eto.Test.Sections.Behaviors
 			};
 			var layout = new DynamicLayout();
 			layout.Add(null);
+			layout.AddCentered(TestChangeSizeButton());
+			layout.AddCentered(TestChangeClientSizeButton());
 			layout.AddCentered(SendToBackButton());
 			layout.AddCentered(CloseButton());
 			layout.Add(null);
@@ -167,6 +170,8 @@ namespace Eto.Test.Sections.Behaviors
 			child.SizeChanged += child_SizeChanged;
 			bringToFrontButton.Enabled = true;
 			child.Show();
+			// show that the child is now referenced
+			Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count());
 		}
 
 		void child_Closed(object sender, EventArgs e)
@@ -182,49 +187,56 @@ namespace Eto.Test.Sections.Behaviors
 			child.SizeChanged -= child_SizeChanged;
 			bringToFrontButton.Enabled = false;
 			child = null;
+			// write out number of open windows after the closed event is called
+			Application.Instance.AsyncInvoke(() => Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count()));
 		}
 
-		void child_Closing(object sender, EventArgs e)
+		static void child_Closing(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "Closing");
 		}
 
-		void child_LocationChanged(object sender, EventArgs e)
+		static void child_LocationChanged(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "LocationChanged: {0}", child.Location);
 		}
 
-		void child_SizeChanged(object sender, EventArgs e)
+		static void child_SizeChanged(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "SizeChanged: {0}", child.Size);
 		}
 
-		void child_LostFocus(object sender, EventArgs e)
+		static void child_LostFocus(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "LostFocus");
 		}
 
-		void child_GotFocus(object sender, EventArgs e)
+		static void child_GotFocus(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "GotFocus");
 		}
 
-		void child_Shown(object sender, EventArgs e)
+		static void child_Shown(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "Shown");
 		}
 
-		void child_WindowStateChanged(object sender, EventArgs e)
+		static void child_WindowStateChanged(object sender, EventArgs e)
 		{
+			var child = (Window)sender;
 			Log.Write(child, "StateChanged: {0}", child.WindowState);
 		}
 
 		Control CreateChildWindowButton()
 		{
 			var control = new Button { Text = "Create Child Window" };
-			control.Click += (sender, e) => {
-				CreateChild();
-			};
+			control.Click += (sender, e) => CreateChild();
 			return control;
 		}
 
@@ -257,6 +269,27 @@ namespace Eto.Test.Sections.Behaviors
 			};
 			return control;
 		}
+
+		Control TestChangeSizeButton()
+		{
+			var control = new Button { Text = "TestChangeSize" };
+			control.Click += (sender, e) =>
+			{
+				if (child != null)
+					child.Size = new Size(500, 500);
+			};
+			return control;
+		}
+
+		Control TestChangeClientSizeButton()
+		{
+			var control = new Button { Text = "TestChangeClientSize" };
+			control.Click += (sender, e) =>
+			{
+				if (child != null)
+					child.ClientSize = new Size(500, 500);
+			};
+			return control;
+		}
 	}
 }
-#endif

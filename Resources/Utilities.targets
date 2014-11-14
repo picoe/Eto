@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project InitialTargets="BuildUtilities" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<UtilitiesImported>true</UtilitiesImported>
+		<UtilitiesBasePath Condition="$(UtilitiesBasePath) == ''">packages</UtilitiesBasePath>
+		<UtilitiesAssemblyPath Condition="$(UtilitiesAssemblyPath) == ''">$(UtilitiesBasePath)\Eto.UtilitiesTasks</UtilitiesAssemblyPath>
+	</PropertyGroup>
+	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="GetAssemblyInfo" />
+	<Target Name="BuildUtilities" Condition="!Exists('$(UtilitiesAssemblyPath)\Utilities.dll')" >
+		<MakeDir Directories="$(UtilitiesAssemblyPath)" />
+		
+		<!-- UsingTask is not implemented in mono -->
+		<ItemGroup>
+			<Utilities Include="GetAssemblyInfo"><Text><![CDATA[
+using System;
+using System.IO;
+using System.Reflection;
+using System.Diagnostics;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public class GetAssemblyInfo : Task
+{
+	public string AssemblyFileName { get; set; }
+
+	[Output]
+	public string AssemblyInformationalVersion { get; set; }
+
+	[Output]
+	public string AssemblyTitle { get; set; }
+
+	[Output]
+	public string AssemblyDescription { get; set; }
+
+	[Output]
+	public string AssemblyCopyright { get; set; }
+
+	[Output]
+	public string AssemblyCompany { get; set; }
+
+	[Output]
+	public string AssemblyName { get; set; }
+
+
+	public override bool Execute()
+	{
+		try
+		{
+			AssemblyFileName = Path.GetFullPath(AssemblyFileName);
+
+			Log.LogMessage("Getting assembly info...");
+			AssemblyInformationalVersion = FileVersionInfo.GetVersionInfo(AssemblyFileName).ProductVersion;
+
+			var assembly = Assembly.LoadFrom(AssemblyFileName);
+			var informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+			if (informationalVersion != null)
+				AssemblyInformationalVersion = informationalVersion.InformationalVersion;
+			var title = assembly.GetCustomAttribute<AssemblyTitleAttribute>();
+			if (title != null)
+				AssemblyTitle = title.Title;
+			var description = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>();
+			if (description != null)
+				AssemblyDescription = description.Description;
+			var copyright = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
+			if (copyright != null)
+				AssemblyCopyright = copyright.Copyright;
+			var company = assembly.GetCustomAttribute<AssemblyCompanyAttribute>();
+			if (company != null)
+				AssemblyCompany = company.Company;
+			AssemblyName = assembly.GetName().Name;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log.LogErrorFromException(ex);
+			return false;
+		}
+	}
+}]]></Text></Utilities>
+		</ItemGroup>
+		
+		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\Utilities.cs" Lines="@(Utilities->'%(Text)')" Overwrite="true" />
+	
+		<Csc
+			Sources="$(UtilitiesAssemblyPath)\Utilities.cs"
+			OutputAssembly="$(UtilitiesAssemblyPath)\Utilities.dll"
+			References="Microsoft.Build.Framework.dll;Microsoft.Build.Utilities.v4.0.dll;" 
+			TargetType="library"
+			/>
+	</Target>
+</Project>

@@ -10,7 +10,4 @@
     <assembly fullname="System">
         <type fullname="System.ComponentModel.ReferenceConverter" preserve="type,fields,members"></type>
     </assembly>
-    <assembly fullname="Eto">
-    	<type fullname="Eto.WeakEventHandler`2" preserve="type,fields,members"></type>
-    </assembly>
 </linker>

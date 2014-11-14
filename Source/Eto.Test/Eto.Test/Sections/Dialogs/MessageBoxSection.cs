@@ -4,6 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Dialogs
 {
+	[Section("Dialogs", typeof(MessageBox))]
 	public class MessageBoxSection : Scrollable
 	{
 		public string MessageBoxText { get; set; }
@@ -60,7 +61,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control CaptionBox()
 		{
 			var control = new TextBox { Size = new Size(300, -1) };
-			var binding = new ObjectBinding<MessageBoxSection, string>(this, r => r.MessageBoxCaption, (r, val) => r.MessageBoxCaption = val);
+			var binding = new ControlBinding<MessageBoxSection, string>(this, r => r.MessageBoxCaption, (r, val) => r.MessageBoxCaption = val);
 			control.TextBinding.Bind(binding);
 			return control;
 		}
@@ -68,31 +69,31 @@ namespace Eto.Test.Sections.Dialogs
 		Control TitleBox()
 		{
 			var control = new TextArea { Size = new Size(300, -1) };
-			var binding = new ObjectBinding<MessageBoxSection, string>(this, r => r.MessageBoxText, (r, val) => r.MessageBoxText = val);
+			var binding = new ControlBinding<MessageBoxSection, string>(this, r => r.MessageBoxText, (r, val) => r.MessageBoxText = val);
 			control.TextBinding.Bind(binding);
 			return control;
 		}
 
 		Control MessageBoxTypeCombo()
 		{
-			var control = new EnumComboBox<MessageBoxType>();
-			var binding = new ObjectBinding<MessageBoxSection, MessageBoxType>(this, r => r.MessageBoxType, (r, val) => r.MessageBoxType = val);
+			var control = new EnumDropDown<MessageBoxType>();
+			var binding = new ControlBinding<MessageBoxSection, MessageBoxType>(this, r => r.MessageBoxType, (r, val) => r.MessageBoxType = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;
 		}
 
 		Control MessageBoxButtonsCombo()
 		{
-			var control = new EnumComboBox<MessageBoxButtons>();
-			var binding = new ObjectBinding<MessageBoxSection, MessageBoxButtons>(this, r => r.MessageBoxButtons, (r, val) => r.MessageBoxButtons = val);
+			var control = new EnumDropDown<MessageBoxButtons>();
+			var binding = new ControlBinding<MessageBoxSection, MessageBoxButtons>(this, r => r.MessageBoxButtons, (r, val) => r.MessageBoxButtons = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;
 		}
 
 		Control MessageBoxDefaultButtonCombo()
 		{
-			var control = new EnumComboBox<MessageBoxDefaultButton>();
-			var binding = new ObjectBinding<MessageBoxSection, MessageBoxDefaultButton>(this, r => r.MessageBoxDefaultButton, (r, val) => r.MessageBoxDefaultButton = val);
+			var control = new EnumDropDown<MessageBoxDefaultButton>();
+			var binding = new ControlBinding<MessageBoxSection, MessageBoxDefaultButton>(this, r => r.MessageBoxDefaultButton, (r, val) => r.MessageBoxDefaultButton = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;
 		}
@@ -100,7 +101,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control AttachToParentCheckBox()
 		{
 			var control = new CheckBox { Text = "Attach to Parent Window" };
-			var binding = new ObjectBinding<MessageBoxSection, bool>(this, r => r.AttachToParent, (r, val) => r.AttachToParent = val);
+			var binding = new ControlBinding<MessageBoxSection, bool?>(this, r => r.AttachToParent, (r, val) => r.AttachToParent = val ?? false);
 			control.CheckedBinding.Bind(binding);
 			return control;
 		}

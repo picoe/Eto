@@ -2,6 +2,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(RadioButtonList))]
 	public class RadioButtonListSection : Scrollable
 	{
 		public RadioButtonListSection()
@@ -73,7 +74,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Orientation(RadioButtonList list)
 		{
-			var control = new EnumComboBox<RadioButtonListOrientation>();
+			var control = new EnumDropDown<RadioButtonListOrientation>();
 			control.SelectedValue = list.Orientation;
 			control.SelectedValueChanged += delegate
 			{

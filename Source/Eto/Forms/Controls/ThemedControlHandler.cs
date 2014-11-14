@@ -14,10 +14,12 @@ namespace Eto.Forms
 	/// b) Implementing a control with a non-native look and feel that is consistent across platforms.
 	/// </remarks>
 	/// <typeparam name="TControl">The Eto control used to create the custom implementation, e.g. Panel</typeparam>
-	/// <typeparam name="TWidget">The control being implemented, eg TabControl</typeparam>
-	public class ThemedControlHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl
+	/// <typeparam name="TWidget">The control being implemented, e.g. TabControl</typeparam>
+	/// <typeparam name="TCallback">The callback inferface for the control, e.g. TabControl.ICallback</typeparam>
+	public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler
 		where TControl : Control
 		where TWidget : Control
+		where TCallback : Control.ICallback
 	{
 		/// <summary>
 		/// Gets or sets the color for the background of the control
@@ -152,7 +154,7 @@ namespace Eto.Forms
 		public virtual void OnPreLoad(EventArgs e)
 		{
 			if (PropagateLoadEvents)
-				Control.OnPreLoad(e);
+				Control.TriggerPreLoad(e);
 		}
 
 		/// <summary>
@@ -165,7 +167,7 @@ namespace Eto.Forms
 		public virtual void OnLoad(EventArgs e)
 		{
 			if (PropagateLoadEvents)
-				Control.OnLoad(e);
+				Control.TriggerLoad(e);
 		}
 
 		/// <summary>
@@ -178,7 +180,7 @@ namespace Eto.Forms
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			if (PropagateLoadEvents)
-				Control.OnLoadComplete(e);
+				Control.TriggerLoadComplete(e);
 		}
 
 		/// <summary>
@@ -191,7 +193,7 @@ namespace Eto.Forms
 		public virtual void OnUnLoad(EventArgs e)
 		{
 			if (PropagateLoadEvents)
-				Control.OnUnLoad(e);
+				Control.TriggerUnLoad(e);
 		}
 
 		/// <summary>
@@ -253,8 +255,6 @@ namespace Eto.Forms
 			get { return Control.Location; }
 		}
 
-		#if DESKTOP
-
 		/// <summary>
 		/// Gets or sets the tool tip to show when the mouse is hovered over the control
 		/// </summary>
@@ -274,8 +274,6 @@ namespace Eto.Forms
 			get { return Control.Cursor; }
 			set { Control.Cursor = value; }
 		}
-
-		#endif
 
 		/// <summary>
 		/// Gets the instance of the platform-specific object
@@ -302,89 +300,53 @@ namespace Eto.Forms
 			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
-					Control.KeyDown += (s, e) => Widget.OnKeyDown(e);
+					Control.KeyDown += (s, e) => Callback.OnKeyDown(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += (s, e) => Widget.OnKeyUp(e);
+					Control.KeyUp += (s, e) => Callback.OnKeyUp(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					Control.SizeChanged += (s, e) => Widget.OnSizeChanged(e);
+					Control.SizeChanged += (s, e) => Callback.OnSizeChanged(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
-					Control.MouseDoubleClick += (s, e) => Widget.OnMouseDoubleClick(e);
+					Control.MouseDoubleClick += (s, e) => Callback.OnMouseDoubleClick(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
-					Control.MouseEnter += (s, e) => Widget.OnMouseEnter(e);
+					Control.MouseEnter += (s, e) => Callback.OnMouseEnter(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
-					Control.MouseLeave += (s, e) => Widget.OnMouseLeave(e);
+					Control.MouseLeave += (s, e) => Callback.OnMouseLeave(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
-					Control.MouseDown += (s, e) => Widget.OnMouseDown(e);
+					Control.MouseDown += (s, e) => Callback.OnMouseDown(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
-					Control.MouseUp += (s, e) => Widget.OnMouseUp(e);
+					Control.MouseUp += (s, e) => Callback.OnMouseUp(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
-					Control.MouseMove += (s, e) => Widget.OnMouseMove(e);
+					Control.MouseMove += (s, e) => Callback.OnMouseMove(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
-					Control.MouseWheel += (s, e) => Widget.OnMouseWheel(e);
+					Control.MouseWheel += (s, e) => Callback.OnMouseWheel(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (s, e) => Widget.OnGotFocus(e);
+					Control.GotFocus += (s, e) => Callback.OnGotFocus(Widget, e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (s, e) => Widget.OnLostFocus(e);
+					Control.LostFocus += (s, e) => Callback.OnLostFocus(Widget, e);
 					handled = true;
 					break;
-#if TODO
-				case Eto.Forms.DragDropInputSource.DragDropEvent:
-					Control.DragDrop += (s, e) =>
-						handleDragEvent(
-							Widget.DragDropInputSource.OnDragDrop,
-							e);
-					handled = true;
-					break;
-				case Eto.Forms.DragDropInputSource.DragEnterEvent:
-					Control.DragEnter += (s, e) =>
-						handleDragEvent(
-							Widget.DragDropInputSource.OnDragEnter,
-							e);
-					handled = true;
-					break;
-				case Eto.Forms.DragDropInputSource.DragOverEvent:
-					Control.DragOver += (s, e) =>
-						handleDragEvent(
-							Widget.DragDropInputSource.OnDragOver,
-							e);
-					handled = true;
-					break;
-				case Eto.Forms.DragDropInputSource.GiveFeedbackEvent:
-					Control.GiveFeedback += (s, e) =>
-						Widget.DragDropInputSource.OnGiveFeedback(
-							e.ToEto());
-					handled = true;
-					break;
-				case Eto.Forms.DragDropInputSource.QueryContinueDragEvent:
-					Control.QueryContinueDrag += (s, e) =>
-						// TODO: convert the result back to SWF
-						Widget.DragDropInputSource.OnQueryContinueDrag(
-							e.ToEto());
-					handled = true;
-					break;
-#endif
 			}
 
 			if (!handled)

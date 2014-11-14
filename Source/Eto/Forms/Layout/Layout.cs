@@ -5,60 +5,6 @@ using System.ComponentModel;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Platform handler interface for the the <see cref="Layout"/> class
-	/// </summary>
-	public interface ILayout : IContainer
-	{
-		/// <summary>
-		/// Re-calculates the layout of the controls and re-positions them, if necessary
-		/// </summary>
-		/// <remarks>
-		/// All layouts should theoretically work without having to manually update them, but in certain cases
-		/// this may be necessary to be called.
-		/// </remarks>
-		void Update();
-	}
-
-	/// <summary>
-	/// Platform handler interface for positional layouts where controls are placed in an x, y grid
-	/// </summary>
-	public interface IPositionalLayout : ILayout
-	{
-		/// <summary>
-		/// Adds the control to the layout given the specified co-ordinates
-		/// </summary>
-		/// <remarks>
-		/// Adding a control typically will make it visible to the user immediately, assuming they can see the control
-		/// in the current co-ordinates, and that the control's <see cref="Control.Visible"/> property is true
-		/// </remarks>
-		/// <param name="child">Child control to add to this layout</param>
-		/// <param name="x">X co-ordinate</param>
-		/// <param name="y">Y co-ordinate</param>
-		void Add(Control child, int x, int y);
-
-		/// <summary>
-		/// Moves the control to the specified co-ordinates
-		/// </summary>
-		/// <remarks>
-		/// This assumes that the control is already a child of this layout
-		/// </remarks>
-		/// <param name="child">Child control to move</param>
-		/// <param name="x">New X co-ordinate</param>
-		/// <param name="y">New Y co-ordinate</param>
-		void Move(Control child, int x, int y);
-
-		/// <summary>
-		/// Removes the specified child from this layout
-		/// </summary>
-		/// <remarks>
-		/// This assumes that the control is already a child of this layout.  This will make the child control
-		/// invisible to the user
-		/// </remarks>
-		/// <param name="child">Child control to remove</param>
-		void Remove(Control child);
-	}
-
-	/// <summary>
 	/// Base class for all layout-based containers
 	/// </summary>
 	/// <remarks>
@@ -67,26 +13,44 @@ namespace Eto.Forms
 	/// </remarks>
 	public abstract class Layout : Container, ISupportInitialize
 	{
-		new ILayout Handler { get { return (ILayout)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Eto.Forms.Layout"/> is initializing.
+		/// Initializes a new instance of the <see cref="Eto.Forms.Layout"/> class.
 		/// </summary>
-		/// <value><c>true</c> if initializing; otherwise, <c>false</c>.</value>
-		protected bool Initializing { get; private set; }
+		protected Layout()
+		{
+		}
 
 		/// <summary>
-		/// Obsolete. Use <see cref="Control.Parent"/> instead
+		/// Initializes a new instance of the <see cref="Eto.Forms.Layout"/> class with the specified handler.
 		/// </summary>
-		[Obsolete("Use Parent instead")]
-		public Container Container { get { return Parent; } }
+		/// <param name="handler">Handler to use for the widget</param>
+		protected Layout(IHandler handler)
+			: base(handler)
+		{
+		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Layout"/> class.
+		/// </summary>
+		/// <param name="g">The green component.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Layout(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
 		}
 
-		protected Layout(Generator g, ILayout handler, bool initialize = true)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Layout"/> class.
+		/// </summary>
+		/// <param name="g">The green component.</param>
+		/// <param name="handler">Handler.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
+		[Obsolete("Use Layout(ILayout) instead")]
+		protected Layout(Generator g, IHandler handler, bool initialize = true)
 			: base(g, handler, initialize)
 		{
 		}
@@ -117,7 +81,6 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void BeginInit()
 		{
-			Initializing = true;
 		}
 
 		/// <summary>
@@ -125,7 +88,61 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void EndInit()
 		{
-			Initializing = false;
 		}
+
+		/// <summary>
+		/// Platform handler interface for the the <see cref="Layout"/> class
+		/// </summary>
+		public new interface IHandler : Container.IHandler
+		{
+			/// <summary>
+			/// Re-calculates the layout of the controls and re-positions them, if necessary
+			/// </summary>
+			/// <remarks>
+			/// All layouts should theoretically work without having to manually update them, but in certain cases
+			/// this may be necessary to be called.
+			/// </remarks>
+			void Update();
+		}
+
+		/// <summary>
+		/// Platform handler interface for positional layouts where controls are placed in an x, y grid
+		/// </summary>
+		public interface IPositionalLayoutHandler
+		{
+			/// <summary>
+			/// Adds the control to the layout given the specified co-ordinates
+			/// </summary>
+			/// <remarks>
+			/// Adding a control typically will make it visible to the user immediately, assuming they can see the control
+			/// in the current co-ordinates, and that the control's <see cref="Control.Visible"/> property is true
+			/// </remarks>
+			/// <param name="control">Child control to add to this layout</param>
+			/// <param name="x">X co-ordinate</param>
+			/// <param name="y">Y co-ordinate</param>
+			void Add(Control control, int x, int y);
+
+			/// <summary>
+			/// Moves the control to the specified co-ordinates
+			/// </summary>
+			/// <remarks>
+			/// This assumes that the control is already a child of this layout
+			/// </remarks>
+			/// <param name="control">Child control to move</param>
+			/// <param name="x">New X co-ordinate</param>
+			/// <param name="y">New Y co-ordinate</param>
+			void Move(Control control, int x, int y);
+
+			/// <summary>
+			/// Removes the specified child from this layout
+			/// </summary>
+			/// <remarks>
+			/// This assumes that the control is already a child of this layout.  This will make the child control
+			/// invisible to the user
+			/// </remarks>
+			/// <param name="control">Child control to remove</param>
+			void Remove(Control control);
+		}
+
 	}
 }

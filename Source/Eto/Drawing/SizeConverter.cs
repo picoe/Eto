@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// Allows for conversion from a string to a <see cref="Size"/>.
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SizeConverter : TypeConverter
 	{
 		/// <summary>

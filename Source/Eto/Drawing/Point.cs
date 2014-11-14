@@ -10,6 +10,8 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// The point struct is used for drawing and positioning of elements and widgets
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter(typeof(PointConverter))]
 	public struct Point : IEquatable<Point>
 	{
@@ -565,59 +567,6 @@ namespace Eto.Drawing
 		public bool Equals (Point other)
 		{
 			return other == this;
-		}
-		
-		#region Obsolete
-		
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("Use operator + instead")]
-		public static Point Add (Point point, Size size)
-		{
-			return new Point (point.X + size.Width, point.Y + size.Height);
-		}
-		
-		/// <summary>
-		/// Gets a value indicating that both the X and Y co-ordinates of this point are zero
-		/// </summary>
-		[Obsolete ("Use IsZero instead")]
-		public bool IsEmpty
-		{
-			get { return x == 0 && y == 0; }
-		}
-		
-		/// <summary>
-		/// Adds the specified <paramref name="x"/> and <paramref name="y"/> values to this point
-		/// </summary>
-		/// <param name="x">Value to add to the X co-ordinate of this point</param>
-		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
-		[Obsolete("Use Offset() instead")]
-		public void Add (int x, int y)
-		{
-			this.x += x;
-			this.y += y;
-		}
-		
-		/// <summary>
-		/// Adds the X and Y co-ordinate values of the specified <paramref name="point"/> to this point
-		/// </summary>
-		/// <param name="point">Point with X and Y values to add to this point</param>
-		[Obsolete("Use Offset() instead")]
-		public void Add (Point point)
-		{
-			Add(point.X, point.Y);
-		}
-		
-		/// <summary>
-		/// Gets the magnitude of this point from 0,0 using Pythagoras' theorem
-		/// </summary>
-		[Obsolete ("Use Length instead")]
-		public double Magnitude
-		{
-			get { return Math.Sqrt (X * X + Y * Y); }
-		}
-		
-		#endregion
+		}		
 	}
 }

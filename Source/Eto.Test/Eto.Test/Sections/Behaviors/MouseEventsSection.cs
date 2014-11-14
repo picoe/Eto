@@ -2,12 +2,13 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Mouse Events")]
 	public class MouseEventsSection : AllControlsBase
 	{
 		CheckBox handleEvents;
 		CheckBox showParentEvents;
 
-		public override void OnLoad(System.EventArgs e)
+		protected override void OnLoad(System.EventArgs e)
 		{
 			base.OnLoad(e);
 			LogEvents(this);
@@ -22,7 +23,7 @@ namespace Eto.Test.Sections.Behaviors
 				e.Handled = true;
 		}
 
-		protected override Control GenerateOptions()
+		protected override Control CreateOptions()
 		{
 			var layout = new DynamicLayout();
 

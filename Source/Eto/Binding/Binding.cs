@@ -4,14 +4,45 @@ using System.Globalization;
 namespace Eto
 {
 	/// <summary>
+	/// Base binding interface
+	/// </summary>
+	/// <remarks>
+	/// Binding provides a way to bind your data objects to control properties and grid values.
+	/// This base class adds the ability to unbind the binding, or update it manually.
+	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public interface IBinding
+	{
+		/// <summary>
+		/// Unbind this instance from its parent.
+		/// </summary>
+		/// <remarks>
+		/// This typically will unregister any event handlers to properties so that the controls can be garbage collected.
+		/// </remarks>
+		void Unbind();
+
+		/// <summary>
+		/// Updates the binding from the source to the destination
+		/// </summary>
+		/// <remarks>
+		/// Typically the source would be your custom class and the destination would be a UI control, but this is not
+		/// always the case.
+		/// </remarks>
+		void Update();
+	}
+
+	/// <summary>
 	/// Base class for binding between a value and another
 	/// </summary>
 	/// <remarks>
 	/// This is the base of any type of binding.  Some bindings may only be used to get/set a single
-	/// value (e.g. <see cref="IndirectBinding"/>), whereas the <see cref="DualBinding"/> can link
+	/// value (e.g. <see cref="IndirectBinding{T}"/>), whereas the <see cref="DualBinding{T}"/> can link
 	/// two objects' values together
 	/// </remarks>
-	public abstract class Binding
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public abstract partial class Binding : IBinding
 	{
 		#region Events
 

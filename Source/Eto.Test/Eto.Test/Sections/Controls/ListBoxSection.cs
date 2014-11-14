@@ -1,22 +1,24 @@
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(ListBox))]
 	public class ListBoxSection : Scrollable
 	{
 		public ListBoxSection()
 		{
 			var layout = new DynamicLayout();
-			
+
 			layout.AddRow(new Label { Text = "Default" }, Default());
-						
+
 			layout.AddRow(new Label { Text = "Virtual list, with Icons" }, WithIcons());
 
-#if DESKTOP
-			layout.AddRow(new Label { Text = "Context Menu" }, WithContextMenu());
-#endif
-			
+			if (Platform.Supports<ContextMenu>())
+				layout.AddRow(new Label { Text = "Context Menu" }, WithContextMenu());
+
 			layout.Add(null);
 
 			Content = layout;
@@ -26,7 +28,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new ListBox
 			{
-				Size = new Size (100, 150)
+				Size = new Size(100, 150)
 			};
 			LogEvents(control);
 
@@ -34,13 +36,13 @@ namespace Eto.Test.Sections.Controls
 			{
 				control.Items.Add(new ListItem { Text = "Item " + i });
 			}
-			
+
 			var layout = new DynamicLayout();
 			layout.Add(control);
 			layout.BeginVertical();
 			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), null);
 			layout.EndVertical();
-			
+
 			return layout;
 		}
 
@@ -76,21 +78,71 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		class VirtualList : IListStore
+		class VirtualList : IList, IEnumerable<object>
 		{
-			Icon image = TestIcons.TestIcon();
+			Icon image = TestIcons.TestIcon;
 
 			public int Count
 			{
 				get { return 1000; }
 			}
 
-			public IListItem this [int index]
+			public object this[int index]
 			{
-				get
-				{
-					return new ImageListItem { Text = "Item " + index, Image = image };
-				}
+				get { return new ImageListItem { Text = "Item " + index, Image = image }; }
+				set { }
+			}
+
+			public IEnumerator<object> GetEnumerator()
+			{
+				for (int i = 0; i < Count; i++)
+					yield return this[i];
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+
+			public int Add(object value)
+			{
+				throw new System.NotImplementedException();
+			}
+			public void Clear()
+			{
+				throw new System.NotImplementedException();
+			}
+			public bool Contains(object value)
+			{
+				throw new System.NotImplementedException();
+			}
+			public int IndexOf(object value)
+			{
+				throw new System.NotImplementedException();
+			}
+			public void Insert(int index, object value)
+			{
+				throw new System.NotImplementedException();
+			}
+			public void Remove(object value)
+			{
+				throw new System.NotImplementedException();
+			}
+			public void RemoveAt(int index)
+			{
+				throw new System.NotImplementedException();
+			}
+			public bool IsFixedSize { get { return true; } }
+			public bool IsReadOnly { get { return true; } }
+
+			public void CopyTo(System.Array array, int index)
+			{
+				throw new System.NotImplementedException();
+			}
+			public bool IsSynchronized { get { return false; } }
+			public object SyncRoot
+			{
+				get { throw new System.NotImplementedException(); }
 			}
 		}
 
@@ -98,19 +150,19 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new ListBox
 			{
-				Size = new Size (100, 150)
+				Size = new Size(100, 150)
 			};
 			LogEvents(control);
-			
+
 			control.DataStore = new VirtualList();
 			return control;
 		}
-		#if DESKTOP
+
 		Control WithContextMenu()
 		{
 			var control = new ListBox
 			{
-				Size = new Size (100, 150)
+				Size = new Size(100, 150)
 			};
 			LogEvents(control);
 
@@ -118,22 +170,22 @@ namespace Eto.Test.Sections.Controls
 			{
 				control.Items.Add(new ListItem { Text = "Item " + i });
 			}
-			
+
 			var menu = new ContextMenu();
 			var item = new ButtonMenuItem { Text = "Click Me!" };
 			item.Click += delegate
 			{
 				if (control.SelectedValue != null)
-					Log.Write(item, "Click, Item: {0}", control.SelectedValue.Text);
+					Log.Write(item, "Click, Item: {0}", ((ListItem)control.SelectedValue).Text);
 				else
 					Log.Write(item, "Click, no item selected");
 			};
 			menu.Items.Add(item);
-			
+
 			control.ContextMenu = menu;
 			return control;
 		}
-		#endif
+
 		void LogEvents(ListBox control)
 		{
 			control.SelectedIndexChanged += delegate

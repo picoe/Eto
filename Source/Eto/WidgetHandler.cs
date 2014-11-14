@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Eto
 {
@@ -26,161 +27,15 @@ namespace Eto
 	/// </example>
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<TWidget> : IWidget, IDisposable
+	public abstract class WidgetHandler<TWidget> : Widget.IHandler, IDisposable
 		where TWidget: Widget
 	{
-		Generator generator;
+		const string InstanceEventSuffix = ".Instance";
 
 		/// <summary>
 		/// Gets the widget that this platform handler is attached to
 		/// </summary>
 		public TWidget Widget { get; private set; }
-
-		/// <summary>
-		/// Gets the generator that was used to create this handler
-		/// </summary>
-		public Generator Generator
-		{
-			get { return generator; }
-			set
-			{
-				generator = value;
-				
-				// validate the generator
-				Eto.Generator.Validate(generator);
-			}
-		}
-
-		#region IWidget Members
-
-		/// <summary>
-		/// Called to initialize this widget after it has been constructed
-		/// </summary>
-		/// <remarks>
-		/// Override this to initialize any of the platform objects.  This is called
-		/// in the widget constructor, after all of the widget's constructor code has been called.
-		/// </remarks>
-		protected virtual void Initialize()
-		{
-		}
-
-		protected virtual void PostInitialize()
-		{
-		}
-
-		void IWidget.Initialize()
-		{
-			Initialize();
-			PostInitialize();
-		}
-
-		/// <summary>
-		/// Gets or sets the widget instance
-		/// </summary>
-		Widget IWidget.Widget
-		{
-			get { return Widget; }
-			set { Widget = (TWidget)value; }
-		}
-
-		#endregion
-
-		#region IDisposable Members
-
-		/// <summary>
-		/// Disposes this object
-		/// </summary>
-		/// <remarks>
-		/// To handle disposal logic, use the <see cref="Dispose(bool)"/> method.
-		/// </remarks>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		#endregion
-
-		/// <summary>
-		/// Disposes the object
-		/// </summary>
-		/// <param name="disposing">True when disposed manually, false if disposed via the finalizer</param>
-		protected virtual void Dispose(bool disposing)
-		{
-		}
-	}
-
-	/// <summary>
-	/// Base platform handler for <see cref="InstanceWidget"/> objects
-	/// </summary>
-	/// <remarks>
-	/// This is the base class for platform handlers. 
-	/// It is used to help wire up events and provide base functionality of a widget.
-	/// </remarks>
-	/// <example>
-	/// This example shows how to implement a platform handler for a widget
-	/// <code><![CDATA[
-	/// // override the class and implement widget-specific interface
-	/// public MyWidgetHandler : WidgetHandler<MyPlatformControl, MyWidget>, IMyWidget
-	/// {
-	///		// implement IStaticWidget's properties and methods
-	/// }
-	/// ]]></code>
-	/// </example>
-	/// <seealso cref="WidgetHandler{T,W}"/>
-	/// <typeparam name="T">Type of the platform-specific object</typeparam>
-	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget
-		where TWidget: InstanceWidget
-	{
-		const string InstanceEventSuffix = ".Instance";
-
-				/// <summary>
-		/// Initializes a new instance of the WidgetHandler class
-		/// </summary>
-		protected WidgetHandler()
-		{
-		}
-
-		/// <summary>
-		/// Called to create the platform control for this widget
-		/// </summary>
-		/// <remarks>
-		/// This is used so that it is easy to override the control that is created for a handler.
-		/// If you derive from an existing platform handler to override it's behaviour, you can change
-		/// the class that is created via this method. You will still need that control to be of the same
-		/// type that the original handler has defined, but you will be able to subclass the platform control
-		/// to provide any specific functionality if needed.
-		/// 
-		/// This gets called automatically by <see cref="Initialize"/>, so you should only set properties on your control
-		/// in the handler's overridden initialize method, after the base class' initialize has been called.
-		/// </remarks>
-		/// <returns>A new instance of the platform-specific control this handler encapsulates</returns>
-		public virtual T CreateControl()
-		{
-			return default(T);
-		}
-
-		/// <summary>
-		/// Called to initialize this widget after it has been constructed
-		/// </summary>
-		/// <remarks>
-		/// Override this to initialize any of the platform objects.  This is called
-		/// in the widget constructor, after all of the widget's constructor code has been called.
-		/// </remarks>
-		protected override void Initialize()
-		{
-			if (EqualityComparer<T>.Default.Equals(Control, default(T)))
-				Control = CreateControl();
-
-			base.Initialize();
-		}
-
-		protected override void PostInitialize()
-		{
-			base.PostInitialize();
-			Style.OnStyleWidgetDefaults(this);
-		}
 
 		static readonly object IDKey = new object();
 
@@ -194,21 +49,6 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating that control should automatically be disposed when this widget is disposed
-		/// </summary>
-		protected virtual bool DisposeControl { get { return true; } }
-
-		/// <summary>
-		/// Gets or sets the platform-specific control object
-		/// </summary>
-		public virtual T Control { get; protected set; }
-
-		/// <summary>
-		/// Gets the platform-specific control object
-		/// </summary>
-		object IInstanceWidget.ControlObject { get { return Control; } }
-
-		/// <summary>
 		/// Gets a value indicating that the specified event is handled
 		/// </summary>
 		/// <param name="id">Identifier of the event</param>
@@ -218,6 +58,31 @@ namespace Eto
 			return Widget.Properties.ContainsKey(id) || EventLookup.IsDefault(Widget, id) || Widget.Properties.ContainsKey(id + InstanceEventSuffix);
 		}
 
+		/// <summary>
+		/// Gets the callback object for the control
+		/// </summary>
+		/// <remarks>
+		/// This object is typically a single static instance that is used by the platform handlers to call private or protected
+		/// methods on the widget, such as protected event methods e.g. protected virtual void OnClick(EventArgs e)
+		/// </remarks>
+		/// <value>The callback.</value>
+		protected object Callback { get { return ((ICallbackSource)Widget).Callback; } }
+
+		/// <summary>
+		/// Called to handle a specific event
+		/// </summary>
+		/// <remarks>
+		/// Most events are late bound by this method. Instead of wiring all events, this
+		/// will be called with an event string that is defined by the control.
+		/// 
+		/// This is called automatically when attaching to events, but must be called manually
+		/// when users of the control only override the event's On... method.
+		/// 
+		/// Override the <see cref="AttachEvent"/> to attach your events
+		/// </remarks>
+		/// <seealso cref="AttachEvent"/>
+		/// <param name="id">ID of the event to handle</param>
+		/// <param name="defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
 		public void HandleEvent(string id, bool defaultEvent = false)
 		{
 			if (defaultEvent)
@@ -246,11 +111,113 @@ namespace Eto
 		/// <param name="id">Identifier of the event</param>
 		public virtual void AttachEvent(string id)
 		{
-			// only use for desktop until mobile controls are working
-			#if DESKTOP
-			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
+			#if DEBUG
+			// only throw for platforms that should be fully implemented, and only in debug
+			if (Widget.Platform.IsGtk || Widget.Platform.IsMac || Widget.Platform.IsWinForms || Widget.Platform.IsWpf)
+	
+				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
 			#endif
 		}
+
+		/// <summary>
+		/// Called to initialize this widget after it has been constructed
+		/// </summary>
+		/// <remarks>
+		/// Override this to initialize any of the platform objects.  This is called
+		/// in the widget constructor, after all of the widget's constructor code has been called.
+		/// </remarks>
+		protected virtual void Initialize()
+		{
+			Style.OnStyleWidgetDefaults(this);
+		}
+
+		void Widget.IHandler.Initialize()
+		{
+			Initialize();
+		}
+
+		/// <summary>
+		/// Gets or sets the widget instance
+		/// </summary>
+		Widget Widget.IHandler.Widget
+		{
+			get { return Widget; }
+			set
+			{
+				Widget = (TWidget)value;
+			}
+		}
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Disposes this object
+		/// </summary>
+		/// <remarks>
+		/// To handle disposal logic, use the <see cref="Dispose(bool)"/> method.
+		/// </remarks>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Disposes the object
+		/// </summary>
+		/// <param name="disposing">True when disposed manually, false if disposed via the finalizer</param>
+		protected virtual void Dispose(bool disposing)
+		{
+		}
+	}
+
+	/// <summary>
+	/// Base platform handler for <see cref="Widget"/> objects that have a backing platform object
+	/// </summary>
+	/// <remarks>
+	/// This is the base class for platform handlers. 
+	/// It is used to help wire up events and provide base functionality of a widget.
+	/// </remarks>
+	/// <example>
+	/// This example shows how to implement a platform handler for a widget
+	/// <code><![CDATA[
+	/// // override the class and implement widget-specific interface
+	/// public MyWidgetHandler : WidgetHandler<MyPlatformControl, MyWidget>, IMyWidget
+	/// {
+	///		// implement IStaticWidget's properties and methods
+	/// }
+	/// ]]></code>
+	/// </example>
+	/// <seealso cref="WidgetHandler{T,W}"/>
+	/// <typeparam name="TControl">Type of the platform-specific object</typeparam>
+	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
+	public abstract class WidgetHandler<TControl, TWidget> : WidgetHandler<TWidget>, IControlObjectSource
+		where TWidget: Widget
+	{
+		/// <summary>
+		/// Initializes a new instance of the WidgetHandler class
+		/// </summary>
+		protected WidgetHandler()
+		{
+		}
+
+		/// <summary>
+		/// Gets a value indicating that control should automatically be disposed when this widget is disposed
+		/// </summary>
+		protected virtual bool DisposeControl { get { return true; } }
+
+		/// <summary>
+		/// Gets or sets the platform-specific control object
+		/// </summary>
+		public TControl Control { get; protected set; }
+
+		/// <summary>
+		/// Gets the platform-specific control object
+		/// </summary>
+		object IControlObjectSource.ControlObject { get { return Control; } }
+
 
 		/// <summary>
 		/// Disposes this widget and the associated control if <see cref="DisposeControl"/> is <c>true</c>
@@ -266,7 +233,7 @@ namespace Eto
 					control.Dispose();
 			}
 			//Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
-			Control = default(T);
+			Control = default(TControl);
 			base.Dispose(disposing);
 		}
 
@@ -287,9 +254,9 @@ namespace Eto
 		/// </remarks>
 		/// <param name="widget">The widget to get the platform-specific control from</param>
 		/// <returns>The platform-specific control used for the specified widget</returns>
-		public static T GetControl(TWidget widget)
+		public static TControl GetControl(TWidget widget)
 		{
-			var handler = (WidgetHandler<T, TWidget>)widget.Handler;
+			var handler = (WidgetHandler<TControl, TWidget>)widget.Handler;
 			return handler.Control;
 		}
 
@@ -334,15 +301,130 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Connector for events to keep a weak reference to allow gtk controls to be garbage collected when no longer referenced
+		/// Connector for events to keep a weak reference to allow controls to be garbage collected when no longer referenced
 		/// </summary>
 		/// <seealso cref="Connector"/>
 		protected class WeakConnector
 		{
 			WeakReference handler;
 
-			public WidgetHandler<T, TWidget> Handler { get { return (WidgetHandler<T, TWidget>)handler.Target; } internal set { handler = new WeakReference(value); } }
+			/// <summary>
+			/// Gets the handler that the connector is associated with
+			/// </summary>
+			/// <remarks>
+			/// This property is used to access the handler instance to trigger events.
+			/// </remarks>
+			/// <value>The handler.</value>
+			public WidgetHandler<TControl, TWidget> Handler { get { return (WidgetHandler<TControl, TWidget>)handler.Target; } internal set { handler = new WeakReference(value); } }
 		}
 
 	}
+
+	/// <summary>
+	/// Widget handler with type-specific callback
+	/// </summary>
+	/// <remarks>
+	/// This can be used by controls that have events to trigger using a callback class.
+	/// </remarks>
+	/// <example>
+	/// This is a full example showing a new control with a handler-triggered event and a property.
+	/// <code>
+	/// 	// in your eto-only dll:
+	/// 	public class MyEtoControl : Eto.Forms.Control
+	/// 	{
+	/// 
+	/// 		// define an event that is triggered by the handler
+	/// 		public const string MySomethingEvent = "MyEtoControl.MySomething";
+	/// 		
+	/// 		public event EventHandler&lt;EventArgs&gt; MySomething
+	/// 		{
+	/// 			add { Properties.AddHandlerEvent(MySomethingEvent, value); }
+	/// 			remove { Properties.RemoveEvent(MySomethingEvent, value); }
+	/// 		}
+	/// 		
+	/// 		// allow subclasses to override the event
+	/// 		protected virtual void OnMySomething(EventArgs e)
+	/// 		{
+	/// 			Properties.TriggerEvent(MySomethingEvent, this, e);
+	/// 		}
+	/// 
+	/// 		static MyEtoControl()
+	/// 		{
+	/// 			RegisterEvent&lt;MyEtoControl&gt;(c => c.OnMySomething(null), MySomethingEvent);
+	/// 		}
+	/// 
+	/// 		// defines the callback interface to trigger the event from handlers
+	/// 		public interface ICallback : Eto.Control.ICallback
+	/// 		{
+	/// 			void OnMySomething(MyEtoControl widget, EventArgs e);
+	/// 		}
+	/// 
+	/// 		// defines the callback implementation
+	/// 		protected class Callback : Eto.Control.Callback, ICallback
+	/// 		{
+	/// 			public void OnMySomething(MyEtoControl widget, EventArgs e)
+	/// 			{
+	/// 				widget.Platform.Invoke(() => widget.OnMySomething(e));
+	/// 			}
+	/// 		}
+	/// 
+	/// 		// create single instance of the callback, and tell Eto we want to use it
+	/// 		static readonly object callback = new Callback();
+	/// 		protected override object GetCallback() { return callback; }
+	/// 
+	/// 		// handler interface for other methods/properties
+	/// 		public interface IHandler : Eto.Control.IHandler
+	/// 		{
+	/// 			string MyProperty { get; set; }
+	/// 		}
+	/// 
+	/// 		new IHandler Handler { get { (IHandler)base.Handler; } }
+	/// 
+	/// 		public string MyProperty { get { return Handler.MyProperty; } set { Handler.MyProperty = value; } }
+	/// 	}
+	/// 
+	/// 
+	/// 	// in each platform-specific dll:
+	/// 	public class MyHandler : WidgetHandler&lt;PlatformSpecificControl, MyEtoControl, MyEtoControl.ICallback&gt; : MyEtoControl.IHandler
+	/// 	{
+	/// 		public MyHandler()
+	/// 		{
+	/// 			Control = new PlatformSpecificControl();
+	/// 		}
+	/// 
+	/// 		public string MyProperty { get; set; }
+	/// 
+	/// 		public override void AttachEvent(string id)
+	/// 		{
+	/// 			switch (id)
+	/// 			{
+	/// 				case MyEtoControl.MySomethingEvent:
+	/// 					Control.SomeEvent += (sender, e) => Callback.OnMySomething(EventArgs.Empty);
+	/// 					break;
+	/// 
+	/// 				default:
+	/// 					base.AttachEvent(id);
+	/// 					break;
+	/// 			}
+	/// 		}
+	/// 	}
+	/// </code>
+	/// </example>
+	/// <typeparam name="TControl">Type of the platform-specific object</typeparam>
+	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
+	/// <typeparam name="TCallback">Type of the callback</typeparam>
+	public abstract class WidgetHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget>
+		where TWidget: Widget
+	{
+		/// <summary>
+		/// Gets the callback object for the control
+		/// </summary>
+		/// <remarks>
+		/// This object is typically a single static instance that is used by the platform handlers to call private or protected
+		/// methods on the widget, such as protected event methods e.g. protected virtual void OnClick(EventArgs e)
+		/// </remarks>
+		/// <value>The callback.</value>
+		public new TCallback Callback { get { return (TCallback)base.Callback; } }
+	}
+
 }

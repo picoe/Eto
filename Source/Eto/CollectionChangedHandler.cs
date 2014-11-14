@@ -26,53 +26,57 @@ namespace Eto
 		/// <summary>
 		/// Gets the collection that this handler is observing
 		/// </summary>
-		public TCollection Collection { get; private set; }
-		
+		public TCollection Collection { get; protected set; }
+
 		/// <summary>
 		/// Called when the object has been registered (attached) to a collection
 		/// </summary>
-		protected virtual void OnRegisterCollection (EventArgs e)
+		protected virtual void OnRegisterCollection(EventArgs e)
 		{
 		}
 
 		/// <summary>
 		/// Called when the object has unregistered the collection
 		/// </summary>
-		protected virtual void OnUnregisterCollection (EventArgs e)
+		protected virtual void OnUnregisterCollection(EventArgs e)
 		{
-			RemoveAllItems ();
+			RemoveAllItems();
 		}
-		
+
 		/// <summary>
 		/// Registers a specific collection to observe
 		/// </summary>
 		/// <param name="collection">collection to observe</param>
 		/// <returns>true if the collection was registered, false otherwise</returns>
-		public bool Register (TCollection collection)
+		public virtual bool Register(TCollection collection)
 		{
+			if (Collection != null)
+				Unregister();
 			Collection = collection;
 			
 			var notify = Collection as INotifyCollectionChanged;
-			if (notify != null) {
+			if (notify != null)
+			{
 				notify.CollectionChanged += CollectionChanged;
 			}
-			OnRegisterCollection (EventArgs.Empty);
+			OnRegisterCollection(EventArgs.Empty);
 			return notify != null;
 		}
-		
+
 		/// <summary>
 		/// Unregisters the current registered collection
 		/// </summary>
-		public void Unregister ()
+		public virtual void Unregister()
 		{
 			if (Collection == null)
 				return;
 			
 			var notify = Collection as INotifyCollectionChanged;
-			if (notify != null) {
+			if (notify != null)
+			{
 				notify.CollectionChanged -= CollectionChanged;
 			}
-			OnUnregisterCollection (EventArgs.Empty);
+			OnUnregisterCollection(EventArgs.Empty);
 			
 			Collection = null;
 		}
@@ -82,47 +86,76 @@ namespace Eto
 		/// </summary>
 		/// <param name="item">Item to find the index of</param>
 		/// <returns>Index of the item if contained in the collection, otherwise -1</returns>
-		public virtual int IndexOf (TItem item)
+		public virtual int IndexOf(TItem item)
 		{
-			var list = Collection as IList;
+			var list = Collection as IList<TItem>;
 			if (list != null)
 				return list.IndexOf(item);
 			return InternalIndexOf(item);
 		}
-		
+
+		/// <summary>
+		/// Gets the element at the specified index of the current registered collection.
+		/// </summary>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
+		public virtual TItem ElementAt(int index)
+		{
+			var list = Collection as IList<TItem>;
+			if (list != null)
+				return list[index];
+			return InternalElementAt(index);
+		}
+
+		/// <summary>
+		/// Gets the count of the items in the current registered collection.
+		/// </summary>
+		/// <value>The count of items.</value>
+		public abstract int Count { get; }
+
 		/// <summary>
 		/// Gets the index of the item from the collection
 		/// </summary>
 		/// <remarks>
-		/// Implementors should implement this to get the index of the item
+		/// Derived classes should implement this to get the index of the item.
 		/// </remarks>
 		/// <param name="item">Item to find the index</param>
 		/// <returns>index of the item in the collection, or -1 if the item is not found</returns>
-		protected abstract int InternalIndexOf (TItem item);
-		
+		protected abstract int InternalIndexOf(TItem item);
+
+		/// <summary>
+		/// Gets the element at the specified index.
+		/// </summary>
+		/// <remarks>
+		/// Derived classes should implement this to get the item at the specified index.
+		/// </remarks>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
+		protected abstract TItem InternalElementAt(int index);
+
 		/// <summary>
 		/// Adds the item to the end of the collection
 		/// </summary>
 		/// <param name="item">Item to add to the collection</param>
-		public abstract void AddItem (TItem item);
-			
+		public abstract void AddItem(TItem item);
+
 		/// <summary>
 		/// Inserts an item at the specified index in the collection
 		/// </summary>
 		/// <param name="index">Index to insert the item to</param>
 		/// <param name="item">Item to insert</param>
-		public abstract void InsertItem (int index, TItem item);
-			
+		public abstract void InsertItem(int index, TItem item);
+
 		/// <summary>
 		/// Removes the item at the specified index
 		/// </summary>
 		/// <param name="index">Index of the item to remove</param>
-		public abstract void RemoveItem (int index);
+		public abstract void RemoveItem(int index);
 
 		/// <summary>
 		/// Removes all items from the collection
 		/// </summary>
-		public abstract void RemoveAllItems ();
+		public abstract void RemoveAllItems();
 
 		/// <summary>
 		/// Removes the specified item
@@ -132,11 +165,11 @@ namespace Eto
 		/// Implementors should override this method if there is a faster mechanism to do so.
 		/// </remarks>
 		/// <param name="item">Item to remove from the collection</param>
-		public virtual void RemoveItem (TItem item)
+		public virtual void RemoveItem(TItem item)
 		{
-			var index = IndexOf (item);
+			var index = IndexOf(item);
 			if (index >= 0)
-				RemoveItem (index);
+				RemoveItem(index);
 		}
 
 		/// <summary>
@@ -150,12 +183,12 @@ namespace Eto
 		/// should be overridden so the UI is updated after all items have been added.
 		/// </remarks>
 		/// <param name="items">Enumeration of items to add to the end of the collection</param>
-		public virtual void AddRange (IEnumerable<TItem> items)
+		public virtual void AddRange(IEnumerable<TItem> items)
 		{
 			foreach (var item in items)
-				AddItem (item);
+				AddItem(item);
 		}
-		
+
 		/// <summary>
 		/// Inserts multiple items to the specified index in the collection
 		/// </summary>
@@ -168,10 +201,10 @@ namespace Eto
 		/// </remarks>
 		/// <param name="index">Index to start adding the items</param>
 		/// <param name="items">Enumeration of items to add</param>
-		public virtual void InsertRange (int index, IEnumerable<TItem> items)
+		public virtual void InsertRange(int index, IEnumerable<TItem> items)
 		{
 			foreach (var item in items)
-				InsertItem (index++, item);
+				InsertItem(index++, item);
 		}
 
 		/// <summary>
@@ -186,10 +219,10 @@ namespace Eto
 		/// </remarks>
 		/// <param name="index">Index to start removing the items from</param>
 		/// <param name="count">Number of items to remove</param>
-		public virtual void RemoveRange (int index, int count)
+		public virtual void RemoveRange(int index, int count)
 		{
 			for (int i = 0; i < count; i++)
-				RemoveItem (index);
+				RemoveItem(index);
 		}
 
 		/// <summary>
@@ -203,52 +236,70 @@ namespace Eto
 		/// should be overridden so the UI is updated after all items have been removed.
 		/// </remarks>
 		/// <param name="items">List of items to remove</param>
-		public virtual void RemoveRange (IEnumerable<TItem> items)
+		public virtual void RemoveRange(IEnumerable<TItem> items)
 		{
-			foreach (var item in items) 
-				RemoveItem (item);
+			foreach (var item in items)
+				RemoveItem(item);
 		}
 
-		void CollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			switch (e.Action) {
-			case NotifyCollectionChangedAction.Add:
-				if (e.NewStartingIndex != -1) 
-					InsertRange (e.NewStartingIndex, e.NewItems.Cast<TItem> ());
-				else
-					AddRange (e.NewItems.Cast<TItem> ());
-				break;
-			case NotifyCollectionChangedAction.Move:
-				RemoveRange (e.OldItems.Cast<TItem> ());
-				InsertRange (e.NewStartingIndex, e.NewItems.Cast<TItem> ());
-				break;
-			case NotifyCollectionChangedAction.Remove:
-				if (e.OldStartingIndex != -1)
-					RemoveRange (e.OldStartingIndex, e.OldItems.Count);
-				else
-					RemoveRange (e.OldItems.Cast<TItem> ());
-				break;
-			case NotifyCollectionChangedAction.Replace:
-				if (e.OldStartingIndex != -1) {
-					RemoveRange (e.OldStartingIndex, e.OldItems.Count);
-					InsertRange (e.OldStartingIndex, e.NewItems.Cast<TItem> ());
-				} else {
-					for (int i = 0; i < e.OldItems.Count; i++) {
-						var index = IndexOf ((TItem)e.OldItems [i]);
-						RemoveItem (index);
-						InsertItem (index, (TItem)e.NewItems [i]);
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					if (e.NewStartingIndex != -1)
+					{
+						if (e.NewItems.Count == 1)
+							InsertItem(e.NewStartingIndex, (TItem)e.NewItems[0]);
+						else
+							InsertRange(e.NewStartingIndex, e.NewItems.Cast<TItem>());
 					}
-				}
-				break;
-			case NotifyCollectionChangedAction.Reset:
-				RemoveAllItems ();
-				break;
+					else
+						AddRange(e.NewItems.Cast<TItem>());
+					break;
+				case NotifyCollectionChangedAction.Move:
+					if (e.OldStartingIndex != -1)
+						RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+					else
+						RemoveRange(e.OldItems.Cast<TItem>());
+					InsertRange(e.NewStartingIndex, e.NewItems.Cast<TItem>());
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					if (e.OldStartingIndex != -1)
+					{
+						if (e.OldItems.Count == 1)
+							RemoveItem(e.OldStartingIndex);
+						else
+							RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+					}
+					else
+						RemoveRange(e.OldItems.Cast<TItem>());
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					if (e.OldStartingIndex != -1)
+					{
+						RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+						InsertRange(e.OldStartingIndex, e.NewItems.Cast<TItem>());
+					}
+					else
+					{
+						for (int i = 0; i < e.OldItems.Count; i++)
+						{
+							var index = IndexOf((TItem)e.OldItems[i]);
+							RemoveItem(index);
+							InsertItem(index, (TItem)e.NewItems[i]);
+						}
+					}
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					RemoveAllItems();
+					break;
 			}
 		}
 	}
 
 	/// <summary>
-	/// Class to help implement change handling on an <see cref="IEnumerable"/>
+	/// Helper class to handle collection change events of an <see cref="IEnumerable"/>
 	/// </summary>
 	/// <remarks>
 	/// This is used for the platform handler of controls that use collections.
@@ -260,10 +311,28 @@ namespace Eto
 	/// otherwise you must register a new collection each time.
 	/// </remarks>
 	/// <typeparam name="TItem">Type of each item in the enumerable</typeparam>
-	/// <typeparam name="TCollection">Type of collection</typeparam>
-	public abstract class EnumerableChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>
-		where TCollection: class, IEnumerable
+	public abstract class EnumerableChangedHandler<TItem> : EnumerableChangedHandler<TItem, IEnumerable<TItem>>
 	{
+	}
+
+	/// <summary>
+	/// Helper class to handle collection change events of an <see cref="IEnumerable"/>
+	/// </summary>
+	/// <remarks>
+	/// This is used for the platform handler of controls that use collections.
+	/// This class helps detect changes to a collection so that the appropriate action
+	/// can be taken to update the UI with the changes.
+	/// 
+	/// Use this class as a base when you only have an <see cref="IEnumerable"/>.  If the object
+	/// also implements <see cref="INotifyCollectionChanged"/> it will get changed events
+	/// otherwise you must register a new collection each time.
+	/// </remarks>
+	/// <typeparam name="TItem">Type of each item in the enumerable</typeparam>
+	/// <typeparam name="TCollection">Type of the collection to handle the change events for</typeparam>
+	public abstract class EnumerableChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>
+		where TCollection: class, IEnumerable<TItem>
+	{
+
 		/// <summary>
 		/// Implements the mechanism for finding the index of an item (the slow way)
 		/// </summary>
@@ -273,27 +342,63 @@ namespace Eto
 		/// </remarks>
 		/// <param name="item">Item to find in the collection</param>
 		/// <returns>Index of the item, or -1 if not found</returns>
-		protected override int InternalIndexOf (TItem item)
+		protected override int InternalIndexOf(TItem item)
 		{
-			int index = 0;
-			foreach (var child in Collection) {
-				if (object.ReferenceEquals (item, child)) 
-					return index;
-				index++;
-			}
-			return -1;
+			return Collection.IndexOf(item);
 		}
-		
+
+		/// <summary>
+		/// Gets the count of the items in the current registered collection.
+		/// </summary>
+		/// <value>The count of items.</value>
+		public override int Count
+		{
+			get
+			{
+				// mono doesn't test for ICollection, causing performance issues
+				var coll = Collection as ICollection;
+				if (coll != null)
+					return coll.Count;
+				return Collection != null ? Collection.Count() : 0;
+			}
+		}
+
+		/// <summary>
+		/// Gets the element at the specified index.
+		/// </summary>
+		/// <remarks>Derived classes should implement this to get the item at the specified index.</remarks>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
+		protected override TItem InternalElementAt(int index)
+		{
+			var list = Collection as IList<TItem>;
+			if (list != null)
+				return (TItem)list[index];
+			var list2 = Collection as IList;
+			if (list2 != null)
+				return (TItem)list2[index];
+			return Collection.ElementAt(index);
+		}
+
 		/// <summary>
 		/// Called when the collection is registered
 		/// </summary>
-		protected override void OnRegisterCollection (EventArgs e)
+		protected override void OnRegisterCollection(EventArgs e)
 		{
-			base.OnRegisterCollection (e);
-			AddRange (Collection.Cast<TItem>());
+			base.OnRegisterCollection(e);
+			InitializeCollection();
+		}
+
+		/// <summary>
+		/// Initializes the collection, usually by adding the collection to the underlying handler.
+		/// </summary>
+		protected virtual void InitializeCollection()
+		{
+			if (Collection != null)
+				AddRange(Collection);
 		}
 	}
-	
+
 	/// <summary>
 	/// Class to help implement change handling for a <see cref="IDataStore{T}"/>
 	/// </summary>
@@ -311,23 +416,27 @@ namespace Eto
 	public abstract class DataStoreChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>, IEnumerable<TItem>
 		where TCollection: class, IDataStore<TItem>
 	{
-		public IEnumerator<TItem> GetEnumerator ()
+		/// <summary>
+		/// Gets the enumerator.
+		/// </summary>
+		/// <returns>The enumerator.</returns>
+		public IEnumerator<TItem> GetEnumerator()
 		{
-			return new DataStoreVirtualCollection<TItem>(Collection).GetEnumerator ();
+			return new DataStoreVirtualCollection<TItem>(Collection).GetEnumerator();
 		}
 
-		IEnumerator IEnumerable.GetEnumerator ()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator ();
+			return GetEnumerator();
 		}
 
 		/// <summary>
 		/// Called when the collection is registered
 		/// </summary>
-		protected override void OnRegisterCollection (EventArgs e)
+		protected override void OnRegisterCollection(EventArgs e)
 		{
-			base.OnRegisterCollection (e);
-			AddRange (Collection.AsEnumerable ());
+			base.OnRegisterCollection(e);
+			AddRange(this);
 		}
 
 		/// <summary>
@@ -339,13 +448,34 @@ namespace Eto
 		/// </remarks>
 		/// <param name="item">Item to find in the collection</param>
 		/// <returns>Index of the item, or -1 if not found</returns>
-		protected override int InternalIndexOf (TItem item)
+		protected override int InternalIndexOf(TItem item)
 		{
-			for (int i = 0; i < Collection.Count; i++) {
-				if (object.ReferenceEquals (item, Collection [i])) 
+			for (int i = 0; i < Collection.Count; i++)
+			{
+				if (object.ReferenceEquals(item, Collection[i]))
 					return i;
 			}
 			return -1;
+		}
+
+		/// <summary>
+		/// Gets the count of the items in the current registered collection.
+		/// </summary>
+		/// <value>The count of items.</value>
+		public override int Count
+		{
+			get { return Collection.Count; }
+		}
+
+		/// <summary>
+		/// Gets the element at the specified index.
+		/// </summary>
+		/// <remarks>Derived classes should implement this to get the item at the specified index.</remarks>
+		/// <returns>The item at the specified index.</returns>
+		/// <param name="index">Index of the item to get.</param>
+		protected override TItem InternalElementAt(int index)
+		{
+			return Collection[index];
 		}
 	}
 }

@@ -5,7 +5,9 @@ namespace Eto
 	/// <summary>
 	/// Collection of bindings
 	/// </summary>
-	public class BindingCollection : Collection<Binding>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class BindingCollection : Collection<IBinding>
 	{
 		/// <summary>
 		/// Unbinds all bindings in the collection

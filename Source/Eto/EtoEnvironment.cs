@@ -15,7 +15,7 @@ namespace Eto
 		/// This will return a different folder, depending on the platform:
 		///   OS X:    ~/Library/Application Settings/[Name Of Application]
 		///   Windows: [User's Home]/AppSettings
-		///   Linux:   
+		///   Linux:   ~/.config
 		/// </remarks>
 		ApplicationSettings,
 
@@ -33,20 +33,7 @@ namespace Eto
 		/// </summary>
 		Documents
 	}
-	
-	/// <summary>
-	/// Handler interface for the <see cref="EtoEnvironment"/> class
-	/// </summary>
-	public interface IEtoEnvironment : IWidget
-	{
-		/// <summary>
-		/// Gets the folder path for the specified special folder
-		/// </summary>
-		/// <param name="folder">Special folder to retrieve the path for</param>
-		/// <returns>Path of the specified folder</returns>
-		string GetFolderPath(EtoSpecialFolder folder);
-	}
-	
+
 	/// <summary>
 	/// Environment methods
 	/// </summary>
@@ -57,11 +44,12 @@ namespace Eto
 		/// <summary>
 		/// Gets the platform information for the currently running operating system
 		/// </summary>
-		public static OperatingSystemPlatform Platform {
+		public static OperatingSystemPlatform Platform
+		{
 			get
 			{
 				if (platform == null)
-					platform = new OperatingSystemPlatform ();
+					platform = new OperatingSystemPlatform();
 				return platform;
 			}
 		}
@@ -70,24 +58,57 @@ namespace Eto
 		/// Gets the folder path for the specified special folder
 		/// </summary>
 		/// <param name="folder">Special folder to retrieve the path for</param>
-		/// <param name="generator">Generator to get the folder path with</param>
 		/// <returns>Path of the specified folder</returns>
-		public static string GetFolderPath (EtoSpecialFolder folder, Generator generator = null)
+		public static string GetFolderPath(EtoSpecialFolder folder)
 		{
-			var handler = generator.CreateShared<IEtoEnvironment> ();
-			return handler.GetFolderPath (folder);
+			var handler = Eto.Platform.Instance.CreateShared<IHandler>();
+			return handler.GetFolderPath(folder);
 		}
+
+		/// <summary>
+		/// Gets a value indicating the runtime is a 64 bit process.
+		/// </summary>
+		/// <value><c>true</c> if running under 64 bit; otherwise, <c>false</c>.</value>
+		public static bool Is64BitProcess
+		{
+			get
+			{
+				#if PCL
+				return IntPtr.Size == 8; // test based on size of IntPtr, which is 4 bytes in 32 bit, 8 in 64 bit.
+				#else
+				return Environment.Is64BitProcess;
+				#endif
+			}
+		}
+
+		#pragma warning disable 612,618
 
 		/// <summary>
 		/// Gets the folder path for the specified special folder
 		/// </summary>
-		/// <param name="g">Generator to use</param>
 		/// <param name="folder">Special folder to retrieve the path for</param>
+		/// <param name="generator">Generator to get the folder path with</param>
 		/// <returns>Path of the specified folder</returns>
-		[Obsolete("Use GetFolderPath(EtoSpecialFolder, Generator) instead")]
-		public static string GetFolderPath (Generator g, EtoSpecialFolder folder)
+		[Obsolete("Use variation without generator instead")]
+		public static string GetFolderPath(EtoSpecialFolder folder, Generator generator)
 		{
-			return GetFolderPath (folder, g);
+			var handler = generator.CreateShared<IHandler>();
+			return handler.GetFolderPath(folder);
+		}
+
+		#pragma warning restore 612,618
+
+		/// <summary>
+		/// Handler interface for the <see cref="EtoEnvironment"/> class
+		/// </summary>
+		public interface IHandler
+		{
+			/// <summary>
+			/// Gets the folder path for the specified special folder
+			/// </summary>
+			/// <param name="folder">Special folder to retrieve the path for</param>
+			/// <returns>Path of the specified folder</returns>
+			string GetFolderPath(EtoSpecialFolder folder);
 		}
 	}
 }

@@ -26,7 +26,7 @@ namespace Eto.Test.Android
 		
 		public static void UpdateIdValues()
 		{
-			global::Eto.Platform.Android.Resource.String.library_name = global::Eto.Test.Android.Resource.String.library_name;
+			global::Eto.Android.Resource.String.library_name = global::Eto.Test.Android.Resource.String.library_name;
 		}
 		
 		public partial class Attribute

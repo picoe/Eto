@@ -2,20 +2,21 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
 {
+	[Section("Behaviors", "Key Events")]
 	public class KeyEventsSection : AllControlsBase
 	{
 		CheckBox handleEvents;
 		CheckBox showParentEvents;
 		CheckBox showWindowEvents;
 
-		public override void OnLoad(System.EventArgs e)
+		protected override void OnLoad(System.EventArgs e)
 		{
 			base.OnLoad(e);
 			LogEvents(this);
 			LogEvents(ParentWindow);
 		}
 
-		public override void OnUnLoad(System.EventArgs e)
+		protected override void OnUnLoad(System.EventArgs e)
 		{
 			base.OnUnLoad(e);
 			ParentWindow.KeyDown -= control_KeyDown;
@@ -62,7 +63,7 @@ namespace Eto.Test.Sections.Behaviors
 			return showWindowEvents = new CheckBox { Text = "Show window events" };
 		}
 
-		protected override Control GenerateOptions()
+		protected override Control CreateOptions()
 		{
 			var layout = new DynamicLayout();
 

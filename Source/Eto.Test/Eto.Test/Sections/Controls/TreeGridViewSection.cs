@@ -5,12 +5,13 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(TreeGridView))]
 	public class TreeGridViewSection : Scrollable
 	{
 		int expanded;
 		CheckBox allowCollapsing;
 		CheckBox allowExpanding;
-		static Image Image = TestIcons.TestIcon();
+		static Image Image = TestIcons.TestIcon;
 
 		public TreeGridViewSection()
 		{
@@ -94,21 +95,22 @@ namespace Eto.Test.Sections.Controls
 
 			control.Columns.Add(new GridColumn { DataCell = new ImageTextCell(0, 1), HeaderText = "Image and Text", AutoSize = true, Resizable = true, Editable = true });
 			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(2), HeaderText = "Text", AutoSize = true, Width = 150, Resizable = true, Editable = true });
-		
-#if DESKTOP
-			var menu = new ContextMenu();
-			var item = new ButtonMenuItem{ Text = "Click Me!" };
-			item.Click += delegate
+
+			if (Platform.Supports<ContextMenu>())
 			{
-				if (control.SelectedItem != null)
-					Log.Write(item, "Click, Rows: {0}", control.SelectedItem);
-				else
-					Log.Write(item, "Click, no item selected");
-			};
-			menu.Items.Add(item);
+				var menu = new ContextMenu();
+				var item = new ButtonMenuItem{ Text = "Click Me!" };
+				item.Click += delegate
+				{
+					if (control.SelectedItem != null)
+						Log.Write(item, "Click, Rows: {0}", control.SelectedItem);
+					else
+						Log.Write(item, "Click, no item selected");
+				};
+				menu.Items.Add(item);
 			
-			control.ContextMenu = menu;
-#endif
+				control.ContextMenu = menu;
+			}
 
 			control.DataStore = CreateComplexTreeItem(0, "", Image);
 			LogEvents(control);

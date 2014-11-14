@@ -4,150 +4,82 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace System
+namespace Eto
 {
 	/// <summary>
-	/// Extension methods to replace methods missing in WinRT.
+	/// Extension methods to provide a consistent .
 	/// 
 	/// Some of these are from https://gist.github.com/jeffwilcox/2432351 (no attribution requested.)
 	/// </summary>
-	internal static class TypeHelper // internal so that unrelated assemblies can link to the same source file without errors
+	static class TypeHelper
 	{
-		#region GetBaseType
+		#if PCL
+		static MethodInfo getCallingAssembly = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
+
+		public static MethodInfo GetCallingAssembly { get { return getCallingAssembly; } }
+		#endif
+
+		public static Assembly GetAssembly(this Type type)
+		{
+#if PCL
+			return type.GetTypeInfo().Assembly;
+#else
+			return type.Assembly;
+#endif
+		}
 
 		public static Type GetBaseType(this Type type)
 		{
-#if WINRT
+#if PCL
 			return type.GetTypeInfo().BaseType;
 #else
 			return type.BaseType;
 #endif
 		}
 
-		#endregion
-
-		#region IsEnum
 		public static bool IsEnum(this Type type)
 		{
-#if WINRT
+#if PCL
 			return type.GetTypeInfo().IsEnum;
 #else
 			return type.IsEnum;
 #endif
 		}
-		#endregion
 
-		#region GetGetMethodInfo(PropertyInfo propertyInfo)
-
-		public static MethodInfo GetGetMethodInfo(this PropertyInfo propertyInfo)
+		public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
 		{
-#if WINRT
+#if PCL
 			return propertyInfo.GetMethod;
 #else
 			return propertyInfo.GetGetMethod(true);
 #endif
 		}
-		#endregion
 
-		#region GetSetMethodInfo(PropertyInfo propertyInfo)
-
-		public static MethodInfo GetSetMethodInfo(this PropertyInfo propertyInfo)
+		public static MethodInfo GetSetMethod(this PropertyInfo propertyInfo)
 		{
-#if WINRT
+#if PCL
 			return propertyInfo.SetMethod;
 #else
 			return propertyInfo.GetSetMethod(true);
 #endif
 		}
-		#endregion
 
-		#region InvokeOnInstance
-		public static object InvokeOnInstance(this MethodInfo method, object instance, object[] parameters = null)
+#if PCL
+		public static T GetCustomAttribute<T>(this Type type, bool inherit)
+			where T: Attribute
 		{
-#if WINRT
-			return method.Invoke(instance, parameters);
-#else
-			return method.Invoke(instance, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
-				null, parameters, null);
-#endif
+			return type.GetTypeInfo().GetCustomAttribute<T>(inherit);
 		}
 
-		#endregion
-
-		#region GetAllProperties
-#if WINRT
-		public static List<PropertyInfo> GetAllProperties(this Type type)
+		public static MethodInfo GetAddMethod(this EventInfo eventInfo)
 		{
-			var result = new List<PropertyInfo>();
-			type.GetAllProperties(result);
-			return result;
+			return eventInfo.AddMethod;
 		}
 
-		private static void GetAllProperties(this Type type, List<PropertyInfo> result)
+		public static MethodInfo GetRemoveMethod(this EventInfo eventInfo)
 		{
-			var typeInfo = type.GetTypeInfo();
-
-			if (result == null)
-				result = typeInfo.DeclaredProperties.ToList();
-			else
-				result.AddRange(typeInfo.DeclaredProperties);
-
-			if (typeInfo.BaseType != null)
-				typeInfo.BaseType.GetAllProperties(result);
+			return eventInfo.RemoveMethod;
 		}
-#else
-
-#endif
-		#endregion
-
-		#region GetRuntimePropertyInfo
-
-		/// <summary>
-		/// Returns a PropertyInfo for the specified property of the current type.
-		/// The property may be declared on the current type or an ancestor type.
-		/// </summary>
-		/// <returns></returns>
-		public static PropertyInfo GetRuntimePropertyInfo(this Type type, string propertyName)
-		{
-#if WINRT			
-			var typeInfo = type.GetTypeInfo();
-			var result = typeInfo.GetDeclaredProperty(propertyName);
-			if (result == null &&
-			    typeInfo.BaseType != null)
-				result = GetRuntimePropertyInfo(typeInfo.BaseType, propertyName); // recursive
-			return result;
-#else
-			return type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-#endif
-		}
-
-		#endregion
-
-		#region GetRuntimeMethodInfo
-
-		/// <summary>
-		/// Returns a MethodInfo for the specified method of the current type.
-		/// The Method may be declared on the current type or an ancestor type.
-		/// </summary>
-		/// <returns></returns>
-		public static MethodInfo GetRuntimeMethodInfo(this Type type, string MethodName)
-		{
-#if WINRT			
-			var typeInfo = type.GetTypeInfo();
-			var result = typeInfo.GetDeclaredMethod(MethodName);
-			if (result == null &&
-			    typeInfo.BaseType != null)
-				result = GetRuntimeMethodInfo(typeInfo.BaseType, MethodName); // recursive
-			return result;
-#else
-			return type.GetMethod(MethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-#endif
-		}
-
-		#endregion
-
-#if WINRT
-
 		/// <summary>
 		/// Determines whether the specified object is an instance of the current Type.
 		/// </summary>
@@ -160,73 +92,72 @@ namespace System
 		/// ContainsGenericParameters returns true).</returns>
 		public static bool IsInstanceOfType(this Type type, object o)
 		{
-			return o != null && type.IsAssignableFrom(o.GetType());
-		}
-
-		internal static bool ImplementInterface(this Type type, Type ifaceType)
-		{
-			while (type != null)
-			{
-				Type[] interfaces = type.GetTypeInfo().ImplementedInterfaces.ToArray(); //  .GetInterfaces();
-				if (interfaces != null)
-				{
-					for (int i = 0; i < interfaces.Length; i++)
-					{
-						if (interfaces[i] == ifaceType || (interfaces[i] != null && interfaces[i].ImplementInterface(ifaceType)))
-						{
-							return true;
-						}
-					}
-				}
-				type = type.GetTypeInfo().BaseType;
-				// type = type.BaseType;
-			}
-			return false;
+			return o != null && IsAssignableFrom(type, o.GetType());
 		}
 
 		public static bool IsAssignableFrom(this Type type, Type c)
 		{
-			if (c == null)
-			{
-				return false;
-			}
-			if (type == c)
-			{
-				return true;
-			}
-
-			//RuntimeType runtimeType = type.UnderlyingSystemType as RuntimeType;
-			//if (runtimeType != null)
-			//{
-			//    return runtimeType.IsAssignableFrom(c);
-			//}
-
-			//if (c.IsSubclassOf(type))
-			if (c.GetTypeInfo().IsSubclassOf(c))
-			{
-				return true;
-			}
-
-			//if (type.IsInterface)
-			if (type.GetTypeInfo().IsInterface)
-			{
-				return c.ImplementInterface(type);
-			}
-
-			if (type.IsGenericParameter)
-			{
-				Type[] genericParameterConstraints = type.GetTypeInfo().GetGenericParameterConstraints();
-				for (int i = 0; i < genericParameterConstraints.Length; i++)
-				{
-					if (!genericParameterConstraints[i].IsAssignableFrom(c))
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-			return false;
+			return c != null && type.GetTypeInfo().IsAssignableFrom(c.GetTypeInfo());
 		}
+
+#else 
+
+		public static T GetCustomAttribute<T>(this Type type, bool inherit)
+			where T: Attribute
+		{
+			return (T)type.GetCustomAttributes(typeof(T), inherit).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Returns a PropertyInfo for the specified property of the current type.
+		/// The property may be declared on the current type or an ancestor type.
+		/// </summary>
+		/// <returns></returns>
+		public static PropertyInfo GetRuntimeProperty(this Type type, string propertyName)
+		{
+			return type.GetProperty(propertyName);
+		}
+
+		public static FieldInfo GetRuntimeField(this Type type, string fieldName)
+		{
+			return type.GetField(fieldName);
+		}
+
+		public static EventInfo GetRuntimeEvent(this Type type, string eventName)
+		{
+			return type.GetEvent(eventName);
+		}
+
+		public static IEnumerable<EventInfo> GetRuntimeEvents(this Type type)
+		{
+			return type.GetEvents(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+		}
+
+		public static Delegate CreateDelegate(this MethodInfo method, Type objectType, object instance)
+		{
+			return Delegate.CreateDelegate(objectType, instance, method);
+		}
+
+		public static MethodInfo GetRuntimeMethod(this Type type, string methodName, Type[] parameters)
+		{
+			return type.GetMethod(methodName, parameters);
+		}
+
+		public static IEnumerable<MethodInfo> GetRuntimeMethods(this Type type)
+		{
+			return type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+		}
+
+		public static IEnumerable<PropertyInfo> GetRuntimeProperties(this Type type)
+		{
+			return type.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+		}
+
+		public static IEnumerable<FieldInfo> GetRuntimeFields(this Type type)
+		{
+			return type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+		}
+
 #endif
 	}
 }

@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -23,42 +25,17 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
-	/// Handler interface for the <see cref="DateTimePicker"/> control
-	/// </summary>
-	public interface IDateTimePicker : ICommonControl
-	{
-		/// <summary>
-		/// Gets or sets the value of the date/time picker
-		/// </summary>
-		/// <value>The current value.</value>
-		DateTime? Value { get; set; }
-
-		/// <summary>
-		/// Gets or sets the minimum date entered
-		/// </summary>
-		/// <value>The minimum date.</value>
-		DateTime MinDate { get; set; }
-
-		/// <summary>
-		/// Gets or sets the maximum date entered
-		/// </summary>
-		/// <value>The maximum date.</value>
-		DateTime MaxDate { get; set; }
-
-		/// <summary>
-		/// Gets or sets the mode of the date/time picker.
-		/// </summary>
-		/// <value>The picker mode.</value>
-		DateTimePickerMode Mode { get; set; }
-	}
-
-	/// <summary>
 	/// Date/time picker control to enter a date and/or time value
 	/// </summary>
+	[Handler(typeof(DateTimePicker.IHandler))]
 	public class DateTimePicker : CommonControl
 	{
-		new IDateTimePicker Handler { get { return (IDateTimePicker)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// The default mode for all new date/time pickers.
+		/// </summary>
+		[Obsolete("Set the mode of your picker directly or use styles")]
 		public static DateTimePickerMode DefaultMode = DateTimePickerMode.Date;
 
 		/// <summary>
@@ -70,7 +47,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="ValueChanged"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnValueChanged(EventArgs e)
+		protected virtual void OnValueChanged(EventArgs e)
 		{
 			if (ValueChanged != null)
 				ValueChanged(this, e);
@@ -80,7 +57,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
 		/// </summary>
 		public DateTimePicker()
-			: this((Generator)null)
 		{
 		}
 
@@ -88,8 +64,9 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
+		[Obsolete("Use default constructor instead")]
 		public DateTimePicker(Generator generator)
-			: this(generator, typeof(IDateTimePicker))
+			: this(generator, typeof(IHandler))
 		{
 		}
 
@@ -97,8 +74,9 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler interface to create, must implement <see cref="IDateTimePicker"/></param>
+		/// <param name="type">Type of the handler interface to create, must implement <see cref="IHandler"/></param>
 		/// <param name="initialize">If set to <c>true</c>, initialize after created, otherwise the subclass should call Initialize.</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected DateTimePicker(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
@@ -138,11 +116,100 @@ namespace Eto.Forms
 		/// Gets or sets the mode of the date/time picker.
 		/// </summary>
 		/// <value>The picker mode.</value>
+		[DefaultValue(DateTimePickerMode.Date)]
 		public DateTimePickerMode Mode
 		{
 			get { return Handler.Mode; }
 			set { Handler.Mode = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		/// <remarks>
+		/// By default, the text will get a color based on the user's theme. However, this is usually black.
+		/// </remarks>
+		/// <value>The color of the text.</value>
+		public Color TextColor
+		{
+			get { return Handler.TextColor; }
+			set { Handler.TextColor = value; }
+		}
+
+		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
+		protected override object GetCallback() { return callback; }
+
+		/// <summary>
+		/// Callback interface for the <see cref="DateTimePicker"/>.
+		/// </summary>
+		public new interface ICallback : CommonControl.ICallback
+		{
+			/// <summary>
+			/// Raises the value changed event.
+			/// </summary>
+			void OnValueChanged(DateTimePicker widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for handlers of the <see cref="DateTimePicker"/>.
+		/// </summary>
+		protected new class Callback : CommonControl.Callback, ICallback
+		{
+			/// <summary>
+			/// Raises the value changed event.
+			/// </summary>
+			public void OnValueChanged(DateTimePicker widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnValueChanged(e));
+			}
+		}
+
+		#region Handler
+
+		/// <summary>
+		/// Handler interface for the <see cref="DateTimePicker"/> control
+		/// </summary>
+		public new interface IHandler : CommonControl.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the value of the date/time picker
+			/// </summary>
+			/// <value>The current value.</value>
+			DateTime? Value { get; set; }
+
+			/// <summary>
+			/// Gets or sets the minimum date entered
+			/// </summary>
+			/// <value>The minimum date.</value>
+			DateTime MinDate { get; set; }
+
+			/// <summary>
+			/// Gets or sets the maximum date entered
+			/// </summary>
+			/// <value>The maximum date.</value>
+			DateTime MaxDate { get; set; }
+
+			/// <summary>
+			/// Gets or sets the mode of the date/time picker.
+			/// </summary>
+			/// <value>The picker mode.</value>
+			DateTimePickerMode Mode { get; set; }
+
+			/// <summary>
+			/// Gets or sets the color of the text.
+			/// </summary>
+			/// <remarks>
+			/// By default, the text will get a color based on the user's theme. However, this is usually black.
+			/// </remarks>
+			/// <value>The color of the text.</value>
+			Color TextColor { get; set; }
+		}
+
+		#endregion
 	}
 }
 

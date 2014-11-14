@@ -14,9 +14,14 @@ namespace Eto.Drawing
 	/// This class keeps a cache of 32-bit ARGB values for each element in the collection for faster retrieval. These
 	/// values are generated using <see cref="Color.ToArgb"/>.
 	/// </remarks>
-	public class Palette : ObservableCollection<Color>, ICloneable
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class Palette : ObservableCollection<Color>
+	#if !PCL
+	, ICloneable
+	#endif
 	{
-		readonly List<uint> argb;
+		readonly List<int> argb;
 		static readonly int[] egaColors = { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
 
 		/// <summary>
@@ -27,25 +32,12 @@ namespace Eto.Drawing
 			get { return (int[])egaColors.Clone(); }
 		}
 
-		#region Obsolete
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete("Use Color.ToArgb() instead"), CLSCompliant(false)]
-		public static UInt32 GenerateRGBColor(Color c)
-		{
-			return (((uint)(c.A * 255) << 24) + ((uint)(c.R * 255) << 16) + ((uint)(c.G * 255) << 8) + (uint)(c.B * 255));
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Initializes a new instance of the Pallette class
 		/// </summary>
 		public Palette()
 		{
-			argb = new List<uint>();
+			argb = new List<int>();
 		}
 
 		/// <summary>
@@ -240,7 +232,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="index">Index to get the ARGB color for</param>
 		/// <returns>A 32-bit ARGB color value of the color at the specified index</returns>
-		public uint GetRGBColor(int index)
+		public int GetRGBColor(int index)
 		{
 			return argb[index];
 		}
@@ -373,7 +365,7 @@ namespace Eto.Drawing
 			return new Palette(this);
 		}
 
-		#region ICloneable implementation
+		#if !PCL
 
 		/// <summary>
 		/// Creates a clone of this palette
@@ -384,7 +376,6 @@ namespace Eto.Drawing
 			return Clone();
 		}
 
-		#endregion
-
+		#endif
 	}
 }

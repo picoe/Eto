@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Handlers
 {
-    class TabPageHandler : ThemedContainerHandler<Panel, TabPage>, ITabPage
+	class TabPageHandler : ThemedContainerHandler<Panel, TabPage, TabPage.ICallback>, TabPage.IHandler
     {
 		public Padding Padding { get; set; }
 
@@ -28,13 +28,11 @@ namespace Eto.Test.Handlers
 			set { Tab.Text = value; }
 		}
 
-#if DESKTOP
 		public ContextMenu ContextMenu
 		{
 			get { return Control.ContextMenu; }
 			set { Control.ContextMenu = value; } // TODO
 		}
-#endif
 
 		public Image Image
 		{

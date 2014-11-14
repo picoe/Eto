@@ -10,10 +10,10 @@ namespace Eto.Drawing
 	/// The bitmap data is accessed through <see cref="Bitmap.Lock"/>, which locks the data
 	/// for direct access using the <see cref="BitmapData.Data"/> pointer.
 	/// 
-	/// Ensure you call <see cref="Bitmap.Unlock"/> with the same instance when you are done
-	/// accessing or writing the data.
+	/// Ensure you call dispose the instance when you are done accessing or writing the data,
+	/// otherwise the bitmap may be left in an unusable state.
 	/// </remarks>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class BitmapData : IDisposable
 	{
@@ -22,6 +22,7 @@ namespace Eto.Drawing
 		readonly object controlObject;
 		readonly Image image;
 		readonly int bitsPerPixel;
+		readonly int bytesPerPixel;
 
 		/// <summary>
 		/// Initializes a new instance of the BitmapData class
@@ -38,6 +39,7 @@ namespace Eto.Drawing
 			this.scanWidth = scanWidth;
 			this.bitsPerPixel = bitsPerPixel;
 			this.controlObject = controlObject;
+			this.bytesPerPixel = (bitsPerPixel + 7) / 8;
 		}
 
 		/// <summary>
@@ -64,7 +66,7 @@ namespace Eto.Drawing
 		/// <value>The bytes per pixel</value>
 		public int BytesPerPixel
 		{
-			get { return (bitsPerPixel + 7) / 8;}
+			get { return bytesPerPixel; }
 		}
 
 		/// <summary>
@@ -83,7 +85,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="argb">ARGB pixel value to translate into the platform-specific format</param>
 		/// <returns>Platform-specific format of the pixels that can be set directly onto the data</returns>
-		public abstract uint TranslateArgbToData(uint argb);
+		public abstract int TranslateArgbToData(int argb);
 
 		/// <summary>
 		/// Translates the platform specific pixel format to a 32-bit ARGB value
@@ -94,13 +96,13 @@ namespace Eto.Drawing
 		/// Each platform can have a different pixel format, and this allows you to abstract 
 		/// getting the data into a 32-bit colour.
 		/// 
-		/// The ARGB value can be easily handled using <see cref="C:Color(uint)"/>.
+		/// The ARGB value can be easily handled using <see cref="C:Eto.Drawing.Color(uint)"/>.
 		/// 
 		/// For non-alpha bitmaps, the alpha component will be ignored
 		/// </remarks>
 		/// <param name="bitmapData">Platform specific bitmap data for a pixel to translate</param>
 		/// <returns>Translated ARGB value from the bitmap data</returns>
-		public abstract uint TranslateDataToArgb(uint bitmapData);
+		public abstract int TranslateDataToArgb(int bitmapData);
 
 		/// <summary>
 		/// Gets the pointer to the data of the bitmap
@@ -128,6 +130,85 @@ namespace Eto.Drawing
 		public virtual bool Flipped
 		{
 			get { return false; }
+		}
+
+		/// <summary>
+		/// Gets the color of the pixel at the specified <paramref name="position"/>
+		/// </summary>
+		/// <returns>The color of the pixel.</returns>
+		/// <param name="position">Position to get the color of the pixel.</param>
+		public Color GetPixel(Point position)
+		{
+			return GetPixel(position.X, position.Y);
+		}
+
+		/// <summary>
+		/// Gets the color of the pixel at the specified coordinates.
+		/// </summary>
+		/// <returns>The color of the pixel.</returns>
+		/// <param name="x">The x coordinate to get the color from.</param>
+		/// <param name="y">The y coordinate to get the color from.</param>
+		public unsafe virtual Color GetPixel(int x, int y)
+		{
+			var pos = (byte*)Data;
+			pos += x * BytesPerPixel + y * ScanWidth;
+
+			if (BytesPerPixel == 4)
+			{
+				var col = TranslateDataToArgb(*((int*)pos));
+				return Color.FromArgb(col);
+			}
+			if (BytesPerPixel == 3)
+			{
+				var col = TranslateDataToArgb(*((int*)pos));
+				return Color.FromRgb(col);
+			}
+			var bmp = Image as IndexedBitmap;
+			if (bmp != null)
+			{
+				if (BytesPerPixel == 1)
+				{
+					var col = *pos;
+					return bmp.Palette[col];
+				}
+			}
+			throw new NotSupportedException("This PixelFormat is not supported by GetPixel. Must be 24 or 32 bits per pixel, or 8 bit indexed");
+		}
+
+		/// <summary>
+		/// Sets the pixel color at the specified <paramref name="position"/>.
+		/// </summary>
+		/// <param name="position">Position to set the pixel color.</param>
+		/// <param name="color">Color to set.</param>
+		public void SetPixel(Point position, Color color)
+		{
+			SetPixel(position.X, position.Y, color);
+		}
+
+		/// <summary>
+		/// Sets the pixel color at the specified coordinates.
+		/// </summary>
+		/// <param name="x">The x coordinate of the pixel to set.</param>
+		/// <param name="y">The y coordinate of the pixel to set.</param>
+		/// <param name="color">Color to set the pixel to.</param>
+		public unsafe virtual void SetPixel(int x, int y, Color color)
+		{
+			var pos = (byte*)Data;
+			pos += x * BytesPerPixel + y * ScanWidth;
+
+			var col = TranslateArgbToData(color.ToArgb());
+			if (BytesPerPixel == 4)
+			{
+				*((int*)pos) = col;
+			}
+			else if (BytesPerPixel == 3)
+			{
+				*(pos++) = (byte)(col & 0xFF);
+				*(pos++) = (byte)((col >> 8) & 0xFF);
+				*(pos++) = (byte)((col >> 16) & 0xFF);
+			}
+			else
+				throw new NotSupportedException("This PixelFormat is not supported by SetPixel. Must be 3 or 4 bytes per pixel");
 		}
 
 		/// <summary>
@@ -176,9 +257,7 @@ namespace Eto.Drawing
 			}
 			else
 			{
-#if !WINRT
-				Debug.Print("Caller is missing a call to BitmapData.Dispose()");
-#endif
+				Debug.WriteLine("Caller is missing a call to BitmapData.Dispose()");
 			}
 		}
 	}

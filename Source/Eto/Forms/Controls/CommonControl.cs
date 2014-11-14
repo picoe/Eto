@@ -3,24 +3,58 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface ICommonControl : IControl
-	{
-		Font Font { get; set; }
-	}
-
+	/// <summary>
+	/// Base class for controls with common functionality
+	/// </summary>
+	/// <remarks>
+	/// Currently provides a way to change the font for controls.
+	/// 
+	/// Any control with textual input or display should derive from this class.
+	/// Any container or specialized control where there are multiple fonts, etc should define their own properties.
+	/// </remarks>
 	public abstract class CommonControl : Control
 	{
-		new ICommonControl Handler { get { return (ICommonControl)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.CommonControl"/> class.
+		/// </summary>
+		/// <param name="generator">Generator.</param>
+		/// <param name="type">Type.</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected CommonControl(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.CommonControl"/> class.
+		/// </summary>
+		protected CommonControl()
+		{
+		}
+
+		/// <summary>
+		/// Gets or sets the font for the text of the control
+		/// </summary>
+		/// <value>The text font.</value>
 		public Font Font
 		{
 			get { return Handler.Font; }
 			set { Handler.Font = value; }
+		}
+
+		/// <summary>
+		/// Handler interface for the <see cref="CommonControl"/>.
+		/// </summary>
+		public new interface IHandler : Control.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the font for the text of the control
+			/// </summary>
+			/// <value>The text font.</value>
+			Font Font { get; set; }
 		}
 	}
 }

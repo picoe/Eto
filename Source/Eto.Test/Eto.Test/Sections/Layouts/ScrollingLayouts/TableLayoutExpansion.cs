@@ -3,6 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Layouts.ScrollingLayouts
 {
+	[Section("Scrollable", "TableLayout Expansion")]
 	public class TableLayoutExpansion : Panel
 	{
 		Scrollable defaultScrollable;

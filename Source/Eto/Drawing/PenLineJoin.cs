@@ -2,9 +2,9 @@
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Specifies how lines are joined for a <see cref="IPen"/>
+	/// Specifies how lines are joined for a <see cref="Pen"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum PenLineJoin
 	{

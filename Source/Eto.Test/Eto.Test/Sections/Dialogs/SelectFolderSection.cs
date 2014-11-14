@@ -1,14 +1,16 @@
 using Eto.Drawing;
 using Eto.Forms;
 using System.IO;
+using System;
 
 namespace Eto.Test.Sections.Dialogs
 {
+	[Section("Dialogs", typeof(SelectFolderDialog))]
 	public class SelectFolderSection : Panel
 	{
 		public SelectFolderSection()
 		{
-			var layout = new DynamicLayout(new Size(20, 20));
+			var layout = new DynamicLayout { Spacing = new Size(20, 20) };
 
 			layout.AddRow(null, SelectFolder(), null);
 			layout.AddRow(null, SelectFolderWithStartupPath(), null);
@@ -41,7 +43,11 @@ namespace Eto.Test.Sections.Dialogs
 			button.Click += delegate
 			{
 				var dialog = new SelectFolderDialog();
+				#if PCL
+				dialog.Directory = EtoEnvironment.GetFolderPath(EtoSpecialFolder.Documents);
+				#else
 				dialog.Directory = Directory.GetCurrentDirectory();
+				#endif
 
 				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)

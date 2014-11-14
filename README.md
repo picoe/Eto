@@ -2,12 +2,15 @@ Eto.Forms
 =========
 ### A cross platform desktop and mobile user interface framework
 
+[![Build status](http://img.shields.io/appveyor/ci/cwensley/eto.svg?style=flat)](https://ci.appveyor.com/project/cwensley/eto/branch/develop)
+
 Links
 -----
 
 * Join the [forums](http://groups.google.com/group/eto-forms)
 * Chat in [#eto.forms](http://chat.mibbit.com/?server=irc.gimp.org&channel=%23eto.forms) on irc.gimp.org
-* Download using [nuget](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or [Xamarin Studio nuget addin](https://github.com/mrward/monodevelop-nuget-addin)
+* Download binaries using NuGet [![NuGet](http://img.shields.io/nuget/v/Eto.Forms.svg?style=flat)](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or Xamarin Studio.
+* For bleeding edge nuget packages, add the MyGet development feed [![MyGet](http://img.shields.io/myget/eto/vpre/Eto.Forms.svg?style=flat)](https://www.myget.org/F/eto/) to your sources list.
 
 
 Description
@@ -22,23 +25,22 @@ There is a Mobile/iOS port in the works, but is considered incomplete.
 
 This framework was built so that using it in .NET is natural. For example, a simple hello-world application might look like:
 
+	using Eto.Forms;
+	using Eto.Drawing;
+	
 	public class MyForm : Form
 	{
 		public MyForm ()
 		{
-			Text = "My Cross-Platform App";
-			Size = new Size (200, 200);
+			Title = "My Cross-Platform App";
+			ClientSize = new Size(200, 200);
 			Content = new Label { Text = "Hello World!" };
 		}
 		
 		[STAThread]
-		static void Main () {
-			var app = new Application();
-			app.Initialized += delegate {
-				app.MainForm = new MyForm ();
-				app.MainForm.Show ();
-			};
-			app.Run ();
+		static void Main()
+		{
+			new Application().Run(new MyForm());
 		}
 	}
 
@@ -50,13 +52,22 @@ Applications
 * [Notedown](https://github.com/modmonkeys/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
 
-Namespaces
+Assemblies
 ----------
 
-* [Eto.Forms](https://github.com/picoe/Eto/tree/master/Source/Eto/Forms) - User interface 
-* [Eto.Drawing](https://github.com/picoe/Eto/tree/master/Source/Eto/Drawing) - Drawing/graphical routines
-* [Eto.IO](https://github.com/picoe/Eto/tree/master/Source/Eto/IO) - Disk/Virtual directory abstraction
-* Eto.Platform.[Platform] - platform implementations
+Your project only needs to reference Eto.dll, and include the corresponding platform assembly that you wish to target. To run on a Mac platform, you need to [bundle your app](https://github.com/picoe/Eto/wiki/Running-your-application).
+
+* Eto.dll - Eto.Forms (UI), Eto.Drawing (Graphics), and platform loading
+* Eto.Mac.dll - MonoMac platform for OS X using 32-bit mono
+* Eto.Mac64.dll - MonoMac platform for OS X using 64-bit mono
+* Eto.XamMac.dll - Xamarin.Mac platform for OS X to embed mono
+* Eto.WinForms.dll - Windows Forms platform using GDI+ for graphics
+* Eto.Direct2D.dll - Windows Forms platform using Direct2D for graphics
+* Eto.Wpf.dll - Windows Presentation Foundation platform
+* Eto.Gtk2.dll - Gtk2 platform
+* Eto.Gtk3.dll - Gtk3 platform
+* Eto.iOS.dll - Xamarin.iOS platform
+* Eto.Android.dll - Xamarin.Android platform
 
 Currently supported targets
 ---------------------------
@@ -69,4 +80,7 @@ Currently supported targets
 Under development
 -----------------
 
-* Android using Xamarin.Android
+These platforms are currently in development. Any eager bodies willing to help feel free to do so!
+
+* Android using Xamarin.Android (Eto.Android)
+* Windows 8.x and Windows Phone (Eto.WinRT)

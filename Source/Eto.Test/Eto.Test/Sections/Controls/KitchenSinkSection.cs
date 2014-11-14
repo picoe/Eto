@@ -5,10 +5,11 @@ using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", "Kitchen Sink")]
 	public class KitchenSinkSection : Panel
 	{
-		Bitmap bitmap1 = TestIcons.TestImage();
-		Icon icon1 = TestIcons.TestIcon();
+		Bitmap bitmap1 = TestIcons.TestImage;
+		Icon icon1 = TestIcons.TestIcon;
 
 		public KitchenSinkSection()
 		{
@@ -22,8 +23,8 @@ namespace Eto.Test.Sections.Controls
 		Control Tabs()
 		{
 			var control = new TabControl();
-			control.TabPages.Add(MainContent(new TabPage { Text = "Tab 1", Image = icon1 }));
-			control.TabPages.Add(new TabPage { Text = "Tab 2", Image = bitmap1 });
+			control.Pages.Add(MainContent(new TabPage { Text = "Tab 1", Image = icon1 }));
+			control.Pages.Add(new TabPage { Text = "Tab 2", Image = bitmap1 });
 			return control;
 		}
 
@@ -38,7 +39,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control ComboBox()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			control.Items.Add(new ListItem { Text = "Combo Box" });
 			control.Items.Add(new ListItem { Text = "Item 2" });
 			control.Items.Add(new ListItem { Text = "Item 3" });
@@ -100,7 +101,7 @@ namespace Eto.Test.Sections.Controls
 			return layout;
 		}
 
-		IListStore ComboCellItems()
+		IEnumerable<object> ComboCellItems()
 		{
 			var items = new ListItemCollection();
 			items.Add(new ListItem { Text = "Grid Combo 1", Key = "1" });
@@ -118,7 +119,7 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(2), HeaderText = "Text", Editable = true });
 			control.Columns.Add(new GridColumn { DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
 			
-			var items = new DataStoreCollection();
+			var items = new List<GridItem>();
 			items.Add(new GridItem(bitmap1, true, "Text in Grid 1", "1"));
 			items.Add(new GridItem(icon1, false, "Text in Grid 2", "2"));
 			items.Add(new GridItem(bitmap1, null, "Text in Grid 3", "3"));
@@ -162,13 +163,13 @@ namespace Eto.Test.Sections.Controls
 			{
 				var control = new Label
 				{ 
-					Text = string.Format ("WebView not supported on this platform with the {0} generator", Generator.ID),
+					Text = string.Format ("WebView not supported on this platform with the {0} generator", Platform.ID),
 					BackgroundColor = Colors.Red,
 					HorizontalAlign = HorizontalAlign.Center,
 					VerticalAlign = VerticalAlign.Middle,
 					TextColor = Colors.White
 				};
-				if (Generator.ID == Generators.Gtk)
+				if (Platform.IsGtk)
 					Log.Write(this, "You must install webkit-sharp for WebView to work under GTK. Note that GTK does not support webkit-sharp on any platform other than Linux.");
 				return control;
 			}

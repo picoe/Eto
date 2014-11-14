@@ -1,10 +1,13 @@
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto
 {
 	/// <summary>
-	/// Interface to provide a source for the <see cref="ColumnBinding"/>
+	/// Interface to provide a source for the <see cref="ColumnBinding{T}"/>
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IColumnItem
 	{
 		/// <summary>
@@ -27,10 +30,12 @@ namespace Eto
 	/// </summary>
 	/// <remarks>
 	/// This binding is an indirect binding on a particular column/index of each object.
-	/// This is used to get/set values of a passed-in object to the <see cref="IndirectBinding.GetValue"/> and
-	/// <see cref="IndirectBinding.SetValue"/>.
+	/// This is used to get/set values of a passed-in object to the <see cref="IndirectBinding{T}.GetValue"/> and
+	/// <see cref="IndirectBinding{T}.SetValue"/>.
 	/// </remarks>
-	public class ColumnBinding : IndirectBinding
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class ColumnBinding<T> : IndirectBinding<T>
 	{
 		/// <summary>
 		/// Gets or sets the column the binding will get/set the value
@@ -58,14 +63,14 @@ namespace Eto
 		/// </summary>
 		/// <param name="dataItem">object to get the value from</param>
 		/// <returns>value at the <see cref="Column"/> of the specified object</returns>
-		protected override object InternalGetValue (object dataItem)
+		protected override T InternalGetValue (object dataItem)
 		{
 			var colitem = dataItem as IColumnItem;
 			if (colitem != null) {
-				return colitem.GetValue (Column);
+				return (T)colitem.GetValue (Column);
 			}
-			var listitem = dataItem as IList;
-			return listitem == null ? null : listitem[Column];
+			var listitem = dataItem as IList<T>;
+			return listitem == null ? default(T) : listitem[Column];
 		}
 		
 		/// <summary>
@@ -73,7 +78,7 @@ namespace Eto
 		/// </summary>
 		/// <param name="dataItem">object to set the value</param>
 		/// <param name="value">value to set at the <see cref="Column"/> of the specified object</param>
-		protected override void InternalSetValue (object dataItem, object value)
+		protected override void InternalSetValue (object dataItem, T value)
 		{
 			var colitem = dataItem as IColumnItem;
 			if (colitem != null) {

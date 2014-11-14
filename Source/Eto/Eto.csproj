@@ -23,6 +23,7 @@
     <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Release</OutputPath>
@@ -30,21 +31,20 @@
     <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <Import Project="../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Binding\Binding.helpers.cs" />
     <Compile Include="Binding\ColumnBinding.cs" />
-    <Compile Include="CancelEventHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Binding\PropertyNotifyHelper.cs" />
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\DashStyle.cs" />
@@ -56,27 +56,21 @@
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Drawing\Matrix.cs" />
-    <Compile Include="EmbeddedAssemblyLoader.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\Drawable.mobile.cs" />
+    <Compile Include="Forms\Controls\ComboBox.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
-    <Compile Include="Forms\Controls\GridViewSelection.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
-    <Compile Include="Forms\Controls\ProgressBar.cs" />
-    <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
     <Compile Include="Forms\Controls\SearchBox.cs" />
     <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
     <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Controls\TreeView.cs" />
-    <Compile Include="Forms\Controls\TreeView.desktop.cs" />
-    <Compile Include="Forms\DataStoreView.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
@@ -85,23 +79,13 @@
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
-    <Compile Include="Generator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="GeneratorContext.cs" />
-    <Compile Include="Generators.cs" />
     <Compile Include="Int32ArrayConverter.cs" />
-    <Compile Include="InstanceWidget.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
-    <Compile Include="Resources.cs" />
     <Compile Include="Threading\Thread.cs" />
     <Compile Include="TypeHelper.cs" />
-    <Compile Include="WeakEventHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Widget.cs" />
     <Compile Include="WidgetHandler.cs">
       <SubType>Code</SubType>
@@ -109,7 +93,6 @@
     <Compile Include="Forms\Application.cs" />
     <Compile Include="Forms\Container.cs" />
     <Compile Include="Forms\Dialog.cs" />
-    <Compile Include="Forms\Layout\DockLayout.cs" />
     <Compile Include="Forms\FileDialog.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\Key.cs">
@@ -126,43 +109,9 @@
     <Compile Include="Forms\Layout\TableLayout.cs" />
     <Compile Include="Forms\UITimer.cs" />
     <Compile Include="Forms\Window.cs" />
-    <Compile Include="Forms\Window.desktop.cs" />
-    <Compile Include="Forms\Actions\ActionCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ActionItem.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ActionItem.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ActionItemCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ActionItemCollection.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ButtonAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\ButtonAction.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\CheckAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\CheckAction.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\RadioAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\RadioAction.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Controls\Button.cs" />
     <Compile Include="Forms\Controls\CheckBox.cs" />
-    <Compile Include="Forms\Controls\ComboBox.cs" />
+    <Compile Include="Forms\Controls\DropDown.cs" />
     <Compile Include="Forms\Controls\Control.cs" />
     <Compile Include="Forms\Controls\Drawable.cs" />
     <Compile Include="Forms\Controls\GroupBox.cs" />
@@ -173,6 +122,7 @@
     <Compile Include="Forms\Controls\MouseEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\ProgressBar.cs" />
     <Compile Include="Forms\Controls\NumericUpDown.cs" />
     <Compile Include="Forms\Controls\Panel.cs" />
     <Compile Include="Forms\Controls\RadioButton.cs" />
@@ -191,49 +141,12 @@
     <Compile Include="Forms\Menu\RadioMenuItem.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
-    <Compile Include="IO\DiskDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\DiskFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoDriveInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\EtoSystemObjectInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="IO\SystemIcons.cs" />
-    <Compile Include="IO\VirtualDirectoryInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualDirectoryType.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualFileEntry.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IO\VirtualFileInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\Platform.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Xaml\EtoXamlSchemaContext.cs" />
-    <Compile Include="Xaml\Extensions\ResourceExtension.cs" />
-    <Compile Include="Xaml\XamlReader.cs" />
-    <Compile Include="..\GlobalAssemblyInfo.cs">
+    <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\WebView.cs" />
     <Compile Include="Forms\Clipboard.cs" />
-    <Compile Include="Forms\Application.desktop.cs" />
     <Compile Include="Forms\CommonDialog.cs" />
     <Compile Include="Forms\ColorDialog.cs" />
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
@@ -241,11 +154,9 @@
     <Compile Include="Forms\Menu\ContextMenu.cs" />
     <Compile Include="Forms\Layout\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
-    <Compile Include="Forms\Controls\ListBox.desktop.cs" />
     <Compile Include="Forms\Controls\CommonControl.cs" />
     <Compile Include="Forms\Controls\Slider.cs" />
     <Compile Include="Forms\Cursor.cs" />
-    <Compile Include="Forms\Controls\Control.desktop.cs" />
     <Compile Include="Drawing\Bitmap.cs" />
     <Compile Include="Drawing\Color.cs">
       <SubType>Code</SubType>
@@ -299,15 +210,14 @@
     <Compile Include="Forms\Controls\GridColumn.cs" />
     <Compile Include="Forms\Cells\Cell.cs" />
     <Compile Include="Forms\Cells\ComboBoxCell.cs" />
+    <Compile Include="Forms\Cells\DrawableCell.cs" />
     <Compile Include="Forms\Cells\ImageTextCell.cs" />
     <Compile Include="Forms\Cells\SingleValueCell.cs" />
     <Compile Include="Forms\Controls\TreeGridItem.cs" />
     <Compile Include="Forms\Cells\TextBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageViewCell.cs" />
-    <Compile Include="Forms\Controls\GridView.desktop.cs" />
-    <Compile Include="Forms\Controls\TreeGridView.desktop.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
-    <Compile Include="Forms\Controls\EnumComboBox.cs" />
+    <Compile Include="Forms\Controls\EnumDropDown.cs" />
     <Compile Include="Binding\Binding.cs" />
     <Compile Include="Binding\BindingCollection.cs" />
     <Compile Include="Binding\BindingChangingEventArgs.cs" />
@@ -317,14 +227,11 @@
     <Compile Include="Binding\DirectBinding.cs" />
     <Compile Include="Binding\ObjectBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
-    <Compile Include="Binding\BindingExtensions.cs" />
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
-    <Compile Include="Widget.xaml.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
     <Compile Include="HandlerInvalidException.cs" />
     <Compile Include="Forms\Range.cs" />
-    <Compile Include="Xaml\Extensions\FileExtension.cs" />
     <Compile Include="Forms\Controls\Navigation.cs" />
     <Compile Include="Forms\Controls\NavigationItem.cs" />
     <Compile Include="Forms\FontDialog.cs" />
@@ -363,11 +270,6 @@
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
     <Compile Include="Forms\Controls\Spinner.cs" />
     <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
-    <Compile Include="Forms\Actions\GenerateActionArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\BaseAction.desktop.cs" />
-    <Compile Include="Forms\Actions\BaseAction.cs" />
     <Compile Include="Forms\Command.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -379,7 +281,32 @@
     <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
     <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
-    <Compile Include="Forms\ToolBar\ToolItem.obsolete.cs" />
+    <Compile Include="RuntimeNamePropertyAttribute.cs" />
+    <Compile Include="Platform.cs" />
+    <Compile Include="PlatformContext.cs" />
+    <Compile Include="Platforms.cs" />
+    <Compile Include="Generators.cs" />
+    <Compile Include="Generator.cs" />
+    <Compile Include="HandlerAttribute.cs" />
+    <Compile Include="AutoInitializeAttribute.cs" />
+    <Compile Include="PclTypes.cs" />
+    <Compile Include="..\Shared\EnumerableExtensions.cs">
+      <Link>EnumerableExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\ColorPicker.cs" />
+    <Compile Include="Forms\FilterCollection.cs" />
+    <Compile Include="Forms\Controls\Calendar.cs" />
+    <Compile Include="..\Shared\PlatformDetect.cs">
+      <Link>PlatformDetect.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\LinkButton.cs" />
+    <Compile Include="Forms\BindingExtensions.cs" />
+    <Compile Include="Forms\ControlBinding.cs" />
+    <Compile Include="Forms\Layout\TableRow.cs" />
+    <Compile Include="Forms\Layout\TableCell.cs" />
+    <Compile Include="ExtendedObservableCollection.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItem.cs" />
+    <Compile Include="Forms\WidgetExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -388,9 +315,6 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <ItemGroup />
-  <ItemGroup />
-  <ItemGroup />
   <ItemGroup>
     <Content Include="..\..\LICENSE">
       <Link>LICENSE</Link>
@@ -411,4 +335,5 @@
   </ProjectExtensions>
   <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
+  <Import Project="../Shared/Build.targets" />
 </Project>

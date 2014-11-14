@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 
 namespace Eto
 {
@@ -27,6 +28,24 @@ namespace Eto
 					if (object.ReferenceEquals(target[row, col], value))
 						return new Tuple<int, int>(row, col);
 				}
+			}
+
+			return null;
+		}
+
+		internal static MemberExpression GetMemberInfo(this Expression method)
+		{
+			var lambda = method as LambdaExpression;
+			if (lambda == null)
+				return null;
+
+			if (lambda.Body.NodeType == ExpressionType.Convert)
+			{
+				return ((UnaryExpression)lambda.Body).Operand as MemberExpression;
+			}
+			if (lambda.Body.NodeType == ExpressionType.MemberAccess)
+			{
+				return lambda.Body as MemberExpression;
 			}
 
 			return null;

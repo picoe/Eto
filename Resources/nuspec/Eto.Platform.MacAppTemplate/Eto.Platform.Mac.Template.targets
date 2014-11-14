@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<PropertyGroup>
+		<BuildDependsOn>
+			$(BuildDependsOn);
+			_CreateAppBundle
+		</BuildDependsOn>
+	</PropertyGroup>
+	<Target Name="_CreateAppBundle">
+		<PropertyGroup>
+			<AppBundleName Condition="'$(AppBundleName)'==''">$(MSBuildProjectName)</AppBundleName>
+			<InputAppPath Condition="'$(InputAppPath)'==''">$(MSBuildProjectDirectory)\Mac\MyApp.app</InputAppPath>
+		</PropertyGroup>
+		<!-- Using CreateProperty to compute properly on xbuild -->
+		<CreateProperty Value="$(TargetDir)\$(AppBundleName).app" Condition="'$(OutputAppPath)'==''">
+			<Output PropertyName="OutputAppPath" TaskParameter="Value"/>
+		</CreateProperty>
+		<PropertyGroup>
+			<OutputMonoBundlePath>$(OutputAppPath)\Contents\MonoBundle</OutputMonoBundlePath>
+			<LauncherFile>$(OutputAppPath)\Contents\MacOS\Launcher.exec</LauncherFile>
+		</PropertyGroup>
+
+		<!--
+			Modify the PListFile to execute correct assembly
+		-->
+		<ItemGroup>
+			<PListFile Include="$(OutputAppPath)\Contents\Info.plist"/>
+			<AppFiles Include="$(InputAppPath)\**\*.*"/>
+		</ItemGroup>
+		<Copy DestinationFiles="@(AppFiles-&gt;'$(OutputAppPath)\%(RecursiveDir)%(Filename)%(Extension)')" SourceFiles="@(AppFiles)"/>
+		<ReadLinesFromFile File="@(PListFile)">
+			<Output ItemName="PListContentList" TaskParameter="Lines"/>
+		</ReadLinesFromFile>
+		<!-- Using CreateProperty to compute properly on xbuild -->
+		<CreateProperty Value="@(PListContentList-&gt;'%(Identity)', '%0a')">
+			<Output PropertyName="PListContents" TaskParameter="Value"/>
+		</CreateProperty>
+		<PropertyGroup>
+			<PListContents>$(PListContents.Replace('&gt;MyApp.exe&lt;/', '&gt;$(TargetFileName)&lt;/'))</PListContents>
+			<PListContents>$(PListContents.Replace('&gt;MacAppTemplate&lt;/', '&gt;$(AppBundleName)&lt;/'))</PListContents>
+		</PropertyGroup>
+		<WriteLinesToFile File="@(PListFile)" Lines="$(PListContents)" Overwrite="true"/>
+
+		<!-- 
+			Copy ouput files, except for non-mac Eto platforms
+		-->
+		<ItemGroup>
+			<ExecutableFiles Include="$(TargetDir)\**" Exclude="$(OutputAppPath)\**\*"/>
+			<ExecutableFiles Remove="$(TargetDir)\*.vshost.*"/>
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk2.*"/>
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Gtk3.*"/>
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Wpf.*"/>
+			<ExecutableFiles Remove="$(TargetDir)\Eto.WinForms.*"/>
+			<ExecutableFiles Remove="$(TargetDir)\Eto.iOS.*"/>
+			<ExecutableFiles Remove="$(TargetDir)\Eto.WinRT.*"/>
+			<ExecutableFiles Remove="$(TargetDir)\Eto.Android.*"/>
+		</ItemGroup>
+		<Copy SourceFiles="@(ExecutableFiles)" DestinationFolder="$(OutputMonoBundlePath)" />
+		
+		<!--
+			Set executable bit on launcher if on OS X or linux.
+			On windows, zip up the .app bundle and unzipping on OS X will set this for you.
+		-->
+		<Exec Command="chmod +x &quot;$(LauncherFile)&quot;" Condition="'$(OS)'=='Unix'" />
+	</Target>
+</Project>

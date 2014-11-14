@@ -5,6 +5,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 	/// <summary>
 	/// This tests a TableLayout that contains a control with a width larger than its container
 	/// </summary>
+	[Section("TableLayout", "Child Width")]
 	public class ChildWidthSection : TableLayout
 	{
 		public ChildWidthSection()

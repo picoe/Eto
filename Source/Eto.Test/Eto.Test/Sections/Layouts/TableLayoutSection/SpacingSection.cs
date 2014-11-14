@@ -3,6 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
+	[Section("TableLayout", "Spacing")]
 	public class SpacingSection : Panel
 	{
 		Size SquareSize = new Size(30, 40);
@@ -20,13 +21,13 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		void FillTable(TableLayout layout)
 		{
-			for (int y = 0; y < layout.CellSize.Height; y++)
-				for (int x = 0; x < layout.CellSize.Width; x++)
+			for (int y = 0; y < layout.Dimensions.Height; y++)
+				for (int x = 0; x < layout.Dimensions.Width; x++)
 				{
 					var panel = new Panel
 					{ 
 						Size = SquareSize, 
-						BackgroundColor = (x+y*layout.CellSize.Width) % 2 == 0 ? Colors.Lime : Colors.Red 
+						BackgroundColor = (x+y*layout.Dimensions.Width) % 2 == 0 ? Colors.Lime : Colors.Red 
 					};
 					layout.Add(panel, x, y);
 				}

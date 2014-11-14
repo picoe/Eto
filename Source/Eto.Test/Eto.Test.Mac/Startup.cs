@@ -1,8 +1,16 @@
-using MonoMac.AppKit;
-using Eto.Platform.Mac.Forms.Controls;
-using Eto.Platform.Mac.Forms;
-using Eto.Platform.Mac;
+using Eto.Mac.Forms.Controls;
+using Eto.Mac.Forms;
+using Eto.Mac;
 using System.Diagnostics;
+using Eto.Drawing;
+using Eto.Mac.Forms.ToolBar;
+
+
+#if XAMMAC2
+using AppKit;
+#else
+using MonoMac.AppKit;
+#endif
 
 namespace Eto.Test.Mac
 {
@@ -10,19 +18,19 @@ namespace Eto.Test.Mac
 	{
 		static void Main (string[] args)
 		{
-#if DEBUG
+#if DEBUG && !XAMMAC2
 			Debug.Listeners.Add (new ConsoleTraceListener ());
 #endif
 			AddStyles ();
 			
-			var generator = new Eto.Platform.Mac.Generator ();
+			var generator = new Eto.Mac.Platform ();
 			
 			var app = new TestApplication (generator);
 
 			// use this to use your own app delegate:
 			// ApplicationHandler.Instance.AppDelegate = new MyAppDelegate();
 
-			app.Run (args);
+			app.Run();
 		}
 
 		static void AddStyles ()
@@ -43,8 +51,8 @@ namespace Eto.Test.Mac
 			});
 
 			Style.Add<ButtonToolItemHandler> (null, handler => {
-				// use standard textured/round buttons, and make the image grayscale
-				handler.UseStandardButton (grayscale: true);
+				// tint the images in grayscale
+				handler.Tint = Colors.Gray;
 			});
 
 			Style.Add<ToolBarHandler> (null, handler => { 

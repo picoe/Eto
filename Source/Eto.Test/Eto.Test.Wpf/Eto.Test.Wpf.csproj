@@ -10,8 +10,9 @@
     <AssemblyName>Eto.Test.Wpf</AssemblyName>
     <ApplicationIcon>TestIcon.ico</ApplicationIcon>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
-    <SolutionDir Condition="$(BaseDir) == '' Or $(BaseDir) == '*Undefined*'">..\..</SolutionDir>
+    <PackagesDir Condition="$(PackagesDir) == '' Or $(PackagesDir) == '*Undefined*'">..\..</PackagesDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -33,11 +34,13 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
+  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunitlite">
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\nunitlite.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Reflection">
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -53,7 +56,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+    <Compile Include="..\..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Startup.cs" />
@@ -66,10 +69,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto.Platform.Wpf\Eto.Platform.Wpf.csproj">
-      <Project>{E3524178-5A24-47C0-B155-92314FE4B2B6}</Project>
-      <Name>Eto.Platform.Wpf</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
       <Project>{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}</Project>
       <Name>Eto.Test</Name>
@@ -77,6 +76,10 @@
     <ProjectReference Include="..\..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Wpf\Eto.Wpf.csproj">
+      <Project>{E3524178-5A24-47C0-B155-92314FE4B2B6}</Project>
+      <Name>Eto.Wpf</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -86,7 +89,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(BaseDir)\.nuget\NuGet.targets" Condition="Exists('$(BaseDir)\.nuget\NuGet.targets')" />
+  <Import Project="$(PackagesDir)\.nuget\NuGet.targets" Condition="Exists('$(PackagesDir)\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -95,4 +98,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="../../Shared/Build.targets" />
 </Project>

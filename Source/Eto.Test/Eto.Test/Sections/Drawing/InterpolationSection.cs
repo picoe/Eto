@@ -1,8 +1,10 @@
+using System.Reflection;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
+	[Section("Drawing", "ImageInterpolation")]
 	public class InterpolationSection : Scrollable
 	{
 		public InterpolationSection()
@@ -30,8 +32,11 @@ namespace Eto.Test.Sections.Drawing
 
 		Control CreateImage(ImageInterpolation interpolation)
 		{
+#if PCL
+			var resourceStream = GetType().GetTypeInfo().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
+#else
 			var resourceStream = GetType().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
-
+#endif
 			var image = new Bitmap(resourceStream);
 			var drawable = new Drawable { Size = new Size(250, 160) };
 

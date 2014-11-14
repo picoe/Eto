@@ -6,223 +6,20 @@ using System.Collections.Generic;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for <see cref="Control"/>
-	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public partial interface IControl : IInstanceWidget
-	{
-		/// <summary>
-		/// Gets or sets the color for the background of the control
-		/// </summary>
-		/// <remarks>
-		/// Note that on some platforms (e.g. Mac), setting the background color of a control can change the performance
-		/// characteristics of the control and its children, since it must enable layers to do so.
-		/// </remarks>
-		/// <value>The color of the background.</value>
-		Color BackgroundColor { get; set; }
-
-		/// <summary>
-		/// Gets or sets the size of the control. Use -1 to specify auto sizing for either the width and/or height.
-		/// </summary>
-		/// <remarks>
-		/// Setting the size of controls is entirely optional as most controls will size themselves appropriately.
-		/// When specifying a size, it will be used as the desired size of the control.  The container will reposition
-		/// and resize the control depending on the available size.
-		/// 
-		/// For a <see cref="Window"/>, it is preferred to set the <see cref="Container.ClientSize"/> instead, as various
-		/// platforms have different sizes of window decorations, toolbars, etc.
-		/// </remarks>
-		/// <value>The current size of the control</value>
-		Size Size { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
-		/// </summary>
-		/// <remarks>
-		/// Typically when a control is disabled, the user cannot do anything with the control (including for example, selecting
-		/// text in a text control).  Certain controls can have a 'Read Only' mode, such as <see cref="TextBox.ReadOnly"/> which
-		/// allows the user to select text, but not change its contents.
-		/// </remarks>
-		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		bool Enabled { get; set; }
-
-		/// <summary>
-		/// Queues a repaint of the entire control on the screen
-		/// </summary>
-		/// <remarks>
-		/// This is only useful when the control is visible.
-		/// </remarks>
-		void Invalidate();
-
-		/// <summary>
-		/// Queues a repaint of the specified <paramref name="rect"/> of the control
-		/// </summary>
-		/// <remarks>
-		/// This is only useful when the control is visible.
-		/// </remarks>
-		/// <param name="rect">Rectangle to repaint</param>
-		void Invalidate(Rectangle rect);
-
-		/// <summary>
-		/// Suspends the layout of child controls
-		/// </summary>
-		/// <remarks>
-		/// This can be used to optimize some platforms while adding, removing, or changing many child controls at once.
-		/// It disables the calculation of control positioning until <see cref="ResumeLayout"/> is called.
-		/// Each call to SuspendLayout() must be balanced with a call to <see cref="ResumeLayout"/>.
-		/// </remarks>
-		void SuspendLayout();
-
-		/// <summary>
-		/// Resumes the layout after it has been suspended, and performs a layout
-		/// </summary>
-		/// <remarks>
-		/// This can be used to optimize some platforms while adding, removing, or changing many child controls at once.
-		/// Each call to ResumeLayout() must be balanced with a call to <see cref="SuspendLayout"/> before it.
-		/// </remarks>
-		void ResumeLayout();
-
-		/// <summary>
-		/// Attempts to set the keyboard input focus to this control, or the first child that accepts focus
-		/// </summary>
-		void Focus();
-
-		/// <summary>
-		/// Gets a value indicating whether this instance has the keyboard input focus.
-		/// </summary>
-		/// <value><c>true</c> if this instance has focus; otherwise, <c>false</c>.</value>
-		bool HasFocus { get; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is visible to the user.
-		/// </summary>
-		/// <remarks>
-		/// When the visibility of a control is set to false, it will still occupy space in the layout, but not be shown.
-		/// The only exception is for controls like the <see cref="Splitter"/>, which will hide a pane if the visibility
-		/// of one of the panels is changed.
-		/// </remarks>
-		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
-		bool Visible { get; set; }
-
-		/// <summary>
-		/// Called before the control is loaded on a form
-		/// </summary>
-		/// <param name="e">Event arguments</param>
-		/// <seealso cref="OnLoadComplete"/>
-		/// <seealso cref="OnLoad"/>
-		/// <seealso cref="OnUnLoad"/>
-		void OnPreLoad(EventArgs e);
-
-		/// <summary>
-		/// Called when the control is loaded on a form
-		/// </summary>
-		/// <param name="e">Event arguments</param>
-		/// <seealso cref="OnPreLoad"/>
-		/// <seealso cref="OnLoadComplete"/>
-		/// <seealso cref="OnUnLoad"/>
-		void OnLoad(EventArgs e);
-
-		/// <summary>
-		/// Called after all other controls have been loaded
-		/// </summary>
-		/// <param name="e">Event arguments</param>
-		/// <seealso cref="OnPreLoad"/>
-		/// <seealso cref="OnLoad"/>
-		/// <seealso cref="OnUnLoad"/>
-		void OnLoadComplete(EventArgs e);
-
-		/// <summary>
-		/// Called when the control is unloaded, which is when it is not currently on a displayed window
-		/// </summary>
-		/// <param name="e">Event arguments</param>
-		/// <seealso cref="OnPreLoad"/>
-		/// <seealso cref="OnLoad"/>
-		/// <seealso cref="OnLoadComplete"/>
-		void OnUnLoad(EventArgs e);
-
-		/// <summary>
-		/// Called when the parent of the control has been set
-		/// </summary>
-		/// <param name="parent">New parent for the control, or null if the parent was removed</param>
-		void SetParent(Container parent);
-
-		/// <summary>
-		/// Gets the supported platform commands that can be used to hook up system functions to user defined logic
-		/// </summary>
-		/// <remarks>
-		/// This lists all available commands that can be mapped using the <see cref="MapPlatformCommand"/> method
-		/// of the control.
-		/// </remarks>
-		/// <value>The supported platform commands.</value>
-		/// <seealso cref="MapPlatformCommand"/>
-		IEnumerable<string> SupportedPlatformCommands { get; }
-
-		/// <summary>
-		/// Specifies a command to execute for a platform-specific command
-		/// </summary>
-		/// <remarks>
-		/// Some platforms have specific system-defined commands that can be associated with a control.
-		/// For example, the Mac platform's cut/copy/paste functionality is defined by the system, and if you want to
-		/// hook into it, you can use this to map it to your own defined logic.
-		/// The valid values of the <paramref name="systemCommand"/> parameter are defined by each platform, and a list can be
-		/// retrieved using <see cref="Control.SupportedPlatformCommands"/>
-		/// </remarks>
-		/// <example>
-		/// This example shows how to extend a control with cut/copy/paste for the mac platform:
-		/// <code>
-		/// var drawable = new Drawable();
-		/// if (drawable.Generator.IsMac)
-		/// {
-		/// 	drawable.MapPlatformCommand("cut", new MyCutCommand());
-		/// 	drawable.MapPlatformCommand("copy", new MyCopyCommand());
-		/// 	drawable.MapPlatformCommand("paste", new MyPasteCommand());
-		/// }
-		/// </code>
-		/// </example>
-		/// <param name="systemCommand">System action.</param>
-		/// <param name="command">Command.</param>
-		/// <seealso cref="SupportedPlatformCommands"/>
-		void MapPlatformCommand(string systemCommand, Command command);
-
-		/// <summary>
-		/// Converts a point from screen space to control space.
-		/// </summary>
-		/// <returns>The point in control space</returns>
-		/// <param name="point">Point in screen space</param>
-		PointF PointFromScreen(PointF point);
-
-		/// <summary>
-		/// Converts a point from control space to screen space
-		/// </summary>
-		/// <returns>The point in screen space</returns>
-		/// <param name="point">Point in control space</param>
-		PointF PointToScreen(PointF point);
-
-		/// <summary>
-		/// Gets the location of the control as positioned by the container
-		/// </summary>
-		/// <remarks>
-		/// A control's location is set by the container.
-		/// This can be used to determine where the control is for overlaying floating windows, menus, etc.
-		/// </remarks>
-		/// <value>The current location of the control</value>
-		Point Location { get; }
-	}
-
-	/// <summary>
 	/// Base for all visual UI elements
 	/// </summary>
 	/// <remarks>
 	/// All visual user interface elements should inherit from this class to provide common functionality like binding,
 	/// load/unload, and common events.
 	/// </remarks>
+	#if !PCL
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
-	public abstract partial class Control : InstanceWidget, IMouseInputSource, IKeyboardInputSource
+	#endif
+	public partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
-		new IControl Handler { get { return (IControl)base.Handler; } }
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown
@@ -280,7 +77,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.SizeChanged"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnSizeChanged(EventArgs e)
+		protected virtual void OnSizeChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SizeChangedEvent, this, e);
 		}
@@ -304,7 +101,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.KeyDown"/> event.
 		/// </summary>
 		/// <param name="e">Key event arguments</param>
-		public virtual void OnKeyDown(KeyEventArgs e)
+		protected virtual void OnKeyDown(KeyEventArgs e)
 		{
 			Properties.TriggerEvent(KeyDownEvent, this, e);
 		}
@@ -328,7 +125,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.KeyUp"/> event.
 		/// </summary>
 		/// <param name="e">Key event arguments</param>
-		public virtual void OnKeyUp(KeyEventArgs e)
+		protected virtual void OnKeyUp(KeyEventArgs e)
 		{
 			Properties.TriggerEvent(KeyUpEvent, this, e);
 		}
@@ -351,7 +148,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="TextInput"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnTextInput(TextInputEventArgs e)
+		protected virtual void OnTextInput(TextInputEventArgs e)
 		{
 			Properties.TriggerEvent(TextInputEvent, this, e);
 		}
@@ -382,7 +179,7 @@ namespace Eto.Forms
 		/// To override default behaviour of the control, set <see cref="MouseEventArgs.Handled"/> property to <c>true</c>.
 		/// </remarks>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnMouseDown(MouseEventArgs e)
+		protected virtual void OnMouseDown(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseDownEvent, this, e);
 		}
@@ -406,7 +203,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Control.MouseUp"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnMouseUp(MouseEventArgs e)
+		protected virtual void OnMouseUp(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseUpEvent, this, e);
 		}
@@ -435,7 +232,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="MouseMove"/> event.
 		/// </summary>
 		/// <param name="e">Mouse event args</param>
-		public virtual void OnMouseMove(MouseEventArgs e)
+		protected virtual void OnMouseMove(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseMoveEvent, this, e);
 		}
@@ -459,7 +256,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="e">Mouse event arguments</param>
 		/// <seealso cref="MouseEnter"/>
-		public virtual void OnMouseLeave(MouseEventArgs e)
+		protected virtual void OnMouseLeave(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseLeaveEvent, this, e);
 		}
@@ -483,7 +280,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="MouseEnter"/> event.
 		/// </summary>
 		/// <param name="e">Mouse event arguments</param>
-		public virtual void OnMouseEnter(MouseEventArgs e)
+		protected virtual void OnMouseEnter(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseEnterEvent, this, e);
 		}
@@ -517,7 +314,7 @@ namespace Eto.Forms
 		/// Raises the mouse <see cref="MouseDoubleClick"/> event.
 		/// </summary>
 		/// <param name="e">Mouse event arguments</param>
-		public virtual void OnMouseDoubleClick(MouseEventArgs e)
+		protected virtual void OnMouseDoubleClick(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseDoubleClickEvent, this, e);
 		}
@@ -540,7 +337,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="MouseWheel"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnMouseWheel(MouseEventArgs e)
+		protected virtual void OnMouseWheel(MouseEventArgs e)
 		{
 			Properties.TriggerEvent(MouseWheelEvent, this, e);
 		}
@@ -567,7 +364,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="GotFocus"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnGotFocus(EventArgs e)
+		protected virtual void OnGotFocus(EventArgs e)
 		{
 			Properties.TriggerEvent(GotFocusEvent, this, e);
 		}
@@ -594,7 +391,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="LostFocus"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnLostFocus(EventArgs e)
+		protected virtual void OnLostFocus(EventArgs e)
 		{
 			Properties.TriggerEvent(LostFocusEvent, this, e);
 		}
@@ -621,7 +418,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Shown"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnShown(EventArgs e)
+		protected virtual void OnShown(EventArgs e)
 		{
 			Properties.TriggerEvent(ShownEvent, this, e);
 		}
@@ -644,7 +441,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="PreLoad"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnPreLoad(EventArgs e)
+		protected virtual void OnPreLoad(EventArgs e)
 		{
 			Properties.TriggerEvent(PreLoadKey, this, e);
 			Handler.OnPreLoad(e);
@@ -673,7 +470,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="Load"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnLoad(EventArgs e)
+		protected virtual void OnLoad(EventArgs e)
 		{
 #if DEBUG
 			if (Loaded)
@@ -702,7 +499,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="LoadComplete"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnLoadComplete(EventArgs e)
+		protected virtual void OnLoadComplete(EventArgs e)
 		{
 			Properties.TriggerEvent(LoadCompleteKey, this, e);
 			Handler.OnLoadComplete(e);
@@ -726,7 +523,7 @@ namespace Eto.Forms
 		/// Raises the <see cref="UnLoad"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		public virtual void OnUnLoad(EventArgs e)
+		protected virtual void OnUnLoad(EventArgs e)
 		{
 #if DEBUG
 			if (!Loaded)
@@ -761,7 +558,7 @@ namespace Eto.Forms
 		/// on one of the parent control(s).
 		/// </remarks>
 		/// <param name="e">Event arguments</param>
-		protected internal virtual void OnDataContextChanged(EventArgs e)
+		protected virtual void OnDataContextChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(DataContextChangedKey, this, e);
 		}
@@ -786,12 +583,15 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnTextInput(null), Control.TextInputEvent);
 		}
 
+		#pragma warning disable 612,618
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Control"/> class.
 		/// </summary>
 		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler to create (must implement <see cref="IControl"/>)</param>
+		/// <param name="type">Type of the handler to create (must implement <see cref="IHandler"/>)</param>
 		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
+		[Obsolete("Use default constructor and HandlerAttribute instead")]
 		protected Control(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
@@ -803,8 +603,27 @@ namespace Eto.Forms
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		protected Control(Generator generator, IControl handler, bool initialize = true)
+		[Obsolete("Use Control(IHandler) instead")]
+		protected Control(Generator generator, IHandler handler, bool initialize = true)
 			: base(generator, handler, initialize)
+		{
+		}
+
+		#pragma warning restore 612,618
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Control"/> class.
+		/// </summary>
+		protected Control()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Container with the specified handler
+		/// </summary>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		public Control(IHandler handler)
+			: base(handler)
 		{
 		}
 
@@ -850,6 +669,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the width of the control size.
+		/// </summary>
+		public virtual int Width
+		{
+			get { return Handler.Size.Width; }
+			set { Size = new Size(value, Size.Height); }
+		}
+
+		/// <summary>
+		/// Gets or sets the height of the control size.
+		/// </summary>
+		public virtual int Height
+		{
+			get { return Handler.Size.Height; }
+			set { Size = new Size(Size.Width, value); }
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
 		/// </summary>
 		/// <remarks>
@@ -858,6 +695,7 @@ namespace Eto.Forms
 		/// allows the user to select text, but not change its contents.
 		/// </remarks>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public virtual bool Enabled
 		{
 			get { return Handler.Enabled; }
@@ -873,6 +711,7 @@ namespace Eto.Forms
 		/// of one of the panels is changed.
 		/// </remarks>
 		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public virtual bool Visible
 		{
 			get { return Handler.Visible; }
@@ -892,19 +731,15 @@ namespace Eto.Forms
 			get { return Properties.Get<object>(DataContextKey) ?? (Parent == null ? null : Parent.DataContext); }
 			set
 			{
-				Properties[DataContextKey] = value;
-				OnDataContextChanged(EventArgs.Empty);
+				if (!ReferenceEquals(value, Properties.Get<object>(DataContextKey)))
+				{
+					Properties[DataContextKey] = value;
+					OnDataContextChanged(EventArgs.Empty);
+				}
 			}
 		}
 
 		static readonly object DataContextKey = new object();
-
-		/// <summary>
-		/// Obsolete, do not use. Gets the parent layout
-		/// </summary>
-		[Obsolete("Use Parent instead")]
-		public Container ParentLayout { get { return Parent; } }
-
 		Container parent;
 
 		/// <summary>
@@ -922,7 +757,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Finds a control in the parent hierarchy with the specified type and <see cref="Control.ID"/> if specified
+		/// Finds a control in the parent hierarchy with the specified type and <see cref="Widget.ID"/> if specified
 		/// </summary>
 		/// <returns>The parent if found, or null if not found</returns>
 		/// <param name="id">Identifier of the parent control to find, or null to ignore</param>
@@ -943,6 +778,12 @@ namespace Eto.Forms
 			return default(T);
 		}
 
+		/// <summary>
+		/// Finds a control in the parent hierarchy with the specified type and <see cref="Widget.ID"/> if specified
+		/// </summary>
+		/// <returns>The parent if found, or null if not found.</returns>
+		/// <param name="type">The type of control to find.</param>
+		/// <param name="id">Identifier of the parent control to find, or null to find by type only.</param>
 		public Container FindParent(Type type, string id = null)
 		{
 			var control = Parent;
@@ -957,6 +798,11 @@ namespace Eto.Forms
 			return null;
 		}
 
+		/// <summary>
+		/// Finds a control in the parent hierarchy with the specified <paramref name="id"/>
+		/// </summary>
+		/// <returns>The parent if found, or null if not found.</returns>
+		/// <param name="id">Identifier of the parent control to find.</param>
 		public Container FindParent(string id)
 		{
 			return FindParent(null, id);
@@ -972,6 +818,60 @@ namespace Eto.Forms
 		{
 			if (Parent != null)
 				Parent.Remove(this);
+		}
+
+		/// <summary>
+		/// Attaches the control for direct use in a native application
+		/// </summary>
+		/// <remarks>
+		/// Use this to use a control directly in a native application.  Note that the native application must be running
+		/// the same framework as the current platform.  E.g. a WinForms application can use an Eto.Forms control
+		/// when using the Eto.WinForms platform.
+		/// 
+		/// This prepares the control by firing the <see cref="PreLoad"/>, <see cref="Load"/>, etc. events.
+		/// </remarks>
+		public void AttachNative()
+		{
+			if (Parent != null)
+				throw new EtoException("You can only attach a parentless control");
+
+			using (Platform.Context)
+			{
+				OnPreLoad(EventArgs.Empty);
+				OnLoad(EventArgs.Empty);
+				OnDataContextChanged(EventArgs.Empty);
+				OnLoadComplete(EventArgs.Empty);
+			}
+		}
+
+		internal void TriggerPreLoad(EventArgs e)
+		{
+			using (Platform.Context)
+				OnPreLoad(e);
+		}
+
+		internal void TriggerLoad(EventArgs e)
+		{
+			using (Platform.Context)
+				OnLoad(e);
+		}
+
+		internal void TriggerLoadComplete(EventArgs e)
+		{
+			using (Platform.Context)
+				OnLoadComplete(e);
+		}
+
+		internal void TriggerUnLoad(EventArgs e)
+		{
+			using (Platform.Context)
+				OnUnLoad(e);
+		}
+
+		internal void TriggerDataContextChanged(EventArgs e)
+		{
+			using (Platform.Context)
+				OnDataContextChanged(e);
 		}
 
 		/// <summary>
@@ -1048,31 +948,6 @@ namespace Eto.Forms
 				}
 				return null;
 			}
-		}
-
-		/// <summary>
-		/// Maps the platform action. Obsolete, use <see cref="MapPlatformCommand"/> instead.
-		/// </summary>
-		/// <param name="systemAction">System action.</param>
-		/// <param name="action">Action.</param>
-		[Obsolete("Use MapPlatformCommand instead")]
-		public void MapPlatformAction(string systemAction, BaseAction action)
-		{
-			Command command = null;
-			if (action != null)
-			{
-				command = new Command
-				{
-					ID = action.ID,
-					MenuText = action.MenuText,
-					ToolBarText = action.ToolBarText,
-					ToolTip = action.TooltipText
-				};
-				action.EnabledChanged += (sender, e) => command.Enabled = action.Enabled;
-				command.Executed += (sender, e) => action.Activate();
-			}
-
-			Handler.MapPlatformCommand(systemAction, command);
 		}
 
 		/// <summary>
@@ -1182,6 +1057,26 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the type of cursor to use when the mouse is hovering over the control
+		/// </summary>
+		/// <value>The mouse cursor</value>
+		public virtual Cursor Cursor
+		{
+			get { return Handler.Cursor; }
+			set { Handler.Cursor = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the tool tip to show when the mouse is hovered over the control
+		/// </summary>
+		/// <value>The tool tip.</value>
+		public virtual string ToolTip
+		{
+			get { return Handler.ToolTip; }
+			set { Handler.ToolTip = value; }
+		}
+
+		/// <summary>
 		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
 		/// </summary>
 		public virtual void Unbind()
@@ -1219,5 +1114,403 @@ namespace Eto.Forms
 
 			base.Dispose(disposing);
 		}
+
+		#region Callback
+
+		static readonly object callback = new Callback();
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
+		protected override object GetCallback() { return callback; }
+
+		/// <summary>
+		/// Callback interface for instances of <see cref="Control"/>
+		/// </summary>
+		public new interface ICallback : Widget.ICallback
+		{
+			/// <summary>
+			/// Raises the key down event.
+			/// </summary>
+			void OnKeyDown(Control widget, KeyEventArgs e);
+			/// <summary>
+			/// Raises the key up event.
+			/// </summary>
+			void OnKeyUp(Control widget, KeyEventArgs e);
+			/// <summary>
+			/// Raises the mouse down event.
+			/// </summary>
+			void OnMouseDown(Control widget, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse up event.
+			/// </summary>
+			void OnMouseUp(Control widget, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse move event.
+			/// </summary>
+			void OnMouseMove(Control widget, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse leave event.
+			/// </summary>
+			void OnMouseLeave(Control widget, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse enter event.
+			/// </summary>
+			void OnMouseEnter(Control widget, MouseEventArgs e);
+			/// <summary>
+			/// Raises the text input event.
+			/// </summary>
+			void OnTextInput(Control widget, TextInputEventArgs e);
+			/// <summary>
+			/// Raises the size changed event.
+			/// </summary>
+			void OnSizeChanged(Control widget, EventArgs e);
+			/// <summary>
+			/// Raises the mouse double click event.
+			/// </summary>
+			void OnMouseDoubleClick(Control widget, MouseEventArgs e);
+			/// <summary>
+			/// Raises the mouse wheel event.
+			/// </summary>
+			void OnMouseWheel(Control widget, MouseEventArgs e);
+			/// <summary>
+			/// Raises the got focus event.
+			/// </summary>
+			void OnGotFocus(Control widget, EventArgs e);
+			/// <summary>
+			/// Raises the lost focus event.
+			/// </summary>
+			void OnLostFocus(Control widget, EventArgs e);
+			/// <summary>
+			/// Raises the shown event.
+			/// </summary>
+			void OnShown(Control widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback methods for handlers of <see cref="Control"/>
+		/// </summary>
+		protected class Callback : ICallback
+		{
+			/// <summary>
+			/// Raises the key down event.
+			/// </summary>
+			public void OnKeyDown(Control widget, KeyEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnKeyDown(e));
+			}
+			/// <summary>
+			/// Raises the key up event.
+			/// </summary>
+			public void OnKeyUp(Control widget, KeyEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnKeyUp(e));
+			}
+			/// <summary>
+			/// Raises the mouse down event.
+			/// </summary>
+			public void OnMouseDown(Control widget, MouseEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnMouseDown(e));
+			}
+			/// <summary>
+			/// Raises the mouse up event.
+			/// </summary>
+			public void OnMouseUp(Control widget, MouseEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnMouseUp(e));
+			}
+			/// <summary>
+			/// Raises the mouse move event.
+			/// </summary>
+			public void OnMouseMove(Control widget, MouseEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnMouseMove(e));
+			}
+			/// <summary>
+			/// Raises the mouse leave event.
+			/// </summary>
+			public void OnMouseLeave(Control widget, MouseEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnMouseLeave(e));
+			}
+			/// <summary>
+			/// Raises the mouse enter event.
+			/// </summary>
+			public void OnMouseEnter(Control widget, MouseEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnMouseEnter(e));
+			}
+			/// <summary>
+			/// Raises the text input event.
+			/// </summary>
+			public void OnTextInput(Control widget, TextInputEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnTextInput(e));
+			}
+			/// <summary>
+			/// Raises the size changed event.
+			/// </summary>
+			public void OnSizeChanged(Control widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnSizeChanged(e));
+			}
+			/// <summary>
+			/// Raises the mouse double click event.
+			/// </summary>
+			public void OnMouseDoubleClick(Control widget, MouseEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnMouseDoubleClick(e));
+			}
+			/// <summary>
+			/// Raises the mouse wheel event.
+			/// </summary>
+			public void OnMouseWheel(Control widget, MouseEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnMouseWheel(e));
+			}
+			/// <summary>
+			/// Raises the got focus event.
+			/// </summary>
+			public void OnGotFocus(Control widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnGotFocus(e));
+			}
+			/// <summary>
+			/// Raises the lost focus event.
+			/// </summary>
+			public void OnLostFocus(Control widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnLostFocus(e));
+			}
+			/// <summary>
+			/// Raises the shown event.
+			/// </summary>
+			public void OnShown(Control widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnShown(e));
+			}
+		}
+
+		#endregion
+
+		#region Handler
+		/// <summary>
+		/// Handler interface for <see cref="Control"/>
+		/// </summary>
+		/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public new interface IHandler : Widget.IHandler
+		{
+			/// <summary>
+			/// Gets or sets the color for the background of the control
+			/// </summary>
+			/// <remarks>
+			/// Note that on some platforms (e.g. Mac), setting the background color of a control can change the performance
+			/// characteristics of the control and its children, since it must enable layers to do so.
+			/// </remarks>
+			/// <value>The color of the background.</value>
+			Color BackgroundColor { get; set; }
+
+			/// <summary>
+			/// Gets or sets the size of the control. Use -1 to specify auto sizing for either the width and/or height.
+			/// </summary>
+			/// <remarks>
+			/// Setting the size of controls is entirely optional as most controls will size themselves appropriately.
+			/// When specifying a size, it will be used as the desired size of the control.  The container will reposition
+			/// and resize the control depending on the available size.
+			/// 
+			/// For a <see cref="Window"/>, it is preferred to set the <see cref="Container.ClientSize"/> instead, as various
+			/// platforms have different sizes of window decorations, toolbars, etc.
+			/// </remarks>
+			/// <value>The current size of the control</value>
+			Size Size { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
+			/// </summary>
+			/// <remarks>
+			/// Typically when a control is disabled, the user cannot do anything with the control (including for example, selecting
+			/// text in a text control).  Certain controls can have a 'Read Only' mode, such as <see cref="TextBox.ReadOnly"/> which
+			/// allows the user to select text, but not change its contents.
+			/// </remarks>
+			/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+			bool Enabled { get; set; }
+
+			/// <summary>
+			/// Queues a repaint of the entire control on the screen
+			/// </summary>
+			/// <remarks>
+			/// This is only useful when the control is visible.
+			/// </remarks>
+			void Invalidate();
+
+			/// <summary>
+			/// Queues a repaint of the specified <paramref name="rect"/> of the control
+			/// </summary>
+			/// <remarks>
+			/// This is only useful when the control is visible.
+			/// </remarks>
+			/// <param name="rect">Rectangle to repaint</param>
+			void Invalidate(Rectangle rect);
+
+			/// <summary>
+			/// Suspends the layout of child controls
+			/// </summary>
+			/// <remarks>
+			/// This can be used to optimize some platforms while adding, removing, or changing many child controls at once.
+			/// It disables the calculation of control positioning until <see cref="ResumeLayout"/> is called.
+			/// Each call to SuspendLayout() must be balanced with a call to <see cref="ResumeLayout"/>.
+			/// </remarks>
+			void SuspendLayout();
+
+			/// <summary>
+			/// Resumes the layout after it has been suspended, and performs a layout
+			/// </summary>
+			/// <remarks>
+			/// This can be used to optimize some platforms while adding, removing, or changing many child controls at once.
+			/// Each call to ResumeLayout() must be balanced with a call to <see cref="SuspendLayout"/> before it.
+			/// </remarks>
+			void ResumeLayout();
+
+			/// <summary>
+			/// Attempts to set the keyboard input focus to this control, or the first child that accepts focus
+			/// </summary>
+			void Focus();
+
+			/// <summary>
+			/// Gets a value indicating whether this instance has the keyboard input focus.
+			/// </summary>
+			/// <value><c>true</c> if this instance has focus; otherwise, <c>false</c>.</value>
+			bool HasFocus { get; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is visible to the user.
+			/// </summary>
+			/// <remarks>
+			/// When the visibility of a control is set to false, it will still occupy space in the layout, but not be shown.
+			/// The only exception is for controls like the <see cref="Splitter"/>, which will hide a pane if the visibility
+			/// of one of the panels is changed.
+			/// </remarks>
+			/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+			bool Visible { get; set; }
+
+			/// <summary>
+			/// Called before the control is loaded on a form
+			/// </summary>
+			/// <param name="e">Event arguments</param>
+			/// <seealso cref="OnLoadComplete"/>
+			/// <seealso cref="OnLoad"/>
+			/// <seealso cref="OnUnLoad"/>
+			void OnPreLoad(EventArgs e);
+
+			/// <summary>
+			/// Called when the control is loaded on a form
+			/// </summary>
+			/// <param name="e">Event arguments</param>
+			/// <seealso cref="OnPreLoad"/>
+			/// <seealso cref="OnLoadComplete"/>
+			/// <seealso cref="OnUnLoad"/>
+			void OnLoad(EventArgs e);
+
+			/// <summary>
+			/// Called after all other controls have been loaded
+			/// </summary>
+			/// <param name="e">Event arguments</param>
+			/// <seealso cref="OnPreLoad"/>
+			/// <seealso cref="OnLoad"/>
+			/// <seealso cref="OnUnLoad"/>
+			void OnLoadComplete(EventArgs e);
+
+			/// <summary>
+			/// Called when the control is unloaded, which is when it is not currently on a displayed window
+			/// </summary>
+			/// <param name="e">Event arguments</param>
+			/// <seealso cref="OnPreLoad"/>
+			/// <seealso cref="OnLoad"/>
+			/// <seealso cref="OnLoadComplete"/>
+			void OnUnLoad(EventArgs e);
+
+			/// <summary>
+			/// Called when the parent of the control has been set
+			/// </summary>
+			/// <param name="parent">New parent for the control, or null if the parent was removed</param>
+			void SetParent(Container parent);
+
+			/// <summary>
+			/// Gets the supported platform commands that can be used to hook up system functions to user defined logic
+			/// </summary>
+			/// <remarks>
+			/// This lists all available commands that can be mapped using the <see cref="MapPlatformCommand"/> method
+			/// of the control.
+			/// </remarks>
+			/// <value>The supported platform commands.</value>
+			/// <seealso cref="MapPlatformCommand"/>
+			IEnumerable<string> SupportedPlatformCommands { get; }
+
+			/// <summary>
+			/// Specifies a command to execute for a platform-specific command
+			/// </summary>
+			/// <remarks>
+			/// Some platforms have specific system-defined commands that can be associated with a control.
+			/// For example, the Mac platform's cut/copy/paste functionality is defined by the system, and if you want to
+			/// hook into it, you can use this to map it to your own defined logic.
+			/// The valid values of the <paramref name="systemCommand"/> parameter are defined by each platform, and a list can be
+			/// retrieved using <see cref="Control.SupportedPlatformCommands"/>
+			/// </remarks>
+			/// <example>
+			/// This example shows how to extend a control with cut/copy/paste for the mac platform:
+			/// <code>
+			/// var drawable = new Drawable();
+			/// if (drawable.Generator.IsMac)
+			/// {
+			/// 	drawable.MapPlatformCommand("cut", new MyCutCommand());
+			/// 	drawable.MapPlatformCommand("copy", new MyCopyCommand());
+			/// 	drawable.MapPlatformCommand("paste", new MyPasteCommand());
+			/// }
+			/// </code>
+			/// </example>
+			/// <param name="systemCommand">System action.</param>
+			/// <param name="command">Command.</param>
+			/// <seealso cref="SupportedPlatformCommands"/>
+			void MapPlatformCommand(string systemCommand, Command command);
+
+			/// <summary>
+			/// Converts a point from screen space to control space.
+			/// </summary>
+			/// <returns>The point in control space</returns>
+			/// <param name="point">Point in screen space</param>
+			PointF PointFromScreen(PointF point);
+
+			/// <summary>
+			/// Converts a point from control space to screen space
+			/// </summary>
+			/// <returns>The point in screen space</returns>
+			/// <param name="point">Point in control space</param>
+			PointF PointToScreen(PointF point);
+
+			/// <summary>
+			/// Gets the location of the control as positioned by the container
+			/// </summary>
+			/// <remarks>
+			/// A control's location is set by the container.
+			/// This can be used to determine where the control is for overlaying floating windows, menus, etc.
+			/// </remarks>
+			/// <value>The current location of the control</value>
+			Point Location { get; }
+
+			/// <summary>
+			/// Gets or sets the tool tip to show when the mouse is hovered over the control
+			/// </summary>
+			/// <value>The tool tip.</value>
+			string ToolTip { get; set; }
+
+			/// <summary>
+			/// Gets or sets the type of cursor to use when the mouse is hovering over the control
+			/// </summary>
+			/// <value>The mouse cursor</value>
+			Cursor Cursor { get; set; }
+		}
+		#endregion
 	}
 }

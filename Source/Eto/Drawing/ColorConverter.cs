@@ -13,6 +13,8 @@ namespace Eto.Drawing
 	/// 
 	/// When converting to a string, it converts to a Hex format via <see cref="Color.ToHex"/>
 	/// </remarks>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ColorConverter : TypeConverter
 	{
 		/// <summary>

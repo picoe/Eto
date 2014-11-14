@@ -4,6 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Printing
 {
+	[Section("Printing", "Print Dialog")]
 	public class PrintDialogSection : Panel
 	{
 		PrintSettings settings = new PrintSettings();
@@ -89,7 +90,7 @@ namespace Eto.Test.Sections.Printing
 		{
 			var document = new PrintDocument();
 			document.PrintSettings = settings;
-			var font = Fonts.Serif(16, generator: document.Generator);
+			var font = Fonts.Serif(16);
 			var printTime = DateTime.Now;
 			document.PrintPage += (sender, e) => {
 				Size pageSize = Size.Round(e.PageSize);
@@ -97,7 +98,7 @@ namespace Eto.Test.Sections.Printing
 				// draw a border around the printable area
 				var rect = new Rectangle(pageSize);
 				rect.Inflate(-1, -1);
-				e.Graphics.DrawRectangle(Pens.Silver(e.Generator), rect);
+				e.Graphics.DrawRectangle(Pens.Silver, rect);
 
 				// draw title
 				e.Graphics.DrawText(font, Colors.Black, new Point(50, 20), document.Name);
@@ -116,12 +117,12 @@ namespace Eto.Test.Sections.Printing
 				switch (e.CurrentPage)
 				{
 					case 0:
-						e.Graphics.DrawRectangle(Pens.Blue(e.Generator), new Rectangle(50, 50, 100, 100));
-						e.Graphics.DrawRectangle(Pens.Green(e.Generator), new Rectangle(new Point(pageSize) - new Size(150, 150), new Size(100, 100)));
+						e.Graphics.DrawRectangle(Pens.Blue, new Rectangle(50, 50, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Green, new Rectangle(new Point(pageSize) - new Size(150, 150), new Size(100, 100)));
 						break;
 					case 1:
-						e.Graphics.DrawRectangle(Pens.Blue(e.Generator), new Rectangle(pageSize.Width - 150, 50, 100, 100));
-						e.Graphics.DrawRectangle(Pens.Green(e.Generator), new Rectangle(50, pageSize.Height - 150, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Blue, new Rectangle(pageSize.Width - 150, 50, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Green, new Rectangle(50, pageSize.Height - 150, 100, 100));
 						break;
 				}
 			};
@@ -197,29 +198,29 @@ namespace Eto.Test.Sections.Printing
 
 		static Control PageOrientation()
 		{
-			var control = new EnumComboBox<PageOrientation>();
-			control.SelectedValueBinding.Bind<PrintSettings>(r => r.Orientation, (r, v) => r.Orientation = v);
+			var control = new EnumDropDown<PageOrientation>();
+			control.SelectedValueBinding.BindDataContext<PrintSettings>(r => r.Orientation, (r, v) => r.Orientation = v);
 			return control;
 		}
 
 		static Control Copies()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
-			control.ValueBinding.Bind<PrintSettings>(r => r.Copies, (r, v) => r.Copies = (int)v, defaultGetValue: 1);
+			control.ValueBinding.BindDataContext<PrintSettings>(r => r.Copies, (r, v) => r.Copies = (int)v, defaultGetValue: 1);
 			return control;
 		}
 
 		static Control Collate()
 		{
 			var control = new CheckBox { Text = "Collate" };
-			control.CheckedBinding.Bind<PrintSettings>(r => r.Collate, (r, v) => r.Collate = v ?? false);
+			control.CheckedBinding.BindDataContext<PrintSettings>(r => r.Collate, (r, v) => r.Collate = v ?? false);
 			return control;
 		}
 
 		static Control Reverse()
 		{
 			var control = new CheckBox { Text = "Reverse" };
-			control.CheckedBinding.Bind<PrintSettings>(r => r.Reverse, (r, v) => r.Reverse = v ?? false);
+			control.CheckedBinding.BindDataContext<PrintSettings>(r => r.Reverse, (r, v) => r.Reverse = v ?? false);
 			return control;
 		}
 
@@ -234,8 +235,7 @@ namespace Eto.Test.Sections.Printing
 			{
 				var range = settings.MaximumPageRange;
 				var end = range.End;
-				range.Start = (int)control.Value;
-				range.End = Math.Max(end, range.Start);
+				range = new Range<int>((int)control.Value, Math.Max(end, range.Start));
 				maximumEnd.MinValue = control.Value;
 				maximumEnd.Value = range.End;
 				settings.MaximumPageRange = range;
@@ -253,8 +253,7 @@ namespace Eto.Test.Sections.Printing
 			control.ValueChanged += delegate
 			{
 				var range = settings.MaximumPageRange;
-				range.End = (int)control.Value;
-				settings.MaximumPageRange = range;
+				settings.MaximumPageRange = new Range<int>(range.Start, (int)control.Value);
 			};
 			return control;
 		}
@@ -270,8 +269,7 @@ namespace Eto.Test.Sections.Printing
 			{
 				var range = settings.SelectedPageRange;
 				var end = range.End;
-				range.Start = (int)control.Value;
-				range.End = Math.Max(range.Start, end);
+				range = new Range<int>((int)control.Value, Math.Max(range.Start, end));
 				selectedEnd.MinValue = control.Value;
 				selectedEnd.Value = range.End;
 				settings.SelectedPageRange = range;
@@ -289,16 +287,15 @@ namespace Eto.Test.Sections.Printing
 			control.ValueChanged += delegate
 			{
 				var range = settings.SelectedPageRange;
-				range.End = (int)control.Value;
-				settings.SelectedPageRange = range;
+				settings.SelectedPageRange = new Range<int>(range.Start, (int)control.Value);
 			};
 			return control;
 		}
 
 		static Control PrintSelection()
 		{
-			var control = new EnumComboBox<PrintSelection>();
-			control.SelectedValueBinding.Bind<PrintSettings>(r => r.PrintSelection, (r, v) => r.PrintSelection = v);
+			var control = new EnumDropDown<PrintSelection>();
+			control.SelectedValueBinding.BindDataContext<PrintSettings>(r => r.PrintSelection, (r, v) => r.PrintSelection = v);
 			return control;
 		}
 	}

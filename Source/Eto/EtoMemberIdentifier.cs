@@ -1,7 +1,4 @@
 using System;
-#if XAML
-using System.Xaml;
-#endif
 
 namespace Eto
 {
@@ -15,13 +12,12 @@ namespace Eto
 		/// </summary>
 		/// <param name="declaringType">Type that the property is attached to</param>
 		/// <param name="memberName">Name of the member/property</param>
-		public EtoMemberIdentifier (Type declaringType, string memberName)
-			: base (declaringType, memberName)
+		public EtoMemberIdentifier(Type declaringType, string memberName)
+			: base(declaringType, memberName)
 		{
 		}
 	}
 
-#if !XAML
 	/// <summary>
 	/// Attachable member identifier for properties, when xaml is not present/available
 	/// </summary>
@@ -31,52 +27,93 @@ namespace Eto
 	/// </remarks>
 	public class AttachableMemberIdentifier : IEquatable<AttachableMemberIdentifier>
 	{
+		/// <summary>
+		/// Gets the type that declared the member.
+		/// </summary>
+		/// <value>The type of the declaring class.</value>
 		public Type DeclaringType { get; private set; }
-			
+
+		/// <summary>
+		/// Gets the name of the member.
+		/// </summary>
+		/// <value>The name of the member.</value>
 		public string MemberName { get; private set; }
 
-		public AttachableMemberIdentifier (Type declaringType, string memberName)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.AttachableMemberIdentifier"/> class.
+		/// </summary>
+		/// <param name="declaringType">Declaring type.</param>
+		/// <param name="memberName">Name of the member.</param>
+		public AttachableMemberIdentifier(Type declaringType, string memberName)
 		{
 			this.DeclaringType = declaringType;
 			this.MemberName = memberName;
 		}
-		
-		private static bool IsNull (AttachableMemberIdentifier a)
+
+		static bool IsNull(AttachableMemberIdentifier a)
 		{
-			return object.ReferenceEquals (a, null);
+			return ReferenceEquals(a, null);
 		}
-		
-		public override bool Equals (object obj)
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="Eto.AttachableMemberIdentifier"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with the current <see cref="Eto.AttachableMemberIdentifier"/>.</param>
+		/// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current
+		/// <see cref="Eto.AttachableMemberIdentifier"/>; otherwise, <c>false</c>.</returns>
+		public override bool Equals(object obj)
 		{
-			AttachableMemberIdentifier other = obj as AttachableMemberIdentifier;
-			return this.Equals (other);
+			var other = obj as AttachableMemberIdentifier;
+			return Equals(other);
 		}
-		
-		public bool Equals (AttachableMemberIdentifier other)
+
+		/// <summary>
+		/// Determines whether the specified <see cref="Eto.AttachableMemberIdentifier"/> is equal to the current <see cref="Eto.AttachableMemberIdentifier"/>.
+		/// </summary>
+		/// <param name="other">The <see cref="Eto.AttachableMemberIdentifier"/> to compare with the current <see cref="Eto.AttachableMemberIdentifier"/>.</param>
+		/// <returns><c>true</c> if the specified <see cref="Eto.AttachableMemberIdentifier"/> is equal to the current
+		/// <see cref="Eto.AttachableMemberIdentifier"/>; otherwise, <c>false</c>.</returns>
+		public bool Equals(AttachableMemberIdentifier other)
 		{
-			return !AttachableMemberIdentifier.IsNull (other) && this.DeclaringType == other.DeclaringType && this.MemberName == other.MemberName;
+			return !IsNull(other) && DeclaringType == other.DeclaringType && MemberName == other.MemberName;
 		}
-		
-		public override int GetHashCode ()
+
+		/// <summary>
+		/// Serves as a hash function for a <see cref="Eto.AttachableMemberIdentifier"/> object.
+		/// </summary>
+		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+		public override int GetHashCode()
 		{
-			return ((!(this.DeclaringType != null)) ? 0 : this.DeclaringType.GetHashCode ()) << 5 + ((this.MemberName == null) ? 0 : this.MemberName.GetHashCode ());
+			return ((DeclaringType == null) ? 0 : DeclaringType.GetHashCode()) << 5 + ((MemberName == null) ? 0 : MemberName.GetHashCode());
 		}
-		
-		public override string ToString ()
+
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="Eto.AttachableMemberIdentifier"/>.
+		/// </summary>
+		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Eto.AttachableMemberIdentifier"/>.</returns>
+		public override string ToString()
 		{
-			return (!(this.DeclaringType != null)) ? this.MemberName : (this.DeclaringType.FullName + "." + this.MemberName);
+			return (DeclaringType == null) ? MemberName : (DeclaringType.FullName + "." + MemberName);
 		}
-		
-		public static bool operator == (AttachableMemberIdentifier left, AttachableMemberIdentifier right)
+
+		/// <summary>
+		/// Compares two AttachableMemberIdentifier objects for equality
+		/// </summary>
+		/// <param name="left">First member identifier to compare</param>
+		/// <param name="right">Second member identifier to compare</param>
+		public static bool operator ==(AttachableMemberIdentifier left, AttachableMemberIdentifier right)
 		{
-			return (!AttachableMemberIdentifier.IsNull (left)) ? left.Equals (right) : AttachableMemberIdentifier.IsNull (right);
+			return (!IsNull(left)) ? left.Equals(right) : IsNull(right);
 		}
-		
-		public static bool operator != (AttachableMemberIdentifier left, AttachableMemberIdentifier right)
+
+		/// <summary>
+		/// Compares two AttachableMemberIdentifier objects for inequality
+		/// </summary>
+		/// <param name="left">First member identifier to compare</param>
+		/// <param name="right">Second member identifier to compare</param>
+		public static bool operator !=(AttachableMemberIdentifier left, AttachableMemberIdentifier right)
 		{
-			return (!AttachableMemberIdentifier.IsNull (left)) ? (AttachableMemberIdentifier.IsNull (right) || left.DeclaringType != right.DeclaringType || left.MemberName != right.MemberName) : (!AttachableMemberIdentifier.IsNull (right));
+			return (!IsNull(left)) ? (IsNull(right) || left.DeclaringType != right.DeclaringType || left.MemberName != right.MemberName) : (!IsNull(right));
 		}
 	}
-#endif
-
 }

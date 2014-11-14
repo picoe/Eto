@@ -6,23 +6,38 @@ namespace Eto.Test.Sections.Behaviors
 {
 	public class AllControlsBase : Panel
 	{
-		public override void OnPreLoad(EventArgs e)
+		protected override void OnPreLoad(EventArgs e)
 		{
-
 			var layout = new DynamicLayout();
 			
-			var options = GenerateOptions();
+			var options = CreateOptions();
 			if (options != null)
 				layout.Add(options);
 
 			layout.BeginVertical();
-			layout.AddRow(null, LabelControl(), ButtonControl(), null);
-			layout.AddRow(null, TextBoxControl(), TextAreaControl(), null);
-			layout.AddRow(null, CheckBoxControl(), RadioButtonControl(), null);
-			layout.AddRow(null, DateTimeControl(), NumericUpDownControl(), null);
-			layout.AddRow(null, ComboBoxControl(), PasswordBoxControl(), null);
-			layout.AddRow(null, ListBoxControl(), DrawableControl(), null);
-			layout.AddRow(null, GroupBoxControl(), new Panel(), null);
+			layout.AddRow(null, LabelControl(), ButtonControl(), new Panel(), null);
+			layout.AddRow(null, TextBoxControl(), PasswordBoxControl());
+
+			layout.BeginHorizontal();
+			layout.Add(null);
+			layout.Add(TextAreaControl());
+			if (Platform.Supports<ListBox>())
+				layout.Add(ListBoxControl());
+			layout.EndHorizontal();
+
+			layout.AddRow(null, CheckBoxControl(), RadioButtonControl());
+			layout.AddRow(null, DateTimeControl(), NumericUpDownControl());
+			layout.AddRow(null, DropDownControl(), ComboBoxControl());
+
+			layout.BeginHorizontal();
+			layout.Add(null);
+			layout.Add(ColorPickerControl());
+			if (Platform.Supports<GroupBox>())
+				layout.Add(GroupBoxControl());
+			layout.EndHorizontal();
+
+			layout.AddRow(null, LinkButtonControl(), SliderControl());
+			layout.AddRow(null, DrawableControl(), ImageViewControl());
 			layout.EndVertical();
 			layout.Add(null);
 
@@ -31,7 +46,7 @@ namespace Eto.Test.Sections.Behaviors
 			base.OnPreLoad(e);
 		}
 
-		protected virtual Control GenerateOptions()
+		protected virtual Control CreateOptions()
 		{
 			return null;
 		}
@@ -99,12 +114,24 @@ namespace Eto.Test.Sections.Behaviors
 			return control;
 		}
 
+		Control DropDownControl()
+		{
+			var control = new DropDown();
+			control.Items.Add(new ListItem{ Text = "Item 1" });
+			control.Items.Add(new ListItem{ Text = "Item 2" });
+			control.Items.Add(new ListItem{ Text = "Item 3" });
+			control.SelectedKey = "Item 1";
+			LogEvents(control);
+			return control;
+		}
+
 		Control ComboBoxControl()
 		{
 			var control = new ComboBox();
 			control.Items.Add(new ListItem{ Text = "Item 1" });
 			control.Items.Add(new ListItem{ Text = "Item 2" });
 			control.Items.Add(new ListItem{ Text = "Item 3" });
+			control.SelectedKey = "Item 1";
 			LogEvents(control);
 			return control;
 		}
@@ -124,7 +151,9 @@ namespace Eto.Test.Sections.Behaviors
 			var control = new Drawable { Size = new Size(100, 30), CanFocus = true };
 			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
-				pe.Graphics.FillRectangle(Brushes.Blue(), pe.ClipRectangle);
+				pe.Graphics.FillRectangle(Brushes.Blue, pe.ClipRectangle);
+				var size = pe.Graphics.MeasureString(SystemFonts.Label(), "Drawable");
+				pe.Graphics.DrawText(SystemFonts.Label(), Brushes.White, (PointF)((control.Size - size) / 2), "Drawable");
 			};
 			LogEvents(control);
 			return control;
@@ -138,13 +167,52 @@ namespace Eto.Test.Sections.Behaviors
 			return control;
 		}
 
+		Control LinkButtonControl()
+		{
+			var control = new LinkButton { Text = "Link Button" };
+			LogEvents(control);
+			return control;
+		}
+
+		Control SliderControl()
+		{
+			var control = new Slider();
+			LogEvents(control);
+			return control;
+		}
+
+		Control ColorPickerControl()
+		{
+			var control = new ColorPicker();
+			LogEvents(control);
+			return TableLayout.AutoSized(control, centered: true);
+		}
+
+		Control ImageViewControl()
+		{
+			var control = new ImageView();
+			control.Image = TestIcons.TestImage;
+			LogEvents(control);
+			return control;
+		}
+
 		protected virtual void LogEvents(Button control)
 		{
 			control.Click += delegate
 			{
 				Log.Write(control, "Click");
 			};
-			
+
+			LogEvents((Control)control);	
+		}
+
+		protected virtual void LogEvents(LinkButton control)
+		{
+			control.Click += delegate
+			{
+				Log.Write(control, "Click");
+			};
+
 			LogEvents((Control)control);	
 		}
 
@@ -165,6 +233,16 @@ namespace Eto.Test.Sections.Behaviors
 				Log.Write(control, "CheckedChanged");
 			};
 			
+			LogEvents((Control)control);	
+		}
+
+		protected virtual void LogEvents(Slider control)
+		{
+			control.ValueChanged += delegate
+			{
+				Log.Write(control, "ValueChanged");
+			};
+
 			LogEvents((Control)control);	
 		}
 

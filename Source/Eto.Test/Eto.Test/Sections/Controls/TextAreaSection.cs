@@ -4,39 +4,62 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	[Section("Controls", typeof(TextArea))]
 	public class TextAreaSection : Scrollable
 	{
 		public TextAreaSection()
 		{
-			var layout = new DynamicLayout();
-
-			layout.AddRow(new Label { Text = "Default" }, Default());
-			layout.AddRow(new Label { Text = "Different Size" }, DifferentSize());
-			layout.AddRow(new Label { Text = "Read Only" }, ReadOnly());
-			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
-			layout.AddRow(new Label { Text = "No Wrap" }, NoWrap());
-			layout.AddRow(new Label { Text = "Wrap" }, Wrap());
-			layout.AddRow(new Label { Text = "Pixel Layout" }, PixelLayout());
-			
-			// growing space at end is blank!
-			layout.Add(null);
-
-			Content = layout;
+			Content = Default();
 		}
 
 		Control Default()
 		{
-			var text = new TextArea { Text = "Some Text" };
+			var text = new TextArea { Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." };
 			LogEvents(text);
 
-			var layout = new DynamicLayout();
+			return new TableLayout
+			{
+				Rows =
+				{
+					TableLayout.Horizontal(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), null).With(r => r.Padding = Padding.Empty),
+					TableLayout.Horizontal(null, SetAlignment(text), SetCaretButton(text), ChangeColorButton(text), null).With(r => r.Padding = Padding.Empty),
+					TableLayout.Horizontal(null, EnabledCheckBox(text), ReadOnlyCheckBox(text), AcceptsTabCheckBox(text), AcceptsReturnCheckBox(text), WrapCheckBox(text), null).With(r => r.Padding = Padding.Empty),
+					text
+				}
+			};
+		}
 
-			layout.Add(text);
-			layout.BeginVertical(Padding.Empty, Size.Empty);
-			layout.AddRow(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), SetCaret(text), null);
-			layout.EndVertical();
+		Control WrapCheckBox(TextArea text)
+		{
+			var control = new CheckBox { Text = "Wrap" };
+			control.CheckedBinding.Bind(text, t => t.Wrap);
+			return control;
+		}
 
-			return layout;
+		Control AcceptsReturnCheckBox(TextArea text)
+		{
+			var control = new CheckBox { Text = "AcceptsReturn" };
+			control.CheckedBinding.Bind(text, t => t.AcceptsReturn);
+			return control;
+		}
+
+		Control AcceptsTabCheckBox(TextArea text)
+		{
+			var control = new CheckBox { Text = "AcceptsTab" };
+			control.CheckedBinding.Bind(text, t => t.AcceptsTab);
+			return control;
+		}
+
+		Control SetAlignment(TextArea text)
+		{
+			var control = new EnumDropDown<HorizontalAlign>();
+			control.SelectedValueBinding.Bind(text, t => t.HorizontalAlign);
+			return new TableLayout
+			{
+				Padding = Padding.Empty,
+				Spacing = new Size(5, 5),
+				Rows = { new TableRow(new Label { Text = "Alignment", VerticalAlign = VerticalAlign.Middle }, control) }
+			};
 		}
 
 		Control ShowSelectedText(TextArea text)
@@ -49,7 +72,8 @@ namespace Eto.Test.Sections.Controls
 		Control SelectAll(TextArea text)
 		{
 			var control = new Button { Text = "Select All" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				text.SelectAll();
 				text.Focus();
 			};
@@ -59,10 +83,11 @@ namespace Eto.Test.Sections.Controls
 		Control SetSelectedText(TextArea textArea)
 		{
 			var control = new Button { Text = "Set selected text" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				var text = textArea.Text;
 				// select the last half of the text
-				textArea.Selection = new Range(text.Length / 2, text.Length / 2 + 1);
+				textArea.Selection = new Range<int>(text.Length / 2, text.Length / 2 + 1);
 				textArea.Focus();
 			};
 			return control;
@@ -71,89 +96,57 @@ namespace Eto.Test.Sections.Controls
 		Control ReplaceSelected(TextArea textArea)
 		{
 			var control = new Button { Text = "Replace selected text" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				textArea.SelectedText = "Some inserted text!";
 				textArea.Focus();
 			};
 			return control;
 		}
 
-		Control SetCaret(TextArea textArea)
+		Control SetCaretButton(TextArea textArea)
 		{
 			var control = new Button { Text = "Set Caret" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				textArea.CaretIndex = textArea.Text.Length / 2;
 				textArea.Focus();
 			};
 			return control;
 		}
 
-		Control DifferentSize()
+		Control ChangeColorButton(TextArea textArea)
 		{
-			var control = new TextArea { Text = "Some Text", Size = new Size (100, 20) };
-			LogEvents(control);
-			return control;
-		}
-
-		Control ReadOnly()
-		{
-			var control = new TextArea { Text = "Read only text", ReadOnly = true };
-			LogEvents(control);
-			return control;
-		}
-
-		Control Disabled()
-		{
-			var control = new TextArea { Text = "Disabled text that you cannot select", Enabled = false };
-			return control;
-		}
-
-		Control Wrap()
-		{
-			var control = new TextArea
+			var control = new Button { Text = "Change Color" };
+			control.Click += (sender, e) =>
 			{
-				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + System.Environment.NewLine + "Second Line",
-				Wrap = true
+				textArea.BackgroundColor = Colors.Black;
+				textArea.TextColor = Colors.Blue;
 			};
-			LogEvents(control);
 			return control;
 		}
 
-		Control NoWrap()
+		Control EnabledCheckBox(TextArea textArea)
 		{
-			var control = new TextArea
-			{
-				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + System.Environment.NewLine + "Second Line",
-				Wrap = false
-			};
-			LogEvents(control);
+			var control = new CheckBox { Text = "Enabled" };
+			control.CheckedBinding.Bind(textArea, t => t.Enabled);
 			return control;
 		}
 
-		Control PixelLayout()
+		Control ReadOnlyCheckBox(TextArea textArea)
 		{
-			var control = new PixelLayout();
-			control.Add(new TextArea
-			{
-				Text = "Some text that is contained in a pixel layout."
-			}, Point.Empty);
+			var control = new CheckBox { Text = "ReadOnly" };
+			control.CheckedBinding.Bind(textArea, t => t.ReadOnly);
 			return control;
 		}
 
 		void LogEvents(TextArea control)
 		{
-			control.TextChanged += delegate
-			{
-				Log.Write(control, "TextChanged, Text: {0}", control.Text);
-			};
+			control.TextChanged += (sender, e) => Log.Write(control, "TextChanged, Text: {0}", control.Text);
 
-			control.SelectionChanged += (sender, e) => {
-				Log.Write(control, "SelectionChanged, Selection: {0}", control.Selection);
-			};
+			control.SelectionChanged += (sender, e) => Log.Write(control, "SelectionChanged, Selection: {0}", control.Selection);
 
-			control.CaretIndexChanged += (sender, e) => {
-				Log.Write(control, "CaretIndexChanged, CaretIndex: {0}", control.CaretIndex);
-			};
+			control.CaretIndexChanged += (sender, e) => Log.Write(control, "CaretIndexChanged, CaretIndex: {0}", control.CaretIndex);
 		}
 	}
 }

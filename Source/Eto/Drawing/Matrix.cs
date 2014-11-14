@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Eto.Drawing
 {
@@ -14,7 +15,7 @@ namespace Eto.Drawing
 	/// 	| x0 y0 1 |
 	/// </para>
 	/// </remarks>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IMatrix : IControlObjectSource, IDisposable
 	{
@@ -136,49 +137,9 @@ namespace Eto.Drawing
 	}
 	
 	/// <summary>
-	/// Handler interface for the <see cref="IMatrix"/>
-	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IMatrixHandler : IMatrix
-	{
-		/// <summary>
-		/// Creates a new identiy matrix
-		/// </summary>
-		/// <remarks>
-		/// An identity matrix is defined as:
-		/// <para>
-		/// 	| 1  0  0 |
-		/// 	| 0  1  0 |
-		/// 	| 0  0  1 |
-		/// </para>
-		/// </remarks>
-		void Create ();
-		
-		/// <summary>
-		/// Creates a new matrix with the specified components
-		/// </summary>
-		/// <remarks>
-		/// The components of the matrix are defined as:
-		/// <para>
-		/// 	| xx xy 0 |
-		/// 	| yx yy 0 |
-		/// 	| x0 y0 1 |
-		/// </para>
-		/// </remarks>
-		/// <param name="xx">Xx component of the matrix (scaleX)</param>
-		/// <param name="yx">Yx component of the matrix</param>
-		/// <param name="xy">Xy component of the matrix</param>
-		/// <param name="yy">Yy component of the matrix (scaleY)</param>
-		/// <param name="x0">X0 component of the matrix (translateX)</param>
-		/// <param name="y0">Y0 component of the matrix (translateY)</param>
-		void Create (float xx, float yx, float xy, float yy, float x0, float y0);
-	}
-	
-	/// <summary>
 	/// Methods to create and manage an <see cref="IMatrix"/>
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class Matrix
 	{
@@ -201,10 +162,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <returns>A new matrix with a scale transform</returns>
 		/// <param name="scale">Scale size for the X and Y coordinates</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromScale (SizeF scale, Generator generator = null)
+		public static IMatrix FromScale (SizeF scale)
 		{
-			return FromScale (scale.Width, scale.Height, generator);
+			return FromScale (scale.Width, scale.Height);
 		}
 		
 		/// <summary>
@@ -213,10 +173,9 @@ namespace Eto.Drawing
 		/// <returns>A new matrix with a scale transform</returns>
 		/// <param name="scaleX">The amount to multiply coordinates along the x axis</param>
 		/// <param name="scaleY">The amount to multiply coordinates along the y axis</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromScale (float scaleX, float scaleY, Generator generator = null)
+		public static IMatrix FromScale (float scaleX, float scaleY)
 		{
-			return Matrix.Create (scaleX, 0, 0, scaleY, 0, 0, generator);
+			return Matrix.Create (scaleX, 0, 0, scaleY, 0, 0);
 		}
 		
 		/// <summary>
@@ -225,10 +184,9 @@ namespace Eto.Drawing
 		/// <returns>A new matrix with a scale transform</returns>
 		/// <param name="scale">The amount to multiply coordinates by</param>
 		/// <param name="center">Point to scale from</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromScaleAt (SizeF scale, PointF center, Generator generator = null)
+		public static IMatrix FromScaleAt (SizeF scale, PointF center)
 		{
-			return FromScaleAt (scale.Width, scale.Height, center.X, center.Y, generator);
+			return FromScaleAt (scale.Width, scale.Height, center.X, center.Y);
 		}
 		
 		/// <summary>
@@ -239,10 +197,9 @@ namespace Eto.Drawing
 		/// <param name="scaleY">The amount to multiply coordinates along the y axis</param>
 		/// <param name="centerX">X co-ordinate of the point to scale from</param>
 		/// <param name="centerY">Y co-ordinate of the point to scale from</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromScaleAt (float scaleX, float scaleY, float centerX, float centerY, Generator generator = null)
+		public static IMatrix FromScaleAt (float scaleX, float scaleY, float centerX, float centerY)
 		{
-			var matrix = Matrix.Create (generator);
+			var matrix = Matrix.Create ();
 			matrix.ScaleAt (scaleX, scaleY, centerX, centerY);
 			return matrix;
 		}
@@ -252,10 +209,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <returns>A new translation matrix</returns>
 		/// <param name="offset">Offset to translate by</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromTranslation (SizeF offset, Generator generator = null)
+		public static IMatrix FromTranslation (SizeF offset)
 		{
-			return FromTranslation (offset.Width, offset.Height, generator);
+			return FromTranslation (offset.Width, offset.Height);
 		}
 		
 		/// <summary>
@@ -263,10 +219,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <returns>A new translation matrix</returns>
 		/// <param name="offset">Offset to translate by</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromTranslation (PointF offset, Generator generator = null)
+		public static IMatrix FromTranslation (PointF offset)
 		{
-			return FromTranslation (offset.X, offset.Y, generator);
+			return FromTranslation (offset.X, offset.Y);
 		}
 		
 		/// <summary>
@@ -275,10 +230,9 @@ namespace Eto.Drawing
 		/// <returns>A new translation matrix</returns>
 		/// <param name="distanceX">Distance to translate along the x axis</param>
 		/// <param name="distanceY">Distance to translate along the y axis</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromTranslation (float distanceX, float distanceY, Generator generator = null)
+		public static IMatrix FromTranslation (float distanceX, float distanceY)
 		{
-			var matrix = Matrix.Create (generator);
+			var matrix = Matrix.Create ();
 			matrix.Translate (distanceX, distanceY);
 			return matrix;
 		}
@@ -288,10 +242,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <returns>A new rotation matrix</returns>
 		/// <param name="angle">Angle in degrees to rotate. A positive value indicates a clockwise rotation, whereas a negative value will rotate counter clockwise</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromRotation (float angle, Generator generator = null)
+		public static IMatrix FromRotation (float angle)
 		{
-			var matrix = Matrix.Create (generator);
+			var matrix = Matrix.Create ();
 			matrix.Rotate (angle);
 			return matrix;
 		}
@@ -302,10 +255,9 @@ namespace Eto.Drawing
 		/// <returns>A new rotation matrix</returns>
 		/// <param name="angle">Angle in degrees to rotate. A positive value indicates a clockwise rotation, whereas a negative value will rotate counter clockwise</param>
 		/// <param name="center">the point to rotate around</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromRotationAt (float angle, PointF center, Generator generator = null)
+		public static IMatrix FromRotationAt (float angle, PointF center)
 		{
-			return FromRotationAt (angle, center.X, center.Y, generator);
+			return FromRotationAt (angle, center.X, center.Y);
 		}
 		
 		/// <summary>
@@ -315,10 +267,9 @@ namespace Eto.Drawing
 		/// <param name="angle">Angle in degrees to rotate. A positive value indicates a clockwise rotation, whereas a negative value will rotate counter clockwise</param>
 		/// <param name="centerX">X co-ordinate of the point to rotate around</param>
 		/// <param name="centerY">Y co-ordinate of the point to rotate around</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromRotationAt (float angle, float centerX, float centerY, Generator generator = null)
+		public static IMatrix FromRotationAt (float angle, float centerX, float centerY)
 		{
-			var matrix = Matrix.Create (generator);
+			var matrix = Matrix.Create ();
 			matrix.RotateAt (angle, centerX, centerY);
 			return matrix;
 		}
@@ -329,50 +280,53 @@ namespace Eto.Drawing
 		/// <returns>A new skew matrix</returns>
 		/// <param name="skewX">Amount to skew along the X axis, 1.0 does not skew</param>
 		/// <param name="skewY">Amount to skew along the Y axis, 1.0 does not skew</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix FromSkew (float skewX, float skewY, Generator generator = null)
+		public static IMatrix FromSkew (float skewX, float skewY)
 		{
-			var matrix = Matrix.Create (generator);
+			var matrix = Matrix.Create ();
 			matrix.Skew (skewX, skewY);
 			return matrix;
 		}
 		
 		/// <summary>
-		/// Gets a delegate that can be used to create an identity matrix
+		/// Gets a delegate that can be used to create an identity matrix with little overhead
 		/// </summary>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static Func<IMatrix> Instantiator (Generator generator = null)
+		public static Func<IMatrix> Instantiator
 		{
-			var activator = generator.Find<IMatrixHandler> ();
-			return () => {
-				var matrix = activator ();
-				matrix.Create ();
-				return matrix;
-			};
+			get {
+				var activator = Platform.Instance.Find<IHandler>();
+				return () =>
+				{
+					var matrix = activator();
+					matrix.Create();
+					return matrix;
+				};
+			}
 		}
 		
 		/// <summary>
-		/// Gets a delegate that can be used to create instances of a matrix with specified components
+		/// Gets a delegate that can be used to create instances of a matrix with specified components with little overhead
 		/// </summary>
 		/// <returns>The with elements.</returns>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static Func<float, float, float, float, float, float, IMatrix> InstantiatorWithElements (Generator generator = null)
+		public static Func<float, float, float, float, float, float, IMatrix> InstantiatorWithElements
 		{
-			var activator = generator.Find<IMatrixHandler> ();
-			return (xx, yx, xy, yy, x0, y0) => {
-				var matrix = activator ();
-				matrix.Create (xx, yx, xy, yy, x0, y0);
-				return matrix;
-			};
+			get
+			{
+				var activator = Platform.Instance.Find<IHandler>();
+				return (xx, yx, xy, yy, x0, y0) =>
+				{
+					var matrix = activator();
+					matrix.Create(xx, yx, xy, yy, x0, y0);
+					return matrix;
+				};
+			}
 		}
 		
 		/// <summary>
 		/// Creates a new identity matrix
 		/// </summary>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix Create (Generator generator = null)
+		public static IMatrix Create ()
 		{
-			var handler = generator.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create ();
 			return handler;
 		}
@@ -381,14 +335,13 @@ namespace Eto.Drawing
 		/// Creates a new matrix with the specified <paramref name="elements"/>
 		/// </summary>
 		/// <param name="elements">Elements of the matrix (six components)</param>
-		/// <param name="generator">Generator to create the matrix</param>
-		public static IMatrix Create (float[] elements, Generator generator = null)
+		public static IMatrix Create (float[] elements)
 		{
 			if (elements == null)
 				throw new ArgumentNullException ("elements");
 			if (elements.Length != 6)
 				throw new ArgumentOutOfRangeException ("elements", elements, "Elements must be an array with a length of 6");
-			var handler = generator.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create (elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 			return handler;
 		}
@@ -402,10 +355,9 @@ namespace Eto.Drawing
 		/// <param name="yy">Yy component of the matrix</param>
 		/// <param name="x0">X0 component of the matrix</param>
 		/// <param name="y0">Y0 component of the matrix</param>
-		/// <param name="generator">Generator.</param>
-		public static IMatrix Create (float xx, float yx, float xy, float yy, float x0, float y0, Generator generator = null)
+		public static IMatrix Create (float xx, float yx, float xy, float yy, float x0, float y0)
 		{
-			var handler = generator.Create<IMatrixHandler> ();
+			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create (xx, yx, xy, yy, x0, y0);
 			return handler;
 		}
@@ -440,7 +392,7 @@ namespace Eto.Drawing
 		{
 			matrix.Translate (offset.X, offset.Y);
 		}
-		
+
 		/// <summary>
 		/// Prepend a scale to the matrix from the origin (0, 0)
 		/// </summary>
@@ -524,5 +476,271 @@ namespace Eto.Drawing
 		{
 			return new PointF(matrix.Xx, matrix.Yy);
 		}
+
+		/// <summary>
+		/// Transforms the rectangle with the current matrix.
+		/// </summary>
+		/// <remarks>
+		/// This returns a rectangle that encompasses the specified <paramref name="rect"/> after it is translated.
+		/// When rotating, this means that the new rectangle may be larger in size to encompass the translated rectangle.
+		/// </remarks>
+		/// <returns>A new rectangle that encompasses the translated <paramref name="rect"/>.</returns>
+		/// <param name="matrix">Matrix to transform each point of the rectangle.</param>
+		/// <param name="rect">Rectangle to transform.</param>
+		public static RectangleF TransformRectangle(this IMatrix matrix, RectangleF rect)
+		{
+			var points = new[]
+			{
+				matrix.TransformPoint(rect.TopLeft),
+				matrix.TransformPoint(rect.TopRight),
+				matrix.TransformPoint(rect.BottomLeft),
+				matrix.TransformPoint(rect.BottomRight)
+			};
+			return RectangleF.FromSides(points.Min(r => r.X), points.Min(r => r.Y), points.Max(r => r.X), points.Max(r => r.Y));
+		}
+
+		#pragma warning disable 612,618
+
+		/// <summary>
+		/// Creates a new matrix with the specified <paramref name="scale"/>
+		/// </summary>
+		/// <returns>A new matrix with a scale transform</returns>
+		/// <param name="scale">Scale size for the X and Y coordinates</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromScale (SizeF scale, Generator generator)
+		{
+			return FromScale (scale.Width, scale.Height, generator);
+		}
+
+		/// <summary>
+		/// Creates a new matrix with the specified scale factor
+		/// </summary>
+		/// <returns>A new matrix with a scale transform</returns>
+		/// <param name="scaleX">The amount to multiply coordinates along the x axis</param>
+		/// <param name="scaleY">The amount to multiply coordinates along the y axis</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromScale (float scaleX, float scaleY, Generator generator)
+		{
+			return Matrix.Create (scaleX, 0, 0, scaleY, 0, 0, generator);
+		}
+
+		/// <summary>
+		/// Creates a new matrix with a <paramref name="scale"/> at the specified <paramref name="center"/> point
+		/// </summary>
+		/// <returns>A new matrix with a scale transform</returns>
+		/// <param name="scale">The amount to multiply coordinates by</param>
+		/// <param name="center">Point to scale from</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromScaleAt (SizeF scale, PointF center, Generator generator)
+		{
+			return FromScaleAt (scale.Width, scale.Height, center.X, center.Y, generator);
+		}
+
+		/// <summary>
+		/// Creates a new matrix with a scale at the specified point
+		/// </summary>
+		/// <returns>A new matrix with a scale transform</returns>
+		/// <param name="scaleX">The amount to multiply coordinates along the x axis</param>
+		/// <param name="scaleY">The amount to multiply coordinates along the y axis</param>
+		/// <param name="centerX">X co-ordinate of the point to scale from</param>
+		/// <param name="centerY">Y co-ordinate of the point to scale from</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromScaleAt (float scaleX, float scaleY, float centerX, float centerY, Generator generator)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.ScaleAt (scaleX, scaleY, centerX, centerY);
+			return matrix;
+		}
+
+		/// <summary>
+		/// Creates a new matrix with a translation
+		/// </summary>
+		/// <returns>A new translation matrix</returns>
+		/// <param name="offset">Offset to translate by</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromTranslation (SizeF offset, Generator generator)
+		{
+			return FromTranslation (offset.Width, offset.Height, generator);
+		}
+
+		/// <summary>
+		/// Creates a new matrix with a translation
+		/// </summary>
+		/// <returns>A new translation matrix</returns>
+		/// <param name="offset">Offset to translate by</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromTranslation (PointF offset, Generator generator)
+		{
+			return FromTranslation (offset.X, offset.Y, generator);
+		}
+
+		/// <summary>
+		/// Creates a new matrix with a translation
+		/// </summary>
+		/// <returns>A new translation matrix</returns>
+		/// <param name="distanceX">Distance to translate along the x axis</param>
+		/// <param name="distanceY">Distance to translate along the y axis</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromTranslation (float distanceX, float distanceY, Generator generator)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.Translate (distanceX, distanceY);
+			return matrix;
+		}
+
+		/// <summary>
+		/// Creates a new rotation matrix
+		/// </summary>
+		/// <returns>A new rotation matrix</returns>
+		/// <param name="angle">Angle in degrees to rotate. A positive value indicates a clockwise rotation, whereas a negative value will rotate counter clockwise</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromRotation (float angle, Generator generator)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.Rotate (angle);
+			return matrix;
+		}
+
+		/// <summary>
+		/// Creates a new rotation matrix around a center point with the specified <paramref name="angle"/>
+		/// </summary>
+		/// <returns>A new rotation matrix</returns>
+		/// <param name="angle">Angle in degrees to rotate. A positive value indicates a clockwise rotation, whereas a negative value will rotate counter clockwise</param>
+		/// <param name="center">the point to rotate around</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromRotationAt (float angle, PointF center, Generator generator)
+		{
+			return FromRotationAt (angle, center.X, center.Y, generator);
+		}
+
+		/// <summary>
+		/// Creates a new rotation matrix around a (<paramref name="centerX"/>, <paramref name="centerY"/>) point with the specified <paramref name="angle"/>
+		/// </summary>
+		/// <returns>A new rotation matrix</returns>
+		/// <param name="angle">Angle in degrees to rotate. A positive value indicates a clockwise rotation, whereas a negative value will rotate counter clockwise</param>
+		/// <param name="centerX">X co-ordinate of the point to rotate around</param>
+		/// <param name="centerY">Y co-ordinate of the point to rotate around</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromRotationAt (float angle, float centerX, float centerY, Generator generator)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.RotateAt (angle, centerX, centerY);
+			return matrix;
+		}
+
+		/// <summary>
+		/// Creates a new matrix with a skew
+		/// </summary>
+		/// <returns>A new skew matrix</returns>
+		/// <param name="skewX">Amount to skew along the X axis, 1.0 does not skew</param>
+		/// <param name="skewY">Amount to skew along the Y axis, 1.0 does not skew</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix FromSkew (float skewX, float skewY, Generator generator)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.Skew (skewX, skewY);
+			return matrix;
+		}
+
+		/// <summary>
+		/// Creates a new identity matrix
+		/// </summary>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix Create (Generator generator)
+		{
+			var handler = Platform.Instance.Create<IHandler> ();
+			handler.Create ();
+			return handler;
+		}
+
+		/// <summary>
+		/// Creates a new matrix with the specified <paramref name="elements"/>
+		/// </summary>
+		/// <param name="elements">Elements of the matrix (six components)</param>
+		/// <param name="generator">Generator to create the matrix</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix Create (float[] elements, Generator generator)
+		{
+			if (elements == null)
+				throw new ArgumentNullException ("elements");
+			if (elements.Length != 6)
+				throw new ArgumentOutOfRangeException ("elements", elements, "Elements must be an array with a length of 6");
+			var handler = Platform.Instance.Create<IHandler> ();
+			handler.Create (elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+			return handler;
+		}
+
+		/// <summary>
+		/// Creates a new matrix with the specified components
+		/// </summary>
+		/// <param name="xx">Xx component of the matrix</param>
+		/// <param name="yx">Yx component of the matrix</param>
+		/// <param name="xy">Xy component of the matrix</param>
+		/// <param name="yy">Yy component of the matrix</param>
+		/// <param name="x0">X0 component of the matrix</param>
+		/// <param name="y0">Y0 component of the matrix</param>
+		/// <param name="generator">Generator.</param>
+		[Obsolete("Use method without generator intance specified")]
+		public static IMatrix Create (float xx, float yx, float xy, float yy, float x0, float y0, Generator generator)
+		{
+			var handler = Platform.Instance.Create<IHandler> ();
+			handler.Create (xx, yx, xy, yy, x0, y0);
+			return handler;
+		}
+
+		#pragma warning restore 612,618
+
+		/// <summary>
+		/// Handler interface for the <see cref="IMatrix"/>
+		/// </summary>
+		/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+		/// <license type="BSD-3">See LICENSE for full terms</license>
+		public interface IHandler : IMatrix
+		{
+			/// <summary>
+			/// Creates a new identiy matrix
+			/// </summary>
+			/// <remarks>
+			/// An identity matrix is defined as:
+			/// <para>
+			/// 	| 1  0  0 |
+			/// 	| 0  1  0 |
+			/// 	| 0  0  1 |
+			/// </para>
+			/// </remarks>
+			void Create ();
+
+			/// <summary>
+			/// Creates a new matrix with the specified components
+			/// </summary>
+			/// <remarks>
+			/// The components of the matrix are defined as:
+			/// <para>
+			/// 	| xx xy 0 |
+			/// 	| yx yy 0 |
+			/// 	| x0 y0 1 |
+			/// </para>
+			/// </remarks>
+			/// <param name="xx">Xx component of the matrix (scaleX)</param>
+			/// <param name="yx">Yx component of the matrix</param>
+			/// <param name="xy">Xy component of the matrix</param>
+			/// <param name="yy">Yy component of the matrix (scaleY)</param>
+			/// <param name="x0">X0 component of the matrix (translateX)</param>
+			/// <param name="y0">Y0 component of the matrix (translateY)</param>
+			void Create (float xx, float yx, float xy, float yy, float x0, float y0);
+		}
+
 	}
 }
