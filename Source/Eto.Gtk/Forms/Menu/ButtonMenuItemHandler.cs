@@ -21,6 +21,7 @@ namespace Eto.GtkSharp.Forms.Menu
 			label.UseUnderline = true;
 			label.AccelWidget = Control;
 			Control.Add(label);
+			Control.ShowAll();
 		}
 
 		protected override void Initialize()

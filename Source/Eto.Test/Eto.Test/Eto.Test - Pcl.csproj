@@ -170,6 +170,7 @@
     <Compile Include="Sections\Controls\ControlColorsSection.cs" />
     <Compile Include="Sections\Controls\LinkButtonSection.cs" />
     <Compile Include="Sections\Controls\DropDownSection.cs" />
+    <Compile Include="Sections\Behaviors\DynamicMenuBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />

@@ -51,6 +51,7 @@ namespace Eto.GtkSharp.Forms.Menu
 			hbox.Add(accelLabel);
 			Control.Add(hbox);
 			Control.Toggled += Connector.HandleToggled;
+			Control.ShowAll();
 		}
 
 		protected new RadioMenuItemConnector Connector { get { return (RadioMenuItemConnector)base.Connector; } }

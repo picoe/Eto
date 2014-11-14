@@ -7,6 +7,7 @@ namespace Eto.GtkSharp.Forms.Menu
 		public ContextMenuHandler()
 		{
 			Control = new Gtk.Menu();
+			Control.ShowAll();
 		}
 
 		public void AddMenu(int index, MenuItem item)

@@ -8,6 +8,7 @@ namespace Eto.GtkSharp.Forms.Menu
 		public SeparatorMenuItemHandler()
 		{
 			Control = new Gtk.SeparatorMenuItem();
+			Control.ShowAll();
 		}
 
 		public void CreateFromCommand(Command command)

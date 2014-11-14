@@ -12,6 +12,7 @@ namespace Eto.GtkSharp.Forms.Menu
 		public MenuBarHandler()
 		{
 			Control = new Gtk.MenuBar();
+			Control.ShowAll();
 		}
 
 		protected override Keys GetShortcut()
