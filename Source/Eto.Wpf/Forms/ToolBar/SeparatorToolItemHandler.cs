@@ -12,13 +12,14 @@ namespace Eto.Wpf.Forms.ToolBar
 		{
 			public EtoSpaceSeparator()
 			{
-				this.Width = this.Height = 16;
+				Width = Height = 16;
+				IsTabStop = false;
 			}
 		}
 
 		public SeparatorToolItemHandler()
 		{
-			Control = new swc.ContentControl();
+			Control = new swc.ContentControl { IsTabStop = false };
 			Type = SeparatorToolItemType.Divider;
 		}
 
