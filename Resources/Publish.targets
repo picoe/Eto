@@ -100,10 +100,10 @@
 			<Package Include="Eto.Platform.Direct2D">
 				<Assembly>Eto.Direct2D.dll</Assembly>
 			</Package>
-			<Package Include="Eto.Platform.Wpf">
+			<Package Include="Eto.Platform.Wpf" Condition="$(Platform) == 'Windows'">
 				<Assembly>Eto.Wpf.dll</Assembly>
 			</Package>
-			<Package Include="Eto.Platform.WinRT">
+			<Package Include="Eto.Platform.WinRT" Condition="$(Platform) == 'Windows'">
 				<Assembly>Eto.WinRT.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.iOS">
@@ -151,7 +151,7 @@
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk3.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
-    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac64.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<!--MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac64.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/-->
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Windows.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Wpf.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
