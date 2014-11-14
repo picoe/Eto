@@ -2,15 +2,15 @@ Eto.Forms
 =========
 ### A cross platform desktop and mobile user interface framework
 
-[![Build status](https://ci.appveyor.com/api/projects/status/rftjjnd9lq2rxc7h/branch/develop)](https://ci.appveyor.com/project/cwensley/eto/branch/develop)
+[![Build status](http://img.shields.io/appveyor/ci/cwensley/eto.svg?style=flat)](https://ci.appveyor.com/project/cwensley/eto/branch/develop)
 
 Links
 -----
 
 * Join the [forums](http://groups.google.com/group/eto-forms)
 * Chat in [#eto.forms](http://chat.mibbit.com/?server=irc.gimp.org&channel=%23eto.forms) on irc.gimp.org
-* Download binaries using [nuget](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or Xamarin Studio.
-* For bleeding edge nuget packages, add the [development nuget feed](https://www.myget.org/F/eto/) (**now on MyGet.org**) to your sources list.
+* Download binaries using NuGet [![NuGet](http://img.shields.io/nuget/v/Eto.Forms.svg?style=flat)](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or Xamarin Studio.
+* For bleeding edge nuget packages, add the MyGet development feed [![MyGet](http://img.shields.io/myget/eto/vpre/Eto.Forms.svg?style=flat)](https://www.myget.org/F/eto/) to your sources list.
 
 
 Description
