@@ -3,19 +3,19 @@
 	<metadata>
 		<id>Eto.Serialization.Json</id>
 		<version>$version$</version>
-		<title>Eto.Forms Json serializer</title>
-		<authors>Picoe Software Solutions Inc.</authors>
-		<owners>Picoe Software Solutions Inc.</owners>
+		<title>$title$</title>
+		<authors>$author$</authors>
+		<owners>$author$</owners>
 		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
 		<projectUrl>https://github.com/picoe/Eto</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>Eto.Forms Json serializer</summary>
+		<summary>$description$</summary>
 		<description>
-    	Eto.Json allows you to load json UI definitions for the Eto.Forms framework
+Eto.Json allows you to load json UI definitions for the Eto.Forms framework
     	
-        To get more information about how to get started, read the wiki:
+To get more information about how to get started, read the wiki:
 
-        https://github.com/picoe/Eto/wiki		
+https://github.com/picoe/Eto/wiki		
 		</description>
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop json eto.forms</tags>

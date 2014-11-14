@@ -11,17 +11,17 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
 		<description>
-    	This is the MonoMac platform for Eto.Forms UI Framework.
+This is the MonoMac platform for Eto.Forms UI Framework.
     	
-    	Include this along with your Eto.Forms application to provide an OS X interface for Mac users.
+Include this along with your Eto.Forms application to provide an OS X interface for Mac users.
     	
-    	Eto.Platform.Mac uses the open source MonoMac, which allows you to create OS X Applications with no cost.  However, it does require mono to be installed.
+Eto.Platform.Mac uses the open source MonoMac, which allows you to create OS X Applications with no cost.  However, it does require mono to be installed.
 
-    	Using Eto.Platform.XamMac instead allows you to bundle mono inside your .app, however it requires purchasing Xamarin.Mac and using Xamarin Studio on OS X.
+Using Eto.Platform.XamMac instead allows you to bundle mono inside your .app, however it requires purchasing Xamarin.Mac and using Xamarin Studio on OS X.
     	
-    	You can create your own .app bundle to run your app on OS X, without an OS X machine. This is included as the MyApp.app folder. Read MyApp.app\Contents\MonoBundle\README.txt for instructions on next steps.
+You can create your own .app bundle to run your app on OS X, without using a Mac. Use the Eto.Platform.Mac.Template nuget package to build one for your app automatically.
     	
-    	You do not need to use any of the classes of this assembly (unless customizing the MonoMac functionality of the platform), and should just use the UI controls from the Eto assembly.
+You do not need to use any of the classes of this assembly (unless customizing the MonoMac functionality of the platform), and should just use the UI controls from the Eto assembly.
 		</description>
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop monomac osx mac eto.forms</tags>

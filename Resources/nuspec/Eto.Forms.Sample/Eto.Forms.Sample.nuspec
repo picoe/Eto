@@ -11,11 +11,13 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Eto.Forms - Sample Cross Platform Application</summary>
     <description>
-    	This sample application provides a starting point for your Eto.Forms application.
+This sample application provides a starting point for your Eto.Forms application.
     	
-    	Add this package to a blank console application, then delete the Program.cs of the existing application to use MyEtoApplication.Main() as your program startup.
+Add this package to a blank console application, which will replace your Program.cs with the Eto.Forms startup code and include a MainForm.cs as a sample form to get you started.
     	
-    	You should also change the console application's output type to 'Windows Application' to suppress the console window from showing.
+You will need to change the console application's output type to 'Windows Application' to suppress the console window from showing.
+
+In Xamarin Studio, set the compile target to 'Executable with GUI' and uncheck 'Run on external console' in Run &gt; Build. 
     </description>
     <copyright>Copyright 2014 by Curtis Wensley</copyright>
     <tags>cross platform gui framework desktop winforms wpf mac osx gtk eto.forms sample</tags>

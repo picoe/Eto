@@ -11,11 +11,11 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
 		<description>
-    	This is the Windows Forms platform for Eto.Forms UI Framework.
+This is the Windows Forms platform for Eto.Forms UI Framework.
     	
-    	Include this along with your Eto.Forms application to provide a Windows Forms interface for your windows users.
+Include this along with your Eto.Forms application to provide a Windows Forms interface for your windows users.
     	
-    	You do not need to use any of the classes of this assembly (unless customizing the Windows Forms functionality of the platform), and should just use the UI controls from the Eto assembly.
+You do not need to use any of the classes of this assembly (unless customizing the Windows Forms functionality of the platform), and should just use the UI controls from the Eto assembly.
 		</description>
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop wpf eto.forms</tags>
