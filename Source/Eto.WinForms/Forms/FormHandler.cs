@@ -71,6 +71,12 @@ namespace Eto.WinForms.Forms
 			};
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Resizable = true;
+		}
+
 		public void Show()
 		{
 			Control.Show();
