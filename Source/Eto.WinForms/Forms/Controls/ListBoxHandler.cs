@@ -12,9 +12,9 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		CollectionHandler collection;
 
-		class MyListBox : swf.ListBox
+		class EtoListBox : swf.ListBox
 		{
-			public MyListBox()
+			public EtoListBox()
 			{
 				DrawMode = swf.DrawMode.OwnerDrawFixed;
 				SetStyle(swf.ControlStyles.UserPaint | swf.ControlStyles.OptimizedDoubleBuffer | swf.ControlStyles.EnableNotifyMessage | swf.ControlStyles.ResizeRedraw, true);
@@ -62,28 +62,26 @@ namespace Eto.WinForms.Forms.Controls
 
 				if (e.Index == -1)
 					return;
-				using (var foreBrush = new sd.SolidBrush(ForeColor))
+
+				var bounds = e.Bounds;
+				var item = (IListItem)Items[e.Index];
+				var imageitem = item as IImageListItem;
+				if (imageitem != null && imageitem.Image != null)
 				{
-					var bounds = e.Bounds;
-					var item = (IListItem)Items[e.Index];
-					var imageitem = item as IImageListItem;
-					if (imageitem != null && imageitem.Image != null)
-					{
-						var img = imageitem.Image.Handler as IWindowsImageSource;
-						if (img != null)
-							e.Graphics.DrawImage(img.GetImageWithSize(bounds.Height), bounds.Left, bounds.Top, bounds.Height, bounds.Height);
-						bounds.X += bounds.Height + 2;
-					}
-					var stringSize = e.Graphics.MeasureString(item.Text, e.Font);
-					var adjust = Math.Max(0, (bounds.Height - stringSize.Height) / 2);
-					e.Graphics.DrawString(item.Text, e.Font, foreBrush, bounds.Left, bounds.Top + adjust);
+					var img = imageitem.Image.Handler as IWindowsImageSource;
+					if (img != null)
+						e.Graphics.DrawImage(img.GetImageWithSize(bounds.Height), bounds.Left, bounds.Top, bounds.Height, bounds.Height);
+					bounds.X += bounds.Height + 2;
 				}
+				var stringSize = swf.TextRenderer.MeasureText(e.Graphics, item.Text, e.Font);
+				bounds.Y += Math.Max(0, (bounds.Height - stringSize.Height) / 2);
+				swf.TextRenderer.DrawText(e.Graphics, item.Text, e.Font, bounds, ForeColor, swf.TextFormatFlags.Left);
 			}
 		}
 
 		public ListBoxHandler()
 		{
-			Control = new MyListBox();
+			Control = new EtoListBox();
 			Control.SelectedIndexChanged += control_SelectedIndexChanged;
 			Control.IntegralHeight = false;
 			Control.DoubleClick += control_DoubleClick;

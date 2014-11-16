@@ -8,7 +8,7 @@ namespace Eto.WinForms.Forms
 {
 	public class FormHandler : WindowHandler<swf.Form, Form, Form.ICallback>, Form.IHandler
 	{
-		public class MyForm : swf.Form
+		public class EtoForm : swf.Form
 		{
 			bool hideFromAltTab;
 
@@ -62,7 +62,7 @@ namespace Eto.WinForms.Forms
 
 		public FormHandler()
 		{
-			Control = new MyForm
+			Control = new EtoForm
 			{
 				StartPosition = swf.FormStartPosition.CenterParent,
 				AutoSize = true,
@@ -88,7 +88,7 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				base.ShowInTaskbar = value;
-				var myForm = Control as MyForm;
+				var myForm = Control as EtoForm;
 				if (myForm != null)
 					myForm.HideFromAltTab = !value;
 			}
