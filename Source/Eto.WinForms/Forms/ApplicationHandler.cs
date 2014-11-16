@@ -24,6 +24,7 @@ namespace Eto.WinForms.Forms
 		{
 			mainThread = Thread.CurrentThread;
 			swf.Application.EnableVisualStyles();
+			swf.Application.SetCompatibleTextRenderingDefault(false);
 		}
 
 		public void RunIteration()

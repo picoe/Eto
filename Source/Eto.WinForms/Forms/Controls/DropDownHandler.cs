@@ -23,21 +23,21 @@ namespace Eto.WinForms.Forms.Controls
 
 		public sd.Size MinSize { get; set; }
 
-		static readonly sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
-
 		public override sd.Size GetPreferredSize(sd.Size proposedSize)
 		{
 			if (cachedSize == null)
 			{
 				var size = new sd.Size(16, 20);
 				var font = Font;
-
-				foreach (object item in Items)
+				using (var g = CreateGraphics())
 				{
-					var text = GetItemText(item);
-					var itemSize = graphics.MeasureString(text, font);
-					size.Width = Math.Max(size.Width, (int)itemSize.Width);
-					size.Height = Math.Max(size.Height, (int)itemSize.Height);
+					foreach (object item in Items)
+					{
+						var text = GetItemText(item);
+						var itemSize = swf.TextRenderer.MeasureText(g, text, font);
+						size.Width = Math.Max(size.Width, (int) itemSize.Width);
+						size.Height = Math.Max(size.Height, (int) itemSize.Height);
+					}
 				}
 				// for drop down glyph and border
 				if (DrawMode == swf.DrawMode.OwnerDrawFixed)
@@ -82,7 +82,7 @@ namespace Eto.WinForms.Forms.Controls
 				string text = Items[e.Index].ToString();
 
 				// Determine the forecolor based on whether or not the item is selected    
-				e.Graphics.DrawString(text, Font, new sd.SolidBrush(ForeColor), e.Bounds.X, e.Bounds.Y);
+				swf.TextRenderer.DrawText(e.Graphics, text, Font, e.Bounds, ForeColor, swf.TextFormatFlags.Left);
 			}
 
 			e.DrawFocusRectangle();
