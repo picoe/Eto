@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using System.Reflection;
@@ -19,39 +18,29 @@ namespace Eto.WinForms.CustomControls
 	/// </remarks>
 	public class ExtendedDateTimePicker : swf.DateTimePicker
 	{
-		static sd.Image img = sd.Image.FromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("Eto.WinForms.CustomControls.CalendarPicker.png"));
+		static readonly sd.Image img = sd.Image.FromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("Eto.WinForms.CustomControls.CalendarPicker.png"));
 
 		int selectedSegment = -1;
 
-		static sd.StringFormat stringFormat;
-
-		static ExtendedDateTimePicker()
-		{
-			stringFormat = new sd.StringFormat(sd.StringFormat.GenericTypographic);
-			stringFormat.FormatFlags |=
-				sd.StringFormatFlags.MeasureTrailingSpaces
-				| sd.StringFormatFlags.NoWrap
-				| sd.StringFormatFlags.NoClip;
-			stringFormat.Alignment = sd.StringAlignment.Far;
-			stringFormat.LineAlignment = sd.StringAlignment.Center;
-		}
+		const swf.TextFormatFlags RenderTextFormat = swf.TextFormatFlags.SingleLine
+		                                             | swf.TextFormatFlags.NoPrefix
+		                                             | swf.TextFormatFlags.TextBoxControl
+		                                             | swf.TextFormatFlags.Right
+		                                             | swf.TextFormatFlags.VerticalCenter
+		                                             | swf.TextFormatFlags.NoPadding;
 
 		class Segment
 		{
 			public SegmentDef Def { get; set; }
 			public string Format { get; set; }
-			public float Start { get; set; }
-			public float End { get { return Start + Width; } }
+			public int Start { get; set; }
+			public int End { get { return Start + Width; } }
 			public string StaticText { get; set; }
 			public bool IsUpdatable { get { return Def != null; } }
-			public float Width { get; set; }
+			public int Width { get; set; }
 		}
 
-		List<Segment> segments = new List<Segment>();
-		public ExtendedDateTimePicker()
-		{
-			//ExtendedMode = true;
-		}
+		readonly List<Segment> segments = new List<Segment>();
 
 		public bool ExtendedMode
 		{
@@ -68,18 +57,18 @@ namespace Eto.WinForms.CustomControls
 			public char Char { get; set; }
 			public Func<DateTime, int, DateTime> Update { get; set; }
 			public Func<string, string> MaxWidth { get; set; }
-			public int? CharWidth { get; set; }
 		}
 
-		static SegmentDef[] defs = new[] {
-				new SegmentDef { Char = 'y', Update = (d,i) => d.AddYears(i), MaxWidth = s => new string('9', s.Length) },
-				new SegmentDef { Char = 'M', Update = (d,i) => d.AddMonths(i), MaxWidth = s => "99" },
-				new SegmentDef { Char = 'd', Update = (d,i) => d.AddDays(i), MaxWidth = s => "99" },
-				new SegmentDef { Char = 'h', Update = (d,i) => d.AddHours(i), MaxWidth = s => "99" },
-				new SegmentDef { Char = 'm', Update = (d,i) => d.AddMinutes(i), MaxWidth = s => "99" },
-				new SegmentDef { Char = 's', Update = (d,i) => d.AddSeconds(i), MaxWidth = s => "99" },
-				new SegmentDef { Char = 't', Update = (d,i) => d.AddHours(d.Hour > 12 ? -12 : 12), MaxWidth = s => CultureInfo.CurrentCulture.DateTimeFormat.AMDesignator }
-			};
+		static readonly SegmentDef[] defs =
+		{
+			new SegmentDef { Char = 'y', Update = (d,i) => d.AddYears(i), MaxWidth = s => new string('9', s.Length) },
+			new SegmentDef { Char = 'M', Update = (d,i) => d.AddMonths(i), MaxWidth = s => "99" },
+			new SegmentDef { Char = 'd', Update = (d,i) => d.AddDays(i), MaxWidth = s => "99" },
+			new SegmentDef { Char = 'h', Update = (d,i) => d.AddHours(i), MaxWidth = s => "99" },
+			new SegmentDef { Char = 'm', Update = (d,i) => d.AddMinutes(i), MaxWidth = s => "99" },
+			new SegmentDef { Char = 's', Update = (d,i) => d.AddSeconds(i), MaxWidth = s => "99" },
+			new SegmentDef { Char = 't', Update = (d,i) => d.AddHours(d.Hour > 12 ? -12 : 12), MaxWidth = s => CultureInfo.CurrentCulture.DateTimeFormat.AMDesignator }
+		};
 
 		protected override void OnFormatChanged(EventArgs e)
 		{
@@ -114,11 +103,10 @@ namespace Eto.WinForms.CustomControls
 
 			using (var g = CreateGraphics())
 			{
-				var pixelPos = 0f;
+				var pixelPos = 0;
 				var pos = 0;
 				while (pos < format.Length)
 				{
-					pixelPos = (float)Math.Round(pixelPos);
 					var ch = format[pos];
 					var def = defs.FirstOrDefault(r => r.Char == ch);
 					if (def != null)
@@ -127,11 +115,11 @@ namespace Eto.WinForms.CustomControls
 						while (endPos < format.Length - 1 && format[endPos + 1] == ch)
 							endPos++;
 						var str = def.MaxWidth(format.Substring(pos, (endPos - pos + 1)));
-						var strSize = g.MeasureString(str, Font, int.MaxValue, stringFormat);
+						var strSize = swf.TextRenderer.MeasureText(g, str, Font, sd.Size.Empty, RenderTextFormat);
 						var segment = new Segment
 						{
 							Start = pixelPos,
-							Width = (float)Math.Round(strSize.Width + .5f),
+							Width = strSize.Width,
 							Format = format.Substring(pos, endPos - pos + 1),
 							Def = def
 						};
@@ -141,12 +129,12 @@ namespace Eto.WinForms.CustomControls
 					}
 					else
 					{
-						var strSize = g.MeasureString(ch.ToString(), Font, int.MaxValue, stringFormat);
+						var strSize = swf.TextRenderer.MeasureText(g, ch.ToString(CultureInfo.InvariantCulture), Font, sd.Size.Empty, RenderTextFormat);
 						var segment = new Segment
 						{
 							Start = pixelPos,
-							Width = (float)Math.Round(strSize.Width + .5f),
-							StaticText = ch.ToString()
+							Width = strSize.Width,
+							StaticText = ch.ToString(CultureInfo.InvariantCulture)
 						};
 						segments.Add(segment);
 						pixelPos += segment.Width;
@@ -283,9 +271,9 @@ namespace Eto.WinForms.CustomControls
 			
 			// calculate text location
 			var font = Font;
-			var fontSize = g.MeasureString("9/", font, int.MaxValue, stringFormat);
+			var fontSize = swf.TextRenderer.MeasureText(g, "9/", font, new sd.Size(int.MaxValue, int.MaxValue), RenderTextFormat);
 
-			int textOffset = (int)Math.Round((ClientSize.Height - fontSize.Height) / 2);
+			int textOffset = (ClientSize.Height - fontSize.Height) / 2;
 			var textRect = rect;
 			textRect.X += 2;
 			textRect.Y += textOffset;
@@ -307,33 +295,28 @@ namespace Eto.WinForms.CustomControls
 
 			// text segments
 			int currentSegment = 0;
-			using (var foreBrush = new sd.SolidBrush(foreColor))
-			using (var highlightBrush = new sd.SolidBrush(sd.SystemColors.HighlightText))
+			foreach (var segment in segments)
 			{
-
-				foreach (var segment in segments)
+				string str;
+				var textColor = foreColor;
+				if (segment.Def != null)
 				{
-					string str;
-					var textBrush = foreBrush;
-					if (segment.Def != null)
+					var s = Value.ToString(" " + segment.Format);
+					str = s.Substring(1);
+					if (Focused && currentSegment == selectedSegment)
 					{
-						var s = Value.ToString(" " + segment.Format);
-						str = s.Substring(1);
-						if (Focused && currentSegment == selectedSegment)
+						using (var highlightBgBrush = new sd.SolidBrush(sd.SystemColors.Highlight))
 						{
-							using (var highlightBgBrush = new sd.SolidBrush(sd.SystemColors.Highlight))
-							{
-								g.FillRectangle(highlightBgBrush, new sd.RectangleF(textRect.X + segment.Start + 0.5f, textRect.Y - 1, segment.Width - 1f, textRect.Height + 2));
-							}
-							textBrush = highlightBrush;
+							g.FillRectangle(highlightBgBrush, new sd.RectangleF(textRect.X + segment.Start, textRect.Y, segment.Width, textRect.Height));
 						}
+						textColor = sd.SystemColors.HighlightText;
 					}
-					else
-						str = segment.StaticText;
-
-					g.DrawString(str, font, textBrush, new sd.RectangleF(textRect.X + segment.Start, textRect.Y, segment.Width, textRect.Height), stringFormat);
-					currentSegment++;
 				}
+				else
+					str = segment.StaticText;
+
+				swf.TextRenderer.DrawText(g, str, font, new sd.Rectangle((int)(textRect.X + segment.Start), textRect.Y, segment.Width, textRect.Height), textColor, RenderTextFormat);
+				currentSegment++;
 			}
 
 			// calendar button
@@ -372,21 +355,15 @@ namespace Eto.WinForms.CustomControls
 				{
 					if (Focused && selectedSegment == -1)
 						return swf.VisualStyles.CheckBoxState.CheckedHot;
-					else
-						return swf.VisualStyles.CheckBoxState.CheckedNormal;
+					return swf.VisualStyles.CheckBoxState.CheckedNormal;
 				}
-				else if (Focused && selectedSegment == -1)
+				if (Focused && selectedSegment == -1)
 					return swf.VisualStyles.CheckBoxState.UncheckedHot;
-				else
-					return swf.VisualStyles.CheckBoxState.UncheckedNormal;
+				return swf.VisualStyles.CheckBoxState.UncheckedNormal;
 			}
-			else
-			{
-				if (Checked)
-					return swf.VisualStyles.CheckBoxState.CheckedDisabled;
-				else
-					return swf.VisualStyles.CheckBoxState.UncheckedDisabled;
-			}
+			if (Checked)
+				return swf.VisualStyles.CheckBoxState.CheckedDisabled;
+			return swf.VisualStyles.CheckBoxState.UncheckedDisabled;
 		}
 
 		bool calendarOpen;
