@@ -67,6 +67,17 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		protected override bool SetMinimumSize(Size size)
+		{
+			var sdsize = size.ToSD();
+			if (Control.MinimumSize != sdsize)
+			{
+				Control.MinimumSize = sdsize;
+				return true;
+			}
+			return false;
+		}
+
 		protected override void Initialize()
 		{
 			Control.KeyPreview = !ApplicationHandler.BubbleKeyEvents;
@@ -103,7 +114,7 @@ namespace Eto.WinForms.Forms
 					ContainerContentControl.MinimumSize = Content.GetPreferredSize().ToSD();
 				Control.MinimumSize = Control.Size;
 				Control.AutoSize = false;
-				Control.MinimumSize = sd.Size.Empty;
+				Control.MinimumSize = MinimumSize.ToSD();
 				content.MinimumSize = content.MaximumSize = sd.Size.Empty;
 				ContainerContentControl.MinimumSize = sd.Size.Empty;
 			};
