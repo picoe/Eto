@@ -1,5 +1,7 @@
 using Eto.Drawing;
 using Eto.Forms;
+using Eto.Wpf.Forms.Cells;
+using Eto.Wpf.Forms.ToolBar;
 using swi = System.Windows.Input;
 using swm = System.Windows.Media;
 using sw = System.Windows;
@@ -64,6 +66,7 @@ namespace Eto.Wpf
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<Calendar.IHandler>(() => new CalendarHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
@@ -109,6 +112,7 @@ namespace Eto.Wpf
 			
 			// Forms.ToolBar
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
+			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());

@@ -4,11 +4,11 @@ using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public class FormHandler : WindowHandler<swf.Form, Form, Form.ICallback>, Form.IHandler
 	{
-		public class MyForm : swf.Form
+		public class EtoForm : swf.Form
 		{
 			bool hideFromAltTab;
 
@@ -62,13 +62,19 @@ namespace Eto.WinForms
 
 		public FormHandler()
 		{
-			Control = new MyForm
+			Control = new EtoForm
 			{
 				StartPosition = swf.FormStartPosition.CenterParent,
 				AutoSize = true,
 				Size = sd.Size.Empty,
 				MinimumSize = sd.Size.Empty
 			};
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Resizable = true;
 		}
 
 		public void Show()
@@ -82,7 +88,7 @@ namespace Eto.WinForms
 			set
 			{
 				base.ShowInTaskbar = value;
-				var myForm = Control as MyForm;
+				var myForm = Control as EtoForm;
 				if (myForm != null)
 					myForm.HideFromAltTab = !value;
 			}

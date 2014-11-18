@@ -8,7 +8,7 @@ using System.Globalization;
 namespace Eto.Wpf.Drawing
 {
 	/// <summary>
-	/// Handler for <see cref="IGraphics"/>
+	/// Handler for <see cref="Graphics"/>
 	/// </summary>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
@@ -21,6 +21,7 @@ namespace Eto.Wpf.Drawing
 		double offset = 0.5;
 		double inverseoffset;
 		RectangleF? clipBounds;
+		readonly RectangleF initialClip;
 		IGraphicsPath clipPath;
 		sw.Rect bounds;
 		readonly bool disposeControl;
@@ -50,21 +51,22 @@ namespace Eto.Wpf.Drawing
 
 		protected override bool DisposeControl { get { return disposeControl; } }
 
-		public GraphicsHandler(swm.Visual visual, swm.DrawingContext context, sw.Rect bounds, bool shouldDispose = true)
+		public GraphicsHandler(swm.Visual visual, swm.DrawingContext context, sw.Rect bounds, RectangleF initialClip, bool shouldDispose = true)
 		{
-			this.disposeControl = shouldDispose;
+			disposeControl = shouldDispose;
 			this.visual = visual;
-			this.drawingVisual = visual as swm.DrawingVisual;
+			drawingVisual = visual as swm.DrawingVisual;
 
-			this.Control = context;
+			Control = context;
 
 			this.bounds = bounds;
+			this.initialClip = initialClip;
 
 			PushGuideLines(bounds);
 
-			this.Control.PushClip(new swm.RectangleGeometry(bounds));
+			Control.PushClip(new swm.RectangleGeometry(bounds));
 
-			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
+			ImageInterpolation = ImageInterpolation.Default;
 		}
 
 		public bool IsRetained { get { return true; } }
@@ -80,7 +82,7 @@ namespace Eto.Wpf.Drawing
 
 			PushGuideLines(bounds);
 
-			ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
+			ImageInterpolation = ImageInterpolation.Default;
 		}
 
 		public double DPI
@@ -90,7 +92,7 @@ namespace Eto.Wpf.Drawing
 				if (dpiScale == null)
 				{
 					var presentationSource = sw.PresentationSource.FromVisual(visual);
-					if (presentationSource != null)
+					if (presentationSource != null && presentationSource.CompositionTarget != null)
 					{
 						swm.Matrix m = presentationSource.CompositionTarget.TransformToDevice;
 						dpiScale = m.M11;
@@ -430,7 +432,17 @@ namespace Eto.Wpf.Drawing
 
 		public RectangleF ClipBounds
 		{
-			get { return clipBounds ?? RectangleF.Empty; }
+			get
+			{
+				var translatedClip = clipBounds ?? initialClip;
+				if (TransformStack.Current != null)
+				{
+					var invertedTransform = TransformStack.Current.Clone();
+					invertedTransform.Invert();
+					translatedClip = invertedTransform.TransformRectangle(translatedClip);
+				}
+				return translatedClip;
+			}
 		}
 
 		public void SetClip(RectangleF rectangle)
@@ -461,7 +473,7 @@ namespace Eto.Wpf.Drawing
 
 		public void Clear(SolidBrush brush)
 		{
-			var rect = ClipBounds;
+			var rect = clipBounds ?? initialClip;
 			if (drawingVisual != null)
 			{
 				// bitmap

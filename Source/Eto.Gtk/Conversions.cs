@@ -17,7 +17,7 @@ namespace Eto.GtkSharp
 			return new Cairo.Color((double)color.R, (double)color.G, (double)color.B, (double)color.A);
 		}
 
-#if GTK3
+		#if GTK3
 		public static Cairo.Color ToCairo(this Gdk.RGBA color)
 		{
 			return new Cairo.Color(color.Red, color.Green, color.Blue, color.Alpha);
@@ -536,6 +536,36 @@ namespace Eto.GtkSharp
 			if (value.HasFlag(Gtk.CellRendererState.Selected))
 				return DrawableCellStates.Selected;
 			return DrawableCellStates.None;
+		}
+
+		public static HorizontalAlign ToEto(this Gtk.Justification justification)
+		{
+			switch (justification)
+			{
+				case Gtk.Justification.Left:
+					return HorizontalAlign.Left;
+				case Gtk.Justification.Right:
+					return HorizontalAlign.Right;
+				case Gtk.Justification.Center:
+					return HorizontalAlign.Center;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static Gtk.Justification ToGtk(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Left:
+					return Gtk.Justification.Left;
+				case HorizontalAlign.Center:
+					return Gtk.Justification.Center;
+				case HorizontalAlign.Right:
+					return Gtk.Justification.Right;
+				default:
+					throw new NotSupportedException();
+			}
 		}
 	}
 }

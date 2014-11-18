@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public interface IGtkListModelHandler<TItem, TStore>
 		where TStore: IDataStore<TItem>

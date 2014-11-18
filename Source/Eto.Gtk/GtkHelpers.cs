@@ -1,6 +1,8 @@
 ﻿using System;
 using Eto.Forms;
 using Eto.GtkSharp;
+using Eto.GtkSharp.Forms.Controls;
+using Eto.GtkSharp.Forms;
 
 namespace Eto.Forms
 {
@@ -27,10 +29,34 @@ namespace Eto.Forms
 		/// <param name="attach">If set to <c>true</c> the control is to be attached to an existing application, or <c>false</c> to get the native control directly.</param>
 		public static Gtk.Widget ToNative(this Control control, bool attach = false)
 		{
-			if (attach)
+			if (attach && !control.Loaded)
+			{
 				control.AttachNative();
+				control.GetContainerWidget().ShowAll();
+			}
 			return control.GetContainerWidget();
 		}
+
+		/// <summary>
+		/// Wraps the specified <paramref name="nativeWidget"/> to an Eto control that can be used directly in Eto.Forms code.
+		/// </summary>
+		/// <returns>The eto control wrapper around the native control.</returns>
+		/// <param name="nativeWidget">Native control to wrap.</param>
+		public static Control ToEto(this Gtk.Widget nativeWidget)
+		{
+			return new Control(new NativeControlHandler(nativeWidget));
+		}
+
+		/// <summary>
+		/// Wraps the specified Gtk <paramref name="window"/> in an Eto control so it can be used as a parent when showing dialogs, etc.
+		/// </summary>
+		/// <returns>The eto window wrapper around the native Gtk window.</returns>
+		/// <param name="window">Gtk Window to wrap.</param>
+		public static Window ToEtoWindow(this Gtk.Window window)
+		{
+			return new Form(new FormHandler(window));
+		}
+
 	}
 }
 

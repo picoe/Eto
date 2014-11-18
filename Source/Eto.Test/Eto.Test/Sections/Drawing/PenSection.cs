@@ -38,7 +38,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control PenJoinControl()
 		{
-			var control = new EnumComboBox<PenLineJoin>();
+			var control = new EnumDropDown<PenLineJoin>();
 			control.Bind(c => c.SelectedValue, this, r => r.LineJoin);
 			control.SelectedValueChanged += Refresh;
 			return control;
@@ -46,7 +46,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control PenCapControl()
 		{
-			var control = new EnumComboBox<PenLineCap>();
+			var control = new EnumDropDown<PenLineCap>();
 			control.Bind(c => c.SelectedValue, this, r => r.LineCap);
 			control.SelectedValueChanged += Refresh;
 			return control;
@@ -70,7 +70,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control DashStyleControl()
 		{
-			var control = new ComboBox();
+			var control = new DropDown();
 			control.Items.Add(new DashStyleItem { Text = "Solid", Style = DashStyles.Solid });
 			control.Items.Add(new DashStyleItem { Text = "Dash", Style = DashStyles.Dash });
 			control.Items.Add(new DashStyleItem { Text = "Dot", Style = DashStyles.Dot });

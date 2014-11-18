@@ -1,9 +1,14 @@
 using Eto.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public class FormHandler : GtkWindow<Gtk.Window, Form, Form.ICallback>, Form.IHandler
 	{
+		public FormHandler(Gtk.Window window)
+		{
+			Control = window;
+		}
+
 		public FormHandler()
 		{
 			Control = new Gtk.Window(Gtk.WindowType.Toplevel);

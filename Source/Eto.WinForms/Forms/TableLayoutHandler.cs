@@ -5,7 +5,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using System.Linq;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public class TableLayoutHandler : WindowsContainer<swf.TableLayoutPanel, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
@@ -18,6 +18,8 @@ namespace Eto.WinForms
 
 		protected override bool SetMinimumSize(Size size)
 		{
+			if (columnScale == null || rowScale == null)
+				return base.SetMinimumSize(size);
 			// ensure that our width doesn't get smaller than the non-scaled child controls
 			// to make it so the child controls are left-justified when the container
 			// is smaller than all the children
@@ -49,8 +51,10 @@ namespace Eto.WinForms
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};
-			this.Spacing = TableLayout.DefaultSpacing;
-			this.Padding = TableLayout.DefaultPadding;
+			#pragma warning disable 612,618
+			Spacing = TableLayout.DefaultSpacing;
+			Padding = TableLayout.DefaultPadding;
+			#pragma warning restore 612,618
 		}
 
 		public void Update()
@@ -67,10 +71,22 @@ namespace Eto.WinForms
 			set
 			{
 				spacing = value;
-				var newpadding = new swf.Padding(0, 0, spacing.Width, spacing.Height);
-				foreach (swf.Control control in Control.Controls)
+				SetChildPadding();
+			}
+		}
+
+		void SetChildPadding()
+		{
+			if (views != null && rowScale != null && columnScale != null)
+			{
+				for (int y = 0; y < rowScale.Length; y++)
 				{
-					control.Margin = newpadding;
+					for (int x = 0; x < columnScale.Length; x++)
+					{
+						var control = views[x, y].GetContainerControl();
+						if (control != null)
+							control.Margin = GetPadding(x, y);
+					}
 				}
 			}
 		}

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="Eto.Addin.VisualStudio" Version="1.0" Language="en-US" Publisher="Curtis Wensley" />
+    <DisplayName>Eto.Forms Visual Studio Addin</DisplayName>
+    <Description xml:space="preserve">Eto.Forms Support for Visual Studio.  Eto.Forms is a cross platform GUI framework for desktop and mobile applications in .NET that can target Wpf, WinForms, Direct2D, MonoMac, Xamarin.Mac, Gtk2, Gtk3, and iOS with a single set of code.</Description>
+    <MoreInfo>https://github.com/picoe/Eto</MoreInfo>
+    <Tags>eto wpf mac osx gtk xamarin mono</Tags>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Pro" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.0,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="Eto.VisualStudioTemplates" Path="|Eto.VisualStudioTemplates|" AssemblyName="|Eto.VisualStudioTemplates;AssemblyName|" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="Eto.PCL.Separate" d:TargetPath="|Eto.PCL.Separate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="Eto.PCL.Combined" d:TargetPath="|Eto.PCL.Combined;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:TargetPath="|Eto.SAL.Combined;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="Eto.SAL.Separate" d:TargetPath="|Eto.SAL.Separate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="Eto.Library" d:TargetPath="|Eto.Library;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="Eto.File.Form" d:TargetPath="|Eto.File.Form;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="Eto.File.Dialog" d:TargetPath="|Eto.File.Dialog;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="Eto.File.Panel" d:TargetPath="|Eto.File.Panel;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+  </Assets>
+</PackageManifest>

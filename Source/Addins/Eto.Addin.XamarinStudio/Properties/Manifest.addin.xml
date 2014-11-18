@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+	<Runtime>
+		<Import file="Templates/Projects/Eto-PCL-Separate.xpt.xml" />
+		<Import file="Templates/Projects/Eto-PCL-Combined.xpt.xml" />
+		<Import file="Templates/Projects/Eto-SAL-Separate.xpt.xml" />
+		<Import file="Templates/Projects/Eto-SAL-Combined.xpt.xml" />
+		<Import file="Templates/Projects/Eto-Library.xpt.xml" />
+		<Import file="Templates/Files/Eto-Form.xft.xml" />
+		<Import file="Templates/Files/Eto-Dialog.xft.xml" />
+		<Import file="Templates/Files/Eto-Panel.xft.xml" />
+	</Runtime>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
+		<PackageRepository path="Packages" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id="Eto-PCL-Combined" file="Templates/Projects/Eto-PCL-Combined.xpt.xml" />
+		<ProjectTemplate id="Eto-PCL-Separate" file="Templates/Projects/Eto-PCL-Separate.xpt.xml" />
+		<ProjectTemplate id="Eto-SAL-Combined" file="Templates/Projects/Eto-SAL-Combined.xpt.xml" />
+		<ProjectTemplate id="Eto-SAL-Separate" file="Templates/Projects/Eto-SAL-Separate.xpt.xml" />
+		<ProjectTemplate id="Eto-Library" file="Templates/Projects/Eto-Library.xpt.xml" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id="Eto-Form" file="Templates/Files/Eto-Form.xft.xml" />
+		<FileTemplate id="Eto-Dialog" file="Templates/Files/Eto-Dialog.xft.xml" />
+		<FileTemplate id="Eto-Panel" file="Templates/Files/Eto-Panel.xft.xml" />
+	</Extension>
+</ExtensionModel>

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Eto.Forms;
 
 using aa = Android.App;
 using ac = Android.Content;
@@ -11,47 +10,61 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using at = Android.Text;
+using Eto.Drawing;
+using Eto.Forms;
 
 namespace Eto.Android.Forms.Controls
 {
-	/// <summary>
-	/// Handler for <see cref="TextBox"/>
-	/// </summary>
-	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	class TextBoxHandler : AndroidControl<aw.TextView, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class TextBoxHandler : AndroidControl<aw.EditText, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
-		public bool ReadOnly
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public override av.View ContainerControl { get { return Control; } }
 
-		public int MaxLength
+		public TextBoxHandler()
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			Control = new aw.EditText(aa.Application.Context);
 		}
 
 		public void SelectAll()
 		{
-			throw new NotImplementedException();
+			Control.SelectAll();
 		}
 
-		public string PlaceholderText { get; set; }
+		// TODO
+		public bool ReadOnly
+		{
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
+		}
 
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case TextControl.TextChangedEvent:
+					Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		int maxLength = int.MaxValue;
+		public int MaxLength
+		{
+			get { return maxLength; }
+			set
+			{
+				maxLength = value;
+				Control.SetFilters(new [] { new at.InputFilterLengthFilter(maxLength) });
+			}
+		}
+		public string PlaceholderText
+		{
+			get { return Control.Hint; }
+			set { Control.Hint = value; }
+		}
 		public string Text
 		{
 			get { return Control.Text; }
@@ -70,9 +83,10 @@ namespace Eto.Android.Forms.Controls
 			}
 		}
 
-		public override av.View ContainerControl
+		public Color TextColor
 		{
-			get { throw new NotImplementedException(); }
+			get { return Control.TextColors.ToEto(); }
+			set { Control.SetTextColor(value.ToAndroid()); }
 		}
 	}
 }

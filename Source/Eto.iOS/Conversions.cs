@@ -90,6 +90,37 @@ namespace Eto.iOS
 				top = top.PresentedViewController;
 			return top;
 		}
+
+		public static HorizontalAlign ToEto(this UITextAlignment align)
+		{
+			switch (align)
+			{
+				case UITextAlignment.Natural:
+				case UITextAlignment.Left:
+					return HorizontalAlign.Left;
+				case UITextAlignment.Center:
+					return HorizontalAlign.Center;
+				case UITextAlignment.Right:
+					return HorizontalAlign.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static UITextAlignment ToUI(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Left:
+					return UITextAlignment.Left;
+				case HorizontalAlign.Center:
+					return UITextAlignment.Center;
+				case HorizontalAlign.Right:
+					return UITextAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }
 

@@ -60,6 +60,12 @@ namespace Eto.iOS.Forms.Controls
 		{
 			Control.SelectAll(Control);
 		}
+
+		public Color TextColor
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 	}
 }
 

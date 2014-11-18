@@ -9,19 +9,35 @@ namespace Eto.Wpf.Forms.Controls
 	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
+		#pragma warning disable 612,618
 		readonly Size defaultSize = TextArea.DefaultSize;
+		#pragma warning restore 612,618
 
 		protected override Size DefaultSize { get { return defaultSize; } }
 
+		class EtoTextBox : swc.TextBox
+		{
+			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				if (IsLoaded && IsVisible)
+				{
+					constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
+					constraint.Height = !double.IsNaN(constraint.Height) ? Math.Min(constraint.Height, ActualHeight) : ActualHeight;
+				}
+				return base.MeasureOverride(constraint);
+			}
+		}
+
 		public TextAreaHandler ()
 		{
-			Control = new swc.TextBox
+			Control = new EtoTextBox
 			{
 				AcceptsReturn = true,
 				AcceptsTab = true,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto
 			};
+			Wrap = true;
 		}
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
@@ -86,12 +102,6 @@ namespace Eto.Wpf.Forms.Controls
 			set	{ Control.Text = value;	}
 		}
 
-		public Color TextColor
-		{
-			get { return Control.Foreground.ToEtoColor(); }
-			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
-		}
-
 		public bool Wrap
 		{
 			get { return Control.TextWrapping == sw.TextWrapping.Wrap; }
@@ -121,6 +131,30 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Control.CaretIndex; }
 			set { Control.CaretIndex = value; }
+		}
+
+		public bool AcceptsTab
+		{
+			get { return Control.AcceptsTab; }
+			set { Control.AcceptsTab = value; }
+		}
+
+		public bool AcceptsReturn
+		{
+			get { return Control.AcceptsReturn; }
+			set { Control.AcceptsReturn = value; }
+		}
+
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.HorizontalContentAlignment.ToEto(); }
+			set { Control.HorizontalContentAlignment = value.ToWpf(); }
+		}
+
+		public VerticalAlign VerticalAlign
+		{
+			get { return Control.VerticalContentAlignment.ToEto(); }
+			set { Control.VerticalContentAlignment = value.ToWpf(); }
 		}
 	}
 }

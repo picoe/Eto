@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using System.Linq.Expressions;
 
 namespace Eto
 {
@@ -284,7 +285,7 @@ namespace Eto
 		/// <param name="defaultSetValue">Default set value when this binding's value or DataItem is null.</param>
 		/// <typeparam name="TObject">The type of the object that is being bound to.</typeparam>
 		[Obsolete("Use Bind() without an object value instead, as the delegates can access your object value directly. Or, use Bind<TObject>(TObject, DelegateBinding<TValue>)")]
-		public DualBinding<TValue> Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		public DualBinding<TValue> Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
 		{
 			return Bind(objectValue, new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
 		}
@@ -317,5 +318,31 @@ namespace Eto
 		{
 			return Bind<object>(objectValue, new PropertyBinding<TValue>(propertyName), mode: mode);
 		}
+
+		/// <summary>
+		/// Creates a binding to the specified <paramref name="objectValue"/> with the specified <paramref name="propertyExpression"/>.
+		/// </summary>
+		/// <remarks>
+		/// This has the advantage of registering automatically to <see cref="System.ComponentModel.INotifyPropertyChanged"/> 
+		/// or to an event named after the property with a "Changed" suffix, if the expression is a property.
+		/// When the expression does not evaluate to a property, it will not be able to bind to the changed events and will
+		/// use the expression as a delegate directly.
+		/// </remarks>
+		/// <typeparam name="TObject">Type of the data context to bind to</typeparam>
+		/// <param name="objectValue">Object to bind to.</param>
+		/// <param name="propertyExpression">Expression for a property of the <paramref name="objectValue"/>, or a non-property expression with no change event binding.</param>
+		/// <param name="mode">Direction of the binding</param>
+		/// <returns>The binding between the data context and this binding</returns>
+		public DualBinding<TValue> Bind<TObject>(TObject objectValue, Expression<Func<TObject, TValue>> propertyExpression, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			var memberInfo = propertyExpression.GetMemberInfo();
+			if (memberInfo == null)
+			{
+				var getValue = propertyExpression.Compile();
+				return Bind(() => getValue(objectValue), null, null, null, mode);
+			}
+			return Bind(objectValue, new PropertyBinding<TValue>(memberInfo.Member.Name), mode);
+		}
+
 	}
 }

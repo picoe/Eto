@@ -1,6 +1,6 @@
 using Eto.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public class SelectFolderDialogHandler : WidgetHandler<Gtk.FileChooserDialog, SelectFolderDialog>, SelectFolderDialog.IHandler
 	{

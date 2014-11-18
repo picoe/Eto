@@ -6,7 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, ListBox.IHandler, IGtkEnumerableModelHandler<object>
 	{
@@ -212,6 +212,27 @@ namespace Eto.GtkSharp
 		EnumerableChangedHandler<object> IGtkEnumerableModelHandler<object>.Collection
 		{
 			get { return collection; }
+		}
+
+		public Gtk.CellRendererText TextCell
+		{
+			get { return ((Gtk.CellRendererText)Control.Columns[1].Cells[0]); }
+		}
+
+		public Color TextColor
+		{
+			get { return TextCell.ForegroundGdk.ToEto(); }
+			set
+			{
+				TextCell.ForegroundGdk = value.ToGdk();
+				Control.QueueDraw();
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return Control.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			set { Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk()); }
 		}
 	}
 }

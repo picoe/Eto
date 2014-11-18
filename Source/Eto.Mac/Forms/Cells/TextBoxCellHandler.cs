@@ -31,7 +31,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-namespace Eto.Mac.Forms.Controls
+namespace Eto.Mac.Forms.Cells
 {
 	public class TextBoxCellHandler : CellHandler<NSTextFieldCell, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
 	{

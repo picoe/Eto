@@ -153,6 +153,8 @@ namespace Eto.Test.Sections.Behaviors
 			};
 			var layout = new DynamicLayout();
 			layout.Add(null);
+			layout.AddCentered(TestChangeSizeButton());
+			layout.AddCentered(TestChangeClientSizeButton());
 			layout.AddCentered(SendToBackButton());
 			layout.AddCentered(CloseButton());
 			layout.Add(null);
@@ -175,7 +177,14 @@ namespace Eto.Test.Sections.Behaviors
 		void child_Closed(object sender, EventArgs e)
 		{
 			Log.Write(child, "Closed");
+			child.WindowStateChanged -= child_WindowStateChanged;
 			child.Closed -= child_Closed;
+			child.Closing -= child_Closing;
+			child.Shown -= child_Shown;
+			child.GotFocus -= child_GotFocus;
+			child.LostFocus -= child_LostFocus;
+			child.LocationChanged -= child_LocationChanged;
+			child.SizeChanged -= child_SizeChanged;
 			bringToFrontButton.Enabled = false;
 			child = null;
 			// write out number of open windows after the closed event is called
@@ -257,6 +266,28 @@ namespace Eto.Test.Sections.Behaviors
 			control.Click += (sender, e) => {
 				if (child != null)
 					child.SendToBack();
+			};
+			return control;
+		}
+
+		Control TestChangeSizeButton()
+		{
+			var control = new Button { Text = "TestChangeSize" };
+			control.Click += (sender, e) =>
+			{
+				if (child != null)
+					child.Size = new Size(500, 500);
+			};
+			return control;
+		}
+
+		Control TestChangeClientSizeButton()
+		{
+			var control = new Button { Text = "TestChangeClientSize" };
+			control.Click += (sender, e) =>
+			{
+				if (child != null)
+					child.ClientSize = new Size(500, 500);
 			};
 			return control;
 		}

@@ -27,7 +27,7 @@ namespace Eto.Test.Sections.Behaviors
 					case 1: control = new TextArea(); break;
 					case 2: control = new CheckBox { Text = "A Check Box" }; break;
 					case 3: control = new RadioButton { Text = "A Radio Button" }; break;
-					case 4: control = new ComboBox { Items = { "Item 1", "Item 2", "Item 3" } }; break;
+					case 4: control = new DropDown { Items = { "Item 1", "Item 2", "Item 3" } }; break;
 					case 5: control = new DateTimePicker(); break;
 					case 6: control = new ColorPicker(); break;
 					case 7: control = new PasswordBox(); break;

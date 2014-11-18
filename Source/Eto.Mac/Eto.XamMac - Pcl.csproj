@@ -103,6 +103,7 @@
     <Compile Include="IO\SystemIconsHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
@@ -206,6 +207,8 @@
     <Compile Include="Messaging.cs" />
     <Compile Include="Forms\Controls\MacLabel.cs" />
     <Compile Include="MacHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -39,12 +39,13 @@ namespace Eto.Forms
 		/// <param name="modifiers">Key modifiers such as Control, Alt, or Shift.</param>
 		/// <param name="location">Location of the mouse cursor for the event.</param>
 		/// <param name="delta">Delta of the scroll wheel.</param>
-		public MouseEventArgs(MouseButtons buttons, Keys modifiers, PointF location, SizeF? delta = null)
+		/// <param name="pressure">Pressure of a stylus or touch, if applicable. 1.0f for full pressure or not supported</param>
+		public MouseEventArgs(MouseButtons buttons, Keys modifiers, PointF location, SizeF? delta = null, float pressure = 1.0f)
 		{
 			this.Modifiers = modifiers;
 			this.Buttons = buttons;
 			this.Location = location;
-			this.Pressure = 1.0f;
+			this.Pressure = pressure;
 			this.Delta = delta ?? SizeF.Empty;
 		}
 
@@ -80,13 +81,13 @@ namespace Eto.Forms
 		/// Gets or sets the pressure of the mouse/stylus press, if applicable. 1.0 if full pressure or not supported.
 		/// </summary>
 		/// <value>The pressure of the mouse/stylus.</value>
-		public float Pressure { get; set; }
+		public float Pressure { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the delta change of the scroll wheel for the event.
 		/// </summary>
 		/// <value>The scroll wheel delta.</value>
-		public SizeF Delta { get; set; }
+		public SizeF Delta { get; private set; }
 	}
 }
 

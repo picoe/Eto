@@ -36,7 +36,7 @@ using nuint = System.UInt32;
 #endif
 
 
-namespace Eto.Mac.Forms.Controls
+namespace Eto.Mac.Forms.Cells
 {
 	public class DrawableCellHandler : CellHandler<NSCell, DrawableCell, DrawableCell.ICallback>, DrawableCell.IHandler
 	{

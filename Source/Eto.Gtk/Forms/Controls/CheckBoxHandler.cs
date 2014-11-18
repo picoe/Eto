@@ -3,7 +3,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox, CheckBox.ICallback>, CheckBox.IHandler
 	{
@@ -106,6 +106,17 @@ namespace Eto.GtkSharp
 		{
 			get;
 			set;
+		}
+
+		public Color TextColor
+		{
+			get { return Control.Child.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			set
+			{
+				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				Control.Child.ModifyFg(Gtk.StateType.Active, value.ToGdk());
+				Control.Child.ModifyFg(Gtk.StateType.Prelight, value.ToGdk());
+			}
 		}
 	}
 }

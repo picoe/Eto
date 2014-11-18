@@ -51,10 +51,6 @@
       <Private>False</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="PresentationCore" />
@@ -63,6 +59,9 @@
     <Reference Include="System.Printing" />
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Eto.Mac\Conversions.sd.cs">
@@ -124,6 +123,8 @@
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SwfWebViewHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
     <Compile Include="Forms\EnableThemingInScope.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
@@ -222,7 +224,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll">
+    <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll">
       <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
@@ -283,9 +285,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -304,6 +303,9 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - Pcl</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="../Shared/Build.targets" />
 </Project>

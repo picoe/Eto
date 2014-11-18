@@ -173,7 +173,7 @@ namespace Eto.Wpf
 				buttons |= MouseButtons.Alternate;
 			if (e.ChangedButton == swi.MouseButton.Middle && e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
-			var modifiers = Keys.None;
+			var modifiers = KeyMap.Convert(swi.Key.None, swi.Keyboard.Modifiers);
 			var location = e.GetPosition(control).ToEto();
 
 			return new MouseEventArgs(buttons, modifiers, location);
@@ -188,7 +188,7 @@ namespace Eto.Wpf
 				buttons |= MouseButtons.Alternate;
 			if (e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
-			var modifiers = Keys.None;
+			var modifiers = KeyMap.Convert(swi.Key.None, swi.Keyboard.Modifiers);
 			var location = e.GetPosition(control).ToEto();
 
 			return new MouseEventArgs(buttons, modifiers, location);
@@ -203,7 +203,7 @@ namespace Eto.Wpf
 				buttons |= MouseButtons.Alternate;
 			if (e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
-			var modifiers = Keys.None;
+			var modifiers = KeyMap.Convert(swi.Key.None, swi.Keyboard.Modifiers);
 			var location = e.GetPosition(control).ToEto();
 			var delta = new SizeF(0, (float)e.Delta / WheelDelta);
 
@@ -549,6 +549,81 @@ namespace Eto.Wpf
 					return swc.CalendarSelectionMode.SingleDate;
 				case CalendarMode.Range:
 					return swc.CalendarSelectionMode.SingleRange;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static HorizontalAlign ToEto(this sw.HorizontalAlignment align)
+		{
+			switch (align)
+			{
+				case sw.HorizontalAlignment.Left:
+					return HorizontalAlign.Left;
+				case sw.HorizontalAlignment.Right:
+					return HorizontalAlign.Right;
+				case sw.HorizontalAlignment.Center:
+					return HorizontalAlign.Center;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static sw.HorizontalAlignment ToWpf(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Center:
+					return sw.HorizontalAlignment.Center;
+				case HorizontalAlign.Left:
+					return sw.HorizontalAlignment.Left;
+				case HorizontalAlign.Right:
+					return sw.HorizontalAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static sw.TextAlignment ToWpfTextAlignment(this HorizontalAlign align)
+		{
+			switch (align)
+			{
+				case HorizontalAlign.Center:
+					return sw.TextAlignment.Center;
+				case HorizontalAlign.Left:
+					return sw.TextAlignment.Left;
+				case HorizontalAlign.Right:
+					return sw.TextAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static VerticalAlign ToEto(this sw.VerticalAlignment align)
+		{
+			switch (align)
+			{
+				case sw.VerticalAlignment.Top:
+					return VerticalAlign.Top;
+				case sw.VerticalAlignment.Bottom:
+					return VerticalAlign.Bottom;
+				case sw.VerticalAlignment.Center:
+					return VerticalAlign.Middle;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static sw.VerticalAlignment ToWpf(this VerticalAlign align)
+		{
+			switch (align)
+			{
+				case VerticalAlign.Top:
+					return sw.VerticalAlignment.Top;
+				case VerticalAlign.Bottom:
+					return sw.VerticalAlignment.Bottom;
+				case VerticalAlign.Middle:
+					return sw.VerticalAlignment.Center;
 				default:
 					throw new NotSupportedException();
 			}

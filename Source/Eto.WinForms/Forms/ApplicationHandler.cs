@@ -7,7 +7,7 @@ using System.Threading;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using System.Collections.Generic;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
 	{
@@ -24,6 +24,7 @@ namespace Eto.WinForms
 		{
 			mainThread = Thread.CurrentThread;
 			swf.Application.EnableVisualStyles();
+			swf.Application.SetCompatibleTextRenderingDefault(false);
 		}
 
 		public void RunIteration()

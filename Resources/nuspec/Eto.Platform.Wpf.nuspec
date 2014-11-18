@@ -11,11 +11,11 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
 		<description>
-    	This is the WPF platform for Eto.Forms UI Framework.
+This is the WPF platform for Eto.Forms UI Framework.
     	
-    	Include this along with your Eto.Forms application to provide a WPF interface for your windows users.  WPF is by default preferred over the Eto.Platform.Windows platform, so if both are included, WPF will be selected.
+Include this along with your Eto.Forms application to provide a WPF interface for your windows users.  WPF is by default preferred over the Eto.Platform.Windows platform, so if both are included, WPF will be selected.
     	
-    	You do not need to use any of the classes of this assembly (unless customizing the WPF functionality of the platform), and should just use the UI controls from the Eto assembly.
+You do not need to use any of the classes of this assembly (unless customizing the WPF functionality of the platform), and should just use the UI controls from the Eto assembly.
 		</description>
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop wpf eto.forms</tags>

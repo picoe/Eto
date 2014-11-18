@@ -81,8 +81,12 @@ namespace Eto.Wpf.Drawing
 		{
 			if (control != null)
 			{
-				var m = sw.PresentationSource.FromVisual(sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
-				points /= m.M22;
+				var source = sw.PresentationSource.FromVisual(control.GetParentWindow());
+				if (source != null)
+				{
+					var m = source.CompositionTarget.TransformToDevice;
+					points /= m.M22;
+				}
 			}
 			return points * (72.0 / 96.0);
 		}

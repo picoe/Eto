@@ -1,6 +1,7 @@
 using Eto.Forms;
 using Eto.Drawing;
 using System;
+using Eto.Mac.Forms.Controls;
 
 #if XAMMAC2
 using AppKit;
@@ -31,7 +32,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-namespace Eto.Mac.Forms.Controls
+namespace Eto.Mac.Forms.Cells
 {
 	public interface ICellHandler
 	{

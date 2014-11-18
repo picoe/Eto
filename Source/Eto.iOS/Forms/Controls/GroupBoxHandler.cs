@@ -65,6 +65,11 @@ namespace Eto.iOS.Forms.Controls
 				size.Height += label.Frame.Height;
 			return size;
 		}
+
+		public Color TextColor
+		{
+			get { return label.TextColor.ToEto(); }
+			set { label.TextColor = value.ToNSUI(); }
+		}
 	}
-	
 }

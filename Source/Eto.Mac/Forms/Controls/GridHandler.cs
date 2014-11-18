@@ -6,6 +6,9 @@ using System.Linq;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 using sd = System.Drawing;
+using Eto.Mac.Forms.Cells;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;

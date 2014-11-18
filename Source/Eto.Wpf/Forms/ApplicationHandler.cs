@@ -63,7 +63,12 @@ namespace Eto.Wpf.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control = sw.Application.Current ?? new sw.Application { ShutdownMode = sw.ShutdownMode.OnExplicitShutdown };
+			Control = sw.Application.Current;
+			if (Control == null)
+			{
+				Control = new sw.Application { ShutdownMode = sw.ShutdownMode.OnExplicitShutdown };
+				System.Windows.Forms.Application.EnableVisualStyles();
+			}
 			instance = this;
 			Control.Startup += HandleStartup;
 		}

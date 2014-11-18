@@ -12,7 +12,7 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		public ColorPickerHandler()
 		{
-			Control = new xwt.ColorPicker { Focusable = true, IsTabStop = true };
+			Control = new xwt.ColorPicker { Focusable = true, IsTabStop = true, MaxWidth = 60 };
 		}
 
 		public override void AttachEvent(string id)

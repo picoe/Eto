@@ -5,7 +5,6 @@ using System.Linq;
 using Eto.Mac.Forms;
 using System.Collections.ObjectModel;
 
-
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -20,7 +19,7 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #endif
 
-namespace Eto.Mac
+namespace Eto.Mac.Forms.Menu
 {
 	public class MenuBarHandler : WidgetHandler<NSMenu, MenuBar>, MenuBar.IHandler
 	{

@@ -1,15 +1,22 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class RadioButtonHandler : GtkControl<Gtk.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
+		Gtk.EventBox box;
 		Gtk.AccelLabel label;
 
 		protected override Gtk.Widget FontControl
 		{
 			get { return label; }
+		}
+
+		public override Gtk.Widget ContainerControl
+		{
+			get { return box; }
 		}
 
 		public void Create(RadioButton controller)
@@ -26,6 +33,8 @@ namespace Eto.GtkSharp
 			label = new Gtk.AccelLabel("");
 			Control.Add(label); //control.AddMnemonicLabel(label);
 			Control.Toggled += Connector.HandleCheckedChanged;
+			box = new Gtk.EventBox();
+			box.Child = Control;
 		}
 
 		protected new RadioButtonConnector Connector { get { return (RadioButtonConnector)base.Connector; } }
@@ -55,6 +64,17 @@ namespace Eto.GtkSharp
 		{
 			get { return Control.Active; }
 			set { Control.Active = value; }
+		}
+
+		public Color TextColor
+		{
+			get { return label.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			set
+			{
+				label.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				label.ModifyFg(Gtk.StateType.Active, value.ToGdk());
+				label.ModifyFg(Gtk.StateType.Prelight, value.ToGdk());
+			}
 		}
 	}
 }

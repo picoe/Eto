@@ -3,7 +3,7 @@ using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 using System;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class DrawableHandler : GtkPanel<Gtk.EventBox, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{

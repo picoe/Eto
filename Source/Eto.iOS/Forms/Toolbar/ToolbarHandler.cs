@@ -20,7 +20,7 @@ namespace Eto.iOS.Forms.Toolbar
 	{
 		void OnClick();
 		bool Enabled { get; }
-		UIBarButtonItem Button { get; }
+		UIBarButtonItem ButtonItem { get; }
 	}
 
 	public class ToolBarHandler : WidgetHandler<UIToolbar, ToolBar>, ToolBar.IHandler, IIosViewControllerSource

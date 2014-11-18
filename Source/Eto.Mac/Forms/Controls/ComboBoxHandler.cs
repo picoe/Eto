@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using SD = System.Drawing;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using Eto.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -38,98 +39,138 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class ComboBoxHandler : MacControl<NSComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
+		int lastSelected = -1;
 		CollectionHandler collection;
 
-		public class EtoPopUpButton : NSPopUpButton, IMacControl
+		public class EtoComboBox : NSComboBox, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
 			public object Handler
-			{ 
+			{
 				get { return WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+				set { WeakHandler = new WeakReference(value); }
 			}
 		}
 
 		public ComboBoxHandler()
 		{
-			Control = new EtoPopUpButton { Handler = this };
-			Control.Activated += HandleActivated;
+			Control = new EtoComboBox
+			{ 
+				Handler = this, 
+				StringValue = string.Empty,
+				Editable = true,
+				VisibleItems = 20
+			};
+			AddObserver(NSComboBox.SelectionIsChangingNotification, SelectionDidChange);
+			Control.Changed += HandleChanged;
 		}
 
-		static void HandleActivated(object sender, EventArgs e)
+		static void HandleChanged(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as ComboBoxHandler;
-			handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
+			if (handler != null)
+			{
+				handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty);
+				Application.Instance.AsyncInvoke(() =>
+				{
+					if (handler.SelectedIndex != handler.lastSelected)
+					{
+						handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
+						handler.lastSelected = handler.SelectedIndex;
+					}
+				});
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case ComboBox.TextChangedEvent:
+					// handled automatically
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			var size = base.GetNaturalSize(availableSize);
+			return new SizeF(Math.Max(size.Width, 100), size.Height);
+		}
+
+		static void SelectionDidChange(ObserverActionEventArgs e)
+		{
+			var handler = e.Handler as ComboBoxHandler;
+			if (handler != null)
+			{
+				Application.Instance.AsyncInvoke(() =>
+				{
+					handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
+					Application.Instance.AsyncInvoke(() => handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty));
+				});
+			}
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ComboBoxHandler Handler { get; set; }
 
-			public override int IndexOf(object item)
-			{
-				var binding = Handler.Widget.TextBinding;
-				return (int)Handler.Control.Menu.IndexOf(binding.GetValue(item));
-			}
-
 			public override void AddRange(IEnumerable<object> items)
 			{
-				var oldIndex = Handler.Control.IndexOfSelectedItem;
+				var oldIndex = Handler.Control.SelectedIndex;
 				var binding = Handler.Widget.TextBinding;
 				foreach (var item in items.Select(r => binding.GetValue(r)))
 				{
-					Handler.Control.Menu.AddItem(new NSMenuItem(item));
+					Handler.Control.Add(NSObject.FromObject(item));
 				}
-				if (oldIndex == -1)
-					Handler.Control.SelectItem(-1);
 				Handler.LayoutIfNeeded();
 			}
 
 			public override void AddItem(object item)
 			{
-				var oldIndex = Handler.Control.IndexOfSelectedItem;
 				var binding = Handler.Widget.TextBinding;
-				Handler.Control.Menu.AddItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))));
-				if (oldIndex == -1)
-					Handler.Control.SelectItem(-1);
+				Handler.Control.Add(NSObject.FromObject(binding.GetValue(item)));
 				Handler.LayoutIfNeeded();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var oldIndex = Handler.Control.IndexOfSelectedItem;
 				var binding = Handler.Widget.TextBinding;
-				Handler.Control.Menu.InsertItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))), index);
-				if (oldIndex == -1)
-					Handler.Control.SelectItem(-1);
+				Handler.Control.Insert(NSObject.FromObject(binding.GetValue(item)), index);
 				Handler.LayoutIfNeeded();
 			}
 
 			public override void RemoveItem(int index)
 			{
 				var selected = Handler.SelectedIndex;
-				Handler.Control.RemoveItem(index);
-				Handler.LayoutIfNeeded();
-				if (Handler.Widget.Loaded && selected == index)
+				Handler.Control.RemoveAt(index);
+				if (selected == index)
 				{
-					Handler.Control.SelectItem(-1);
-					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+					Handler.Control.StringValue = string.Empty;
+					Handler.SelectedIndex = -1;
+					// when removing the last item, we don't get a change event here
+					if (index == Count)
+						Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 				}
+				Handler.LayoutIfNeeded();
 			}
 
 			public override void RemoveAllItems()
 			{
 				var change = Handler.SelectedIndex != -1;
-				Handler.Control.RemoveAllItems();
-				Handler.LayoutIfNeeded();
-				if (Handler.Widget.Loaded && change)
+				Handler.Control.RemoveAll();
+				if (change)
 				{
-					Handler.Control.SelectItem(-1);
-					Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+					Handler.Control.StringValue = string.Empty;
+					Handler.SelectedIndex = -1;
 				}
+				Handler.LayoutIfNeeded();
 			}
 		}
 
@@ -147,16 +188,94 @@ namespace Eto.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get	{ return (int)Control.IndexOfSelectedItem; }
+			get { return (int)Control.SelectedIndex; }
 			set
 			{
-				if (value != SelectedIndex)
+				var selectedIndex = SelectedIndex;
+				var lastText = Text;
+				if (value == -1)
 				{
+					if (selectedIndex != -1)
+					{
+						Control.DeselectItem(Control.SelectedIndex);
+						Control.StringValue = string.Empty;
+					}
+				}
+				else
 					Control.SelectItem(value);
-					if (Widget.Loaded)
-						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				if (value != selectedIndex)
+				{
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+				}
+				if (lastText != Text)
+				{
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
 			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return ((NSComboBoxCell)Control.Cell).BackgroundColor.ToEto(); }
+			set
+			{
+				if (value != BackgroundColor)
+				{
+					((NSComboBoxCell)Control.Cell).BackgroundColor = value.ToNSUI();
+					Control.SetNeedsDisplay();
+				}
+			}
+		}
+
+		public Color TextColor
+		{
+			get { return ((NSComboBoxCell)Control.Cell).TextColor.ToEto(); }
+			set
+			{
+				if (value != TextColor)
+				{
+					((NSComboBoxCell)Control.Cell).TextColor = value.ToNSUI();
+					Control.SetNeedsDisplay();
+				}
+			}
+		}
+
+		public string Text
+		{
+			get { return Control.StringValue; }
+			set
+			{ 
+				if (Text != value)
+				{
+					Control.StringValue = value ?? string.Empty;
+					if (collection != null)
+					{
+						var binding = Widget.TextBinding;
+						var item = collection.Collection.FirstOrDefault(r => binding.GetValue(r) == value);
+						var index = item != null ? collection.IndexOf(item) : -1;
+
+						SelectedIndex = index;
+					}
+
+				}
+			}
+		}
+
+		public bool ReadOnly
+		{
+			get { return !Control.Editable; }
+			set
+			{ 
+				Control.Editable = !value;
+				if (Control.Window != null)
+					Control.Window.MakeFirstResponder(null); // allows editing if currently focussed, so remove focus
+			}
+		}
+
+		public bool AutoComplete
+		{
+			get { return Control.Completes; }
+			set { Control.Completes = value; }
 		}
 	}
 }

@@ -4,7 +4,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.WinForms.Drawing;
 
-namespace Eto.WinForms.Forms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class ImageViewHandler : WindowsControl<SWF.PictureBox, ImageView, ImageView.ICallback>, ImageView.IHandler
 	{

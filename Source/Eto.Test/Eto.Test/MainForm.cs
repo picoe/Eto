@@ -20,7 +20,7 @@ namespace Eto.Test
 				{
 					eventLog = new TextArea
 					{
-						Size = new Size (100, 100),
+						Size = new Size(100, 100),
 						ReadOnly = true,
 						Wrap = false
 					};
@@ -175,19 +175,22 @@ namespace Eto.Test
 			{
 				Menu = new MenuBar
 				{
-					Items = {
+					Items =
+					{
 						// custom top-level menu items
 						new ButtonMenuItem { Text = "&File", Items = { new Command { MenuText = "File Command" } } },
 						new ButtonMenuItem { Text = "&Edit", Items = { new Command { MenuText = "Edit Command" } } },
 						new ButtonMenuItem { Text = "&View", Items = { new Command { MenuText = "View Command" } } },
 						new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { new Command { MenuText = "Window Command" } } },
 					},
-					ApplicationItems = {
+					ApplicationItems =
+					{
 						// custom menu items for the application menu (Application on OS X, File on others)
 						new Command { MenuText = "Application command" },
 						new ButtonMenuItem { Text = "Application menu item" }
 					},
-					HelpItems = {
+					HelpItems =
+					{
 						new Command { MenuText = "Help Command" }
 					},
 					QuitItem = quit,
@@ -198,9 +201,19 @@ namespace Eto.Test
 			if (Platform.Supports<ToolBar>())
 			{
 				// create and set the toolbar
-				ToolBar = new ToolBar
+				ToolBar = new ToolBar();
+
+				ToolBar.Items.Add(about);
+				if (Platform.Supports<CheckToolItem>())
 				{
-					Items = { about }
+					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
+					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
+				}
+				if (Platform.Supports<RadioToolItem>())
+				{
+					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
+					ToolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.TestIcon, Checked = true });
+					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
 				};
 			}
 

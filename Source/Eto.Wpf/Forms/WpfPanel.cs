@@ -23,8 +23,8 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				if (!Control.IsLoaded && clientSize != null)
-					return clientSize.Value;
+				if (!Control.IsLoaded)
+					return clientSize ?? Size.Max(Size.Empty, base.Size - Padding.Size);
 				return border.GetSize();
 			}
 			set

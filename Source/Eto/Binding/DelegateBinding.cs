@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using Eto.Forms;
+using System.ComponentModel;
+using System.Linq.Expressions;
 
 namespace Eto
 {
@@ -161,7 +163,6 @@ namespace Eto
 		/// <value>The default set value.</value>
 		public TValue DefaultSetValue { get; set; }
 
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.DelegateBinding{T,TValue}"/> class.
 		/// </summary>
@@ -184,6 +185,27 @@ namespace Eto
 			}
 			else if (addChangeEvent != null || removeChangeEvent != null)
 				throw new ArgumentException("You must either specify both the add and remove change event delegates, or pass null for both");
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.DelegateBinding{T,TValue}"/> class.
+		/// </summary>
+		/// <param name="getValue">Delegate to get the value for the binding.</param>
+		/// <param name="setValue">Delegate to set the value for the binding.</param>
+		/// <param name="notifyProperty">Name of the property to listen for change events of this binding.</param>
+		/// <param name="defaultGetValue">Default get value, when the object instance is null.</param>
+		/// <param name="defaultSetValue">Default set value, when the incoming value is null.</param>
+		public DelegateBinding(Func<T, TValue> getValue, Action<T, TValue> setValue, string notifyProperty, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
+		{
+			GetValue = getValue;
+			DefaultGetValue = defaultGetValue;
+			SetValue = setValue;
+			DefaultSetValue = defaultSetValue;
+			if (!string.IsNullOrEmpty(notifyProperty))
+			{
+				AddChangeEvent = (obj, eh) => AddPropertyEvent(obj, notifyProperty, eh);
+				RemoveChangeEvent = (obj, eh) => RemovePropertyEvent(obj, eh);
+			}
 		}
 
 		/// <summary>

@@ -247,18 +247,43 @@ namespace Eto.Forms
 		/// <param name="centered">If set to <c>true</c> center the control, otherwise control is upper left of the container.</param>
 		public static TableLayout AutoSized(Control control, Padding? padding = null, bool centered = false)
 		{
-			var layout = new TableLayout(3, 3);
-			layout.Padding = padding ?? Padding.Empty;
-			layout.Spacing = Size.Empty;
 			if (centered)
 			{
+				var layout = new TableLayout(3, 3);
+				layout.Padding = padding ?? Padding.Empty;
+				layout.Spacing = Size.Empty;
 				layout.SetColumnScale(0);
 				layout.SetColumnScale(2);
 				layout.SetRowScale(0);
 				layout.SetRowScale(2);
+				layout.Add(control, 1, 1);
+				return layout;
 			}
-			layout.Add(control, 1, 1);
-			return layout;
+			else
+			{
+				var layout = new TableLayout(2, 2);
+				layout.Padding = padding ?? Padding.Empty;
+				layout.Spacing = Size.Empty;
+				layout.Add(control, 0, 0);
+				return layout;
+			}
+		}
+
+		/// <summary>
+		/// Creates a horizontal table layout with the specified cells.
+		/// </summary>
+		/// <remarks>
+		/// Since table layouts are by default vertical by defining the rows and the cells for each row,
+		/// it is verbose to create nested tables when you want a horizontal table.  E.g. <code>new TableLayout(new TableRow(...))</code>.
+		/// 
+		/// This method is used to easily create a single row table layout with a horizontal set of cells. E.g.
+		/// <code>TableLayout.Horizontal(...)</code>
+		/// </remarks>
+		/// <param name="cells">Cells for the row</param>
+		/// <returns>A new single row table layout with the specified cells</returns>
+		public static TableLayout Horizontal(params TableCell[] cells)
+		{
+			return new TableLayout(new TableRow(cells));
 		}
 
 		/// <summary>
@@ -266,6 +291,7 @@ namespace Eto.Forms
 		/// </summary>
 		public TableLayout()
 		{
+			Initialize();
 		}
 
 		/// <summary>
@@ -285,6 +311,7 @@ namespace Eto.Forms
 		public TableLayout(Size dimensions)
 		{
 			SetCellSize(dimensions, true);
+			Initialize();
 		}
 
 		/// <summary>
@@ -295,6 +322,7 @@ namespace Eto.Forms
 		{
 			Rows = new TableRowCollection(rows);
 			Create();
+			Initialize();
 		}
 
 		/// <summary>
@@ -305,6 +333,26 @@ namespace Eto.Forms
 		{
 			Rows = new TableRowCollection(rows);
 			Create();
+			Initialize();
+		}
+
+		static readonly object DataContextChangedKey = new object();
+
+		/// <summary>
+		/// Raises the <see cref="Control.DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="Control.DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			if (created)
+				base.OnDataContextChanged(e);
+			else
+				Properties[DataContextChangedKey] = true;
 		}
 
 		void Create()
@@ -330,6 +378,11 @@ namespace Eto.Forms
 					SetRowScale(y);
 			}
 			created = true;
+			if (Properties.Get<bool>(DataContextChangedKey))
+			{
+				OnDataContextChanged(EventArgs.Empty);
+				Properties[DataContextChangedKey] = null;
+			}
 		}
 
 		/// <summary>
@@ -354,6 +407,7 @@ namespace Eto.Forms
 			: base(generator, typeof(IHandler), false)
 		{
 			SetCellSize(size, true);
+			Initialize();
 		}
 
 		void SetCellSize(Size value, bool createRows)
@@ -364,7 +418,6 @@ namespace Eto.Forms
 			if (!dimensions.IsEmpty)
 			{
 				Handler.CreateControl(dimensions.Width, dimensions.Height);
-				Initialize();
 				if (createRows)
 				{
 					var rows = Enumerable.Range(0, value.Height).Select(r => new TableRow(Enumerable.Range(0, value.Width).Select(c => new TableCell())));

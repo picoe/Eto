@@ -138,5 +138,11 @@ namespace Eto.iOS.Forms.Controls
 				Control.Label.Font = value.ToUI();
 			}
 		}
+
+		public Color TextColor
+		{
+			get { return Control.TintColor.ToEto(); }
+			set { Control.TintColor = value.ToNSUI(); }
+		}
 	}
 }

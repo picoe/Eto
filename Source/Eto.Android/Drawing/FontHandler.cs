@@ -42,15 +42,52 @@ namespace Eto.Android.Drawing
 		ag.Paint.FontMetrics fontMetrics;
 		ag.Paint.FontMetrics FontMetrics { get { return fontMetrics = fontMetrics ?? Paint.GetFontMetrics(); } }
 
+		public FontHandler()
+		{
+		}
+
+		public FontHandler(ag.Typeface typeface)
+		{
+			Control = typeface;
+		}
+
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
 			this.size = size;
 			this.Control = ag.Typeface.Create(family.ControlObject as ag.Typeface, style.ToAndroid());
 		}
 
+		// TODO:
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			throw new NotImplementedException();
+			var style = ag.TypefaceStyle.Normal;
+			switch (systemFont)
+			{
+			case SystemFont.Default:
+				break;
+			case SystemFont.Bold:
+				break;
+			case SystemFont.Label:
+				break;
+			case SystemFont.TitleBar:
+				break;
+			case SystemFont.ToolTip:
+				break;
+			case SystemFont.MenuBar:
+				break;
+			case SystemFont.Menu:
+				break;
+			case SystemFont.Message:
+				break;
+			case SystemFont.Palette:
+				break;
+			case SystemFont.StatusBar:
+				break;
+				default:
+					break;
+			}
+
+			Control = ag.Typeface.Create(ag.Typeface.Default, style); 
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)

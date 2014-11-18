@@ -95,8 +95,11 @@ namespace Eto.Mac.Forms
 #elif IOS
 			Control = new NSView();
 #endif
+
+			#pragma warning disable 612,618
 			spacing = TableLayout.DefaultSpacing;
 			padding = TableLayout.DefaultPadding;
+			#pragma warning restore 612,618
 		}
 
 		protected override void Initialize()
@@ -168,9 +171,7 @@ namespace Eto.Mac.Forms
 
 		public override void LayoutChildren()
 		{
-			if (!Widget.Loaded)
-				return;
-			if (NeedsQueue())
+			if (!Widget.Loaded || views == null || NeedsQueue())
 				return;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];

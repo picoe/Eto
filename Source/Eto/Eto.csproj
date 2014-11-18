@@ -42,7 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Binding\Binding.helpers.cs" />
     <Compile Include="Binding\ColumnBinding.cs" />
+    <Compile Include="Binding\PropertyNotifyHelper.cs" />
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\DashStyle.cs" />
@@ -60,6 +62,7 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\ComboBox.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\SearchBox.cs" />
@@ -108,7 +111,7 @@
     <Compile Include="Forms\Window.cs" />
     <Compile Include="Forms\Controls\Button.cs" />
     <Compile Include="Forms\Controls\CheckBox.cs" />
-    <Compile Include="Forms\Controls\ComboBox.cs" />
+    <Compile Include="Forms\Controls\DropDown.cs" />
     <Compile Include="Forms\Controls\Control.cs" />
     <Compile Include="Forms\Controls\Drawable.cs" />
     <Compile Include="Forms\Controls\GroupBox.cs" />
@@ -214,7 +217,7 @@
     <Compile Include="Forms\Cells\TextBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageViewCell.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
-    <Compile Include="Forms\Controls\EnumComboBox.cs" />
+    <Compile Include="Forms\Controls\EnumDropDown.cs" />
     <Compile Include="Binding\Binding.cs" />
     <Compile Include="Binding\BindingCollection.cs" />
     <Compile Include="Binding\BindingChangingEventArgs.cs" />
@@ -301,6 +304,9 @@
     <Compile Include="Forms\ControlBinding.cs" />
     <Compile Include="Forms\Layout\TableRow.cs" />
     <Compile Include="Forms\Layout\TableCell.cs" />
+    <Compile Include="ExtendedObservableCollection.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItem.cs" />
+    <Compile Include="Forms\WidgetExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

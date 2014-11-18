@@ -58,6 +58,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Forms\GtkContainer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\GtkControl.cs" />
     <Compile Include="Forms\GtkFileDialog.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -111,6 +113,7 @@
     <Compile Include="Forms\TableLayoutHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="IO\SystemIcons.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -134,9 +137,6 @@
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
-    <Compile Include="Forms\Controls\GtkControl.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -169,7 +169,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />
     <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -240,6 +240,7 @@
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="Forms\GtkSynchronizationContext.cs" />
     <Compile Include="GtkHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="../Shared/Build.targets" />

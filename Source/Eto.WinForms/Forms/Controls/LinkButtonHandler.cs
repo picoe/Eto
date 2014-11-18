@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class LinkButtonHandler : WindowsControl<swf.LinkLabel, LinkButton, LinkButton.ICallback>, LinkButton.IHandler
 	{
@@ -16,7 +17,7 @@ namespace Eto.WinForms
 			};
 		}
 
-		public Color TextColor
+		public override Color TextColor
 		{
 			get { return Control.LinkColor.ToEto(); }
 			set { Control.LinkColor = value.ToSD(); }
@@ -35,11 +36,16 @@ namespace Eto.WinForms
 			}
 		}
 
-
 		public Color DisabledTextColor
 		{
 			get { return Control.DisabledLinkColor.ToEto(); }
 			set { Control.DisabledLinkColor = value.ToSD(); }
+		}
+
+		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
+		public override bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 	}
 }

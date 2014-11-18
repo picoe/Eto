@@ -1,8 +1,9 @@
 using SD = System.Drawing;
 using swf = System.Windows.Forms;
+using System.Linq;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class PasswordBoxHandler : WindowsControl<swf.TextBox, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler
 	{
@@ -37,6 +38,15 @@ namespace Eto.WinForms
 					Control.PasswordChar = value;
 				}
 			}
+		}
+
+		static readonly Win32.WM[] intrinsicEvents = {
+														 Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK,
+														 Win32.WM.RBUTTONDOWN, Win32.WM.RBUTTONUP, Win32.WM.RBUTTONDBLCLK
+													 };
+		public override bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 	}
 }

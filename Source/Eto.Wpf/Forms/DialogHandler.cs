@@ -26,7 +26,7 @@ namespace Eto.Wpf.Forms
 
 		public void ShowModal(Control parent)
 		{
-			if (parent != null)
+			if (parent != null && !LocationSet)
 			{
 				parentWindow = parent.ParentWindow;
 				if (parentWindow != null)

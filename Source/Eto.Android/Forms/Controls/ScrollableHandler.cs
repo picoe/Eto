@@ -21,9 +21,13 @@ namespace Eto.Android.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ScrollableHandler : AndroidPanel<aw.ScrollView, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{
-		public void UpdateScrollSizes()
+		public ScrollableHandler()
 		{
 			Control = new aw.ScrollView(aa.Application.Context);
+		}
+
+		public void UpdateScrollSizes()
+		{
 		}
 
 		public override av.View ContainerControl

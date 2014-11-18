@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Menu
 {
 	/// <summary>
 	/// Summary description for MenuBarHandler.
@@ -13,7 +13,20 @@ namespace Eto.GtkSharp
 		Gtk.AccelLabel label;
 		Gtk.Label accelLabel;
 		bool isActivating;
+		bool enabled = true;
+		bool isChecked;
 		RadioMenuItemHandler controller;
+
+		public RadioMenuItemHandler()
+		{
+			label = new Gtk.AccelLabel(string.Empty);
+			label.Xalign = 0;
+			label.UseUnderline = true;
+			label.AccelWidget = Control;
+			accelLabel = new Gtk.Label();
+			accelLabel.Xalign = 1;
+			accelLabel.Visible = false;
+		}
 
 		public void Create(RadioMenuItem controller)
 		{
@@ -32,18 +45,13 @@ namespace Eto.GtkSharp
 				}
 			}
 
+			Control.Sensitive = enabled;
 			var hbox = new Gtk.HBox(false, 4);
-			label = new Gtk.AccelLabel(string.Empty);
-			label.Xalign = 0;
-			label.UseUnderline = true;
-			label.AccelWidget = Control;
 			hbox.Add(label);
-			accelLabel = new Gtk.Label();
-			accelLabel.Xalign = 1;
-			accelLabel.Visible = false;
 			hbox.Add(accelLabel);
 			Control.Add(hbox);
 			Control.Toggled += Connector.HandleToggled;
+			Control.ShowAll();
 		}
 
 		protected new RadioMenuItemConnector Connector { get { return (RadioMenuItemConnector)base.Connector; } }
@@ -73,7 +81,7 @@ namespace Eto.GtkSharp
 			set
 			{
 				text = value;
-				label.TextWithMnemonic = text;
+				label.TextWithMnemonic = value;
 			}
 		}
 
@@ -102,19 +110,28 @@ namespace Eto.GtkSharp
 
 		public bool Checked
 		{
-			get { return Control.Active; }
+			get { return Control != null ? Control.Active : isChecked; }
 			set
-			{ 
-				controller.isActivating = true;
-				Control.Active = value;
-				controller.isActivating = false;
+			{
+				isChecked = value;
+				if (Control != null)
+				{
+					controller.isActivating = true;
+					Control.Active = value;
+					controller.isActivating = false;
+				}
 			}
 		}
 
 		public bool Enabled
 		{
-			get { return Control.Sensitive; }
-			set { Control.Sensitive = value; }
+			get { return Control != null ? enabled : Control.Sensitive; }
+			set {
+				if (Control != null)
+					Control.Sensitive = value;
+				else
+					enabled = value;
+			}
 		}
 
 		public void AddMenu(int index, MenuItem item)

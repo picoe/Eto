@@ -11,7 +11,7 @@ namespace Eto.Wpf.Forms
 {
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout, TableLayout.ICallback>, TableLayout.IHandler
 	{
-		swc.Border border = new swc.Border();
+		readonly swc.Border border;
 		Size spacing;
 		Control[,] controls;
 		bool[] columnScale;
@@ -22,8 +22,12 @@ namespace Eto.Wpf.Forms
 
 		public TableLayoutHandler()
 		{
+			Control = new swc.Grid { SnapsToDevicePixels = true };
+			border = new swc.Border();
+			#pragma warning disable 612,618
 			spacing = TableLayout.DefaultSpacing;
 			border.Padding = TableLayout.DefaultPadding.ToWpf();
+			#pragma warning restore 612,618
 		}
 
 		public Size Adjust { get; set; }
@@ -60,7 +64,12 @@ namespace Eto.Wpf.Forms
 				height += maxHeight;
 			}
 
-			return new sw.Size(widths.Sum() + border.Padding.Horizontal(), height + border.Padding.Vertical());
+			var size = new sw.Size(widths.Sum() + border.Padding.Horizontal(), height + border.Padding.Vertical());
+			if (!double.IsNaN(PreferredSize.Width))
+				size.Width = Math.Max(size.Width, PreferredSize.Width);
+			if (!double.IsNaN(PreferredSize.Height))
+				size.Height = Math.Max(size.Height, PreferredSize.Height);
+			return size;
 		}
 
 		public void CreateControl(int cols, int rows)
@@ -70,7 +79,6 @@ namespace Eto.Wpf.Forms
 			rowScale = new bool[rows];
 			lastColumnScale = cols - 1;
 			lastRowScale = rows - 1;
-			Control = new swc.Grid { SnapsToDevicePixels = true };
 			for (int i = 0; i < cols; i++) Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = GetColumnWidth(i) });
 			for (int i = 0; i < rows; i++) Control.RowDefinitions.Add(new swc.RowDefinition { Height = GetRowHeight(i) });
 
@@ -96,11 +104,6 @@ namespace Eto.Wpf.Forms
 			swc.Grid.SetRow(empty, y);
 			SetMargins(empty, x, y);
 			return empty;
-		}
-
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
 		}
 
 		public override void OnLoadComplete(EventArgs e)
@@ -146,7 +149,6 @@ namespace Eto.Wpf.Forms
 		void SetChildrenSizes()
 		{
 			var inGroupBoxCurrent = inGroupBox;
-			var widths = new double[Control.ColumnDefinitions.Count];
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{
 				var rowdef = Control.RowDefinitions[y];

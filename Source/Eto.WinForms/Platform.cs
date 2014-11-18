@@ -9,6 +9,9 @@ using Eto.WinForms.Forms.Printing;
 using Eto.WinForms.Forms.Controls;
 using Eto.WinForms.IO;
 using Eto.Forms.ThemedControls;
+using Eto.WinForms.Forms.Cells;
+using Eto.WinForms.Forms.Menu;
+using Eto.WinForms.Forms.ToolBar;
 
 namespace Eto.WinForms
 {
@@ -59,6 +62,7 @@ namespace Eto.WinForms
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<Calendar.IHandler>(() => new CalendarHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
@@ -104,6 +108,7 @@ namespace Eto.WinForms
 			
 			// Forms.ToolBar
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
+			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolBarItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());

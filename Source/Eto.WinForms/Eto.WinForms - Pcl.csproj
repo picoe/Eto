@@ -71,6 +71,9 @@
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
     <Compile Include="Conversions.cs" />
+    <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\TreeController.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
@@ -87,6 +90,10 @@
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
@@ -101,6 +108,7 @@
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="KeyMap.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -174,9 +182,6 @@
     <Compile Include="Forms\Controls\CheckBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Controls\ControlHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -220,9 +225,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\WindowsControl.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
@@ -301,6 +303,10 @@
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="WinFormsHelpers.cs" />
     <Compile Include="Forms\HwndFormHandler.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\WindowsControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -343,6 +349,9 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - Pcl</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CustomControls\CalendarPicker.png" />
   </ItemGroup>
   <Import Project="../Shared/Build.targets" />
 </Project>

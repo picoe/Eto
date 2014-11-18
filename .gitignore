@@ -11,5 +11,6 @@ UpgradeLog*.htm
 Source/packages
 Source/Components
 AppPackages
-Tutorials/packages
 Resources/packages
+Samples/packages
+Source/Addins/Eto.Addin.XamarinStudio/packages

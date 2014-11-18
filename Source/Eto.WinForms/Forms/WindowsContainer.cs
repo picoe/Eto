@@ -4,8 +4,9 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.WinForms.Forms.Controls;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms
 {
 
 	public abstract class WindowsContainer<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, Container.IHandler

@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -12,6 +14,7 @@ namespace Eto.Forms
 	/// Note that you should use an <see cref="System.Collections.ObjectModel.ObservableCollection{T}"/> if you are using a
 	/// POCO, or the <see cref="ListItemCollection"/> if you want to add items without custom objects.
 	/// </remarks>
+	[Obsolete("Use IList<IListItem>/IList instead if you want a virtual collection, or ObservableCollection<IListItem> to have change tracking")]
 	public interface IListStore : IDataStore<IListItem>
 	{
 	}
@@ -19,8 +22,30 @@ namespace Eto.Forms
 	/// <summary>
 	/// A collection of <see cref="ListItem"/> objects for use with <see cref="ListControl"/> objects
 	/// </summary>
-	public class ListItemCollection : DataStoreCollection<IListItem>, IListStore
+	/// <remarks>
+	/// This is used to provide an easy way to add items to a <see cref="ListControl"/>.
+	/// It is not mandatory to use this collection, however, since each control can specify bindings to your own
+	/// model objects using <see cref="ListControl.KeyBinding"/>, <see cref="ListControl.TextBinding"/>, or other
+	/// subclass bindings.
+	/// </remarks>
+	public class ListItemCollection : ExtendedObservableCollection<IListItem>
 	{
+		/// <summary>
+		/// Initializes a new instance of the ListItemCollection class.
+		/// </summary>
+		public ListItemCollection()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the ListItemCollection class with the specified collection.
+		/// </summary>
+		/// <param name="collection">Collection of items to populate this collection with</param>
+		public ListItemCollection(IEnumerable<IListItem> collection)
+			: base(collection)
+		{
+		}
+
 		/// <summary>
 		/// Adds a new item to the list with the specified text
 		/// </summary>
@@ -55,13 +80,13 @@ namespace Eto.Forms
 				return item.Text;
 			if (HasProperty(dataItem))
 				return base.InternalGetValue(dataItem);
-			return Convert.ToString(dataItem);
+			return dataItem != null ? System.Convert.ToString(dataItem) : null;
 		}
 		protected override void InternalSetValue(object dataItem, string value)
 		{
 			var item = dataItem as IListItem;
 			if (item != null)
-				item.Text = Convert.ToString(value);
+				item.Text = System.Convert.ToString(value);
 			else
 				base.InternalSetValue(dataItem, value);
 		}
@@ -78,7 +103,11 @@ namespace Eto.Forms
 		protected override string InternalGetValue(object dataItem)
 		{
 			var item = dataItem as IListItem;
-			return item != null ? item.Key : base.InternalGetValue(dataItem);
+			if (item != null)
+				return item.Key;
+			if (HasProperty(dataItem))
+				return base.InternalGetValue(dataItem);
+			return dataItem != null ? System.Convert.ToString(dataItem) : null;
 		}
 	}
 
@@ -102,10 +131,16 @@ namespace Eto.Forms
 		/// <value>The key binding.</value>
 		public IIndirectBinding<string> KeyBinding { get; set; }
 
+		static readonly object SelectedIndexChangedKey = new object();
+
 		/// <summary>
 		/// Occurs when the <see cref="SelectedIndex"/> changed.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedIndexChanged;
+		public event EventHandler<EventArgs> SelectedIndexChanged
+		{
+			add { Properties.AddEvent(SelectedIndexChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedIndexChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedIndexChanged"/> event.
@@ -113,15 +148,21 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
-			if (SelectedIndexChanged != null)
-				SelectedIndexChanged(this, e);
+			Properties.TriggerEvent(SelectedIndexChangedKey, this, e);
 			OnSelectedValueChanged(e);
+			OnSelectedKeyChanged(e);
 		}
+
+		static readonly object SelectedValueChangedKey = new object();
 
 		/// <summary>
 		/// Occurs when the <see cref="SelectedValue"/> changed.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedValueChanged;
+		public event EventHandler<EventArgs> SelectedValueChanged
+		{
+			add { Properties.AddEvent(SelectedValueChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedValueChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedValueChanged"/> event.
@@ -129,8 +170,27 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedValueChanged(EventArgs e)
 		{
-			if (SelectedValueChanged != null)
-				SelectedValueChanged(this, e);
+			Properties.TriggerEvent(SelectedValueChangedKey, this, e);
+		}
+
+		static readonly object SelectedKeyChangedKey = new object();
+
+		/// <summary>
+		/// Occurs when the <see cref="SelectedValue"/> changed.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedKeyChanged
+		{
+			add { Properties.AddEvent(SelectedKeyChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedKeyChangedKey, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="SelectedValueChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnSelectedKeyChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(SelectedKeyChangedKey, this, e);
 		}
 
 		/// <summary>
@@ -228,6 +288,19 @@ namespace Eto.Forms
 				EnsureDataStore();
 				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.FindIndex<object>(r => KeyBinding.GetValue(r) == value) : -1;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		/// <remarks>
+		/// By default, the text will get a color based on the user's theme. However, this is usually black.
+		/// </remarks>
+		/// <value>The color of the text.</value>
+		public Color TextColor
+		{
+			get { return Handler.TextColor; }
+			set { Handler.TextColor = value; }
 		}
 
 		/// <summary>
@@ -377,6 +450,15 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The index of the selected item.</value>
 			int SelectedIndex { get; set; }
+
+			/// <summary>
+			/// Gets or sets the color of the text.
+			/// </summary>
+			/// <remarks>
+			/// By default, the text will get a color based on the user's theme. However, this is usually black.
+			/// </remarks>
+			/// <value>The color of the text.</value>
+			Color TextColor { get; set; }
 		}
 	}
 }

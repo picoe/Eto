@@ -14,17 +14,17 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #endif
 
-namespace Eto.Mac
+namespace Eto.Mac.Forms.Menu
 {
 	public interface IMenuHandler
 	{
 		void EnsureSubMenu();
 	}
 
-	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Menu.IHandler, IMenuHandler
+	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Eto.Forms.Menu.IHandler, IMenuHandler
 		where TControl: NSMenuItem
-		where TWidget: Menu
-		where TCallback: Menu.ICallback
+		where TWidget: Eto.Forms.Menu
+		where TCallback: Eto.Forms.Menu.ICallback
 	{
 		public void EnsureSubMenu()
 		{

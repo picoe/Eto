@@ -70,7 +70,6 @@
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\ClipSection.cs" />
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
-    <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
     <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
@@ -175,6 +174,8 @@
     <Compile Include="Sections\Controls\LinkButtonSection.cs" />
     <Compile Include="Commands\About.cs" />
     <Compile Include="Commands\Quit.cs" />
+    <Compile Include="Sections\Controls\ControlColorsSection.cs" />
+    <Compile Include="Sections\Behaviors\DynamicMenuBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

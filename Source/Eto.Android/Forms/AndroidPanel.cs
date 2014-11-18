@@ -13,6 +13,7 @@ namespace Eto.Android.Forms
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class AndroidPanel<TControl, TWidget, TCallback> : AndroidContainer<TControl, TWidget, TCallback>, Panel.IHandler
+		where TControl: av.View
 		where TWidget: Panel
 		where TCallback: Panel.ICallback
 	{
@@ -47,7 +48,7 @@ namespace Eto.Android.Forms
 				if (content != null)
 				{
 					var view = content.GetContainerView();
-					view.LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.FillParent, av.ViewGroup.LayoutParams.FillParent);
+					view.LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.MatchParent, av.ViewGroup.LayoutParams.MatchParent);
 					frame.AddView(view);
 				}
 			}

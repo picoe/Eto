@@ -20,7 +20,7 @@ namespace Eto.WinRT.Forms.Controls
 
 		protected override Size DefaultSize { get { return defaultSize; } }
 
-		public TextAreaHandler ()
+		public TextAreaHandler()
 		{
 			Control = new swc.TextBox
 			{
@@ -48,64 +48,61 @@ namespace Eto.WinRT.Forms.Controls
 
 		public override bool UseKeyPreview { get { return true; } }
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
-			case TextControl.TextChangedEvent:
-				Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
-				break;
-			case TextArea.SelectionChangedEvent:
-				Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-				break;
-			case TextArea.CaretIndexChangedEvent:
-				{
-#if TODO_XAML
-					Control.SelectionChanged += (sender, e) => {
-						var caretIndex = Control.CaretIndex;
-						if (lastCaretIndex != caretIndex)
-						{
-							Widget.OnCaretIndexChanged(EventArgs.Empty);
-							lastCaretIndex = caretIndex;
-						}
-					};
+				case TextControl.TextChangedEvent:
+					Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
 					break;
-#else
-					throw new NotImplementedException();
-#endif
-				}
-			default:
-				base.AttachEvent (id);
-				break;
+				case TextArea.SelectionChangedEvent:
+					Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					break;
+				case TextArea.CaretIndexChangedEvent:
+					{
+						Control.SelectionChanged += (sender, e) =>
+						{
+							var caretIndex = Control.SelectionStart + Control.SelectionLength;
+							if (lastCaretIndex != caretIndex)
+							{
+								Callback.OnCaretIndexChanged(Widget, EventArgs.Empty);
+								lastCaretIndex = caretIndex;
+							}
+						};
+						break;
+					}
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
 		public bool ReadOnly
 		{
 			get { return Control.IsReadOnly; }
-			set {
+			set
+			{
 				Control.IsReadOnly = value;
-#if TODO_XAML
-				Control.AcceptsTab = !value;
-#endif
-				Control.AcceptsReturn = !value;
 			}
 		}
 
-		public void Append (string text, bool scrollToCursor)
+		public void Append(string text, bool scrollToCursor)
 		{
-#if TODO_XAML
-			Control.AppendText (text);
-			if (scrollToCursor) Control.ScrollToEnd ();
-#else
-			throw new NotImplementedException();
-#endif
+			Control.Text += text;
+			if (scrollToCursor)
+			{
+				var sv = Control.FindChild<swc.ScrollViewer>();
+				if (sv != null)
+				{
+					sv.ChangeView(null, sv.ExtentHeight - sv.ViewportHeight, null, true);
+				}
+			}
 		}
 
 		public string Text
 		{
-			get	{ return Control.Text; }
-			set	{ Control.Text = value;	}
+			get { return Control.Text; }
+			set { Control.Text = value; }
 		}
 
 		public Color TextColor
@@ -117,7 +114,8 @@ namespace Eto.WinRT.Forms.Controls
 		public bool Wrap
 		{
 			get { return Control.TextWrapping == sw.TextWrapping.Wrap; }
-			set	{
+			set
+			{
 				Control.TextWrapping = value ? sw.TextWrapping.Wrap : sw.TextWrapping.NoWrap;
 			}
 		}
@@ -131,22 +129,68 @@ namespace Eto.WinRT.Forms.Controls
 		public Range<int> Selection
 		{
 			get { return new Range<int>(Control.SelectionStart, Control.SelectionStart + Control.SelectionLength - 1); }
-			set { Control.Select (value.Start, value.End - value.Start + 1); }
+			set
+			{
+				Control.Focus(sw.FocusState.Programmatic);
+				Control.Select(value.Start, value.End - value.Start + 1);
+			}
 		}
 
-		public void SelectAll ()
+		public void SelectAll()
 		{
-			Control.SelectAll ();
+			Control.Focus(sw.FocusState.Programmatic);
+			Control.SelectAll();
 		}
 
 		public int CaretIndex
 		{
-#if TODO_XAML			
-			get { return Control.CaretIndex; }
-			set { Control.CaretIndex = value; }
-#else
-			get; set;
-#endif
+			get { return Control.SelectionStart + Control.SelectionLength; }
+			set
+			{
+				Control.Focus(sw.FocusState.Programmatic);
+				Control.SelectionStart = value; Control.SelectionLength = 0;
+			}
+		}
+
+		public bool AcceptsReturn
+		{
+			get { return Control.AcceptsReturn; }
+			set { Control.AcceptsReturn = value; }
+		}
+
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.TextAlignment.ToEto(); }
+			set { Control.TextAlignment = value.ToWpfTextAlignment(); }
+		}
+
+		bool acceptsTab = true;
+		public bool AcceptsTab
+		{
+			get { return acceptsTab; }
+			set
+			{
+				if (value != AcceptsTab)
+				{
+					if (acceptsTab)
+						Control.KeyDown -= Control_KeyDown;
+					acceptsTab = value;
+					if (acceptsTab)
+						Control.KeyDown += Control_KeyDown;
+				}
+			}
+		}
+
+		void Control_KeyDown(object sender, sw.Input.KeyRoutedEventArgs e)
+		{
+			if (acceptsTab && e.Key == Windows.System.VirtualKey.Tab)
+			{
+				var selection = Control.SelectionStart + Control.SelectionLength;
+				Control.SelectedText = "\t";
+				Control.SelectionStart = selection;
+				Control.SelectionLength = 0;
+				e.Handled = true;
+			}
 		}
 	}
 }

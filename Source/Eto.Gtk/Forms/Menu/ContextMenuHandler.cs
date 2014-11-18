@@ -1,12 +1,13 @@
 using Eto.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Menu
 {
 	public class ContextMenuHandler : MenuHandler<Gtk.Menu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
 	{
 		public ContextMenuHandler()
 		{
 			Control = new Gtk.Menu();
+			Control.ShowAll();
 		}
 
 		public void AddMenu(int index, MenuItem item)

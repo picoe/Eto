@@ -32,7 +32,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-namespace Eto.Mac.Forms.Controls
+namespace Eto.Mac.Forms.Cells
 {
 	public class ImageViewCellHandler : CellHandler<ImageViewCellHandler.EtoCell, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
 	{

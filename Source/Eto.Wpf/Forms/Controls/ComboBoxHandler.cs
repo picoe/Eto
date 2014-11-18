@@ -1,116 +1,125 @@
-using System;
+﻿using System;
+using System.Linq;
+using Eto.Drawing;
+using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
-using swd = System.Windows.Data;
-using swa = System.Windows.Automation;
-using swm = System.Windows.Media;
-using Eto.Forms;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class ComboBoxHandler : DropDownHandler<EtoComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
-		IEnumerable<object> store;
-
-		public class EtoComboBox : swc.ComboBox
-		{
-			int? _selected;
-
-			public EtoComboBox()
-			{
-				Loaded += ComboBoxEx_Loaded;
-			}
-
-			public override void OnApplyTemplate()
-			{
-				base.OnApplyTemplate();
-
-				_selected = SelectedIndex;
-				SelectedIndex = -1;
-			}
-
-			protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
-			{
-				if (_selected == null)
-					base.OnSelectionChanged(e);
-			}
-
-			protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-			{
-				base.OnItemsChanged(e);
-				if (IsLoaded)
-				{
-					InvalidateMeasure();
-				}
-			}
-
-			void ComboBoxEx_Loaded(object sender, sw.RoutedEventArgs e)
-			{
-				if (_selected != null)
-				{
-					SelectedIndex = _selected.Value;
-					_selected = null;
-				}
-			}
-
-			protected override sw.Size MeasureOverride(sw.Size constraint)
-			{
-				var size = base.MeasureOverride(constraint);
-				var popup = (swc.Primitives.Popup)GetTemplateChild("PART_Popup");
-				popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
-				if (ItemContainerGenerator.Status == swc.Primitives.GeneratorStatus.ContainersGenerated)
-				{
-					double maxWidth = 0;
-					foreach (var item in Items)
-					{
-						var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
-						comboBoxItem.Measure(Conversions.PositiveInfinitySize);
-						maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
-					}
-					var toggle = GetTemplateChild("toggleButton") as sw.UIElement;
-					if (toggle != null)
-						maxWidth += toggle.DesiredSize.Width; // add room for the toggle button
-					else
-						maxWidth += 20; // windows 7 doesn't name the toggle button, so hack it
-					size.Width = Math.Max(maxWidth, size.Width);
-				}
-				return size;
-			}
-		}
+		bool textChanging;
+		string lastText;
 
 		public ComboBoxHandler()
 		{
-			Control = new EtoComboBox();
-			var template = new sw.DataTemplate();
-			template.VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false);
-			Control.ItemTemplate = template;
-			Control.SelectionChanged += delegate
-			{
-				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
-			};
+			Control.RetainSize = true;
+			Control.IsEditable = true;
+			Control.IsTextSearchEnabled = false;
+			Control.AddHandler(swc.Primitives.TextBoxBase.TextChangedEvent, new swc.TextChangedEventHandler((sender, e) => HandleTextChanged()));
 		}
 
-		public override bool UseMousePreview { get { return true; } }
-
-		public override bool UseKeyPreview { get { return true; } }
-
-
-		public IEnumerable<object> DataStore
+		void HandleTextChanged()
 		{
-			get { return store; }
-			set
+			if (textChanging) return;
+			try
 			{
-				store = value;
-				Control.ItemsSource = store;
+				textChanging = true;
+
+				var text = Text;
+				if (text != lastText)
+				{
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
+					lastText = text;
+				}
+
+				if (!AutoComplete)
+				{
+					// with autocomplete off, items aren't selected based on typed text but should be
+					var item = DataStore.FirstOrDefault(o => Widget.TextBinding.GetValue(o) == text);
+					if (item != null)
+					{
+						Control.SelectedItem = item;
+						return;
+					}
+				}
+				else if (Control.SelectedItem != null)
+				{
+					// with autocomplete on, selected item is set even though text doesn't actually match
+					var val = Widget.TextBinding.GetValue(Control.SelectedItem);
+					if (text == val) return;
+				}
+
+				// unselect the current item manually
+				var textBox = Control.TextBox;
+				if (textBox != null)
+				{
+					// keeping selection if there's a textbox
+					var selectionStart = textBox.SelectionStart;
+					var selectionLength = textBox.SelectionLength;
+					Control.SelectedIndex = -1;
+					Control.Text = text;
+					textBox.SelectionStart = selectionStart;
+					textBox.SelectionLength = selectionLength;
+				}
+				else
+				{
+					Control.SelectedIndex = -1;
+					Control.Text = text;
+				}
+			}
+			finally
+			{
+				textChanging = false;
 			}
 		}
 
-		public int SelectedIndex
+		public override void AttachEvent(string id)
 		{
-			get { return Control.SelectedIndex; }
-			set { Control.SelectedIndex = value; }
+			switch (id)
+			{
+				case ComboBox.TextChangedEvent:
+					// handled automatically
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		protected override Size DefaultSize
+		{
+			get
+			{
+				var size = base.DefaultSize;
+				return new Size(100, size.Height);
+			}
+		}
+
+		public string Text
+		{
+			get { return Control.Text; }
+			set
+			{
+				if (value != Text)
+				{
+					Control.Text = value;
+					HandleTextChanged();
+				}
+			}
+		}
+
+		public bool ReadOnly
+		{
+			get { return Control.IsReadOnly; }
+			set { Control.IsReadOnly = value; }
+		}
+
+		public bool AutoComplete
+		{
+			get { return Control.IsTextSearchEnabled; }
+			set { Control.IsTextSearchEnabled = value; }
 		}
 	}
 }

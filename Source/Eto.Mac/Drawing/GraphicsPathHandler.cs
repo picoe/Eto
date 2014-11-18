@@ -246,7 +246,7 @@ namespace Eto.iOS.Drawing
 
 		public void AddEllipse (float x, float y, float width, float height)
 		{
-			#if XAMMAC2
+			#if XAMMAC || XAMMAC2
 			Control.AddEllipseInRect(new CGRect(x, y, width, height));
 			#else
 			Control.AddElipseInRect (new sd.RectangleF (x, y, width, height));

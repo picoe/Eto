@@ -71,7 +71,9 @@ namespace Eto.Mac.Forms.Controls
 				Calendar = NSCalendar.CurrentCalendar,
 				DateValue = DateTime.Now.ToNS()
 			};
+			#pragma warning disable 612,618
 			this.Mode = DateTimePicker.DefaultMode;
+			#pragma warning restore 612,618
 			// apple+backspace clears the value
 			Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
 		}
@@ -181,6 +183,26 @@ namespace Eto.Mac.Forms.Controls
 					Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
 					Callback.OnValueChanged(Widget, EventArgs.Empty);
 				}
+			}
+		}
+
+		public Color TextColor
+		{
+			get { return Control.TextColor.ToEto(); }
+			set { Control.TextColor = value.ToNSUI(); }
+		}
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			if (color != null)
+			{
+				Control.Cell.BackgroundColor = color.Value.ToNSUI();
+				Control.Cell.DrawsBackground = true;
+			}
+			else
+			{
+				Control.Cell.BackgroundColor = NSColor.ControlBackground;
+				Control.Cell.DrawsBackground = true;
 			}
 		}
 	}

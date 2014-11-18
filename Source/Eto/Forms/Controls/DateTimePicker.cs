@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -122,6 +123,19 @@ namespace Eto.Forms
 			set { Handler.Mode = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the color of the text.
+		/// </summary>
+		/// <remarks>
+		/// By default, the text will get a color based on the user's theme. However, this is usually black.
+		/// </remarks>
+		/// <value>The color of the text.</value>
+		public Color TextColor
+		{
+			get { return Handler.TextColor; }
+			set { Handler.TextColor = value; }
+		}
+
 		static readonly object callback = new Callback();
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
@@ -184,6 +198,15 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The picker mode.</value>
 			DateTimePickerMode Mode { get; set; }
+
+			/// <summary>
+			/// Gets or sets the color of the text.
+			/// </summary>
+			/// <remarks>
+			/// By default, the text will get a color based on the user's theme. However, this is usually black.
+			/// </remarks>
+			/// <value>The color of the text.</value>
+			Color TextColor { get; set; }
 		}
 
 		#endregion

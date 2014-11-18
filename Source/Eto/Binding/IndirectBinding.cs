@@ -125,5 +125,89 @@ namespace Eto
 		public virtual void RemoveValueChangedHandler(object bindingReference, EventHandler<EventArgs> handler)
 		{
 		}
+
+		/// <summary>
+		/// Converts this binding's value to another value using delegates.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you want to cast one binding to another, perform logic when getting/setting a value from a particular
+		/// binding, or get/set a preoperty of the value.
+		/// </remarks>
+		/// <param name="toValue">Delegate to convert to the new value type.</param>
+		/// <param name="fromValue">Delegate to convert from the value to the original binding's type.</param>
+		/// <typeparam name="TValue">The type to convert to.</typeparam>
+		public IndirectBinding<TValue> Convert<TValue>(Func<T, TValue> toValue, Func<TValue, T> fromValue = null)
+		{
+			return new DelegateBinding<object, TValue>(
+				m => toValue != null ? toValue(GetValue(m)) : default(TValue),
+				(m, val) => { if (fromValue != null) SetValue(m, fromValue(val)); },
+				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				removeChangeEvent: RemoveValueChangedHandler
+			);
+		}
+
+		/// <summary>
+		/// Casts this binding value to another (compatible) type.
+		/// </summary>
+		/// <typeparam name="TValue">The type to cast the values of this binding to.</typeparam>
+		public IndirectBinding<TValue> Cast<TValue>()
+		{
+			return new DelegateBinding<object, TValue>(
+				m => (TValue)(object)GetValue(m),
+				(m, val) => SetValue(m, (T)(object)val),
+				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				removeChangeEvent: RemoveValueChangedHandler
+			);
+		}
+
+		/// <summary>
+		/// Converts this binding to return a nullable boolean binding
+		/// </summary>
+		/// <remarks>
+		/// This is useful when converting a binding to be used for a checkbox's Checked binding for example.
+		/// When the binding's value matches the <paramref name="trueValue"/>, it will return true.
+		/// </remarks>
+		/// <returns>Boolean binding.</returns>
+		/// <param name="trueValue">Value when the binding is true.</param>
+		/// <param name="falseValue">Value when the binding is false.</param>
+		/// <param name="nullValue">Value when the binding is null.</param>
+		public IndirectBinding<bool?> ToBool(T trueValue, T falseValue, T nullValue)
+		{
+			return new DelegateBinding<object, bool?>(
+				m => Equals(GetValue(m), trueValue),
+				(m, val) => SetValue(m, val == true ? trueValue : val != null ? falseValue : nullValue),
+				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				removeChangeEvent: RemoveValueChangedHandler
+			);
+		}
+
+		/// <summary>
+		/// Converts this binding to return a nullable boolean binding
+		/// </summary>
+		/// <remarks>
+		/// This is useful when converting a binding to be used for a checkbox's Checked binding for example.
+		/// When the binding's value matches the <paramref name="trueValue"/>, it will return true.
+		/// </remarks>
+		/// <returns>Boolean binding.</returns>
+		/// <param name="trueValue">Value when the binding is true.</param>
+		/// <param name="falseValue">Value when the binding is false.</param>
+		public IndirectBinding<bool?> ToBool(T trueValue, T falseValue)
+		{
+			return ToBool(trueValue, falseValue, falseValue);
+		}
+
+		/// <summary>
+		/// Converts this binding to return a nullable boolean binding
+		/// </summary>
+		/// <remarks>
+		/// This is useful when converting a binding to be used for a checkbox's Checked binding for example.
+		/// When the binding's value matches the <paramref name="trueValue"/>, it will return true.
+		/// </remarks>
+		/// <returns>Boolean binding.</returns>
+		/// <param name="trueValue">Value when the binding is true.</param>
+		public IndirectBinding<bool?> ToBool(T trueValue)
+		{
+			return ToBool(trueValue, trueValue, trueValue);
+		}
 	}
 }

@@ -53,7 +53,9 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
@@ -129,9 +131,6 @@
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
-    <Compile Include="Forms\Controls\GtkControl.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -240,6 +239,12 @@
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="Forms\GtkSynchronizationContext.cs" />
     <Compile Include="GtkHelpers.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\GtkControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

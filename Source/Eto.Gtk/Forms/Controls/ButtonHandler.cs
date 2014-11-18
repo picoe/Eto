@@ -2,7 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	/// <summary>
 	/// Button handler.
@@ -163,6 +163,12 @@ namespace Eto.GtkSharp
 					SetImagePosition();
 				}
 			}
+		}
+
+		public Color TextColor
+		{
+			get { return label.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			set { label.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
 		}
 	}
 }

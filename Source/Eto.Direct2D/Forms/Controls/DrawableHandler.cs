@@ -10,7 +10,7 @@ using swf = System.Windows.Forms;
 
 namespace Eto.Direct2D.Forms.Controls
 {
-	public class DrawableHandler : Eto.WinForms.DrawableHandler
+	public class DrawableHandler : Eto.WinForms.Forms.Controls.DrawableHandler
 	{
 		Graphics graphics;
 		GraphicsHandler graphicsHandler;

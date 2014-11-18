@@ -2,7 +2,7 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
 
-namespace Eto.Wpf.Forms.Controls
+namespace Eto.Wpf.Forms.Cells
 {
 	public interface ICellContainerHandler
 	{

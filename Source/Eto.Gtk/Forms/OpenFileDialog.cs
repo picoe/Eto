@@ -1,7 +1,7 @@
 using Eto.Forms;
 using System.Collections.Generic;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public class OpenFileDialogHandler : GtkFileDialog<Gtk.FileChooserDialog, OpenFileDialog>, OpenFileDialog.IHandler
 	{

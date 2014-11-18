@@ -1,22 +1,23 @@
 using System;
+using System.IO;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
-	public class LabelHandler : WindowsControl<LabelHandler.MyLabel, Label, Label.ICallback>, Label.IHandler
+	public class LabelHandler : WindowsControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler
 	{
-		public class MyLabel : swf.Label
+		public class EtoLabel : swf.Label
 		{
-			readonly sd.StringFormat stringFormat;
 			WrapMode wrapMode;
 			HorizontalAlign horizontalAlign;
 			sd.SizeF? measuredSize;
 			sd.Size proposedSizeCache;
 			sd.SizeF? measuredSizeMax;
 			VerticalAlign verticalAlign;
+			swf.TextFormatFlags textFormat = swf.TextFormatFlags.Default;
 
 			void ClearSize()
 			{
@@ -71,17 +72,15 @@ namespace Eto.WinForms
 				set
 				{
 					verticalAlign = value;
+					SetStringFormat();
 					ClearSize();
 				}
 			}
 
-			public MyLabel()
+			public EtoLabel()
 			{
-				stringFormat = new sd.StringFormat();
 				Wrap = WrapMode.Word;
 			}
-
-			static readonly sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
@@ -94,7 +93,7 @@ namespace Eto.WinForms
 					{
 						proposedSize -= bordersAndPadding;
 						proposedSize.Height = Math.Max(0, proposedSize.Height);
-						measuredSizeMax = graphics.MeasureString(Text, Font, proposedSize.Width, stringFormat);
+						measuredSizeMax = swf.TextRenderer.MeasureText(Text, Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
 					}
 					measuredSize = measuredSizeMax;
 				}
@@ -103,7 +102,7 @@ namespace Eto.WinForms
 					proposedSizeCache = proposedSize;
 					proposedSize -= bordersAndPadding;
 					proposedSize.Height = Math.Max(0, proposedSize.Height);
-					measuredSize = graphics.MeasureString(Text, Font, proposedSize.Width, stringFormat);
+					measuredSize = swf.TextRenderer.MeasureText(Text, Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
 				}
 				var size = measuredSize.Value;
 				size += bordersAndPadding;
@@ -116,29 +115,40 @@ namespace Eto.WinForms
 
 			void SetStringFormat()
 			{
-				stringFormat.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Show;
+				textFormat = swf.TextFormatFlags.Default;
 				switch (Wrap)
 				{
 					case WrapMode.None:
-						stringFormat.Trimming = System.Drawing.StringTrimming.None;
-						stringFormat.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
+						textFormat |= swf.TextFormatFlags.SingleLine;
 						break;
 					case WrapMode.Word:
-						stringFormat.Trimming = System.Drawing.StringTrimming.Word;
-						stringFormat.FormatFlags = 0;
+						textFormat |= swf.TextFormatFlags.WordBreak;
 						break;
 					case WrapMode.Character:
-						stringFormat.Trimming = System.Drawing.StringTrimming.Character;
-						stringFormat.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
 						break;
 				}
 				switch (HorizontalAlign)
 				{
+					case HorizontalAlign.Left:
+						textFormat |= swf.TextFormatFlags.Left;
+						break;
 					case HorizontalAlign.Right:
-						stringFormat.Alignment = System.Drawing.StringAlignment.Far;
+						textFormat |= swf.TextFormatFlags.Right;
 						break;
 					case HorizontalAlign.Center:
-						stringFormat.Alignment = System.Drawing.StringAlignment.Center;
+						textFormat |= swf.TextFormatFlags.HorizontalCenter;
+						break;
+				}
+				switch (VerticalAlign)
+				{
+					case VerticalAlign.Top:
+						textFormat |= swf.TextFormatFlags.Top;
+						break;
+					case VerticalAlign.Bottom:
+						textFormat |= swf.TextFormatFlags.Bottom;
+						break;
+					case VerticalAlign.Middle:
+						textFormat |= swf.TextFormatFlags.VerticalCenter;
 						break;
 				}
 
@@ -146,78 +156,20 @@ namespace Eto.WinForms
 
 			protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 			{
-				using (var b = new sd.SolidBrush(ForeColor))
-				{
-					if (Wrap == WrapMode.Character)
-					{
-						// draw string one line at a time to trim to character..
-						int charactersFitted, linesFilled;
-						string text = Text;
-						sd.PointF drawPoint = sd.PointF.Empty;
-						var font = Font;
-						var height = font.GetHeight(e.Graphics);
-						while (!string.IsNullOrEmpty(text))
-						{
-							e.Graphics.MeasureString(text, font, Bounds.Size, stringFormat, out charactersFitted, out linesFilled);
-
-							e.Graphics.DrawString(text.Substring(0, charactersFitted), font, b, drawPoint, stringFormat);
-
-							if (charactersFitted >= text.Length) break;
-							text = text.Substring(charactersFitted);
-
-							drawPoint.Y += height;
-						}
-					}
-					else
-					{
-						var rect = new sd.RectangleF(Margin.Left, Margin.Top, Bounds.Width - Margin.Horizontal, Bounds.Height - Margin.Vertical);
-						var size = e.Graphics.MeasureString(Text, Font, (int)rect.Width, stringFormat);
-
-						if (size.Height < rect.Height)
-						{
-							switch (VerticalAlign)
-							{
-								case Eto.Forms.VerticalAlign.Bottom:
-									rect.Y += rect.Height - size.Height;
-									rect.Height = size.Height;
-									break;
-								case Eto.Forms.VerticalAlign.Middle:
-									rect.Y += (rect.Height - size.Height) / 2;
-									rect.Height = size.Height;
-									break;
-							}
-						}
-
-						if (size.Width < rect.Width)
-						{
-							switch (HorizontalAlign)
-							{
-								case HorizontalAlign.Right:
-									rect.X = rect.Width - size.Width - Margin.Top;
-									rect.Width = size.Width;
-									break;
-								case HorizontalAlign.Center:
-									rect.X = (rect.Width - size.Width) / 2 - Margin.Top;
-									rect.Width = size.Width;
-									break;
-							}
-						}
-
-						e.Graphics.DrawString(Text, Font, b, rect, stringFormat);
-					}
-				}
+				var rect = new sd.Rectangle(Margin.Left, Margin.Top, Bounds.Width - Margin.Horizontal, Bounds.Height - Margin.Vertical);
+				swf.TextRenderer.DrawText(e.Graphics, Text, Font, rect, ForeColor, BackColor, textFormat);
 			}
 		}
 
 		public LabelHandler()
 		{
-			Control = new MyLabel
+			Control = new EtoLabel
 			{
 				AutoSize = true
 			};
 		}
 
-		public Color TextColor
+		public override Color TextColor
 		{
 			get { return Control.ForeColor.ToEto(); }
 			set { Control.ForeColor = value.ToSD(); }
@@ -265,5 +217,10 @@ namespace Eto.WinForms
 			}
 		}
 
+		public override void SetFilledContent()
+		{
+			base.SetFilledContent();
+			Control.AutoSize = false;
+		}
 	}
 }

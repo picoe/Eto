@@ -1,7 +1,7 @@
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class GroupBoxHandler : GtkPanel<Gtk.Frame, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
@@ -50,6 +50,12 @@ namespace Eto.GtkSharp
 				Control.SetSizeRequest(clientSize.Value.Width + 10, clientSize.Value.Height + label.Allocation.Height + 10);
 				clientSize = null;
 			}*/
+		}
+
+		public Color TextColor
+		{
+			get { return Control.LabelWidget.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			set { Control.LabelWidget.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
 		}
 	}
 }

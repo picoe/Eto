@@ -6,6 +6,7 @@ using Eto.Drawing;
 using Eto.Mac.Drawing;
 using System.Collections;
 using System.Linq;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -121,9 +122,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override void PostKeyDown(KeyEventArgs e)
+		public override void OnKeyDown(KeyEventArgs e)
 		{
-			if (e.Key == Keys.Enter)
+			base.OnKeyDown(e);
+
+			if (!e.Handled && e.Key == Keys.Enter)
 			{
 				Callback.OnActivated(Widget, EventArgs.Empty);
 				e.Handled = true;
@@ -266,6 +269,22 @@ namespace Eto.Mac.Forms.Controls
 				Control.Window.MakeFirstResponder(Control);
 			else
 				base.Focus();
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return Control.BackgroundColor.ToEto(); }
+			set { Control.BackgroundColor = value.ToNSUI(); }
+		}
+
+		public Color TextColor
+		{
+			get { return cell.TextColor.ToEto(); }
+			set
+			{ 
+				cell.TextColor = value.ToNSUI();
+				Control.SetNeedsDisplay();
+			}
 		}
 	}
 }

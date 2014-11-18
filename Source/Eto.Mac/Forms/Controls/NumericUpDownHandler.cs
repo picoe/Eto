@@ -141,9 +141,11 @@ namespace Eto.Mac.Forms.Controls
 			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 		}
 
-		public override void PostKeyDown(KeyEventArgs e)
+		public override void OnKeyDown(KeyEventArgs e)
 		{
-			base.PostKeyDown(e);
+			base.OnKeyDown(e);
+			if (e.Handled)
+				return;
 			if (e.KeyData == Keys.Down)
 			{
 				var val = Value;
@@ -280,6 +282,18 @@ namespace Eto.Mac.Forms.Controls
 					text.Formatter = formatter;
 				}
 			}
+		}
+
+		public Color TextColor
+		{
+			get { return text.TextColor.ToEto(); }
+			set { text.TextColor = value.ToNSUI(); }
+		}
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			if (color != null)
+				text.BackgroundColor = color.Value.ToNSUI();
 		}
 	}
 }

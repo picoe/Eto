@@ -1,7 +1,8 @@
 using System;
 using Eto.Forms;
+using Eto.GtkSharp.Forms.Controls;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Menu
 {
 	public class CheckMenuItemHandler : MenuActionItemHandler<Gtk.CheckMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler
 	{
@@ -18,6 +19,7 @@ namespace Eto.GtkSharp
 			label.UseUnderline = true;
 			label.AccelWidget = Control;
 			Control.Add(label);
+			Control.ShowAll();
 		}
 
 		protected override void Initialize()

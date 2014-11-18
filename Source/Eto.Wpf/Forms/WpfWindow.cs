@@ -26,7 +26,7 @@ namespace Eto.Wpf.Forms
 	{
 		Icon icon;
 		MenuBar menu;
-		ToolBar toolBar;
+		Eto.Forms.ToolBar toolBar;
 		swc.DockPanel main;
 		swc.ContentControl menuHolder;
 		swc.ContentControl toolBarHolder;
@@ -135,7 +135,7 @@ namespace Eto.Wpf.Forms
 			ContainerControl.MinHeight = MinimumSize.Height;
 		}
 
-		public ToolBar ToolBar
+		public Eto.Forms.ToolBar ToolBar
 		{
 			get { return toolBar; }
 			set
@@ -332,6 +332,13 @@ namespace Eto.Wpf.Forms
 			set { Control.Title = value; }
 		}
 
+		static readonly object locationSetKey = new object();
+
+		protected bool LocationSet
+		{
+			get { return Widget.Properties.Get<bool?>(locationSetKey) ?? false; }
+			set { Widget.Properties[locationSetKey] = value; }
+		}
 
 		public new Point Location
 		{
@@ -343,6 +350,8 @@ namespace Eto.Wpf.Forms
 			{
 				Control.Left = value.X;
 				Control.Top = value.Y;
+				if (!Widget.Loaded)
+					LocationSet = true;
 			}
 		}
 

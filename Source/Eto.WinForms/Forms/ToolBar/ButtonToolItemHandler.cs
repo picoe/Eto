@@ -3,18 +3,15 @@ using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.ToolBar
 {
 	public class ButtonToolItemHandler : ToolItemHandler<SWF.ToolStripButton, ButtonToolItem>, ButtonToolItem.IHandler
 	{
-		readonly SWF.ToolStripButton control;
-
 		public ButtonToolItemHandler()
 		{
-			control = new SWF.ToolStripButton();
-			control.Tag = this;
-			control.Click += control_Click;
-			Control = control;
+			Control = new SWF.ToolStripButton();
+			Control.Tag = this;
+			Control.Click += control_Click;
 		}
 
 		void control_Click(object sender, EventArgs e)
@@ -24,18 +21,13 @@ namespace Eto.WinForms
 
 		public override bool Enabled
 		{
-			get { return control.Enabled; }
-			set { control.Enabled = value; }
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
 		}
 
 		public override void CreateControl(ToolBarHandler handler, int index)
 		{
-			handler.Control.Items.Insert(index, control);
-		}
-
-		public override void InvokeButton()
-		{
-			Widget.OnClick(EventArgs.Empty);
+			handler.Control.Items.Insert(index, Control);
 		}
 	}
 }

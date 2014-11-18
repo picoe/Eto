@@ -1,31 +1,31 @@
-using System;
-using Eto.Forms;
-using Eto.Drawing;
-using Eto.GtkSharp.Drawing;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Eto.Drawing;
+using Eto.Forms;
+using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class ComboBoxHandler : GtkControl<Gtk.ComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
+	public class ComboBoxHandler : DropDownHandler<Gtk.ComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
-		Font font;
-		CollectionHandler collection;
-		readonly Gtk.ListStore listStore;
-		readonly Gtk.CellRendererText text;
+		Gtk.Entry entry;
+		Gtk.EntryCompletion completion;
 
-		public ComboBoxHandler()
+		protected override void Create()
 		{
 			listStore = new Gtk.ListStore(typeof(string));
-			Control = new Gtk.ComboBox(listStore);
-			text = new Gtk.CellRendererText();
-			Control.PackStart(text, false);
-			Control.AddAttribute(text, "text", 0);
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
+#if GTK2
+			Control = new Gtk.ComboBoxEntry(listStore, 0);
+#else
+			Control = Gtk.ComboBox.NewWithModelAndEntry(listStore);
+			Control.EntryTextColumn = 0;
+#endif
+			text = Control.Cells[0] as Gtk.CellRendererText;
+			Control.SetAttributes(text, "text", 0);
+			entry = (Gtk.Entry)Control.Child;
+			entry.IsEditable = true;
 			Control.Changed += Connector.HandleChanged;
 		}
 
@@ -36,81 +36,97 @@ namespace Eto.GtkSharp.Forms.Controls
 			return new ComboBoxConnector();
 		}
 
-		protected class ComboBoxConnector : GtkControlConnector
+		protected class ComboBoxConnector : DropDownConnector
 		{
 			public new ComboBoxHandler Handler { get { return (ComboBoxHandler)base.Handler; } }
 
-			public void HandleChanged(object sender, EventArgs e)
+			public void HandleTextChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
+				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 
-		public int SelectedIndex
+		public override void AttachEvent(string id)
 		{
-			get { return Control.Active; }
-			set { Control.Active = value; }
+			switch (id)
+			{
+				case ComboBox.TextChangedEvent:
+					entry.Changed += Connector.HandleTextChanged;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 
 		public override Font Font
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(new FontHandler(text.FontDesc));
-				return font;
+				return font ?? (font = new Font(new FontHandler(text.FontDesc)));
 			}
 			set
 			{
 				font = value;
-				text.FontDesc = font != null ? ((FontHandler)font.Handler).Control : null;
+				if (font != null)
+				{
+					var newfont = ((FontHandler)font.Handler).Control;
+					entry.ModifyFont(newfont);
+					text.FontDesc = newfont;
+				}
 			}
 		}
 
-		public class CollectionHandler : EnumerableChangedHandler<object>
+		public override string Text
 		{
-			public ComboBoxHandler Handler { get; set; }
-
-			public override void AddItem(object item)
-			{
-				var binding = Handler.Widget.TextBinding;
-				Handler.listStore.AppendValues(binding.GetValue(item));
-				Handler.Control.QueueResize();
-			}
-
-			public override void InsertItem(int index, object item)
-			{
-				var binding = Handler.Widget.TextBinding;
-				Handler.listStore.InsertWithValues(index, binding.GetValue(item));
-				Handler.Control.QueueResize();
-			}
-
-			public override void RemoveItem(int index)
-			{
-				Gtk.TreeIter iter;
-				if (Handler.listStore.IterNthChild(out iter, index))
-					Handler.listStore.Remove(ref iter);
-				Handler.Control.QueueResize();
-			}
-
-			public override void RemoveAllItems()
-			{
-				Handler.listStore.Clear();
-				Handler.Control.QueueResize();
-			}
+			get { return entry.Text; }
+			set { entry.Text = value ?? string.Empty; }
 		}
 
-		public IEnumerable<object> DataStore
+		public bool ReadOnly
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get { return !entry.IsEditable; }
+			set { entry.IsEditable = !value; }
+		}
+
+		public override int SelectedIndex
+		{
+			get
+			{
+				return base.SelectedIndex;
+			}
 			set
 			{
-				if (collection != null)
-					collection.Unregister();
-				collection = new CollectionHandler{ Handler = this };
-				collection.Register(value);
+				base.SelectedIndex = value;
+				if (value == -1)
+				{
+					Text = null;
+				}
+			}
+		}
+
+		public bool AutoComplete
+		{
+			get { return completion != null; }
+			set
+			{
+				if (AutoComplete != value)
+				{
+					if (value)
+					{
+						completion = new Gtk.EntryCompletion();
+						completion.Model = listStore;
+						completion.MinimumKeyLength = 1;
+						completion.TextColumn = 0;
+						entry.Completion = completion;
+					}
+					else
+					{
+						completion = null;
+						entry.Completion = null;
+					}
+				}
 			}
 		}
 	}
 }
-

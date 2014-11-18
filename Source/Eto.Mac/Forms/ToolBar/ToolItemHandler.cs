@@ -32,7 +32,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-namespace Eto.Mac
+namespace Eto.Mac.Forms.ToolBar
 {
 	public interface IToolBarBaseItemHandler
 	{
@@ -108,15 +108,15 @@ namespace Eto.Mac
 		NSMenuItem menuItem;
 		Color? tint;
 
-		private CGSize ButtonSize
+		CGSize ButtonSize
 		{
 			get { 
 				if (toolBarItemStyle == MacToolBarItemStyle.Default)
-					return new CGSize (42, 32);
+					return new CGSize (40, 32);
 				else if (toolBarItemStyle == MacToolBarItemStyle.StandardButton)
-					return new CGSize (42, 24);
+					return new CGSize (40, 24);
 				else // large button
-					return new CGSize (42, 32); 
+					return new CGSize (40, 32); 
 			}
 		}
 
@@ -131,6 +131,7 @@ namespace Eto.Mac
 				button = null;
 				if (value == MacToolBarItemStyle.StandardButton || value == MacToolBarItemStyle.LargeButton) {
 					button = new NSButton {
+						Title = string.Empty,
 						BezelStyle = NSBezelStyle.TexturedRounded,
 						Bordered = toolBarItemStyle == MacToolBarItemStyle.StandardButton, // no border or bezel in the large button style
 						Frame = new CGRect(CGPoint.Empty, ButtonSize),
@@ -168,16 +169,25 @@ namespace Eto.Mac
 			Control.Target = new ToolBarItemHandlerTarget { Handler = this };
 			Control.Action = selAction;
 			Control.Autovalidates = false;
+			Control.Label = string.Empty;
 
 			menuItem = new NSMenuItem(string.Empty);
 			menuItem.Action = Control.Action;
 			menuItem.Target = Control.Target;
 			Control.MenuFormRepresentation = menuItem;
 			Control.Enabled = true;
-
-			this.ToolBarItemStyle = MacToolBarItemStyle.Default;
 		}
 
+		protected virtual MacToolBarItemStyle DefaultStyle { get { return MacToolBarItemStyle.StandardButton; } }
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			this.ToolBarItemStyle = DefaultStyle;
+
+		}
+
+		[Obsolete("Use ToolBarItemStyle and Tint properties instead")]
 		public void UseStandardButton(bool grayscale)
 		{
 			this.ToolBarItemStyle = MacToolBarItemStyle.StandardButton;

@@ -14,6 +14,7 @@ namespace Eto.Wpf.Forms.Controls
 	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable, Drawable.ICallback>, Drawable.IHandler
 	{
 		bool tiled;
+		sw.FrameworkElement content;
 		Scrollable scrollable;
 		readonly Dictionary<int, EtoTile> visibleTiles = new Dictionary<int, EtoTile>();
 		readonly List<EtoTile> unusedTiles = new List<EtoTile>();
@@ -61,7 +62,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (!Handler.tiled)
 				{
 					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
-					var graphics = new Graphics(new GraphicsHandler(this, dc, rect, false));
+					var graphics = new Graphics(new GraphicsHandler(this, dc, rect, new RectangleF(Handler.ClientSize), false));
 					Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, rect.ToEto()));
 				}
 			}
@@ -98,7 +99,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			protected override void OnRender(swm.DrawingContext drawingContext)
 			{
-				var graphics = new Graphics(new GraphicsHandler(this, drawingContext, bounds.ToWpf(), false));
+				var graphics = new Graphics(new GraphicsHandler(this, drawingContext, bounds.ToWpf(), new RectangleF(Handler.ClientSize), false));
 				Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, Bounds));
 			}
 		}
@@ -153,6 +154,8 @@ namespace Eto.Wpf.Forms.Controls
 			SetMaxTiles();
 			UpdateTiles(true);
 			Invalidate();
+			content.Width = e.NewSize.Width;
+			content.Height = e.NewSize.Height;
 		}
 
 		void SetMaxTiles()
@@ -360,6 +363,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
+			this.content = content;
 			Control.Children.Add(content);
 		}
 

@@ -198,7 +198,7 @@ namespace Eto.Test.Sections.Printing
 
 		static Control PageOrientation()
 		{
-			var control = new EnumComboBox<PageOrientation>();
+			var control = new EnumDropDown<PageOrientation>();
 			control.SelectedValueBinding.BindDataContext<PrintSettings>(r => r.Orientation, (r, v) => r.Orientation = v);
 			return control;
 		}
@@ -294,7 +294,7 @@ namespace Eto.Test.Sections.Printing
 
 		static Control PrintSelection()
 		{
-			var control = new EnumComboBox<PrintSelection>();
+			var control = new EnumDropDown<PrintSelection>();
 			control.SelectedValueBinding.BindDataContext<PrintSettings>(r => r.PrintSelection, (r, v) => r.PrintSelection = v);
 			return control;
 		}

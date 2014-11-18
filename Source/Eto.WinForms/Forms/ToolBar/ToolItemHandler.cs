@@ -3,7 +3,7 @@ using SD = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.ToolBar
 {
 	public interface IToolBarItemHandler
 	{
@@ -18,10 +18,6 @@ namespace Eto.WinForms
 		int imageSize = 16;
 
 		public abstract void CreateControl(ToolBarHandler handler, int index);
-
-		public virtual void InvokeButton()
-		{
-		}
 
 		public int ImageSize
 		{

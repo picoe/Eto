@@ -14,7 +14,7 @@ using ag = Android.Graphics;
 
 namespace Eto.Android.Forms.Controls
 {
-	class SearchBoxHandler : TextBoxHandler, SearchBox.IHandler
+	public class SearchBoxHandler : TextBoxHandler, SearchBox.IHandler
 	{
 	}
 }

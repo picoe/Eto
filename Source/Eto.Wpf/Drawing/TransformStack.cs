@@ -11,13 +11,13 @@ namespace Eto.Wpf.Drawing
 	{
 		readonly Action<IMatrix> push;
 		readonly Action pop;
-		Stack<StackEntry> stack;
-		StackEntry current;
+		Stack<IMatrix> stack;
+
+		public IMatrix Current { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the TransformStack class
 		/// </summary>
-		/// <param name="generator">Generator for the stack</param>
 		/// <param name="push">A callback that should prepend the specified value to the current matrix </param>
 		/// <param name="pop">A callback that should either pop the matrix stack or set the current matrix to the specified value</param>
 		public TransformStack(Action<IMatrix> push, Action pop)
@@ -26,87 +26,73 @@ namespace Eto.Wpf.Drawing
 			this.pop = pop;
 		}
 
-		public void TranslateTransform (float dx, float dy)
+		public void TranslateTransform(float dx, float dy)
 		{
-			Push (Matrix.FromTranslation (dx, dy));
+			Prepend(Matrix.FromTranslation(dx, dy));
 		}
 
-		public void RotateTransform (float angle)
+		public void RotateTransform(float angle)
 		{
-			Push (Matrix.FromRotation (angle));
+			Prepend(Matrix.FromRotation(angle));
 		}
 
-		public void ScaleTransform (float sx, float sy)
+		public void ScaleTransform(float sx, float sy)
 		{
-			Push (Matrix.FromScale (sx, sy));
+			Prepend(Matrix.FromScale(sx, sy));
 		}
 
-		public void MultiplyTransform (IMatrix matrix)
+		public void MultiplyTransform(IMatrix matrix)
 		{
-			Push (matrix);
+			Prepend(matrix);
 		}
 
-		class StackEntry
+		public void PushAll()
 		{
-			readonly List<IMatrix> matrices = new List<IMatrix>();
-			public int PopCount { get; set; }
-			public List<IMatrix> Matrices { get { return matrices; } }
-		}
-
-
-		public void PushAll ()
-		{
-			if (stack != null) {
-				foreach (var entry in stack) {
-					foreach (var matrix in entry.Matrices) {
-						push (matrix);
-					}
-				}
+			if (Current != null)
+			{
+				push(Current);
 			}
 		}
 
-		StackEntry NewEntry ()
+		void Prepend(IMatrix matrix)
 		{
-			stack = stack ?? new Stack<StackEntry> ();
-			var entry = new StackEntry ();
-			stack.Push (entry);
-			return entry;
+			if (Current != null)
+			{
+				pop();
+				Current.Prepend(matrix);
+			}
+			else
+			{
+				Current = matrix.Clone();
+			}
+			push(Current);
 		}
 
-		void Push (IMatrix matrix)
+		public void SaveTransform()
 		{
-			// If we're in a SaveTransform block,
-			// increment the pop count.
-			current = current ?? NewEntry ();
-			current.Matrices.Add (matrix);
+			if (stack == null)
+				stack = new Stack<IMatrix>();
 
-			current.PopCount++;
-			
-			// push the transform
-			push (matrix);
+			if (Current != null)
+			{
+				stack.Push(Current);
+				Current = Current.Clone();
+			}
+			else
+				stack.Push(null);
 		}
 
-		public void SaveTransform ()
-		{
-			// Create a stack the first time.
-			current = NewEntry ();
-		}
-
-		public void RestoreTransform ()
+		public void RestoreTransform()
 		{
 			// If there is a current entry, use it.
-			if (current == null)
-				throw new EtoException ("RestoreTransform called without SaveTransform");
+			if (stack == null || stack.Count == 0)
+				throw new EtoException("RestoreTransform called without SaveTransform");
 
-			// Pop the drawing context
-			// popCount times
-			while (current.PopCount-- > 0) {
-				// return a cloned matrix
-				// since the caller may dispose it.
-				pop ();
-			}
-			stack.Pop ();
-			current = (stack.Count == 0) ? NewEntry () : stack.Peek ();
+			if (Current != null)
+				pop();
+			Current = stack.Pop();
+			if (Current != null)
+				push(Current);
 		}
 	}
 }

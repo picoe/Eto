@@ -6,7 +6,7 @@ using swm = System.Windows.Media;
 using Eto.Wpf.Drawing;
 using Eto.Drawing;
 
-namespace Eto.Wpf.Forms.Controls
+namespace Eto.Wpf.Forms.Cells
 {
 	public class DrawableCellHandler : CellHandler<swc.DataGridColumn, DrawableCell, DrawableCell.ICallback>, DrawableCell.IHandler
 	{
@@ -26,7 +26,7 @@ namespace Eto.Wpf.Forms.Controls
 			protected override void OnRender(swm.DrawingContext dc)
 			{
 				var handler = Column.Handler;
-				var graphics = new Graphics(new GraphicsHandler(this, dc, new sw.Rect(RenderSize), false));
+				var graphics = new Graphics(new GraphicsHandler(this, dc, new sw.Rect(RenderSize), new RectangleF(RenderSize.ToEto()), false));
 				var state = IsSelected ? DrawableCellStates.Selected : DrawableCellStates.None;
 				var args = new DrawableCellPaintEventArgs(graphics, new Rectangle(RenderSize.ToEtoSize()), state, DataContext);
 				handler.Callback.OnPaint(handler.Widget, args);

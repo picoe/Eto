@@ -244,12 +244,6 @@ namespace Eto.Forms
 		public string ToolTip { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to show the label on the toolbar, if only some items show text.
-		/// </summary>
-		/// <value><c>true</c> if show the tool label; otherwise, <c>false</c>.</value>
-		public bool ShowLabel { get; set; }
-
-		/// <summary>
 		/// Gets or sets the image for the menu or tool item.
 		/// </summary>
 		/// <remarks>

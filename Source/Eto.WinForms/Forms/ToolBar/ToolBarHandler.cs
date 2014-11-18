@@ -3,9 +3,9 @@ using SWF = System.Windows.Forms;
 using Eto.Forms;
 using System;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.ToolBar
 {
-	public class ToolBarHandler : WidgetHandler<ToolStripEx, ToolBar>, ToolBar.IHandler
+	public class ToolBarHandler : WidgetHandler<ToolStripEx, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
 	{
 		ToolBarDock dock = ToolBarDock.Top;
 

@@ -1,9 +1,9 @@
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Menu
 {
-	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Menu.IHandler
+	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Eto.Forms.Menu.IHandler
 		where TControl: SWF.ToolStripItem
 		where TWidget: Widget
 	{

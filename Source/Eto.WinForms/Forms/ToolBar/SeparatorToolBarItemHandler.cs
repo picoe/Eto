@@ -3,7 +3,7 @@ using SWF = System.Windows.Forms;
 using Eto.Forms;
 using System;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.ToolBar
 {
 	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarItemHandler
 	{

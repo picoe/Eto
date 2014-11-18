@@ -13,7 +13,7 @@ namespace Eto.Test.UnitTests.Drawing
 			TestUtils.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
-				Assert.AreEqual(drawable.ClientSize, size, "Drawable client size should be 200x200");
+				Assert.AreEqual(size, drawable.ClientSize, "Drawable client size should be 200x200");
 				Assert.AreEqual(Size.Round(drawable.ClientSize), Size.Round(graphics.ClipBounds.Size), "Clip bounds should match drawable client size");
 			}, size);
 		}

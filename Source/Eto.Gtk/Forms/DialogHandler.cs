@@ -1,8 +1,9 @@
 using System;
 using Eto.Forms;
 using System.Threading.Tasks;
+using Eto.GtkSharp.Forms.Controls;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{

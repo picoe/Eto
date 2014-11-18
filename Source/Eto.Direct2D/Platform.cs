@@ -6,23 +6,23 @@ using Eto.Direct2D.Forms.Printing;
 
 namespace Eto.Direct2D
 {
-    public class Platform : Eto.WinForms.Platform
-    {
-        public override string ID
-        {
-            get { return Platforms.Direct2D; }
-        }
+	public class Platform : Eto.WinForms.Platform
+	{
+		public override string ID
+		{
+			get { return Platforms.Direct2D; }
+		}
 
-        public Platform()
-        {
+		public Platform()
+		{
 			// generator to use for scenarios where direct 2d doesn't work (e.g. printing)
 			BasePlatform = new Eto.WinForms.Platform();
 
 			Eto.WinForms.Platform.AddTo(this);
 
-            // This is added after the base class's assembly
+			// This is added after the base class's assembly
 			AddTo(this);
-        }
+		}
 
 		public Eto.Platform BasePlatform
 		{
@@ -53,5 +53,5 @@ namespace Eto.Direct2D
 			// Forms.Printing
 			p.Add<PrintDocument.IHandler>(() => new PrintDocumentHandler());
 		}
-    }
+	}
 }

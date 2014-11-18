@@ -1,8 +1,9 @@
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.GtkSharp.Forms.Controls;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkContainer<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, Container.IHandler
 		where TControl: Gtk.Widget

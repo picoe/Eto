@@ -1,7 +1,8 @@
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.GtkSharp.Forms.Controls;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public class PixelLayoutHandler : GtkContainer<Gtk.Fixed, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler
 	{

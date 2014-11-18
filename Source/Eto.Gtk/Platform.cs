@@ -9,6 +9,8 @@ using Eto.GtkSharp.Forms.Printing;
 using Eto.GtkSharp.Forms;
 using Eto.GtkSharp.IO;
 using Eto.Forms.ThemedControls;
+using Eto.GtkSharp.Forms.Menu;
+using Eto.GtkSharp.Forms.ToolBar;
 
 namespace Eto.GtkSharp
 {
@@ -29,6 +31,21 @@ namespace Eto.GtkSharp
 		public override bool IsDesktop { get { return true; } }
 
 		public override bool IsGtk { get { return true; } }
+
+		public override bool IsValid
+		{
+			get
+			{
+				try
+				{
+					return typeof(Gtk.Application) != null;
+				}
+				catch
+				{
+					return false;
+				}
+			}
+		}
 
 		#if GTK2
 		public override string ID { get { return "gtk2"; } }
@@ -72,6 +89,7 @@ namespace Eto.GtkSharp
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<Calendar.IHandler>(() => new CalendarHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
@@ -121,6 +139,7 @@ namespace Eto.GtkSharp
 			
 			// Forms.ToolBar
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
+			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());

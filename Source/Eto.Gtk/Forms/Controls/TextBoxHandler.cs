@@ -1,7 +1,8 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
@@ -136,6 +137,18 @@ namespace Eto.GtkSharp
 			Control.GrabFocus();
 			if (!string.IsNullOrEmpty(Control.Text))
 				Control.SelectRegion(0, Control.Text.Length);
+		}
+
+		public Color TextColor
+		{
+			get { return Control.Style.Text(Gtk.StateType.Normal).ToEto(); }
+			set { Control.ModifyText(Gtk.StateType.Normal, value.ToGdk()); }
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return Control.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			set { Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk()); }
 		}
 	}
 }

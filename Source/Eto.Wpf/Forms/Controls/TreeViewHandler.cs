@@ -400,7 +400,7 @@ namespace Eto.Wpf.Forms.Controls
 			return null;
 		}
 
-		public Color TextColor
+		public override Color TextColor
 		{
 			get
 			{

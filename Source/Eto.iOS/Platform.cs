@@ -13,9 +13,11 @@ using Eto.Mac.Forms;
 using Eto.Threading;
 using Eto.iOS.Threading;
 using Eto.iOS.Forms.Toolbar;
+using System.Reflection;
 
 namespace Eto.iOS
 {
+	[Preserve]
 	public class Platform : Eto.Platform
 	{
 		public const string GeneratorID = "ios";
@@ -65,6 +67,7 @@ namespace Eto.iOS
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
@@ -108,7 +111,8 @@ namespace Eto.iOS
 			//p.Add<PrintSettings.IHandler>(() => new PrintSettingsHandler ());
 			
 			// Forms.ToolBar
-			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
+			//p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
+			//p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
@@ -141,6 +145,12 @@ namespace Eto.iOS
 		public override IDisposable ThreadStart()
 		{
 			return new NSAutoreleasePool();
+		}
+
+		static void LinkingOverrides()
+		{
+			// Prevent linking some system code used via reflection in Eto.dll due to pcl restrictions
+			Assembly.GetCallingAssembly();
 		}
 	}
 }

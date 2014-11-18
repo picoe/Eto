@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms
 {
 	public class MessageBoxHandler : WidgetHandler<Widget>, MessageBox.IHandler
 	{

@@ -45,5 +45,11 @@ namespace Eto.Wpf.Forms.Controls
 				Control.Header = string.IsNullOrEmpty(value) ? null : Header;
 			}
 		}
+
+		public Color TextColor
+		{
+			get { return AccessText.Foreground.ToEtoColor(); }
+			set { AccessText.Foreground = value.ToWpfBrush(AccessText.Foreground); }
+		}
 	}
 }

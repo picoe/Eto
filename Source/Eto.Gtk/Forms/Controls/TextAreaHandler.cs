@@ -3,7 +3,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public class TextAreaHandler : GtkControl<Gtk.TextView, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
@@ -25,6 +25,7 @@ namespace Eto.GtkSharp
 			Control = new Gtk.TextView();
 			Size = TextArea.DefaultSize;
 			scroll.Add(Control);
+			Wrap = true;
 		}
 
 		public override void AttachEvent(string id)
@@ -57,6 +58,7 @@ namespace Eto.GtkSharp
 		{
 			Range<int> lastSelection;
 			int? lastCaretIndex;
+
 			public new TextAreaHandler Handler { get { return (TextAreaHandler)base.Handler; } }
 
 			public void HandleBufferChanged(object sender, EventArgs e)
@@ -119,6 +121,7 @@ namespace Eto.GtkSharp
 		}
 
 		Color? backgroundColor;
+
 		public override Color BackgroundColor
 		{
 			get
@@ -233,6 +236,44 @@ namespace Eto.GtkSharp
 			}
 		}
 
+		public bool AcceptsTab
+		{
+			get { return Control.AcceptsTab; }
+			set { Control.AcceptsTab = value; }
+		}
+
+		bool acceptsReturn = true;
+
+		public bool AcceptsReturn
+		{
+			get { return acceptsReturn; }
+			set
+			{
+				if (value != acceptsReturn)
+				{
+					if (!acceptsReturn)
+						Widget.KeyDown -= HandleKeyDown;
+						//Control.KeyPressEvent -= PreventEnterKey;
+					acceptsReturn = value;
+					if (!acceptsReturn)
+						Widget.KeyDown += HandleKeyDown;
+						//Control.KeyPressEvent += PreventEnterKey;
+				}
+			}
+		}
+
+		void HandleKeyDown (object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Enter)
+				e.Handled = true;
+		}
+
+		static void PreventEnterKey(object o, Gtk.KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Return)
+				args.RetVal = false;
+		}
+
 		public override Font Font
 		{
 			get { return base.Font; }
@@ -256,5 +297,12 @@ namespace Eto.GtkSharp
 				}
 			}
 		}
+
+		public HorizontalAlign HorizontalAlign
+		{
+			get { return Control.Justification.ToEto(); }
+			set { Control.Justification = value.ToGtk(); }
+		}
+
 	}
 }

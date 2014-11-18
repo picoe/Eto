@@ -73,6 +73,9 @@
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
     <Compile Include="Conversions.cs" />
+    <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\TreeController.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
@@ -91,6 +94,7 @@
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
@@ -106,6 +110,7 @@
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Forms\WindowsControl.cs" />
     <Compile Include="KeyMap.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -179,9 +184,7 @@
     <Compile Include="Forms\Controls\CheckBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\ControlHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -225,9 +228,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextBoxHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\WindowsControl.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
@@ -301,6 +301,10 @@
     <Compile Include="Win32TextBox.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="WinFormsHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -324,6 +328,9 @@
     <EmbeddedResource Include="..\packages\Windows7APICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll">
       <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.Shell.dll</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CustomControls\CalendarPicker.png" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

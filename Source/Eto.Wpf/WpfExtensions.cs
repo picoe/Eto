@@ -10,48 +10,54 @@ namespace Eto.Wpf
 {
 	static class WpfExtensions
 	{
-		public static T GetParent<T> (this System.Windows.DependencyObject control)
+		public static T GetParent<T>(this System.Windows.DependencyObject control)
 			where T : System.Windows.DependencyObject
 		{
-			var tmp = System.Windows.Media.VisualTreeHelper.GetParent (control);
-			while (tmp != null) {
-				tmp = System.Windows.Media.VisualTreeHelper.GetParent (tmp);
+			var tmp = System.Windows.Media.VisualTreeHelper.GetParent(control);
+			while (tmp != null)
+			{
+				tmp = System.Windows.Media.VisualTreeHelper.GetParent(tmp);
 				var ttmp = tmp as T;
 				if (ttmp != null) return ttmp;
 			}
 			return null;
 		}
 
-		public static T FindChild<T> (this sw.DependencyObject parent, string childName = null)
-		   where T : sw.DependencyObject
+		public static T FindChild<T>(this sw.DependencyObject parent, string childName = null)
+			 where T : sw.DependencyObject
 		{
 			// Confirm parent and childName are valid. 
 			if (parent == null) return null;
 
 			T foundChild = null;
 
-			int childrenCount = swm.VisualTreeHelper.GetChildrenCount (parent);
-			for (int i = 0; i < childrenCount; i++) {
-				var child = swm.VisualTreeHelper.GetChild (parent, i);
+			int childrenCount = swm.VisualTreeHelper.GetChildrenCount(parent);
+			for (int i = 0; i < childrenCount; i++)
+			{
+				var child = swm.VisualTreeHelper.GetChild(parent, i);
 				// If the child is not of the request child type child
 				var childType = child as T;
-				if (childType == null) {
+				if (childType == null)
+				{
 					// recursively drill down the tree
-					foundChild = FindChild<T> (child, childName);
+					foundChild = FindChild<T>(child, childName);
 
 					// If the child is found, break so we do not overwrite the found child. 
 					if (foundChild != null) break;
 				}
-				else if (!string.IsNullOrEmpty (childName)) {
+				else if (!string.IsNullOrEmpty(childName))
+				{
 					var frameworkElement = child as sw.FrameworkElement;
 					// If the child's name is set for search
-					if (frameworkElement != null && frameworkElement.Name == childName) {
+					if (frameworkElement != null && frameworkElement.Name == childName)
+					{
 						// if the child's name is of the request name
 						foundChild = (T)child;
 						break;
 					}
 				}
-				else {
+				else
+				{
 					// child element found.
 					foundChild = (T)child;
 					break;
@@ -59,6 +65,17 @@ namespace Eto.Wpf
 			}
 
 			return foundChild;
+		}
+
+		public static sw.Window GetParentWindow(this sw.FrameworkElement element)
+		{
+			var window = element.GetParent<sw.Window>();
+			if (window == null)
+			{
+				var app = sw.Application.Current;
+				window = app.MainWindow ?? (app.Windows.Count > 0 ? app.Windows[0] : new sw.Window());
+			}
+			return window;
 		}
 
 		public static void RemoveFromParent(this Control control)
@@ -70,9 +87,9 @@ namespace Eto.Wpf
 				parent.Remove(control.GetContainerControl());
 		}
 
-		public static bool HasFocus (this sw.DependencyObject control, sw.DependencyObject focusScope, bool checkChildren = true)
+		public static bool HasFocus(this sw.DependencyObject control, sw.DependencyObject focusScope, bool checkChildren = true)
 		{
-			var current = swi.FocusManager.GetFocusedElement (focusScope) as sw.DependencyObject;
+			var current = swi.FocusManager.GetFocusedElement(focusScope) as sw.DependencyObject;
 			if (!checkChildren)
 				return current == control;
 
@@ -80,12 +97,12 @@ namespace Eto.Wpf
 			{
 				if (current == control)
 					return true;
-				current = swm.VisualTreeHelper.GetParent (current);
+				current = swm.VisualTreeHelper.GetParent(current);
 			}
 			return false;
 		}
 
-		public static void EnsureLoaded (this sw.FrameworkElement control)
+		public static void EnsureLoaded(this sw.FrameworkElement control)
 		{
 			ApplicationHandler.InvokeIfNecessary(() =>
 			{
@@ -96,12 +113,12 @@ namespace Eto.Wpf
 			});
 		}
 
-		public static double Horizontal (this sw.Thickness thickness)
+		public static double Horizontal(this sw.Thickness thickness)
 		{
 			return thickness.Left + thickness.Right;
 		}
 
-		public static double Vertical (this sw.Thickness thickness)
+		public static double Vertical(this sw.Thickness thickness)
 		{
 			return thickness.Top + thickness.Bottom;
 		}

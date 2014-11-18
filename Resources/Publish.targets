@@ -15,6 +15,10 @@
 		<MSBuildCommunityTasksPath>$(MSBuildThisFileDirectory)\packages\MSBuildTasks.$(MSBuildCommunityVersion)\tools</MSBuildCommunityTasksPath>
 	    <MSBuildCommunityTasksLib>$([MSBUILD]::Unescape($(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll))</MSBuildCommunityTasksLib>
 		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
+		<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj</XamarinStudioAddinProject>
+		<VisualStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudio\Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
+		<mdtool Condition="$(mdtool) == '' and $(Platform) != 'Windows'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
+		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
 	</PropertyGroup>
 	<Import Project="Utilities.targets" Condition="$(UtilitiesImported) == ''" />
 	<Import Project="$(NugetDir)\.nuget\NuGet.targets" Condition="Exists('$(NugetDir)\.nuget\NuGet.targets')" />
@@ -26,40 +30,39 @@
 
 		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
             Regex='AssemblyInformationalVersion[(]&quot;.*&quot;[)]'
+            Encoding="utf-8-without-bom"
             ReplacementText='AssemblyInformationalVersion(&quot;$(BuildVersion)&quot;)' />
-	</Target>
-	
-	<Target Name="PrepareMac" DependsOnTargets="UpdateAssemblyInfo">
-		<PropertyGroup>
-			<mdtool Condition="$(mdtool) == ''">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
-		</PropertyGroup>
-        		
+        
+        <ItemGroup>
+        	<VSTemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
+        	<XSProjFile Include="$(XamarinStudioAddinProject)" />
+        	<!-- Using ItemGroup with text to prevent messing up backslashes in xbuild -->
+        	<NupkgReg Include="1"><Text><![CDATA[(?<=Eto.[\w\.]+?)(\.\d+)*([-]\w+\d*)?\.nupkg]]></Text></NupkgReg>
+        	<VSTemplateReg Include="1"><Text><![CDATA[(?<=id\s*[=]\s*"Eto\.[\w\.]+"\s+)version\s*=\s*"[^"]+"]]></Text></VSTemplateReg>
+        </ItemGroup>
+        
+		<FileUpdate Files="@(XSProjFile)"
+			WarnOnNoUpdate="true"
+            Regex="@(NupkgReg->'%(Text)')"
+            ReplacementText='.$(BuildVersion).nupkg' />
             
-    	<Exec Command="$(mdtool) build -t:Clean -p:Eto.XamMac -c:'$(Configuration)' $(SourceDir)\Eto.sln" />
-    	<Exec Command="$(mdtool) build -t:Clean -p:Eto -c:'$(Configuration)' $(SourceDir)\Eto.sln" />
-    	<Exec Command="$(mdtool) build -p:Eto.XamMac -c:'$(Configuration)|Mac' $(SourceDir)\Eto.sln" />
+		<FileUpdate Files="@(VSTemplateFiles)"
+            Encoding="utf-8-without-bom"
+            Regex="@(VSTemplateReg->'%(Text)')"
+            ReplacementText='version=&quot;$(BuildVersion)&quot;' />
 
-    	<!-- need to clean between non-pcl and pcl otherwise xbuild gets confused -->
-    	<Exec Command="$(mdtool) build -t:Clean -p:'Eto.XamMac - Pcl' -c:'$(Configuration)' '$(SourceDir)\Eto - Pcl.sln'" />
-    	<Exec Command="$(mdtool) build -t:Clean -p:'Eto - Pcl' -c:'$(Configuration)' '$(SourceDir)\Eto - Pcl.sln'" />
-    	<Exec Command="$(mdtool) build -p:'Eto.XamMac - Pcl' -c:'$(Configuration)|Mac' '$(SourceDir)\Eto - Pcl.sln'" />
-    	<Exec Command="$(mdtool) build -p:'Eto.XamMac2 - Pcl' -c:'$(Configuration)|Mac' '$(SourceDir)\Eto - Pcl.sln'" />
-    	<Exec Command="$(mdtool) build -p:'Eto.iOS' -c:'$(Configuration)|iPhoneSimulator' '$(SourceDir)\Eto - iOS.sln'" />
 	</Target>
 	
     <Target Name="Package" DependsOnTargets="UpdateAssemblyInfo">
 
     	<!-- using exec since xbuild messes up properties when using msbuild task -->
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto.sln'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - Pcl.sln'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net40.sln'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net45.sln'" Condition="$(Platform) != 'Windows'"/>
     	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration)' '$(SourceDir)\Eto.iOS\Eto.iOS.csproj'" Condition="$(Platform) != 'Windows'"/>
     	
-    	<MSBuild Projects="$(SourceDir)\Eto.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
-    	<MSBuild Projects="$(SourceDir)\Eto - Pcl.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
-    	<!--MSBuild Projects="$(SourceDir)\Eto - WinRT.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=Any CPU" /-->
-    	<MSBuild Projects="$(SourceDir)\Eto.WinRT\Eto.WinRT.csproj" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="$(Platform) == 'Windows'" />
-    	<MSBuild Projects="$(SourceDir)\Eto.Test\Eto.Test.WinRT\Eto.Test.WinRT.csproj" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="$(Platform) == 'Windows'" />
-
+    	<MSBuild Projects="$(SourceDir)\Eto - net40.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
+    	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
+    	
 		<!-- build XamMac separately if it hasn't been built on mac -->
     	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputDir)\Eto.XamMac.dll')" />
     	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac - Pcl.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputPclDir)\Eto.XamMac.dll')" />
@@ -97,10 +100,10 @@
 			<Package Include="Eto.Platform.Direct2D">
 				<Assembly>Eto.Direct2D.dll</Assembly>
 			</Package>
-			<Package Include="Eto.Platform.Wpf">
+			<Package Include="Eto.Platform.Wpf" Condition="$(Platform) == 'Windows'">
 				<Assembly>Eto.Wpf.dll</Assembly>
 			</Package>
-			<Package Include="Eto.Platform.WinRT">
+			<Package Include="Eto.Platform.WinRT" Condition="$(Platform) == 'Windows'">
 				<Assembly>Eto.WinRT.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.iOS">
@@ -129,6 +132,16 @@
     	<Exec Command="xbuild /t:'BuildPackage' /p:'ProjectPath=nuspec/%(StandalonePackage.RelativeDir);ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(TargetDir);NugetBuildOptions=-Version $(AssemblyVersion)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows'"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\%(StandalonePackage.RelativeDir)\;ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(TargetDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="$(MSBuildProjectFile)" Condition="$(Platform) == 'Windows'"/>
     </Target>
+    <Target Name="BuildAddins" DependsOnTargets="Package">
+    	<!-- addins -->
+    	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+
+		<!-- Visual Studio Addin -->
+    	<MSBuild Projects="$(VisualStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    </Target>
     <Target Name="Publish">
 		<GetAssemblyInfo AssemblyFileName="$(BuildOutputDir)\Eto.dll">
 			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
@@ -138,7 +151,7 @@
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk3.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
-    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac64.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
+    	<!--MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac64.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/-->
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Windows.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Wpf.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>

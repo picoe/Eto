@@ -30,7 +30,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-namespace Eto.Mac.Forms.Controls
+namespace Eto.Mac.Forms.Cells
 {
 	public class CheckBoxCellHandler : CellHandler<NSButtonCell, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
 	{

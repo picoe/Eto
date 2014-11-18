@@ -196,7 +196,8 @@ namespace Eto.Mac.Forms
 		}
 
 		bool isResizing;
-		void HandleSizeChanged (object sender, EventArgs e)
+
+		void HandleSizeChanged(object sender, EventArgs e)
 		{
 			if (!isResizing)
 			{

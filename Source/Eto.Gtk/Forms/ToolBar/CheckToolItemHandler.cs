@@ -1,12 +1,11 @@
 using System;
 using Eto.Forms;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.ToolBar
 {
 	public class CheckToolItemHandler : ToolItemHandler<Gtk.ToggleToolButton, CheckToolItem>, CheckToolItem.IHandler
 	{
 		bool ischecked;
-		bool isBeingChecked;
 
 		public bool Checked
 		{
@@ -15,10 +14,8 @@ namespace Eto.GtkSharp
 			{
 				if (value != ischecked)
 				{
-					isBeingChecked = true;
 					if (Control != null)
 						Control.Active = value;
-					isBeingChecked = false;
 					ischecked = value;
 				}
 			}
@@ -39,11 +36,6 @@ namespace Eto.GtkSharp
 			tb.Insert(Control, index);
 			if (tb.Visible)
 				Control.ShowAll();
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
 			Control.Toggled += Connector.HandleToggled;
 		}
 
@@ -60,14 +52,7 @@ namespace Eto.GtkSharp
 
 			public void HandleToggled(object sender, EventArgs e)
 			{
-				var handler = Handler;
-				if (!handler.isBeingChecked)
-				{
-					handler.isBeingChecked = true;
-					handler.Control.Active = handler.ischecked;
-					handler.isBeingChecked = false;
-					handler.Widget.OnClick(EventArgs.Empty);
-				}
+				Handler.Widget.OnClick(EventArgs.Empty);
 			}
 		}
 	}

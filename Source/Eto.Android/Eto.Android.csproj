@@ -13,7 +13,7 @@
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,7 +60,6 @@
     <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
@@ -100,6 +99,9 @@
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
     <Compile Include="Forms\AndroidPanel.cs" />
     <Compile Include="Platform.cs" />
+    <Compile Include="Forms\Controls\NavigationHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

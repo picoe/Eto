@@ -47,14 +47,15 @@ namespace Eto.Android
 
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
-			//p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
-			//p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
+			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+			p.Add<DropDown.IHandler>(() => new DropDownHandler());
+			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			//p.Add<IDateTimePicker.IHandler>(() => new DateTimePickerHandler ());
 			//p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
 			p.Add<GridView.IHandler>(() => new GridViewHandler());
 			//p.Add<IGroupBox.IHandler>(() => new GroupBoxHandler ());
-			//p.Add<ImageView.IHandler>(() => new ImageViewHandler());
+			p.Add<ImageView.IHandler>(() => new ImageViewHandler());
 			p.Add<Label.IHandler>(() => new LabelHandler());
 			//p.Add<ListBox.IHandler>(() => new ListBoxHandler());
 			//p.Add<NumericUpDown.IHandler>(() => new NumericUpDownHandler());
@@ -74,7 +75,7 @@ namespace Eto.Android
 			//p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
 			//p.Add<ITreeView.IHandler>(() => new TreeViewHandler ());
 			//p.Add<WebView.IHandler>(() => new WebViewHandler());
-			//p.Add<Navigation.IHandler>(() => new NavigationHandler());
+			p.Add<Navigation.IHandler>(() => new NavigationHandler());
 
 			// Forms.Menu
 			//p.Add<ICheckMenuItem.IHandler>(() => new CheckMenuItemHandler ());

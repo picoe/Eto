@@ -17,7 +17,7 @@ namespace Eto.Forms
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
-	public abstract partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
+	public partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -622,7 +622,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the Container with the specified handler
 		/// </summary>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		protected Control(IHandler handler)
+		public Control(IHandler handler)
 			: base(handler)
 		{
 		}
@@ -669,6 +669,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the width of the control size.
+		/// </summary>
+		public virtual int Width
+		{
+			get { return Handler.Size.Width; }
+			set { Size = new Size(value, Size.Height); }
+		}
+
+		/// <summary>
+		/// Gets or sets the height of the control size.
+		/// </summary>
+		public virtual int Height
+		{
+			get { return Handler.Size.Height; }
+			set { Size = new Size(Size.Width, value); }
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
 		/// </summary>
 		/// <remarks>
@@ -677,6 +695,7 @@ namespace Eto.Forms
 		/// allows the user to select text, but not change its contents.
 		/// </remarks>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public virtual bool Enabled
 		{
 			get { return Handler.Enabled; }
@@ -692,6 +711,7 @@ namespace Eto.Forms
 		/// of one of the panels is changed.
 		/// </remarks>
 		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
 		public virtual bool Visible
 		{
 			get { return Handler.Visible; }
@@ -711,8 +731,11 @@ namespace Eto.Forms
 			get { return Properties.Get<object>(DataContextKey) ?? (Parent == null ? null : Parent.DataContext); }
 			set
 			{
-				Properties[DataContextKey] = value;
-				OnDataContextChanged(EventArgs.Empty);
+				if (!ReferenceEquals(value, Properties.Get<object>(DataContextKey)))
+				{
+					Properties[DataContextKey] = value;
+					OnDataContextChanged(EventArgs.Empty);
+				}
 			}
 		}
 

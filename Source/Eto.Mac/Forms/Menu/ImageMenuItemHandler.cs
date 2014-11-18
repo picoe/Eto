@@ -17,7 +17,7 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #endif
 
-namespace Eto.Mac
+namespace Eto.Mac.Forms.Menu
 {
 	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler, IMenuActionHandler
 	{

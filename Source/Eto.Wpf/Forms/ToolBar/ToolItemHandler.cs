@@ -2,7 +2,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using System;
 
-namespace Eto.Wpf.Forms
+namespace Eto.Wpf.Forms.ToolBar
 {
 	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler
 		where TControl : System.Windows.UIElement

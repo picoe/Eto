@@ -3,7 +3,7 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Eto.GtkSharp
+namespace Eto.GtkSharp.Forms.Controls
 {
 	public interface IGtkEnumerableModelHandler<TItem>
 		where TItem: class

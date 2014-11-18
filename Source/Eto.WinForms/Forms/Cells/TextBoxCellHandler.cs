@@ -3,7 +3,7 @@ using sd = System.Drawing;
 using Eto.Forms;
 using System;
 
-namespace Eto.WinForms.Forms.Controls
+namespace Eto.WinForms.Forms.Cells
 {
 	public class TextBoxCellHandler : CellHandler<swf.DataGridViewTextBoxCell, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
 	{

@@ -1,10 +1,11 @@
 using System;
+using System.Linq;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class RadioButtonHandler : WindowsControl<swf.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
@@ -17,12 +18,12 @@ namespace Eto.WinForms
 				this.SetStyle(swf.ControlStyles.StandardClick | swf.ControlStyles.StandardDoubleClick, true);
 			}
 		}
-		
+
 		public RadioButtonHandler()
 		{
-			Control = new EtoRadioButton();
+			Control = new EtoRadioButton { TabStop = true };
 			Control.AutoSize = true;
-			Control.Click += (sender, e) => Callback.OnClick (Widget, EventArgs.Empty);
+			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 			Control.CheckedChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 		}
 
@@ -52,11 +53,17 @@ namespace Eto.WinForms
 				}
 			}
 		}
-		
+
 		public bool Checked
 		{
 			get { return Control.Checked; }
 			set { Control.Checked = value; }
+		}
+
+		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
+		public override bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 	}
 }

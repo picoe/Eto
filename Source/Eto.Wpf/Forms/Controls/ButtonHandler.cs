@@ -16,7 +16,6 @@ namespace Eto.Wpf.Forms.Controls
 		Image image;
 		readonly swc.Image swcimage;
 		readonly swc.Label label;
-		readonly swc.Grid grid;
 		ButtonImagePosition imagePosition;
 
 		public static Size MinimumSize = new Size(80, 23);
@@ -38,7 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 			swc.Grid.SetRow(label, 1);
 			swcimage = new swc.Image();
 			SetImagePosition();
-			grid = new swc.Grid();
+			var grid = new swc.Grid();
 			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
 			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Star) });
 			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
@@ -147,6 +146,12 @@ namespace Eto.Wpf.Forms.Controls
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		public override Color TextColor
+		{
+			get { return label.Foreground.ToEtoColor(); }
+			set { label.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
 	}
 }

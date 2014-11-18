@@ -11,11 +11,11 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$description$</summary>
 		<description>
-    	Eto.Xaml allows you to load xaml UI definitions for the Eto.Forms framework
+Eto.Xaml allows you to load xaml UI definitions for the Eto.Forms framework
     	
-        To get more information about how to get started, read the wiki:
+To get more information about how to get started, read the wiki:
 
-        https://github.com/picoe/Eto/wiki		
+https://github.com/picoe/Eto/wiki		
     	</description>
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop xaml eto.forms</tags>

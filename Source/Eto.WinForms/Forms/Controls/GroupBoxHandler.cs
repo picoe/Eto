@@ -3,7 +3,7 @@ using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class GroupBoxHandler : WindowsPanel<swf.GroupBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
@@ -20,6 +20,7 @@ namespace Eto.WinForms
 			{
 				Font = sd.SystemFonts.DefaultFont,
 				Dock = swf.DockStyle.Fill,
+				ForeColor = sd.SystemColors.ControlText,
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};

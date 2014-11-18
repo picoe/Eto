@@ -10,6 +10,7 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using Eto.Drawing;
 
 namespace Eto.Android.Forms.Controls
 {
@@ -26,22 +27,23 @@ namespace Eto.Android.Forms.Controls
 			set { Control.Checked = value ?? false; }
 		}
 
+		// TODO:
 		public bool ThreeState
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
 
 		public string Text
 		{
 			get { return Control.Text; }
 			set { Control.Text = value; }
+		}
+
+		public Color TextColor
+		{
+			get { return Control.TextColors.ToEto(); }
+			set { Control.SetTextColor(value.ToAndroid()); }
 		}
 	}
 }

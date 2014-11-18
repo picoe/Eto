@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using Eto.Forms;
 using System.Globalization;
 using swf = System.Windows.Forms;
+using Eto.WinForms.CustomControls;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -9,9 +11,11 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		public DateTimePickerHandler()
 		{
-			Control = new swf.DateTimePicker();
+			Control = new ExtendedDateTimePicker { ExtendedMode = true };
 			Control.ShowCheckBox = true;
+			#pragma warning disable 612,618
 			Mode = DateTimePicker.DefaultMode;
+			#pragma warning restore 612,618
 			Value = null;
 			Control.ValueChanged += delegate
 			{
@@ -99,6 +103,12 @@ namespace Eto.WinForms.Forms.Controls
 				else
 					Control.Checked = false;
 			}
+		}
+
+		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
+		public override bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 	}
 }

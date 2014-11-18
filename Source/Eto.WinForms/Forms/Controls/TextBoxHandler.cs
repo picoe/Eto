@@ -1,14 +1,15 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using System.Linq;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Runtime.InteropServices;
 
-namespace Eto.WinForms
+namespace Eto.WinForms.Forms.Controls
 {
 	public class TextBoxHandler : WindowsControl<TextBoxHandler.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
-		public class WatermarkTextBox : SWF.TextBox
+		public class WatermarkTextBox : swf.TextBox
 		{
 			const uint ECM_FIRST = 0x1500;
 			const uint EM_SETCUEBANNER = ECM_FIRST + 1;
@@ -57,6 +58,21 @@ namespace Eto.WinForms
 		{
 			Control.Focus ();
 			Control.SelectAll ();
+		}
+
+		static readonly Win32.WM[] intrinsicEvents = {
+														 Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK,
+														 Win32.WM.RBUTTONDOWN, Win32.WM.RBUTTONUP, Win32.WM.RBUTTONDBLCLK
+													 };
+		public override bool ShouldBubbleEvent(swf.Message msg)
+		{
+			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
+		}
+
+		public override void SetFilledContent()
+		{
+			base.SetFilledContent();
+			Control.AutoSize = false;
 		}
 	}
 }

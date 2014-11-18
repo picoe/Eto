@@ -4,15 +4,15 @@ This contains a template for creating an application that runs on OS X using Eto
 If you are using Xamarin Studio on OS X, it is recommended to create a MonoMac or XamMac 
 project directly, as it will allow you to debug and deploy the app directly.
 
-The nuget package automatically adds a PostBuildEvent call to buildapp.cmd, which will
+The nuget package automatically adds a targets include, which will
 package up your application into $(TargetName).app in the output directory.
 
 Next Steps:
 
 Modify MyApp.app/Contents/Info.plist and update these properties:
 	
-  - MonoBundleExecutable:       Name of your exe to launch (set by buildapp.cmd)
-  - CFBundleName:               Short name of your application to display on the menu bar
+  - MonoBundleExecutable:       Name of your exe to launch (set automatically to your .exe)
+  - CFBundleName:               Short name of your application to display on the menu bar (set automatically to the project name)
   - CFBundleIdentifier:         An identifier string that specifies the app type of the
                                 bundle. The string should be in reverse DNS format using
                                 only the Roman alphabet in upper and lower case

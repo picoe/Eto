@@ -10,6 +10,10 @@ using Eto.Mac.Forms;
 using Eto.Mac.Forms.Menu;
 using Eto.Mac.Threading;
 using Eto.Threading;
+using System.Reflection;
+using Eto.Mac.Forms.Cells;
+using Eto.Mac.Forms.ToolBar;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -53,7 +57,10 @@ namespace Eto.Mac
 			#endif
 			if (!initialized)
 			{
-				NSApplication.Init();
+				var appType = typeof(NSApplication);
+				var initField = appType.GetField("initialized", BindingFlags.Static | BindingFlags.NonPublic);
+				if (initField == null || Equals(initField.GetValue(null), false))
+					NSApplication.Init();
 				// until everything is marked as thread safe correctly in monomac
 				// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
 				NSApplication.CheckForIllegalCrossThreadCalls = false;
@@ -92,6 +99,7 @@ namespace Eto.Mac
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<Calendar.IHandler>(() => new CalendarHandler());
 			p.Add<CheckBox.IHandler>(() => new CheckBoxHandler());
+			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
@@ -137,6 +145,7 @@ namespace Eto.Mac
 			
 			// Forms.ToolBar
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
+			p.Add<RadioToolItem.IHandler>(() => new RadioToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
@@ -169,6 +178,20 @@ namespace Eto.Mac
 		public override IDisposable ThreadStart()
 		{
 			return new NSAutoreleasePool();
+		}
+
+		public override bool IsValid
+		{
+			get
+			{
+				return Assembly.GetEntryAssembly().Location.StartsWith(NSBundle.MainBundle.BundlePath, StringComparison.Ordinal);
+			}
+		}
+
+		static void LinkingOverrides()
+		{
+			// Prevent linking system code used via reflection in Eto.dll due to pcl restrictions
+			Assembly.GetCallingAssembly();
 		}
 	}
 }

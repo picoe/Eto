@@ -60,7 +60,7 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -130,6 +130,7 @@
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SwfWebViewHandler.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
     <Compile Include="Forms\EnableThemingInScope.cs" />
+    <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
@@ -220,6 +222,7 @@
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>
     <Compile Include="WpfHelpers.cs" />
+    <Compile Include="Forms\Controls\NativeControlHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
@@ -290,7 +293,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll">
+    <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll">
       <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
     </EmbeddedResource>
   </ItemGroup>

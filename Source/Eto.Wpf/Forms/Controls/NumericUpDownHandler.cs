@@ -1,4 +1,5 @@
 using System;
+using Eto.Drawing;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
@@ -8,9 +9,27 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
+		public class EtoDoubleUpDown : mwc.DoubleUpDown
+		{
+			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				if (IsLoaded && IsVisible)
+				{
+					constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
+					constraint.Height = !double.IsNaN(constraint.Height) ? Math.Min(constraint.Height, ActualHeight) : ActualHeight;
+				}
+				return base.MeasureOverride(constraint);
+			}
+		}
+
+		protected override Size DefaultSize
+		{
+			get { return new Size(80, base.DefaultSize.Height); }
+		}
+
 		public NumericUpDownHandler()
 		{
-			Control = new mwc.DoubleUpDown();
+			Control = new EtoDoubleUpDown();
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 			DecimalPlaces = 0;
 		}
