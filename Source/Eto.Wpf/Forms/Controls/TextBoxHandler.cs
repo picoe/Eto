@@ -19,7 +19,6 @@ namespace Eto.Wpf.Forms.Controls
 				if (IsLoaded && IsVisible)
 				{
 					constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
-					constraint.Height = !double.IsNaN(constraint.Height) ? Math.Min(constraint.Height, ActualHeight) : ActualHeight;
 				}
 				return base.MeasureOverride(constraint);
 			}
