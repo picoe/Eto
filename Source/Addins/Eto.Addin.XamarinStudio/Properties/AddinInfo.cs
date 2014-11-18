@@ -3,8 +3,8 @@ using Mono.Addins;
 using Mono.Addins.Description;
 
 [assembly:Addin(
-	"Eto.Addin.XamarinStudio", 
-	Namespace = "Eto.Addin.XamarinStudio",
+	"XamarinStudio", 
+	Namespace = "Eto.Addin",
 	Version = "1.0"
 )]
 

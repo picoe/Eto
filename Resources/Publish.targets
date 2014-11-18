@@ -139,6 +139,8 @@
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
 
+    	<Exec Command="$(mdtool) setup pack $(BaseDir)/BuildOutput/Addins/$(Configuration)/XamarinStudio/Eto.Addin.XamarinStudio.dll -d:$(BaseDir)/BuildOutput/Addins/$(Configuration)" Condition="$(Platform) != 'Windows'"/>
+
 		<!-- Visual Studio Addin -->
     	<MSBuild Projects="$(VisualStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     </Target>

@@ -9,6 +9,9 @@
 		<Import file="Templates/Files/Eto-Form.xft.xml" />
 		<Import file="Templates/Files/Eto-Dialog.xft.xml" />
 		<Import file="Templates/Files/Eto-Panel.xft.xml" />
+		<Import file="Templates/Projects/Shared/MainForm.cs" />
+		<Import file="Templates/Projects/Shared/MyPanel.cs" />
+		<Import file="Templates/Projects/Mac/Info.plist" />
 	</Runtime>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
 		<PackageRepository path="Packages" />
