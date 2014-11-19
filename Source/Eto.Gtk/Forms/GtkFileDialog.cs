@@ -21,6 +21,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				Control.SetCurrentFolder(Path.GetDirectoryName(value));
 				Control.SetFilename(value);
+				Control.CurrentName = Path.GetFileName(value);
 			}
 		}
 		
