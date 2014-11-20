@@ -44,9 +44,9 @@ namespace Eto.Mac.Forms.Controls
 
 		public class EtoDrawableView : MacEventView
 		{
-			Drawable Drawable
+			DrawableHandler Drawable
 			{
-				get { return Widget as Drawable; }
+				get { return Handler as DrawableHandler; }
 			}
 
 			public override void DrawRect(CGRect dirtyRect)
@@ -61,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 				if (dirtyRect.Y % 1.0f > 0f)
 					dirtyRect.Height += 1;
 				ApplicationHandler.QueueResizing = true;
-				drawable.Update(Rectangle.Ceiling(dirtyRect.ToEto()));
+				drawable.DrawRegion(Rectangle.Ceiling(dirtyRect.ToEto()));
 				ApplicationHandler.QueueResizing = false;
 			}
 
@@ -128,7 +128,7 @@ namespace Eto.Mac.Forms.Controls
 				base.Invalidate(rect);
 		}
 
-		public void Update(Rectangle rect)
+		void DrawRegion(Rectangle rect)
 		{
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null)
@@ -144,6 +144,11 @@ namespace Eto.Mac.Forms.Controls
 						Callback.OnPaint(widget, new PaintEventArgs(graphics, rect));
 				}
 			}
+		}
+
+		public void Update(Rectangle rect)
+		{
+			Control.DisplayRect(rect.ToSDRectangleF());
 		}
 	}
 }
