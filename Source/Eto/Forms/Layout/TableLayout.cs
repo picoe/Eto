@@ -606,7 +606,7 @@ namespace Eto.Forms
 		[OnDeserialized]
 		void OnDeserialized(StreamingContext context)
 		{
-			OnDeserialized();
+			OnDeserialized(false);
 		}
 
 		/// <summary>
@@ -628,7 +628,18 @@ namespace Eto.Forms
 			base.OnPreLoad(e);
 		}
 
-		void OnDeserialized(bool direct = false)
+		/// <summary>
+		/// Raises the <see cref="Control.Load"/> event, and recursed to this container's children
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			// ensure we've been deserialized, in case something was done in load or pre-load event
+			OnDeserialized(false);
+		}
+
+		void OnDeserialized(bool direct)
 		{
 			if (Loaded || direct)
 			{
