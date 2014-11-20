@@ -45,6 +45,8 @@ namespace Eto.Wpf.Forms
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
+			if (columnScale == null || rowScale == null)
+				return base.GetPreferredSize(constraint);
 			var widths = new double[columnScale.Length];
 			double height = 0;
 			for (int y = 0; y < rowScale.Length; y++)
