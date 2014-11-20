@@ -48,6 +48,8 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		static readonly string[] ValidInputTags = { "input", "textarea" };
+
 		public SwfWebViewHandler()
 		{
 			Browser = new swf.WebBrowser
@@ -62,6 +64,31 @@ namespace Eto.Wpf.Forms.Controls
 			Control = new swf.Integration.WindowsFormsHost
 			{
 				Child = Browser
+			};
+			Browser.PreviewKeyDown += (sender, args) =>
+			{
+				var doc = Browser.Document;
+				if (!Browser.WebBrowserShortcutsEnabled && doc != null)
+				{
+					// implement shortcut keys for copy/paste
+					switch (args.KeyData)
+					{
+						case (swf.Keys.C | swf.Keys.Control):
+							doc.ExecCommand("Copy", false, null);
+							break;
+						case (swf.Keys.V | swf.Keys.Control):
+							if (doc.ActiveElement != null && ValidInputTags.Contains(doc.ActiveElement.TagName.ToLowerInvariant()))
+								doc.ExecCommand("Paste", false, null);
+							break;
+						case (swf.Keys.X | swf.Keys.Control):
+							if (doc.ActiveElement != null && ValidInputTags.Contains(doc.ActiveElement.TagName.ToLowerInvariant()))
+								doc.ExecCommand("Cut", false, null);
+							break;
+						case (swf.Keys.A | swf.Keys.Control):
+							doc.ExecCommand("SelectAll", false, null);
+							break;
+					}
+				}
 			};
 		}
 
