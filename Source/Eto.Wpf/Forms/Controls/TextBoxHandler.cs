@@ -10,23 +10,14 @@ namespace Eto.Wpf.Forms.Controls
 	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		bool textChanging;
+
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
 
-		class EtoWatermarkTextBox : mwc.WatermarkTextBox
-		{
-			protected override sw.Size MeasureOverride(sw.Size constraint)
-			{
-				if (IsLoaded && IsVisible)
-				{
-					constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
-				}
-				return base.MeasureOverride(constraint);
-			}
-		}
+		protected override bool PreventUserResize { get { return true; } }
 
 		public TextBoxHandler ()
 		{
-			Control = new EtoWatermarkTextBox();
+			Control = new mwc.WatermarkTextBox();
 			Control.GotKeyboardFocus += Control_GotKeyboardFocus;
 		}
 

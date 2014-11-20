@@ -59,16 +59,8 @@ namespace Eto.Wpf.Forms.Controls
 			selected = null;
 		}
 
-		public bool RetainSize { get; set; }
-
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
-			if (RetainSize && IsLoaded && IsVisible)
-			{
-				constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
-				constraint.Height = !double.IsNaN(constraint.Height) ? Math.Min(constraint.Height, ActualHeight) : ActualHeight;
-			}
-
 			var size = base.MeasureOverride(constraint);
 			var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
 			if (popup == null)
