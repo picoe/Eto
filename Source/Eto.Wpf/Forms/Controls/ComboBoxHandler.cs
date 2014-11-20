@@ -12,9 +12,12 @@ namespace Eto.Wpf.Forms.Controls
 		bool textChanging;
 		string lastText;
 
+		protected override Size DefaultSize { get { return new Size(100, -1); } }
+
+		protected override bool PreventUserResize { get { return true; } }
+
 		public ComboBoxHandler()
 		{
-			Control.RetainSize = true;
 			Control.IsEditable = true;
 			Control.IsTextSearchEnabled = false;
 			Control.AddHandler(swc.Primitives.TextBoxBase.TextChangedEvent, new swc.TextChangedEventHandler((sender, e) => HandleTextChanged()));
@@ -85,15 +88,6 @@ namespace Eto.Wpf.Forms.Controls
 				default:
 					base.AttachEvent(id);
 					break;
-			}
-		}
-
-		protected override Size DefaultSize
-		{
-			get
-			{
-				var size = base.DefaultSize;
-				return new Size(100, size.Height);
 			}
 		}
 
