@@ -11,8 +11,8 @@ namespace Eto.Test.Sections.Controls
 
 		protected override void OnPreLoad(EventArgs e)
 		{
-			base.OnPreLoad(e);
 			Content = Create();
+			base.OnPreLoad(e);
 		}
 
 		public virtual Control Create()
