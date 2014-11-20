@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
@@ -11,12 +12,16 @@ namespace Eto.WinForms.Forms
 		where TControl : swf.FileDialog
 		where TWidget : FileDialog
 	{
-		IFileDialogFilter[] filters;
-
 		public string FileName
 		{
 			get { return Control.FileName; }
-			set { Control.FileName = value; }
+			set
+			{
+				var dir = Path.GetDirectoryName(value);
+				if (!string.IsNullOrEmpty(dir))
+					Control.InitialDirectory = dir;
+				Control.FileName = Path.GetFileName(value);
+			}
 		}
 
 		public Uri Directory
@@ -25,34 +30,41 @@ namespace Eto.WinForms.Forms
 			set { Control.InitialDirectory = value.AbsoluteUri; }
 		}
 
-		public IEnumerable<IFileDialogFilter> Filters
+		public void InsertFilter(int index, FileDialogFilter filter)
 		{
-			get { return filters; }
-			set
-			{
-				filters = value.ToArray();
-				var filterValues = from f in filters
-								   select string.Format("{0}|{1}",
-									   f.Name,
-									   string.Join(";",
-										   from ex in f.Extensions
-										   select "*" + ex
-									   )
-								   );
-				Control.Filter = string.Join("|", filterValues);
-			}
 		}
 
-		public IFileDialogFilter CurrentFilter
+		public void RemoveFilter(int index)
+		{
+		}
+
+		public void ClearFilters()
+		{
+		}
+
+		public void SetFilters()
+		{
+			var filterValues = from f in Widget.Filters
+							   select string.Format("{0}|{1}",
+								   f.Name.Replace("|", " "),
+								   string.Join(";",
+									   from ex in f.Extensions
+									   select "*" + ex.Replace(";", " ")
+								   )
+							   );
+			Control.Filter = string.Join("|", filterValues);
+		}
+
+		public FileDialogFilter CurrentFilter
 		{
 			get
 			{
-				if (CurrentFilterIndex == -1 || filters == null) return null;
-				return filters[CurrentFilterIndex];
+				if (CurrentFilterIndex == -1) return null;
+				return Widget.Filters[CurrentFilterIndex];
 			}
 			set
 			{
-				CurrentFilterIndex = Array.IndexOf(filters, value);
+				CurrentFilterIndex = Widget.Filters.IndexOf(value);
 			}
 		}
 
@@ -76,6 +88,8 @@ namespace Eto.WinForms.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			SetFilters();
+
 			swf.DialogResult dr;
 			if (parent != null)
 				dr = Control.ShowDialog((swf.Control)parent.ControlObject);

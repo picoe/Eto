@@ -84,7 +84,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The dialog result.</returns>
 		/// <param name="parent">Parent window.</param>
-		public DialogResult ShowDialog(Window parent)
+		public virtual DialogResult ShowDialog(Window parent)
 		{
 			return Handler.ShowDialog(parent);
 		}

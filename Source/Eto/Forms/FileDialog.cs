@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
 	/// <summary>
 	/// Interface for a filter for a <see cref="FileDialog"/>
 	/// </summary>
+	[Obsolete("Use FileDialogFilter directly")]
 	public interface IFileDialogFilter
 	{
 		/// <summary>
@@ -28,7 +30,9 @@ namespace Eto.Forms
 	/// <remarks>
 	/// Each filter defines an option for the user to limit the selection of files in the dialog.
 	/// </remarks>
+#pragma warning disable 618
 	public class FileDialogFilter : IFileDialogFilter
+#pragma warning restore 618
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.FileDialogFilter"/> class.
@@ -82,6 +86,24 @@ namespace Eto.Forms
 				hash ^= Extensions.GetHashCode();
 			return hash;
 		}
+
+		/// <summary>
+		/// Converts a string representation of a filter in the form of "[name]|[ext];[ext];[ext]" to a FileDialogFilter.
+		/// </summary>
+		/// <param name="filter">String representation of the file dialog filter</param>
+		/// <returns>A new file dialog filter with the name and extensions specified in the <paramref name="filter"/> argument</returns>
+		public static implicit operator FileDialogFilter(string filter)
+		{
+			var parts = filter.Split('|');
+			if (parts.Length != 2)
+				throw new ArgumentException("Filter must be in the form of '<name>|<ext>;<ext>;<ext>;", "filter");
+
+			return new FileDialogFilter
+			{
+				Name = parts[0],
+				Extensions = parts[1].Split(new [] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+			};
+		}
 	}
 
 	/// <summary>
@@ -89,6 +111,8 @@ namespace Eto.Forms
 	/// </summary>
 	public abstract class FileDialog : CommonDialog
 	{
+		FilterCollection filters;
+
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
@@ -123,10 +147,9 @@ namespace Eto.Forms
 		/// Gets or sets the available filters for the user.
 		/// </summary>
 		/// <value>The filters the user can select.</value>
-		public IEnumerable<IFileDialogFilter> Filters
+		public Collection<FileDialogFilter> Filters
 		{
-			get { return Handler.Filters; }
-			set { Handler.Filters = value; }
+			get { return filters ?? (filters = new FilterCollection { Dialog = this }); }
 		}
 
 		/// <summary>
@@ -146,10 +169,18 @@ namespace Eto.Forms
 		/// This should always match an entry in the <see cref="Filters"/> enumeration.
 		/// </remarks>
 		/// <value>The current filter.</value>
-		public IFileDialogFilter CurrentFilter
+		public FileDialogFilter CurrentFilter
 		{
-			get { return Handler.CurrentFilter; }
-			set { Handler.CurrentFilter = value; }
+			get
+			{
+				var index = CurrentFilterIndex;
+				if (index == -1 || filters == null || index >= filters.Count) return null;
+				return Filters[index];
+			}
+			set
+			{
+				CurrentFilterIndex = Filters.IndexOf(value);
+			}
 		}
 
 		/// <summary>
@@ -183,6 +214,36 @@ namespace Eto.Forms
 			set { Handler.Directory = value; }
 		}
 
+		class FilterCollection : Collection<FileDialogFilter>
+		{
+			public FileDialog Dialog { get; set; }
+
+			protected override void InsertItem(int index, FileDialogFilter item)
+			{
+				base.InsertItem(index, item);
+				Dialog.Handler.InsertFilter(index, item);
+			}
+
+			protected override void RemoveItem(int index)
+			{
+				base.RemoveItem(index);
+				Dialog.Handler.RemoveFilter(index);
+			}
+
+			protected override void SetItem(int index, FileDialogFilter item)
+			{
+				Dialog.Handler.RemoveFilter(index);
+				base.SetItem(index, item);
+				Dialog.Handler.InsertFilter(index, item);
+			}
+
+			protected override void ClearItems()
+			{
+				base.ClearItems();
+				Dialog.Handler.ClearFilters();
+			}
+		}
+
 		/// <summary>
 		/// Handler interface for the <see cref="FileDialog"/> based widgets
 		/// </summary>
@@ -195,25 +256,10 @@ namespace Eto.Forms
 			string FileName { get; set; }
 
 			/// <summary>
-			/// Gets or sets the available filters for the user.
-			/// </summary>
-			/// <value>The filters the user can select.</value>
-			IEnumerable<IFileDialogFilter> Filters { get; set; }
-
-			/// <summary>
 			/// Gets or sets the index of the current filter in the <see cref="Filters"/> enumeration
 			/// </summary>
 			/// <value>The index of the current filter.</value>
 			int CurrentFilterIndex { get; set; }
-
-			/// <summary>
-			/// Gets or sets the currently selected filter from <see cref="Filters"/>
-			/// </summary>
-			/// <remarks>
-			/// This should always match an entry in the <see cref="Filters"/> enumeration.
-			/// </remarks>
-			/// <value>The current filter.</value>
-			IFileDialogFilter CurrentFilter { get; set; }
 
 			/// <summary>
 			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.FileDialog"/> checks if the file exists 
@@ -233,6 +279,24 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The directory.</value>
 			Uri Directory { get; set; }
+
+			/// <summary>
+			/// Inserts a filter at the specified index
+			/// </summary>
+			/// <param name="index">Index to insert the filter</param>
+			/// <param name="filter">Filter to insert</param>
+			void InsertFilter(int index, FileDialogFilter filter);
+
+			/// <summary>
+			/// Removes a filter at the specified index
+			/// </summary>
+			/// <param name="index">Index of the filter to remove</param>
+			void RemoveFilter(int index);
+
+			/// <summary>
+			/// Clears all filters
+			/// </summary>
+			void ClearFilters();
 		}
 	}
 }

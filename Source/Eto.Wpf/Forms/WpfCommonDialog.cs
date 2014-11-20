@@ -8,7 +8,7 @@ namespace Eto.Wpf.Forms
 		where TControl : mw.CommonDialog
 		where TWidget : CommonDialog
 	{
-		public DialogResult ShowDialog (Window parent)
+		public virtual DialogResult ShowDialog (Window parent)
 		{
 			bool? result;
 			if (parent != null) {
