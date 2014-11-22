@@ -90,13 +90,7 @@ namespace Eto.Wpf.Forms
 
 			border.Child = Control;
 
-			Control.SizeChanged += Control_SizeChanged;
-			Control.Loaded += Control_SizeChanged;
-		}
-
-		void Control_SizeChanged(object sender, EventArgs e)
-		{
-			SetChildrenSizes();
+			Control.LayoutUpdated += (sender, args) => SetChildrenSizes();
 		}
 
 		sw.FrameworkElement EmptyCell(int x, int y)
