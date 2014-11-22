@@ -29,7 +29,6 @@ namespace Eto.Wpf.Forms
 				return handler;
 			var controlObject = control.ControlObject as Control;
 			return controlObject != null ? controlObject.GetWpfFrameworkElement() : null;
-
 		}
 
 		public static IWpfContainer GetWpfContainer(this Container control)
@@ -41,7 +40,6 @@ namespace Eto.Wpf.Forms
 				return handler;
 			var controlObject = control.ControlObject as Container;
 			return controlObject != null ? controlObject.GetWpfContainer() : null;
-
 		}
 
 		public static sw.FrameworkElement GetContainerControl(this Control control)
@@ -76,7 +74,7 @@ namespace Eto.Wpf.Forms
 	public abstract class WpfFrameworkElement<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IWpfFrameworkElement
 		where TControl : System.Windows.FrameworkElement
 		where TWidget : Control
-		where TCallback: Control.ICallback
+		where TCallback : Control.ICallback
 	{
 		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
@@ -90,6 +88,15 @@ namespace Eto.Wpf.Forms
 		protected sw.Size PreferredSize { get { return preferredSize; } set { preferredSize = value; } }
 
 		protected virtual Size DefaultSize { get { return Size.Empty; } }
+
+		/// <summary>
+		/// This property, when set to true, will prevent the control from growing/shrinking based on user input.
+		/// Typically, this will be accompanied by overriding the <see cref="DefaultSize"/> as well.
+		/// 
+		/// For example, when the user types into a text box, it will grow to fit the content if it is auto sized.
+		/// This doesn't happen on any other platform, so we need to disable this behaviour on WPF.
+		/// </summary>
+		protected virtual bool PreventUserResize { get { return false; } }
 
 		public abstract Color BackgroundColor { get; set; }
 
@@ -135,11 +142,38 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void SetSize()
 		{
-			ContainerControl.Width = XScale && Control.IsLoaded ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
-			ContainerControl.Height = YScale && Control.IsLoaded ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
 			var defaultSize = DefaultSize;
-			ContainerControl.MinWidth = XScale && Control.IsLoaded ? 0 : Math.Max(0, double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
-			ContainerControl.MinHeight = YScale && Control.IsLoaded ? 0 : Math.Max(0, double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
+			if (XScale && Control.IsLoaded)
+			{
+				ContainerControl.Width = double.NaN;
+				ContainerControl.MinWidth = 0;
+			}
+			else
+			{
+				var containerWidth = PreventUserResize && double.IsNaN(preferredSize.Width)
+					? defaultSize.Width <= 0
+						? double.NaN
+						: defaultSize.Width
+					: preferredSize.Width;
+				ContainerControl.Width = Math.Max(containerWidth, parentMinimumSize.Width);
+				ContainerControl.MinWidth = Math.Max(0, double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
+			}
+
+			if (YScale && Control.IsLoaded)
+			{
+				ContainerControl.Height = double.NaN;
+				ContainerControl.MinHeight = 0;
+			}
+			else
+			{
+				var containerHeight = PreventUserResize && double.IsNaN(preferredSize.Height)
+					? defaultSize.Height <= 0
+						? double.NaN
+						: defaultSize.Height
+					: preferredSize.Height;
+				ContainerControl.Height = Math.Max(containerHeight, parentMinimumSize.Height);
+				ContainerControl.MinHeight = Math.Max(0, double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
+			}
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)
