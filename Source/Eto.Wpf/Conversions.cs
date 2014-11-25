@@ -63,11 +63,15 @@ namespace Eto.Wpf
 
 		public static Rectangle ToEto(this sw.Rect value)
 		{
+			if (value.IsEmpty)
+				return Rectangle.Empty;
 			return new Rectangle((int)value.X, (int)value.Y, (int)value.Width, (int)value.Height);
 		}
 
 		public static RectangleF ToEtoF(this sw.Rect value)
 		{
+			if (value.IsEmpty)
+				return RectangleF.Empty;
 			return new RectangleF((float)value.X, (float)value.Y, (float)value.Width, (float)value.Height);
 		}
 
