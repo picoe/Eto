@@ -71,7 +71,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					var c = (Gtk.Button)o;
 					var size = args.Allocation;
-					if (size.Width > 1 || size.Height > 1)
+					if (Handler.PreferredSize.Width == -1 && (size.Width > 1 || size.Height > 1))
 					{
 						size.Width = Math.Max(size.Width, MinimumWidth);
 						if (args.Allocation != size)

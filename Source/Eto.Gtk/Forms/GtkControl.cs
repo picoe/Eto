@@ -67,6 +67,8 @@ namespace Eto.GtkSharp.Forms
 			size = new Size(-1, -1);
 		}
 
+		public Size PreferredSize { get { return size; } }
+
 		public virtual Size DefaultSize { get { return new Size(-1, -1); } }
 
 		public virtual Gtk.Widget ContainerControl
