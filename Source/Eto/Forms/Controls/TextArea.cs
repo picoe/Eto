@@ -220,6 +220,30 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TextArea"/> will perform spell checking.
+		/// </summary>
+		/// <remarks>
+		/// When <c>true</c>, platforms will typically show misspelled or unknown words with a red underline.
+		/// This is a hint, and is only supported by the platform when <see cref="SpellCheckIsSupported"/> is true.
+		/// When not supported, setting this property will do nothing.
+		/// </remarks>
+		/// <value><c>true</c> if spell check; otherwise, <c>false</c>.</value>
+		public bool SpellCheck
+		{
+			get { return Handler.SpellCheck; }
+			set { Handler.SpellCheck = value; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the <see cref="SpellCheck"/> property is supported on the control's platform.
+		/// </summary>
+		/// <value><c>true</c> if spell check is supported; otherwise, <c>false</c>.</value>
+		public bool SpellCheckIsSupported
+		{
+			get { return Handler.SpellCheckIsSupported; }
+		}
+
+		/// <summary>
 		/// Append the specified text to the control and optionally scrolls to make the inserted text visible.
 		/// </summary>
 		/// <remarks>
@@ -368,6 +392,23 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The horizontal alignment.</value>
 			HorizontalAlign HorizontalAlign { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TextArea"/> will perform spell checking.
+			/// </summary>
+			/// <remarks>
+			/// When <c>true</c>, platforms will typically show misspelled or unknown words with a red underline.
+			/// This is a hint, and is only supported by the platform when <see cref="SpellCheckIsSupported"/> is true.
+			/// When not supported, setting this property will do nothing.
+			/// </remarks>
+			/// <value><c>true</c> if spell check; otherwise, <c>false</c>.</value>
+			bool SpellCheck { get; set; }
+
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="SpellCheck"/> property is supported on the control's platform.
+			/// </summary>
+			/// <value><c>true</c> if spell check is supported; otherwise, <c>false</c>.</value>
+			bool SpellCheckIsSupported { get; }
 		}
 	}
 }

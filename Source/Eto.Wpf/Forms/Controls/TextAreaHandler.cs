@@ -144,5 +144,14 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Control.VerticalContentAlignment.ToEto(); }
 			set { Control.VerticalContentAlignment = value.ToWpf(); }
 		}
+
+
+		public bool SpellCheck
+		{
+			get { return Control.SpellCheck.IsEnabled; }
+			set { Control.SpellCheck.IsEnabled = value; }
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
 	}
 }
