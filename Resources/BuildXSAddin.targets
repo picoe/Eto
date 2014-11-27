@@ -31,7 +31,7 @@
 		<Copy SourceFiles="%(SourceNupkg.Identity)" DestinationFiles="$(NugetOutputDir)\%(Filename)%(Extension)" />
 
     	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration);UseAddinTargets=false' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     </Target>
