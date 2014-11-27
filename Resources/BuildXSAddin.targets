@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+        <BuildVersion>2.0.5</BuildVersion>
+	</PropertyGroup>
+	<Import Project="Publish.targets" />
+	
+    <Target Name="Build" DependsOnTargets="UpdateAssemblyInfo">
+    	<!-- this builds the Xamarin Studio addin specifically for addins.monodevelop.com -->
+
+		<PropertyGroup>
+    		<AllPackagesConfig>$(MSBuildThisFileDirectory)\packages.config</AllPackagesConfig>
+    		<NugetOutputDir>$(BaseDir)\BuildOutput\Nuget\$(Configuration)</NugetOutputDir>
+		</PropertyGroup>
+
+    	<Exec Command="xbuild /t:'RestorePackages' /p:'PackagesDir=$(MSBuildThisFileDirectory);PackagesConfig=$(AllPackagesConfig)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows'"/>
+    	
+    	<ItemGroup>
+    		<SourceNupkg Include="$(MSBuildThisFileDirectory)\packages\Eto.*\*.nupkg" />
+    	</ItemGroup>
+    	
+    	<MakeDir Directories="$(NugetOutputDir)" />
+		<Copy SourceFiles="%(SourceNupkg.Identity)" DestinationFiles="$(NugetOutputDir)\%(Filename)%(Extension)" />
+
+    	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    </Target>
+	<Target Name="Clean">
+		<!-- placeholder -->
+	</Target>
+</Project>

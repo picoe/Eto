@@ -1,7 +1,0 @@
-<AddinProject appVersion="5.0">
-	<Project platforms="Mac Linux Win32">
-		<AddinFile>../BuildOutput/Addins/Release/XamarinStudio/Eto.Addin.XamarinStudio.dll</AddinFile>
-		<BuildFile>Publish.targets</BuildFile>
-		<BuildConfiguration>BuildXSAddin</BuildConfiguration>
-	</Project>
-</AddinProject>
