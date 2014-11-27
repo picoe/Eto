@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<IsMac>false</IsMac>
 		<IsMac Condition="'$(OS)' == 'Unix' and Exists('/Library/Frameworks')">true</IsMac>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 		<BuildVersion>2.0.5</BuildVersion>
 	</PropertyGroup>
 	<Import Project="Publish.targets" />
@@ -31,7 +32,7 @@
 		<Copy SourceFiles="%(SourceNupkg.Identity)" DestinationFiles="$(NugetOutputDir)\%(Filename)%(Extension)" />
 
     	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration);UseAddinTargets=false' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration);UseAddinTargets=false;ReferencePath=$(ReferencePath)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     </Target>
