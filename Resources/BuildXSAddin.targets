@@ -7,12 +7,15 @@
 	</PropertyGroup>
 	<Import Project="Publish.targets" />
 	
-    <Target Name="Build" DependsOnTargets="UpdateAssemblyInfo">
-    	<!-- this builds the Xamarin Studio addin specifically for addins.monodevelop.com -->
-
+	<Target Name="PreBuild">
+	
 		<!-- need this to download packages from nuget through https -->
 		<Exec Command="mozroots --import --sync" Condition="$(IsMac) == false" />
-		
+	</Target>
+	
+    <Target Name="Build" DependsOnTargets="PreBuild;UpdateAssemblyInfo">
+    	<!-- this builds the Xamarin Studio addin specifically for addins.monodevelop.com -->
+
 		<PropertyGroup>
     		<AllPackagesConfig>$(MSBuildThisFileDirectory)\packages.config</AllPackagesConfig>
     		<NugetOutputDir>$(BaseDir)\BuildOutput\Nuget\$(Configuration)</NugetOutputDir>
