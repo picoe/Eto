@@ -10,7 +10,9 @@
 		<TargetDir Condition="$(TargetDir) == ''">$(BaseDir)\BuildOutput\Nuget\$(Configuration)</TargetDir>
 		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
         <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
-        <Platform Condition="$(Platform) == ''">Windows</Platform>
+        <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix'">Mac</Platform>
+        <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
+        <XSAddinNugetVersion>2.0.5</XSAddinNugetVersion>
         <MSBuildCommunityVersion>1.4.0.78</MSBuildCommunityVersion>
 		<MSBuildCommunityTasksPath>$(MSBuildThisFileDirectory)\packages\MSBuildTasks.$(MSBuildCommunityVersion)\tools</MSBuildCommunityTasksPath>
 	    <MSBuildCommunityTasksLib>$([MSBUILD]::Unescape($(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll))</MSBuildCommunityTasksLib>
@@ -32,10 +34,17 @@
             Regex='AssemblyInformationalVersion[(]&quot;.*&quot;[)]'
             Encoding="utf-8-without-bom"
             ReplacementText='AssemblyInformationalVersion(&quot;$(BuildVersion)&quot;)' />
+            
+		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
+            Regex='AssemblyFileVersion[(]&quot;.*&quot;[)]'
+            Encoding="utf-8-without-bom"
+            ReplacementText='AssemblyFileVersion(&quot;$(BuildVersion)&quot;)' />
         
         <ItemGroup>
         	<VSTemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
         	<XSProjFile Include="$(XamarinStudioAddinProject)" />
+        	<AllPackagesFile Include="$(MSBuildThisFileDirectory)\packages.config" />
+        	
         	<!-- Using ItemGroup with text to prevent messing up backslashes in xbuild -->
         	<NupkgReg Include="1"><Text><![CDATA[(?<=Eto.[\w\.]+?)(\.\d+)*([-]\w+\d*)?\.nupkg]]></Text></NupkgReg>
         	<VSTemplateReg Include="1"><Text><![CDATA[(?<=id\s*[=]\s*"Eto\.[\w\.]+"\s+)version\s*=\s*"[^"]+"]]></Text></VSTemplateReg>
@@ -51,10 +60,14 @@
             Regex="@(VSTemplateReg->'%(Text)')"
             ReplacementText='version=&quot;$(BuildVersion)&quot;' />
 
+		<FileUpdate Files="@(AllPackagesFile)"
+			WarnOnNoUpdate="true"
+            Regex="@(VSTemplateReg->'%(Text)')"
+            ReplacementText='version=&quot;$(BuildVersion)&quot;' />
 	</Target>
 	
     <Target Name="Package" DependsOnTargets="UpdateAssemblyInfo">
-
+	
     	<!-- using exec since xbuild messes up properties when using msbuild task -->
     	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net40.sln'" Condition="$(Platform) != 'Windows'"/>
     	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net45.sln'" Condition="$(Platform) != 'Windows'"/>
@@ -143,6 +156,36 @@
 
 		<!-- Visual Studio Addin -->
     	<MSBuild Projects="$(VisualStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    </Target>
+    
+    <Target Name="_BuildXSAddinProperties">
+    	<PropertyGroup>
+	   		<!-- Version of packages to load from nuget -->
+    		<BuildVersion>$(XSAddinNugetVersion)</BuildVersion>
+    	</PropertyGroup>
+    	<Message Text="$(BuildVersion)"/>
+    </Target>
+    <Target Name="BuildXSAddin" DependsOnTargets="_BuildXSAddinProperties;UpdateAssemblyInfo">
+    	<!-- this builds the Xamarin Studio addin specifically for addins.monodevelop.com -->
+
+		<PropertyGroup>
+    		<AllPackagesConfig>$(MSBuildThisFileDirectory)\packages.config</AllPackagesConfig>
+    		<NugetOutputDir>$(BaseDir)\BuildOutput\Nuget\$(Configuration)</NugetOutputDir>
+		</PropertyGroup>
+
+    	<Exec Command="xbuild /t:'RestorePackages' /p:'PackagesDir=$(MSBuildThisFileDirectory);PackagesConfig=$(AllPackagesConfig)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows'"/>
+    	
+    	<ItemGroup>
+    		<SourceNupkg Include="$(MSBuildThisFileDirectory)\packages\Eto.*\*.nupkg" />
+    	</ItemGroup>
+    	
+    	<MakeDir Directories="$(NugetOutputDir)" />
+		<Copy SourceFiles="%(SourceNupkg.Identity)" DestinationFiles="$(NugetOutputDir)\%(Filename)%(Extension)" />
+
+    	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     </Target>
     <Target Name="Publish">
 		<GetAssemblyInfo AssemblyFileName="$(BuildOutputDir)\Eto.dll">
