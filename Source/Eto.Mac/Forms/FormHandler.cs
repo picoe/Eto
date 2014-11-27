@@ -37,7 +37,10 @@ namespace Eto.Mac.Forms
 {
 	public class FormHandler : MacWindow<NSWindow, Form, Form.ICallback>, Form.IHandler
 	{
+		#pragma warning disable 414
+		// keep reference to controller so it doesn't get disposed
 		NSWindowController controller;
+		#pragma warning restore 414
 		protected override bool DisposeControl { get { return false; } }
 
 		public FormHandler(NSWindow window)
