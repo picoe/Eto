@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-        <BuildVersion>2.0.5</BuildVersion>
+		<IsMac>false</IsMac>
+		<IsMac Condition="'$(OS)' == 'Unix' and Exists('/Library/Frameworks')">true</IsMac>
+		<BuildVersion>2.0.5</BuildVersion>
 	</PropertyGroup>
 	<Import Project="Publish.targets" />
 	
     <Target Name="Build" DependsOnTargets="UpdateAssemblyInfo">
     	<!-- this builds the Xamarin Studio addin specifically for addins.monodevelop.com -->
 
+		<!-- need this to download packages from nuget through https -->
+		<Exec Command="mozroots --import --sync" Condition="$(IsMac) == false" />
+		
 		<PropertyGroup>
     		<AllPackagesConfig>$(MSBuildThisFileDirectory)\packages.config</AllPackagesConfig>
     		<NugetOutputDir>$(BaseDir)\BuildOutput\Nuget\$(Configuration)</NugetOutputDir>
