@@ -26,7 +26,7 @@
 	<UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.FileUpdate" />
 	
 	<Target Name="UpdateAssemblyInfo" Condition="$(BuildVersion) != ''">
-		<Exec Command="nuget install MSBuildTasks -Version $(MSBuildCommunityVersion) -OutputDirectory packages"
+		<Exec Command="$(NuGetCommand) install MSBuildTasks -Version $(MSBuildCommunityVersion) -OutputDirectory packages"
 			Condition="! Exists('$(MSBuildCommunityTasksPath)')" />
 
 		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
