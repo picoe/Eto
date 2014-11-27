@@ -111,7 +111,6 @@
     <Compile Include="Forms\Controls\PanelHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
-    <Compile Include="Forms\Menu\ImageMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\MenuBarHandler.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
@@ -196,6 +195,7 @@
     <Compile Include="MacHelpers.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
