@@ -209,4 +209,7 @@
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.Sample.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.iOS.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     </Target>
+	<Target Name="Clean">
+		<!-- placeholder -->
+	</Target>
 </Project>
