@@ -53,8 +53,10 @@ namespace Tutorial4
 			var textBox = new TextBox();
 			// bind to the text property using delegates
 			textBox.TextBinding.BindDataContext<MyObject>(r => r.TextProperty, (r, val) => r.TextProperty = val);
-			// You can also bind using reflection, if the data context type is unknown:
-			// textBox.TextBinding.BindDataContext(new PropertyBinding<string>("TextProperty"));
+			// You can also bind using reflection
+			//textBox.TextBinding.BindDataContext<MyObject>(r => r.TextProperty);
+			// or, if the data context type is unknown
+			//textBox.TextBinding.BindDataContext(new PropertyBinding<string>("TextProperty"));
 			return textBox;
 		}
 
@@ -64,8 +66,8 @@ namespace Tutorial4
 			var obj = new MyObject { TextProperty = "Initial value 2" };
 
 			var textBox = new TextBox();
-			// bind to the text property using delegates
-			textBox.TextBinding.Bind(obj, r => r.TextProperty, (r, val) => r.TextProperty = val);
+			// bind to the text property of a specific object instance using reflection
+			textBox.TextBinding.Bind(obj, r => r.TextProperty);
 			return textBox;
 		}
 	
