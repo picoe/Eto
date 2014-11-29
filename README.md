@@ -44,12 +44,20 @@ This framework was built so that using it in .NET is natural. For example, a sim
 		}
 	}
 
+Getting Started
+---------------
+
+To create apps using Eto.Forms, you can use the project templates provided by the Visual Studio or Xamarin Studio addins. Read the [Quick Start Guide](https://github.com/picoe/Eto/wiki/Quick-Start) to begin.
+
+To compile or contribute to Eto.Forms, read the [Contributing Guide](https://github.com/picoe/Eto/wiki/Contributing).
+
+
 Applications
 ------------
 * [Manager](http://www.manager.io) - Accounting Software
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
 * [JabbR.Desktop](https://github.com/JabbR/JabbR.Desktop) - JabbR client
-* [Notedown](https://github.com/modmonkeys/Notedown) - Note taking application
+* [Notedown](https://github.com/cwensley/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
 
 Assemblies
