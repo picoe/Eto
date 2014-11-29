@@ -47,7 +47,7 @@ This framework was built so that using it in .NET is natural. For example, a sim
 Getting Started
 ---------------
 
-To create apps using Eto.Forms, you can use the project templates provided by the Visual Studio or Xamarin Studio addins. Read the [Quick Start Guide](https://github.com/picoe/Eto/wiki/Quick-Start) to begin.
+To begin creating apps using Eto.Forms, follow the [Quick Start Guide](https://github.com/picoe/Eto/wiki/Quick-Start).
 
 To compile or contribute to Eto.Forms, read the [Contributing Guide](https://github.com/picoe/Eto/wiki/Contributing).
 
