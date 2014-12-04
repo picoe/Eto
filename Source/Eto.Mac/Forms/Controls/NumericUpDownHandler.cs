@@ -46,6 +46,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
+		public override NSView FocusControl { get { return text; } }
+
 		public class EtoTextField : NSTextField, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }

@@ -13,10 +13,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override Size DefaultSize { get { return new Size(mode == DateTimePickerMode.DateTime ? 180 : 120, -1); } }
 
-		public override sw.Size GetPreferredSize(sw.Size constraint)
-		{
-			return base.GetPreferredSize(Conversions.ZeroSize);
-		}
+		protected override bool PreventUserResize { get { return true; } }
 
 		public DateTimePickerHandler()
 		{

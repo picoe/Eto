@@ -7,28 +7,21 @@ using mwc = Xceed.Wpf.Toolkit;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	public class EtoDoubleUpDown : mwc.DoubleUpDown
 	{
-		public class EtoDoubleUpDown : mwc.DoubleUpDown
-		{
-			protected override sw.Size MeasureOverride(sw.Size constraint)
-			{
-				if (IsLoaded && IsVisible)
-				{
-					constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
-				}
-				return base.MeasureOverride(constraint);
-			}
-		}
+		public new swc.TextBox TextBox { get { return base.TextBox; } }
+	}
 
-		protected override Size DefaultSize
-		{
-			get { return new Size(80, base.DefaultSize.Height); }
-		}
+	public class NumericUpDownHandler : WpfControl<EtoDoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	{
+		protected override Size DefaultSize { get { return new Size(80, -1); } }
+
+		protected override bool PreventUserResize { get { return true; } }
 
 		public NumericUpDownHandler()
 		{
 			Control = new EtoDoubleUpDown();
+			Control.Value = 0;
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 			DecimalPlaces = 0;
 		}
@@ -81,5 +74,21 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Control.Increment ?? 1; }
 			set { Control.Increment = value; }
 		}
+
+		public override void Focus()
+		{
+			// focus the inner text box
+			if (Control.IsLoaded)
+				Control.TextBox.Focus();
+			else
+				Control.Loaded += HandleFocus;
+		}
+
+		void HandleFocus(object sender, sw.RoutedEventArgs e)
+		{
+			Control.TextBox.Focus();
+			Control.Loaded -= HandleFocus;
+		}
+
 	}
 }

@@ -133,7 +133,7 @@ namespace Eto.Mac
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
 			p.Add<ContextMenu.IHandler>(() => new ContextMenuHandler());
-			p.Add<ButtonMenuItem.IHandler>(() => new ImageMenuItemHandler());
+			p.Add<ButtonMenuItem.IHandler>(() => new ButtonMenuItemHandler());
 			p.Add<MenuBar.IHandler>(() => new MenuBarHandler());
 			p.Add<RadioMenuItem.IHandler>(() => new RadioMenuItemHandler());
 			p.Add<SeparatorMenuItem.IHandler>(() => new SeparatorMenuItemHandler());

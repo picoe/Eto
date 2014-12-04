@@ -18,7 +18,7 @@ namespace Eto.Mac.Forms.Menu
 {
 	public interface IMenuActionHandler
 	{
-		void HandleClick();
+		void Activate();
 
 		bool Enabled { get; }
 
@@ -40,7 +40,7 @@ namespace Eto.Mac.Forms.Menu
 		{
 			var h = Handler;
 			if (h != null)
-				h.HandleClick();
+				h.Activate();
 		}
 
 		[Export("validateMenuItem:")]

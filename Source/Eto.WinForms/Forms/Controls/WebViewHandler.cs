@@ -1,5 +1,7 @@
 using System;
-using SWF = System.Windows.Forms;
+using System.Linq;
+using SHDocVw;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.CustomControls;
 using System.Runtime.InteropServices;
@@ -7,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class WebViewHandler : WindowsControl<SWF.WebBrowser, WebView, WebView.ICallback>, WebView.IHandler
+	public class WebViewHandler : WindowsControl<swf.WebBrowser, WebView, WebView.ICallback>, WebView.IHandler
 	{
 		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 		[Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]
@@ -17,14 +19,14 @@ namespace Eto.WinForms.Forms.Controls
 			object QueryService(ref Guid guidService, ref Guid riid);
 		}
 
-		HashSet<string> delayedEvents = new HashSet<string>();
+		readonly HashSet<string> delayedEvents = new HashSet<string>();
 
-		SHDocVw.WebBrowser_V1 WebBrowserV1
+		WebBrowser_V1 WebBrowserV1
 		{
-			get { return (SHDocVw.WebBrowser_V1)Control.ActiveXInstance; }
+			get { return (WebBrowser_V1)Control.ActiveXInstance; }
 		}
 
-		public void AttachEvent(SHDocVw.WebBrowser_V1 control, string handler)
+		public void AttachEvent(WebBrowser_V1 control, string handler)
 		{
 			switch (handler)
 			{
@@ -34,26 +36,50 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		static readonly string[] ValidInputTags = { "input", "textarea" };
+
 		public WebViewHandler()
 		{
-			this.Control = new SWF.WebBrowser
+			Control = new swf.WebBrowser
 			{
 				IsWebBrowserContextMenuEnabled = false,
 				WebBrowserShortcutsEnabled = false,
 				AllowWebBrowserDrop = false,
 				ScriptErrorsSuppressed = true
 			};
-			this.Control.HandleCreated += (sender, e) =>
+			Control.HandleCreated += (sender, e) => HookDocumentEvents();
+			Control.PreviewKeyDown += (sender, args) =>
 			{
-				HookDocumentEvents();
+				var doc = Control.Document;
+				if (!Control.WebBrowserShortcutsEnabled && doc != null)
+				{
+					// implement shortcut keys for copy/paste
+					switch (args.KeyData)
+					{
+						case (swf.Keys.C | swf.Keys.Control):
+							doc.ExecCommand("Copy", false, null);
+							break;
+						case (swf.Keys.V | swf.Keys.Control):
+							if (doc.ActiveElement != null && ValidInputTags.Contains(doc.ActiveElement.TagName.ToLowerInvariant()))
+								doc.ExecCommand("Paste", false, null);
+							break;
+						case (swf.Keys.X | swf.Keys.Control):
+							if (doc.ActiveElement != null && ValidInputTags.Contains(doc.ActiveElement.TagName.ToLowerInvariant()))
+								doc.ExecCommand("Cut", false, null);
+							break;
+						case (swf.Keys.A | swf.Keys.Control):
+							doc.ExecCommand("SelectAll", false, null);
+							break;
+					}
+				}
 			};
 		}
 
-		void WebBrowserV1_NewWindow(string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
+		void WebBrowserV1_NewWindow(string url, int flags, string targetFrameName, ref object postData, string headers, ref bool processed)
 		{
-			var e = new WebViewNewWindowEventArgs(new Uri(URL), TargetFrameName);
+			var e = new WebViewNewWindowEventArgs(new Uri(url), targetFrameName);
 			Callback.OnOpenNewWindow(Widget, e);
-			Processed = e.Cancel;
+			processed = e.Cancel;
 		}
 
 		public override void AttachEvent(string handler)
@@ -163,7 +189,7 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				if (server == null)
 					server = new HttpServer();
-				server.SetHtml(html, baseUri != null ? baseUri.LocalPath : null);
+				server.SetHtml(html, baseUri.LocalPath);
 				Control.Navigate(server.Url);
 			}
 			else

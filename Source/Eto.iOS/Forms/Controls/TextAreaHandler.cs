@@ -84,7 +84,7 @@ namespace Eto.iOS.Forms.Controls
 			get
 			{ 
 				var range = Control.SelectedRange;
-				return new Range(range.Location, range.Location + range.Length);
+				return new Range<int>(range.Location, range.Location + range.Length - 1);
 			}
 			set
 			{
@@ -124,5 +124,16 @@ namespace Eto.iOS.Forms.Controls
 			get { return Control.TextAlignment.ToEto(); }
 			set { Control.TextAlignment = value.ToUI(); }
 		}
+
+		public bool SpellCheck
+		{
+			get { return Control.SpellCheckingType != UITextSpellCheckingType.No; }
+			set
+			{
+				Control.SpellCheckingType = value ? UITextSpellCheckingType.Yes : UITextSpellCheckingType.No;
+			}
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
 	}
 }

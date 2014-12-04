@@ -374,5 +374,13 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control.Alignment.ToEto(); }
 			set { Control.Alignment = value.ToNS(); }
 		}
+
+		public bool SpellCheck
+		{
+			get { return Control.ContinuousSpellCheckingEnabled; }
+			set { Control.ContinuousSpellCheckingEnabled = value; }
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
 	}
 }

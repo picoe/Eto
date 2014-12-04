@@ -4,6 +4,7 @@ using Eto.Mac.Forms.Actions;
 using System.Linq;
 using Eto.Mac.Forms;
 using System.Collections.ObjectModel;
+using System;
 
 #if XAMMAC2
 using AppKit;
@@ -38,7 +39,7 @@ namespace Eto.Mac.Forms.Menu
 		{
 			var itemHandler = item.Handler as IMenuHandler;
 			if (itemHandler != null)
-				itemHandler.EnsureSubMenu();
+				itemHandler.SetTopLevel();
 			Control.InsertItem((NSMenuItem)item.ControlObject, index);
 		}
 

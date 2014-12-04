@@ -16,8 +16,21 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+
+
+public static class Extensions
+{
+	public static T GetAssemblyAttribute<T>(this System.Reflection.Assembly ass) where T :  Attribute
+	{
+		object[] attributes = ass.GetCustomAttributes(typeof(T), false);
+		if (attributes == null || attributes.Length == 0)
+			return null;
+		return attributes.OfType<T>().SingleOrDefault();
+	}
+}
 
 public class GetAssemblyInfo : Task
 {
@@ -52,19 +65,19 @@ public class GetAssemblyInfo : Task
 			AssemblyInformationalVersion = FileVersionInfo.GetVersionInfo(AssemblyFileName).ProductVersion;
 
 			var assembly = Assembly.LoadFrom(AssemblyFileName);
-			var informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+			var informationalVersion = assembly.GetAssemblyAttribute<AssemblyInformationalVersionAttribute>();
 			if (informationalVersion != null)
 				AssemblyInformationalVersion = informationalVersion.InformationalVersion;
-			var title = assembly.GetCustomAttribute<AssemblyTitleAttribute>();
+			var title = assembly.GetAssemblyAttribute<AssemblyTitleAttribute>();
 			if (title != null)
 				AssemblyTitle = title.Title;
-			var description = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>();
+			var description = assembly.GetAssemblyAttribute<AssemblyDescriptionAttribute>();
 			if (description != null)
 				AssemblyDescription = description.Description;
-			var copyright = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
+			var copyright = assembly.GetAssemblyAttribute<AssemblyCopyrightAttribute>();
 			if (copyright != null)
 				AssemblyCopyright = copyright.Copyright;
-			var company = assembly.GetCustomAttribute<AssemblyCompanyAttribute>();
+			var company = assembly.GetAssemblyAttribute<AssemblyCompanyAttribute>();
 			if (company != null)
 				AssemblyCompany = company.Company;
 			AssemblyName = assembly.GetName().Name;
@@ -80,7 +93,7 @@ public class GetAssemblyInfo : Task
 		</ItemGroup>
 		
 		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\Utilities.cs" Lines="@(Utilities->'%(Text)')" Overwrite="true" />
-	
+
 		<Csc
 			Sources="$(UtilitiesAssemblyPath)\Utilities.cs"
 			OutputAssembly="$(UtilitiesAssemblyPath)\Utilities.dll"

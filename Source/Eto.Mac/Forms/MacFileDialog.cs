@@ -37,56 +37,58 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms
 {
-    interface IMacFileDialog
-    {
-    	List<string> MacFilters { get; }
-        IEnumerable<IFileDialogFilter> Filters { get; }
+	interface IMacFileDialog
+	{
+		List<string> MacFilters { get; }
+
 		string GetDefaultExtension();
+
 		int CurrentFilterIndex { get; }
-    }
- 
-    class SavePanelDelegate : NSOpenSavePanelDelegate
-    {
+	}
+
+	class SavePanelDelegate : NSOpenSavePanelDelegate
+	{
 		WeakReference handler;
+
 		public IMacFileDialog Handler { get { return (IMacFileDialog)handler.Target; } set { handler = new WeakReference(value); } }
-     
-        public override bool ShouldEnableUrl (NSSavePanel panel, NSUrl url)
+
+		public override bool ShouldEnableUrl(NSSavePanel panel, NSUrl url)
 		{
 			if (Directory.Exists(url.Path))
 				return true;
 
-			var extension = Path.GetExtension(url.Path).ToLowerInvariant().TrimStart('.');
+			var extension = Path.GetExtension(url.Path).TrimStart('.');
 			if (Handler.MacFilters == null || Handler.MacFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
 				return true;
 			return false;
 		}
 		
-    }
-	
+	}
+
 	public abstract class MacFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, FileDialog.IHandler, IMacFileDialog
      where TControl: NSSavePanel
      where TWidget: FileDialog
-    {
-        IFileDialogFilter[] filters;
+	{
 		List<string> macfilters;
 		readonly NSPopUpButton fileTypes;
-		List<string> titles;
 
-        protected MacFileDialog ()
-        {
+		protected MacFileDialog()
+		{
 			fileTypes = new NSPopUpButton();
-        }
-		
+		}
+
 		void Create()
 		{
-			if (Control.AccessoryView != null) return;
+			if (Control.AccessoryView != null)
+				return;
 
 			var fileTypeView = new NSView();
 			fileTypeView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			
 			const int padding = 15;
 			
-			if (macfilters != null && macfilters.Count > 0) {
+			if (Widget.Filters.Count > 0)
+			{
 				var label = new NSTextField();
 				label.StringValue = "Format";
 				label.DrawsBackground = false;
@@ -96,12 +98,13 @@ namespace Eto.Mac.Forms
 				label.Selectable = false;
 				label.SizeToFit();
 				fileTypeView.AddSubview(label);
-				
+
 				fileTypes.SizeToFit();
-				fileTypes.Activated += (sender, e) => {
-					SetFilters ();
-					Control.ValidateVisibleColumns ();// SetFilters ();
-					Control.Update ();
+				fileTypes.Activated += (sender, e) =>
+				{
+					SetCurrentItem();
+					Control.ValidateVisibleColumns();
+					Control.Update();
 				};
 				fileTypeView.AddSubview(fileTypes);
 				fileTypes.SetFrameOrigin(new CGPoint((nfloat)label.Frame.Width + 10, padding));
@@ -111,32 +114,38 @@ namespace Eto.Mac.Forms
 				fileTypeView.Frame = new CGRect(0, 0, (nfloat)(fileTypes.Frame.Width + label.Frame.Width + 10), (nfloat)(fileTypes.Frame.Height + padding * 2));
 				
 				Control.AccessoryView = fileTypeView;
+				SetCurrentItem();
 			}
 			else
 				Control.AccessoryView = null;
 		}
-     
-        public virtual string FileName {
-            get { 
-                return Control.Url.Path;
-            }
-            set { }
-        }
-		
-		public Uri Directory {
-			get {
+
+		public virtual string FileName
+		{
+			get
+			{ 
+				return Control.Url.Path;
+			}
+			set { }
+		}
+
+		public Uri Directory
+		{
+			get
+			{
 				return new Uri(Control.DirectoryUrl.AbsoluteString);
 			}
-			set {
+			set
+			{
 				Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
 			}
 		}
-		
-		public string GetDefaultExtension ()
+
+		public string GetDefaultExtension()
 		{
-			if (CurrentFilterIndex >= 0)
+			var filter = Widget.CurrentFilter;
+			if (filter != null)
 			{
-				var filter = filters[CurrentFilterIndex];
 				string ext = filter.Extensions.FirstOrDefault();
 				if (!string.IsNullOrEmpty(ext))
 				{
@@ -145,88 +154,80 @@ namespace Eto.Mac.Forms
 			}
 			return null;
 		}
-		
-		void SetFilters()
-		{
-            macfilters = new List<string> ();
-			var filter = filters[CurrentFilterIndex];
-            //foreach (var filter in filters) {
-                foreach (var filterext in filter.Extensions) {
-                    macfilters.Add (filterext.TrimStart ('*', '.'));
-                }
-            //}
-            Control.AllowedFileTypes = macfilters.Distinct ().ToArray ();
-		}
-		
+
 		public List<string> MacFilters
 		{
 			get { return macfilters; }
 		}
 
-        public IEnumerable<IFileDialogFilter> Filters {
-            get { return filters; }
-            set { 
-                filters = value.ToArray ();
-             	titles = new List<string>();
-				fileTypes.RemoveAllItems();
-                foreach (var filter in filters) {
-					titles.Add(filter.Name);
-                }
-				fileTypes.AddItems(titles.ToArray());
-				
-				SetFilters ();
-            }
-        }
+		public void SetCurrentItem()
+		{
+			macfilters = new List<string>();
+			var currentFilter = Widget.CurrentFilter;
+			foreach (var filterext in currentFilter.Extensions)
+			{
+				macfilters.Add(filterext.TrimStart('*', '.'));
+			}
+			Control.AllowedFileTypes = macfilters.Distinct().ToArray();
+		}
 
-		public IFileDialogFilter CurrentFilter
+		public int CurrentFilterIndex
 		{
 			get
-			{
-				if (CurrentFilterIndex == -1 || filters == null) return null;
-				return filters[CurrentFilterIndex];
+			{ 
+				var title = fileTypes.TitleOfSelectedItem;
+				var item = Widget.Filters.FirstOrDefault(r => r.Name == title);
+				if (item == null)
+					return -1;
+				return Widget.Filters.IndexOf(item);
 			}
 			set
-			{
-				CurrentFilterIndex = Array.IndexOf (filters, value);
+			{ 
+				fileTypes.SelectItem(Widget.Filters[value].Name);
 			}
 		}
 
-        public int CurrentFilterIndex {
-            get { 
-				var title = fileTypes.TitleOfSelectedItem;
-                return titles.IndexOf(title);
-			}
-            set { 
-				fileTypes.SelectItem (filters[value].Name);
-			}
-        }
+		public bool CheckFileExists
+		{
+			get { return false; }
+			set { }
+		}
 
-        public bool CheckFileExists {
-            get { return false; }
-            set {  }
-        }
+		public string Title
+		{
+			get { return Control.Title; }
+			set { Control.Title = value; }
+		}
 
-        public string Title {
-            get { return Control.Title; }
-            set { Control.Title = value; }
-        }
-     
-        public DialogResult ShowDialog (Window parent)
-        {
-            //Control.AllowsOtherFileTypes = false;
-            Control.Delegate = new SavePanelDelegate{ Handler = this };
+		public DialogResult ShowDialog(Window parent)
+		{
+			//Control.AllowsOtherFileTypes = false;
+			Control.Delegate = new SavePanelDelegate{ Handler = this };
 			Create();
 
-			
-            int ret = MacModal.Run(Control, parent);
+			int ret = MacModal.Run(Control, parent);
             
-            return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
-        }
-		
-		protected override void Dispose (bool disposing)
+			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
+		}
+
+		protected override void Dispose(bool disposing)
 		{
 			//base.Dispose (disposing);
 		}
 
-    }
+		public void InsertFilter(int index, FileDialogFilter filter)
+		{
+			fileTypes.InsertItem(filter.Name, index);
+		}
+
+		public void RemoveFilter(int index)
+		{
+			fileTypes.RemoveItem(index);
+		}
+
+		public void ClearFilters()
+		{
+			fileTypes.RemoveAllItems();
+		}
+	}
 }

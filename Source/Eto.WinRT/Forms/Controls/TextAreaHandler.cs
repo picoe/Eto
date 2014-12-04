@@ -192,5 +192,14 @@ namespace Eto.WinRT.Forms.Controls
 				e.Handled = true;
 			}
 		}
+
+
+		public bool SpellCheck
+		{
+			get { return Control.IsSpellCheckEnabled; }
+			set { Control.IsSpellCheckEnabled = value; }
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
 	}
 }

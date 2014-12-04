@@ -10,14 +10,11 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
 
+		protected override bool PreventUserResize { get { return true; } }
+
 		public PasswordBoxHandler()
 		{
 			Control = new swc.PasswordBox();
-		}
-
-		public override sw.Size GetPreferredSize(sw.Size constraint)
-		{
-			return base.GetPreferredSize(Conversions.ZeroSize);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

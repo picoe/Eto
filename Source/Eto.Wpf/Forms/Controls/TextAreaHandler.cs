@@ -10,27 +10,15 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		int? lastCaretIndex;
 		#pragma warning disable 612,618
-		readonly Size defaultSize = TextArea.DefaultSize;
+		static Size defaultSize = TextArea.DefaultSize;
 		#pragma warning restore 612,618
-
 		protected override Size DefaultSize { get { return defaultSize; } }
 
-		class EtoTextBox : swc.TextBox
-		{
-			protected override sw.Size MeasureOverride(sw.Size constraint)
-			{
-				if (IsLoaded && IsVisible)
-				{
-					constraint.Width = !double.IsNaN(constraint.Width) ? Math.Min(constraint.Width, ActualWidth) : ActualWidth;
-					constraint.Height = !double.IsNaN(constraint.Height) ? Math.Min(constraint.Height, ActualHeight) : ActualHeight;
-				}
-				return base.MeasureOverride(constraint);
-			}
-		}
+		protected override bool PreventUserResize { get { return true; } }
 
 		public TextAreaHandler ()
 		{
-			Control = new EtoTextBox
+			Control = new swc.TextBox
 			{
 				AcceptsReturn = true,
 				AcceptsTab = true,
@@ -156,5 +144,14 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Control.VerticalContentAlignment.ToEto(); }
 			set { Control.VerticalContentAlignment = value.ToWpf(); }
 		}
+
+
+		public bool SpellCheck
+		{
+			get { return Control.SpellCheck.IsEnabled; }
+			set { Control.SpellCheck.IsEnabled = value; }
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
 	}
 }

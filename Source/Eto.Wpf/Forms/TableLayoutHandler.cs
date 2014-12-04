@@ -45,6 +45,8 @@ namespace Eto.Wpf.Forms
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
+			if (columnScale == null || rowScale == null)
+				return base.GetPreferredSize(constraint);
 			var widths = new double[columnScale.Length];
 			double height = 0;
 			for (int y = 0; y < rowScale.Length; y++)
@@ -88,13 +90,7 @@ namespace Eto.Wpf.Forms
 
 			border.Child = Control;
 
-			Control.SizeChanged += Control_SizeChanged;
-			Control.Loaded += Control_SizeChanged;
-		}
-
-		void Control_SizeChanged(object sender, EventArgs e)
-		{
-			SetChildrenSizes();
+			Control.LayoutUpdated += (sender, args) => SetChildrenSizes();
 		}
 
 		sw.FrameworkElement EmptyCell(int x, int y)

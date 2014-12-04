@@ -23,7 +23,17 @@ namespace Eto.Test.Sections.Controls
 				{
 					TableLayout.Horizontal(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), null).With(r => r.Padding = Padding.Empty),
 					TableLayout.Horizontal(null, SetAlignment(text), SetCaretButton(text), ChangeColorButton(text), null).With(r => r.Padding = Padding.Empty),
-					TableLayout.Horizontal(null, EnabledCheckBox(text), ReadOnlyCheckBox(text), AcceptsTabCheckBox(text), AcceptsReturnCheckBox(text), WrapCheckBox(text), null).With(r => r.Padding = Padding.Empty),
+					TableLayout.Horizontal
+					(
+						null, 
+						EnabledCheckBox(text), 
+						ReadOnlyCheckBox(text), 
+						AcceptsTabCheckBox(text), 
+						AcceptsReturnCheckBox(text), 
+						WrapCheckBox(text), 
+						SpellCheckCheckBox(text), 
+						null
+					).With(r => r.Padding = Padding.Empty),
 					text
 				}
 			};
@@ -47,6 +57,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new CheckBox { Text = "AcceptsTab" };
 			control.CheckedBinding.Bind(text, t => t.AcceptsTab);
+			return control;
+		}
+
+		Control SpellCheckCheckBox(TextArea text)
+		{
+			var control = new CheckBox { Text = "SpellCheck", Enabled = text.SpellCheckIsSupported };
+			control.CheckedBinding.Bind(text, t => t.SpellCheck);
 			return control;
 		}
 

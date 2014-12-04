@@ -10,10 +10,6 @@ namespace Eto.GtkSharp.Forms
 		where TControl: Gtk.FileChooserDialog
 		where TWidget: FileDialog
 	{
-		IFileDialogFilter[] filters;
-
-
-
 		public string FileName
 		{
 			get { return Control.Filename; }
@@ -21,6 +17,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				Control.SetCurrentFolder(Path.GetDirectoryName(value));
 				Control.SetFilename(value);
+				Control.CurrentName = Path.GetFileName(value);
 			}
 		}
 		
@@ -34,41 +31,23 @@ namespace Eto.GtkSharp.Forms
 		}
 		
 		
-		public IEnumerable<IFileDialogFilter> Filters
+		public void SetFilters()
 		{
-			get { return filters; }
-			set
+			var list = Control.Filters.ToArray();
+			foreach (Gtk.FileFilter filter in list)
 			{
-				var list = Control.Filters.ToArray ();
-				foreach (Gtk.FileFilter filter in list)
-				{
-					Control.RemoveFilter(filter);
-				}
-				
-				filters = value.ToArray ();
-				foreach (var val in filters)
-				{
-					var filter = new Gtk.FileFilter();
-					filter.Name = val.Name;
-					foreach (string pattern in val.Extensions) filter.AddPattern("*" + pattern);
-					Control.AddFilter(filter);
-				}
+				Control.RemoveFilter(filter);
+			}
+			
+			foreach (var val in Widget.Filters)
+			{
+				var filter = new Gtk.FileFilter();
+				filter.Name = val.Name;
+				foreach (string pattern in val.Extensions) filter.AddPattern("*" + pattern);
+				Control.AddFilter(filter);
 			}
 		}
 
-		public IFileDialogFilter CurrentFilter
-		{
-			get
-			{
-				if (CurrentFilterIndex == -1 || filters == null) return null;
-				return filters[CurrentFilterIndex];
-			}
-			set
-			{
-				CurrentFilterIndex = Array.IndexOf (filters, value);
-			}
-		}
-		
 		public int CurrentFilterIndex
 		{
 			get
@@ -102,6 +81,7 @@ namespace Eto.GtkSharp.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			SetFilters();
 			if (parent != null) Control.TransientFor = (Gtk.Window)parent.ControlObject;
 
 			int result = Control.Run();
@@ -115,5 +95,17 @@ namespace Eto.GtkSharp.Forms
 			return response;
 		}
 
+		public void InsertFilter(int index, FileDialogFilter filter)
+		{
+
+		}
+		public void RemoveFilter(int index)
+		{
+
+		}
+		public void ClearFilters()
+		{
+
+		}
 	}
 }

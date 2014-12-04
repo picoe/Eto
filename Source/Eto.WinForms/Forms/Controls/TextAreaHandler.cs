@@ -194,5 +194,14 @@ namespace Eto.WinForms.Forms.Controls
 				Selection = sel;
 			}
 		}
+
+
+		public bool SpellCheck
+		{
+			get { return false; }
+			set { }
+		}
+
+		public bool SpellCheckIsSupported { get { return false; } }
 	}
 }

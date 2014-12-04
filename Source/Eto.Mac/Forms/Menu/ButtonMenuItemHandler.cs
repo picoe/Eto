@@ -19,7 +19,7 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac.Forms.Menu
 {
-	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler, IMenuActionHandler
+	public class ButtonMenuItemHandler : MenuHandler<NSMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler, IMenuActionHandler
 	{
 		Image image;
 		string text;
@@ -36,7 +36,7 @@ namespace Eto.Mac.Forms.Menu
 			}
 		}
 
-		public ImageMenuItemHandler()
+		public ButtonMenuItemHandler()
 		{
 			Control = new NSMenuItem();
 			Enabled = true;
@@ -44,7 +44,7 @@ namespace Eto.Mac.Forms.Menu
 			Control.Action = MenuActionHandler.selActivate;
 		}
 
-		public void HandleClick()
+		public override void Activate()
 		{
 			Callback.OnClick(Widget, EventArgs.Empty);
 		}

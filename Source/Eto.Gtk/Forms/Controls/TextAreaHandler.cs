@@ -304,5 +304,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { Control.Justification = value.ToGtk(); }
 		}
 
+		public bool SpellCheck
+		{
+			get { return false; }
+			set { }
+		}
+
+		public bool SpellCheckIsSupported { get { return false; } }
+
 	}
 }

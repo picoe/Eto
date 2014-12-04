@@ -210,7 +210,7 @@ namespace Eto.Test.Sections.Drawing
 				var colorPen = new Pen(color);
 				var blackPen = Pens.Black;
 				var blackBrush = Brushes.Black;
-				switch (random.Next(useTexturesAndGradients ? 4 : 2))
+				switch (random.Next(useTexturesAndGradients ? 5 : 2))
 				{
 					case 0:
 						draw = g => g.DrawRectangle(colorPen, rect);
@@ -251,6 +251,11 @@ namespace Eto.Test.Sections.Drawing
 						}
 						draw = g => g.FillRectangle(fillBrush, rect);
 						erase = g => g.FillRectangle(blackBrush, rect);
+						break;
+					case 4:
+						var font = Fonts.Sans(random.Next(20) + 4);
+						draw = g => g.DrawText(font, color, 0, 0, "Some Text");
+						erase = g => g.DrawText(font, Colors.Black, 0, 0, "Some Text");
 						break;
 				}
 			}

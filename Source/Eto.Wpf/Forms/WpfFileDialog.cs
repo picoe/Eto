@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Eto.Forms;
 using mw = Microsoft.Win32;
@@ -11,42 +12,16 @@ namespace Eto.Wpf.Forms
 		where TControl: mw.FileDialog
 		where TWidget: FileDialog
 	{
-		IFileDialogFilter[] filters;
-
 		public string FileName
 		{
 			get { return Control.FileName; }
-			set { Control.FileName = value; }
-		}
-
-		public IEnumerable<IFileDialogFilter> Filters
-		{
-			get { return filters; }
 			set
 			{
-				filters = value.ToArray ();
-				var filterValues = from f in filters
-								   select string.Format ("{0}|{1}",
-									   f.Name,
-									   string.Join (";",
-										   from ex in f.Extensions
-										   select "*" + ex
-									   )
-								   );
-				Control.Filter = string.Join ("|", filterValues);
-			}
-		}
+				var dir = Path.GetDirectoryName(value);
+				if (!string.IsNullOrEmpty(dir))
+					Control.InitialDirectory = dir;
 
-		public IFileDialogFilter CurrentFilter
-		{
-			get
-			{
-				if (CurrentFilterIndex == -1 || filters == null) return null;
-				return filters[CurrentFilterIndex];
-			}
-			set
-			{
-				CurrentFilterIndex = Array.IndexOf (filters, value);
+				Control.FileName = Path.GetFileName(value);
 			}
 		}
 
@@ -75,6 +50,37 @@ namespace Eto.Wpf.Forms
 			{
 				Control.InitialDirectory = value.LocalPath;
 			}
+		}
+
+		void SetFilters()
+		{
+			var filterValues = from f in Widget.Filters
+							   select string.Format("{0}|{1}",
+								   f.Name,
+								   string.Join(";",
+									   from ex in f.Extensions
+									   select "*" + ex
+								   )
+							   );
+			Control.Filter = string.Join("|", filterValues);
+		}
+
+		public override DialogResult ShowDialog(Window parent)
+		{
+			SetFilters();
+			return base.ShowDialog(parent);
+		}
+
+		public void InsertFilter(int index, FileDialogFilter filter)
+		{
+		}
+
+		public void RemoveFilter(int index)
+		{
+		}
+
+		public void ClearFilters()
+		{
 		}
 	}
 }
