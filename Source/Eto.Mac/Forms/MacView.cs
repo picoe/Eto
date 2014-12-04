@@ -111,6 +111,8 @@ namespace Eto.Mac.Forms
 
 		public virtual NSView EventControl { get { return ContainerControl; } }
 
+		public virtual NSView FocusControl { get { return EventControl; } }
+
 		public virtual bool AutoSize { get; protected set; }
 
 		public virtual Size MinimumSize { get; set; }
@@ -460,8 +462,8 @@ namespace Eto.Mac.Forms
 
 		public virtual void Focus()
 		{
-			if (EventControl.Window != null)
-				EventControl.Window.MakeFirstResponder(EventControl);
+			if (FocusControl.Window != null)
+				FocusControl.Window.MakeFirstResponder(FocusControl);
 			else
 				focus = true;
 		}
@@ -502,7 +504,7 @@ namespace Eto.Mac.Forms
 		{
 			get
 			{
-				return EventControl.Window != null && EventControl.Window.FirstResponder == Control;
+				return FocusControl.Window != null && FocusControl.Window.FirstResponder == Control;
 			}
 		}
 
@@ -578,8 +580,8 @@ namespace Eto.Mac.Forms
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
-			if (focus && EventControl.Window != null)
-				EventControl.Window.MakeFirstResponder(EventControl);
+			if (focus && FocusControl.Window != null)
+				FocusControl.Window.MakeFirstResponder(FocusControl);
 			SetBackgroundColor(backgroundColor);
 		}
 

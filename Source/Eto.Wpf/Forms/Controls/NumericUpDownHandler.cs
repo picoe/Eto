@@ -7,7 +7,12 @@ using mwc = Xceed.Wpf.Toolkit;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	public class EtoDoubleUpDown : mwc.DoubleUpDown
+	{
+		public new swc.TextBox TextBox { get { return base.TextBox; } }
+	}
+
+	public class NumericUpDownHandler : WpfControl<EtoDoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
 
@@ -15,7 +20,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public NumericUpDownHandler()
 		{
-			Control = new mwc.DoubleUpDown();
+			Control = new EtoDoubleUpDown();
+			Control.Value = 0;
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 			DecimalPlaces = 0;
 		}
@@ -68,5 +74,21 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Control.Increment ?? 1; }
 			set { Control.Increment = value; }
 		}
+
+		public override void Focus()
+		{
+			// focus the inner text box
+			if (Control.IsLoaded)
+				Control.TextBox.Focus();
+			else
+				Control.Loaded += HandleFocus;
+		}
+
+		void HandleFocus(object sender, sw.RoutedEventArgs e)
+		{
+			Control.TextBox.Focus();
+			Control.Loaded -= HandleFocus;
+		}
+
 	}
 }
