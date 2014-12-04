@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<IsMac>false</IsMac>
-		<IsMac Condition="'$(OS)' == 'Unix' and Exists('/Library/Frameworks')">true</IsMac>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 		<BuildVersion>2.0.5</BuildVersion>
 	</PropertyGroup>
@@ -11,7 +9,7 @@
 	<Target Name="PreBuild">
 	
 		<!-- need this to download packages from nuget through https -->
-		<Exec Command="mozroots --import --sync" Condition="$(IsMac) == false" />
+		<Exec Command="mozroots --import --sync" Condition="'$(Platform)' == 'Linux'" />
 	</Target>
 	
     <Target Name="Build" DependsOnTargets="PreBuild;UpdateAssemblyInfo">

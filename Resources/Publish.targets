@@ -10,7 +10,8 @@
 		<TargetDir Condition="$(TargetDir) == ''">$(BaseDir)\BuildOutput\Nuget\$(Configuration)</TargetDir>
 		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
         <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
-        <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix'">Mac</Platform>
+        <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</Platform>
+        <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
         <MSBuildCommunityVersion>1.4.0.78</MSBuildCommunityVersion>
 		<MSBuildCommunityTasksPath>$(MSBuildThisFileDirectory)\packages\MSBuildTasks.$(MSBuildCommunityVersion)\tools</MSBuildCommunityTasksPath>
@@ -18,7 +19,8 @@
 		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
 		<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj</XamarinStudioAddinProject>
 		<VisualStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudio\Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
-		<mdtool Condition="$(mdtool) == '' and $(Platform) != 'Windows'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
+		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Linux'">"mdtool"</mdtool>
+		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
 	</PropertyGroup>
 	<Import Project="Utilities.targets" Condition="$(UtilitiesImported) == ''" />
