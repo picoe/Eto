@@ -932,6 +932,16 @@ namespace Eto.Drawing
 			Handler.Clear (brush);
 		}
 
+		/// <summary>
+		/// Resets all pixels in the <see cref="ClipBounds"/> region with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color to clear the graphics context</param>
+		public void Clear(Color color)
+		{
+			using (var brush = new SolidBrush(color))
+				Clear(brush);
+		}
+
 		#region Handler
 
 		/// <summary>
