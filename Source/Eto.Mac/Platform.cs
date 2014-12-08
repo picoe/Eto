@@ -184,7 +184,8 @@ namespace Eto.Mac
 		{
 			get
 			{
-				return Assembly.GetEntryAssembly().Location.StartsWith(NSBundle.MainBundle.BundlePath, StringComparison.Ordinal);
+				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+				return assembly.Location.StartsWith(NSBundle.MainBundle.BundlePath, StringComparison.Ordinal);
 			}
 		}
 
