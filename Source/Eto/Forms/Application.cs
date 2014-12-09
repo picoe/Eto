@@ -271,11 +271,31 @@ namespace Eto.Forms
 		/// <summary>
 		/// Invoke the specified action on the UI thread, blocking the current execution until it is complete.
 		/// </summary>
+		/// <remarks>
+		/// Use this method when you want to perform changes to the UI from a worker thread, and return when
+		/// the changes are complete.
+		/// </remarks>
 		/// <param name="action">Action to invoke</param>
 		public virtual void Invoke(Action action)
 		{
 			Handler.Invoke(action);
 		}
+
+		/// <summary>
+		/// Invoke the specified function on the UI thread returning its value after the execution is complete.
+		/// </summary>
+		/// <remarks>
+		/// Use this method when you want to return values from the UI in a worker thread.
+		/// </remarks>
+		/// <param name="func">Function to execute and return the value on the UI thread.</param>
+		/// <typeparam name="T">The type of the return value.</typeparam>
+		public T Invoke<T>(Func<T> func)
+		{
+			T value = default(T);
+			Invoke(() => value = func());
+			return value;
+		}
+
 
 		/// <summary>
 		/// Invoke the action asynchronously on the UI thread
