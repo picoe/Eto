@@ -101,6 +101,7 @@ namespace Eto.Serialization.Json
 					ContractResolver = new EtoContractResolver(),
 					Binder = new EtoBinder { NamespaceManager = namespaceManager, Instance = instance }
 				};
+				serializer.Converters.Add(new TableLayoutConverter());
 				serializer.Converters.Add(new DynamicLayoutConverter());
 				serializer.Converters.Add(new DelegateConverter());
 				serializer.Converters.Add(new PropertyStoreConverter());
