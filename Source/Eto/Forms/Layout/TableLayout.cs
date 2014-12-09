@@ -358,7 +358,7 @@ namespace Eto.Forms
 		void Create()
 		{
 			var rows = Rows;
-			var columnCount = rows.Max(r => r != null ? r.Cells.Count : 0);
+			var columnCount = rows.DefaultIfEmpty().Max(r => r != null ? r.Cells.Count : 0);
 			SetCellSize(new Size(columnCount, rows.Count), false);
 			for (int y = 0; y < rows.Count; y++)
 			{
