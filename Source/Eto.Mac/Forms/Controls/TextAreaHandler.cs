@@ -52,6 +52,12 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			[Export("changeColor:")]
+			public void ChangeColor(NSObject sender)
+			{
+
+			}
 		}
 
 		public override void OnKeyDown(KeyEventArgs e)
