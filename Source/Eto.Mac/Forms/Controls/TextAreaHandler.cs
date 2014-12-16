@@ -223,7 +223,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				Control.Value = value;
+				Control.Value = value ?? string.Empty;
 				Control.DisplayIfNeeded();
 			}
 		}
