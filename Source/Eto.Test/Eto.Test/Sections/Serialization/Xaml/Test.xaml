@@ -7,16 +7,16 @@
 		<TabPage Text="Table Layout using Rows &amp; Controls">
 			<TableLayout>
 				<TableRow>
-					<TableCell><Label Text="Text Box" /></TableCell>
-					<TableCell><TextBox /></TableCell>
+					<Label Text="Text Box" />
+					<TextBox TextChanged="HandleTextChanged" />
 				</TableRow>
 				<TableRow>
-					<TableCell><Label Text="Text Area" /></TableCell>
-					<TableCell><TextArea ID="MyTextArea" /></TableCell>
+					<Label Text="Text Area" />
+					<TextArea ID="MyTextArea" />
 				</TableRow>
 				<TableRow>
 					<TableCell />
-					<TableCell><CheckBox ID="MyCheckBox" Text="Check Box" /></TableCell>
+					<CheckBox ID="MyCheckBox" Text="Check Box" />
 				</TableRow>
 				<TableRow>
 					<TableCell><Label Text="Combo Box" /></TableCell>

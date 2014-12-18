@@ -25,6 +25,10 @@ namespace Eto.Test.Sections.Serialization.Xaml
 			MessageBox.Show (this, "I was clicked from Xaml!");
 		}
 
+		public void HandleTextChanged(object sender, EventArgs e)
+		{
+			Log.Write(sender, "Text was changed: {0}", ((TextBox)sender).Text);
+		}
 	}
 }
 
