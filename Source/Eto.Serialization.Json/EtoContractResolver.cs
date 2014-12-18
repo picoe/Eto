@@ -39,6 +39,15 @@ namespace Eto.Serialization.Json
 				prop.ValueProvider = new NameConverter.ValueProvider();
 				list.Add(prop);
 			}
+
+			if (!list.Any(r => r.PropertyName == "$type"))
+			{
+				var prop = new JsonProperty();
+				prop.PropertyName = "$type";
+				prop.Ignored = true;
+				list.Add(prop);
+			}
+
 			return list;
 		}
 	}

@@ -1,8 +1,8 @@
-﻿#if PCL
-using System;
+﻿using System;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Eto.Serialization.Json
 {
@@ -31,10 +31,14 @@ namespace Eto.Serialization.Json
 		{
 			if (converters.ContainsKey(objectType))
 				return true;
+#if PCL
 			var attr = objectType.GetTypeInfo().GetCustomAttribute<TypeConverterAttribute>();
+#else
+			var attr = objectType.GetCustomAttribute<TypeConverterAttribute>(true);
+#endif
 			if (attr != null)
 			{
-				var converter = Activator.CreateInstance(Type.GetType(attr.TypeName)) as TypeConverter;
+				var converter = Activator.CreateInstance(Type.GetType(attr.ConverterTypeName)) as TypeConverter;
 				if (converter != null && converter.CanConvertFrom(typeof(string)))
 				{
 					converters.Add(objectType, converter);
@@ -45,4 +49,3 @@ namespace Eto.Serialization.Json
 		}
 	}
 }
-#endif

@@ -8,7 +8,7 @@
 				Content: {
 					$type: "TableLayout",
 					Rows: [
-						[ { $type: "Label", Text: "Text Box" }, { $type: "TextBox" } ],
+						[ { $type: "Label", Text: "Text Box" }, { $type: "TextBox", TextChanged: "HandleTextChanged" } ],
 						[ { $type: "Label", Text: "Text Area" }, { $type: "TextArea", $name: "MyTextArea" } ],
 						[ { }, { $type: "CheckBox", $name: "MyCheckBox", Text: "Check Box" } ],
 						[ { $type: "Label", Text: "Combo Box" }, { $type: "ComboBox", Items: [

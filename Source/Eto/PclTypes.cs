@@ -149,7 +149,7 @@ namespace Eto
 		/// Gets the name of the type for the type converter of the associated type.
 		/// </summary>
 		/// <value>The name of the type.</value>
-		public string TypeName { get; private set; }
+		public string ConverterTypeName { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.TypeConverterAttribute"/> class.
@@ -157,7 +157,7 @@ namespace Eto
 		/// <param name="type">Type of the type converter.</param>
 		public TypeConverterAttribute(Type type)
 		{
-			TypeName = type.AssemblyQualifiedName;
+			ConverterTypeName = type.AssemblyQualifiedName;
 		}
 
 		/// <summary>
@@ -166,7 +166,7 @@ namespace Eto
 		/// <param name="typeName">Type name of the type converter.</param>
 		public TypeConverterAttribute(string typeName)
 		{
-			TypeName = typeName; 
+			ConverterTypeName = typeName; 
 		}
 	}
 
