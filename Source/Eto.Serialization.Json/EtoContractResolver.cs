@@ -22,7 +22,7 @@ namespace Eto.Serialization.Json
 		protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
 		{
 			var list = base.CreateProperties(type, memberSerialization);
-			foreach (var eventInfo in type.GetRuntimeEvents().Where(r => r.DeclaringType == type && r.GetAddMethod().IsPublic && !r.GetAddMethod().IsStatic && r.EventHandlerType == typeof(EventHandler<EventArgs>)))
+			foreach (var eventInfo in type.GetRuntimeEvents().Where(r => r.GetAddMethod().IsPublic && !r.GetAddMethod().IsStatic && r.EventHandlerType == typeof(EventHandler<EventArgs>)))
 			{
 				var prop = CreateProperty(eventInfo, memberSerialization);
 				prop.Writable = true;
