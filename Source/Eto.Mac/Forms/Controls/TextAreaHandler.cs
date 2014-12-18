@@ -53,10 +53,9 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
-			[Export("changeColor:")]
-			public void ChangeColor(NSObject sender)
+			public override void ChangeColor(NSObject sender)
 			{
-
+				// ignore color changes
 			}
 		}
 
