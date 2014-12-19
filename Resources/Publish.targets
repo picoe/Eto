@@ -5,8 +5,9 @@
         <BaseDir Condition="$(BaseDir) == ''">..</BaseDir>
         <SourceDir Condition="$(SourceDir) == ''">$(BaseDir)\Source</SourceDir>
         <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
-		<BuildOutputDir Condition="$(BuildOutputDir) == ''">$(BaseDir)\BuildOutput\$(Configuration)</BuildOutputDir>
-		<BuildOutputPclDir Condition="$(BuildOutputPclDir) == ''">$(BaseDir)\BuildOutput\Pcl\$(Configuration)</BuildOutputPclDir>
+		<BuildOutputNet40Dir Condition="$(BuildOutputNet40Dir) == ''">$(BaseDir)\BuildOutput\net40\$(Configuration)</BuildOutputNet40Dir>
+		<BuildOutputPCLDir Condition="$(BuildOutputPCLDir) == ''">$(BaseDir)\BuildOutput\pcl\$(Configuration)</BuildOutputPCLDir>
+		<BuildOutputNet45Dir Condition="$(BuildOutputNet45Dir) == ''">$(BaseDir)\BuildOutput\net45\$(Configuration)</BuildOutputNet45Dir>
 		<TargetDir Condition="$(TargetDir) == ''">$(BaseDir)\BuildOutput\Nuget\$(Configuration)</TargetDir>
 		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
         <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
@@ -78,63 +79,63 @@
     	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
     	
 		<!-- build XamMac separately if it hasn't been built on mac -->
-    	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputDir)\Eto.XamMac.dll')" />
-    	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac - Pcl.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputPclDir)\Eto.XamMac.dll')" />
+    	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputNet40Dir)\Eto.XamMac.dll')" />
+    	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac - net45.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputNet45Dir)\Eto.XamMac.dll')" />
     	
 
 		<!-- Nuget has problems with files that have no extension -->
-		<Copy SourceFiles="$(BuildOutputDir)\LICENSE" DestinationFiles="$(BuildOutputDir)\LICENSE.txt" />
+		<Copy SourceFiles="$(BuildOutputNet40Dir)\LICENSE" DestinationFiles="$(BuildOutputNet40Dir)\LICENSE.txt" />
 		
 
     	<ItemGroup>
 			<Package Include="Eto">
-				<Assembly>Eto.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Gtk">
-				<Assembly>Eto.Gtk2.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Gtk2.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Gtk3">
-				<Assembly>Eto.Gtk3.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Gtk3.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Mac">
-				<Assembly>Eto.Mac.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Mac.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Mac64">
-				<Assembly>Eto.Mac64.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Mac64.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.XamMac">
-				<Assembly>Eto.XamMac.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.XamMac.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.XamMac2">
-				<Assembly>Eto.XamMac2.dll</Assembly>
+				<Assembly>$(BuildOutputPCLDir)\Eto.XamMac2.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Windows">
-				<Assembly>Eto.WinForms.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.WinForms.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Direct2D">
-				<Assembly>Eto.Direct2D.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Direct2D.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Wpf" Condition="$(Platform) == 'Windows'">
-				<Assembly>Eto.Wpf.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Wpf.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.WinRT" Condition="$(Platform) == 'Windows'">
-				<Assembly>Eto.WinRT.dll</Assembly>
+				<Assembly>$(BuildOutputPCLDir)\Eto.WinRT.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.iOS">
-				<Assembly>Eto.iOS.dll</Assembly>
+				<Assembly>$(BuildOutputPCLDir)\Eto.iOS.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Serialization.Json">
-				<Assembly>Eto.Serialization.Json.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Serialization.Json.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Serialization.Xaml">
-				<Assembly>Eto.Serialization.Xaml.dll</Assembly>
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Serialization.Xaml.dll</Assembly>
 			</Package>
 		</ItemGroup>
 		
-    	<Exec Command="xbuild /t:'BuildPackage' /p:'ProjectPath=$(BaseDir);ProjectFile=nuspec/%(Package.Identity).nuspec;TargetDir=$(TargetDir);NuspecInfoAssembly=$(BuildOutputPclDir)\%(Assembly)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows' and Exists('$(BuildOutputPclDir)\%(Assembly)')"/>
-    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=$(BaseDir);ProjectFile=nuspec/%(Package.Identity).nuspec;NuspecInfoAssembly=$(BuildOutputPclDir)\%(Assembly);TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)" Condition="$(Platform) == 'Windows' and Exists('$(BuildOutputPclDir)\%(Assembly)')"/>
+    	<Exec Command="xbuild /t:'BuildPackage' /p:'ProjectPath=$(BaseDir);ProjectFile=nuspec/%(Package.Identity).nuspec;TargetDir=$(TargetDir);NuspecInfoAssembly=%(Assembly)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows' and Exists('%(Assembly)')"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=$(BaseDir);ProjectFile=nuspec/%(Package.Identity).nuspec;NuspecInfoAssembly=%(Assembly);TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)" Condition="$(Platform) == 'Windows' and Exists('%(Assembly)')"/>
 
-		<GetAssemblyInfo AssemblyFileName="$(BuildOutputDir)\Eto.dll">
+		<GetAssemblyInfo AssemblyFileName="$(BuildOutputNet40Dir)\Eto.dll">
 			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
 		</GetAssemblyInfo>
 		
@@ -159,10 +160,10 @@
     	<MSBuild Projects="$(VisualStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     </Target>
     <Target Name="Publish">
-		<GetAssemblyInfo AssemblyFileName="$(BuildOutputDir)\Eto.dll">
+		<GetAssemblyInfo AssemblyFileName="$(BuildOutputNet40Dir)\Eto.dll">
 			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
 		</GetAssemblyInfo>
-		
+
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk3.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
@@ -180,6 +181,7 @@
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.Sample.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.iOS.$(AssemblyVersion).nupkg;TargetDir=$(TargetDir)" Projects="$(MSBuildProjectFile)"/>
     </Target>
+    
 	<Target Name="Clean">
 		<!-- placeholder -->
 	</Target>

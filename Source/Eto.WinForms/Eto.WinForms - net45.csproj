@@ -24,14 +24,14 @@
     <DefineConstants>TRACE;WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\BuildOutput\Pcl\Debug</OutputPath>
+    <OutputPath>..\..\BuildOutput\net45\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE;WINFORMS</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\BuildOutput\Pcl\Release</OutputPath>
+    <OutputPath>..\..\BuildOutput\net45\Release</OutputPath>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>

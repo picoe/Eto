@@ -26,7 +26,7 @@ You do not need to use any of the classes of this assembly (unless customizing t
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="BuildOutput/Pcl/$configuration$/Eto.iOS.dll" target="lib\monotouch" />
-		<file src="BuildOutput/$configuration$/LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/pcl/$configuration$/Eto.iOS.dll" target="lib\monotouch" />
+		<file src="BuildOutput/net40/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

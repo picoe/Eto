@@ -18,17 +18,17 @@
     <LibrariesPath>..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\BuildOutput\Debug</OutputPath>
+    <OutputPath>..\..\BuildOutput\net40\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;DESKTOP;XAML;XML</DefineConstants>
-    <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
+    <DocumentationFile>..\..\BuildOutput\net40\Debug\Eto.xml</DocumentationFile>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\BuildOutput\Release</OutputPath>
+    <OutputPath>..\..\BuildOutput\net40\Release</OutputPath>
     <DefineConstants>TRACE;DESKTOP;XAML;XML</DefineConstants>
-    <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
+    <DocumentationFile>..\..\BuildOutput\net40\Release\Eto.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

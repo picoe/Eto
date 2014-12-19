@@ -7,43 +7,43 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - Pcl", "Eto\Eto - Pcl.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - Pcl", "Eto.Serialization.Json\Eto.Serialization.Json - Pcl.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Direct2D - Pcl", "Eto.Direct2D\Eto.Direct2D - Pcl.csproj", "{330EF9FD-5947-4AC9-9796-950C7633695F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Direct2D - net45", "Eto.Direct2D\Eto.Direct2D - net45.csproj", "{330EF9FD-5947-4AC9-9796-950C7633695F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinForms - Pcl", "Eto.WinForms\Eto.WinForms - Pcl.csproj", "{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinForms - net45", "Eto.WinForms\Eto.WinForms - net45.csproj", "{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac - Pcl", "Eto.Mac\Eto.Mac - Pcl.csproj", "{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac - net45", "Eto.Mac\Eto.Mac - net45.csproj", "{3E7995E0-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2 - Pcl", "Eto.Gtk\Eto.Gtk2 - Pcl.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2 - net45", "Eto.Gtk\Eto.Gtk2 - net45.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf - Pcl", "Eto.Wpf\Eto.Wpf - Pcl.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf - net45", "Eto.Wpf\Eto.Wpf - net45.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk3 - Pcl", "Eto.Gtk\Eto.Gtk3 - Pcl.csproj", "{543B2F90-CA56-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk3 - net45", "Eto.Gtk\Eto.Gtk3 - net45.csproj", "{543B2F90-CA56-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac - Pcl", "Eto.Mac\Eto.XamMac - Pcl.csproj", "{BF405A10-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac - net45", "Eto.Mac\Eto.XamMac - net45.csproj", "{BF405A10-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - Pcl", "Eto.Serialization.Xaml\Eto.Serialization.Xaml - Pcl.csproj", "{231FB3B0-CB71-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - net45", "Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj", "{231FB3B0-CB71-11E3-9C1A-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - Pcl", "Eto.Test\Eto.Test\Eto.Test - Pcl.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk2 - Pcl", "Eto.Test\Eto.Test.Gtk2\Eto.Test.Gtk2 - Pcl.csproj", "{CC33FE70-CA54-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk2 - net45", "Eto.Test\Eto.Test.Gtk2\Eto.Test.Gtk2 - net45.csproj", "{CC33FE70-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk3 - Pcl", "Eto.Test\Eto.Test.Gtk3\Eto.Test.Gtk3 - Pcl.csproj", "{D70E9E90-CA54-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk3 - net45", "Eto.Test\Eto.Test.Gtk3\Eto.Test.Gtk3 - net45.csproj", "{D70E9E90-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinForms - Pcl", "Eto.Test\Eto.Test.WinForms\Eto.Test.WinForms - Pcl.csproj", "{CF18B0BB-2C60-437F-8AA3-711ABAE11A91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinForms - net45", "Eto.Test\Eto.Test.WinForms\Eto.Test.WinForms - net45.csproj", "{CF18B0BB-2C60-437F-8AA3-711ABAE11A91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Wpf - Pcl", "Eto.Test\Eto.Test.Wpf\Eto.Test.Wpf - Pcl.csproj", "{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Wpf - net45", "Eto.Test\Eto.Test.Wpf\Eto.Test.Wpf - net45.csproj", "{DD0C2B40-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac - Pcl", "Eto.Test\Eto.Test.Mac\Eto.Test.Mac - Pcl.csproj", "{A4267C50-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac - net45", "Eto.Test\Eto.Test.Mac\Eto.Test.Mac - net45.csproj", "{A4267C50-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac - Pcl", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac - Pcl.csproj", "{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac - net45", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac - net45.csproj", "{9CEE7E60-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Direct2D - Pcl", "Eto.Test\Eto.Test.Direct2D\Eto.Test.Direct2D - Pcl.csproj", "{74328428-C412-4BC3-BD0C-E1DBC43FB479}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Direct2D - net45", "Eto.Test\Eto.Test.Direct2D\Eto.Test.Direct2D - net45.csproj", "{74328428-C412-4BC3-BD0C-E1DBC43FB479}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac2.csproj", "{689E4C20-2702-11E4-8C21-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac64 - Pcl", "Eto.Test\Eto.Test.Mac\Eto.Test.Mac64 - Pcl.csproj", "{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac64 - net45", "Eto.Test\Eto.Test.Mac\Eto.Test.Mac64 - net45.csproj", "{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinRT", "Eto.Test\Eto.Test.WinRT\Eto.Test.WinRT.csproj", "{DFAC63ED-7563-4F09-97E0-9FC3F0FD552F}"
 EndProject
@@ -54,11 +54,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{451A0C
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64 - Pcl", "Eto.Mac\Eto.Mac64 - Pcl.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64 - net45", "Eto.Mac\Eto.Mac64 - net45.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2 - Pcl", "Eto.Mac\Eto.XamMac2 - Pcl.csproj", "{856E8C70-2702-11E4-8C21-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "Eto.Mac\Eto.XamMac2.csproj", "{856E8C70-2702-11E4-8C21-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinRT", "Eto.WinRT\Eto.WinRT.csproj", "{4C2B4FA7-5C94-4582-82CB-FC856BEBFE75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - net45", "Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -317,6 +319,18 @@ Global
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Mac.Build.0 = Release|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Windows.ActiveCfg = Release|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|Windows.Build.0 = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Linux.Build.0 = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Linux.Build.0 = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
@@ -330,9 +344,6 @@ Global
 		{689E4C20-2702-11E4-8C21-0800200C9A66} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{DFAC63ED-7563-4F09-97E0-9FC3F0FD552F} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Eto.Test\Eto.Test.Mac\Eto.Test.Mac - Pcl.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

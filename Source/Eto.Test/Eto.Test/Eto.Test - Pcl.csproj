@@ -25,14 +25,14 @@
     <AssemblyName>Eto.Test</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Pcl\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\pcl\Debug</OutputPath>
     <DefineConstants>DEBUG;PCL</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Pcl\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\pcl\Release</OutputPath>
     <DefineConstants>PCL</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>

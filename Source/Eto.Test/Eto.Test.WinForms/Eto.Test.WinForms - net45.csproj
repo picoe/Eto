@@ -4,13 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{74328428-C412-4BC3-BD0C-E1DBC43FB479}</ProjectGuid>
+    <ProjectGuid>{CF18B0BB-2C60-437F-8AA3-711ABAE11A91}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Eto.Test.Direct2D</RootNamespace>
-    <AssemblyName>Eto.Test.Direct2D</AssemblyName>
+    <RootNamespace>Eto.Test.WinForms</RootNamespace>
     <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
+    <PackagesDir Condition="$(PackagesDir) == '' Or $(PackagesDir) == '*Undefined*'">..\..</PackagesDir>
+    <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>Eto.Test.WinForms</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -21,14 +24,14 @@
     <LibrariesPath>..\..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\..\BuildOutput\Pcl\Debug\</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net45\Debug\test</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\..\BuildOutput\Pcl\Release\</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net45\Release\test</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -45,6 +48,12 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="nunitlite">
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\nunitlite.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Reflection">
+      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Shared\GlobalAssemblyInfo.cs">
@@ -52,19 +61,18 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="UnitTests\NativeTests.cs" />
   </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
   <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Eto.Direct2D\Eto.Direct2D - Pcl.csproj">
-      <Project>{330EF9FD-5947-4AC9-9796-950C7633695F}</Project>
-      <Name>Eto.Direct2D - Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.WinForms\Eto.WinForms - Pcl.csproj">
-      <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
-      <Name>Eto.WinForms - Pcl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - Pcl</Name>
@@ -73,14 +81,13 @@
       <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
       <Name>Eto.Test - Pcl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Eto.WinForms\Eto.WinForms - net45.csproj">
+      <Project>{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}</Project>
+      <Name>Eto.WinForms - net45</Name>
+    </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
 </Project>

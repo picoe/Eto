@@ -23,13 +23,13 @@
     <LibrariesPath>..\..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\..\BuildOutput\Pcl\Debug\</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net45\Debug\test</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\..\BuildOutput\Pcl\Release\</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net45\Release\test</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -93,9 +93,9 @@
       <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
       <Name>Eto.Test - Pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Wpf\Eto.Wpf - Pcl.csproj">
+    <ProjectReference Include="..\..\Eto.Wpf\Eto.Wpf - net45.csproj">
       <Project>{63137FA0-CA55-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Wpf - Pcl</Name>
+      <Name>Eto.Wpf - net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />

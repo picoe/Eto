@@ -13,7 +13,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\BuildOutput\Pcl\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net45\Debug\test</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -22,7 +22,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\BuildOutput\Pcl\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net45\Release\test</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -51,9 +51,9 @@
       <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
       <Name>Eto.Test - Pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk3 - Pcl.csproj">
+    <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk3 - net45.csproj">
       <Project>{543B2F90-CA56-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Gtk3 - Pcl</Name>
+      <Name>Eto.Gtk3 - net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
