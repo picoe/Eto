@@ -25,13 +25,13 @@
   </WizardExtension>
   <WizardData>
     <packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-      <package id="Eto.Forms" version="2.0.5" />
-      <package id="Eto.Platform.Gtk" version="2.0.5" />
-      <package id="Eto.Platform.Gtk3" version="2.0.5" />
-      <package id="Eto.Platform.Windows" version="2.0.5" />
-      <package id="Eto.Platform.Wpf" version="2.0.5" />
-      <package id="Eto.Platform.Mac" version="2.0.5" />
-      <package id="Eto.Platform.Mac.Template" version="2.0.5" />
+      <package id="Eto.Forms" version="2.0.6" />
+      <package id="Eto.Platform.Gtk" version="2.0.6" />
+      <package id="Eto.Platform.Gtk3" version="2.0.6" />
+      <package id="Eto.Platform.Windows" version="2.0.6" />
+      <package id="Eto.Platform.Wpf" version="2.0.6" />
+      <package id="Eto.Platform.Mac" version="2.0.6" />
+      <package id="Eto.Platform.Mac.Template" version="2.0.6" />
     </packages>
   </WizardData>
 </VSTemplate>

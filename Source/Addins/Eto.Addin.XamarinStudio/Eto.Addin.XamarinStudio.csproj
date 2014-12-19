@@ -112,68 +112,68 @@
     <None Include="Templates\Projects\Eto-SAL-Separate.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.0.5.nupkg')">
-      <Link>Packages\Eto.Forms.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.0.6.nupkg')">
+      <Link>Packages\Eto.Forms.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.0.5.nupkg')">
-      <Link>Packages\Eto.Forms.Sample.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.0.6.nupkg')">
+      <Link>Packages\Eto.Forms.Sample.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.Direct2D.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.Direct2D.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.Gtk.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.Gtk.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.Gtk3.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.Gtk3.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.iOS.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.iOS.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.Mac.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.Mac.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.Mac.Template.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.Mac.Template.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.Mac64.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.Mac64.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.Windows.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.Windows.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.WinRT.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.WinRT.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.Wpf.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.Wpf.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.XamMac.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.XamMac.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.0.5.nupkg')">
-      <Link>Packages\Eto.Platform.XamMac2.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.0.6.nupkg')">
+      <Link>Packages\Eto.Platform.XamMac2.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.0.5.nupkg')">
-      <Link>Packages\Eto.Serialization.Json.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.0.6.nupkg')">
+      <Link>Packages\Eto.Serialization.Json.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.0.5.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.0.5.nupkg')">
-      <Link>Packages\Eto.Serialization.Xaml.2.0.5.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.0.6.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.0.6.nupkg')">
+      <Link>Packages\Eto.Serialization.Xaml.2.0.6.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\Projects\Eto-Library.xpt.xml">
