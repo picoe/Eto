@@ -1,7 +1,7 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 
 namespace Eto.iOS.Forms.Controls
 {

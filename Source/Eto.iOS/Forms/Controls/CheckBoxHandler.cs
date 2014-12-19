@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Drawing;
 using sd = System.Drawing;
 
@@ -83,13 +83,13 @@ namespace Eto.iOS.Forms.Controls
 				AddSubview(segmented);
 			}
 
-			public override sd.SizeF SizeThatFits(sd.SizeF size)
+			public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
 			{
 				var labelSize = labelControl.SizeThatFits(size);
 				var toggle = threeState ? (UIControl)segmented : (UIControl)switchControl;
 
 				var switchSize = toggle.SizeThatFits(size);
-				return new sd.SizeF(labelSize.Width + switchSize.Width, Math.Max(labelSize.Height, switchSize.Height));
+				return new CoreGraphics.CGSize(labelSize.Width + switchSize.Width, (nfloat)Math.Max(labelSize.Height, switchSize.Height));
 			}
 
 			public override void LayoutSubviews()
@@ -100,8 +100,8 @@ namespace Eto.iOS.Forms.Controls
 				var switchSize = toggle.SizeThatFits(UIView.UILayoutFittingCompressedSize);
 				var size = this.Frame.Size;
 				var pos = size.Width - switchSize.Width;
-				labelControl.Frame = new sd.RectangleF(new sd.PointF(0, 0), new sd.SizeF(pos, size.Height));
-				toggle.Frame = new sd.RectangleF(new sd.PointF(pos, 0), switchSize);
+				labelControl.Frame = new CoreGraphics.CGRect(new CoreGraphics.CGPoint(0, 0), new CoreGraphics.CGSize(pos, size.Height));
+				toggle.Frame = new CoreGraphics.CGRect(new CoreGraphics.CGPoint(pos, 0), switchSize);
 			}
 		}
 

@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using MonoTouch.UIKit;
+using UIKit;
 using System.Collections.Generic;
 using sd = System.Drawing;
 using System.Linq;
@@ -39,26 +39,26 @@ namespace Eto.iOS.Forms
 			return size;
 		}
 
-		public static void SetPosition(Control control, Point point, float frameHeight, bool flipped)
+		public static void SetPosition(Control control, Point point, nfloat frameHeight, bool flipped)
 		{
 			var offset = ((IIosView)control.Handler).PositionOffset;
 			var childView = control.GetContainerView();
 			
 			var preferredSize = control.GetPreferredSize(Size.MaxValue);
 			
-			sd.PointF origin;
+			CoreGraphics.CGPoint origin;
 			if (flipped)
-				origin = new sd.PointF(
+				origin = new CoreGraphics.CGPoint(
 					point.X + offset.Width,
 					point.Y + offset.Height
 				);
 			else
-				origin = new sd.PointF(
+				origin = new CoreGraphics.CGPoint(
 					point.X + offset.Width,
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
 				);
 			
-			var frame = new sd.RectangleF(origin, preferredSize.ToSD());
+			var frame = new CoreGraphics.CGRect(origin, preferredSize.ToNS());
 			childView.Frame = frame;
 		}
 

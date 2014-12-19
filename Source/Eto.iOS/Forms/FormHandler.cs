@@ -1,5 +1,5 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using System.Linq;
 using Eto.iOS.Forms.Controls;
@@ -35,7 +35,7 @@ namespace Eto.iOS.Forms
 			set { }
 		}
 
-		protected override sd.RectangleF AdjustContent(sd.RectangleF rect)
+		protected override CoreGraphics.CGRect AdjustContent(CoreGraphics.CGRect rect)
 		{
 			rect = base.AdjustContent(rect);
 			// only navigation can take full height of a form, otherwise adjust for status bar

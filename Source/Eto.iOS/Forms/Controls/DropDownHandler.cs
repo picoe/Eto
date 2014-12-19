@@ -2,9 +2,9 @@ using System;
 using System.Reflection;
 using SD = System.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Drawing;
-using MonoTouch.Foundation;
+using Foundation;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,12 +28,12 @@ namespace Eto.iOS.Forms.Controls
 
 			public DropDownHandler<TWidget, TCallback, TPicker> Handler { get { return (DropDownHandler<TWidget, TCallback, TPicker>)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override int GetComponentCount(UIPickerView pickerView)
+			public override nint GetComponentCount(UIPickerView pickerView)
 			{
 				return 1;
 			}
 
-			public override int GetRowsInComponent(UIPickerView pickerView, int component)
+			public override nint GetRowsInComponent(UIPickerView pickerView, nint component)
 			{
 				var data = Handler.collection;
 				return data != null ? data.Count : 0;
@@ -46,10 +46,10 @@ namespace Eto.iOS.Forms.Controls
 
 			public DropDownHandler<TWidget, TCallback, TPicker> Handler { get { return (DropDownHandler<TWidget, TCallback, TPicker>)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override string GetTitle(UIPickerView pickerView, int row, int component)
+			public override string GetTitle(UIPickerView pickerView, nint row, nint component)
 			{
 				var data = Handler.collection;
-				return data != null ? Handler.Widget.TextBinding.GetValue(data.ElementAt(row)) : string.Empty;
+				return data != null ? Handler.Widget.TextBinding.GetValue(data.ElementAt((int)row)) : string.Empty;
 			}
 		}
 
@@ -134,7 +134,7 @@ namespace Eto.iOS.Forms.Controls
 
 		protected override void UpdateValue(TPicker picker)
 		{
-			SelectedIndex = picker.SelectedRowInComponent(0);
+			SelectedIndex = (int)picker.SelectedRowInComponent(0);
 		}
 
 		protected override void UpdatePicker(TPicker picker)

@@ -36,7 +36,7 @@ using nuint = System.UInt32;
 using Eto.Mac;
 namespace Eto.Mac.Drawing
 #elif IOS
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 using Eto.iOS;
 
 namespace Eto.iOS.Drawing
@@ -246,7 +246,7 @@ namespace Eto.iOS.Drawing
 
 		public void AddEllipse (float x, float y, float width, float height)
 		{
-			#if XAMMAC || XAMMAC2
+			#if XAMMAC || XAMMAC2 || IOS
 			Control.AddEllipseInRect(new CGRect(x, y, width, height));
 			#else
 			Control.AddElipseInRect (new sd.RectangleF (x, y, width, height));

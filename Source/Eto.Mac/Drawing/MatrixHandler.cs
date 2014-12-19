@@ -9,7 +9,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -37,7 +37,7 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Drawing
 #elif IOS
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 
 namespace Eto.iOS.Drawing
 #endif

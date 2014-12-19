@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using System.Threading.Tasks;
-using MonoTouch.ObjCRuntime;
+using ObjCRuntime;
 
 namespace Eto.iOS.Forms
 {

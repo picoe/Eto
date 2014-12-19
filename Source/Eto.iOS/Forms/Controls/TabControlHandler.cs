@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using Eto.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using System.Linq;
 using Eto.Mac.Forms;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace Eto.iOS.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return Control.SelectedIndex; }
+			get { return (int)Control.SelectedIndex; }
 			set
 			{
 				Control.SelectedIndex = value;

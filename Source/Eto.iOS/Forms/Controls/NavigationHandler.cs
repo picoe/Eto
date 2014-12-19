@@ -1,7 +1,7 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
-using MonoTouch.ObjCRuntime;
+using ObjCRuntime;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,14 +100,14 @@ namespace Eto.iOS.Forms.Controls
 			view.NavigationItem.Title = item.Text ?? string.Empty;
 			if (!(view.View is UIScrollView) && view.EdgesForExtendedLayoutIsSupported())
 				view.EdgesForExtendedLayout = UIRectEdge.None;
-			view.View.Frame = new System.Drawing.RectangleF(0, 0, 0, 0);
+			view.View.Frame = new CoreGraphics.CGRect(0, 0, 0, 0);
 			view.View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			Navigation.PushViewController(view, true);
 		}
 
 		public void Pop()
 		{
-			Navigation.PopViewControllerAnimated(true);
+			Navigation.PopViewController(true);
 		}
 
 		public virtual Size ClientSize

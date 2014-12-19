@@ -1,23 +1,23 @@
 using System;
-using MonoTouch.UIKit;
-using System.Drawing;
+using UIKit;
+using CoreGraphics;
 using Eto.Forms;
 using Eto.iOS.Forms;
-using MonoTouch.Foundation;
-using MonoTouch.ObjCRuntime;
+using Foundation;
+using ObjCRuntime;
 
 namespace Eto.iOS
 {
 	public static class Extensions
 	{
-		public static void SetFrameSize(this UIView view, SizeF size)
+		public static void SetFrameSize(this UIView view, CGSize size)
 		{
 			var frame = view.Frame;
 			frame.Size = size;
 			view.Frame = frame;
 		}
 
-		public static void SetFrameOrigin(this UIView view, PointF location)
+		public static void SetFrameOrigin(this UIView view, CGPoint location)
 		{
 			var frame = view.Frame;
 			frame.Location = location;

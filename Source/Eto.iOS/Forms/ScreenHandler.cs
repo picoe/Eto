@@ -1,5 +1,5 @@
-﻿using System;
-using MonoTouch.UIKit;
+using System;
+using UIKit;
 using Eto.Forms;
 
 namespace Eto.iOS.Forms
@@ -18,7 +18,7 @@ namespace Eto.iOS.Forms
 
 		public float RealScale
 		{
-			get { return Control.Scale; }
+			get { return (float)Control.Scale; }
 		}
 
 		public int BitsPerPixel

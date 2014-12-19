@@ -3,11 +3,12 @@ using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.iOS.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.CoreAnimation;
-using MonoTouch.Foundation;
-using MonoTouch.ObjCRuntime;
+using UIKit;
+using CoreAnimation;
+using Foundation;
+using ObjCRuntime;
 using Eto.Mac.Forms;
+using Eto.Mac;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -30,7 +31,7 @@ namespace Eto.iOS.Forms.Controls
 				var tiledLayer = (CATiledLayer)this.Layer;
 				if (UIScreen.MainScreen.RespondsToSelector(new Selector("scale")) && Math.Abs(UIScreen.MainScreen.Scale - 2.0f) < 0.01f)
 				{
-					tiledLayer.TileSize = new SD.SizeF(512, 512);
+					tiledLayer.TileSize = new CoreGraphics.CGSize(512, 512);
 				}
 				tiledLayer.LevelsOfDetail = 4;
 			}
@@ -74,7 +75,7 @@ namespace Eto.iOS.Forms.Controls
 
 			public DrawableHandler Handler { get { return (DrawableHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override void Draw(System.Drawing.RectangleF rect)
+			public override void Draw(CoreGraphics.CGRect rect)
 			{
 				Handler.Update(rect.ToEtoRectangle());
 			}
@@ -100,11 +101,11 @@ namespace Eto.iOS.Forms.Controls
 
 			static readonly IntPtr selFrame = Selector.GetHandle("frame");
 
-			public SD.RectangleF BaseFrame
+			public CoreGraphics.CGRect BaseFrame
 			{
 				get
 				{
-					SD.RectangleF result;
+					CoreGraphics.CGRect result;
 					Messaging.RectangleF_objc_msgSend_stret(out result, Handle, selFrame);
 					return result;
 				}

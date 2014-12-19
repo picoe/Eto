@@ -1,9 +1,9 @@
 using System;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 using System.Linq;
 using Eto.Drawing;
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 using Eto.Forms;
 using Eto.iOS.Drawing;
 using Eto.iOS.Forms.Cells;

@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-#if XAMMAC2
+#if IOS
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#elif XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -29,7 +34,11 @@ using nuint = System.UInt32;
 #endif
 #endif
 
+#if IOS
+namespace Eto.iOS
+#else
 namespace Eto.Mac
+#endif
 {
 	public static class Messaging
 	{
@@ -56,6 +65,9 @@ namespace Eto.Mac
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public static extern IntPtr IntPtr_objc_msgSend(IntPtr receiver, IntPtr selector);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		public static extern void RectangleF_objc_msgSend_stret(out CGRect rect, IntPtr receiver, IntPtr selector);
 	}
 }
 

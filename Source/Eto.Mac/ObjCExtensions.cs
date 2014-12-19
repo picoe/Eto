@@ -13,7 +13,8 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #elif IOS
-using MonoTouch.ObjCRuntime;
+using ObjCRuntime;
+using Eto.iOS;
 #endif
 
 namespace Eto.Mac

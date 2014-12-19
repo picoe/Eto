@@ -11,7 +11,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -36,10 +36,12 @@ using nuint = System.UInt32;
 #endif
 
 #if IOS
-using MonoTouch.UIKit;
-using NSView = MonoTouch.UIKit.UIView;
+using UIKit;
+using CoreGraphics;
+using Eto.iOS;
+using NSView = UIKit.UIView;
 using IMacView = Eto.iOS.Forms.IIosView;
-using MacContainer = Eto.iOS.Forms.IosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
+using MacContainer = Eto.iOS.Forms.IosLayout<UIKit.UIView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
 
 #elif OSX
 using Eto.Mac.Forms.Controls;
@@ -62,7 +64,7 @@ namespace Eto.Mac.Forms
 		int lastyscale;
 		Size spacing;
 		Padding padding;
-		sd.SizeF oldFrameSize;
+		CGSize oldFrameSize;
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -283,7 +285,7 @@ namespace Eto.Mac.Forms
 				}
 				starty += heights[y] + Spacing.Height;
 			}
-			oldFrameSize = controlFrame.Size.ToSD();
+			oldFrameSize = controlFrame.Size;
 		}
 
 		public void Add(Control child, int x, int y)

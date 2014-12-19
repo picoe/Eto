@@ -1,8 +1,8 @@
 using System;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using System.Linq;
-using MonoTouch.Foundation;
+using Foundation;
 using System.Diagnostics;
 using Eto.Mac.Forms;
 

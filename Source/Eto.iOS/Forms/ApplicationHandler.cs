@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 using SD = System.Drawing;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace Eto.iOS.Forms
 
 		public string DelegateClassName { get; set; }
 
-		public UIApplicationDelegate AppDelegate { get; private set; }
+		public IUIApplicationDelegate AppDelegate { get; private set; }
 
 		public ApplicationHandler()
 		{
@@ -35,7 +35,7 @@ namespace Eto.iOS.Forms
 				if (Platform.IsIos7)
 				{
 					var statusBarFrame = UIApplication.SharedApplication.StatusBarFrame;
-					return Math.Min(statusBarFrame.Height, statusBarFrame.Width);
+					return (float)Math.Min(statusBarFrame.Height, statusBarFrame.Width);
 				}
 				return 0f;
 			}
@@ -62,7 +62,7 @@ namespace Eto.iOS.Forms
 		{
 		}
 
-		public void Initialize(UIApplicationDelegate appdelegate)
+		public void Initialize(IUIApplicationDelegate appdelegate)
 		{
 			AppDelegate = appdelegate;
 			

@@ -17,7 +17,7 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac.Drawing
 #elif IOS
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 
 namespace Eto.iOS.Drawing
 #endif

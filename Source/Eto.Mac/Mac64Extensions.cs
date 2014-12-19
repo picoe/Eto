@@ -1,13 +1,18 @@
 ﻿using System;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
-#if XAMMAC2
+#if IOS
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+#elif XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -30,7 +35,11 @@ using nuint = System.UInt32;
 #endif
 #endif
 
+#if IOS
+namespace Eto.iOS
+#else
 namespace Eto.Mac
+#endif
 {
 	public static class Mac64Extensions
 	{
@@ -55,11 +64,6 @@ namespace Eto.Mac
 			return new CGPoint(point.X, point.Y);
 		}
 
-		public static CGPoint ToNS(this System.Drawing.PointF point)
-		{
-			return new CGPoint(point.X, point.Y);
-		}
-
 		public static CGSize ToNS(this SizeF size)
 		{
 			return new CGSize(size.Width, size.Height);
@@ -70,22 +74,7 @@ namespace Eto.Mac
 			return new SizeF((float)point.Width, (float)point.Height);
 		}
 
-		public static System.Drawing.SizeF ToSD(this CGSize size)
-		{
-			return new System.Drawing.SizeF((float)size.Width, (float)size.Height);
-		}
-
 		public static CGSize ToNS(this Size size)
-		{
-			return new CGSize((float)size.Width, (float)size.Height);
-		}
-
-		public static CGSize ToNS(this System.Drawing.Size size)
-		{
-			return new CGSize((float)size.Width, (float)size.Height);
-		}
-
-		public static CGSize ToNS(this System.Drawing.SizeF size)
 		{
 			return new CGSize((float)size.Width, (float)size.Height);
 		}
@@ -100,7 +89,7 @@ namespace Eto.Mac
 			return new CGRect(rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
-		public static CGRect ToNS(this System.Drawing.RectangleF rect)
+		public static CGRect ToNS(this Rectangle rect)
 		{
 			return new CGRect(rect.X, rect.Y, rect.Width, rect.Height);
 		}
@@ -110,10 +99,57 @@ namespace Eto.Mac
 			return new RectangleF((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);
 		}
 
+		public static Rectangle ToEtoRectangle(this CGRect rect)
+		{
+			return new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+		}
+
+		#if IOS
+
+		public static CGPoint ToSDPointF (this Point point)
+		{
+			return new CGPoint ((nfloat)point.X, (nfloat)point.Y);
+		}
+
+		public static CGPoint ToSD (this PointF point)
+		{
+			return new CGPoint ((nfloat)point.X, (nfloat)point.Y);
+		}
+
+		#endif
+
+#if !IOS
+
+		public static CGPoint ToNS(this System.Drawing.PointF point)
+		{
+			return new CGPoint(point.X, point.Y);
+		}
+
+		public static System.Drawing.SizeF ToSD(this CGSize size)
+		{
+			return new System.Drawing.SizeF((float)size.Width, (float)size.Height);
+		}
+
+		public static CGSize ToNS(this System.Drawing.Size size)
+		{
+			return new CGSize((float)size.Width, (float)size.Height);
+		}
+
+		public static CGSize ToNS(this System.Drawing.SizeF size)
+		{
+			return new CGSize((float)size.Width, (float)size.Height);
+		}
+
+		public static CGRect ToNS(this System.Drawing.RectangleF rect)
+		{
+			return new CGRect(rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
 		public static System.Drawing.RectangleF ToSD(this CGRect rect)
 		{
 			return new System.Drawing.RectangleF((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);
 		}
+#endif
 
 		public static CGRect SetSize(this CGRect frame, SizeF size)
 		{

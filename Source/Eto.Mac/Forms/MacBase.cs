@@ -1,26 +1,25 @@
 using System;
 using System.Collections.Generic;
 using Eto.Drawing;
-#if XAMMAC2
+using Eto.Forms;
+#if IOS
+using NSView = UIKit.UIView;
+using ObjCRuntime;
+using Foundation;
+#elif XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
-using MonoTouch.ObjCRuntime;
-using MonoTouch.Foundation;
 #endif
-using Eto.Forms;
 
-#if IOS
-using NSView = MonoTouch.UIKit.UIView;
-#endif
 namespace Eto.Mac.Forms
 {
 	public interface IMacControlHandler

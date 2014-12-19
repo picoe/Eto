@@ -8,7 +8,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -34,9 +34,9 @@ using nuint = System.UInt32;
 
 #if IOS
 
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using NSFont = MonoTouch.UIKit.UIFont;
+using UIKit;
+using Foundation;
+using NSFont = UIKit.UIFont;
 
 namespace Eto.iOS.Drawing
 
@@ -265,7 +265,7 @@ namespace Eto.Mac.Drawing
 #if OSX
 			get { return (float)Control.XHeight; }
 #elif IOS
-			get { return Control.xHeight; }
+			get { return (float)Control.xHeight; }
 #endif
 		}
 

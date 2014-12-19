@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using System.Linq;
 
 namespace Eto.iOS.Forms
