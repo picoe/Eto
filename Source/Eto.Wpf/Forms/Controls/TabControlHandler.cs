@@ -9,14 +9,18 @@ namespace Eto.Wpf.Forms.Controls
 	public class TabControlHandler : WpfContainer<swc.TabControl, TabControl, TabControl.ICallback>, TabControl.IHandler
 	{
 		bool disableSelectedIndexChanged;
-		public TabControlHandler ()
+		public TabControlHandler()
 		{
-			Control = new swc.TabControl ();
-			Control.Loaded += delegate {
-				Control.SelectionChanged += delegate {
-					if (!disableSelectedIndexChanged)
-						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
-				};
+			Control = new swc.TabControl();
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			Control.SelectionChanged += (sender, ee) =>
+			{
+				if (ReferenceEquals(ee.Source, Control) && !disableSelectedIndexChanged)
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			};
 		}
 
@@ -34,29 +38,33 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.SelectedIndex = value; }
 		}
 
-		public void InsertTab (int index, TabPage page)
+		public void InsertTab(int index, TabPage page)
 		{
 			if (index == -1)
-				Control.Items.Add (page.ControlObject);
+				Control.Items.Add(page.ControlObject);
 			else
-				Control.Items.Insert (index, page.ControlObject);
-			if (Widget.Loaded && Control.Items.Count == 1)
+				Control.Items.Insert(index, page.ControlObject);
+			if (Control.Items.Count == 1)
 				SelectedIndex = 0;
 		}
 
-		public void ClearTabs ()
+		public void ClearTabs()
 		{
-			Control.Items.Clear ();
+			Control.Items.Clear();
 		}
 
-		public void RemoveTab (int index, TabPage page)
+		public void RemoveTab(int index, TabPage page)
 		{
 			disableSelectedIndexChanged = true;
-			try {
-				Control.Items.Remove (page.ControlObject);
-				if (Widget.Loaded)
+			try
+			{
+				var isSelected = SelectedIndex == index;
+				Control.Items.Remove(page.ControlObject);
+				if (Widget.Loaded && isSelected)
 					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
-			} finally {
+			}
+			finally
+			{
 				disableSelectedIndexChanged = false;
 			}
 		}
