@@ -26,8 +26,8 @@
   </WizardExtension>
   <WizardData>
     <packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-      <package id="Eto.Forms" version="2.0.6" />
-      <package id="Eto.Platform.XamMac2" version="2.0.6" />
+      <package id="Eto.Forms" version="2.0.7" />
+      <package id="Eto.Platform.XamMac2" version="2.0.7" />
     </packages>
   </WizardData>
 </VSTemplate>
