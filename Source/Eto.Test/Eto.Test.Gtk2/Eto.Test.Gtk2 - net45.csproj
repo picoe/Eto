@@ -64,17 +64,17 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto - Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
-      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
-      <Name>Eto.Test - Pcl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk2 - net45.csproj">
       <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
       <Name>Eto.Gtk2 - net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test - pcl.csproj">
+      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
+      <Name>Eto.Test - pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
