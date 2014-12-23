@@ -114,6 +114,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox>("control");
 				Handler.SetTextValue(control.DataContext, control.Text);
+				Handler.ContainerHandler.CellEdited(Handler, editingElement);
 				return true;
 			}
 		}

@@ -9,6 +9,7 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent);
 		void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem);
+		void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem);
 	}
 
 	public interface IGridColumnHandler : GridColumn.IHandler
@@ -128,5 +129,13 @@ namespace Eto.Wpf.Forms.Controls
 			get { return Control; }
 		}
 
+		public void CellEdited(ICellHandler cell, sw.FrameworkElement element)
+		{
+			var dataCell = element.GetParent<swc.DataGridCell>();
+			var dataRow = element.GetParent<swc.DataGridRow>();
+			var row = dataRow.GetIndex();
+			var dataItem = element.DataContext;
+			GridHandler.CellEdited(row, dataCell.Column, dataItem);
+		}
 	}
 }
