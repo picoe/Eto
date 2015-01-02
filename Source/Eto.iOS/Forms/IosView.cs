@@ -18,7 +18,6 @@ namespace Eto.iOS.Forms
 
 	public interface IIosView : IMacControlHandler, IIosViewControllerSource
 	{
-		Size PositionOffset { get; }
 	}
 
 	public abstract class IosView<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>

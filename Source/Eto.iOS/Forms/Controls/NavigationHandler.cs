@@ -63,12 +63,19 @@ namespace Eto.iOS.Forms.Controls
 
 			public override void DidShowViewController(UINavigationController navigationController, UIViewController viewController, bool animated)
 			{
-				Handler.Callback.OnItemShown(Handler.Widget, EventArgs.Empty);
+				var shownItem = Handler.items.FirstOrDefault(r => r.Content.GetViewController(false) == viewController);
+				if (shownItem != null)
+					Handler.Callback.OnItemShown(Handler.Widget, new NavigationItemEventArgs(shownItem));
 				// need to get the view controllers to reset the references to the popped controllers
 				// this is due to how xamarin.ios keeps the controllers in an array
 				// and this resets that array
 				var controllers = Handler.Navigation.ViewControllers;
-				Handler.items.RemoveAll(r => !controllers.Contains(r.Content.GetViewController(false)));
+				var removedItems = Handler.items.Where(r => !controllers.Contains(r.Content.GetViewController(false))).ToList();
+				foreach (var removedItem in removedItems)
+				{
+					Handler.Callback.OnItemRemoved(Handler.Widget, new NavigationItemEventArgs(removedItem));
+				}
+				Handler.items.RemoveAll(removedItems.Contains);
 
 				/* for testing garbage collection after a view is popped
 				#if DEBUG

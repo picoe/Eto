@@ -28,11 +28,12 @@
     <Optimize>False</Optimize>
     <ConsolePause>False</ConsolePause>
     <MtouchDebug>True</MtouchDebug>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>x86_64</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
     <MtouchUseSGen>True</MtouchUseSGen>
     <MtouchProfiling>true</MtouchProfiling>
+    <MtouchLink>None</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Release\iPhoneSimulator</OutputPath>
@@ -42,7 +43,7 @@
     <MtouchLink>None</MtouchLink>
     <MtouchI18n>
     </MtouchI18n>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>i386</MtouchArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Debug\iPhone</OutputPath>
@@ -54,13 +55,14 @@
     <MtouchDebug>True</MtouchDebug>
     <IpaPackageName>
     </IpaPackageName>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
     <MtouchLink>None</MtouchLink>
     <CrashReportingApiKey>
     </CrashReportingApiKey>
     <MtouchUseSGen>True</MtouchUseSGen>
+    <MtouchProfiling>true</MtouchProfiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Release\iPhone</OutputPath>

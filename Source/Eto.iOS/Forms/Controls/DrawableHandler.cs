@@ -9,6 +9,7 @@ using Foundation;
 using ObjCRuntime;
 using Eto.Mac.Forms;
 using Eto.Mac;
+using CoreGraphics;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -98,18 +99,6 @@ namespace Eto.iOS.Forms.Controls
 				Handler.Callback.OnLostFocus(Handler.Widget, EventArgs.Empty);
 				return base.ResignFirstResponder();
 			}
-
-			static readonly IntPtr selFrame = Selector.GetHandle("frame");
-
-			public CoreGraphics.CGRect BaseFrame
-			{
-				get
-				{
-					CoreGraphics.CGRect result;
-					Messaging.RectangleF_objc_msgSend_stret(out result, Handle, selFrame);
-					return result;
-				}
-			}
 		}
 
 		public virtual void Create()
@@ -136,24 +125,10 @@ namespace Eto.iOS.Forms.Controls
 			var context = UIGraphics.GetCurrentContext();
 			if (context != null)
 			{
-				/*var scale = context.GetCTM().xx;  // .a			// http://developer.apple.com/library/ios/#documentation/GraphicsImaging/Reference/CGAffineTransform/Reference/reference.html#//apple_ref/doc/c_ref/CGAffineTransform
-				var tiledLayer = (CATiledLayer)this.Layer;
-				var tileSize = tiledLayer.TileSize;
-				
-			    tileSize.Width /= scale;
-			    tileSize.Height /= scale;*/
-				//lock (this) {
-				//context.TranslateCTM(0, 0);
-				//context.ScaleCTM(1, -1);
-				//var oldCheck = UIApplication.CheckForIllegalCrossThreadCalls;
-				//UIApplication.CheckForIllegalCrossThreadCalls = false;
-				
-				using (var graphics = new Graphics(new GraphicsHandler(Control, context, Control.BaseFrame.Height)))
+				using (var graphics = new Graphics(new GraphicsHandler(Control, context, Control.Frame.Height)))
 				{
 					Callback.OnPaint(Widget, new PaintEventArgs(graphics, rect));
 				}
-				//UIApplication.CheckForIllegalCrossThreadCalls = oldCheck;
-				//}
 			}
 		}
 
