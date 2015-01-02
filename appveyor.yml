@@ -18,3 +18,8 @@ test_script:
 artifacts:
 - path: BuildOutput/Nuget/Release/*.nupkg
   name: nuget
+deploy:
+- provider: Environment
+  name: MyGet
+  on:
+    branch: develop
