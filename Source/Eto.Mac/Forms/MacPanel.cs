@@ -117,7 +117,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 #else
-		public ContextMenu ContextMenu
+		public virtual ContextMenu ContextMenu
 		{
 			get
 			{

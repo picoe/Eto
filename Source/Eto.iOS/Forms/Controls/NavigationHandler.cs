@@ -10,7 +10,6 @@ namespace Eto.iOS.Forms.Controls
 {
 	internal class RotatableNavigationController : UINavigationController
 	{
-		[Obsolete]
 		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true; 

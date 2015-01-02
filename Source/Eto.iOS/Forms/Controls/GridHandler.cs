@@ -122,7 +122,6 @@ namespace Eto.iOS.Forms.Controls
 			return UIInterfaceOrientationMask.All;
 		}
 
-		[Obsolete]
 		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true;

@@ -51,8 +51,6 @@ namespace Eto.iOS.Forms.Toolbar
 		{
 		}
 		
-		static readonly Selector selAction = new Selector("action");
-
 		protected override void Initialize()
 		{
 			base.Initialize();

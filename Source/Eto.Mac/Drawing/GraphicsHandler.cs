@@ -77,8 +77,8 @@ namespace Eto.iOS.Drawing
 		#if OSX
 		NSGraphicsContext graphicsContext;
 		bool disposeContext;
-		#endif
 		readonly NSView view;
+		#endif
 		float height;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		float offset = 0.5f;
@@ -251,10 +251,17 @@ namespace Eto.iOS.Drawing
 #endif
 		}
 
+		#if OSX
 		public float ViewHeight
 		{
 			get { return (float)(view != null ? view.Bounds.Height : height); }
 		}
+		#elif IOS
+		public float ViewHeight
+		{
+			get { return height; }
+		}
+		#endif
 
 		void SetDefaults()
 		{

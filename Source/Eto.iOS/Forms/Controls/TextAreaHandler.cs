@@ -15,8 +15,10 @@ namespace Eto.iOS.Forms.Controls
 			public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
 			{
 				var newSize = base.SizeThatFits(size);
+				#pragma warning disable 618
 				newSize.Width = (nfloat)Math.Max(newSize.Width, TextArea.DefaultSize.Width);
 				newSize.Height = (nfloat)Math.Max(newSize.Height, TextArea.DefaultSize.Height);
+				#pragma warning restore 618
 				return newSize;
 			}
 		}

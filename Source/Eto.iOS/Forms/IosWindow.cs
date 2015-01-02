@@ -198,7 +198,7 @@ namespace Eto.iOS.Forms
 		{
 		}
 
-		public ContextMenu ContextMenu { get { return null; } set { } }
+		public override ContextMenu ContextMenu { get { return null; } set { } }
 	}
 }
 
