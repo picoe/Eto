@@ -292,7 +292,7 @@ namespace Eto.Forms
 		public T Invoke<T>(Func<T> func)
 		{
 			T value = default(T);
-			Invoke(() => value = func());
+			Invoke(new Action(() => value = func()));
 			return value;
 		}
 
