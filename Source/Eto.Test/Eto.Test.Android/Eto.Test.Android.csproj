@@ -71,17 +71,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto - Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
-      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
-      <Name>Eto.Test - Pcl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto.Android\Eto.Android.csproj">
       <Project>{7A02E771-D30B-41A1-8A35-C78D3940FC33}</Project>
       <Name>Eto.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test - pcl.csproj">
+      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
+      <Name>Eto.Test - pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />

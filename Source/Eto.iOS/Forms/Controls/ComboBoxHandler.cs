@@ -2,9 +2,9 @@ using System;
 using System.Reflection;
 using SD = System.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Drawing;
-using MonoTouch.Foundation;
+using Foundation;
 using System.Collections.Generic;
 using System.Linq;
 

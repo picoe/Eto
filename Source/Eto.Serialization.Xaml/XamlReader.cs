@@ -5,12 +5,24 @@ using System.Xaml;
 
 namespace Eto.Serialization.Xaml
 {
-
 	/// <summary>
 	/// Methods to help load/save Eto objects to/from xaml
 	/// </summary>
 	public static class XamlReader
 	{
+		static Stream GetStream(Type type)
+		{
+			return GetStream(type, type.FullName + ".xeto") ?? GetStream(type, type.FullName + ".xaml");
+		}
+
+		static Stream GetStream(Type type, string resourceName)
+		{
+#if PCL
+			return type.GetTypeInfo().Assembly.GetManifestResourceStream(resourceName);
+#else
+			return type.Assembly.GetManifestResourceStream(resourceName);
+#endif
+		}
 
 		/// <summary>
 		/// Loads the specified type from a xaml of the same name
@@ -23,14 +35,15 @@ namespace Eto.Serialization.Xaml
 		/// </remarks>
 		/// <typeparam name="T">Type of object to load from xaml</typeparam>
 		/// <returns>A new instance of the specified type with the contents loaded from xaml</returns>
-		public static T Load<T> ()
-			where T: Widget, new()
+		public static T Load<T>()
+			where T : Widget, new()
 		{
-			var type = typeof(T);
-			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".xaml");
-			return Load<T> (stream, null);
+			using (var stream = GetStream(typeof(T)))
+			{
+				return Load<T>(stream, null);
+			}
 		}
-		
+
 		/// <summary>
 		/// Loads the specified type from the specified xaml stream
 		/// </summary>
@@ -41,10 +54,10 @@ namespace Eto.Serialization.Xaml
 		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
 		/// <param name="stream">Xaml content to load (e.g. from resources)</param>
 		/// <returns>A new instance of the specified type with the contents loaded from the xaml stream</returns>
-		public static T Load<T> (Stream stream)
-			where T: Widget, new()
+		public static T Load<T>(Stream stream)
+			where T : Widget, new()
 		{
-			return Load<T> (stream, null);
+			return Load<T>(stream, null);
 		}
 
 		/// <summary>
@@ -59,12 +72,13 @@ namespace Eto.Serialization.Xaml
 		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
-		public static T Load<T> (T instance)
-			where T: Widget
+		public static T Load<T>(T instance)
+			where T : Widget
 		{
-			var type = typeof(T);
-			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".xaml");
-			return Load<T> (stream, instance);
+			using (var stream = GetStream(typeof(T)))
+			{
+				return Load<T>(stream, instance);
+			}
 		}
 
 		/// <summary>
@@ -74,31 +88,35 @@ namespace Eto.Serialization.Xaml
 		/// <param name="stream">Xaml content to load (e.g. from resources)</param>
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
-		public static T Load<T> (Stream stream, T instance)
+		public static T Load<T>(Stream stream, T instance)
 			where T : Widget
 		{
 			var type = typeof(T);
-			var context = new EtoXamlSchemaContext (new Assembly[] { typeof(XamlReader).Assembly });
-			var reader = new XamlXmlReader (stream, context);
-			var writerSettings = new XamlObjectWriterSettings {
+			var context = new EtoXamlSchemaContext(new Assembly[] { typeof(XamlReader).Assembly });
+			var reader = new XamlXmlReader(stream, context);
+			var writerSettings = new XamlObjectWriterSettings
+			{
 				RootObjectInstance = instance
 			};
-			writerSettings.AfterPropertiesHandler += delegate (object sender, XamlObjectEventArgs e) {
+			writerSettings.AfterPropertiesHandler += delegate(object sender, XamlObjectEventArgs e)
+			{
 				var obj = e.Instance as Widget;
-				if (obj != null && !string.IsNullOrEmpty (obj.ID)) {
-					var property = type.GetProperty (obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+				if (obj != null && !string.IsNullOrEmpty(obj.ID))
+				{
+					var property = type.GetProperty(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 					if (property != null)
-						property.SetValue (instance, obj, null);
-					else {
-						var field = type.GetField (obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						property.SetValue(instance, obj, null);
+					else
+					{
+						var field = type.GetField(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 						if (field != null)
-							field.SetValue (instance, obj);
+							field.SetValue(instance, obj);
 					}
 				}
 			};
 
-			var writer = new XamlObjectWriter (context, writerSettings);
-			XamlServices.Transform (reader, writer);
+			var writer = new XamlObjectWriter(context, writerSettings);
+			XamlServices.Transform(reader, writer);
 			return writer.Result as T;
 		}
 	}

@@ -7,31 +7,19 @@
 		<TabPage Text="Table Layout using Rows &amp; Controls">
 			<TableLayout>
 				<TableRow>
-					<TableCell>
-						<Label Text="Text Box" />
-					</TableCell>
-					<TableCell>
-						<TextBox />
-					</TableCell>
+					<Label Text="Text Box" />
+					<TextBox TextChanged="HandleTextChanged" />
 				</TableRow>
 				<TableRow>
-					<TableCell>
-						<Label Text="Text Area" />
-					</TableCell>
-					<TableCell>
-						<TextArea ID="MyTextArea" />
-					</TableCell>
+					<Label Text="Text Area" />
+					<TextArea ID="MyTextArea" />
 				</TableRow>
 				<TableRow>
 					<TableCell />
-					<TableCell>
-						<CheckBox ID="MyCheckBox" Text="Check Box" />
-					</TableCell>
+					<CheckBox ID="MyCheckBox" Text="Check Box" />
 				</TableRow>
 				<TableRow>
-					<TableCell>
-						<Label Text="Combo Box" />
-					</TableCell>
+					<TableCell><Label Text="Combo Box" /></TableCell>
 					<TableCell>
 						<DropDown>
 							<ListItem Text="Item 1" />
@@ -42,9 +30,7 @@
 					</TableCell>
 				</TableRow>
 				<TableRow>
-					<TableCell>
-						<Label Text="Image" VerticalAlign="Middle" />
-					</TableCell>
+					<TableCell><Label Text="Image" VerticalAlign="Middle" /></TableCell>
 					<TableCell>
 						<TableLayout>
 							<TableLayout.Rows>
@@ -62,16 +48,12 @@
 					</TableCell>
 				</TableRow>
 				<TableRow>
-					<TableCell>
-						<Label Text="Button" />
-					</TableCell>
+					<TableCell><Label Text="Button" /></TableCell>
 					<TableCell>
 						<TableLayout>
 							<TableLayout.Rows>
 								<TableRow>
-									<TableCell>
-										<Button Text="Bind to Click event in code behind" Click="HandleButtonClick" />
-									</TableCell>
+									<TableCell><Button Text="Bind to Click event in code behind" Click="HandleButtonClick" /></TableCell>
 									<TableCell ScaleWidth="true" />
 								</TableRow>
 							</TableLayout.Rows>
@@ -79,19 +61,6 @@
 					</TableCell>
 				</TableRow>
 				<TableRow />
-			</TableLayout>
-		</TabPage>
-		<TabPage Text="Table Layout using Location">
-			<TableLayout>
-				<TableRow ScaleHeight="true"/>
-				<TableRow>
-					<TableCell ScaleWidth="true"/>
-					<TableCell>
-						<Label Text="Centered in tab" />
-					</TableCell>
-					<TableCell ScaleWidth="true"/>
-				</TableRow>
-				<TableRow ScaleHeight="true"/>
 			</TableLayout>
 		</TabPage>
 		<TabPage Text="External Control">

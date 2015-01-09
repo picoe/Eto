@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 using SD = System.Drawing;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -19,13 +19,12 @@ namespace Eto.iOS.Forms
 
 		public string DelegateClassName { get; set; }
 
-		public UIApplicationDelegate AppDelegate { get; private set; }
+		public IUIApplicationDelegate AppDelegate { get; private set; }
 
 		public ApplicationHandler()
 		{
 			DelegateClassName = "EtoAppDelegate";
 			UIApplication.CheckForIllegalCrossThreadCalls = false;
-			Control = UIApplication.SharedApplication;
 		}
 
 		public float StatusBarAdjustment
@@ -35,7 +34,7 @@ namespace Eto.iOS.Forms
 				if (Platform.IsIos7)
 				{
 					var statusBarFrame = UIApplication.SharedApplication.StatusBarFrame;
-					return Math.Min(statusBarFrame.Height, statusBarFrame.Width);
+					return (float)Math.Min(statusBarFrame.Height, statusBarFrame.Width);
 				}
 				return 0f;
 			}
@@ -49,7 +48,7 @@ namespace Eto.iOS.Forms
 			}
 			else
 			{
-				Initialize(Control.Delegate);
+				Initialize(UIApplication.SharedApplication.Delegate);
 			}
 		}
 
@@ -62,7 +61,7 @@ namespace Eto.iOS.Forms
 		{
 		}
 
-		public void Initialize(UIApplicationDelegate appdelegate)
+		public void Initialize(IUIApplicationDelegate appdelegate)
 		{
 			AppDelegate = appdelegate;
 			
@@ -113,22 +112,43 @@ namespace Eto.iOS.Forms
 			get { return Keys.Alt; }
 		}
 
+		UIUserNotificationType notificationTypes;
+		UIRemoteNotificationType remoteNotificationTypes;
+		void RegisterNotifications(UIUserNotificationType notifications, UIRemoteNotificationType remoteNotification)
+		{
+			if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
+			{
+				if (!notificationTypes.HasFlag(notifications))
+				{
+					notificationTypes |= notifications;
+					var settings = UIUserNotificationSettings.GetSettingsForTypes(notificationTypes, null);
+					UIApplication.SharedApplication.RegisterUserNotificationSettings(settings);
+				}
+			}
+			else if (!remoteNotificationTypes.HasFlag(remoteNotification))
+			{
+				remoteNotificationTypes |= remoteNotification;
+				UIApplication.SharedApplication.RegisterForRemoteNotificationTypes(remoteNotificationTypes);
+			}
+		}
+
 		public string BadgeLabel
 		{
-			get { return Control.ApplicationIconBadgeNumber > 0 ? Convert.ToString(Control.ApplicationIconBadgeNumber) : null; }
+			get { return UIApplication.SharedApplication.ApplicationIconBadgeNumber > 0 ? Convert.ToString(UIApplication.SharedApplication.ApplicationIconBadgeNumber) : null; }
 			set
 			{ 
 				if (string.IsNullOrEmpty(value))
-					Control.ApplicationIconBadgeNumber = 0;
+					UIApplication.SharedApplication.ApplicationIconBadgeNumber = 0;
 				else
 				{
+					RegisterNotifications(UIUserNotificationType.Badge, UIRemoteNotificationType.Badge);
 					int result;
 					if (Int32.TryParse(value, out result))
-						Control.ApplicationIconBadgeNumber = result;
+						UIApplication.SharedApplication.ApplicationIconBadgeNumber = result;
 					else
 					{
 						Debug.WriteLine("iOS: Application.BadgeLabel only supports numeric values");
-						Control.ApplicationIconBadgeNumber = 0;
+						UIApplication.SharedApplication.ApplicationIconBadgeNumber = 0;
 					}
 				}
 			}

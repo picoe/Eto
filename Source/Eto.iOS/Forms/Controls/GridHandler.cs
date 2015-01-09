@@ -1,9 +1,9 @@
 using System;
 using MonoTouch;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using System.Collections.Generic;
-using MonoTouch.Foundation;
+using Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -122,7 +122,6 @@ namespace Eto.iOS.Forms.Controls
 			return UIInterfaceOrientationMask.All;
 		}
 
-		[Obsolete]
 		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true;

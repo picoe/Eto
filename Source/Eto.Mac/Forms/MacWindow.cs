@@ -209,9 +209,15 @@ namespace Eto.Mac.Forms
 		{
 			base.Initialize();
 			Control.DidBecomeKey += HandleDidBecomeKey;
+			Control.DidResignKey += HandleDidResignKey;
 			Control.ShouldZoom = HandleShouldZoom;
 			Control.WillMiniaturize += HandleWillMiniaturize;
 		}
+
+		IntPtr oldMenu;
+
+		static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
+		static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
 
 		static void HandleDidBecomeKey(object sender, EventArgs e)
 		{
@@ -220,9 +226,31 @@ namespace Eto.Mac.Forms
 				return;
 			if (handler.MenuBar != null)
 			{
+				var ptr = Messaging.IntPtr_objc_msgSend(NSApplication.SharedApplication.Handle, selMainMenu);
+				if (Runtime.TryGetNSObject(ptr) == null)
+				{
+					// it's a native menu, so let's hold on to it till we resign key of the form
+					MacExtensions.Retain(ptr);
+					handler.oldMenu = ptr;
+				}
 				NSApplication.SharedApplication.MainMenu = handler.MenuBar;
 			}
+			else
+				handler.oldMenu = IntPtr.Zero;
+		}
 
+		static void HandleDidResignKey(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return;
+			if (handler.oldMenu != IntPtr.Zero)
+			{
+				// restore old native menu
+				Messaging.void_objc_msgSend_IntPtr(NSApplication.SharedApplication.Handle, selSetMainMenu, handler.oldMenu);
+				MacExtensions.Release(handler.oldMenu);
+				handler.oldMenu = IntPtr.Zero;
+			}
 		}
 
 		static bool HandleShouldZoom(NSWindow window, CGRect newFrame)

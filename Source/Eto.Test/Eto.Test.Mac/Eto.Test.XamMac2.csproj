@@ -21,7 +21,7 @@
     <LibrariesPath>..\..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Pcl\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\pcl\Debug</OutputPath>
     <DefineConstants>DEBUG;XAMMAC2</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
@@ -33,9 +33,10 @@
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <UseSGen>true</UseSGen>
     <XamMacArch>x86_64</XamMacArch>
+    <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Pcl\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\pcl\Release</OutputPath>
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <EnableCodeSigning>False</EnableCodeSigning>
@@ -48,6 +49,7 @@
     <LinkMode>SdkOnly</LinkMode>
     <XamMacArch>x86_64</XamMacArch>
     <DefineConstants>XAMMAC2</DefineConstants>
+    <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <Import Project="../../Shared/Common.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
@@ -76,21 +78,21 @@
     <Content Include="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto - Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
-      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
-      <Name>Eto.Test - Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Mac\Eto.XamMac2 - Pcl.csproj">
+    <ProjectReference Include="..\..\Eto.Mac\Eto.XamMac2.csproj">
       <Project>{856E8C70-2702-11E4-8C21-0800200C9A66}</Project>
-      <Name>Eto.XamMac2 - Pcl</Name>
+      <Name>Eto.XamMac2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json - Pcl.csproj">
+    <ProjectReference Include="..\Eto.Test\Eto.Test - pcl.csproj">
+      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
+      <Name>Eto.Test - pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json - pcl.csproj">
       <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>
-      <Name>Eto.Serialization.Json - Pcl</Name>
+      <Name>Eto.Serialization.Json - pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />

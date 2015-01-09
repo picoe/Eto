@@ -1,12 +1,12 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Drawing;
 using Eto.iOS.Drawing;
 using Eto.Forms;
-using MonoTouch.Foundation;
+using Foundation;
 using System.Linq;
-using MonoTouch.CoreGraphics;
-using MonoTouch.ImageIO;
+using CoreGraphics;
+using ImageIO;
 
 namespace Eto.iOS
 {
@@ -19,9 +19,9 @@ namespace Eto.iOS
 
 		public static Color ToEto(this UIColor color)
 		{
-			float red, green, blue, alpha;
+			nfloat red, green, blue, alpha;
 			color.GetRGBA(out red, out green, out blue, out alpha);
-			return new Color(red, green, blue, alpha);
+			return new Color((float)red, (float)green, (float)blue, (float)alpha);
 		}
 
 		public static UIFont ToUI(this Font font)

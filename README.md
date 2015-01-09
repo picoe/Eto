@@ -9,6 +9,7 @@ Links
 
 * Join the [forums](http://groups.google.com/group/eto-forms)
 * Chat in [#eto.forms](http://chat.mibbit.com/?server=irc.gimp.org&channel=%23eto.forms) on irc.gimp.org
+* Browse the [wiki](https://github.com/picoe/Eto/wiki) for quick start, tutorials, and API
 * Download binaries using NuGet [![NuGet](http://img.shields.io/nuget/v/Eto.Forms.svg?style=flat)](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or Xamarin Studio.
 * For bleeding edge nuget packages, add the MyGet development feed [![MyGet](http://img.shields.io/myget/eto/vpre/Eto.Forms.svg?style=flat)](https://www.myget.org/F/eto/) to your sources list.
 
@@ -25,24 +26,26 @@ There is a Mobile/iOS port in the works, but is considered incomplete.
 
 This framework was built so that using it in .NET is natural. For example, a simple hello-world application might look like:
 
-	using Eto.Forms;
-	using Eto.Drawing;
-	
-	public class MyForm : Form
+```C#
+using Eto.Forms;
+using Eto.Drawing;
+
+public class MyForm : Form
+{
+	public MyForm ()
 	{
-		public MyForm ()
-		{
-			Title = "My Cross-Platform App";
-			ClientSize = new Size(200, 200);
-			Content = new Label { Text = "Hello World!" };
-		}
-		
-		[STAThread]
-		static void Main()
-		{
-			new Application().Run(new MyForm());
-		}
+		Title = "My Cross-Platform App";
+		ClientSize = new Size(200, 200);
+		Content = new Label { Text = "Hello World!" };
 	}
+	
+	[STAThread]
+	static void Main()
+	{
+		new Application().Run(new MyForm());
+	}
+}
+```
 
 Getting Started
 ---------------

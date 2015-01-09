@@ -12,7 +12,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -50,11 +50,11 @@ namespace Eto.Mac.Drawing
 #elif IOS
 using Eto.iOS.Forms;
 using Eto.Mac;
-using MonoTouch.CoreGraphics;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using NSView = MonoTouch.UIKit.UIView;
-using GraphicsBase = Eto.WidgetHandler<MonoTouch.CoreGraphics.CGContext, Eto.Drawing.Graphics, Eto.Drawing.Graphics.ICallback>;
+using CoreGraphics;
+using UIKit;
+using Foundation;
+using NSView = UIKit.UIView;
+using GraphicsBase = Eto.WidgetHandler<CoreGraphics.CGContext, Eto.Drawing.Graphics, Eto.Drawing.Graphics.ICallback>;
 
 namespace Eto.iOS.Drawing
 #endif
@@ -77,8 +77,8 @@ namespace Eto.iOS.Drawing
 		#if OSX
 		NSGraphicsContext graphicsContext;
 		bool disposeContext;
-		#endif
 		readonly NSView view;
+		#endif
 		float height;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		float offset = 0.5f;
@@ -170,10 +170,10 @@ namespace Eto.iOS.Drawing
 
 		#elif IOS
 
-		public GraphicsHandler(NSView view, CGContext context, float height)
+		public GraphicsHandler(NSView view, CGContext context, nfloat height)
 		{
 			this.DisplayView = view;
-			this.height = height;
+			this.height = (float)height;
 			this.Control = context;
 
 			SetDefaults();
@@ -224,7 +224,7 @@ namespace Eto.iOS.Drawing
 #elif IOS
 			var cgimage = handler.Control.CGImage;
 			Control = new CGBitmapContext(handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
-			scale = cgimage.Width / handler.Control.Size.Width;
+			scale = (float)(cgimage.Width / handler.Control.Size.Width);
 #endif
 
 			height = image.Size.Height;
@@ -251,10 +251,17 @@ namespace Eto.iOS.Drawing
 #endif
 		}
 
+		#if OSX
 		public float ViewHeight
 		{
 			get { return (float)(view != null ? view.Bounds.Height : height); }
 		}
+		#elif IOS
+		public float ViewHeight
+		{
+			get { return height; }
+		}
+		#endif
 
 		void SetDefaults()
 		{

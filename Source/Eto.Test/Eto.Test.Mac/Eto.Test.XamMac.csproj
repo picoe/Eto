@@ -20,7 +20,7 @@
     <LibrariesPath>..\..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net40\Debug\test</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
@@ -34,9 +34,10 @@
     <I18n>
     </I18n>
     <MonoBundlingExtraArgs>--xml="${ProjectDir}/linker.xml"</MonoBundlingExtraArgs>
+    <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net40\Release\test</OutputPath>
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <EnableCodeSigning>False</EnableCodeSigning>
@@ -50,6 +51,7 @@
     </I18n>
     <MonoBundlingExtraArgs>--xml="${ProjectDir}/linker.xml"</MonoBundlingExtraArgs>
     <LinkMode>SdkOnly</LinkMode>
+    <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <Import Project="../../Shared/Common.targets" />
   <ItemGroup>

@@ -93,13 +93,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\Eto.Wpf\Eto.Wpf - Pcl.csproj">
+    <ProjectReference Include="..\..\..\Source\Eto.Wpf\Eto.Wpf - net45.csproj">
       <Project>{63137fa0-ca55-11e3-9c1a-0800200c9a66}</Project>
-      <Name>Eto.Wpf - Pcl</Name>
+      <Name>Eto.Wpf - net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Source\Eto\Eto - Pcl.csproj">
+    <ProjectReference Include="..\..\..\Source\Eto\Eto - pcl.csproj">
       <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto - Pcl</Name>
+      <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

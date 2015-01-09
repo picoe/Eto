@@ -1,9 +1,9 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using System.Linq;
 using Eto.iOS.Forms.Cells;
-using MonoTouch.Foundation;
+using Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -42,24 +42,24 @@ namespace Eto.iOS.Forms.Controls
 			WeakReference handler;
 			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override int NumberOfSections (UITableView tableView)
+			public override nint NumberOfSections (UITableView tableView)
 			{
 				return Handler.store.Collection != null ? Handler.store.Collection.Count : 0;
 			}
 
-			public override int RowsInSection (UITableView tableView, int section)
+			public override nint RowsInSection (UITableView tableView, nint section)
 			{
-				var item = Handler.store.Collection[section] as IDataStore<ITreeGridItem>;
+				var item = Handler.store.Collection[(int)section] as IDataStore<ITreeGridItem>;
 				if (item != null)
 					return item.Count;
 				else
 					return 0;
 			}
 
-			public override string TitleForHeader (UITableView tableView, int section)
+			public override string TitleForHeader (UITableView tableView, nint section)
 			{
 				var coll = Handler.store.Collection;
-				var dataItem = coll[section];
+				var dataItem = coll[(int)section];
 				foreach (var column in Handler.Widget.Columns.Where (r=> r.DataCell != null).Select(r => r.DataCell.Handler).OfType<ICellHandler>())
 				{
 					return column.TitleForSection (dataItem);
@@ -69,7 +69,7 @@ namespace Eto.iOS.Forms.Controls
 
 			public const string CELL_ID = "GridView_Cell";
 
-			public override UITableViewCell GetCell (UITableView tableView, MonoTouch.Foundation.NSIndexPath indexPath)
+			public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
 			{
 				var cell = tableView.DequeueReusableCell(CELL_ID);
 				if (cell == null)

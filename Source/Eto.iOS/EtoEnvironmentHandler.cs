@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Linq;
-using MonoTouch.Foundation;
+using Foundation;
 
 namespace Eto.iOS
 {

@@ -8,7 +8,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -32,7 +32,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-#if XAMMAC2
+#if XAMMAC2 || IOS
 using nnfloat = System.nfloat;
 #else
 using nnfloat = System.Single;
@@ -43,7 +43,7 @@ using nnfloat = System.Single;
 
 namespace Eto.Mac.Drawing
 #elif IOS
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 
 namespace Eto.iOS.Drawing
 #endif

@@ -1,6 +1,6 @@
 using System;
 using Eto.Drawing;
-using MonoTouch.UIKit;
+using UIKit;
 
 namespace Eto.iOS.Drawing
 {

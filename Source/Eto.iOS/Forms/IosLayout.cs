@@ -1,8 +1,8 @@
 using System;
 using Eto.Forms;
 using SD = System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 using Eto.Drawing;
 using Eto.Mac.Forms;
 

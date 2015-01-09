@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
 #if IOS
-using MonoTouch.Foundation;
+using Foundation;
 #else
 #if XAMMAC2
 using AppKit;
@@ -34,7 +34,7 @@ namespace Eto.Mac.Forms
 			WeakReference handler;
 			public UITimerHandler Handler { get { return (UITimerHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			#if XAMMAC2
+			#if XAMMAC2 || IOS
 			public void Elapsed(NSTimer timer)
 			#else
 			public void Elapsed()

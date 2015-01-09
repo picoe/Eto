@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
+using System.Collections;
 
 namespace Eto.Forms
 {
@@ -12,6 +13,7 @@ namespace Eto.Forms
 	/// Represents a cell in a <see cref="TableRow"/>
 	/// </summary>
 	[ContentProperty("Control")]
+	[TypeConverter(typeof(TableCellConverter))]
 	public class TableCell
 	{
 		/// <summary>
@@ -81,7 +83,7 @@ namespace Eto.Forms
 		}
 	}
 
-	class TableCellCollection : Collection<TableCell>
+	class TableCellCollection : Collection<TableCell>, IList
 	{
 		public TableCellCollection()
 		{
@@ -104,6 +106,17 @@ namespace Eto.Forms
 			if (item == null)
 				item = new TableCell { ScaleWidth = true };
 			base.SetItem(index, item);
+		}
+
+		int IList.Add(object value)
+		{
+			// allow adding a control directly from xaml
+			var control = value as Control;
+			if (control != null)
+				Add((TableCell)control);
+			else
+				Add((TableCell)value);
+			return Count - 1;
 		}
 	}
 }

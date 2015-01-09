@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
-using MonoTouch.ObjCRuntime;
-using MonoTouch.UIKit;
+using ObjCRuntime;
+using UIKit;
 using sd = System.Drawing;
 
 namespace Eto.iOS.Forms.Toolbar

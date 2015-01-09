@@ -3,13 +3,12 @@ using Eto.Drawing;
 using sd = System.Drawing;
 
 #if XAMMAC2
-using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -38,8 +37,8 @@ using nuint = System.UInt32;
 namespace Eto.Mac.Drawing
 #else
 using Eto.Mac;
-using MonoTouch.CoreGraphics;
-using MonoTouch.ImageIO;
+using CoreGraphics;
+using ImageIO;
 
 namespace Eto.iOS.Drawing
 #endif

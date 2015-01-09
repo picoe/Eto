@@ -8,7 +8,7 @@ namespace Eto.Test.iOS
 		{
 			var platform = new Eto.iOS.Platform();
 			var app = new TestApplication(platform);
-			app.Run(args);
+			app.Run();
 		}
 	}
 }

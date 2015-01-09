@@ -3,8 +3,8 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.iOS.Drawing;
 using SD = System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 using Eto.Mac.Forms;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,6 @@ namespace Eto.iOS.Forms
 
 	public interface IIosView : IMacControlHandler, IIosViewControllerSource
 	{
-		Size PositionOffset { get; }
 	}
 
 	public abstract class IosView<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
@@ -122,7 +121,7 @@ namespace Eto.iOS.Forms
 			var control = Control as UIView;
 			if (control != null)
 			{
-				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
+				CoreGraphics.CGSize? size = (Widget.Loaded) ? (CoreGraphics.CGSize?)control.Frame.Size : null;
 				IsResizing = true;
 				control.SizeToFit();
 				naturalSize = control.Frame.Size.ToEto();
@@ -229,7 +228,7 @@ namespace Eto.iOS.Forms
 
 		public virtual void Invalidate(Rectangle rect)
 		{
-			EventControl.SetNeedsDisplayInRect(rect.ToSDRectangleF());
+			EventControl.SetNeedsDisplayInRect(rect.ToNS());
 		}
 
 		public Graphics CreateGraphics()
@@ -310,7 +309,7 @@ namespace Eto.iOS.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			var sdpoint = point.ToSD();
+			var sdpoint = point.ToNS();
 			sdpoint = ContainerControl.ConvertPointFromView(sdpoint, null);
 			sdpoint.Y = ContainerControl.Frame.Height - sdpoint.Y;
 			return sdpoint.ToEto();
@@ -318,7 +317,7 @@ namespace Eto.iOS.Forms
 
 		public PointF PointToScreen(PointF point)
 		{
-			var sdpoint = point.ToSD();
+			var sdpoint = point.ToNS();
 			sdpoint.Y = ContainerControl.Frame.Height - sdpoint.Y;
 			sdpoint = ContainerControl.ConvertPointToView(sdpoint, null);
 			return sdpoint.ToEto();

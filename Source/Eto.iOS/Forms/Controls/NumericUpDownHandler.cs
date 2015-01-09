@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using SD = System.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls

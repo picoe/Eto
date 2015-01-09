@@ -75,13 +75,7 @@ namespace Eto.Wpf.Forms.Controls
 					};
 					break;
 				case Grid.CellEditedEvent:
-					Control.CellEditEnding += (sender, e) =>
-					{
-						var row = e.Row.GetIndex();
-						var item = GetItemAtRow(row);
-						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-						Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
-					};
+					// handled by each cell after value is set with the CellEdited method
 					break;
 				case Grid.SelectionChangedEvent:
 					Control.SelectedCellsChanged += (sender, e) =>
@@ -393,5 +387,10 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem)
+		{
+			var gridColumn = Widget.Columns[dataGridColumn.DisplayIndex];
+			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, dataGridColumn.DisplayIndex, dataItem));
+		}
 	}
 }

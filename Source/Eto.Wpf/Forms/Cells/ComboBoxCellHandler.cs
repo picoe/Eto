@@ -67,6 +67,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var control = editingElement as swc.ComboBox ?? editingElement.FindChild<swc.ComboBox>("control");
 				Handler.SetValue(control.DataContext, control.SelectedValue);
+				Handler.ContainerHandler.CellEdited(Handler, editingElement);
 				return true;
 			}
 		}

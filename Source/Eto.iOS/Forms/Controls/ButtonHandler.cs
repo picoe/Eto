@@ -2,33 +2,33 @@ using System;
 using System.Reflection;
 using Eto.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 
 namespace Eto.iOS.Forms.Controls
 {
 	public class ButtonHandler : IosButton<UIButton, Button, Button.ICallback>, Button.IHandler
 	{
-		public static Size MinimumSize = new Size(80, 23);
+		public static Size MinimumButtonSize = new Size(80, 23);
 		
 		class MyButton : UIButton {
 			
 			public ButtonHandler Handler { get; set; }
 			
-			public override System.Drawing.RectangleF Frame {
+			public override CoreGraphics.CGRect Frame {
 				get {
 					var value = base.Frame;
 					if (Handler.AutoSize)
 					{
-						value.Width = Math.Max(MinimumSize.Width, value.Width);
-						value.Height = Math.Max(MinimumSize.Height, value.Height);
+						value.Width = (nfloat)Math.Max(MinimumButtonSize.Width, value.Width);
+						value.Height = (nfloat)Math.Max(MinimumButtonSize.Height, value.Height);
 					}
 					return value;
 				}
 				set {
 					if (Handler.AutoSize)
 					{
-						value.Width = Math.Max(MinimumSize.Width, value.Width);
-						value.Height = Math.Max(MinimumSize.Height, value.Height);
+						value.Width = (nfloat)Math.Max(MinimumButtonSize.Width, value.Width);
+						value.Height = (nfloat)Math.Max(MinimumButtonSize.Height, value.Height);
 					}
 					base.Frame = value;
 				}

@@ -64,13 +64,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\Eto\Eto - Pcl.csproj">
+    <ProjectReference Include="..\..\..\Source\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto - Pcl</Name>
+      <Name>Eto - pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Source\Eto.Gtk\Eto.Gtk2 - Pcl.csproj">
+    <ProjectReference Include="..\..\..\Source\Eto.Gtk\Eto.Gtk2 - net45.csproj">
       <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Gtk2 - Pcl</Name>
+      <Name>Eto.Gtk2 - net45</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -58,6 +58,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var control = editingElement as swc.CheckBox ?? editingElement.FindChild<swc.CheckBox>("control");
 				Handler.SetValue(control.DataContext, control.IsChecked);
+				Handler.ContainerHandler.CellEdited(Handler, editingElement);
 				return true;
 			}
 

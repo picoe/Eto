@@ -2,9 +2,9 @@ using System;
 using System.Reflection;
 using SD = System.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Drawing;
-using MonoTouch.Foundation;
+using Foundation;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -65,7 +65,7 @@ namespace Eto.iOS.Forms.Controls
 			picker.Mode = GetMode();
 			picker.MinimumDate = MinDate == DateTime.MinValue ? (NSDate)null : (NSDate)MinDate.ToUniversalTime();
 			picker.MaximumDate = MaxDate == DateTime.MaxValue ? (NSDate)null : (NSDate)MaxDate.ToUniversalTime();
-			picker.Date = (Value ?? DateTime.Now).ToUniversalTime();
+			picker.Date = (NSDate)(Value ?? DateTime.Now).ToUniversalTime();
 		}
 
 		protected override string GetTextValue()

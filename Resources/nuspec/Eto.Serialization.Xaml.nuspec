@@ -29,8 +29,8 @@ https://github.com/picoe/Eto/wiki
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="BuildOutput/Pcl/$configuration$/Eto.Serialization.Xaml.dll" target="lib\net45" />
-		<file src="BuildOutput/$configuration$/Eto.Serialization.Xaml.dll" target="lib\net40" />
-		<file src="BuildOutput/$configuration$/LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/net45/$configuration$/Eto.Serialization.Xaml.dll" target="lib\net45" />
+		<file src="BuildOutput/net40/$configuration$/Eto.Serialization.Xaml.dll" target="lib\net40" />
+		<file src="BuildOutput/net40/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>
