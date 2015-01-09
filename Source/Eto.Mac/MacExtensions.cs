@@ -44,37 +44,43 @@ namespace Eto.Mac
 	{
 		static readonly IntPtr selBoundingRectWithSize = Selector.GetHandle("boundingRectWithSize:options:");
 
-		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend_stret")]
-		static extern void RectangleF_objc_msgSend_stret_SizeF_int(out CGRect retval, IntPtr receiver, IntPtr selector, CGSize arg1, nint arg2);
 
 		// not bound
 		public static CGRect BoundingRect(this NSAttributedString str, CGSize size, NSStringDrawingOptions options)
 		{
 			CGRect rect;
-			RectangleF_objc_msgSend_stret_SizeF_int(out rect, str.Handle, selBoundingRectWithSize, size, (int)options);
+			Messaging.RectangleF_objc_msgSend_stret_SizeF_int(out rect, str.Handle, selBoundingRectWithSize, size, (int)options);
 			return rect;
 		}
 
 		static readonly IntPtr selNextEventMatchingMask = Selector.GetHandle("nextEventMatchingMask:untilDate:inMode:dequeue:");
 
-		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		static extern IntPtr IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(IntPtr receiver, IntPtr selector, nuint mask, IntPtr untilDate, IntPtr mode, bool dequeue);
-
 		// untilDate isn't allowed null
 		public static NSEvent NextEventEx(this NSApplication app, NSEventMask mask, NSDate untilDate, NSString mode, bool dequeue)
 		{
-			return (NSEvent)Runtime.GetNSObject(IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (nuint)(uint)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
+			return (NSEvent)Runtime.GetNSObject(Messaging.IntPtr_objc_msgSend_nuint_IntPtr_IntPtr_bool(app.Handle, selNextEventMatchingMask, (nuint)(uint)mask, untilDate != null ? untilDate.Handle : IntPtr.Zero, mode.Handle, dequeue));
 		}
 
-		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		static extern void void_objc_msgSend_NSRange_CGPoint(IntPtr receiver, IntPtr selector, NSRange arg1, CGPoint arg2);
 
 		static readonly IntPtr selDrawGlyphs = Selector.GetHandle("drawGlyphsForGlyphRange:atPoint:");
 
 		// not bound
 		public static void DrawGlyphs(this NSLayoutManager layout, NSRange range, CGPoint point)
 		{
-			void_objc_msgSend_NSRange_CGPoint(layout.Handle, selDrawGlyphs, range, point);
+			Messaging.void_objc_msgSend_NSRange_CGPoint(layout.Handle, selDrawGlyphs, range, point);
+		}
+
+		static readonly IntPtr selRetain = Selector.GetHandle("retain");
+		static readonly IntPtr selRelease = Selector.GetHandle("release");
+
+		public static void Retain(IntPtr handle)
+		{
+			Messaging.void_objc_msgSend(handle, selRetain);
+		}
+
+		public static void Release(IntPtr handle)
+		{
+			Messaging.void_objc_msgSend(handle, selRelease);
 		}
 
 		#if !XAMMAC
