@@ -161,7 +161,7 @@ namespace Eto.Mac.Forms
 
 		public void Quit()
 		{
-			NSApplication.SharedApplication.Terminate(AppDelegate);
+			NSApplication.SharedApplication.Terminate((NSObject)AppDelegate ?? NSApplication.SharedApplication);
 		}
 
 		public bool QuitIsSupported { get { return true; } }
