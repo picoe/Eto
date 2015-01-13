@@ -24,7 +24,12 @@ namespace Eto.Wpf.Forms.Controls
 			header.Children.Add(headerText);
 			Control.Header = header;
 
-			Control.Content = content = new swc.DockPanel { LastChildFill = true };
+			Control.Content = content = new swc.DockPanel
+			{
+				LastChildFill = true,
+				VerticalAlignment = sw.VerticalAlignment.Stretch,
+				HorizontalAlignment = sw.HorizontalAlignment.Stretch
+			};
 		}
 
 		public string Text
