@@ -1,5 +1,8 @@
 using System;
 using Eto.Drawing;
+using System.Linq;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -71,6 +74,16 @@ namespace Eto.Mac.Drawing
 			Weight = (int)manager.WeightOfFont(font);
 			Traits = traits ?? manager.TraitsOfFont(font);
 			name = (NSString)descriptor.FontAttributes[NSFontFaceAttribute];
+			if (name == null)
+			{
+				// no attribute, find font face based on postscript name
+				var members = manager.AvailableMembersOfFontFamily(font.FamilyName);
+				var member = members.FirstOrDefault(r => (string)(NSString)Runtime.GetNSObject(r.ValueAt(0)) == PostScriptName);
+				if (member != null)
+				{
+					name = (string)(NSString)Runtime.GetNSObject(member.ValueAt(1));
+				}
+			}
 		}
 
 		public FontTypefaceHandler(string postScriptName, string name, NSFontTraitMask traits, int weight)
