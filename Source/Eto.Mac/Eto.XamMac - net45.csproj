@@ -9,6 +9,7 @@
     <RootNamespace>Eto.Mac</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.XamMac</AssemblyName>
+    <UseMSBuildEngine>True</UseMSBuildEngine>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
