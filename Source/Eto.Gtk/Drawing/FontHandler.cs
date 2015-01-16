@@ -52,10 +52,12 @@ namespace Eto.GtkSharp.Drawing
 		{
 		}
 
-		public FontHandler(Pango.FontDescription fontDescription, string familyName = null)
+		public FontHandler(Pango.FontDescription fontDescription, string familyName = null, FontDecoration? decorations = null)
 		{
 			Control = fontDescription;
 			this.familyName = familyName;
+			if (decorations != null)
+				FontDecoration = decorations.Value;
 		}
 
 		public FontHandler(string fontName)

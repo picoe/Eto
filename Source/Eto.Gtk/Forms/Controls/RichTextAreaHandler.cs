@@ -274,17 +274,22 @@ namespace Eto.GtkSharp.Forms.Controls
 			get
 			{
 				const string prefix = FontTagName + "-";
+				var weightTag = GetSelectionTag(WeightTagName);
+				var weight = weightTag != null ? weightTag.Weight : Pango.Weight.Normal;
+				var styleTag = GetSelectionTag(StyleTagName);
+				var style = styleTag != null ? styleTag.Style : Pango.Style.Normal;
+				var decoration = FontDecoration.None;
+				if (SelectionUnderline)
+					decoration |= FontDecoration.Underline;
+				if (SelectionStrikethrough)
+					decoration |= FontDecoration.Strikethrough;
+				Pango.FontDescription fontDesc = null;
 				var tag = SelectionIter.Tags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal))
 					?? insertTags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal));
 				if (tag != null)
 				{
-					var weightTag = GetSelectionTag(WeightTagName);
-					var weight = weightTag != null ? weightTag.Weight : Pango.Weight.Normal;
-					var styleTag = GetSelectionTag(StyleTagName);
-					var style = styleTag != null ? styleTag.Style : Pango.Style.Normal;
 					var family = FontFamilyHandler.GetFontFamily(tag.Family);
 					var stretch = tag.Stretch;
-					Pango.FontDescription fontDesc = null;
 					foreach (var face in family.Faces)
 					{
 						var faceDesc = face.Describe();
@@ -297,10 +302,13 @@ namespace Eto.GtkSharp.Forms.Controls
 					if (fontDesc == null)
 						fontDesc = family.Faces[0].Describe();
 					fontDesc.Size = tag.Size;
-					return new Font(new FontHandler(fontDesc));
+					return new Font(new FontHandler(fontDesc, decorations: decoration));
 				}
-				return Font;
-				//return (tag != null ? tag.FontDesc.ToEto(tag.Family) : null) ?? Font;
+				fontDesc = FontControl.Style.FontDescription.Copy();
+				fontDesc.Style = style;
+				fontDesc.Weight = weight;
+
+				return new Font(new FontHandler(fontDesc, decorations: decoration));
 			}
 			set
 			{
@@ -314,16 +322,8 @@ namespace Eto.GtkSharp.Forms.Controls
 					tag.Stretch = pangoFont.Stretch;
 					tag.StretchSet = true;
 				});
-				ApplySelectionTag(StyleTagName, pangoFont.Style.ToString(), tag =>
-				{
-					tag.Style = pangoFont.Style;
-					tag.StyleSet = true;
-				});
-				ApplySelectionTag(WeightTagName, pangoFont.Weight.ToString(), tag =>
-				{
-					tag.Weight = pangoFont.Weight;
-					tag.WeightSet = true;
-				});
+				SelectionBold = value.Bold;
+				SelectionItalic = value.Italic;
 				SelectionUnderline = value.FontDecoration.HasFlag(FontDecoration.Underline);
 				SelectionStrikethrough = value.FontDecoration.HasFlag(FontDecoration.Strikethrough);
 			}
