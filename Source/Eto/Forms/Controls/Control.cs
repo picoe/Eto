@@ -1092,12 +1092,12 @@ namespace Eto.Forms
 		/// <summary>
 		/// Updates all bindings in this widget
 		/// </summary>
-		public virtual void UpdateBindings()
+		public virtual void UpdateBindings(BindingUpdateMode mode = BindingUpdateMode.Source)
 		{
 			var bindings = Properties.Get<BindingCollection>(BindingsKey);
 			if (bindings != null)
 			{
-				bindings.Update();
+				bindings.Update(mode);
 			}
 		}
 

@@ -38,7 +38,7 @@ namespace Eto
 		/// </remarks>
 		OneTime
 	}
-	
+
 	/// <summary>
 	/// Binding for joining two object bindings together
 	/// </summary>
@@ -50,7 +50,7 @@ namespace Eto
 	public class DualBinding<T> : Binding
 	{
 		bool channeling;
-		
+
 		/// <summary>
 		/// Gets the source binding
 		/// </summary>
@@ -65,7 +65,7 @@ namespace Eto
 		/// Gets the mode of the binding
 		/// </summary>
 		public DualBindingMode Mode { get; private set; }
-		
+
 		/// <summary>
 		/// Initializes a new instance of the DualBinding class with two object property bindings
 		/// </summary>
@@ -74,8 +74,8 @@ namespace Eto
 		/// <param name="destination">Object to set the destination value to</param>
 		/// <param name="destinationProperty">Property to set on the destination</param>
 		/// <param name="mode">Mode of the binding</param>
-		public DualBinding (object source, string sourceProperty, object destination, string destinationProperty, DualBindingMode mode = DualBindingMode.TwoWay)
-			: this (
+		public DualBinding(object source, string sourceProperty, object destination, string destinationProperty, DualBindingMode mode = DualBindingMode.TwoWay)
+			: this(
 				new ObjectBinding<object, T>(source, sourceProperty),
 				new ObjectBinding<object, T>(destination, destinationProperty),
 				mode
@@ -89,37 +89,38 @@ namespace Eto
 		/// <param name="source">Binding for retrieving the source value from</param>
 		/// <param name="destination">Binding for setting the destination value to</param>
 		/// <param name="mode">Mode of the binding</param>
-		public DualBinding (DirectBinding<T> source, DirectBinding<T> destination, DualBindingMode mode = DualBindingMode.TwoWay)
+		public DualBinding(DirectBinding<T> source, DirectBinding<T> destination, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			this.Source = source;
 			this.Destination = destination;
 			this.Mode = mode;
-			
+
 			if (mode == DualBindingMode.OneWay || mode == DualBindingMode.TwoWay)
 				source.DataValueChanged += HandleSourceChanged;
 			if (mode == DualBindingMode.OneWayToSource || mode == DualBindingMode.TwoWay)
 				destination.DataValueChanged += HandleDestinationChanged;
 
 			// set initial value
-			this.SetDestination ();
-		}
-		
-		void HandleSourceChanged (object sender, EventArgs e)
-		{
-			SetDestination ();
+			this.SetDestination();
 		}
 
-		void HandleDestinationChanged (object sender, EventArgs e)
+		void HandleSourceChanged(object sender, EventArgs e)
 		{
-			SetSource ();
+			SetDestination();
 		}
-		
+
+		void HandleDestinationChanged(object sender, EventArgs e)
+		{
+			SetSource();
+		}
+
 		/// <summary>
 		/// Sets the source object's property with the value of the destination
 		/// </summary>
-		public void SetSource ()
+		public void SetSource()
 		{
-			if (!channeling) {
+			if (!channeling)
+			{
 				channeling = true;
 				Source.DataValue = Destination.DataValue;
 				channeling = false;
@@ -129,34 +130,38 @@ namespace Eto
 		/// <summary>
 		/// Sets the destination object's property with the value of the source
 		/// </summary>
-		public void SetDestination ()
+		public void SetDestination()
 		{
-			if (!channeling) {
+			if (!channeling)
+			{
 				channeling = true;
 				Destination.DataValue = Source.DataValue;
 				channeling = false;
 			}
 		}
-		
+
 		/// <summary>
 		/// Updates the binding value (sets the source with the value of the destination)
 		/// </summary>
-		public override void Update ()
+		public override void Update(BindingUpdateMode mode = BindingUpdateMode.Destination)
 		{
-			base.Update ();
-			
-			SetSource ();
+			base.Update(mode);
+
+			if (mode == BindingUpdateMode.Source)
+				SetSource();
+			else
+				SetDestination();
 		}
-		
+
 		/// <summary>
 		/// Unbinds both the source and destination bindings
 		/// </summary>
-		public override void Unbind ()
+		public override void Unbind()
 		{
-			base.Unbind ();
-			
-			Source.Unbind ();
-			Destination.Unbind ();
+			base.Unbind();
+
+			Source.Unbind();
+			Destination.Unbind();
 		}
 	}
 }
