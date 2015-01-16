@@ -125,6 +125,7 @@
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SwfWebViewHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />

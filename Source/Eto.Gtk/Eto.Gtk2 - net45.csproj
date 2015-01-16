@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{80915A80-CA54-11E3-9C1A-0800200C9A66}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Eto.Gtk2</RootNamespace>
+    <RootNamespace>Eto.GtkSharp</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Gtk2</AssemblyName>
   </PropertyGroup>
@@ -245,6 +245,7 @@
     <Compile Include="Forms\GtkControl.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

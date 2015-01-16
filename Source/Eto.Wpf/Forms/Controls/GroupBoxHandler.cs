@@ -33,7 +33,7 @@ namespace Eto.Wpf.Forms.Controls
 		public Font Font
 		{
 			get { return font; }
-			set { font = FontHandler.Apply(Header, r => AccessText.TextDecorations = r, value); }
+			set { font = Header.SetEtoFont(value, r => AccessText.TextDecorations = r); }
 		}
 
 		public string Text
