@@ -567,5 +567,15 @@ namespace Eto.GtkSharp
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Pango.FontDescription ToPango(this Font font)
+		{
+			return font == null ? null : ((FontHandler)font.Handler).Control;
+		}
+
+		public static Font ToEto(this Pango.FontDescription fontDesc, string familyName = null)
+		{
+			return fontDesc == null ? null : new Font(new FontHandler(fontDesc, familyName));
+		}
 	}
 }

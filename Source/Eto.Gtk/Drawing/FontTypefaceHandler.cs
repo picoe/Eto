@@ -19,9 +19,9 @@ namespace Eto.GtkSharp.Drawing
 			get {
 				var style = FontStyle.None;
 				var description = Control.Describe ();
-				if (description.Style.HasFlag (Pango.Style.Italic))
+				if (description.Style == Pango.Style.Italic || description.Style == Pango.Style.Oblique)
 					style |= FontStyle.Italic;
-				if (description.Weight.HasFlag (Pango.Weight.Bold))
+				if ((int)description.Weight >= (int)Pango.Weight.Semibold)
 					style |= FontStyle.Bold;
 				return style;
 			}

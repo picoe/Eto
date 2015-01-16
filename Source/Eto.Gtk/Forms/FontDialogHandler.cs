@@ -2,6 +2,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using System;
 using Eto.GtkSharp.Drawing;
+using System.Text;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -41,7 +42,29 @@ namespace Eto.GtkSharp.Forms
 			if (Font != null)
 			{
 				var fontHandler = Font.Handler as FontHandler;
-				Control.SetFontName(fontHandler.Control.ToString());
+				var pangoFont = fontHandler.Control;
+				var sb = new StringBuilder();
+				sb.Append(fontHandler.FamilyName);
+				if (pangoFont.Style != Pango.Style.Normal && Enum.IsDefined(typeof(Pango.Style), pangoFont.Style))
+				{
+					sb.Append(" ");
+					sb.Append(pangoFont.Style.ToString());
+				}
+				if (pangoFont.Weight != Pango.Weight.Normal && Enum.IsDefined(typeof(Pango.Weight), pangoFont.Weight))
+				{
+					sb.Append(" ");
+					sb.Append(pangoFont.Weight.ToString());
+				}
+				if (pangoFont.Stretch != Pango.Stretch.Normal && Enum.IsDefined(typeof(Pango.Stretch), pangoFont.Stretch) )
+				{
+					sb.Append(" ");
+					sb.Append(pangoFont.Stretch.ToString());
+				}
+				sb.Append(" ");
+				sb.Append(((int)fontHandler.Size).ToString());
+
+				Console.WriteLine("Selecting font: {0}", sb);
+				Control.SetFontName(sb.ToString());
 			}
 			else
 				Control.SetFontName(string.Empty);
