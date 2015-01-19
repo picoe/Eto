@@ -30,7 +30,7 @@ namespace Eto.Mac.Forms.Menu
 			Control.Action = MenuActionHandler.selActivate;
 		}
 
-		public void HandleClick()
+		public override void Activate()
 		{
 			Callback.OnClick(Widget, EventArgs.Empty);
 			

@@ -4,6 +4,22 @@ using System.Globalization;
 namespace Eto
 {
 	/// <summary>
+	/// Mode for updating the binding
+	/// </summary>
+	public enum BindingUpdateMode
+	{
+		/// <summary>
+		/// Update the binding source (usually the model)
+		/// </summary>
+		Source,
+
+		/// <summary>
+		/// Update the binding destination (usually the control)
+		/// </summary>
+		Destination
+	}
+
+	/// <summary>
 	/// Base binding interface
 	/// </summary>
 	/// <remarks>
@@ -29,7 +45,8 @@ namespace Eto
 		/// Typically the source would be your custom class and the destination would be a UI control, but this is not
 		/// always the case.
 		/// </remarks>
-		void Update();
+		/// <param name="mode">Direction of the update</param>
+		void Update(BindingUpdateMode mode = BindingUpdateMode.Source);
 	}
 
 	/// <summary>
@@ -57,10 +74,10 @@ namespace Eto
 		/// <summary>
 		/// Handles the <see cref="Changing"/> event
 		/// </summary>
-		protected virtual void OnChanging (BindingChangingEventArgs e)
+		protected virtual void OnChanging(BindingChangingEventArgs e)
 		{
 			if (Changing != null)
-				Changing (this, e);
+				Changing(this, e);
 		}
 
 		/// <summary>
@@ -71,10 +88,10 @@ namespace Eto
 		/// <summary>
 		/// Handles the <see cref="Changed"/> event
 		/// </summary>
-		protected virtual void OnChanged (BindingChangedEventArgs e)
+		protected virtual void OnChanged(BindingChangedEventArgs e)
 		{
 			if (Changed != null)
-				Changed (this, e);
+				Changed(this, e);
 		}
 
 		#endregion
@@ -87,14 +104,19 @@ namespace Eto
 		/// are changed.  This is called to unbind the binding from the objects so that they can be
 		/// garbage collected
 		/// </remarks>
-		public virtual void Unbind ()
+		public virtual void Unbind()
 		{
 		}
-		
+
 		/// <summary>
 		/// Updates the bound target object's value
 		/// </summary>
-		public virtual void Update ()
+		/// <remarks>
+		/// Typically the source would be your custom class and the destination would be a UI control, but this is not
+		/// always the case.
+		/// </remarks>
+		/// <param name="mode">Direction of the update</param>
+		public virtual void Update(BindingUpdateMode mode = BindingUpdateMode.Destination)
 		{
 		}
 
@@ -102,18 +124,18 @@ namespace Eto
 		/// Called to handle an event for this binding
 		/// </summary>
 		/// <param name="id"></param>
-		protected virtual void HandleEvent (string id)
+		protected virtual void HandleEvent(string id)
 		{
 #if DEBUG
-			throw new EtoException(string.Format (CultureInfo.CurrentCulture, "This binding does not support the {0} event", id));
+			throw new EtoException(string.Format(CultureInfo.CurrentCulture, "This binding does not support the {0} event", id));
 #endif
 		}
-		
+
 		/// <summary>
 		/// Called to remove an event for this binding
 		/// </summary>
 		/// <param name="id"></param>
-		protected virtual void RemoveEvent (string id)
+		protected virtual void RemoveEvent(string id)
 		{
 		}
 	}

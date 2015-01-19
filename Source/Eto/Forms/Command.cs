@@ -144,7 +144,7 @@ namespace Eto.Forms
 		/// <param name="generator">Generator.</param>
 		public override ToolItem CreateToolItem(Generator generator)
 		{
-			throw new NotSupportedException();
+			return new RadioToolItem(this);
 		}
 
 		#pragma warning restore 672,612,618

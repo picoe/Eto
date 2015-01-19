@@ -384,6 +384,13 @@ namespace Eto.Mac
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Font ToEto(this NSFont font)
+		{
+			if (font == null)
+				return null;
+			return new Font(new FontHandler(font));
+		}
 	}
 }
 

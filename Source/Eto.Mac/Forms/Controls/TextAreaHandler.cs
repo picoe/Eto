@@ -38,26 +38,74 @@ using nnint = System.Int32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TextAreaHandler : MacView<NSTextView, TextArea, TextArea.ICallback>, TextArea.IHandler
+	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
-		int? lastCaretIndex;
-		Range<int> lastSelection;
+	}
 
-		public class EtoTextView : NSTextView, IMacControl
+	public interface ITextAreaHandler
+	{
+		TextArea.ICallback Callback { get; }
+
+		TextArea Widget { get; }
+
+		Range<int> Selection { get; }
+
+		int CaretIndex { get; }
+
+		Range<int> lastSelection { get; set; }
+		int? lastCaretIndex { get; set; }
+	}
+
+	public class EtoTextAreaDelegate : NSTextViewDelegate
+	{
+		WeakReference handler;
+
+		public ITextAreaHandler Handler { get { return (ITextAreaHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
+		public override void TextDidChange(NSNotification notification)
 		{
-			public WeakReference WeakHandler { get; set; }
+			Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+		}
 
-			public object Handler
-			{ 
-				get { return WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
-			}
-
-			public override void ChangeColor(NSObject sender)
+		public override void DidChangeSelection(NSNotification notification)
+		{
+			var selection = Handler.Selection;
+			if (selection != Handler.lastSelection)
 			{
-				// ignore color changes
+				Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+				Handler.lastSelection = selection;
+			}
+			var caretIndex = Handler.CaretIndex;
+			if (caretIndex != Handler.lastCaretIndex)
+			{
+				Handler.Callback.OnCaretIndexChanged(Handler.Widget, EventArgs.Empty);
+				Handler.lastCaretIndex = caretIndex;
 			}
 		}
+	}
+
+	public class EtoTextView : NSTextView, IMacControl
+	{
+		public WeakReference WeakHandler { get; set; }
+
+		public object Handler
+		{ 
+			get { return WeakHandler.Target; }
+			set { WeakHandler = new WeakReference(value); } 
+		}
+
+		public override void ChangeColor(NSObject sender)
+		{
+			// ignore color changes
+		}
+	}
+
+	public class TextAreaHandler<TControl, TCallback> : MacView<NSTextView, TControl, TCallback>, TextArea.IHandler, ITextAreaHandler
+		where TControl: TextArea
+		where TCallback: TextArea.ICallback
+	{
+		int? ITextAreaHandler.lastCaretIndex { get; set; }
+		Range<int> ITextAreaHandler.lastSelection { get; set; }
 
 		public override void OnKeyDown(KeyEventArgs e)
 		{
@@ -89,41 +137,13 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Scroll; }
 		}
-		// Remove use of delegate when events work correctly in MonoMac
-		public class EtoDelegate : NSTextViewDelegate
-		{
-			WeakReference handler;
-
-			public TextAreaHandler Handler { get { return (TextAreaHandler)handler.Target; } set { handler = new WeakReference(value); } }
-
-			public override void TextDidChange(NSNotification notification)
-			{
-				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
-			}
-
-			public override void DidChangeSelection(NSNotification notification)
-			{
-				var selection = Handler.Selection;
-				if (selection != Handler.lastSelection)
-				{
-					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
-					Handler.lastSelection = selection;
-				}
-				var caretIndex = Handler.CaretIndex;
-				if (caretIndex != Handler.lastCaretIndex)
-				{
-					Handler.Callback.OnCaretIndexChanged(Handler.Widget, EventArgs.Empty);
-					Handler.lastCaretIndex = caretIndex;
-				}
-			}
-		}
 
 		public TextAreaHandler()
 		{
 			Control = new EtoTextView
 			{
 				Handler = this,
-				Delegate = new EtoDelegate { Handler = this },
+				Delegate = new EtoTextAreaDelegate { Handler = this },
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
 				HorizontallyResizable = true,
 				VerticallyResizable = true,
@@ -214,7 +234,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public string Text
+		public virtual string Text
 		{
 			get
 			{
@@ -387,5 +407,15 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public bool SpellCheckIsSupported { get { return true; } }
+
+		TextArea.ICallback ITextAreaHandler.Callback
+		{
+			get { return Callback; }
+		}
+
+		TextArea ITextAreaHandler.Widget
+		{
+			get { return Widget; }
+		}
 	}
 }

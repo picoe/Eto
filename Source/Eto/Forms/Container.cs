@@ -202,14 +202,14 @@ namespace Eto.Forms
 		/// <summary>
 		/// Updates all bindings in this widget, and recurses to this container's children
 		/// </summary>
-		public override void UpdateBindings()
+		public override void UpdateBindings(BindingUpdateMode mode = BindingUpdateMode.Source)
 		{
-			base.UpdateBindings();
+			base.UpdateBindings(mode);
 			if (Handler.RecurseToChildren)
 			{
 				foreach (var control in Controls)
 				{
-					control.UpdateBindings();
+					control.UpdateBindings(mode);
 				}
 			}
 		}

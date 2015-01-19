@@ -9,6 +9,7 @@ using sw = System.Windows;
 using sp = System.Printing;
 using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
+using swd = System.Windows.Documents;
 using System.Text.RegularExpressions;
 using Eto.Wpf.Drawing;
 
@@ -632,5 +633,58 @@ namespace Eto.Wpf
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Font SetEtoFont(this swc.Control control, Font font, Action<sw.TextDecorationCollection> setDecorations = null)
+		{
+			if (control == null) return font;
+			if (font != null)
+			{
+				((FontHandler)font.Handler).Apply(control, setDecorations);
+			}
+			else
+			{
+				control.SetValue(swc.Control.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
+			}
+			return font;
+		}
+
+		public static Font SetEtoFont(this swd.TextRange control, Font font)
+		{
+			if (control == null) return font;
+			if (font != null)
+			{
+				((FontHandler)font.Handler).Apply(control);
+			}
+			else
+			{
+				control.ApplyPropertyValue(swd.TextElement.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
+				control.ApplyPropertyValue(swd.TextElement.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
+				control.ApplyPropertyValue(swd.TextElement.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
+				control.ApplyPropertyValue(swd.TextElement.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
+				control.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, new sw.TextDecorationCollection());
+			}
+			return font;
+		}
+
+		public static Font SetEtoFont(this swc.TextBlock control, Font font, Action<sw.TextDecorationCollection> setDecorations = null)
+		{
+			if (control == null) return font;
+			if (font != null)
+			{
+				((FontHandler)font.Handler).Apply(control, setDecorations);
+			}
+			else
+			{
+				control.SetValue(swc.Control.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
+			}
+			return font;
+		}
+
 	}
 }

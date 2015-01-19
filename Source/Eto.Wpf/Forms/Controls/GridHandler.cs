@@ -287,7 +287,7 @@ namespace Eto.Wpf.Forms.Controls
 				set
 				{
 					font = value;
-					FontHandler.Apply(Cell, null, font);
+					Cell.SetEtoFont(font);
 				}
 			}
 

@@ -34,7 +34,7 @@ namespace Eto.Forms
 		{
 			Checked = command.Checked;
 			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
+			CheckedChanged += (sender, e) => command.Checked = Checked;
 			Handler.CreateFromCommand(command);
 		}
 

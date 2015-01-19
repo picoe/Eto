@@ -4,6 +4,7 @@ using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using sw = System.Windows;
 using sd = System.Drawing;
+using swd = System.Windows.Documents;
 
 namespace Eto.Wpf.Drawing
 {
@@ -35,6 +36,27 @@ namespace Eto.Wpf.Drawing
 			{
 				setDecorations(WpfTextDecorations);
 			}
+		}
+
+		public void Apply(swd.TextElement control, Action<sw.TextDecorationCollection> setDecorations)
+		{
+			control.FontFamily = WpfFamily;
+			control.FontStyle = WpfFontStyle;
+			control.FontWeight = WpfFontWeight;
+			control.FontSize = PixelSize;
+			if (setDecorations != null && WpfTextDecorations != null)
+			{
+				setDecorations(WpfTextDecorations);
+			}
+		}
+
+		public void Apply(swd.TextRange control)
+		{
+			control.ApplyPropertyValue(swd.TextElement.FontFamilyProperty, WpfFamily);
+			control.ApplyPropertyValue(swd.TextElement.FontStyleProperty, WpfFontStyle);
+			control.ApplyPropertyValue(swd.TextElement.FontWeightProperty, WpfFontWeight);
+			control.ApplyPropertyValue(swd.TextElement.FontSizeProperty, PixelSize);
+			control.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, WpfTextDecorations);
 		}
 
 		sd.Font SDFont
@@ -91,40 +113,6 @@ namespace Eto.Wpf.Drawing
 			return points * (72.0 / 96.0);
 		}
 
-		public static Font Apply(swc.Control control, Action<sw.TextDecorationCollection> setDecorations, Font font)
-		{
-			if (control == null) return font;
-			if (font != null)
-			{
-				((FontHandler)font.Handler).Apply(control, setDecorations);
-			}
-			else
-			{
-				control.SetValue(swc.Control.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
-				control.SetValue(swc.Control.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
-				control.SetValue(swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
-				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
-			}
-			return font;
-		}
-
-		public static Font Apply(swc.TextBlock control, Action<sw.TextDecorationCollection> setDecorations, Font font)
-		{
-			if (control == null) return font;
-			if (font != null)
-			{
-				((FontHandler)font.Handler).Apply(control, setDecorations);
-			}
-			else
-			{
-				control.SetValue(swc.Control.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
-				control.SetValue(swc.Control.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
-				control.SetValue(swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
-				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
-			}
-			return font;
-		}
-
 		public sw.FontStyle WpfFontStyle { get; set; }
 
 		public sw.TextDecorationCollection WpfTextDecorations { get; set; }
@@ -151,6 +139,21 @@ namespace Eto.Wpf.Drawing
 			this.Size = PixelsToPoints(control.FontSize, control);
 			this.WpfFontStyle = control.FontStyle;
 			this.WpfFontWeight = control.FontWeight;
+			var decorations = control.TextDecorations;
+			if (decorations != null)
+				this.WpfTextDecorations = new sw.TextDecorationCollection(decorations);
+		}
+
+		public FontHandler(swd.TextSelection range, sw.FrameworkElement control)
+		{
+			var wpfFamily = range.GetPropertyValue(swd.TextElement.FontFamilyProperty) as swm.FontFamily ?? swd.TextElement.GetFontFamily(control);
+			this.Family = new FontFamily(new FontFamilyHandler(wpfFamily));
+			this.Size = PixelsToPoints(range.GetPropertyValue(swd.TextElement.FontSizeProperty) as double? ?? swd.TextElement.GetFontSize(control), control);
+			this.WpfFontStyle = range.GetPropertyValue(swd.TextElement.FontStyleProperty) as sw.FontStyle? ?? swd.TextElement.GetFontStyle(control);
+			this.WpfFontWeight = range.GetPropertyValue(swd.TextElement.FontWeightProperty) as sw.FontWeight? ?? swd.TextElement.GetFontWeight(control);
+			var decorations = range.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
+			if (decorations != null)
+				this.WpfTextDecorations = new sw.TextDecorationCollection(decorations);
 		}
 
 		public FontHandler(swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)

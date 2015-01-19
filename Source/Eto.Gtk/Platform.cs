@@ -122,8 +122,8 @@ namespace Eto.GtkSharp
 			p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
 			p.Add<TreeView.IHandler>(() => new TreeViewHandler());
 			p.Add<WebView.IHandler>(() => new WebViewHandler());
-			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
-			
+			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
+
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
 			p.Add<ContextMenu.IHandler>(() => new ContextMenuHandler());
@@ -160,6 +160,7 @@ namespace Eto.GtkSharp
 			p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
+			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

@@ -26,11 +26,11 @@ namespace Eto.Mac.Forms.Menu
 			Control.Action = MenuActionHandler.selActivate;
 		}
 		
-		public void HandleClick ()
+		public override void Activate()
 		{
-			Callback.OnClick (Widget, EventArgs.Empty);
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
-		
+
 		#region IMenuItem Members
 
 		public bool Enabled {

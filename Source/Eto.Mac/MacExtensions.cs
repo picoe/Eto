@@ -83,6 +83,19 @@ namespace Eto.Mac
 			Messaging.void_objc_msgSend(handle, selRelease);
 		}
 
+		static readonly IntPtr selShouldChangeTextInRangeReplacementString_Handle = Selector.GetHandle("shouldChangeTextInRange:replacementString:");
+
+		// replacementString should allow nulls
+		public static bool ShouldChangeTextNew(this NSTextView textView, NSRange affectedCharRange, string replacementString)
+		{
+			IntPtr intPtr = replacementString != null ? NSString.CreateNative(replacementString) : IntPtr.Zero;
+			bool result;
+			result = Messaging.bool_objc_msgSend_NSRange_IntPtr(textView.Handle, selShouldChangeTextInRangeReplacementString_Handle, affectedCharRange, intPtr);
+			if (intPtr != IntPtr.Zero)
+				NSString.ReleaseNative(intPtr);
+			return result;
+		}
+
 		#if !XAMMAC
 		public static void DangerousRetain(this NSObject obj)
 		{

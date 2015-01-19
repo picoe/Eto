@@ -8,6 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Mac</RootNamespace>
     <AssemblyName>Eto.XamMac</AssemblyName>
+    <UseMSBuildEngine>True</UseMSBuildEngine>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -205,6 +206,7 @@
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
+    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

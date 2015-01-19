@@ -63,7 +63,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				return font ?? (font = new Font(new FontHandler(text.FontDesc)));
+				return font ?? (font = text.FontDesc.ToEto());
 			}
 			set
 			{

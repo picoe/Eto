@@ -21,53 +21,69 @@ namespace Eto.Test.Sections.Controls
 			{
 				Rows =
 				{
-					TableLayout.Horizontal(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), null).With(r => r.Padding = Padding.Empty),
-					TableLayout.Horizontal(null, SetAlignment(text), SetCaretButton(text), ChangeColorButton(text), null).With(r => r.Padding = Padding.Empty),
-					TableLayout.Horizontal
-					(
-						null, 
-						EnabledCheckBox(text), 
-						ReadOnlyCheckBox(text), 
-						AcceptsTabCheckBox(text), 
-						AcceptsReturnCheckBox(text), 
-						WrapCheckBox(text), 
-						SpellCheckCheckBox(text), 
-						null
-					).With(r => r.Padding = Padding.Empty),
+					TextAreaOptions(text),
+					TextAreaOptions2(text),
+					TextAreaOptions3(text),
 					text
 				}
 			};
 		}
 
-		Control WrapCheckBox(TextArea text)
+		public static Control TextAreaOptions(TextArea text)
+		{
+			return TableLayout.Horizontal(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), null).With(r => r.Padding = Padding.Empty);
+		}
+
+		public static Control TextAreaOptions2(TextArea text)
+		{
+			return TableLayout.Horizontal(null, SetAlignment(text), SetCaretButton(text), ChangeColorButton(text), null).With(r => r.Padding = Padding.Empty);
+		}
+
+		public static Control TextAreaOptions3(TextArea text)
+		{
+			return TableLayout.Horizontal
+								(
+									null,
+									EnabledCheckBox(text),
+									ReadOnlyCheckBox(text),
+									AcceptsTabCheckBox(text),
+									AcceptsReturnCheckBox(text),
+									WrapCheckBox(text),
+									SpellCheckCheckBox(text),
+									null
+								).With(r => r.Padding = Padding.Empty);
+
+		}
+
+		static Control WrapCheckBox(TextArea text)
 		{
 			var control = new CheckBox { Text = "Wrap" };
 			control.CheckedBinding.Bind(text, t => t.Wrap);
 			return control;
 		}
 
-		Control AcceptsReturnCheckBox(TextArea text)
+		static Control AcceptsReturnCheckBox(TextArea text)
 		{
 			var control = new CheckBox { Text = "AcceptsReturn" };
 			control.CheckedBinding.Bind(text, t => t.AcceptsReturn);
 			return control;
 		}
 
-		Control AcceptsTabCheckBox(TextArea text)
+		static Control AcceptsTabCheckBox(TextArea text)
 		{
 			var control = new CheckBox { Text = "AcceptsTab" };
 			control.CheckedBinding.Bind(text, t => t.AcceptsTab);
 			return control;
 		}
 
-		Control SpellCheckCheckBox(TextArea text)
+		static Control SpellCheckCheckBox(TextArea text)
 		{
 			var control = new CheckBox { Text = "SpellCheck", Enabled = text.SpellCheckIsSupported };
 			control.CheckedBinding.Bind(text, t => t.SpellCheck);
 			return control;
 		}
 
-		Control SetAlignment(TextArea text)
+		static Control SetAlignment(TextArea text)
 		{
 			var control = new EnumDropDown<HorizontalAlign>();
 			control.SelectedValueBinding.Bind(text, t => t.HorizontalAlign);
@@ -79,14 +95,14 @@ namespace Eto.Test.Sections.Controls
 			};
 		}
 
-		Control ShowSelectedText(TextArea text)
+		static Control ShowSelectedText(TextArea text)
 		{
 			var control = new Button { Text = "Show selected text" };
-			control.Click += (sender, e) => MessageBox.Show(this, string.Format("Selected Text: {0}", text.SelectedText));
+			control.Click += (sender, e) => MessageBox.Show(text, string.Format("Selected Text: {0}", text.SelectedText));
 			return control;
 		}
 
-		Control SelectAll(TextArea text)
+		static Control SelectAll(TextArea text)
 		{
 			var control = new Button { Text = "Select All" };
 			control.Click += (sender, e) =>
@@ -97,7 +113,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control SetSelectedText(TextArea textArea)
+		static Control SetSelectedText(TextArea textArea)
 		{
 			var control = new Button { Text = "Set selected text" };
 			control.Click += (sender, e) =>
@@ -110,7 +126,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control ReplaceSelected(TextArea textArea)
+		static Control ReplaceSelected(TextArea textArea)
 		{
 			var control = new Button { Text = "Replace selected text" };
 			control.Click += (sender, e) =>
@@ -121,7 +137,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control SetCaretButton(TextArea textArea)
+		static Control SetCaretButton(TextArea textArea)
 		{
 			var control = new Button { Text = "Set Caret" };
 			control.Click += (sender, e) =>
@@ -132,7 +148,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control ChangeColorButton(TextArea textArea)
+		static Control ChangeColorButton(TextArea textArea)
 		{
 			var control = new Button { Text = "Change Color" };
 			control.Click += (sender, e) =>
@@ -143,14 +159,14 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control EnabledCheckBox(TextArea textArea)
+		static Control EnabledCheckBox(TextArea textArea)
 		{
 			var control = new CheckBox { Text = "Enabled" };
 			control.CheckedBinding.Bind(textArea, t => t.Enabled);
 			return control;
 		}
 
-		Control ReadOnlyCheckBox(TextArea textArea)
+		static Control ReadOnlyCheckBox(TextArea textArea)
 		{
 			var control = new CheckBox { Text = "ReadOnly" };
 			control.CheckedBinding.Bind(textArea, t => t.ReadOnly);
