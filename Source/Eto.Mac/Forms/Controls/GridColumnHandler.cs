@@ -48,6 +48,8 @@ namespace Eto.Mac.Forms.Controls
 
 		CGRect GetVisibleRect();
 
+		bool Loaded { get; }
+
 		void OnCellFormatting(GridColumn column, object item, int row, NSCell cell);
 	}
 
@@ -177,6 +179,12 @@ namespace Eto.Mac.Forms.Controls
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					cellHandler.Editable = value;
 				}
+				var table = Control.TableView;
+				if (DataViewHandler != null && DataViewHandler.Loaded && table != null)
+				{
+					table.SetNeedsDisplay();
+				}
+
 			}
 		}
 

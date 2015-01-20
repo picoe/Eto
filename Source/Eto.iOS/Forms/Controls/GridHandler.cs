@@ -94,6 +94,18 @@ namespace Eto.iOS.Forms.Controls
 		public void BeginEdit(int row, int column)
 		{
 		}
+
+		public void ScrollToRow(int row)
+		{
+			var index = NSIndexPath.FromRowSection(row, 0);
+			Control.ScrollToRow(index, UITableViewScrollPosition.None, Widget.Loaded);
+		}
+
+		public GridLines GridLines
+		{
+			get;
+			set;
+		}
 	}
 
 	public class GridHandlerTableDelegate : UITableViewDelegate

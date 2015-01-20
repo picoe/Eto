@@ -26,8 +26,6 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 		// Boilerplate
 		public ContextMenu ContextMenu { get; set; }
 
-		public bool ShowCellBorders { get; set; }
-
 		public bool ShowHeader { get; set; }
 
 		public int RowHeight { get; set; }
@@ -199,5 +197,11 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 				Handler.selectedRows.Clear();
 			}
 		}
+
+		public void ScrollToRow(int row)
+		{
+		}
+
+		public GridLines GridLines { get; set; }
 	}
 }

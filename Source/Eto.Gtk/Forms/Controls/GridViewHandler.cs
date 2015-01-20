@@ -10,8 +10,6 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		GtkEnumerableModel<object> model;
 		CollectionHandler collection;
-		bool showCellBorders;
-
 		protected override ITreeModelImplementor CreateModelImplementor()
 		{
 			model = new GtkEnumerableModel<object> { Handler = this, Count = collection != null ? collection.Count : 0 };
@@ -69,25 +67,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public bool ShowCellBorders
-		{
-			get { return showCellBorders; }
-			set
-			{
-				if (showCellBorders != value)
-				{
-					showCellBorders = value;
-					SetBorders();
-				}
-			}
-		}
-
-		protected override void UpdateColumns()
-		{
-			base.UpdateColumns();
-			SetBorders();
-		}
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -105,15 +84,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				default:
 					base.AttachEvent(id);
 					break;
-			}
-		}
-
-		void SetBorders()
-		{
-			int spacing = showCellBorders ? 10 : 0;
-			foreach (var column in Tree.Columns)
-			{
-				column.Spacing = spacing;
 			}
 		}
 

@@ -392,5 +392,50 @@ namespace Eto.Wpf.Forms.Controls
 			var gridColumn = Widget.Columns[dataGridColumn.DisplayIndex];
 			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, dataGridColumn.DisplayIndex, dataItem));
 		}
+
+		public void ScrollToRow(int row)
+		{
+			Control.ScrollIntoView(Control.Items[row]);
+		}
+
+		public GridLines GridLines
+		{
+			get
+			{
+				switch (Control.GridLinesVisibility)
+				{
+					case System.Windows.Controls.DataGridGridLinesVisibility.All:
+						return Eto.Forms.GridLines.Both;
+					case System.Windows.Controls.DataGridGridLinesVisibility.Horizontal:
+						return Eto.Forms.GridLines.Horizontal;
+					case System.Windows.Controls.DataGridGridLinesVisibility.None:
+						return Eto.Forms.GridLines.None;
+					case System.Windows.Controls.DataGridGridLinesVisibility.Vertical:
+						return Eto.Forms.GridLines.Vertical;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+			set
+			{
+				switch (value)
+				{
+					case GridLines.None:
+						Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
+						break;
+					case GridLines.Horizontal:
+						Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.Horizontal;
+						break;
+					case GridLines.Vertical:
+						Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.Vertical;
+						break;
+					case GridLines.Both:
+						Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.All;
+						break;
+					default:
+						break;
+				}
+			}
+		}
 	}
 }

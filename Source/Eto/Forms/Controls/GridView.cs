@@ -203,10 +203,11 @@ namespace Eto.Forms
 		/// Gets or sets a value indicating whether to show a border around each cell.
 		/// </summary>
 		/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
+		[Obsolete("Use Grid.GridLines instead")]
 		public bool ShowCellBorders
 		{
-			get { return Handler.ShowCellBorders; }
-			set { Handler.ShowCellBorders = value; }
+			get { return GridLines != GridLines.None; }
+			set { GridLines = value ? GridLines.Both : GridLines.None; }
 		}
 
 		#region Events
@@ -442,12 +443,6 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The grid's data store.</value>
 			IEnumerable<object> DataStore { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value indicating whether to show a border around each cell.
-			/// </summary>
-			/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
-			bool ShowCellBorders { get; set; }
 
 			/// <summary>
 			/// Gets an enumeration of the currently selected items

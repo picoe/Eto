@@ -38,12 +38,6 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
-		public bool ShowCellBorders
-		{
-			get { return false; }
-			set { } // TODO
-		}
-
 		protected override UITableViewDelegate CreateDelegate ()
 		{
 			return new GridTableDelegate(this);
