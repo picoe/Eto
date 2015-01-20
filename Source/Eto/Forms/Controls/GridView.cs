@@ -96,6 +96,32 @@ namespace Eto.Forms
 		/// </summary>
 		/// <value>The selected items.</value>
 		public new IEnumerable<T> SelectedItems { get { return base.SelectedItems.Cast<T>(); } }
+
+		/// <summary>
+		/// If there is exactly one selected item, returns it, otherwise returns null.
+		/// </summary>
+		/// <remarks>
+		/// Typically, you would use <see cref="SelectedItems"/> when <see cref="AllowMultipleSelection"/> is <c>true</c>.
+		/// </remarks>
+		/// <seealso cref="SelectedItems"/>
+		public new T SelectedItem { get { return base.SelectedItem as T; } set { base.SelectedItem = value; } }
+
+		/// <summary>
+		/// Gets a binding object to bind to the <see cref="SelectedItem"/> property.
+		/// </summary>
+		/// <value>The selected item binding.</value>
+		public new ControlBinding<Grid, T> SelectedItemBinding
+		{
+			get
+			{
+				return new ControlBinding<Grid, T>(this, 
+					g => g.SelectedItem,
+					(g, v) => g.SelectedItem = v,
+					(g, eh) => g.SelectionChanged += eh,
+					(g, eh) => g.SelectionChanged -= eh
+				);
+			}
+		}
 	}
 
 	/// <summary>
