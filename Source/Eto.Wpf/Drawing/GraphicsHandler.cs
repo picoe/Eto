@@ -4,6 +4,7 @@ using sw = System.Windows;
 using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace Eto.Wpf.Drawing
 {
@@ -15,6 +16,7 @@ namespace Eto.Wpf.Drawing
 	public class GraphicsHandler : WidgetHandler<swm.DrawingContext, Graphics>, Graphics.IHandler
 	{
 		swm.Visual visual;
+		swm.DrawingGroup group;
 		swm.DrawingVisual drawingVisual;
 		ImageInterpolation imageInterpolation;
 		PixelOffsetMode pixelOffsetMode;
@@ -22,12 +24,13 @@ namespace Eto.Wpf.Drawing
 		double inverseoffset;
 		RectangleF? clipBounds;
 		readonly RectangleF initialClip;
-		IGraphicsPath clipPath;
+		swm.PathGeometry clipPath;
 		sw.Rect bounds;
 		readonly bool disposeControl;
 
 		Bitmap image;
 		double? dpiScale;
+		swm.DrawingContext baseContext;
 
 		public GraphicsHandler()
 		{
@@ -326,7 +329,7 @@ namespace Eto.Wpf.Drawing
 		{
 			get
 			{
-				switch (swm.RenderOptions.GetEdgeMode(visual))
+				switch (swm.RenderOptions.GetEdgeMode((sw.DependencyObject)group ?? visual))
 				{
 					case swm.EdgeMode.Aliased:
 						return false;
@@ -338,7 +341,11 @@ namespace Eto.Wpf.Drawing
 			}
 			set
 			{
-				swm.RenderOptions.SetEdgeMode(visual, value ? swm.EdgeMode.Unspecified : swm.EdgeMode.Aliased);
+				if (value != AntiAlias)
+				{
+					CreateGroup();
+					swm.RenderOptions.SetEdgeMode(group, value ? swm.EdgeMode.Unspecified : swm.EdgeMode.Aliased);
+				}
 			}
 		}
 
@@ -355,8 +362,37 @@ namespace Eto.Wpf.Drawing
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
+			{
+				CloseGroup();
 				Close();
+			}
 			base.Dispose(disposing);
+		}
+
+		void CreateGroup()
+		{
+			CloseGroup();
+			if (baseContext == null)
+				baseContext = Control;
+			group = new swm.DrawingGroup();
+			Control = group.Open();
+			TransformStack.PushAll();
+			ApplyClip();
+		}
+
+		void CloseGroup()
+		{
+			if (group != null && baseContext != null)
+			{
+				TransformStack.PopAll();
+				ResetClip();
+				Control.Close();
+				baseContext.DrawDrawing(group);
+				Control = baseContext;
+				group = null;
+				ApplyClip();
+				TransformStack.PushAll();
+			}
 		}
 
 		TransformStack transformStack;
@@ -368,7 +404,8 @@ namespace Eto.Wpf.Drawing
 				if (transformStack == null)
 					transformStack = new TransformStack(
 						m => Control.PushTransform(m.ToWpfTransform()),
-						Control.Pop);
+						() => Control.Pop()
+						);
 
 				return transformStack;
 			}
@@ -376,30 +413,22 @@ namespace Eto.Wpf.Drawing
 
 		public void TranslateTransform(float offsetX, float offsetY)
 		{
-			ReverseClip();
 			TransformStack.TranslateTransform(offsetX, offsetY);
-			ApplyClip();
 		}
 
 		public void RotateTransform(float angle)
 		{
-			ReverseClip();
 			TransformStack.RotateTransform(angle);
-			ApplyClip();
 		}
 
 		public void ScaleTransform(float scaleX, float scaleY)
 		{
-			ReverseClip();
 			TransformStack.ScaleTransform(scaleX, scaleY);
-			ApplyClip();
 		}
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
-			ReverseClip();
 			TransformStack.MultiplyTransform(matrix);
-			ApplyClip();
 		}
 
 		public void SaveTransform()
@@ -422,7 +451,7 @@ namespace Eto.Wpf.Drawing
 		{
 			if (clipPath != null)
 			{
-				Control.PushClip(clipPath.ToWpf());
+				Control.PushClip(clipPath);
 			}
 			else if (clipBounds != null)
 			{
@@ -447,18 +476,22 @@ namespace Eto.Wpf.Drawing
 
 		public void SetClip(RectangleF rectangle)
 		{
+			TransformStack.PopAll();
 			ResetClip();
 			clipBounds = rectangle;
 			clipPath = null;
 			ApplyClip();
+			TransformStack.PushAll();
 		}
 
 		public void SetClip(IGraphicsPath path)
 		{
+			TransformStack.PopAll();
 			ResetClip();
-			clipPath = path.Clone(); // require a clone so changes to path don't affect current clip
-			clipBounds = clipPath.ToWpf().Bounds.ToEtoF();
+			clipPath = path.Clone().ToWpf(); // require a clone so changes to path don't affect current clip
+			clipBounds = clipPath.Bounds.ToEtoF();
 			ApplyClip();
+			TransformStack.PushAll();
 		}
 
 		public void ResetClip()
@@ -484,7 +517,7 @@ namespace Eto.Wpf.Drawing
 				swm.Geometry maskgeometry;
 				if (clipPath != null)
 				{
-					maskgeometry = clipPath.ToWpf();
+					maskgeometry = clipPath;
 				}
 				else
 				{

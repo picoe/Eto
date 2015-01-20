@@ -46,6 +46,12 @@ namespace Eto.Wpf.Drawing
 			Prepend(matrix);
 		}
 
+		public void PopAll()
+		{
+			if (Current != null)
+				pop();
+		}
+
 		public void PushAll()
 		{
 			if (Current != null)
