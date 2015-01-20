@@ -378,7 +378,7 @@ namespace Eto.Forms
 			{
 				return new ControlBinding<Grid, object>(this, 
 					g => g.SelectedItem,
-					(g, v) => g.SelectedItem = v,
+					null,
 					(g, eh) => g.SelectionChanged += eh,
 					(g, eh) => g.SelectionChanged -= eh
 				);

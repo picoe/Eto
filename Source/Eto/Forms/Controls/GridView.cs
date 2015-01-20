@@ -101,22 +101,22 @@ namespace Eto.Forms
 		/// If there is exactly one selected item, returns it, otherwise returns null.
 		/// </summary>
 		/// <remarks>
-		/// Typically, you would use <see cref="SelectedItems"/> when <see cref="AllowMultipleSelection"/> is <c>true</c>.
+		/// Typically, you would use <see cref="Grid.SelectedItems"/> when <see cref="Grid.AllowMultipleSelection"/> is <c>true</c>.
 		/// </remarks>
 		/// <seealso cref="SelectedItems"/>
-		public new T SelectedItem { get { return base.SelectedItem as T; } set { base.SelectedItem = value; } }
+		public new T SelectedItem { get { return base.SelectedItem as T; } }
 
 		/// <summary>
 		/// Gets a binding object to bind to the <see cref="SelectedItem"/> property.
 		/// </summary>
 		/// <value>The selected item binding.</value>
-		public new ControlBinding<Grid, T> SelectedItemBinding
+		public new ControlBinding<GridView<T>, T> SelectedItemBinding
 		{
 			get
 			{
-				return new ControlBinding<Grid, T>(this, 
+				return new ControlBinding<GridView<T>, T>(this, 
 					g => g.SelectedItem,
-					(g, v) => g.SelectedItem = v,
+					null,
 					(g, eh) => g.SelectionChanged += eh,
 					(g, eh) => g.SelectionChanged -= eh
 				);
