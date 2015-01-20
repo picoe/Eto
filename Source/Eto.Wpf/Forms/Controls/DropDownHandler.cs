@@ -32,6 +32,17 @@ namespace Eto.Wpf.Forms.Controls
 			SelectedIndex = -1;
 		}
 
+		public swc.ScrollViewer ContentHost
+		{
+			get
+			{
+				var tb = TextBox;
+				if (tb == null)
+					return null;
+				return tb.Template.FindName("PART_ContentHost", tb) as swc.ScrollViewer;
+			}
+		}
+
 		public swc.TextBox TextBox
 		{
 			get { return GetTemplateChild("PART_EditableTextBox") as swc.TextBox; }

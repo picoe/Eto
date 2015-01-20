@@ -104,6 +104,21 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public override Color BackgroundColor
+		{
+			get
+			{
+				var contentHost = Control.ContentHost;
+				return (contentHost != null ? contentHost.Background : sw.SystemColors.WindowBrush).ToEtoColor();
+			}
+			set
+			{
+				var contentHost = Control.ContentHost;
+				if (contentHost != null)
+					contentHost.Background = value.ToWpfBrush(contentHost.Background);
+			}
+		}
+
 		public bool ReadOnly
 		{
 			get { return Control.IsReadOnly; }
