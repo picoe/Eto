@@ -151,7 +151,7 @@ namespace Eto.Mac.Forms.Controls
 			if (e.KeyData == Keys.Down)
 			{
 				var val = Value;
-				var newval = Math.Max(val - 1, MinValue);
+				var newval = Math.Max(val - Increment, MinValue);
 				if (newval < val)
 				{
 					Value = newval;
@@ -162,7 +162,7 @@ namespace Eto.Mac.Forms.Controls
 			else if (e.KeyData == Keys.Up)
 			{
 				var val = Value;
-				var newval = Math.Min(val + 1, MaxValue);
+				var newval = Math.Min(val + Increment, MaxValue);
 				if (newval > val)
 				{
 					Value = newval;
