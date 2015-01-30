@@ -339,7 +339,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				if (!MacEventView.KeyDown(handler.Widget, theEvent))
 				{
 					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
@@ -353,7 +353,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				if (!MacEventView.KeyUp(handler.Widget, theEvent))
 				{
 					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
@@ -367,7 +367,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				if (theEvent.ClickCount >= 2)
 					handler.Callback.OnMouseDoubleClick(handler.Widget, args);
@@ -390,7 +390,7 @@ namespace Eto.Mac.Forms
 
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				handler.Callback.OnMouseUp(handler.Widget, args);
 				if (!args.Handled)
@@ -406,7 +406,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				handler.Callback.OnMouseMove(handler.Widget, args);
 				if (!args.Handled)
@@ -422,7 +422,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, true);
 				if (!args.Delta.IsZero)
 				{
@@ -643,7 +643,7 @@ namespace Eto.Mac.Forms
 
 		static bool ValidateSystemMenuAction(IntPtr sender, IntPtr sel, IntPtr item)
 		{
-			var menuItem = new NSMenuItem(item);
+			var menuItem = Messaging.GetNSObject<NSMenuItem>(item);
 			
 			var control = Runtime.GetNSObject(sender);
 			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
@@ -661,7 +661,7 @@ namespace Eto.Mac.Forms
 
 		static bool ValidateSystemToolbarAction(IntPtr sender, IntPtr sel, IntPtr item)
 		{
-			var toolbarItem = new NSToolbarItem(item);
+			var toolbarItem = Messaging.GetNSObject<NSToolbarItem>(item);
 			
 			var control = Runtime.GetNSObject(sender);
 			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;

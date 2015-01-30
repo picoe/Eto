@@ -30,8 +30,8 @@ namespace Eto.Mac
 		
 		static bool EtoLoadNibNamed (IntPtr self, IntPtr sel, IntPtr filePath, IntPtr owner)
 		{
-			var str = new NSString (filePath);
-			return str.Length == 0 || Messaging.bool_objc_msgSend_IntPtr_IntPtr(self, selEtoLoadNibNamed, filePath, owner);
+			var str = Messaging.GetNSObject<NSString>(filePath);
+			return str == null || str.Length == 0 || Messaging.bool_objc_msgSend_IntPtr_IntPtr(self, selEtoLoadNibNamed, filePath, owner);
 		}
 	}
 }

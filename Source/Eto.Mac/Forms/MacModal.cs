@@ -55,9 +55,7 @@ namespace Eto.Mac.Forms
 				if (window == null || !panel.RespondsToSelector (new Selector ("beginSheetModalForWindow:completionHandler:")))
 					ret = (int)panel.RunModal ();
 				else {
-					panel.BeginSheet (window, delegate(int result) { 
-						NSApplication.SharedApplication.StopModalWithCode (result); 
-					});
+					panel.BeginSheet (window, result => NSApplication.SharedApplication.StopModalWithCode (result));
 					ret = (int)NSApplication.SharedApplication.RunModalForWindow (window);
 				}
 			} else

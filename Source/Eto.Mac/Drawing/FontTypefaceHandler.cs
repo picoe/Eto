@@ -60,10 +60,10 @@ namespace Eto.Mac.Drawing
 
 		public FontTypefaceHandler(NSArray descriptor)
 		{
-			PostScriptName = (string)new NSString(descriptor.ValueAt(0));
-			name = (string)new NSString(descriptor.ValueAt(1));
-			Weight = new NSNumber(descriptor.ValueAt(2)).Int32Value;
-			Traits = (NSFontTraitMask)new NSNumber(descriptor.ValueAt(3)).Int32Value;
+			PostScriptName = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(0));
+			name = (string)Messaging.GetNSObject<NSString>(descriptor.ValueAt(1));
+			Weight = Messaging.GetNSObject<NSNumber>(descriptor.ValueAt(2)).Int32Value;
+			Traits = (NSFontTraitMask)Messaging.GetNSObject<NSNumber>(descriptor.ValueAt(3)).Int32Value;
 		}
 
 		public FontTypefaceHandler(NSFont font, NSFontTraitMask? traits = null)
