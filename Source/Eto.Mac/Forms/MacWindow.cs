@@ -176,8 +176,6 @@ namespace Eto.Mac.Forms
 			set
 			{
 				base.MinimumSize = value;
-				// TODO: Mac64
-				#if !Mac64
 				if (value != Size.Empty)
 				{
 					Control.WillResize = (sender, frameSize) =>
@@ -191,7 +189,6 @@ namespace Eto.Mac.Forms
 				}
 				else
 					Control.WillResize = null;
-				#endif
 			}
 		}
 

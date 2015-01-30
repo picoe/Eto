@@ -83,13 +83,10 @@ namespace Eto.Mac.Forms.Cells
 
 			public bool DrawsBackground { get; set; }
 
-			// TODO: Mac64
-			#if !Mac64 && !XAMMAC2
 			public override CGSize CellSizeForBounds(CGRect bounds)
 			{
 				return CGSize.Empty;
 			}
-			#endif
 
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone(IntPtr zone)

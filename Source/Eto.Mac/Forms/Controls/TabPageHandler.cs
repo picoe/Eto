@@ -73,8 +73,6 @@ namespace Eto.Mac.Forms.Controls
 				base.DrawLabel(shouldTruncateLabel, labelRect);
 			}
 
-			// TODO: Mac64
-			#if !Mac64 && !XAMMAC2
 			public override CGSize SizeOfLabel (bool computeMin)
 			{
 				var size = base.SizeOfLabel (computeMin);
@@ -83,7 +81,6 @@ namespace Eto.Mac.Forms.Controls
 				}
 				return size;
 			}
-			#endif
 		}
 
 		public TabPageHandler()

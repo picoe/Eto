@@ -175,8 +175,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
-		// TODO: Mac64
-		#if !Mac64 && !XAMMAC2
 		public override CGSize CellSizeForBounds(CGRect bounds)
 		{
 			var size = base.CellSizeForBounds(bounds);
@@ -191,7 +189,6 @@ namespace Eto.Mac.Forms.Controls
 			size.Width = (nfloat)Math.Min(size.Width, bounds.Width);
 			return size;
 		}
-		#endif
 
 		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 		{
