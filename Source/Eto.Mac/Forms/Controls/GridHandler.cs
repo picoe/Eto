@@ -458,6 +458,38 @@ namespace Eto.Mac.Forms.Controls
 		{
 			Callback.OnCellFormatting(Widget, new MacCellFormatArgs(column, item, row, cell));
 		}
+
+		public void ScrollToRow(int row)
+		{
+			Control.ScrollRowToVisible(row);
+		}
+
+		public bool Loaded
+		{
+			get { return Widget.Loaded; }
+		}
+
+		public GridLines GridLines
+		{
+			get
+			{
+				var lines = GridLines.None;
+				if (Control.GridStyleMask.HasFlag(NSTableViewGridStyle.SolidHorizontalLine))
+					lines |= GridLines.Horizontal;
+				if (Control.GridStyleMask.HasFlag(NSTableViewGridStyle.SolidVerticalLine))
+					lines |= GridLines.Vertical;
+				return lines;
+			}
+			set
+			{
+				var mask = NSTableViewGridStyle.None;
+				if (value.HasFlag(GridLines.Horizontal))
+					mask |= NSTableViewGridStyle.SolidHorizontalLine;
+				if (value.HasFlag(GridLines.Vertical))
+					mask |= NSTableViewGridStyle.SolidVerticalLine;
+				Control.GridStyleMask = mask;
+			}
+		}
 	}
 }
 

@@ -43,17 +43,22 @@ namespace Eto.WinForms.Forms.Cells
 
 			protected override void Paint(sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
 			{
-				if (!object.ReferenceEquals(cachedGraphicsKey, graphics) ||
-				    cachedGraphics == null)
+				// save graphics state to prevent artifacts in other paint operations in the grid
+				var state = graphics.Save();
+				if (!object.ReferenceEquals(cachedGraphicsKey, graphics) || cachedGraphics == null)
 				{
 					cachedGraphicsKey = graphics;
 					cachedGraphics = new Graphics(new GraphicsHandler(graphics, shouldDisposeGraphics: false));
 				}
-
+				else
+				{
+					((GraphicsHandler)cachedGraphics.Handler).SetInitialState();
+				}
 				graphics.SetClip(cellBounds);
 				var args = new DrawableCellPaintEventArgs(cachedGraphics, cellBounds.ToEto(), cellState.ToEto(), value);
 				Handler.Callback.OnPaint(Handler.Widget, args);
 				graphics.ResetClip();
+				graphics.Restore(state);
 			}
 
 			protected override void OnMouseClick(swf.DataGridViewCellMouseEventArgs e)

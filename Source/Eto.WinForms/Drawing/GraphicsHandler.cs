@@ -121,6 +121,11 @@ namespace Eto.WinForms.Drawing
 		protected override void Initialize()
 		{
 			base.Initialize();
+			SetInitialState();
+		}
+
+		public void SetInitialState()
+		{
 			Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
 			Control.SmoothingMode = sdd.SmoothingMode.AntiAlias;
 			Control.InterpolationMode = sdd.InterpolationMode.HighQualityBilinear;

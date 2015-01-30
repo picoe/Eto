@@ -84,7 +84,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Eto.Wpf\Eto.Wpf - Pcl.csproj">
+    <ProjectReference Include="..\..\..\Eto.Wpf\Eto.Wpf - net45.csproj">
       <Project>{63137fa0-ca55-11e3-9c1a-0800200c9a66}</Project>
       <Name>Eto.Wpf - Pcl</Name>
       <Private>False</Private>

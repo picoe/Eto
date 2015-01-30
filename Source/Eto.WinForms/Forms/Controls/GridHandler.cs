@@ -62,6 +62,7 @@ namespace Eto.WinForms.Forms.Controls
 				VirtualMode = true,
 				MultiSelect = false,
 				SelectionMode = swf.DataGridViewSelectionMode.FullRowSelect,
+				CellBorderStyle = swf.DataGridViewCellBorderStyle.None,
 				RowHeadersVisible = false,
 				AllowUserToAddRows = false,
 				AllowUserToResizeRows = false,
@@ -372,6 +373,58 @@ namespace Eto.WinForms.Forms.Controls
 		public override bool ShouldBubbleEvent(swf.Message msg)
 		{
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
+		}
+
+		public void ScrollToRow(int row)
+		{
+			var displayedCount = Control.DisplayedRowCount(false);
+			var idx = Control.FirstDisplayedScrollingRowIndex;
+			if (row < idx)
+			{
+				Control.FirstDisplayedScrollingRowIndex = row;
+			}
+			else if (row >= idx + displayedCount)
+			{
+				Control.FirstDisplayedScrollingRowIndex = Math.Max(0, row - displayedCount + 1);
+			}
+		}
+
+		public GridLines GridLines
+		{
+			get
+			{
+				switch (Control.CellBorderStyle)
+				{
+					case System.Windows.Forms.DataGridViewCellBorderStyle.Single:
+						return GridLines.Both;
+					case System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal:
+						return GridLines.Horizontal;
+					case System.Windows.Forms.DataGridViewCellBorderStyle.SingleVertical:
+						return GridLines.Vertical;
+					default:
+						return GridLines.None;
+				}
+			}
+			set
+			{
+				switch (value)
+				{
+					case GridLines.None:
+						Control.CellBorderStyle = swf.DataGridViewCellBorderStyle.None;
+						break;
+					case GridLines.Horizontal:
+						Control.CellBorderStyle = swf.DataGridViewCellBorderStyle.SingleHorizontal;
+						break;
+					case GridLines.Vertical:
+						Control.CellBorderStyle = swf.DataGridViewCellBorderStyle.SingleVertical;
+						break;
+					case GridLines.Both:
+						Control.CellBorderStyle = swf.DataGridViewCellBorderStyle.Single;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+			}
 		}
 	}
 }

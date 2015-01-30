@@ -170,18 +170,17 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.AcceptsReturn = value; }
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public virtual HorizontalAlign HorizontalAlign
 		{
 			get { return Control.HorizontalContentAlignment.ToEto(); }
 			set { Control.HorizontalContentAlignment = value.ToWpf(); }
 		}
 
-		public VerticalAlign VerticalAlign
+		public virtual VerticalAlign VerticalAlign
 		{
 			get { return Control.VerticalContentAlignment.ToEto(); }
 			set { Control.VerticalContentAlignment = value.ToWpf(); }
 		}
-
 
 		public bool SpellCheck
 		{

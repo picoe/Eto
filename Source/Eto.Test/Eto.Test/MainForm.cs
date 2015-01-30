@@ -33,6 +33,7 @@ namespace Eto.Test
 		{
 			Title = "Test Application";
 			Style = "main";
+			MinimumSize = new Size(400, 400);
 			topNodes = topNodes ?? TestSections.Get();
 			//SectionList = new SectionListGridView(topNodes);
 			//SectionList = new SectionListTreeView(topNodes);

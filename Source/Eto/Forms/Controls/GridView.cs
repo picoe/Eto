@@ -96,6 +96,32 @@ namespace Eto.Forms
 		/// </summary>
 		/// <value>The selected items.</value>
 		public new IEnumerable<T> SelectedItems { get { return base.SelectedItems.Cast<T>(); } }
+
+		/// <summary>
+		/// If there is exactly one selected item, returns it, otherwise returns null.
+		/// </summary>
+		/// <remarks>
+		/// Typically, you would use <see cref="Grid.SelectedItems"/> when <see cref="Grid.AllowMultipleSelection"/> is <c>true</c>.
+		/// </remarks>
+		/// <seealso cref="SelectedItems"/>
+		public new T SelectedItem { get { return base.SelectedItem as T; } }
+
+		/// <summary>
+		/// Gets a binding object to bind to the <see cref="SelectedItem"/> property.
+		/// </summary>
+		/// <value>The selected item binding.</value>
+		public new ControlBinding<GridView<T>, T> SelectedItemBinding
+		{
+			get
+			{
+				return new ControlBinding<GridView<T>, T>(this, 
+					g => g.SelectedItem,
+					null,
+					(g, eh) => g.SelectionChanged += eh,
+					(g, eh) => g.SelectionChanged -= eh
+				);
+			}
+		}
 	}
 
 	/// <summary>
@@ -203,10 +229,11 @@ namespace Eto.Forms
 		/// Gets or sets a value indicating whether to show a border around each cell.
 		/// </summary>
 		/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
+		[Obsolete("Use Grid.GridLines instead")]
 		public bool ShowCellBorders
 		{
-			get { return Handler.ShowCellBorders; }
-			set { Handler.ShowCellBorders = value; }
+			get { return GridLines != GridLines.None; }
+			set { GridLines = value ? GridLines.Both : GridLines.None; }
 		}
 
 		#region Events
@@ -442,12 +469,6 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The grid's data store.</value>
 			IEnumerable<object> DataStore { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value indicating whether to show a border around each cell.
-			/// </summary>
-			/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
-			bool ShowCellBorders { get; set; }
 
 			/// <summary>
 			/// Gets an enumeration of the currently selected items

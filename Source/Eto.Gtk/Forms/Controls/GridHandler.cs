@@ -95,7 +95,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				EqualityComparer<T> comparer = EqualityComparer<T>.Default;
 				for (int i = 0; i < a1.Length; i++)
 				{
-					if (!comparer.Equals(a1[i], a2[i])) return false;
+					if (!comparer.Equals(a1[i], a2[i]))
+						return false;
 				}
 				return true;
 			}
@@ -226,6 +227,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public abstract object GetItem(Gtk.TreePath path);
 
 		public abstract Gtk.TreeIter GetIterAtRow(int row);
+
 		public abstract Gtk.TreePath GetPathAtRow(int row);
 
 		public void SetColumnMap(int dataIndex, int column)
@@ -323,6 +325,53 @@ namespace Eto.GtkSharp.Forms.Controls
 		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
 			Callback.OnCellFormatting(Widget, args);
+		}
+
+		public void ScrollToRow(int row)
+		{
+			var path = this.GetPathAtRow(row);
+			var column = Tree.Columns.First();
+			Tree.ScrollToCell(path, column, false, 0, 0);
+		}
+
+		public GridLines GridLines
+		{
+			get
+			{
+				switch (Tree.EnableGridLines)
+				{
+					case Gtk.TreeViewGridLines.None:
+						return GridLines.None;
+					case Gtk.TreeViewGridLines.Horizontal:
+						return GridLines.Horizontal;
+					case Gtk.TreeViewGridLines.Vertical:
+						return GridLines.Vertical;
+					case Gtk.TreeViewGridLines.Both:
+						return GridLines.Both;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+			set
+			{
+				switch (value)
+				{
+					case GridLines.None:
+						Tree.EnableGridLines = Gtk.TreeViewGridLines.None;
+						break;
+					case GridLines.Horizontal:
+						Tree.EnableGridLines = Gtk.TreeViewGridLines.Horizontal;
+						break;
+					case GridLines.Vertical:
+						Tree.EnableGridLines = Gtk.TreeViewGridLines.Vertical;
+						break;
+					case GridLines.Both:
+						Tree.EnableGridLines = Gtk.TreeViewGridLines.Both;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+			}
 		}
 
 	}

@@ -37,7 +37,7 @@ namespace Eto.Mac.Forms.Controls
 				TimeZone = NSTimeZone.LocalTimeZone,
 				Calendar = NSCalendar.CurrentCalendar,
 				Bezeled = false,
-				DateValue = DateTime.Today,
+				DateValue = (NSDate)DateTime.Today,
 				DatePickerStyle = NSDatePickerStyle.ClockAndCalendar,
 				DatePickerElements = NSDatePickerElementFlags.YearMonthDateDay
 			};

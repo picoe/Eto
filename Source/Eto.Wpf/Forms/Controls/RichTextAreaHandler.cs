@@ -18,19 +18,22 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class RichTextAreaHandler : TextAreaHandler<swc.RichTextBox, RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer
 	{
+		swd.TextRange ContentRange
+		{
+			get { return new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd); }
+		}
+
 		public override string Text
 		{
 			get
 			{
 				var doc = Control.Document;
-				var textRange = new swd.TextRange(doc.ContentStart, doc.ContentEnd);
-				return textRange.Text;
+				return ContentRange.Text;
 			}
 			set
 			{
 				var doc = Control.Document;
-				var textRange = new swd.TextRange(doc.ContentStart, doc.ContentEnd);
-				textRange.Text = value ?? string.Empty;
+				ContentRange.Text = value ?? string.Empty;
 			}
 		}
 
@@ -288,7 +291,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void Load(Stream stream, RichTextAreaFormat format)
 		{
-			var range = new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd);
+			var range = ContentRange;
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
@@ -304,7 +307,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void Save(Stream stream, RichTextAreaFormat format)
 		{
-			var range = new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd);
+			var range = ContentRange;
 			switch (format)
 			{
 				case RichTextAreaFormat.Rtf:
@@ -338,6 +341,16 @@ namespace Eto.Wpf.Forms.Controls
 		public ITextBuffer Buffer
 		{
 			get { return this; }
+		}
+
+		public override HorizontalAlign HorizontalAlign
+		{
+			get { return base.HorizontalAlign; }
+			set
+			{
+				base.HorizontalAlign = value;
+				ContentRange.ApplyPropertyValue(swd.Block.TextAlignmentProperty, value.ToWpfTextAlignment());
+			}
 		}
 	}
 
@@ -465,5 +478,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			return position;
 		}
+
+		
 	}
 }

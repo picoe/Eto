@@ -66,11 +66,5 @@ namespace Eto.Wpf.Forms.Controls
 				return Control.SelectedItems.OfType<object>();
 			}
 		}
-
-		public bool ShowCellBorders
-		{
-			get { return Control.GridLinesVisibility != swc.DataGridGridLinesVisibility.None; }
-			set { Control.GridLinesVisibility = value ? swc.DataGridGridLinesVisibility.All : swc.DataGridGridLinesVisibility.None; }
-		}
 	}
 }

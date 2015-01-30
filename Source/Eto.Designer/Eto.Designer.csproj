@@ -62,7 +62,7 @@
       <Project>{3f8178ef-0710-43f7-92e2-130b9be2212d}</Project>
       <Name>Eto.Serialization.Json - Pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - Pcl.csproj">
+    <ProjectReference Include="..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
       <Project>{231fb3b0-cb71-11e3-9c1a-0800200c9a66}</Project>
       <Name>Eto.Serialization.Xaml - Pcl</Name>
     </ProjectReference>

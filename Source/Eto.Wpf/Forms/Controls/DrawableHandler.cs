@@ -62,8 +62,10 @@ namespace Eto.Wpf.Forms.Controls
 				if (!Handler.tiled)
 				{
 					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
-					var graphics = new Graphics(new GraphicsHandler(this, dc, rect, new RectangleF(Handler.ClientSize), false));
-					Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, rect.ToEto()));
+					using (var graphics = new Graphics(new GraphicsHandler(this, dc, rect, new RectangleF(Handler.ClientSize), false)))
+					{
+						Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, rect.ToEto()));
+					}
 				}
 			}
 		}
@@ -117,11 +119,6 @@ namespace Eto.Wpf.Forms.Controls
 			UnRegisterScrollable();
 		}
 
-		public DrawableHandler()
-		{
-			AllowTiling = true;
-		}
-
 		public void Create()
 		{
 			Control = new EtoMainCanvas
@@ -136,6 +133,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void Create(bool largeCanvas)
 		{
+			AllowTiling = largeCanvas;
 			Create();
 		}
 

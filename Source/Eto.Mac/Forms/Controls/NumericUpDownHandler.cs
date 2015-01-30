@@ -82,6 +82,8 @@ namespace Eto.Mac.Forms.Controls
 			get { return text; }
 		}
 
+		static NSNumberFormatter DefaultFormatter = new NSNumberFormatter { NumberStyle = NSNumberFormatterStyle.Decimal, Lenient = true };
+
 		public NumericUpDownHandler()
 		{
 			this.Control = new EtoNumericUpDownView
@@ -93,7 +95,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				WeakHandler = new WeakReference(this),
 				Bezeled = true,
-				Editable = true
+				Editable = true,
+				Formatter = DefaultFormatter
 			};
 			text.Changed += HandleTextChanged;
 			
@@ -130,7 +133,11 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(((NSView)((NSNotification)sender).Object).Superview) as NumericUpDownHandler;
 			if (handler != null)
 			{
-				handler.stepper.DoubleValue = handler.text.DoubleValue;
+				var text = handler.text;
+				var formatter = (NSNumberFormatter)text.Formatter;
+				var number = formatter.NumberFromString(text.StringValue);
+				if (number != null)
+					handler.stepper.DoubleValue = number.DoubleValue;
 				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 			}
 		}
@@ -151,7 +158,7 @@ namespace Eto.Mac.Forms.Controls
 			if (e.KeyData == Keys.Down)
 			{
 				var val = Value;
-				var newval = Math.Max(val - 1, MinValue);
+				var newval = Math.Max(val - Increment, MinValue);
 				if (newval < val)
 				{
 					Value = newval;
@@ -162,7 +169,7 @@ namespace Eto.Mac.Forms.Controls
 			else if (e.KeyData == Keys.Up)
 			{
 				var val = Value;
-				var newval = Math.Min(val + 1, MaxValue);
+				var newval = Math.Min(val + Increment, MaxValue);
 				if (newval > val)
 				{
 					Value = newval;
@@ -196,7 +203,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public double Value
 		{
-			get { return text.DoubleValue; }
+			get
+			{ 
+				var formatter = (NSNumberFormatter)text.Formatter;
+				var val = formatter.NumberFromString(text.StringValue);
+				return val != null ? val.DoubleValue : text.DoubleValue;
+			}
 			set
 			{
 				if (Math.Abs(value) < 1E-10)
@@ -269,6 +281,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		int decimalPlaces;
+
 		public int DecimalPlaces
 		{
 			get { return decimalPlaces; }
@@ -277,10 +290,13 @@ namespace Eto.Mac.Forms.Controls
 				if (value != decimalPlaces)
 				{
 					decimalPlaces = value;
-					var formatter = new NSNumberFormatter();
-					formatter.NumberStyle = NSNumberFormatterStyle.Decimal;
-					formatter.MinimumFractionDigits = (nnint)decimalPlaces;
-					formatter.MaximumFractionDigits = (nnint)decimalPlaces;
+					var formatter = new NSNumberFormatter
+					{
+						Lenient = true,
+						NumberStyle = NSNumberFormatterStyle.Decimal,
+						MinimumFractionDigits = (nnint)decimalPlaces,
+						MaximumFractionDigits = (nnint)decimalPlaces
+					};
 					text.Formatter = formatter;
 				}
 			}

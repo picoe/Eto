@@ -205,8 +205,6 @@ namespace Eto.Android.Forms.Controls
 			set { collection.Register(value); }
 		}
 
-		public bool ShowCellBorders { get; set; }
-
 		public bool ShowHeader { get; set; }
 
 		public int RowHeight { get; set; }
@@ -287,6 +285,17 @@ namespace Eto.Android.Forms.Controls
 		public void BeginEdit(int row, int column)
 		{
 			throw new NotImplementedException();
+		}
+
+		public void ScrollToRow(int row)
+		{
+			throw new NotImplementedException();
+		}
+
+		public GridLines GridLines
+		{
+			get;
+			set;
 		}
 	}
 }

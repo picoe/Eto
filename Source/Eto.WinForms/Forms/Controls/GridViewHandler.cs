@@ -10,12 +10,6 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		CollectionHandler collection;
 
-		public bool ShowCellBorders
-		{
-			get { return Control.CellBorderStyle != swf.DataGridViewCellBorderStyle.None; }
-			set { Control.CellBorderStyle = value ? swf.DataGridViewCellBorderStyle.Single : swf.DataGridViewCellBorderStyle.None; }
-		}
-
 		protected override object GetItemAtRow(int row)
 		{
 			if (collection != null && collection.Collection != null && collection.Count > row)

@@ -13,13 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.ItemTemplates", "Eto.It
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer", "..\..\Eto.Designer\Eto.Designer.csproj", "{7FAA1841-0869-474C-9D89-87E1B4BAB190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - Pcl", "..\..\Eto\Eto - Pcl.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - pcl", "..\..\Eto\Eto - pcl.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf - Pcl", "..\..\Eto.Wpf\Eto.Wpf - Pcl.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Wpf - net45", "..\..\Eto.Wpf\Eto.Wpf - net45.csproj", "{63137FA0-CA55-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - Pcl", "..\..\Eto.Serialization.Json\Eto.Serialization.Json - Pcl.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - net45", "..\..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - Pcl", "..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - Pcl.csproj", "{231FB3B0-CB71-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - net45", "..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj", "{231FB3B0-CB71-11E3-9C1A-0800200C9A66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

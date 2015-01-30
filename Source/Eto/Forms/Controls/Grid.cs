@@ -29,6 +29,30 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
+	/// Enumeration for the type of grid lines to show around each column/row in a <see cref="Grid"/>
+	/// </summary>
+	[Flags]
+	public enum GridLines
+	{
+		/// <summary>
+		/// No grid lines shown
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// A horizontal line is shown between each row
+		/// </summary>
+		Horizontal = 1 << 0,
+		/// <summary>
+		/// A vertical line is shown between each column
+		/// </summary>
+		Vertical = 1 << 1,
+		/// <summary>
+		/// Shows both vertical and horizontal lines between each column/row
+		/// </summary>
+		Both = Horizontal | Vertical
+	}
+
+	/// <summary>
 	/// Event arguments to format a cell in a <see cref="Grid"/>
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
@@ -345,6 +369,23 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets a binding object to bind to the <see cref="SelectedItem"/> property.
+		/// </summary>
+		/// <value>The selected item binding.</value>
+		public ControlBinding<Grid, object> SelectedItemBinding
+		{
+			get
+			{
+				return new ControlBinding<Grid, object>(this, 
+					g => g.SelectedItem,
+					null,
+					(g, eh) => g.SelectionChanged += eh,
+					(g, eh) => g.SelectionChanged -= eh
+				);
+			}
+		}
+
+		/// <summary>
 		/// Gets the selected rows indexes
 		/// </summary>
 		/// <value>The selected rows.</value>
@@ -362,6 +403,16 @@ namespace Eto.Forms
 		{
 			get { return Handler.RowHeight; }
 			set { Handler.RowHeight = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the style of grid lines to show between columns and rows
+		/// </summary>
+		/// <value>The grid line style.</value>
+		public GridLines GridLines
+		{
+			get { return Handler.GridLines; }
+			set { Handler.GridLines = value; }
 		}
 
 		/// <summary>
@@ -406,6 +457,15 @@ namespace Eto.Forms
 		public void BeginEdit(int row, int column)
 		{
 			Handler.BeginEdit(row, column);
+		}
+
+		/// <summary>
+		/// Scrolls to show the specified row in the view
+		/// </summary>
+		/// <param name="row">Row to scroll to.</param>
+		public void ScrollToRow(int row)
+		{
+			Handler.ScrollToRow(row);
 		}
 
 		static readonly object callback = new Callback();
@@ -537,6 +597,12 @@ namespace Eto.Forms
 			IEnumerable<int> SelectedRows { get; set; }
 
 			/// <summary>
+			/// Gets or sets the style of grid lines to show between columns and rows
+			/// </summary>
+			/// <value>The grid line style.</value>
+			GridLines GridLines { get; set; }
+
+			/// <summary>
 			/// Selects the row to the specified <paramref name="row"/>, clearing other selections
 			/// </summary>
 			/// <param name="row">Row to select</param>
@@ -564,6 +630,12 @@ namespace Eto.Forms
 			/// <param name="row">Row to edit</param>
 			/// <param name="column">Column to edit</param>
 			void BeginEdit(int row, int column);
+
+			/// <summary>
+			/// Scrolls to show the specified row in the view
+			/// </summary>
+			/// <param name="row">Row to scroll to.</param>
+			void ScrollToRow(int row);
 		}
 
 		#endregion

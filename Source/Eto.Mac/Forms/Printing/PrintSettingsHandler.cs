@@ -44,8 +44,8 @@ namespace Eto.Mac.Forms.Printing
 			get
 			{
 				var range = ((NSArray)Control.PrintSettings["com_apple_print_PrintSettings_PMPageRange"]);
-				var firstPage = new NSNumber(range.ValueAt(0)).Int32Value;
-				var lastPage = new NSNumber(range.ValueAt(1)).Int32Value;
+				var firstPage = Messaging.GetNSObject<NSNumber>(range.ValueAt(0)).Int32Value;
+				var lastPage = Messaging.GetNSObject<NSNumber>(range.ValueAt(1)).Int32Value;
 				return new Range<int>(firstPage, lastPage - firstPage + 1);
 			}
 			set

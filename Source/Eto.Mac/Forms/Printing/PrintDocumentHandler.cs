@@ -78,7 +78,7 @@ namespace Eto.Mac.Forms.Printing
 			{
 				var operation = NSPrintOperation.CurrentOperation;
 
-				var context = new NSGraphicsContext(Messaging.IntPtr_objc_msgSend(classNSGraphicsContext, selCurrentContext));
+				var context = Messaging.GetNSObject<NSGraphicsContext>(Messaging.IntPtr_objc_msgSend(classNSGraphicsContext, selCurrentContext));
 				// this causes monomac to hang for some reason:
 				//var context = NSGraphicsContext.CurrentContext;
 
