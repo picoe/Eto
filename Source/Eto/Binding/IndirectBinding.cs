@@ -174,8 +174,20 @@ namespace Eto
 		public IndirectBinding<bool?> ToBool(T trueValue, T falseValue, T nullValue)
 		{
 			return new DelegateBinding<object, bool?>(
-				m => Equals(GetValue(m), trueValue),
-				(m, val) => SetValue(m, val == true ? trueValue : val != null ? falseValue : nullValue),
+				m =>
+				{
+					var val = GetValue(m);
+					if (Equals(val, trueValue))
+						return true;
+					if (Equals(val, falseValue))
+						return false;
+					return null;
+				},
+				(m, val) =>
+				{
+					var typedVal = val == true ? trueValue : val == false ? falseValue : nullValue;
+					SetValue(m, typedVal);
+				},
 				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
 				removeChangeEvent: RemoveValueChangedHandler
 			);
@@ -193,7 +205,26 @@ namespace Eto
 		/// <param name="falseValue">Value when the binding is false.</param>
 		public IndirectBinding<bool?> ToBool(T trueValue, T falseValue)
 		{
-			return ToBool(trueValue, falseValue, falseValue);
+			return new DelegateBinding<object, bool?>(
+				m =>
+				{
+					var val = GetValue(m);
+					if (Equals(val, trueValue))
+						return true;
+					if (Equals(val, falseValue))
+						return false;
+					return null;
+				},
+				(m, val) =>
+				{
+					if (val == true)
+						SetValue(m, trueValue);
+					else if (val == false)
+						SetValue(m, falseValue);
+				},
+				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				removeChangeEvent: RemoveValueChangedHandler
+			);
 		}
 
 		/// <summary>
@@ -207,7 +238,22 @@ namespace Eto
 		/// <param name="trueValue">Value when the binding is true.</param>
 		public IndirectBinding<bool?> ToBool(T trueValue)
 		{
-			return ToBool(trueValue, trueValue, trueValue);
+			return new DelegateBinding<object, bool?>(
+				m =>
+				{
+					var val = GetValue(m);
+					if (Equals(val, trueValue))
+						return true;
+					return false;
+				},
+				(m, val) =>
+				{
+					if (val == true)
+						SetValue(m, trueValue);
+				},
+				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				removeChangeEvent: RemoveValueChangedHandler
+			);
 		}
 	}
 }
