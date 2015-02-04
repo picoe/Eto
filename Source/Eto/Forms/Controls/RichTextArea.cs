@@ -75,6 +75,13 @@ namespace Eto.Forms
 		void SetBackground(Range<int> range, Color color);
 
 		/// <summary>
+		/// Sets the font family for the specified text range.
+		/// </summary>
+		/// <param name="range">Range to set the font family.</param>
+		/// <param name="family">Font family for the text in the range.</param>
+		void SetFamily(Range<int> range, FontFamily family);
+
+		/// <summary>
 		/// Gets an enumeration of formats supported for the <see cref="Load"/> and <see cref="Save"/> methods.
 		/// </summary>
 		/// <value>The supported formats for loading and saving.</value>
@@ -192,6 +199,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the font family of the selected text or insertion point.
+		/// </summary>
+		/// <value>The font family of the selected text.</value>
+		public FontFamily SelectionFamily
+		{
+			get { return Handler.SelectionFamily; }
+			set { Handler.SelectionFamily = value; }
+		}
+
+		/// <summary>
 		/// Gets the formatted text buffer to set formatting and load/save to file.
 		/// </summary>
 		/// <remarks>
@@ -258,6 +275,12 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The text buffer.</value>
 			ITextBuffer Buffer { get; }
+
+			/// <summary>
+			/// Gets or sets the font family of the selected text or insertion point.
+			/// </summary>
+			/// <value>The font family of the selected text.</value>
+			FontFamily SelectionFamily { get; set; }
 		}
 	}
 }

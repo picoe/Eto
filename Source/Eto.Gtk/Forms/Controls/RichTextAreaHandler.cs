@@ -21,6 +21,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		const string FontTagName = "f";
 		const string ForegroundTagName = "fg";
 		const string BackgroundTagName = "bg";
+		const string FamilyTagName = "fm";
 
 		bool keepTags;
 
@@ -169,10 +170,13 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var pangoFont = font.ToPango();
 			var variation = pangoFont != null ? pangoFont.Handle.ToString() : string.Empty;
-			ApplyTag(FontTagName, variation, range, tag =>
+			ApplyTag(FamilyTagName, pangoFont.Family, range, tag =>
 			{
 				tag.Family = pangoFont.Family;
 				tag.FamilySet = true;
+			});
+			ApplyTag(FontTagName, variation, range, tag =>
+			{
 				tag.Size = pangoFont.Size;
 				tag.SizeSet = true;
 				tag.Stretch = pangoFont.Stretch;
@@ -191,8 +195,18 @@ namespace Eto.GtkSharp.Forms.Controls
 			});
 			SetUnderline(range, font.FontDecoration.HasFlag(FontDecoration.Underline));
 			SetStrikethrough(range, font.FontDecoration.HasFlag(FontDecoration.Strikethrough));
-
 		}
+
+		public void SetFamily(Range<int> range, FontFamily family)
+		{
+			var pangoFamily = family.ToPango().Name;
+			ApplyTag(FamilyTagName, pangoFamily, range, tag =>
+			{
+				tag.Family = pangoFamily;
+				tag.FamilySet = true;
+			});
+		}
+
 
 		public void SetForeground(Range<int> range, Color color)
 		{
@@ -427,6 +441,31 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					tag.Strikethrough = value;
 					tag.StrikethroughSet = true;
+				});
+			}
+		}
+
+		public FontFamily SelectionFamily
+		{
+			get
+			{
+				const string prefix = FamilyTagName + "-";
+				var tag = SelectionIter.Tags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal))
+					?? insertTags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal));
+				if (tag != null)
+				{
+					var family = FontFamilyHandler.GetFontFamily(tag.Family);
+					return new FontFamily(new FontFamilyHandler(family));
+				}
+				return SelectionFont.Family;
+			}
+			set
+			{
+				var pangoFamily = value.ToPango().Name;
+				ApplySelectionTag(FamilyTagName, pangoFamily, tag =>
+				{
+					tag.Family = pangoFamily;
+					tag.FamilySet = true;
 				});
 			}
 		}

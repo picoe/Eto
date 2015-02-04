@@ -13,11 +13,20 @@ using Eto.Wpf.Drawing;
 using System.Globalization;
 using System.Collections;
 using System.IO;
+using System.ComponentModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
 	public class RichTextAreaHandler : TextAreaHandler<swc.RichTextBox, RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer
 	{
+		public RichTextAreaHandler()
+		{
+			// set default margin between paragraphs to match other platforms
+			var style = new sw.Style { TargetType = typeof(swd.Paragraph) };
+			style.Setters.Add(new sw.Setter(swd.Paragraph.MarginProperty, new sw.Thickness(0)));
+			Control.Resources.Add(typeof(swd.Paragraph), style);
+		}
+
 		swd.TextRange ContentRange
 		{
 			get { return new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd); }
@@ -49,31 +58,47 @@ namespace Eto.Wpf.Forms.Controls
 					if (wrap)
 					{
 						Control.TextChanged -= Control_TextChangedSetPageWidth;
+						Control.SizeChanged -= Control_TextChangedSetPageWidth;
 						Control.Document.PageWidth = double.NaN;
 					}
 					else
 					{
 						Control.TextChanged += Control_TextChangedSetPageWidth;
+						Control.SizeChanged += Control_TextChangedSetPageWidth;
 						SetPageWidthToContent();
 					}
 				}
 			}
 		}
 
-		void Control_TextChangedSetPageWidth(object sender, swc.TextChangedEventArgs e)
+		void Control_TextChangedSetPageWidth(object sender, EventArgs e)
 		{
-			SetPageWidthToContent();
+			Control.Dispatcher.BeginInvoke(new Action(() => SetPageWidthToContent()));
 		}
 
 		void SetPageWidthToContent()
 		{
-			Control.Document.PageWidth = Control.Document.GetFormattedText().WidthIncludingTrailingWhitespace + 20;
+			var width = Control.Document.GetFormattedText().WidthIncludingTrailingWhitespace + 20;
+			Control.Document.PageWidth = Math.Max(width, Control.ViewportWidth);
 		}
 
 		public override string SelectedText
 		{
 			get { return Control.Selection.Text; }
-			set { Control.Selection.Text = value; }
+			set { Control.Selection.Text = value ?? string.Empty; }
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case RichTextArea.SelectionChangedEvent:
+					Control.Selection.Changed += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 
 		public override Range<int> Selection
@@ -100,6 +125,12 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return new Font(new FontHandler(Control.Selection, Control)); }
 			set { Control.Selection.SetEtoFont(value); }
+		}
+
+		public FontFamily SelectionFamily
+		{
+			get { return new FontFamily(new FontFamilyHandler(Control.Selection, Control)); }
+			set { Control.Selection.SetEtoFamily(value); }
 		}
 
 		public Color SelectionForeground
@@ -144,6 +175,11 @@ namespace Eto.Wpf.Forms.Controls
 			SetRange(range, tr => tr.SetEtoFont(font));
 		}
 
+		public void SetFamily(Range<int> range, FontFamily family)
+		{
+			SetRange(range, tr => tr.SetEtoFamily(family));
+		}
+
 		public void SetForeground(Range<int> range, Color color)
 		{
 			SetRange(range, tr => tr.ApplyPropertyValue(swd.TextElement.ForegroundProperty, color.ToWpfBrush()));
@@ -158,6 +194,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
+				
 				var fontWeight = Control.Selection.GetPropertyValue(swd.TextElement.FontWeightProperty) as sw.FontWeight? ?? sw.FontWeights.Normal;
 				return fontWeight == sw.FontWeights.Bold
 					|| fontWeight == sw.FontWeights.DemiBold

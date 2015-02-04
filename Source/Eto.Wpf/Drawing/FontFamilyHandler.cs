@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using swm = System.Windows.Media;
 using sw = System.Windows;
+using swd = System.Windows.Documents;
+using System.Diagnostics;
 
 namespace Eto.Wpf.Drawing
 {
@@ -13,10 +15,18 @@ namespace Eto.Wpf.Drawing
 		{
 		}
 
-		public FontFamilyHandler (swm.FontFamily wpfFamily)
+		public FontFamilyHandler(swm.FontFamily wpfFamily)
 		{
 			Control = wpfFamily;
-			Name = Control.Source;
+			var familyMapName = Control.FamilyNames.Select(r => r.Value).FirstOrDefault();
+			Name = familyMapName ?? Control.Source;
+		}
+
+		public FontFamilyHandler(swd.TextSelection range, sw.Controls.RichTextBox control)
+		{
+			Control = range.GetPropertyValue(swd.TextElement.FontFamilyProperty) as swm.FontFamily ?? swd.TextElement.GetFontFamily(control);
+			var familyMapName = Control.FamilyNames.Select(r => r.Value).FirstOrDefault();
+			Name = familyMapName ?? Control.Source;
 		}
 
 		public void Create (string familyName)
@@ -61,6 +71,11 @@ namespace Eto.Wpf.Drawing
 					return new FontTypeface(Widget, new FontTypefaceHandler (type));
 			}
 			return new FontTypeface(Widget, new FontTypefaceHandler (typefaces.First ()));
+		}
+
+		public void Apply(sw.Documents.TextRange control)
+		{
+			control.ApplyPropertyValue(swd.TextElement.FontFamilyProperty, Control);
 		}
 	}
 }

@@ -92,6 +92,15 @@ namespace Eto.Test.Sections.Controls
 					richText.Focus();
 			};
 
+			var familyDropDown = new DropDown();
+			familyDropDown.DataStore = Fonts.AvailableFontFamilies.OrderBy(r => r.Name);
+			familyDropDown.SelectedValueBinding.Bind(richText, r => r.SelectionFamily);
+			familyDropDown.SelectedValueChanged += (sender, e) =>
+			{
+				richText.Focus();
+				UpdateBindings(BindingUpdateMode.Destination);
+			};
+
 			var formatEnum = new EnumDropDown<RichTextAreaFormat>();
 			formatEnum.SelectedValue = RichTextAreaFormat.Rtf;
 
@@ -115,32 +124,37 @@ namespace Eto.Test.Sections.Controls
 			clearButton.Click += (sender, e) => buffer.Clear();
 
 			var formatting1 = TableLayout.Horizontal(
-								  null,
-								  boldButton,
-								  italicButton,
-								  underlineButton,
-								  strikethroughButton,
-								  null
-							  );
+				                  null,
+				                  boldButton,
+				                  italicButton,
+				                  underlineButton,
+				                  strikethroughButton,
+				                  null
+			                  );
 
 			var formatting2 = TableLayout.Horizontal(
-								  null,
-								  fontButton,
-								  new Label { Text = "Foreground", VerticalAlign = VerticalAlign.Middle },
-								  TableLayout.AutoSized(foregroundButton, centered: true),
-								  new Label { Text = "Background", VerticalAlign = VerticalAlign.Middle },
-								  TableLayout.AutoSized(backgroundButton, centered: true),
-								  null
-							  );
+				                  null,
+				                  new Label { Text = "Foreground", VerticalAlign = VerticalAlign.Middle },
+				                  TableLayout.AutoSized(foregroundButton, centered: true),
+				                  new Label { Text = "Background", VerticalAlign = VerticalAlign.Middle },
+				                  TableLayout.AutoSized(backgroundButton, centered: true),
+				                  null
+			                  );
+			var formatting3 = TableLayout.Horizontal(
+				                  null,
+				                  fontButton,
+				                  familyDropDown,
+				                  null
+			                  );
 
 			var buttons = TableLayout.Horizontal(
-							  null,
-							  formatEnum,
-							  loadButton,
-							  saveButton,
-							  clearButton,
-							  null
-						  );
+				              null,
+				              formatEnum,
+				              loadButton,
+				              saveButton,
+				              clearButton,
+				              null
+			              );
 
 			Content = new TableLayout
 			{
@@ -153,6 +167,7 @@ namespace Eto.Test.Sections.Controls
 					TextAreaSection.TextAreaOptions3(richText),
 					formatting1,
 					formatting2,
+					formatting3,
 					richText,
 					null
 				}

@@ -328,6 +328,13 @@ namespace Eto.WinForms
 			return ((IWindowsFontSource)font.Handler).GetFont();
 		}
 
+		public static sd.FontFamily ToSD(this FontFamily family)
+		{
+			if (family == null)
+				return null;
+			return ((FontFamilyHandler)family.Handler).Control;
+		}
+
 		public static sd.Font ToSD(this SystemFont systemFont)
 		{
 			switch (systemFont)
@@ -360,6 +367,11 @@ namespace Eto.WinForms
 		public static Font ToEto(this sd.Font font)
 		{
 			return font == null ? null : new Font(new FontHandler(font));
+		}
+
+		public static FontFamily ToEto(this sd.FontFamily family)
+		{
+			return family == null ? null : new FontFamily(new FontFamilyHandler(family));
 		}
 
 		public static MouseEventArgs ToEto(this swf.MouseEventArgs e, swf.Control control)
