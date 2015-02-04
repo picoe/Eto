@@ -669,6 +669,20 @@ namespace Eto.Wpf
 			return font;
 		}
 
+		public static FontFamily SetEtoFamily(this swd.TextRange control, FontFamily fontFamily)
+		{
+			if (control == null) return fontFamily;
+			if (fontFamily != null)
+			{
+				((FontFamilyHandler)fontFamily.Handler).Apply(control);
+			}
+			else
+			{
+				control.ApplyPropertyValue(swd.TextElement.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
+			}
+			return fontFamily;
+		}
+
 		public static Font SetEtoFont(this swc.TextBlock control, Font font, Action<sw.TextDecorationCollection> setDecorations = null)
 		{
 			if (control == null) return font;

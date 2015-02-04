@@ -67,6 +67,12 @@ namespace Eto.Mac.Forms.Controls
 				Control.TextStorage.AddAttributes(attr, nsrange);
 		}
 
+		public void SetFamily(Range<int> range, FontFamily family)
+		{
+			var familyName = ((FontFamilyHandler)family.Handler).MacName;
+			SetFontAttribute(range.ToNS(), true, font => NSFontManager.SharedFontManager.ConvertFontToFamily(font, familyName));
+		}
+
 		public void SetForeground(Range<int> range, Color color)
 		{
 			Control.TextStorage.AddAttribute(NSAttributedString.ForegroundColorAttributeName, color.ToNSUI(), range.ToNS());
@@ -116,11 +122,16 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetSelectedFontAttribute(NSFontTraitMask traitMask, NSFontTraitMask traitUnmask, bool enabled)
 		{
+			SetSelectedFontAttribute(enabled, f => UpdateFontTrait(f, traitMask, traitUnmask, enabled));
+		}
+
+		void SetSelectedFontAttribute(bool enabled, Func<NSFont, NSFont> updateFont)
+		{
 			var range = Control.SelectedRange;
 			if (range.Length > 0)
-				SetFontAttribute(range, traitMask, traitUnmask, enabled);
+				SetFontAttribute(range, enabled, updateFont);
 			else
-				Control.TypingAttributes = UpdateFontAttributes(Control.TypingAttributes, traitMask, traitUnmask, enabled);
+				Control.TypingAttributes = UpdateFontAttributes(Control.TypingAttributes, enabled, updateFont);
 		}
 
 		void SetSelectedAttribute(NSString attribute, NSObject value)
@@ -138,6 +149,11 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetFontAttribute(NSRange range, NSFontTraitMask traitMask, NSFontTraitMask traitUnmask, bool enabled)
 		{
+			SetFontAttribute(range, enabled, f => UpdateFontTrait(f, traitMask, traitUnmask, enabled));
+		}
+
+		void SetFontAttribute(NSRange range, bool enabled, Func<NSFont, NSFont> updateFont)
+		{
 			NSRange effectiveRange;
 			if (Control.ShouldChangeTextNew(range, null))
 			{
@@ -147,7 +163,7 @@ namespace Eto.Mac.Forms.Controls
 				do
 				{
 					var attribs = Control.TextStorage.GetAttributes(current.Location, out effectiveRange, current);
-					attribs = UpdateFontAttributes(attribs, traitMask, traitUnmask, enabled);
+					attribs = UpdateFontAttributes(attribs, enabled, updateFont);
 					var span = effectiveRange.Location + effectiveRange.Length - current.Location;
 					var newRange = new NSRange(current.Location, (nnuint)Math.Min(span, current.Length));
 					Control.TextStorage.AddAttributes(attribs, newRange);
@@ -160,7 +176,13 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		NSDictionary UpdateFontAttributes(NSDictionary attribs, NSFontTraitMask traitMask, NSFontTraitMask traitUnmask, bool enabled)
+		NSFont UpdateFontTrait(NSFont font, NSFontTraitMask traitMask, NSFontTraitMask traitUnmask, bool enabled)
+		{
+			var traits = enabled ? traitMask : traitUnmask;
+			return NSFontManager.SharedFontManager.ConvertFont(font, traits);
+		}
+
+		NSDictionary UpdateFontAttributes(NSDictionary attribs, bool enabled, Func<NSFont, NSFont> updateFont)
 		{
 			NSObject fontValue = null;
 			if ((enabled && attribs == null)
@@ -168,8 +190,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var font = fontValue as NSFont ?? Control.Font;
 
-				var traits = enabled ? traitMask : traitUnmask;
-				font = NSFontManager.SharedFontManager.ConvertFont(font, traits);
+				font = updateFont(font);
 
 				var mutableAttribs = new NSMutableDictionary(attribs);
 				mutableAttribs.SetValueForKey(font, NSAttributedString.FontAttributeName);
@@ -226,6 +247,16 @@ namespace Eto.Mac.Forms.Controls
 				return value != null && value.Int32Value != (int)NSUnderlineStyle.None;
 			}
 			set { SetSelectedAttribute(NSAttributedString.StrikethroughStyleAttributeName, new NSNumber((int)(value ? NSUnderlineStyle.Single : NSUnderlineStyle.None))); }
+		}
+
+		public FontFamily SelectionFamily
+		{
+			get { return GetSelectedTextAttribute<NSFont>(NSAttributedString.FontAttributeName).ToEto().Family; }
+			set
+			{
+				var familyName = ((FontFamilyHandler)value.Handler).MacName;
+				SetSelectedFontAttribute(true, f => NSFontManager.SharedFontManager.ConvertFontToFamily(f, familyName));
+			}
 		}
 
 		public void Clear()

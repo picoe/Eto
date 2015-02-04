@@ -83,6 +83,12 @@ namespace Eto.WinForms.Forms.Controls
 			SetAttribute(range, () => Control.SelectionFont = font.ToSD());
 		}
 
+		public void SetFamily(Range<int> range, FontFamily family)
+		{
+			var sdfamily = family.ToSD();
+			SetFontStyle(range, font => new sd.Font(sdfamily, font.Size, font.Style));
+		}
+
 		public void SetForeground(Range<int> range, Color color)
 		{
 			SetAttribute(range, () => Control.SelectionColor = color.ToSD());
@@ -117,6 +123,20 @@ namespace Eto.WinForms.Forms.Controls
 			set { Control.SelectionFont = value.ToSD(); }
 		}
 
+		public FontFamily SelectionFamily
+		{
+			get
+			{
+				var font = Control.SelectionFont;
+				return font != null ? font.FontFamily.ToEto() : null;
+			}
+			set
+			{
+				var family = value.ToSD();
+				SetSelectionFontStyle(font => new sd.Font(family, font.Size, font.Style));
+			}
+		}
+
 		public Color SelectionForeground
 		{
 			get { return Control.SelectionColor.ToEto(); }
@@ -131,7 +151,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public bool SelectionBold
 		{
-			get { return Control.SelectionFont.Bold; }
+			get
+			{
+				var font = Control.SelectionFont;
+				return font != null ? font.Bold : false;
+			}
 			set
 			{
 				SetSelectionFontStyle(font =>
@@ -150,7 +174,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public bool SelectionItalic
 		{
-			get { return Control.SelectionFont.Italic; }
+			get
+			{
+				var font = Control.SelectionFont;
+				return font != null ? font.Italic : false;
+			}
 			set
 			{
 				SetSelectionFontStyle(font =>
@@ -169,7 +197,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public bool SelectionUnderline
 		{
-			get { return Control.SelectionFont.Underline; }
+			get
+			{
+				var font = Control.SelectionFont;
+				return font != null ? font.Underline : false;
+			}
 			set
 			{
 				SetSelectionFontStyle(font =>
@@ -188,7 +220,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		public bool SelectionStrikethrough
 		{
-			get { return Control.SelectionFont.Strikeout; }
+			get
+			{
+				var font = Control.SelectionFont;
+				return font != null ? font.Strikeout : false;
+			}
 			set
 			{
 				SetSelectionFontStyle(font =>

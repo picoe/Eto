@@ -113,8 +113,20 @@ namespace Eto
 		public DirectBinding<bool?> ToBool(T trueValue, T falseValue, T nullValue)
 		{
 			return new DelegateBinding<bool?>(
-				() => Equals(DataValue, trueValue),
-				val => { DataValue = val == true ? trueValue : val == false ? falseValue : nullValue; },
+				() =>
+				{
+					var val = DataValue;
+					if (Equals(val, trueValue))
+						return true;
+					if (Equals(val, falseValue))
+						return false;
+					return null;
+				},
+				val =>
+				{
+					var typedVal = val == true ? trueValue : val == false ? falseValue : nullValue;
+					DataValue = typedVal;
+				},
 				addChangeEvent: ev => DataValueChanged += ev,
 				removeChangeEvent: ev => DataValueChanged -= ev
 			);
@@ -132,7 +144,26 @@ namespace Eto
 		/// <param name="falseValue">Value when the binding is false or null.</param>
 		public DirectBinding<bool?> ToBool(T trueValue, T falseValue)
 		{
-			return ToBool(trueValue, falseValue, falseValue);
+			return new DelegateBinding<bool?>(
+				() =>
+				{
+					var val = DataValue;
+					if (Equals(val, trueValue))
+						return true;
+					if (Equals(val, falseValue))
+						return false;
+					return null;
+				},
+				val =>
+				{
+					if (val == true)
+						DataValue = trueValue;
+					else if (val == false)
+						DataValue = falseValue;
+				},
+				addChangeEvent: eh => DataValueChanged += eh,
+				removeChangeEvent: eh => DataValueChanged -= eh
+			);
 		}
 
 		/// <summary>
@@ -146,7 +177,22 @@ namespace Eto
 		/// <param name="trueValue">Value when the binding is true, false, or null.</param>
 		public DirectBinding<bool?> ToBool(T trueValue)
 		{
-			return ToBool(trueValue, trueValue, trueValue);
+			return new DelegateBinding<bool?>(
+				() =>
+				{
+					var val = DataValue;
+					if (Equals(val, trueValue))
+						return true;
+					return false;
+				},
+				val =>
+				{
+					if (val == true)
+						DataValue = trueValue;
+				},
+				addChangeEvent: eh => DataValueChanged += eh,
+				removeChangeEvent: eh => DataValueChanged -= eh
+			);
 		}
 	}
 }

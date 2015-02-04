@@ -4,6 +4,7 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
 using mwc = Xceed.Wpf.Toolkit;
+using System.ComponentModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -23,7 +24,18 @@ namespace Eto.Wpf.Forms.Controls
 			Control = new EtoDoubleUpDown();
 			Control.Value = 0;
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
+			Control.Loaded += Control_Loaded;
 			DecimalPlaces = 0;
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			// ensure changed event fires when changing the text, not just when focus is lost
+			if (Control.TextBox != null)
+			{
+				Control.TextBox.TextChanged += (sender2, e2) => Callback.OnValueChanged(Widget, EventArgs.Empty);
+				Control.Loaded -= Control_Loaded;
+			}
 		}
 
 		public override bool UseMousePreview { get { return true; } }

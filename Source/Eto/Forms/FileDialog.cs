@@ -208,7 +208,7 @@ namespace Eto.Forms
 		/// Gets or sets the directory the file dialog will show files.
 		/// </summary>
 		/// <remarks>
-		/// You can use <see cref="EtoEnvironment.GetSpecialFolder"/> to set the initial value of the directory,
+		/// You can use <see cref="EtoEnvironment.GetFolderPath(EtoSpecialFolder)"/> to set the initial value of the directory,
 		/// though the user should be able to change the folder and keep it
 		/// </remarks>
 		/// <value>The directory.</value>

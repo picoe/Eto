@@ -573,6 +573,13 @@ namespace Eto.GtkSharp
 			return font == null ? null : ((FontHandler)font.Handler).Control;
 		}
 
+		public static Pango.FontFamily ToPango(this FontFamily family)
+		{
+			if (family == null)
+				return null;
+			return ((FontFamilyHandler)family.Handler).Control;
+		}
+
 		public static Font ToEto(this Pango.FontDescription fontDesc, string familyName = null)
 		{
 			return fontDesc == null ? null : new Font(new FontHandler(fontDesc, familyName));
