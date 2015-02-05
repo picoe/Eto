@@ -7,7 +7,7 @@ namespace Eto.Forms
 	/// Radio button list based on an enumeration
 	/// </summary>
 	public class EnumRadioButtonList<T> : RadioButtonList
-		where T: struct
+		where T : struct
 	{
 		class EnumValue : IListItem
 		{
@@ -44,6 +44,20 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a delegate used to get the text value for each item.
+		/// </summary>
+		/// <remarks>
+		/// You can use this delegate to provide translated or custom text for each enumeration.
+		/// Otherwise, the name of the enum is used.
+		/// </remarks>
+		public Func<T, string> GetText { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating that the items in the list are sorted alphabetically, instead of by numerical value of the enumeration
+		/// </summary>
+		public bool SortAlphabetically { get; set; }
+
+		/// <summary>
 		/// Creates the default items.
 		/// </summary>
 		/// <returns>The default items.</returns>
@@ -52,24 +66,26 @@ namespace Eto.Forms
 			var type = typeof(T);
 			if (!type.IsEnum())
 				throw new EtoException("T must be an enumeration");
-			
+
 			var items = new ListItemCollection();
 			var values = Enum.GetValues(type);
 			var names = Enum.GetNames(type);
 			for (int i = 0; i < names.Length; i++)
 			{
-				
+
 				var e = new AddValueEventArgs<T>((T)values.GetValue(i), true);
+				OnAddValue(e);
 				if (e.ShouldAdd)
 				{
 					items.Add(new EnumValue
 					{
-						Text = names[i],
+						Text = GetText != null ? GetText(e.Value) : names[i],
 						Key = Convert.ToString(Convert.ToInt32(e.Value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture)
 					});
 				}
 			}
-			items.Sort((x, y) => string.Compare(x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			if (SortAlphabetically)
+				items.Sort((x, y) => string.Compare(x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			return items;
 		}
 
@@ -82,10 +98,10 @@ namespace Eto.Forms
 			get
 			{
 				return new ControlBinding<EnumRadioButtonList<T>, T>(
-					this, 
-					c => c.SelectedValue, 
-					(c, v) => c.SelectedValue = v, 
-					(c, h) => c.SelectedValueChanged += h, 
+					this,
+					c => c.SelectedValue,
+					(c, v) => c.SelectedValue = v,
+					(c, h) => c.SelectedValueChanged += h,
 					(c, h) => c.SelectedValueChanged -= h
 				);
 			}
