@@ -25,7 +25,20 @@ namespace Eto.Mac.Forms.Controls
 		public override Color BackgroundColor
 		{
 			get { return Control.BackgroundColor.ToEto(); }
-			set { Control.BackgroundColor = value.ToNSUI(); }
+			set
+			{ 
+				var color = value.ToNSUI();
+				Control.BackgroundColor = color;
+				if (Widget.Loaded && HasFocus)
+				{
+					var editor = Control.CurrentEditor;
+					if (editor != null)
+					{
+						editor.BackgroundColor = color;
+						editor.DrawsBackground = true;
+					}
+				}
+			}
 		}
 
 		public virtual string Text
