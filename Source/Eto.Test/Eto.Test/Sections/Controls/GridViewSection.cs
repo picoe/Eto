@@ -177,10 +177,11 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control);
 
 			var dropDown = MyDropDown("DropDownKey");
-			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell("Check"), Editable = true, AutoSize = true, Resizable = false });
+			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell("Check"), AutoSize = true, Resizable = false });
 			control.Columns.Add(new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image") });
-			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Editable = true, Sortable = true });
-			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Editable = true, Sortable = true });
+			control.Columns.Add(new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text") });
+			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true });
+			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Sortable = true });
 
 			if (Platform.Supports<DrawableCell>())
 			{

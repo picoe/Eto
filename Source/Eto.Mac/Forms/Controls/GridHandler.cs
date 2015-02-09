@@ -123,12 +123,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				return font ?? (font = new Font(new FontHandler(Cell.Font)));
+				return font ?? (font = Cell.Font.ToEto());
 			}
 			set
 			{
 				font = value;
-				Cell.Font = font != null ? ((FontHandler)font.Handler).Control : null;
+				Cell.Font = font.ToNSFont();
 			}
 		}
 
@@ -160,6 +160,11 @@ namespace Eto.Mac.Forms.Controls
 		public NSTableView Table
 		{
 			get { return Control; }
+		}
+
+		protected IEnumerable<IDataColumnHandler> ColumnHandlers 
+		{
+			get { return Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>(); }
 		}
 
 		public NSScrollView ScrollView { get; private set; }
@@ -305,7 +310,7 @@ namespace Eto.Mac.Forms.Controls
 			
 			int i = 0;
 			IsAutoSizingColumns = true;
-			foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
+			foreach (var col in ColumnHandlers)
 			{
 				col.Loaded(this, i++);
 				col.Resize(true);
@@ -321,7 +326,7 @@ namespace Eto.Mac.Forms.Controls
 				if (rect.Width > 0 || rect.Height > 0)
 				{
 					IsAutoSizingColumns = true;
-					foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
+					foreach (var col in ColumnHandlers)
 					{
 						col.Resize();
 					}
@@ -431,6 +436,19 @@ namespace Eto.Mac.Forms.Controls
 		public virtual int RowCount
 		{
 			get { return (int)Control.RowCount; }
+		}
+
+		public override bool Enabled
+		{
+			get { return base.Enabled; }
+			set
+			{
+				base.Enabled = value;
+				foreach (var ctl in ColumnHandlers)
+				{
+					ctl.EnabledChanged(value);
+				}
+			}
 		}
 
 		Grid IGridHandler.Widget
