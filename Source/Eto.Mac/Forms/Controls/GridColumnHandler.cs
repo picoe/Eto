@@ -117,7 +117,7 @@ namespace Eto.Mac.Forms.Controls
 					var range = handler.Table.RowsInRect(rect);
 
 					var cellSize = Control.DataCell.CellSize;
-					cellSize.Height = Math.Max(cellSize.Height, handler.RowHeight);
+					cellSize.Height = (nfloat)Math.Max(cellSize.Height, handler.RowHeight);
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
 					for (var i = range.Location; i < range.Location + range.Length; i++)
 					{
