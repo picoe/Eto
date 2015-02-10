@@ -65,7 +65,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			return new TextBoxCellEventConnector();
 		}
 
-		protected class TextBoxCellEventConnector : SingleCellConnector
+		protected class TextBoxCellEventConnector : CellConnector
 		{
 			public new TextBoxCellHandler Handler { get { return (TextBoxCellHandler)base.Handler; } }
 
