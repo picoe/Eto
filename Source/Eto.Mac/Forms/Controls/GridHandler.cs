@@ -307,7 +307,13 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			
+
+			if (!Widget.Properties.Get<bool>(ScrolledToRowKey))
+				// Yosemite bug: hides first row when DataStore is set before control is visible
+				Control.ScrollRowToVisible(0);
+			else
+				Widget.Properties.Remove(ScrolledToRowKey);
+
 			int i = 0;
 			IsAutoSizingColumns = true;
 			foreach (var col in ColumnHandlers)
@@ -477,9 +483,13 @@ namespace Eto.Mac.Forms.Controls
 			Callback.OnCellFormatting(Widget, new MacCellFormatArgs(column, item, row, cell));
 		}
 
+		static readonly object ScrolledToRowKey = new object();
+
 		public void ScrollToRow(int row)
 		{
 			Control.ScrollRowToVisible(row);
+			if (!Widget.Loaded)
+				Widget.Properties[ScrolledToRowKey] = true;
 		}
 
 		public bool Loaded
