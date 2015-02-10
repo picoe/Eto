@@ -23,15 +23,16 @@ namespace Eto.GtkSharp.Forms
 			Padding = Panel.DefaultPadding;
 		}
 
+		protected virtual bool UseMinimumSizeRequested { get { return true; } }
+
 		protected override void Initialize()
 		{
 			base.Initialize();
 			SetContainerContent(alignment);
+
 			#if GTK2
-			ContainerContentControl.SizeRequested += Connector.HandleContentSizeRequested;
-			#else
-			if (MinimumSize != Size.Empty)
-				ContainerContentControl.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
+			if (UseMinimumSizeRequested)
+				ContainerControl.SizeRequested += Connector.HandleContentSizeRequested;
 			#endif
 		}
 
@@ -71,7 +72,18 @@ namespace Eto.GtkSharp.Forms
 			set { contextMenu = value; } // TODO
 		}
 
-		public Size MinimumSize { get; set; }
+		Size minimumSize;
+		public virtual Size MinimumSize
+		{
+			get { return minimumSize; }
+			set
+			{
+				minimumSize = value;
+				#if GTK3
+				ContainerControl.SetSizeRequest(value.Width > 0 ? value.Width : -1, value.Height > 0 ? value.Height : -1);
+				#endif
+			}
+		}
 
 		public Padding Padding
 		{

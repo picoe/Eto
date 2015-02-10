@@ -139,8 +139,6 @@ namespace Eto.GtkSharp.Forms
 						if (size.Height == -1)
 							size.Height = defSize.Height;
 					}
-					var alloc = Control.Allocation;
-					alloc.Size = value.ToGdk();
 					ContainerControl.SetSizeRequest(size.Width, size.Height);
 				}
 			}
