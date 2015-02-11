@@ -241,9 +241,16 @@ namespace Eto.Wpf.Drawing
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
 			var src = image.ToWpf((int)Math.Max(width, height));
-			//Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { x , x  + width }, new double[] { y , y + height }));
+			if ((imageInterpolation == Eto.Drawing.ImageInterpolation.High || imageInterpolation == Eto.Drawing.ImageInterpolation.Default)
+				&& (width != src.Width || height != src.Height))
+			{
+				// better image quality by using transformed bitmap, plus it is actually faster
+				src = new swmi.TransformedBitmap(
+					src,
+					new swm.ScaleTransform(width / src.Width * 96 / src.DpiX, height / src.Height * 96 / src.DpiY, 0, 0)
+					);
+			}
 			Control.DrawImage(src, new sw.Rect(x + inverseoffset, y + inverseoffset, width, height));
-			//Control.Pop ();
 		}
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
