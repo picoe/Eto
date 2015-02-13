@@ -68,8 +68,7 @@
             ReplacementText='version=&quot;$(BuildVersion)&quot;' />
 	</Target>
 	
-    <Target Name="Package" DependsOnTargets="UpdateAssemblyInfo">
-	
+	<Target Name="Build" DependsOnTargets="UpdateAssemblyInfo">
     	<!-- using exec since xbuild messes up properties when using msbuild task -->
     	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net40.sln'" Condition="$(Platform) != 'Windows'"/>
     	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net45.sln'" Condition="$(Platform) != 'Windows'"/>
@@ -81,11 +80,13 @@
 		<!-- build XamMac separately if it hasn't been built on mac -->
     	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputNet40Dir)\Eto.XamMac.dll')" />
     	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac - net45.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputNet45Dir)\Eto.XamMac.dll')" />
-    	
-
+	
+	</Target>
+	
+	
+    <Target Name="Package" DependsOnTargets="Build">
 		<!-- Nuget has problems with files that have no extension -->
 		<Copy SourceFiles="$(BuildOutputNet40Dir)\LICENSE" DestinationFiles="$(BuildOutputNet40Dir)\LICENSE.txt" />
-		
 
     	<ItemGroup>
 			<Package Include="Eto">
