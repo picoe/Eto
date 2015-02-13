@@ -1,6 +1,8 @@
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+using System;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -17,6 +19,12 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac.Forms.Controls
 {
+
+	public class CustomTextFieldEditor : CustomFieldEditor, IMacControl
+	{
+		public WeakReference WeakHandler { get; set; }
+	}
+
 	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler
 		where TControl: NSTextField
 		where TWidget: TextControl
@@ -51,6 +59,19 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.TextColor.ToEto(); }
 			set { Control.TextColor = value.ToNSUI(); }
+		}
+
+		static readonly object CustomFieldEditorKey = new object();
+
+		public override NSObject CustomFieldEditor { get { return Widget.Properties.Get<NSObject>(CustomFieldEditorKey); } }
+
+		protected override void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
+		{
+			if (CustomFieldEditor == null)
+			{
+				Widget.Properties[CustomFieldEditorKey] = new CustomTextFieldEditor { Widget = Widget, WeakHandler = new WeakReference(this) };
+			}
+			base.InnerMapPlatformCommand(systemAction, command, CustomFieldEditor);
 		}
 	}
 }

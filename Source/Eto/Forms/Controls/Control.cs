@@ -987,7 +987,7 @@ namespace Eto.Forms
 		/// </code>
 		/// </example>
 		/// <param name="systemCommand">System command</param>
-		/// <param name="command">Command object to execute</param>
+		/// <param name="command">Command to execute, or null to restore to the default behavior</param>
 		/// <seealso cref="SupportedPlatformCommands"/>
 		public void MapPlatformCommand(string systemCommand, Command command)
 		{
@@ -1470,8 +1470,8 @@ namespace Eto.Forms
 			/// }
 			/// </code>
 			/// </example>
-			/// <param name="systemCommand">System action.</param>
-			/// <param name="command">Command.</param>
+			/// <param name="systemCommand">System command.</param>
+			/// <param name="command">Command to execute, or null to restore to the default behavior</param>
 			/// <seealso cref="SupportedPlatformCommands"/>
 			void MapPlatformCommand(string systemCommand, Command command);
 
