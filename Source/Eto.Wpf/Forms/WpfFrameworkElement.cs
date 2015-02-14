@@ -122,7 +122,7 @@ namespace Eto.Wpf.Forms
 			{
 				if (newSize != null)
 					return newSize.Value;
-				if (!Control.IsLoaded)
+				if (!Widget.Loaded)
 					return preferredSize.ToEtoSize();
 				return Control.GetSize();
 			}
