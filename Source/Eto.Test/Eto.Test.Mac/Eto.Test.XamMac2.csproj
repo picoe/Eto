@@ -9,7 +9,7 @@
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <LastXamMacNagTime>14/12/2012 1:15:16 AM</LastXamMacNagTime>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <AssemblyName>EtoTestXamMac2</AssemblyName>
+    <AssemblyName>Eto.Test.XamMac2</AssemblyName>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
   </PropertyGroup>
   <PropertyGroup>
