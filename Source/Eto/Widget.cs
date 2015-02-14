@@ -297,8 +297,8 @@ namespace Eto
 			var handler = WidgetHandler;
 			if (handler != null)
 				handler.Initialize();
-			Eto.Style.OnStyleWidgetDefaults(this);
 			EventLookup.HookupEvents(this);
+			Platform.Instance.TriggerWidgetCreated(new WidgetCreatedEventArgs(this));
 		}
 
 		PropertyStore properties;

@@ -9,9 +9,31 @@ namespace Eto
 	/// <summary>
 	/// Arguments for when a widget is created
 	/// </summary>
-	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2015 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class WidgetCreatedArgs : EventArgs
+	public class WidgetCreatedEventArgs : EventArgs
+	{
+		/// <summary>
+		/// Gets the instance of the widget that was created
+		/// </summary>
+		public Widget Instance { get; private set; }
+
+		/// <summary>
+		/// Initializes a new instance of the WidgetCreatedArgs class
+		/// </summary>
+		/// <param name="instance">Instance of the widget that was created</param>
+		public WidgetCreatedEventArgs(Widget instance)
+		{
+			this.Instance = instance;
+		}
+	}
+
+	/// <summary>
+	/// Arguments for when a widget is created
+	/// </summary>
+	/// <copyright>(c) 2012-2015 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class HandlerCreatedEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Gets the instance of the widget that was created
@@ -22,7 +44,7 @@ namespace Eto
 		/// Initializes a new instance of the WidgetCreatedArgs class
 		/// </summary>
 		/// <param name="instance">Instance of the widget that was created</param>
-		public WidgetCreatedArgs(object instance)
+		public HandlerCreatedEventArgs(object instance)
 		{
 			this.Instance = instance;
 		}
@@ -47,7 +69,7 @@ namespace Eto
 	/// This class takes care of creating the platform-specific implementations of each control.
 	/// All controls the platform can handle should be added using <see cref="Platform.Add{T}"/>.
 	/// </remarks>
-	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2015 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 #pragma warning disable 0612,0618
 	public abstract class Platform : Generator
@@ -87,16 +109,37 @@ namespace Eto
 		/// <summary>
 		/// Event to handle when widgets are created by this platform
 		/// </summary>
-		public event EventHandler<WidgetCreatedArgs> WidgetCreated;
+		public event EventHandler<HandlerCreatedEventArgs> HandlerCreated;
 
 		/// <summary>
 		/// Handles the <see cref="WidgetCreated"/> event
 		/// </summary>
 		/// <param name="e">Arguments for the event</param>
-		protected virtual void OnWidgetCreated(WidgetCreatedArgs e)
+		protected virtual void OnHandlerCreated(HandlerCreatedEventArgs e)
 		{
+			if (HandlerCreated != null)
+				HandlerCreated(this, e);
+		}
+
+		/// <summary>
+		/// Event to handle when widgets are created by this platform
+		/// </summary>
+		public event EventHandler<WidgetCreatedEventArgs> WidgetCreated;
+
+		/// <summary>
+		/// Handles the <see cref="WidgetCreated"/> event
+		/// </summary>
+		/// <param name="e">Arguments for the event</param>
+		protected virtual void OnWidgetCreated(WidgetCreatedEventArgs e)
+		{
+			Eto.Style.OnStyleWidgetDefaults(e.Instance);
 			if (WidgetCreated != null)
 				WidgetCreated(this, e);
+		}
+
+		internal void TriggerWidgetCreated(WidgetCreatedEventArgs args)
+		{
+			OnWidgetCreated(args);
 		}
 
 		#endregion
@@ -391,7 +434,7 @@ namespace Eto
 					throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "type {0} could not be found in this generator", type.FullName));
 
 				var handler = instantiator();
-				OnWidgetCreated(new WidgetCreatedArgs(handler));
+				OnHandlerCreated(new HandlerCreatedEventArgs(handler));
 				return handler;
 			}
 			catch (Exception e)
