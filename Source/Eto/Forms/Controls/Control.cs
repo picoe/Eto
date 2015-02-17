@@ -1115,6 +1115,18 @@ namespace Eto.Forms
 			base.Dispose(disposing);
 		}
 
+		/// <summary>
+		/// Converts a string to a label control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add labels to your layout through code, without having to create <see cref="Label"/> instances.
+		/// </remarks>
+		/// <param name="labelText">Text to convert to a Label control.</param>
+		public static implicit operator Control(string labelText)
+		{
+			return new Label { Text = labelText };
+		}
+
 		#region Callback
 
 		static readonly object callback = new Callback();

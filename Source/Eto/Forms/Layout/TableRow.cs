@@ -91,6 +91,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Converts a string to a TableRow with a label control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add labels to your layout through code, without having to create <see cref="Label"/> instances.
+		/// </remarks>
+		/// <param name="labelText">Text to convert to a Label control.</param>
+		public static implicit operator TableRow(string labelText)
+		{
+			return new TableRow(new Label { Text = labelText });
+		}
+
+		/// <summary>
 		/// Implicitly converts a TableRow to a control
 		/// </summary>
 		/// <remarks>
