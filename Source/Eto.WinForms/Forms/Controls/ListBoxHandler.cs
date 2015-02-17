@@ -14,8 +14,11 @@ namespace Eto.WinForms.Forms.Controls
 
 		class EtoListBox : swf.ListBox
 		{
-			public EtoListBox()
+			private readonly ListBoxHandler handler;
+
+			public EtoListBox(ListBoxHandler handler)
 			{
+				this.handler = handler;
 				DrawMode = swf.DrawMode.OwnerDrawFixed;
 				SetStyle(swf.ControlStyles.UserPaint | swf.ControlStyles.OptimizedDoubleBuffer | swf.ControlStyles.EnableNotifyMessage | swf.ControlStyles.ResizeRedraw, true);
 				ResizeRedraw = false;
@@ -64,24 +67,25 @@ namespace Eto.WinForms.Forms.Controls
 					return;
 
 				var bounds = e.Bounds;
-				var item = (IListItem)Items[e.Index];
-				var imageitem = item as IImageListItem;
-				if (imageitem != null && imageitem.Image != null)
+				var item = Items[e.Index];
+				var text = handler.Widget.TextBinding != null ? handler.Widget.TextBinding.GetValue(item) : string.Empty;
+				var image = handler.Widget.ImageBinding != null? handler.Widget.ImageBinding.GetValue(item) : null;
+				if (image != null)
 				{
-					var img = imageitem.Image.Handler as IWindowsImageSource;
+					var img = image.Handler as IWindowsImageSource;
 					if (img != null)
 						e.Graphics.DrawImage(img.GetImageWithSize(bounds.Height), bounds.Left, bounds.Top, bounds.Height, bounds.Height);
 					bounds.X += bounds.Height + 2;
 				}
-				var stringSize = swf.TextRenderer.MeasureText(e.Graphics, item.Text, e.Font);
+				var stringSize = swf.TextRenderer.MeasureText(e.Graphics, text, e.Font);
 				bounds.Y += Math.Max(0, (bounds.Height - stringSize.Height) / 2);
-				swf.TextRenderer.DrawText(e.Graphics, item.Text, e.Font, bounds, ForeColor, swf.TextFormatFlags.Left);
+				swf.TextRenderer.DrawText(e.Graphics, text, e.Font, bounds, ForeColor, swf.TextFormatFlags.Left);
 			}
 		}
 
 		public ListBoxHandler()
 		{
-			Control = new EtoListBox();
+			Control = new EtoListBox(this);
 			Control.SelectedIndexChanged += control_SelectedIndexChanged;
 			Control.IntegralHeight = false;
 			Control.DoubleClick += control_DoubleClick;
