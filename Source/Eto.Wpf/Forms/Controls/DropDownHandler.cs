@@ -173,7 +173,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control.ItemTemplate = new sw.DataTemplate
 			{
-				VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false)
+				VisualTree = new WpfTextBindingBlock(() => Widget.ItemTextBinding, setMargin: false)
 			};
 		}
 	}

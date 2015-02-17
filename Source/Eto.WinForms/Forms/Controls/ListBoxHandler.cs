@@ -68,8 +68,8 @@ namespace Eto.WinForms.Forms.Controls
 
 				var bounds = e.Bounds;
 				var item = Items[e.Index];
-				var text = handler.Widget.TextBinding != null ? handler.Widget.TextBinding.GetValue(item) : string.Empty;
-				var image = handler.Widget.ImageBinding != null? handler.Widget.ImageBinding.GetValue(item) : null;
+				var text = handler.Widget.ItemTextBinding != null ? handler.Widget.ItemTextBinding.GetValue(item) : string.Empty;
+				var image = handler.Widget.ItemImageBinding != null? handler.Widget.ItemImageBinding.GetValue(item) : null;
 				if (image != null)
 				{
 					var img = image.Handler as IWindowsImageSource;

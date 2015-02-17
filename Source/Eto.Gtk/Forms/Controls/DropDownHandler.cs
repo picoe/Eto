@@ -89,14 +89,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public override void AddItem(object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.listStore.AppendValues(binding.GetValue(item));
 				Handler.Control.QueueResize();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.listStore.InsertWithValues(index, binding.GetValue(item));
 				Handler.Control.QueueResize();
 			}

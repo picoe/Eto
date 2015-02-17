@@ -38,7 +38,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <remarks>
 	/// If you have a list of your own objects, it is more efficient to use them directly with the list control by 
-	/// passing a collection to the DataStore property, and use <see cref="ListControl.TextBinding"/> and <see cref="ListControl.KeyBinding"/> instead.
+	/// passing a collection to the DataStore property, and use <see cref="ListControl.ItemTextBinding"/> and <see cref="ListControl.ItemKeyBinding"/> instead.
 	/// </remarks>
 	/// <seealso cref="ListItemCollection"/>
 	[ContentProperty("Text")]
@@ -87,8 +87,8 @@ namespace Eto.Forms
 	/// </summary>
 	/// <remarks>
 	/// If you have a list of your own objects, it is more efficient to use them directly with the list control by 
-	/// passing a collection to the DataStore property, and use <see cref="ListControl.TextBinding"/>, <see cref="ListControl.KeyBinding"/>,
-	/// and <see cref="ListBox.ImageBinding"/>.
+	/// passing a collection to the DataStore property, and use <see cref="ListControl.ItemTextBinding"/>, <see cref="ListControl.ItemKeyBinding"/>,
+	/// and <see cref="ListBox.ItemImageBinding"/>.
 	/// </remarks>
 	public class ImageListItem : ListItem, IImageListItem
 	{
