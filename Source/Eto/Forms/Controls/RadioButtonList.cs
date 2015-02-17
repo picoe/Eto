@@ -7,22 +7,6 @@ using System.Collections;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Orientation of buttons in a <see cref="RadioButtonList"/>
-	/// </summary>
-	public enum RadioButtonListOrientation
-	{
-		/// <summary>
-		/// Radio buttons are displayed horizontally.
-		/// </summary>
-		Horizontal,
-
-		/// <summary>
-		/// Radio buttons are displayed vertically.
-		/// </summary>
-		Vertical
-	}
-
-	/// <summary>
 	/// Shows a list of radio buttons.
 	/// </summary>
 	/// <remarks>
@@ -31,7 +15,7 @@ namespace Eto.Forms
 	/// </remarks>
 	public class RadioButtonList : Panel
 	{
-		RadioButtonListOrientation orientation;
+		Orientation orientation;
 		ItemDataStore dataStore;
 		readonly List<RadioButton> buttons = new List<RadioButton>();
 		RadioButton controller;
@@ -235,7 +219,7 @@ namespace Eto.Forms
 		/// Gets or sets the orientation of the radio buttons.
 		/// </summary>
 		/// <value>The radio button orientation.</value>
-		public RadioButtonListOrientation Orientation
+		public Orientation Orientation
 		{
 			get { return orientation; }
 			set
@@ -342,7 +326,7 @@ namespace Eto.Forms
 				return;
 			SuspendLayout();
 			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = spacing };
-			var horizontal = orientation == RadioButtonListOrientation.Horizontal;
+			var horizontal = orientation == Orientation.Horizontal;
 			if (horizontal)
 				layout.BeginHorizontal();
 			foreach (var button in buttons)
@@ -450,6 +434,78 @@ namespace Eto.Forms
 					(c, h) => c.SelectedValueChanged -= h
 				);
 			}
+		}
+	}
+
+	/// <summary>
+	/// Orientation of buttons in a <see cref="RadioButtonList"/>
+	/// </summary>
+	[Obsolete("Use Orientation instead")]
+	public struct RadioButtonListOrientation
+	{
+		readonly Orientation orientation;
+
+		RadioButtonListOrientation(Orientation orientation)
+		{
+			this.orientation = orientation;
+		}
+
+		/// <summary>
+		/// Radio buttons are displayed horizontally.
+		/// </summary>
+		public static RadioButtonListOrientation Horizontal { get { return Orientation.Horizontal; } }
+
+		/// <summary>
+		/// Radio buttons are displayed vertically.
+		/// </summary>
+		public static RadioButtonListOrientation Vertical { get { return Orientation.Vertical; } }
+
+		/// <summary>Converts to an Orientation</summary>
+		public static implicit operator Orientation(RadioButtonListOrientation orientation)
+		{
+			return orientation.orientation;
+		}
+
+		/// <summary>Converts an Orientation to a RadioButtonListOrientation</summary>
+		public static implicit operator RadioButtonListOrientation(Orientation orientation)
+		{
+			return new RadioButtonListOrientation(orientation);
+		}
+
+		/// <summary>Compares for equality</summary>
+		/// <param name="orientation1">Orientation1.</param>
+		/// <param name="orientation2">Orientation2.</param>
+		public static bool operator ==(Orientation orientation1, RadioButtonListOrientation orientation2)
+		{
+			return orientation1 == orientation2.orientation;
+		}
+
+		/// <summary>Compares for inequality</summary>
+		/// <param name="orientation1">Orientation1.</param>
+		/// <param name="orientation2">Orientation2.</param>
+		public static bool operator !=(Orientation orientation1, RadioButtonListOrientation orientation2)
+		{
+			return orientation1 != orientation2.orientation;
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="Eto.Forms.SliderOrientation"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with the current <see cref="Eto.Forms.SliderOrientation"/>.</param>
+		/// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current
+		/// <see cref="Eto.Forms.SliderOrientation"/>; otherwise, <c>false</c>.</returns>
+		public override bool Equals(object obj)
+		{
+			return obj is RadioButtonListOrientation && (this == (RadioButtonListOrientation)obj);
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a <see cref="Eto.Forms.SliderOrientation"/> object.
+		/// </summary>
+		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+		public override int GetHashCode()
+		{
+			return orientation.GetHashCode();
 		}
 	}
 }

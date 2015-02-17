@@ -86,10 +86,10 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public SliderOrientation Orientation
+		public Orientation Orientation
 		{
-			get { return Control.Orientation == swf.Orientation.Horizontal ? SliderOrientation.Horizontal : SliderOrientation.Vertical; }
-			set { Control.Orientation = value == SliderOrientation.Horizontal ? swf.Orientation.Horizontal : swf.Orientation.Vertical; }
+			get { return Control.Orientation == swf.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical; }
+			set { Control.Orientation = value == Orientation.Horizontal ? swf.Orientation.Horizontal : swf.Orientation.Vertical; }
 		}
 
 		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };

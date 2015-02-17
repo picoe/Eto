@@ -19,7 +19,7 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class SliderHandler : MacControl<NSSlider, Slider, Slider.ICallback>, Slider.IHandler
 	{
-		SliderOrientation orientation;
+		Orientation orientation;
 
 		public class EtoSlider : NSSlider, IMacControl
 		{
@@ -55,7 +55,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return Orientation == SliderOrientation.Horizontal ? new Size(80, 30) : new Size(30, 80);
+			return Orientation == Orientation.Horizontal ? new Size(80, 30) : new Size(30, 80);
 		}
 
 		public int MaxValue
@@ -106,7 +106,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public SliderOrientation Orientation
+		public Orientation Orientation
 		{
 			get
 			{
@@ -117,7 +117,7 @@ namespace Eto.Mac.Forms.Controls
 				orientation = value;
 				// wha?!?! no way to do this other than change size or sumthun?
 				var size = Control.Frame.Size;
-				if (value == SliderOrientation.Vertical)
+				if (value == Orientation.Vertical)
 				{
 					size.Height = size.Width + 1;
 				}

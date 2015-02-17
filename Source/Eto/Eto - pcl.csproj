@@ -307,6 +307,7 @@
     <Compile Include="Forms\Layout\TableCellConverter.cs" />
     <Compile Include="Forms\Layout\TableRowConverter.cs" />
     <Compile Include="Forms\Controls\RichTextArea.cs" />
+    <Compile Include="Forms\Orientation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

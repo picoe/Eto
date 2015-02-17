@@ -59,15 +59,15 @@ namespace Eto.WinRT.Forms.Controls
 			set { Control.TickFrequency = value; }
 		}
 
-		public SliderOrientation Orientation
+		public Orientation Orientation
 		{
 			get
 			{
 				switch (Control.Orientation) {
 					case swc.Orientation.Vertical:
-						return SliderOrientation.Vertical;
+						return Orientation.Vertical;
 					case swc.Orientation.Horizontal:
-						return SliderOrientation.Horizontal;
+						return Orientation.Horizontal;
 					default:
 						throw new NotSupportedException ();
 				}
@@ -75,10 +75,10 @@ namespace Eto.WinRT.Forms.Controls
 			set
 			{
 				switch (value) {
-					case SliderOrientation.Vertical:
+					case Orientation.Vertical:
 						Control.Orientation = swc.Orientation.Vertical;
 						break;
-					case SliderOrientation.Horizontal:
+					case Orientation.Horizontal:
 						Control.Orientation = swc.Orientation.Horizontal;
 						break;
 					default:
