@@ -25,7 +25,7 @@ namespace Eto.Forms
 	/// <remarks>
 	/// This is used to provide an easy way to add items to a <see cref="ListControl"/>.
 	/// It is not mandatory to use this collection, however, since each control can specify bindings to your own
-	/// model objects using <see cref="ListControl.KeyBinding"/>, <see cref="ListControl.TextBinding"/>, or other
+	/// model objects using <see cref="ListControl.ItemKeyBinding"/>, <see cref="ListControl.ItemTextBinding"/>, or other
 	/// subclass bindings.
 	/// </remarks>
 	public class ListItemCollection : ExtendedObservableCollection<IListItem>
@@ -123,13 +123,35 @@ namespace Eto.Forms
 		/// Gets or sets the binding for the text value of each item.
 		/// </summary>
 		/// <value>The text binding.</value>
-		public IIndirectBinding<string> TextBinding { get; set; }
+		public IIndirectBinding<string> ItemTextBinding { get; set; }
 
 		/// <summary>
 		/// Gets or sets the binding for the key value of each item.
 		/// </summary>
 		/// <value>The key binding.</value>
-		public IIndirectBinding<string> KeyBinding { get; set; }
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+
+		/// <summary>
+		/// Gets or sets the binding for the text value of each item.
+		/// </summary>
+		/// <value>The text binding.</value>
+		[Obsolete("Use ItemTextBinding instead")]
+		public IIndirectBinding<string> TextBinding
+		{
+			get { return ItemTextBinding; }
+			set { ItemTextBinding = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the binding for the key value of each item.
+		/// </summary>
+		/// <value>The key binding.</value>
+		[Obsolete("Use ItemKeyBinding instead")]
+		public IIndirectBinding<string> KeyBinding
+		{
+			get { return ItemKeyBinding; }
+			set { ItemKeyBinding = value; }
+		}
 
 		static readonly object SelectedIndexChangedKey = new object();
 
@@ -198,8 +220,8 @@ namespace Eto.Forms
 		/// </summary>
 		protected ListControl()
 		{
-			TextBinding = new ListItemTextBinding();
-			KeyBinding = new ListItemKeyBinding();
+			ItemTextBinding = new ListItemTextBinding();
+			ItemKeyBinding = new ListItemKeyBinding();
 		}
 
 		/// <summary>
@@ -212,8 +234,8 @@ namespace Eto.Forms
 		protected ListControl(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
-			TextBinding = new ListItemTextBinding();
-			KeyBinding = new ListItemKeyBinding();
+			ItemTextBinding = new ListItemTextBinding();
+			ItemKeyBinding = new ListItemKeyBinding();
 		}
 
 		/// <summary>
@@ -277,16 +299,16 @@ namespace Eto.Forms
 		/// Gets or sets the key of the selected item in the <see cref="DataStore"/>.
 		/// </summary>
 		/// <remarks>
-		/// This uses the <see cref="KeyBinding"/> to map the key for each item in the list.
+		/// This uses the <see cref="ItemKeyBinding"/> to map the key for each item in the list.
 		/// </remarks>
 		/// <value>The selected key.</value>
 		public string SelectedKey
 		{
-			get { return KeyBinding.GetValue(SelectedValue); }
+			get { return ItemKeyBinding.GetValue(SelectedValue); }
 			set
 			{
 				EnsureDataStore();
-				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.FindIndex<object>(r => KeyBinding.GetValue(r) == value) : -1;
+				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.FindIndex<object>(r => ItemKeyBinding.GetValue(r) == value) : -1;
 			}
 		}
 

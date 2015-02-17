@@ -23,7 +23,7 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			var selected = SelectedIndex;
 			var text = Text;
-			var item = Control.Items.Cast<object>().FirstOrDefault(r => Widget.TextBinding.GetValue(r) == text);
+			var item = Control.Items.Cast<object>().FirstOrDefault(r => Widget.ItemTextBinding.GetValue(r) == text);
 			var newIndex = item != null ? Control.Items.IndexOf(item) : -1;
 			if (selected != newIndex)
 			{

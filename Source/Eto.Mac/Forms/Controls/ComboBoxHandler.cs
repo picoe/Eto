@@ -124,7 +124,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void AddRange(IEnumerable<object> items)
 			{
 				var oldIndex = Handler.Control.SelectedIndex;
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				foreach (var item in items.Select(r => binding.GetValue(r)))
 				{
 					Handler.Control.Add(NSObject.FromObject(item));
@@ -134,14 +134,14 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void AddItem(object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Add(NSObject.FromObject(binding.GetValue(item)));
 				Handler.LayoutIfNeeded();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Insert(NSObject.FromObject(binding.GetValue(item)), index);
 				Handler.LayoutIfNeeded();
 			}
@@ -250,7 +250,7 @@ namespace Eto.Mac.Forms.Controls
 					Control.StringValue = value ?? string.Empty;
 					if (collection != null)
 					{
-						var binding = Widget.TextBinding;
+						var binding = Widget.ItemTextBinding;
 						var item = collection.Collection.FirstOrDefault(r => binding.GetValue(r) == value);
 						var index = item != null ? collection.IndexOf(item) : -1;
 
