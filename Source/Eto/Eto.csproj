@@ -311,6 +311,7 @@
     <Compile Include="Forms\Layout\TableRowConverter.cs" />
     <Compile Include="Forms\Controls\RichTextArea.cs" />
     <Compile Include="Forms\Orientation.cs" />
+    <Compile Include="Forms\Layout\StackLayout.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
