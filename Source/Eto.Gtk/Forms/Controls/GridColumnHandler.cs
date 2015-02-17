@@ -73,6 +73,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				((ICellHandler)dataCell.Handler).SetEditable(Control, editable);
 				SetupEvents();
+				if (Control.TreeView != null)
+					Control.TreeView.QueueDraw();
 			}
 		}
 

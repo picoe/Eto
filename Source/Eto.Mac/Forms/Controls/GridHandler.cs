@@ -123,12 +123,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				return font ?? (font = new Font(new FontHandler(Cell.Font)));
+				return font ?? (font = Cell.Font.ToEto());
 			}
 			set
 			{
 				font = value;
-				Cell.Font = font != null ? ((FontHandler)font.Handler).Control : null;
+				Cell.Font = font.ToNSFont();
 			}
 		}
 
@@ -160,6 +160,11 @@ namespace Eto.Mac.Forms.Controls
 		public NSTableView Table
 		{
 			get { return Control; }
+		}
+
+		protected IEnumerable<IDataColumnHandler> ColumnHandlers 
+		{
+			get { return Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>(); }
 		}
 
 		public NSScrollView ScrollView { get; private set; }
@@ -302,10 +307,16 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			
+
+			if (!Widget.Properties.Get<bool>(ScrolledToRowKey))
+				// Yosemite bug: hides first row when DataStore is set before control is visible
+				Control.ScrollRowToVisible(0);
+			else
+				Widget.Properties.Remove(ScrolledToRowKey);
+
 			int i = 0;
 			IsAutoSizingColumns = true;
-			foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
+			foreach (var col in ColumnHandlers)
 			{
 				col.Loaded(this, i++);
 				col.Resize(true);
@@ -321,7 +332,7 @@ namespace Eto.Mac.Forms.Controls
 				if (rect.Width > 0 || rect.Height > 0)
 				{
 					IsAutoSizingColumns = true;
-					foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
+					foreach (var col in ColumnHandlers)
 					{
 						col.Resize();
 					}
@@ -433,6 +444,19 @@ namespace Eto.Mac.Forms.Controls
 			get { return (int)Control.RowCount; }
 		}
 
+		public override bool Enabled
+		{
+			get { return base.Enabled; }
+			set
+			{
+				base.Enabled = value;
+				foreach (var ctl in ColumnHandlers)
+				{
+					ctl.EnabledChanged(value);
+				}
+			}
+		}
+
 		Grid IGridHandler.Widget
 		{
 			get { return Widget; }
@@ -459,9 +483,13 @@ namespace Eto.Mac.Forms.Controls
 			Callback.OnCellFormatting(Widget, new MacCellFormatArgs(column, item, row, cell));
 		}
 
+		static readonly object ScrolledToRowKey = new object();
+
 		public void ScrollToRow(int row)
 		{
 			Control.ScrollRowToVisible(row);
+			if (!Widget.Loaded)
+				Widget.Properties[ScrolledToRowKey] = true;
 		}
 
 		public bool Loaded

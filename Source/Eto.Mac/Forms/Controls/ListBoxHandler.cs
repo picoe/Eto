@@ -76,8 +76,8 @@ namespace Eto.Mac.Forms.Controls
 				var item = Handler.collection.ElementAt((int)row);
 				return new MacImageData
 				{
-					Text = new NSString(Convert.ToString(w.TextBinding.GetValue(item))),
-					Image = w.ImageBinding != null ? ((Image)w.ImageBinding.GetValue(item)).ToNS() : null
+					Text = new NSString(Convert.ToString(w.ItemTextBinding.GetValue(item))),
+					Image = w.ItemImageBinding != null ? ((Image)w.ItemImageBinding.GetValue(item)).ToNS() : null
 				};
 			}
 

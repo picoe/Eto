@@ -459,6 +459,18 @@ namespace Eto.Wpf.Forms.Controls
 			return output;
 		}
 
+		public static string GetText(this swd.InlineCollection inlines)
+		{
+			var sb = new StringBuilder();
+
+			foreach (var el in inlines)
+			{
+				var run = el as swd.Run;
+				sb.Append(run == null ? Environment.NewLine : run.Text);
+			}
+			return sb.ToString();
+		}
+
 		public static string GetText(this swd.FlowDocument doc)
 		{
 			var sb = new StringBuilder();

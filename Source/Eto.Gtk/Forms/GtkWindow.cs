@@ -62,6 +62,27 @@ namespace Eto.GtkSharp.Forms
 			get { return Control.Style.Background(Gtk.StateType.Normal).ToEto(); }
 		}
 
+		protected override bool UseMinimumSizeRequested
+		{
+			get { return false; }
+		}
+
+		public override Size MinimumSize
+		{
+			get { return base.MinimumSize; }
+			set
+			{
+				base.MinimumSize = value;
+				#if GTK2
+				Control.AllowShrink = value.Width <= 0 && value.Height <= 0;
+				#endif
+				if (Widget.Loaded)
+				{
+					Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
+				}
+			}
+		}
+
 		public Gtk.Widget WindowContentControl
 		{
 			get { return vbox; }
@@ -152,8 +173,6 @@ namespace Eto.GtkSharp.Forms
 				else
 				{
 					Control.Resize(value.Width, value.Height);
-					if (initialSize == null)
-						Control.Shown += HandleControlShown;
 					initialSize = value;
 				}
 			}
@@ -161,14 +180,19 @@ namespace Eto.GtkSharp.Forms
 
 		void HandleControlShown(object sender, EventArgs e)
 		{
-			Control.Shown -= HandleControlShown;
-			var frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
-			// HACK: get twice to get 'real' size? Ubuntu 14.04 returns inflated size the first call.
-			frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
+			//Control.Shown -= HandleControlShown;
+			if (initialSize != null)
+			{
+				var frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
+				// HACK: get twice to get 'real' size? Ubuntu 14.04 returns inflated size the first call.
+				frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
 
-			var diff = frameExtents - Control.Allocation.Size.ToEto();
-			Control.Resize(initialSize.Value.Width - diff.Width, initialSize.Value.Height - diff.Height);
-			initialSize = null;
+				var diff = frameExtents - Control.Allocation.Size.ToEto();
+				Control.Resize(initialSize.Value.Width - diff.Width, initialSize.Value.Height - diff.Height);
+				initialSize = null;
+			}
+			// set initial minimum size
+			Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
 		}
 
 		public override Size ClientSize
@@ -205,6 +229,7 @@ namespace Eto.GtkSharp.Forms
 			
 			HandleEvent(Window.WindowStateChangedEvent); // to set restore bounds properly
 			HandleEvent(Window.ClosingEvent); // to chain application termination events
+			Control.Shown += HandleControlShown;
 		}
 
 		public override void AttachEvent(string id)

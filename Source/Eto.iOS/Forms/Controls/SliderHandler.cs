@@ -7,7 +7,7 @@ namespace Eto.iOS.Forms.Controls
 {
 	public class SliderHandler : IosControl<UISlider, Slider, Slider.ICallback>, Slider.IHandler
 	{
-		SliderOrientation orientation;
+		Orientation orientation;
 		int? lastValue;
 
 		public SliderHandler()
@@ -69,7 +69,7 @@ namespace Eto.iOS.Forms.Controls
 			set;
 		}
 
-		public SliderOrientation Orientation
+		public Orientation Orientation
 		{
 			get { return orientation; }
 			set
@@ -79,10 +79,10 @@ namespace Eto.iOS.Forms.Controls
 					orientation = value;
 					switch (value)
 					{
-						case SliderOrientation.Horizontal:
+						case Orientation.Horizontal:
 							Control.Transform = new CGAffineTransform();
 							break;
-						case SliderOrientation.Vertical:
+						case Orientation.Vertical:
 							Control.Transform = CGAffineTransform.MakeRotation((float)Math.PI * -0.5f);
 							break;
 						default:

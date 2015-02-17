@@ -81,6 +81,18 @@ namespace Eto.Forms
 		{
 			return new TableCell(new TableLayout(rows));
 		}
+
+		/// <summary>
+		/// Converts a string to a TableCell with a label control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add labels to your layout through code, without having to create <see cref="Label"/> instances.
+		/// </remarks>
+		/// <param name="labelText">Text to convert to a Label control.</param>
+		public static implicit operator TableCell(string labelText)
+		{
+			return new TableCell(new Label { Text = labelText });
+		}
 	}
 
 	class TableCellCollection : Collection<TableCell>, IList

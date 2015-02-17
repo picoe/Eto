@@ -133,7 +133,6 @@ namespace Eto.Mac.Forms.Controls
 				var colHandler = Handler.GetColumn(tableColumn);
 				var item = Handler.GetItem((int)row);
 				Handler.OnCellFormatting(colHandler.Widget, item, (int)row, cell as NSCell);
-
 			}
 
 			public override void ColumnDidResize(NSNotification notification)

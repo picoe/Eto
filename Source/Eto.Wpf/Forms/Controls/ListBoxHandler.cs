@@ -27,7 +27,7 @@ namespace Eto.Wpf.Forms.Controls
 			//Control.DisplayMemberPath = "Text";
 			var template = new sw.DataTemplate();
 
-			template.VisualTree = new WpfImageTextBindingBlock(() => Widget.TextBinding, () => Widget.ImageBinding, false);
+			template.VisualTree = new WpfImageTextBindingBlock(() => Widget.ItemTextBinding, () => Widget.ItemImageBinding, false);
 			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate
 			{

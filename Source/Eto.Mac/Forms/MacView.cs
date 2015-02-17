@@ -88,6 +88,8 @@ namespace Eto.Mac.Forms
 		void OnKeyDown(KeyEventArgs e);
 
 		void OnSizeChanged(EventArgs e);
+
+		NSObject CustomFieldEditor { get; }
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -147,6 +149,8 @@ namespace Eto.Mac.Forms
 			get { return naturalSize; }
 			set { naturalSize = value; }
 		}
+
+		public virtual NSObject CustomFieldEditor { get { return null; } }
 
 		protected virtual bool LayoutIfNeeded(SizeF? oldPreferredSize = null, bool force = false)
 		{
@@ -636,50 +640,38 @@ namespace Eto.Mac.Forms
 				Command command;
 				if (handler.systemActions != null && handler.systemActions.TryGetValue(sel, out command))
 				{
-					command.Execute();
+					if (command != null)
+					{
+						command.Execute();
+						return;
+					}
 				}
 			}
+			Messaging.void_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, e);
 		}
 
-		static bool ValidateSystemMenuAction(IntPtr sender, IntPtr sel, IntPtr item)
+		static bool ValidateSystemUserInterfaceItem(IntPtr sender, IntPtr sel, IntPtr item)
 		{
-			var menuItem = Messaging.GetNSObject<NSMenuItem>(item);
-			
+			var actionHandle = Messaging.IntPtr_objc_msgSend(item, selGetAction);
+
 			var control = Runtime.GetNSObject(sender);
 			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
 			if (handler != null)
 			{
 				Command command;
-				if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue(menuItem.Action.Handle, out command))
+				if (handler.systemActions != null && actionHandle != IntPtr.Zero && handler.systemActions.TryGetValue(actionHandle, out command))
 				{
 					if (command != null)
 						return command.Enabled;
 				}
 			}
-			return false;
+			return Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
 		}
 
-		static bool ValidateSystemToolbarAction(IntPtr sender, IntPtr sel, IntPtr item)
-		{
-			var toolbarItem = Messaging.GetNSObject<NSToolbarItem>(item);
-			
-			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
-			if (handler != null)
-			{
-				Command command;
-				if (handler.systemActions != null && toolbarItem.Action != null && handler.systemActions.TryGetValue(toolbarItem.Action.Handle, out command))
-				{
-					if (command != null)
-						return command.Enabled;
-				}
-			}
-			return false;
-		}
 
 		Dictionary<IntPtr, Command> systemActions;
-		static readonly IntPtr selValidateMenuItem = Selector.GetHandle("validateMenuItem:");
-		static readonly IntPtr selValidateToolbarItem = Selector.GetHandle("validateToolbarItem:");
+		static readonly IntPtr selGetAction = Selector.GetHandle("action");
+		static readonly IntPtr selValidateUserInterfaceItem = Selector.GetHandle("validateUserInterfaceItem:");
 		static readonly IntPtr selCut = Selector.GetHandle("cut:");
 		static readonly IntPtr selCopy = Selector.GetHandle("copy:");
 		static readonly IntPtr selPaste = Selector.GetHandle("paste:");
@@ -713,7 +705,12 @@ namespace Eto.Mac.Forms
 			get { return systemActionSelectors.Keys; }
 		}
 
-		public virtual void MapPlatformCommand(string systemAction, Command command)
+		public void MapPlatformCommand(string systemAction, Command command)
+		{
+			InnerMapPlatformCommand(systemAction, command, null);
+		}
+
+		protected virtual void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
 		{
 			IntPtr sel;
 			if (systemActionSelectors.TryGetValue(systemAction, out sel))
@@ -721,10 +718,9 @@ namespace Eto.Mac.Forms
 				if (systemActions == null)
 				{
 					systemActions = new Dictionary<IntPtr, Command>();
-					AddMethod(selValidateMenuItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemMenuAction), "B@:@");
-					AddMethod(selValidateToolbarItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemToolbarAction), "B@:@");
+					AddMethod(selValidateUserInterfaceItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemUserInterfaceItem), "B@:@", control);
 				}
-				AddMethod(sel, new Action<IntPtr, IntPtr, IntPtr>(TriggerSystemAction), "v@:@");
+				AddMethod(sel, new Action<IntPtr, IntPtr, IntPtr>(TriggerSystemAction), "v@:@", control);
 				systemActions[sel] = command;
 			}
 		}

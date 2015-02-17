@@ -99,11 +99,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public SliderOrientation Orientation
+		public Orientation Orientation
 		{
 			get
 			{
-				return (scale is Gtk.HScale) ? SliderOrientation.Horizontal : SliderOrientation.Vertical;
+				return (scale is Gtk.HScale) ? Orientation.Horizontal : Orientation.Vertical;
 			}
 			set
 			{
@@ -113,7 +113,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.Remove(scale);
 					scale.Destroy();
 					scale.Dispose();
-					if (value == SliderOrientation.Horizontal)
+					if (value == Orientation.Horizontal)
 						scale = new Gtk.HScale(min, max, 1);
 					else
 						scale = new Gtk.VScale(min, max, 1);

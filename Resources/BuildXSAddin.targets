@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-		<BuildVersion>2.0.5</BuildVersion>
+		<BuildVersion>2.0.7</BuildVersion>
 	</PropertyGroup>
-	<Import Project="Publish.targets" />
+	<Import Project="Build.targets" />
 	
 	<Target Name="PreBuild">
 	

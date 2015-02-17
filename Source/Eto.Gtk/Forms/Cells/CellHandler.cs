@@ -47,36 +47,6 @@ namespace Eto.GtkSharp.Forms.Cells
 		{
 			column.PackStart(Control, true);
 		}
-
-		public override void AttachEvent(string id)
-		{
-			switch (id)
-			{
-				case Grid.CellEditingEvent:
-					Control.EditingStarted += Connector.HandleEditingStarted;
-					break;
-				default:
-					base.AttachEvent(id);
-					break;
-			}
-		}
-
-		protected new SingleCellConnector Connector { get { return (SingleCellConnector)base.Connector; } }
-
-		protected override WeakConnector CreateConnector()
-		{
-			return new SingleCellConnector();
-		}
-
-		protected class SingleCellConnector : WeakConnector
-		{
-			public new SingleCellHandler<TControl, TWidget, TCallback> Handler { get { return (SingleCellHandler<TControl, TWidget, TCallback>)base.Handler; } }
-
-			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
-			{
-				Handler.Source.BeginCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
-			}
-		}
 	}
 
 	public abstract class CellHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Cell.IHandler, ICellHandler
@@ -170,6 +140,23 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		protected abstract GLib.Value GetValueInternal(object dataItem, int dataColumn, int row);
 
+		protected new CellConnector Connector { get { return (CellConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new CellConnector();
+		}
+
+		protected class CellConnector : WeakConnector
+		{
+			public new CellHandler<TControl, TWidget, TCallback> Handler { get { return (CellHandler<TControl, TWidget, TCallback>)base.Handler; } }
+
+			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
+			{
+				Handler.Source.BeginCellEditing(new Gtk.TreePath(args.Path), Handler.ColumnIndex);
+			}
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -177,6 +164,9 @@ namespace Eto.GtkSharp.Forms.Cells
 				case Grid.CellFormattingEvent:
 					FormattingEnabled = true;
 					ReBind();
+					break;
+				case Grid.CellEditingEvent:
+					Control.EditingStarted += Connector.HandleEditingStarted;
 					break;
 				default:
 					base.AttachEvent(id);

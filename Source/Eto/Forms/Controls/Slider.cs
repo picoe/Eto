@@ -3,22 +3,6 @@ using System;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Enumeration of the orientations available for the <see cref="Slider"/> control
-	/// </summary>
-	public enum SliderOrientation
-	{
-		/// <summary>
-		/// Slider should be shown in a horizontal orientation
-		/// </summary>
-		Horizontal,
-
-		/// <summary>
-		/// Slider should be shown in a vertical orientation
-		/// </summary>
-		Vertical
-	}
-
-	/// <summary>
 	/// Control with a knob the user can slide up/down or left/right to select a numeric range.
 	/// </summary>
 	[Handler(typeof(Slider.IHandler))]
@@ -132,7 +116,7 @@ namespace Eto.Forms
 		/// Gets or sets the orientation of the slider.
 		/// </summary>
 		/// <value>The slider orientation.</value>
-		public SliderOrientation Orientation
+		public Orientation Orientation
 		{
 			get { return Handler.Orientation; }
 			set { Handler.Orientation = value; }
@@ -221,7 +205,79 @@ namespace Eto.Forms
 			/// Gets or sets the orientation of the slider.
 			/// </summary>
 			/// <value>The slider orientation.</value>
-			SliderOrientation Orientation { get; set; }
+			Orientation Orientation { get; set; }
+		}
+	}
+
+	/// <summary>
+	/// Enumeration of the orientations available for the <see cref="Slider"/> control
+	/// </summary>
+	[Obsolete("Use Orientation instead")]
+	public struct SliderOrientation
+	{
+		readonly Orientation orientation;
+
+		SliderOrientation(Orientation orientation)
+		{
+			this.orientation = orientation;
+		}
+
+		/// <summary>
+		/// Slider should be shown in a horizontal orientation
+		/// </summary>
+		public static SliderOrientation Horizontal { get { return Orientation.Horizontal; } }
+
+		/// <summary>
+		/// Slider should be shown in a vertical orientation
+		/// </summary>
+		public static SliderOrientation Vertical { get { return Orientation.Vertical; } }
+
+		/// <summary>Converts to an Orientation</summary>
+		public static implicit operator Orientation(SliderOrientation orientation)
+		{
+			return orientation.orientation;
+		}
+
+		/// <summary>Converts an Orientation to a RadioButtonListOrientation</summary>
+		public static implicit operator SliderOrientation(Orientation orientation)
+		{
+			return new SliderOrientation(orientation);
+		}
+
+		/// <summary>Compares for equality</summary>
+		/// <param name="orientation1">Orientation1.</param>
+		/// <param name="orientation2">Orientation2.</param>
+		public static bool operator ==(Orientation orientation1, SliderOrientation orientation2)
+		{
+			return orientation1 == orientation2.orientation;
+		}
+
+		/// <summary>Compares for inequality</summary>
+		/// <param name="orientation1">Orientation1.</param>
+		/// <param name="orientation2">Orientation2.</param>
+		public static bool operator !=(Orientation orientation1, SliderOrientation orientation2)
+		{
+			return orientation1 != orientation2.orientation;
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="Eto.Forms.SliderOrientation"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with the current <see cref="Eto.Forms.SliderOrientation"/>.</param>
+		/// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current
+		/// <see cref="Eto.Forms.SliderOrientation"/>; otherwise, <c>false</c>.</returns>
+		public override bool Equals(object obj)
+		{
+			return obj is SliderOrientation && (this == (SliderOrientation)obj);
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a <see cref="Eto.Forms.SliderOrientation"/> object.
+		/// </summary>
+		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+		public override int GetHashCode()
+		{
+			return orientation.GetHashCode();
 		}
 	}
 }

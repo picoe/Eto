@@ -180,21 +180,21 @@ namespace Eto.WinForms.Forms.Controls
 
 			public override void AddRange(IEnumerable<object> items)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Items.AddRange(items.Select(r => (object)new Item(binding, r)).ToArray());
 				Handler.UpdateSizes();
 			}
 
 			public override void AddItem(object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Items.Add(new Item(binding, item));
 				Handler.UpdateSizes();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Items.Insert(index, new Item(binding, item));
 				Handler.UpdateSizes();
 			}

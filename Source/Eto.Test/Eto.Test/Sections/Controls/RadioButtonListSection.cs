@@ -19,7 +19,7 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow(new Label { Text = "EnumRadioButtonList<TestEnum>" }, TableLayout.AutoSized(EnumCombo()));
 
-			layout.AddRow(new Label { Text = "Vertical" }, TableLayout.AutoSized(Items(RadioButtonListOrientation.Vertical)));
+			layout.AddRow(new Label { Text = "Vertical" }, TableLayout.AutoSized(Items(Orientation.Vertical)));
 
 			layout.Add(null, null, true);
 
@@ -34,7 +34,7 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout();
 			layout.Add(TableLayout.AutoSized(control));
 			layout.BeginVertical();
-			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), Orientation(control), null);
+			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), OrientationDropDown(control), null);
 			layout.EndVertical();
 			
 			return layout;
@@ -72,9 +72,9 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control Orientation(RadioButtonList list)
+		Control OrientationDropDown(RadioButtonList list)
 		{
-			var control = new EnumDropDown<RadioButtonListOrientation>();
+			var control = new EnumDropDown<Orientation>();
 			control.SelectedValue = list.Orientation;
 			control.SelectedValueChanged += delegate
 			{
@@ -83,7 +83,7 @@ namespace Eto.Test.Sections.Controls
 			return TableLayout.AutoSized(control, centered: true);
 		}
 
-		RadioButtonList Items(RadioButtonListOrientation? orientation = null)
+		RadioButtonList Items(Orientation? orientation = null)
 		{
 			var control = new RadioButtonList();
 			if (orientation != null)

@@ -987,7 +987,7 @@ namespace Eto.Forms
 		/// </code>
 		/// </example>
 		/// <param name="systemCommand">System command</param>
-		/// <param name="command">Command object to execute</param>
+		/// <param name="command">Command to execute, or null to restore to the default behavior</param>
 		/// <seealso cref="SupportedPlatformCommands"/>
 		public void MapPlatformCommand(string systemCommand, Command command)
 		{
@@ -1113,6 +1113,18 @@ namespace Eto.Forms
 			}
 
 			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Converts a string to a label control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add labels to your layout through code, without having to create <see cref="Label"/> instances.
+		/// </remarks>
+		/// <param name="labelText">Text to convert to a Label control.</param>
+		public static implicit operator Control(string labelText)
+		{
+			return new Label { Text = labelText };
 		}
 
 		#region Callback
@@ -1470,8 +1482,8 @@ namespace Eto.Forms
 			/// }
 			/// </code>
 			/// </example>
-			/// <param name="systemCommand">System action.</param>
-			/// <param name="command">Command.</param>
+			/// <param name="systemCommand">System command.</param>
+			/// <param name="command">Command to execute, or null to restore to the default behavior</param>
 			/// <seealso cref="SupportedPlatformCommands"/>
 			void MapPlatformCommand(string systemCommand, Command command);
 

@@ -59,7 +59,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = SetInitialValue();
 			control.Size = new Size(-1, 150);
-			control.Orientation = SliderOrientation.Vertical;
+			control.Orientation = Orientation.Vertical;
 			var layout = new DynamicLayout();
 			layout.AddCentered(control);
 			return layout;

@@ -76,7 +76,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			return new ComboBoxCellEventConnector();
 		}
 
-		protected class ComboBoxCellEventConnector : SingleCellConnector
+		protected class ComboBoxCellEventConnector : CellConnector
 		{
 			public new ComboBoxCellHandler Handler { get { return (ComboBoxCellHandler)base.Handler; } }
 

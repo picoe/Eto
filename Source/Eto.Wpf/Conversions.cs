@@ -359,6 +359,11 @@ namespace Eto.Wpf
 			return decoration;
 		}
 
+		public static Bitmap ToEto(this swmi.BitmapSource bitmap)
+		{
+			return new Bitmap(new BitmapHandler(bitmap));
+		}
+
 		public static swmi.BitmapSource ToWpf(this Image image, int? size = null)
 		{
 			if (image == null)

@@ -142,6 +142,25 @@ namespace Eto.Mac.Forms.Cells
 			Control.Title = string.Empty;
 		}
 
+		bool editable = true;
+
+		public override bool Editable
+		{
+			get { return editable; }
+			set
+			{ 
+				editable = value;
+				Control.Enabled = value;
+			}
+		}
+
+		public override void EnabledChanged(bool value)
+		{
+			base.EnabledChanged(value);
+			if (value)
+				Control.Enabled = editable;
+		}
+
 		public override void SetBackgroundColor(NSCell cell, Color color)
 		{
 			var c = (EtoCell)cell;

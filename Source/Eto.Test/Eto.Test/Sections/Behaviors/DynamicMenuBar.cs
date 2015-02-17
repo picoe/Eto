@@ -18,7 +18,7 @@ namespace Eto.Test.Sections.Behaviors
 			var menuToEdit = new DropDown
 			{
 				DataStore = menu.Items.OfType<ISubmenu>().Union(new ISubmenu[] { menu }).ToList(),
-				TextBinding = Binding.Delegate((MenuItem item) => item.Text, defaultGetValue: "Main Menu")
+				ItemTextBinding = Binding.Delegate((MenuItem item) => item.Text, defaultGetValue: "Main Menu")
 			};
 			menuToEdit.SelectedValueBinding.Bind(() => editMenu, v => editMenu = v as ISubmenu);
 
