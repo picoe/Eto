@@ -87,9 +87,15 @@ namespace Eto.WinForms.Forms.Controls
 				var bordersAndPadding = Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
 				if (proposedSize.Width <= 1)
 					proposedSize.Width = int.MaxValue;
+
 				if (proposedSize.Width == int.MaxValue)
 				{
-					if (measuredSizeMax == null)
+					if (measuredSizeMax == null && string.IsNullOrEmpty(Text))
+					{
+						var emptySize = swf.TextRenderer.MeasureText(" ", Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
+						measuredSizeMax = new sd.SizeF(0, emptySize.Height);
+					}
+					else if (measuredSizeMax == null)
 					{
 						proposedSize -= bordersAndPadding;
 						proposedSize.Height = Math.Max(0, proposedSize.Height);
