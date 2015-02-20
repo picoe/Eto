@@ -26,19 +26,6 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			switch (id)
 			{
-				case GridView.CellDoubleClickEvent:
-					Control.MouseDoubleClick += (sender, e) =>
-					{
-						int rowIndex;
-						if ((rowIndex = Control.SelectedIndex) >= 0)
-						{
-							var columnIndex = Control.CurrentColumn == null ? -1 : Control.CurrentColumn.DisplayIndex;
-							var item = Control.SelectedItem;
-							var column = Widget.Columns[columnIndex];
-							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-						}
-					};
-					break;
 				default:
 					base.AttachEvent(id);
 					break;

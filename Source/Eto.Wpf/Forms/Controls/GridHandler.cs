@@ -77,6 +77,19 @@ namespace Eto.Wpf.Forms.Controls
 				case Grid.CellEditedEvent:
 					// handled by each cell after value is set with the CellEdited method
 					break;
+				case Grid.CellDoubleClickEvent:
+					Control.MouseDoubleClick += (sender, e) =>
+					{
+						int rowIndex;
+						if ((rowIndex = Control.SelectedIndex) >= 0)
+						{
+							var columnIndex = Control.CurrentColumn == null ? -1 : Control.CurrentColumn.DisplayIndex;
+							var item = Control.SelectedItem;
+							var column = Widget.Columns[columnIndex];
+							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						}
+					};
+					break;
 				case Grid.SelectionChangedEvent:
 					Control.SelectedCellsChanged += (sender, e) =>
 					{
