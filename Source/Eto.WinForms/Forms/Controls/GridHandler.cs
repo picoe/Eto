@@ -215,6 +215,25 @@ namespace Eto.WinForms.Forms.Controls
 						Callback.OnCellEdited(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
 					};
 					break;
+				case Grid.CellClickEvent:
+					Control.CellClick += (sender, e) =>
+					{
+						var item = GetItemAtRow(e.RowIndex);
+						var column = Widget.Columns[e.ColumnIndex];
+						Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
+					};
+					break;
+				case Grid.CellDoubleClickEvent:
+					Control.CellDoubleClick += (sender, e) =>
+					{
+						if (e.RowIndex > -1)
+						{
+							var item = GetItemAtRow(e.RowIndex);
+							var column = Widget.Columns[e.ColumnIndex];
+							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
+						}
+					};
+					break;
 				case Grid.SelectionChangedEvent:
 					// handled automatically
 					break;

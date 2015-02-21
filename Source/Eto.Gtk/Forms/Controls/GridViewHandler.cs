@@ -71,16 +71,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			switch (id)
 			{
-				case GridView.CellDoubleClickEvent:
-					Tree.RowActivated += (sender, e) =>
-					{
-						var rowIndex = e.Path.Indices.Length > 0 ? e.Path.Indices[0] : -1;
-						var columnIndex = GetColumnOfItem(e.Column);
-						var item = GetItem(e.Path);
-						var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
-						Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-					};
-					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -162,11 +152,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int GetRowOfItem(object item)
 		{
 			return collection != null ? collection.IndexOf(item) : -1;
-		}
-
-		public int GetColumnOfItem(Gtk.TreeViewColumn item)
-		{
-			return Widget.Columns.Select(r => r.Handler as GridColumnHandler).Select(r => r.Control).ToList().IndexOf(item);
 		}
 
 		public EnumerableChangedHandler<object> Collection

@@ -156,11 +156,6 @@ namespace Eto.Forms
 		/// </summary>
 		public Func<object, string> DeleteConfirmationTitle { get; set; }
 
-		static GridView()
-		{
-			EventLookup.Register<GridView>(c => c.OnCellClick(null), GridView.CellClickEvent);
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class.
 		/// </summary>
@@ -235,56 +230,6 @@ namespace Eto.Forms
 			get { return GridLines != GridLines.None; }
 			set { GridLines = value ? GridLines.Both : GridLines.None; }
 		}
-
-		#region Events
-
-		/// <summary>
-		/// Event identifier for the <see cref="CellClick"/> event.
-		/// </summary>
-		public const string CellClickEvent = "GridView.CellClick";
-
-		/// <summary>
-		/// Occurs when an individual cell is clicked.
-		/// </summary>
-		public event EventHandler<GridViewCellEventArgs> CellClick
-		{
-			add { Properties.AddHandlerEvent(CellClickEvent, value); }
-			remove { Properties.RemoveEvent(CellClickEvent, value); }
-		}
-
-		/// <summary>
-		/// Raises the <see cref="CellClick"/> event.
-		/// </summary>
-		/// <param name="e">Grid cell event arguments.</param>
-		protected virtual void OnCellClick(GridViewCellEventArgs e)
-		{
-			Properties.TriggerEvent(CellClickEvent, this, e);
-		}
-
-		/// <summary>
-		/// Event identifier for the <see cref="CellDoubleClick"/> event.
-		/// </summary>
-		public const string CellDoubleClickEvent = "GridView.CellDoubleClick";
-
-		/// <summary>
-		/// Occurs when an individual cell is double clicked.
-		/// </summary>
-		public event EventHandler<GridViewCellEventArgs> CellDoubleClick
-		{
-			add { Properties.AddHandlerEvent(CellDoubleClickEvent, value); }
-			remove { Properties.RemoveEvent(CellDoubleClickEvent, value); }
-		}
-
-		/// <summary>
-		/// Raises the <see cref="CellDoubleClick"/> event.
-		/// </summary>
-		/// <param name="e">Grid cell event arguments.</param>
-		protected virtual void OnCellDoubleClick(GridViewCellEventArgs e)
-		{
-			Properties.TriggerEvent(CellDoubleClickEvent, this, e);
-		}
-
-		#endregion
 
 		class SelectionPreserverHelper : ISelectionPreserver
 		{
@@ -419,44 +364,6 @@ namespace Eto.Forms
 		protected override object GetCallback()
 		{
 			return callback;
-		}
-
-		/// <summary>
-		/// Callback interface for the <see cref="GridView"/>
-		/// </summary>
-		public new interface ICallback : Grid.ICallback
-		{
-			/// <summary>
-			/// Raises the cell click event.
-			/// </summary>
-			void OnCellClick(GridView widget, GridViewCellEventArgs e);
-
-			/// <summary>
-			/// Raises the cell double click event.
-			/// </summary>
-			void OnCellDoubleClick(GridView widget, GridViewCellEventArgs e);
-		}
-
-		/// <summary>
-		/// Callback implementation for handlers of the <see cref="GridView"/>.
-		/// </summary>
-		protected new class Callback : Grid.Callback, ICallback
-		{
-			/// <summary>
-			/// Raises the cell click event.
-			/// </summary>
-			public void OnCellClick(GridView widget, GridViewCellEventArgs e)
-			{
-				widget.Platform.Invoke(() => widget.OnCellClick(e));
-			}
-
-			/// <summary>
-			/// Raises the cell double click event.
-			/// </summary>
-			public void OnCellDoubleClick(GridView widget, GridViewCellEventArgs e)
-			{
-				widget.Platform.Invoke(() => widget.OnCellDoubleClick(e));
-			}
 		}
 
 		/// <summary>
