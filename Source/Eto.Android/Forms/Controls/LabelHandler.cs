@@ -21,7 +21,7 @@ namespace Eto.Android.Forms.Controls
 			Control = new aw.TextView(a.App.Application.Context);
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.Gravity.ToEtoHorizontal(); }
 			set
@@ -31,7 +31,7 @@ namespace Eto.Android.Forms.Controls
 			}
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get { return Control.Gravity.ToEtoVertical(); }
 			set

@@ -52,8 +52,8 @@ namespace Eto.Test.Sections.Controls
 		{
 			layout.BeginHorizontal();
 			layout.Add(null, xscale: false);
-			layout.Add(new Label { Text = "Bitmap", HorizontalAlign = HorizontalAlign.Center }, xscale: true);
-			layout.Add(new Label { Text = "Icon", HorizontalAlign = HorizontalAlign.Center }, xscale: true);
+			layout.Add(new Label { Text = "Bitmap", TextAlignment = TextAlignment.Center }, xscale: true);
+			layout.Add(new Label { Text = "Icon", TextAlignment = TextAlignment.Center }, xscale: true);
 			layout.EndHorizontal();
 		}
 

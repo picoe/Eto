@@ -43,8 +43,8 @@ namespace Eto.Wpf.Forms.Controls
 				Content = text
 			};
 			Control.Target = Control;
-			HorizontalAlign = HorizontalAlign.Left;
-			VerticalAlign = VerticalAlign.Top;
+			TextAlignment = TextAlignment.Left;
+			VerticalAlignment = VerticalAlignment.Top;
 			Wrap = WrapMode.Word;
 		}
 
@@ -62,7 +62,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.HorizontalContentAlignment.ToEto(); }
 			set
@@ -72,7 +72,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get { return Control.VerticalContentAlignment.ToEto(); }
 			set { Control.VerticalContentAlignment = value.ToWpf(); }

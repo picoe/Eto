@@ -2,31 +2,55 @@
 using System.Collections.ObjectModel;
 using Eto.Drawing;
 using System.ComponentModel;
+using System.Collections;
 
 
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Alignment for child controls of the <see cref="StackLayout"/>.
+	/// Horizontal alignment for controls
 	/// </summary>
-	public enum StackLayoutAlignment
+	public enum HorizontalAlignment
 	{
 		/// <summary>
-		/// Controls are aligned to the top in a horizontal layout, left in a vertical layout.
+		/// Controls are aligned to the left of the container.
 		/// </summary>
-		TopOrLeft,
+		Left,
 		/// <summary>
 		/// Controls are centered.
 		/// </summary>
 		Center,
 		/// <summary>
-		/// Controls are aligned to the bottom in a horizontal layout, right in a vertical layout.
+		/// Controls are aligned to the right of the container.
 		/// </summary>
-		BottomOrRight,
+		Right,
 		/// <summary>
-		/// Controls fill the entire height in a horizontal layout, or width in a vertical layout.
+		/// Controls stretch to fill the entire width of the container.
 		/// </summary>
-		Fill
+		Stretch
+	}
+
+	/// <summary>
+	/// Horizontal alignment for controls
+	/// </summary>
+	public enum VerticalAlignment
+	{
+		/// <summary>
+		/// Controls are aligned to the top of the container.
+		/// </summary>
+		Top,
+		/// <summary>
+		/// Controls are centered.
+		/// </summary>
+		Center,
+		/// <summary>
+		/// Controls are aligned to the bottom of the container.
+		/// </summary>
+		Bottom,
+		/// <summary>
+		/// Controls stretch to fill the entire height of the container.
+		/// </summary>
+		Stretch
 	}
 
 	/// <summary>
@@ -41,11 +65,16 @@ namespace Eto.Forms
 		public Control Control { get; set; }
 
 		/// <summary>
-		/// Gets or sets the alignment for the control, or null to use the default <see cref="StackLayout.ContentAlign"/>.
+		/// Gets or sets the horizontal alignment for the control for vertical stack layouts, or null to use <see cref="StackLayout.HorizontalContentAlignment"/>.
 		/// </summary>
-		/// <value>The alignment of the control.</value>
-		public StackLayoutAlignment? Align { get; set; }
+		/// <value>The horizontal alignment of the control.</value>
+		public HorizontalAlignment? HorizontalAlignment { get; set; }
 
+		/// <summary>
+		/// Gets or sets the vertical alignment for the control for horizontal stack layouts, or null to use <see cref="StackLayout.VerticalContentAlignment"/>.
+		/// </summary>
+		/// <value>The vertical alignment of the control.</value>
+		public VerticalAlignment? VerticalAlignment { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the control expands to available space in the direction of the layout.
@@ -64,12 +93,36 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.StackLayoutItem"/> class.
 		/// </summary>
 		/// <param name="control">Control for the item.</param>
-		/// <param name="align">Alignment for the control.</param>
 		/// <param name="expand">Whether the control expands to fill space along the direction of the layout</param>
-		public StackLayoutItem(Control control, StackLayoutAlignment? align = null, bool expand = false)
+		public StackLayoutItem(Control control, bool expand = false)
 		{
 			Control = control;
-			Align = align;
+			Expand = expand;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.StackLayoutItem"/> class when the StackLayout.Orientation is Vertical.
+		/// </summary>
+		/// <param name="control">Control for the item.</param>
+		/// <param name="alignment">Horizontal alignment of the control for vertical layouts.</param>
+		/// <param name="expand">Whether the control expands to fill space along the direction of the layout</param>
+		public StackLayoutItem(Control control, HorizontalAlignment? alignment, bool expand = false)
+		{
+			Control = control;
+			HorizontalAlignment = alignment;
+			Expand = expand;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.StackLayoutItem"/> class when the StackLayout.Orientation is Horizontal.
+		/// </summary>
+		/// <param name="control">Control for the item.</param>
+		/// <param name="alignment">Vertical alignment of the control for horizontal layouts.</param>
+		/// <param name="expand">Whether the control expands to fill space along the direction of the layout</param>
+		public StackLayoutItem(Control control, VerticalAlignment? alignment, bool expand = false)
+		{
+			Control = control;
+			VerticalAlignment = alignment;
 			Expand = expand;
 		}
 
@@ -99,6 +152,7 @@ namespace Eto.Forms
 	/// Layout to stack controls horizontally or vertically, with the ability for each child to be aligned to a side
 	/// of the layout.
 	/// </summary>
+	[ContentProperty("Items")]
 	public class StackLayout : Panel
 	{
 		Orientation orientation = Orientation.Vertical;
@@ -107,10 +161,10 @@ namespace Eto.Forms
 		/// Gets or sets the orientation of the controls in the stack layout.
 		/// </summary>
 		/// <remarks>
-		/// When the orientation is Horizontal, the <see cref="ContentAlign"/> specifies the default vertical alignment 
-		/// for the child controls.
-		/// When the orientation is Vertical, the ContentAlign specifies the default horizontal alignment for the child
-		/// controls.
+		/// When the orientation is Horizontal, the <see cref="VerticalContentAlignment"/> specifies the default
+		/// vertical alignment for child controls.
+		/// When the orientation is Vertical, the <see cref="HorizontalContentAlignment"/> specifies the default 
+		/// horizontal alignment for child controls.
 		/// </remarks>
 		/// <value>The orientation of the controls.</value>
 		[DefaultValue(Orientation.Vertical)]
@@ -148,40 +202,76 @@ namespace Eto.Forms
 			}
 		}
 
-		StackLayoutAlignment contentAlign;
+		HorizontalAlignment horizontalAlignment;
 
 		/// <summary>
-		/// Gets or sets the default alignment of the child controls in the stack layout.
+		/// Gets or sets the default horizontal alignment of the child controls in the stack layout when the <see cref="Orientation"/> is Vertical.
 		/// </summary>
 		/// <remarks>
-		/// The alignment can also be specified on a per-child basis with the <see cref="StackLayoutItem.Align"/> property.
+		/// The alignment can also be specified on a per-child basis with the <see cref="StackLayoutItem.HorizontalAlignment"/> property.
 		/// </remarks>
 		/// <value>The default child control alignment.</value>
-		public StackLayoutAlignment ContentAlign
+		public HorizontalAlignment HorizontalContentAlignment
 		{
-			get { return contentAlign; }
+			get { return horizontalAlignment; }
 			set
 			{
-				if (contentAlign != value)
+				if (horizontalAlignment != value)
 				{
-					contentAlign = value;
+					horizontalAlignment = value;
 					CreateIfNeeded(true);
 				}
 			}
 		}
 
+		VerticalAlignment verticalAlignment;
+
 		/// <summary>
-		/// Gets or sets a delegate to update the item before being added to the underlying TableLayout.
+		/// Gets or sets the default vertical alignment of the child controls in the stack layout when the <see cref="Orientation"/> is Horizontal.
 		/// </summary>
 		/// <remarks>
-		/// This can be used to apply rules to each item. The default behaviour of this delegate will
-		/// update all <see cref="Label"/> controls added directly to the layout to match its HorizontalAlign or
-		/// VerticalAlign to match the alignment of the stack panel.
+		/// The alignment can also be specified on a per-child basis with the <see cref="StackLayoutItem.VerticalAlignment"/> property.
 		/// </remarks>
-		/// <value>The update item delegate.</value>
-		public Action<StackLayoutItem> ItemAdding { get; set; }
+		/// <value>The default child control alignment.</value>
+		public VerticalAlignment VerticalContentAlignment
+		{
+			get { return verticalAlignment; }
+			set
+			{
+				if (verticalAlignment != value)
+				{
+					verticalAlignment = value;
+					CreateIfNeeded(true);
+				}
+			}
+		}
 
-		class StackLayoutItemCollection : Collection<StackLayoutItem>
+		bool alignLabels = true;
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the Label's alignment will be changed to match the alignment of the StackLayout.
+		/// </summary>
+		/// <remarks>
+		/// This is used so labels can be updated automatically to match the content alignment of the stack.
+		/// For example, when <see cref="HorizontalContentAlignment"/> is Center, then all Labels will get their 
+		/// <see cref="Label.TextAlignment"/> set to <see cref="TextAlignment.Center"/>.
+		/// </remarks>
+		/// <value><c>true</c> if to label alignment; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
+		public bool AlignLabels
+		{
+			get { return alignLabels; }
+			set
+			{
+				if (alignLabels != value)
+				{
+					alignLabels = value;
+					CreateIfNeeded(true);
+				}
+			}
+		}
+
+		class StackLayoutItemCollection : Collection<StackLayoutItem>, IList
 		{
 			public StackLayout Parent { get; set; }
 
@@ -208,6 +298,17 @@ namespace Eto.Forms
 				base.SetItem(index, item);
 				Parent.CreateIfNeeded(true);
 			}
+
+			int IList.Add(object value)
+			{
+				// allow adding a control directly from xaml
+				var control = value as Control;
+				if (control != null)
+					Add((StackLayoutItem)control);
+				else
+					Add((StackLayoutItem)value);
+				return Count - 1;
+			}
 		}
 
 		readonly StackLayoutItemCollection items;
@@ -227,52 +328,41 @@ namespace Eto.Forms
 		public StackLayout()
 		{
 			items = new StackLayoutItemCollection { Parent = this };
-			ItemAdding = UpdateLabelItem;
 		}
 
 		void UpdateLabelItem(StackLayoutItem item)
 		{
+			if (!AlignLabels)
+				return;
 			var label = item.Control as Label;
 			if (label != null)
 			{
 				switch (Orientation)
 				{
 					case Orientation.Horizontal:
-						switch (item.Align ?? ContentAlign)
-						{
-							case StackLayoutAlignment.TopOrLeft:
-								label.VerticalAlign = VerticalAlign.Top;
-								break;
-							case StackLayoutAlignment.Center:
-								label.VerticalAlign = VerticalAlign.Middle;
-								break;
-							case StackLayoutAlignment.BottomOrRight:
-								label.VerticalAlign = VerticalAlign.Bottom;
-								break;
-							default:
-								return;
-						}
+						label.VerticalAlignment = item.VerticalAlignment ?? VerticalContentAlignment;
+						item.VerticalAlignment = VerticalAlignment.Stretch;
 						break;
 					case Orientation.Vertical:
-						switch (item.Align ?? ContentAlign)
+						switch (item.HorizontalAlignment ?? HorizontalContentAlignment)
 						{
-							case StackLayoutAlignment.TopOrLeft:
-								label.HorizontalAlign = HorizontalAlign.Left;
+							case HorizontalAlignment.Left:
+								label.TextAlignment = TextAlignment.Left;
 								break;
-							case StackLayoutAlignment.Center:
-								label.HorizontalAlign = HorizontalAlign.Center;
+							case HorizontalAlignment.Center:
+								label.TextAlignment = TextAlignment.Center;
 								break;
-							case StackLayoutAlignment.BottomOrRight:
-								label.HorizontalAlign = HorizontalAlign.Right;
+							case HorizontalAlignment.Right:
+								label.TextAlignment = TextAlignment.Right;
 								break;
 							default:
 								return;
 						}
+						item.HorizontalAlignment = HorizontalAlignment.Stretch;
 						break;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-				item.Align = StackLayoutAlignment.Fill;
 			}
 		}
 
@@ -333,7 +423,7 @@ namespace Eto.Forms
 			table.Spacing = new Size(Spacing, Spacing);
 
 			bool filled = false;
-			var itemAdding = ItemAdding;
+			Action<StackLayoutItem> itemAdding = UpdateLabelItem;
 			switch (Orientation)
 			{
 				case Orientation.Horizontal:
@@ -345,20 +435,22 @@ namespace Eto.Forms
 						var control = item.Control;
 						filled |= item.Expand;
 						var cell = new TableCell { ScaleWidth = item.Expand };
-						switch (item.Align ?? ContentAlign)
+						switch (item.VerticalAlignment ?? VerticalContentAlignment)
 						{
-							case StackLayoutAlignment.TopOrLeft:
+							case VerticalAlignment.Top:
 								cell.Control = new TableLayout(control, null);
 								break;
-							case StackLayoutAlignment.Center:
+							case VerticalAlignment.Center:
 								cell.Control = new TableLayout(null, control, null);
 								break;
-							case StackLayoutAlignment.BottomOrRight:
+							case VerticalAlignment.Bottom:
 								cell.Control = new TableLayout(null, control);
 								break;
-							default:
+							case VerticalAlignment.Stretch:
 								cell.Control = control;
 								break;
+							default:
+								throw new ArgumentOutOfRangeException();
 						}
 						topRow.Cells.Add(cell);
 					}
@@ -374,20 +466,22 @@ namespace Eto.Forms
 						var control = item.Control;
 						filled |= item.Expand;
 						var vrow = new TableRow { ScaleHeight = item.Expand };
-						switch (item.Align ?? ContentAlign)
+						switch (item.HorizontalAlignment ?? HorizontalContentAlignment)
 						{
-							case StackLayoutAlignment.TopOrLeft:
+							case HorizontalAlignment.Left:
 								vrow.Cells.Add(TableLayout.Horizontal(control, null));
 								break;
-							case StackLayoutAlignment.Center:
+							case HorizontalAlignment.Center:
 								vrow.Cells.Add(TableLayout.Horizontal(null, control, null));
 								break;
-							case StackLayoutAlignment.BottomOrRight:
+							case HorizontalAlignment.Right:
 								vrow.Cells.Add(TableLayout.Horizontal(null, control));
 								break;
-							default:
+							case HorizontalAlignment.Stretch:
 								vrow.Cells.Add(control);
 								break;
+							default:
+								throw new ArgumentOutOfRangeException();
 						}
 						table.Rows.Add(vrow);
 					}

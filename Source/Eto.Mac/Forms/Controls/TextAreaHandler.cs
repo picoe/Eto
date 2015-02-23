@@ -394,7 +394,7 @@ namespace Eto.Mac.Forms.Controls
 				Control.ScrollRangeToVisible(range);
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.Alignment.ToEto(); }
 			set { Control.Alignment = value.ToNS(); }

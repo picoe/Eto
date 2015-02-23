@@ -305,7 +305,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.Justification.ToEto(); }
 			set { Control.Justification = value.ToGtk(); }

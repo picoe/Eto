@@ -121,7 +121,7 @@ namespace Eto.iOS.Forms.Controls
 			set;
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.TextAlignment.ToEto(); }
 			set { Control.TextAlignment = value.ToUI(); }

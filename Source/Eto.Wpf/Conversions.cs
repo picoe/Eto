@@ -564,76 +564,80 @@ namespace Eto.Wpf
 			}
 		}
 
-		public static HorizontalAlign ToEto(this sw.HorizontalAlignment align)
+		public static TextAlignment ToEto(this sw.HorizontalAlignment align)
 		{
 			switch (align)
 			{
 				case sw.HorizontalAlignment.Left:
-					return HorizontalAlign.Left;
+					return TextAlignment.Left;
 				case sw.HorizontalAlignment.Right:
-					return HorizontalAlign.Right;
+					return TextAlignment.Right;
 				case sw.HorizontalAlignment.Center:
-					return HorizontalAlign.Center;
+					return TextAlignment.Center;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static sw.HorizontalAlignment ToWpf(this HorizontalAlign align)
+		public static sw.HorizontalAlignment ToWpf(this TextAlignment align)
 		{
 			switch (align)
 			{
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					return sw.HorizontalAlignment.Center;
-				case HorizontalAlign.Left:
+				case TextAlignment.Left:
 					return sw.HorizontalAlignment.Left;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					return sw.HorizontalAlignment.Right;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static sw.TextAlignment ToWpfTextAlignment(this HorizontalAlign align)
+		public static sw.TextAlignment ToWpfTextAlignment(this TextAlignment align)
 		{
 			switch (align)
 			{
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					return sw.TextAlignment.Center;
-				case HorizontalAlign.Left:
+				case TextAlignment.Left:
 					return sw.TextAlignment.Left;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					return sw.TextAlignment.Right;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static VerticalAlign ToEto(this sw.VerticalAlignment align)
+		public static VerticalAlignment ToEto(this sw.VerticalAlignment align)
 		{
 			switch (align)
 			{
 				case sw.VerticalAlignment.Top:
-					return VerticalAlign.Top;
+					return VerticalAlignment.Top;
 				case sw.VerticalAlignment.Bottom:
-					return VerticalAlign.Bottom;
+					return VerticalAlignment.Bottom;
 				case sw.VerticalAlignment.Center:
-					return VerticalAlign.Middle;
+					return VerticalAlignment.Center;
+				case sw.VerticalAlignment.Stretch:
+					return VerticalAlignment.Stretch;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static sw.VerticalAlignment ToWpf(this VerticalAlign align)
+		public static sw.VerticalAlignment ToWpf(this VerticalAlignment align)
 		{
 			switch (align)
 			{
-				case VerticalAlign.Top:
+				case VerticalAlignment.Top:
 					return sw.VerticalAlignment.Top;
-				case VerticalAlign.Bottom:
+				case VerticalAlignment.Bottom:
 					return sw.VerticalAlignment.Bottom;
-				case VerticalAlign.Middle:
+				case VerticalAlignment.Center:
 					return sw.VerticalAlignment.Center;
+				case VerticalAlignment.Stretch:
+					return sw.VerticalAlignment.Stretch;
 				default:
 					throw new NotSupportedException();
 			}

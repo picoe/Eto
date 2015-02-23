@@ -31,7 +31,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddAutoSized(ColourButton(), centered: true);
 			layout.AddAutoSized(DisabledButton(), centered: true);
 			layout.Add(StretchedButton());
-			layout.AddSeparateRow(null, new Label { Text = "Image Position:", VerticalAlign = VerticalAlign.Middle }, ImagePositionControl(), null);
+			layout.AddSeparateRow(null, new Label { Text = "Image Position:", VerticalAlignment = VerticalAlignment.Center }, ImagePositionControl(), null);
 			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(smallImage)), TableLayout.AutoSized(ImageTextButton(smallImage)), null);
 			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(largeImage)), TableLayout.AutoSized(ImageTextButton(largeImage)), null);
 
@@ -69,7 +69,7 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control2);
 
 			var layout = new DynamicLayout { Padding = Padding.Empty };
-			layout.AddRow(new Label { Text = "With Default Size of 50x50:", VerticalAlign = VerticalAlign.Middle }, control, control2);
+			layout.AddRow(new Label { Text = "With Default Size of 50x50:", VerticalAlignment = VerticalAlignment.Center }, control, control2);
 			return layout;
 		}
 

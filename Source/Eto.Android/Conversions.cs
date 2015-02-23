@@ -245,61 +245,65 @@ namespace Eto.Android
 			return ret;
 		}
 
-		public static HorizontalAlign ToEtoHorizontal(this av.GravityFlags gravity)
+		public static TextAlignment ToEtoHorizontal(this av.GravityFlags gravity)
 		{
 			switch (gravity & av.GravityFlags.HorizontalGravityMask)
 			{
 				case av.GravityFlags.CenterHorizontal:
-					return HorizontalAlign.Center;
+					return TextAlignment.Center;
 				case av.GravityFlags.Left:
-					return HorizontalAlign.Left;
+					return TextAlignment.Left;
 				case av.GravityFlags.Right:
-					return HorizontalAlign.Right;
+					return TextAlignment.Right;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static av.GravityFlags ToAndroid(this HorizontalAlign value)
+		public static av.GravityFlags ToAndroid(this TextAlignment value)
 		{
 			switch (value)
 			{
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					return av.GravityFlags.CenterHorizontal;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					return av.GravityFlags.Right;
-				case HorizontalAlign.Left:
+				case TextAlignment.Left:
 					return av.GravityFlags.Left;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static VerticalAlign ToEtoVertical(this av.GravityFlags gravity)
+		public static VerticalAlignment ToEtoVertical(this av.GravityFlags gravity)
 		{
 			switch (gravity & av.GravityFlags.VerticalGravityMask)
 			{
 				case av.GravityFlags.CenterVertical:
-					return VerticalAlign.Middle;
+					return VerticalAlignment.Center;
 				case av.GravityFlags.Top:
-					return VerticalAlign.Top;
+					return VerticalAlignment.Top;
 				case av.GravityFlags.Bottom:
-					return VerticalAlign.Bottom;
+					return VerticalAlignment.Bottom;
+				case av.GravityFlags.FillVertical:
+					return VerticalAlignment.Stretch;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static av.GravityFlags ToAndroid(this VerticalAlign value)
+		public static av.GravityFlags ToAndroid(this VerticalAlignment value)
 		{
 			switch (value)
 			{
-				case VerticalAlign.Middle:
+				case VerticalAlignment.Center:
 					return av.GravityFlags.CenterVertical;
-				case VerticalAlign.Top:
+				case VerticalAlignment.Top:
 					return av.GravityFlags.Top;
-				case VerticalAlign.Bottom:
+				case VerticalAlignment.Bottom:
 					return av.GravityFlags.Bottom;
+				case VerticalAlignment.Stretch:
+					return av.GravityFlags.FillVertical;
 				default:
 					throw new NotSupportedException();
 			}

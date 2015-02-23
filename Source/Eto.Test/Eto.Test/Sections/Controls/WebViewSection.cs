@@ -74,8 +74,8 @@ namespace Eto.Test.Sections.Controls
 				{ 
 					Text = string.Format ("WebView not supported on this platform with the {0} generator", Platform.ID),
 					BackgroundColor = Colors.Red,
-					HorizontalAlign = HorizontalAlign.Center,
-					VerticalAlign = VerticalAlign.Middle,
+					TextAlignment = TextAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center,
 					TextColor = Colors.White
 				};
 				if (Platform.IsGtk)

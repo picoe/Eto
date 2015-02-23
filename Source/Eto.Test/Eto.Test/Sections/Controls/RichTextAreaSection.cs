@@ -134,9 +134,9 @@ namespace Eto.Test.Sections.Controls
 
 			var formatting2 = TableLayout.Horizontal(
 				                  null,
-				                  new Label { Text = "Foreground", VerticalAlign = VerticalAlign.Middle },
+								  new Label { Text = "Foreground", VerticalAlignment = VerticalAlignment.Center },
 				                  TableLayout.AutoSized(foregroundButton, centered: true),
-				                  new Label { Text = "Background", VerticalAlign = VerticalAlign.Middle },
+								  new Label { Text = "Background", VerticalAlignment = VerticalAlignment.Center },
 				                  TableLayout.AutoSized(backgroundButton, centered: true),
 				                  null
 			                  );

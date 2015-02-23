@@ -5,7 +5,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 {
 	public class TestLabelHandler : TestControlHandler, Label.IHandler
 	{
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get
 			{
@@ -16,7 +16,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 				throw new NotImplementedException();
 			}
 		}
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get
 			{

@@ -52,7 +52,7 @@ namespace Eto.Test.Sections.Behaviors
 				Rows =
 				{
 					null,
-					TableLayout.Horizontal(null, new Label { Text = "Submenu to add to", VerticalAlign = VerticalAlign.Middle }, menuToEdit, null),
+					TableLayout.Horizontal(null, new Label { Text = "Submenu to add to", VerticalAlignment = VerticalAlignment.Center }, menuToEdit, null),
 					TableLayout.Horizontal(null, addToEditMenu, removeFromEditMenu, null),
 					null
 				}

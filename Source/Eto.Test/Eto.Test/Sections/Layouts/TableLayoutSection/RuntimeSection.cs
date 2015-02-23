@@ -75,7 +75,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 		{
 			middleTable = new TableLayout(1, 3);
 
-			middleTable.Add(new Label { Text = "Content", BackgroundColor = Colors.LightGrey, HorizontalAlign = HorizontalAlign.Center, VerticalAlign = VerticalAlign.Middle }, 0, 1, true, true);
+			middleTable.Add(new Label { Text = "Content", BackgroundColor = Colors.LightGrey, TextAlignment = TextAlignment.Center, VerticalAlignment = VerticalAlignment.Center }, 0, 1, true, true);
 			middleTable.Add(topSection = new Panel(), 0, 0);
 
 			return middleTable;

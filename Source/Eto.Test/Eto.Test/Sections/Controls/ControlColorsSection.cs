@@ -45,12 +45,12 @@ namespace Eto.Test.Sections.Controls
 
 			return new TableLayout(
 				new TableRow(
-					null, 
-					new Label { Text = "Text", VerticalAlign = VerticalAlign.Middle },
+					null,
+					new Label { Text = "Text", VerticalAlignment = VerticalAlignment.Center },
 					foregroundPicker,
-					new Label { Text = "Background", VerticalAlign = VerticalAlign.Middle },
+					new Label { Text = "Background", VerticalAlignment = VerticalAlignment.Center },
 					backgroundPicker,
-					new Label { Text = "Form", VerticalAlign = VerticalAlign.Middle },
+					new Label { Text = "Form", VerticalAlignment = VerticalAlignment.Center },
 					formColorPicker,
 					fontPicker,
 					null

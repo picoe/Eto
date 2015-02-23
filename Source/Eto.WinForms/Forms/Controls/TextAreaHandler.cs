@@ -198,12 +198,12 @@ namespace Eto.WinForms.Forms.Controls
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.SelectionAlignment.ToEto(); }
 			set
 			{
-				if (value == HorizontalAlign) return;
+				if (value == TextAlignment) return;
 				var sel = Selection;
 				Control.SelectAll();
 				Control.SelectionAlignment = value.ToSWF();
