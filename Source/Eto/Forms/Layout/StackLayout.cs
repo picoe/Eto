@@ -424,13 +424,14 @@ namespace Eto.Forms
 
 			bool filled = false;
 			Action<StackLayoutItem> itemAdding = UpdateLabelItem;
+			var expandItem = new StackLayoutItem { Expand = true };
 			switch (Orientation)
 			{
 				case Orientation.Horizontal:
 					var topRow = new TableRow();
 					for (int i = 0; i < items.Count; i++)
 					{
-						var item = items[i];
+						var item = items[i] ?? expandItem;
 						itemAdding(item);
 						var control = item.Control;
 						filled |= item.Expand;
@@ -461,7 +462,7 @@ namespace Eto.Forms
 				case Orientation.Vertical:
 					for (int i = 0; i < items.Count; i++)
 					{
-						var item = items[i];
+						var item = items[i] ?? expandItem;
 						itemAdding(item);
 						var control = item.Control;
 						filled |= item.Expand;
