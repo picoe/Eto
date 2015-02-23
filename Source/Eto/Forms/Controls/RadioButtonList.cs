@@ -496,7 +496,8 @@ namespace Eto.Forms
 		/// <see cref="Eto.Forms.SliderOrientation"/>; otherwise, <c>false</c>.</returns>
 		public override bool Equals(object obj)
 		{
-			return obj is RadioButtonListOrientation && (this == (RadioButtonListOrientation)obj);
+			return (obj is RadioButtonListOrientation && (this == (RadioButtonListOrientation)obj))
+				|| (obj is Orientation && (this == (Orientation)obj));
 		}
 
 		/// <summary>
