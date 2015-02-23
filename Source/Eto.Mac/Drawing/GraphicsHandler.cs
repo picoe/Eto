@@ -269,6 +269,30 @@ namespace Eto.iOS.Drawing
 			Control.SetAllowsSubpixelPositioning(false);
 		}
 
+		#if OSX
+		CGSize? phase;
+		public void SetPhase()
+		{
+			if (DisplayView == null)
+				return;
+			if (phase == null)
+			{
+				// find parent with layer, or goes up to window if none are found
+				var layerView = DisplayView;
+				while (layerView.Superview != null && layerView.Layer == null)
+					layerView = layerView.Superview;
+
+				// convert bottom-left point relative to layer or window
+				var pos = DisplayView.ConvertPointToView(CGPoint.Empty, layerView);
+
+				// phase should be based on position of control within closest layer or window.
+				phase = new CGSize(pos.X, pos.Y);
+			}
+
+			Control.SetPatternPhase(phase.Value);
+		}
+		#endif
+
 		void InitializeContext(bool viewFlipped)
 		{
 			Control.SaveState();
@@ -292,6 +316,9 @@ namespace Eto.iOS.Drawing
 				if (viewFlipped)
 					Control.ConcatCTM(currentTransform);
 			}
+
+			phase = null;
+
 			#elif IOS
 			if (viewFlipped)
 			{
@@ -300,6 +327,7 @@ namespace Eto.iOS.Drawing
 				Control.ConcatCTM(currentTransform);
 			}
 			#endif
+
 		}
 
 		public CGPoint TranslateView(CGPoint point, bool halfers = false, bool inverse = false)
@@ -546,7 +574,7 @@ namespace Eto.iOS.Drawing
 
 		public void RotateTransform(float angle)
 		{
-			angle = Conversions.DegreesToRadians(angle);
+			angle = (float)Conversions.DegreesToRadians(angle);
 			Control.RotateCTM(angle);
 			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeRotation(angle), currentTransform);
 		}

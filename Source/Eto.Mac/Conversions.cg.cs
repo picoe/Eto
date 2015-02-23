@@ -111,10 +111,12 @@ namespace Eto.iOS
 			if (matrix == null) return CGAffineTransform.MakeIdentity();
 			return (CGAffineTransform)matrix.ControlObject;
 		}
+
+		static nfloat degToRad = (nfloat)Math.PI / (nfloat)180.0;
 		
-		public static float DegreesToRadians (float angle)
+		public static nfloat DegreesToRadians (nfloat angle)
 		{
-			return (float)Math.PI * angle / 180.0f;
+			return angle * degToRad;
 		}
 
 		public static CGLineJoin ToCG (this PenLineJoin value)

@@ -106,9 +106,9 @@ namespace Eto.iOS.Drawing
 		
 		public void RotateAt (float angle, float centerX, float centerY)
 		{
-			angle = Conversions.DegreesToRadians (angle);
-			var sina = (float)Math.Sin (angle);
-			var cosa = (float)Math.Cos (angle);
+			angle = (float)Conversions.DegreesToRadians(angle);
+			var sina = (nfloat)Math.Sin (angle);
+			var cosa = (nfloat)Math.Cos (angle);
 			var matrix = new CGAffineTransform(cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);
 			control = CGAffineTransform.Multiply (matrix, control);
 		}
@@ -131,7 +131,7 @@ namespace Eto.iOS.Drawing
 		
 		public void Skew (float skewX, float skewY)
 		{
-			var matrix = new CGAffineTransform (1, (float)Math.Tan (Conversions.DegreesToRadians (skewX)), (float)Math.Tan (Conversions.DegreesToRadians (skewY)), 1, 0, 0);
+			var matrix = new CGAffineTransform (1, (nfloat)Math.Tan (Conversions.DegreesToRadians (skewX)), (nfloat)Math.Tan (Conversions.DegreesToRadians (skewY)), 1, 0, 0);
 			control = CGAffineTransform.Multiply (matrix, control);
 		}
 		
