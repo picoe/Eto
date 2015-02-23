@@ -83,12 +83,7 @@ namespace Eto.iOS.Drawing
 				graphics.SetFillColorSpace();
 
 				#if OSX
-				if (graphics.DisplayView != null)
-				{
-					// adjust for position of the current view relative to the window
-					var pos = graphics.DisplayView.ConvertPointToView(CGPoint.Empty, null);
-					graphics.Control.SetPatternPhase(new CGSize(pos.X, pos.Y));
-				}
+				graphics.SetPhase();
 				#endif
 
 				// make current transform apply to the pattern

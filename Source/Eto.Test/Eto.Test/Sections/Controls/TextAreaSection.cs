@@ -85,13 +85,13 @@ namespace Eto.Test.Sections.Controls
 
 		static Control SetAlignment(TextArea text)
 		{
-			var control = new EnumDropDown<HorizontalAlign>();
-			control.SelectedValueBinding.Bind(text, t => t.HorizontalAlign);
+			var control = new EnumDropDown<TextAlignment>();
+			control.SelectedValueBinding.Bind(text, t => t.TextAlignment);
 			return new TableLayout
 			{
 				Padding = Padding.Empty,
 				Spacing = new Size(5, 5),
-				Rows = { new TableRow(new Label { Text = "Alignment", VerticalAlign = VerticalAlign.Middle }, control) }
+				Rows = { new TableRow(new Label { Text = "Alignment", VerticalAlignment = VerticalAlignment.Center }, control) }
 			};
 		}
 

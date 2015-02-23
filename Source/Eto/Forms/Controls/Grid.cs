@@ -176,6 +176,52 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Event identifier for the <see cref="CellClick"/> event.
+		/// </summary>
+		public const string CellClickEvent = "Grid.CellClick";
+
+		/// <summary>
+		/// Occurs when an individual cell is clicked.
+		/// </summary>
+		public event EventHandler<GridViewCellEventArgs> CellClick
+		{
+			add { Properties.AddHandlerEvent(CellClickEvent, value); }
+			remove { Properties.RemoveEvent(CellClickEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="CellClick"/> event.
+		/// </summary>
+		/// <param name="e">Grid cell event arguments.</param>
+		protected virtual void OnCellClick(GridViewCellEventArgs e)
+		{
+			Properties.TriggerEvent(CellClickEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for the <see cref="CellDoubleClick"/> event.
+		/// </summary>
+		public const string CellDoubleClickEvent = "Grid.CellDoubleClick";
+
+		/// <summary>
+		/// Occurs when an individual cell is double clicked.
+		/// </summary>
+		public event EventHandler<GridViewCellEventArgs> CellDoubleClick
+		{
+			add { Properties.AddHandlerEvent(CellDoubleClickEvent, value); }
+			remove { Properties.RemoveEvent(CellDoubleClickEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="CellDoubleClick"/> event.
+		/// </summary>
+		/// <param name="e">Grid cell event arguments.</param>
+		protected virtual void OnCellDoubleClick(GridViewCellEventArgs e)
+		{
+			Properties.TriggerEvent(CellDoubleClickEvent, this, e);
+		}
+
+		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="Grid.SelectionChanged"/> event
 		/// </summary>
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";
@@ -269,6 +315,8 @@ namespace Eto.Forms
 			EventLookup.Register<Grid>(c => c.OnCellEdited(null), Grid.CellEditedEvent);
 			EventLookup.Register<Grid>(c => c.OnCellEditing(null), Grid.CellEditingEvent);
 			EventLookup.Register<Grid>(c => c.OnCellFormatting(null), Grid.CellFormattingEvent);
+			EventLookup.Register<Grid>(c => c.OnCellClick(null), Grid.CellClickEvent);
+			EventLookup.Register<Grid>(c => c.OnCellDoubleClick(null), Grid.CellDoubleClickEvent);
 			EventLookup.Register<Grid>(c => c.OnSelectionChanged(null), Grid.SelectionChangedEvent);
 			EventLookup.Register<Grid>(c => c.OnColumnHeaderClick(null), Grid.ColumnHeaderClickEvent);
 		}
@@ -495,6 +543,16 @@ namespace Eto.Forms
 			void OnCellEdited(Grid widget, GridViewCellEventArgs e);
 
 			/// <summary>
+			/// Raises the cell click event.
+			/// </summary>
+			void OnCellClick(Grid widget, GridViewCellEventArgs e);
+
+			/// <summary>
+			/// Raises the cell double click event.
+			/// </summary>
+			void OnCellDoubleClick(Grid widget, GridViewCellEventArgs e);
+
+			/// <summary>
 			/// Raises the selection changed event.
 			/// </summary>
 			void OnSelectionChanged(Grid widget, EventArgs e);
@@ -529,6 +587,22 @@ namespace Eto.Forms
 			public void OnCellEdited(Grid widget, GridViewCellEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnCellEdited(e));
+			}
+
+			/// <summary>
+			/// Raises the cell click event.
+			/// </summary>
+			public void OnCellClick(Grid widget, GridViewCellEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCellClick(e));
+			}
+
+			/// <summary>
+			/// Raises the cell double click event.
+			/// </summary>
+			public void OnCellDoubleClick(Grid widget, GridViewCellEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCellDoubleClick(e));
 			}
 
 			/// <summary>

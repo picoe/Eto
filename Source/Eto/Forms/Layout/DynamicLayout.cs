@@ -358,6 +358,7 @@ namespace Eto.Forms
 		/// </remarks>
 		public void EndHorizontal()
 		{
+			yscale = null;
 			if (currentItem.CurrentRow == null)
 				EndVertical();
 			else

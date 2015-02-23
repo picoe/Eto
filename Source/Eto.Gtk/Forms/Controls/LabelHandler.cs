@@ -8,8 +8,8 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly Gtk.EventBox eventBox;
-		HorizontalAlign horizontalAlign = HorizontalAlign.Left;
-		VerticalAlign verticalAlign = VerticalAlign.Top;
+		TextAlignment horizontalAlign = TextAlignment.Left;
+		VerticalAlignment verticalAlign = VerticalAlignment.Top;
 
 		public override Gtk.Widget ContainerControl
 		{
@@ -144,7 +144,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { Control.TextWithMnemonic = StringToMnuemonic(value); }
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return horizontalAlign; }
 			set
@@ -163,22 +163,22 @@ namespace Eto.GtkSharp.Forms.Controls
 				default:
 					xalignment = 0F;
 					break;
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					xalignment = 0.5F;
 					break;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					xalignment = 1F;
 					break;
 			}
 			switch (verticalAlign)
 			{
-				case VerticalAlign.Middle:
+				case VerticalAlignment.Center:
 					yalignment = 0.5F;
 					break;
 				default:
 					yalignment = 0F;
 					break;
-				case VerticalAlign.Bottom:
+				case VerticalAlignment.Bottom:
 					yalignment = 1F;
 					break;
 			}
@@ -186,7 +186,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.Justify = horizontalAlign.ToGtk();
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get { return verticalAlign; }
 			set

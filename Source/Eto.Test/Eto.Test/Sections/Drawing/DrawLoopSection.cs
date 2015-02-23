@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Drawing
 				if (!drawable.SupportsCreateGraphics)
 				{
 					content.BackgroundColor = Colors.Red;
-					content.Content = new Label { Text = "This platform does not support Drawable.CreateGraphics", TextColor = Colors.White, VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
+					content.Content = new Label { Text = "This platform does not support Drawable.CreateGraphics", TextColor = Colors.White, VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center };
 					return;
 				}
 				drawFrame = DrawWithCreateGraphics;

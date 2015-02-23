@@ -91,31 +91,31 @@ namespace Eto.iOS
 			return top;
 		}
 
-		public static HorizontalAlign ToEto(this UITextAlignment align)
+		public static TextAlignment ToEto(this UITextAlignment align)
 		{
 			switch (align)
 			{
 				case UITextAlignment.Natural:
 				case UITextAlignment.Left:
-					return HorizontalAlign.Left;
+					return TextAlignment.Left;
 				case UITextAlignment.Center:
-					return HorizontalAlign.Center;
+					return TextAlignment.Center;
 				case UITextAlignment.Right:
-					return HorizontalAlign.Right;
+					return TextAlignment.Right;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static UITextAlignment ToUI(this HorizontalAlign align)
+		public static UITextAlignment ToUI(this TextAlignment align)
 		{
 			switch (align)
 			{
-				case HorizontalAlign.Left:
+				case TextAlignment.Left:
 					return UITextAlignment.Left;
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					return UITextAlignment.Center;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					return UITextAlignment.Right;
 				default:
 					throw new NotSupportedException();

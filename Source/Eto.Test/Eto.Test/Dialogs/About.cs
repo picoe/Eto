@@ -23,7 +23,7 @@ namespace Eto.Test.Dialogs
 			{
 				Text = "Test Application",
 				Font = new Font(SystemFont.Bold, 20),
-				HorizontalAlign = HorizontalAlign.Center
+				TextAlignment = TextAlignment.Center
 			});
 
 			#if PCL
@@ -35,14 +35,14 @@ namespace Eto.Test.Dialogs
 			{
 				Text = string.Format("Version {0}", version),
 				Font = new Font(SystemFont.Default, 10),
-				HorizontalAlign = HorizontalAlign.Center
+				TextAlignment = TextAlignment.Center
 			});
 
 			layout.Add(new Label
 			{
 				Text = "Copyright 2013 by Curtis Wensley aka Eto",
 				Font = new Font(SystemFont.Default, 10),
-				HorizontalAlign = HorizontalAlign.Center
+				TextAlignment = TextAlignment.Center
 			});
 
 			layout.AddCentered(CloseButton());

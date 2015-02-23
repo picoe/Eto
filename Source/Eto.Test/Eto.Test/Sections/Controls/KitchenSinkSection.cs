@@ -70,7 +70,7 @@ namespace Eto.Test.Sections.Controls
 			layout.DefaultPadding = Padding.Empty;
 			layout.BeginVertical();
 			layout.BeginHorizontal();
-			layout.Add(new Label { Text = "Label", VerticalAlign = VerticalAlign.Middle });
+			layout.Add(new Label { Text = "Label", VerticalAlignment = VerticalAlignment.Center });
 			layout.AddAutoSized(new Button { Text = "Button Control" }, centered: true);
 			layout.Add(new ImageView { Image = icon1, Size = new Size(64, 64) });
 			layout.Add(null);
@@ -165,8 +165,8 @@ namespace Eto.Test.Sections.Controls
 				{ 
 					Text = string.Format ("WebView not supported on this platform with the {0} generator", Platform.ID),
 					BackgroundColor = Colors.Red,
-					HorizontalAlign = HorizontalAlign.Center,
-					VerticalAlign = VerticalAlign.Middle,
+					TextAlignment = TextAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center,
 					TextColor = Colors.White
 				};
 				if (Platform.IsGtk)

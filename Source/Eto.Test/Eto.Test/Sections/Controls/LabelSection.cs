@@ -45,7 +45,7 @@ namespace Eto.Test.Sections.Controls
 			return new Label
 			{
 				Text = "Center Align",
-				HorizontalAlign = HorizontalAlign.Center
+				TextAlignment = TextAlignment.Center
 			};
 		}
 
@@ -54,7 +54,7 @@ namespace Eto.Test.Sections.Controls
 			return new Label
 			{
 				Text = "Right Align",
-				HorizontalAlign = HorizontalAlign.Right
+				TextAlignment = TextAlignment.Right
 			};
 		}
 
@@ -63,8 +63,8 @@ namespace Eto.Test.Sections.Controls
 			return new Label
 			{
 				Text = "Middle Center Align",
-				HorizontalAlign = HorizontalAlign.Center,
-				VerticalAlign = VerticalAlign.Middle,
+				TextAlignment = TextAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
 				BackgroundColor = Colors.AliceBlue
 			};
 		}
@@ -74,8 +74,8 @@ namespace Eto.Test.Sections.Controls
 			return new Label
 			{
 				Text = "Bottom Center Align",
-				HorizontalAlign = HorizontalAlign.Center,
-				VerticalAlign = VerticalAlign.Bottom,
+				TextAlignment = TextAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
 				BackgroundColor = Colors.AliceBlue
 			};
 		}

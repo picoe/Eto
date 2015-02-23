@@ -125,6 +125,16 @@ namespace Eto.GtkSharp.Forms.Controls
 				case Grid.CellFormattingEvent:
 					SetupColumnEvents();
 					break;
+				case Grid.CellDoubleClickEvent:
+					Tree.RowActivated += (sender, e) =>
+					{
+						var rowIndex = e.Path.Indices.Length > 0 ? e.Path.Indices[0] : -1;
+						var columnIndex = GetColumnOfItem(e.Column);
+						var item = GetItem(e.Path);
+						var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
+						Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+					};
+					break;
 				case Grid.SelectionChangedEvent:
 					Tree.Selection.Changed += Connector.HandleGridSelectionChanged;
 					break;
@@ -225,6 +235,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 
 		public abstract object GetItem(Gtk.TreePath path);
+
+		public int GetColumnOfItem(Gtk.TreeViewColumn item)
+		{
+			return Widget.Columns.Select(r => r.Handler as GridColumnHandler).Select(r => r.Control).ToList().IndexOf(item);
+		}
 
 		public abstract Gtk.TreeIter GetIterAtRow(int row);
 

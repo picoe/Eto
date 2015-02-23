@@ -21,25 +21,6 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			switch (id)
 			{
-				case GridView.CellClickEvent:
-					Control.CellClick += (sender, e) =>
-					{
-						var item = GetItemAtRow(e.RowIndex);
-						var column = Widget.Columns[e.ColumnIndex];
-						Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
-					};
-					break;
-				case GridView.CellDoubleClickEvent:
-					Control.CellDoubleClick += (sender, e) =>
-					{
-						if (e.RowIndex > -1)
-						{
-							var item = GetItemAtRow(e.RowIndex);
-							var column = Widget.Columns[e.ColumnIndex];
-							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, e.RowIndex, e.ColumnIndex, item));
-						}
-					};
-					break;
 				default:
 					base.AttachEvent(id);
 					break;

@@ -268,7 +268,8 @@ namespace Eto.Forms
 		/// <see cref="Eto.Forms.SliderOrientation"/>; otherwise, <c>false</c>.</returns>
 		public override bool Equals(object obj)
 		{
-			return obj is SliderOrientation && (this == (SliderOrientation)obj);
+			return (obj is SliderOrientation && (this == (SliderOrientation)obj))
+				|| (obj is Orientation && (this == (Orientation)obj));
 		}
 
 		/// <summary>

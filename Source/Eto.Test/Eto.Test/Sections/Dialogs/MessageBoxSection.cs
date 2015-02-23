@@ -34,7 +34,7 @@ namespace Eto.Test.Sections.Dialogs
 
 			layout.BeginHorizontal();
 			layout.Add(null);
-			layout.Add(new Label { Text = "Type", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Right });
+			layout.Add(new Label { Text = "Type", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Right });
 			layout.Add(MessageBoxTypeCombo());
 			layout.Add(AttachToParentCheckBox());
 			layout.Add(null);
@@ -43,9 +43,9 @@ namespace Eto.Test.Sections.Dialogs
 			layout.EndBeginVertical();
 			layout.BeginHorizontal();
 			layout.Add(null);
-			layout.Add(new Label { Text = "Buttons", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Right });
+			layout.Add(new Label { Text = "Buttons", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Right });
 			layout.Add(MessageBoxButtonsCombo());
-			layout.Add(new Label { Text = "Default Button", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Right });
+			layout.Add(new Label { Text = "Default Button", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Right });
 			layout.Add(MessageBoxDefaultButtonCombo());
 			layout.Add(null);
 			layout.EndHorizontal();

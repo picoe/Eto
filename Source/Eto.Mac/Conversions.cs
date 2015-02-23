@@ -356,29 +356,29 @@ namespace Eto.Mac
 			}
 		}
 
-		public static HorizontalAlign ToEto(this NSTextAlignment align)
+		public static TextAlignment ToEto(this NSTextAlignment align)
 		{
 			switch (align)
 			{
 				default:
 				case NSTextAlignment.Left:
-					return HorizontalAlign.Left;
+					return TextAlignment.Left;
 				case NSTextAlignment.Right:
-					return HorizontalAlign.Right;
+					return TextAlignment.Right;
 				case NSTextAlignment.Center:
-					return HorizontalAlign.Center;
+					return TextAlignment.Center;
 			}
 		}
 
-		public static NSTextAlignment ToNS(this HorizontalAlign align)
+		public static NSTextAlignment ToNS(this TextAlignment align)
 		{
 			switch (align)
 			{
-				case HorizontalAlign.Left:
+				case TextAlignment.Left:
 					return NSTextAlignment.Left;
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					return NSTextAlignment.Center;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					return NSTextAlignment.Right;
 				default:
 					throw new NotSupportedException();

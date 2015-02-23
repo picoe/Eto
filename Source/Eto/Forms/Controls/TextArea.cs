@@ -213,10 +213,21 @@ namespace Eto.Forms
 		/// Gets or sets the horizontal alignment of the text.
 		/// </summary>
 		/// <value>The horizontal alignment.</value>
+		public TextAlignment TextAlignment
+		{
+			get { return Handler.TextAlignment; }
+			set { Handler.TextAlignment = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the horizontal alignment of the text.
+		/// </summary>
+		/// <value>The horizontal alignment.</value>
+		[Obsolete("Since 2.1: Use TextAlignment instead")]
 		public HorizontalAlign HorizontalAlign
 		{
-			get { return Handler.HorizontalAlign; }
-			set { Handler.HorizontalAlign = value; }
+			get { return Handler.TextAlignment; }
+			set { Handler.TextAlignment = value; }
 		}
 
 		/// <summary>
@@ -391,7 +402,7 @@ namespace Eto.Forms
 			/// Gets or sets the horizontal alignment of the text.
 			/// </summary>
 			/// <value>The horizontal alignment.</value>
-			HorizontalAlign HorizontalAlign { get; set; }
+			TextAlignment TextAlignment { get; set; }
 
 			/// <summary>
 			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TextArea"/> will perform spell checking.

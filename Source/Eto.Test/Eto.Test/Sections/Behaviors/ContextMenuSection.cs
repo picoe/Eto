@@ -41,8 +41,8 @@ namespace Eto.Test.Sections.Behaviors
 				Size = new Size(100, 100), 
 				BackgroundColor = Colors.Blue,
 				TextColor = Colors.White,
-				HorizontalAlign = HorizontalAlign.Center,
-				VerticalAlign = VerticalAlign.Middle,
+				TextAlignment = TextAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
 				Text = "Click on me!"
 			};
 			label.MouseDown += (sender, e) =>

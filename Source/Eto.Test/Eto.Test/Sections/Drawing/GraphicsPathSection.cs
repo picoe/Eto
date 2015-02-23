@@ -95,7 +95,7 @@ namespace Eto.Test.Sections.Drawing
 			control.ValueBinding.Bind(() => PenThickness, val => { PenThickness = (float)val; Refresh(); });
 
 			var layout = new DynamicLayout { Padding = Padding.Empty };
-			layout.AddRow(new Label { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
+			layout.AddRow(new Label { Text = "Thickness:", VerticalAlignment = VerticalAlignment.Center }, control);
 			return layout;
 		}
 

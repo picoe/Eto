@@ -380,12 +380,12 @@ namespace Eto.Wpf.Forms.Controls
 			get { return this; }
 		}
 
-		public override HorizontalAlign HorizontalAlign
+		public override TextAlignment TextAlignment
 		{
-			get { return base.HorizontalAlign; }
+			get { return base.TextAlignment; }
 			set
 			{
-				base.HorizontalAlign = value;
+				base.TextAlignment = value;
 				ContentRange.ApplyPropertyValue(swd.Block.TextAlignmentProperty, value.ToWpfTextAlignment());
 			}
 		}

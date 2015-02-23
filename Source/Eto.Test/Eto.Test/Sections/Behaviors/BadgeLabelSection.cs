@@ -24,7 +24,7 @@ namespace Eto.Test.Sections.Behaviors
 			var text = new TextBox();
 			var button = new Button { Text = "Set Badge Label" };
 			button.Click += (sender, e) => Application.Instance.BadgeLabel = text.Text;
-			layout.Add(new Label { Text = "Badge Label Text:", VerticalAlign = VerticalAlign.Middle });
+			layout.Add(new Label { Text = "Badge Label Text:", VerticalAlignment = VerticalAlignment.Center });
 			layout.AddCentered(text);
 			layout.Add(button);
 			layout.EndHorizontal();

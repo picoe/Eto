@@ -32,8 +32,8 @@ namespace Eto.WinRT.Forms.Controls
 				Padding = new sw.Thickness(0),
 			};
 			//Control.Target = Control;
-			HorizontalAlign = HorizontalAlign.Left;
-			VerticalAlign = VerticalAlign.Top;
+			TextAlignment = TextAlignment.Left;
+			VerticalAlignment = VerticalAlignment.Top;
 			Wrap = WrapMode.Word;
 		}
 
@@ -51,7 +51,7 @@ namespace Eto.WinRT.Forms.Controls
 			}
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { 
 #if TODO_XAML
@@ -101,7 +101,7 @@ namespace Eto.WinRT.Forms.Controls
 #endif
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get
 			{

@@ -50,7 +50,7 @@ namespace Eto.Mac.Forms.Controls
 
 	public class EtoLabelFieldCell : NSTextFieldCell
 	{
-		public VerticalAlign VerticalAlign { get; set; }
+		public VerticalAlignment VerticalAlign { get; set; }
 
 		public override CGRect DrawingRectForBounds(CGRect theRect)
 		{
@@ -59,13 +59,10 @@ namespace Eto.Mac.Forms.Controls
 
 			switch (VerticalAlign)
 			{
-				case VerticalAlign.Middle:
+				case VerticalAlignment.Center:
 					rect.Y = theRect.Y + (theRect.Height - titleSize.Height) / 2.0F;
 					break;
-				case VerticalAlign.Top:
-					// do nothing!
-					break;
-				case VerticalAlign.Bottom:
+				case VerticalAlignment.Bottom:
 					rect.Y = theRect.Y + (theRect.Height - titleSize.Height);
 					break;
 			}
@@ -247,7 +244,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return paragraphStyle.Alignment.ToEto(); }
 			set
@@ -277,7 +274,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get { return ((EtoLabelFieldCell)Control.Cell).VerticalAlign; }
 			set { ((EtoLabelFieldCell)Control.Cell).VerticalAlign = value; }

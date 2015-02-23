@@ -700,31 +700,31 @@ namespace Eto.WinForms
 			return new swf.SelectionRange(range.Start, range.End);
 		}
 
-		public static swf.HorizontalAlignment ToSWF(this HorizontalAlign align)
+		public static swf.HorizontalAlignment ToSWF(this TextAlignment align)
 		{
 			switch (align)
 			{
-				case HorizontalAlign.Left:
+				case TextAlignment.Left:
 					return swf.HorizontalAlignment.Left;
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					return swf.HorizontalAlignment.Center;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					return swf.HorizontalAlignment.Right;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static HorizontalAlign ToEto(this swf.HorizontalAlignment align)
+		public static TextAlignment ToEto(this swf.HorizontalAlignment align)
 		{
 			switch (align)
 			{
 				case swf.HorizontalAlignment.Center:
-					return HorizontalAlign.Center;
+					return TextAlignment.Center;
 				case swf.HorizontalAlignment.Left:
-					return HorizontalAlign.Left;
+					return TextAlignment.Left;
 				case swf.HorizontalAlignment.Right:
-					return HorizontalAlign.Right;
+					return TextAlignment.Right;
 				default:
 					throw new NotSupportedException();
 			}

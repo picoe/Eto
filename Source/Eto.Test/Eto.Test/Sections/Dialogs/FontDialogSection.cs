@@ -22,7 +22,7 @@ namespace Eto.Test.Sections.Dialogs
 			var layout = new DynamicLayout { Spacing = new Size(5, 5) };
 
 			layout.AddSeparateRow(null, PickFont(), PickFontWithStartingFont(), SetToFontFamily(), null);
-			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlign = VerticalAlign.Middle }, PickFontFamily(), null);
+			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlignment = VerticalAlignment.Center }, PickFontFamily(), null);
 
 			layout.AddSeparateRow(null, FontList(), FontStyles(), FontSizes(), null);
 			layout.AddSeparateRow(null, new Label { Text = "Style:" }, BoldFont(), ItalicFont(), UnderlineFont(), StrikeoutFont(), null);

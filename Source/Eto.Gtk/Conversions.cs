@@ -538,30 +538,30 @@ namespace Eto.GtkSharp
 			return DrawableCellStates.None;
 		}
 
-		public static HorizontalAlign ToEto(this Gtk.Justification justification)
+		public static TextAlignment ToEto(this Gtk.Justification justification)
 		{
 			switch (justification)
 			{
 				case Gtk.Justification.Left:
-					return HorizontalAlign.Left;
+					return TextAlignment.Left;
 				case Gtk.Justification.Right:
-					return HorizontalAlign.Right;
+					return TextAlignment.Right;
 				case Gtk.Justification.Center:
-					return HorizontalAlign.Center;
+					return TextAlignment.Center;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static Gtk.Justification ToGtk(this HorizontalAlign align)
+		public static Gtk.Justification ToGtk(this TextAlignment align)
 		{
 			switch (align)
 			{
-				case HorizontalAlign.Left:
+				case TextAlignment.Left:
 					return Gtk.Justification.Left;
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					return Gtk.Justification.Center;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					return Gtk.Justification.Right;
 				default:
 					throw new NotSupportedException();
