@@ -77,6 +77,30 @@ namespace Eto.Wpf.Forms.Controls
 				case Grid.CellEditedEvent:
 					// handled by each cell after value is set with the CellEdited method
 					break;
+				case Grid.CellClickEvent:
+					Control.PreviewMouseLeftButtonDown += (sender, e) =>
+					{
+						var dep = e.OriginalSource as sw.DependencyObject;
+						while (dep != null && !(dep is swc.DataGridCell))
+							dep = swm.VisualTreeHelper.GetParent(dep);
+
+						var cell = dep as swc.DataGridCell;
+						while (dep != null && !(dep is swc.DataGridRow))
+							dep = swm.VisualTreeHelper.GetParent(dep);
+
+						var row = dep as swc.DataGridRow;
+
+						int rowIndex;
+						if ((rowIndex = row.GetIndex()) >= 0)
+						{
+							var columnIndex = cell.Column == null ? -1 : cell.Column.DisplayIndex;
+
+							var item = Control.SelectedItem;
+							var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+							Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						}
+					};
+					break;
 				case Grid.CellDoubleClickEvent:
 					Control.MouseDoubleClick += (sender, e) =>
 					{

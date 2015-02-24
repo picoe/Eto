@@ -125,10 +125,13 @@ namespace Eto.GtkSharp.Forms.Controls
 				case Grid.CellFormattingEvent:
 					SetupColumnEvents();
 					break;
+				case Grid.CellClickEvent:
+					Tree.ButtonPressEvent += OnTreeButtonPress;
+					break;
 				case Grid.CellDoubleClickEvent:
 					Tree.RowActivated += (sender, e) =>
 					{
-						var rowIndex = e.Path.Indices.Length > 0 ? e.Path.Indices[0] : -1;
+						var rowIndex = GetRowIndexOfPath(e.Path);
 						var columnIndex = GetColumnOfItem(e.Column);
 						var item = GetItem(e.Path);
 						var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
@@ -142,6 +145,29 @@ namespace Eto.GtkSharp.Forms.Controls
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		[GLib.ConnectBefore]
+		protected virtual void OnTreeButtonPress (object sender, Gtk.ButtonPressEventArgs e)
+		{
+			// If clicked mouse button is not the primary button, return.
+			if (e.Event.Button != 1 || e.Event.Type == Gdk.EventType.TwoButtonPress || e.Event.Type == Gdk.EventType.ThreeButtonPress)
+				return;
+
+			Gtk.TreePath path;
+			Gtk.TreeViewColumn clickedColumn;
+
+			// Get path and column from mouse position
+			Tree.GetPathAtPos((int)e.Event.X, (int)e.Event.Y, out path, out clickedColumn);
+			if (path == null || clickedColumn == null)
+				return;
+
+			var rowIndex = GetRowIndexOfPath(path);
+			var columnIndex = GetColumnOfItem(clickedColumn);
+			var item = GetItem(path);
+			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+
+			Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
 		}
 
 		public override void OnLoadComplete(EventArgs e)
@@ -239,6 +265,22 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int GetColumnOfItem(Gtk.TreeViewColumn item)
 		{
 			return Widget.Columns.Select(r => r.Handler as GridColumnHandler).Select(r => r.Control).ToList().IndexOf(item);
+		}
+
+		public int GetRowIndexOfPath(Gtk.TreePath path)
+		{
+			int rowIndex = 0;
+			if (path.Indices.Length > 0)
+			{
+				for (int i = 0; i < path.Depth; i++)
+					rowIndex += path.Indices[i] + 1;
+
+				rowIndex--;
+			}
+			else
+				rowIndex = -1;
+
+			return rowIndex;
 		}
 
 		public abstract Gtk.TreeIter GetIterAtRow(int row);

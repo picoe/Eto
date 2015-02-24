@@ -66,6 +66,22 @@ namespace Eto.Mac.Forms.Controls
 				else
 					base.DrawBackground(clipRect);
 			}
+
+			public override void MouseDown(NSEvent theEvent)
+			{
+				var point = ConvertPointFromBase(theEvent.LocationInWindow);
+
+				int rowIndex;
+				if ((rowIndex = (int)GetRow(point)) >= 0)
+				{
+					int columnIndex = (int)GetColumn(point);
+					var item = Handler.GetItem(rowIndex);
+					var column = columnIndex == -1 || columnIndex > Handler.Widget.Columns.Count ? null : Handler.Widget.Columns[columnIndex];
+					Handler.Callback.OnCellClick(Handler.Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+				}
+
+				base.MouseDown(theEvent);
+			}
 		}
 
 		class EtoTableViewDataSource : NSTableViewDataSource
@@ -181,6 +197,9 @@ namespace Eto.Mac.Forms.Controls
 					Handler.Widget.OnHeaderClick (new GridColumnEventArgs (column));
 				};
 				*/
+					break;
+				case Grid.CellClickEvent:
+					// Handled in EtoTableView
 					break;
 				case Grid.CellFormattingEvent:
 					break;

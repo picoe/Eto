@@ -272,7 +272,8 @@ namespace Eto.Test.Sections.Controls
 			control.CellEdited += (sender, e) => Log.Write(control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			control.SelectionChanged += (sender, e) => Log.Write(control, "Selection Changed, Rows: {0}", SelectedRowsString(control));
 			control.ColumnHeaderClick += (sender, e) => Log.Write(control, "Column Header Clicked: {0}", e.Column.HeaderText);
-			control.CellDoubleClick += (s, e) => Log.Write(control, "Cell Double Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			control.CellClick += (sender, e) => Log.Write(control, "Cell Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			control.CellDoubleClick += (sender, e) => Log.Write(control, "Cell Double Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 		}
 
 		static string SelectedRowsString(GridView grid)
