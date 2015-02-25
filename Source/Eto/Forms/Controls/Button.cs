@@ -129,6 +129,15 @@ namespace Eto.Forms
 			set { Handler.ImagePosition = value; }
 		}
 
+		/// <summary>
+		/// Triggers the <see cref="Click"/> event for the button, if the button is visable and enabled.
+		/// </summary>
+		public void PerformClick()
+		{
+			if (Enabled && Visible)
+				OnClick(EventArgs.Empty);
+		}
+
 		static readonly object callback = new Callback();
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
