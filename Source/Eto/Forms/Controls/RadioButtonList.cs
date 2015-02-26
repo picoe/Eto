@@ -435,6 +435,24 @@ namespace Eto.Forms
 				);
 			}
 		}
+
+		/// <summary>
+		/// Gets a binding to the <see cref="SelectedIndex"/> property.
+		/// </summary>
+		/// <value>The selected index binding.</value>
+		public ControlBinding<RadioButtonList, int> SelectedIndexBinding
+		{
+			get
+			{
+				return new ControlBinding<RadioButtonList, int>(
+					this, 
+					c => c.SelectedIndex, 
+					(c, v) => c.SelectedIndex = v, 
+					(c, h) => c.SelectedIndexChanged += h, 
+					(c, h) => c.SelectedIndexChanged -= h
+				);
+			}
+		}
 	}
 
 	/// <summary>
