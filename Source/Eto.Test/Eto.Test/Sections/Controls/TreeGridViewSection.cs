@@ -169,6 +169,16 @@ namespace Eto.Test.Sections.Controls
 			{
 				Log.Write(control, "Column Header Clicked: {0}", e.Column);
 			};
+
+			control.CellClick += (sender, e) =>
+			{
+				Log.Write(control, "Cell Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			};
+
+			control.CellDoubleClick += (sender, e) =>
+			{
+				Log.Write(control, "Cell Double Clicked, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			};
 		}
 	}
 }

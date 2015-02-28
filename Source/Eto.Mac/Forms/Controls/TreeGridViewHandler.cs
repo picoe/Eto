@@ -242,6 +242,22 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public override void MouseDown(NSEvent theEvent)
+			{
+				var point = ConvertPointFromBase(theEvent.LocationInWindow);
+
+				int rowIndex;
+				if ((rowIndex = (int)GetRow(point)) >= 0)
+				{
+					int columnIndex = (int)GetColumn(point);
+					var item = (Handler as TreeGridViewHandler).GetItem(rowIndex);
+					var column = columnIndex == -1 || columnIndex > (Handler as TreeGridViewHandler).Widget.Columns.Count ? null : (Handler as TreeGridViewHandler).Widget.Columns[columnIndex];
+					(Handler as TreeGridViewHandler).Callback.OnCellClick((Handler as TreeGridViewHandler).Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+				}
+
+				base.MouseDown(theEvent);
+			}
 		}
 		
 		public override object EventObject {
@@ -259,6 +275,9 @@ namespace Eto.Mac.Forms.Controls
 			case Grid.SelectionChangedEvent:
 			case Grid.ColumnHeaderClickEvent:
 				// handled in delegate
+				break;
+			case Grid.CellClickEvent:
+				// Handled in EtoOutlineView
 				break;
 			default:
 				base.AttachEvent (id);
