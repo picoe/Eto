@@ -628,7 +628,15 @@ namespace Eto.Mac.Forms
 
 		Point Control.IHandler.Location
 		{
-			get { return ContentControl.Frame.Location.ToEtoPoint(); }
+			get
+			{ 
+				var frame = ContentControl.Frame;
+				var location = frame.Location;
+				var super = ContentControl.Superview;
+				if (super == null || super.IsFlipped)
+					return location.ToEtoPoint();
+				return new Point((int)location.X, (int)(super.Frame.Height - location.Y - frame.Height));
+			}
 		}
 
 		static void TriggerSystemAction(IntPtr sender, IntPtr sel, IntPtr e)
