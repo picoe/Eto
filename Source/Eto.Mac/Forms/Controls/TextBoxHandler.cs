@@ -79,16 +79,6 @@ namespace Eto.Mac.Forms.Controls
 
 	public class TextBoxHandler : MacText<EtoTextField, TextBox, TextBox.ICallback>, TextBox.IHandler, ITextBoxWithMaxLength
 	{
-		public override bool HasFocus
-		{
-			get
-			{
-				if (Widget.ParentWindow == null)
-					return false;
-				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorObject == Control;
-			}
-		}
-
 		public TextBoxHandler()
 		{
 			Control = new EtoTextField
@@ -113,12 +103,18 @@ namespace Eto.Mac.Forms.Controls
 			return size;
 		}
 
+		static readonly IntPtr selShouldChangeText = Selector.GetHandle("shouldChangeTextInRange:replacementString:");
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case TextControl.TextChangedEvent:
 					Control.Changed += HandleTextChanged;
+					break;
+				case TextBox.TextChangingEvent:
+					SetCustomFieldEditor();
+					AddMethod(selShouldChangeText, new Func<IntPtr, IntPtr, NSRange, IntPtr, bool>(TriggerShouldChangeText), "B@:{NSRange=QQ}@", CustomFieldEditor);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -130,6 +126,22 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var h = GetHandler(sender) as TextBoxHandler;
 			h.Callback.OnTextChanged(h.Widget, EventArgs.Empty);
+		}
+
+		static bool TriggerShouldChangeText(IntPtr sender, IntPtr sel, NSRange affectedCharRange, IntPtr replacementStringPtr)
+		{
+			var obj = Runtime.GetNSObject(sender);
+			var handler = GetHandler(obj) as TextBoxHandler;
+
+			if (handler != null)
+			{
+				var replacementString = Messaging.GetNSObject<NSString>(replacementStringPtr);
+				var args = new TextChangingEventArgs(replacementString, affectedCharRange.ToEto());
+				handler.Callback.OnTextChanging(handler.Widget, args);
+				if (args.Cancel)
+					return false;
+			}
+			return Messaging.bool_objc_msgSendSuper_NSRange_IntPtr(obj.SuperHandle, sel, affectedCharRange, replacementStringPtr);
 		}
 
 		public bool ReadOnly

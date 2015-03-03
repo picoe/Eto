@@ -247,6 +247,7 @@
     </Compile>
     <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
     <Compile Include="Forms\KeyboardHandler.cs" />
+    <Compile Include="NativeMethods.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

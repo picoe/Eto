@@ -95,6 +95,39 @@ namespace Eto.iOS.Forms.Controls
 			get { return Control.TextColor.ToEto(); }
 			set { Control.TextColor = value.ToNSUI(); }
 		}
+
+		public int CaretIndex
+		{
+			get {
+				var selectedRange = Control.SelectedTextRange;
+				var selectionStart = selectedRange.Start;
+				return (int)Control.GetOffsetFromPosition(Control.BeginningOfDocument, selectionStart);
+			}
+			set
+			{
+				Selection = new Range<int>(value, value - 1);
+			}
+		}
+
+		public Range<int> Selection
+		{
+			get
+			{
+				var selectedRange = Control.SelectedTextRange;
+				var selectionStart = selectedRange.Start;
+				var selectionEnd = selectedRange.End;
+
+				var start = (int)Control.GetOffsetFromPosition(Control.BeginningOfDocument, selectionStart);
+				var end = (int)Control.GetOffsetFromPosition(Control.BeginningOfDocument, selectionEnd);
+				return new Range<int>(start, end - 1);
+			}
+			set
+			{
+				var start = Control.GetPosition(Control.BeginningOfDocument, value.Start);
+				var end = Control.GetPosition(Control.BeginningOfDocument, value.End);
+				Control.SelectedTextRange = Control.GetTextRange(start, end);
+			}
+		}
 	}
 }
 

@@ -25,7 +25,12 @@ namespace Eto.Mac.Forms.Controls
 		public WeakReference WeakHandler { get; set; }
 	}
 
-	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler
+	public interface IMacText
+	{
+		TextControl.ICallback Callback { get; }
+	}
+
+	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler, IMacText
 		where TControl: NSTextField
 		where TWidget: TextControl
 		where TCallback: TextControl.ICallback
@@ -49,10 +54,22 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		TextControl.ICallback IMacText.Callback
+		{
+			get { return Callback; }
+		}
+
 		public virtual string Text
 		{
 			get { return Control.AttributedStringValue.Value; }
-			set { Control.AttributedStringValue = Font.AttributedString(value ?? string.Empty, Control.AttributedStringValue); }
+			set
+			{ 
+				if (value != Text)
+				{
+					Control.AttributedStringValue = Font.AttributedString(value ?? string.Empty, Control.AttributedStringValue);
+					Callback.OnTextChanged(Widget, EventArgs.Empty);
+				}
+			}
 		}
 
 		public virtual Color TextColor
@@ -61,16 +78,73 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.TextColor = value.ToNSUI(); }
 		}
 
+		public int CaretIndex
+		{
+			get { return (int)Control.CurrentEditor.SelectedRange.Location; }
+			set
+			{
+				var range = new NSRange(value, 0);
+				Control.CurrentEditor.SelectedRange = range;
+				Control.CurrentEditor.ScrollRangeToVisible(range);
+			}
+		}
+
+		public Range<int> Selection
+		{
+			get { return Control.CurrentEditor.SelectedRange.ToEto(); }
+			set { Control.CurrentEditor.SelectedRange = value.ToNS(); }
+		}
+
+		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Eto.Forms.Control.TextInputEvent:
+					SetCustomFieldEditor();
+					AddMethod(selResignFirstResponder, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@", CustomFieldEditor);
+					break;
+				case Eto.Forms.Control.LostFocusEvent:
+					SetCustomFieldEditor();
+					// lost focus is on the custom field editor, not on the control itself (it loses focus immediately due to the field editor)
+					AddMethod(selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:", CustomFieldEditor);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
 		static readonly object CustomFieldEditorKey = new object();
 
 		public override NSObject CustomFieldEditor { get { return Widget.Properties.Get<NSObject>(CustomFieldEditorKey); } }
 
+		public void SetCustomFieldEditor()
+		{
+			if (CustomFieldEditor != null)
+				return;
+			Widget.Properties[CustomFieldEditorKey] = new CustomTextFieldEditor
+			{
+				Widget = Widget,
+				WeakHandler = new WeakReference(this)
+			};
+		}
+
+		public override bool HasFocus
+		{
+			get
+			{
+				return (
+				    base.HasFocus
+				    || (ShouldHaveFocus ?? (CustomFieldEditor != null && Control.Window != null && Control.Window.FirstResponder == CustomFieldEditor))
+				);
+			}
+		}
+
 		protected override void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
 		{
-			if (CustomFieldEditor == null)
-			{
-				Widget.Properties[CustomFieldEditorKey] = new CustomTextFieldEditor { Widget = Widget, WeakHandler = new WeakReference(this) };
-			}
+			SetCustomFieldEditor();
 			base.InnerMapPlatformCommand(systemAction, command, CustomFieldEditor);
 		}
 	}

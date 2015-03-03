@@ -90,6 +90,8 @@ namespace Eto.Mac.Forms
 		void OnSizeChanged(EventArgs e);
 
 		NSObject CustomFieldEditor { get; }
+
+		bool? ShouldHaveFocus { get; set; }
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -237,8 +239,9 @@ namespace Eto.Mac.Forms
 		static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
 		static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
 		static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
-		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
 		static readonly IntPtr selSetFrameSize = Selector.GetHandle("setFrameSize:");
+		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
+		static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
 
 		public override void AttachEvent(string id)
 		{
@@ -293,11 +296,27 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.ShownEvent:
 				// TODO
 					break;
+				case Eto.Forms.Control.TextInputEvent:
+					AddMethod(selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@");
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 
 			}
+		}
+
+		protected static void TriggerTextInput(IntPtr sender, IntPtr sel, IntPtr textPtr)
+		{
+			var obj = Runtime.GetNSObject(sender);
+
+			var handler = GetHandler(obj) as IMacViewHandler;
+			if (handler != null)
+			{
+				var text = (string)Messaging.GetNSObject<NSString>(textPtr);
+				handler.Callback.OnTextInput(handler.Widget, new TextInputEventArgs(text));
+			}
+			Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, textPtr);
 		}
 
 		static void SetFrameSizeAction(IntPtr sender, IntPtr sel, CGSize size)
@@ -313,25 +332,29 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		static bool TriggerGotFocus(IntPtr sender, IntPtr sel)
+		protected static bool TriggerGotFocus(IntPtr sender, IntPtr sel)
 		{
 			var obj = Runtime.GetNSObject(sender);
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
+				handler.ShouldHaveFocus = true;
 				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
+				handler.ShouldHaveFocus = null;
 				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 			}
 			return false;
 		}
 
-		static bool TriggerLostFocus(IntPtr sender, IntPtr sel)
+		protected static bool TriggerLostFocus(IntPtr sender, IntPtr sel)
 		{
 			var obj = Runtime.GetNSObject(sender);
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
+				handler.ShouldHaveFocus = false;
 				handler.Callback.OnLostFocus(handler.Widget, EventArgs.Empty);
+				handler.ShouldHaveFocus = null;
 				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 			}
 			return false;
@@ -504,11 +527,19 @@ namespace Eto.Mac.Forms
 
 		public abstract bool Enabled { get; set; }
 
+		static readonly object ShouldHaveFocusKey = new object();
+
+		public bool? ShouldHaveFocus
+		{
+			get { return Widget.Properties.Get<bool?>(ShouldHaveFocusKey); }
+			set { Widget.Properties[ShouldHaveFocusKey] = value; }
+		}
+
 		public virtual bool HasFocus
 		{
 			get
 			{
-				return FocusControl.Window != null && FocusControl.Window.FirstResponder == Control;
+				return ShouldHaveFocus ?? (FocusControl.Window != null && FocusControl.Window.FirstResponder == Control);
 			}
 		}
 
@@ -675,7 +706,6 @@ namespace Eto.Mac.Forms
 			}
 			return Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
 		}
-
 
 		Dictionary<IntPtr, Command> systemActions;
 		static readonly IntPtr selGetAction = Selector.GetHandle("action");

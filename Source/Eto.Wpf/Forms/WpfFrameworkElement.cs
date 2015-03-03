@@ -351,6 +351,9 @@ namespace Eto.Wpf.Forms
 						Control.TextInput += HandleTextInput;
 					}
 					break;
+				case Eto.Forms.Control.TextInputEvent:
+					HandleEvent(Eto.Forms.Control.KeyDownEvent);
+					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					Control.KeyUp += (sender, e) =>
 					{
@@ -382,6 +385,14 @@ namespace Eto.Wpf.Forms
 
 		void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
 		{
+			var tiargs = new TextInputEventArgs(e.Text);
+			Callback.OnTextInput(Widget, tiargs);
+			if (tiargs.Cancel)
+			{
+				e.Handled = true;
+				return;
+			}
+
 			foreach (var keyChar in e.Text)
 			{
 				var key = Keys.None;

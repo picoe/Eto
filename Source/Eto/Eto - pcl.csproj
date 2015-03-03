@@ -310,6 +310,7 @@
     <Compile Include="Forms\Orientation.cs" />
     <Compile Include="Forms\Layout\StackLayout.cs" />
     <Compile Include="Forms\Keyboard.cs" />
+    <Compile Include="Forms\Controls\TextChangingEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">
