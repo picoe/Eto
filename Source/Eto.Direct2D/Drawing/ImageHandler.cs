@@ -29,9 +29,12 @@ namespace Eto.Direct2D.Drawing
 		public sw.Bitmap[] Frames { get; private set; }
 		public sd.Bitmap GetBitmap(sd.RenderTarget target)
 		{
-			if (targetBitmap == null || !ReferenceEquals(targetBitmap.Tag, target))
+			if (targetBitmap == null || !Equals(targetBitmap.Tag, target.NativePointer))
 			{
+				if (targetBitmap != null)
+					targetBitmap.Dispose();
 				targetBitmap = CreateDrawableBitmap(target);
+				targetBitmap.Tag = target.NativePointer;
 			}
 			return targetBitmap;
 		}
