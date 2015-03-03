@@ -17,7 +17,7 @@
 								{ $type: "ListItem", Text: "Item 3" },
 								{ $type: "ListItem", Text: "Item 4" }
 							] } ],
-						[ { $type: "Label", Text: "Image", VerticalAlign: "Middle" }, 
+						[ { $type: "Label", Text: "Image", VerticalAlignment: "Center" }, 
 							[ /* TableLayout */
 								[ /* TableRow */
 									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.TestImage.png, Eto.Test" } },
