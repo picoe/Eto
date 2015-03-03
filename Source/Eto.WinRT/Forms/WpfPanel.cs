@@ -30,14 +30,10 @@ namespace Eto.WinRT.Forms
 		{
 			get
 			{
-				if (
 #if TODO_XAML
-					!Control.IsLoaded && 
-#else
-					false &&
-#endif
-					clientSize != null)
+				if (!Control.IsLoaded && clientSize != null)
 					return clientSize.Value;
+#endif
 				return border.GetSize();
 			}
 			set

@@ -104,8 +104,7 @@ namespace Eto.WinRT.Forms.Controls
 			}
 			set
 			{
-				scroller.ScrollToVerticalOffset(value.Y);
-				scroller.ScrollToHorizontalOffset(value.X);
+				scroller.ChangeView(value.X, value.Y, null);
 			}
 		}
 

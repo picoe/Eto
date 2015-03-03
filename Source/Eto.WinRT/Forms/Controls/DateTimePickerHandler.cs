@@ -33,7 +33,7 @@ namespace Eto.WinRT.Forms.Controls
 				ShowButtonSpinner = false
 #endif
 			};
-			Mode = DateTimePicker.DefaultMode;
+			Mode = DateTimePickerMode.Date;
 			MinDate = DateTime.MinValue;
 			MaxDate = DateTime.MaxValue;
 		}
