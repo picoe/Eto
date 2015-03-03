@@ -69,7 +69,7 @@ namespace Eto.Mac
 			return inverse.TryGetValue(key & Keys.KeyMask, out value) ? value : string.Empty;
 		}
 
-		public static NSEventModifierMask KeyEquivalentModifierMask (Keys key)
+		public static NSEventModifierMask KeyEquivalentModifierMask (this Keys key)
 		{
 			key &= Keys.ModifierMask;
 			var mask = (NSEventModifierMask)0;
@@ -81,6 +81,20 @@ namespace Eto.Mac
 				mask |= NSEventModifierMask.ControlKeyMask;
 			if (key.HasFlag(Keys.Application))
 				mask |= NSEventModifierMask.CommandKeyMask;
+			if (key == Keys.CapsLock)
+				mask |= NSEventModifierMask.AlphaShiftKeyMask;
+			if (key == Keys.NumberLock)
+				mask |= NSEventModifierMask.NumericPadKeyMask;
+			return mask;
+		}
+
+		public static NSEventModifierMask ModifierMask (this Keys key)
+		{
+			var mask = KeyEquivalentModifierMask(key);
+			if (key == Keys.CapsLock)
+				mask |= NSEventModifierMask.AlphaShiftKeyMask;
+			if (key == Keys.NumberLock)
+				mask |= NSEventModifierMask.NumericPadKeyMask;
 			return mask;
 		}
 

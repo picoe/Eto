@@ -209,6 +209,7 @@
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
     <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
+    <Compile Include="Forms\KeyboardHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

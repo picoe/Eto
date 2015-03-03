@@ -308,6 +308,7 @@
     <Compile Include="Forms\WindowsControl.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\KeyboardHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

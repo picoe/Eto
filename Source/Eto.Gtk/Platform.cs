@@ -161,6 +161,7 @@ namespace Eto.GtkSharp
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
+			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

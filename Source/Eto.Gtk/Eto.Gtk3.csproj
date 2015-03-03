@@ -267,6 +267,7 @@
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
+    <Compile Include="Forms\KeyboardHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
