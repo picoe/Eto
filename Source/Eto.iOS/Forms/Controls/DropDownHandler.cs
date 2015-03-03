@@ -49,7 +49,7 @@ namespace Eto.iOS.Forms.Controls
 			public override string GetTitle(UIPickerView pickerView, nint row, nint component)
 			{
 				var data = Handler.collection;
-				return data != null ? Handler.Widget.TextBinding.GetValue(data.ElementAt((int)row)) : string.Empty;
+				return data != null ? Handler.Widget.ItemTextBinding.GetValue(data.ElementAt((int)row)) : string.Empty;
 			}
 		}
 
@@ -111,7 +111,7 @@ namespace Eto.iOS.Forms.Controls
 			if (collection != null && selectedIndex >= 0 && selectedIndex < collection.Count)
 			{
 				var item = collection.ElementAt(selectedIndex);
-				return Widget.TextBinding.GetValue(item);
+				return Widget.ItemTextBinding.GetValue(item);
 			}
 			return null;
 		}
