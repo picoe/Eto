@@ -88,5 +88,20 @@ namespace Eto.Android.Forms.Controls
 			get { return Control.TextColors.ToEto(); }
 			set { Control.SetTextColor(value.ToAndroid()); }
 		}
+
+		public int CaretIndex
+		{
+			get { return Control.SelectionStart; }
+			set
+			{
+				Control.SetSelection(value);
+			}
+		}
+
+		public Range<int> Selection
+		{
+			get { return new Range<int>(Control.SelectionStart, Control.SelectionEnd - 1); }
+			set { Control.SetSelection(value.Start, value.End); }
+		}
 	}
 }

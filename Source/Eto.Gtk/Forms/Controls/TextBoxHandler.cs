@@ -1,6 +1,8 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Runtime.InteropServices;
+using GLib;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -22,6 +24,11 @@ namespace Eto.GtkSharp.Forms.Controls
 				case TextControl.TextChangedEvent:
 					Control.Changed += Connector.HandleTextChanged;
 					break;
+				case TextBox.TextChangingEvent:
+					Control.ClipboardPasted += Connector.HandleClipboardPasted;
+					Control.TextDeleted += Connector.HandleTextDeleted;
+					Widget.TextInput += Connector.HandleTextInput;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -42,6 +49,48 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
 				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+			}
+
+			static Clipboard clipboard;
+
+			static Clipboard Clipboard
+			{
+				get { return clipboard ?? (clipboard = new Clipboard()); }
+			}
+
+			public void HandleTextInput(object sender, TextInputEventArgs e)
+			{
+				var tia = new TextChangingEventArgs(e.Text, Handler.Selection);
+				Handler.Callback.OnTextChanging(Handler.Widget, tia);
+				e.Cancel = tia.Cancel;
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleClipboardPasted(object sender, EventArgs e)
+			{
+				var tia = new TextChangingEventArgs(Clipboard.Text, Handler.Selection);
+				Handler.Callback.OnTextChanging(Handler.Widget, tia);
+				if (tia.Cancel)
+					NativeMethods.StopEmissionByName(Handler.Control, "paste-clipboard");
+			}
+
+			bool deleting;
+
+			[GLib.ConnectBefore]
+			public void HandleTextDeleted(object o, Gtk.TextDeletedArgs args)
+			{
+				if (!deleting)
+				{
+					deleting = true;
+					if (args.StartPos < args.EndPos)
+					{
+						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, Handler.Control.Text.Length - 1)));
+						Handler.Callback.OnTextChanging(Handler.Widget, tia);
+						if (tia.Cancel)
+							NativeMethods.StopEmissionByName(Handler.Control, "delete-text");
+					}
+					deleting = false;
+				}
 			}
 
 			#if GTK2
@@ -82,6 +131,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 		#if GTK2
 		Pango.Layout placeholderLayout;
+
 		public override Eto.Drawing.Font Font
 		{
 			get { return base.Font; }
@@ -149,6 +199,34 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Control.Style.Base(Gtk.StateType.Normal).ToEto(); }
 			set { Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk()); }
+		}
+
+		public int CaretIndex
+		{
+			get
+			{ 
+				int start, end;
+				Control.GetSelectionBounds(out start, out end);
+				return Math.Min(start, end);
+			}
+			set
+			{
+				Control.SelectRegion(value, value);
+			}
+		}
+
+		public Range<int> Selection
+		{
+			get
+			{
+				int start, end;
+				Control.GetSelectionBounds(out start, out end);
+				return new Range<int>(Math.Min(start, end), Math.Max(start, end) - 1);
+			}
+			set
+			{
+				Control.SelectRegion(value.Start, value.End + 1);
+			}
 		}
 	}
 }

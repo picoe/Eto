@@ -12,6 +12,7 @@ using Eto.Forms.ThemedControls;
 using Eto.WinForms.Forms.Cells;
 using Eto.WinForms.Forms.Menu;
 using Eto.WinForms.Forms.ToolBar;
+using Eto.Shared.Forms;
 
 namespace Eto.WinForms
 {
@@ -130,7 +131,9 @@ namespace Eto.WinForms
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
-			
+			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
+			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
+
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
 			

@@ -411,13 +411,16 @@ namespace Eto.Forms
 		List<T> filtered;
 		Func<T, bool> filter;
 		Comparison<T> sort;
-		CollectionHandler changedHandler;
+		EnumerableChangedHandler<T> changedHandler;
+		IList<T> externalList;
+		bool updating;
 
 		/// <summary>
 		/// Gets the underlying list of items that the filtered collection is based off.
+		/// If you change this list, you must call <see cref="Rebuild"/> to update the filtered collection.
 		/// </summary>
 		/// <value>The underlying items.</value>
-		public IList<T> Items { get { return items; } }
+		protected IList<T> Items { get { return items; } }
 
 		/// <summary>
 		/// Gets a value indicating whether this instance has filtering or sorting.
@@ -528,11 +531,69 @@ namespace Eto.Forms
 			var changed = collection as INotifyCollectionChanged;
 			if (changed != null)
 			{
+				items = collection.ToList();
 				changedHandler = new CollectionHandler { List = this };
 				changedHandler.Register(collection);
 			}
 			else
+			{
 				items = new List<T>(collection);
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.FilterCollection{T}"/> class with the specified <paramref name="list"/>
+		/// which will keep in sync with any changes to the filtered collection.
+		/// </summary>
+		/// <param name="list">List to keep in sync with this filtered collection.</param>
+		public FilterCollection(IList<T> list)
+			: this((IEnumerable<T>)list)
+		{
+			this.externalList = list;
+		}
+
+		void InsertItemRange(int index, IEnumerable<T> collection)
+		{
+			var collectionList = collection.ToList();
+			items.InsertRange(index, collectionList);
+			if (externalList != null)
+			{
+				foreach (var item in collectionList)
+				{
+					externalList.Insert(index++, item);
+				}
+			}
+		}
+
+		void ExternalUpdate(Action action)
+		{
+			// don't update the list as we're responding to its changes
+			var oldList = externalList;
+			externalList = null;
+			action();
+			externalList = oldList;
+		}
+
+		void Update(Action action)
+		{
+			using (CreateChange())
+			{
+				// don't respond to external list updates, if any
+				updating = true;
+				action();
+				updating = false;
+			}
+		}
+
+		TResult Update<TResult>(Func<TResult> action)
+		{
+			using (CreateChange())
+			{
+				updating = true;
+				var result = action();
+				updating = false;
+				return result;
+			}
 		}
 
 		class CollectionHandler : EnumerableChangedHandler<T>
@@ -541,37 +602,80 @@ namespace Eto.Forms
 
 			protected override void InitializeCollection()
 			{
-				List.items = Collection != null ? new List<T>(Collection) : new List<T>();
 			}
 
 			public override void AddRange(IEnumerable<T> items)
 			{
-				List.AddRange(items);
+				if (List.updating)
+					return;
+				using (List.CreateChange())
+				{
+					List.items.AddRange(items);
+					List.Rebuild();
+					List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				}
 			}
 
 			public override void InsertRange(int index, IEnumerable<T> items)
 			{
-				List.InsertRange(index, items);
+				if (List.updating)
+					return;
+				using (List.CreateChange())
+				{
+					List.items.InsertRange(index, items);
+					List.Rebuild();
+					List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				}
 			}
 
 			public override void AddItem(T item)
 			{
-				List.Add(item);
+				if (List.updating)
+					return;
+				using (List.CreateChange())
+				{
+					List.items.Add(item);
+
+					List.Rebuild();
+					var filtered = List.filtered;
+					var index = (filtered != null ? filtered.IndexOf(item) : List.items.Count) - 1;
+					if (index >= 0)
+						List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+				}
 			}
 
 			public override void InsertItem(int index, T item)
 			{
-				List.Insert(index, item);
+				if (List.updating)
+					return;
+				if (index == List.items.Count)
+				{
+					AddItem(item);
+					return;
+				}
+				var filtered = List.filtered;
+				if (filtered != null)
+					index = filtered.IndexOf(List.items[index]);
+				if (index >= 0)
+					List.ExternalUpdate(() => List.Insert(index, item));
 			}
 
 			public override void RemoveItem(int index)
 			{
-				List.RemoveAt(index);
+				if (List.updating)
+					return;
+				var filtered = List.filtered;
+				if (filtered != null)
+					index = filtered.IndexOf(List.items[index]);
+				if (index >= 0)
+					List.ExternalUpdate(() => List.RemoveAt(index));
 			}
 
 			public override void RemoveAllItems()
 			{
-				List.Clear();
+				if (List.updating)
+					return;
+				List.ExternalUpdate(List.Clear);
 			}
 		}
 
@@ -597,11 +701,19 @@ namespace Eto.Forms
 				InsertRange(Count, items);
 			else
 			{
-				using (CreateChange())
+				Update(() =>
 				{
-					this.items.AddRange(items);
+					var itemList = items.ToList();
+					this.items.AddRange(itemList);
+					if (externalList != null)
+					{
+						foreach (var item in itemList)
+						{
+							externalList.Add(item);
+						}
+					}
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-				}
+				});
 			}
 		}
 
@@ -616,11 +728,11 @@ namespace Eto.Forms
 		/// <param name="items">Items to add to the collection.</param>
 		public void InsertRange(int index, IEnumerable<T> items)
 		{
-			using (CreateChange())
+			Update(() =>
 			{
 				if (filtered != null)
 				{
-					var enumerable = items as IList<T> ?? items.ToArray();
+					var enumerable = items as IList<T> ?? items.ToList();
 
 					if (sort == null || enumerable.Count == 1)
 					{
@@ -641,16 +753,16 @@ namespace Eto.Forms
 						{
 							var beforeItem = filtered[index - 1];
 							var itemsIndex = this.items.IndexOf(beforeItem);
-							this.items.InsertRange(itemsIndex, items);
+							InsertItemRange(itemsIndex, items);
 						}
 						else
 						{
-							this.items.InsertRange(0, items);
+							InsertItemRange(0, items);
 						}
 
 						if (sort != null)
 							index = filtered.IndexOf((T)enumerable[0]);
-						this.items.InsertRange(index, items);
+						InsertItemRange(index, items);
 						Rebuild();
 						var insertIndex = filtered.IndexOf(firstItem);
 						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items, insertIndex));
@@ -659,17 +771,17 @@ namespace Eto.Forms
 					{
 						if (sort != null)
 							index = filtered.IndexOf((T)enumerable[0]);
-						this.items.InsertRange(index, items);
+						InsertItemRange(index, items);
 						Rebuild();
 						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 					}
 				}
 				else
 				{
-					this.items.InsertRange(index, items);
+					InsertItemRange(index, items);
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 				}
-			}
+			});
 		}
 
 		#region IList<T> implementation
@@ -691,7 +803,7 @@ namespace Eto.Forms
 		/// <param name="item">Item to insert.</param>
 		public virtual void Insert(int index, T item)
 		{
-			using (CreateChange())
+			Update(() =>
 			{
 				if (filtered != null)
 				{
@@ -702,12 +814,16 @@ namespace Eto.Forms
 						var beforeItem = filtered[index - 1];
 						var itemsIndex = items.IndexOf(beforeItem);
 						items.Insert(itemsIndex, item);
+						if (externalList != null)
+							externalList.Insert(itemsIndex, item);
 						if (directInsert)
 							filtered.Insert(index, item);
 					}
 					else
 					{
 						items.Insert(0, item);
+						if (externalList != null)
+							externalList.Insert(0, item);
 						if (directInsert)
 							filtered.Insert(0, item);
 					}
@@ -723,9 +839,11 @@ namespace Eto.Forms
 				else
 				{
 					items.Insert(index, item);
+					if (externalList != null)
+						externalList.Insert(index, item);
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 				}
-			}
+			});
 		}
 
 		/// <summary>
@@ -734,22 +852,26 @@ namespace Eto.Forms
 		/// <param name="index">Index of the item to remove.</param>
 		public virtual void RemoveAt(int index)
 		{
-			using (CreateChange())
+			Update(() =>
 			{
 				if (filtered != null)
 				{
 					var item = filtered[index];
 					filtered.RemoveAt(index);
 					items.Remove(item);
+					if (externalList != null)
+						externalList.Remove(item);
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
 				}
 				else
 				{
 					var item = items[index];
 					items.RemoveAt(index);
+					if (externalList != null)
+						externalList.RemoveAt(index);
 					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
 				}
-			}
+			});
 		}
 
 		/// <summary>
@@ -761,20 +883,33 @@ namespace Eto.Forms
 			get { return filtered != null ? filtered[index] : items[index]; }
 			set
 			{
-				using (CreateChange())
+				Update(() =>
 				{
+					var oldIndex = index;
 					var oldItem = this[index];
 					if (filtered != null)
 					{
 						var itemsIndex = items.IndexOf(filtered[index]);
 						items[itemsIndex] = value;
+						if (externalList != null)
+							externalList[itemsIndex] = value;
 						Rebuild();
 						index = filtered.IndexOf(value);
 					}
 					else
+					{
 						items[index] = value;
-					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, oldItem, value, index));
-				}
+						if (externalList != null)
+							externalList[index] = value;
+					}
+					if (index == oldIndex)
+						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, oldItem, value, index));
+					else
+					{
+						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem, oldIndex));
+						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, index));
+					}
+				});
 			}
 		}
 
@@ -788,14 +923,16 @@ namespace Eto.Forms
 		/// <param name="item">Item to add.</param>
 		public virtual void Add(T item)
 		{
-			using (CreateChange())
+			Update(() =>
 			{
 				items.Add(item);
+				if (externalList != null)
+					externalList.Add(item);
 
 				Rebuild();
-				var index = (filtered != null ? filtered.Count : items.Count) - 1;
+				var index = (filtered != null ? filtered.IndexOf(item) : items.Count) - 1;
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
-			}
+			});
 		}
 
 		/// <summary>
@@ -803,13 +940,15 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void Clear()
 		{
-			using (CreateChange())
+			Update(() =>
 			{
 				items.Clear();
+				if (externalList != null)
+					externalList.Clear();
 				if (filtered != null)
 					filtered.Clear();
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-			}
+			});
 		}
 
 		/// <summary>
@@ -838,15 +977,20 @@ namespace Eto.Forms
 		/// <param name="item">Item to remove.</param>
 		public virtual bool Remove(T item)
 		{
-			using (CreateChange())
+			return Update(() =>
 			{
-				var index = IndexOf(item);
-				if (filtered != null)
-					filtered.Remove(item);
-				var removed = items.Remove(item);
-				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
-				return removed;
-			}
+				if (items.Remove(item))
+				{
+					var index = IndexOf(item);
+					if (filtered != null)
+						filtered.RemoveAt(index);
+					if (externalList != null)
+						externalList.Remove(item);
+					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+					return true;
+				}
+				return false;
+			});
 		}
 
 		/// <summary>

@@ -257,6 +257,9 @@ namespace Eto.WinForms.Forms
 				case TextControl.TextChangedEvent:
 					Control.TextChanged += Control_TextChanged;
 					break;
+				case Eto.Forms.Control.TextInputEvent:
+					HandleEvent(Eto.Forms.Control.KeyDownEvent);
+					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					Control.SizeChanged += Control_SizeChanged;
 					break;
@@ -560,9 +563,19 @@ namespace Eto.WinForms.Forms
 			keyChar = e.KeyChar;
 			if (!handled)
 			{
-				var kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
-				Callback.OnKeyDown(Widget, kpea);
-				e.Handled = kpea.Handled;
+				if (!char.IsControl(e.KeyChar))
+				{
+					var tia = new TextInputEventArgs(keyChar.ToString());
+					Callback.OnTextInput(Widget, tia);
+					e.Handled = tia.Cancel;
+				}
+
+				if (!e.Handled)
+				{
+					var kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
+					Callback.OnKeyDown(Widget, kpea);
+					e.Handled = kpea.Handled;
+				}
 			}
 			else
 				e.Handled = true;

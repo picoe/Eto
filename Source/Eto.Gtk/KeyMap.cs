@@ -122,7 +122,12 @@ namespace Eto.GtkSharp
 				inversekeymap.Add(val.Value, val.Key);
 			}
 
-			keymap.Add((Gdk.Key)0x1000010, Keys.ContextMenu); // os x
+			if (EtoEnvironment.Platform.IsMac)
+			{
+				// os x
+				keymap.Add(Gdk.Key.KP_Enter, Keys.Insert);
+				keymap.Add((Gdk.Key)0x1000010, Keys.ContextMenu);
+			}
 			keymap.Add(Gdk.Key.a, Keys.A);
 			keymap.Add(Gdk.Key.b, Keys.B);
 			keymap.Add(Gdk.Key.c, Keys.C);

@@ -13,6 +13,7 @@ using Eto.Threading;
 using System.Reflection;
 using Eto.Mac.Forms.Cells;
 using Eto.Mac.Forms.ToolBar;
+using Eto.Shared.Forms;
 
 #if XAMMAC2
 using AppKit;
@@ -167,6 +168,8 @@ namespace Eto.Mac
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
+			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
+			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

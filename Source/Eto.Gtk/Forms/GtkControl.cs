@@ -324,6 +324,9 @@ namespace Eto.GtkSharp.Forms
 					EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
 					EventControl.KeyPressEvent += Connector.HandleKeyPressEvent;
 					break;
+				case Eto.Forms.Control.TextInputEvent:
+					HandleEvent(Eto.Forms.Control.KeyDownEvent);
+					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.KeyReleaseMask);
 					EventControl.KeyReleaseEvent += Connector.HandleKeyReleaseEvent;
@@ -490,30 +493,75 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
+			Gtk.IMContext context;
+			bool commitHandled;
+
+			Gtk.IMContext Context
+			{
+				get
+				{
+					if (context != null)
+						return context; 
+					context = new Gtk.IMContextSimple();
+
+					context.Commit += (o, args) => 
+					{
+						var handler = Handler;
+						if (handler == null || string.IsNullOrEmpty(args.Str))
+							return;
+
+						var tia = new TextInputEventArgs(args.Str);
+						handler.Callback.OnTextInput(handler.Widget, tia);
+						commitHandled = tia.Cancel;
+						context.Reset();
+					};
+					return context;
+				}
+			}
+
 			[ConnectBefore]
 			public void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
 				var e = args.Event.ToEto();
 				if (e != null)
 				{
-					Handler.Callback.OnKeyDown(Handler.Widget, e);
+					handler.Callback.OnKeyDown(Handler.Widget, e);
 					args.RetVal = e.Handled;
+				}
+
+				if (e == null || !e.Handled)
+				{
+					commitHandled = false;
+					if (Context.FilterKeypress(args.Event))
+					{
+						args.RetVal = commitHandled;
+					}
 				}
 			}
 
 			public void HandleKeyReleaseEvent(object o, Gtk.KeyReleaseEventArgs args)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return;
 				var e = args.Event.ToEto();
 				if (e != null)
 				{
-					Handler.Callback.OnKeyUp(Handler.Widget, e);
+					handler.Callback.OnKeyUp(handler.Widget, e);
 					args.RetVal = e.Handled;
 				}
 			}
 
 			public void FocusInEvent(object o, Gtk.FocusInEventArgs args)
 			{
-				Handler.Callback.OnGotFocus(Handler.Widget, EventArgs.Empty);
+				var handler = Handler;
+				if (handler == null)
+					return;
+				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
 			}
 
 			public void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)

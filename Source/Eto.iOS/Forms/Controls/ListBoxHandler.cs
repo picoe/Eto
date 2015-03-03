@@ -40,8 +40,8 @@ namespace Eto.iOS.Forms.Controls
 					cell = new UITableViewCell(UITableViewCellStyle.Default, kCellIdentifier);
 				}
 				var item = Handler.collection.ElementAt(indexPath.Row);
-				cell.TextLabel.Text = Handler.Widget.TextBinding.GetValue(item);
-				var imageBinding = Handler.Widget.ImageBinding;
+				cell.TextLabel.Text = Handler.Widget.ItemTextBinding.GetValue(item);
+				var imageBinding = Handler.Widget.ItemImageBinding;
 				if (imageBinding != null)
 					cell.ImageView.Image = imageBinding.GetValue(item).ToUI();
 				else

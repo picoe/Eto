@@ -33,8 +33,8 @@ namespace Eto.WinRT.Forms.Controls
 
 		bool labelEdit;
 		// use two templates to refresh individual items by changing its template (hack? yes, fast? yes)
-		mwc.Data.HierarchicalDataTemplate template1;
-		mwc.Data.HierarchicalDataTemplate template2;
+		//mwc.Data.HierarchicalDataTemplate template1;
+		//mwc.Data.HierarchicalDataTemplate template2;
 
 		public class EtoTreeViewItem : mwc.TreeViewItem, INotifyPropertyChanged
 		{
@@ -101,9 +101,9 @@ namespace Eto.WinRT.Forms.Controls
 					PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
 
-			bool cancelEvents;
 
 #if TODO_XAML
+			bool cancelEvents;
 			protected override void OnExpanded(sw.RoutedEventArgs e)
 			{
 				if (cancelEvents) return;

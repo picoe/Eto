@@ -308,6 +308,10 @@
     <Compile Include="Forms\WindowsControl.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\KeyboardHandler.cs" />
+    <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
+      <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
