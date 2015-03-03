@@ -311,6 +311,11 @@
     <Compile Include="Forms\Layout\StackLayout.cs" />
     <Compile Include="Forms\Keyboard.cs" />
     <Compile Include="Forms\Controls\TextChangingEventArgs.cs" />
+    <Compile Include="Forms\Controls\MaskedTextBox.cs" />
+    <Compile Include="Forms\MaskedTextProvider\IMaskedTextProvider.cs" />
+    <Compile Include="Forms\MaskedTextProvider\FixedMaskedTextProvider.cs" />
+    <Compile Include="Forms\MaskedTextProvider\NumericMaskedTextProvider.cs" />
+    <Compile Include="Forms\MaskedTextProvider\VariableMaskedTextProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

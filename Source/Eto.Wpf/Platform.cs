@@ -13,6 +13,7 @@ using Eto.Wpf.Forms;
 using Eto.IO;
 using Eto.Wpf.IO;
 using Eto.Forms.ThemedControls;
+using Eto.Shared.Forms;
 
 namespace Eto.Wpf
 {
@@ -136,6 +137,7 @@ namespace Eto.Wpf
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
+			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
 			
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
