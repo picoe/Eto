@@ -1,7 +1,6 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
-using SD = System.Drawing;
 using Eto.Mac.Forms.Controls;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Printing;
@@ -476,7 +475,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void Invalidate(Rectangle rect)
 		{
-			var region = rect.ToSDRectangleF().ToNS();
+			var region = rect.ToNS();
 			region.Y = EventControl.Frame.Height - region.Y - region.Height;
 			EventControl.SetNeedsDisplayInRect(region);
 		}

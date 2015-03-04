@@ -48,38 +48,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ToolItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use ToolItem(Command) instead")]
-		protected ToolItem(Command command, Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-			ID = command.ID;
-			Text = command.ToolBarText;
-			ToolTip = command.ToolTip;
-			Image = command.Image;
-			Click += (sender, e) => command.Execute();
-			Enabled = command.Enabled;
-			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
-			Order = -1;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ToolItem"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ToolItem(Generator g, Type type)
-			: base(g, type)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the order of the tool item when adding to the <see cref="ToolItemCollection"/>.
 		/// </summary>
 		/// <value>The order when adding the item.</value>

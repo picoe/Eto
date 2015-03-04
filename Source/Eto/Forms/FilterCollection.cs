@@ -7,32 +7,6 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
-	#region Obsolete
-
-	/// <summary>
-	/// Used as a hook to obsolete functionality in <see cref="GridView.Filter"/> and <see cref="GridView.SortComparer"/>.
-	/// Remove when obsolete code is removed.
-	/// </summary>
-	interface IFilterableSource<in T>
-	{
-		Func<T, bool> Filter { get; }
-
-		Comparison<T> Sort { get; }
-	}
-
-	/// <summary>
-	/// Used as a hook to obsolete functionality in <see cref="GridView.Filter"/> and <see cref="GridView.SortComparer"/>
-	/// Remove when obsolete code is removed.
-	/// </summary>
-	interface IFilterable<out T>
-	{
-		Func<T, bool> Filter { set; }
-
-		Comparison<T> Sort { set; }
-	}
-
-	#endregion
-
 	/// <summary>
 	/// Interface for a control that can preserve selected items
 	/// </summary>
@@ -405,7 +379,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged, IFilterableSource<T>, IFilterable<T>
+	public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged
 	{
 		List<T> items;
 		List<T> filtered;

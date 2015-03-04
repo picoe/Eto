@@ -195,43 +195,6 @@ namespace Eto.Forms
 			return mb.ShowDialog(parent);
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Obsolete.
-		/// </summary>
-		[Obsolete("Use variation without generator instead")]
-		public static DialogResult Show(Generator generator, Control parent, string text, string caption = null, MessageBoxType type = MessageBoxType.Information)
-		{
-			return Show(generator, parent, text, caption, MessageBoxButtons.OK, type);
-		}
-
-		/// <summary>
-		/// Obsolete.
-		/// </summary>
-		[Obsolete("Use variation without generator instead")]
-		public static DialogResult Show(Generator generator, Control parent, string text, MessageBoxButtons buttons, MessageBoxType type = MessageBoxType.Information, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Default)
-		{
-			return Show(generator, parent, text, null, buttons, type, defaultButton);
-		}
-
-		/// <summary>
-		/// Obsolete.
-		/// </summary>
-		[Obsolete("Use variation without generator instead")]
-		public static DialogResult Show(Generator generator, Control parent, string text, string caption, MessageBoxButtons buttons, MessageBoxType type = MessageBoxType.Information, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Default)
-		{
-			var mb = (generator ?? Generator.Current).Create<IHandler>();
-			mb.Text = text;
-			mb.Caption = caption;
-			mb.Type = type;
-			mb.Buttons = buttons;
-			mb.DefaultButton = defaultButton;
-			return mb.ShowDialog(parent);
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Handler interface for the <see cref="MessageBox"/>
 		/// </summary>

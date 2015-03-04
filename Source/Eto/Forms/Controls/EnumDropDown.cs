@@ -86,23 +86,6 @@ namespace Eto.Forms
 		public bool SortAlphabetically { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the EnumDropDown
-		/// </summary>
-		public EnumDropDown()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the EnumDropDown with the specified generator
-		/// </summary>
-		/// <param name="generator">Generator generator</param>
-		[Obsolete("Use default constructor instead")]
-		public EnumDropDown(Generator generator)
-			: base(generator)
-		{
-		}
-
-		/// <summary>
 		/// Creates the default data store for the list.
 		/// </summary>
 		/// <remarks>This is used to create a data store if one is not specified by the user.

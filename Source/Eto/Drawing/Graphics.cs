@@ -45,33 +45,6 @@ namespace Eto.Drawing
 			Initialize();
 		}
 
-#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the Graphics with the specified handler type.
-		/// Allows derived types to change the handler.
-		/// </summary>
-		/// <param name="generator">Generator to create this graphics context for</param>
-		/// <param name="handlerType"></param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Graphics(Generator generator, Type handlerType)
-			: base(generator, handlerType)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Graphics class with the specified platform <paramref name="handler"/>
-		/// </summary>
-		/// <param name="generator">Generator for this instance</param>
-		/// <param name="handler">Platform handler to use for this instance</param>
-		[Obsolete("Use variation without generator instead")]
-		public Graphics(Generator generator, IHandler handler)
-			: base(generator, handler)
-		{
-		}
-
-#pragma warning restore 612,618
-
 		/// <summary>
 		/// Draws a 1 pixel wide line with the specified <paramref name="color"/>
 		/// </summary>

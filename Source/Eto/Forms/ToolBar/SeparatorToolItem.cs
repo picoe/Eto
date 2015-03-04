@@ -37,22 +37,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.SeparatorToolItem"/> class.
-		/// </summary>
-		public SeparatorToolItem()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.SeparatorToolItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public SeparatorToolItem (Generator generator) : base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the type of the separator.
 		/// </summary>
 		/// <value>The separator type.</value>

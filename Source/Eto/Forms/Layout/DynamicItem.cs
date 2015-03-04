@@ -30,29 +30,6 @@ namespace Eto.Forms
 		public bool? YScale { get; set; }
 
 		/// <summary>
-		/// Generates the layout
-		/// </summary>
-		/// <param name="layout">Layout.</param>
-		[Obsolete("Use Create() instead")]
-		public Control Generate(DynamicLayout layout)
-		{
-			return Create(layout);
-		}
-
-		/// <summary>
-		/// Generate the specified layout, parent, x and y.
-		/// </summary>
-		/// <param name="layout">Layout.</param>
-		/// <param name="parent">Parent.</param>
-		/// <param name="x">The x coordinate.</param>
-		/// <param name="y">The y coordinate.</param>
-		[Obsolete("Use Create() instead")]
-		public void Generate(DynamicLayout layout, TableLayout parent, int x, int y)
-		{
-			Create(layout, parent, x, y);
-		}
-
-		/// <summary>
 		/// Creates the content for this item
 		/// </summary>
 		/// <param name="layout">Top level layout the item is being created for</param>

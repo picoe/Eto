@@ -14,23 +14,6 @@ namespace Eto.Forms
 	public class Spinner : Control
 	{
 		/// <summary>
-		/// Initializes a new instance of the Spinner class
-		/// </summary>
-		public Spinner()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Spinner class with the specified generator
-		/// </summary>
-		/// <param name="generator">Generator to create the spinner from</param>
-		[Obsolete("Use default constructor instead")]
-		public Spinner(Generator generator)
-			: base(generator, typeof(IHandler), true)
-		{
-		}
-
-		/// <summary>
 		/// Handler interface for the <see cref="Spinner"/> control
 		/// </summary>
 		/// <copyright>(c) 2013 by Curtis Wensley</copyright>

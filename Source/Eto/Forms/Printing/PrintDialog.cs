@@ -12,23 +12,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PrintDialog"/> class.
-		/// </summary>
-		public PrintDialog()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PrintDialog"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public PrintDialog(Generator generator)
-			: base (generator, typeof (IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the print settings the print dialog is modifying.
 		/// </summary>
 		/// <value>The print settings.</value>

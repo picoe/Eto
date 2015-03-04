@@ -8,18 +8,6 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Data store interface for a <see cref="ListControl"/>
-	/// </summary>
-	/// <remarks>
-	/// Note that you should use an <see cref="System.Collections.ObjectModel.ObservableCollection{T}"/> if you are using a
-	/// POCO, or the <see cref="ListItemCollection"/> if you want to add items without custom objects.
-	/// </remarks>
-	[Obsolete("Use IList<IListItem>/IList instead if you want a virtual collection, or ObservableCollection<IListItem> to have change tracking")]
-	public interface IListStore : IDataStore<IListItem>
-	{
-	}
-
-	/// <summary>
 	/// A collection of <see cref="ListItem"/> objects for use with <see cref="ListControl"/> objects
 	/// </summary>
 	/// <remarks>
@@ -135,7 +123,7 @@ namespace Eto.Forms
 		/// Gets or sets the binding for the text value of each item.
 		/// </summary>
 		/// <value>The text binding.</value>
-		[Obsolete("Use ItemTextBinding instead")]
+		[Obsolete("Since 2.1: Use ItemTextBinding instead")]
 		public IIndirectBinding<string> TextBinding
 		{
 			get { return ItemTextBinding; }
@@ -146,7 +134,7 @@ namespace Eto.Forms
 		/// Gets or sets the binding for the key value of each item.
 		/// </summary>
 		/// <value>The key binding.</value>
-		[Obsolete("Use ItemKeyBinding instead")]
+		[Obsolete("Since 2.1: Use ItemKeyBinding instead")]
 		public IIndirectBinding<string> KeyBinding
 		{
 			get { return ItemKeyBinding; }
@@ -219,20 +207,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.ListControl"/> class.
 		/// </summary>
 		protected ListControl()
-		{
-			ItemTextBinding = new ListItemTextBinding();
-			ItemKeyBinding = new ListItemKeyBinding();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ListControl"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ListControl(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
 		{
 			ItemTextBinding = new ListItemTextBinding();
 			ItemKeyBinding = new ListItemKeyBinding();
@@ -335,16 +309,6 @@ namespace Eto.Forms
 			EnsureDataStore();
 		}
 
-		/// <summary>
-		/// Creates the default items.
-		/// </summary>
-		/// <returns>The default items.</returns>
-		[Obsolete("Use CreateDefaultDataStore")]
-		protected virtual ListItemCollection CreateDefaultItems()
-		{
-			return new ListItemCollection();
-		}
-
 		internal void EnsureDataStore()
 		{
 			if (DataStore == null)
@@ -361,9 +325,7 @@ namespace Eto.Forms
 		/// <returns>The default data store.</returns>
 		protected virtual IEnumerable<object> CreateDefaultDataStore()
 		{
-			#pragma warning disable 612,618
-			return CreateDefaultItems();
-			#pragma warning restore 612,618
+			return new ListItemCollection();
 		}
 
 		/// <summary>

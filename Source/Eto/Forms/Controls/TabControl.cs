@@ -61,39 +61,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TabControl"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public TabControl(Generator generator) : this (generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TabControl"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected TabControl(Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TabControl"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="handler">Handler.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use TabControl(ITabControl) instead")]
-		protected TabControl(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the index of the selected tab.
 		/// </summary>
 		/// <value>The index of the selected tab.</value>
@@ -111,16 +78,6 @@ namespace Eto.Forms
 		{
 			get { return SelectedIndex < 0 ? null : Pages[SelectedIndex]; }
 			set { SelectedIndex = pages.IndexOf(value); }
-		}
-
-		/// <summary>
-		/// Gets the collection of tab pages.
-		/// </summary>
-		/// <value>The tab pages.</value>
-		[Obsolete("Use Pages instead")]
-		public Collection<TabPage> TabPages
-		{
-			get { return pages ?? (pages = new TabPageCollection(this)); }
 		}
 
 		/// <summary>

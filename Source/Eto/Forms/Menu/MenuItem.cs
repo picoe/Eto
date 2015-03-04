@@ -128,41 +128,6 @@ namespace Eto.Forms
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MenuItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use MenuItem(Command) instead")]
-		protected MenuItem(Command command, Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-			ID = command.ID;
-			Text = command.MenuText;
-			ToolTip = command.ToolTip;
-			Shortcut = command.Shortcut;
-			Click += (sender, e) => command.Execute();
-			Validate += (sender, e) => Enabled = command.Enabled;
-			Enabled = command.Enabled;
-			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
-			if (initialize)
-				Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MenuItem"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected MenuItem(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
-		{
-		}
-
 		static MenuItem()
 		{
 			EventLookup.Register<MenuItem>(c => c.OnValidate(null), MenuItem.ValidateEvent);
@@ -279,7 +244,7 @@ namespace Eto.Forms
 			/// </summary>
 			/// <remarks>
 			/// This is used primarily when creating menu items for system commands that the platform returns
-			/// via the <see cref="Application.GetSystemCommands"/> method.
+			/// via <see cref="MenuBar.SystemCommands"/>.
 			/// </remarks>
 			/// <param name="command">Command the menu item is created with.</param>
 			void CreateFromCommand(Command command);

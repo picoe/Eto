@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Drawing;
 #if XAMMAC2
 using AppKit;
 using Foundation;

@@ -338,30 +338,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to instantiate the handler with</param>
-		/// <param name="type">Type of handler to create</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Grid(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, false)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to instantiate the handler with</param>
-		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use Grid(IGrid) instead")]
-		protected Grid(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, false)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating that the header should be shown
 		/// </summary>
 		/// <value><c>true</c> to show header; otherwise, <c>false</c>.</value>

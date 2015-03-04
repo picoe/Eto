@@ -75,10 +75,7 @@ namespace Eto.Wpf.Forms.Controls
 		where TWidget : TextArea
 		where TCallback : TextArea.ICallback
 	{
-#pragma warning disable 612,618
-		static Size defaultSize = TextArea.DefaultSize;
-#pragma warning restore 612,618
-		protected override Size DefaultSize { get { return defaultSize; } }
+		protected override Size DefaultSize { get { return new Size(100, 60); } }
 
 		protected override bool PreventUserResize { get { return true; } }
 

@@ -68,32 +68,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioButton"/> class.
-		/// </summary>
-		/// <param name="controller">Controller.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use RadioButton(RadioButton) instead")]
-		public RadioButton(RadioButton controller = null, Generator generator = null)
-			: this(generator, typeof(IHandler), controller)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioButton"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="controller">Controller.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected RadioButton(Generator generator, Type type, RadioButton controller, bool initialize = true)
-			: base(generator, type, false)
-		{
-			Handler.Create(controller);
-			Initialize();
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.RadioButton"/> is checked.
 		/// </summary>
 		/// <value><c>true</c> if checked; otherwise, <c>false</c>.</value>

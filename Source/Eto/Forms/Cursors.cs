@@ -115,38 +115,5 @@ namespace Eto.Forms
 		{
 			get { return GetCursor(CursorType.HorizontalSplit); }
 		}
-
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Gets a cached cursor with the specified <paramref name="type"/>
-		/// </summary>
-		/// <param name="type">Type of cursor to get</param>
-		/// <param name="generator">Generator to get the cached pen for</param>
-		/// <returns>A cached instance of the specified cursor</returns>
-		[Obsolete("Use variation without generator instead")]
-		public static Cursor Cached (CursorType type, Generator generator)
-		{
-			return GetCursor(type);
-		}
-
-		/// <summary>
-		/// Clears the cursor cache
-		/// </summary>
-		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached(CursorType,Generator)"/> method to cache pens and want to clear it
-		/// to conserve memory or resources.
-		/// </remarks>
-		/// <param name="generator">Generator to clear the pen cache for</param>
-		[Obsolete("Use variation without generator instead")]
-		public static void ClearCache (Generator generator)
-		{
-			var cache = generator.Cache<CursorType, Cursor> (cursorCache);
-			lock (cache) {
-				cache.Clear ();
-			}
-		}
-
-		#pragma warning restore 612,618
 	}
 }

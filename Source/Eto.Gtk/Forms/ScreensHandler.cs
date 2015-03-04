@@ -21,7 +21,7 @@ namespace Eto.GtkSharp.Forms
 				for (int i = 0; i < display.NScreens; i++) {
 					var screen = display.GetScreen (i);
 					for (int monitor = 0; monitor < screen.NMonitors; monitor++) {
-						yield return new Screen (Platform, new ScreenHandler (screen, monitor));
+						yield return new Screen (new ScreenHandler (screen, monitor));
 					}
 				}
 			}
@@ -31,7 +31,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				return new Screen(Platform, new ScreenHandler(Gdk.Display.Default.DefaultScreen, 0));
+				return new Screen(new ScreenHandler(Gdk.Display.Default.DefaultScreen, 0));
 			}
 		}
 	}

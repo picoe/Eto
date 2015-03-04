@@ -490,41 +490,6 @@ namespace Eto.Drawing
 
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FF000000</summary>
 		public static Pen Black { get { return GetPen(Colors.Black); } }
-
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Gets a cached pen with the specified <paramref name="color"/> and <paramref name="thickness"/>
-		/// </summary>
-		/// <param name="color">Color of the cached pen to get</param>
-		/// <param name="thickness">Thickness of the cached pen to get</param>
-		/// <param name="dashStyle">Dash Style for the pen</param>
-		/// <param name="generator">Generator to get the cached pen for</param>
-		[Obsolete("Use variation without generator instead")]
-		public static Pen Cached(Color color, float thickness, DashStyle dashStyle, Generator generator)
-		{
-			return GetPen(color, thickness, dashStyle);
-		}
-
-		/// <summary>
-		/// Clears the pen cache
-		/// </summary>
-		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached(Color,float,DashStyle,Generator)"/> method to cache pens and want to clear it
-		/// to conserve memory or resources.
-		/// </remarks>
-		/// <param name="generator">Generator to clear the pen cache for</param>
-		[Obsolete("Use variation without generator instead")]
-		public static void ClearCache(Generator generator)
-		{
-			var cache = generator.Cache<PenKey, Pen>(cacheKey);
-			lock (cache)
-			{
-				cache.Clear();
-			}
-		}
-
-		#pragma warning restore 612,618
 	}
 }
 

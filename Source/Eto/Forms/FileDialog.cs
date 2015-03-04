@@ -5,34 +5,12 @@ using System.Collections.ObjectModel;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Interface for a filter for a <see cref="FileDialog"/>
-	/// </summary>
-	[Obsolete("Use FileDialogFilter directly")]
-	public interface IFileDialogFilter
-	{
-		/// <summary>
-		/// Gets the name of the filter
-		/// </summary>
-		string Name { get; }
-
-		/// <summary>
-		/// Gets the extensions to filter the file list
-		/// </summary>
-		/// <remarks>
-		/// Each extension should include the period.  e.g. ".jpeg", ".png", etc.
-		/// </remarks>
-		string[] Extensions { get; }
-	}
-
-	/// <summary>
 	/// Filter definition for a <see cref="FileDialog"/>
 	/// </summary>
 	/// <remarks>
 	/// Each filter defines an option for the user to limit the selection of files in the dialog.
 	/// </remarks>
-#pragma warning disable 618
-	public class FileDialogFilter : IFileDialogFilter
-#pragma warning restore 618
+	public class FileDialogFilter
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.FileDialogFilter"/> class.
@@ -114,24 +92,6 @@ namespace Eto.Forms
 		FilterCollection filters;
 
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.FileDialog"/> class.
-		/// </summary>
-		protected FileDialog()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.FileDialog"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected FileDialog(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
-		{
-		}
 
 		/// <summary>
 		/// Gets or sets the full name and path of the file that is selected

@@ -115,24 +115,6 @@ namespace Eto.Threading
 			get { return CurrentThread.IsMain; }
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Threading.Thread"/> class.
-		/// </summary>
-		/// <param name="action">Action.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public Thread(Action action, Generator generator = null)
-			: base(generator, typeof(IHandler), false)
-		{
-			this.action = action;
-			Handler.Create();
-			Initialize();
-		}
-
-		#pragma warning restore 612,618
-
 		static readonly object callback = new Callback();
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations

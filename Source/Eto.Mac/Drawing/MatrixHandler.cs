@@ -1,6 +1,5 @@
 using System;
 using Eto.Drawing;
-using SD = System.Drawing;
 
 #if XAMMAC2
 using AppKit;

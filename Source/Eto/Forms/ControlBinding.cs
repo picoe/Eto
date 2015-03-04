@@ -151,36 +151,5 @@ namespace Eto.Forms
 			}
 			return BindDataContext(new PropertyBinding<TValue>(memberInfo.Member.Name), mode);
 		}
-
-		#region Obsolete
-
-		/// <summary>
-		/// Obsolete. Use BindDataContext(...) instead.
-		/// </summary>
-		[Obsolete("Use BindDataContext() instead")]
-		public DualBinding<TValue> Bind(IndirectBinding<TValue> dataContextBinding, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
-		{
-			return BindDataContext(dataContextBinding, mode, defaultControlValue, defaultContextValue);
-		}
-
-		/// <summary>
-		/// Obsolete. Use BindDataContext(...) instead.
-		/// </summary>
-		[Obsolete("Use BindDataContext<T> instead")]
-		public DualBinding<TValue> Bind<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
-		{
-			return BindDataContext(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
-		}
-
-		/// <summary>
-		/// Obsolete. Use BindDataContext(...) instead.
-		/// </summary>
-		[Obsolete("Use BindDataContext<T> instead")]
-		public DualBinding<TValue> Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
-		{
-			return Bind(dataContextBinding: binding, mode: mode);
-		}
-
-		#endregion
 	}
 }

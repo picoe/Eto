@@ -37,16 +37,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ButtonMenuItem(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class with the specified command.
 		/// </summary>
 		/// <param name="command">Command to initialize the menu item with.</param>
@@ -55,30 +45,6 @@ namespace Eto.Forms
 		{
 			Image = command.Image;
 			Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public ButtonMenuItem(Command command, Generator generator = null)
-			: base(command, generator, typeof(IHandler))
-		{
-			Image = command.Image;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ButtonMenuItem(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
 		}
 
 		/// <summary>

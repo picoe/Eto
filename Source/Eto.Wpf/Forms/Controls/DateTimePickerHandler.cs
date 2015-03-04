@@ -24,9 +24,7 @@ namespace Eto.Wpf.Forms.Controls
 		public DateTimePickerHandler()
 		{
 			Control = new swc.Border { Focusable = false };
-			#pragma warning disable 612,618
-			Mode = DateTimePicker.DefaultMode;
-			#pragma warning restore 612,618
+			Mode = DateTimePickerMode.Date;
 		}
 
 		void CreateDateTimeUpDown()

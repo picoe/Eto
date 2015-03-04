@@ -69,22 +69,6 @@ namespace Eto.Forms
 		ToolItemCollection items;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ToolBar"/> class.
-		/// </summary>
-		public ToolBar()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ToolBar"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ToolBar(Generator generator) : base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the docking hint for the toolbar.
 		/// </summary>
 		/// <remarks>

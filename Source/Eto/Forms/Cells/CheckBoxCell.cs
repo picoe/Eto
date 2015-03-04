@@ -37,16 +37,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBoxCell"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public CheckBoxCell(Generator generator)
-			: base(generator, typeof(IHandler), true)
-		{
-		}
-
-		/// <summary>
 		/// Handler interface for the <see cref="CheckBoxCell"/>.
 		/// </summary>
 		public new interface IHandler : SingleValueCell<bool?>.IHandler

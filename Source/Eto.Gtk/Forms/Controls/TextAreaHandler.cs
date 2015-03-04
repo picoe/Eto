@@ -23,14 +23,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return scroll; }
 		}
 
-		public override Size DefaultSize { get { return TextArea.DefaultSize; } }
+		public override Size DefaultSize { get { return new Size(100, 60); } }
 
 		public TextAreaHandler()
 		{
 			scroll = new Gtk.ScrolledWindow();
 			scroll.ShadowType = Gtk.ShadowType.In;
 			Control = new TControl();
-			Size = TextArea.DefaultSize;
+			Size = new Size(100, 60);
 			scroll.Add(Control);
 			Wrap = true;
 		}

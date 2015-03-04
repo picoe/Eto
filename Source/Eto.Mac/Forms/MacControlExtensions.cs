@@ -1,7 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
 using System;
-using sd = System.Drawing;
 using System.Text.RegularExpressions;
 
 

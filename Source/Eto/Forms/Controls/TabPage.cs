@@ -17,7 +17,6 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="control">Control.</param>
 		/// <param name="padding">Padding.</param>
-		[Obsolete("Use initializer pattern instead")]
 		public TabPage(Control control, Padding? padding = null)
 		{
 			if (padding != null)
@@ -29,28 +28,6 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.TabPage"/> class.
 		/// </summary>
 		public TabPage()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TabPage"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public TabPage(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TabPage"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected TabPage(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
 		{
 		}
 
@@ -93,13 +70,6 @@ namespace Eto.Forms
 			get { return Handler.Image; }
 			set { Handler.Image = value; }
 		}
-
-		/// <summary>
-		/// Gets or sets the key of the tab.
-		/// </summary>
-		/// <value>The key.</value>
-		[Obsolete]
-		public virtual string Key { get; set; }
 
 		/// <summary>
 		/// Handler interface for the <see cref="TabPage"/>

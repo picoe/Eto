@@ -26,35 +26,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Slider"/> class.
-		/// </summary>
-		public Slider()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Slider"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Slider(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Slider"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Slider(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the hint for numeric value between each visual tick.
 		/// </summary>
 		/// <remarks>
@@ -212,7 +183,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Enumeration of the orientations available for the <see cref="Slider"/> control
 	/// </summary>
-	[Obsolete("Use Orientation instead")]
+	[Obsolete("Since 2.1: Use Orientation instead")]
 	public struct SliderOrientation
 	{
 		readonly Orientation orientation;

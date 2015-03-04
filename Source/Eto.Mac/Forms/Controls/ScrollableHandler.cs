@@ -3,7 +3,6 @@
 //#define USE_FLIPPED
 
 using System;
-using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 #if XAMMAC2

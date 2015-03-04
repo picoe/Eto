@@ -20,7 +20,6 @@ namespace Eto.GtkSharp.Forms
 		protected GtkPanel()
 		{
 			alignment = new Gtk.Alignment(0, 0, 1, 1);
-			Padding = Panel.DefaultPadding;
 		}
 
 		protected virtual bool UseMinimumSizeRequested { get { return true; } }

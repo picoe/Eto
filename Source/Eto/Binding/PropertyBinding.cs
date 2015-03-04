@@ -15,36 +15,6 @@ namespace Eto
 	/// This can be used to get/set values from any object.  If you want to bind to a particular object
 	/// directly, use the <see cref="ObjectBinding{T}"/> with this class as its inner binding.
 	/// </remarks>
-	[Obsolete("Use PropertyBinding<object> instead")]
-	public class PropertyBinding : PropertyBinding<object>
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.PropertyBinding"/> class.
-		/// </summary>
-		public PropertyBinding()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the PropertyBinding with the specified property
-		/// </summary>
-		/// <param name="property">Property to use to get/set values for this binding</param>
-		/// <param name="ignoreCase">True to ignore case for the property, false to be case sensitive</param>
-		public PropertyBinding(string property, bool ignoreCase = true)
-			: base(property, ignoreCase)
-		{
-		}
-	}
-
-	/// <summary>
-	/// Indirect binding to get/set values using a property of a specified object
-	/// </summary>
-	/// <remarks>
-	/// This is used when you are binding to a particular property of an object.
-	/// 
-	/// This can be used to get/set values from any object.  If you want to bind to a particular object
-	/// directly, use the <see cref="ObjectBinding{T}"/> with this class as its inner binding.
-	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PropertyBinding<T> : IndirectBinding<T>

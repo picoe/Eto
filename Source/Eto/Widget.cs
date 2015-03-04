@@ -78,13 +78,6 @@ namespace Eto
 		public Platform Platform { get; private set; }
 
 		/// <summary>
-		/// Gets the generator. Obsolete.
-		/// </summary>
-		/// <value>The generator.</value>
-		[Obsolete("Use Platform instead")]
-		public Generator Generator { get { return Platform; } }
-
-		/// <summary>
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
 		public object Handler { get; internal set; }
@@ -217,48 +210,6 @@ namespace Eto
 			Dispose(false);
 		}
 		#endif
-
-		/// <summary>
-		/// Initializes a new instance of the Widget class
-		/// </summary>
-		/// <param name="generator">Generator the widget handler was created with, or null to use <see cref="Eto.Generator.Current"/></param>
-		/// <param name="handler">Handler to assign to this widget for its implementation</param>
-		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
-		[Obsolete("Use Widget(IHandler) instead")]
-		protected Widget(Generator generator, IHandler handler, bool initialize = true)
-		{
-			if (generator == null)
-				generator = Platform.Instance;
-			Handler = handler;
-			Platform = (Platform)generator;
-			if (handler != null)
-			{
-				handler.Widget = this; // tell the handler who we are
-			}
-			if (initialize)
-				Initialize();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Widget class
-		/// </summary>
-		/// <param name="generator">Generator to create the handler with, or null to use <see cref="Eto.Generator.Current"/></param>
-		/// <param name="type">Type of widget handler to create from the generator for this widget</param>
-		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
-		[Obsolete("Use default constructor and HandlerAttribute to specify handler to use")]
-		protected Widget(Generator generator, Type type, bool initialize = true)
-		{
-			var platform = (Platform)generator ?? Platform.Instance;
-			this.Handler = platform.Create(type);
-			this.Platform = (Platform)generator;
-			var widgetHandler = WidgetHandler;
-			if (widgetHandler != null)
-			{
-				widgetHandler.Widget = this;
-			}
-			if (initialize)
-				Initialize();
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the Widget class

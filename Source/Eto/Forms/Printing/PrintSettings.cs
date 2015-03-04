@@ -65,27 +65,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PrintSettings"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public PrintSettings(Generator generator)
-			: base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PrintSettings"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="handler">Handler.</param>
-		[Obsolete("Use PrintSettings(IPrintSettings) instead")]
-		public PrintSettings(Generator generator, IHandler handler)
-			: base(generator, handler)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the number of copies to print.
 		/// </summary>
 		/// <value>The number of copies.</value>

@@ -71,39 +71,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ContextMenu(Generator generator) : this(generator, typeof(ContextMenu.IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ContextMenu(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-			Trim = true;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="items">Items.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public ContextMenu(Generator g, IEnumerable<MenuItem> items) : this(g)
-		{
-			Items.AddRange(items);
-		}
-
-		/// <summary>
 		/// Show the context menu relative to the specified control
 		/// </summary>
 		/// <param name="relativeTo">Control to show the menu relative to</param>

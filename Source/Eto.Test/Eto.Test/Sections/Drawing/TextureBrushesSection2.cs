@@ -96,7 +96,7 @@ namespace Eto.Test.Sections.Drawing
 			var img = image.Clone(new Rectangle(w, w, w, w));
 			var textureBrush = new TextureBrush(img);
 			var solidBrush = new SolidBrush(Colors.Blue);
-			var linearGradientBrush = new LinearGradientBrush(Colors.White, Colors.Black, PointF.Empty, new PointF(0, 100), Platform);
+			var linearGradientBrush = new LinearGradientBrush(Colors.White, Colors.Black, PointF.Empty, new PointF(0, 100));
 			var font = SystemFonts.Default();
 			drawable.BackgroundColor = Colors.Green;
 			drawable.MouseMove += HandleMouseMove;

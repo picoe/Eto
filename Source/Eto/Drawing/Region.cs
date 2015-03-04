@@ -15,23 +15,6 @@ namespace Eto.Drawing
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the Region class
-		/// </summary>
-		public Region()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Region class using the specified generator to instantiate the handler
-		/// </summary>
-		/// <param name="generator">Generator to use for instantiating the handler</param>
-		[Obsolete("Use default constructor instead")]
-		public Region (Generator generator)
-			: base (generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Excludes the specified <paramref name="rectangle"/> from the region
 		/// </summary>
 		/// <param name="rectangle">Rectangle to exclude</param>

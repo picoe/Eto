@@ -33,12 +33,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// The default mode for all new date/time pickers.
-		/// </summary>
-		[Obsolete("Set the mode of your picker directly or use styles")]
-		public static DateTimePickerMode DefaultMode = DateTimePickerMode.Date;
-
-		/// <summary>
 		/// Occurs when the <see cref="DateTimePicker.Value"/> property has changed by the user
 		/// </summary>
 		public event EventHandler<EventArgs> ValueChanged;
@@ -51,35 +45,6 @@ namespace Eto.Forms
 		{
 			if (ValueChanged != null)
 				ValueChanged(this, e);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
-		/// </summary>
-		public DateTimePicker()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		[Obsolete("Use default constructor instead")]
-		public DateTimePicker(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DateTimePicker"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler interface to create, must implement <see cref="IHandler"/></param>
-		/// <param name="initialize">If set to <c>true</c>, initialize after created, otherwise the subclass should call Initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected DateTimePicker(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
 		}
 
 		/// <summary>

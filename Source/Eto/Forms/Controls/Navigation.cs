@@ -112,16 +112,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Navigation"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Navigation(Generator generator)
-			: base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Navigation"/> class with the initial <paramref name="content"/> and <paramref name="title"/>.
 		/// </summary>
 		/// <param name="content">Content.</param>

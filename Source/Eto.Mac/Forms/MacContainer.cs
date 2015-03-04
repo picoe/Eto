@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using SD = System.Drawing;
 using System.Linq;
 using Eto.Drawing;
 
