@@ -62,6 +62,8 @@ namespace Eto.GtkSharp.Forms
 		Color? backgroundColor;
 		public static float ScrollAmount = 2f;
 
+		public override IntPtr NativeHandle { get { return Control.Handle; } }
+
 		protected GtkControl()
 		{
 			size = new Size(-1, -1);

@@ -85,6 +85,15 @@ namespace Eto.Wpf.Forms
 		public bool XScale { get; private set; }
 		public bool YScale { get; private set; }
 
+		public override IntPtr NativeHandle
+		{
+			get
+			{
+				var hwnd = sw.PresentationSource.FromVisual(Control) as sw.Interop.HwndSource;
+				return hwnd != null ? hwnd.Handle : IntPtr.Zero;
+			}
+		}
+
 		protected sw.Size PreferredSize { get { return preferredSize; } set { preferredSize = value; } }
 
 		protected virtual Size DefaultSize { get { return Size.Empty; } }

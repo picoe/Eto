@@ -107,6 +107,8 @@ namespace Eto.Mac.Forms
 		Cursor cursor;
 		SizeF? naturalSize;
 
+		public override IntPtr NativeHandle { get { return Control.Handle; } }
+
 		Control.ICallback IMacViewHandler.Callback { get { return Callback; } }
 
 		public abstract NSView ContainerControl { get; }

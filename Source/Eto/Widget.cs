@@ -90,6 +90,15 @@ namespace Eto
 		public object Handler { get; internal set; }
 
 		/// <summary>
+		/// Gets the native platform-specific handle for integration purposes
+		/// </summary>
+		/// <value>The native handle.</value>
+		public IntPtr NativeHandle
+		{
+			get { return WidgetHandler.NativeHandle; }
+		}
+
+		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
 		/// </summary>
 		/// <remarks>
@@ -129,6 +138,12 @@ namespace Eto
 			/// Gets the widget this handler is implemented for
 			/// </summary>
 			Widget Widget { get; set; }
+
+			/// <summary>
+			/// Gets the native platform-specific handle for integration purposes
+			/// </summary>
+			/// <value>The native handle.</value>
+			IntPtr NativeHandle { get; }
 
 			/// <summary>
 			/// Called after the widget is constructed
