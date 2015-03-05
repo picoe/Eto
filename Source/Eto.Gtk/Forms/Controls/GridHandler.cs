@@ -267,7 +267,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			return Widget.Columns.Select(r => r.Handler as GridColumnHandler).Select(r => r.Control).ToList().IndexOf(item);
 		}
 
-		public int GetRowIndexOfPath(Gtk.TreePath path)
+		public virtual int GetRowIndexOfPath(Gtk.TreePath path)
 		{
 			int rowIndex = 0;
 			if (path.Indices.Length > 0)
