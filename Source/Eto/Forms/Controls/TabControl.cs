@@ -13,7 +13,7 @@ namespace Eto.Forms
 	/// It is advised to utilize different methods (e.g. a listbox or combo box) to switch between many sections
 	/// if there are too many tabs.
 	/// </remarks>
-	[ContentProperty("TabPages")]
+	[ContentProperty("Pages")]
 	[Handler(typeof(TabControl.IHandler))]
 	public class TabControl : Container
 	{
