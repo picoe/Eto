@@ -238,14 +238,77 @@ namespace Eto.GtkSharp.Forms.Controls
 			return model.GetItemAtPath(path);
 		}
 
+		public override int GetRowIndexOfPath(Gtk.TreePath path)
+		{
+			int count = 0;
+			var tempPath = new Gtk.TreePath();
+			count += GetCount(Gtk.TreeIter.Zero, path.Indices[0]);
+			// slow but works for now
+			for (int i = 0; i < path.Indices.Length - 1; i++)
+			{
+				tempPath.AppendIndex(path.Indices[i]);
+				Gtk.TreeIter iter;
+				if (model.GetIter(out iter, tempPath))
+					count += GetCount(iter, path.Indices[i + 1]);
+			}
+			count += path.Indices.Length - 1;
+
+			return count;
+		}
+
 		public override Gtk.TreeIter GetIterAtRow(int row)
 		{
-			throw new NotImplementedException();
+			Gtk.TreeIter iter;
+			model.GetIter(out iter, GetPathAtRow(row));
+			return iter;
 		}
 
 		public override Gtk.TreePath GetPathAtRow(int row)
 		{
-			throw new NotImplementedException();
+			Gtk.TreePath path;
+			Gtk.TreeIter iter;
+
+			bool valid = Tree.Model.GetIterFirst(out iter);
+			while (valid)
+			{
+				// Check
+				path = Tree.Model.GetPath(iter);
+				if (GetRowIndexOfPath(path) == row)
+					return path;
+
+				// Go Down
+				if (Tree.GetRowExpanded(path) && Tree.Model.IterChildren(out iter, iter))
+					continue;
+				// Go Next
+				Gtk.TreeIter temp = iter;
+				if (Tree.Model.IterNext(ref iter))
+					continue;
+				else
+					iter = temp;
+
+				while (true)
+				{
+					// Go Up
+					if (Tree.Model.IterParent(out iter, iter))
+					{
+						// Go Next
+						temp = iter;
+						if (Tree.Model.IterNext(ref iter))
+							break;
+						else
+							iter = temp;
+					}
+					else
+					{
+						valid = false;
+						break;
+					}
+				}
+			}
+
+			// Get and return first if given row does not exist
+			Tree.Model.GetIterFirst(out iter);
+			return Tree.Model.GetPath(iter);
 		}
 
 		protected override void SetSelectedRows(IEnumerable<int> value)
