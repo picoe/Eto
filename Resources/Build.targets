@@ -67,6 +67,18 @@
             Regex="@(VSTemplateReg->'%(Text)')"
             ReplacementText='version=&quot;$(BuildVersion)&quot;' />
 	</Target>
+
+	<Target Name="BuildHelpShfb" DependsOnTargets="Build">
+		<PropertyGroup>
+        	<SHFBVersion>2014.11.22</SHFBVersion>
+			<SHFBPath>$(MSBuildThisFileDirectory)\packages\EWSoftware.SHFB.$(SHFBVersion)\tools</SHFBPath>
+		    <SHFBLib>$([MSBUILD]::Unescape($(SHFBPath)\MSBuild.Community.Tasks.dll))</SHFBLib>
+			<SHFBROOT Condition=" '$(SHFBROOT)' == '' ">$(SHFBPath)</SHFBROOT>
+		</PropertyGroup>
+  		<Exec Command="$(NuGetCommand) install EWSoftware.SHFB -OutputDirectory packages" Condition="! Exists('$(SHFBPath)')" />
+
+    	<MSBuild Projects="$(MSBuildThisFileDirectory)\help\Help.shfbproj" Properties="Configuration=$(Configuration)" />
+	</Target>
 	
 	<Target Name="Build" DependsOnTargets="UpdateAssemblyInfo">
     	<!-- using exec since xbuild messes up properties when using msbuild task -->
