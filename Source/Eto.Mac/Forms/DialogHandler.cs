@@ -38,7 +38,7 @@ namespace Eto.Mac.Forms
 	public class DialogHandler : MacWindow<MyWindow, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button button;
-		MacModal.ModalHelper session;
+		ModalEventArgs session;
 
 		protected override bool DisposeControl { get { return false; } }
 
@@ -113,11 +113,11 @@ namespace Eto.Mac.Forms
 
 			Widget.Closed += HandleClosed;
 			if (DisplayMode.HasFlag(DialogDisplayMode.Attached))
-				MacModal.RunSheet(Control, out session);
+				MacModal.RunSheet(Widget, Control, out session);
 			else
 			{
 				Control.MakeKeyWindow();
-				MacModal.Run(Control, out session);
+				MacModal.Run(Widget, Control, out session);
 			}
 		}
 
@@ -136,14 +136,14 @@ namespace Eto.Mac.Forms
 			Widget.Closed += HandleClosed;
 			if (DisplayMode.HasFlag(DialogDisplayMode.Attached))
 			{
-				MacModal.BeginSheet(Control, out session, () => tcs.SetResult(true));
+				MacModal.BeginSheet(Widget, Control, out session, () => tcs.SetResult(true));
 			}
 			else
 			{
 				Control.MakeKeyWindow();
 				Application.Instance.AsyncInvoke(() =>
 				{
-					MacModal.Run(Control, out session);
+					MacModal.Run(Widget, Control, out session);
 					tcs.SetResult(true);
 				});
 

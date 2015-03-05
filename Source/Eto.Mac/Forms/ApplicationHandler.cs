@@ -11,7 +11,6 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -19,7 +18,6 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
-
 #if Mac64
 using CGSize = MonoMac.Foundation.NSSize;
 using CGRect = MonoMac.Foundation.NSRect;
@@ -27,7 +25,6 @@ using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
-
 #else
 using CGSize = System.Drawing.SizeF;
 using CGRect = System.Drawing.RectangleF;
@@ -55,6 +52,26 @@ namespace Eto.Mac.Forms
 		public static ApplicationHandler Instance
 		{
 			get { return Application.Instance == null ? null : Application.Instance.Handler as ApplicationHandler; }
+		}
+
+		/// <summary>
+		/// Event to inject custom functionality during the event loop of a modal session for an eto dialog.
+		/// </summary>
+		public event EventHandler<ModalEventArgs> ProcessModalSession;
+
+		/// <summary>
+		/// Raises the <see cref="ProcessModalSession"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnProcessModalSession(ModalEventArgs e)
+		{
+			if (ProcessModalSession != null)
+				ProcessModalSession(this, e);
+		}
+
+		internal void TriggerProcessModalSession(ModalEventArgs e)
+		{
+			OnProcessModalSession(e);
 		}
 
 		public string BadgeLabel
