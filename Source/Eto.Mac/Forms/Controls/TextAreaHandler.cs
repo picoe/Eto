@@ -2,7 +2,6 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using sd = System.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -171,9 +170,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			#pragma warning disable 612,618
-			return TextArea.DefaultSize;
-			#pragma warning restore 612,618
+			return new SizeF(100, 60);
 		}
 
 		public override void AttachEvent(string id)

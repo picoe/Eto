@@ -20,6 +20,7 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 		public Size Size { get; set; }
 		public string ID { get; set; }
 		public object ControlObject { get; set; }
+		public IntPtr NativeHandle { get { return IntPtr.Zero; } }
 
 		public void Create(string fileName)
 		{

@@ -46,15 +46,6 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		/// <summary>
-		/// The default minimum size for buttons
-		/// </summary>
-		/// <remarks>
-		/// You can set this size to ensure that all buttons are at least of this size
-		/// </remarks>
-		[Obsolete("This is no longer supported. Set the size of your buttons directly or use styles")]
-		public static Size DefaultSize = new Size(80, 26);
-
 		EventHandler<EventArgs> click;
 
 		/// <summary>
@@ -74,39 +65,6 @@ namespace Eto.Forms
 		{
 			if (click != null)
 				click(this, e);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
-		/// </summary>
-		public Button()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the button</param>
-		[Obsolete("Use default constructor instead")]
-		public Button(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class
-		/// </summary>
-		/// <remarks>
-		/// Used by subclasses of a button to allow them to define a different handler interface
-		/// to create as the platform handler of the button
-		/// </remarks>
-		/// <param name="generator">Generator to create the button</param>
-		/// <param name="type">Type of the button handler to use for the subclass</param>
-		/// <param name="initialize">True to initialize the button, false if you will initialize after constructor logic</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Button(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
 		}
 
 		/// <summary>

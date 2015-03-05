@@ -49,22 +49,6 @@ namespace Eto.Drawing
 			ControlObject = handler.Create (color);
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of a SolidBrush with the specified <paramref name="color"/>
-		/// </summary>
-		/// <param name="color">Color for the brush</param>
-		/// <param name="generator">Generator to create the brush for</param>
-		[Obsolete("Use variation without generator instead")]
-		public SolidBrush(Color color, Generator generator = null)
-		{
-			handler = generator.CreateShared <IHandler>();
-			ControlObject = handler.Create(color);
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Gets or sets the fill color of this brush
 		/// </summary>

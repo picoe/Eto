@@ -28,27 +28,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Form"/> class with the specified <paramref name="generator"/>
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		[Obsolete("Use default constructor instead")]
-		public Form(Generator generator) : this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Form"/> class
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler interface to create, must implement <see cref="IHandler"/></param>
-		/// <param name="initialize">If set to <c>true</c>, initialize the handler after created, otherwise the subclass should initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Form(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Show the form
 		/// </summary>
 		public void Show()

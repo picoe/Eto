@@ -8,8 +8,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Event arguments for cell-based events of a <see cref="GridView"/>
 	/// </summary>
-	[Obsolete("Use GridViewCellEventArgs instead")]
-	public class GridViewCellArgs : EventArgs
+	public class GridViewCellEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Gets the grid column that triggered the event.
@@ -36,29 +35,6 @@ namespace Eto.Forms
 		public object Item { get; private set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.GridViewCellArgs"/> class.
-		/// </summary>
-		/// <param name="gridColumn">Grid column.</param>
-		/// <param name="row">Row.</param>
-		/// <param name="column">Column.</param>
-		/// <param name="item">Item.</param>
-		public GridViewCellArgs(GridColumn gridColumn, int row, int column, object item)
-		{
-			this.GridColumn = gridColumn;
-			this.Row = row;
-			this.Column = column;
-			this.Item = item;
-		}
-	}
-
-	#pragma warning disable 612,618
-
-	/// <summary>
-	/// Event arguments for cell-based events of a <see cref="GridView"/>
-	/// </summary>
-	public class GridViewCellEventArgs : GridViewCellArgs
-	{
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.GridViewCellEventArgs"/> class.
 		/// </summary>
 		/// <param name="gridColumn">Grid column that triggered the event.</param>
@@ -66,13 +42,13 @@ namespace Eto.Forms
 		/// <param name="column">Column that triggered the event, or -1 if no column.</param>
 		/// <param name="item">Item of the row that triggered the event, or null if no item.</param>
 		public GridViewCellEventArgs(GridColumn gridColumn, int row, int column, object item)
-			: base(gridColumn, row, column, item)
 		{
+			this.GridColumn = gridColumn;
+			this.Row = row;
+			this.Column = column;
+			this.Item = item;
 		}
 	}
-
-	#pragma warning restore 612,618
-
 
 	/// <summary>
 	/// Grid view with a data store of a specific type
@@ -173,40 +149,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public GridView(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected GridView(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.GridView"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="handler">Handler.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use GridView(IGridView) instead")]
-		public GridView(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, initialize)
-		{
-		}
-
-		/// <summary>
 		/// The data store for the grid.
 		/// </summary>
 		/// <remarks>
@@ -224,7 +166,7 @@ namespace Eto.Forms
 		/// Gets or sets a value indicating whether to show a border around each cell.
 		/// </summary>
 		/// <value><c>true</c> to show a space between cells; otherwise, <c>false</c>.</value>
-		[Obsolete("Use Grid.GridLines instead")]
+		[Obsolete("Since 2.1: Use Grid.GridLines instead")]
 		public bool ShowCellBorders
 		{
 			get { return GridLines != GridLines.None; }
@@ -288,52 +230,6 @@ namespace Eto.Forms
 		public ISelectionPreserver SelectionPreserver
 		{
 			get { return new SelectionPreserverHelper(this); }
-		}
-
-		/// <summary>
-		/// Gets or sets the comparer to sort the data through code. Obsolete. Use <see cref="FilterCollection{T}.Sort"/> instead.
-		/// </summary>
-		/// <remarks>
-		/// This is used to sort data programatically. If you have data coming from a database, it is usually more
-		/// efficient to sort the data on the server. 
-		/// </remarks>
-		/// <value>The sort comparer.</value>
-		[Obsolete("Use FilterCollection.SortComparer instead")]
-		public Comparison<object> SortComparer
-		{
-			get
-			{ 
-				var filter = DataStore as IFilterableSource<object>;
-				return filter != null ? filter.Sort : null;
-			}
-			set
-			{
-				var filter = DataStore as IFilterable<object> ?? new FilterCollection<object>(DataStore);
-				filter.Sort = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the filter of the data. Obsolete. Use <see cref="FilterCollection{T}.Filter"/> instead.
-		/// </summary>
-		/// <remarks>
-		/// This is used to filter the data programatically.  If you have data coming from a database, it is usually
-		/// more efficient to filter from the server.
-		/// </remarks>
-		/// <value>The data filter.</value>
-		[Obsolete("Use FilterCollection.Filter instead")]
-		public Func<object, bool> Filter
-		{
-			get
-			{ 
-				var filter = DataStore as IFilterableSource<object>;
-				return filter != null ? filter.Filter : null;
-			}
-			set
-			{
-				var filter = DataStore as IFilterable<object> ?? new FilterCollection<object>(DataStore);
-				filter.Filter = value;
-			}
 		}
 
 		/// <summary>

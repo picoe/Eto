@@ -28,27 +28,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonToolItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ButtonToolItem(Generator generator) : base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonToolItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use ButtonToolItem(Command) instead")]
-		public ButtonToolItem(Command command, Generator generator = null)
-			: base(command, generator, typeof(IHandler))
-		{
-			Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
 		/// Handler for the <see cref="ButtonToolItem"/>.
 		/// </summary>
 		public new interface IHandler : ToolItem.IHandler

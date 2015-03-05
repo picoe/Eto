@@ -1,5 +1,4 @@
 using System;
-using sd = System.Drawing;
 using Eto.Drawing;
 #if XAMMAC2
 using AppKit;
@@ -82,7 +81,7 @@ namespace Eto.Mac
 			var outputImage = (CIImage)compositingFilter.ValueForKey(CIFilterOutputKey.Image);
 			var extent = outputImage.Extent;
 
-			var newsize = sd.Size.Truncate(extent.Size.ToSD());
+			var newsize = Size.Truncate(extent.Size.ToEto());
 			if (newsize.IsEmpty)
 				return image;
 

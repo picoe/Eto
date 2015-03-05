@@ -1,4 +1,3 @@
-using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Drawing;
@@ -148,7 +147,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Update(Rectangle rect)
 		{
-			Control.DisplayRect(rect.ToSDRectangleF());
+			Control.DisplayRect(rect.ToNS());
 		}
 	}
 }

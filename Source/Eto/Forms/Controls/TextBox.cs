@@ -45,36 +45,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextBox"/> class.
-		/// </summary>
-		public TextBox()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextBox"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public TextBox(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-			
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextBox"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected TextBox(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TextBox"/> is read only.
 		/// </summary>
 		/// <remarks>

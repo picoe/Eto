@@ -2,9 +2,9 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILD_OUTPUT_PATH=$DIR/../BuildOutput
-INPUT_PATH=$BUILD_OUTPUT_PATH/Debug
+INPUT_PATH=$BUILD_OUTPUT_PATH/net40/Release
 
-OUTPUT_PATH=$BUILD_OUTPUT_PATH/Help
+OUTPUT_PATH=$BUILD_OUTPUT_PATH/help
 MDOC_OUTPUT_PATH=$OUTPUT_PATH/mdoc
 MDOC_SOURCES_PATH=$MDOC_OUTPUT_PATH/sources
 XML_OUTPUT_PATH=$OUTPUT_PATH/xml
@@ -14,7 +14,7 @@ rm -rf $MDOC_OUTPUT_PATH
 rm -rf $XML_OUTPUT_PATH
 mkdir -p $XML_OUTPUT_PATH
 cp -r $DIR/xml/* $XML_OUTPUT_PATH
-mdoc update -i "$INPUT_PATH/Eto.XML" -o "$XML_OUTPUT_PATH" "$INPUT_PATH/Eto.dll"
+mdoc update -i "$INPUT_PATH/Eto.xml" -o "$XML_OUTPUT_PATH" "$INPUT_PATH/Eto.dll"
 mkdir -p $MDOC_SOURCES_PATH
 mdoc assemble -o "$MDOC_SOURCES_PATH/Eto" "$XML_OUTPUT_PATH" 
 
@@ -40,4 +40,5 @@ if [ "$1" == "html" ]
 then
 	rm -rf $HTML_OUTPUT_PATH
 	mdoc export-html -out "$HTML_OUTPUT_PATH" "$XML_OUTPUT_PATH"
+	# mdoc export-html-webdoc --out="$HTML_OUTPUT_PATH" "$MDOC_SOURCES_PATH/Eto.tree"
 fi

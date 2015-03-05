@@ -13,35 +13,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ProgressBar"/> class.
-		/// </summary>
-		public ProgressBar()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ProgressBar"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		[Obsolete("Use default constructor instead")]
-		public ProgressBar(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ProgressBar"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of platform handler interface to create (must implement <see cref="IHandler"/>)</param>
-		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ProgressBar(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the value of the progress bar that represents 100% complete. The default is 100.
 		/// </summary>
 		/// <value>The maximum value.</value>

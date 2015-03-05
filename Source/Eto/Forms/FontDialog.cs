@@ -47,23 +47,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.FontDialog"/> class.
-		/// </summary>
-		public FontDialog()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.FontDialog"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public FontDialog(Generator generator)
-			: base(generator, typeof(IHandler), true)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the currently selected font.
 		/// </summary>
 		/// <value>The selected font.</value>

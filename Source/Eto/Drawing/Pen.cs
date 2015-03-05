@@ -57,23 +57,6 @@ namespace Eto.Drawing
 			ControlObject = handler.Create(color, thickness);
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Creates a new pen with the specified <paramref name="color"/> and <paramref name="thickness"/>
-		/// </summary>
-		/// <param name="color">Color for the new pen</param>
-		/// <param name="thickness">Thickness of the new pen</param>
-		/// <param name="generator">Generator to create the pen for</param>
-		[Obsolete("Use variation without generator instead")]
-		public Pen(Color color, float thickness, Generator generator)
-		{
-			handler = generator.CreateShared<IHandler>();
-			ControlObject = handler.Create(color, thickness);
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Gets or sets the color of the pen
 		/// </summary>

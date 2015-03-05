@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
 #if XAMMAC2
@@ -48,6 +47,10 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView FocusControl { get { return text; } }
 
+		public NSTextField TextField { get { return text; } }
+
+		public NSStepper Stepper { get { return stepper; } }
+
 		public class EtoTextField : NSTextField, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -82,7 +85,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return text; }
 		}
 
-		static NSNumberFormatter DefaultFormatter = new NSNumberFormatter { NumberStyle = NSNumberFormatterStyle.Decimal, Lenient = true };
+		public static NSNumberFormatter DefaultFormatter = new NSNumberFormatter { NumberStyle = NSNumberFormatterStyle.Decimal, Lenient = true };
 
 		public NumericUpDownHandler()
 		{

@@ -2,7 +2,6 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
-using sd = System.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -97,11 +96,6 @@ namespace Eto.Mac.Forms
 #elif IOS
 			Control = new NSView();
 #endif
-
-			#pragma warning disable 612,618
-			spacing = TableLayout.DefaultSpacing;
-			padding = TableLayout.DefaultPadding;
-			#pragma warning restore 612,618
 		}
 
 		protected override void Initialize()

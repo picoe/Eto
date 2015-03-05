@@ -387,10 +387,11 @@ namespace Eto.Forms
 
 			if (len > 0)
 			{
+				var tempPos = pos;
 				if (overwrite)
-					provider.Clear(ref pos, len, true);
+					provider.Clear(ref tempPos, len, true);
 				else
-					provider.Delete(ref pos, len, true);
+					provider.Delete(ref tempPos, len, true);
 			}
 
 			foreach (char ch in e.Text)

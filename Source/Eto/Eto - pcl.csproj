@@ -258,8 +258,6 @@
     <Compile Include="Binding\DelegateBinding.cs" />
     <Compile Include="Forms\IKeyboardInputSource.cs" />
     <Compile Include="Forms\IMouseInputSource.cs" />
-    <Compile Include="XmlExtensions.cs" />
-    <Compile Include="Drawing\XmlExtensions.cs" />
     <Compile Include="Drawing\SystemFonts.cs" />
     <Compile Include="Forms\Controls\Control.binding.cs" />
     <Compile Include="EventLookup.cs" />
@@ -285,8 +283,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlatformContext.cs" />
-    <Compile Include="Generator.cs" />
-    <Compile Include="Generators.cs" />
     <Compile Include="HandlerAttribute.cs" />
     <Compile Include="AutoInitializeAttribute.cs" />
     <Compile Include="..\Shared\EnumerableExtensions.cs">

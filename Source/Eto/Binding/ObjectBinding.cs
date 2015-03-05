@@ -31,7 +31,7 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the ObjectBinding with the specified object and property for a <see cref="PropertyBinding"/>
+		/// Initializes a new instance of the ObjectBinding with the specified object and property for a <see cref="PropertyBinding{T}"/>
 		/// </summary>
 		/// <remarks>
 		/// This is a shortcut to set up the binding to get/set values from a particular property of the specified object
@@ -122,7 +122,7 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the ObjectBinding with the specified object and property for a <see cref="PropertyBinding"/>
+		/// Initializes a new instance of the ObjectBinding with the specified object and property for a <see cref="PropertyBinding{T}"/>
 		/// </summary>
 		/// <remarks>
 		/// This is a shortcut to set up the binding to get/set values from a particular property of the specified object
@@ -265,29 +265,6 @@ namespace Eto
 		public DualBinding<TValue> Bind(Func<TValue> getValue, Action<TValue> setValue = null, Action<EventHandler<EventArgs>> addChangeEvent = null, Action<EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			return Bind(new DelegateBinding<TValue> { GetValue = getValue, SetValue = setValue, AddChangeEvent = addChangeEvent, RemoveChangeEvent = removeChangeEvent }, mode);
-		}
-
-		/// <summary>
-		/// Creates a new dual binding using a <see cref="DelegateBinding{T,TValue}"/> with the specified delegates and this binding.
-		/// </summary>
-		/// <remarks>
-		/// This creates a <see cref="DualBinding{TValue}"/> between a new <see cref="DelegateBinding{T,TValue}"/> and this binding.
-		/// This uses an <see cref="ObjectBinding{T,TValue}"/> to store the specified <paramref name="objectValue"/>, since the DelegateBinding created
-		/// is an indirect binding (requires an object instance to get/set the value).
-		/// </remarks>
-		/// <param name="objectValue">Object to get/set the values from/to.</param>
-		/// <param name="getValue">Delegate to get the value from the <paramref name="objectValue"/>.</param>
-		/// <param name="setValue">Delegate to set the value to the <paramref name="objectValue"/> when changed.</param>
-		/// <param name="addChangeEvent">Delegate to add a change event when the value on the <paramref name="objectValue"/> changes.</param>
-		/// <param name="removeChangeEvent">Delegate to remove the change event.</param>
-		/// <param name="mode">Dual binding mode.</param>
-		/// <param name="defaultGetValue">Default value to get when the value or object is null.</param>
-		/// <param name="defaultSetValue">Default set value when this binding's value or DataItem is null.</param>
-		/// <typeparam name="TObject">The type of the object that is being bound to.</typeparam>
-		[Obsolete("Use Bind() without an object value instead, as the delegates can access your object value directly. Or, use Bind<TObject>(TObject, DelegateBinding<TValue>)")]
-		public DualBinding<TValue> Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
-		{
-			return Bind(objectValue, new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent, defaultGetValue, defaultSetValue), mode);
 		}
 
 		/// <summary>

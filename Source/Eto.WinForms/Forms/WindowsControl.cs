@@ -100,6 +100,8 @@ namespace Eto.WinForms.Forms
 		Size desiredSize = new Size(-1, -1);
 		Size parentMinimumSize;
 
+		public override IntPtr NativeHandle { get { return Control.Handle; } }
+
 		Control.ICallback IWindowsControl.Callback { get { return Callback; } }
 
 		public bool XScale { get; set; }

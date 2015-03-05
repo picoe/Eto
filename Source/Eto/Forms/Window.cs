@@ -167,21 +167,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Window"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler instance</param>
-		/// <param name="type">Type of interface to create for the handler, must implement <see cref="IHandler"/></param>
-		/// <param name="initialize"><c>true</c> to initialize the handler, false if the subclass will initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Window(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, false)
-		{
-			if (initialize)
-				Initialize();
-			HandleEvent(ClosedEvent);
-		}
-
-		/// <summary>
 		/// Gets or sets the title of the window
 		/// </summary>
 		/// <remarks>

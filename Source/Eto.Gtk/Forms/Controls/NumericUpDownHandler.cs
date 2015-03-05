@@ -11,6 +11,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control = new Gtk.SpinButton(double.MinValue, double.MaxValue, 1);
 			Control.WidthRequest = 80;
 			Control.Wrap = true;
+			Control.Adjustment.PageIncrement = 1;
 			Value = 0;
 		}
 
@@ -68,14 +69,11 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public double Increment
 		{
-			get { 
-				double step, page;
-				Control.GetIncrements(out step, out page);
-				return step;
-			}
+			get { return Control.Adjustment.StepIncrement; }
 			set
 			{
-				Control.SetIncrements(value, value * 2);
+				Control.Adjustment.StepIncrement = value;
+				Control.Adjustment.PageIncrement = value;
 			}
 		}
 

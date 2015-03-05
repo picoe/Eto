@@ -48,7 +48,7 @@ namespace Eto.Forms
 		/// By default, this will bind to a "Text" property, or <see cref="IListItem.Text"/> when implemented.
 		/// </remarks>
 		/// <value>The text binding.</value>
-		[Obsolete("Use ItemTextBinding instead")]
+		[Obsolete("Since 2.1: Use ItemTextBinding instead")]
 		public IIndirectBinding<string> TextBinding {
 			get { return ItemTextBinding; }
 			set { ItemTextBinding = value; }
@@ -61,7 +61,7 @@ namespace Eto.Forms
 		/// By default, this will bind to a "Key" property, or <see cref="IListItem.Key"/> when implemented.
 		/// </remarks>
 		/// <value>The key binding.</value>
-		[Obsolete("Use ItemKeyBinding instead")]
+		[Obsolete("Since 2.1: Use ItemKeyBinding instead")]
 		public IIndirectBinding<string> KeyBinding {
 			get { return ItemKeyBinding; }
 			set { ItemKeyBinding = value; }
@@ -458,7 +458,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Orientation of buttons in a <see cref="RadioButtonList"/>
 	/// </summary>
-	[Obsolete("Use Orientation instead")]
+	[Obsolete("Since 2.1: Use Orientation instead")]
 	public struct RadioButtonListOrientation
 	{
 		readonly Orientation orientation;

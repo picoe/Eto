@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using Eto.Drawing;
-using sd = System.Drawing;
 using Eto.Mac.Forms;
 
 #if XAMMAC2

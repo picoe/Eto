@@ -2,7 +2,7 @@
 	/* $type can be specified if loading json directly (without existing instance), but when loading from a specific instance (like this example) you omit it */
 	Content: {
 		$type: "TabControl",
-		TabPages: [
+		Pages: [
 			{
 				Text: "Table Layout & Controls",
 				Content: {

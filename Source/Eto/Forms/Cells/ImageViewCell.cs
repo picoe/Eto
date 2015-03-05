@@ -37,16 +37,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ImageViewCell"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ImageViewCell(Generator generator)
-			: base(generator, typeof(IHandler), true)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the interpolation mode when scaling images to fit into the cell.
 		/// </summary>
 		/// <value>The image interpolation.</value>

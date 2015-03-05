@@ -36,34 +36,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
-		/// </summary>
-		public CheckBox()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		[Obsolete("Use default constructor instead")]
-		public CheckBox(Generator generator) : this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckBox"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Handler type to create, must be an instance of <see cref="IHandler"/></param>
-		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected CheckBox(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the checked state
 		/// </summary>
 		/// <remarks>

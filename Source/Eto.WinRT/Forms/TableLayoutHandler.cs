@@ -85,6 +85,9 @@ namespace Eto.WinRT.Forms
 
 			border = new swc.Border { Child = Control };
 
+			Spacing = Size.Empty;
+			Padding = Padding.Empty;
+
 			Control.SizeChanged += (s, e) => SetChildrenSizes();
 			Control.Loaded += (s, e) => SetChildrenSizes();
 		}

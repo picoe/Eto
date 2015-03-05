@@ -16,12 +16,6 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		/// <summary>
-		/// The default size of text area controls.
-		/// </summary>
-		[Obsolete("Set the size of the control directly or use styles")]
-		public static Size DefaultSize = new Size(100, 60);
-
 		#region Events
 
 		/// <summary>
@@ -76,34 +70,6 @@ namespace Eto.Forms
 		{
 			EventLookup.Register<TextArea>(c => c.OnSelectionChanged(null), TextArea.SelectionChangedEvent);
 			EventLookup.Register<TextArea>(c => c.OnCaretIndexChanged(null), TextArea.CaretIndexChangedEvent);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextArea"/> class.
-		/// </summary>
-		public TextArea()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextArea"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public TextArea(Generator generator) : this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextArea"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected TextArea(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
 		}
 
 		/// <summary>

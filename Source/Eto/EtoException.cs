@@ -31,17 +31,5 @@ namespace Eto
 		public EtoException (string message, Exception inner) : base (message, inner)
 		{
 		}
-		
-#if !PCL
-		/// <summary>
-		/// Initializes a new instance of the <see cref="T:EtoException"/> class
-		/// </summary>
-		/// <param name="context">The contextual information about the source or destination.</param>
-		/// <param name="info">The object that holds the serialized object data.</param>
-		[Obsolete("Do not use this constructor overload")]
-		protected EtoException (System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base (info, context)
-		{
-		}
-#endif
 	}
 }

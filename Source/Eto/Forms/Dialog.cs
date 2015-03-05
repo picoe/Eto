@@ -107,34 +107,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Dialog"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Dialog(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Dialog"/> class.
-		/// </summary>
-		public Dialog()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Dialog"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Dialog(Generator generator) : this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the display mode hint
 		/// </summary>
 		/// <value>The display mode.</value>
@@ -143,13 +115,6 @@ namespace Eto.Forms
 			get { return Handler.DisplayMode; }
 			set { Handler.DisplayMode = value; }
 		}
-
-		/// <summary>
-		/// Gets or sets the dialog result.
-		/// </summary>
-		/// <value>The dialog result.</value>
-		[Obsolete("This property is deprecated, use Dialog<T> instead to define a custom return type")]
-		public DialogResult DialogResult { get; set; }
 
 		/// <summary>
 		/// Gets or sets the abort button.
@@ -176,18 +141,6 @@ namespace Eto.Forms
 		{
 			get { return Handler.DefaultButton; }
 			set { Handler.DefaultButton = value; }
-		}
-
-		/// <summary>
-		/// Shows the dialog.
-		/// </summary>
-		/// <returns>The dialog.</returns>
-		/// <param name="parent">Parent.</param>
-		[Obsolete("Use ShowModal() instead")]
-		public DialogResult ShowDialog(Control parent = null)
-		{
-			ShowModal(parent);
-			return DialogResult;
 		}
 
 		/// <summary>
@@ -233,17 +186,6 @@ namespace Eto.Forms
 			}
 
 			return Handler.ShowModalAsync(parent);
-		}
-
-		/// <summary>
-		/// Close the dialog with the specified dialog result
-		/// </summary>
-		/// <param name="result">Result.</param>
-		[Obsolete("Use Dialog<T> instead to define the return type")]
-		public void Close(DialogResult result)
-		{
-			DialogResult = result;
-			Close();
 		}
 
 		/// <summary>

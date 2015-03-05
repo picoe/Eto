@@ -35,16 +35,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextBoxCell"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public TextBoxCell(Generator generator)
-			: base(generator, typeof(IHandler), true)
-		{
-		}
-
-		/// <summary>
 		/// Handler interface for the <see cref="TextBoxCell"/>.
 		/// </summary>
 		public new interface IHandler : SingleValueCell<string>.IHandler

@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Forms.Controls;

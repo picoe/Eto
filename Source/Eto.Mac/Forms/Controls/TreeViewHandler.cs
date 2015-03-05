@@ -3,7 +3,6 @@ using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Menu;
 using System.Linq;
-using sd = System.Drawing;
 using Eto.Drawing;
 
 #if XAMMAC2

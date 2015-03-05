@@ -32,31 +32,6 @@ namespace Eto.Forms
 		{
 		}
 
-#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Screen"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Screen(Generator generator)
-			: base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Screen"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="handler">Handler.</param>
-		[Obsolete("Use Screen(IScreen) instead")]
-		public Screen(Generator generator, IHandler handler)
-			: base(generator, handler)
-		{
-		}
-
-#pragma warning restore 612,618
-
 		/// <summary>
 		/// Gets an enumerable of display screens available on the current system.
 		/// </summary>

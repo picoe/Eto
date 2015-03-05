@@ -36,6 +36,11 @@ namespace Eto.Wpf.Forms
 		bool maximizable = true;
 		bool minimizable = true;
 
+		public override IntPtr NativeHandle
+		{
+			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
+		}
+
 		protected override void Initialize()
 		{
 			content = new swc.DockPanel();

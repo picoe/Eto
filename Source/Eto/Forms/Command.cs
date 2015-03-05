@@ -67,14 +67,11 @@ namespace Eto.Forms
 		{
 		}
 
-		#pragma warning disable 672,612,618
-
 		/// <summary>
 		/// Creates a new menu item attached to this command.
 		/// </summary>
 		/// <returns>The menu item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		public override MenuItem CreateMenuItem(Generator generator)
+		public override MenuItem CreateMenuItem()
 		{
 			return new CheckMenuItem(this);
 		}
@@ -83,13 +80,10 @@ namespace Eto.Forms
 		/// Creates a new tool item attached to this command.
 		/// </summary>
 		/// <returns>The tool item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		public override ToolItem CreateToolItem(Generator generator)
+		public override ToolItem CreateToolItem()
 		{
 			return new CheckToolItem(this);
 		}
-
-		#pragma warning restore 672,612,618
 	}
 
 	/// <summary>
@@ -125,14 +119,11 @@ namespace Eto.Forms
 		{
 		}
 
-		#pragma warning disable 672,612,618
-
 		/// <summary>
 		/// Creates a new menu item attached to this command.
 		/// </summary>
 		/// <returns>The menu item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		public override MenuItem CreateMenuItem(Generator generator)
+		public override MenuItem CreateMenuItem()
 		{
 			return menuItem = new RadioMenuItem(this, Controller != null ? Controller.menuItem : null);
 		}
@@ -141,13 +132,10 @@ namespace Eto.Forms
 		/// Creates a new tool item attached to this command.
 		/// </summary>
 		/// <returns>The tool item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		public override ToolItem CreateToolItem(Generator generator)
+		public override ToolItem CreateToolItem()
 		{
 			return new RadioToolItem(this);
 		}
-
-		#pragma warning restore 672,612,618
 	}
 
 	/// <summary>
@@ -285,15 +273,13 @@ namespace Eto.Forms
 			OnExecuted(EventArgs.Empty);
 		}
 
-		#pragma warning disable 612,618
-
 		/// <summary>
 		/// Creates a new tool item attached to this command.
 		/// </summary>
 		/// <returns>The tool item for the command.</returns>
 		public virtual ToolItem CreateToolItem()
 		{
-			return CreateToolItem(Platform.Instance);
+			return new ButtonToolItem(this);
 		}
 
 		/// <summary>
@@ -302,32 +288,8 @@ namespace Eto.Forms
 		/// <returns>The menu item for the command.</returns>
 		public virtual MenuItem CreateMenuItem()
 		{
-			return CreateMenuItem(Platform.Instance);
+			return new ButtonMenuItem(this);
 		}
-
-		/// <summary>
-		/// Creates a new tool item attached to this command.
-		/// </summary>
-		/// <returns>The tool item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use variation without generator instead")]
-		public virtual ToolItem CreateToolItem(Generator generator)
-		{
-			return new ButtonToolItem(this, generator);
-		}
-
-		/// <summary>
-		/// Creates a new menu item attached to this command.
-		/// </summary>
-		/// <returns>The menu item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use variation without generator instead")]
-		public virtual MenuItem CreateMenuItem(Generator generator)
-		{
-			return new ButtonMenuItem(this, generator);
-		}
-
-		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Implicitly converts the command to a menu item

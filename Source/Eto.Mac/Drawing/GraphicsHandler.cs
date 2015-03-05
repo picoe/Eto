@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Eto.Drawing;
-using SD = System.Drawing;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 

@@ -55,18 +55,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ComboBoxCell"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ComboBoxCell(Generator generator)
-			: base(generator, typeof(IHandler), true)
-		{
-			ComboTextBinding = new ListItemTextBinding();
-			ComboKeyBinding = new ListItemKeyBinding();
-		}
-
-		/// <summary>
 		/// Gets or sets the data store of the items in the combo box for this cell.
 		/// </summary>
 		/// <seealso cref="ComboTextBinding"/>

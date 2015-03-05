@@ -372,30 +372,6 @@ namespace Eto.Drawing
 			Handler = handler;
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the GraphicsPath class
-		/// </summary>
-		/// <param name="generator">Generator generator for the object, or null to use the current generator</param>
-		[Obsolete("Use variation without generator instead")]
-		public GraphicsPath(Generator generator)
-		{
-			Handler = Create(generator);
-		}
-
-		/// <summary>
-		/// Creates a new instance of the IGraphicsPath for the specified generator
-		/// </summary>
-		/// <param name="generator">Generator generator for the object, or null to use the current generator</param>
-		[Obsolete("Use variation without generator instead")]
-		public static IGraphicsPath Create(Generator generator)
-		{
-			return Platform.Instance.Create<IHandler>();
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Adds a line to the path with the specified start and end points
 		/// </summary>
@@ -691,41 +667,6 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		#pragma warning disable 612,618
-
-
-		/// <summary>
-		/// Creates a rounded rectangle using the specified corner radius
-		/// </summary>
-		/// <returns>The round rect.</returns>
-		/// <param name="rectangle">Rectangle to round</param>
-		/// <param name="radius">Radius for all corners</param>
-		/// <param name="generator">Generator to create the graphics path</param>
-		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
-		[Obsolete("Use variation without generator instead")]
-		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float radius, Generator generator)
-		{
-			return GetRoundRect (rectangle, radius, radius, radius, radius);
-		}
-
-		/// <summary>
-		/// Creates a rounded rectangle using the specified corner radius
-		/// </summary>
-		/// <param name="rectangle">Rectangle to round</param>
-		/// <param name="nwRadius">Radius of the north east corner</param>
-		/// <param name="neRadius">Radius of the north west corner</param>
-		/// <param name="seRadius">Radius of the south east corner</param>
-		/// <param name="swRadius">Radius of the south west corner</param>
-		/// <param name="generator">Generator to create the graphics path</param>
-		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
-		[Obsolete("Use variation without generator instead")]
-		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius, Generator generator)
-		{
-			return GetRoundRect(rectangle, nwRadius, neRadius, seRadius, swRadius);
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Handler interface for the <see cref="IGraphicsPath"/>
 		/// </summary>
@@ -736,4 +677,3 @@ namespace Eto.Drawing
 		}
 	}
 }
-

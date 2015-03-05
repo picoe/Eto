@@ -161,30 +161,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Container"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler to create (must implement <see cref="IHandler"/>)</param>
-		/// <param name="initialize"><c>true</c> to initialize the handler, false if the caller will initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Container(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Container with the specified handler
-		/// </summary>
-		/// <param name="generator">Generator for the widget</param>
-		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		[Obsolete("Use Container(IContainer) instead")]
-		protected Container(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Unbinds any bindings in the <see cref="Control.Bindings"/> collection and removes the bindings, and recurses to this container's children
 		/// </summary>
 		public override void Unbind()

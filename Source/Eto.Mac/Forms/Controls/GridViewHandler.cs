@@ -2,7 +2,6 @@ using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Drawing;
-using sd = System.Drawing;
 using System.Collections;
 using System.Linq;
 

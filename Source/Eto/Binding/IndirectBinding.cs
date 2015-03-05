@@ -44,7 +44,7 @@ namespace Eto
 	/// The IndirectBinding is useful when you want to use the same binding on multiple
 	/// objects, such as when binding cells in a <see cref="Forms.Grid"/>.
 	/// 
-	/// Typically one would use <see cref="PropertyBinding"/> or <see cref="ColumnBinding{T}"/>
+	/// Typically one would use <see cref="PropertyBinding{T}"/> or <see cref="ColumnBinding{T}"/>
 	/// which are ways to retrieve either a property value or column/index-based value.
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>

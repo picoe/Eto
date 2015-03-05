@@ -16,23 +16,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Clipboard"/> class.
-		/// </summary>
-		public Clipboard()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Clipboard"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Clipboard(Generator generator)
-			: base(generator, typeof(Clipboard.IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Gets the type id's for each type of data in the clipboard.
 		/// </summary>
 		/// <value>The content types in the clipboard.</value>

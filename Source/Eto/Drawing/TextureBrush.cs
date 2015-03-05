@@ -76,23 +76,6 @@ namespace Eto.Drawing
 			ControlObject = handler.Create (image, opacity);
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Drawing.TextureBrush"/> class.
-		/// </summary>
-		/// <param name="image">Image for the brush</param>
-		/// <param name="opacity">Opacity of the texture to apply to the brush when painting</param>
-		/// <param name="generator">Generator to create the brush</param>
-		public TextureBrush(Image image, float opacity, Generator generator)
-		{
-			this.Image = image;
-			handler = generator.CreateShared<IHandler>();
-			ControlObject = handler.Create(image, opacity);
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Gets or sets the transform for this brush
 		/// </summary>

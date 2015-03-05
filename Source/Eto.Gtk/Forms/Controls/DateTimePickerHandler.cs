@@ -9,7 +9,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public DateTimePickerHandler()
 		{
 			Control = new CustomControls.DateComboBox();
-			this.Mode = DateTimePicker.DefaultMode;
+			this.Mode = DateTimePickerMode.Date;
 		}
 
 		protected override void Initialize()

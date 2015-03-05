@@ -55,51 +55,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioMenuItem"/> class.
-		/// </summary>
-		/// <param name="controller">Controller.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public RadioMenuItem(RadioMenuItem controller, Generator generator = null)
-			: this(generator, typeof(RadioMenuItem.IHandler), controller)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioMenuItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="controller">Controller.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public RadioMenuItem(RadioCommand command, RadioMenuItem controller, Generator generator = null)
-			: base(command, generator, typeof(RadioMenuItem.IHandler), false)
-		{
-			Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
-			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Handler.Create(controller);
-			Initialize();
-			Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioMenuItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="controller">Controller.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected RadioMenuItem(Generator generator, Type type, RadioMenuItem controller, bool initialize = true)
-			: base(generator, type, false)
-		{
-			Handler.Create(controller);
-			if (initialize)
-				Initialize();
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.RadioMenuItem"/> is checked.
 		/// </summary>
 		/// <value><c>true</c> if checked; otherwise, <c>false</c>.</value>

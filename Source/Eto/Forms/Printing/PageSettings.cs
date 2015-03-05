@@ -12,23 +12,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PageSettings"/> class.
-		/// </summary>
-		public PageSettings()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PageSettings"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public PageSettings(Generator generator)
-			: base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Gets the printable area for the page
 		/// </summary>
 		/// <value>The printable area.</value>

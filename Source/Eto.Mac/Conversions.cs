@@ -2,7 +2,6 @@ using System;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Drawing;
-using sd = System.Drawing;
 using Eto.Mac.Forms.Printing;
 #if XAMMAC2
 using AppKit;

@@ -29,6 +29,8 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 
 		public Widget Widget { get; set; }
 
+		public IntPtr NativeHandle { get { return IntPtr.Zero; } }
+
 		public void Initialize()
 		{
 		}

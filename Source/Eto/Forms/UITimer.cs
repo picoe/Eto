@@ -20,12 +20,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// The default interval.
-		/// </summary>
-		[Obsolete("Set Interval of timer directly or use styles")]
-		public static double DefaultInterval = 1.0;
-
-		/// <summary>
 		/// Occurs each time the <see cref="Interval"/> has elapsed
 		/// </summary>
 		public event EventHandler<EventArgs> Elapsed;
@@ -38,34 +32,6 @@ namespace Eto.Forms
 		{
 			if (Elapsed != null)
 				Elapsed(this, e);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.UITimer"/> class.
-		/// </summary>
-		public UITimer()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.UITimer"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public UITimer(Generator generator) : this(generator, typeof(UITimer.IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.UITimer"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected UITimer(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
 		}
 
 		/// <summary>

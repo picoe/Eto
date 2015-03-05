@@ -96,13 +96,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Eto.Forms.DynamicLayout"/> is generated.
-		/// </summary>
-		/// <value><c>true</c> if generated; otherwise, <c>false</c>.</value>
-		[Obsolete("Use IsCreated instead")]
-		public bool Generated { get { return IsCreated; } }
-
-		/// <summary>
 		/// Gets a value indicating whether the layout has been created
 		/// </summary>
 		/// <remarks>
@@ -137,7 +130,7 @@ namespace Eto.Forms
 		/// Gets or sets the default padding for all child <see cref="DynamicTable"/> instances (vertical sections)
 		/// </summary>
 		/// <value>The default padding for each vertical section.</value>
-		public new Padding? DefaultPadding { get; set; }
+		public Padding? DefaultPadding { get; set; }
 
 		/// <summary>
 		/// Gets or sets the default spacing for all cells in the layout
@@ -192,52 +185,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class with default spacing
-		/// </summary>
-		/// <param name="spacing">Spacing.</param>
-		[Obsolete("Use Spacing property initializer instead")]
-		public DynamicLayout(Size? spacing)
-			: this()
-		{
-			topTable.Spacing = spacing;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class.
-		/// </summary>
-		/// <param name="padding">Padding.</param>
-		/// <param name="spacing">Spacing.</param>
-		[Obsolete("Use Padding/Spacing property initializers instead")]
-		public DynamicLayout(Padding? padding, Size? spacing = null)
-			: this()
-		{
-			topTable.Padding = padding;
-			topTable.Spacing = spacing;
-		}
-
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class.
-		/// </summary>
-		/// <param name="padding">Padding.</param>
-		/// <param name="spacing">Spacing.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use variation without generator instead")]
-		public DynamicLayout(Padding? padding, Size? spacing, Generator generator)
-			: base(generator)
-		{
-			topTable = new DynamicTable
-			{ 
-				Padding = padding, 
-				Spacing = spacing
-			};
-			currentItem = topTable;
-		}
-
-		#pragma warning restore 612,618
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.DynamicLayout"/> class with the specified rows
 		/// </summary>
 		/// <param name="rows">Rows to populate the layout</param>
@@ -254,24 +201,6 @@ namespace Eto.Forms
 			: this()
 		{
 			Rows = new Collection<DynamicRow>(rows.ToList());
-		}
-
-		/// <summary>
-		/// Obsolete
-		/// </summary>
-		[Obsolete("Use BeginVertical(xscale: <value>, yscale: <value>) instead")]
-		public DynamicTable BeginVertical(bool xscale, bool? yscale = null)
-		{
-			return BeginVertical(null, null, xscale, yscale);
-		}
-
-		/// <summary>
-		/// Obsolete
-		/// </summary>
-		[Obsolete("Use BeginVertical(spacing: <value>, xscale: <value>, yscale: <value>) instead")]
-		public DynamicTable BeginVertical(Size spacing, bool? xscale = null, bool? yscale = null)
-		{
-			return BeginVertical(null, spacing, xscale, yscale);
 		}
 
 		/// <summary>
@@ -478,33 +407,6 @@ namespace Eto.Forms
 		/// <summary>
 		/// Adds a control centered in a new vertical section
 		/// </summary>
-		/// <seealso cref="AddAutoSized"/>
-		/// <param name="control">Control to add</param>
-		/// <param name="xscale">Xscale for the vertical section</param>
-		/// <param name="yscale">Yscale for the vertical section</param>
-		[Obsolete("Use AddCentered(control, xscale: <value>, yscale: <value>)")]
-		public void AddCentered(Control control, bool? xscale, bool? yscale = null)
-		{
-			AddCentered(control, Drawing.Padding.Empty, Size.Empty, xscale, yscale, true, true);
-		}
-
-		/// <summary>
-		/// Adds a control centered in a new vertical section
-		/// </summary>
-		/// <seealso cref="AddAutoSized"/>
-		/// <param name="control">Control to add</param>
-		/// <param name="spacing">Spacing between cells</param>
-		/// <param name="xscale">Xscale for the vertical section</param>
-		/// <param name="yscale">Yscale for the vertical section</param>
-		[Obsolete("Use AddCentered(control, spacing: <value>, xscale: <value>, yscale: <value>)")]
-		public void AddCentered(Control control, Size spacing, bool? xscale = null, bool? yscale = null)
-		{
-			AddCentered(control, Drawing.Padding.Empty, spacing, xscale, yscale, true, true);
-		}
-
-		/// <summary>
-		/// Adds a control centered in a new vertical section
-		/// </summary>
 		/// <remarks>
 		/// This adds scaled blank space around the control, and sizes the control to its preferred size.
 		/// This is similar to doing the following:
@@ -619,19 +521,10 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Generates this layout
-		/// </summary>
-		[Obsolete("Use Create() instead")]
-		public void Generate()
-		{
-			Create();
-		}
-
-		/// <summary>
 		/// Clears the layout so it can be recreated
 		/// </summary>
 		/// <remarks>
-		/// You must call <see cref="Generate"/> when done updating the layout
+		/// You must call <see cref="Create"/> when done updating the layout
 		/// </remarks>
 		public void Clear()
 		{

@@ -1,6 +1,5 @@
 using System;
 using Eto.Drawing;
-using sd = System.Drawing;
 
 #if XAMMAC2
 using Foundation;

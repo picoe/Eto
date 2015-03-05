@@ -36,31 +36,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckToolItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public CheckToolItem(Generator generator)
-			: base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckToolItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use CheckToolItem(CheckCommand) instead")]
-		public CheckToolItem(CheckCommand command, Generator generator = null)
-			: base(command, generator, typeof(IHandler))
-		{
-			Checked = command.Checked;
-			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
-			Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether this item is checked.
 		/// </summary>
 		/// <value><c>true</c> if checked; otherwise, <c>false</c>.</value>

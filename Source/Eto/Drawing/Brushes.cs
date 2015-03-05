@@ -350,40 +350,5 @@ namespace Eto.Drawing
 		public static SolidBrush DarkSlateGray { get { return GetBrush(Colors.DarkSlateGray); } }
 		/// <summary>Gets a solid brush with a color ARGB value of #FF000000</summary>
 		public static SolidBrush Black { get { return GetBrush(Colors.Black); } }
-
-		#pragma warning disable 612,618
-
-		// Cached
-		/// <summary>
-		/// Gets a cached solid brush with the specified color
-		/// </summary>
-		/// <param name="color">Color of the cached solid brush to get</param>
-		/// <param name="generator">Generator to get the brush for</param>
-		[Obsolete("Use variation without generator instead")]
-		public static SolidBrush Cached(Color color, Generator generator)
-		{
-			return GetBrush(color);
-		}
-
-		/// <summary>
-		/// Clears the brush cache
-		/// </summary>
-		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached(Color)"/> method to cache brushes and want to clear it
-		/// to conserve memory or resources.
-		/// </remarks>
-		/// <param name="generator">Generator to clear the brush cache for</param>
-		[Obsolete("Use variation without generator instead")]
-		public static void ClearCache(Generator generator)
-		{
-			var cache = ((Platform)generator ?? Platform.Instance).Cache<BrushKey, SolidBrush>(cacheKey);
-			lock (cache)
-			{
-				cache.Clear();
-			}
-		}
-
-		#pragma warning restore 612,618
-
 	}
 }

@@ -86,38 +86,6 @@ namespace Eto.Drawing
 			ControlObject = handler.Create (rectangle, startColor, endColor, angle);
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Drawing.LinearGradientBrush"/> class between two points
-		/// </summary>
-		/// <param name="startColor">Start color for the gradient</param>
-		/// <param name="endColor">End color for the gradient</param>
-		/// <param name="startPoint">Start point for the gradient</param>
-		/// <param name="endPoint">End point for the gradient</param>
-		/// <param name="generator">Generator to create the brush, or null to use the current generator</param>
-		public LinearGradientBrush(Color startColor, Color endColor, PointF startPoint, PointF endPoint, Generator generator)
-		{
-			handler = generator.CreateShared<IHandler>();
-			ControlObject = handler.Create(startColor, endColor, startPoint, endPoint);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Drawing.LinearGradientBrush"/> class with a given <paramref name="rectangle"/> and <paramref name="angle"/>
-		/// </summary>
-		/// <param name="rectangle">Rectangle to define the area of the gradient</param>
-		/// <param name="startColor">Start color for the gradient</param>
-		/// <param name="endColor">End color for the gradient</param>
-		/// <param name="angle">Angle of the gradient</param>
-		/// <param name="generator">Generator to create the brush, or null to use the current generator</param>
-		public LinearGradientBrush(RectangleF rectangle, Color startColor, Color endColor, float angle, Generator generator)
-		{
-			handler = generator.CreateShared<IHandler>();
-			ControlObject = handler.Create(rectangle, startColor, endColor, angle);
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Gets or sets the transform to apply to the gradient
 		/// </summary>

@@ -31,48 +31,7 @@ namespace Eto.Forms
 		{
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Panel"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Panel(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Panel"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Panel(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Container with the specified handler
-		/// </summary>
-		/// <param name="generator">Generator for the widget</param>
-		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		[Obsolete("Use Panel(IHandler) instead")]
-		protected Panel(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, initialize)
-		{
-		}
-
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
-
-		/// <summary>
-		/// The default padding for panels.
-		/// </summary>
-		[Obsolete("Set the padding of your panel directly or use styles")]
-		public static Padding DefaultPadding = Padding.Empty;
 
 		/// <summary>
 		/// Gets an enumeration of controls that are directly contained by this container

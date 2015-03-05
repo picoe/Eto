@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using SD = System.Drawing;
 using Eto.Drawing;
 
 #if XAMMAC2
