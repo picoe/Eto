@@ -100,7 +100,7 @@ namespace Eto.Mac.Forms
 			ConfigureWindow();
 		}
 
-		public void ShowModal(Control parent)
+		public virtual void ShowModal(Control parent)
 		{
 			session = null;
 			if (parent != null && parent.ParentWindow != null)
@@ -121,7 +121,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public Task ShowModalAsync(Control parent)
+		public virtual Task ShowModalAsync(Control parent)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			session = null;
