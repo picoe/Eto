@@ -120,7 +120,7 @@ namespace Eto.GtkSharp.Forms.Controls
 							Tree.Selection.SelectIter(GetIterAtRow(start));
 						else
 							Tree.Selection.SelectRange(GetPathAtRow(start), GetPathAtRow(end));
-						start = end = -1;
+						start = end = row;
 					}
 				}
 				if (start != -1)
