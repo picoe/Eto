@@ -201,6 +201,7 @@
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
+    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

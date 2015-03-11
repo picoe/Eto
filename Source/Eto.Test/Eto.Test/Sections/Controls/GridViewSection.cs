@@ -181,6 +181,7 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add(new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image") });
 			control.Columns.Add(new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text") });
 			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true });
+			control.Columns.Add(new GridColumn { HeaderText = "Progress", DataCell = new ProgressCell("Progress") });
 			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Sortable = true });
 
 			if (Platform.Supports<DrawableCell>())
@@ -308,6 +309,7 @@ namespace Eto.Test.Sections.Controls
 			bool? check;
 			string text;
 			string dropDownKey;
+			int progress;
 
 			public int Row { get; set; }
 
@@ -351,6 +353,16 @@ namespace Eto.Test.Sections.Controls
 			// used for drawable cell
 			public Color Color { get; set; }
 
+			public int Progress
+			{
+				get { return progress; }
+				set
+				{
+					progress = value;
+					Log("Progress", value);
+				}
+			}
+
 			public MyGridItem(Random rand, int row)
 			{
 				// initialize to random values
@@ -366,6 +378,8 @@ namespace Eto.Test.Sections.Controls
 				Color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
 
 				dropDownKey = "Item " + Convert.ToString(rand.Next(4) + 1);
+
+				progress = rand.Next(0, 100);
 			}
 		}
 	}
