@@ -85,6 +85,7 @@ namespace Eto.GtkSharp
 			p.Add<ImageViewCell.IHandler>(() => new ImageViewCellHandler());
 			p.Add<TextBoxCell.IHandler>(() => new TextBoxCellHandler());
 			p.Add<DrawableCell.IHandler>(() => new DrawableCellHandler());
+			p.Add<ProgressCell.IHandler>(() => new ProgressCellHandler());
 
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
