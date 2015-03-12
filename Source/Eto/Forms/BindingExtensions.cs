@@ -84,8 +84,19 @@ namespace Eto.Forms
 			where TWidget : Control
 		{
 			var controlExpression = controlProperty.GetMemberInfo();
+			IndirectBinding<TValue> controlBinding;
+			if (controlExpression != null)
+				controlBinding = new PropertyBinding<TValue>(controlExpression.Member.Name);
+			else
+				controlBinding = new DelegateBinding<TWidget, TValue>(controlProperty.Compile());
+
 			var sourceExpression = sourceProperty.GetMemberInfo();
-			return control.BindDataContext<TValue>(controlExpression.Member.Name, sourceExpression.Member.Name, mode, defaultControlValue, defaultContextValue);
+			IndirectBinding<TValue> sourceBinding;
+			if (sourceExpression != null)
+				sourceBinding = new PropertyBinding<TValue>(sourceExpression.Member.Name);
+			else
+				sourceBinding = new DelegateBinding<TContext, TValue>(sourceProperty.Compile());
+			return control.BindDataContext(controlBinding, sourceBinding, mode, defaultControlValue, defaultContextValue);
 		}
 
 		/// <summary>

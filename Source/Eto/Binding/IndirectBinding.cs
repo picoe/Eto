@@ -255,5 +255,29 @@ namespace Eto
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
+
+		/// <summary>
+		/// Converts the a binding to an enumeration to/from its string representation
+		/// </summary>
+		/// <returns>Binding to the string value of the enumeration.</returns>
+		/// <param name="defaultValue">Default if the value is not valid or empty.</param>
+		public IndirectBinding<string> EnumToString(T defaultValue = default(T))
+		{
+			var enumType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+			if (!enumType.IsEnum())
+				throw new ArgumentException(string.Format("Type of T ({0}) must be an enumeration type", typeof(T)));
+			return new DelegateBinding<object, string>(
+				m => System.Convert.ToString(GetValue(m)),
+				(m, val) =>
+				{
+					var value = Enum.IsDefined(enumType, val)
+						? (T)Enum.Parse(enumType, val)
+						: defaultValue;
+					SetValue(m, value);
+				},
+				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				removeChangeEvent: RemoveValueChangedHandler
+			);
+		}
 	}
 }

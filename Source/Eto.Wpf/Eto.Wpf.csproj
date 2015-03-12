@@ -228,6 +228,7 @@
     <Compile Include="WpfHelpers.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
+    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">

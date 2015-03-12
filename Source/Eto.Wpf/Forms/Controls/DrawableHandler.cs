@@ -62,9 +62,13 @@ namespace Eto.Wpf.Forms.Controls
 				if (!Handler.tiled)
 				{
 					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
-					using (var graphics = new Graphics(new GraphicsHandler(this, dc, rect, new RectangleF(Handler.ClientSize), false)))
+					var cliprect = rect.ToEto();
+					if (!cliprect.IsEmpty)
 					{
-						Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, rect.ToEto()));
+						using (var graphics = new Graphics(new GraphicsHandler(this, dc, rect, new RectangleF(Handler.ClientSize), false)))
+						{
+							Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, cliprect));
+						}
 					}
 				}
 			}
