@@ -24,7 +24,10 @@ namespace Eto.Wpf.Forms
 			get
 			{
 				if (!Control.IsLoaded)
-					return clientSize ?? Size.Max(Size.Empty, base.Size - Padding.Size);
+					return clientSize ?? Size;
+				// when the child of a border is null, it doesn't return the correct size
+				if (border.Child == null)
+					return Size;
 				return border.GetSize();
 			}
 			set
@@ -37,7 +40,7 @@ namespace Eto.Wpf.Forms
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
-			SetContentScale(xscale, yscale);
+			SetContentScale(true, true);
 		}
 
 		protected virtual void SetContentScale(bool xscale, bool yscale)

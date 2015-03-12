@@ -317,7 +317,7 @@ namespace Eto.Wpf
 
 		public static Size GetSize(this sw.FrameworkElement element)
 		{
-			if (element.IsVisible && (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight)))
+			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
 				return new Size((int)element.ActualWidth, (int)element.ActualHeight);
 			return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
 		}
