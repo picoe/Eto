@@ -181,22 +181,25 @@ namespace Eto.Forms
 			var rows = Rows;
 			var columnCount = rows.DefaultIfEmpty().Max(r => r != null ? r.Cells.Count : 0);
 			SetCellSize(new Size(columnCount, rows.Count), false);
-			for (int y = 0; y < rows.Count; y++)
+			if (columnCount > 0)
 			{
-				var row = rows[y];
-				while (row.Cells.Count < columnCount)
-					row.Cells.Add(new TableCell());
-				for (int x = 0; x < columnCount; x++)
+				for (int y = 0; y < rows.Count; y++)
 				{
-					var cell = row.Cells[x];
-					Add(cell.Control, x, y);
-					if (cell.ScaleWidth)
-						SetColumnScale(x);
+					var row = rows[y];
+					while (row.Cells.Count < columnCount)
+						row.Cells.Add(new TableCell());
+					for (int x = 0; x < columnCount; x++)
+					{
+						var cell = row.Cells[x];
+						Add(cell.Control, x, y);
+						if (cell.ScaleWidth)
+							SetColumnScale(x);
+					}
+					while (row.Cells.Count < columnCount)
+						row.Cells.Add(new TableCell());
+					if (row.ScaleHeight)
+						SetRowScale(y);
 				}
-				while (row.Cells.Count < columnCount)
-					row.Cells.Add(new TableCell());
-				if (row.ScaleHeight)
-					SetRowScale(y);
 			}
 			created = true;
 			if (Properties.Get<bool>(DataContextChangedKey))
