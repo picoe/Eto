@@ -46,8 +46,8 @@ namespace Eto
 		/// <value>The data value.</value>
 		public override TValue DataValue
 		{
-			get { return GetValue(); }
-			set { SetValue(value); }
+			get { return GetValue != null ? GetValue() : default(TValue); }
+			set { if (SetValue != null) SetValue(value); }
 		}
 
 		void HandleChangedEvent(object sender, EventArgs e)

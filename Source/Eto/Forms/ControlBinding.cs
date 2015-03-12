@@ -151,5 +151,39 @@ namespace Eto.Forms
 			}
 			return BindDataContext(new PropertyBinding<TValue>(memberInfo.Member.Name), mode);
 		}
+
+		/// <summary>
+		/// Converts this binding's value to another value using delegates.
+		/// </summary>
+		/// <remarks>This is useful when you want to cast one binding to another, perform logic when getting/setting a value from a particular
+		/// binding, or get/set a preoperty of the value.</remarks>
+		/// <typeparam name="TNewValue">Type of the value for the new binding</typeparam>
+		/// <param name="getValue">Delegate to translate the value when getting it for the new binding</param>
+		/// <param name="setValue">Delegate to translate the value when setting it to this binding</param>
+		public new ControlBinding<T, TNewValue> Convert<TNewValue>(Func<TValue, TNewValue> getValue, Action<TNewValue> setValue = null)
+		{
+			return new ControlBinding<T, TNewValue>(
+				DataItem,
+				c => getValue != null ? getValue(DataValue) : default(TNewValue),
+				(c,v) => { if (setValue != null) setValue(v); },
+				addChangeEvent: (c, ev) => DataValueChanged += ev,
+				removeChangeEvent: (c, ev) => DataValueChanged -= ev
+			);
+		}
+
+		/// <summary>
+		/// Casts this binding value to another (compatible) type.
+		/// </summary>
+		/// <typeparam name="TNewValue">The type to cast the values of this binding to.</typeparam>
+		public new ControlBinding<T, TNewValue> Cast<TNewValue>()
+		{
+			return new ControlBinding<T, TNewValue>(
+				DataItem,
+				c => (TNewValue)(object)DataValue,
+				(c, v) => DataValue = (TValue)(object)v,
+				addChangeEvent: (c, ev) => DataValueChanged += ev,
+				removeChangeEvent: (c, ev) => DataValueChanged -= ev
+			);
+		}
 	}
 }
