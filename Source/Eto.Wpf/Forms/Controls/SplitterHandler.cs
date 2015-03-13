@@ -300,6 +300,7 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 		}
+
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
@@ -325,7 +326,8 @@ namespace Eto.Wpf.Forms.Controls
 					//swc.DockPanel.SetDock (control, swc.Dock.Top);
 					//control.Height = double.NaN;
 					SetStretch(panel1);
-					control.SetScale(true, true);
+					if (Widget.Loaded)
+						control.SetScale(true, true);
 					pane1.Children.Add(control.ContainerControl);
 				}
 			}
@@ -345,7 +347,8 @@ namespace Eto.Wpf.Forms.Controls
 					//swc.DockPanel.SetDock (control, swc.Dock.Top);
 					//control.Height = double.NaN;
 					SetStretch(panel2);
-					control.SetScale(true, true);
+					if (Widget.Loaded)
+						control.SetScale(true, true);
 					pane2.Children.Add(control.ContainerControl);
 				}
 			}
