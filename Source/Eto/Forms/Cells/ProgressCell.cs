@@ -6,7 +6,7 @@ namespace Eto.Forms
 	/// Cell for <see cref="Grid"/> controls to show and bind a int value to a progress bar.
 	/// </summary>
 	[Handler(typeof(ProgressCell.IHandler))]
-	public class ProgressCell : SingleValueCell<int>
+	public class ProgressCell : SingleValueCell<float?>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ProgressCell"/> class.
@@ -14,7 +14,7 @@ namespace Eto.Forms
 		/// <param name="column">Index of the column to bind to.</param>
 		public ProgressCell(int column)
 		{
-			Binding = new ColumnBinding<int>(column);
+			Binding = new ColumnBinding<float?>(column);
 		}
 
 		/// <summary>
@@ -24,7 +24,7 @@ namespace Eto.Forms
 		/// <param name="ignoreCase">True to ignore case for the property, false to be case sensitive. Default is true.</param>
 		public ProgressCell(string property, bool ignoreCase = true)
 		{
-			Binding = new PropertyBinding<int>(property, ignoreCase);
+			Binding = new PropertyBinding<float?>(property, ignoreCase);
 		}
 
 		/// <summary>

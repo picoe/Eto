@@ -309,7 +309,7 @@ namespace Eto.Test.Sections.Controls
 			bool? check;
 			string text;
 			string dropDownKey;
-			int progress;
+			float? progress;
 
 			public int Row { get; set; }
 
@@ -353,7 +353,7 @@ namespace Eto.Test.Sections.Controls
 			// used for drawable cell
 			public Color Color { get; set; }
 
-			public int Progress
+			public float? Progress
 			{
 				get { return progress; }
 				set
@@ -379,7 +379,7 @@ namespace Eto.Test.Sections.Controls
 
 				dropDownKey = "Item " + Convert.ToString(rand.Next(4) + 1);
 
-				progress = rand.Next(0, 100);
+				progress = rand.Next() % 10 != 0 ? (float?)rand.NextDouble() : null;
 			}
 		}
 	}
