@@ -122,6 +122,12 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			SetScale(false, false);
+		}
+
 		protected virtual void UpdateClientSize(Size size)
 		{
 			var xdiff = Control.ActualWidth - content.ActualWidth;

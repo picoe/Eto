@@ -40,7 +40,7 @@ namespace Eto.Wpf.Forms
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
-			SetContentScale(true, true);
+			SetContentScale(xscale, yscale);
 		}
 
 		protected virtual void SetContentScale(bool xscale, bool yscale)
@@ -121,7 +121,8 @@ namespace Eto.Wpf.Forms
 					element.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
 					element.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
 					border.Child = element;
-					SetContentScale(XScale, YScale);
+					if (Widget.Loaded)
+						SetContentScale(XScale, YScale);
 				}
 				else
 					border.Child = null;

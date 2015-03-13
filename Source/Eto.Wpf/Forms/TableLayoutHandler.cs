@@ -104,23 +104,17 @@ namespace Eto.Wpf.Forms
 			base.OnLoadComplete(e);
 			inGroupBox = Widget.FindParent<GroupBox>() != null;
 			SetMargins();
-
-			if (Control.IsLoaded)
-				SetScale();
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
 		{
-			if (Widget.Loaded)
-			{
-				base.SetScale(xscale, yscale);
-				SetScale();
-			}
+			base.SetScale(xscale, yscale);
+			SetScale();
 		}
 
 		void SetScale()
 		{
-			if (Control == null)
+			if (Control == null || !Widget.Loaded)
 				return;
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{
@@ -283,7 +277,8 @@ namespace Eto.Wpf.Forms
 				control.SetValue(swc.Grid.ColumnProperty, x);
 				control.SetValue(swc.Grid.RowProperty, y);
 				SetMargins(control, x, y);
-				SetScale(handler, x, y);
+				if (Widget.Loaded)
+					SetScale(handler, x, y);
 				Control.Children.Add(control);
 			}
 			UpdatePreferredSize();
