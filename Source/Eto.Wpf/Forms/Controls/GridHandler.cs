@@ -43,6 +43,8 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
 				AutoGenerateColumns = false,
+				CanUserDeleteRows = false,
+				CanUserResizeRows = false,
 				CanUserAddRows = false,
 				RowHeaderWidth = 0,
 				SelectionMode = swc.DataGridSelectionMode.Single
