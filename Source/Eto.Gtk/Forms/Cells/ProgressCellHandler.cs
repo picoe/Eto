@@ -24,6 +24,9 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
+				if (float.IsNaN((float)Handler.GetValueInternal(Item, Handler.ColumnIndex, Row).Val))
+					return;
+
 				if (Handler.FormattingEnabled)
 					Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Item, Row));
 
@@ -40,6 +43,9 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
 			{
+				if (float.IsNaN((float)Handler.GetValueInternal(Item, Handler.ColumnIndex, Row).Val))
+					return;
+
 				if (Handler.FormattingEnabled)
 					Handler.Format(new GtkGridCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
 				base.OnRender (cr, widget, background_area, cell_area, flags);
@@ -49,6 +55,8 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		public ProgressCellHandler()
 		{
+			// We attach the cell formatting event to set FormattingEnabled to true so we can get the progress value in the renderer.
+			AttachEvent(Grid.CellFormattingEvent);
 			Control = new Renderer { Handler = this };
 		}
 
@@ -66,15 +74,24 @@ namespace Eto.GtkSharp.Forms.Cells
 		public override void SetValue(object dataItem, object value)
 		{
 			if (Widget.Binding != null)
-				Widget.Binding.SetValue(dataItem, value is int ? (int)value : 0);
+			{
+				float? progress = value as float?;
+				if (progress.HasValue)
+					progress = progress < 0f ? 0f : progress > 1f ? 1f : progress;
+				Widget.Binding.SetValue(dataItem, progress);
+			}
 		}
 
 		protected override GLib.Value GetValueInternal(object dataItem, int dataColumn, int row)
 		{
-			if (Widget.Binding != null)
-				return new GLib.Value(Widget.Binding.GetValue(dataItem));
+			float? progress = Widget.Binding.GetValue(dataItem);
+			if (Widget.Binding != null && progress.HasValue)
+			{
+				progress = progress < 0f ? 0f : progress > 1f ? 1f : progress;
+				return new GLib.Value(progress * 100f);
+			}
 
-			return new GLib.Value(0);
+			return new GLib.Value(float.NaN);
 		}
 
 		public override void AttachEvent(string id)
