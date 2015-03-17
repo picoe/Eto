@@ -36,11 +36,11 @@ using nuint = System.UInt32;
 namespace Eto.Mac.Forms.Cells
 {
 	// TO DO: Add native ProgressBar and remove Draw code
-	public class ProgressCellHandler : CellHandler<NSTextFieldCell, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
+	public class ProgressCellHandler : CellHandler<ProgressCellHandler.EtoCell, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
 	{
 		public ProgressCellHandler()
 		{
-			Control = new EtoCell { Handler = this, Enabled = true };
+			Control = new EtoCell { Handler = this, Enabled = true, LevelIndicatorStyle = NSLevelIndicatorStyle.ContinuousCapacity, MinValue = 0, MaxValue = 1 };
 		}
 
 		public override bool Editable
@@ -53,7 +53,6 @@ namespace Eto.Mac.Forms.Cells
 		{
 			var c = (EtoCell)cell;
 			c.BackgroundColor = color;
-			c.DrawsBackground = color != Colors.Transparent;
 		}
 
 		public override Color GetBackgroundColor(NSCell cell)
@@ -100,10 +99,12 @@ namespace Eto.Mac.Forms.Cells
 
 
 		// The progress cell
-		public class EtoCell : NSTextFieldCell, IMacControl
+		public class EtoCell : NSLevelIndicatorCell, IMacControl
 		{
-			public EtoCell() : base()
+			public EtoCell()
 			{
+				ForegroundColor = Colors.Black;
+				BackgroundColor = Colors.White;
 			}
 
 			public EtoCell(IntPtr handle) : base(handle)
@@ -118,13 +119,13 @@ namespace Eto.Mac.Forms.Cells
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
-			public new Color BackgroundColor { get; set; }
+			public Color BackgroundColor { get; set; }
 
 			public Color ForegroundColor { get; set; }
 
 			public override CGSize CellSizeForBounds(CGRect bounds)
 			{
-				return CGSize.Empty;
+				return new CGSize(50f, 10f);
 			}
 
 			[Export("copyWithZone:")]
@@ -138,36 +139,26 @@ namespace Eto.Mac.Forms.Cells
 				return new EtoCell(ptr) { Handler = Handler };
 			}
 
-			public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
+			public override void DrawWithFrame(CGRect cellFrame, NSView inView)
 			{
-				var nscontext = NSGraphicsContext.CurrentContext;
-
-				if (DrawsBackground)
-				{
-					var context = nscontext.GraphicsPort;
-					context.SetFillColor(BackgroundColor.ToCGColor());
-					context.FillRect(cellFrame);
-				}
-
-				float? progress;
-				if (float.IsNaN((float)(progress = FloatValue)))
+				var progress = FloatValue;
+				if (float.IsNaN((float)progress))
 					return;
 
+				base.DrawWithFrame(cellFrame, inView);
+
 				string progressText = (int)(progress * 100f) + "%";
-
-				using (var graphics = new Graphics(new GraphicsHandler(null, nscontext, (float)cellFrame.Height, flipped: true)))
+				var str = new NSMutableAttributedString(progressText, NSDictionary.FromObjectAndKey(ForegroundColor.ToNSUI(), NSAttributedString.ForegroundColorAttributeName));
+				var range = new NSRange(0, str.Length);
+				if (Font != null)
 				{
-					RectangleF barRect = new RectangleF((float)cellFrame.X + 2f, (float)cellFrame.Y, (float)cellFrame.Width - 4f, (float)cellFrame.Height - 2f);
-
-					if (ForegroundColor == Colors.Transparent)
-						ForegroundColor = Colors.Green;
-
-					graphics.FillRectangle(Colors.Beige, barRect);
-					graphics.FillRectangle(ForegroundColor, barRect.X, barRect.Y, (barRect.Width / 100f) * (float)(progress * 100f), barRect.Height);
-					graphics.DrawRectangle(Colors.Black, barRect);
-					float fontSize = Math.Max(13, (float)barRect.Height / 2f);
-					graphics.DrawText(Fonts.Sans(fontSize), Colors.Black, new PointF(barRect.MiddleX - (((3f * (float)progressText.Length) / 9.45f) * fontSize), barRect.MiddleY - 1 -(fontSize / 2f)), progressText);
+					str.AddAttributes(NSDictionary.FromObjectAndKey(Font, NSAttributedString.FontAttributeName), range);
 				}
+				var size = FontExtensions.MeasureString(str, cellFrame.Size.ToEto());
+				var rect = cellFrame.ToEto();
+				rect.Offset((rect.Size - size) / 2);
+
+				str.DrawString(rect.ToNS());
 			}
 		}
 	}
