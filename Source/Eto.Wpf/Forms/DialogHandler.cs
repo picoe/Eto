@@ -4,6 +4,7 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Wpf.Forms.Controls;
 using System.Threading.Tasks;
+using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
 {
@@ -11,7 +12,7 @@ namespace Eto.Wpf.Forms
 	{
 		Button defaultButton;
 		Button abortButton;
-		Window parentWindow;
+		Rectangle? parentWindowBounds;
 
 		public DialogHandler()
 		{
@@ -28,7 +29,7 @@ namespace Eto.Wpf.Forms
 		{
 			if (parent != null && !LocationSet)
 			{
-				parentWindow = parent.ParentWindow;
+				var parentWindow = parent.ParentWindow;
 				if (parentWindow != null)
 				{
 					var handler = (IWpfWindow)parentWindow.Handler;
@@ -36,6 +37,7 @@ namespace Eto.Wpf.Forms
 					// CenterOwner does not work in certain cases (e.g. with autosizing)
 					Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
 					Control.SourceInitialized += HandleSourceInitialized;
+					parentWindowBounds = parentWindow.Bounds;
 				}
 			}
 			Control.ShowDialog();
@@ -55,11 +57,12 @@ namespace Eto.Wpf.Forms
 
 		void HandleSourceInitialized(object sender, EventArgs e)
 		{
-			if (parentWindow != null)
+			if (parentWindowBounds != null)
 			{
-				var bounds = parentWindow.Bounds;
+				var bounds = parentWindowBounds.Value;
 				Control.Left = bounds.Left + (bounds.Width - Control.ActualWidth) / 2;
 				Control.Top = bounds.Top + (bounds.Height - Control.ActualHeight) / 2;
+				parentWindowBounds = null;
 			}
 			Control.SourceInitialized -= HandleSourceInitialized;
 		}
