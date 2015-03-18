@@ -26,7 +26,7 @@ namespace Eto.Forms
 		/// <value>The contained controls.</value>
 		public override IEnumerable<Control> Controls
 		{
-			get { return pages; }
+			get { return pages ?? Enumerable.Empty<Control>(); }
 		}
 
 		/// <summary>
