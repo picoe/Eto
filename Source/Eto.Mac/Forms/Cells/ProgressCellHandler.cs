@@ -35,7 +35,6 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Cells
 {
-	// TO DO: Add native ProgressBar and remove Draw code
 	public class ProgressCellHandler : CellHandler<ProgressCellHandler.EtoCell, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
 	{
 		public ProgressCellHandler()
