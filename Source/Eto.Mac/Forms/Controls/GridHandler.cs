@@ -76,23 +76,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-		static readonly Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
-
-		#if Mac64
-		CGPoint ConvertPointFromBacking(CGPoint point)
-		{
-			return base.ConvertNSPointromBacking(point);
-		}
-		#endif
 
 		public override void MouseDown(NSEvent theEvent)
 		{
-			var point = theEvent.LocationInWindow;
+			var point = ConvertPointFromView(theEvent.LocationInWindow, null);
 
-			if (RespondsToSelector(selConvertPointFromBacking))
-				point = ConvertPointFromBacking(point);
-			else
-				point = ConvertPointFromBase(point);
 			var col = GetColumn(point);
 			if (col >= 0)
 			{

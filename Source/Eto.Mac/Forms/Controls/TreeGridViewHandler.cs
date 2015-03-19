@@ -245,7 +245,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void MouseDown(NSEvent theEvent)
 			{
-				var point = ConvertPointFromBase(theEvent.LocationInWindow);
+				var point = ConvertPointFromView(theEvent.LocationInWindow, null);
 
 				int rowIndex;
 				if ((rowIndex = (int)GetRow(point)) >= 0)
