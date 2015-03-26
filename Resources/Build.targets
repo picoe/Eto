@@ -84,7 +84,7 @@
     	<!-- using exec since xbuild messes up properties when using msbuild task -->
     	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net40.sln'" Condition="$(Platform) != 'Windows'"/>
     	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net45.sln'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration)' '$(SourceDir)\Eto.iOS\Eto.iOS.csproj'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration)' '$(SourceDir)\Eto.iOS\Eto.iOS.csproj'" Condition="$(Platform) == 'Mac'"/>
     	
     	<MSBuild Projects="$(SourceDir)\Eto - net40.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
     	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
@@ -134,7 +134,7 @@
 			<Package Include="Eto.Platform.WinRT" Condition="$(Platform) == 'Windows'">
 				<Assembly>$(BuildOutputPCLDir)\Eto.WinRT.dll</Assembly>
 			</Package>
-			<Package Include="Eto.Platform.iOS">
+			<Package Include="Eto.Platform.iOS" Condition="$(Platform) == 'Mac'">
 				<Assembly>$(BuildOutputPCLDir)\Eto.iOS.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Serialization.Json">
