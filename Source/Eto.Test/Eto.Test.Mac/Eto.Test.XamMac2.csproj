@@ -44,7 +44,6 @@
     <UseSGen>True</UseSGen>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
-    <LinkMode>SdkOnly</LinkMode>
     <XamMacArch>x86_64</XamMacArch>
     <DefineConstants>XAMMAC2</DefineConstants>
     <UseRefCounting>false</UseRefCounting>
