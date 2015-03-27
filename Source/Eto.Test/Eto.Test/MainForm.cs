@@ -31,7 +31,7 @@ namespace Eto.Test
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
-			Title = "Test Application";
+			Title = string.Format("Test Application [{0}]", Platform.ID);
 			Style = "main";
 			MinimumSize = new Size(400, 400);
 			topNodes = topNodes ?? TestSections.Get();
