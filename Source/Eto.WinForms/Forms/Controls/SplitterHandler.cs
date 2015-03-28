@@ -63,6 +63,7 @@ namespace Eto.WinForms.Forms.Controls
 				FixedPanel = swf.FixedPanel.Panel1,
 				Panel1MinSize = 0,
 				Panel2MinSize = 0,
+				SplitterWidth = 5 // make it same as WPF & GTK
 			};
 			Control.HandleCreated += (sender, e) =>
 			{
@@ -185,7 +186,33 @@ namespace Eto.WinForms.Forms.Controls
 			Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
 			if (position != null)
 			{
-				SetPosition(position.Value);
+				var newPosition = position.Value;
+				if (fixedPanel == SplitterFixedPanel.None)
+				{
+					var orientation = Control.Orientation;
+					var desiredSize = orientation == swf.Orientation.Vertical ?
+						UserDesiredSize.Width : UserDesiredSize.Height;
+					if (desiredSize > 0)
+					{
+						var currentSize = orientation == swf.Orientation.Vertical ?
+							Control.Width : Control.Height;
+						newPosition = newPosition * currentSize / desiredSize;
+					}
+				}
+				else if (fixedPanel == SplitterFixedPanel.Panel2)
+				{
+					var orientation = Control.Orientation;
+					var desiredSize = orientation == swf.Orientation.Vertical ?
+						UserDesiredSize.Width : UserDesiredSize.Height;
+					if (desiredSize > 0)
+					{
+						var currentSize = orientation == swf.Orientation.Vertical ?
+							Control.Width : Control.Height;
+						newPosition = Math.Max(0,
+							newPosition + currentSize - desiredSize);
+					}
+				}
+				SetPosition(newPosition);
 			}
 			else
 			{
@@ -202,7 +229,16 @@ namespace Eto.WinForms.Forms.Controls
 							pos = Control.Width - size2.Width;
 						else
 							pos = Control.Height - size2.Height;
-						SetPosition(pos);
+						SetPosition(Math.Max(Control.Panel1MinSize, pos - Control.SplitterWidth));
+						break;
+					default:
+						var sone = panel1.GetPreferredSize();
+						var stwo = panel1.GetPreferredSize();
+						var ori = Control.Orientation;
+						var one = ori == swf.Orientation.Vertical ? sone.Width : sone.Height;
+						var two = ori == swf.Orientation.Vertical ? stwo.Width : stwo.Height;
+						var size = ori == swf.Orientation.Vertical ? Control.Width : Control.Height;
+						Position = one * (size - Control.SplitterWidth) / (one + two);
 						break;
 				}
 			}

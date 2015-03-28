@@ -114,6 +114,38 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			if (position != null)
 				Control.Position = position.Value;
+
+			if (fixedPanel != SplitterFixedPanel.Panel1)
+				Control.SizeAllocated += Control_SizeAllocated;
+		}
+
+		void Control_SizeAllocated(object o, Gtk.SizeAllocatedArgs args)
+		{
+			Control.SizeAllocated -= Control_SizeAllocated;
+			if (position == null)
+				return;
+			if (orientation == SplitterOrientation.Horizontal)
+			{
+				int width = PreferredSize.Width;
+				if (width <= 0)
+					return;
+				if (fixedPanel == SplitterFixedPanel.Panel2)
+					Control.Position = Math.Max(0,
+						position.Value + args.Allocation.Width - width);
+				else
+					Control.Position = position.Value * args.Allocation.Width / width;
+			}
+			else
+			{
+				int height = PreferredSize.Height;
+				if (height <= 0)
+					return;
+				if (fixedPanel == SplitterFixedPanel.Panel2)
+					Control.Position = Math.Max(0,
+						position.Value + args.Allocation.Height - height);
+				else
+					Control.Position = position.Value * args.Allocation.Height / height;
+			}
 		}
 
 		static Gtk.Widget EmptyContainer()

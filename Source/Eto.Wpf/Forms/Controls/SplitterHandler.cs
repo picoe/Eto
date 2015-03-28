@@ -10,14 +10,14 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class SplitterHandler : WpfContainer<swc.Grid, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
+		const int splitterSize = 5;
+
 		readonly swc.GridSplitter splitter;
 		readonly swc.DockPanel pane1;
 		readonly swc.DockPanel pane2;
 		SplitterOrientation orientation;
 		SplitterFixedPanel fixedPanel;
 		int? position;
-		int? initialWidth;
-		int? initialHeight;
 		readonly sw.Style style;
 
 		Control panel1;
@@ -51,35 +51,62 @@ namespace Eto.Wpf.Forms.Controls
 			style.Setters.Add(new sw.Setter(sw.FrameworkElement.HorizontalAlignmentProperty, sw.HorizontalAlignment.Stretch));
 
 			UpdateOrientation();
-			Control.Loaded += delegate
-			{
-				// controls should be stretched to fit panels
-				SetStretch(panel1);
-				SetStretch(panel2);
-				UpdateColumnSizing();
-				if (FixedPanel == SplitterFixedPanel.Panel2)
-				{
-					var size = panel2.GetPreferredSize(Conversions.PositiveInfinitySize);
-					var currentOrientation = Orientation;
-					if (currentOrientation == SplitterOrientation.Horizontal)
-					{
-						var width = (int)Control.ActualWidth;
-						position = position ?? (int)(width - size.Width);
-						Position = Size.Width - (width - position.Value);
-					}
-					else if (currentOrientation == SplitterOrientation.Vertical)
-					{
-						var height = (int)Control.ActualHeight;
-						position = position ?? (int)(height - size.Height);
+			Control.Loaded += Control_Loaded;
+		}
 
-						Position = Size.Height - (height - position.Value);
-					}
-					else if (position != null)
-						Position = position.Value;
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			// usually called twice and the second could screw up the calculation
+			Control.Loaded -= Control_Loaded;
+			// controls should be stretched to fit panels
+			SetStretch(panel1);
+			SetStretch(panel2);
+			UpdateColumnSizing();
+
+			bool horiz = Orientation == SplitterOrientation.Horizontal;
+			var size = horiz ? Control.ActualWidth : Control.ActualHeight;
+
+			// use preferred size if no position set
+			// note: shall we rather use GetPreferredSize(OurSize)?
+			if (position == null)
+			{
+				if (fixedPanel == SplitterFixedPanel.Panel1)
+				{
+					var prefer = panel1.GetPreferredSize(Conversions.PositiveInfinitySize);
+					Position = (int)Math.Round(horiz ? prefer.Width : prefer.Height);
+					return;
 				}
-				else if (position != null)
+				if (fixedPanel == SplitterFixedPanel.Panel2)
+				{
+					var prefer = panel2.GetPreferredSize(Conversions.PositiveInfinitySize);
+					Position = Math.Max(0, (int)Math.Round(
+						size - splitterSize - (horiz ? prefer.Width : prefer.Height)));
+					return;
+				}
+				var sone = panel1.GetPreferredSize(Conversions.PositiveInfinitySize);
+				var stwo = panel1.GetPreferredSize(Conversions.PositiveInfinitySize);
+				var one = horiz ? sone.Width : sone.Height;
+				var two = horiz ? stwo.Width : stwo.Height;
+				Position = (int)Math.Round(one * (size - splitterSize) / (one + two));
+			}
+			else
+			{
+				var prefer = horiz ?
+					PreferredSize.Width : PreferredSize.Height;
+
+				if (fixedPanel == SplitterFixedPanel.Panel1 || !(prefer > 0)) //NaN-aware compare
+				{
 					Position = position.Value;
-			};
+				}
+				else if (fixedPanel == SplitterFixedPanel.Panel2)
+				{
+					Position = position.Value + (int)Math.Round(size - prefer);
+				}
+				else
+				{
+					Position = (int)Math.Round(position.Value * (size - splitterSize) / (prefer - splitterSize));
+				}
+			}
 		}
 
 		static void SetStretch(Control panel)
@@ -89,10 +116,6 @@ namespace Eto.Wpf.Forms.Controls
 				var control = panel.GetContainerControl();
 				control.VerticalAlignment = sw.VerticalAlignment.Stretch;
 				control.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
-				/*
-				((sw.FrameworkElement)panel.ControlObject).Width = double.NaN;
-				((sw.FrameworkElement)panel.ControlObject).Height = double.NaN;
-				 * */
 			}
 		}
 
@@ -118,7 +141,7 @@ namespace Eto.Wpf.Forms.Controls
 				swc.Grid.SetColumn(pane2, 2);
 				swc.Grid.SetRow(pane2, 0);
 
-				splitter.Width = 5;
+				splitter.Width = splitterSize;
 				splitter.Height = double.NaN;
 			}
 			else
@@ -142,7 +165,7 @@ namespace Eto.Wpf.Forms.Controls
 				swc.Grid.SetRow(pane2, 2);
 
 				splitter.Width = double.NaN;
-				splitter.Height = 5;
+				splitter.Height = splitterSize;
 			}
 		}
 
@@ -245,61 +268,40 @@ namespace Eto.Wpf.Forms.Controls
 				if (!Widget.Loaded)
 				{
 					position = value;
-					initialWidth = Size.Width;
-					initialHeight = Size.Height;
+					return;
 				}
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns)
 				{
 					var col1 = Control.ColumnDefinitions[0];
 					var col2 = Control.ColumnDefinitions[2];
-					var controlWidth = Control.ActualWidth;
-					if (double.IsNaN(controlWidth))
-						controlWidth = Control.Width;
-					switch (fixedPanel)
+					var width = Control.ActualWidth;
+					if (fixedPanel == SplitterFixedPanel.Panel1)
+						col1.Width = new sw.GridLength(value, sw.GridUnitType.Pixel);
+					else if (fixedPanel == SplitterFixedPanel.Panel2)
+						col2.Width = new sw.GridLength(Math.Max(0,
+							width - splitter.Width - value), sw.GridUnitType.Pixel);
+					else
 					{
-						case SplitterFixedPanel.None:
-							if (Widget.Loaded)
-							{
-								col1.Width = new sw.GridLength(value, sw.GridUnitType.Star);
-								col2.Width = new sw.GridLength(controlWidth - value, sw.GridUnitType.Star);
-							}
-							break;
-						case SplitterFixedPanel.Panel1:
-							col1.Width = new sw.GridLength(value, sw.GridUnitType.Pixel);
-							break;
-						case SplitterFixedPanel.Panel2:
-							if (Widget.Loaded)
-								col2.Width = new sw.GridLength(controlWidth - value, sw.GridUnitType.Pixel);
-							else
-								col1.Width = new sw.GridLength(value, sw.GridUnitType.Pixel);
-							break;
+						col1.Width = new sw.GridLength(value, sw.GridUnitType.Star);
+						col2.Width = new sw.GridLength(Math.Max(0, 
+							width - splitter.Width - value), sw.GridUnitType.Star);
 					}
 				}
 				else
 				{
 					var row1 = Control.RowDefinitions[0];
 					var row2 = Control.RowDefinitions[2];
-					var controlHeight = Control.ActualHeight;
-					if (double.IsNaN(controlHeight))
-						controlHeight = Control.Height;
-					switch (fixedPanel)
+					var height = Control.ActualHeight;
+					if (fixedPanel == SplitterFixedPanel.Panel1)
+						row1.Height = new sw.GridLength(value, sw.GridUnitType.Pixel);
+					else if (fixedPanel == SplitterFixedPanel.Panel2)
+						row2.Height = new sw.GridLength(Math.Max(0,
+							height - splitter.Height - value), sw.GridUnitType.Pixel);
+					else
 					{
-						case SplitterFixedPanel.None:
-							if (Widget.Loaded)
-							{
-								row1.Height = new sw.GridLength(value, sw.GridUnitType.Star);
-								row2.Height = new sw.GridLength(controlHeight - value, sw.GridUnitType.Star);
-							}
-							break;
-						case SplitterFixedPanel.Panel1:
-							row1.Height = new sw.GridLength(value, sw.GridUnitType.Pixel);
-							break;
-						case SplitterFixedPanel.Panel2:
-							if (Widget.Loaded)
-								row2.Height = new sw.GridLength(Math.Max(0, controlHeight - value), sw.GridUnitType.Pixel);
-							else
-								row1.Height = new sw.GridLength(value, sw.GridUnitType.Pixel);
-							break;
+						row1.Height = new sw.GridLength(value, sw.GridUnitType.Star);
+						row2.Height = new sw.GridLength(Math.Max(0,
+							height - splitter.Height - value), sw.GridUnitType.Star);
 					}
 				}
 			}
@@ -348,8 +350,6 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					var control = panel2.GetWpfFrameworkElement();
 					control.ContainerControl.Style = style;
-					//swc.DockPanel.SetDock (control, swc.Dock.Top);
-					//control.Height = double.NaN;
 					SetStretch(panel2);
 					if (Widget.Loaded)
 						control.SetScale(true, true);
