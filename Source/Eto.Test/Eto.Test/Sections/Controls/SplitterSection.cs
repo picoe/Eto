@@ -208,28 +208,35 @@ namespace Eto.Test.Sections.Controls
 				for (var i = 0; i < Panels.Length; ++i)
 					Panels[i].Content = getContent(i);
 
+				// basic test - near mode
 				var p0_1 = new Splitter {
 					Panel1 = Panels[0], Panel2 = Panels[1],
 					Orientation = SplitterOrientation.Vertical,
 					Position = 200
 				};
+				// far mode (position sets size of second panel)
 				var p2_3 = new Splitter {
 					Panel1 = Panels[2], Panel2 = Panels[3],
 					Orientation = SplitterOrientation.Vertical,
 					FixedPanel = SplitterFixedPanel.Panel2,
-					// -200px from bottom with minimal height for autosize test (p0_1 should preffer higher)
-					Position = 0, Height = 205
+					Position = 200, PositionMode = SplitterPositionMode.Far
 				};
+				// percent mode (60%)
 				var p4_5 = new Splitter {
 					Panel1 = Panels[4], Panel2 = Panels[5],
 					Orientation = SplitterOrientation.Vertical,
 					FixedPanel = SplitterFixedPanel.None,
+					PositionMode = SplitterPositionMode.Percent,
+					Position = 60
 				};
+				// startup percent mode, but fix left
 				var p01_23 = new Splitter {
 					Panel1 = p0_1, Panel2 = p2_3,
 					Orientation = SplitterOrientation.Horizontal,
-					Position = 200
+					PositionMode = SplitterPositionMode.Percent,
+					Position = 50
 				};
+				// startup test with near mode and width set
 				var p0123_45 = new Splitter {
 					Panel1 = p01_23, Panel2 = p4_5,
 					Orientation = SplitterOrientation.Horizontal,
@@ -294,12 +301,20 @@ namespace Eto.Test.Sections.Controls
 			Func<Control> makebox = () => {
 				var area = new TextArea();
 				area.SizeChanged += (s,e) => {
-					if (area.Width <= 0 || area.Height <= 0)
+					var split = area.Parent as Splitter;
+					if (split == null)
+						return;
+					var size = area.Parent.Size;
+					if (split.Orientation == SplitterOrientation.Horizontal)
+						size.Width -= split.SplitterWidth;
+					else
+						size.Height -= split.SplitterWidth;
+					if (size.Width <= 0 || size.Height <= 0)
 						return;
 					area.Text = string.Format(
 						"W:{0} ({1}%)\r\nH:{2} ({3}%)",
-						area.Width, area.Width*100/area.Parent.Width,
-						area.Height, area.Height*100/area.Parent.Height);
+						area.Width, area.Width*100/size.Width,
+						area.Height, area.Height*100/size.Height);
 				};
 				return area;
 			};
@@ -313,12 +328,12 @@ namespace Eto.Test.Sections.Controls
 					? new Rectangle(wa.X + 20, wa.Y + 40 + wa.Height/3, wa.Width/3, wa.Height*2/3 - 60)
 					: new Rectangle(wa.X + wa.Width/3 + 40, wa.Y + 20, wa.Width*2/3 - 60, wa.Height - 40)
 				};
-				var left = new Splitter {
+				var main = new Splitter {
 					Position = 80
 				};
 				var middle = new Splitter {
 					FixedPanel = SplitterFixedPanel.Panel2,
-					Width = 200, Position = 115 // 5px less to make Panel2.Width = 50
+					Width = 200, Position = 115 // 5px less to make Panel2.Width = 80
 				};
 				var ltop = new Splitter {
 					Orientation = SplitterOrientation.Vertical,
@@ -327,7 +342,8 @@ namespace Eto.Test.Sections.Controls
 				var lbottom = new Splitter {
 					Orientation = SplitterOrientation.Vertical,
 					FixedPanel = SplitterFixedPanel.Panel2,
-					Height = 200, Position = 115
+					PositionMode = SplitterPositionMode.Far,
+					Position = 80
 				};
 				var right = new Splitter {
 					Orientation = SplitterOrientation.Vertical,
@@ -336,10 +352,11 @@ namespace Eto.Test.Sections.Controls
 				};
 				var center = new Splitter {
 					FixedPanel = SplitterFixedPanel.None,
-					Width = 200, Position = 80 // ~40%
+					PositionMode = SplitterPositionMode.Percent,
+					Position = 40
 				};
-				left	.Panel1 = ltop;
-				left	.Panel2 = middle;
+				main	.Panel1 = ltop;
+				main	.Panel2 = middle;
 				ltop	.Panel1 = makebox();
 				ltop	.Panel2 = lbottom;
 				lbottom	.Panel1 = makebox();
@@ -350,7 +367,7 @@ namespace Eto.Test.Sections.Controls
 				right	.Panel2 = makebox();
 				center	.Panel1 = makebox();
 				center	.Panel2 = makebox();
-				form.Content = left;
+				form.Content = main;
 				form.Show();
 				return form;
 			};
