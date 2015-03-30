@@ -85,6 +85,7 @@ namespace Eto.WinForms.Forms.Controls
 			Control.HandleCreated += HandleCreated;
 		}
 
+		//TODO: Check that PositionChanged fires correctly
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -208,7 +209,7 @@ namespace Eto.WinForms.Forms.Controls
 					break;
 				default:
 					var sone = panel1.GetPreferredSize();
-					var stwo = panel1.GetPreferredSize();
+					var stwo = panel2.GetPreferredSize();
 					var one = horiz ? sone.Width : sone.Height;
 					var two = horiz ? stwo.Width : stwo.Height;
 					SetPosition(one * GetAvailableSize(true) / (one + two),	SplitterPositionMode.Near);

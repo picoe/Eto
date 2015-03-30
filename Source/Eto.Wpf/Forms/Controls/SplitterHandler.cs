@@ -6,8 +6,6 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Drawing;
 
-using System.Diagnostics;
-
 namespace Eto.Wpf.Forms.Controls
 {
 	public class SplitterHandler : WpfContainer<swc.Grid, Splitter, Splitter.ICallback>, Splitter.IHandler
@@ -82,7 +80,7 @@ namespace Eto.Wpf.Forms.Controls
 						break;
 					default:
 						var sone = panel1.GetPreferredSize(Conversions.PositiveInfinitySize);
-						var stwo = panel1.GetPreferredSize(Conversions.PositiveInfinitySize);
+						var stwo = panel2.GetPreferredSize(Conversions.PositiveInfinitySize);
 						var one = horiz ? sone.Width : sone.Height;
 						var two = horiz ? stwo.Width : stwo.Height;
 						SetPosition(one * size / (one + two), SplitterPositionMode.Near);
