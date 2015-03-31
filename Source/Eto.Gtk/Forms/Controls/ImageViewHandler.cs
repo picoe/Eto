@@ -87,7 +87,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			set
 			{
 				image = value;
-				if (image != null && !widthSet || !heightSet)
+				if (image != null && (!widthSet || !heightSet))
 				{
 					Control.SetSizeRequest(widthSet ? Size.Width : image.Size.Width, heightSet ? Size.Height : image.Size.Height);
 				}
