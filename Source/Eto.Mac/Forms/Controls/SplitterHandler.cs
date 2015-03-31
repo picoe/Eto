@@ -224,6 +224,20 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		//TODO: SplitterPositionMode for Mac, now empty that it can at least be compiled
+		//..... take inspiration in WinForms/GTK or WPF implementation
+		public SplitterPositionMode PositionMode
+		{
+			get { return SplitterPositionMode.Near; }
+			set { /* TODO */ }
+		}
+
+		public int SplitterWidth
+		{
+			get { return 5; }
+			set { /* TODO */ }
+		}
+
 		public SplitterOrientation Orientation
 		{
 			get
