@@ -17,30 +17,37 @@ namespace Eto.GtkSharp.Forms
 
 		public override void Send(SendOrPostCallback d, object state)
 		{
-			var evt = new ManualResetEvent(false);
-			Exception exception = null;
-
-			Idle.Add(() =>
+			if (System.Threading.Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
 			{
-				try
-				{
-					d(state);
-				}
-				catch (Exception ex)
-				{
-					exception = ex;
-				}
-				finally
-				{
-					evt.Set();
-				}
-				return false;
-			});
+				d(state);
+			}
+			else
+			{
+				var evt = new ManualResetEvent(false);
+				Exception exception = null;
 
-			evt.WaitOne();
+				Idle.Add(() =>
+				{
+					try
+					{
+						d(state);
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+					}
+					finally
+					{
+						evt.Set();
+					}
+					return false;
+				});
 
-			if (exception != null)
-				throw exception;
+				evt.WaitOne();
+
+				if (exception != null)
+					throw exception;
+			}
 		}
 	}
 }
