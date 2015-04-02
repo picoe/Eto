@@ -105,8 +105,16 @@ namespace Eto.Mac
 		{
 			obj.Release();
 		}
-		#endif
 
+		static readonly IntPtr NSColorClassPtr = Class.GetHandle("NSColor");
+		static readonly IntPtr selColorWithCGColor = Selector.GetHandle("colorWithCGColor:");
+
+		public static NSColor NSColorFromCGColor(CGColor cgColor)
+		{
+			NSApplication.EnsureUIThread();
+			return Messaging.GetNSObject<NSColor>(Messaging.IntPtr_objc_msgSend_IntPtr(NSColorClassPtr, selColorWithCGColor, cgColor.Handle));
+		}
+		#endif
 	}
 }
 

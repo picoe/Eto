@@ -49,10 +49,16 @@ namespace Eto.Mac
 		{
 			if (color == null)
 				return Colors.Black;
-			//if (color.ColorSpace.ColorSpaceModel != NSColorSpaceModel.RGB)
-			color = color.UsingColorSpace(NSColorSpace.CalibratedRGB);
+			var converted = color.UsingColorSpace(NSColorSpace.CalibratedRGB);
+			if (converted == null)
+			{
+				// Convert named (e.g. system) colors to RGB using its CGColor
+				converted = color.CGColor.ToNS().UsingColorSpace(NSColorSpace.CalibratedRGB);
+				if (converted == null)
+					throw new ArgumentOutOfRangeException("color", "Color cannot be converted to an RGB colorspace");
+			}
 			nfloat red, green, blue, alpha;
-			color.GetRgba(out red, out green, out blue, out alpha);
+			converted.GetRgba(out red, out green, out blue, out alpha);
 			return new Color((float)red, (float)green, (float)blue, (float)alpha);
 		}
 
