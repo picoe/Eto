@@ -196,11 +196,6 @@ namespace Eto.Mac.Forms
 			get { return menuBar == null ? null : menuBar.ControlObject as NSMenu; }
 		}
 
-		protected MacWindow()
-		{
-			AutoSize = true;
-		}
-
 		protected override void Initialize()
 		{
 			base.Initialize();

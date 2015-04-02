@@ -93,11 +93,6 @@ namespace Eto.WinForms.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
-		bool internalVisible = true;
-		Font font;
-		Cursor cursor;
-		string tooltip;
-		Size desiredSize = new Size(-1, -1);
 		Size parentMinimumSize;
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
@@ -133,11 +128,13 @@ namespace Eto.WinForms.Forms
 			return Size.Max(parentMinimumSize, size);
 		}
 
+		static readonly object DesiredSizeKey = new object();
+
 		public Size UserDesiredSize
 		{
 			get
 			{
-				return desiredSize;
+				return Widget.Properties.Get<Size?>(DesiredSizeKey) ?? new Size(-1, -1);
 			}
 		}
 
@@ -370,7 +367,7 @@ namespace Eto.WinForms.Forms
 			get { return ContainerControl.Size.ToEto(); }
 			set
 			{
-				desiredSize = value;
+				Widget.Properties[DesiredSizeKey] = value;
 				ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
 				var minset = SetMinimumSize();
 				ContainerControl.Size = value.ToSD();
@@ -399,22 +396,26 @@ namespace Eto.WinForms.Forms
 			set { Control.Enabled = value; }
 		}
 
+		static readonly object CursorKey = new object();
+
 		public Cursor Cursor
 		{
-			get { return cursor; }
+			get { return Widget.Properties.Get<Cursor>(CursorKey); }
 			set
 			{
-				cursor = value;
-				Control.Cursor = cursor != null ? cursor.ControlObject as swf.Cursor : null;
+				Widget.Properties[CursorKey] = value;
+				Control.Cursor = value != null ? value.ControlObject as swf.Cursor : null;
 			}
 		}
 
+		static readonly object ToolTipKey = new object();
+
 		public string ToolTip
 		{
-			get { return tooltip; }
+			get { return Widget.Properties.Get<string>(ToolTipKey); }
 			set
 			{
-				tooltip = value;
+				Widget.Properties[ToolTipKey] = value;
 				SetToolTip();
 			}
 		}
@@ -464,9 +465,11 @@ namespace Eto.WinForms.Forms
 			get { return Control.Focused; }
 		}
 
+		static readonly object InternalVisibleKey = new object();
+
 		bool IWindowsControl.InternalVisible
 		{
-			get { return internalVisible; }
+			get { return Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
 		}
 
 		public bool Visible
@@ -476,7 +479,7 @@ namespace Eto.WinForms.Forms
 			{
 				if (ContainerControl.Visible != value)
 				{
-					internalVisible = value;
+					Widget.Properties[InternalVisibleKey] = value;
 					ContainerControl.Visible = value;
 					SetMinimumSize(updateParent: true);
 				}
@@ -521,7 +524,7 @@ namespace Eto.WinForms.Forms
 			{
 				var parent = Widget.ParentWindow.Handler as IWindowHandler;
 				if (parent != null)
-					parent.ToolTips.SetToolTip(Control, tooltip);
+					parent.ToolTips.SetToolTip(Control, ToolTip);
 			}
 		}
 
@@ -603,18 +606,18 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		static readonly object FontKey = new object();
+
 		public Font Font
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(new FontHandler(Control.Font));
-				return font;
+				return Widget.Properties.Create<Font>(FontKey, () => new Font(new FontHandler(Control.Font)));
 			}
 			set
 			{
-				font = value;
-				Control.Font = font.ToSD();
+				Widget.Properties[FontKey] = value;
+				Control.Font = value.ToSD();
 			}
 		}
 
