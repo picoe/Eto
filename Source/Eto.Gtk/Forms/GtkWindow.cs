@@ -249,7 +249,7 @@ namespace Eto.GtkSharp.Forms
 					Control.DeleteEvent += Connector.HandleDeleteEvent;
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					Control.Shown += Connector.HandleShown;
+					Control.Shown += Connector.HandleShownEvent;
 					break;
 				case Window.WindowStateChangedEvent:
 					Connector.OldState = WindowState;
@@ -287,7 +287,7 @@ namespace Eto.GtkSharp.Forms
 				args.RetVal = !Handler.CloseWindow();
 			}
 
-			public void HandleShown(object sender, EventArgs e)
+			public void HandleShownEvent(object sender, EventArgs e)
 			{
 				Handler.Callback.OnShown(Handler.Widget, EventArgs.Empty);
 			}
