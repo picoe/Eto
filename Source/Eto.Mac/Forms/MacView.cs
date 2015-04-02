@@ -594,7 +594,7 @@ namespace Eto.Mac.Forms
 		public string ToolTip
 		{
 			get { return ContentControl.ToolTip; }
-			set { ContentControl.ToolTip = value; }
+			set { ContentControl.ToolTip = value ?? string.Empty; }
 		}
 
 		public void Print(PrintSettings settings)
