@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -64,6 +65,7 @@ namespace Eto.Forms
 		/// to the container or explicitly set the size.
 		/// </remarks>
 		/// <value>The wrapping mode for the text.</value>
+		[DefaultValue(WrapMode.Word)]
 		public WrapMode Wrap
 		{
 			get { return Handler.Wrap; }
