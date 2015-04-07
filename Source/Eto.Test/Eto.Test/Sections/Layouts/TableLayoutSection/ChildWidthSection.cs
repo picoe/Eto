@@ -1,4 +1,5 @@
 using Eto.Forms;
+using System.Linq;
 
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
@@ -6,11 +7,13 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 	/// This tests a TableLayout that contains a control with a width larger than its container
 	/// </summary>
 	[Section("TableLayout", "Child Width")]
-	public class ChildWidthSection : TableLayout
+	public class ChildWidthSection : TableLayout2
 	{
 		public ChildWidthSection()
 			: base(1, 3)
 		{
+			//Columns[0].Width = TableLength.Star(1);
+			//Rows[2].Height = TableLength.Star(1);
 			var table = new GridView();
 			table.Columns.Add(new GridColumn { AutoSize = false, Width = 1000, HeaderText = "Title", DataCell = new TextBoxCell("FormattedTitle"), Editable = false, Sortable = true });
 

@@ -244,6 +244,11 @@ namespace Eto.Forms
 			Control.MapPlatformCommand(systemAction, action);
 		}
 
+		public Size GetPreferredSize(Size availableSize)
+		{
+			return Size.Round(Control.GetPreferredSize(availableSize));
+		}
+
 		/// <summary>
 		/// Gets the location of the control as positioned by the container
 		/// </summary>

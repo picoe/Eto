@@ -48,7 +48,7 @@ namespace Eto.Test.UnitTests.Handlers
 				if (handler != null)
 				{
 					if (AutoSize)
-						ClientSize = handler.GetPreferredSize();
+						ClientSize = handler.GetPreferredSize(Size.MaxValue);
 					else
 						handler.SetBounds(new Rectangle(ClientSize));
 				}

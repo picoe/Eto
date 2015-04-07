@@ -2,14 +2,15 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
+using System.Threading;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly Gtk.EventBox eventBox;
-		TextAlignment horizontalAlign = TextAlignment.Left;
-		VerticalAlignment verticalAlign = VerticalAlignment.Top;
+		static readonly object TextAlignment_Key = new object();
+		static readonly object VerticalAlignment_Key = new object();
 
 		public override Gtk.Widget ContainerControl
 		{
@@ -23,7 +24,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public class EtoLabel : Gtk.Label
 		{
-			int wrapWidth;
+			int? wrapWidth;
 
 			public void ResetWidth()
 			{
@@ -32,33 +33,43 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 
 			#if GTK2
+
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
-				//base.OnSizeRequested (ref requisition);
 				int width, height;
 				Layout.GetPixelSize(out width, out height);
 				requisition.Width = width;
 				requisition.Height = height;
 			}
 			#else
-			protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
+			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
 			{
-				base.OnGetPreferredWidth (out minimum_width, out natural_width);
-				//minimum_width = natural_width; // = 500; //this.Layout.Width;
+				var oldWidth = Layout.Width;
+				int pixelWidth, pixelHeight;
+				Layout.GetPixelSize(out pixelWidth, out pixelHeight);
+				natural_height = pixelHeight;
+				minimum_height = pixelHeight;
+
+				Layout.Width = oldWidth;
 			}
 
-			protected override void OnAdjustSizeRequest (Gtk.Orientation orientation, out int minimum_size, out int natural_size)
+			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
 			{
-				base.OnAdjustSizeRequest (orientation, out minimum_size, out natural_size);
-				if (orientation == Gtk.Orientation.Horizontal)
-					minimum_size = natural_size;
+				var width = Layout.Width;
+				Layout.Width = int.MaxValue;
+				int pixelWidth, pixelHeight;
+				Layout.GetPixelSize(out pixelWidth, out pixelHeight);
+				minimum_width = 0;
+				natural_width = pixelWidth;
+				Layout.Width = width;
 			}
 			#endif
 
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
 				base.OnSizeAllocated(allocation);
-				SetWrapWidth(allocation.Width);
+				if (Wrap || wrapWidth == null)
+					SetWrapWidth(allocation.Width);
 			}
 
 			void SetWrapWidth(int width)
@@ -107,6 +118,8 @@ namespace Eto.GtkSharp.Forms.Controls
 						Control.SingleLineMode = true;
 						break;
 					case WrapMode.Word:
+						// set to false then true to ensure size is recalculated at runtime
+						Control.Wrap = false;
 						Control.Wrap = true;
 						Control.Layout.Wrap = Pango.WrapMode.WordChar;
 						Control.LineWrapMode = Pango.WrapMode.WordChar;
@@ -114,6 +127,7 @@ namespace Eto.GtkSharp.Forms.Controls
 						Control.SingleLineMode = false;
 						break;
 					case WrapMode.Character:
+						Control.Wrap = false;
 						Control.Wrap = true;
 						Control.Layout.Wrap = Pango.WrapMode.Char;
 						Control.LineWrapMode = Pango.WrapMode.Char;
@@ -156,10 +170,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public TextAlignment TextAlignment
 		{
-			get { return horizontalAlign; }
+			get { return Widget.Properties.Get<TextAlignment>(TextAlignment_Key); }
 			set
 			{
-				horizontalAlign = value;
+				Widget.Properties.Set(TextAlignment_Key, value);
 				SetAlignment();
 			}
 		}
@@ -168,7 +182,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			float xalignment;
 			float yalignment;
-			switch (horizontalAlign)
+			switch (TextAlignment)
 			{
 				default:
 					xalignment = 0F;
@@ -180,7 +194,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					xalignment = 1F;
 					break;
 			}
-			switch (verticalAlign)
+			switch (VerticalAlignment)
 			{
 				case VerticalAlignment.Center:
 					yalignment = 0.5F;
@@ -193,15 +207,15 @@ namespace Eto.GtkSharp.Forms.Controls
 					break;
 			}
 			Control.SetAlignment(xalignment, yalignment);
-			Control.Justify = horizontalAlign.ToGtk();
+			Control.Justify = TextAlignment.ToGtk();
 		}
 
 		public VerticalAlignment VerticalAlignment
 		{
-			get { return verticalAlign; }
+			get { return Widget.Properties.Get<VerticalAlignment>(VerticalAlignment_Key); }
 			set
 			{
-				verticalAlign = value;
+				Widget.Properties.Set(VerticalAlignment_Key, value);
 				SetAlignment();
 			}
 		}
@@ -216,5 +230,26 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.Attributes = value != null ? ((FontHandler)value.Handler).Attributes : null;
 			}
 		}
+
+		public override Size GetPreferredSize(Size availableSize)
+		{
+			if (!Control.IsRealized)
+				Control.Realize();
+
+			var oldWidth = Control.Layout.Width;
+			Control.Layout.Width = Control.Wrap ? (int)Math.Round(availableSize.Width * Pango.Scale.PangoScale) : int.MaxValue;
+			int width, height;
+			Control.Layout.GetPixelSize(out width, out height);
+			Control.Layout.Width = oldWidth;
+			return new Size(width, height);
+		}
+
+		#if GTK3
+		public override void SetScale(bool scaled)
+		{
+			base.SetScale(scaled);
+			Control.Scaled = scaled;
+		}
+		#endif
 	}
 }

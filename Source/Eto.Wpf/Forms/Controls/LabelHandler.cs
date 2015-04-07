@@ -36,7 +36,7 @@ namespace Eto.Wpf.Forms.Controls
 			accessText.TextDecorations = decorations;
 		}
 
-		public LabelHandler ()
+		public LabelHandler()
 		{
 			accessText = new swc.AccessText();
 			Control = new EtoLabel
@@ -63,7 +63,6 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 			TextAlignment = TextAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Top;
-			Wrap = WrapMode.Word;
 		}
 
 		public override void AttachEvent(string id)
@@ -108,7 +107,7 @@ namespace Eto.Wpf.Forms.Controls
 					case sw.TextWrapping.WrapWithOverflow:
 						return WrapMode.Word;
 					default:
-						throw new NotSupportedException ();
+						throw new NotSupportedException();
 				}
 			}
 			set
@@ -132,6 +131,7 @@ namespace Eto.Wpf.Forms.Controls
 					SetText();
                     UpdatePreferredSize();
 				}
+				Text = Text; // set text again to set correct non-breaking space
 			}
 		}
 
@@ -147,6 +147,8 @@ namespace Eto.Wpf.Forms.Controls
 			get { return accessText.Foreground.ToEtoColor(); }
 			set { accessText.Foreground = value.ToWpfBrush(accessText.Foreground); }
 		}
+
+		static readonly object Text_Key = new object();
 
 		public string Text
 		{

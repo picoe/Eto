@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
@@ -104,6 +105,13 @@ namespace Eto.WinForms.Forms.Controls
 				Wrap = WrapMode.Word;
 			}
 
+			struct Position
+			{
+				public sd.Size Size;
+				public string Text;
+			}
+			List<Position> positions;
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var bordersAndPadding = Padding.Size;
@@ -194,11 +202,15 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					case WrapMode.None:
 						textFormat |= swf.TextFormatFlags.SingleLine;
+						AutoSize = true;
 						break;
 					case WrapMode.Word:
 						textFormat |= swf.TextFormatFlags.WordBreak;
+						AutoSize = true;
 						break;
 					case WrapMode.Character:
+						//textFormat |= swf.TextFormatFlags.WordBreak;
+						AutoSize = true;
 						break;
 				}
 				switch (TextAlignment)
@@ -298,6 +310,8 @@ namespace Eto.WinForms.Forms.Controls
 					Control.Wrap = value;
 					SetMinimumSize(true);
 					Control.Invalidate();
+					if (Control.Parent != null)
+						Control.Parent.PerformLayout();
 				}
 			}
 		}

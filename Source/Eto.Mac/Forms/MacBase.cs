@@ -38,8 +38,6 @@ namespace Eto.Mac.Forms
 		NSView EventControl { get; }
 
 		bool AutoSize { get; }
-
-		SizeF GetPreferredSize(SizeF availableSize);
 	}
 
 	[Register("ObserverHelper")]

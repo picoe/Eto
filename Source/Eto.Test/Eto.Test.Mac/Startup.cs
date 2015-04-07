@@ -4,6 +4,7 @@ using Eto.Mac;
 using System.Diagnostics;
 using Eto.Drawing;
 using Eto.Mac.Forms.ToolBar;
+using System.Collections.Generic;
 
 #if XAMMAC2
 using AppKit;

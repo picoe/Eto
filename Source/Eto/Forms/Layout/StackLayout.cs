@@ -401,24 +401,24 @@ namespace Eto.Forms
 				{
 					case Orientation.Horizontal:
 						label.VerticalAlignment = item.VerticalAlignment ?? VerticalContentAlignment;
-						item.VerticalAlignment = VerticalAlignment.Stretch;
+						item.VerticalAlignment = Forms.VerticalAlignment.Stretch;
 						break;
 					case Orientation.Vertical:
 						switch (item.HorizontalAlignment ?? HorizontalContentAlignment)
 						{
-							case HorizontalAlignment.Left:
+							case Forms.HorizontalAlignment.Left:
 								label.TextAlignment = TextAlignment.Left;
 								break;
-							case HorizontalAlignment.Center:
+							case Forms.HorizontalAlignment.Center:
 								label.TextAlignment = TextAlignment.Center;
 								break;
-							case HorizontalAlignment.Right:
+							case Forms.HorizontalAlignment.Right:
 								label.TextAlignment = TextAlignment.Right;
 								break;
 							default:
 								return;
 						}
-						item.HorizontalAlignment = HorizontalAlignment.Stretch;
+						item.HorizontalAlignment = Forms.HorizontalAlignment.Stretch;
 						break;
 					default:
 						throw new ArgumentOutOfRangeException();
@@ -502,16 +502,16 @@ namespace Eto.Forms
 						var cell = new TableCell { ScaleWidth = item.Expand };
 						switch (item.VerticalAlignment ?? VerticalContentAlignment)
 						{
-							case VerticalAlignment.Top:
+							case Forms.VerticalAlignment.Top:
 								cell.Control = new TableLayout(control, null);
 								break;
-							case VerticalAlignment.Center:
+							case Forms.VerticalAlignment.Center:
 								cell.Control = new TableLayout(null, control, null);
 								break;
-							case VerticalAlignment.Bottom:
+							case Forms.VerticalAlignment.Bottom:
 								cell.Control = new TableLayout(null, control);
 								break;
-							case VerticalAlignment.Stretch:
+							case Forms.VerticalAlignment.Stretch:
 								cell.Control = control;
 								break;
 							default:
@@ -533,16 +533,16 @@ namespace Eto.Forms
 						var vrow = new TableRow { ScaleHeight = item.Expand };
 						switch (item.HorizontalAlignment ?? HorizontalContentAlignment)
 						{
-							case HorizontalAlignment.Left:
+							case Forms.HorizontalAlignment.Left:
 								vrow.Cells.Add(TableLayout.Horizontal(control, null));
 								break;
-							case HorizontalAlignment.Center:
+							case Forms.HorizontalAlignment.Center:
 								vrow.Cells.Add(TableLayout.Horizontal(null, control, null));
 								break;
-							case HorizontalAlignment.Right:
+							case Forms.HorizontalAlignment.Right:
 								vrow.Cells.Add(TableLayout.Horizontal(null, control));
 								break;
-							case HorizontalAlignment.Stretch:
+							case Forms.HorizontalAlignment.Stretch:
 								vrow.Cells.Add(control);
 								break;
 							default:

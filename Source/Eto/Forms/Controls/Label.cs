@@ -99,6 +99,7 @@ namespace Eto.Forms
 			set { Handler.TextAlignment = value; }
 		}
 
+		/*
 		/// <summary>
 		/// Gets or sets the vertical alignment of the text.
 		/// </summary>
@@ -110,7 +111,7 @@ namespace Eto.Forms
 		{
 			get { return Handler.VerticalAlignment; }
 			set { Handler.VerticalAlignment = value; }
-		}
+		}*/
 
 		/// <summary>
 		/// Gets or sets the vertical alignment of the text.

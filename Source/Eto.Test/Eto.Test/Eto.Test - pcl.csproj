@@ -193,6 +193,7 @@
     <Compile Include="UnitTests\Forms\Layout\DynamicLayoutTests.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
     <Compile Include="UnitTests\Forms\TestClasses.cs" />
+    <Compile Include="Sections\Layouts\PixelLayoutSection\FlowLayoutSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />

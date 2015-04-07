@@ -14,7 +14,7 @@ namespace Eto.Wpf.Forms
 			foreach (var control in Widget.VisualControls)
 			{
 				var container = control.GetContainerControl();
-				var preferredSize = control.GetPreferredSize(constraint);
+				var preferredSize = control.GetPreferredSize(constraint.ToEtoSize());
 				var left = swc.Canvas.GetLeft(container) + preferredSize.Width;
 				var top = swc.Canvas.GetTop(container) + preferredSize.Height;
 				if (size.Width < left) size.Width = left;

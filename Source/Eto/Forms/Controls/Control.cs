@@ -1000,6 +1000,15 @@ namespace Eto.Forms
 			base.Dispose(disposing);
 		}
 
+		public HorizontalAlignment HorizontalAlignment { get; set; }
+		public VerticalAlignment VerticalAlignment { get; set; }
+		public Padding Margin { get; set; }
+
+		public virtual SizeF GetPreferredSize(SizeF availableSize)
+		{
+			return Handler.GetPreferredSize(Size.Truncate(availableSize));
+		}
+
 		/// <summary>
 		/// Converts a string to a label control implicitly.
 		/// </summary>
@@ -1419,6 +1428,8 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The mouse cursor</value>
 			Cursor Cursor { get; set; }
+
+			Size GetPreferredSize(Size availableSize);
 		}
 		#endregion
 	}

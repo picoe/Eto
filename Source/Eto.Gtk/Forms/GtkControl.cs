@@ -19,6 +19,8 @@ namespace Eto.GtkSharp.Forms
 		Color? SelectedBackgroundColor { get; }
 
 		void SetBackgroundColor();
+
+		void SetScale(bool scaled);
 	}
 
 	public static class GtkControlExtensions
@@ -58,6 +60,7 @@ namespace Eto.GtkSharp.Forms
 		bool mouseDownHandled;
 		Color? cachedBackgroundColor;
 		Color? backgroundColor;
+
 		public static float ScrollAmount = 2f;
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
@@ -659,5 +662,20 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		public virtual Size GetPreferredSize(Size availableSize)
+		{
+			var preferredSize = PreferredSize;
+
+			var request = Control.SizeRequest().ToEto();
+			if (preferredSize.Width == -1)
+				preferredSize.Width = request.Width;
+			if (preferredSize.Height == -1)
+				preferredSize.Height = request.Height;
+			return preferredSize;
+		}
+		
+		public virtual void SetScale(bool scaled)
+		{
+		}
 	}
 }

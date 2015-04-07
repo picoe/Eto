@@ -79,6 +79,9 @@ namespace Eto.WinForms.Forms
 
 		public void Show()
 		{
+			//ContainerContentControl.AutoSize = false;
+			//ContainerContentControl.MaximumSize = ContainerContentControl.MinimumSize = (Content.GetPreferredSize() + 100).ToSD();
+
 			Control.Show();
 		}
 

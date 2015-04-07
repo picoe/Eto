@@ -682,5 +682,34 @@ namespace Eto.WinForms.Forms
 			get { return Control.ForeColor.ToEto(); }
 			set { Control.ForeColor = value.ToSD(); }
 		}
+
+		public virtual void SetFilledContent()
+		{
+		}
+
+		public Size GetPreferredSize(Size availableSize)
+		{
+			var size = UserDesiredSize;
+
+			Size? defSize;
+			if (true)
+				defSize = cachedDefaultSize ?? DefaultSize;
+			else
+				defSize = DefaultSize;
+			if (defSize != null)
+			{
+				var controlSize = Control.GetPreferredSize(availableSize.ToSD());
+				if (size.Width == -1) size.Width = Math.Max(defSize.Value.Width, controlSize.Width);
+				if (size.Height == -1) size.Height = Math.Max(defSize.Value.Height, controlSize.Height);
+			}
+			else if (size.Width == -1 || size.Height == -1)
+			{
+				var controlSize = Control.GetPreferredSize(availableSize.ToSD());
+				if (size.Width == -1) size.Width = controlSize.Width;
+				if (size.Height == -1) size.Height = controlSize.Height;
+			}
+
+			return Size.Max(parentMinimumSize, size);
+		}
 	}
 }

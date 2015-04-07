@@ -216,6 +216,8 @@ namespace Eto.Mac.Forms
 				var size = (Widget.Loaded) ? (CGSize?)control.Frame.Size : null;
 				control.SizeToFit();
 				naturalSize = control.Frame.Size.ToEto();
+				if (naturalSize.Value.IsEmpty && control.Cell != null)
+					naturalSize = control.Cell.CellSizeForBounds(new RectangleF(Size.MaxValue).ToNS()).ToEtoSize();
 				if (size != null)
 					control.SetFrameSize(size.Value);
 				NaturalSize = naturalSize;
@@ -236,6 +238,11 @@ namespace Eto.Mac.Forms
 					size.Height = preferredSize.Height;
 			}
 			return SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
+		}
+
+		public Size GetPreferredSize(Size availableSize)
+		{
+			return Size.Round(GetPreferredSize((SizeF)availableSize));
 		}
 
 		public virtual Size PositionOffset { get { return Size.Empty; } }

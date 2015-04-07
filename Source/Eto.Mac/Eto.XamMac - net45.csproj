@@ -234,6 +234,7 @@
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
     <Compile Include="Forms\NativeFormHandler.cs" />
+    <Compile Include="Forms\CustomLayoutHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

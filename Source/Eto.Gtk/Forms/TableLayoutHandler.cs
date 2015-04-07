@@ -157,9 +157,11 @@ namespace Eto.GtkSharp.Forms
 				}
 
 				controls[y, x] = child;
-				var widget = child.GetContainerWidget();
+				var childHandler = child.GetGtkControlHandler();
+				var widget = childHandler.ContainerControl;
 				if (widget.Parent != null)
 					((Gtk.Container)widget.Parent).Remove(widget);
+				childHandler.SetScale(columnScale[x] || x == lastColumnScale);
 				Control.Attach(widget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions(x), GetRowOptions(y), 0, 0);
 				widget.ShowAll();
 				return true;

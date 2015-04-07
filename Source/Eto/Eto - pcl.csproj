@@ -94,7 +94,6 @@
     <Compile Include="Forms\Key.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Layout\Layout.cs" />
     <Compile Include="Forms\MessageBox.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -327,6 +326,10 @@
     <Compile Include="Forms\ToolBar\ToolItemConverter.cs" />
     <Compile Include="Forms\KeysConverter.cs" />
     <Compile Include="Drawing\FontConverter.cs" />
+    <Compile Include="Forms\Layout\FlowLayout.cs" />
+    <Compile Include="Forms\Layout\Layout.cs" />
+    <Compile Include="Forms\Layout\TableLayout2.cs" />
+    <Compile Include="Forms\Layout\TableRow2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

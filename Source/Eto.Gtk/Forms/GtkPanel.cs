@@ -108,11 +108,13 @@ namespace Eto.GtkSharp.Forms
 					if (content != null)
 						alignment.Remove(content.GetContainerWidget());
 					content = value;
-					var widget = content.GetContainerWidget();
-					if (widget != null)
+					var controlHandler = content.GetGtkControlHandler();
+					if (controlHandler != null)
 					{
+						var widget = controlHandler.ContainerControl;
 						if (widget.Parent != null)
 							((Gtk.Container)widget.Parent).Remove(widget);
+						controlHandler.SetScale(true);
 						alignment.Child = widget;
 						widget.ShowAll();
 					}

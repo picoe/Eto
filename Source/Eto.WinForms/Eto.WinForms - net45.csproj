@@ -110,6 +110,7 @@
     <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
+    <Compile Include="Forms\CustomLayoutHandler.cs" />
     <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
     <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />

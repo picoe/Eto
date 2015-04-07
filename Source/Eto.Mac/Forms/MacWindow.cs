@@ -163,11 +163,7 @@ namespace Eto.Mac.Forms
 			SizeF naturalSize = new SizeF(200, 200);
 			if (Content != null && Content.Visible)
 			{
-				var contentControl = Content.GetMacControl();
-				if (contentControl != null)
-				{
-					naturalSize = contentControl.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
-				}
+				naturalSize = Content.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
 			}
 			if (PreferredClientSize != null)
 			{
@@ -540,6 +536,8 @@ namespace Eto.Mac.Forms
 				}
 			}
 		}
+
+		Size initialSize = new Size(-1, -1);
 
 		public override Size Size
 		{

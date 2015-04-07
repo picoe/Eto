@@ -201,6 +201,12 @@ namespace Eto.Mac.Forms.Controls
 			SetCustomFieldEditor();
 			base.InnerMapPlatformCommand(systemAction, command, CustomFieldEditor);
 		}
+
+		public override SizeF GetPreferredSize(SizeF availableSize)
+		{
+			var size = base.GetPreferredSize(availableSize);
+			return size;
+		}
 	}
 }
 

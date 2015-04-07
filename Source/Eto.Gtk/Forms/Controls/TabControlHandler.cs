@@ -86,5 +86,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.TabPos.ToEto(); }
 			set { Control.TabPos = value.ToGtk(); }
 		}
+		
+		public override Size GetPreferredSize(Size availableSize)
+		{
+			var size = base.GetPreferredSize(availableSize);
+			var tabSize = Control.GetNthPage(0).SizeRequest();
+			size.Height += 50; // TODO: Get actual size somehow
+			return size;
+		}
 	}
 }

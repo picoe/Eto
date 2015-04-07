@@ -170,7 +170,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value != DisabledTextColor)
 				{
 					Widget.Properties[DisabledTextColorKey] = value;
-					SetAttributes();
+					//SetAttributes();
 				}
 			}
 		}

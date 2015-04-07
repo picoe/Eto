@@ -5,6 +5,7 @@ using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using Eto.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -65,6 +66,12 @@ namespace Eto.WinForms.Forms.Controls
 		public TextBoxHandler()
 		{
 			Control = new EtoTextBox();
+			Control.Margin = swf.Padding.Empty;
+		}
+
+		public override Size? DefaultSize
+		{
+			get { return new Size(100, -1); }
 		}
 
 		public bool ShowBorder

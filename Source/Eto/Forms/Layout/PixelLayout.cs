@@ -36,7 +36,7 @@ namespace Eto.Forms
 		/// When adding children using this, you can position them using the <see cref="SetLocation"/> static method.
 		/// </remarks>
 		/// <value>The contents of the container.</value>
-		public List<Control> Contents
+		public IList<Control> Contents
 		{
 			get
 			{

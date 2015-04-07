@@ -41,6 +41,11 @@ namespace Eto.Wpf.Forms
 		bool maximizable = true;
 		bool minimizable = true;
 
+		protected swc.DockPanel InnerContent
+		{
+			get { return content; }
+		}
+
 		public override IntPtr NativeHandle
 		{
 			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
@@ -66,14 +71,15 @@ namespace Eto.Wpf.Forms
 			Control.Content = main;
 			Control.Loaded += delegate
 			{
+				// stop form from auto-sizing after it is shown
+				Control.SizeToContent = sw.SizeToContent.Manual;
+
 				SetResizeMode();
 				if (initialClientSize != null)
 				{
 					initialClientSize = null;
-					SetContentSize();
 				}
-				// stop form from auto-sizing after it is shown
-				Control.SizeToContent = sw.SizeToContent.Manual;
+				SetContentSize();
 				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 			};
 			Control.PreviewKeyDown += (sender, e) =>

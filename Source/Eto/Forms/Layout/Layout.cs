@@ -1,9 +1,27 @@
 using System;
 using System.Linq;
 using System.ComponentModel;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
+	[Handler(typeof(IHandler))]
+	public abstract class CustomLayout : Layout
+	{
+		protected new IHandler Handler { get { return (IHandler)base.Handler; } }
+
+		public new interface IHandler : Layout.IHandler
+		{
+			void Add(Control control);
+
+			void Remove(Control control);
+
+			void RemoveAll();
+
+			void Move(Control control, Rectangle location);
+		}
+	}
+
 	/// <summary>
 	/// Base class for all layout-based containers
 	/// </summary>
@@ -38,7 +56,7 @@ namespace Eto.Forms
 		/// All layouts should theoretically work without having to manually update them, but in certain cases
 		/// this may be necessary to be called.
 		/// </remarks>
-		public virtual void Update()
+		public virtual void UpdateLayout()
 		{
 			UpdateContainers(this);
 			Handler.Update();
@@ -48,7 +66,7 @@ namespace Eto.Forms
 		{
 			foreach (var c in container.VisualControls.OfType<Layout>())
 			{
-				c.Update();
+				c.UpdateLayout();
 			}
 		}
 

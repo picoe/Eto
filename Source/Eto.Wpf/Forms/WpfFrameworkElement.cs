@@ -12,7 +12,6 @@ namespace Eto.Wpf.Forms
 {
 	public interface IWpfFrameworkElement
 	{
-		sw.Size GetPreferredSize(sw.Size constraint);
 		sw.FrameworkElement ContainerControl { get; }
 		void SetScale(bool xscale, bool yscale);
 		sw.Size ParentMinimumSize { get; set; }
@@ -55,14 +54,6 @@ namespace Eto.Wpf.Forms
 				return controlObject.GetContainerControl();
 
 			return control.ControlObject as sw.FrameworkElement;
-		}
-
-		public static sw.Size GetPreferredSize(this Control control, sw.Size available)
-		{
-			var handler = control.GetWpfFrameworkElement();
-			if (handler != null)
-				return handler.GetPreferredSize(available);
-			return WpfConversions.ZeroSize;
 		}
 	}
 
@@ -556,6 +547,11 @@ namespace Eto.Wpf.Forms
 					return Point.Empty;
 				return Control.TranslatePoint(new sw.Point(0, 0), Widget.VisualParent.GetContainerControl()).ToEtoPoint();
 			}
+		}
+
+		public Size GetPreferredSize(Size availableSize)
+		{
+			return GetPreferredSize(availableSize.ToWpf()).ToEtoSize();
 		}
 	}
 }

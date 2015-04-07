@@ -279,12 +279,13 @@ namespace Eto.Mac.Forms.Controls
 			set { ((EtoLabelFieldCell)Control.Cell).VerticalAlignment = value; }
 		}
 
-		protected virtual void SetAttributes()
+		public override void OnLoad(EventArgs e)
 		{
-			SetAttributes(false);
+			base.OnLoad(e);
+			SetAttributes(true);
 		}
 
-		void SetAttributes(bool force)
+		void SetAttributes(bool force = false)
 		{
 			if (Widget.Loaded || force)
 			{
@@ -317,12 +318,6 @@ namespace Eto.Mac.Forms.Controls
 					return col.Value.ToNSUI();
 				return null; 
 			}
-		}
-
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			SetAttributes(true);
 		}
 
 		public override void AttachEvent(string id)

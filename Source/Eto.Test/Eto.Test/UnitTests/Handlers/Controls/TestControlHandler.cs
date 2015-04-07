@@ -7,7 +7,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 	interface IControlHandler
 	{
 		void OnShown();
-		Size GetPreferredSize();
+		Size GetPreferredSize(Size availableSize);
 		void SetBounds(Rectangle rect);
 	}
 
@@ -179,15 +179,15 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 			Invalidate();
 		}
 
-		public virtual Size GetPreferredSize()
-		{
-			return desiredSize;
-		}
-
 		public virtual void SetBounds(Rectangle rect)
 		{
 			size = rect.Size;
 			Location = rect.Location;
+		}
+
+		public Size GetPreferredSize(Size availableSize)
+		{
+			return desiredSize;
 		}
 	}
 }

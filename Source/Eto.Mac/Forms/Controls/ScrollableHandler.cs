@@ -209,7 +209,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override CGRect GetContentBounds()
 		{
-			var contentSize = Content.GetPreferredSize(SizeF.MaxValue);
+			var contentSize = Content.GetPreferredSize(ClientSize);
 
 			if (ExpandContentWidth)
 				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
@@ -373,5 +373,10 @@ namespace Eto.Mac.Forms.Controls
 		public float MaximumZoom { get { return 1f; } set { } }
 
 		public float Zoom { get { return 1f; } set { } }
+
+		public override SizeF GetPreferredSize(SizeF availableSize)
+		{
+			return base.GetPreferredSize(availableSize) + GetBorderSize();
+		}
 	}
 }

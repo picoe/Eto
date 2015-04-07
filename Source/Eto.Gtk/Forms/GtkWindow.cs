@@ -61,7 +61,7 @@ namespace Eto.GtkSharp.Forms
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		Point? currentLocation;
-		Size? initialSize;
+		Size initialSize = new Size(-1, -1);
 		WindowState state;
 		WindowStyle style;
 		bool topmost;
@@ -185,20 +185,23 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				var window = Control.GetWindow();
-				return window != null ? window.FrameExtents.Size.ToEto() : initialSize ?? Control.DefaultSize.ToEto();
+				return Widget.Loaded && window != null ? window.FrameExtents.Size.ToEto() : initialSize;
 			}
 			set
 			{
 				var window = Control.GetWindow();
-				if (window != null)
+				if (Widget.Loaded && window != null)
 				{
 					var diff = window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
 					Control.Resize(value.Width - diff.Width, value.Height - diff.Height);
 				}
 				else
 				{
-					Control.Resize(value.Width, value.Height);
 					initialSize = value;
+					if (initialSize.Width > 0)
+						Control.WidthRequest = initialSize.Width;
+					if (initialSize.Height > 0)
+						Control.HeightRequest = initialSize.Height;
 				}
 			}
 		}
@@ -208,7 +211,7 @@ namespace Eto.GtkSharp.Forms
 			var allocation = Control.Allocation.Size;
 			var minSize = MinimumSize;
 
-			if (initialSize != null)
+			if (initialSize.Width > 0 || initialSize.Height > 0)
 			{
 				var gdkWindow = Control.GetWindow();
 				var frameExtents = gdkWindow.FrameExtents.Size.ToEto();
@@ -216,9 +219,13 @@ namespace Eto.GtkSharp.Forms
 				frameExtents = gdkWindow.FrameExtents.Size.ToEto();
 
 				var diff = frameExtents - Control.Allocation.Size.ToEto();
-				allocation.Width = initialSize.Value.Width - diff.Width;
-				allocation.Height = initialSize.Value.Height - diff.Height;
-				initialSize = null;
+				if (initialSize.Width < 0)
+					initialSize.Width = allocation.Width + diff.Width;
+				if (initialSize.Height < 0)
+					initialSize.Height = allocation.Height + diff.Height;
+				allocation.Width = initialSize.Width - diff.Width;
+				allocation.Height = initialSize.Height - diff.Height;
+				initialSize = Size.Empty;
 			}
 
 			if (Resizable)
