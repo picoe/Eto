@@ -587,7 +587,10 @@ namespace Eto.Mac.Forms
 
 		public virtual void Close()
 		{
-			Control.Close();
+			var args = new CancelEventArgs();
+			Callback.OnClosing(Widget, args);
+			if (!args.Cancel)
+				Control.Close();
 		}
 
 		public Eto.Forms.ToolBar ToolBar
