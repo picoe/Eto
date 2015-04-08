@@ -18,6 +18,7 @@ namespace Eto.Forms
 	public class TabControl : Container
 	{
 		TabPageCollection pages;
+
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>

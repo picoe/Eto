@@ -8,7 +8,6 @@ namespace Eto.GtkSharp.Forms.Menu
 	public class ButtonMenuItemHandler : MenuActionItemHandler<Gtk.ImageMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
 	{
 		string tooltip;
-		string text;
 		Keys shortcut;
 		Image image;
 		readonly Gtk.AccelLabel label;
@@ -72,12 +71,10 @@ namespace Eto.GtkSharp.Forms.Menu
 
 		public string Text
 		{
-			get { return text; }
+			get { return label.Text; }
 			set
 			{
-				text = value;
-				//string val = (shortcutText.Length > 0) ? text+"\t"+shortcutText : text;
-				label.Text = GtkControl<Gtk.Widget, Control, Control.ICallback>.StringToMnuemonic(text);
+				label.Text = value.ToPlatformMnemonic();
 				label.UseUnderline = true;
 			}
 		}

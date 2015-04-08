@@ -141,7 +141,7 @@ namespace Eto.iOS.Drawing
 				MoveTo ((float)xs, (float)ys);
 			}
 
-			Control.AddArc (affine, x+ width / 2, centerY, width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc (affine, x+ width / 2, centerY, width / 2, MacConversions.DegreesToRadians (startAngle), MacConversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
 		}
 
 		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)

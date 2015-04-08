@@ -59,7 +59,7 @@ namespace Eto.Wpf.Forms.Controls
 				UpdateColumnSizing();
 				if (FixedPanel == SplitterFixedPanel.Panel2)
 				{
-					var size = panel2.GetPreferredSize(Conversions.PositiveInfinitySize);
+					var size = panel2.GetPreferredSize(WpfConversions.PositiveInfinitySize);
 					var currentOrientation = Orientation;
 					if (currentOrientation == SplitterOrientation.Horizontal)
 					{

@@ -54,7 +54,7 @@ namespace Eto.Wpf.Forms
 					var childControl = controls[x, y].GetWpfFrameworkElement();
 					if (childControl != null)
 					{
-						var preferredSize = childControl.GetPreferredSize(Conversions.PositiveInfinitySize);
+						var preferredSize = childControl.GetPreferredSize(WpfConversions.PositiveInfinitySize);
 						var margin = childControl.ContainerControl.Margin;
 						widths[x] = Math.Max(widths[x], preferredSize.Width + margin.Horizontal());
 						maxHeight = Math.Max(maxHeight, preferredSize.Height + margin.Vertical());

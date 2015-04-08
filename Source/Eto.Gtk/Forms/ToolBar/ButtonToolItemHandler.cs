@@ -19,8 +19,8 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			Control = new Gtk.ToolButton(GtkImage, Text);
 			Control.IsImportant = true;
 			Control.Sensitive = Enabled;
-			//Control.TooltipText = this.ToolTip;
-			//control.CanFocus = false;
+			Control.TooltipText = this.ToolTip;
+			//control.CanFocus = false;			// why is this disabled and not true???
 			tb.Insert(Control, index);
 			if (tb.Visible) Control.ShowAll();
 			Control.Clicked += Connector.HandleClicked;
