@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Eto
 {
@@ -207,6 +209,65 @@ namespace Eto
 			{
 				((EventHandler<T>)existingDelegate)(sender, args);
 			}
+		}
+
+		/// <summary>
+		/// Set the value for the specified property key, removing the value from the dictionary if it is the default value of T.
+		/// </summary>
+		/// <remarks>
+		/// This can be used as an optimized way to set the value in the dictionary as if the value set is the default
+		/// (e.g. null for reference types, false for bool, 0 for int, etc), then it will be removed from the dictionary
+		/// instead of just set to the value, reducing memory usage.
+		/// The <see cref="Get{T}"/> will return the default value if it does not exist
+		/// </remarks>
+		/// <param name="key">Key of the property to set.</param>
+		/// <param name="value">Value for the property.</param>
+		/// <typeparam name="T">The type of the property to set.</typeparam>
+		public void Set<T>(object key, T value)
+		{
+			if (ContainsKey(key) && Equals(value, default(T)))
+				Remove(key);
+			else
+				this[key] = value;
+		}
+
+		/// <summary>
+		/// Set the value for the specified property key, raising the <paramref name="propertyChanged"/> handler if it has changed.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when creating properties that need to trigger changed events without having to write boilerplate code.
+		/// </remarks>
+		/// <example>
+		/// <code>
+		/// public class MyForm : Form, INotifyPropertyChanged
+		/// {
+		/// 	static readonly MyPropertyKey = new object();
+		/// 
+		/// 	public bool MyProperty
+		///		{
+		/// 		get { return Properties.Get&lt;bool&gt;(MyPropertyKey); }
+		/// 		set { Properties.Set(MyPropertyKey, value, PropertyChanged); }
+		/// 	}
+		/// 
+		/// 	public event PropertyChangedEventHandler PropertyChanged;
+		/// }
+		/// </code>
+		/// </example>
+		/// <param name="key">Key of the property to set.</param>
+		/// <param name="value">Value for the property.</param>
+		/// <param name="propertyChanged">Property changed event handler to raise if the property value has changed.</param>
+		/// <param name="propertyName">Name of the property, or omit to get the property name from the caller.</param>
+		/// <typeparam name="T">The type of the property to set.</typeparam>
+		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, [CallerMemberName] string propertyName = null)
+		{
+			var existing = Get<T>(key);
+			if (!Equals(existing, value))
+			{
+				Set<T>(key, value);
+				propertyChanged(Parent, new PropertyChangedEventArgs(propertyName));
+				return true;
+			}
+			return false;
 		}
 	}
 }
