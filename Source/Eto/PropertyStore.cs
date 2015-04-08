@@ -258,7 +258,11 @@ namespace Eto
 		/// <param name="propertyChanged">Property changed event handler to raise if the property value has changed.</param>
 		/// <param name="propertyName">Name of the property, or omit to get the property name from the caller.</param>
 		/// <typeparam name="T">The type of the property to set.</typeparam>
+		#if PCL
 		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, [CallerMemberName] string propertyName = null)
+		#else
+		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, string propertyName)
+		#endif
 		{
 			var existing = Get<T>(key);
 			if (!Equals(existing, value))

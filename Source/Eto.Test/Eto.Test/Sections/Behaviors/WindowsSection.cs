@@ -24,7 +24,7 @@ namespace Eto.Test.Sections.Behaviors
 		public bool CancelClose
 		{
 			get { return Properties.Get<bool>(CancelCloseKey); }
-			set { Properties.Set(CancelCloseKey, value, PropertyChanged); }
+			set { Properties.Set(CancelCloseKey, value, PropertyChanged, "CancelClose"); }
 		}
 
 		public WindowsSection()
