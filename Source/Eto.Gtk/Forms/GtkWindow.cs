@@ -229,7 +229,7 @@ namespace Eto.GtkSharp.Forms
 			
 			HandleEvent(Window.WindowStateChangedEvent); // to set restore bounds properly
 			HandleEvent(Window.ClosingEvent); // to chain application termination events
-			HandleEvent(Window.SizeChangedEvent); // for RestoreBounds
+			HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
 			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
 			Control.Shown += HandleControlShown;
 		}
@@ -300,15 +300,15 @@ namespace Eto.GtkSharp.Forms
 				var windowState = handler.WindowState;
 				if (windowState == WindowState.Normal)
 				{
-					if ((args.Event.ChangedMask & Gdk.WindowState.Maximized) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Maximized) == 0)
+					if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Maximized) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Maximized))
 					{
 						handler.restoreBounds = handler.Widget.Bounds;
 					}
-					else if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Iconified) == 0)
+					else if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Iconified) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Iconified))
 					{
 						handler.restoreBounds = handler.Widget.Bounds;
 					}
-					else if ((args.Event.ChangedMask & Gdk.WindowState.Fullscreen) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Fullscreen) == 0)
+					else if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Fullscreen) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Fullscreen))
 					{
 						handler.restoreBounds = handler.Widget.Bounds;
 					}
@@ -426,7 +426,7 @@ namespace Eto.GtkSharp.Forms
 			return !args.Cancel;
 		}
 
-		public void Close()
+		public virtual void Close()
 		{
 			if (CloseWindow())
 			{
