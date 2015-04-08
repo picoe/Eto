@@ -183,9 +183,9 @@ namespace Eto.iOS.Forms
 
 		public WindowState WindowState { get; set; }
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
-			get { return null; }
+			get { return Widget.Bounds; }
 		}
 
 		public WindowStyle WindowStyle { get { return WindowStyle.Default; } set { } }

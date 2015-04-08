@@ -27,7 +27,7 @@ namespace Eto.Wpf.Forms
 
 		public void ShowModal(Control parent)
 		{
-			if (parent != null && !LocationSet)
+			if (parent != null)
 			{
 				var parentWindow = parent.ParentWindow;
 				if (parentWindow != null)
@@ -57,13 +57,14 @@ namespace Eto.Wpf.Forms
 
 		void HandleSourceInitialized(object sender, EventArgs e)
 		{
-			if (parentWindowBounds != null)
+			if (parentWindowBounds != null && !LocationSet)
 			{
 				var bounds = parentWindowBounds.Value;
 				Control.Left = bounds.Left + (bounds.Width - Control.ActualWidth) / 2;
 				Control.Top = bounds.Top + (bounds.Height - Control.ActualHeight) / 2;
 				parentWindowBounds = null;
 			}
+			LocationSet = false;
 			Control.SourceInitialized -= HandleSourceInitialized;
 		}
 

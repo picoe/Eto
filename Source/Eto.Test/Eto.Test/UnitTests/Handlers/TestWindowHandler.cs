@@ -99,7 +99,7 @@ namespace Eto.Test.UnitTests.Handlers
 			set { throw new NotImplementedException(); }
 		}
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
 			get { throw new NotImplementedException(); }
 		}

@@ -735,9 +735,9 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
-			get { return WindowState == WindowState.Normal ? null : restoreBounds; }
+			get { return WindowState == WindowState.Normal ? Widget.Bounds : restoreBounds ?? Widget.Bounds; }
 			set { restoreBounds = value; }
 		}
 

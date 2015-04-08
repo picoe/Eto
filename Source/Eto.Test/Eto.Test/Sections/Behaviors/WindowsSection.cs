@@ -2,6 +2,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.Linq;
+using System.ComponentModel;
 
 namespace Eto.Test.Sections.Behaviors
 {
@@ -17,12 +18,13 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox minimizableCheckBox;
 		CheckBox showInTaskBarCheckBox;
 		CheckBox topMostCheckBox;
+		CheckBox cancelCloseCheckBox;
 
 		public WindowsSection()
 		{
 			var layout = new DynamicLayout();
 
-			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), ShowInTaskBar(), TopMost(), null);
+			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), ShowInTaskBar(), TopMost(), CreateCancelClose(), null);
 			layout.AddSeparateRow(null, new Label { Text = "Window Style" }, WindowStyle(), null);
 			layout.AddSeparateRow(null, new Label { Text = "Window State" }, WindowState(), null);
 			layout.AddSeparateRow(null, CreateChildWindowButton(), null);
@@ -135,6 +137,11 @@ namespace Eto.Test.Sections.Behaviors
 			return topMostCheckBox;
 		}
 
+		Control CreateCancelClose()
+		{
+			return cancelCloseCheckBox = new CheckBox { Text = "Cancel Close" };
+		}
+
 		void CreateChild()
 		{
 			if (child != null)
@@ -191,10 +198,14 @@ namespace Eto.Test.Sections.Behaviors
 			Application.Instance.AsyncInvoke(() => Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count()));
 		}
 
-		static void child_Closing(object sender, EventArgs e)
+		void child_Closing(object sender, CancelEventArgs e)
 		{
-			var child = (Window)sender;
 			Log.Write(child, "Closing");
+			Log.Write(child, "RestoreBounds: {0}", child.RestoreBounds);
+			if (cancelCloseCheckBox.Checked ?? false)
+			{
+				e.Cancel = true;
+			}
 		}
 
 		static void child_LocationChanged(object sender, EventArgs e)

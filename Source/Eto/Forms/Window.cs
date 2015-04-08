@@ -371,13 +371,13 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the bounds of the window before it was minimized or maximized.
+		/// Gets the bounds of the window before it was minimized or maximized, or the current bounds if <see cref="WindowState"/> is Normal.
 		/// </summary>
 		/// <remarks>
 		/// This is useful to retrieve the desired size and position of the window even though it is currently maximized or minimized.
 		/// </remarks>
 		/// <value>The restore bounds.</value>
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
 			get { return Handler.RestoreBounds; }
 		}
@@ -625,7 +625,7 @@ namespace Eto.Forms
 			/// This is useful to retrieve the desired size and position of the window even though it is currently maximized or minimized.
 			/// </remarks>
 			/// <value>The restore bounds.</value>
-			Rectangle? RestoreBounds { get; }
+			Rectangle RestoreBounds { get; }
 
 			/// <summary>
 			/// Gets or sets the style of this window.

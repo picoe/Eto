@@ -361,7 +361,7 @@ namespace Eto.Wpf.Forms
 			{
 				Control.Left = value.X;
 				Control.Top = value.Y;
-				if (!Widget.Loaded)
+				if (!Control.IsLoaded)
 					LocationSet = true;
 			}
 		}
@@ -407,9 +407,9 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
-			get { return Control.RestoreBounds.IsEmpty ? (Rectangle?)null : Control.RestoreBounds.ToEto(); }
+			get { return Control.WindowState == sw.WindowState.Normal || Control.RestoreBounds.IsEmpty ? Widget.Bounds : Control.RestoreBounds.ToEto(); }
 		}
 
 		sw.Window IWpfWindow.Control
