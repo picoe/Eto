@@ -19,19 +19,19 @@ namespace Eto
 	public class PropertyStore : Dictionary<object, object>
 	{
 		/// <summary>
-		/// Gets the parent widget that this property store is attached to
+		/// Gets the parent object that this property store is attached to
 		/// </summary>
 		/// <remarks>
 		/// This is used to attach/remove events
 		/// </remarks>
-		/// <value>The parent widget</value>
-		public Widget Parent { get; private set; }
+		/// <value>The parent object</value>
+		public object Parent { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.PropertyStore"/> class.
 		/// </summary>
 		/// <param name="parent">Parent to attach the properties to</param>
-		internal PropertyStore(Widget parent)
+		public PropertyStore(object parent)
 		{
 			this.Parent = parent;
 		}
@@ -40,12 +40,13 @@ namespace Eto
 		/// Gets a value from the property store with the specified key of a concrete type
 		/// </summary>
 		/// <param name="key">Key of the property to get</param>
+		/// <param name="defaultValue">Value to return when the specified property is not found in the dictionary</param>
 		/// <typeparam name="T">The type of property to get.</typeparam>
-		/// <returns>Value of the property with the given key, or default(T) if not found</returns>
-		public T Get<T>(object key)
+		/// <returns>Value of the property with the given key, or <paramref name="defaultValue"/> if not found</returns>
+		public T Get<T>(object key, T defaultValue = default(T))
 		{
 			object value;
-			return TryGetValue(key, out value) ? (T)value : default(T);
+			return TryGetValue(key, out value) ? (T)value : defaultValue;
 		}
 
 		/// <summary>
@@ -83,7 +84,7 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// This should be called in an event's add accessor.
-		/// If you are adding a handler-based event, call <see cref="AddHandlerEvent"/> instead, which will automatically
+		/// If you are adding a handler-based event, call <see cref="WidgetPropertyStore.AddHandlerEvent"/> instead, which will automatically
 		/// tell the handler that it needs to be wired up.
 		/// 
 		/// You can use any subclass of <see cref="System.EventArgs"/> for the type of event handler
@@ -91,7 +92,7 @@ namespace Eto
 		/// To trigger the event, use <see cref="TriggerEvent{T}"/>.
 		/// </remarks>
 		/// <seealso cref="RemoveEvent"/>
-		/// <seealso cref="AddHandlerEvent"/>
+		/// <seealso cref="WidgetPropertyStore.AddHandlerEvent"/>
 		/// <example>
 		/// Example implementation of a generic event
 		/// <code>
@@ -146,18 +147,17 @@ namespace Eto
 		/// <param name="value">Delegate to add to the event</param>
 		public void AddHandlerEvent(string key, Delegate value)
 		{
+			var parentWidget = Parent as Widget;
+			if (parentWidget == null)
+				throw new InvalidOperationException("Parent must subclass Widget");
 			object existingDelegate;
 			if (TryGetValue(key, out existingDelegate))
 				this[key] = Delegate.Combine((Delegate)existingDelegate, value);
 			else
 			{
-				if (!EventLookup.IsDefault(Parent, key))
+				if (!EventLookup.IsDefault(parentWidget, key))
 				{
-					var handler = Parent.Handler as Widget.IHandler;
-					if (handler != null)
-					{
-						handler.HandleEvent(key);
-					}
+					parentWidget.HandleEvent(key);
 				}
 				Add(key, value);
 			}
@@ -167,7 +167,7 @@ namespace Eto
 		/// Removes the event delegate with the specified <paramref name="key"/>
 		/// </summary>
 		/// <remarks>
-		/// Use this in the remove accessor of your event.  See <see cref="AddEvent"/> and <see cref="AddHandlerEvent"/>
+		/// Use this in the remove accessor of your event.  See <see cref="AddEvent"/> and <see cref="WidgetPropertyStore.AddHandlerEvent"/>
 		/// for examples.
 		/// </remarks>
 		/// <param name="key">Key of the event to remove</param>
@@ -215,17 +215,18 @@ namespace Eto
 		/// Set the value for the specified property key, removing the value from the dictionary if it is the default value of T.
 		/// </summary>
 		/// <remarks>
-		/// This can be used as an optimized way to set the value in the dictionary as if the value set is the default
+		/// This can be used as an optimized way to set the value in the dictionary as if the value set equal to the <paramref name="defaultValue"/>
 		/// (e.g. null for reference types, false for bool, 0 for int, etc), then it will be removed from the dictionary
 		/// instead of just set to the value, reducing memory usage.
-		/// The <see cref="Get{T}"/> will return the default value if it does not exist
+		/// The <see cref="Get{T}"/> should be passed the same default when retrieving the parameter value.
 		/// </remarks>
 		/// <param name="key">Key of the property to set.</param>
 		/// <param name="value">Value for the property.</param>
+		/// <param name="defaultValue">Value of the property when it should be removed from the dictionary. This should match what is passed to <see cref="Get{T}"/> when getting the value.</param>
 		/// <typeparam name="T">The type of the property to set.</typeparam>
-		public void Set<T>(object key, T value)
+		public void Set<T>(object key, T value, T defaultValue = default(T))
 		{
-			if (ContainsKey(key) && Equals(value, default(T)))
+			if (Equals(value, defaultValue))
 				Remove(key);
 			else
 				this[key] = value;
@@ -255,19 +256,20 @@ namespace Eto
 		/// </example>
 		/// <param name="key">Key of the property to set.</param>
 		/// <param name="value">Value for the property.</param>
+		/// <param name="defaultValue">Default value of the property to compare when removing the key</param>
 		/// <param name="propertyChanged">Property changed event handler to raise if the property value has changed.</param>
 		/// <param name="propertyName">Name of the property, or omit to get the property name from the caller.</param>
 		/// <typeparam name="T">The type of the property to set.</typeparam>
 		#if PCL
-		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, [CallerMemberName] string propertyName = null)
+		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, T defaultValue = default(T), [CallerMemberName] string propertyName = null)
 		#else
-		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, string propertyName)
+		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, T defaultValue, string propertyName)
 		#endif
 		{
 			var existing = Get<T>(key);
 			if (!Equals(existing, value))
 			{
-				Set<T>(key, value);
+				Set<T>(key, value, defaultValue);
 				propertyChanged(Parent, new PropertyChangedEventArgs(propertyName));
 				return true;
 			}
