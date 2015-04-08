@@ -53,8 +53,12 @@ namespace Eto.Mac.Forms
 		{
 		}
 
+		public bool DisableCenterParent { get; set; }
+
 		public override void Center()
 		{
+			if (DisableCenterParent)
+				return;
 			// implement centering to parent if there is a parent window for this one..
 			if (ParentWindow != null)
 			{
@@ -143,7 +147,6 @@ namespace Eto.Mac.Forms
 		WindowState? initialState;
 		bool maximizable = true;
 		bool topmost;
-		bool setInitialPosition = true;
 		Point? oldLocation;
 
 		Window.ICallback IMacWindow.Callback { get { return Callback; } }
@@ -690,7 +693,9 @@ namespace Eto.Mac.Forms
 
 					Control.SetFrameOrigin(point);
 				}
-				setInitialPosition = false;
+				var etoWindow = Control as MyWindow;
+				if (etoWindow != null)
+					etoWindow.DisableCenterParent = true;
 			}
 		}
 
@@ -760,12 +765,8 @@ namespace Eto.Mac.Forms
 				SetContentSize(size.ToNS());
 				setInitialSize = true;
 
-				PositionWindow();
 			}
-			else
-			{
-				PositionWindow();
-			}
+			PositionWindow();
 		}
 		public override void OnLoadComplete(EventArgs e)
 		{
@@ -779,11 +780,7 @@ namespace Eto.Mac.Forms
 
 		protected virtual void PositionWindow()
 		{
-			if (setInitialPosition)
-			{
-				Control.Center();
-				setInitialPosition = false;
-			}
+			Control.Center();
 		}
 
 		#region IMacContainer implementation
