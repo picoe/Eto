@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 
@@ -98,7 +99,7 @@ namespace Eto.Drawing
 			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
 				if (stream == null)
-					throw new ResourceNotFoundException(assembly, resourceName);
+					throw new Exception(string.Format(CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName));
 				return new Bitmap(stream);
 			}
 		}

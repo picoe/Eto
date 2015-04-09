@@ -459,9 +459,5 @@ namespace Eto
 			}
 		}
 	}
-
-	class SerializableAttribute : Attribute
-	{
-	}
 }
 #endif

@@ -1,8 +1,9 @@
 using System;
-using Eto.Forms;
-using Eto.Drawing;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test
 {
@@ -111,7 +112,7 @@ namespace Eto.Test
 				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
 			}
-			throw new EtoException("Platform must support splitter or navigation");
+			throw new Exception(string.Format(CultureInfo.CurrentCulture, "Platform must support splitter or navigation"));
 
 		}
 

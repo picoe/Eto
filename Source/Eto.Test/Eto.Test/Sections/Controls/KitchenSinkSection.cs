@@ -159,7 +159,7 @@ namespace Eto.Test.Sections.Controls
 				control.LoadHtml("<html><head><title>Hello</title></head><body><h1>Web View</h1><p>This is a web view loaded with a html string</p></body>");
 				return control;
 			}
-			catch (HandlerInvalidException)
+			catch (Exception)
 			{
 				var control = new Label
 				{ 
