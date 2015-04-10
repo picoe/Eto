@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.WinForms.Drawing;
@@ -75,7 +76,7 @@ namespace Eto.WinForms
 				case ImageFormat.Png:
 					return sd.Imaging.ImageFormat.Png;
 				default:
-					throw new Exception("Invalid format specified");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid format specified"));
 			}
 		}
 

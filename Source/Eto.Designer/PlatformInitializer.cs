@@ -23,7 +23,7 @@ namespace Eto.Designer
 			{
 				var init = Activator.CreateInstance(initInfo.InitializerType) as IPlatformInitializer;
 				if (init == null)
-					throw new Exception(string.Format(CultureInfo.CurrentCulture, "Wrong type specified for platform initializer (must implement IPlatformInitializer)"));
+					throw new ArgumentNullException(string.Format(CultureInfo.CurrentCulture, "Wrong type specified for platform initializer (must implement IPlatformInitializer)"));
 				init.Initialize(platform);
 			}
 		}

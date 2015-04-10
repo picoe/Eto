@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
@@ -166,7 +167,7 @@ namespace Eto.GtkSharp
 				case ImageFormat.Png:
 					return "png";
 				default:
-					throw new Exception("Invalid format specified");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid format specified"));
 			}
 		}
 
