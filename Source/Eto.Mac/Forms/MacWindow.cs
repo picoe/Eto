@@ -109,10 +109,6 @@ namespace Eto.Mac.Forms
 
 	public class CustomFieldEditor : NSTextView
 	{
-		WeakReference widget;
-
-		public Control Widget { get { return (Control)widget.Target; } set { widget = new WeakReference(value); } }
-
 		public CustomFieldEditor()
 		{
 			FieldEditor = true;
@@ -125,10 +121,14 @@ namespace Eto.Mac.Forms
 
 		public override void KeyDown(NSEvent theEvent)
 		{
-			if (!MacEventView.KeyDown(Widget, theEvent))
+			var macControl = WeakDelegate as IMacControl;
+			if (macControl != null)
 			{
-				base.KeyDown(theEvent);
+				var macViewHandler = macControl.WeakHandler.Target as IMacViewHandler;
+				if (macViewHandler != null && MacEventView.KeyDown(macViewHandler.Widget, theEvent))
+					return;
 			}
+			base.KeyDown(theEvent);
 		}
 	}
 
@@ -137,7 +137,6 @@ namespace Eto.Mac.Forms
 		where TWidget: Window
 		where TCallback: Window.ICallback
 	{
-
 		CustomFieldEditor fieldEditor;
 		MenuBar menuBar;
 		Icon icon;
@@ -456,16 +455,9 @@ namespace Eto.Mac.Forms
 					var fieldEditor = childHandler.CustomFieldEditor;
 					if (fieldEditor != null)
 						return fieldEditor;
-					if (childHandler.IsEventHandled(Eto.Forms.Control.KeyDownEvent))
-					{
-						if (handler.fieldEditor == null)
-							handler.fieldEditor = new CustomFieldEditor();
-						handler.fieldEditor.Widget = childHandler.Widget;
-						return handler.fieldEditor;
-					}
 				}
 			}
-			return null;
+			return handler.fieldEditor ?? (handler.fieldEditor = new CustomFieldEditor());;
 		}
 
 		public override NSView ContentControl { get { return Control.ContentView; } }

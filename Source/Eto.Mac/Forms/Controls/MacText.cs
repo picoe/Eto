@@ -126,7 +126,6 @@ namespace Eto.Mac.Forms.Controls
 				return;
 			Widget.Properties[CustomFieldEditorKey] = new CustomTextFieldEditor
 			{
-				Widget = Widget,
 				WeakHandler = new WeakReference(this)
 			};
 		}
