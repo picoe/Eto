@@ -31,15 +31,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public override string StringFor(NSObject value)
 		{
-			if (value == null)
-				return string.Empty;
-			var str = (NSString)value;
-			//if (str != null && value.Handle != IntPtr.Zero)
-			return str.ToString();
+			return value as NSString;
 		}
 
 		[Export("getObjectValue:forString:errorDescription:")]
-		public bool GetObjectValue(ref IntPtr obj, IntPtr value, ref IntPtr error)
+		public bool GetObjectValue(ref NSObject obj, NSString value, ref IntPtr error)
 		{
 			obj = value;
 			return true;

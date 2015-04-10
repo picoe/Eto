@@ -13,7 +13,30 @@ namespace Eto.Forms
 	/// </summary>
 	public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTextProvider<T>
 	{
-		MethodInfo tryParseMethod;
+		Func<string, T> parse;
+
+		class Info
+		{
+			public bool AllowSign;
+			public bool AllowDecimal;
+			public Func<string, object> Parse;
+		}
+
+		// use dictionary instead of reflection for Xamarin.Mac linking
+		Dictionary<Type, Info> numericTypes = new Dictionary<Type, Info>
+		{
+			{ typeof(decimal), new Info { Parse = s => { decimal d; return decimal.TryParse(s, out d) ? (object)d : null; }, AllowSign = true, AllowDecimal = true } },
+			{ typeof(double), new Info { Parse = s => { double d; return double.TryParse(s, out d) ? (object)d : null; }, AllowSign = true, AllowDecimal = true } },
+			{ typeof(float), new Info { Parse = s => { float d; return float.TryParse(s, out d) ? (object)d : null; }, AllowSign = true, AllowDecimal = true } },
+			{ typeof(int), new Info { Parse = s => { int d; return int.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
+			{ typeof(uint), new Info { Parse = s => { uint d; return uint.TryParse(s, out d) ? (object)d : null; } } },
+			{ typeof(long), new Info { Parse = s => { long d; return long.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
+			{ typeof(ulong), new Info { Parse = s => { ulong d; return ulong.TryParse(s, out d) ? (object)d : null; } } },
+			{ typeof(short), new Info { Parse = s => { short d; return short.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
+			{ typeof(ushort), new Info { Parse = s => { ushort d; return ushort.TryParse(s, out d) ? (object)d : null; } } },
+			{ typeof(byte), new Info { Parse = s => { byte d; return byte.TryParse(s, out d) ? (object)d : null; } } },
+			{ typeof(sbyte), new Info { Parse = s => { sbyte d; return sbyte.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } }
+		};
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.NumericMaskedTextProvider{T}"/> class.
@@ -22,18 +45,44 @@ namespace Eto.Forms
 		{
 			var type = typeof(T);
 			var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
-			AllowSign = Convert.ToBoolean(underlyingType.GetRuntimeField("MinValue").GetValue(null));
-			AllowDecimal = underlyingType == typeof(decimal) || underlyingType == typeof(double) || underlyingType == typeof(float);
-
-			tryParseMethod = underlyingType.GetRuntimeMethod("TryParse", new [] { typeof(string), underlyingType.MakeByRefType() });
-			if (tryParseMethod == null || tryParseMethod.ReturnType != typeof(bool))
-				throw new ArgumentException(string.Format("Type of T ({0}) must implement a static bool TryParse(string, out T) method", typeof(T)));
-
-			Validate = text =>
+			Info info;
+			if (numericTypes.TryGetValue(underlyingType, out info))
 			{
-				var parameters = new object[] { text, null };
-				return (bool)tryParseMethod.Invoke(null, parameters);
-			};
+				AllowSign = info.AllowSign;
+				AllowDecimal = info.AllowDecimal;
+				parse = text =>
+				{
+					var val = info.Parse(text);
+					return val == null ? default(T) : (T)val;
+				};
+				Validate = text => info.Parse(text) != null;
+			}
+			else
+			{
+				// use reflection for other types
+				AllowSign = Convert.ToBoolean(underlyingType.GetRuntimeField("MinValue").GetValue(null));
+				AllowDecimal = underlyingType == typeof(decimal) || underlyingType == typeof(double) || underlyingType == typeof(float);
+
+				var tryParseMethod = underlyingType.GetRuntimeMethod("TryParse", new [] { typeof(string), underlyingType.MakeByRefType() });
+				if (tryParseMethod == null || tryParseMethod.ReturnType != typeof(bool))
+					throw new ArgumentException(string.Format("Type of T ({0}) must implement a static bool TryParse(string, out T) method", typeof(T)));
+
+				parse = text =>
+				{
+					var parameters = new object[] { Text, null };
+					if ((bool)tryParseMethod.Invoke(null, parameters))
+					{
+						return (T)parameters[1];
+					}
+					return default(T);
+				};
+
+				Validate = text =>
+				{
+					var parameters = new object[] { text, null };
+					return (bool)tryParseMethod.Invoke(null, parameters);
+				};
+			}
 		}
 
 		/// <summary>
@@ -44,12 +93,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				var parameters = new object[] { Text, null };
-				if ((bool)tryParseMethod.Invoke(null, parameters))
-				{
-					return (T)parameters[1];
-				}
-				return default(T);
+				return parse(Text);
 			}
 			set
 			{

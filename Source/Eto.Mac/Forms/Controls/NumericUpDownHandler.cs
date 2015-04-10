@@ -56,8 +56,10 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 		}
 
-		class EtoNumericUpDownView : MacEventView
+		class EtoNumericUpDownView : NSView, IMacControl
 		{
+			public WeakReference WeakHandler { get; set; }
+
 			public override void SetFrameSize(CGSize newSize)
 			{
 				base.SetFrameSize(newSize);
@@ -91,7 +93,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			this.Control = new EtoNumericUpDownView
 			{
-				Handler = this,
+				WeakHandler = new WeakReference(this),
 				AutoresizesSubviews = false
 			};
 			text = new EtoTextField

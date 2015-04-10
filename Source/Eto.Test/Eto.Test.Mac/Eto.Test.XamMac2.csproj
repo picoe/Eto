@@ -8,9 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <LastXamMacNagTime>14/12/2012 1:15:16 AM</LastXamMacNagTime>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.XamMac2</AssemblyName>
-    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -46,7 +44,6 @@
     <UseSGen>True</UseSGen>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
-    <LinkMode>SdkOnly</LinkMode>
     <XamMacArch>x86_64</XamMacArch>
     <DefineConstants>XAMMAC2</DefineConstants>
     <UseRefCounting>false</UseRefCounting>

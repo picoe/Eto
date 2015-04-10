@@ -134,15 +134,9 @@ namespace Eto.Forms
 		/// <param name="items">Items to add.</param>
 		public void AddRange(IEnumerable<MenuItem> items)
 		{
-			var list = Items as List<MenuItem>;
-			if (list != null)
-				list.AddRange(items);
-			else
+			foreach (var item in items)
 			{
-				foreach (var item in items)
-				{
-					Add(item);
-				}
+				Add(item);
 			}
 		}
 

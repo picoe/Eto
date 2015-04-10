@@ -67,10 +67,16 @@ namespace Eto.Forms
 			set { ItemKeyBinding = value; }
 		}
 
+		static readonly object SelectedIndexChangedKey = new object();
+
 		/// <summary>
 		/// Occurs when the <see cref="SelectedIndex"/> changes.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedIndexChanged;
+		public event EventHandler<EventArgs> SelectedIndexChanged
+		{
+			add { Properties.AddEvent(SelectedIndexChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedIndexChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedIndexChanged"/> event.
@@ -78,15 +84,21 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
-			if (SelectedIndexChanged != null)
-				SelectedIndexChanged(this, e);
+			Properties.TriggerEvent(SelectedIndexChangedKey, this, e);
 			OnSelectedValueChanged(e);
+			OnSelectedKeyChanged(e);
 		}
 
+		static readonly object SelectedValueChangedKey = new object();
+		
 		/// <summary>
 		/// Occurs when <see cref="SelectedValue"/> changes.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedValueChanged;
+		public event EventHandler<EventArgs> SelectedValueChanged
+		{
+			add { Properties.AddEvent(SelectedValueChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedValueChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedValueChanged"/> event.
@@ -94,8 +106,27 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedValueChanged(EventArgs e)
 		{
-			if (SelectedValueChanged != null)
-				SelectedValueChanged(this, e);
+			Properties.TriggerEvent(SelectedValueChangedKey, this, e);
+		}
+
+		static readonly object SelectedKeyChangedKey = new object();
+
+		/// <summary>
+		/// Occurs when <see cref="SelectedKey"/> changes.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedKeyChanged
+		{
+			add { Properties.AddEvent(SelectedKeyChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedKeyChangedKey, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="SelectedKeyChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnSelectedKeyChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(SelectedKeyChangedKey, this, e);
 		}
 
 		/// <summary>
@@ -427,10 +458,10 @@ namespace Eto.Forms
 			get
 			{
 				return new ControlBinding<RadioButtonList, object>(
-					this, 
-					c => c.SelectedValue, 
-					(c, v) => c.SelectedValue = v, 
-					(c, h) => c.SelectedValueChanged += h, 
+					this,
+					c => c.SelectedValue,
+					(c, v) => c.SelectedValue = v,
+					(c, h) => c.SelectedValueChanged += h,
 					(c, h) => c.SelectedValueChanged -= h
 				);
 			}
@@ -445,11 +476,29 @@ namespace Eto.Forms
 			get
 			{
 				return new ControlBinding<RadioButtonList, int>(
-					this, 
-					c => c.SelectedIndex, 
-					(c, v) => c.SelectedIndex = v, 
-					(c, h) => c.SelectedIndexChanged += h, 
+					this,
+					c => c.SelectedIndex,
+					(c, v) => c.SelectedIndex = v,
+					(c, h) => c.SelectedIndexChanged += h,
 					(c, h) => c.SelectedIndexChanged -= h
+				);
+			}
+		}
+
+		/// <summary>
+		/// Gets a binding to the <see cref="SelectedKey"/> property.
+		/// </summary>
+		/// <value>The selected index binding.</value>
+		public ControlBinding<RadioButtonList, string> SelectedKeyBinding
+		{
+			get
+			{
+				return new ControlBinding<RadioButtonList, string>(
+					this,
+					c => c.SelectedKey,
+					(c, v) => c.SelectedKey = v,
+					(c, h) => c.SelectedKeyChanged += h,
+					(c, h) => c.SelectedKeyChanged -= h
 				);
 			}
 		}

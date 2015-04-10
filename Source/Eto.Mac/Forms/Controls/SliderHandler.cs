@@ -50,6 +50,16 @@ namespace Eto.Mac.Forms.Controls
 					handler.Control.IntValue = newval;
 
 				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
+
+				var ev = NSApplication.SharedApplication.CurrentEvent;
+				if (ev != null)
+				{
+					// trigger mouse events when value is changed as they are buried by the slider
+					if (ev.Type == NSEventType.LeftMouseUp || ev.Type == NSEventType.RightMouseUp)
+						handler.Callback.OnMouseUp(handler.Widget, Conversions.GetMouseEvent(handler.Control, ev, false));
+					else if (ev.Type == NSEventType.LeftMouseDragged || ev.Type == NSEventType.RightMouseDragged)
+						handler.Callback.OnMouseMove(handler.Widget, Conversions.GetMouseEvent(handler.Control, ev, false));
+				}
 			}
 		}
 

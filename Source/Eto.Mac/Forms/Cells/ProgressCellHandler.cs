@@ -35,71 +35,11 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Cells
 {
-	// TO DO: Add native ProgressBar and remove Draw code
-	public class ProgressCellHandler : CellHandler<NSTextFieldCell, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
+	public class ProgressCellHandler : CellHandler<ProgressCellHandler.EtoCell, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
 	{
-		public class EtoCell : NSTextFieldCell, IMacControl
+		public ProgressCellHandler()
 		{
-			public WeakReference WeakHandler { get; set; }
-
-			public ProgressCellHandler Handler
-			{ 
-				get { return (ProgressCellHandler)WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
-			}
-
-			public EtoCell()
-			{
-			}
-
-			public EtoCell(IntPtr handle) : base(handle)
-			{
-			}
-
-			public new Color BackgroundColor { get; set; }
-
-			//public bool DrawsBackground { get; set; }
-
-			public override CGSize CellSizeForBounds(CGRect bounds)
-			{
-				return CGSize.Empty;
-			}
-
-			[Export("copyWithZone:")]
-			NSObject CopyWithZone(IntPtr zone)
-			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr(
-					SuperHandle,
-					MacCommon.CopyWithZoneHandle,
-					zone
-				);
-				return new EtoCell(ptr) { Handler = Handler };
-			}
-
-			public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
-			{
-				var nscontext = NSGraphicsContext.CurrentContext;
-
-				if (DrawsBackground)
-				{
-					var context = nscontext.GraphicsPort;
-					context.SetFillColor(BackgroundColor.ToCGColor());
-					context.FillRect(cellFrame);
-				}
-
-				var graphicsHandler = new GraphicsHandler(null, nscontext, (float)cellFrame.Height, flipped: true);
-				using (var graphics = new Graphics(graphicsHandler))
-				{
-					int value = int.Parse(StringValue);
-					RectangleF barRect = new RectangleF((float)cellFrame.X + 2f, (float)cellFrame.Y, (float)cellFrame.Width - 4f, (float)cellFrame.Height - 2f);
-
-					graphics.FillRectangle(Colors.Beige, barRect);
-					graphics.FillRectangle(Colors.Green, barRect.X, barRect.Y, (barRect.Width / 100f) * (float)value, barRect.Height);
-					graphics.DrawRectangle(Colors.Black, barRect);
-					string progressText = value + "%";
-					graphics.DrawText(Fonts.Sans(13), Colors.Black, new PointF(barRect.X + (barRect.Width / 2) - (progressText.Length * 3), barRect.Y + (barRect.Height / 2) - 8), progressText);
-				}
-			}
+			Control = new EtoCell { Handler = this, Enabled = true, LevelIndicatorStyle = NSLevelIndicatorStyle.ContinuousCapacity, MinValue = 0, MaxValue = 1 };
 		}
 
 		public override bool Editable
@@ -108,16 +48,10 @@ namespace Eto.Mac.Forms.Cells
 			set { Control.Editable = value; }
 		}
 
-		public ProgressCellHandler()
-		{
-			Control = new EtoCell { Handler = this, Enabled = true };
-		}
-
 		public override void SetBackgroundColor(NSCell cell, Color color)
 		{
 			var c = (EtoCell)cell;
 			c.BackgroundColor = color;
-			c.DrawsBackground = color != Colors.Transparent;
 		}
 
 		public override Color GetBackgroundColor(NSCell cell)
@@ -127,33 +61,104 @@ namespace Eto.Mac.Forms.Cells
 
 		public override void SetForegroundColor(NSCell cell, Color color)
 		{
+			((EtoCell)cell).ForegroundColor = color;
 		}
 
 		public override Color GetForegroundColor(NSCell cell)
 		{
-			return Colors.Transparent;
+			return ((EtoCell)cell).ForegroundColor;
 		}
 
 		public override NSObject GetObjectValue(object dataItem)
 		{
-			if (Widget.Binding != null)
+			float? progress = Widget.Binding.GetValue(dataItem);
+			if (Widget.Binding != null && progress.HasValue)
 			{
-				var val = Widget.Binding.GetValue(dataItem);
-				return new NSNumber(val);
+				progress = progress < 0f ? 0f : progress > 1f ? 1f : progress;
+				return new NSNumber((float)progress);
 			}
-			return new NSNumber(0);
+			return new NSNumber(float.NaN);
 		}
 
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
 			if (Widget.Binding != null)
-				Widget.Binding.SetValue(dataItem, ((NSNumber)value).Int32Value);
+			{
+				float? progress = ((NSNumber)value).FloatValue as float?;
+				if (progress.HasValue)
+					progress = progress < 0f ? 0f : progress > 1f ? 1f : progress;
+				Widget.Binding.SetValue(dataItem, progress);
+			}
 		}
 
 		public override nfloat GetPreferredSize(object value, CGSize cellSize, NSCell cell)
 		{
-			return 10f;
+			return 30f;
+		}
+
+
+		// The progress cell
+		public class EtoCell : NSLevelIndicatorCell, IMacControl
+		{
+			public EtoCell()
+			{
+				ForegroundColor = Colors.Black;
+				BackgroundColor = Colors.White;
+			}
+
+			public EtoCell(IntPtr handle) : base(handle)
+			{
+			}
+
+			public WeakReference WeakHandler { get; set; }
+
+			public ProgressCellHandler Handler
+			{ 
+				get { return (ProgressCellHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+
+			public Color BackgroundColor { get; set; }
+
+			public Color ForegroundColor { get; set; }
+
+			public override CGSize CellSizeForBounds(CGRect bounds)
+			{
+				return new CGSize(50f, 10f);
+			}
+
+			[Export("copyWithZone:")]
+			NSObject CopyWithZone(IntPtr zone)
+			{
+				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr(
+					SuperHandle,
+					MacCommon.CopyWithZoneHandle,
+					zone);
+
+				return new EtoCell(ptr) { Handler = Handler };
+			}
+
+			public override void DrawWithFrame(CGRect cellFrame, NSView inView)
+			{
+				var progress = FloatValue;
+				if (float.IsNaN((float)progress))
+					return;
+
+				base.DrawWithFrame(cellFrame, inView);
+
+				string progressText = (int)(progress * 100f) + "%";
+				var str = new NSMutableAttributedString(progressText, NSDictionary.FromObjectAndKey(ForegroundColor.ToNSUI(), NSAttributedString.ForegroundColorAttributeName));
+				var range = new NSRange(0, str.Length);
+				if (Font != null)
+				{
+					str.AddAttributes(NSDictionary.FromObjectAndKey(Font, NSAttributedString.FontAttributeName), range);
+				}
+				var size = FontExtensions.MeasureString(str, cellFrame.Size.ToEto());
+				var rect = cellFrame.ToEto();
+				rect.Offset((rect.Size - size) / 2);
+
+				str.DrawString(rect.ToNS());
+			}
 		}
 	}
 }
-

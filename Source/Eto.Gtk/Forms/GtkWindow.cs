@@ -229,6 +229,8 @@ namespace Eto.GtkSharp.Forms
 			
 			HandleEvent(Window.WindowStateChangedEvent); // to set restore bounds properly
 			HandleEvent(Window.ClosingEvent); // to chain application termination events
+			HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
+			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
 			Control.Shown += HandleControlShown;
 		}
 
@@ -298,15 +300,15 @@ namespace Eto.GtkSharp.Forms
 				var windowState = handler.WindowState;
 				if (windowState == WindowState.Normal)
 				{
-					if ((args.Event.ChangedMask & Gdk.WindowState.Maximized) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Maximized) != 0)
+					if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Maximized) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Maximized))
 					{
 						handler.restoreBounds = handler.Widget.Bounds;
 					}
-					else if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0)
+					else if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Iconified) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Iconified))
 					{
 						handler.restoreBounds = handler.Widget.Bounds;
 					}
-					else if ((args.Event.ChangedMask & Gdk.WindowState.Fullscreen) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Fullscreen) != 0)
+					else if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Fullscreen) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Fullscreen))
 					{
 						handler.restoreBounds = handler.Widget.Bounds;
 					}
@@ -336,7 +338,9 @@ namespace Eto.GtkSharp.Forms
 				var newSize = handler.Size;
 				if (handler.Control.IsRealized && oldSize != newSize)
 				{
-					Handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
+					handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
+					if (handler.WindowState == WindowState.Normal)
+						handler.restoreBounds = handler.Widget.Bounds;
 					oldSize = newSize;
 				}
 			}
@@ -351,6 +355,8 @@ namespace Eto.GtkSharp.Forms
 				if (handler.Control.IsRealized && handler.Widget.Loaded && oldLocation != handler.currentLocation)
 				{
 					handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
+					if (handler.WindowState == WindowState.Normal)
+						handler.restoreBounds = handler.Widget.Bounds;
 					oldLocation = handler.currentLocation;
 				}
 				handler.currentLocation = null;
@@ -420,7 +426,7 @@ namespace Eto.GtkSharp.Forms
 			return !args.Cancel;
 		}
 
-		public void Close()
+		public virtual void Close()
 		{
 			if (CloseWindow())
 			{
@@ -547,11 +553,11 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
 			get
 			{
-				return WindowState == WindowState.Normal ? null : restoreBounds;
+				return WindowState == WindowState.Normal ? Widget.Bounds : restoreBounds ?? Widget.Bounds;
 			}
 		}
 

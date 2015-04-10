@@ -17,27 +17,37 @@ namespace Eto.Mac
 {
 	public static partial class Conversions
 	{
-		static readonly DateTime ReferenceDate = new DateTime (2001, 1, 1, 0, 0, 0);
-		
-		public static NSUrl ToNS (this Uri uri)
+		static readonly DateTime ReferenceDate = new DateTime(2001, 1, 1, 0, 0, 0);
+
+		public static NSUrl ToNS(this Uri uri)
 		{
 			return uri == null ? null : new NSUrl(uri.AbsoluteUri);
 		}
 
-		public static NSDate ToNS (this DateTime date)
+		public static NSDate ToNS(this DateTime date)
 		{
-			return NSDate.FromTimeIntervalSinceReferenceDate ((date.ToUniversalTime () - ReferenceDate).TotalSeconds);
+			return NSDate.FromTimeIntervalSinceReferenceDate((date.ToUniversalTime() - ReferenceDate).TotalSeconds);
 		}
-		
-		public static NSDate ToNS (this DateTime? date)
+
+		public static NSDate ToNS(this DateTime? date)
 		{
 			return date == null ? null : date.Value.ToNS();
 		}
-		
-		public static DateTime? ToEto (this NSDate date)
+
+		public static DateTime? ToEto(this NSDate date)
 		{
-			if (date == null) return null;
-			return new DateTime ((long)(date.SecondsSinceReferenceDate * (double)TimeSpan.TicksPerSecond + (double)ReferenceDate.Ticks), DateTimeKind.Utc).ToLocalTime ();
+			if (date == null)
+				return null;
+			return new DateTime((long)(date.SecondsSinceReferenceDate * (double)TimeSpan.TicksPerSecond + (double)ReferenceDate.Ticks), DateTimeKind.Utc).ToLocalTime();
+		}
+
+		public static NSColor ToNS(this CGColor color)
+		{
+			#if XAMMAC
+			return NSColor.FromCGColor(color);
+			#else
+			return MacExtensions.NSColorFromCGColor(color);
+			#endif
 		}
 		
 	}

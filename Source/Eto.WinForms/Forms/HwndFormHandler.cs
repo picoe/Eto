@@ -220,7 +220,7 @@ namespace Eto.WinForms.Forms
       }
     }
 
-    public Eto.Drawing.Rectangle? RestoreBounds
+    public Eto.Drawing.Rectangle RestoreBounds
     {
       get { throw new NotImplementedException(); }
     }

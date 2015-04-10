@@ -26,6 +26,7 @@ namespace Eto.GtkSharp.Forms
 			Control.AllowShrink = false;
 			Control.AllowGrow = false;
 			Control.HasSeparator = false;
+			Control.DestroyWithParent = true;
 #else
 			Control.Resizable = false;
 			Control.HasResizeGrip = false;
@@ -73,9 +74,31 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 			// TODO: implement cancel button somehow?
-			
-			Control.Run();
+
+			do
+			{
+				Control.Run();
+			} while (!WasClosed && !CloseWindow());
+
+			WasClosed = false;
 			Control.Hide();
+		}
+
+		static readonly object WasClosedKey = new object();
+
+		bool WasClosed
+		{
+			get { return Widget.Properties.Get<bool>(WasClosedKey); }
+			set { Widget.Properties.Set(WasClosedKey, value); }
+		}
+
+		public override void Close()
+		{
+			if (CloseWindow())
+			{
+				WasClosed = true;
+				Control.Hide();
+			}
 		}
 
 		public Task ShowModalAsync(Control parent)
