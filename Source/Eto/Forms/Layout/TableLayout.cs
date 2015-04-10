@@ -1,10 +1,11 @@
 using System;
-using Eto.Drawing;
-using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
+using System.Runtime.Serialization;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -212,7 +213,7 @@ namespace Eto.Forms
 		void SetCellSize(Size value, bool createRows)
 		{
 			if (created)
-				throw new InvalidOperationException("Can only set the cell size of a table once");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Can only set the cell size of a table once"));
 			dimensions = value;
 			if (!dimensions.IsEmpty)
 			{
@@ -283,7 +284,7 @@ namespace Eto.Forms
 		void InnerAdd(Control control, int x, int y)
 		{
 			if (dimensions.IsEmpty)
-				throw new InvalidOperationException("You must set the size of the TableLayout before adding controls");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "You must set the size of the TableLayout before adding controls"));
 			var cell = Rows[y].Cells[x];
 
 			SetParent(control, () => {

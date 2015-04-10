@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace Eto.Drawing
@@ -340,7 +341,7 @@ namespace Eto.Drawing
 			if (elements == null)
 				throw new ArgumentNullException ("elements");
 			if (elements.Length != 6)
-				throw new ArgumentOutOfRangeException ("elements", elements, "Elements must be an array with a length of 6");
+				throw new ArgumentOutOfRangeException ("elements", elements, string.Format(CultureInfo.CurrentCulture, "Elements must be an array with a length of 6"));
 			var handler = Platform.Instance.Create<IHandler> ();
 			handler.Create (elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 			return handler;

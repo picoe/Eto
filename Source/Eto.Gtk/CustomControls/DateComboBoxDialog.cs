@@ -41,7 +41,7 @@ namespace Eto.GtkSharp.CustomControls
 					DateTime d = calendar.Date;
 					return new DateTime(d.Year, d.Month, d.Day);
 				}
-				throw new Exception();
+				throw new InvalidOperationException();
 			}
 		}
 		

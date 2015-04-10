@@ -53,7 +53,7 @@ namespace Eto.Mac
 			unsafe
 			{
 				if (sizeof(IntPtr) != 8)
-					throw new Exception(string.Format(System.Globalization.CultureInfo.CurrentCulture, "You can only run this platform in 64-bit mode. Use the 32-bit Eto.Mac platform instead."));
+					throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "You can only run this platform in 64-bit mode. Use the 32-bit Eto.Mac platform instead."));
 			}
 			#endif
 			if (!initialized)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -63,11 +64,11 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				throw new NotSupportedException("You cannot get the enabled state of a native control");
+				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "You cannot get the enabled state of a native control"));
 			}
 			set
 			{
-				throw new NotSupportedException("You cannot set the enabled state of a native control");
+				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "You cannot set the enabled state of a native control"));
 			}
 		}
 	}

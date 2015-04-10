@@ -121,7 +121,7 @@ namespace Eto.Designer.Builders
 									newDomain = AppDomain.CreateDomain("newDomain", null, setup);
 									var module = newDomain.CreateInstanceFromAndUnwrap(typeof(ControlLoader).Assembly.Location, typeof(ControlLoader).FullName) as ControlLoader;
 									if (module == null)
-										throw new Exception(string.Format(CultureInfo.CurrentCulture, "Could not create ControlLoader instance in new domain"));
+										throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Could not create ControlLoader instance in new domain"));
 									//var executeMethod = module.GetType().GetMethod("Execute");
 									//var contract = executeMethod.Invoke(module, new object[] { Platform.Instance.GetType().FullName + ", " + Platform.Instance.GetType().Assembly.FullName, assemblyName, InitializeAssembly });
 									var contract = module.Execute(Platform.Instance.GetType().FullName + ", " + Platform.Instance.GetType().Assembly.FullName, assemblyName, InitializeAssembly);

@@ -112,7 +112,7 @@ namespace Eto.Test
 				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
 			}
-			throw new Exception(string.Format(CultureInfo.CurrentCulture, "Platform must support splitter or navigation"));
+			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Platform must support splitter or navigation"));
 
 		}
 

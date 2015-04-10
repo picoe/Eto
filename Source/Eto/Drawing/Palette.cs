@@ -170,7 +170,7 @@ namespace Eto.Drawing
 		public static Palette FromEGA(Palette palEGA)
 		{
 			if (palEGA.Count != 64)
-				throw new Exception(string.Format(CultureInfo.CurrentCulture, "Source palette is not an EGA palette"));
+				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Source palette is not an EGA palette"));
 			var output = new Palette();
 			for (int i = 0; i < EGAColors.Length; i++)
 			{

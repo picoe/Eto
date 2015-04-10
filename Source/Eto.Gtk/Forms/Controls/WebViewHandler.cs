@@ -35,7 +35,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(string.Format(CultureInfo.CurrentCulture, "GTK WebView is only supported on Linux, and requires webkit-sharp", ex));
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "GTK WebView is only supported on Linux, and requires webkit-sharp", ex));
 			}
 			scroll.Add(Control);
 		}

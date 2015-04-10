@@ -93,7 +93,7 @@ namespace Eto.Addin.VisualStudio
 
 			builderInfo = BuilderInfo.Find(fileName);
 			if (builderInfo == null)
-				throw new Exception(string.Format("Could not find builder for file {0}", fileName));
+				throw new InvalidOperationException(string.Format("Could not find builder for file {0}", fileName));
 			builder = builderInfo.CreateBuilder();
 
 			SetupCommands();

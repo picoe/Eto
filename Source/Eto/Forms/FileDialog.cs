@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace Eto.Forms
 {
@@ -74,7 +75,7 @@ namespace Eto.Forms
 		{
 			var parts = filter.Split('|');
 			if (parts.Length != 2)
-				throw new ArgumentException("Filter must be in the form of '<name>|<ext>;<ext>;<ext>;", "filter");
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Filter must be in the form of '<name>|<ext>;<ext>;<ext>;"), "filter");
 
 			return new FileDialogFilter
 			{

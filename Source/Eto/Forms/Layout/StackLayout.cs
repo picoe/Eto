@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using Eto.Drawing;
-using System.ComponentModel;
 using System.Collections;
-
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using Eto.Drawing;
+using System.Globalization;
 
 namespace Eto.Forms
 {
@@ -404,7 +404,7 @@ namespace Eto.Forms
 		public override void ResumeLayout()
 		{
 			if (suspended == 0)
-				throw new InvalidOperationException("Must balance ResumeLayout with SuspendLayout calls");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Must balance ResumeLayout with SuspendLayout calls"));
 			suspended--;
 			base.ResumeLayout();
 			CreateIfNeeded();

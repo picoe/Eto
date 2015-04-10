@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 
@@ -78,7 +79,7 @@ namespace Eto
 				assemblyName = val[1].Trim();
 			}
 			else
-				throw new ArgumentException("Namespace must include the assembly name in the form of: My.Namespace, MyAssembly", ns);
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Namespace must include the assembly name in the form of: My.Namespace, MyAssembly"), ns);
 		}
 
 		/// <summary>

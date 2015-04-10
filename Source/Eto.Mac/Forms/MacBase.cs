@@ -175,7 +175,7 @@ namespace Eto.Mac.Forms
 			var type = control.GetType();
 			#if OSX
 			if (!typeof(IMacControl).IsAssignableFrom(type))
-				throw new Exception(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
 			#endif
 			var classHandle = Class.GetHandle(type);
 			ObjCExtensions.AddMethod(classHandle, selector, action, arguments);

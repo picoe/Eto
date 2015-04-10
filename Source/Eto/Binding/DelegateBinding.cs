@@ -1,8 +1,9 @@
 using System;
-using System.Diagnostics;
-using Eto.Forms;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq.Expressions;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -184,7 +185,7 @@ namespace Eto
 				RemoveChangeEvent = removeChangeEvent;
 			}
 			else if (addChangeEvent != null || removeChangeEvent != null)
-				throw new ArgumentException("You must either specify both the add and remove change event delegates, or pass null for both");
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "You must either specify both the add and remove change event delegates, or pass null for both"));
 		}
 
 		/// <summary>

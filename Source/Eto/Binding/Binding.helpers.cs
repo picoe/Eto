@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using System.ComponentModel;
 
 namespace Eto
 {
@@ -49,7 +50,7 @@ namespace Eto
 			{
 				return new ObjectBinding<T, TValue>(model, new PropertyBinding<TValue>(propertyInfo.Member.Name));
 			}
-			throw new ArgumentException("Must be a expression to a property", "propertyExpression");
+			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Must be a expression to a property"), "propertyExpression");
 		}
 
 		/// <summary>
@@ -65,7 +66,7 @@ namespace Eto
 			{
 				return new PropertyBinding<TValue>(propertyInfo.Member.Name);
 			}
-			throw new ArgumentException("Must be a expression to a property", "propertyExpression");
+			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Must be a expression to a property"), "propertyExpression");
 		}
 
 		/// <summary>

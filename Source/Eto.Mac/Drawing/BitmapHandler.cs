@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Eto.Drawing;
@@ -162,7 +163,7 @@ namespace Eto.Mac.Drawing
 					control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
 					break;*/
 				default:
-					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, "Not supported");
+					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, string.Format(CultureInfo.CurrentCulture, "Not supported"));
 			}
 		}
 
@@ -274,7 +275,7 @@ namespace Eto.Mac.Drawing
 		public Color GetPixel(int x, int y)
 		{
 			if (bmprep == null)
-				throw new InvalidOperationException(string.Format("Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
 
 			return bmprep.ColorAt(x, y).ToEto();
 		}

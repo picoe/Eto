@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using sw = System.Windows;
 using swm = System.Windows.Media;
@@ -148,7 +149,7 @@ namespace Eto.Wpf.CustomControls
 				IntPtr hwnd = new sw.Interop.WindowInteropHelper (window).Handle;
 
 				if (hwnd == IntPtr.Zero) {
-					throw new InvalidOperationException ("The Window must be shown before extending glass.");
+					throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The Window must be shown before extending glass."));
 				}
 
 				// Set the background to transparent from both the WPF and Win32 perspectives

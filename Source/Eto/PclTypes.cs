@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 // This file contains type definitions currently needed to compile Eto
 // as a Portable Class Library, in the project Eto.Pcl.csproj.
@@ -67,6 +68,22 @@ namespace Eto
 					var formatInfo = (NumberFormatInfo)culture.GetFormat(typeof(NumberFormatInfo));
 					result = FromString(text, formatInfo);
 					return result;
+				}
+				catch (InvalidOperationException innerException)
+				{
+					throw new InvalidOperationException(text, innerException);
+				}
+				catch (ArgumentNullException innerException)
+				{
+					throw new ArgumentNullException(text, innerException);
+				}
+				catch (ArgumentOutOfRangeException innerException)
+				{
+					throw new ArgumentOutOfRangeException(text, innerException);
+				}
+				catch (ArgumentException innerException)
+				{
+					throw new ArgumentException(text, innerException);
 				}
 				catch (Exception innerException)
 				{
@@ -400,9 +417,7 @@ namespace Eto
 			else
 				destinationType = value.GetType().FullName;
 
-			throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture,
-				"{0} cannot convert from {1}.", GetType().Name,
-				destinationType));
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "{0} cannot convert from {1}.", GetType().Name, destinationType));
 		}
 
 		/// <summary>
@@ -419,9 +434,7 @@ namespace Eto
 			else
 				sourceType = value.GetType().FullName;
 
-			throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture,
-				"'{0}' is unable to convert '{1}' to '{2}'.", GetType().Name,
-				sourceType, destinationType.FullName));
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "'{0}' is unable to convert '{1}' to '{2}'.", GetType().Name, sourceType, destinationType.FullName));
 		}
 
 		/// <summary>

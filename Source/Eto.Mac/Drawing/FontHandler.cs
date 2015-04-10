@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Eto.Drawing;
 
 #if XAMMAC2
@@ -169,7 +170,7 @@ namespace Eto.Mac.Drawing
 			var font = CreateFont(familyHandler, size, traits.Value);
 
 			if (font == null || font.Handle == IntPtr.Zero)
-				throw new ArgumentOutOfRangeException(string.Empty, string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
+				throw new ArgumentOutOfRangeException(string.Empty, string.Format(CultureInfo.CurrentCulture, "Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
 			var familyHandler = (FontFamilyHandler)family.Handler;
 			var font = familyHandler.CreateFont (size, style);
