@@ -84,7 +84,7 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// This should be called in an event's add accessor.
-		/// If you are adding a handler-based event, call <see cref="WidgetPropertyStore.AddHandlerEvent"/> instead, which will automatically
+		/// If you are adding a handler-based event, call <see cref="AddHandlerEvent"/> instead, which will automatically
 		/// tell the handler that it needs to be wired up.
 		/// 
 		/// You can use any subclass of <see cref="System.EventArgs"/> for the type of event handler
@@ -92,7 +92,7 @@ namespace Eto
 		/// To trigger the event, use <see cref="TriggerEvent{T}"/>.
 		/// </remarks>
 		/// <seealso cref="RemoveEvent"/>
-		/// <seealso cref="WidgetPropertyStore.AddHandlerEvent"/>
+		/// <seealso cref="AddHandlerEvent"/>
 		/// <example>
 		/// Example implementation of a generic event
 		/// <code>
@@ -167,7 +167,7 @@ namespace Eto
 		/// Removes the event delegate with the specified <paramref name="key"/>
 		/// </summary>
 		/// <remarks>
-		/// Use this in the remove accessor of your event.  See <see cref="AddEvent"/> and <see cref="WidgetPropertyStore.AddHandlerEvent"/>
+		/// Use this in the remove accessor of your event.  See <see cref="AddEvent"/> and <see cref="AddHandlerEvent"/>
 		/// for examples.
 		/// </remarks>
 		/// <param name="key">Key of the event to remove</param>
