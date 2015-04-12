@@ -11,6 +11,9 @@ namespace Eto.WinForms.Forms.Controls
 		Control panel1;
 		Control panel2;
 		int? position;
+		SplitterPositionMode mode;
+		bool created;
+		int suppressSplitterMoved;
 
 		public bool RecurseToChildren { get { return true; } }
 
@@ -39,15 +42,29 @@ namespace Eto.WinForms.Forms.Controls
 				var size = new sd.Size();
 				var size1 = Handler.panel1.GetPreferredSize();
 				var size2 = Handler.panel2.GetPreferredSize();
+				var mode = Handler.mode;
+				var pos = Handler.position;
 				if (Orientation == swf.Orientation.Vertical)
 				{
-					size1.Width = Handler.position ?? size1.Width;
+					if(pos != null)
+					{
+						if(mode == SplitterPositionMode.Near)
+							size1.Width = pos.Value;
+						else if(mode == SplitterPositionMode.Far)
+							size2.Width = pos.Value;
+					}
 					size.Width = size1.Width + size2.Width + SplitterWidth;
 					size.Height = Math.Max(size1.Height, size2.Height);
 				}
 				else
 				{
-					size1.Height = Handler.position ?? size1.Height;
+					if(pos != null)
+					{
+						if(mode == SplitterPositionMode.Near)
+							size1.Height = pos.Value;
+						else if(mode == SplitterPositionMode.Far)
+							size2.Height = pos.Value;
+					}
 					size.Height = size1.Height + size2.Height + SplitterWidth;
 					size.Width = Math.Max(size1.Width, size2.Width);
 				}
@@ -63,15 +80,12 @@ namespace Eto.WinForms.Forms.Controls
 				FixedPanel = swf.FixedPanel.Panel1,
 				Panel1MinSize = 0,
 				Panel2MinSize = 0,
+				SplitterWidth = 5 // make it same as WPF & GTK
 			};
-			Control.HandleCreated += (sender, e) =>
-			{
-				SetInitialPosition();
-				HookEvents();
-				SetFixedPanel();
-			};
+			Control.HandleCreated += HandleCreated;
 		}
 
+		//TODO: Check that PositionChanged fires correctly
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -90,123 +104,149 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int Position
 		{
-			get { return Control.SplitterDistance; }
+			get
+			{
+				switch (mode)
+				{
+					default:
+						return Control.SplitterDistance;
+					case SplitterPositionMode.Far:
+						return Math.Max(0, (Orientation == SplitterOrientation.Horizontal ?
+							Control.Width : Control.Height) - Control.SplitterDistance - Control.SplitterWidth);
+					case SplitterPositionMode.Percent:
+						var width = (Orientation == SplitterOrientation.Horizontal ?
+							Control.Width : Control.Height) - Control.SplitterWidth;
+						return width <= 0 ? 0 : Control.SplitterDistance * 100 / width;
+				}
+			}
 			set
 			{
 				if (value != position)
 				{
-					suppressSplitterMoved++;
-					if (Control.IsHandleCreated)
-						SetPosition(value);
-					suppressSplitterMoved--;
 					position = value;
+					if (Control.IsHandleCreated)
+						SetPosition(value, mode);
 					Callback.OnPositionChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
 
-		void SetPosition(int newPosition)
+		public SplitterPositionMode PositionMode
 		{
-			position = newPosition;
-			if (Control.Orientation == swf.Orientation.Vertical)
-			{
-				if (Control.Width > 1)
-					Control.SplitterDistance = Math.Max(0, Math.Min(Control.Width - Control.Panel2MinSize - 1, newPosition));
-			}
-			else
-			{
-				if (Control.Height > 1)
-					Control.SplitterDistance = Math.Max(0, Math.Min(Control.Height - Control.Panel2MinSize - 1, newPosition));
-			}
+			get { return mode; }
+			set { mode = value; }
 		}
 
-		public override void OnLoad(EventArgs e)
+		public int SplitterWidth
 		{
-			base.OnLoad(e);
+			get { return Control.SplitterWidth; }
+			set { Control.SplitterWidth = value; }
+		}
+
+		int GetAvailableSize()
+		{
+			return GetAvailableSize(!created);
+		}
+		int GetAvailableSize(bool desired)
+		{
+			if (desired)
+			{
+				var size = UserDesiredSize;
+				var pick = Orientation == SplitterOrientation.Horizontal ?
+					size.Width : size.Height;
+				if (pick >= 0)
+					return pick - SplitterWidth;
+			}
+			return (Orientation == SplitterOrientation.Horizontal ?
+				Control.Width : Control.Height) - SplitterWidth;
+		}
+
+		void SetPosition(int pos, SplitterPositionMode mode)
+		{
 			suppressSplitterMoved++;
-			if (Control.IsHandleCreated)
-				SetInitialPosition();
-		}
-
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
+			int size = GetAvailableSize(false);
+			if (mode == SplitterPositionMode.Far)
+				pos = size - pos;
+			else if (mode == SplitterPositionMode.Percent)
+				pos = (1 + 2 * size * pos) / 200;
+			Control.SplitterDistance = Math.Max(0, Math.Min(size, pos));
 			suppressSplitterMoved--;
 		}
 
-		int suppressSplitterMoved;
-		void HookEvents()
+		void SetInitialPosition()
 		{
-			Control.SplitterMoved += (sender, e) =>
+			if (position != null)
+			{
+				var pos = position.Value;
+				if (mode != SplitterPositionMode.Percent &&
+					(FixedPanel == SplitterFixedPanel.None ||
+					(FixedPanel == SplitterFixedPanel.Panel1) != (mode == SplitterPositionMode.Near)))
+				{
+					var size = GetAvailableSize(false);
+					var want = GetAvailableSize(true);
+					var diff = size - want;
+					if( diff != 0 )
+					{
+						if (FixedPanel == SplitterFixedPanel.None)
+							pos = pos * size / want;
+						else
+							pos += mode == SplitterPositionMode.Near ? diff : -diff;
+					}
+				}
+				SetPosition(pos, mode);
+				return;
+			}
+			var horiz = Orientation == SplitterOrientation.Horizontal;
+			switch (FixedPanel)
+			{
+				case SplitterFixedPanel.Panel1:
+					var size1 = panel1.GetPreferredSize();
+					SetPosition(horiz ? size1.Width : size1.Height, SplitterPositionMode.Near);
+					break;
+				case SplitterFixedPanel.Panel2:
+					var size2 = panel2.GetPreferredSize();
+					SetPosition(horiz ? size2.Width : size2.Height, SplitterPositionMode.Far);
+					break;
+				default:
+					var sone = panel1.GetPreferredSize();
+					var stwo = panel2.GetPreferredSize();
+					var one = horiz ? sone.Width : sone.Height;
+					var two = horiz ? stwo.Width : stwo.Height;
+					SetPosition(one * GetAvailableSize(true) / (one + two),	SplitterPositionMode.Near);
+					break;
+			}
+		}
+
+		void HandleCreated(object sender, EventArgs e)
+		{
+			SetInitialPosition();
+			SetFixedPanel();
+			created = true;
+
+			Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsHandler()).InternalVisible;
+			Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
+
+			Control.SplitterMoved += (s, a) =>
 			{
 				if (Widget.ParentWindow != null)
 				{
 					// keep track of the desired position (for removing/re-adding/resizing the control)
 					if (Widget.Loaded && suppressSplitterMoved == 0)
 					{
-						position = Control.SplitterDistance;
+						position = Position;
 						Callback.OnPositionChanged(Widget, EventArgs.Empty);
 					}
 				}
 			};
 
-			Size? oldSize = null;
-			Control.SizeChanged += (sender, e) =>
+			Control.SizeChanged += (s, a) =>
 			{
 				// SplitterDistance can only be at most width or height, but if the control's width is smaller than 
 				// desired position to start then gets a layout pass, try to set to the preferred position when resized
-				if (position != null && position.Value != Control.SplitterDistance)
-				{
-					suppressSplitterMoved++;
-					switch (FixedPanel)
-					{
-						case SplitterFixedPanel.Panel1:
-							SetPosition(position.Value);
-							break;
-						case SplitterFixedPanel.Panel2:
-							var size = Size;
-							if (oldSize != null)
-							{
-								position -= Orientation == SplitterOrientation.Vertical ? (oldSize.Value.Height - size.Height) : (oldSize.Value.Width - size.Width);
-								SetPosition(position.Value);
-							}
-							oldSize = size;
-							break;
-					}
-					suppressSplitterMoved--;
-				}
+				if (mode != SplitterPositionMode.Percent && FixedPanel != SplitterFixedPanel.None
+					&& position != null && position.Value != Position)
+					SetPosition(position.Value, mode);
 			};
-		}
-		
-		void SetInitialPosition()
-		{
-			suppressSplitterMoved++;
-			Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsHandler()).InternalVisible;
-			Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
-			if (position != null)
-			{
-				SetPosition(position.Value);
-			}
-			else
-			{
-				switch (FixedPanel)
-				{
-					case SplitterFixedPanel.Panel1:
-						var size1 = panel1.GetPreferredSize();
-						SetPosition(Control.Orientation == swf.Orientation.Vertical ? size1.Width : size1.Height);
-						break;
-					case SplitterFixedPanel.Panel2:
-						var size2 = panel2.GetPreferredSize();
-						int pos;
-						if (Control.Orientation == swf.Orientation.Vertical)
-							pos = Control.Width - size2.Width;
-						else
-							pos = Control.Height - size2.Height;
-						SetPosition(pos);
-						break;
-				}
-			}
-			suppressSplitterMoved--;
 		}
 
 		SplitterFixedPanel fixedPanel;

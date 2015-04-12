@@ -19,6 +19,27 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
+	/// Meaning if <see cref="Splitter.Position"/>.
+	/// </summary>
+	public enum SplitterPositionMode
+	{
+		/// <summary>
+		/// Default mode - pixels from top/left (width/height of Panel1)
+		/// </summary>
+		Near,
+		/// <summary>
+		/// Inverted mode - pixels from bottom/right (width/height of Panel2)
+		/// - usefull with <see cref="Splitter.FixedPanel"/> = <see cref="SplitterFixedPanel.Panel2"/>.
+		/// </summary>
+		Far,
+		/// <summary>
+		/// Percent ratio mode of first panel vs. full size excluding splitter size
+		/// - usefull with <see cref="Splitter.FixedPanel"/> = <see cref="SplitterFixedPanel.None"/>
+		/// </summary>
+		Percent
+	}
+
+	/// <summary>
 	/// Specifies which panel has a fixed size the parent container is resized.
 	/// </summary>
 	public enum SplitterFixedPanel
@@ -142,6 +163,23 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the position mode.
+		/// </summary>
+		public SplitterPositionMode PositionMode {
+			get { return Handler.PositionMode; }
+			set { Handler.PositionMode = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets size of the splitter
+		/// </summary>
+		public int SplitterWidth
+		{
+			get { return Handler.SplitterWidth; }
+			set { Handler.SplitterWidth = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the top or left panel of the splitter.
 		/// </summary>
 		/// <value>The first panel.</value>
@@ -241,6 +279,16 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The position of the splitter.</value>
 			int Position { get; set; }
+
+			/// <summary>
+			/// Gets or sets the position mode.
+			/// </summary>
+			SplitterPositionMode PositionMode { get; set; }
+
+			/// <summary>
+			/// Gets or sets size of the splitter
+			/// </summary>
+			int SplitterWidth { get; set; }
 
 			/// <summary>
 			/// Gets or sets the top or left panel of the splitter.

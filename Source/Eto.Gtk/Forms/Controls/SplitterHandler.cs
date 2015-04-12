@@ -10,7 +10,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		Control panel2;
 		SplitterOrientation orientation;
 		SplitterFixedPanel fixedPanel;
+		SplitterPositionMode mode;
 		int? position;
+		bool created;
 
 		class EtoHPaned : Gtk.HPaned
 		{
@@ -57,8 +59,65 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public int Position
 		{
-			get { return Control.Position; }
-			set { position = Control.Position = value; }
+			get
+			{
+				switch (mode)
+				{
+					default:
+						return Control.Position;
+					case SplitterPositionMode.Far:
+						return Math.Max(0, (Orientation == SplitterOrientation.Horizontal ?
+							Control.Allocation.Width : Control.Allocation.Height) - Control.Position - SplitterWidth);
+					case SplitterPositionMode.Percent:
+						var width = (Orientation == SplitterOrientation.Horizontal ?
+							Control.Allocation.Width : Control.Allocation.Height) - SplitterWidth;
+						return width <= 0 ? 0 : Control.Position * 100 / width;
+				}
+			}
+			set
+			{
+				position = Control.Position = value;
+			}
+		}
+
+		int GetAvailableSize()
+		{
+			return GetAvailableSize(!created);
+		}
+		int GetAvailableSize(bool desired)
+		{
+			if (desired)
+			{
+				var size = PreferredSize;
+				var pick = Orientation == SplitterOrientation.Horizontal ?
+					size.Width : size.Height;
+				if (pick >= 0)
+					return pick - SplitterWidth;
+			}
+			return (Orientation == SplitterOrientation.Horizontal ?
+				Control.Allocation.Width : Control.Allocation.Height) - SplitterWidth;
+		}
+
+		void SetPosition(int pos, SplitterPositionMode mode)
+		{
+			int size = GetAvailableSize(false);
+			if (mode == SplitterPositionMode.Far)
+				pos = size - pos;
+			else if (mode == SplitterPositionMode.Percent)
+				pos = (1 + 2 * size * pos) / 200;
+			Control.Position = Math.Max(0, Math.Min(size, pos));
+		}
+
+		public SplitterPositionMode PositionMode
+		{
+			get { return mode; }
+			set { mode = value; }
+		}
+
+		public int SplitterWidth
+		{
+			get { return 5; /* just u guess :( */ }
+			set { /* unfortunatelly I cannot see binding for gtk_set_gutter_size in Gtk# */ }
 		}
 
 		public SplitterFixedPanel FixedPanel
@@ -69,7 +128,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (fixedPanel != value)
 				{
 					fixedPanel = value;
-					Create();
+					((Gtk.Paned.PanedChild)Control[Control.Child1]).Resize = value != SplitterFixedPanel.Panel1;
+					((Gtk.Paned.PanedChild)Control[Control.Child2]).Resize = value != SplitterFixedPanel.Panel2;
 				}
 			}
 		}
@@ -114,6 +174,61 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			if (position != null)
 				Control.Position = position.Value;
+
+			created = false;
+			Control.SizeAllocated += Control_SizeAllocated;
+		}
+
+		void SetInitialPosition()
+		{
+			if (position != null)
+			{
+				var pos = position.Value;
+				if (mode != SplitterPositionMode.Percent &&
+					(FixedPanel == SplitterFixedPanel.None ||
+					(FixedPanel == SplitterFixedPanel.Panel1) != (mode == SplitterPositionMode.Near)))
+				{
+					var size = GetAvailableSize(false);
+					var want = GetAvailableSize(true);
+					var diff = size - want;
+					if (diff != 0)
+					{
+						if (FixedPanel == SplitterFixedPanel.None)
+							pos = pos * size / want;
+						else
+							pos += mode == SplitterPositionMode.Near ? diff : -diff;
+					}
+				}
+				SetPosition(pos, mode);
+				return;
+			}
+			var horiz = Orientation == SplitterOrientation.Horizontal;
+			switch (FixedPanel)
+			{
+				case SplitterFixedPanel.Panel1:
+					var size1 = Control.Child1.SizeRequest();
+					SetPosition(horiz ? size1.Width : size1.Height, SplitterPositionMode.Near);
+					break;
+				case SplitterFixedPanel.Panel2:
+					var size2 = Control.Child2.SizeRequest();
+					SetPosition(horiz ? size2.Width : size2.Height, SplitterPositionMode.Far);
+					break;
+				default:
+					var sone = Control.Child1.SizeRequest();
+					var stwo = Control.Child2.SizeRequest();
+					var one = horiz ? sone.Width : sone.Height;
+					var two = horiz ? stwo.Width : stwo.Height;
+					SetPosition(one * GetAvailableSize(true) / (one + two), SplitterPositionMode.Near);
+					break;
+			}
+		}
+
+
+		void Control_SizeAllocated(object o, Gtk.SizeAllocatedArgs args)
+		{
+			Control.SizeAllocated -= Control_SizeAllocated;
+			SetInitialPosition();
+			created = true;
 		}
 
 		static Gtk.Widget EmptyContainer()

@@ -18,6 +18,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddCentered(Test2WithSize());
 			layout.AddCentered(Test2AutoSize());
 			layout.AddCentered(TestDynamic());
+			layout.AddCentered(TestInitResize());
 			layout.Add(null);
 			Content = layout;
 		}
@@ -68,7 +69,10 @@ namespace Eto.Test.Sections.Controls
 		static Form Test1(bool setSize, Action<Label[], Panel> layoutContent)
 		{
 			// Status bar
-			Label[] status = { new Label(), new Label(), new Label(), new Label(), new Label() };
+			Label[] status = {
+				new Label(), new Label(), new Label(),
+				new Label(), new Label(), new Label()
+			};
 			var statusLayout = new DynamicLayout { Padding = Padding.Empty, Spacing = Size.Empty };
 			statusLayout.BeginHorizontal();
 			for (var i = 0; i < status.Length; ++i)
@@ -138,7 +142,10 @@ namespace Eto.Test.Sections.Controls
 			mainPanel.Content = splitLayout.Layout(
 				i =>
 				{
-					var button = new Button { Text = "Click to update status " + i, BackgroundColor = splitLayout.PanelColors[i] };
+					var button = new Button {
+						Text = "Click to update status " + i,
+						BackgroundColor = splitLayout.PanelColors[i]
+					};
 					button.Click += (s, e) => status[i].Text = "New count: " + (count++);
 					return button;
 				});
@@ -175,11 +182,14 @@ namespace Eto.Test.Sections.Controls
 
 			public Panel[] Panels { get; private set; }
 
-			public Color[] PanelColors = { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
+			public Color[] PanelColors = {
+				Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite,
+				Colors.Purple, Colors.Orange, Colors.Aqua };
 
 			public SplitLayout(Panel[] panels = null)
 			{
-				this.Panels = panels ?? new Panel[] { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
+				this.Panels = panels ?? new Panel[] {
+					new Panel(), new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
 			}
 
 			public Control Layout(Func<int, Control>getContent)
@@ -188,21 +198,52 @@ namespace Eto.Test.Sections.Controls
 				// |---------------------------
 				// |        |      |          |
 				// |  P0    |  P2  |   P4     |
-				// | -------|      |          |  <== These are on MainPanel
-				// |  P1    |------|          |
+				// | -------|      |----------|  <== These are on MainPanel
+				// |  P1    |------|   P5     |
 				// |        |  P3  |          |
 				// |---------------------------
-				// |         status0..4,      |  <== These are on StatusPanel
+				// |         status0..5,      |  <== These are on StatusPanel
 				// ----------------------------
 
 				for (var i = 0; i < Panels.Length; ++i)
 					Panels[i].Content = getContent(i);
 
-				var p0_1 = new Splitter { Panel1 = Panels[0], Panel2 = Panels[1], Orientation = SplitterOrientation.Vertical, Position = 200 };
-				var p2_3 = new Splitter { Panel1 = Panels[2], Panel2 = Panels[3], Orientation = SplitterOrientation.Vertical, Position = 200, FixedPanel = SplitterFixedPanel.Panel2 };
-				var p01_23 = new Splitter { Panel1 = p0_1, Panel2 = p2_3, Orientation = SplitterOrientation.Horizontal, Position = 200 };
-				var p0123_4 = new Splitter { Panel1 = p01_23, Panel2 = Panels[4], Orientation = SplitterOrientation.Horizontal, Position = 400 };
-				return this.Root = p0123_4;
+				// basic test - near mode
+				var p0_1 = new Splitter {
+					Panel1 = Panels[0], Panel2 = Panels[1],
+					Orientation = SplitterOrientation.Vertical,
+					Position = 200
+				};
+				// far mode (position sets size of second panel)
+				var p2_3 = new Splitter {
+					Panel1 = Panels[2], Panel2 = Panels[3],
+					Orientation = SplitterOrientation.Vertical,
+					FixedPanel = SplitterFixedPanel.Panel2,
+					Position = 200, PositionMode = SplitterPositionMode.Far
+				};
+				// percent mode (60%)
+				var p4_5 = new Splitter {
+					Panel1 = Panels[4], Panel2 = Panels[5],
+					Orientation = SplitterOrientation.Vertical,
+					FixedPanel = SplitterFixedPanel.None,
+					PositionMode = SplitterPositionMode.Percent,
+					Position = 60
+				};
+				// startup percent mode, but fix left
+				var p01_23 = new Splitter {
+					Panel1 = p0_1, Panel2 = p2_3,
+					Orientation = SplitterOrientation.Horizontal,
+					PositionMode = SplitterPositionMode.Percent,
+					Position = 50
+				};
+				// startup test with near mode and width set
+				var p0123_45 = new Splitter {
+					Panel1 = p01_23, Panel2 = p4_5,
+					Orientation = SplitterOrientation.Horizontal,
+					FixedPanel = SplitterFixedPanel.Panel2,
+					Position = 405, Width = 610
+				};
+				return this.Root = p0123_45;
 			}
 		}
 
@@ -250,6 +291,102 @@ namespace Eto.Test.Sections.Controls
 			if (setSize)
 				form.Size = new Size(600, 400);
 			return form;
+		}
+
+		static Control TestInitResize()
+		{
+			var control = new Button { 
+				Text = "Show splitter test of initial resize"
+			};
+			Func<Control> makebox = () => {
+				var area = new TextArea();
+				area.SizeChanged += (s,e) => {
+					var split = area.Parent as Splitter;
+					if (split == null)
+						return;
+					var size = area.Parent.Size;
+					if (split.Orientation == SplitterOrientation.Horizontal)
+						size.Width -= split.SplitterWidth;
+					else
+						size.Height -= split.SplitterWidth;
+					if (size.Width <= 0 || size.Height <= 0)
+						return;
+					area.Text = string.Format(
+						"W:{0} ({1}%)\r\nH:{2} ({3}%)",
+						area.Width, area.Width*100/size.Width,
+						area.Height, area.Height*100/size.Height);
+				};
+				return area;
+			};
+			Func<int,Form> makeform = (i) => {
+				var wa = new Rectangle(Screen.PrimaryScreen.WorkingArea);
+				var form = new Form {
+					Title = "Test Form #" + (i+1).ToString(),
+					Bounds = i == 0
+					? new Rectangle(wa.X + 20, wa.Y + 20, wa.Width/3, wa.Height/3)
+					: i == 1
+					? new Rectangle(wa.X + 20, wa.Y + 40 + wa.Height/3, wa.Width/3, wa.Height*2/3 - 60)
+					: new Rectangle(wa.X + wa.Width/3 + 40, wa.Y + 20, wa.Width*2/3 - 60, wa.Height - 40)
+				};
+				var main = new Splitter {
+					Position = 80
+				};
+				var middle = new Splitter {
+					FixedPanel = SplitterFixedPanel.Panel2,
+					Width = 200, Position = 115 // 5px less to make Panel2.Width = 80
+				};
+				var ltop = new Splitter {
+					Orientation = SplitterOrientation.Vertical,
+					Position = 80
+				};
+				var lbottom = new Splitter {
+					Orientation = SplitterOrientation.Vertical,
+					FixedPanel = SplitterFixedPanel.Panel2,
+					PositionMode = SplitterPositionMode.Far,
+					Position = 80
+				};
+				var right = new Splitter {
+					Orientation = SplitterOrientation.Vertical,
+					FixedPanel = SplitterFixedPanel.None,
+					Height = 300, Position = 100 // ~33%
+				};
+				var center = new Splitter {
+					FixedPanel = SplitterFixedPanel.None,
+					PositionMode = SplitterPositionMode.Percent,
+					Position = 40
+				};
+				main	.Panel1 = ltop;
+				main	.Panel2 = middle;
+				ltop	.Panel1 = makebox();
+				ltop	.Panel2 = lbottom;
+				lbottom	.Panel1 = makebox();
+				lbottom	.Panel2 = makebox();
+				middle	.Panel1 = center;
+				middle	.Panel2 = right;
+				right	.Panel1 = makebox();
+				right	.Panel2 = makebox();
+				center	.Panel1 = makebox();
+				center	.Panel2 = makebox();
+				form.Content = main;
+				form.Show();
+				return form;
+			};
+			control.Click += (sender, e) => {
+				var forms = new Form[3];
+				for (int i = 0; i < 3; i++)
+				{
+					forms[i] = makeform(i);
+					forms[i].Closed += (fs, fe) => {
+						var all = forms;
+						forms = null;
+						if( all != null ) 
+							for (int j = 0; j < 3; j++)
+								if (all[j] != fs)
+									all[j].Close();
+					};
+				}
+			};
+			return control;
 		}
 	}
 }
