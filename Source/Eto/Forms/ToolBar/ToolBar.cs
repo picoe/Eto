@@ -61,6 +61,7 @@ namespace Eto.Forms
 	/// <seealso cref="Window.ToolBar"/>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[ContentProperty("Items")]
 	[Handler(typeof(ToolBar.IHandler))]
 	public class ToolBar : Widget
 	{
