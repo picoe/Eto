@@ -55,9 +55,6 @@
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="EtoException.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Controls\DropDown.cs" />
     <Compile Include="Forms\Controls\EnumDropDown.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
@@ -82,7 +79,6 @@
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
-    <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Threading\Thread.cs" />
     <Compile Include="TypeHelper.cs" />
     <Compile Include="Widget.cs" />
@@ -227,7 +223,6 @@
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
-    <Compile Include="HandlerInvalidException.cs" />
     <Compile Include="Forms\Range.cs" />
     <Compile Include="Forms\Controls\Navigation.cs" />
     <Compile Include="Forms\Controls\NavigationItem.cs" />

@@ -38,7 +38,7 @@ namespace Eto.Drawing
 			if (text != null) {
 				var parts = text.Split (culture.TextInfo.ListSeparator.ToCharArray ());
 				if (parts.Length != 2)
-					throw new ArgumentException (string.Format (CultureInfo.CurrentCulture, "Cannot parse value '{0}' as point.  Should be in the form of 'x,y'", text));
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as point.  Should be in the form of 'x,y'", text));
 
 				var converter = new SingleConverter ();
 				return new PointF (

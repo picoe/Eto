@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using Eto.Designer;
-using System.Diagnostics;
 
 namespace Eto.Designer
 {
@@ -22,7 +23,7 @@ namespace Eto.Designer
 			{
 				var init = Activator.CreateInstance(initInfo.InitializerType) as IPlatformInitializer;
 				if (init == null)
-					throw new EtoException("Wrong type specified for platform initializer (must implement IPlatformInitializer)");
+					throw new ArgumentNullException(string.Format(CultureInfo.CurrentCulture, "Wrong type specified for platform initializer (must implement IPlatformInitializer)"));
 				init.Initialize(platform);
 			}
 		}

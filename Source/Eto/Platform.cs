@@ -262,8 +262,6 @@ namespace Eto
 		{
 			get
 			{
-				//if (current == null)
-				//	throw new EtoException("Generator has not been initialized");
 				return instance.Value;
 			}
 		}
@@ -311,7 +309,7 @@ namespace Eto
 				}
 				
 				if (detected == null)
-					throw new EtoException("Could not detect platform. Are you missing a platform assembly?");
+					throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Could not detect platform. Are you missing a platform assembly?"));
 					
 				Initialize(detected);
 				return globalInstance;
@@ -358,7 +356,7 @@ namespace Eto
 			{
 				if (allowNull)
 					return null;
-				throw new EtoException("Platform not found. Are you missing the platform assembly?");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Platform not found. Are you missing the platform assembly?"));
 			}
 			try
 			{
@@ -369,7 +367,7 @@ namespace Eto
 					if (allowNull)
 						Debug.WriteLine(message);
 					else
-						throw new EtoException(message);
+						throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, message));
 					return null;
 				}
 				return platform;
@@ -480,7 +478,7 @@ namespace Eto
 			{
 				var instantiator = Find(type);
 				if (instantiator == null)
-					throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "type {0} could not be found in this generator", type.FullName));
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Type {0} could not be found in this generator", type.FullName));
 
 				var handler = instantiator();
 				OnHandlerCreated(new HandlerCreatedEventArgs(handler));
@@ -488,7 +486,7 @@ namespace Eto
 			}
 			catch (Exception e)
 			{
-				throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "Could not create instance of type {0}", type), e);
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Could not create instance of type {0}", type), e);
 			}
 		}
 

@@ -280,7 +280,7 @@ namespace Eto.Drawing
 			Color color;
 			if (TryParse (value, out color))
 				return color;
-			throw new ArgumentOutOfRangeException ("value", value, "Cannot convert value to a color");
+			throw new ArgumentOutOfRangeException ("value", value, string.Format(CultureInfo.CurrentCulture, "Cannot convert value to a color"));
 		}
 
 		/// <summary>

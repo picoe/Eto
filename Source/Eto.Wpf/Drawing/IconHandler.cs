@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Eto.Drawing;
 using System.IO;
 using sw = System.Windows;
@@ -139,7 +140,7 @@ namespace Eto.Wpf.Drawing
 					pos += 4;
 					int imgOffset = BitConverter.ToInt32 (srcBuf, pos);    // ICONDIRENTRY.dwImageOffset
 					if (imgOffset + imgSize > srcBuf.Length)
-						throw new InvalidDataException ("Icon not a valid format");
+						throw new InvalidDataException(string.Format(CultureInfo.CurrentCulture, "Icon not a valid format"));
 					writer.Write (srcBuf, imgOffset, imgSize);
 					writer.Flush ();
 

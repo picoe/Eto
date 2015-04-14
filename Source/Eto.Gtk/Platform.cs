@@ -56,7 +56,7 @@ namespace Eto.GtkSharp
 		public Platform()
 		{
 			if (EtoEnvironment.Platform.IsWindows && Environment.Is64BitProcess)
-				throw new NotSupportedException("Please compile/run GTK in x86 mode (32-bit) on windows");
+				throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Please compile/run GTK in x86 mode (32-bit) on windows"));
 
 			AddTo(this);
 		}

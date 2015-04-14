@@ -48,10 +48,6 @@ namespace Eto.Designer
 					}
 				}
 			}
-			catch (HandlerInvalidException ex)
-			{
-				throw new Exception(ex.ToString());
-			}
 			catch (Exception ex)
 			{
 				throw new Exception(ex.ToString());

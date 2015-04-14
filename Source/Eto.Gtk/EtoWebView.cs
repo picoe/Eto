@@ -51,7 +51,7 @@ namespace Eto.GtkSharp
 				var webView = (EtoWebView)GLib.Object.GetObject (webview, false);
 				result = webView.OnNewWindowPolicyDecisionRequested (GLib.Object.GetObject (frame) as WebFrame, GLib.Object.GetObject (request) as NetworkRequest, GLib.Object.GetObject (action) as WebNavigationAction, GLib.Object.GetObject (decision) as WebPolicyDecision);
 			} catch (Exception ex) {
-				ExceptionManager.RaiseUnhandledException (ex, true);
+				ExceptionManager.RaiseUnhandledException(ex, true);
 				throw;
 			}
 			return result;

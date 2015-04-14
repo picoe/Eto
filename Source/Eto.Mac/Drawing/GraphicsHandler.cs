@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
@@ -605,7 +606,7 @@ namespace Eto.iOS.Drawing
 		public void RestoreTransform()
 		{
 			if (transformSaveCount <= 0)
-				throw new InvalidOperationException("No saved transform");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "No saved transform"));
 			RewindClip();
 			transformSaveCount--;
 			Control.RestoreState();

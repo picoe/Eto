@@ -30,7 +30,7 @@
 					</TableCell>
 				</TableRow>
 				<TableRow>
-					<TableCell><Label Text="Image" VerticalAlign="Middle" /></TableCell>
+					<TableCell><Label Text="Image" VerticalAlignment="Center" /></TableCell>
 					<TableCell>
 						<TableLayout>
 							<TableLayout.Rows>

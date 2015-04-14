@@ -1,7 +1,8 @@
 using System;
-using System.ComponentModel;
-using Eto.Drawing;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -474,7 +475,7 @@ namespace Eto.Forms
 		{
 #if DEBUG
 			if (Loaded)
-				throw new EtoException("Control was loaded more than once");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Control was loaded more than once"));
 #endif
 			Properties.TriggerEvent(LoadKey, this, e);
 			Handler.OnLoad(e);
@@ -527,7 +528,7 @@ namespace Eto.Forms
 		{
 #if DEBUG
 			if (!Loaded)
-				throw new EtoException("Control was unloaded more than once");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Control was unloaded more than once"));
 #endif
 			Loaded = false;
 			Properties.TriggerEvent(UnLoadKey, this, e);
@@ -805,7 +806,7 @@ namespace Eto.Forms
 		public void AttachNative()
 		{
 			if (Parent != null)
-				throw new EtoException("You can only attach a parentless control");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "You can only attach a parentless control"));
 
 			using (Platform.Context)
 			{

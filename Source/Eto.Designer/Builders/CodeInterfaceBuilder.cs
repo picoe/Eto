@@ -1,14 +1,15 @@
 using System;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Collections.Generic;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.IO;
-using System.Threading;
-using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using Eto.Forms;
+using Eto.Drawing;
 using Eto.Designer;
 
 namespace Eto.Designer.Builders
@@ -120,7 +121,7 @@ namespace Eto.Designer.Builders
 									newDomain = AppDomain.CreateDomain("newDomain", null, setup);
 									var module = newDomain.CreateInstanceFromAndUnwrap(typeof(ControlLoader).Assembly.Location, typeof(ControlLoader).FullName) as ControlLoader;
 									if (module == null)
-										throw new EtoException("Could not create ControlLoader instance in new domain");
+										throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Could not create ControlLoader instance in new domain"));
 									//var executeMethod = module.GetType().GetMethod("Execute");
 									//var contract = executeMethod.Invoke(module, new object[] { Platform.Instance.GetType().FullName + ", " + Platform.Instance.GetType().Assembly.FullName, assemblyName, InitializeAssembly });
 									var contract = module.Execute(Platform.Instance.GetType().FullName + ", " + Platform.Instance.GetType().Assembly.FullName, assemblyName, InitializeAssembly);
