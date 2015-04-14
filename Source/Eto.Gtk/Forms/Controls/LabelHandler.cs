@@ -140,8 +140,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override string Text
 		{
-			get { return MnuemonicToString(Control.Text); }
-			set { Control.TextWithMnemonic = StringToMnuemonic(value); }
+			get { return Control.Text.ToEtoMnemonic(); }
+			set { Control.TextWithMnemonic = value.ToPlatformMnemonic(); }
 		}
 
 		public TextAlignment TextAlignment

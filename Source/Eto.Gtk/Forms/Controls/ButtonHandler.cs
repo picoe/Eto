@@ -83,10 +83,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override string Text
 		{
-			get { return MnuemonicToString(label.Text); }
+			get { return label.Text.ToEtoMnemonic(); }
 			set
 			{
-				label.TextWithMnemonic = StringToMnuemonic(value);
+				label.TextWithMnemonic = value.ToPlatformMnemonic();
 				SetImagePosition();
 			}
 		}

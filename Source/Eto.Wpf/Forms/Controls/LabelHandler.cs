@@ -119,8 +119,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return text.Text.ToEtoMneumonic(); }
-			set { text.Text = value.ToWpfMneumonic(); }
+			get { return text.Text.ToEtoMnemonic(); }
+			set { text.Text = value.ToPlatformMnemonic(); }
 		}
 	}
 }

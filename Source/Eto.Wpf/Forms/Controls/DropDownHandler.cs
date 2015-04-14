@@ -76,14 +76,14 @@ namespace Eto.Wpf.Forms.Controls
 			var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
 			if (popup == null)
 				return size;
-			popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
+			popup.Child.Measure(WpfConversions.PositiveInfinitySize); // force generating containers
 			if (ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
 				return size;
 			double maxWidth = 0;
 			foreach (var item in Items)
 			{
 				var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
-				comboBoxItem.Measure(Conversions.PositiveInfinitySize);
+				comboBoxItem.Measure(WpfConversions.PositiveInfinitySize);
 				maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
 			}
 

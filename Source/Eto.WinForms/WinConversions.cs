@@ -12,7 +12,7 @@ using Eto.WinForms.Forms.Printing;
 
 namespace Eto.WinForms
 {
-	public static partial class Conversions
+	public static partial class WinConversions
 	{
 		public const float WheelDelta = 120f;
 
@@ -444,11 +444,6 @@ namespace Eto.WinForms
 		public static IMatrix ToEto(this sd2.Matrix matrix)
 		{
 			return new MatrixHandler(matrix);
-		}
-
-		public static float DegreesToRadians(float angle)
-		{
-			return (float)Math.PI * angle / 180.0f;
 		}
 
 		public static ITreeItem ToEto(this swf.TreeNode treeNode)

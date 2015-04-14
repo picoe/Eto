@@ -107,8 +107,8 @@
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <ItemGroup>
-    <Compile Include="..\Eto.Direct2D\Conversions.cs">
-      <Link>Conversions.cs</Link>
+    <Compile Include="..\Eto.Direct2D\2DConversions.cs">
+      <Link>2DConversions.cs</Link>
     </Compile>
     <Compile Include="..\Eto.Direct2D\Drawing\BitmapHandler.cs">
       <Link>Drawing\BitmapHandler.cs</Link>

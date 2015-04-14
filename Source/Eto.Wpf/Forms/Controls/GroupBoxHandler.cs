@@ -38,10 +38,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return AccessText.Text.ToEtoMneumonic(); }
+			get { return AccessText.Text.ToEtoMnemonic(); }
 			set
 			{
-				AccessText.Text = value.ToWpfMneumonic();
+				AccessText.Text = value.ToPlatformMnemonic();
 				Control.Header = string.IsNullOrEmpty(value) ? null : Header;
 			}
 		}

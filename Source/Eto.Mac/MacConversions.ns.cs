@@ -15,7 +15,7 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac
 {
-	public static partial class Conversions
+	public static partial class MacConversions
 	{
 		static readonly DateTime ReferenceDate = new DateTime(2001, 1, 1, 0, 0, 0);
 
@@ -43,13 +43,12 @@ namespace Eto.Mac
 
 		public static NSColor ToNS(this CGColor color)
 		{
-			#if XAMMAC
+#if XAMMAC
 			return NSColor.FromCGColor(color);
-			#else
+#else
 			return MacExtensions.NSColorFromCGColor(color);
-			#endif
+#endif
 		}
-		
+
 	}
 }
-

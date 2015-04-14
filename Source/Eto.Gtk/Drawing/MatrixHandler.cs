@@ -65,7 +65,7 @@ namespace Eto.GtkSharp.Drawing
 		
 		public void RotateAt (float angle, float centerX, float centerY)
 		{
-			angle = Conversions.DegreesToRadians (angle);
+			angle = Conversions.DegreesToRadians(angle);
 			var sina = Math.Sin (angle);
 			var cosa = Math.Cos (angle);
 			var matrix = new Cairo.Matrix (cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);
@@ -90,7 +90,7 @@ namespace Eto.GtkSharp.Drawing
 		
 		public void Skew (float skewX, float skewY)
 		{
-			var matrix = new Cairo.Matrix (1, Math.Tan (Conversions.DegreesToRadians (skewX)), Math.Tan (Conversions.DegreesToRadians (skewY)), 1, 0, 0);
+			var matrix = new Cairo.Matrix(1, Math.Tan(Conversions.DegreesToRadians(skewX)), Math.Tan(Conversions.DegreesToRadians(skewY)), 1, 0, 0);
 			control = Cairo.Matrix.Multiply (matrix, control);
 		}
 		

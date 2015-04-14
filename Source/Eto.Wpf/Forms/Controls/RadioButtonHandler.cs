@@ -43,8 +43,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return (Control.Content as string).ToEtoMneumonic(); }
-			set { Control.Content = value.ToWpfMneumonic(); }
+			get { return (Control.Content as string).ToEtoMnemonic(); }
+			set { Control.Content = value.ToPlatformMnemonic(); }
 		}
 
 		public override Color BackgroundColor

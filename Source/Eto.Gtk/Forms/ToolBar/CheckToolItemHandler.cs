@@ -28,7 +28,7 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			Control = new Gtk.ToggleToolButton();
 			Control.Active = ischecked;
 			Control.Label = Text;
-			//Control.TooltipText = this.ToolTip;
+			Control.TooltipText = this.ToolTip;
 			Control.IconWidget = GtkImage;
 			Control.Sensitive = Enabled;
 			Control.CanFocus = false;
