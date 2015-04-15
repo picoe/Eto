@@ -17,7 +17,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// The character to split up the string which will be converted
 		/// </summary>
-		private readonly string[] StringSplitter = new string[1] { "," };
+		static readonly string[] StringSplitter = new string[1] { "," };
 
 		/// <summary>
 		/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
