@@ -12,7 +12,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TypeConverter (typeof (ColorConverter))]
+	[TypeConverter(typeof(ColorConverter))]
 	public struct Color : IEquatable<Color>
 	{
 		// static members for mapping color names from the Colors class
@@ -24,7 +24,7 @@ namespace Eto.Drawing
 		/// Gets or sets the alpha/opacity (0-1)
 		/// </summary>
 		public float A { get; set; }
-		
+
 		/// <summary>
 		/// Gets or sets the red component (0-1)
 		/// </summary>
@@ -65,6 +65,11 @@ namespace Eto.Drawing
 		public int Bb { get { return (int)((B * 255) + 0.5f); } set { B = value / 255f; } }
 
 		/// <summary>
+		/// The character to split up the string which will be converted
+		/// </summary>
+		static readonly string[] ColorSplitter = new string[1] { "," };
+
+		/// <summary>
 		/// Creates a color from 8-bit ARGB components
 		/// </summary>
 		/// <returns>A new instance of the Color object with the specified components</returns>
@@ -72,7 +77,7 @@ namespace Eto.Drawing
 		/// <param name="green">The green component (0-255)</param>
 		/// <param name="blue">The blue component (0-255)</param>
 		/// <param name="alpha">The alpha component (0-255)</param>
-		public static Color FromArgb (int red, int green, int blue, int alpha = 255)
+		public static Color FromArgb(int red, int green, int blue, int alpha = 255)
 		{
 			return new Color(alpha: alpha / 255f, red: red / 255f, green: green / 255f, blue: blue / 255f);
 		}
@@ -82,9 +87,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="argb">32-bit ARGB value with Alpha in the high byte</param>
 		/// <returns>A new instance of the Color object with the specified color</returns>
-		public static Color FromArgb (int argb)
+		public static Color FromArgb(int argb)
 		{
-			return new Color (((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, (argb & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
+			return new Color(((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, (argb & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
 		}
 
 		/// <summary>
@@ -103,9 +108,9 @@ namespace Eto.Drawing
 		/// <param name="val">Value for each RGB component</param>
 		/// <param name="alpha">Alpha value</param>
 		/// <returns>A new instance of the Color object with the specified grayscale color</returns>
-		public static Color FromGrayscale (float val, float alpha = 1f)
+		public static Color FromGrayscale(float val, float alpha = 1f)
 		{
-			return new Color (val, val, val, alpha);
+			return new Color(val, val, val, alpha);
 		}
 
 		/// <summary>
@@ -117,9 +122,9 @@ namespace Eto.Drawing
 		/// <param name="value1">First color to compare</param>
 		/// <param name="value2">Second color to compare with</param>
 		/// <returns>The overall distance/difference between the two colours. A lower value indicates a closer match</returns>
-		public static float Distance (Color value1, Color value2)
+		public static float Distance(Color value1, Color value2)
 		{
-			return (float)Math.Sqrt (Math.Pow (value1.R - value2.R, 2) + Math.Pow (value1.G - value2.G, 2) + Math.Pow (value1.B - value2.B, 2));
+			return (float)Math.Sqrt(Math.Pow(value1.R - value2.R, 2) + Math.Pow(value1.G - value2.G, 2) + Math.Pow(value1.B - value2.B, 2));
 		}
 
 		/// <summary>
@@ -130,7 +135,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="baseColor">Base color</param>
 		/// <param name="blendColor">Color to blend onto the base color</param>
-		public static Color Blend (Color baseColor, Color blendColor)
+		public static Color Blend(Color baseColor, Color blendColor)
 		{
 			if (Math.Abs(blendColor.A - 1.0f) < Epsilon)
 				return blendColor;
@@ -148,8 +153,8 @@ namespace Eto.Drawing
 		/// <param name="green">Green component (0-1)</param>
 		/// <param name="blue">Blue component (0-1)</param>
 		/// <param name="alpha">Alpha component (0-1)</param>
-		public Color (float red, float green, float blue, float alpha = 1f)
-			: this ()
+		public Color(float red, float green, float blue, float alpha = 1f)
+			: this()
 		{
 			this.R = red;
 			this.G = green;
@@ -162,8 +167,8 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color to copy</param>
 		/// <param name="alpha">Alpha to use for the new color, or null to use the alpha component from <paramref name="color"/></param>
-		public Color (Color color, float? alpha = null)
-			: this ()
+		public Color(Color color, float? alpha = null)
+			: this()
 		{
 			R = color.R;
 			G = color.G;
@@ -188,80 +193,96 @@ namespace Eto.Drawing
 		/// <param name="value">String value to parse</param>
 		/// <param name="color">Color struct with the parsed value, or Transparent if value is invalid</param>
 		/// <returns>True if the value was successfully parsed into a color, false otherwise</returns>
-		public static bool TryParse (string value, out Color color)
+		public static bool TryParse(string value, out Color color)
 		{
-			value = value.Trim ();
-			if (value.Length == 0) {
+			value = value.Trim();
+			if (value.Length == 0)
+			{
 				color = Colors.Transparent;
 				return true;
 			}
-			string listSeparator = ",";
-			if (value.IndexOf (listSeparator, StringComparison.OrdinalIgnoreCase) == -1) {
+
+			if (value.IndexOf(ColorSplitter[0], StringComparison.OrdinalIgnoreCase) == -1)
+			{
 				bool isArgb = value[0] == '#';
 				int num = (!isArgb) ? 0 : 1;
 				bool ixHex = false;
-				if (value.Length > num + 1 && value[num] == '0') {
+				if (value.Length > num + 1 && value[num] == '0')
+				{
 					ixHex = (value[num + 1] == 'x' || value[num + 1] == 'X');
-					if (ixHex) {
+					if (ixHex)
+					{
 						num += 2;
 					}
 				}
-				if (isArgb || ixHex) {
-					value = value.Substring (num);
+				if (isArgb || ixHex)
+				{
+					value = value.Substring(num);
 					uint num2;
-					if (!uint.TryParse (value, NumberStyles.HexNumber, null, out num2)) {
+					if (!uint.TryParse(value, NumberStyles.HexNumber, null, out num2))
+					{
 						color = Colors.Transparent;
 						return false;
 					}
 
-					if (value.Length < 6 || (value.Length == 6 && isArgb && ixHex)) {
+					if (value.Length < 6 || (value.Length == 6 && isArgb && ixHex))
+					{
 						num2 &= 0xFFFFFF;
 					}
-					else {
+					else
+					{
 						if (num2 >> 24 == 0) num2 |= 0xFF000000;
 					}
-					color = Color.FromArgb ((int)num2);
+					color = Color.FromArgb((int)num2);
 					return true;
 				}
-				if (colormap == null) {
-					lock (colormaplock) {
-						if (colormap == null) {
-#if PCL							
+				if (colormap == null)
+				{
+					lock (colormaplock)
+					{
+						if (colormap == null)
+						{
+#if PCL
 							var props = from p in typeof(Colors).GetRuntimeProperties() where p.GetGetMethod().IsStatic && p.GetGetMethod().IsPublic select p;
 #else
 							var props = typeof (Colors).GetProperties (BindingFlags.Public | BindingFlags.Static);
 #endif
-							colormap = new Dictionary<string, Color> (StringComparer.OrdinalIgnoreCase);
-							foreach (var val in props.Where (r => r.PropertyType == typeof (Color))) {
-								var col = (Color)val.GetValue (null, null);
-								colormap.Add (val.Name, col);
+							colormap = new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase);
+							foreach (var val in props.Where(r => r.PropertyType == typeof(Color)))
+							{
+								var col = (Color)val.GetValue(null, null);
+								colormap.Add(val.Name, col);
 							}
 						}
 					}
 				}
-				if (colormap.TryGetValue (value, out color))
+				if (colormap.TryGetValue(value, out color))
 					return true;
 			}
-			string[] array = value.Split (listSeparator.ToCharArray ());
+
+			string[] array = value.Split(ColorSplitter, StringSplitOptions.RemoveEmptyEntries);
 			var array2 = new uint[array.Length];
-			for (int i = 0; i < array2.Length; i++) {
+			for (int i = 0; i < array2.Length; i++)
+			{
 				uint num;
-				if (!uint.TryParse (array[i], out num)) {
+				if (!uint.TryParse(array[i], out num))
+				{
 					color = Colors.Transparent;
 					return false;
 				}
 				array2[i] = num;
 			}
-			switch (array.Length) {
-			case 1:
-				color = Color.FromArgb ((int)array2[0]);
-				return true;
-			case 3:
-				color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2]);
-				return true;
-			case 4:
-				color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2], (int)array2[3]);
-				return true;
+			switch (array.Length)
+			{
+				case 1:
+					color = Color.FromArgb((int)array2[0]);
+					return true;
+				case 3:
+					color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2]);
+					return true;
+				case 4:
+					color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2], (int)array2[3]);
+					return true;
 			}
 			color = Colors.Transparent;
 			return false;
@@ -275,12 +296,13 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <exception cref="ArgumentOutOfRangeException">If the value is an invalid color</exception>
 		/// <param name="value">Value to convert</param>
-		public static Color Parse (string value)
+		public static Color Parse(string value)
 		{
 			Color color;
-			if (TryParse (value, out color))
+			if (TryParse(value, out color))
 				return color;
-			throw new ArgumentOutOfRangeException ("value", value, string.Format(CultureInfo.CurrentCulture, "Cannot convert value to a color"));
+
+			throw new ArgumentOutOfRangeException("value", value, string.Format(CultureInfo.CurrentCulture, "Cannot convert value to a color"));
 		}
 
 		/// <summary>
@@ -288,7 +310,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="obj">Color to compare with</param>
 		/// <returns>True if the specified object is a Color and has the same ARGB components as this color, false otherwise</returns>
-		public override bool Equals (object obj)
+		public override bool Equals(object obj)
 		{
 			return obj is Color && this == (Color)obj;
 		}
@@ -297,9 +319,9 @@ namespace Eto.Drawing
 		/// Gets the hash code for this Color
 		/// </summary>
 		/// <returns>Hash code for the color</returns>
-		public override int GetHashCode ()
+		public override int GetHashCode()
 		{
-			return R.GetHashCode () ^ G.GetHashCode () ^ B.GetHashCode () ^ A.GetHashCode ();
+			return R.GetHashCode() ^ G.GetHashCode() ^ B.GetHashCode() ^ A.GetHashCode();
 		}
 
 		/// <summary>
@@ -308,7 +330,7 @@ namespace Eto.Drawing
 		/// <param name="color1">The first Color struct to compare</param>
 		/// <param name="color2">The second Color struct to compare</param>
 		/// <returns>True if both the Color structs have the same values for all ARGB components</returns>
-		public static bool operator == (Color color1, Color color2)
+		public static bool operator ==(Color color1, Color color2)
 		{
 			return Math.Abs(color1.B - color2.B) < Epsilon
 				&& Math.Abs(color1.R - color2.R) < Epsilon
@@ -322,7 +344,7 @@ namespace Eto.Drawing
 		/// <param name="color1">The first Color struct to compare</param>
 		/// <param name="color2">The second Color struct to compare</param>
 		/// <returns>True if the Color structs have a differing value for any of the ARGB components</returns>
-		public static bool operator != (Color color1, Color color2)
+		public static bool operator !=(Color color1, Color color2)
 		{
 			return !(color1 == color2);
 		}
@@ -335,7 +357,7 @@ namespace Eto.Drawing
 		/// equal to the 1 minus the component's value.  This is useful for when you want to show
 		/// a highlighted color but still show the variation in colors.
 		/// </remarks>
-		public void Invert ()
+		public void Invert()
 		{
 			R = 1f - R;
 			G = 1f - G;
@@ -359,7 +381,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="includeAlpha">True to include the alpha component, false to exclude it</param>
 		/// <returns>A hex representation of this color, with 8 digits if <paramref name="includeAlpha"/> is true, or 6 digits if false</returns>
-		public string ToHex (bool includeAlpha = true)
+		public string ToHex(bool includeAlpha = true)
 		{
 			if (includeAlpha)
 				return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", Ab, Rb, Gb, Bb);
@@ -373,9 +395,9 @@ namespace Eto.Drawing
 		/// This just calls <see cref="ToHex"/>
 		/// </remarks>
 		/// <returns>A string representation of this object</returns>
-		public override string ToString ()
+		public override string ToString()
 		{
-			return ToHex ();
+			return ToHex();
 		}
 
 		/// <summary>
@@ -383,7 +405,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="other">Other color to determine equality</param>
 		/// <returns>True if all components of the specified color are equal to this object</returns>
-		public bool Equals (Color other)
+		public bool Equals(Color other)
 		{
 			return other == this;
 		}
@@ -408,24 +430,24 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Color with the value from the element id</returns>
 		/// <param name="id">Identifier.</param>
 		/// <param name="alpha">Alpha.</param>
-		public static Color FromElementId (int id, int alpha = 255)
+		public static Color FromElementId(int id, int alpha = 255)
 		{
 			int shuffleTerm = id & 7;
-			
+
 			int red = 0x7f & (id >> 17);
 			int green = 0x7f & (id >> 10);
 			int blue = 0x7f & (id >> 3);
-			
+
 			if ((shuffleTerm & 1) == 1)
 				blue |= 0x80;
-			
+
 			if ((shuffleTerm & 2) == 2)
 				green |= 0x80;
-			
+
 			if ((shuffleTerm & 4) == 4)
 				red |= 0x80;
-			
-			return Color.FromArgb (red, green, blue, alpha);
+
+			return Color.FromArgb(red, green, blue, alpha);
 		}
 
 		/// <summary>
@@ -433,7 +455,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <seealso cref="FromElementId"/>
 		/// <returns>The element id value of this color</returns>
-		public int ToElementId ()
+		public int ToElementId()
 		{
 			int result = (Rb & 0x7f) << 17
 				| (Gb & 0x7f) << 10
@@ -441,7 +463,7 @@ namespace Eto.Drawing
 				| ((Rb & 0x80) == 0x80 ? 4 : 0)
 				| ((Gb & 0x80) == 0x80 ? 2 : 0)
 				| ((Bb & 0x80) == 0x80 ? 1 : 0);
-			
+
 			return result;
 		}
 
