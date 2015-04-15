@@ -76,7 +76,6 @@
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
-    <Compile Include="Int32ArrayConverter.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
