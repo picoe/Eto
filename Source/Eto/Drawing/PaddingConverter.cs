@@ -14,7 +14,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// The character to split up the string which will be converted
 		/// </summary>
-		static readonly string[] StringSplitter = new string[1] { "," };
+		static readonly char[] DimensionSplitter = new char[1] { ',' };
 
 		/// <summary>
 		/// Determines if the specified <paramref name="sourceType"/> can be converted to a <see cref="Padding"/> object
@@ -39,7 +39,7 @@ namespace Eto.Drawing
 			string text = value as string;
 			if (text != null)
 			{
-				string[] parts = text.Split(StringSplitter, StringSplitOptions.RemoveEmptyEntries);
+				string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
 
 				try
 				{
