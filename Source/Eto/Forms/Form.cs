@@ -31,7 +31,7 @@ namespace Eto.Forms
 		/// Show the form
 		/// </summary>
 		public void Show()
-		{ 
+		{
 			var loaded = Loaded;
 			if (!loaded)
 			{

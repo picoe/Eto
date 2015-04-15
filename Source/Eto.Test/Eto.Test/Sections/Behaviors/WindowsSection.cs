@@ -240,8 +240,28 @@ namespace Eto.Test.Sections.Behaviors
 			{
 				var dialog = new Dialog();
 				child = dialog;
-				show = () => dialog.ShowModal(this);
+				show = () => dialog.ShowModal();
 			}
+
+			var layout = new DynamicLayout();
+			layout.Add(null);
+			layout.AddCentered(TestChangeSizeButton());
+			layout.AddCentered(TestChangeClientSizeButton());
+			layout.AddCentered(SendToBackButton());
+			layout.AddCentered(CreateCancelClose());
+			layout.AddCentered(CloseButton());
+			layout.Add(null);
+			child.Content = layout;
+
+			child.OwnerChanged += child_OwnerChanged;
+			child.WindowStateChanged += child_WindowStateChanged;
+			child.Closed += child_Closed;
+			child.Closing += child_Closing;
+			child.Shown += child_Shown;
+			child.GotFocus += child_GotFocus;
+			child.LostFocus += child_LostFocus;
+			child.LocationChanged += child_LocationChanged;
+			child.SizeChanged += child_SizeChanged;
 
 			child.Title = "Child Window";
 			child.WindowStyle = styleCombo.SelectedValue;
@@ -255,24 +275,10 @@ namespace Eto.Test.Sections.Behaviors
 				child.Location = initialLocation;
 			if (setInitialClientSize)
 				child.ClientSize = initialClientSize;
-			var layout = new DynamicLayout();
-			layout.Add(null);
-			layout.AddCentered(TestChangeSizeButton());
-			layout.AddCentered(TestChangeClientSizeButton());
-			layout.AddCentered(SendToBackButton());
-			layout.AddCentered(CreateCancelClose());
-			layout.AddCentered(CloseButton());
-			layout.Add(null);
-			child.Content = layout;
-
-			child.WindowStateChanged += child_WindowStateChanged;
-			child.Closed += child_Closed;
-			child.Closing += child_Closing;
-			child.Shown += child_Shown;
-			child.GotFocus += child_GotFocus;
-			child.LostFocus += child_LostFocus;
-			child.LocationChanged += child_LocationChanged;
-			child.SizeChanged += child_SizeChanged;
+			if (typeRadio.SelectedKey != "form")
+			{
+				child.Owner = this.ParentWindow;
+			}
 			bringToFrontButton.Enabled = true;
 			show();
 			// show that the child is now referenced
@@ -282,6 +288,7 @@ namespace Eto.Test.Sections.Behaviors
 		void child_Closed(object sender, EventArgs e)
 		{
 			Log.Write(child, "Closed");
+			child.OwnerChanged -= child_OwnerChanged;
 			child.WindowStateChanged -= child_WindowStateChanged;
 			child.Closed -= child_Closed;
 			child.Closing -= child_Closing;
@@ -334,6 +341,12 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var child = (Window)sender;
 			Log.Write(child, "Shown");
+		}
+
+		static void child_OwnerChanged(object sender, EventArgs e)
+		{
+			var child = (Window)sender;
+			Log.Write(child, "OwnerChanged: {0}", child.Owner);
 		}
 
 		static void child_WindowStateChanged(object sender, EventArgs e)
