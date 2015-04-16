@@ -165,7 +165,7 @@ namespace Eto.Mac.Forms
 				var contentControl = Content.GetMacControl();
 				if (contentControl != null)
 				{
-					return contentControl.GetPreferredSize(availableSize);
+					return contentControl.GetPreferredSize(availableSize) + Padding.Size;
 				}
 			}
 			return new Size(200, 200);
