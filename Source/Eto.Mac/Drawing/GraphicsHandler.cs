@@ -449,7 +449,7 @@ namespace Eto.iOS.Drawing
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
 			Control.ConcatCTM(new CGAffineTransform(1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
-			Control.AddArc(centerX, centerY, rect.Width / 2, MacConversions.DegreesToRadians(startAngle), MacConversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc(centerX, centerY, rect.Width / 2, CGConversions.DegreesToRadians(startAngle), CGConversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
 			Control.StrokePath();
 			EndDrawing();
 		}
@@ -465,7 +465,7 @@ namespace Eto.iOS.Drawing
 			var centerX = rect.GetMidX();
 			Control.ConcatCTM(new CGAffineTransform(1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
 			Control.MoveTo(centerX, centerY);
-			Control.AddArc(centerX, centerY, rect.Width / 2, MacConversions.DegreesToRadians(startAngle), MacConversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc(centerX, centerY, rect.Width / 2, CGConversions.DegreesToRadians(startAngle), CGConversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
 			Control.AddLineToPoint(centerX, centerY);
 			Control.ClosePath();
 			Control.FillPath();
@@ -574,7 +574,7 @@ namespace Eto.iOS.Drawing
 
 		public void RotateTransform(float angle)
 		{
-			angle = (float)MacConversions.DegreesToRadians(angle);
+			angle = (float)CGConversions.DegreesToRadians(angle);
 			Control.RotateCTM(angle);
 			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeRotation(angle), currentTransform);
 		}
