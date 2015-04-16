@@ -87,8 +87,8 @@ namespace Eto.Mac.Forms.Cells
 				{
 					var newtitle = (NSMutableAttributedString)title.MutableCopy();
 					var range = new NSRange(0, (int)title.Length);
-					newtitle.RemoveAttribute(NSAttributedString.ForegroundColorAttributeName, range);
-					newtitle.AddAttribute(NSAttributedString.ForegroundColorAttributeName, TextColor, range);
+					newtitle.RemoveAttribute(NSStringAttributeKey.ForegroundColor, range);
+					newtitle.AddAttribute(NSStringAttributeKey.ForegroundColor, TextColor, range);
 					title = newtitle;
 				}
 				var rect = base.DrawTitle(title, frame, controlView);

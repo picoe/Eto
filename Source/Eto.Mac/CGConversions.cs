@@ -42,7 +42,7 @@ using Eto.iOS.Drawing;
 namespace Eto.iOS
 #endif
 {
-	public static partial class MacConversions
+	public static partial class CGConversions
 	{
 		static CGColorSpace deviceRGB;
 		

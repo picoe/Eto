@@ -236,7 +236,9 @@ namespace Eto.Mac
 			inverse.Add (Keys.Left, ((char)NSKey.LeftArrow).ToString());
 			inverse.Add (Keys.Home, ((char)NSKey.Home).ToString());
 			inverse.Add (Keys.End, ((char)NSKey.End).ToString());
+			#if !__UNIFIED__
 			inverse.Add (Keys.Insert, ((char)NSKey.Insert).ToString());
+			#endif
 			inverse.Add (Keys.Delete, ((char)KeyCharacters.NSDeleteCharacter).ToString());
 			inverse.Add (Keys.Backspace, ((char)KeyCharacters.NSBackspaceCharacter).ToString());
 			inverse.Add (Keys.Tab, ((char)KeyCharacters.NSTabCharacter).ToString());

@@ -147,11 +147,11 @@ namespace Eto.Mac.Forms.Cells
 				base.DrawWithFrame(cellFrame, inView);
 
 				string progressText = (int)(progress * 100f) + "%";
-				var str = new NSMutableAttributedString(progressText, NSDictionary.FromObjectAndKey(ForegroundColor.ToNSUI(), NSAttributedString.ForegroundColorAttributeName));
+				var str = new NSMutableAttributedString(progressText, NSDictionary.FromObjectAndKey(ForegroundColor.ToNSUI(), NSStringAttributeKey.ForegroundColor));
 				var range = new NSRange(0, str.Length);
 				if (Font != null)
 				{
-					str.AddAttributes(NSDictionary.FromObjectAndKey(Font, NSAttributedString.FontAttributeName), range);
+					str.AddAttributes(NSDictionary.FromObjectAndKey(Font, NSStringAttributeKey.Font), range);
 				}
 				var size = FontExtensions.MeasureString(str, cellFrame.Size.ToEto());
 				var rect = cellFrame.ToEto();

@@ -55,7 +55,7 @@ namespace Eto.Mac.Forms.Controls
 				set
 				{
 					textColor = value;
-					textAttributes = textColor != null ? NSDictionary.FromObjectAndKey(textColor.Value.ToNSUI(), NSAttributedString.ForegroundColorAttributeName) : null;
+					textAttributes = textColor != null ? NSDictionary.FromObjectAndKey(textColor.Value.ToNSUI(), NSStringAttributeKey.ForegroundColor) : null;
 				}
 			}
 
