@@ -12,10 +12,56 @@ namespace Eto.WinForms.Forms
 		where TCallback : Panel.ICallback
 	{
 		Control content;
+		Eto.Forms.ToolBar toolBar;
+		swf.Panel contentHolder;
+		swf.Panel toolbarHolder;
+
+		protected override void Initialize()
+		{
+			contentHolder = new swf.Panel
+			{
+				Dock = swf.DockStyle.Fill,
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
+				AutoSize = true
+			};
+			Control.Controls.Add(contentHolder);
+
+			toolbarHolder = new swf.Panel
+			{
+				Dock = swf.DockStyle.Top,
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
+				AutoSize = true
+			};
+			Control.Controls.Add(toolbarHolder);
+
+			base.Initialize();
+		}
+
+		public Eto.Forms.ToolBar ToolBar
+		{
+			get
+			{
+				return toolBar;
+			}
+			set
+			{
+				toolbarHolder.SuspendLayout();
+				if (toolBar != null)
+					toolbarHolder.Controls.Remove((swf.Control)toolBar.ControlObject);
+				toolBar = value;
+				if (toolBar != null)
+				{
+					var c = ((swf.Control)toolBar.ControlObject);
+					c.Dock = swf.DockStyle.Top;
+					toolbarHolder.Controls.Add(c);
+				}
+				toolbarHolder.ResumeLayout();
+			}
+		}
 
 		public virtual swf.Control ContainerContentControl
 		{
-			get { return Control; }
+			get { return contentHolder; }
 		}
 
 		protected virtual Size ContentPadding { get { return Size.Empty; } }
@@ -115,7 +161,7 @@ namespace Eto.WinForms.Forms
 					childHandler.BeforeAddControl(Widget.Loaded);
 					SetContent(childHandler.ContainerControl);
 				}
-
+				
 				if (Widget.Loaded)
 					ResumeLayout();
 			}

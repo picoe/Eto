@@ -23,10 +23,8 @@ namespace Eto.WinForms.Forms
 	{
 		MenuBar menu;
 		Icon icon;
-		Eto.Forms.ToolBar toolBar;
 		swf.Panel menuHolder;
 		swf.Panel content;
-		swf.Panel toolbarHolder;
 		readonly swf.ToolTip tooltips = new swf.ToolTip();
 		bool resizable;
 		bool clientSizeSet;
@@ -90,14 +88,6 @@ namespace Eto.WinForms.Forms
 				Dock = swf.DockStyle.Fill
 			};
 			Control.Controls.Add(content);
-
-			toolbarHolder = new swf.Panel
-			{
-				Dock = swf.DockStyle.Top,
-				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
-				AutoSize = true
-			};
-			Control.Controls.Add(toolbarHolder);
 
 			menuHolder = new swf.Panel
 			{
@@ -262,28 +252,6 @@ namespace Eto.WinForms.Forms
 		{
 			get { return Control.TopMost; }
 			set { Control.TopMost = value; }
-		}
-
-		public Eto.Forms.ToolBar ToolBar
-		{
-			get
-			{
-				return toolBar;
-			}
-			set
-			{
-				toolbarHolder.SuspendLayout();
-				if (toolBar != null)
-					toolbarHolder.Controls.Remove((swf.Control)toolBar.ControlObject);
-				toolBar = value;
-				if (toolBar != null)
-				{
-					var c = ((swf.Control)toolBar.ControlObject);
-					c.Dock = swf.DockStyle.Top;
-					toolbarHolder.Controls.Add(c);
-				}
-				toolbarHolder.ResumeLayout();
-			}
 		}
 
 		public void AddToolbar(Eto.Forms.ToolBar toolBar)

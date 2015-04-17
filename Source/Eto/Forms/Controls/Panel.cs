@@ -101,6 +101,27 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the tool bar for the panel.
+		/// </summary>
+		/// <remarks>
+		/// Note that each panel can only have a single tool bar
+		/// </remarks>
+		/// <value>The tool bar for the panel</value>
+		public ToolBar ToolBar
+		{
+			get { return Handler.ToolBar; }
+			set
+			{
+				var toolbar = Handler.ToolBar;
+				if (toolbar != null)
+					toolbar.OnUnLoad(EventArgs.Empty);
+				Handler.ToolBar = value;
+				if (value != null)
+					value.OnLoad(EventArgs.Empty);
+			}
+		}
+
+		/// <summary>
 		/// Removes the specified child from the container
 		/// </summary>
 		/// <param name="child">Child to remove.</param>
@@ -128,6 +149,15 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The child content of the control.</value>
 			Control Content { get; set; }
+
+			/// <summary>
+			/// Gets or sets the tool bar for the panel.
+			/// </summary>
+			/// <remarks>
+			/// Note that each panel can only have a single tool bar
+			/// </remarks>
+			/// <value>The tool bar for the panel</value>
+			ToolBar ToolBar { get; set; }
 
 			/// <summary>
 			/// Gets or sets the padding around the <see cref="Content"/> of the panel.

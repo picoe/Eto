@@ -23,13 +23,10 @@ namespace Eto.GtkSharp.Forms
 	{
 		Gtk.VBox vbox;
 		readonly Gtk.VBox actionvbox;
-		readonly Gtk.Box topToolbarBox;
 		Gtk.Box menuBox;
 		Gtk.Box containerBox;
-		readonly Gtk.Box bottomToolbarBox;
 		MenuBar menuBar;
 		Icon icon;
-		Eto.Forms.ToolBar toolBar;
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		Point? currentLocation;
@@ -44,17 +41,15 @@ namespace Eto.GtkSharp.Forms
 			actionvbox = new Gtk.VBox();
 
 			menuBox = new Gtk.HBox();
-			topToolbarBox = new Gtk.VBox();
 
 			containerBox = new Gtk.VBox();
 			containerBox.Visible = true;
 
-			bottomToolbarBox = new Gtk.VBox();
+			//bottomToolbarBox = new Gtk.VBox();
 
 			actionvbox.PackStart(menuBox, false, false, 0);
-			actionvbox.PackStart(topToolbarBox, false, false, 0);
 			vbox.PackStart(containerBox, true, true, 0);
-			vbox.PackStart(bottomToolbarBox, false, false, 0);
+			//vbox.PackStart(bottomToolbarBox, false, false, 0);
 		}
 
 		protected override Color DefaultBackgroundColor
@@ -456,23 +451,6 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 			base.Dispose(disposing);
-		}
-
-		public Eto.Forms.ToolBar ToolBar
-		{
-			get
-			{
-				return toolBar;
-			}
-			set
-			{
-				if (toolBar != null)
-					topToolbarBox.Remove((Gtk.Widget)toolBar.ControlObject);
-				toolBar = value;
-				if (toolBar != null)
-					topToolbarBox.Add((Gtk.Widget)toolBar.ControlObject);
-				topToolbarBox.ShowAll();
-			}
 		}
 
 		public Icon Icon

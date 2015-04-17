@@ -9,17 +9,32 @@ namespace Eto.GtkSharp.Forms
 		where TWidget: Panel
 		where TCallback: Panel.ICallback
 	{
+		Gtk.VBox vboxPanel;
 		readonly Gtk.Alignment alignment;
 		Control content;
+		Gtk.Box contentHolder;
+		Gtk.Box toolbarHolder;
+		Eto.Forms.ToolBar toolBar;
 
 		public override Gtk.Widget ContainerContentControl
 		{
-			get { return Control; }
+			get { return alignment; }
 		}
 
 		protected GtkPanel()
 		{
+			vboxPanel = new Gtk.VBox();
+
 			alignment = new Gtk.Alignment(0, 0, 1, 1);
+
+			contentHolder = new Gtk.VBox();
+			contentHolder.Visible = true;
+			contentHolder.PackStart(alignment, false, false, 0);
+
+			toolbarHolder = new Gtk.VBox();
+			vboxPanel.PackStart(toolbarHolder, false, false, 0);
+			vboxPanel.PackStart(contentHolder, true, true, 0);
+
 		}
 
 		protected virtual bool UseMinimumSizeRequested { get { return true; } }
@@ -27,7 +42,8 @@ namespace Eto.GtkSharp.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			SetContainerContent(alignment);
+
+			SetContainerContent(vboxPanel);
 
 			#if GTK2
 			if (UseMinimumSizeRequested)
@@ -117,6 +133,23 @@ namespace Eto.GtkSharp.Forms
 						widget.ShowAll();
 					}
 				}
+			}
+		}
+
+		public Eto.Forms.ToolBar ToolBar
+		{
+			get
+			{
+				return toolBar;
+			}
+			set
+			{
+				if (toolBar != null)
+					toolbarHolder.Remove((Gtk.Widget)toolBar.ControlObject);
+				toolBar = value;
+				if (toolBar != null)
+					toolbarHolder.Add((Gtk.Widget)toolBar.ControlObject);
+				toolbarHolder.ShowAll();
 			}
 		}
 

@@ -236,27 +236,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the tool bar for the window.
-		/// </summary>
-		/// <remarks>
-		/// Note that each window can only have a single tool bar
-		/// </remarks>
-		/// <value>The tool bar for the window</value>
-		public ToolBar ToolBar
-		{
-			get { return Handler.ToolBar; }
-			set
-			{ 
-				var toolbar = Handler.ToolBar;
-				if (toolbar != null)
-					toolbar.OnUnLoad(EventArgs.Empty);
-				Handler.ToolBar = value;
-				if (value != null)
-					value.OnLoad(EventArgs.Empty);
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets the opacity of the window
 		/// </summary>
 		/// <value>The window opacity.</value>
@@ -546,15 +525,6 @@ namespace Eto.Forms
 		/// </summary>
 		public new interface IHandler : Panel.IHandler
 		{
-			/// <summary>
-			/// Gets or sets the tool bar for the window.
-			/// </summary>
-			/// <remarks>
-			/// Note that each window can only have a single tool bar
-			/// </remarks>
-			/// <value>The tool bar for the window</value>
-			ToolBar ToolBar { get; set; }
-
 			/// <summary>
 			/// Closes the window
 			/// </summary>
