@@ -9,7 +9,17 @@ namespace Eto.Test.Handlers
 
 		public Tab Tab { get; private set; }
 
-		public Control Content { get { return Control != null ? Control.Content : null; } set { Control.Content = value; } }
+		public Control Content
+		{
+			get { return Control != null ? Control.Content : null; }
+			set { Control.Content = value; }
+		}
+
+		public ToolBar ToolBar
+		{
+			get { return Control != null ? Control.ToolBar : null; }
+			set { Control.ToolBar = value; }
+		}
 
 		public Size MinimumSize { get { return Control.MinimumSize; } set { Control.MinimumSize = value; } }
 

@@ -14,12 +14,6 @@ namespace Eto.Test.UnitTests.Handlers
 		new Window.ICallback Callback { get { return (Window.ICallback)base.Callback; } }
 		new Window Widget { get { return (Window)base.Widget; } }
 
-		public ToolBar ToolBar
-		{
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
-		}
-
 		public void Close()
 		{
 			var e = new CancelEventArgs();

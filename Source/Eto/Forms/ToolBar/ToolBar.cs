@@ -53,12 +53,12 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
-	/// Toolbar widget for use on a <see cref="Window"/>.
+	/// Toolbar widget for use on a <see cref="Panel"/>.
 	/// </summary>
 	/// <remarks>
-	/// Only a single toolbar is currently supported for each window.
+	/// Only a single toolbar is currently supported for each panel.
 	/// </remarks>
-	/// <seealso cref="Window.ToolBar"/>
+	/// <seealso cref="Panel.ToolBar"/>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[ContentProperty("Items")]

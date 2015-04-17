@@ -23,6 +23,12 @@ namespace Eto.Test.UnitTests.Handlers
 			}
 		}
 
+		public ToolBar ToolBar
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+
 		public override void OnShown()
 		{
 			if (Content != null)
