@@ -26,10 +26,8 @@ namespace Eto.Wpf.Forms
 	{
 		Icon icon;
 		MenuBar menu;
-		Eto.Forms.ToolBar toolBar;
-		swc.DockPanel main;
+		swc.DockPanel contentHolder;
 		swc.ContentControl menuHolder;
-		swc.ContentControl toolBarHolder;
 		swc.DockPanel content;
 		Size? initialClientSize;
 		bool resizable = true;
@@ -41,24 +39,27 @@ namespace Eto.Wpf.Forms
 			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
 		}
 
-		protected override void Initialize()
+		protected WpfWindow()
 		{
 			content = new swc.DockPanel();
+			content.Background = System.Windows.SystemColors.ControlBrush;
 
+			menuHolder = new swc.ContentControl { IsTabStop = false };
+			swc.DockPanel.SetDock(menuHolder, swc.Dock.Top);
+
+			contentHolder = new swc.DockPanel();
+			contentHolder.Children.Add(menuHolder);
+			contentHolder.Children.Add(content);
+		}
+
+		protected override void Initialize()
+		{
 			base.Initialize();
+
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 			Control.SnapsToDevicePixels = true;
 			Control.UseLayoutRounding = true;
-			main = new swc.DockPanel();
-			menuHolder = new swc.ContentControl { IsTabStop = false };
-			toolBarHolder = new swc.ContentControl { IsTabStop = false };
-			content.Background = System.Windows.SystemColors.ControlBrush;
-			swc.DockPanel.SetDock(menuHolder, swc.Dock.Top);
-			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
-			main.Children.Add(menuHolder);
-			main.Children.Add(toolBarHolder);
-			main.Children.Add(content);
-			Control.Content = main;
+			Control.Content = contentHolder;
 			Control.Loaded += delegate
 			{
 				SetResizeMode();
@@ -144,16 +145,6 @@ namespace Eto.Wpf.Forms
 			ContainerControl.Height = PreferredSize.Height;
 			ContainerControl.MinWidth = MinimumSize.Width;
 			ContainerControl.MinHeight = MinimumSize.Height;
-		}
-
-		public Eto.Forms.ToolBar ToolBar
-		{
-			get { return toolBar; }
-			set
-			{
-				toolBar = value;
-				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
-			}
 		}
 
 		public void Close()
@@ -492,7 +483,6 @@ namespace Eto.Wpf.Forms
 		{
 			this.content.Children.Add(content);
 		}
-
 
 		public void SetOwnerFor(sw.Window child)
 		{

@@ -16,7 +16,7 @@ namespace Eto.WinForms.Forms
 		swf.Panel contentHolder;
 		swf.Panel toolbarHolder;
 
-		protected override void Initialize()
+		protected WindowsPanel()
 		{
 			contentHolder = new swf.Panel
 			{
@@ -33,7 +33,10 @@ namespace Eto.WinForms.Forms
 				AutoSize = true
 			};
 			Control.Controls.Add(toolbarHolder);
+		}
 
+		protected override void Initialize()
+		{
 			base.Initialize();
 		}
 
