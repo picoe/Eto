@@ -19,7 +19,6 @@ namespace Eto.Wpf.Forms
 		swc.DockPanel contentHolder;
 		readonly swc.Border border;
 		Size? clientSize;
-		protected virtual bool UseContentSize { get { return true; } }
 
 		protected WpfPanel()
 		{
@@ -78,6 +77,11 @@ namespace Eto.Wpf.Forms
 			{
 				contentHandler.SetScale(xscale, yscale);
 			}
+		}
+
+		protected virtual bool UseContentSize
+		{
+			get { return true; }
 		}
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)

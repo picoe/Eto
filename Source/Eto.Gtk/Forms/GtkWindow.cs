@@ -45,11 +45,8 @@ namespace Eto.GtkSharp.Forms
 			containerBox = new Gtk.VBox();
 			containerBox.Visible = true;
 
-			//bottomToolbarBox = new Gtk.VBox();
-
 			actionvbox.PackStart(menuBox, false, false, 0);
 			vbox.PackStart(containerBox, true, true, 0);
-			//vbox.PackStart(bottomToolbarBox, false, false, 0);
 		}
 
 		protected override Color DefaultBackgroundColor
