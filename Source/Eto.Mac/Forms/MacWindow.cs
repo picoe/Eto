@@ -140,7 +140,6 @@ namespace Eto.Mac.Forms
 		CustomFieldEditor fieldEditor;
 		MenuBar menuBar;
 		Icon icon;
-		Eto.Forms.ToolBar toolBar;
 		Rectangle? restoreBounds;
 		bool setInitialSize;
 		WindowState? initialState;
@@ -586,19 +585,6 @@ namespace Eto.Mac.Forms
 			Callback.OnClosing(Widget, args);
 			if (!args.Cancel)
 				Control.Close();
-		}
-
-		public Eto.Forms.ToolBar ToolBar
-		{
-			get
-			{
-				return toolBar;
-			}
-			set
-			{
-				toolBar = value;
-				Control.Toolbar = (NSToolbar)toolBar.ControlObject;
-			}
 		}
 
 		public Icon Icon
