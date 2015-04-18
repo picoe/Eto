@@ -21,10 +21,37 @@ namespace Eto.WinRT.Forms
 		where TCallback : Panel.ICallback
 	{
 		Control content;
+		Eto.Forms.ToolBar toolBar;
+		swc.ContentControl toolBarHolder;
+		swc.DockPanel contentHolder;
 		readonly swc.Border border;
 		Size? clientSize;
 
-		protected virtual bool UseContentSize { get { return true; } }
+		protected WpfPanel()
+		{
+			border = new swc.Border
+			{
+				SnapsToDevicePixels = true,
+				Focusable = false,
+			};
+
+			toolBarHolder = new swc.ContentControl
+			{
+				IsTabStop = false
+			};
+			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
+
+			contentHolder = new swc.DockPanel();
+			contentHolder.Children.Add(toolBarHolder);
+			contentHolder.Children.Add(border);
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+
+			SetContainerContent(contentHolder);
+		}
 
 		public override Size ClientSize
 		{
@@ -56,6 +83,11 @@ namespace Eto.WinRT.Forms
 			{
 				contentHandler.SetScale(xscale, yscale);
 			}
+		}
+
+		protected virtual bool UseContentSize
+		{
+			get { return true; }
 		}
 
 		public override wf.Size GetPreferredSize(wf.Size constraint)
@@ -138,6 +170,16 @@ namespace Eto.WinRT.Forms
 				else
 					border.Child = null;
 				UpdatePreferredSize();
+			}
+		}
+
+		public Eto.Forms.ToolBar ToolBar
+		{
+			get { return toolBar; }
+			set
+			{
+				toolBar = value;
+				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
 			}
 		}
 
