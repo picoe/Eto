@@ -88,6 +88,11 @@ namespace Eto.GtkSharp.Forms
 			get { return ContainerControl; }
 		}
 
+		public virtual Gtk.Widget BackgroundControl
+		{
+			get { return ContainerContentControl; }
+		}
+
 		public virtual Point CurrentLocation { get; set; }
 
 		public virtual Size Size
@@ -180,11 +185,11 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (color != null)
 			{
-				ContainerContentControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+				BackgroundControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
 			}
 			else
 			{
-				ContainerContentControl.ModifyBg(Gtk.StateType.Normal);
+				BackgroundControl.ModifyBg(Gtk.StateType.Normal);
 			}
 		}
 
