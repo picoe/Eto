@@ -132,6 +132,7 @@ namespace Eto.iOS
 			//p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler ());
 			p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
+			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
 			
 			// IO
 			//p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler ());

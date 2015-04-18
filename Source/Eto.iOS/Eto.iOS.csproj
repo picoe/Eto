@@ -197,6 +197,7 @@
     <Compile Include="..\Eto.Mac\Messaging.cs">
       <Link>Messaging.cs</Link>
     </Compile>
+    <Compile Include="Forms\ClipboardHandler.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

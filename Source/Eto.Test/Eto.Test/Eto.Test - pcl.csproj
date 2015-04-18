@@ -173,6 +173,7 @@
     <Compile Include="Sections\Behaviors\DynamicMenuBar.cs" />
     <Compile Include="Sections\Controls\RichTextAreaSection.cs" />
     <Compile Include="Sections\Controls\MaskedTextBoxSection.cs" />
+    <Compile Include="Sections\Behaviors\ClipboardSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />

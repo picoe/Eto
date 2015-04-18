@@ -176,6 +176,7 @@
     <Compile Include="Commands\Quit.cs" />
     <Compile Include="Sections\Controls\ControlColorsSection.cs" />
     <Compile Include="Sections\Behaviors\DynamicMenuBar.cs" />
+    <Compile Include="Sections\Behaviors\ClipboardSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
