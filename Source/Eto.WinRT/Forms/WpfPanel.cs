@@ -23,7 +23,7 @@ namespace Eto.WinRT.Forms
 		Control content;
 		Eto.Forms.ToolBar toolBar;
 		swc.ContentControl toolBarHolder;
-		swc.DockPanel contentHolder;
+		swc.ContentControl contentHolder;
 		readonly swc.Border border;
 		Size? clientSize;
 
@@ -31,8 +31,10 @@ namespace Eto.WinRT.Forms
 		{
 			border = new swc.Border
 			{
+#if TODO_XAML
 				SnapsToDevicePixels = true,
 				Focusable = false,
+#endif
 			};
 
 			toolBarHolder = new swc.ContentControl
@@ -41,7 +43,7 @@ namespace Eto.WinRT.Forms
 			};
 			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
 
-			contentHolder = new swc.DockPanel();
+			contentHolder = new swc.ContentControl();
 			contentHolder.Children.Add(toolBarHolder);
 			contentHolder.Children.Add(border);
 		}
@@ -127,23 +129,6 @@ namespace Eto.WinRT.Forms
 				throw new NotImplementedException();
 #endif
 			}
-		}
-
-		protected WpfPanel()
-		{
-			border = new swc.Border
-			{
-#if TODO_XAML
-				SnapsToDevicePixels = true,
-				Focusable = false,
-#endif
-			};
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-			SetContainerContent(border);
 		}
 
 		public Padding Padding
