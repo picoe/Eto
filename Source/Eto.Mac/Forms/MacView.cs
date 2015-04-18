@@ -733,10 +733,20 @@ namespace Eto.Mac.Forms
 						return command.Enabled;
 				}
 			}
-			return Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
+			var objClass = ObjCExtensions.object_getClass(sender);
+
+			if (objClass == IntPtr.Zero)
+				return false;
+
+			var superClass = ObjCExtensions.class_getSuperclass(objClass);
+			return
+				superClass != IntPtr.Zero
+				&& ObjCExtensions.ClassInstancesRespondToSelector(superClass, sel)
+				&& Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
 		}
 
 		Dictionary<IntPtr, Command> systemActions;
+		static readonly IntPtr selRespondsToSelector = Selector.GetHandle("respondsToSelector:");
 		static readonly IntPtr selGetAction = Selector.GetHandle("action");
 		static readonly IntPtr selValidateUserInterfaceItem = Selector.GetHandle("validateUserInterfaceItem:");
 		static readonly IntPtr selCut = Selector.GetHandle("cut:");
