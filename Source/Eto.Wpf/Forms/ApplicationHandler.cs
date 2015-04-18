@@ -149,12 +149,12 @@ namespace Eto.Wpf.Forms
 
 		public void Invoke(Action action)
 		{
-			Control.Dispatcher.Invoke(action, sw.Threading.DispatcherPriority.Background);
+			Control.Dispatcher.Invoke(action, sw.Threading.DispatcherPriority.ApplicationIdle);
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-			Control.Dispatcher.BeginInvoke(action);
+			Control.Dispatcher.BeginInvoke(action, sw.Threading.DispatcherPriority.ApplicationIdle);
 		}
 
 		public Keys CommonModifier
