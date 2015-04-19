@@ -73,6 +73,7 @@
       <Link>Conversions.cs</Link>
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="WinConversions.cs" />
     <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
       <SubType>Component</SubType>
@@ -96,7 +97,9 @@
     <Compile Include="Forms\Controls\ComboBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\DropDownHandler.cs" />
+    <Compile Include="Forms\Controls\DropDownHandler.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
@@ -226,10 +229,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextAreaHandler.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextBoxHandler.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>

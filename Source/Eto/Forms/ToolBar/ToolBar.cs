@@ -43,22 +43,27 @@ namespace Eto.Forms
 	public enum ToolBarDock
 	{
 		/// <summary>
-		/// Toolbar will be shown at the top of the form
+		/// Toolbar will be shown at the bottom of the panel.
 		/// </summary>
-		Top,
+		Bottom,
 		/// <summary>
-		/// Toolbar will be shown at the bottom of the form.
+		/// Toolbar will be shown at the left of the panel
 		/// </summary>
-		Bottom
+		Left,
+		/// <summary>
+		/// Toolbar will be shown at the right of the panel
+		/// </summary>
+		Right,
+		/// <summary>
+		/// Toolbar will be shown at the top of the panel
+		/// </summary>
+		Top
 	}
 
 	/// <summary>
-	/// Toolbar widget for use on a <see cref="Panel"/>.
+	/// Toolbar widget for use on a <see cref="ToolBarView"/>.
 	/// </summary>
-	/// <remarks>
-	/// Only a single toolbar is currently supported for each panel.
-	/// </remarks>
-	/// <seealso cref="Panel.ToolBar"/>
+	/// <seealso cref="ToolBarView.Items"/>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[ContentProperty("Items")]
@@ -93,7 +98,19 @@ namespace Eto.Forms
 		/// Gets the collection of items in the toolbar.
 		/// </summary>
 		/// <value>The tool item collection.</value>
-		public ToolItemCollection Items { get { return items ?? (items = new ToolItemCollection(this)); } }
+		public ToolItemCollection Items
+		{
+			get
+			{
+				return items ?? (items = new ToolItemCollection(this));
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the order of the tool bar when adding to the <see cref="ToolBarCollection"/>.
+		/// </summary>
+		/// <value>The order when adding the item.</value>
+		public int Order { get; set; }
 
 		/// <summary>
 		/// Gets or sets the text alignment hint.
@@ -142,25 +159,9 @@ namespace Eto.Forms
 			void AddButton(ToolItem button, int index);
 
 			/// <summary>
-			/// Removes the specified button.
-			/// </summary>
-			/// <param name="button">Button to remove.</param>
-			void RemoveButton(ToolItem button);
-
-			/// <summary>
 			/// Clears all buttons from the toolbar
 			/// </summary>
 			void Clear();
-
-			/// <summary>
-			/// Gets or sets the text alignment hint.
-			/// </summary>
-			/// <remarks>
-			/// Note that some platforms may define the visual style of toolbar items and this just serves as a hint for platforms
-			/// that support such features (e.g. windows).
-			/// </remarks>
-			/// <value>The text alignment hint.</value>
-			ToolBarTextAlign TextAlign { get; set; }
 
 			/// <summary>
 			/// Gets or sets the docking hint for the toolbar.
@@ -177,7 +178,22 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The dock hint.</value>
 			ToolBarDock Dock { get; set; }
-		}
 
+			/// <summary>
+			/// Removes the specified button.
+			/// </summary>
+			/// <param name="button">Button to remove.</param>
+			void RemoveButton(ToolItem button);
+
+			/// <summary>
+			/// Gets or sets the text alignment hint.
+			/// </summary>
+			/// <remarks>
+			/// Note that some platforms may define the visual style of toolbar items and this just serves as a hint for platforms
+			/// that support such features (e.g. windows).
+			/// </remarks>
+			/// <value>The text alignment hint.</value>
+			ToolBarTextAlign TextAlign { get; set; }
+		}
 	}
 }

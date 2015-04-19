@@ -21,9 +21,7 @@ namespace Eto.WinRT.Forms
 		where TCallback : Panel.ICallback
 	{
 		Control content;
-		Eto.Forms.ToolBar toolBar;
-		swc.ContentControl toolBarHolder;
-		swc.ContentControl contentHolder;
+        swc.Grid contentHolder;
 		readonly swc.Border border;
 		Size? clientSize;
 
@@ -36,15 +34,8 @@ namespace Eto.WinRT.Forms
 				Focusable = false,
 #endif
 			};
-
-			toolBarHolder = new swc.ContentControl
-			{
-				IsTabStop = false
-			};
-			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
-
-			contentHolder = new swc.ContentControl();
-			contentHolder.Children.Add(toolBarHolder);
+            
+            contentHolder = new swc.Grid();
 			contentHolder.Children.Add(border);
 		}
 
@@ -155,16 +146,6 @@ namespace Eto.WinRT.Forms
 				else
 					border.Child = null;
 				UpdatePreferredSize();
-			}
-		}
-
-		public Eto.Forms.ToolBar ToolBar
-		{
-			get { return toolBar; }
-			set
-			{
-				toolBar = value;
-				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
 			}
 		}
 

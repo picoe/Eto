@@ -1,5 +1,6 @@
-using System.Collections.ObjectModel;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
@@ -20,34 +21,15 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Called when an item is inserted.
+		/// Add a <paramref name="command"/> with the specified <paramref name="order"/>.
 		/// </summary>
-		/// <param name="index">Index of the item to insert.</param>
-		/// <param name="item">Item to insert.</param>
-		protected override void InsertItem(int index, ToolItem item)
+		/// <param name="command">Command to add.</param>
+		/// <param name="order">Order to add it at.</param>
+		public void Add(Command command, int order = -1)
 		{
-			base.InsertItem(index, item);
-			parent.Handler.AddButton(item, index);
-		}
-
-		/// <summary>
-		/// Called when an item is removed from the collection.
-		/// </summary>
-		/// <param name="index">Index of the item being removed.</param>
-		protected override void RemoveItem(int index)
-		{
-			var item = this[index];
-			base.RemoveItem(index);
-			parent.Handler.RemoveButton(item);
-		}
-
-		/// <summary>
-		/// Called when the collection is cleared.
-		/// </summary>
-		protected override void ClearItems()
-		{
-			base.ClearItems();
-			parent.Handler.Clear();
+			var item = command.CreateToolItem();
+			item.Order = order;
+			Add(item);
 		}
 
 		/// <summary>
@@ -72,25 +54,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Add a <paramref name="command"/> with the specified <paramref name="order"/>.
+		/// Adds the specified commands to the collection starting at the specified order.
 		/// </summary>
-		/// <param name="command">Command to add.</param>
-		/// <param name="order">Order to add it at.</param>
-		public void Add(Command command, int order = -1)
+		/// <param name="commands">Commands to add.</param>
+		/// <param name="order">Order of the items to add.</param>
+		public void AddRange(IEnumerable<Command> commands, int order = -1)
 		{
-			var item = command.CreateToolItem();
-			item.Order = order;
-			Add(item);
-		}
-
-		/// <summary>
-		/// Adds a separator item with the specified <paramref name="order"/> or <paramref name="type"/>
-		/// </summary>
-		/// <param name="order">Order to add the separator.</param>
-		/// <param name="type">Type of separator.</param>
-		public void AddSeparator(int order = -1, SeparatorToolItemType type = SeparatorToolItemType.Divider)
-		{
-			Add(new SeparatorToolItem { Order = order, Type = type });
+			foreach (var command in commands)
+			{
+				Add(command, order);
+			}
 		}
 
 		/// <summary>
@@ -106,16 +79,44 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Adds the specified commands to the collection starting at the specified order.
+		/// Adds a separator item with the specified <paramref name="order"/> or <paramref name="type"/>
 		/// </summary>
-		/// <param name="commands">Commands to add.</param>
-		/// <param name="order">Order of the items to add.</param>
-		public void AddRange(IEnumerable<Command> commands, int order = -1)
+		/// <param name="order">Order to add the separator.</param>
+		/// <param name="type">Type of separator.</param>
+		public void AddSeparator(int order = -1, SeparatorToolItemType type = SeparatorToolItemType.Divider)
 		{
-			foreach (var command in commands)
-			{
-				Add(command, order);
-			}
+			Add(new SeparatorToolItem { Order = order, Type = type });
+		}
+
+		/// <summary>
+		/// Called when the collection is cleared.
+		/// </summary>
+		protected override void ClearItems()
+		{
+			base.ClearItems();
+			parent.Handler.Clear();
+		}
+
+		/// <summary>
+		/// Called when an item is inserted.
+		/// </summary>
+		/// <param name="index">Index of the item to insert.</param>
+		/// <param name="item">Item to insert.</param>
+		protected override void InsertItem(int index, ToolItem item)
+		{
+			base.InsertItem(index, item);
+			parent.Handler.AddButton(item, index);
+		}
+
+		/// <summary>
+		/// Called when an item is removed from the collection.
+		/// </summary>
+		/// <param name="index">Index of the item being removed.</param>
+		protected override void RemoveItem(int index)
+		{
+			var item = this[index];
+			base.RemoveItem(index);
+			parent.Handler.RemoveButton(item);
 		}
 	}
 }

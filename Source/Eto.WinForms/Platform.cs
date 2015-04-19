@@ -114,7 +114,8 @@ namespace Eto.WinForms
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolBarItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
-			
+			p.Add<ToolBarView.IHandler>(() => new ToolBarViewHandler());
+
 			// Forms
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());

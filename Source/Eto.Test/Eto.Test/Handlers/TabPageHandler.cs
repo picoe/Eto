@@ -15,12 +15,6 @@ namespace Eto.Test.Handlers
 			set { Control.Content = value; }
 		}
 
-		public ToolBar ToolBar
-		{
-			get { return Control != null ? Control.ToolBar : null; }
-			set { Control.ToolBar = value; }
-		}
-
 		public Size MinimumSize { get { return Control.MinimumSize; } set { Control.MinimumSize = value; } }
 
 		// handled by tab control

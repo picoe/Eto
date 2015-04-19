@@ -19,7 +19,12 @@ namespace Eto.WinForms.Forms.ToolBar
 		public ToolBarDock Dock
 		{
 			get { return dock; }
-			set { dock = value; }
+			set
+			{
+				dock = value;
+
+				// TODO: We need to check if we can call a handler of the ToolBarView which implements this ToolBar to update the layout
+			}
 		}
 
 		public void AddButton(ToolItem item, int index)

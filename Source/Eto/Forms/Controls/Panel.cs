@@ -1,6 +1,6 @@
 using System;
-using Eto.Drawing;
 using System.Collections.Generic;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -15,6 +15,8 @@ namespace Eto.Forms
 	[Handler(typeof(Panel.IHandler))]
 	public class Panel : Container
 	{
+		new IHandler Handler { get { return (IHandler)base.Handler; } }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Panel"/> class.
 		/// </summary>
@@ -29,56 +31,6 @@ namespace Eto.Forms
 		protected Panel(IHandler handler)
 			: base(handler)
 		{
-		}
-
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
-
-		/// <summary>
-		/// Gets an enumeration of controls that are directly contained by this container
-		/// </summary>
-		/// <value>The contained controls.</value>
-		public override IEnumerable<Control> Controls
-		{
-			get
-			{
-				var content = Handler == null ? null : Handler.Content;
-				if (content != null)
-					yield return content;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the padding around the <see cref="Content"/> of the panel.
-		/// </summary>
-		/// <value>The padding around the content.</value>
-		public Padding Padding
-		{
-			get { return Handler.Padding; }
-			set { Handler.Padding = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the minimum size of the panel.
-		/// </summary>
-		/// <value>The minimum size.</value>
-		public Size MinimumSize
-		{
-			get { return Handler.MinimumSize; }
-			set { Handler.MinimumSize = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the context menu for the panel.
-		/// </summary>
-		/// <remarks>
-		/// The context menu is usually shown when the user right clicks the control, or in mobile platforms when the
-		/// user taps and holds their finger down on the control.
-		/// </remarks>
-		/// <value>The context menu.</value>
-		public ContextMenu ContextMenu
-		{
-			get { return Handler.ContextMenu; }
-			set { Handler.ContextMenu = value; }
 		}
 
 		/// <summary>
@@ -101,24 +53,51 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the tool bar for the panel.
+		/// Gets or sets the context menu for the panel.
 		/// </summary>
 		/// <remarks>
-		/// Note that each panel can only have a single tool bar
+		/// The context menu is usually shown when the user right clicks the control, or in mobile platforms when the
+		/// user taps and holds their finger down on the control.
 		/// </remarks>
-		/// <value>The tool bar for the panel</value>
-		public ToolBar ToolBar
+		/// <value>The context menu.</value>
+		public ContextMenu ContextMenu
 		{
-			get { return Handler.ToolBar; }
-			set
+			get { return Handler.ContextMenu; }
+			set { Handler.ContextMenu = value; }
+		}
+
+		/// <summary>
+		/// Gets an enumeration of controls that are directly contained by this container
+		/// </summary>
+		/// <value>The contained controls.</value>
+		public override IEnumerable<Control> Controls
+		{
+			get
 			{
-				var toolbar = Handler.ToolBar;
-				if (toolbar != null)
-					toolbar.OnUnLoad(EventArgs.Empty);
-				Handler.ToolBar = value;
-				if (value != null)
-					value.OnLoad(EventArgs.Empty);
+				var content = Handler == null ? null : Handler.Content;
+				if (content != null)
+					yield return content;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the minimum size of the panel.
+		/// </summary>
+		/// <value>The minimum size.</value>
+		public Size MinimumSize
+		{
+			get { return Handler.MinimumSize; }
+			set { Handler.MinimumSize = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the padding around the <see cref="Content"/> of the panel.
+		/// </summary>
+		/// <value>The padding around the content.</value>
+		public Padding Padding
+		{
+			get { return Handler.Padding; }
+			set { Handler.Padding = value; }
 		}
 
 		/// <summary>
@@ -134,7 +113,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Handler interface fot the <see cref="Panel"/>
+		/// Handler interface for the <see cref="Panel"/>
 		/// </summary>
 		public new interface IHandler : Container.IHandler, IContextMenuHost
 		{
@@ -151,25 +130,16 @@ namespace Eto.Forms
 			Control Content { get; set; }
 
 			/// <summary>
-			/// Gets or sets the tool bar for the panel.
+			/// Gets or sets the minimum size of the panel.
 			/// </summary>
-			/// <remarks>
-			/// Note that each panel can only have a single tool bar
-			/// </remarks>
-			/// <value>The tool bar for the panel</value>
-			ToolBar ToolBar { get; set; }
+			/// <value>The minimum size.</value>
+			Size MinimumSize { get; set; }
 
 			/// <summary>
 			/// Gets or sets the padding around the <see cref="Content"/> of the panel.
 			/// </summary>
 			/// <value>The padding around the content.</value>
 			Padding Padding { get; set; }
-
-			/// <summary>
-			/// Gets or sets the minimum size of the panel.
-			/// </summary>
-			/// <value>The minimum size.</value>
-			Size MinimumSize { get; set; }
 		}
 	}
 }
