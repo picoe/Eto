@@ -112,6 +112,7 @@
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="Forms\WindowsControl.cs" />
     <Compile Include="KeyMap.cs">
       <SubType>Code</SubType>
