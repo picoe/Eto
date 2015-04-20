@@ -23,7 +23,7 @@ namespace Eto.WinForms.Forms
 	{
 		MenuBar menu;
 		Icon icon;
-		Control toolBar;
+		ToolBarView toolBar;
 		swf.Panel menuHolder;
 		swf.Panel content;
 		swf.Panel toolbarHolder;
@@ -264,7 +264,7 @@ namespace Eto.WinForms.Forms
 			set { Control.TopMost = value; }
 		}
 
-		public Control ToolBar
+		public ToolBarView ToolBar
 		{
 			get
 			{

@@ -17,23 +17,26 @@ namespace Eto.GtkSharp.Forms
 	}
 
 	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
-		where TControl: Gtk.Window
-		where TWidget: Window
-		where TCallback: Window.ICallback
+		where TControl : Gtk.Window
+		where TWidget : Window
+		where TCallback : Window.ICallback
 	{
-		Gtk.VBox vbox;
-		readonly Gtk.VBox actionvbox;
-		Gtk.Box menuBox;
-		Gtk.Box containerBox;
-		MenuBar menuBar;
-		Icon icon;
 		Gtk.AccelGroup accelGroup;
-		Rectangle? restoreBounds;
+		readonly Gtk.VBox actionvbox;
+		Gtk.Box containerBox;
 		Point? currentLocation;
+		Icon icon;
 		Size? initialSize;
+		MenuBar menuBar;
+		Gtk.Box menuBox;
+		Rectangle? restoreBounds;
 		WindowState state;
 		WindowStyle style;
+		ToolBarView toolBar;
 		bool topmost;
+		readonly Gtk.Box toolbarBox;
+		readonly Gtk.Box toolbarContainer;
+		Gtk.VBox vbox;
 
 		protected GtkWindow()
 		{
@@ -41,11 +44,16 @@ namespace Eto.GtkSharp.Forms
 			actionvbox = new Gtk.VBox();
 
 			menuBox = new Gtk.HBox();
+			toolbarBox = new Gtk.VBox();
+			toolbarContainer = new Gtk.HBox();
+			toolbarContainer.PackStart(toolbarBox, false, false, 0);
+			toolbarContainer.PackStart(new Gtk.Alignment(0, 0, 1, 1), true, true, 0);
 
 			containerBox = new Gtk.VBox();
 			containerBox.Visible = true;
 
 			actionvbox.PackStart(menuBox, false, false, 0);
+			actionvbox.PackStart(toolbarContainer, false, false, 0);
 			vbox.PackStart(containerBox, true, true, 0);
 		}
 
@@ -65,9 +73,9 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				base.MinimumSize = value;
-				#if GTK2
+#if GTK2
 				Control.AllowShrink = value.Width <= 0 && value.Height <= 0;
-				#endif
+#endif
 				if (Widget.Loaded)
 				{
 					Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
@@ -89,13 +97,13 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return containerBox; }
 		}
-		#if GTK2
+#if GTK2
 		public bool Resizable
 		{
 			get { return Control.Resizable; }
 			set { Control.Resizable = value; }
 		}
-		#else
+#else
 		public bool Resizable
 		{
 			get { return Control.Resizable; }
@@ -116,7 +124,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return topmost; }
 			set
-			{ 
+			{
 				if (topmost != value)
 				{
 					topmost = value;
@@ -129,7 +137,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return style; }
 			set
-			{ 
+			{
 				if (style != value)
 				{
 					style = value;
@@ -218,7 +226,7 @@ namespace Eto.GtkSharp.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			
+
 			HandleEvent(Window.WindowStateChangedEvent); // to set restore bounds properly
 			HandleEvent(Window.ClosingEvent); // to chain application termination events
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
@@ -450,6 +458,23 @@ namespace Eto.GtkSharp.Forms
 			base.Dispose(disposing);
 		}
 
+		public ToolBarView ToolBar
+		{
+			get
+			{
+				return toolBar;
+			}
+			set
+			{
+				if (toolBar != null)
+					toolbarBox.Remove((Gtk.Widget)toolBar.ControlObject);
+				toolBar = value;
+				if (toolBar != null)
+					toolbarBox.Add((Gtk.Widget)toolBar.ControlObject);
+				toolbarBox.ShowAll();
+			}
+		}
+
 		public Icon Icon
 		{
 			get { return icon; }
@@ -481,7 +506,7 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				if (Control.GdkWindow == null)
-					return state;	
+					return state;
 
 				if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
 					return WindowState.Minimized;
@@ -496,7 +521,7 @@ namespace Eto.GtkSharp.Forms
 				if (state != value)
 				{
 					state = value;
-				
+
 					switch (value)
 					{
 						case WindowState.Maximized:

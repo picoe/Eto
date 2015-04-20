@@ -111,6 +111,7 @@
     <Compile Include="Forms\TableLayoutHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="IO\SystemIcons.cs">
       <SubType>Code</SubType>
     </Compile>

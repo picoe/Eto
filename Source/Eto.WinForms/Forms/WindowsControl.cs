@@ -12,56 +12,37 @@ namespace Eto.WinForms.Forms
 {
 	public interface IWindowsControl
 	{
-		bool InternalVisible { get; }
+		void BeforeAddControl(bool top = true);
 
-		swf.DockStyle DockStyle { get; }
+		Control.ICallback Callback { get; }
 
 		swf.Control ContainerControl { get; }
 
-		Size ParentMinimumSize { get; set; }
+		swf.DockStyle DockStyle { get; }
 
 		Size GetPreferredSize(Size availableSize, bool useCache = false);
+
+		bool InternalVisible { get; }
+
+		Size ParentMinimumSize { get; set; }
+
+		void SetFilledContent();
 
 		bool SetMinimumSize(bool updateParent = false, bool useCache = false);
 
 		void SetScale(bool xscale, bool yscale);
+
+		bool ShouldBubbleEvent(swf.Message msg);
 
 		bool ShouldCaptureMouse { get; }
 
 		bool XScale { get; }
 
 		bool YScale { get; }
-
-		Control.ICallback Callback { get; }
-
-		void BeforeAddControl(bool top = true);
-
-		bool ShouldBubbleEvent(swf.Message msg);
-
-		void SetFilledContent();
 	}
 
 	public static class WindowsControlExtensions
 	{
-		public static IWindowsControl GetWindowsHandler(this Control control)
-		{
-			if (control == null)
-				return null;
-
-			var handler = control.Handler as IWindowsControl;
-			if (handler != null)
-				return handler;
-
-			var controlObject = control.ControlObject as Control;
-			return controlObject != null ? controlObject.GetWindowsHandler() : null;
-
-		}
-
-		public static Size GetPreferredSize(this Control control)
-		{
-			var handler = control.GetWindowsHandler();
-			return handler != null ? handler.GetPreferredSize(Size.Empty) : Size.Empty;
-		}
 
 		public static swf.Control GetContainerControl(this Control control)
 		{
@@ -79,6 +60,26 @@ namespace Eto.WinForms.Forms
 			return control.ControlObject as swf.Control;
 		}
 
+		public static Size GetPreferredSize(this Control control)
+		{
+			var handler = control.GetWindowsHandler();
+			return handler != null ? handler.GetPreferredSize(Size.Empty) : Size.Empty;
+		}
+
+		public static IWindowsControl GetWindowsHandler(this Control control)
+		{
+			if (control == null)
+				return null;
+
+			var handler = control.Handler as IWindowsControl;
+			if (handler != null)
+				return handler;
+
+			var controlObject = control.ControlObject as Control;
+			return controlObject != null ? controlObject.GetWindowsHandler() : null;
+
+		}
+
 		public static void SetScale(this Control control, bool xscale, bool yscale)
 		{
 			var handler = control.GetWindowsHandler();
@@ -93,8 +94,8 @@ namespace Eto.WinForms.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
-		ControlDock dock = ControlDock.Top;
 		Size? cachedDefaultSize;
+		ControlDock dock = ControlDock.Top;
 		Size parentMinimumSize;
 
 		protected void ClearCachedDefaultSize()
@@ -107,17 +108,16 @@ namespace Eto.WinForms.Forms
 			get { return null; }
 		}
 
-		/// <summary>
-		/// Gets or sets the dock of the control.
-		/// </summary>
-		/// <value>The dock of the control.</value>
 		public ControlDock Dock
 		{
 			get { return dock; }
 			set { dock = value; }
 		}
 
-		public override IntPtr NativeHandle { get { return Control.Handle; } }
+		public override IntPtr NativeHandle
+		{
+			get { return Control.Handle; }
+		}
 
 		Control.ICallback IWindowsControl.Callback { get { return Callback; } }
 

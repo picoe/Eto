@@ -7,6 +7,8 @@ namespace Eto.GtkSharp.Forms
 {
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
+		static readonly object WasClosedKey = new object();
+
 		public class MyDialog : Gtk.Dialog
 		{
 			#if GTK3
@@ -47,6 +49,15 @@ namespace Eto.GtkSharp.Forms
 
 		public Button AbortButton { get; set; }
 
+		public override void Close()
+		{
+			if (CloseWindow())
+			{
+				WasClosed = true;
+				Control.Hide();
+			}
+		}
+
 		public Button DefaultButton { get; set; }
 
 		public DialogDisplayMode DisplayMode { get; set; }
@@ -84,23 +95,6 @@ namespace Eto.GtkSharp.Forms
 			Control.Hide();
 		}
 
-		static readonly object WasClosedKey = new object();
-
-		bool WasClosed
-		{
-			get { return Widget.Properties.Get<bool>(WasClosedKey); }
-			set { Widget.Properties.Set(WasClosedKey, value); }
-		}
-
-		public override void Close()
-		{
-			if (CloseWindow())
-			{
-				WasClosed = true;
-				Control.Hide();
-			}
-		}
-
 		public Task ShowModalAsync(Control parent)
 		{
 			var tcs = new TaskCompletionSource<bool>();
@@ -111,6 +105,12 @@ namespace Eto.GtkSharp.Forms
 			});
 
 			return tcs.Task;
+		}
+
+		bool WasClosed
+		{
+			get { return Widget.Properties.Get<bool>(WasClosedKey); }
+			set { Widget.Properties.Set(WasClosedKey, value); }
 		}
 	}
 }

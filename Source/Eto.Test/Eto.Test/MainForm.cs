@@ -124,6 +124,11 @@ namespace Eto.Test
 				return dockView;
 			}
 
+			if (ToolBarView.IsSupported)
+			{
+				this.ToolBar = new ToolBarView { Content = this.CreateToolBarTop(), Dock = ControlDock.Top };
+			}
+
 			if (Splitter.IsSupported)
 			{
 				return splitter;

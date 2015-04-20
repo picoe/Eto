@@ -102,6 +102,7 @@
     <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
     <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
     <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
     <Compile Include="Drawing\BitmapHandler.cs">
       <SubType>Code</SubType>

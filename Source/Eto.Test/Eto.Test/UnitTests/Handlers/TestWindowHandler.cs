@@ -51,7 +51,7 @@ namespace Eto.Test.UnitTests.Handlers
 			set { throw new NotImplementedException(); }
 		}
 
-		public Control ToolBar
+		public ToolBarView ToolBar
 		{
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }

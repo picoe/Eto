@@ -76,7 +76,7 @@ namespace Eto.WinForms.Forms
       throw new NotImplementedException();
     }
 
-	public Control ToolBar
+	public ToolBarView ToolBar
     {
       get
       {

@@ -2,10 +2,8 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.ToolBar
 {
-	public class ToolBarHandler : WidgetHandler<Gtk.Toolbar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
+	public class ToolBarHandler : GtkControl<Gtk.Toolbar, Eto.Forms.ToolBar, Eto.Forms.ToolBar.ICallback>, Eto.Forms.ToolBar.IHandler
 	{
-		ToolBarDock dock = ToolBarDock.Top;
-
 		#if GTK2
 		Gtk.RadioButton radioGroup;
 		public GLib.SList RadioGroup
@@ -23,23 +21,13 @@ namespace Eto.GtkSharp.Forms.ToolBar
 		public ToolBarHandler()
 		{
 			Control = new Gtk.Toolbar();
+			//Control.ShowArrow = false;
 			//control.ToolbarStyle = Gtk.ToolbarStyle.Both;
-		}
-
-		public ToolBarDock Dock
-		{
-			get { return dock; }
-			set { dock = value; }
 		}
 		
 		public void AddButton(ToolItem item, int index)
 		{
 			((IToolBarItemHandler)item.Handler).CreateControl(this, index);
-		}
-
-		public void RemoveButton(ToolItem item)
-		{
-			if (item.ControlObject != null) Control.Remove((Gtk.Widget)item.ControlObject);
 		}
 
 		public void Clear()
@@ -48,6 +36,12 @@ namespace Eto.GtkSharp.Forms.ToolBar
 			{
 				Control.Remove(w);
 			}
+		}
+
+		public void RemoveButton(ToolItem item)
+		{
+			if (item.ControlObject != null)
+				Control.Remove((Gtk.Widget)item.ControlObject);
 		}
 
 		public ToolBarTextAlign TextAlign
