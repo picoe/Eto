@@ -73,6 +73,7 @@
       <Link>Conversions.cs</Link>
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
+    <Compile Include="Forms\Controls\DockViewHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="WinConversions.cs" />
     <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
@@ -261,9 +262,7 @@
     <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarHandler.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>

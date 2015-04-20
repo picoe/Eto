@@ -93,7 +93,29 @@ namespace Eto.WinForms.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
+		ControlDock dock = ControlDock.Top;
+		Size? cachedDefaultSize;
 		Size parentMinimumSize;
+
+		protected void ClearCachedDefaultSize()
+		{
+			cachedDefaultSize = null;
+		}
+
+		public virtual Size? DefaultSize
+		{
+			get { return null; }
+		}
+
+		/// <summary>
+		/// Gets or sets the dock of the control.
+		/// </summary>
+		/// <value>The dock of the control.</value>
+		public ControlDock Dock
+		{
+			get { return dock; }
+			set { dock = value; }
+		}
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
@@ -103,14 +125,6 @@ namespace Eto.WinForms.Forms
 
 		public bool YScale { get; set; }
 
-		public virtual Size? DefaultSize { get { return null; } }
-
-		protected void ClearCachedDefaultSize()
-		{
-			cachedDefaultSize = null;
-		}
-
-		Size? cachedDefaultSize;
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
 			var size = UserDesiredSize;
@@ -643,8 +657,8 @@ namespace Eto.WinForms.Forms
 		public Point Location
 		{
 			get { return Control.Location.ToEto(); }
+			set { Control.Location = value.ToSD(); }
 		}
-
 
 		public virtual bool ShouldBubbleEvent(swf.Message msg)
 		{

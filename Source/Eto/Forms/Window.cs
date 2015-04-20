@@ -307,6 +307,20 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the tool bar for the window.
+		/// </summary>
+		/// <remarks>
+		/// Note that each window can only have a single tool bar.
+		/// If you want to use multiple tool bars use the <see cref="Eto.Forms.DockView"/> control.
+		/// </remarks>
+		/// <value>The tool bar for the window</value>
+		public Control ToolBar
+		{
+			get { return Handler.ToolBar; }
+			set { Handler.ToolBar = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the icon for the window to show in the menu bar.
 		/// </summary>
 		/// <remarks>
@@ -525,6 +539,16 @@ namespace Eto.Forms
 		/// </summary>
 		public new interface IHandler : Panel.IHandler
 		{
+			/// <summary>
+			/// Gets or sets the tool bar for the window.
+			/// </summary>
+			/// <remarks>
+			/// Note that each window can only have a single tool bar.
+			/// If you want to use multiple tool bars use the <see cref="Eto.Forms.DockView"/> control.
+			/// </remarks>
+			/// <value>The tool bar for the window</value>
+			Control ToolBar { get; set; }
+
 			/// <summary>
 			/// Closes the window
 			/// </summary>

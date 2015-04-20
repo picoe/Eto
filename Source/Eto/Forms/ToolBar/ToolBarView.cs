@@ -13,13 +13,11 @@ namespace Eto.Forms
 	/// </remarks>
     /// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
     /// <license type="BSD-3">See LICENSE for full terms</license>
-	[ContentProperty("Items")]
+	[ContentProperty("Content")]
     [Handler(typeof(ToolBarView.IHandler))]
 	public class ToolBarView : Panel
 	{
         internal new IHandler Handler { get { return (IHandler)base.Handler; } }
-
-		ToolBarCollection items;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ToolBarView"/> class.
@@ -38,18 +36,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the collection of items in the toolbar.
-		/// </summary>
-		/// <value>The tool item collection.</value>
-		public ToolBarCollection Items
-		{
-			get
-			{
-				return items ?? (items = new ToolBarCollection(this));
-			}
-		}
-
-		/// <summary>
 		/// Gets a value indicating the <see cref="ToolBarView"/> is supported in the platform
 		/// </summary>
 		/// <value><c>true</c> if supported; otherwise, <c>false</c>.</value>
@@ -63,23 +49,6 @@ namespace Eto.Forms
         /// </summary>
 		public new interface IHandler : Panel.IHandler
         {
-			/// <summary>
-			/// Adds a tool bar at the specified index.
-			/// </summary>
-			/// <param name="toolbar">Tool bar to add.</param>
-			/// <param name="index">Index of the tool bar to add.</param>
-			void AddToolBar(ToolBar toolbar, int index);
-
-			/// <summary>
-			/// Clears all tool bars from the <see cref="ToolBarView"/>
-			/// </summary>
-			void Clear();
-
-			/// <summary>
-			/// Removes the specified tool bar from the tool bar view.
-			/// </summary>
-			/// <param name="toolbar">Tool bar to remove.</param>
-			void RemoveToolBar(ToolBar toolbar);
         }
     }
 }

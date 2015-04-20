@@ -26,73 +26,18 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
-	/// Docking mode hint for a <see cref="ToolBar"/>
-	/// </summary>
-	/// <remarks>
-	/// Most platforms will not respect this, and is usually only necessary for constrained devices like iOS and Android.
-	/// Each platform may have a different default docking mode, depending on the type of device.
-	/// E.g. iPhone will by default show the toolbar on the bottom, whereas iPad and dekstop platforms will show it at
-	/// the top by default.
-	/// 
-	/// Additionally, some platforms may choose to show the toolbar in a different way, e.g. the Navigation control
-	/// on iPhone has a standard toolbar available, so if you are using one it will attempt to use its toolbar to provide 
-	/// the best native experience.
-	/// </remarks>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public enum ToolBarDock
-	{
-		/// <summary>
-		/// Toolbar will be shown at the bottom of the panel.
-		/// </summary>
-		Bottom,
-		/// <summary>
-		/// Toolbar will be shown at the left of the panel
-		/// </summary>
-		Left,
-		/// <summary>
-		/// Toolbar will be shown at the right of the panel
-		/// </summary>
-		Right,
-		/// <summary>
-		/// Toolbar will be shown at the top of the panel
-		/// </summary>
-		Top
-	}
-
-	/// <summary>
 	/// Toolbar widget for use on a <see cref="ToolBarView"/>.
 	/// </summary>
-	/// <seealso cref="ToolBarView.Items"/>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[ContentProperty("Items")]
 	[Handler(typeof(ToolBar.IHandler))]
-	public class ToolBar : Widget
+	public class ToolBar : Control
 	{
 		internal new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		ToolItemCollection items;
-
-		/// <summary>
-		/// Gets or sets the docking hint for the toolbar.
-		/// </summary>
-		/// <remarks>
-		/// Most platforms will not respect this, and is usually only necessary for constrained devices like iOS and Android.
-		/// Each platform may have a different default docking mode, depending on the type of device.
-		/// E.g. iPhone will by default show the toolbar on the bottom, whereas iPad and dekstop platforms will show it at
-		/// the top by default.
-		/// 
-		/// Additionally, some platforms may choose to show the toolbar in a different way, e.g. the Navigation control
-		/// on iPhone has a standard toolbar available, so if you are using one it will attempt to use its toolbar to provide 
-		/// the best native experience.
-		/// </remarks>
-		/// <value>The dock hint.</value>
-		public ToolBarDock Dock
-		{
-			get { return Handler.Dock; }
-			set { Handler.Dock = value; }
-		}
 
 		/// <summary>
 		/// Gets the collection of items in the toolbar.
@@ -105,12 +50,6 @@ namespace Eto.Forms
 				return items ?? (items = new ToolItemCollection(this));
 			}
 		}
-
-		/// <summary>
-		/// Gets or sets the order of the tool bar when adding to the <see cref="ToolBarCollection"/>.
-		/// </summary>
-		/// <value>The order when adding the item.</value>
-		public int Order { get; set; }
 
 		/// <summary>
 		/// Gets or sets the text alignment hint.
@@ -126,6 +65,7 @@ namespace Eto.Forms
 			set { Handler.TextAlign = value; }
 		}
 
+		/*
 		/// <summary>
 		/// Called when the tool item is loaded to be shown on the form.
 		/// </summary>
@@ -145,11 +85,12 @@ namespace Eto.Forms
 			foreach (var item in Items)
 				item.OnUnLoad(e);
 		}
+		*/
 
 		/// <summary>
 		/// Handler interface for the <see cref="ToolBar"/>.
 		/// </summary>
-		public new interface IHandler : Widget.IHandler
+		public new interface IHandler : Control.IHandler
 		{
 			/// <summary>
 			/// Adds a button at the specified index.
@@ -162,22 +103,6 @@ namespace Eto.Forms
 			/// Clears all buttons from the toolbar
 			/// </summary>
 			void Clear();
-
-			/// <summary>
-			/// Gets or sets the docking hint for the toolbar.
-			/// </summary>
-			/// <remarks>
-			/// Most platforms will not respect this, and is usually only necessary for constrained devices like iOS and Android.
-			/// Each platform may have a different default docking mode, depending on the type of device.
-			/// E.g. iPhone will by default show the toolbar on the bottom, whereas iPad and dekstop platforms will show it at
-			/// the top by default.
-			/// 
-			/// Additionally, some platforms may choose to show the toolbar in a different way, e.g. the Navigation control
-			/// on iPhone has a standard toolbar available, so if you are using one it will attempt to use its toolbar to provide 
-			/// the best native experience.
-			/// </remarks>
-			/// <value>The dock hint.</value>
-			ToolBarDock Dock { get; set; }
 
 			/// <summary>
 			/// Removes the specified button.

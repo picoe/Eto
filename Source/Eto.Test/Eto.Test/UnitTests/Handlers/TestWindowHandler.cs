@@ -51,6 +51,12 @@ namespace Eto.Test.UnitTests.Handlers
 			set { throw new NotImplementedException(); }
 		}
 
+		public Control ToolBar
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+
 		public Icon Icon
 		{
 			get { throw new NotImplementedException(); }

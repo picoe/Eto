@@ -60,6 +60,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ComboBox.cs" />
+    <Compile Include="Forms\Controls\DockView.cs" />
+    <Compile Include="Forms\Controls\DockViewCollection.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\SearchBox.cs" />
@@ -76,7 +78,6 @@
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarCollection.cs" />
     <Compile Include="Forms\ToolBar\ToolBarView.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />

@@ -89,7 +89,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Called when the collection is cleared.
+		/// Called when the collection should be cleared.
 		/// </summary>
 		protected override void ClearItems()
 		{

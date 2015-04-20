@@ -108,20 +108,20 @@ namespace Eto.Test
 				};
 			}
 
-			if (ToolBarView.IsSupported)
+			if (DockView.IsSupported)
 			{
-				
-				var toolbarview = new ToolBarView
+				DockView dockView = new DockView
 				{
+					Content = splitter,
 					Items =
 					{
-						this.CreateToolBarRight(),
-						this.CreateToolBarTop()
-					},
-					Content = splitter
+						new ToolBarView { Content = this.CreateToolBarTop(), Dock = ControlDock.Top, Location = new Eto.Drawing.Point(0,0) },
+						new ToolBarView { Content = this.CreateToolBarRight(), Dock = ControlDock.Right },
+						new TextBox { PlaceholderText ="Search", Size = new Size(100, 25), Text = "Search for", Dock = ControlDock.None, Location = new Eto.Drawing.Point(200,0) }
+					}
 				};
-
-				return toolbarview;
+				
+				return dockView;
 			}
 
 			if (Splitter.IsSupported)
@@ -137,7 +137,6 @@ namespace Eto.Test
 			}
 			
 			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Platform must support splitter or navigation"));
-
 		}
 
 		Control RightPane()
@@ -229,7 +228,7 @@ namespace Eto.Test
 		{
 			ToolBar toolBar = new ToolBar
 			{
-				Dock = ToolBarDock.Right
+				Dock = ControlDock.Top
 			};
 
 			if (Platform.Supports<ToolBar>())

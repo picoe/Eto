@@ -67,6 +67,7 @@
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Controls\TreeView.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
+    <Compile Include="Forms\Controls\DockView.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
     <Compile Include="Forms\Layout\DynamicTable.cs" />
@@ -75,7 +76,7 @@
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItem.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarCollection.cs" />
+    <Compile Include="Forms\Controls\DockViewCollection.cs" />
     <Compile Include="Forms\ToolBar\ToolBarView.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />

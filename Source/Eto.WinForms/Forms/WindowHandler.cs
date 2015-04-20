@@ -4,8 +4,8 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.WinForms.Forms;
 using Eto.WinForms.Drawing;
+using Eto.WinForms.Forms;
 
 namespace Eto.WinForms.Forms
 {
@@ -23,8 +23,10 @@ namespace Eto.WinForms.Forms
 	{
 		MenuBar menu;
 		Icon icon;
+		Control toolBar;
 		swf.Panel menuHolder;
 		swf.Panel content;
+		swf.Panel toolbarHolder;
 		readonly swf.ToolTip tooltips = new swf.ToolTip();
 		bool resizable;
 		bool clientSizeSet;
@@ -89,6 +91,14 @@ namespace Eto.WinForms.Forms
 			};
 			Control.Controls.Add(content);
 
+			toolbarHolder = new swf.Panel
+			{
+				Dock = swf.DockStyle.Top,
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
+				AutoSize = true
+			};
+			Control.Controls.Add(toolbarHolder);
+
 			menuHolder = new swf.Panel
 			{
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
@@ -136,8 +146,8 @@ namespace Eto.WinForms.Forms
 						Callback.OnClosing(Widget, args);
 
 						if (!e.Cancel && swf.Application.OpenForms.Count <= 1
-						    || e.CloseReason == swf.CloseReason.ApplicationExitCall
-						    || e.CloseReason == swf.CloseReason.WindowsShutDown)
+							|| e.CloseReason == swf.CloseReason.ApplicationExitCall
+							|| e.CloseReason == swf.CloseReason.WindowsShutDown)
 						{
 							var app = ((ApplicationHandler)Application.Instance.Handler);
 							app.Callback.OnTerminating(app.Widget, args);
@@ -252,6 +262,28 @@ namespace Eto.WinForms.Forms
 		{
 			get { return Control.TopMost; }
 			set { Control.TopMost = value; }
+		}
+
+		public Control ToolBar
+		{
+			get
+			{
+				return toolBar;
+			}
+			set
+			{
+				toolbarHolder.SuspendLayout();
+				if (toolBar != null)
+					toolbarHolder.Controls.Remove((swf.Control)toolBar.ControlObject);
+				toolBar = value;
+				if (toolBar != null)
+				{
+					var c = ((swf.Control)toolBar.ControlObject);
+					c.Dock = swf.DockStyle.Top;
+					toolbarHolder.Controls.Add(c);
+				}
+				toolbarHolder.ResumeLayout();
+			}
 		}
 
 		public void AddToolbar(Eto.Forms.ToolBar toolBar)
