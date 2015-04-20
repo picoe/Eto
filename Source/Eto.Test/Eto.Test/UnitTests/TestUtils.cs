@@ -197,6 +197,79 @@ namespace Eto.Test.UnitTests
 		}
 
 		/// <summary>
+		/// Test operations on a form once it is shown
+		/// </summary>
+		/// <param name="init">Create form content and/or set other properties of the form</param>
+		/// <param name="test">Delegate to execute on the form when shown</param>
+		/// <param name="replay">Replay the init and test again after shown</param>
+		/// <param name="timeout">Timeout to wait for the operation to complete</param>
+		public static void Shown<T>(Func<Form, T> init, Action<T> test, bool replay = false, int timeout = DefaultTimeout)
+			where T : Control
+		{
+			var application = Application;
+			bool finished = false;
+			Exception exception = null;
+			Form(form =>
+			{
+				var control = init(form);
+				form.Shown += (sender, e) =>
+				{
+					try
+					{
+						test(control);
+						if (replay)
+						{
+							form.Content = null;
+							control = init(form);
+							if (control != null && form.Content == null)
+								form.Content = control;
+							if (application == null)
+								test(control);
+						}
+						finished = true;
+					}
+					catch (Exception ex)
+					{
+						exception = ex;
+					}
+					finally
+					{
+						if (application == null)
+							form.Close();
+						else if (!replay || !finished)
+							application.AsyncInvoke(form.Close);
+						else
+						{
+							finished = false;
+							application.AsyncInvoke(() =>
+							{
+								try
+								{
+									test( control );
+									finished = true;
+								}
+								catch( Exception ex )
+								{
+									exception = ex;
+								}
+								finally
+								{
+									form.Close();
+								}
+							});
+						}
+					}
+				};
+				if (control != null && form.Content == null)
+					form.Content = control;
+			}, timeout);
+			if (exception != null)
+				ExceptionDispatchInfo.Capture(exception).Throw();
+			if (!finished)
+				Assert.Fail("Shown event did not finish");
+		}
+
+		/// <summary>
 		/// Test paint operations on a drawable
 		/// </summary>
 		/// <param name="paint">Delegate to execute during the paint event</param>

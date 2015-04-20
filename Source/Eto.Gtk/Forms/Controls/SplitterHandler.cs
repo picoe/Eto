@@ -11,37 +11,126 @@ namespace Eto.GtkSharp.Forms.Controls
 		SplitterOrientation orientation;
 		SplitterFixedPanel fixedPanel;
 		int? position;
+		double relative = double.NaN;
+		int suppressSplitterMoved;
+
+		private int _prefer(int width1, int width2)
+		{
+			if (position.HasValue)
+				width1 = position.Value;
+			else
+			{
+				if (!double.IsNaN(relative))
+				{
+					if (fixedPanel == SplitterFixedPanel.Panel1)
+						width1 = (int)Math.Round(relative);
+					else if (fixedPanel == SplitterFixedPanel.Panel2)
+						width2 = (int)Math.Round(relative);
+					else if (relative <= 0.0)
+						width1 = 0;
+					else if (relative >= 1.0)
+						width2 = 0;
+					else
+					{
+						// both get at least the preferred size
+						return (int)Math.Round(Math.Max(
+							width1 / relative, width2 / (1 - relative)));
+					}
+				}
+			}
+			return width1 + width2 + SplitterWidth;
+		}
 
 		class EtoHPaned : Gtk.HPaned
 		{
+			public SplitterHandler Handler { get; set; }
+
 			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
-				base.OnSizeRequested(ref requisition);
-				if (PositionSet && Child1 != null)
-				{
-					var childreq = Child1.Requisition;
-					if (childreq.Width > 0)
-						requisition.Width += Position - childreq.Width;
-				}
+				var size1 = Child1.SizeRequest();
+				var size2 = Child2.SizeRequest();
+				requisition.Height = Math.Max(size1.Height, size2.Height);
+				requisition.Width = Handler._prefer(size1.Width, size2.Width);
+			}
+			#else
+			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+			{
+				int min1, width1, min2, width2, sw = Handler.SplitterWidth;
+				Child1.GetPreferredWidth(out min1, out width1);
+				Child2.GetPreferredWidth(out min2, out width2);
+				minimum_width = Handler._prefer(min1, min2);
+				natural_width = Handler._prefer(width1, width2);
+			}
+			protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
+			{
+				int min1, width1, min2, width2, sw = Handler.SplitterWidth;
+				Child1.GetPreferredWidthForHeight(height, out min1, out width1);
+				Child2.GetPreferredWidthForHeight(height, out min2, out width2);
+				minimum_width = Handler._prefer(min1, min2);
+				natural_width = Handler._prefer(width1, width2);
 			}
 			#endif
+
+			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
+			{
+				var it = Handler;
+				if (it == null || double.IsNaN(it.relative))
+				{
+					base.OnSizeAllocated(allocation);
+					return;
+				}
+				it.suppressSplitterMoved++;
+				base.OnSizeAllocated(allocation);
+				it.SetRelative(it.relative);
+				it.suppressSplitterMoved--;
+			}
 		}
 
 		class EtoVPaned : Gtk.VPaned
 		{
+			public SplitterHandler Handler { get; set; }
+
 			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
-				base.OnSizeRequested(ref requisition);
-				if (PositionSet && Child1 != null)
-				{
-					var childreq = Child1.Requisition;
-					if (childreq.Height > 0)
-						requisition.Height += Position - childreq.Height;
-				}
+				var size1 = Child1.SizeRequest();
+				var size2 = Child2.SizeRequest();
+				requisition.Width = Math.Max(size1.Width, size2.Width);
+				requisition.Height = Handler._prefer(size1.Height, size2.Height);
+			}
+			#else
+			protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
+			{
+				int min1, height1, min2, height2, sw = Handler.SplitterWidth;
+				Child1.GetPreferredHeight(out min1, out height1);
+				Child2.GetPreferredHeight(out min2, out height2);
+				minimum_height = Handler._prefer(min1, min2);
+				natural_height = Handler._prefer(height1, height2);
+			}
+			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
+			{
+				int min1, height1, min2, height2, sw = Handler.SplitterWidth;
+				Child1.GetPreferredHeightForWidth(width, out min1, out height1);
+				Child2.GetPreferredHeightForWidth(width, out min2, out height2);
+				minimum_height = Handler._prefer(min1, min2);
+				natural_height = Handler._prefer(height1, height2);
 			}
 			#endif
+
+			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
+			{
+				var it = Handler;
+				if (it == null || double.IsNaN(it.relative))
+				{
+					base.OnSizeAllocated(allocation);
+					return;
+				}
+				it.suppressSplitterMoved++;
+				base.OnSizeAllocated(allocation);
+				it.SetRelative(it.relative);
+				it.suppressSplitterMoved--;
+			}
 		}
 
 		public override Gtk.Widget ContainerControl
@@ -58,7 +147,105 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int Position
 		{
 			get { return Control.Position; }
-			set { position = Control.Position = value; }
+			set
+			{
+				if (value != position)
+				{
+					position = value;
+					relative = double.NaN;
+					if (Control.IsRealized)
+						SetPosition(value);
+				}
+			}
+		}
+
+		public int SplitterWidth
+		{
+			get { return 5; /* = default; Control.StyleGetProperty("handle-size") as int ? or gutter_size? */; }
+			set { /* not implemented */ }
+		}
+
+		int GetAvailableSize()
+		{
+			return GetAvailableSize(!Control.IsRealized);
+		}
+		int GetAvailableSize(bool desired)
+		{
+			if (desired)
+			{
+				var size = PreferredSize;
+				var pick = Orientation == SplitterOrientation.Horizontal ?
+					size.Width : size.Height;
+				if (pick >= 0)
+					return pick - SplitterWidth;
+			}
+			return (Orientation == SplitterOrientation.Horizontal ?
+				Control.Allocation.Width : Control.Allocation.Height) - SplitterWidth;
+		}
+
+		void UpdateRelative()
+		{
+			var pos = Position;
+			if (fixedPanel == SplitterFixedPanel.Panel1)
+				relative = pos;
+			else
+			{
+				var sz = GetAvailableSize();
+				if (fixedPanel == SplitterFixedPanel.Panel2)
+					relative = sz <= 0 ? 0 : sz - pos;
+				else
+					relative = sz <= 0 ? 0.5 : pos / (double)sz;
+			}
+		}
+
+		public double RelativePosition
+		{
+			get
+			{
+				if (double.IsNaN(relative))
+					UpdateRelative();
+				return relative;
+			}
+			set
+			{
+				if (relative == value)
+					return;
+				relative = value;
+				position = null;
+				if (Control.IsRealized)
+					SetRelative(value);
+				Callback.OnPositionChanged(Widget, EventArgs.Empty);
+			}
+		}
+
+		void SetPosition(int newPosition)
+		{
+			position = null;
+			var size = GetAvailableSize();
+			relative = fixedPanel == SplitterFixedPanel.Panel1 ? Math.Max(0, newPosition)
+				: fixedPanel == SplitterFixedPanel.Panel2 ? Math.Max(0, size - newPosition)
+				: size <= 0 ? 0.5 : Math.Max(0.0, Math.Min(1.0, newPosition / (double)size));
+			Control.Position = newPosition;
+		}
+		void SetRelative(double newRelative)
+		{
+			position = null;
+			relative = newRelative;
+			var size = GetAvailableSize();
+			if (size <= 0)
+				return;
+			switch (fixedPanel)
+			{
+				case SplitterFixedPanel.Panel1:
+					Control.Position = Math.Max(0, Math.Min(size, (int)Math.Round(relative)));
+					break;
+				case SplitterFixedPanel.Panel2:
+					Control.Position = Math.Max(0, Math.Min(size, size - (int)Math.Round(relative)));
+					break;
+				case SplitterFixedPanel.None:
+					Control.Position = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
+					break;
+			}
 		}
 
 		public SplitterFixedPanel FixedPanel
@@ -69,7 +256,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (fixedPanel != value)
 				{
 					fixedPanel = value;
-					Create();
+					((Gtk.Paned.PanedChild)Control[Control.Child1]).Resize = value != SplitterFixedPanel.Panel1;
+					((Gtk.Paned.PanedChild)Control[Control.Child2]).Resize = value != SplitterFixedPanel.Panel2;
 				}
 			}
 		}
@@ -91,9 +279,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			Gtk.Paned old = Control;
 			if (orientation == SplitterOrientation.Horizontal)
-				Control = new EtoHPaned();
+				Control = new EtoHPaned() { Handler = this };
 			else
-				Control = new EtoVPaned();
+				Control = new EtoVPaned() { Handler = this };
 			if (container.Child != null)
 				container.Remove(container.Child);
 			container.Child = Control;
@@ -112,8 +300,105 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.Pack1(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
 				Control.Pack2(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
 			}
-			if (position != null)
-				Control.Position = position.Value;
+			Control.Realized += (sender, e) =>
+			{
+				SetInitialPosition();
+				HookEvents();
+			};
+		}
+
+		void HookEvents()
+		{
+			Control.AddNotification("position", (o, args) =>
+			{
+				if (Widget.ParentWindow == null || !Widget.Loaded || suppressSplitterMoved > 0)
+					return;
+				// keep track of the desired position (for removing/re-adding/resizing the control)
+				UpdateRelative();
+				Callback.OnPositionChanged(Widget, EventArgs.Empty);
+			});
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Splitter.PositionChangedEvent:
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			suppressSplitterMoved++;
+			if (Control.IsRealized)
+				SetInitialPosition();
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			suppressSplitterMoved--;
+		}
+
+		void SetInitialPosition()
+		{
+			suppressSplitterMoved++;
+			try
+			{
+				if (position != null)
+				{
+					var pos = position.Value;
+					if (fixedPanel != SplitterFixedPanel.Panel1)
+					{
+						var size = GetAvailableSize(false);
+						var want = GetAvailableSize(true);
+						if (size != want)
+						{
+							if (FixedPanel == SplitterFixedPanel.Panel2)
+								pos += size - want;
+							else
+							{
+								SetRelative(pos / (double)want);
+								return;
+							}
+						}
+
+					}
+					SetPosition(pos);
+				}
+				else if (!double.IsNaN(relative))
+				{
+					SetRelative(relative);
+				}
+				else if (fixedPanel == SplitterFixedPanel.Panel1)
+				{
+					var size1 = Control.Child1.SizeRequest();
+					SetRelative(Orientation == SplitterOrientation.Horizontal ? size1.Width : size1.Height);
+				}
+				else if (fixedPanel == SplitterFixedPanel.Panel2)
+				{
+					var size2 = Control.Child2.SizeRequest();
+					SetRelative(Orientation == SplitterOrientation.Horizontal ? size2.Width : size2.Height);
+				}
+				else
+				{
+					var size1 = Control.Child1.SizeRequest();
+					var size2 = Control.Child2.SizeRequest();
+					SetRelative(Orientation == SplitterOrientation.Horizontal
+						? size1.Width / (double)(size1.Width + size2.Width)
+						: size1.Height / (double)(size1.Height + size2.Height));
+				}
+			}
+			finally
+			{
+				suppressSplitterMoved--;
+			}
+
 		}
 
 		static Gtk.Widget EmptyContainer()
