@@ -142,6 +142,29 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the relative position of the splitter which is based on <see cref="FixedPanel"/>.
+		/// </summary>
+		/// <remarks>
+		/// Same as <see cref="Position"/> with SplitterFixedPanel.Panel1,
+		/// width/height of second panel with SplitterFixedPanel.Panel2
+		/// and ratio of width/height of first panel against available size with SplitterFixedPanel.None.
+		/// </remarks>
+		public double RelativePosition
+		{
+			get { return Handler.RelativePosition; }
+			set { Handler.RelativePosition = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets size of the splitter/gutter
+		/// </summary>
+		public int SplitterWidth
+		{
+			get { return Handler.SplitterWidth; }
+			set { Handler.SplitterWidth = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the top or left panel of the splitter.
 		/// </summary>
 		/// <value>The first panel.</value>
@@ -241,6 +264,21 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The position of the splitter.</value>
 			int Position { get; set; }
+
+			/// <summary>
+			/// Gets or sets the relative position of the splitter which is based on <see cref="FixedPanel"/>.
+			/// </summary>
+			/// <remarks>
+			/// Same as <see cref="Position"/> with SplitterFixedPanel.Panel1,
+			/// width/height of second panel with SplitterFixedPanel.Panel2
+			/// and ratio of width/height of first panel against available size with SplitterFixedPanel.None.
+			/// </remarks>
+			double RelativePosition { get; set; }
+
+			/// <summary>
+			/// Gets or sets size of the splitter/gutter
+			/// </summary>
+			int SplitterWidth { get; set; }
 
 			/// <summary>
 			/// Gets or sets the top or left panel of the splitter.
