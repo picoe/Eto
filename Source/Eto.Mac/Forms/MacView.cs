@@ -151,12 +151,17 @@ namespace Eto.Mac.Forms
 				var oldSize = GetPreferredSize(Size.MaxValue);
 				PreferredSize = value;
 
-				var newSize = ContainerControl.Frame.Size;
+				var oldFrameSize = ContainerControl.Frame.Size;
+				var newSize = oldFrameSize;
 				if (value.Width >= 0)
 					newSize.Width = value.Width;
 				if (value.Height >= 0)
 					newSize.Height = value.Height;
+
+				// this doesn't get to our overridden method to handle the event (since it calls [super setFrameSize:]) so trigger event manually.
 				ContainerControl.SetFrameSize(newSize);
+				if (oldFrameSize != newSize)
+					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 
 				AutoSize = value.Width == -1 && value.Height == -1;
 				CreateTracking();
