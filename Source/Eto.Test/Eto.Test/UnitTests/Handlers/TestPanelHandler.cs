@@ -23,7 +23,7 @@ namespace Eto.Test.UnitTests.Handlers
 			}
 		}
 
-		public ToolBar ToolBar
+		public ToolBarView ToolBar
 		{
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }

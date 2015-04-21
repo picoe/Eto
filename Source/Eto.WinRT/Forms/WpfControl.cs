@@ -20,6 +20,7 @@ namespace Eto.WinRT.Forms
 		where TCallback : Control.ICallback
 	{
 		Font font;
+
 		public Font Font
 		{
 			get

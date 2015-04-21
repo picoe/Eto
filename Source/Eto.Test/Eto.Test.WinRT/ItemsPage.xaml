@@ -12,14 +12,17 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-
         <!-- Collection of items displayed by this page -->
         <CollectionViewSource
             x:Name="itemsViewSource"
             Source="{Binding Items}"
             d:Source="{Binding AllGroups, Source={d:DesignInstance Type=data:AllTests, IsDesignTimeCreatable=True}}"/>
     </Page.Resources>
-
+    <Page.BottomAppBar>
+        <AppBar x:Name="appBar" IsOpen="True" IsSticky="True">
+            <!-- will be overwritten in code, only displayed to get an overview about the size ratio in page -->
+        </AppBar>
+    </Page.BottomAppBar>
     <!--
         This grid acts as a root panel for the page that defines two rows:
         * Row 0 contains the back button and page title
@@ -72,7 +75,7 @@
             <Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
             <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"/>
         </Grid>
-
+        
         <VisualStateManager.VisualStateGroups>
 
             <!-- Visual states reflect the application's view state -->

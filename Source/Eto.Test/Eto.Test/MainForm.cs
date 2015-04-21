@@ -251,6 +251,13 @@ namespace Eto.Test
 
 			if (Platform.Supports<ToolBar>())
 			{
+				if (Platform.Supports<ButtonToolItem>())
+				{
+					toolBar.Items.Add(new ButtonToolItem { Text = "Button1", Image = TestIcons.TestImage });
+					toolBar.Items.Add(new CheckToolItem { Text = "Button2", Image = TestIcons.TestImage });
+					toolBar.Items.Add(new CheckToolItem { Text = "Button3", Image = TestIcons.TestImage });
+					toolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
+				}
 				if (Platform.Supports<CheckToolItem>())
 				{
 					toolBar.Items.Add(new CheckToolItem { Text = "Check1", Image = TestIcons.TestImage });
@@ -262,6 +269,10 @@ namespace Eto.Test
 					toolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.TestIcon, Checked = true });
 					toolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
 					toolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
+				}
+				if (Platform.Supports<ButtonToolItem>())
+				{
+					toolBar.Items.Add(new ButtonToolItem { Text = "Button4", Image = TestIcons.TestImage });
 				}
 			}
 

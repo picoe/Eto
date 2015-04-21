@@ -34,8 +34,7 @@ namespace Eto.GtkSharp.Forms
 		WindowStyle style;
 		ToolBarView toolBar;
 		bool topmost;
-		readonly Gtk.Box toolbarBox;
-		readonly Gtk.Box toolbarContainer;
+		readonly Gtk.Alignment toolbarBox;
 		Gtk.VBox vbox;
 
 		protected GtkWindow()
@@ -44,16 +43,13 @@ namespace Eto.GtkSharp.Forms
 			actionvbox = new Gtk.VBox();
 
 			menuBox = new Gtk.HBox();
-			toolbarBox = new Gtk.VBox();
-			toolbarContainer = new Gtk.HBox();
-			toolbarContainer.PackStart(toolbarBox, false, false, 0);
-			toolbarContainer.PackStart(new Gtk.Alignment(0, 0, 1, 1), true, true, 0);
+			toolbarBox = new Gtk.Alignment(0, 0, 1, 1);
 
 			containerBox = new Gtk.VBox();
 			containerBox.Visible = true;
 
 			actionvbox.PackStart(menuBox, false, false, 0);
-			actionvbox.PackStart(toolbarContainer, false, false, 0);
+			actionvbox.PackStart(toolbarBox, false, false, 0);
 			vbox.PackStart(containerBox, true, true, 0);
 		}
 

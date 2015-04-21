@@ -5,7 +5,7 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Control to display a panel containing a single <see cref="Panel.Content"/> control
+	/// Control to display a tool bar containing a single <see cref="ToolBar"/> control
 	/// </summary>
 	/// <remarks>
 	/// This can be instantiated directly to provide padding around a control, and is also the base of other containers that have

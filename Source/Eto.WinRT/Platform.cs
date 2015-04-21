@@ -18,6 +18,7 @@ namespace Eto.WinRT
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class Platform : Eto.Platform
 	{
@@ -103,7 +104,8 @@ namespace Eto.WinRT
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
 			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
-			//p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
+			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
+			p.Add<ToolBarView.IHandler>(() => new ToolBarViewHandler());
 			
 			// Forms
 			p.Add<Application.IHandler>(() => new ApplicationHandler());

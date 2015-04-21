@@ -47,7 +47,6 @@ namespace Eto.Forms.ThemedControls
 	public class ThemedSpinnerHandler : ThemedControlHandler<Drawable, Spinner, Spinner.ICallback>, Spinner.IHandler
 	{
 		float currentValue;
-		ControlDock dock = ControlDock.Top;
 		bool enabled;
 		int numberOfElements;
 		int numberOfVisibleElements;
@@ -92,16 +91,6 @@ namespace Eto.Forms.ThemedControls
 		/// </summary>
 		/// <value>The disabled alpha.</value>
 		public float DisabledAlpha { get; set; }
-
-		/// <summary>
-		/// Gets or sets the dock of the control.
-		/// </summary>
-		/// <value>The dock of the control.</value>
-		public ControlDock Dock
-		{
-			get { return dock; }
-			set { dock = value; }
-		}
 
 		/// <summary>
 		/// Gets or sets the main color of each element

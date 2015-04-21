@@ -1,32 +1,39 @@
-#if TODO_XAML
+using System;
 using swc = Windows.UI.Xaml.Controls;
 using swi = Windows.UI.Xaml.Input;
+using swm = Windows.UI.Xaml.Media;
 using Eto.Forms;
 
 namespace Eto.WinRT.Forms
 {
-	public class ToolBarHandler : WidgetHandler<swc.ToolBar, ToolBar>, IToolBar
+	/// <summary>
+	/// Control to hold a tool bar which can be displayed via <see cref="ToolBarView"/> control
+	/// </summary>
+	/// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class ToolBarHandler : WpfControl<swc.CommandBar, ToolBar, ToolBar.ICallback>, ToolBar.IHandler
 	{
-		public override swc.ToolBar CreateControl()
+		public ToolBarHandler()
 		{
-			var control = new swc.ToolBar { IsTabStop = false };
-			swi.KeyboardNavigation.SetTabNavigation(control, swi.KeyboardNavigationMode.Continue);
-			return control;
+			this.Control = new swc.CommandBar
+			{
+				FontFamily = new swm.FontFamily("Segoe UI")
+			};
 		}
 
 		public void AddButton(ToolItem button, int index)
 		{
-			Control.Items.Insert(index, button.ControlObject);
+			Control.PrimaryCommands.Add((swc.AppBarButton)button.ControlObject);
 		}
 
 		public void RemoveButton(ToolItem button)
 		{
-			Control.Items.Remove(button.ControlObject);
+			Control.PrimaryCommands.Remove((swc.AppBarButton)button.ControlObject);
 		}
 
 		public void Clear()
 		{
-			Control.Items.Clear();
+			Control.PrimaryCommands.Clear();
 		}
 
 		public ToolBarTextAlign TextAlign
@@ -39,17 +46,5 @@ namespace Eto.WinRT.Forms
 			{
 			}
 		}
-
-		public ToolBarDock Dock
-		{
-			get
-			{
-				return ToolBarDock.Top;
-			}
-			set
-			{
-			}
-		}
 	}
 }
-#endif

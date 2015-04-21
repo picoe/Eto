@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Eto.Forms;
+using Eto.WinRT.Forms;
 
 // The Items Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234233
 
@@ -29,6 +31,27 @@ namespace Eto.Test.WinRT
         public ItemsPage()
         {
             this.InitializeComponent();
+			
+			if (ToolBarView.IsSupported)
+			{
+				var toolBarView  = new ToolBarView
+				{
+					Content = new ToolBar 
+					{
+						Items = 
+						{
+							new ButtonToolItem { Text = "Button1", Image = TestIcons.TestImage, ToolTip="Button1" },
+							new ButtonToolItem { Text = "Button2", Image = TestIcons.TestImage, ToolTip="Button2" },
+							new ButtonToolItem { Text = "Button3", Image = TestIcons.TestImage, ToolTip="Button3" },
+							new ButtonToolItem { Text = "Button4", Image = TestIcons.TestImage, ToolTip="Button4" }
+						}
+					}, Dock = ControlDock.Top
+				};
+
+				this.BottomAppBar = toolBarView.ControlObject as CommandBar;
+			}
+			this.BottomAppBar.IsOpen = true;
+			this.BottomAppBar.IsSticky = true;
         }
 
         /// <summary>

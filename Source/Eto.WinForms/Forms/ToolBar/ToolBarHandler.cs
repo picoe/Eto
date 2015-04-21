@@ -19,6 +19,11 @@ namespace Eto.WinForms.Forms.ToolBar
 			((IToolBarItemHandler)item.Handler).CreateControl(this, index);
 		}
 
+		public void Clear()
+		{
+			Control.Items.Clear();
+		}
+
 		public void RemoveButton(ToolItem item)
 		{
 			Control.Items.Remove((swf.ToolStripItem)item.ControlObject);
@@ -53,11 +58,6 @@ namespace Eto.WinForms.Forms.ToolBar
 						throw new NotSupportedException();
 				}
 			}
-		}
-
-		public void Clear()
-		{
-			Control.Items.Clear();
 		}
 	}
 }
