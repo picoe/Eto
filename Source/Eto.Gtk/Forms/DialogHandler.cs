@@ -32,6 +32,7 @@ namespace Eto.GtkSharp.Forms
 			Control.HasResizeGrip = false;
 #endif
 			Control.KeyPressEvent += Control_KeyPressEvent;
+			Resizable = false;
 		}
 
 		protected override void Initialize()
