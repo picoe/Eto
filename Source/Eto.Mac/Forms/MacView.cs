@@ -98,10 +98,17 @@ namespace Eto.Mac.Forms
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
+		ControlDock dock = ControlDock.Top;
 		bool mouseMove;
 		NSTrackingArea tracking;
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
+
+		public ControlDock Dock
+		{
+			get { return dock; }
+			set { dock = value; }
+		}
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
@@ -696,6 +703,10 @@ namespace Eto.Mac.Forms
 				if (super == null || super.IsFlipped)
 					return location.ToEtoPoint();
 				return new Point((int)location.X, (int)(super.Frame.Height - location.Y - frame.Height));
+			}
+			set
+			{
+				// TODO: have to be done by someone who is developing for Mac
 			}
 		}
 

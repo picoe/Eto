@@ -92,6 +92,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="KeyMap.cs" />
     <Compile Include="Forms\MacFileDialog.cs" />
     <Compile Include="InvokeHelper.cs" />

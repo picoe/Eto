@@ -1,8 +1,6 @@
 ﻿using System;
-//using System.Runtime.InteropServices;
-using Eto.Forms;
 using Eto.Drawing;
-//using GLib;
+using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.ToolBar
 {

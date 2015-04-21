@@ -6,7 +6,6 @@ using swc = Windows.UI.Xaml.Controls;
 
 namespace Eto.WinRT.Forms
 {
-
 	/// <summary>
 	/// Control to display a tool bar containing a single <see cref="ToolBar"/> control
 	/// </summary>

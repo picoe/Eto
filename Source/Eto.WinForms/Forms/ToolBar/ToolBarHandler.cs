@@ -1,7 +1,7 @@
 using System;
+using Eto.Forms;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
-using Eto.Forms;
 
 namespace Eto.WinForms.Forms.ToolBar
 {

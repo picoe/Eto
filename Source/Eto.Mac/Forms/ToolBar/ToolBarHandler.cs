@@ -34,9 +34,9 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.ToolBar
 {
+	// TODO: needs to be changed to MacControl instead of WidgetHandler
 	public class ToolBarHandler : WidgetHandler<NSToolbar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
 	{
-		ToolBarDock dock = ToolBarDock.Top;
 		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();
 
 		class TBDelegate : NSToolbarDelegate
@@ -96,12 +96,6 @@ namespace Eto.Mac.Forms.ToolBar
 			Control.Delegate = new TBDelegate { Handler = this };
 		}
 
-		public ToolBarDock Dock
-		{
-			get { return dock; }
-			set { dock = value; }
-		}
-
 		public void AddButton(ToolItem item, int index)
 		{
 			var handler = (IToolBarBaseItemHandler)item.Handler;
@@ -109,6 +103,19 @@ namespace Eto.Mac.Forms.ToolBar
 			Control.InsertItem(handler.Identifier, index);
 			if (handler != null)
 				handler.ControlAdded(this);
+			//Control.ValidateVisibleItems();
+		}
+
+		public void Clear()
+		{
+			for (int i = Control.Items.Length - 1; i >= 0; i--)
+			{
+				Control.RemoveItem(i);
+			}
+			items.Clear();
+			// allow menu items to be GC'd
+			var newitems = Control.Items;
+
 			//Control.ValidateVisibleItems();
 		}
 
@@ -146,19 +153,6 @@ namespace Eto.Mac.Forms.ToolBar
 						break;
 				}
 			}
-		}
-
-		public void Clear()
-		{
-			for (int i = Control.Items.Length - 1; i >= 0; i--)
-			{
-				Control.RemoveItem(i);
-			}
-			items.Clear();
-			// allow menu items to be GC'd
-			var newitems = Control.Items;
-
-			//Control.ValidateVisibleItems();
 		}
 	}
 }

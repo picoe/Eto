@@ -46,12 +46,11 @@ namespace Eto.Mac.Forms
 {
 
 	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, Panel.IHandler
-		where TControl: NSObject
-		where TWidget: Panel
-		where TCallback: Panel.ICallback
+		where TControl : NSObject
+		where TWidget : Panel
+		where TCallback : Panel.ICallback
 	{
 		Control content;
-		Eto.Forms.ToolBar toolBar;
 		Padding padding;
 
 		public Padding Padding
@@ -64,12 +63,12 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		#if OSX
+#if OSX
 		protected virtual NSViewResizingMask ContentResizingMask()
 		{
 			return NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 		}
-		#endif
+#endif
 
 		public Control Content
 		{
@@ -77,7 +76,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				if (content != null)
-				{ 
+				{
 					var oldContent = content.GetContainerView();
 					oldContent.RemoveFromSuperview();
 				}
@@ -102,23 +101,6 @@ namespace Eto.Mac.Forms
 				{
 					LayoutParent();
 				}
-			}
-		}
-
-		public Eto.Forms.ToolBar ToolBar
-		{
-			get
-			{
-				return toolBar;
-			}
-			set
-			{
-				toolBar = value;
-
-				//TODO: if Mac don't support multiple NSToolbar's we need to get the parent and set the toolbar there.
-				//		In this case we don't need to care about multiple toolbars, they will be automatically overwritten
-				//		and the programmer itself have to care about if he wants to support Mac-Platform
-				//Control.Toolbar = (NSToolbar)toolBar.ControlObject;
 			}
 		}
 
@@ -239,4 +221,3 @@ namespace Eto.Mac.Forms
 		}
 	}
 }
-

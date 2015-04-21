@@ -94,6 +94,7 @@
     <Compile Include="Forms\MacWindow.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="KeyMap.cs" />
     <Compile Include="Forms\MacFileDialog.cs" />
     <Compile Include="InvokeHelper.cs" />
