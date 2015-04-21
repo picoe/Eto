@@ -13,7 +13,6 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-using nnuint = System.Int32;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -22,22 +21,27 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
-using nnuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
-using nnuint = System.Int32;
 #endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+#endif
+#endif
+
+#if XAMMAC
+using nnint = System.Int32;
+#elif Mac64
+using nnint = System.UInt64;
+#else
+using nnint = System.UInt32;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -53,7 +57,7 @@ namespace Eto.Mac.Forms.Controls
 			where T: class
 		{
 			NSRange effectiveRange;
-			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnuint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange);
+			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange);
 			NSObject value;
 			return attrib.TryGetValue(attributeName, out value) ? value as T : null;
 		}
@@ -106,7 +110,7 @@ namespace Eto.Mac.Forms.Controls
 		bool HasFontAttribute(NSFontTraitMask traitMask)
 		{
 			NSRange effectiveRange;
-			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnuint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange, Control.SelectedRange);
+			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange, Control.SelectedRange);
 			NSObject value;
 			if (attrib.TryGetValue(NSStringAttributeKey.Font, out value))
 			{
@@ -165,7 +169,7 @@ namespace Eto.Mac.Forms.Controls
 					var attribs = Control.TextStorage.GetAttributes(current.Location, out effectiveRange, current);
 					attribs = UpdateFontAttributes(attribs, enabled, updateFont);
 					var span = effectiveRange.Location + effectiveRange.Length - current.Location;
-					var newRange = new NSRange(current.Location, (nnuint)Math.Min(span, current.Length));
+					var newRange = new NSRange(current.Location, (nnint)Math.Min(span, current.Length));
 					Control.TextStorage.AddAttributes(attribs, newRange);
 					current.Location += span;
 					current.Length -= span;
@@ -271,7 +275,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public void Insert(int position, string text)
 		{
-			Control.TextStorage.Insert(new NSAttributedString(text), (nnuint)position);
+			Control.TextStorage.Insert(new NSAttributedString(text), (nnint)position);
 		}
 
 		public IEnumerable<RichTextAreaFormat> SupportedFormats

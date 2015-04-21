@@ -162,7 +162,6 @@
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\MacControlExtensions.cs" />
     <Compile Include="Forms\MacBase.cs" />
-    <Compile Include="SDConversions.cs" />
     <Compile Include="CGConversions.cs" />
     <Compile Include="MacConversions.cs" />
     <Compile Include="MacConversions.ns.cs" />

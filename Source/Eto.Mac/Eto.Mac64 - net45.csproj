@@ -175,7 +175,6 @@
     <Compile Include="NSImageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
-    <Compile Include="SDConversions.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="Forms\iosCompatibility.cs" />
