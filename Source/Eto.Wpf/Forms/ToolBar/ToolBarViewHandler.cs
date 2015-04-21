@@ -1,18 +1,19 @@
 ﻿using System;
 using Eto.Drawing;
 using Eto.Forms;
-using sw = Windows.UI.Xaml;
-using swc = Windows.UI.Xaml.Controls;
+using Eto.Wpf.Forms.Menu;
+using sw = System.Windows;
+using swc = System.Windows.Controls;
+using swi = System.Windows.Input;
 
-namespace Eto.WinRT.Forms
+namespace Eto.Wpf.Forms.Controls
 {
-
 	/// <summary>
 	/// Control to display a tool bar containing a single <see cref="ToolBar"/> control
 	/// </summary>
 	/// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ToolBarViewHandler : WpfControl<swc.CommandBar, ToolBarView, ToolBarView.ICallback>, ToolBarView.IHandler
+	public class ToolBarViewHandler : WpfControl<swc.ToolBar, ToolBarView, ToolBarView.ICallback>, ToolBarView.IHandler
 	{
 		Control content;
 		ContextMenu contextMenu;
@@ -20,22 +21,18 @@ namespace Eto.WinRT.Forms
 
 		public ToolBarViewHandler()
 		{
-			Control = new swc.CommandBar();
+			Control = new swc.ToolBar();
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
 		}
-
+		
 		public Size ClientSize
 		{
 			get
 			{
-#if TODO_XAML
-				if (!Control.IsLoaded && clientSize != null)
-					return clientSize.Value;
-#endif
 				return Control.GetSize();
 			}
 			set
@@ -43,7 +40,7 @@ namespace Eto.WinRT.Forms
 				Control.SetSize(value);
 			}
 		}
-
+		
 		public Control Content
 		{
 			get { return content; }
@@ -57,7 +54,7 @@ namespace Eto.WinRT.Forms
 					var contentHandler = content.GetWpfFrameworkElement();
 					contentHandler.SetScale(false, false);
 				}
-				
+
 				content = value;
 
 				if (content != null)
@@ -65,7 +62,7 @@ namespace Eto.WinRT.Forms
 					var contentHandler = content.GetWpfFrameworkElement();
 					SetContent(contentHandler.ContainerControl);
 				}
-				
+
 				if (Widget.Loaded)
 					ResumeLayout();
 			}
@@ -77,11 +74,8 @@ namespace Eto.WinRT.Forms
 			set
 			{
 				contextMenu = value;
-#if TODO_XAML
+				
 				Control.ContextMenu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
-#else
-				throw new NotImplementedException();
-#endif
 			}
 		}
 		
@@ -98,21 +92,22 @@ namespace Eto.WinRT.Forms
 				}
 			}
 		}
-		
+
 		public virtual Padding Padding
 		{
 			get { return this.Control.Padding.ToEto(); }
 			set { this.Control.Padding = value.ToWpf(); }
 		}
-
+		
 		public virtual void SetContent(sw.FrameworkElement content)
 		{
-			Control = content as swc.CommandBar;
+			Control = content as swc.ToolBar;
 		}
-		
+
 		public bool RecurseToChildren
 		{
 			get { return true; }
 		}
 	}
 }
+

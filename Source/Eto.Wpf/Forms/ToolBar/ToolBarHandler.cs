@@ -1,10 +1,11 @@
+using System;
+using Eto.Forms;
 using swc = System.Windows.Controls;
 using swi = System.Windows.Input;
-using Eto.Forms;
 
 namespace Eto.Wpf.Forms.ToolBar
 {
-	public class ToolBarHandler : WidgetHandler<swc.ToolBar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
+	public class ToolBarHandler : WpfControl<swc.ToolBar, Eto.Forms.ToolBar, Eto.Forms.ToolBar.ICallback>, Eto.Forms.ToolBar.IHandler
 	{
 		public ToolBarHandler()
 		{
@@ -17,14 +18,14 @@ namespace Eto.Wpf.Forms.ToolBar
 			Control.Items.Insert(index, button.ControlObject);
 		}
 
-		public void RemoveButton(ToolItem button)
-		{
-			Control.Items.Remove(button.ControlObject);
-		}
-
 		public void Clear()
 		{
 			Control.Items.Clear();
+		}
+
+		public void RemoveButton(ToolItem button)
+		{
+			Control.Items.Remove(button.ControlObject);
 		}
 
 		public ToolBarTextAlign TextAlign
@@ -32,17 +33,6 @@ namespace Eto.Wpf.Forms.ToolBar
 			get
 			{
 				return ToolBarTextAlign.Underneath;
-			}
-			set
-			{
-			}
-		}
-
-		public ToolBarDock Dock
-		{
-			get
-			{
-				return ToolBarDock.Top;
 			}
 			set
 			{

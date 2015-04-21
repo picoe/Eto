@@ -101,9 +101,9 @@ namespace Eto.WinRT
 			//p.Add<PrintSettings.IHandler>(() => new PrintSettingsHandler());
 			
 			// Forms.ToolBar
+			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
-			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 			p.Add<ToolBarView.IHandler>(() => new ToolBarViewHandler());
 			
