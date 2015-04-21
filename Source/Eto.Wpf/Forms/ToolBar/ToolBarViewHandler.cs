@@ -6,7 +6,7 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using swi = System.Windows.Input;
 
-namespace Eto.Wpf.Forms.Controls
+namespace Eto.Wpf.Forms.ToolBar
 {
 	/// <summary>
 	/// Control to display a tool bar containing a single <see cref="ToolBar"/> control

@@ -128,6 +128,7 @@
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
     <Compile Include="Forms\Controls\MacControl.cs" />
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="Forms\Controls\MacText.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Forms\Controls\MacButton.cs" />

@@ -4,7 +4,7 @@ using Eto.Forms;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 
-namespace Eto.WinForms.Forms.Controls
+namespace Eto.WinForms.Forms.ToolBar
 {
 	public class ToolBarViewHandler : WindowsControl<swf.ToolStrip, ToolBarView, ToolBarView.ICallback>, ToolBarView.IHandler
 	{

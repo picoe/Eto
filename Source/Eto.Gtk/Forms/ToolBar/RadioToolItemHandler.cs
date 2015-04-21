@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using System.Linq;
 
 namespace Eto.GtkSharp.Forms.ToolBar
 {

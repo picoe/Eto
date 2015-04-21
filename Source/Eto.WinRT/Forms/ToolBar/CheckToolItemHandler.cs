@@ -1,10 +1,10 @@
 using System;
+using Eto.Drawing;
+using Eto.Forms;
 using swc = Windows.UI.Xaml.Controls;
 using swm = Windows.UI.Xaml.Media;
-using Eto.Forms;
-using Eto.Drawing;
 
-namespace Eto.WinRT.Forms
+namespace Eto.WinRT.Forms.ToolBar
 {
 	public class CheckToolItemHandler : ToolItemHandler<swc.Primitives.ToggleButton, CheckToolItem>, CheckToolItem.IHandler
 	{

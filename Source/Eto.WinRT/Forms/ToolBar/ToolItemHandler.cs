@@ -1,9 +1,9 @@
+using System;
 using Eto.Drawing;
 using Eto.Forms;
-using System;
 using Windows.UI.Xaml;
 
-namespace Eto.WinRT.Forms
+namespace Eto.WinRT.Forms.ToolBar
 {
 	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ToolItem.IHandler
 		where TControl : UIElement

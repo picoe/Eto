@@ -3,7 +3,6 @@ using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.ToolBar
 {
-
 	public class ButtonToolItemHandler : ToolItemHandler<Gtk.ToolButton, ButtonToolItem>, ButtonToolItem.IHandler
 	{
 

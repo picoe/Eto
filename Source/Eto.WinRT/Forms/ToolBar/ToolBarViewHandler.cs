@@ -4,7 +4,7 @@ using Eto.Forms;
 using sw = Windows.UI.Xaml;
 using swc = Windows.UI.Xaml.Controls;
 
-namespace Eto.WinRT.Forms
+namespace Eto.WinRT.Forms.ToolBar
 {
 	/// <summary>
 	/// Control to display a tool bar containing a single <see cref="ToolBar"/> control

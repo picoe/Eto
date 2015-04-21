@@ -1,17 +1,17 @@
 using System;
+using Eto.Forms;
 using swc = Windows.UI.Xaml.Controls;
 using swi = Windows.UI.Xaml.Input;
 using swm = Windows.UI.Xaml.Media;
-using Eto.Forms;
 
-namespace Eto.WinRT.Forms
+namespace Eto.WinRT.Forms.ToolBar
 {
 	/// <summary>
 	/// Control to hold a tool bar which can be displayed via <see cref="ToolBarView"/> control
 	/// </summary>
 	/// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ToolBarHandler : WpfControl<swc.CommandBar, ToolBar, ToolBar.ICallback>, ToolBar.IHandler
+	public class ToolBarHandler : WpfControl<swc.CommandBar, Eto.Forms.ToolBar, Eto.Forms.ToolBar.ICallback>, Eto.Forms.ToolBar.IHandler
 	{
 		public ToolBarHandler()
 		{
