@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Eto
 {
@@ -67,6 +69,7 @@ namespace Eto
 	public static class Style
 	{
 		static readonly Dictionary<object, IList<Action<Widget>>> styleMap = new Dictionary<object, IList<Action<Widget>>>();
+		static readonly Dictionary<object, IList<Action<Widget>>> cascadingStyleMap = new Dictionary<object, IList<Action<Widget>>>();
 
 		#region Events
 
@@ -80,13 +83,17 @@ namespace Eto
 			if (widget != null && !string.IsNullOrEmpty(widget.Style))
 			{
 				var styles = widget.Style.Split(' ');
-				foreach (var style in styles)
+				for (int i = 0; i < styles.Length; i++)
 				{
-					var styleHandlers = GetStyleList(style, false);
+					var style = styles[i];
+					var styleHandlers = GetStyleList(style);
 					if (styleHandlers != null)
 					{
-						foreach (var styleHandler in styleHandlers)
+						for (int j = 0; j < styleHandlers.Count; j++)
+						{
+							var styleHandler = styleHandlers[j];
 							styleHandler(widget);
+						}
 					}
 				}
 			}
@@ -96,29 +103,37 @@ namespace Eto
 
 		internal static void OnStyleWidgetDefaults(Widget widget)
 		{
-			if (widget != null)
+			if (widget == null)
+				return;
+			
+			var styleHandlers = GetCascadingStyleList(widget.GetType());
+			if (styleHandlers == null)
+				return;
+			
+			for (int i = 0; i < styleHandlers.Count; i++)
 			{
-				var styleHandlers = GetStyleList(widget.GetType(), false);
-				if (styleHandlers != null)
-				{
-					foreach (var styleHandler in styleHandlers)
-						styleHandler(widget);
-				}
+				var styleHandler = styleHandlers[i];
+				styleHandler(widget);
 			}
 		}
 
 		internal static void OnStyleWidgetDefaults(Widget.IHandler handler)
 		{
-			if (handler != null)
+			if (handler == null)
+				return;
+			
+			var widget = handler.Widget;
+			if (widget == null)
+				return;
+			
+			var styleHandlers = GetCascadingStyleList(handler.GetType());
+			if (styleHandlers == null)
+				return;
+			
+			for (int i = 0; i < styleHandlers.Count; i++)
 			{
-				var styleHandlers = GetStyleList(handler.GetType(), false);
-				if (styleHandlers != null)
-				{
-					var widget = handler.Widget;
-					if (widget != null)
-						foreach (var styleHandler in styleHandlers)
-							styleHandler(widget);
-				}
+				var styleHandler = styleHandlers[i];
+				styleHandler(widget);
 			}
 		}
 
@@ -139,13 +154,14 @@ namespace Eto
 		public static void Add<TWidget>(string style, StyleWidgetHandler<TWidget> handler)
 			where TWidget: Widget
 		{
-			var list = GetStyleList((object)style ?? typeof(TWidget));
+			var list = CreateStyleList((object)style ?? typeof(TWidget));
 			list.Add(widget =>
 			{
 				var control = widget as TWidget;
 				if (control != null)
 					handler(control);
 			});
+			cascadingStyleMap.Clear();
 		}
 
 		/// <summary>
@@ -163,25 +179,63 @@ namespace Eto
 		public static void Add<THandler>(string style, StyleHandler<THandler> styleHandler)
 			where THandler: class, Widget.IHandler
 		{
-			var list = GetStyleList((object)style ?? typeof(THandler));
+			var list = CreateStyleList((object)style ?? typeof(THandler));
 			list.Add(widget =>
 			{
 				var handler = widget.Handler as THandler;
 				if (handler != null)
 					styleHandler(handler);
 			});
+			cascadingStyleMap.Clear();
 		}
 
-		static IList<Action<Widget>> GetStyleList(object style, bool create = true)
+		static IList<Action<Widget>> CreateStyleList(object style)
 		{
 			IList<Action<Widget>> styleHandlers;
-			if (!styleMap.TryGetValue(style, out styleHandlers) && create)
+			if (!styleMap.TryGetValue(style, out styleHandlers))
 			{
 				styleHandlers = new List<Action<Widget>>();
 				styleMap[style] = styleHandlers;
 			}
 			return styleHandlers;
 		}
+
+		static IList<Action<Widget>> GetStyleList(object style)
+		{
+			IList<Action<Widget>> styleHandlers;
+			return styleMap.TryGetValue(style, out styleHandlers) ? styleHandlers : null;
+		}
+
+		static IList<Action<Widget>> GetCascadingStyleList(Type type)
+		{
+			// get a cached list of cascading styles so we don't have to traverse each time
+			IList<Action<Widget>> childHandlers;
+			if (cascadingStyleMap.TryGetValue(type, out childHandlers))
+			{
+				return childHandlers;
+			}
+
+			// don't have a cascading style set, so build one
+			// styles are applied in order from superclass styles down to subclass styles.
+			IEnumerable<Action<Widget>> styleHandlers = Enumerable.Empty<Action<Widget>>();
+			Type currentType = type;
+			do
+			{
+				IList<Action<Widget>> typeStyles;
+				if (styleMap.TryGetValue(currentType, out typeStyles) && typeStyles != null)
+					styleHandlers = typeStyles.Concat(styleHandlers);
+			}
+			while ((currentType = currentType.GetBaseType()) != null);
+
+			// create a cached list, but if its empty don't store it
+			childHandlers = styleHandlers.ToList();
+			if (childHandlers.Count == 0)
+				childHandlers = null;
+			cascadingStyleMap.Add(type, childHandlers);
+
+			return childHandlers;
+		}
+
 	}
 }
 

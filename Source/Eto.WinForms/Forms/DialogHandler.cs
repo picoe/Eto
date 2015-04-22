@@ -9,7 +9,6 @@ namespace Eto.WinForms.Forms
 	public class DialogHandler : WindowHandler<swf.Form, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button button;
-		Button abortButton;
 
 		
 		public DialogHandler()
@@ -32,24 +31,7 @@ namespace Eto.WinForms.Forms
 			get { return swf.FormBorderStyle.FixedDialog; }
 		}
 
-		public Button AbortButton
-		{
-			get
-			{
-				return abortButton;
-			}
-			set
-			{
-				abortButton = value;
-				if (abortButton != null)
-				{
-					var b = abortButton.ControlObject as swf.IButtonControl;
-					Control.CancelButton = b;
-				}
-				else
-					Control.CancelButton = null;
-			}
-		}
+		public Button AbortButton { get; set; }
 
 		public Button DefaultButton
 		{
@@ -88,6 +70,21 @@ namespace Eto.WinForms.Forms
 				}
 			}
 			Control.ShowDialog();
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Widget.KeyDown += Widget_KeyDown;
+		}
+
+		void Widget_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Escape && AbortButton != null)
+			{
+				AbortButton.PerformClick();
+				e.Handled = true;
+			}
 		}
 
 		public Task ShowModalAsync(Control parent)

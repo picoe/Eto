@@ -77,6 +77,7 @@
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedSplitterHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItem.cs" />
     <Compile Include="Forms\Controls\DockViewItemCollection.cs" />
     <Compile Include="Forms\ToolBar\ToolBarView.cs" />

@@ -215,9 +215,9 @@ namespace Eto.Forms
 			if (created)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Can only set the cell size of a table once"));
 			dimensions = value;
+			Handler.CreateControl(dimensions.Width, dimensions.Height);
 			if (!dimensions.IsEmpty)
 			{
-				Handler.CreateControl(dimensions.Width, dimensions.Height);
 				if (createRows)
 				{
 					var rows = Enumerable.Range(0, value.Height).Select(r => new TableRow(Enumerable.Range(0, value.Width).Select(c => new TableCell())));

@@ -151,12 +151,17 @@ namespace Eto.Mac.Forms
 				var oldSize = GetPreferredSize(Size.MaxValue);
 				PreferredSize = value;
 
-				var newSize = ContainerControl.Frame.Size;
+				var oldFrameSize = ContainerControl.Frame.Size;
+				var newSize = oldFrameSize;
 				if (value.Width >= 0)
 					newSize.Width = value.Width;
 				if (value.Height >= 0)
 					newSize.Height = value.Height;
+
+				// this doesn't get to our overridden method to handle the event (since it calls [super setFrameSize:]) so trigger event manually.
 				ContainerControl.SetFrameSize(newSize);
+				if (oldFrameSize != newSize)
+					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 
 				AutoSize = value.Width == -1 && value.Height == -1;
 				CreateTracking();
@@ -733,10 +738,20 @@ namespace Eto.Mac.Forms
 						return command.Enabled;
 				}
 			}
-			return Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
+			var objClass = ObjCExtensions.object_getClass(sender);
+
+			if (objClass == IntPtr.Zero)
+				return false;
+
+			var superClass = ObjCExtensions.class_getSuperclass(objClass);
+			return
+				superClass != IntPtr.Zero
+				&& ObjCExtensions.ClassInstancesRespondToSelector(superClass, sel)
+				&& Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
 		}
 
 		Dictionary<IntPtr, Command> systemActions;
+		static readonly IntPtr selRespondsToSelector = Selector.GetHandle("respondsToSelector:");
 		static readonly IntPtr selGetAction = Selector.GetHandle("action");
 		static readonly IntPtr selValidateUserInterfaceItem = Selector.GetHandle("validateUserInterfaceItem:");
 		static readonly IntPtr selCut = Selector.GetHandle("cut:");

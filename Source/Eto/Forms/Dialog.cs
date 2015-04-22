@@ -55,13 +55,34 @@ namespace Eto.Forms
 		/// <summary>
 		/// Shows the dialog and blocks until the user closes the dialog
 		/// </summary>
+		/// <returns>The result of the modal dialog</returns>
+		public new T ShowModal()
+		{
+			base.ShowModal();
+			return Result;
+		}
+
+		/// <summary>
+		/// Shows the dialog modally asynchronously
+		/// </summary>
+		/// <returns>The result of the modal dialog</returns>
+		public new Task<T> ShowModalAsync()
+		{
+			return base.ShowModalAsync()
+				.ContinueWith(t => Result, TaskContinuationOptions.OnlyOnRanToCompletion);
+		}
+
+		/// <summary>
+		/// Shows the dialog and blocks until the user closes the dialog
+		/// </summary>
 		/// <remarks>
 		/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 		/// the dialog is closed.
 		/// </remarks>
 		/// <returns>The result of the modal dialog</returns>
 		/// <param name="owner">The owner control that is showing the form</param>
-		public new T ShowModal(Control owner = null)
+		[Obsolete("Since 2.1: Use ShowModal() instead and set the Owner property directly")]
+		public new T ShowModal(Control owner)
 		{
 			base.ShowModal(owner);
 			return Result;
@@ -75,7 +96,8 @@ namespace Eto.Forms
 		/// the dialog is closed.
 		/// </remarks>
 		/// <param name="owner">The owner control that is showing the form</param>
-		public new Task<T> ShowModalAsync(Control owner = null)
+		[Obsolete("Since 2.1: Use ShowModalAsync() instead and set the Owner property directly")]
+		public new Task<T> ShowModalAsync(Control owner)
 		{
 			return base.ShowModalAsync(owner)
 				.ContinueWith(t => Result, TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -151,10 +173,10 @@ namespace Eto.Forms
 		/// the dialog is closed.
 		/// </remarks>
 		/// <param name="owner">The owner control that is showing the form</param>
-		[Obsolete("Since 2.1: Use ShowModal() instead and set the owner directly")]
-		public void ShowModal(Control owner = null)
+		[Obsolete("Since 2.1: Use ShowModal() instead and set the Owner property directly")]
+		public void ShowModal(Control owner)
 		{
-			base.Owner = owner != null ? owner.ParentWindow : null;
+			Owner = owner != null ? owner.ParentWindow : null;
 
 			bool loaded = Loaded;
 			if (!loaded)
@@ -186,7 +208,7 @@ namespace Eto.Forms
 
 			Application.Instance.AddWindow(this);
 
-			Handler.ShowModal(this.Owner);
+			Handler.ShowModal(Owner);
 		}
 
 		/// <summary>
@@ -197,10 +219,10 @@ namespace Eto.Forms
 		/// the dialog is closed.
 		/// </remarks>
 		/// <param name="owner">The owner control that is showing the form</param>
-		[Obsolete("Since 2.1: Use ShowModalAsync() instead and set the owner directly")]
-		public Task ShowModalAsync(Control owner = null)
+		[Obsolete("Since 2.1: Use ShowModalAsync() instead and set the Owner property directly")]
+		public Task ShowModalAsync(Control owner)
 		{
-			base.Owner = owner != null ? owner.ParentWindow : null;
+			Owner = owner != null ? owner.ParentWindow : null;
 			
 			bool loaded = Loaded;
 			if (!loaded)
@@ -228,7 +250,7 @@ namespace Eto.Forms
 				OnLoadComplete(EventArgs.Empty);
 			}
 
-			return Handler.ShowModalAsync(this.Owner);
+			return Handler.ShowModalAsync(Owner);
 		}
 
 		/// <summary>

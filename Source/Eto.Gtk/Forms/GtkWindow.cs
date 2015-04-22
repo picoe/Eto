@@ -69,13 +69,6 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				base.MinimumSize = value;
-#if GTK2
-				Control.AllowShrink = value.Width <= 0 && value.Height <= 0;
-#endif
-				if (Widget.Loaded)
-				{
-					Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
-				}
 			}
 		}
 
@@ -93,19 +86,21 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return containerBox; }
 		}
+
+		public bool Resizable
+		{
+			get { return Control.Resizable; }
+			set
+			{
+				Control.Resizable = value;
 #if GTK2
-		public bool Resizable
-		{
-			get { return Control.Resizable; }
-			set { Control.Resizable = value; }
-		}
+				Control.AllowGrow = value;
 #else
-		public bool Resizable
-		{
-			get { return Control.Resizable; }
-			set { Control.Resizable = Control.HasResizeGrip = value; }
-		}
+				Control.HasResizeGrip = value;
 #endif
+			}
+		}
+
 		public bool Minimizable { get; set; }
 
 		public bool Maximizable { get; set; }
@@ -174,9 +169,15 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		void HandleControlShown(object sender, EventArgs e)
+		void HandleControlRealized(object sender, EventArgs e)
 		{
-			//Control.Shown -= HandleControlShown;
+			var allocation = Control.Allocation.Size;
+			// set initial minimum size
+			Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
+#if GTK2
+			Control.AllowShrink = false;
+#endif
+
 			if (initialSize != null)
 			{
 				var frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
@@ -187,8 +188,14 @@ namespace Eto.GtkSharp.Forms
 				Control.Resize(initialSize.Value.Width - diff.Width, initialSize.Value.Height - diff.Height);
 				initialSize = null;
 			}
-			// set initial minimum size
-			Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
+			else
+			{
+				// resize back to allocation
+				Control.Resize(allocation.Width, allocation.Height);
+			}
+
+			// only do this the first time
+			Control.Realized -= HandleControlRealized;
 		}
 
 		public override Size ClientSize
@@ -206,7 +213,7 @@ namespace Eto.GtkSharp.Forms
 				}
 				else
 				{
-					Control.SetSizeRequest(-1, -1);
+					//Control.SetSizeRequest(-1, -1);
 					containerBox.SetSizeRequest(value.Width, value.Height);
 					containerBox.Realized += HandleContainerRealized;
 				}
@@ -227,7 +234,8 @@ namespace Eto.GtkSharp.Forms
 			HandleEvent(Window.ClosingEvent); // to chain application termination events
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
 			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
-			Control.Shown += HandleControlShown;
+			Control.SetSizeRequest(-1, -1);
+			Control.Realized += HandleControlRealized;
 		}
 
 		public override void AttachEvent(string id)

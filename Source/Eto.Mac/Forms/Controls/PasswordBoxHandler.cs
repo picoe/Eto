@@ -102,6 +102,39 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.Editable = !value; }
 		}
 
+		static readonly object Text_Key = new object();
+
+		public override bool Enabled
+		{
+			get { return base.Enabled; }
+			set
+			{
+				if (value != Enabled)
+				{
+					if (!value)
+						Widget.Properties.Set(Text_Key, Text);
+					base.Enabled = value;
+					if (value)
+					{
+						Text = Widget.Properties.Get<string>(Text_Key);
+						Widget.Properties.Set<string>(Text_Key, null);
+					}
+
+				}
+			}
+		}
+
+		public override string Text
+		{
+			get { return Widget.Properties.Get<string>(Text_Key, base.Text); }
+			set
+			{
+				base.Text = value;
+				if (!Enabled)
+					Widget.Properties.Set(Text_Key, value);
+			}
+		}
+
 		public int MaxLength
 		{
 			get;

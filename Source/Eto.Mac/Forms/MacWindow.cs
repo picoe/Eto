@@ -81,7 +81,7 @@ namespace Eto.Mac.Forms
 			else
 			{
 				oldFrame = Frame;
-				base.Zoom(sender);
+				base.Zoom(sender ?? this); // null when double clicking the title bar, but xammac/monomac doesn't allow it
 				zoom = true;
 			}
 			Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
@@ -165,7 +165,7 @@ namespace Eto.Mac.Forms
 				var contentControl = Content.GetMacControl();
 				if (contentControl != null)
 				{
-					return contentControl.GetPreferredSize(availableSize);
+					return contentControl.GetPreferredSize(availableSize) + Padding.Size;
 				}
 			}
 			return new Size(200, 200);

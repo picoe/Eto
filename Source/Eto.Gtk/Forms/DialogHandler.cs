@@ -7,8 +7,6 @@ namespace Eto.GtkSharp.Forms
 {
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
-		static readonly object WasClosedKey = new object();
-
 		public class MyDialog : Gtk.Dialog
 		{
 			#if GTK3
@@ -33,6 +31,8 @@ namespace Eto.GtkSharp.Forms
 			Control.Resizable = false;
 			Control.HasResizeGrip = false;
 #endif
+			Control.KeyPressEvent += Control_KeyPressEvent;
+			Resizable = false;
 		}
 
 		protected override void Initialize()
@@ -48,15 +48,6 @@ namespace Eto.GtkSharp.Forms
 		}
 
 		public Button AbortButton { get; set; }
-
-		public override void Close()
-		{
-			if (CloseWindow())
-			{
-				WasClosed = true;
-				Control.Hide();
-			}
-		}
 
 		public Button DefaultButton { get; set; }
 
@@ -84,7 +75,6 @@ namespace Eto.GtkSharp.Forms
 					Control.Default = widget;
 				}
 			}
-			// TODO: implement cancel button somehow?
 
 			do
 			{
@@ -93,6 +83,33 @@ namespace Eto.GtkSharp.Forms
 
 			WasClosed = false;
 			Control.Hide();
+		}
+
+		static readonly object WasClosedKey = new object();
+
+		bool WasClosed
+		{
+			get { return Widget.Properties.Get<bool>(WasClosedKey); }
+			set { Widget.Properties.Set(WasClosedKey, value); }
+		}
+
+		public override void Close()
+		{
+			if (CloseWindow())
+			{
+				WasClosed = true;
+				Control.Hide();
+			}
+		}
+
+		[GLib.ConnectBefore]
+		void Control_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Escape && AbortButton != null)
+			{
+				AbortButton.PerformClick();
+				args.RetVal = true;
+			}
 		}
 
 		public Task ShowModalAsync(Control parent)
@@ -105,12 +122,6 @@ namespace Eto.GtkSharp.Forms
 			});
 
 			return tcs.Task;
-		}
-
-		bool WasClosed
-		{
-			get { return Widget.Properties.Get<bool>(WasClosedKey); }
-			set { Widget.Properties.Set(WasClosedKey, value); }
 		}
 	}
 }

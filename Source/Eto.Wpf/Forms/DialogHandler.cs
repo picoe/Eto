@@ -11,7 +11,6 @@ namespace Eto.Wpf.Forms
 	public class DialogHandler : WpfWindow<sw.Window, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button defaultButton;
-		Button abortButton;
 		Rectangle? parentWindowBounds;
 
 		public DialogHandler()
@@ -21,6 +20,7 @@ namespace Eto.Wpf.Forms
 			Resizable = false;
 			Minimizable = false;
 			Maximizable = false;
+			Control.PreviewKeyDown += Control_PreviewKeyDown;
 		}
 
 		public DialogDisplayMode DisplayMode { get; set; }
@@ -42,6 +42,15 @@ namespace Eto.Wpf.Forms
 			}
 			Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+		}
+
+		void Control_PreviewKeyDown(object sender, sw.Input.KeyEventArgs e)
+		{
+			if (e.Key == sw.Input.Key.Escape && AbortButton != null)
+			{
+				AbortButton.PerformClick();
+				e.Handled = true;
+			}
 		}
 
 		public Task ShowModalAsync(Control parent)
@@ -87,23 +96,6 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public Button AbortButton
-		{
-			get { return abortButton; }
-			set
-			{
-				if (abortButton != null)
-				{
-					var handler = (ButtonHandler)abortButton.Handler;
-					handler.Control.IsCancel = false;
-				}
-				abortButton = value;
-				if (abortButton != null)
-				{
-					var handler = (ButtonHandler)abortButton.Handler;
-					handler.Control.IsCancel = true;
-				}
-			}
-		}
+		public Button AbortButton { get; set; }
 	}
 }

@@ -6,10 +6,27 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class NumericUpDownHandler : GtkControl<Gtk.SpinButton, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
+		class EtoSpinButton : Gtk.SpinButton
+		{
+			public EtoSpinButton()
+				: base(double.MinValue, double.MaxValue, 1)
+			{
+			}
+
+			#if GTK3
+			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+			{
+				// gtk calculates size based on min/max value, so give sane defaults
+				natural_width = 120;
+				minimum_width = 0;
+			}
+			#endif
+		}
+
 		public NumericUpDownHandler()
 		{
-			Control = new Gtk.SpinButton(double.MinValue, double.MaxValue, 1);
-			Control.WidthRequest = 80;
+			Control = new EtoSpinButton();
+			Control.WidthRequest = 120;
 			Control.Wrap = true;
 			Control.Adjustment.PageIncrement = 1;
 			Value = 0;

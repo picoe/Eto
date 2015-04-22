@@ -19,6 +19,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox minimizableCheckBox;
 		CheckBox showInTaskBarCheckBox;
 		CheckBox topMostCheckBox;
+		CheckBox setOwnerCheckBox;
 
 		static readonly object CancelCloseKey = new object();
 		public bool CancelClose
@@ -37,6 +38,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
 			layout.AddSeparateRow(null, CreateInitialLocationControls(), null);
 			layout.AddSeparateRow(null, CreateClientSizeControls(), null);
+			layout.AddSeparateRow(null, CreateMinimumSizeControls(), null);
 			layout.AddSeparateRow(null, CreateChildWindowButton(), null);
 			layout.AddSeparateRow(null, BringToFrontButton(), null);
 			layout.Add(null);
@@ -53,7 +55,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control CreateTypeControls()
 		{
-			return typeRadio = new RadioButtonList
+			typeRadio = new RadioButtonList
 			{
 				Items =
 				{ 
@@ -61,6 +63,14 @@ namespace Eto.Test.Sections.Behaviors
 					new ListItem { Text = "Dialog (modal)", Key = "dialog" }
 				},
 				SelectedKey = "form"
+			};
+
+			setOwnerCheckBox = new CheckBox { Text = "Set Owner", Checked = true };
+
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Items = { typeRadio, setOwnerCheckBox }
 			};
 		}
 
@@ -224,11 +234,58 @@ namespace Eto.Test.Sections.Behaviors
 
 		}
 
+		Size initialMinimumSize = new Size(300, 300);
+		bool setInitialMinimumSize;
+
+		Control CreateMinimumSizeControls()
+		{
+			var setMinimumSize = new CheckBox { Text = "MinimumSize" };
+			setMinimumSize.CheckedBinding.Bind(() => setInitialMinimumSize, v =>
+			{
+				setInitialMinimumSize = v ?? false;
+				if (v == true && child != null)
+					child.MinimumSize = initialMinimumSize;
+			});
+
+			var width = new NumericUpDown();
+			width.Bind(c => c.Enabled, setMinimumSize, c => c.Checked);
+			width.ValueBinding.Bind(() => initialMinimumSize.Width, v =>
+			{
+				initialMinimumSize.Width = (int)v;
+				if (child != null)
+					child.MinimumSize = initialMinimumSize;
+			});
+
+			var height = new NumericUpDown();
+			height.Bind(c => c.Enabled, setMinimumSize, c => c.Checked);
+			height.ValueBinding.Bind(() => initialMinimumSize.Height, v => initialMinimumSize.Height = (int)v);
+
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Items = 
+				{
+					setMinimumSize,
+					width,
+					height
+				}
+				};
+
+		}
+
 		void CreateChild()
 		{
 			if (child != null)
 				child.Close();
 			Action show;
+
+			var layout = new DynamicLayout();
+			layout.Add(null);
+			layout.AddCentered(TestChangeSizeButton());
+			layout.AddCentered(TestChangeClientSizeButton());
+			layout.AddCentered(SendToBackButton());
+			layout.AddCentered(CreateCancelClose());
+			layout.AddCentered(CloseButton());
 
 			if (typeRadio.SelectedKey == "form")
 			{
@@ -239,17 +296,19 @@ namespace Eto.Test.Sections.Behaviors
 			else
 			{
 				var dialog = new Dialog();
+
+				dialog.DefaultButton = new Button { Text = "Default" };
+				dialog.DefaultButton.Click += (sender, e) => Log.Write(dialog, "Default button clicked");
+
+				dialog.AbortButton = new Button { Text = "Abort" };
+				dialog.AbortButton.Click += (sender, e) => Log.Write(dialog, "Abort button clicked");
+
+				layout.AddSeparateRow(null, dialog.DefaultButton, dialog.AbortButton, null);
+
 				child = dialog;
-				show = () => dialog.ShowModal();
+				show = dialog.ShowModal;
 			}
 
-			var layout = new DynamicLayout();
-			layout.Add(null);
-			layout.AddCentered(TestChangeSizeButton());
-			layout.AddCentered(TestChangeClientSizeButton());
-			layout.AddCentered(SendToBackButton());
-			layout.AddCentered(CreateCancelClose());
-			layout.AddCentered(CloseButton());
 			layout.Add(null);
 			child.Content = layout;
 
@@ -275,10 +334,10 @@ namespace Eto.Test.Sections.Behaviors
 				child.Location = initialLocation;
 			if (setInitialClientSize)
 				child.ClientSize = initialClientSize;
-			if (typeRadio.SelectedKey != "form")
-			{
+			if (setInitialMinimumSize)
+				child.MinimumSize = initialMinimumSize;
+			if (setOwnerCheckBox.Checked ?? false)
 				child.Owner = this.ParentWindow;
-			}
 			bringToFrontButton.Enabled = true;
 			show();
 			// show that the child is now referenced
@@ -310,6 +369,7 @@ namespace Eto.Test.Sections.Behaviors
 			if (CancelClose)
 			{
 				e.Cancel = true;
+				Log.Write(child, "Cancelled Close");
 			}
 		}
 

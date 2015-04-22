@@ -18,9 +18,6 @@ namespace Eto.Test.Mac
 	{
 		static void Main (string[] args)
 		{
-#if DEBUG && !XAMMAC2
-			Debug.Listeners.Add (new ConsoleTraceListener ());
-#endif
 			AddStyles ();
 			
 			var generator = new Eto.Mac.Platform ();

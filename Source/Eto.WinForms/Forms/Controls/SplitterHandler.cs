@@ -11,6 +11,8 @@ namespace Eto.WinForms.Forms.Controls
 		Control panel1;
 		Control panel2;
 		int? position;
+		double relative = double.NaN;
+		int suppressSplitterMoved;
 
 		public bool RecurseToChildren { get { return true; } }
 
@@ -36,23 +38,82 @@ namespace Eto.WinForms.Forms.Controls
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var size = new sd.Size();
-				var size1 = Handler.panel1.GetPreferredSize();
-				var size2 = Handler.panel2.GetPreferredSize();
-				if (Orientation == swf.Orientation.Vertical)
-				{
-					size1.Width = Handler.position ?? size1.Width;
-					size.Width = size1.Width + size2.Width + SplitterWidth;
-					size.Height = Math.Max(size1.Height, size2.Height);
-				}
-				else
-				{
-					size1.Height = Handler.position ?? size1.Height;
-					size.Height = size1.Height + size2.Height + SplitterWidth;
-					size.Width = Math.Max(size1.Width, size2.Width);
-				}
-				return size;
+				return Handler._prefer();
 			}
+
+			// corrections (when too small, or not fixed)
+			protected override void OnLayout(swf.LayoutEventArgs e)
+			{
+				var it = Handler;
+				if (it == null || double.IsNaN(it.relative))
+				{
+					base.OnLayout(e);
+					return;
+				}
+				it.suppressSplitterMoved++;
+				base.OnLayout(e);
+				it.SetRelative(it.relative);
+				it.suppressSplitterMoved--;
+			}
+
+		}
+
+		private sd.Size _prefer()
+		{
+			var size = new sd.Size();
+			var size1 = panel1 == null ? Size.Empty : panel1.GetPreferredSize();
+			var size2 = panel2 == null ? Size.Empty : panel2.GetPreferredSize();
+			if (Orientation == SplitterOrientation.Horizontal)
+			{
+				if (position.HasValue)
+					size1.Width = position.Value;
+				else if (!double.IsNaN(relative))
+				{
+					if (fixedPanel == SplitterFixedPanel.Panel1)
+						size1.Width = (int)Math.Round(relative);
+					else if (fixedPanel == SplitterFixedPanel.Panel2)
+						size2.Width = (int)Math.Round(relative);
+					else if (relative <= 0.0)
+						size1.Width = 0;
+					else if (relative >= 1.0)
+						size2.Width = 0;
+					else
+					{
+						// both get at least the preferred size
+						size1.Width = (int)Math.Round(Math.Max(
+							size1.Width/relative, size2.Width/(1-relative)));
+						size2.Width = 0;
+					}
+				}
+				size.Width = size1.Width + size2.Width + SplitterWidth;
+				size.Height = Math.Max(size1.Height, size2.Height);
+			}
+			else
+			{
+				if (position.HasValue)
+					size1.Height = position.Value;
+				else if (!double.IsNaN(relative))
+				{
+					if (fixedPanel == SplitterFixedPanel.Panel1)
+						size1.Height = (int)Math.Round(relative);
+					else if (fixedPanel == SplitterFixedPanel.Panel2)
+						size2.Height = (int)Math.Round(relative);
+					else if (relative <= 0.0)
+						size1.Height = 0;
+					else if (relative >= 1.0)
+						size2.Height = 0;
+					else
+					{
+						// both get at least the preferred size
+						size1.Height = (int)Math.Round(Math.Max(
+							size1.Height/relative, size2.Height/(1-relative)));
+						size2.Height = 0;
+					}
+				}
+				size.Height = size1.Height + size2.Height + SplitterWidth;
+				size.Width = Math.Max(size1.Width, size2.Width);
+			}
+			return size;
 		}
 
 		public SplitterHandler()
@@ -72,15 +133,23 @@ namespace Eto.WinForms.Forms.Controls
 			};
 		}
 
+		void HookEvents()
+		{
+			Control.SplitterMoved += (sender, e) =>
+			{
+				if (Widget.ParentWindow == null || !Widget.Loaded || suppressSplitterMoved > 0)
+					return;
+				// keep track of the desired position (for removing/re-adding/resizing the control)
+				UpdateRelative();
+				Callback.OnPositionChanged(Widget, EventArgs.Empty);
+			};
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case Splitter.PositionChangedEvent:
-					// Hook SplitterMoving, not SplitterMoved,
-					// because the latter fires even when the
-					// splitter distance is changed programmatically.
-					//Control.SplitterMoving += (s, e) => Callback.OnPositionChanged(Widget, e);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -95,28 +164,103 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				if (value != position)
 				{
+					position = value;
+					relative = double.NaN;
 					suppressSplitterMoved++;
 					if (Control.IsHandleCreated)
 						SetPosition(value);
 					suppressSplitterMoved--;
-					position = value;
 					Callback.OnPositionChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
 
-		void SetPosition(int newPosition)
+		public int SplitterWidth
 		{
-			position = newPosition;
-			if (Control.Orientation == swf.Orientation.Vertical)
+			get { return Control.SplitterWidth; }
+			set { Control.SplitterWidth = value; }
+		}
+
+		int GetAvailableSize(bool desired = false)
+		{
+			if (desired)
 			{
-				if (Control.Width > 1)
-					Control.SplitterDistance = Math.Max(0, Math.Min(Control.Width - Control.Panel2MinSize - 1, newPosition));
+				var size = UserDesiredSize;
+				var pick = Orientation == SplitterOrientation.Horizontal ?
+					size.Width : size.Height;
+				if (pick >= 0)
+					return pick - Control.SplitterWidth;
 			}
+			return (Orientation == SplitterOrientation.Horizontal ?
+				Control.Width : Control.Height) - Control.SplitterWidth;
+		}
+
+		void UpdateRelative()
+		{
+			var pos = Position;
+			if (fixedPanel == SplitterFixedPanel.Panel1)
+				relative = pos;
 			else
 			{
-				if (Control.Height > 1)
-					Control.SplitterDistance = Math.Max(0, Math.Min(Control.Height - Control.Panel2MinSize - 1, newPosition));
+				var sz = GetAvailableSize();
+				if (fixedPanel == SplitterFixedPanel.Panel2)
+					relative = sz <= 0 ? 0 : sz - pos;
+				else
+					relative = sz <= 0 ? 0.5 : pos / (double)sz;
+			}
+		}
+
+		public double RelativePosition
+		{
+			get
+			{
+				if (double.IsNaN(relative))
+					UpdateRelative();
+				return relative;
+
+			}
+			set
+			{
+				if (relative == value)
+					return;
+				relative = value;
+				position = null;
+				suppressSplitterMoved++;
+				if (Control.IsHandleCreated)
+					SetRelative(value);
+				suppressSplitterMoved--;
+				Callback.OnPositionChanged(Widget, EventArgs.Empty);
+			}
+		}
+
+		void SetPosition(int newPosition)
+		{
+			position = null;
+			var size = GetAvailableSize();
+			relative = fixedPanel == SplitterFixedPanel.Panel1 ? Math.Max(0, newPosition)
+				: fixedPanel == SplitterFixedPanel.Panel2 ? Math.Max(0, size - newPosition)
+				: size <= 0 ? 0.5 : Math.Max(0.0, Math.Min(1.0, newPosition / (double)size));
+			if (size > 0)
+				Control.SplitterDistance = Math.Max(0, Math.Min(size, newPosition));
+		}
+		void SetRelative(double newRelative)
+		{
+			position = null;
+			relative = newRelative;
+			var size = GetAvailableSize();
+			if (size <= 0)
+				return;
+			switch (fixedPanel)
+			{
+				case SplitterFixedPanel.Panel1:
+					Control.SplitterDistance = Math.Max(0, Math.Min(size, (int)Math.Round(relative)));
+					break;
+				case SplitterFixedPanel.Panel2:
+					Control.SplitterDistance = Math.Max(0, Math.Min(size, size - (int)Math.Round(relative)));
+					break;
+				case SplitterFixedPanel.None:
+					Control.SplitterDistance = Math.Max(0, Math.Min(size, (int)Math.Round(size * relative)));
+					break;
 			}
 		}
 
@@ -134,79 +278,61 @@ namespace Eto.WinForms.Forms.Controls
 			suppressSplitterMoved--;
 		}
 
-		int suppressSplitterMoved;
-		void HookEvents()
-		{
-			Control.SplitterMoved += (sender, e) =>
-			{
-				if (Widget.ParentWindow != null)
-				{
-					// keep track of the desired position (for removing/re-adding/resizing the control)
-					if (Widget.Loaded && suppressSplitterMoved == 0)
-					{
-						position = Control.SplitterDistance;
-						Callback.OnPositionChanged(Widget, EventArgs.Empty);
-					}
-				}
-			};
-
-			Size? oldSize = null;
-			Control.SizeChanged += (sender, e) =>
-			{
-				// SplitterDistance can only be at most width or height, but if the control's width is smaller than 
-				// desired position to start then gets a layout pass, try to set to the preferred position when resized
-				if (position != null && position.Value != Control.SplitterDistance)
-				{
-					suppressSplitterMoved++;
-					switch (FixedPanel)
-					{
-						case SplitterFixedPanel.Panel1:
-							SetPosition(position.Value);
-							break;
-						case SplitterFixedPanel.Panel2:
-							var size = Size;
-							if (oldSize != null)
-							{
-								position -= Orientation == SplitterOrientation.Vertical ? (oldSize.Value.Height - size.Height) : (oldSize.Value.Width - size.Width);
-								SetPosition(position.Value);
-							}
-							oldSize = size;
-							break;
-					}
-					suppressSplitterMoved--;
-				}
-			};
-		}
-		
 		void SetInitialPosition()
 		{
 			suppressSplitterMoved++;
-			Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsHandler()).InternalVisible;
-			Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
-			if (position != null)
+			try
 			{
-				SetPosition(position.Value);
-			}
-			else
-			{
-				switch (FixedPanel)
+				Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsHandler()).InternalVisible;
+				Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
+				if (position != null)
 				{
-					case SplitterFixedPanel.Panel1:
-						var size1 = panel1.GetPreferredSize();
-						SetPosition(Control.Orientation == swf.Orientation.Vertical ? size1.Width : size1.Height);
-						break;
-					case SplitterFixedPanel.Panel2:
-						var size2 = panel2.GetPreferredSize();
-						int pos;
-						if (Control.Orientation == swf.Orientation.Vertical)
-							pos = Control.Width - size2.Width;
-						else
-							pos = Control.Height - size2.Height;
-						SetPosition(pos);
-						break;
+					var pos = position.Value;
+					if (fixedPanel != SplitterFixedPanel.Panel1)
+					{
+						var size = GetAvailableSize(false);
+						var want = GetAvailableSize(true);
+						if (size != want)
+						{
+							if (FixedPanel == SplitterFixedPanel.Panel2)
+								pos += size - want;
+							else
+							{
+								SetRelative(pos / (double)want);
+								return;
+							}
+						}
+
+					}
+					SetPosition(pos);
+				}
+				else if (!double.IsNaN(relative))
+				{
+					SetRelative(relative);
+				}
+				else if (fixedPanel == SplitterFixedPanel.Panel1)
+				{
+					var size1 = panel1.GetPreferredSize();
+					SetRelative(Control.Orientation == swf.Orientation.Vertical ? size1.Width : size1.Height);
+				}
+				else if (fixedPanel == SplitterFixedPanel.Panel2)
+				{
+					var size2 = panel2.GetPreferredSize();
+					SetRelative(Control.Orientation == swf.Orientation.Vertical ? size2.Width : size2.Height);
+				}
+				else
+				{
+					var size1 = panel1.GetPreferredSize();
+					var size2 = panel2.GetPreferredSize();
+					SetRelative(Control.Orientation == swf.Orientation.Vertical
+						? size1.Width / (double)(size1.Width + size2.Width)
+						: size1.Height / (double)(size1.Height + size2.Height));
 				}
 			}
-			suppressSplitterMoved--;
+			finally
+			{
+				suppressSplitterMoved--;
+			}
 		}
 
 		SplitterFixedPanel fixedPanel;
