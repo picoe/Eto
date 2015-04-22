@@ -14,37 +14,10 @@ namespace Eto.Wpf.Forms
 		where TCallback : Panel.ICallback
 	{
 		Control content;
-		Eto.Forms.ToolBar toolBar;
-		swc.ContentControl toolBarHolder;
-		swc.DockPanel contentHolder;
 		readonly swc.Border border;
 		Size? clientSize;
 
-		protected WpfPanel()
-		{
-			border = new swc.Border
-			{
-				SnapsToDevicePixels = true,
-				Focusable = false,
-			};
-
-			toolBarHolder = new swc.ContentControl
-			{
-				IsTabStop = false
-			};
-			swc.DockPanel.SetDock(toolBarHolder, swc.Dock.Top);
-
-			contentHolder = new swc.DockPanel();
-			contentHolder.Children.Add(toolBarHolder);
-			contentHolder.Children.Add(border);
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-
-			SetContainerContent(contentHolder);
-		}
+		protected virtual bool UseContentSize { get { return true; } }
 
 		public override Size ClientSize
 		{
@@ -77,11 +50,6 @@ namespace Eto.Wpf.Forms
 			{
 				contentHandler.SetScale(xscale, yscale);
 			}
-		}
-
-		protected virtual bool UseContentSize
-		{
-			get { return true; }
 		}
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
@@ -119,6 +87,21 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		protected WpfPanel()
+		{
+			border = new swc.Border
+			{
+				SnapsToDevicePixels = true,
+				Focusable = false,
+			};
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			SetContainerContent(border);
+		}
+
 		public Padding Padding
 		{
 			get { return border.Padding.ToEto(); }
@@ -144,16 +127,6 @@ namespace Eto.Wpf.Forms
 				else
 					border.Child = null;
 				UpdatePreferredSize();
-			}
-		}
-
-		public Eto.Forms.ToolBar ToolBar
-		{
-			get { return toolBar; }
-			set
-			{
-				toolBar = value;
-				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
 			}
 		}
 

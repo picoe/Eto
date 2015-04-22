@@ -14,7 +14,7 @@ namespace Eto.Forms
     /// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
     /// <license type="BSD-3">See LICENSE for full terms</license>
 	[ContentProperty("Content")]
-    [Handler(typeof(ToolBarView.IHandler))]
+	[Handler(typeof(ToolBarView.IHandler))]
 	public class ToolBarView : Panel
 	{
         internal new IHandler Handler { get { return (IHandler)base.Handler; } }
@@ -30,9 +30,23 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.ToolBarView"/> class with the specified handler.
 		/// </summary>
 		/// <param name="handler">Handler to use for the implementation of the control.</param>
-        protected ToolBarView(IHandler handler)
+		protected ToolBarView(IHandler handler)
 			: base(handler)
 		{
+		}
+
+		/// <summary>
+		/// Gets or sets the docking position for the <see cref="ToolBarView"/>.
+		/// </summary>
+		/// <remarks>
+		/// Most platforms will not respect this, and is usually only necessary for constrained devices like iOS and Android.
+		/// Each platform may have a different default docking mode, depending on the type of device.
+		/// </remarks>
+		/// <value>The dock hint.</value>
+		public DockPosition Dock
+		{
+			get { return Handler.Dock; }
+			set { Handler.Dock = value; }
 		}
 
 		/// <summary>
@@ -49,6 +63,15 @@ namespace Eto.Forms
         /// </summary>
 		public new interface IHandler : Panel.IHandler
         {
+			/// <summary>
+			/// Gets or sets the docking position for the <see cref="ToolBarView"/>.
+			/// </summary>
+			/// <remarks>
+			/// Some platforms will not respect this, and is usually only necessary for constrained devices like iOS and Android.
+			/// Each platform may have a different default docking mode, depending on the type of device.
+			/// </remarks>
+			/// <value>The dock hint.</value>
+			DockPosition Dock { get; set; }
         }
     }
 }

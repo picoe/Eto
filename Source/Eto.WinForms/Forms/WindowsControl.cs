@@ -12,37 +12,56 @@ namespace Eto.WinForms.Forms
 {
 	public interface IWindowsControl
 	{
-		void BeforeAddControl(bool top = true);
-
-		Control.ICallback Callback { get; }
-
-		swf.Control ContainerControl { get; }
+		bool InternalVisible { get; }
 
 		swf.DockStyle DockStyle { get; }
 
-		Size GetPreferredSize(Size availableSize, bool useCache = false);
-
-		bool InternalVisible { get; }
+		swf.Control ContainerControl { get; }
 
 		Size ParentMinimumSize { get; set; }
 
-		void SetFilledContent();
+		Size GetPreferredSize(Size availableSize, bool useCache = false);
 
 		bool SetMinimumSize(bool updateParent = false, bool useCache = false);
 
 		void SetScale(bool xscale, bool yscale);
-
-		bool ShouldBubbleEvent(swf.Message msg);
 
 		bool ShouldCaptureMouse { get; }
 
 		bool XScale { get; }
 
 		bool YScale { get; }
+
+		Control.ICallback Callback { get; }
+
+		void BeforeAddControl(bool top = true);
+
+		bool ShouldBubbleEvent(swf.Message msg);
+
+		void SetFilledContent();
 	}
 
 	public static class WindowsControlExtensions
 	{
+		public static IWindowsControl GetWindowsHandler(this Control control)
+		{
+			if (control == null)
+				return null;
+
+			var handler = control.Handler as IWindowsControl;
+			if (handler != null)
+				return handler;
+
+			var controlObject = control.ControlObject as Control;
+			return controlObject != null ? controlObject.GetWindowsHandler() : null;
+
+		}
+
+		public static Size GetPreferredSize(this Control control)
+		{
+			var handler = control.GetWindowsHandler();
+			return handler != null ? handler.GetPreferredSize(Size.Empty) : Size.Empty;
+		}
 
 		public static swf.Control GetContainerControl(this Control control)
 		{
@@ -60,26 +79,6 @@ namespace Eto.WinForms.Forms
 			return control.ControlObject as swf.Control;
 		}
 
-		public static Size GetPreferredSize(this Control control)
-		{
-			var handler = control.GetWindowsHandler();
-			return handler != null ? handler.GetPreferredSize(Size.Empty) : Size.Empty;
-		}
-
-		public static IWindowsControl GetWindowsHandler(this Control control)
-		{
-			if (control == null)
-				return null;
-
-			var handler = control.Handler as IWindowsControl;
-			if (handler != null)
-				return handler;
-
-			var controlObject = control.ControlObject as Control;
-			return controlObject != null ? controlObject.GetWindowsHandler() : null;
-
-		}
-
 		public static void SetScale(this Control control, bool xscale, bool yscale)
 		{
 			var handler = control.GetWindowsHandler();
@@ -94,30 +93,9 @@ namespace Eto.WinForms.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
-		Size? cachedDefaultSize;
-		ControlDock dock = ControlDock.Top;
 		Size parentMinimumSize;
 
-		protected void ClearCachedDefaultSize()
-		{
-			cachedDefaultSize = null;
-		}
-
-		public virtual Size? DefaultSize
-		{
-			get { return null; }
-		}
-
-		public ControlDock Dock
-		{
-			get { return dock; }
-			set { dock = value; }
-		}
-
-		public override IntPtr NativeHandle
-		{
-			get { return Control.Handle; }
-		}
+		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
 		Control.ICallback IWindowsControl.Callback { get { return Callback; } }
 
@@ -125,6 +103,14 @@ namespace Eto.WinForms.Forms
 
 		public bool YScale { get; set; }
 
+		public virtual Size? DefaultSize { get { return null; } }
+
+		protected void ClearCachedDefaultSize()
+		{
+			cachedDefaultSize = null;
+		}
+
+		Size? cachedDefaultSize;
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
 			var size = UserDesiredSize;
@@ -465,12 +451,12 @@ namespace Eto.WinForms.Forms
 			if (Widget.Loaded && Control.IsHandleCreated)
 				Control.Focus();
 			else
-                Widget.LoadComplete += Widget_LoadComplete;
+				Widget.LoadComplete += Widget_LoadComplete;
 		}
 
-        void Widget_LoadComplete(object sender, EventArgs e)
-        {
-            Widget.LoadComplete -= Widget_LoadComplete;
+		void Widget_LoadComplete(object sender, EventArgs e)
+		{
+			Widget.LoadComplete -= Widget_LoadComplete;
 			Control.Focus();
 		}
 
@@ -646,7 +632,7 @@ namespace Eto.WinForms.Forms
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
-            return !Control.IsDisposed ? Control.PointToClient(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
+			return !Control.IsDisposed ? Control.PointToClient(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
 		}
 
 		public virtual PointF PointToScreen(PointF point)

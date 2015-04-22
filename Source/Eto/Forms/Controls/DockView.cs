@@ -5,7 +5,7 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Control to display a panel containing a single <see cref="Panel.Content"/> control
+	/// Control to display a dock view containing a multiple controls.
 	/// </summary>
 	/// <remarks>
 	/// This can be instantiated directly to provide padding around a control, and is also the base of other containers that have
@@ -19,7 +19,7 @@ namespace Eto.Forms
 	{
 		internal new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		DockViewCollection items;
+		DockViewItemCollection items;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.DockView"/> class.
@@ -38,6 +38,20 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the docking position for the <see cref="DockView"/>.
+		/// </summary>
+		/// <remarks>
+		/// Most platforms will not respect this, and is usually only necessary for constrained devices like iOS and Android.
+		/// Each platform may have a different default docking mode, depending on the type of device.
+		/// </remarks>
+		/// <value>The dock hint.</value>
+		public DockPosition Dock
+		{
+			get { return Handler.Dock; }
+			set { Handler.Dock = value; }
+		}
+
+		/// <summary>
 		/// Gets a value indicating the <see cref="DockView"/> is supported in the platform
 		/// </summary>
 		/// <value><c>true</c> if supported; otherwise, <c>false</c>.</value>
@@ -50,11 +64,11 @@ namespace Eto.Forms
 		/// Gets the collection of controls in the <see cref="DockView"/>.
 		/// </summary>
 		/// <value>The controls collection.</value>
-		public DockViewCollection Items
+		public DockViewItemCollection Items
 		{
 			get
 			{
-				return items ?? (items = new DockViewCollection(this));
+				return items ?? (items = new DockViewItemCollection(this));
 			}
 		}
 
@@ -66,9 +80,9 @@ namespace Eto.Forms
 			/// <summary>
 			/// Adds a control at the specified index to the <see cref="DockView"/>.
 			/// </summary>
-			/// <param name="control">Control to add.</param>
+			/// <param name="item"><see cref="DockViewItem"/> to add.</param>
 			/// <param name="index">Index in the DockView to add the control.</param>
-			void AddControl(Control control, int index);
+			void AddItem(DockViewItem item, int index);
 
 			/// <summary>
 			/// Clears all controls from the <see cref="DockView"/>.
@@ -76,10 +90,20 @@ namespace Eto.Forms
 			void Clear();
 
 			/// <summary>
+			/// Gets or sets the docking position for the <see cref="DockView"/>.
+			/// </summary>
+			/// <remarks>
+			/// Some platforms will not respect this, and is usually only necessary for constrained devices like iOS and Android.
+			/// Each platform may have a different default docking mode, depending on the type of device.
+			/// </remarks>
+			/// <value>The dock hint.</value>
+			DockPosition Dock { get; set; }
+
+			/// <summary>
 			/// Removes the specified control from the <see cref="DockView"/>.
 			/// </summary>
-			/// <param name="control">Control to remove.</param>
-			void RemoveControl(Control control);
+			/// <param name="item"><see cref="DockViewItem"/> to remove.</param>
+			void RemoveItem(DockViewItem item);
 		}
 	}
 }

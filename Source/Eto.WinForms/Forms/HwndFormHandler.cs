@@ -59,18 +59,6 @@ namespace Eto.WinForms.Forms
       Control = hWnd;
     }
 
-	public ControlDock Dock
-	{
-		get
-		{
-			throw new NotImplementedException();
-		}
-		set
-		{
-			throw new NotImplementedException();
-		}
-	}
-
     public void Show()
     {
       throw new NotImplementedException();

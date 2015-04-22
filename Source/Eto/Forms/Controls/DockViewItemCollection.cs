@@ -6,19 +6,19 @@ using System.Linq;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// DockView item collection.
+	/// Contains items for the <see cref="DockView"/>.
 	/// </summary>
 	/// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class DockViewCollection : Collection<Control>
+	public class DockViewItemCollection : Collection<DockViewItem>
 	{
 		readonly DockView parent;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DockViewCollection"/> class.
+		/// Initializes a new instance of the <see cref="Eto.Forms.DockViewItemCollection"/> class.
 		/// </summary>
 		/// <param name="parent">Parent of the control.</param>
-		protected internal DockViewCollection(DockView parent)
+		protected internal DockViewItemCollection(DockView parent)
 		{
 			this.parent = parent;
 		}
@@ -27,27 +27,27 @@ namespace Eto.Forms
 		/// Adds the specified item given its order.
 		/// </summary>
 		/// <remarks>
-		/// This will add the item into the collection based on its <see cref="Control.Order"/>, keeping
+		/// This will add the item into the collection based on its <see cref="DockViewItem.Order"/>, keeping
 		/// all items in their order.
 		/// </remarks>
-		/// <param name="control">Control to add.</param>
-		public new void Add(Control control)
+		/// <param name="item"><see cref="DockViewItem"/> to add.</param>
+		public new void Add(DockViewItem item)
 		{
-			var previousItem = this.Where(c => c.Order <= control.Order).OrderBy(c => c.Order).LastOrDefault();
+			var previousItem = this.Where(i => i.Order <= item.Order).OrderBy(i => i.Order).LastOrDefault();
 			var previous = this.IndexOf(previousItem);
 
-			Insert(previous + 1, control);
+			Insert(previous + 1, item);
 		}
 
 		/// <summary>
 		/// Adds the specified controls to the collection.
 		/// </summary>
-		/// <param name="controls">Control to add.</param>
-		public void AddRange(IEnumerable<Control> controls)
+		/// <param name="items"><see cref="DockViewItem"/>s to add.</param>
+		public void AddRange(IEnumerable<DockViewItem> items)
 		{
-			foreach (var control in controls)
+			foreach (var item in items)
 			{
-				Add(control);
+				Add(item);
 			}
 		}
 
@@ -64,22 +64,22 @@ namespace Eto.Forms
 		/// Called when a control is inserted.
 		/// </summary>
 		/// <param name="index">Index of the control to insert.</param>
-		/// <param name="control">Control to insert.</param>
-		protected override void InsertItem(int index, Control control)
+		/// <param name="item"><see cref="DockViewItem"/> to insert.</param>
+		protected override void InsertItem(int index, DockViewItem item)
 		{
-			base.InsertItem(index, control);
-			parent.Handler.AddControl(control, index);
+			base.InsertItem(index, item);
+			parent.Handler.AddItem(item, index);
 		}
 
 		/// <summary>
 		/// Called when a control is removed from the collection.
 		/// </summary>
-		/// <param name="index">Index of the control being removed.</param>
+		/// <param name="index">Index of the <see cref="DockViewItem"/> being removed.</param>
 		protected override void RemoveItem(int index)
 		{
-			var control = this[index];
+			var item = this[index];
 			base.RemoveItem(index);
-			parent.Handler.RemoveControl(control);
+			parent.Handler.RemoveItem(item);
 		}
 	}
 }

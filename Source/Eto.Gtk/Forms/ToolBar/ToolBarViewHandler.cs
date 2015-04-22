@@ -8,6 +8,7 @@ namespace Eto.GtkSharp.Forms.ToolBar
 	{
 		Control content;
 		ContextMenu contextMenu;
+		DockPosition dock = DockPosition.None;
 		Size minimumSize;
 		
 		public ToolBarViewHandler()
@@ -88,6 +89,12 @@ namespace Eto.GtkSharp.Forms.ToolBar
 				}
 			}
 #endif
+		}
+
+		public DockPosition Dock
+		{
+			get { return dock; }
+			set { dock = value; }
 		}
 
 		public virtual Size MinimumSize

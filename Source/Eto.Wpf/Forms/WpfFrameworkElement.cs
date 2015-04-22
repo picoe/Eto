@@ -76,7 +76,6 @@ namespace Eto.Wpf.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
-		ControlDock dock = ControlDock.Top;
 		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
 		Cursor cursor;
@@ -85,12 +84,6 @@ namespace Eto.Wpf.Forms
 		bool isMouseCaptured;
 		public bool XScale { get; private set; }
 		public bool YScale { get; private set; }
-
-		public ControlDock Dock
-		{
-			get { return dock; }
-			set { dock = value; }
-		}
 
 		public override IntPtr NativeHandle
 		{
@@ -538,10 +531,6 @@ namespace Eto.Wpf.Forms
 				if (Widget.Parent == null)
 					return Point.Empty;
 				return Control.TranslatePoint(new sw.Point(0, 0), Widget.Parent.GetContainerControl()).ToEtoPoint();
-			}
-			set
-			{
-				Widget.Location = value;
 			}
 		}
 	}

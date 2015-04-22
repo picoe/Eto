@@ -9,6 +9,7 @@ namespace Eto.WinForms.Forms.ToolBar
 	public class ToolBarViewHandler : WindowsControl<swf.ToolStrip, ToolBarView, ToolBarView.ICallback>, ToolBarView.IHandler
 	{
 		Control content;
+		DockPosition dock = DockPosition.None;
 		static readonly object minimumSizeKey = new object();
 
 		public ToolBarViewHandler()
@@ -55,6 +56,12 @@ namespace Eto.WinForms.Forms.ToolBar
 				if (Widget.Loaded)
 					ResumeLayout();
 			}
+		}
+
+		public DockPosition Dock
+		{
+			get { return dock; }
+			set { dock = value; }
 		}
 
 		public Size MinimumSize

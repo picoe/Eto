@@ -74,6 +74,7 @@
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
     <Compile Include="Forms\Controls\DockViewHandler.cs" />
+    <Compile Include="Forms\Controls\DockViewItemHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="WinConversions.cs" />
     <Compile Include="CustomControls\ExtendedDateTimePicker.cs">

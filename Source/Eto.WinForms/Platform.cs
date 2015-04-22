@@ -69,6 +69,7 @@ namespace Eto.WinForms
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<DockView.IHandler>(() => new DockViewHandler());
+			p.Add<DockViewItem.IHandler>(() => new DockViewItemHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
 			p.Add<GridView.IHandler>(() => new GridViewHandler());

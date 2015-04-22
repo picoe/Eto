@@ -15,6 +15,7 @@ namespace Eto.WinRT.Forms.ToolBar
 	{
 		Control content;
 		ContextMenu contextMenu;
+		DockPosition dock = DockPosition.None;
 		static readonly object minimumSizeKey = new object();
 
 		public ToolBarViewHandler()
@@ -83,7 +84,13 @@ namespace Eto.WinRT.Forms.ToolBar
 #endif
 			}
 		}
-		
+
+		public DockPosition Dock
+		{
+			get { return dock; }
+			set { dock = value; }
+		}
+
 		public Size MinimumSize
 		{
 			get { return Widget.Properties.Get<Size?>(minimumSizeKey) ?? Size.Empty; }

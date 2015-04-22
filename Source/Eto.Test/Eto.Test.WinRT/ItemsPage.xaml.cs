@@ -45,7 +45,7 @@ namespace Eto.Test.WinRT
 							new ButtonToolItem { Text = "Button3", Image = TestIcons.TestImage, ToolTip="Button3" },
 							new ButtonToolItem { Text = "Button4", Image = TestIcons.TestImage, ToolTip="Button4" }
 						}
-					}, Dock = ControlDock.Top
+					}, Dock = DockPosition.Top
 				};
 
 				this.BottomAppBar = toolBarView.ControlObject as CommandBar;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Eto.Drawing;
@@ -11,9 +10,10 @@ namespace Eto.WinForms.Forms.Controls
 {
 	public class DockViewHandler : WindowsControl<swf.ToolStripContainer, DockView, DockView.ICallback>, DockView.IHandler
 	{
-		Collection<Tuple<Control, swf.ToolStrip>> toolStripReference = new Collection<Tuple<Control, swf.ToolStrip>>();
+		Collection<Tuple<DockViewItem, swf.ToolStrip>> toolStripReference = new Collection<Tuple<DockViewItem, swf.ToolStrip>>();
 		Control content;
 		swf.Panel contentHolder;
+		DockPosition dock = DockPosition.None;
 		static readonly object minimumSizeKey = new object();
 
 		public DockViewHandler()
@@ -40,38 +40,42 @@ namespace Eto.WinForms.Forms.Controls
 			base.Initialize();
 		}
 
-		public void AddControl(Control control, int index)
+		public void AddItem(DockViewItem item, int index)
 		{
 			if (Widget.Loaded)
 				SuspendLayout();
 
-			swf.ToolStrip toolStrip = control.ControlObject as swf.ToolStrip;
+			swf.ToolStrip toolStrip = item.Content.ControlObject as swf.ToolStrip;
 			
 			if (toolStrip == null)
 			{
-				swf.ToolStripControlHost toolStripControlHost = new swf.ToolStripControlHost((swf.Control)control.ControlObject);
+				swf.ToolStripControlHost toolStripControlHost = new swf.ToolStripControlHost((swf.Control)item.Content.ControlObject);
 				toolStrip = new swf.ToolStrip(toolStripControlHost);
-				toolStrip.Dock = (swf.DockStyle)Enum.Parse(typeof(swf.DockStyle), control.Dock.ToString());
+				toolStrip.Dock = (swf.DockStyle)Enum.Parse(typeof(swf.DockStyle), item.Dock.ToString());
 			}
-			
-			switch (control.Dock)
+			else if (item.Content is ToolBarView)
 			{
-				case ControlDock.Bottom:
-					Control.BottomToolStripPanel.Join(toolStrip, control.Location.ToSD());
+				toolStrip.Dock = (swf.DockStyle)Enum.Parse(typeof(swf.DockStyle), ((ToolBarView)item.Content).Dock.ToString());
+			}
+
+			switch (item.Dock)
+			{
+				case DockPosition.Bottom:
+					Control.BottomToolStripPanel.Join(toolStrip, item.Position.ToSD());
 					break;
-				case ControlDock.Left:
-					Control.LeftToolStripPanel.Join(toolStrip, control.Location.ToSD());
+				case DockPosition.Left:
+					Control.LeftToolStripPanel.Join(toolStrip, item.Position.ToSD());
 					break;
-				case ControlDock.Right:
-					Control.RightToolStripPanel.Join(toolStrip, control.Location.ToSD());
+				case DockPosition.Right:
+					Control.RightToolStripPanel.Join(toolStrip, item.Position.ToSD());
 					break;
-				case ControlDock.Top:
+				case DockPosition.Top:
 				default:
-					Control.TopToolStripPanel.Join(toolStrip, control.Location.ToSD());
+					Control.TopToolStripPanel.Join(toolStrip, item.Position.ToSD());
 					break;
 			}
 
-			toolStripReference.Add(new Tuple<Control, swf.ToolStrip>(control, toolStrip));
+			toolStripReference.Add(new Tuple<DockViewItem, swf.ToolStrip>(item, toolStrip));
 
 			if (Widget.Loaded)
 				ResumeLayout();
@@ -121,6 +125,12 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		public DockPosition Dock
+		{
+			get { return dock; }
+			set { dock = value; }
+		}
+
 		public Size MinimumSize
 		{
 			get { return Widget.Properties.Get<Size?>(minimumSizeKey) ?? Size.Empty; }
@@ -140,25 +150,25 @@ namespace Eto.WinForms.Forms.Controls
 			set { contentHolder.Padding = value.ToSWF(); }
 		}
 
-		public void RemoveControl(Control control)
+		public void RemoveItem(DockViewItem item)
 		{
 			if (Widget.Loaded)
 				SuspendLayout();
 
-			var reference = toolStripReference.Where(r => r.Item1 == control).SingleOrDefault();
-			
-			switch (control.Dock)
+			var reference = toolStripReference.Where(r => r.Item1 == item).SingleOrDefault();
+
+			switch (item.Dock)
 			{
-				case ControlDock.Bottom:
+				case DockPosition.Bottom:
 					this.Control.BottomToolStripPanel.Controls.Remove(reference.Item2);
 					break;
-				case ControlDock.Left:
+				case DockPosition.Left:
 					this.Control.LeftToolStripPanel.Controls.Remove(reference.Item2);
 					break;
-				case ControlDock.Right:
+				case DockPosition.Right:
 					this.Control.RightToolStripPanel.Controls.Remove(reference.Item2);
 					break;
-				case ControlDock.Top:
+				case DockPosition.Top:
 				default:
 					this.Control.TopToolStripPanel.Controls.Remove(reference.Item2);
 					break;

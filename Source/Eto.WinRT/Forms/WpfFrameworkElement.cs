@@ -87,19 +87,12 @@ namespace Eto.WinRT.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
-		ControlDock dock = ControlDock.Top;
 		wf.Size preferredSize = new wf.Size(double.NaN, double.NaN);
 		Size? newSize;
 		Cursor cursor;
 		wf.Size parentMinimumSize;
 		//bool isMouseOver;
 		//bool isMouseCaptured;
-
-		public ControlDock Dock
-		{
-			get { return dock; }
-			set { dock = value; }
-		}
 
 		public bool XScale { get; private set; }
 		public bool YScale { get; private set; }
@@ -564,10 +557,6 @@ namespace Eto.WinRT.Forms
 				return Point.Empty;
 				throw new NotImplementedException();
 #endif
-			}
-			set
-			{
-				Widget.Location = value;
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -42,15 +43,10 @@ namespace Eto.Forms
 		/// <param name="item">Item to add.</param>
 		public new void Add(ToolItem item)
 		{
-			int previousIndex = -1;
-			for (var i = 0; i < Count; ++i)
-			{
-				if (this[i].Order <= item.Order)
-					previousIndex = i;
-				else
-					break;
-			}
-			Insert(previousIndex + 1, item);
+			var previousItem = this.Where(i => i.Order <= item.Order).OrderBy(i => i.Order).LastOrDefault();
+			var previous = this.IndexOf(previousItem);
+
+			Insert(previous + 1, item);
 		}
 
 		/// <summary>

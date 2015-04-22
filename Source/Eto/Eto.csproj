@@ -60,8 +60,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ComboBox.cs" />
+    <Compile Include="Forms\Controls\Dock.cs" />
     <Compile Include="Forms\Controls\DockView.cs" />
-    <Compile Include="Forms\Controls\DockViewCollection.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\SearchBox.cs" />
@@ -71,6 +71,8 @@
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Controls\TreeView.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
+    <Compile Include="Forms\Controls\DockViewItem.cs" />
+    <Compile Include="Forms\Controls\DockViewItemCollection.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
     <Compile Include="Forms\Layout\DynamicTable.cs" />

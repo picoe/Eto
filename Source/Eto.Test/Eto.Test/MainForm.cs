@@ -115,9 +115,25 @@ namespace Eto.Test
 					Content = splitter,
 					Items =
 					{
-						new ToolBarView { Content = this.CreateToolBarTop(), Dock = ControlDock.Top, Location = new Eto.Drawing.Point(0,0) },
-						new ToolBarView { Content = this.CreateToolBarRight(), Dock = ControlDock.Right },
-						new TextBox { PlaceholderText ="Search", Size = new Size(100, 25), Text = "Search for", Dock = ControlDock.None, Location = new Eto.Drawing.Point(200,0) }
+						new DockViewItem
+						{
+							Content = new ToolBarView { Content = this.CreateToolBarTop(), Dock = DockPosition.Top },
+							Dock = DockPosition.Top,
+							Order = 1,
+							Position = new Eto.Drawing.Point(0,0)
+						},
+						new DockViewItem
+						{
+							Content = new ToolBarView { Content = this.CreateToolBarRight(), Dock = DockPosition.Bottom },
+							Dock = DockPosition.Right
+						},
+						new DockViewItem
+						{
+							Content = new TextBox { PlaceholderText ="Search", Text = "Search for" },
+							Dock = DockPosition.None,
+							Order = 2,
+							Position = new Eto.Drawing.Point(200,0)
+						}
 					}
 				};
 				
@@ -126,7 +142,7 @@ namespace Eto.Test
 
 			if (ToolBarView.IsSupported)
 			{
-				this.ToolBar = new ToolBarView { Content = this.CreateToolBarTop(), Dock = ControlDock.Top };
+				this.ToolBar = new ToolBarView { Content = this.CreateToolBarTop(), Dock = DockPosition.Top };
 			}
 
 			if (Splitter.IsSupported)
@@ -231,10 +247,7 @@ namespace Eto.Test
 
 		ToolBar CreateToolBarRight()
 		{
-			ToolBar toolBar = new ToolBar
-			{
-				Dock = ControlDock.Top
-			};
+			ToolBar toolBar = new ToolBar();
 
 			if (Platform.Supports<ToolBar>())
 			{
