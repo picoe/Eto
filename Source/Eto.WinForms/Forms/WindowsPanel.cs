@@ -12,62 +12,29 @@ namespace Eto.WinForms.Forms
 		where TCallback : Panel.ICallback
 	{
 		Control content;
-		swf.Panel contentHolder;
-
-		protected WindowsPanel()
-		{
-			contentHolder = new swf.Panel
-			{
-				Dock = swf.DockStyle.Fill,
-				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
-				AutoSize = true
-			};
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-
-			Control.Controls.Add(contentHolder);
-		}
 
 		public virtual swf.Control ContainerContentControl
 		{
-			get { return contentHolder; }
+			get { return Control; }
 		}
 
-		public Control Content
+		protected virtual Size ContentPadding { get { return Size.Empty; } }
+
+		public override Size ParentMinimumSize
 		{
-			get { return content; }
+			get
+			{
+				return base.ParentMinimumSize;
+			}
 			set
 			{
-				if (Widget.Loaded)
-					SuspendLayout();
-
-				if (content != null)
+				var control = content.GetWindowsHandler();
+				if (control != null)
 				{
-					var contentHandler = content.GetWindowsHandler();
-					contentHandler.SetScale(false, false);
-					contentHandler.ContainerControl.Parent = null;
+					control.ParentMinimumSize = value - ContentPadding;
 				}
-
-				content = value;
-				if (content != null)
-				{
-					SetContentScale(XScale, YScale);
-					var childHandler = content.GetWindowsHandler();
-					childHandler.BeforeAddControl(Widget.Loaded);
-					SetContent(childHandler.ContainerControl);
-				}
-
-				if (Widget.Loaded)
-					ResumeLayout();
+				base.ParentMinimumSize = value;
 			}
-		}
-
-		protected virtual Size ContentPadding
-		{
-			get { return Size.Empty; }
 		}
 
 		public override Size GetPreferredSize(Size availableSize, bool useCache)
@@ -107,33 +74,10 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public virtual Padding Padding
+		public override void SetScale(bool xscale, bool yscale)
 		{
-			get { return ContainerContentControl.Padding.ToEto(); }
-			set { ContainerContentControl.Padding = value.ToSWF(); }
-		}
-
-		public override Size ParentMinimumSize
-		{
-			get
-			{
-				return base.ParentMinimumSize;
-			}
-			set
-			{
-				var control = content.GetWindowsHandler();
-				if (control != null)
-				{
-					control.ParentMinimumSize = value - ContentPadding;
-				}
-				base.ParentMinimumSize = value;
-			}
-		}
-
-		protected virtual void SetContent(swf.Control contentControl)
-		{
-			contentControl.Dock = swf.DockStyle.Fill;
-			ContainerContentControl.Controls.Add(contentControl);
+			base.SetScale(xscale, yscale);
+			SetContentScale(xscale, yscale);
 		}
 
 		protected virtual void SetContentScale(bool xscale, bool yscale)
@@ -142,10 +86,45 @@ namespace Eto.WinForms.Forms
 				content.SetScale(xscale, yscale);
 		}
 
-		public override void SetScale(bool xscale, bool yscale)
+		public virtual Padding Padding
 		{
-			base.SetScale(xscale, yscale);
-			SetContentScale(xscale, yscale);
+			get { return ContainerContentControl.Padding.ToEto(); }
+			set { ContainerContentControl.Padding = value.ToSWF(); }
+		}
+
+		public Control Content
+		{
+			get { return content; }
+			set
+			{
+				if (Widget.Loaded)
+					SuspendLayout();
+
+				if (content != null)
+				{
+					var contentHandler = content.GetWindowsHandler();
+					contentHandler.SetScale(false, false);
+					contentHandler.ContainerControl.Parent = null;
+				}
+
+				content = value;
+				if (content != null)
+				{
+					SetContentScale(XScale, YScale);
+					var childHandler = content.GetWindowsHandler();
+					childHandler.BeforeAddControl(Widget.Loaded);
+					SetContent(childHandler.ContainerControl);
+				}
+
+				if (Widget.Loaded)
+					ResumeLayout();
+			}
+		}
+
+		protected virtual void SetContent(swf.Control contentControl)
+		{
+			contentControl.Dock = swf.DockStyle.Fill;
+			ContainerContentControl.Controls.Add(contentControl);
 		}
 	}
 }

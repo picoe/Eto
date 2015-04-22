@@ -21,30 +21,10 @@ namespace Eto.WinRT.Forms
 		where TCallback : Panel.ICallback
 	{
 		Control content;
-        swc.Grid contentHolder;
 		readonly swc.Border border;
 		Size? clientSize;
 
-		protected WpfPanel()
-		{
-			border = new swc.Border
-			{
-#if TODO_XAML
-				SnapsToDevicePixels = true,
-				Focusable = false,
-#endif
-			};
-            
-            contentHolder = new swc.Grid();
-			contentHolder.Children.Add(border);
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-
-			SetContainerContent(contentHolder);
-		}
+		protected virtual bool UseContentSize { get { return true; } }
 
 		public override Size ClientSize
 		{
@@ -76,11 +56,6 @@ namespace Eto.WinRT.Forms
 			{
 				contentHandler.SetScale(xscale, yscale);
 			}
-		}
-
-		protected virtual bool UseContentSize
-		{
-			get { return true; }
 		}
 
 		public override wf.Size GetPreferredSize(wf.Size constraint)
@@ -120,6 +95,23 @@ namespace Eto.WinRT.Forms
 				throw new NotImplementedException();
 #endif
 			}
+		}
+
+		protected WpfPanel()
+		{
+			border = new swc.Border
+			{
+#if TODO_XAML
+				SnapsToDevicePixels = true,
+				Focusable = false,
+#endif
+			};
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			SetContainerContent(border);
 		}
 
 		public Padding Padding

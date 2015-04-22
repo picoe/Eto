@@ -93,7 +93,6 @@ namespace Eto.WinRT.Forms
 		wf.Size parentMinimumSize;
 		//bool isMouseOver;
 		//bool isMouseCaptured;
-
 		public bool XScale { get; private set; }
 		public bool YScale { get; private set; }
 

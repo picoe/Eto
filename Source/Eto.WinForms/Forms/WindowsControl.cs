@@ -643,8 +643,8 @@ namespace Eto.WinForms.Forms
 		public Point Location
 		{
 			get { return Control.Location.ToEto(); }
-			set { Control.Location = value.ToSD(); }
 		}
+
 
 		public virtual bool ShouldBubbleEvent(swf.Message msg)
 		{
