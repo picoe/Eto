@@ -28,7 +28,7 @@ namespace Eto.Forms
 		/// </summary>
 		Left,
 		/// <summary>
-		/// Control will be shown at the location coordinates.
+		/// Control will be shown at it's position coordinates.
 		/// </summary>
 		None,
 		/// <summary>

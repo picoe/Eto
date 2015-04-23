@@ -11,13 +11,13 @@ namespace Eto.Forms
 	/// This can be instantiated directly to provide padding around a control, and is also the base of other containers that have
 	/// only a single child control.
 	/// </remarks>
-    /// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
-    /// <license type="BSD-3">See LICENSE for full terms</license>
+	/// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[ContentProperty("Content")]
 	[Handler(typeof(ToolBarView.IHandler))]
 	public class ToolBarView : Panel
 	{
-        internal new IHandler Handler { get { return (IHandler)base.Handler; } }
+		internal new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ToolBarView"/> class.
@@ -58,11 +58,11 @@ namespace Eto.Forms
 			get { return Platform.Instance.Supports<IHandler>(); }
 		}
 
-        /// <summary>
-        /// Handler interface for the <see cref="ToolBarView"/>
-        /// </summary>
+		/// <summary>
+		/// Handler interface for the <see cref="ToolBarView"/>
+		/// </summary>
 		public new interface IHandler : Panel.IHandler
-        {
+		{
 			/// <summary>
 			/// Gets or sets the docking position for the <see cref="ToolBarView"/>.
 			/// </summary>
@@ -72,6 +72,6 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The dock hint.</value>
 			DockPosition Dock { get; set; }
-        }
-    }
+		}
+	}
 }
