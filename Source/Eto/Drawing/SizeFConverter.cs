@@ -17,7 +17,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// The character to split up the string which will be converted
 		/// </summary>
-		static readonly string[] StringSplitter = new string[1] { "," };
+		static readonly char[] DimensionSplitter = new char[1] { ',' };
 
 		/// <summary>
 		/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
@@ -42,7 +42,7 @@ namespace Eto.Drawing
 			string text = value as string;
 			if (text != null)
 			{
-				string[] parts = text.Split(StringSplitter, StringSplitOptions.RemoveEmptyEntries);
+				string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
 				if (parts.Length != 2)
 					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as SizeF. Should be in the form of 'width, height'", text));
 
