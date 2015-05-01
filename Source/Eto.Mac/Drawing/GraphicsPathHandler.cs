@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Eto.Drawing;
 using sd = System.Drawing;
+using System.Diagnostics;
 
 #if OSX
 #if XAMMAC2
@@ -115,7 +116,11 @@ namespace Eto.iOS.Drawing
 
 		public void AddRectangle (float x, float y, float width, float height)
 		{
-			Control.AddRect (new sd.RectangleF(x, y, width, height));
+			#if __UNIFIED__
+			Control.AddRect(new CGRect(x, y, width, height));
+			#else
+			Control.AddRect(new sd.RectangleF(x, y, width, height));
+			#endif
 			startFigure = true;
 			isFirstFigure = false;
 		}
@@ -173,7 +178,11 @@ namespace Eto.iOS.Drawing
 			Check(point1);
 			Check(point2);
 			Check(point3);
+			#if __UNIFIED__
+			Control.AddCurveToPoint(point1.ToNS(), point2.ToNS(), point3.ToNS());
+			#else
 			Control.AddCurveToPoint(point1.ToSD(), point2.ToSD(), point3.ToSD());
+			#endif
 		}
 
 		public void AddPath (IGraphicsPath path, bool connect = false)

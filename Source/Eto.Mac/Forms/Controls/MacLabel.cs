@@ -293,14 +293,14 @@ namespace Eto.Mac.Forms.Controls
 					var range = new NSRange(0, (int)str.Length);
 					var attr = new NSMutableDictionary();
 					Widget.Properties.Get<Font>(FontKey).Apply(attr);
-					attr.Add(NSAttributedString.ParagraphStyleAttributeName, paragraphStyle);
-					attr.Add(NSAttributedString.ForegroundColorAttributeName, CurrentColor);
+					attr.Add(NSStringAttributeKey.ParagraphStyle, paragraphStyle);
+					attr.Add(NSStringAttributeKey.ForegroundColor, CurrentColor);
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{
-						var num = (NSNumber)str.GetAttribute(NSAttributedString.UnderlineStyleAttributeName, (nnint)underlineIndex, out range);
+						var num = (NSNumber)str.GetAttribute(NSStringAttributeKey.UnderlineStyle, (nnint)underlineIndex, out range);
 						var newStyle = (num != null && (NSUnderlineStyle)num.Int64Value == NSUnderlineStyle.Single) ? NSUnderlineStyle.Double : NSUnderlineStyle.Single;
-						str.AddAttribute(NSAttributedString.UnderlineStyleAttributeName, new NSNumber((int)newStyle), new NSRange(underlineIndex, 1));
+						str.AddAttribute(NSStringAttributeKey.UnderlineStyle, new NSNumber((int)newStyle), new NSRange(underlineIndex, 1));
 					}
 				}
 				Control.AttributedStringValue = str;

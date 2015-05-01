@@ -425,7 +425,7 @@ namespace Eto.Mac.Forms.Controls
 		
 		void ExpandItems (NSObject parent)
 		{
-			var ds = Control.DataSource;
+			var ds = (EtoDataSource)Control.DataSource;
 			var count = ds.GetChildrenCount (Control, parent);
 			for (int i=0; i<count; i++) {
 				

@@ -159,6 +159,18 @@ namespace Eto.Mac.Forms.Controls
 				return Handler.BrowserContextMenuEnabled ? defaultMenuItems : null;
 			}
 
+			#if XAMMAC2
+			public override void UIRunOpenPanelForFileButton(wk.WebView sender, wk.IWebOpenPanelResultListener resultListener)
+			{
+				var openDlg = new OpenFileDialog();
+				if (openDlg.ShowDialog(Handler.Widget.ParentWindow) == DialogResult.Ok)
+				{
+					var resultListenerObj = resultListener as wk.WebOpenPanelResultListener;
+					if (resultListenerObj != null)
+						resultListenerObj.ChooseFilenames(openDlg.Filenames.ToArray());
+				}
+			}
+			#else
 			public override void UIRunOpenPanelForFileButton(wk.WebView sender, wk.WebOpenPanelResultListener resultListener)
 			{
 				var openDlg = new OpenFileDialog();
@@ -167,6 +179,7 @@ namespace Eto.Mac.Forms.Controls
 					resultListener.ChooseFilenames(openDlg.Filenames.ToArray());
 				}
 			}
+			#endif
 
 			public override void UIPrintFrameView(wk.WebView sender, wk.WebFrameView frameView)
 			{
