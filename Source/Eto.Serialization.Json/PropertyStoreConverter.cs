@@ -30,7 +30,7 @@ namespace Eto.Serialization.Json
 						foreach (var prop in (IDictionary<string, JToken>)item) {
 							if (prop.Key == "$type") continue;
 							var memberName = "Set" + prop.Key;
-							var member = type.GetRuntimeMethods().FirstOrDefault(r => r.Name == memberName && r.IsStatic);
+							var member = type.GetRuntimeMethods().FirstOrDefault(r => r.IsStatic && r.Name == memberName);
 							if (member == null)
 								throw new JsonSerializationException(string.Format(CultureInfo.CurrentCulture, "Could not find attachable property {0}.{1}", type.Name, memberName));
 							var parameters = member.GetParameters();
