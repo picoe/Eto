@@ -81,6 +81,9 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
+
+		static EtoXamlSchemaContext context = new EtoXamlSchemaContext(new [] { typeof(XamlReader).Assembly });
+
 		/// <summary>
 		/// Loads the specified type from the specified xaml stream
 		/// </summary>
@@ -91,31 +94,31 @@ namespace Eto.Serialization.Xaml
 		public static T Load<T>(Stream stream, T instance)
 			where T : Widget
 		{
-			var type = typeof(T);
-			var context = new EtoXamlSchemaContext(new Assembly[] { typeof(XamlReader).Assembly });
 			var reader = new XamlXmlReader(stream, context);
-			var writerSettings = new XamlObjectWriterSettings
-			{
-				RootObjectInstance = instance
-			};
+			var writerSettings = new XamlObjectWriterSettings();
 			writerSettings.AfterPropertiesHandler += delegate(object sender, XamlObjectEventArgs e)
 			{
-				var obj = e.Instance as Widget;
-				if (obj != null && !string.IsNullOrEmpty(obj.ID))
+				if (writerSettings.RootObjectInstance != null)
 				{
-					var property = type.GetProperty(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-					if (property != null)
-						property.SetValue(instance, obj, null);
-					else
+					var instanceType = writerSettings.RootObjectInstance.GetType();
+					var obj = e.Instance as Widget;
+					if (obj != null && !string.IsNullOrEmpty(obj.ID))
 					{
-						var field = type.GetField(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-						if (field != null)
-							field.SetValue(instance, obj);
+						var property = instanceType.GetProperty(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						if (property != null)
+							property.SetValue(writerSettings.RootObjectInstance, obj, null);
+						else
+						{
+							var field = instanceType.GetField(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+							if (field != null)
+								field.SetValue(writerSettings.RootObjectInstance, obj);
+						}
 					}
 				}
 			};
-
 			var writer = new XamlObjectWriter(context, writerSettings);
+			
+			writerSettings.RootObjectInstance = instance;
 			XamlServices.Transform(reader, writer);
 			return writer.Result as T;
 		}
