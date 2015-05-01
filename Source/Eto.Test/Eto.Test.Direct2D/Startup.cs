@@ -9,8 +9,8 @@ namespace Eto.Test.Direct2D
 		[STAThread]
 		static void Main(string[] args)
 		{
-			var generator = Platform.Get(Platforms.Direct2D);
-			var app = new TestApplication(generator);
+			var platform = new Eto.Direct2D.Platform();
+			var app = new TestApplication(platform, typeof(Startup).Assembly);
 			app.Run();
 		}
 	}

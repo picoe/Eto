@@ -8,12 +8,12 @@ namespace Eto.Test.Wpf
 		[STAThread]
 		static void Main(string[] args)
 		{
-			var generator = new Eto.Wpf.Platform();
+			var platform = new Eto.Wpf.Platform();
 
 			// don't use tiling for the direct drawing test
 			Style.Add<DrawableHandler>("direct", handler => handler.AllowTiling = false);
 
-			var app = new TestApplication(generator);
+			var app = new TestApplication(platform, typeof(Startup).Assembly);
 			app.Run();
 		}
 

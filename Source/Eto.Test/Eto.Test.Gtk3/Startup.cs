@@ -9,9 +9,9 @@ namespace Eto.Test.Gtk3
 		//[STAThread]
 		static void Main(string[] args)
 		{
-			var generator = Platform.Get(Platforms.Gtk3);
+			var generator = new Eto.GtkSharp.Platform();
 			
-			var app = new TestApplication(generator);
+			var app = new TestApplication(generator, typeof(Startup).Assembly);
 			app.Run();
 		}
 	}

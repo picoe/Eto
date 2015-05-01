@@ -35,7 +35,7 @@ namespace Eto.Test
 			Title = string.Format("Test Application [{0}]", Platform.ID);
 			Style = "main";
 			MinimumSize = new Size(400, 400);
-			topNodes = topNodes ?? TestSections.Get();
+			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());
 			//SectionList = new SectionListGridView(topNodes);
 			//SectionList = new SectionListTreeView(topNodes);
 			if (Platform.IsAndroid)
