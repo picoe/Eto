@@ -209,6 +209,8 @@ namespace Eto.WinForms
 					num = 5;
 					break;
 			}
+			if (!EtoEnvironment.Platform.IsWindows)
+				return false;
 			return ((int)((long)Win32.SendMessage(hwnd, Win32.WM.GETDLGCODE, IntPtr.Zero, IntPtr.Zero)) & num) != 0;
 		}
 
