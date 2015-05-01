@@ -8,7 +8,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Mac</RootNamespace>
     <AssemblyName>Eto.XamMac2</AssemblyName>
-    <UseXamMacFullFramework>true</UseXamMacFullFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>

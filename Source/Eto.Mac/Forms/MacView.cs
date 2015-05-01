@@ -751,7 +751,6 @@ namespace Eto.Mac.Forms
 		}
 
 		Dictionary<IntPtr, Command> systemActions;
-		static readonly IntPtr selRespondsToSelector = Selector.GetHandle("respondsToSelector:");
 		static readonly IntPtr selGetAction = Selector.GetHandle("action");
 		static readonly IntPtr selValidateUserInterfaceItem = Selector.GetHandle("validateUserInterfaceItem:");
 		static readonly IntPtr selCut = Selector.GetHandle("cut:");
