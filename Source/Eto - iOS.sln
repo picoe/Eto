@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - pc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - pcl", "Eto.Test\Eto.Test\Eto.Test - pcl.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - pcl", "Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|iPhone = Ad-Hoc|iPhone
@@ -21,6 +23,18 @@ Global
 		Release|iPhoneSimulator = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.AppStore|iPhone.Build.0 = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|iPhone.Build.0 = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.AppStore|iPhone.ActiveCfg = Release|Any CPU

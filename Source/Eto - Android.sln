@@ -16,12 +16,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0DFC22
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - pcl", "Eto.Test\Eto.Test\Eto.Test - pcl.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - pcl", "Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Release|Any CPU.ActiveCfg = Release|Any CPU
