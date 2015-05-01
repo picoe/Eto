@@ -6,7 +6,7 @@ using System.Xaml.Schema;
 
 namespace Eto.Serialization.Xaml
 {
-#if PCL
+#if NET45
 	class TypeConverterConverter : System.ComponentModel.TypeConverter
 	{
 		readonly Eto.TypeConverter etoConverter;
@@ -63,7 +63,7 @@ namespace Eto.Serialization.Xaml
 			return UnderlyingType.GetCustomAttributes(typeof(T), inherit).OfType<T>().FirstOrDefault();
 		}
 
-#if PCL
+#if NET45
 		XamlValueConverter<System.ComponentModel.TypeConverter> typeConverter;
 
 		protected override XamlType LookupItemType()

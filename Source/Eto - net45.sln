@@ -62,6 +62,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinRT", "Eto.WinRT\Eto.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - net45", "Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - pcl", "Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Linux = Debug|Linux
@@ -72,6 +74,18 @@ Global
 		Release|Windows = Release|Windows
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Linux.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Mac.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Windows.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Linux.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Linux.Build.0 = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Mac.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Mac.Build.0 = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Windows.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Windows.Build.0 = Release|Any CPU
 		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Linux.Build.0 = Debug|Any CPU
 		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU

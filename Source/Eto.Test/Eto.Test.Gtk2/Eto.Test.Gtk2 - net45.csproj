@@ -76,6 +76,10 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
+      <Project>{231FB3B0-CB71-11E3-9C1A-0800200C9A66}</Project>
+      <Name>Eto.Serialization.Xaml - net45</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
 </Project>
