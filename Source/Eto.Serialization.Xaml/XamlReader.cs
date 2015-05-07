@@ -122,9 +122,9 @@ namespace Eto.Serialization.Xaml
 					}
 				}
 			};
+			writerSettings.RootObjectInstance = instance;
 			var writer = new XamlObjectWriter(context, writerSettings);
 			
-			writerSettings.RootObjectInstance = instance;
 			XamlServices.Transform(reader, writer);
 			return writer.Result as T;
 			#endif
