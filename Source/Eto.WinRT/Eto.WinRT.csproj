@@ -152,6 +152,9 @@
     <Compile Include="..\Eto.Direct2D\Drawing\PenHandler.cs">
       <Link>Drawing\PenHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Direct2D\Drawing\RadialGradientBrushHandler.cs">
+      <Link>Drawing\RadialGradientBrushHandler.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.Direct2D\Drawing\SDFactory.cs">
       <Link>Drawing\SDFactory.cs</Link>
     </Compile>

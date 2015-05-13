@@ -80,6 +80,7 @@
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
     <Compile Include="Platform.cs" />
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">

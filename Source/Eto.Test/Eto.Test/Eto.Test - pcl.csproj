@@ -41,6 +41,9 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
+    <Compile Include="..\..\Eto\Helper.cs">
+      <Link>Helper.cs</Link>
+    </Compile>
     <Compile Include="..\..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
@@ -128,6 +131,7 @@
     <Compile Include="Sections\Controls\SpinnerSection.cs" />
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
     <Compile Include="UnitTests\Drawing\ClipTests.cs" />
+    <Compile Include="UnitTests\Drawing\DefaultValueTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\ComboBoxTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\SplitterTests.cs" />

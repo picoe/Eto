@@ -107,8 +107,8 @@ namespace Eto.Mac.Forms.Controls
 			
 			stepper = new EtoStepper();
 			stepper.Activated += HandleStepperActivated;
-			MinValue = 0;
-			MaxValue = 100;
+			MinValue = double.MinValue;
+			MaxValue = double.MaxValue;
 			Value = 0;
 			DecimalPlaces = 0;
 			Control.AddSubview(text);

@@ -237,7 +237,7 @@ namespace Eto.Test.Sections.Drawing
 						erase = g => g.FillEllipse(blackBrush, rect);
 						break;
 					case 3:
-						switch (random.Next(2))
+						switch (random.Next(3))
 						{
 							case 0:
 								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height));
@@ -247,6 +247,9 @@ namespace Eto.Test.Sections.Drawing
 								{
 									Transform = Matrix.FromScale(size / 80)
 								};
+								break;
+							case 2:
+								fillBrush = new RadialGradientBrush(GetRandomColor(random), GetRandomColor(random), (PointF)size / 2, (PointF)size / 2, size);
 								break;
 						}
 						draw = g => g.FillRectangle(fillBrush, rect);

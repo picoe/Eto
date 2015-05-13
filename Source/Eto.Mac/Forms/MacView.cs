@@ -543,7 +543,7 @@ namespace Eto.Mac.Forms
 					ContainerControl.WantsLayer = true;
 					var layer = ContainerControl.Layer;
 					if (layer != null)
-						layer.BackgroundColor = color.Value.ToCGColor();
+						layer.BackgroundColor = color.Value.ToCG();
 				}
 				else {
 					ContainerControl.WantsLayer = false;

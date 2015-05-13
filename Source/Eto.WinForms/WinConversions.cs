@@ -459,9 +459,9 @@ namespace Eto.WinForms
 			return (sd.Pen)pen.ControlObject;
 		}
 
-		public static sd.Brush ToSD(this Brush brush)
+		public static sd.Brush ToSD(this Brush brush, RectangleF bounds)
 		{
-			return ((BrushHandler)brush.Handler).GetBrush(brush);
+			return ((BrushHandler)brush.Handler).GetBrush(brush, bounds);
 		}
 
 		public static sd2.LineJoin ToSD(this PenLineJoin value)
@@ -537,12 +537,14 @@ namespace Eto.WinForms
 					return sd2.WrapMode.TileFlipXY;
 				case GradientWrapMode.Repeat:
 					return sd2.WrapMode.Tile;
+				case GradientWrapMode.Pad:
+					return sd2.WrapMode.Clamp;
 				default:
 					throw new NotSupportedException();
 			}
 		}
 
-		public static GradientWrapMode ToEtoGradientWrap(this sd2.WrapMode wrapMode)
+		public static GradientWrapMode ToEto(this sd2.WrapMode wrapMode)
 		{
 			switch (wrapMode)
 			{
@@ -550,6 +552,8 @@ namespace Eto.WinForms
 					return GradientWrapMode.Reflect;
 				case sd2.WrapMode.Tile:
 					return GradientWrapMode.Repeat;
+				case sd2.WrapMode.Clamp:
+					return GradientWrapMode.Pad;
 				default:
 					throw new NotSupportedException();
 			}
