@@ -105,8 +105,6 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			if (string.IsNullOrEmpty(Text))
-				return Size.Empty;
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
 				#if XAMMAC2 // TODO: Fix when Xamarin.Mac2 NSEdgeInsets is fixed to use nfloat instead of float
