@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
 using swi = System.Windows.Input;
@@ -10,18 +9,17 @@ using sp = System.Printing;
 using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
 using swd = System.Windows.Documents;
-using System.Text.RegularExpressions;
 using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf
 {
-	public static class Conversions
+	public static class WpfConversions
 	{
 		public const float WheelDelta = 120f;
 
 		public static readonly sw.Size PositiveInfinitySize = new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
 		public static readonly sw.Size ZeroSize = new sw.Size(0, 0);
-
+		
 		public static swm.Color ToWpf(this Color value)
 		{
 
@@ -129,38 +127,6 @@ namespace Eto.Wpf
 		public static sw.Point ToWpf(this PointF value)
 		{
 			return new sw.Point(value.X, value.Y);
-		}
-
-		public static string ToWpfMneumonic(this string value)
-		{
-			if (value == null)
-				return string.Empty;
-			value = value.Replace("_", "__");
-			var match = Regex.Match(value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
-			if (match.Success)
-			{
-				var sb = new StringBuilder(value);
-				sb[match.Index] = '_';
-				sb.Replace("&&", "&");
-				return sb.ToString();
-			}
-			return value.Replace("&&", "&");
-		}
-
-		public static string ToEtoMneumonic(this string value)
-		{
-			if (value == null)
-				return null;
-			var match = Regex.Match(value, @"(?<=([^_](?:[_]{2})*)|^)[_](?![_])");
-			if (match.Success)
-			{
-				var sb = new StringBuilder(value);
-				sb[match.Index] = '&';
-				sb.Replace("__", "_");
-				return sb.ToString();
-			}
-			value = value.Replace("__", "_");
-			return value;
 		}
 
 		public static KeyEventArgs ToEto(this swi.KeyEventArgs e, KeyEventType keyType)
@@ -492,6 +458,8 @@ namespace Eto.Wpf
 					return swm.GradientSpreadMethod.Reflect;
 				case GradientWrapMode.Repeat:
 					return swm.GradientSpreadMethod.Repeat;
+				case GradientWrapMode.Pad:
+					return swm.GradientSpreadMethod.Pad;
 				default:
 					throw new NotSupportedException();
 			}
@@ -505,6 +473,8 @@ namespace Eto.Wpf
 					return GradientWrapMode.Reflect;
 				case swm.GradientSpreadMethod.Repeat:
 					return GradientWrapMode.Repeat;
+				case swm.GradientSpreadMethod.Pad:
+					return GradientWrapMode.Pad;
 				default:
 					throw new NotSupportedException();
 			}

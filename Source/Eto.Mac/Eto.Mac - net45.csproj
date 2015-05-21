@@ -139,6 +139,7 @@
     <Compile Include="Forms\Controls\MacImageAndTextCell.cs" />
     <Compile Include="Forms\Controls\SliderHandler.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
+    <Compile Include="MacConversions.ns.cs" />
     <Compile Include="ObjCExtensions.cs" />
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\MacCommon.cs" />
@@ -157,10 +158,8 @@
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\MacControlExtensions.cs" />
     <Compile Include="Forms\MacBase.cs" />
-    <Compile Include="Conversions.sd.cs" />
-    <Compile Include="Conversions.cg.cs" />
-    <Compile Include="Conversions.cs" />
-    <Compile Include="Conversions.ns.cs" />
+    <Compile Include="SDConversions.cs" />
+    <Compile Include="MacConversions.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
@@ -208,6 +207,11 @@
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="CGConversions.cs" />
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>Drawing\GradientHelper.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -2,6 +2,8 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.Wpf.Drawing;
 using System;
+using System.ComponentModel;
+using System.Text;
 using sw = System.Windows;
 
 namespace Eto.Wpf.Forms
@@ -10,55 +12,78 @@ namespace Eto.Wpf.Forms
 	{
 		public string[] Types
 		{
-			get { return sw.Clipboard.GetDataObject ().GetFormats (); }
+			get { return sw.Clipboard.GetDataObject().GetFormats(); }
 		}
 
-		public void SetString (string value, string type)
-		{
-			if (string.IsNullOrEmpty (type))
-				sw.Clipboard.SetText (value);
-			else
-				sw.Clipboard.SetData (type, value);
-		}
-
-		public void SetData (byte[] value, string type)
-		{
-			sw.Clipboard.SetData (type, value);
-		}
-
-		public string GetString (string type)
+		public void SetString(string value, string type)
 		{
 			if (string.IsNullOrEmpty(type))
-				return sw.Clipboard.GetText();
-			return Convert.ToString(sw.Clipboard.GetData(type));
+				sw.Clipboard.SetText(value);
+			else
+				sw.Clipboard.SetData(type, value);
 		}
 
-		public byte[] GetData (string type)
+		public void SetData(byte[] value, string type)
 		{
-			return sw.Clipboard.GetData (type) as byte[];
+			sw.Clipboard.SetData(type, value);
+		}
+
+		public string GetString(string type)
+		{
+			if (string.IsNullOrEmpty(type))
+				return Text;
+			return sw.Clipboard.ContainsData(type) ? Convert.ToString(sw.Clipboard.GetData(type)) : null;
+		}
+
+		public byte[] GetData(string type)
+		{
+			if (sw.Clipboard.ContainsData(type))
+			{
+				var data = sw.Clipboard.GetData(type);
+				var bytes = data as byte[];
+				if (bytes != null)
+					return bytes;
+				if (data != null)
+				{
+					var converter = TypeDescriptor.GetConverter(data.GetType());
+					if (converter != null && converter.CanConvertTo(typeof(byte[])))
+					{
+						return converter.ConvertTo(data, typeof(byte[])) as byte[];
+					}
+				}
+				if (data is string)
+				{
+					return Encoding.UTF8.GetBytes(data as string);
+				}
+				if (data is IConvertible)
+				{
+					return Convert.ChangeType(data, typeof(byte[])) as byte[];
+				}
+			}
+			return null;
 		}
 
 		public string Text
 		{
-			get { return sw.Clipboard.GetText (); }
-			set { sw.Clipboard.SetText (value); }
+			get { return sw.Clipboard.ContainsText() ? sw.Clipboard.GetText() : null; }
+			set { sw.Clipboard.SetText(value); }
 		}
 
 		public string Html
 		{
-			get { return sw.Clipboard.GetText (sw.TextDataFormat.Html); }
-			set { sw.Clipboard.SetText (value, sw.TextDataFormat.Html); }
+			get { return sw.Clipboard.ContainsText(sw.TextDataFormat.Html) ? sw.Clipboard.GetText(sw.TextDataFormat.Html) : null; }
+			set { sw.Clipboard.SetText(value, sw.TextDataFormat.Html); }
 		}
 
 		public Image Image
 		{
-			get { return new Bitmap(new BitmapHandler(sw.Clipboard.GetImage())); }
-			set { sw.Clipboard.SetImage (value.ToWpf ()); }
+			get { return sw.Clipboard.ContainsImage() ? new Bitmap(new BitmapHandler(sw.Clipboard.GetImage())) : null; }
+			set { sw.Clipboard.SetImage(value.ToWpf()); }
 		}
 
-		public void Clear ()
+		public void Clear()
 		{
-			sw.Clipboard.Clear ();
+			sw.Clipboard.Clear();
 		}
 	}
 }

@@ -59,8 +59,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override string Text
 		{
-			get { return MnuemonicToString(label.Text); }
-			set { label.TextWithMnemonic = StringToMnuemonic(value); }
+			get { return label.Text.ToEtoMnemonic(); }
+			set { label.TextWithMnemonic = value.ToPlatformMnemonic(); }
 		}
 
 		protected override void Dispose(bool disposing)

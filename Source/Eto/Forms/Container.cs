@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Eto.Drawing;
+using System.Globalization;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -227,7 +228,7 @@ namespace Eto.Forms
 			{
 #if DEBUG
 				if (!ReferenceEquals(child.Parent, this))
-					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a child of this container. Ensure you only remove children that you own."));
 #endif
 				if (child.Loaded)
 				{
@@ -257,7 +258,7 @@ namespace Eto.Forms
 			{
 #if DEBUG
 				if (!ReferenceEquals(previousChild.Parent, this))
-					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a child of this container. Ensure you only remove children that you own."));
 #endif
 				if (previousChild.Loaded)
 				{

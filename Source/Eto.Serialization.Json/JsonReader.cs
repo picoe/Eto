@@ -83,6 +83,8 @@ namespace Eto.Serialization.Json
 			}
 		}
 
+		static JsonSerializer serializer;
+
 		/// <summary>
 		/// Loads the specified type from the specified json stream
 		/// </summary>
@@ -98,23 +100,26 @@ namespace Eto.Serialization.Json
 
 			using (var reader = new StreamReader(stream))
 			{
-				if (namespaceManager == null)
+				if (serializer == null)
 				{
-					namespaceManager = new DefaultNamespaceManager();
+					serializer = new JsonSerializer
+					{
+						TypeNameHandling = TypeNameHandling.Auto,
+						MissingMemberHandling = MissingMemberHandling.Error,
+						ContractResolver = new EtoContractResolver(),
+					};
+					serializer.Converters.Add(new TableLayoutConverter());
+					serializer.Converters.Add(new DynamicLayoutConverter());
+					serializer.Converters.Add(new DelegateConverter());
+					serializer.Converters.Add(new PropertyStoreConverter());
+					serializer.Converters.Add(new ImageConverter());
+					serializer.Converters.Add(new TypeConverterConverter());
 				}
-				var serializer = new JsonSerializer
+				serializer.Binder = new EtoBinder
 				{
-					TypeNameHandling = TypeNameHandling.Auto,
-					MissingMemberHandling = MissingMemberHandling.Error,
-					ContractResolver = new EtoContractResolver(),
-					Binder = new EtoBinder { NamespaceManager = namespaceManager, Instance = instance }
+					NamespaceManager = namespaceManager ?? new DefaultNamespaceManager(),
+					Instance = instance
 				};
-				serializer.Converters.Add(new TableLayoutConverter());
-				serializer.Converters.Add(new DynamicLayoutConverter());
-				serializer.Converters.Add(new DelegateConverter());
-				serializer.Converters.Add(new PropertyStoreConverter());
-				serializer.Converters.Add(new ImageConverter());
-				serializer.Converters.Add(new TypeConverterConverter());
 
 				if (instance == null)
 					return serializer.Deserialize(reader, type) as T;

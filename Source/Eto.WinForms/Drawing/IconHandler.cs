@@ -75,7 +75,7 @@ namespace Eto.WinForms.Drawing
 			if (icons != null)
 				return icons;
 			if (icon == null) {
-				throw new ArgumentNullException ("icon");
+				throw new ArgumentNullException("icon");
 			}
 			
 			// Get multiple .ico file image.
@@ -109,7 +109,7 @@ namespace Eto.WinForms.Drawing
 					pos += 4;
 					int imgOffset = BitConverter.ToInt32 (srcBuf, pos);    // ICONDIRENTRY.dwImageOffset
 					if (imgOffset + imgSize > srcBuf.Length)
-						throw new Exception ("ugh");
+						throw new ArgumentException("ugh");
 					writer.Write (srcBuf, imgOffset, imgSize);
 					writer.Flush ();
 					

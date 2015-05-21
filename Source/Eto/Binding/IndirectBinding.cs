@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Eto
 {
@@ -265,7 +266,7 @@ namespace Eto
 		{
 			var enumType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
 			if (!enumType.IsEnum())
-				throw new ArgumentException(string.Format("Type of T ({0}) must be an enumeration type", typeof(T)));
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Type of T ({0}) must be an enumeration type", typeof(T)));
 			return new DelegateBinding<object, string>(
 				m => System.Convert.ToString(GetValue(m)),
 				(m, val) =>

@@ -1,11 +1,12 @@
 using System;
+using System.Globalization;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp
 {
-	public static class Conversions
+	public static class GtkConversions
 	{
 		public static Gdk.Color ToGdk(this Color color)
 		{
@@ -166,7 +167,7 @@ namespace Eto.GtkSharp
 				case ImageFormat.Png:
 					return "png";
 				default:
-					throw new Exception("Invalid format specified");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid format specified"));
 			}
 		}
 
@@ -317,11 +318,6 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public static float DegreesToRadians(float angle)
-		{
-			return (float)Math.PI * angle / 180.0f;
-		}
-
 		public static void Apply(this Pen pen, GraphicsHandler graphics)
 		{
 			((PenHandler)pen.Handler).Apply(pen, graphics);
@@ -441,6 +437,8 @@ namespace Eto.GtkSharp
 					return GradientWrapMode.Reflect;
 				case Cairo.Extend.Repeat:
 					return GradientWrapMode.Repeat;
+				case Cairo.Extend.Pad:
+					return GradientWrapMode.Pad;
 				default:
 					throw new NotSupportedException();
 			}
@@ -454,6 +452,8 @@ namespace Eto.GtkSharp
 					return Cairo.Extend.Reflect;
 				case GradientWrapMode.Repeat:
 					return Cairo.Extend.Repeat;
+				case GradientWrapMode.Pad:
+					return Cairo.Extend.Pad;
 				default:
 					throw new NotSupportedException();
 			}

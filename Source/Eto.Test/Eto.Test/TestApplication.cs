@@ -3,14 +3,29 @@ using Eto.Forms;
 using System.ComponentModel;
 using System.Diagnostics;
 using Eto.Drawing;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Eto.Test
 {
 	public class TestApplication : Application
 	{
-		public TestApplication(Platform platform)
+		List<Assembly> testAssemblies;
+
+		public static IEnumerable<Assembly> DefaultTestAssemblies()
+		{ 
+			#if PCL
+			yield return typeof(TestApplication).GetTypeInfo().Assembly;
+			#else
+			yield return typeof(TestApplication).Assembly;
+			#endif
+		}
+
+		public TestApplication(Platform platform, params Assembly[] additionalTestAssemblies)
 			: base(platform)
 		{
+			testAssemblies = DefaultTestAssemblies().Union(additionalTestAssemblies ?? Enumerable.Empty<Assembly>()).ToList();
 			this.Name = "Test Application";
 			this.Style = "application";
 
@@ -23,7 +38,7 @@ namespace Eto.Test
 
 		protected override void OnInitialized(EventArgs e)
 		{
-			MainForm = new MainForm();
+			MainForm = new MainForm(TestSections.Get(testAssemblies));
 
 			base.OnInitialized(e);
 

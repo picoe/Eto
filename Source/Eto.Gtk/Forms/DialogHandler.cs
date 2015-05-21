@@ -31,6 +31,8 @@ namespace Eto.GtkSharp.Forms
 			Control.Resizable = false;
 			Control.HasResizeGrip = false;
 #endif
+			Control.KeyPressEvent += Control_KeyPressEvent;
+			Resizable = false;
 		}
 
 		protected override void Initialize()
@@ -73,7 +75,6 @@ namespace Eto.GtkSharp.Forms
 					Control.Default = widget;
 				}
 			}
-			// TODO: implement cancel button somehow?
 
 			do
 			{
@@ -98,6 +99,16 @@ namespace Eto.GtkSharp.Forms
 			{
 				WasClosed = true;
 				Control.Hide();
+			}
+		}
+
+		[GLib.ConnectBefore]
+		void Control_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Escape && AbortButton != null)
+			{
+				AbortButton.PerformClick();
+				args.RetVal = true;
 			}
 		}
 

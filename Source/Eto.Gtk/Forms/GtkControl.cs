@@ -88,36 +88,9 @@ namespace Eto.GtkSharp.Forms
 			get { return ContainerControl; }
 		}
 
-		public static string StringToMnuemonic(string label)
+		public virtual Gtk.Widget BackgroundControl
 		{
-			if (label == null)
-				return string.Empty;
-			label = label.Replace("_", "__");
-			var match = Regex.Match(label, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
-			if (match.Success)
-			{
-				var sb = new StringBuilder(label);
-				sb[match.Index] = '_';
-				sb.Replace("&&", "&");
-				return sb.ToString();
-			}
-			return label.Replace("&&", "&");
-		}
-
-		public static string MnuemonicToString(string label)
-		{
-			if (label == null)
-				return null;
-			var match = Regex.Match(label, @"(?<=([^_](?:[_]{2})*)|^)[_](?![_])");
-			if (match.Success)
-			{
-				var sb = new StringBuilder(label);
-				sb[match.Index] = '&';
-				sb.Replace("__", "_");
-				return sb.ToString();
-			}
-			label = label.Replace("__", "_");
-			return label;
+			get { return ContainerContentControl; }
 		}
 
 		public virtual Point CurrentLocation { get; set; }
@@ -212,11 +185,11 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (color != null)
 			{
-				ContainerContentControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+				BackgroundControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
 			}
 			else
 			{
-				ContainerContentControl.ModifyBg(Gtk.StateType.Normal);
+				BackgroundControl.ModifyBg(Gtk.StateType.Normal);
 			}
 		}
 

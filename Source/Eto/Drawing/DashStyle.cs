@@ -119,7 +119,7 @@ namespace Eto.Drawing
 			DashStyle style;
 			if (TryParse(value, out style))
 				return style;
-			throw new ArgumentOutOfRangeException("value", value, "Cannot convert value to a color");
+			throw new ArgumentOutOfRangeException("value", value, string.Format(CultureInfo.CurrentCulture, "Cannot convert value to a color"));
 		}
 
 		/// <summary>
@@ -137,7 +137,7 @@ namespace Eto.Drawing
 		public DashStyle(float offset, params float[] dashes)
 		{
 			if (dashes != null && dashes.Any(r => r <= 0))
-				throw new ArgumentOutOfRangeException("dashes", dashes, "Each dash or gap must have a size greater than zero");
+				throw new ArgumentOutOfRangeException("dashes", dashes, string.Format(CultureInfo.CurrentCulture, "Each dash or gap must have a size greater than zero"));
 			this.offset = offset;
 			this.dashes = dashes;
 		}

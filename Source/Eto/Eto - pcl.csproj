@@ -48,14 +48,12 @@
     <Compile Include="Drawing\FillMode.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\RadialGradientBrush.cs" />
     <Compile Include="Drawing\PenLineJoin.cs" />
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Drawing\Matrix.cs" />
     <Compile Include="EtoEnvironment.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\DropDown.cs" />
@@ -77,12 +75,11 @@
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedSplitterHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItem.cs" />
-    <Compile Include="Int32ArrayConverter.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
-    <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Threading\Thread.cs" />
     <Compile Include="TypeHelper.cs" />
     <Compile Include="Widget.cs" />
@@ -227,7 +224,6 @@
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
-    <Compile Include="HandlerInvalidException.cs" />
     <Compile Include="Forms\Range.cs" />
     <Compile Include="Forms\Controls\Navigation.cs" />
     <Compile Include="Forms\Controls\NavigationItem.cs" />

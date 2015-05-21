@@ -63,14 +63,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Eto.Mac\Conversions.sd.cs">
-      <Link>Conversions.sd.cs</Link>
+    <Compile Include="..\Eto.Mac\SDConversions.cs">
+      <Link>SDConversions.cs</Link>
     </Compile>
     <Compile Include="..\Eto.Wpf\CustomControls\HttpServer.cs">
       <Link>CustomControls\HttpServer.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\Conversions.cs">
+      <Link>Conversions.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>Drawing\GradientHelper.cs</Link>
+    </Compile>
     <Compile Include="BubbleEventFilter.cs" />
-    <Compile Include="Conversions.cs" />
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="WinConversions.cs" />
     <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
       <SubType>Component</SubType>
     </Compile>

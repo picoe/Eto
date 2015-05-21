@@ -78,7 +78,7 @@ namespace Eto.Mac.Forms.Cells
 				if (DrawsBackground)
 				{
 					var context = nscontext.GraphicsPort;
-					context.SetFillColor(BackgroundColor.ToCGColor());
+					context.SetFillColor(BackgroundColor.ToCG());
 					context.FillRect(cellFrame);
 				}
 

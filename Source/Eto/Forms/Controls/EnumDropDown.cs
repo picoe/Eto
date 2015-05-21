@@ -94,7 +94,8 @@ namespace Eto.Forms
 		protected override IEnumerable<object> CreateDefaultDataStore()
 		{
 			var type = typeof(T);
-			if (!type.IsEnum()) throw new EtoException("T must be an enumeration");
+			if (!type.IsEnum())
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "T must be an enumeration"));
 
 			var items = new ListItemCollection();
 			var values = Enum.GetValues(type);

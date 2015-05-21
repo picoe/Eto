@@ -1,5 +1,7 @@
 using System;
 using Eto.Drawing;
+using System.Collections.Generic;
+using System.Linq;
 
 #if XAMMAC2
 using Foundation;
@@ -33,11 +35,19 @@ using nuint = System.UInt32;
 
 #if OSX
 
+#if XAMMAC2
+using nnfloat = System.nfloat;
+#else
+using nnfloat = System.Single;
+#endif
+
 namespace Eto.Mac.Drawing
 #else
 using Eto.Mac;
 using CoreGraphics;
 using ImageIO;
+
+using nnfloat = System.nfloat;
 
 namespace Eto.iOS.Drawing
 #endif
@@ -51,21 +61,19 @@ namespace Eto.iOS.Drawing
 	{
 		class BrushObject
 		{
-			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
-			CGAffineTransform viewTransform = CGAffineTransform.MakeIdentity();
-			readonly nfloat[] alpha = { 1 };
-			CGPattern pattern;
+			IMatrix transform;
 			GradientWrapMode wrap;
-			CGSize tileSize;
-			CGSize sectionSize;
-
-			public CGGradient InverseGradient { get; set; }
+			float lastScale;
 
 			public CGGradient Gradient { get; set; }
 
-			public CGPoint StartPoint { get; set; }
+			public PointF StartPoint { get; set; }
 
-			public CGPoint EndPoint { get; set; }
+			public PointF EndPoint { get; set; }
+
+			public CGColor StartColor { get; set; }
+
+			public CGColor EndColor { get; set; }
 
 			public GradientWrapMode Wrap
 			{
@@ -73,83 +81,57 @@ namespace Eto.iOS.Drawing
 				set
 				{
 					wrap = value;
-					pattern = null;
+					Reset();
 				}
 			}
 
-			public void Apply(GraphicsHandler graphics)
-			{
-				graphics.SetFillColorSpace();
-
-				#if OSX
-				graphics.SetPhase();
-				#endif
-
-				// make current transform apply to the pattern
-				var currentTransform = graphics.CurrentTransform;
-				if (pattern == null || viewTransform != currentTransform)
-				{
-					viewTransform = currentTransform;
-					SetPattern();
-				}
-
-				graphics.Control.SetFillPattern(pattern, alpha);
-			}
-
-			public float Opacity
-			{
-				get { return (float)alpha[0]; }
-				set { alpha[0] = value; }
-			}
-
-			public CGAffineTransform Transform
+			public IMatrix Transform
 			{
 				get { return transform; }
 				set
 				{
 					transform = value;
-					pattern = null;
+					if (wrap != GradientWrapMode.Pad)
+						Reset();
 				}
 			}
 
-			void DrawPattern(CGContext context)
+			void Reset()
 			{
-				var start = new CGPoint(0, 0);
-				var end = start + sectionSize;
-
-				context.ClipToRect(new CGRect(start, tileSize).Inset(-4, -4));
-
-				if (Wrap == GradientWrapMode.Reflect)
-				{
-					for (int i = 0; i < 2; i++)
-					{
-						context.DrawLinearGradient(Gradient, start, end, 0);
-						context.DrawLinearGradient(InverseGradient, end, end + sectionSize, 0);
-						start = start + sectionSize + sectionSize;
-						end = end + sectionSize + sectionSize;
-					}
-				}
-				else
-				{
-					for (int i = 0; i < 2; i++)
-					{
-						context.DrawLinearGradient(Gradient, start, end, 0);
-						start = start + sectionSize;
-						end = end + sectionSize;
-					}
-				}
+				Gradient = null;
 			}
 
-			void SetPattern()
+			public void Draw(GraphicsHandler graphics, RectangleF rect)
 			{
-				sectionSize = new CGSize((EndPoint.X - StartPoint.X) + 1, (EndPoint.Y - StartPoint.Y) + 1);
-				if (Wrap == GradientWrapMode.Reflect)
-					tileSize = new CGSize(sectionSize.Width * 4, sectionSize.Height * 4);
+				var start = StartPoint;
+				var end = EndPoint;
+
+				if (transform != null)
+				{
+					start = transform.TransformPoint(start);
+					end = transform.TransformPoint(end);
+				}
+
+				if (wrap == GradientWrapMode.Pad)
+				{
+					if (Gradient == null)
+						Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new [] { StartColor, EndColor }, new nnfloat[] { (nnfloat)0f, (nnfloat)1f });
+				}
 				else
-					tileSize = new CGSize(sectionSize.Width * 2, sectionSize.Height * 2);
-				var rect = new CGRect(StartPoint, tileSize);
-				var t = CGAffineTransform.Multiply(transform, viewTransform);
-				pattern = new CGPattern(rect, t, rect.Width, rect.Height, CGPatternTiling.NoDistortion, true, DrawPattern);
+				{
+					var scale = GradientHelper.GetLinearScale(ref start, ref end, rect, lastScale, wrap == GradientWrapMode.Reflect ? 2f : 1f);
+
+					if (Gradient == null || scale > lastScale)
+					{
+						var stops = GradientHelper.GetGradientStops(StartColor, EndColor, scale, wrap).ToList();
+						Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), stops.Select(r => r.Item2).ToArray(), stops.Select(r => (nnfloat)r.Item1).ToArray());
+						lastScale = scale;
+					}
+				}
+
+				var context = graphics.Control;
+
+				context.DrawLinearGradient(Gradient, start.ToNS(), end.ToNS(), CGGradientDrawingOptions.DrawsAfterEndLocation | CGGradientDrawingOptions.DrawsBeforeStartLocation);
 			}
 		}
 
@@ -157,18 +139,10 @@ namespace Eto.iOS.Drawing
 		{
 			return new BrushObject
 			{
-				Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new CGColor []
-				{
-					startColor.ToCGColor(),
-					endColor.ToCGColor()
-				}),
-				InverseGradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new CGColor []
-				{
-					endColor.ToCGColor(),
-					startColor.ToCGColor()
-				}),
-				StartPoint = startPoint.ToNS(),
-				EndPoint = endPoint.ToNS()
+				StartColor = startColor.ToCG(),
+				EndColor = endColor.ToCG(),
+				StartPoint = startPoint,
+				EndPoint = endPoint
 			};
 		}
 
@@ -179,12 +153,12 @@ namespace Eto.iOS.Drawing
 
 		public IMatrix GetTransform(LinearGradientBrush widget)
 		{
-			return ((BrushObject)widget.ControlObject).Transform.ToEto();
+			return ((BrushObject)widget.ControlObject).Transform;
 		}
 
 		public void SetTransform(LinearGradientBrush widget, IMatrix transform)
 		{
-			((BrushObject)widget.ControlObject).Transform = transform.ToCG();
+			((BrushObject)widget.ControlObject).Transform = transform;
 		}
 
 		public GradientWrapMode GetGradientWrap(LinearGradientBrush widget)
@@ -197,9 +171,9 @@ namespace Eto.iOS.Drawing
 			((BrushObject)widget.ControlObject).Wrap = gradientWrap;
 		}
 
-		public override void Apply(object control, GraphicsHandler graphics)
+		public override void Draw(object control, GraphicsHandler graphics, RectangleF rect)
 		{
-			((BrushObject)control).Apply(graphics);
+			((BrushObject)control).Draw(graphics, rect);
 		}
 	}
 }

@@ -63,11 +63,12 @@ namespace Eto.Mac.Forms
 
 		public void Show()
 		{
+			var visible = Control.IsVisible;
 			if (WindowState == WindowState.Minimized)
 				Control.MakeKeyWindow();
 			else
 				Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
-			if (!Control.IsVisible)
+			if (!visible)
 				Callback.OnShown(Widget, EventArgs.Empty);
 		}
 	}

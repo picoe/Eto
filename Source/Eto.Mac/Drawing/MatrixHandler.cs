@@ -100,12 +100,12 @@ namespace Eto.iOS.Drawing
 		
 		public void Rotate (float angle)
 		{
-			control = CGAffineTransform.Multiply (CGAffineTransform.MakeRotation (Conversions.DegreesToRadians (angle)), control);
+			control = CGAffineTransform.Multiply (CGAffineTransform.MakeRotation (CGConversions.DegreesToRadians (angle)), control);
 		}
 		
 		public void RotateAt (float angle, float centerX, float centerY)
 		{
-			angle = (float)Conversions.DegreesToRadians(angle);
+			angle = (float)CGConversions.DegreesToRadians(angle);
 			var sina = (nfloat)Math.Sin (angle);
 			var cosa = (nfloat)Math.Cos (angle);
 			var matrix = new CGAffineTransform(cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);
@@ -130,7 +130,7 @@ namespace Eto.iOS.Drawing
 		
 		public void Skew (float skewX, float skewY)
 		{
-			var matrix = new CGAffineTransform (1, (nfloat)Math.Tan (Conversions.DegreesToRadians (skewX)), (nfloat)Math.Tan (Conversions.DegreesToRadians (skewY)), 1, 0, 0);
+			var matrix = new CGAffineTransform (1, (nfloat)Math.Tan (CGConversions.DegreesToRadians (skewX)), (nfloat)Math.Tan (CGConversions.DegreesToRadians (skewY)), 1, 0, 0);
 			control = CGAffineTransform.Multiply (matrix, control);
 		}
 		
@@ -153,12 +153,20 @@ namespace Eto.iOS.Drawing
 		
 		public PointF TransformPoint (Point p)
 		{
+			#if __UNIFIED__
+			return control.TransformPoint(p.ToNS()).ToEto();
+			#else
 			return control.TransformPoint(p.ToSDPointF()).ToEto();
+			#endif
 		}
 		
 		public PointF TransformPoint (PointF p)
 		{
+			#if __UNIFIED__
+			return control.TransformPoint(p.ToNS()).ToEto();
+			#else
 			return control.TransformPoint(p.ToSD()).ToEto();
+			#endif
 		}
 		
 		public object ControlObject

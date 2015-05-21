@@ -96,6 +96,10 @@
       <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>
       <Name>Eto.Serialization.Json - pcl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
+      <Project>{231FB3B0-CB71-11E3-9C1A-0800200C9A66}</Project>
+      <Name>Eto.Serialization.Xaml - net45</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
 </Project>

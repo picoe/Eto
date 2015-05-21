@@ -22,6 +22,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[ContentProperty("Items")]
 	[Handler(typeof(ContextMenu.IHandler))]
 	public class ContextMenu : Menu, ISubmenu
 	{

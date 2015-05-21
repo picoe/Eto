@@ -20,7 +20,8 @@ https://github.com/picoe/Eto/wiki
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop xaml eto.forms</tags>
 		<frameworkAssemblies>
-			<frameworkAssembly assemblyName="System.Xaml" />
+			<frameworkAssembly assemblyName="System.Xaml" targetFramework="net40" />
+			<frameworkAssembly assemblyName="System.Xaml" targetFramework="net45" />
 		</frameworkAssemblies>
 		<dependencies>
 			<group>
@@ -29,6 +30,7 @@ https://github.com/picoe/Eto/wiki
 		</dependencies>
 	</metadata>
 	<files>
+		<file src="BuildOutput/pcl/$configuration$/Eto.Serialization.Xaml.dll" target="lib\portable-win8+net45+wp8+wpa81+monotouch+monoandroid+xamarin.mac" />
 		<file src="BuildOutput/net45/$configuration$/Eto.Serialization.Xaml.dll" target="lib\net45" />
 		<file src="BuildOutput/net40/$configuration$/Eto.Serialization.Xaml.dll" target="lib\net40" />
 		<file src="BuildOutput/net40/$configuration$/LICENSE.txt" target="LICENSE.txt" />

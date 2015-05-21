@@ -1,5 +1,3 @@
-#if XAML
-
 using System;
 using Eto.Forms;
 using Eto.Serialization.Xaml;
@@ -13,7 +11,6 @@ namespace Eto.Test.Sections.Serialization.Xaml
 
 		public Test ()
 		{
-			// NOTE: Only works in MS.NET or Mono 2.11 at the moment
 			XamlReader.Load (this);
 			
 			MyCheckBox.Checked = true;
@@ -31,5 +28,3 @@ namespace Eto.Test.Sections.Serialization.Xaml
 		}
 	}
 }
-
-#endif

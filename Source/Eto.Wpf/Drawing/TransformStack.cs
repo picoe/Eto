@@ -1,6 +1,7 @@
-using Eto.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using Eto.Drawing;
 
 namespace Eto.Wpf.Drawing
 {
@@ -92,7 +93,7 @@ namespace Eto.Wpf.Drawing
 		{
 			// If there is a current entry, use it.
 			if (stack == null || stack.Count == 0)
-				throw new EtoException("RestoreTransform called without SaveTransform");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "RestoreTransform called without SaveTransform"));
 
 			if (Current != null)
 				pop();

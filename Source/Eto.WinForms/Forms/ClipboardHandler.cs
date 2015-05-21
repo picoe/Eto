@@ -6,6 +6,9 @@ using sdi = System.Drawing.Imaging;
 using Eto.WinForms.Drawing;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
+using System.IO;
+using System.ComponentModel;
+using System.Text;
 
 namespace Eto.WinForms.Forms
 {
@@ -42,7 +45,7 @@ namespace Eto.WinForms.Forms
 			}
 			get
 			{
-				return swf.Clipboard.GetText(swf.TextDataFormat.Html);
+				return swf.Clipboard.ContainsText(swf.TextDataFormat.Html) ? swf.Clipboard.GetText(swf.TextDataFormat.Html) : null;
 			}
 		}
 
@@ -55,7 +58,7 @@ namespace Eto.WinForms.Forms
 			}
 			get
 			{
-				return swf.Clipboard.GetText();				
+				return swf.Clipboard.ContainsText() ? swf.Clipboard.GetText() : null;
 			}
 		}
 
@@ -168,7 +171,28 @@ namespace Eto.WinForms.Forms
 		public byte[] GetData(string type)
 		{
 			if (swf.Clipboard.ContainsData(type))
-				return swf.Clipboard.GetData(type) as byte[];
+			{
+				var data = swf.Clipboard.GetData(type);
+				var bytes = data as byte[];
+				if (bytes != null)
+					return bytes;
+				if (data != null)
+				{
+					var converter = TypeDescriptor.GetConverter(data.GetType());
+					if (converter != null && converter.CanConvertTo(typeof(byte[])))
+					{
+						return converter.ConvertTo(data, typeof(byte[])) as byte[];
+					}
+				}
+				if (data is string)
+				{
+					return Encoding.UTF8.GetBytes(data as string);
+				}
+				if (data is IConvertible)
+				{
+					return Convert.ChangeType(data, typeof(byte[])) as byte[];
+				}
+			}
 			return null;
 		}
 

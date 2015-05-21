@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Eto.Drawing;
 using Eto.Forms;
 #if IOS
@@ -174,7 +175,7 @@ namespace Eto.Mac.Forms
 			var type = control.GetType();
 			#if OSX
 			if (!typeof(IMacControl).IsAssignableFrom(type))
-				throw new EtoException(string.Format("Control '{0}' does not inherit from IMacControl", type));
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
 			#endif
 			var classHandle = Class.GetHandle(type);
 			ObjCExtensions.AddMethod(classHandle, selector, action, arguments);

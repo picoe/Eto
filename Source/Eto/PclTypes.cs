@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 // This file contains type definitions currently needed to compile Eto
 // as a Portable Class Library, in the project Eto.Pcl.csproj.
@@ -68,6 +69,22 @@ namespace Eto
 					result = FromString(text, formatInfo);
 					return result;
 				}
+				catch (InvalidOperationException innerException)
+				{
+					throw new InvalidOperationException(text, innerException);
+				}
+				catch (ArgumentNullException innerException)
+				{
+					throw new ArgumentNullException(text, innerException);
+				}
+				catch (ArgumentOutOfRangeException innerException)
+				{
+					throw new ArgumentOutOfRangeException(text, innerException);
+				}
+				catch (ArgumentException innerException)
+				{
+					throw new ArgumentException(text, innerException);
+				}
 				catch (Exception innerException)
 				{
 					throw new Exception(text, innerException);
@@ -88,26 +105,6 @@ namespace Eto
 				return ToString(value, formatInfo);
 			}
 			return base.ConvertTo(context, culture, value, destinationType);
-		}
-	}
-
-	class Int32Converter : BaseNumberConverter
-	{
-		internal override Type NumberType { get { return typeof(int); } }
-
-		internal override object FromString(string value, int fromBase)
-		{
-			return Convert.ToInt32(value, fromBase);
-		}
-
-		internal override object FromString(string value, NumberFormatInfo formatInfo)
-		{
-			return int.Parse(value, NumberStyles.Integer, formatInfo);
-		}
-
-		internal override string ToString(object value, NumberFormatInfo formatInfo)
-		{
-			return ((int)value).ToString("G", formatInfo);
 		}
 	}
 
@@ -400,9 +397,7 @@ namespace Eto
 			else
 				destinationType = value.GetType().FullName;
 
-			throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture,
-				"{0} cannot convert from {1}.", GetType().Name,
-				destinationType));
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "{0} cannot convert from {1}.", GetType().Name, destinationType));
 		}
 
 		/// <summary>
@@ -419,9 +414,7 @@ namespace Eto
 			else
 				sourceType = value.GetType().FullName;
 
-			throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture,
-				"'{0}' is unable to convert '{1}' to '{2}'.", GetType().Name,
-				sourceType, destinationType.FullName));
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "'{0}' is unable to convert '{1}' to '{2}'.", GetType().Name, sourceType, destinationType.FullName));
 		}
 
 		/// <summary>
@@ -458,10 +451,6 @@ namespace Eto
 				return false;
 			}
 		}
-	}
-
-	class SerializableAttribute : Attribute
-	{
 	}
 }
 #endif

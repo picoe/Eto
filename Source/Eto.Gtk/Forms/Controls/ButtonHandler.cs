@@ -46,6 +46,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			base.Initialize();
 			Control.Clicked += Connector.HandleClicked;
 			Control.SizeAllocated += Connector.HandleButtonSizeAllocated;
+			#if GTK2
+			Control.SizeRequested += Connector.HandleButtonSizeRequested;
+			#endif
 		}
 
 		protected new ButtonConnector Connector { get { return (ButtonConnector)base.Connector; } }
@@ -69,24 +72,42 @@ namespace Eto.GtkSharp.Forms.Controls
 				var handler = Handler;
 				if (handler != null)
 				{
-					var c = (Gtk.Button)o;
 					var size = args.Allocation;
 					if (Handler.PreferredSize.Width == -1 && (size.Width > 1 || size.Height > 1))
 					{
 						size.Width = Math.Max(size.Width, MinimumWidth);
 						if (args.Allocation != size)
+						{
+							var c = (Gtk.Button)o;
 							c.SetSizeRequest(size.Width, size.Height);
+						}
 					}
 				}
 			}
+
+			#if GTK2
+			public void HandleButtonSizeRequested(object o, Gtk.SizeRequestedArgs args)
+			{
+				var handler = Handler;
+				if (handler != null)
+				{
+					var size = args.Requisition;
+					if (Handler.PreferredSize.Width == -1 && (size.Width > 1 || size.Height > 1))
+					{
+						size.Width = Math.Max(size.Width, MinimumWidth);
+						args.Requisition = size;
+					}
+				}
+			}
+			#endif
 		}
 
 		public override string Text
 		{
-			get { return MnuemonicToString(label.Text); }
+			get { return label.Text.ToEtoMnemonic(); }
 			set
 			{
-				label.TextWithMnemonic = StringToMnuemonic(value);
+				label.TextWithMnemonic = value.ToPlatformMnemonic();
 				SetImagePosition();
 			}
 		}

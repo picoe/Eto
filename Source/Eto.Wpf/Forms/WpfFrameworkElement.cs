@@ -62,7 +62,7 @@ namespace Eto.Wpf.Forms
 			var handler = control.GetWpfFrameworkElement();
 			if (handler != null)
 				return handler.GetPreferredSize(available);
-			return Conversions.ZeroSize;
+			return WpfConversions.ZeroSize;
 		}
 	}
 

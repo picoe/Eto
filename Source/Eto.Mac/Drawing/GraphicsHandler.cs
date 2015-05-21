@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
@@ -95,6 +96,8 @@ namespace Eto.iOS.Drawing
 
 		public NSView DisplayView { get; private set; }
 
+		public RectangleF Bounds { get; set; }
+
 		public CGAffineTransform CurrentTransform { get { return currentTransform; } }
 
 		public PixelOffsetMode PixelOffsetMode
@@ -140,6 +143,7 @@ namespace Eto.iOS.Drawing
 
 			SetDefaults();
 			InitializeContext(view.IsFlipped);
+			Bounds = view.Bounds.ToEto();
 		}
 
 		static void FrameDidChange(ObserverActionEventArgs e)
@@ -165,6 +169,8 @@ namespace Eto.iOS.Drawing
 			Control = this.graphicsContext.GraphicsPort;
 			SetDefaults();
 			InitializeContext(!flipped);
+			if (view != null)
+				Bounds = view.Bounds.ToEto();
 		}
 
 		#elif IOS
@@ -229,6 +235,8 @@ namespace Eto.iOS.Drawing
 			height = image.Size.Height;
 			SetDefaults();
 			InitializeContext(true);
+			Bounds = new RectangleF(image.Size);
+
 		}
 
 		public void Reset()
@@ -410,8 +418,10 @@ namespace Eto.iOS.Drawing
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
 			StartDrawing();
-			brush.Apply(this);
-			Control.FillRect(TranslateView(new CGRect(x, y, width, height), width > 1 || height > 1, true));
+			var rect = new CGRect(x, y, width, height);
+			Control.AddRect(TranslateView(rect, true, true));
+			Control.Clip();
+			brush.Draw(this, rect.ToEto());
 			EndDrawing();
 		}
 
@@ -432,9 +442,10 @@ namespace Eto.iOS.Drawing
 				DrawLine(color, x, y, x+width-1, y+height-1);
 				return;
 			}*/
-
-			brush.Apply(this);
-			Control.FillEllipseInRect(TranslateView(new CGRect(x, y, width, height), true, true));
+			var rect = new CGRect(x, y, width, height);
+			Control.AddEllipseInRect(TranslateView(rect, true, true));
+			Control.Clip();
+			brush.Draw(this, rect.ToEto());
 			EndDrawing();
 		}
 
@@ -448,7 +459,7 @@ namespace Eto.iOS.Drawing
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
 			Control.ConcatCTM(new CGAffineTransform(1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
-			Control.AddArc(centerX, centerY, rect.Width / 2, Conversions.DegreesToRadians(startAngle), Conversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc(centerX, centerY, rect.Width / 2, CGConversions.DegreesToRadians(startAngle), CGConversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
 			Control.StrokePath();
 			EndDrawing();
 		}
@@ -458,16 +469,18 @@ namespace Eto.iOS.Drawing
 			StartDrawing();
 
 			var rect = TranslateView(new CGRect(x, y, width, height), true, true);
-			brush.Apply(this);
+			Control.SaveState();
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
 			Control.ConcatCTM(new CGAffineTransform(1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
 			Control.MoveTo(centerX, centerY);
-			Control.AddArc(centerX, centerY, rect.Width / 2, Conversions.DegreesToRadians(startAngle), Conversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc(centerX, centerY, rect.Width / 2, CGConversions.DegreesToRadians(startAngle), CGConversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
 			Control.AddLineToPoint(centerX, centerY);
 			Control.ClosePath();
-			Control.FillPath();
+			Control.RestoreState();
+			Control.Clip();
+			brush.Draw(this, rect.ToEto());
 			EndDrawing();
 		}
 
@@ -479,18 +492,18 @@ namespace Eto.iOS.Drawing
 			Control.BeginPath();
 			Control.AddPath(path.ToCG());
 			Control.ClosePath();
-			brush.Apply(this);
 			switch (path.FillMode)
 			{
 				case FillMode.Alternate:
-					Control.EOFillPath();
+					Control.EOClip();
 					break;
 				case FillMode.Winding:
-					Control.FillPath();
+					Control.Clip();
 					break;
 				default:
 					throw new NotSupportedException();
 			}
+			brush.Draw(this, path.Bounds);
 			EndDrawing();
 		}
 
@@ -573,7 +586,7 @@ namespace Eto.iOS.Drawing
 
 		public void RotateTransform(float angle)
 		{
-			angle = (float)Conversions.DegreesToRadians(angle);
+			angle = (float)CGConversions.DegreesToRadians(angle);
 			Control.RotateCTM(angle);
 			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeRotation(angle), currentTransform);
 		}
@@ -605,7 +618,7 @@ namespace Eto.iOS.Drawing
 		public void RestoreTransform()
 		{
 			if (transformSaveCount <= 0)
-				throw new InvalidOperationException("No saved transform");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "No saved transform"));
 			RewindClip();
 			transformSaveCount--;
 			Control.RestoreState();

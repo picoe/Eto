@@ -42,7 +42,7 @@ namespace Eto.Test.Sections.Drawing
 			m2.Translate(10, 10);
 
 			if (m == m2)
-				throw new Exception("Grr!");
+				throw new ArgumentOutOfRangeException("Grr!");
 
 			Content = layout;
 		}

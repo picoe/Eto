@@ -383,5 +383,20 @@ namespace Eto.Direct2D
 				return new s.WIC.Bitmap(SDFactory.WicImagingFactory, converter, s.WIC.BitmapCreateCacheOption.CacheOnLoad);
 			}
 		}
+
+		public static sd.ExtendMode ToDx(this GradientWrapMode value)
+		{
+			switch (value)
+			{
+				case GradientWrapMode.Repeat:
+					return sd.ExtendMode.Wrap;
+				case GradientWrapMode.Reflect:
+					return sd.ExtendMode.Mirror;
+				case GradientWrapMode.Pad:
+					return sd.ExtendMode.Clamp;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

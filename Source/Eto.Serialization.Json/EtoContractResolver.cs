@@ -40,7 +40,7 @@ namespace Eto.Serialization.Json
 				list.Add(prop);
 			}
 
-			if (!list.Any(r => r.PropertyName == "$type"))
+			if (list.All(r => r.PropertyName != "$type"))
 			{
 				var prop = new JsonProperty();
 				prop.PropertyName = "$type";

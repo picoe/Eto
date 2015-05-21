@@ -167,7 +167,7 @@ namespace Eto.Mac.Forms
 				NSApplication.Main(new string[0]);
 			}
 			else
-				Initialize(Control.Delegate);
+				Initialize(Control.Delegate as NSApplicationDelegate);
 		}
 
 		public void Initialize(NSApplicationDelegate appdelegate)

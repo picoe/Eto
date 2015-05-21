@@ -1,8 +1,9 @@
 using System;
+using System.Globalization;
+using System.Reflection;
 using Eto.Forms;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System.Reflection;
 
 namespace Eto.Serialization.Json
 {
@@ -42,7 +43,7 @@ namespace Eto.Serialization.Json
 					instance = new TableCell(table);
 				}
 				else
-					throw new EtoException("Invalid object graph");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid object graph"));
 			}
 			else
 			{
@@ -60,7 +61,7 @@ namespace Eto.Serialization.Json
 					else if (objectType == typeof(TableCell))
 						instance = new TableCell();
 					else
-						throw new EtoException("Could not infer the type of object to create");
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Could not infer the type of object to create"));
 
 					serializer.Populate(container.CreateReader(), instance);
 				}

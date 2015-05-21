@@ -10,6 +10,6 @@ namespace Eto.WinForms.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class BrushHandler
 	{
-		public abstract sd.Brush GetBrush (Brush brush);
+		public abstract sd.Brush GetBrush(Brush brush, RectangleF rect);
 	}
 }

@@ -1,8 +1,8 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
-using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.ToolBar
 {
@@ -14,22 +14,23 @@ namespace Eto.Wpf.Forms.ToolBar
 
 		public ButtonToolItemHandler ()
 		{
-			Control = new swc.Button ();
+			Control = new swc.Button();
 			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
-			label = new swc.TextBlock ();
+			label = new swc.TextBlock();
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
-			panel.Children.Add (swcImage);
-			panel.Children.Add (label);
+			panel.Children.Add(swcImage);
+			panel.Children.Add(label);
 			Control.Content = panel;
-			Control.Click += delegate {
-				Widget.OnClick (EventArgs.Empty);
+			Control.Click += delegate
+			{
+				Widget.OnClick(EventArgs.Empty);
 			};
 		}
 
 		public override string Text
 		{
-			get { return label.Text.ToEtoMneumonic(); }
-			set { label.Text = value.ToWpfMneumonic(); }
+			get { return label.Text.ToEtoMnemonic(); }
+			set { label.Text = value.ToPlatformMnemonic(); }
 		}
 
 		public override string ToolTip
@@ -44,14 +45,18 @@ namespace Eto.Wpf.Forms.ToolBar
 			set
 			{
 				image = value;
-				swcImage.Source = image.ToWpf ((int)swcImage.MaxWidth);
+				swcImage.Source = image.ToWpf((int)swcImage.MaxWidth);
 			}
 		}
 
 		public override bool Enabled
 		{
 			get { return Control.IsEnabled; }
-			set { Control.IsEnabled = value; }
+			set
+			{
+				Control.IsEnabled = value;
+				swcImage.IsEnabled = value;
+			}
 		}
 	}
 }

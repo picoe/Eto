@@ -68,7 +68,7 @@ namespace Eto.Test.Sections.Controls
 				return webView;
 
 			}
-			catch (HandlerInvalidException)
+			catch (Exception)
 			{
 				var control = new Label
 				{ 

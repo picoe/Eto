@@ -29,24 +29,26 @@ namespace Eto.iOS.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
-		public override void Apply (object control, GraphicsHandler graphics)
+		public override void Draw(object control, GraphicsHandler graphics, RectangleF rect)
 		{
-			graphics.Control.SetFillColor ((CGColor)control);
+			graphics.Control.SetFillColor((CGColor)control);
+
+			graphics.Control.FillRect(rect.ToNS());
 		}
 
-		public Color GetColor (SolidBrush widget)
+		public Color GetColor(SolidBrush widget)
 		{
-			return ((CGColor)widget.ControlObject).ToEtoColor ();
+			return ((CGColor)widget.ControlObject).ToEto();
 		}
 
-		public void SetColor (SolidBrush widget, Color color)
+		public void SetColor(SolidBrush widget, Color color)
 		{
-			widget.ControlObject = color.ToCGColor ();
+			widget.ControlObject = color.ToCG();
 		}
 
-		object SolidBrush.IHandler.Create (Color color)
+		object SolidBrush.IHandler.Create(Color color)
 		{
-			return color.ToCGColor ();
+			return color.ToCG();
 		}
 	}
 }

@@ -10,22 +10,22 @@ namespace Eto.WinForms.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
-		public object Create (Color color)
+		public object Create(Color color)
 		{
-			return new sd.SolidBrush (color.ToSD ());
+			return new sd.SolidBrush(color.ToSD());
 		}
 
-		public Color GetColor (SolidBrush widget)
+		public Color GetColor(SolidBrush widget)
 		{
-			return ((sd.SolidBrush)widget.ControlObject).Color.ToEto ();
+			return ((sd.SolidBrush)widget.ControlObject).Color.ToEto();
 		}
 
-		public void SetColor (SolidBrush widget, Color color)
+		public void SetColor(SolidBrush widget, Color color)
 		{
-			((sd.SolidBrush)widget.ControlObject).Color = color.ToSD ();
+			((sd.SolidBrush)widget.ControlObject).Color = color.ToSD();
 		}
 
-		public override sd.Brush GetBrush (Brush brush)
+		public override sd.Brush GetBrush(Brush brush, RectangleF rect)
 		{
 			return (sd.Brush)brush.ControlObject;
 		}

@@ -1,8 +1,9 @@
 using System;
-using Eto.Forms;
-using Eto.Drawing;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test
 {
@@ -31,10 +32,10 @@ namespace Eto.Test
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
-			Title = "Test Application";
+			Title = string.Format("Test Application [{0}]", Platform.ID);
 			Style = "main";
 			MinimumSize = new Size(400, 400);
-			topNodes = topNodes ?? TestSections.Get();
+			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());
 			//SectionList = new SectionListGridView(topNodes);
 			//SectionList = new SectionListTreeView(topNodes);
 			if (Platform.IsAndroid)
@@ -111,7 +112,7 @@ namespace Eto.Test
 				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
 			}
-			throw new EtoException("Platform must support splitter or navigation");
+			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Platform must support splitter or navigation"));
 
 		}
 

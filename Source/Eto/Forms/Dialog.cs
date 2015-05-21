@@ -18,11 +18,11 @@ namespace Eto.Forms
 		/// The default display mode for modal dialogs in the platform
 		/// </summary>
 		/// <remarks>
-		/// This uses the ideal display mode given the state of the application and the parent window that is passed in
+		/// This uses the ideal display mode given the state of the application and the owner window that is passed in
 		/// </remarks>
 		Default = 0,
 		/// <summary>
-		/// Display the dialog attached to the parent window, if supported (e.g. OS X)
+		/// Display the dialog attached to the owner window, if supported (e.g. OS X)
 		/// </summary>
 		Attached = 0x01,
 		/// <summary>
@@ -40,7 +40,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <remarks>
 	/// This provides a way to show a modal dialog with custom contents to the user.
-	/// A dialog will block user input from the parent form until the dialog is closed.
+	/// A dialog will block user input from the owner form until the dialog is closed.
 	/// </remarks>
 	/// <seealso cref="Dialog"/>
 	/// <typeparam name="T">Type result type of the dialog</typeparam>
@@ -55,15 +55,35 @@ namespace Eto.Forms
 		/// <summary>
 		/// Shows the dialog and blocks until the user closes the dialog
 		/// </summary>
+		/// <returns>The result of the modal dialog</returns>
+		public new T ShowModal()
+		{
+			base.ShowModal();
+			return Result;
+		}
+
+		/// <summary>
+		/// Shows the dialog modally asynchronously
+		/// </summary>
+		/// <returns>The result of the modal dialog</returns>
+		public new Task<T> ShowModalAsync()
+		{
+			return base.ShowModalAsync()
+				.ContinueWith(t => Result, TaskContinuationOptions.OnlyOnRanToCompletion);
+		}
+
+		/// <summary>
+		/// Shows the dialog and blocks until the user closes the dialog
+		/// </summary>
 		/// <remarks>
-		/// The <paramref name="parent"/> specifies the control on the window that will be blocked from user input until
+		/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 		/// the dialog is closed.
 		/// </remarks>
 		/// <returns>The result of the modal dialog</returns>
-		/// <param name="parent">Parent control that is showing the form</param>
-		public new T ShowModal(Control parent = null)
+		/// <param name="owner">The owner control that is showing the form</param>
+		public new T ShowModal(Control owner)
 		{
-			base.ShowModal(parent);
+			base.ShowModal(owner);
 			return Result;
 		}
 
@@ -71,13 +91,13 @@ namespace Eto.Forms
 		/// Shows the dialog modally asynchronously
 		/// </summary>
 		/// <remarks>
-		/// The <paramref name="parent"/> specifies the control on the window that will be blocked from user input until
+		/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 		/// the dialog is closed.
 		/// </remarks>
-		/// <param name="parent">Parent control that is showing the form</param>
-		public new Task<T> ShowModalAsync(Control parent = null)
+		/// <param name="owner">The owner control that is showing the form</param>
+		public new Task<T> ShowModalAsync(Control owner)
 		{
-			return base.ShowModalAsync(parent)
+			return base.ShowModalAsync(owner)
 				.ContinueWith(t => Result, TaskContinuationOptions.OnlyOnRanToCompletion);
 		}
 
@@ -97,7 +117,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <remarks>
 	/// This provides a way to show a modal dialog with custom contents to the user.
-	/// A dialog will block user input from the parent form until the dialog is closed.
+	/// A dialog will block user input from the owner form until the dialog is closed.
 	/// </remarks>
 	/// <seealso cref="Form"/>
 	/// <seealso cref="Dialog{T}"/>
@@ -147,13 +167,22 @@ namespace Eto.Forms
 		/// Shows the dialog modally, blocking the current thread until it is closed.
 		/// </summary>
 		/// <remarks>
-		/// The <paramref name="parent"/> specifies the control on the window that will be blocked from user input until
+		/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 		/// the dialog is closed.
 		/// </remarks>
-		/// <param name="parent">Parent control that is showing the form</param>
-		public void ShowModal(Control parent = null)
+		/// <param name="owner">The owner control that is showing the form</param>
+		public void ShowModal(Control owner)
 		{
-			var loaded = Loaded;
+			Owner = owner != null ? owner.ParentWindow : null;
+			ShowModal();
+		}
+
+		/// <summary>
+		/// Shows the dialog modally, blocking the current thread until it is closed.
+		/// </summary>
+		public void ShowModal()
+		{
+			bool loaded = Loaded;
 			if (!loaded)
 			{
 				OnPreLoad(EventArgs.Empty);
@@ -163,20 +192,30 @@ namespace Eto.Forms
 			}
 
 			Application.Instance.AddWindow(this);
-			Handler.ShowModal(parent);
+
+			Handler.ShowModal(Owner);
 		}
 
 		/// <summary>
 		/// Shows the dialog modally asynchronously
 		/// </summary>
 		/// <remarks>
-		/// The <paramref name="parent"/> specifies the control on the window that will be blocked from user input until
+		/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 		/// the dialog is closed.
 		/// </remarks>
-		/// <param name="parent">Parent control that is showing the form</param>
-		public Task ShowModalAsync(Control parent = null)
+		/// <param name="owner">The owner control that is showing the form</param>
+		public Task ShowModalAsync(Control owner)
 		{
-			var loaded = Loaded;
+			Owner = owner != null ? owner.ParentWindow : null;
+			return ShowModalAsync();
+		}
+
+		/// <summary>
+		/// Shows the dialog modally asynchronously
+		/// </summary>
+		public Task ShowModalAsync()
+		{
+			bool loaded = Loaded;
 			if (!loaded)
 			{
 				OnPreLoad(EventArgs.Empty);
@@ -185,7 +224,7 @@ namespace Eto.Forms
 				OnLoadComplete(EventArgs.Empty);
 			}
 
-			return Handler.ShowModalAsync(parent);
+			return Handler.ShowModalAsync(Owner);
 		}
 
 		/// <summary>
@@ -203,21 +242,21 @@ namespace Eto.Forms
 			/// Shows the dialog modally, blocking the current thread until it is closed.
 			/// </summary>
 			/// <remarks>
-			/// The <paramref name="parent"/> specifies the control on the window that will be blocked from user input until
+			/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 			/// the dialog is closed.
 			/// </remarks>
-			/// <param name="parent">Parent control that is showing the form</param>
-			void ShowModal(Control parent);
+			/// <param name="owner">The owner control that is showing the form</param>
+			void ShowModal(Control owner);
 
 			/// <summary>
 			/// Shows the dialog modally asynchronously
 			/// </summary>
 			/// <remarks>
-			/// The <paramref name="parent"/> specifies the control on the window that will be blocked from user input until
+			/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 			/// the dialog is closed.
 			/// </remarks>
-			/// <param name="parent">Parent control that is showing the form</param>
-			Task ShowModalAsync(Control parent);
+			/// <param name="owner">The owner control that is showing the form</param>
+			Task ShowModalAsync(Control owner);
 
 			/// <summary>
 			/// Gets or sets the default button.

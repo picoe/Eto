@@ -120,6 +120,11 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		public override Gtk.Widget BackgroundControl
+		{
+			get { return Control; }
+		}
+
 		protected abstract void SetContainerContent(Gtk.Widget content);
 	}
 }

@@ -38,7 +38,7 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac
 {
-	public static partial class Conversions
+	public static partial class MacConversions
 	{
 		public static NSColor ToNSUI(this Color color)
 		{
@@ -169,7 +169,7 @@ namespace Eto.Mac
 
 		public static MouseEventArgs GetMouseEvent(NSView view, NSEvent theEvent, bool includeWheel)
 		{
-			var pt = Conversions.GetLocation(view, theEvent);
+			var pt = MacConversions.GetLocation(view, theEvent);
 			Keys modifiers = KeyMap.GetModifiers(theEvent);
 			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
@@ -181,7 +181,7 @@ namespace Eto.Mac
 		public static MouseButtons GetMouseButtons(this NSEvent theEvent)
 		{
 			MouseButtons buttons = MouseButtons.None;
-			
+
 			switch (theEvent.Type)
 			{
 				case NSEventType.LeftMouseUp:
@@ -398,4 +398,3 @@ namespace Eto.Mac
 		}
 	}
 }
-

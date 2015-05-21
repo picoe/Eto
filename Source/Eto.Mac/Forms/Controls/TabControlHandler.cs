@@ -40,15 +40,15 @@ namespace Eto.Mac.Forms.Controls
 		// CWEN: should have some form of implementation here
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
-		public TabControlHandler ()
+		public TabControlHandler()
 		{
 			Enabled = true;
 			Control = new EtoTabView { Handler = this };
 		}
 
-		public override void OnLoadComplete (EventArgs e)
+		public override void OnLoadComplete(EventArgs e)
 		{
-			base.OnLoadComplete (e);
+			base.OnLoadComplete(e);
 			Control.ShouldSelectTabViewItem += HandleShouldSelectTabViewItem;
 			Control.DidSelect += HandleDidSelect;
 		}
@@ -63,11 +63,11 @@ namespace Eto.Mac.Forms.Controls
 		static bool HandleShouldSelectTabViewItem(NSTabView tabView, NSTabViewItem item)
 		{
 			var handler = ((EtoTabView)tabView).WeakHandler.Target as TabControlHandler;
-			var tab = handler.Widget.Pages.FirstOrDefault (r => ((TabPageHandler)r.Handler).TabViewItem == item);
+			var tab = handler.Widget.Pages.FirstOrDefault(r => ((TabPageHandler)r.Handler).TabViewItem == item);
 			return tab == null || tab.Enabled;
 		}
 
-		static void HandleDidSelect (object sender, NSTabViewItemEventArgs e)
+		static void HandleDidSelect(object sender, NSTabViewItemEventArgs e)
 		{
 			var handler = GetHandler(sender) as TabControlHandler;
 			if (handler != null)
@@ -80,47 +80,53 @@ namespace Eto.Mac.Forms.Controls
 		public int SelectedIndex
 		{
 			get { return (int)(Control.Selected == null ? -1 : Control.IndexOf(Control.Selected)); }
-			set { Control.SelectAt (value); }
+			set { Control.SelectAt(value); }
 		}
 
 		public override bool Enabled { get; set; }
-		
-		public void InsertTab (int index, TabPage page)
+
+		public void InsertTab(int index, TabPage page)
 		{
 			if (index == -1)
-				Control.Add (((TabPageHandler)page.Handler).TabViewItem);
+				Control.Add(((TabPageHandler)page.Handler).TabViewItem);
 			else
-				Control.Insert (((TabPageHandler)page.Handler).TabViewItem, index);
+				Control.Insert(((TabPageHandler)page.Handler).TabViewItem, index);
 		}
-		
-		public void ClearTabs ()
+
+		public void ClearTabs()
 		{
 			foreach (var tab in Control.Items)
-				Control.Remove (tab);
+				Control.Remove(tab);
 		}
-		
-		public void RemoveTab (int index, TabPage page)
+
+		public void RemoveTab(int index, TabPage page)
 		{
 			disableSelectedIndexChanged = true;
-			try {
+			try
+			{
 				var isSelected = SelectedIndex == index;
-				Control.Remove (((TabPageHandler)page.Handler).TabViewItem);
+				Control.Remove(((TabPageHandler)page.Handler).TabViewItem);
 				if (isSelected && Control.Items.Length > 0)
-					SelectedIndex = Math.Min (index, Control.Items.Length - 1);
+					SelectedIndex = Math.Min(index, Control.Items.Length - 1);
 				if (Widget.Loaded)
 					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
-			} finally {
+			}
+			finally
+			{
 				disableSelectedIndexChanged = false;
 			}
 		}
 
-		protected override SizeF GetNaturalSize (SizeF availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var size = base.GetNaturalSize(availableSize);
-			foreach (var tab in Widget.Pages.Where(r => r.Visible)) {
-				size = SizeF.Max (size, tab.GetPreferredSize(availableSize));
+			var borderSize = Control.Frame.Size.ToEto() - Control.ContentRect.Size.ToEto();
+
+			foreach (var tab in Widget.Pages.Where(r => r.Visible))
+			{
+				size = SizeF.Max(size, tab.GetPreferredSize(availableSize));
 			}
-			return size;
+			return size + borderSize;
 		}
 	}
 }

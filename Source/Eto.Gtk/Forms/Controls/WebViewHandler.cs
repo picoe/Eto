@@ -1,6 +1,7 @@
 using System;
-using Eto.Forms;
+using System.Globalization;
 using System.Threading;
+using Eto.Forms;
 #if GTK3
 using NewWindowPolicyDecisionRequestedArgs = WebKit.NewWindowPolicyDecisionRequestedArgs;
 #endif
@@ -34,7 +35,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			catch (Exception ex)
 			{
-				throw new EtoException("GTK WebView is only supported on Linux, and requires webkit-sharp", ex);
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "GTK WebView is only supported on Linux, and requires webkit-sharp", ex));
 			}
 			scroll.Add(Control);
 		}

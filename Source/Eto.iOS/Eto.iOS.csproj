@@ -116,8 +116,8 @@
     <Compile Include="..\Eto.Mac\Drawing\GraphicsPathHandler.cs">
       <Link>Drawing\GraphicsPathHandler.cs</Link>
     </Compile>
-    <Compile Include="..\Eto.Mac\Conversions.cg.cs">
-      <Link>Conversions.cg.cs</Link>
+    <Compile Include="..\Eto.Mac\CGConversions.cs">
+      <Link>CGConversions.cs</Link>
     </Compile>
     <Compile Include="Conversions.cs" />
     <Compile Include="..\Eto.Mac\Drawing\FontsHandler.cs">
@@ -196,6 +196,13 @@
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="..\Eto.Mac\Messaging.cs">
       <Link>Messaging.cs</Link>
+    </Compile>
+    <Compile Include="Forms\ClipboardHandler.cs" />
+    <Compile Include="..\Eto.Mac\Drawing\RadialGradientBrushHandler.cs">
+      <Link>Drawing\RadialGradientBrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>Drawing\GradientHelper.cs</Link>
     </Compile>
   </ItemGroup>
   <ProjectExtensions>

@@ -107,8 +107,8 @@
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <ItemGroup>
-    <Compile Include="..\Eto.Direct2D\Conversions.cs">
-      <Link>Conversions.cs</Link>
+    <Compile Include="..\Eto.Direct2D\2DConversions.cs">
+      <Link>2DConversions.cs</Link>
     </Compile>
     <Compile Include="..\Eto.Direct2D\Drawing\BitmapHandler.cs">
       <Link>Drawing\BitmapHandler.cs</Link>
@@ -151,6 +151,9 @@
     </Compile>
     <Compile Include="..\Eto.Direct2D\Drawing\PenHandler.cs">
       <Link>Drawing\PenHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Direct2D\Drawing\RadialGradientBrushHandler.cs">
+      <Link>Drawing\RadialGradientBrushHandler.cs</Link>
     </Compile>
     <Compile Include="..\Eto.Direct2D\Drawing\SDFactory.cs">
       <Link>Drawing\SDFactory.cs</Link>

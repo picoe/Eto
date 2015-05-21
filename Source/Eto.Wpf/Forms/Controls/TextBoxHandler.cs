@@ -29,7 +29,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
-			return base.GetPreferredSize(Conversions.ZeroSize);
+			return base.GetPreferredSize(WpfConversions.ZeroSize);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

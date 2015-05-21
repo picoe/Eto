@@ -46,7 +46,7 @@ namespace Eto.iOS.Drawing
 	public static class FontExtensions
 	{
 		#if OSX
-		static readonly NSString ForegroundColorAttribute = NSAttributedString.ForegroundColorAttributeName;
+		static readonly NSString ForegroundColorAttribute = NSStringAttributeKey.ForegroundColor;
 		#elif IOS
 		static readonly NSString ForegroundColorAttribute = UIStringAttributeKey.ForegroundColor;
 		static readonly Selector selSetSize = new Selector("setSize:");

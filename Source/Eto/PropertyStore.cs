@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -84,7 +84,7 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// This should be called in an event's add accessor.
-		/// If you are adding a handler-based event, call <see cref="WidgetPropertyStore.AddHandlerEvent"/> instead, which will automatically
+		/// If you are adding a handler-based event, call <see cref="AddHandlerEvent"/> instead, which will automatically
 		/// tell the handler that it needs to be wired up.
 		/// 
 		/// You can use any subclass of <see cref="System.EventArgs"/> for the type of event handler
@@ -92,7 +92,7 @@ namespace Eto
 		/// To trigger the event, use <see cref="TriggerEvent{T}"/>.
 		/// </remarks>
 		/// <seealso cref="RemoveEvent"/>
-		/// <seealso cref="WidgetPropertyStore.AddHandlerEvent"/>
+		/// <seealso cref="AddHandlerEvent"/>
 		/// <example>
 		/// Example implementation of a generic event
 		/// <code>
@@ -167,7 +167,7 @@ namespace Eto
 		/// Removes the event delegate with the specified <paramref name="key"/>
 		/// </summary>
 		/// <remarks>
-		/// Use this in the remove accessor of your event.  See <see cref="AddEvent"/> and <see cref="WidgetPropertyStore.AddHandlerEvent"/>
+		/// Use this in the remove accessor of your event.  See <see cref="AddEvent"/> and <see cref="AddHandlerEvent"/>
 		/// for examples.
 		/// </remarks>
 		/// <param name="key">Key of the event to remove</param>
@@ -260,6 +260,7 @@ namespace Eto
 		/// <param name="propertyChanged">Property changed event handler to raise if the property value has changed.</param>
 		/// <param name="propertyName">Name of the property, or omit to get the property name from the caller.</param>
 		/// <typeparam name="T">The type of the property to set.</typeparam>
+		/// <returns>true if the property was changed, false if not</returns>
 		#if PCL
 		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, T defaultValue = default(T), [CallerMemberName] string propertyName = null)
 		#else
@@ -271,6 +272,52 @@ namespace Eto
 			{
 				Set<T>(key, value, defaultValue);
 				propertyChanged(Parent, new PropertyChangedEventArgs(propertyName));
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Set the value for the specified property key, calling the <paramref name="propertyChanged"/> delegate if it has changed.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when creating properties that need to trigger changed events without having to write boilerplate code.
+		/// </remarks>
+		/// <example>
+		/// <code>
+		/// public class MyForm : Form
+		/// {
+		/// 	static readonly MyPropertyKey = new object();
+		/// 
+		/// 	public bool MyProperty
+		///		{
+		/// 		get { return Properties.Get&lt;bool&gt;(MyPropertyKey); }
+		/// 		set { Properties.Set(MyPropertyKey, value, OnMyPropertyChanged); }
+		/// 	}
+		/// 
+		/// 	public event EventHandler&lt;EventArgs&gt; MyPropertyChanged;
+		/// 	
+		///		protected virtual void MyPropertyChanged(EventArgs e)
+		///		{
+		///			if (MyPropertyChanged != null)
+		///				MyPropertyChanged(this, e);
+		///		}
+		/// }
+		/// </code>
+		/// </example>
+		/// <param name="key">Key of the property to set.</param>
+		/// <param name="value">Value for the property.</param>
+		/// <param name="defaultValue">Default value of the property to compare when removing the key</param>
+		/// <param name="propertyChanged">Property changed event handler to raise if the property value has changed.</param>
+		/// <typeparam name="T">The type of the property to set.</typeparam>
+		/// <returns>true if the property was changed, false if not</returns>
+		public bool Set<T>(object key, T value, Action propertyChanged, T defaultValue = default(T))
+		{
+			var existing = Get<T>(key);
+			if (!Equals(existing, value))
+			{
+				Set<T>(key, value, defaultValue);
+				propertyChanged();
 				return true;
 			}
 			return false;

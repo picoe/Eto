@@ -8,12 +8,9 @@ namespace Eto.Test.Gtk2
 		//[STAThread]
 		static void Main(string[] args)
 		{
-#if DEBUG
-			Debug.Listeners.Add(new ConsoleTraceListener());
-#endif
-			var generator = new Eto.GtkSharp.Platform();
+			var platform = new Eto.GtkSharp.Platform();
 			
-			var app = new TestApplication(generator);
+			var app = new TestApplication(platform, typeof(Startup).Assembly);
 			app.Run();
 		}
 	}

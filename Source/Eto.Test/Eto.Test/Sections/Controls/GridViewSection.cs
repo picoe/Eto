@@ -157,7 +157,7 @@ namespace Eto.Test.Sections.Controls
 					// Every item in the split filter string should be within the Text property
 					foreach (var filterItem in filterItems)
 					{
-						if (i.Text.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
+						if (i.Text.IndexOf(filterItem, StringComparison.OrdinalIgnoreCase) == -1)
 						{
 							return false;
 						}

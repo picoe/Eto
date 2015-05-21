@@ -81,7 +81,7 @@ namespace Eto.Forms
 	[ContentProperty("Rows")]
 	public class DynamicLayout : Panel
 	{
-		readonly DynamicTable topTable;
+		readonly DynamicTable topTable = new DynamicTable();
 		DynamicTable currentItem;
 		bool? yscale;
 
@@ -180,7 +180,6 @@ namespace Eto.Forms
 		/// </summary>
 		public DynamicLayout()
 		{
-			topTable = new DynamicTable();
 			currentItem = topTable;
 		}
 

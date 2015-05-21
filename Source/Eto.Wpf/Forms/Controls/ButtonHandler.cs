@@ -64,10 +64,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return (label.Content as string).ToEtoMneumonic(); }
+			get { return (label.Content as string).ToEtoMnemonic(); }
 			set
 			{
-				label.Content = value.ToWpfMneumonic();
+				label.Content = value.ToPlatformMnemonic();
 				SetImagePosition();
 			}
 		}

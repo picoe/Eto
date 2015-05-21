@@ -35,6 +35,47 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class SplitterHandler : MacView<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
+
+		//TODO: RelativePosition - following is just stub, see WinForm/WPF/GTK or ThemedSplitter
+		public double RelativePosition
+		{
+			get
+			{
+				var pos = Position;
+				if (fixedPanel == SplitterFixedPanel.Panel1)
+					return pos;
+				var size = Orientation == SplitterOrientation.Horizontal
+					? Control.Bounds.Width : Control.Bounds.Height;
+				size -= SplitterWidth;
+				if (fixedPanel == SplitterFixedPanel.Panel2)
+					return size - pos;
+				return pos / (double)size;
+			}
+			set
+			{
+				if (fixedPanel == SplitterFixedPanel.Panel1)
+					Position = (int)Math.Round(value);
+				else
+				{
+					var size = Orientation == SplitterOrientation.Horizontal
+					? Control.Bounds.Width : Control.Bounds.Height;
+					size -= SplitterWidth;
+					if (fixedPanel == SplitterFixedPanel.Panel2)
+						Position = (int)Math.Round(size - value);
+					else
+						Position = (int)Math.Round(size * value);
+				}
+			}
+		}
+
+		//TODO: SplitterWidth - at least get correct value
+		public int SplitterWidth
+		{
+			get { return 5; }
+			set { }
+		}
+
+
 		Control panel1;
 		Control panel2;
 		int? position;

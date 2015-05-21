@@ -1,18 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Xaml;
-using System.Windows.Markup;
 using System.Linq;
-using System.ComponentModel;
 using System.Xaml.Schema;
 
 namespace Eto.Serialization.Xaml
 {
-#if PCL
+#if NET45
 	class TypeConverterConverter : System.ComponentModel.TypeConverter
 	{
-		Eto.TypeConverter etoConverter;
+		readonly Eto.TypeConverter etoConverter;
 		public TypeConverterConverter(Eto.TypeConverter etoConverter)
 		{
 			this.etoConverter = etoConverter;
@@ -63,30 +60,66 @@ namespace Eto.Serialization.Xaml
 
 		T GetCustomAttribute<T>(bool inherit = true)
 		{
-			return UnderlyingType.GetCustomAttributes(typeof(T), true).OfType<T>().FirstOrDefault();
+			return UnderlyingType.GetCustomAttributes(typeof(T), inherit).OfType<T>().FirstOrDefault();
 		}
 
-#if PCL
+#if NET45
+		XamlValueConverter<System.ComponentModel.TypeConverter> typeConverter;
+
+		protected override XamlType LookupItemType()
+		{
+			if (EtoEnvironment.Platform.IsMono)
+			{
+				// mono doesn't use SchemaContext.GetXamlType here, which we need to override the type converter.
+				var underlyingType = UnderlyingType;
+				Type type;
+				if (IsArray)
+					type = underlyingType.GetElementType();
+				else if (IsDictionary)
+				{
+					type = !IsGeneric ? typeof(object) : underlyingType.GetGenericArguments()[1];
+				}
+				else if (!IsCollection)
+					type = null;
+				else if (!IsGeneric)
+					type = typeof(object);
+				else
+					type = underlyingType.GetGenericArguments()[0];
+
+				return type != null ? SchemaContext.GetXamlType(type) : null;
+			}
+			return base.LookupItemType();
+		}
+
 		protected override XamlValueConverter<System.ComponentModel.TypeConverter> LookupTypeConverter()
 		{
-			var typeConverterAttrib = this.UnderlyingType.GetCustomAttribute<Eto.TypeConverterAttribute>();
+			if (typeConverter != null)
+				return typeConverter;
+			var typeConverterAttrib = UnderlyingType.GetCustomAttribute<Eto.TypeConverterAttribute>();
 			if (typeConverterAttrib != null)
 			{
 				var converterType = Type.GetType(typeConverterAttrib.ConverterTypeName);
 				if (converterType != null)
-					return new EtoValueConverter(converterType, this);
+					typeConverter = new EtoValueConverter(converterType, this);
 			}
+			if (typeConverter == null)
 			// convert from Eto.TypeConverter to System.ComponentModel.TypeConverter
-			return base.LookupTypeConverter();
+				typeConverter = base.LookupTypeConverter();
+			return typeConverter;
 		}
 #endif
 
+		XamlMember contentProperty;
 		protected override XamlMember LookupContentProperty()
 		{
+			if (contentProperty != null)
+				return contentProperty;
 			var contentAttribute = GetCustomAttribute<ContentPropertyAttribute>();
 			if (contentAttribute == null || contentAttribute.Name == null)
-				return base.LookupContentProperty();
-			return GetMember(contentAttribute.Name);
+				contentProperty = base.LookupContentProperty();
+			else
+				contentProperty = GetMember(contentAttribute.Name);
+			return contentProperty;
 		}
 
 		protected override XamlMember LookupAliasedProperty(XamlDirective directive)

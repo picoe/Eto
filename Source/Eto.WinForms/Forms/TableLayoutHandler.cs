@@ -26,12 +26,12 @@ namespace Eto.WinForms.Forms
 			var widths = Control.GetColumnWidths();
 			var heights = Control.GetRowHeights();
 			var curSize = Size.Empty;
-			for (int i = 0; i < widths.Length; i++)
+			for (int i = 0; i < columnScale.Length; i++)
 			{
 				if (!columnScale[i] && i != lastColumnScale)
 					curSize.Width += widths[i];
 			}
-			for (int i = 0; i < heights.Length; i++)
+			for (int i = 0; i < rowScale.Length; i++)
 			{
 				if (!rowScale[i] && i != lastRowScale)
 					curSize.Height += heights[i];

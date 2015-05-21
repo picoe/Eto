@@ -67,7 +67,7 @@ namespace Eto.Direct2D.Drawing
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
 #if WINFORMS
-			var sdfont = Eto.WinForms.Conversions.ToSD(systemFont);
+			var sdfont = Eto.WinForms.WinConversions.ToSD(systemFont);
 			Create(sdfont.Name, size ?? sdfont.SizeInPoints, FontStyle.None, decoration);
 #else
 			var familyName = "Segoe UI";
@@ -213,7 +213,7 @@ namespace Eto.Direct2D.Drawing
 		public System.Drawing.Font GetFont()
 		{
 			var familyName = Control.FontFamily.FamilyNames.GetString(0);
-			var style = Eto.WinForms.Conversions.ToSD(FontStyle) | Eto.WinForms.Conversions.ToSD(FontDecoration);
+			var style = Eto.WinForms.WinConversions.ToSD(FontStyle) | Eto.WinForms.WinConversions.ToSD(FontDecoration);
 			return new System.Drawing.Font(familyName, Size, style);
 		}
 #endif

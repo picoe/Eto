@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 
@@ -89,7 +90,7 @@ namespace Eto.Drawing
 			{
 #if PCL
 				if (TypeHelper.GetCallingAssembly == null)
-					throw new ArgumentNullException("assembly", "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly");
+					throw new ArgumentNullException("assembly", string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
 				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
 #else
 				assembly = Assembly.GetCallingAssembly();
@@ -98,7 +99,7 @@ namespace Eto.Drawing
 			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
 				if (stream == null)
-					throw new ResourceNotFoundException(assembly, resourceName);
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName));
 				return new Bitmap(stream);
 			}
 		}
@@ -158,6 +159,10 @@ namespace Eto.Drawing
 		/// <param name="pixelFormat">Format of each pixel</param>
 		public Bitmap(int width, int height, PixelFormat pixelFormat)
 		{
+			if (width <= 0)
+				throw new ArgumentOutOfRangeException("width", "width must be greater than zero");
+			if (height <= 0)
+				throw new ArgumentOutOfRangeException("height", "height must be greater than zero");
 			Handler.Create(width, height, pixelFormat);
 			Initialize();
 		}
@@ -170,6 +175,12 @@ namespace Eto.Drawing
 		/// <param name="graphics">Graphics context the bitmap is intended to be drawn on</param>
 		public Bitmap(int width, int height, Graphics graphics)
 		{
+			if (width <= 0)
+				throw new ArgumentOutOfRangeException("width", "width must be greater than zero");
+			if (height <= 0)
+				throw new ArgumentOutOfRangeException("height", "height must be greater than zero");
+			if (graphics == null)
+				throw new ArgumentNullException("graphics");
 			Handler.Create(width, height, graphics);
 			Initialize();
 		}
@@ -183,6 +194,12 @@ namespace Eto.Drawing
 		/// <param name="interpolation">Interpolation quality</param>
 		public Bitmap(Image image, int? width = null, int? height = null, ImageInterpolation interpolation = ImageInterpolation.Default)
 		{
+			if (image == null)
+				throw new ArgumentNullException("image");
+			if (width != null && width <= 0)
+				throw new ArgumentOutOfRangeException("width", "width must be greater than zero");
+			if (height != null && height <= 0)
+				throw new ArgumentOutOfRangeException("height", "height must be greater than zero");
 			Handler.Create(image, width ?? image.Size.Width, height ?? image.Size.Height, interpolation);
 			Initialize();
 		}
@@ -193,6 +210,8 @@ namespace Eto.Drawing
 		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>
 		public Bitmap(byte[] bytes)
 		{
+			if (bytes == null)
+				throw new ArgumentNullException("bytes");
 			Handler.Create(new MemoryStream(bytes, false));
 		}
 

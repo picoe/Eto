@@ -47,13 +47,13 @@ namespace Eto.Mac.Forms
 		[Export("mouseMoved:")]
 		public void MouseMoved(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseMove(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
+			Handler.Callback.OnMouseMove(Handler.Widget, MacConversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("mouseEntered:")]
 		public void MouseEntered(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseEnter(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
+			Handler.Callback.OnMouseEnter(Handler.Widget, MacConversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("cursorUpdate:")]
@@ -64,13 +64,13 @@ namespace Eto.Mac.Forms
 		[Export("mouseExited:")]
 		public void MouseExited(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseLeave(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
+			Handler.Callback.OnMouseLeave(Handler.Widget, MacConversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("scrollWheel:")]
 		public void ScrollWheel(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseWheel(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, true));
+			Handler.Callback.OnMouseWheel(Handler.Widget, MacConversions.GetMouseEvent(Handler.EventControl, theEvent, true));
 		}
 	}
 
@@ -151,12 +151,17 @@ namespace Eto.Mac.Forms
 				var oldSize = GetPreferredSize(Size.MaxValue);
 				PreferredSize = value;
 
-				var newSize = ContainerControl.Frame.Size;
+				var oldFrameSize = ContainerControl.Frame.Size;
+				var newSize = oldFrameSize;
 				if (value.Width >= 0)
 					newSize.Width = value.Width;
 				if (value.Height >= 0)
 					newSize.Height = value.Height;
+
+				// this doesn't get to our overridden method to handle the event (since it calls [super setFrameSize:]) so trigger event manually.
 				ContainerControl.SetFrameSize(newSize);
+				if (oldFrameSize != newSize)
+					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 
 				AutoSize = value.Width == -1 && value.Height == -1;
 				CreateTracking();
@@ -410,7 +415,7 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
-				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				if (theEvent.ClickCount >= 2)
 					handler.Callback.OnMouseDoubleClick(handler.Widget, args);
 			
@@ -433,7 +438,7 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
-				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				handler.Callback.OnMouseUp(handler.Widget, args);
 				if (!args.Handled)
 				{
@@ -449,7 +454,7 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
-				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				handler.Callback.OnMouseMove(handler.Widget, args);
 				if (!args.Handled)
 				{
@@ -465,7 +470,7 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				var theEvent = Messaging.GetNSObject<NSEvent>(e);
-				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, true);
+				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, true);
 				if (!args.Delta.IsZero)
 				{
 					handler.Callback.OnMouseWheel(handler.Widget, args);
@@ -538,7 +543,7 @@ namespace Eto.Mac.Forms
 					ContainerControl.WantsLayer = true;
 					var layer = ContainerControl.Layer;
 					if (layer != null)
-						layer.BackgroundColor = color.Value.ToCGColor();
+						layer.BackgroundColor = color.Value.ToCG();
 				}
 				else {
 					ContainerControl.WantsLayer = false;
@@ -733,7 +738,16 @@ namespace Eto.Mac.Forms
 						return command.Enabled;
 				}
 			}
-			return Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
+			var objClass = ObjCExtensions.object_getClass(sender);
+
+			if (objClass == IntPtr.Zero)
+				return false;
+
+			var superClass = ObjCExtensions.class_getSuperclass(objClass);
+			return
+				superClass != IntPtr.Zero
+				&& ObjCExtensions.ClassInstancesRespondToSelector(superClass, sel)
+				&& Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
 		}
 
 		Dictionary<IntPtr, Command> systemActions;

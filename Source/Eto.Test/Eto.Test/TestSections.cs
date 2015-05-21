@@ -34,32 +34,30 @@ namespace Eto.Test
 
 	public static class TestSections
 	{
-		public static IEnumerable<Section> Get()
+		public static IEnumerable<Section> Get(IEnumerable<Assembly> testAssemblies)
 		{
 			var categories = new Dictionary<string, Section>();
-			#if PCL
-			var asm = typeof(TestSections).GetTypeInfo().Assembly;
-			#else
-			var asm = typeof(TestSections).Assembly;
-			#endif
-			foreach (var type in asm.ExportedTypes)
+			foreach (var asm in testAssemblies)
 			{
-				#if PCL
-				var section = type.GetTypeInfo().GetCustomAttribute<SectionAttribute>(false);
-				#else
-				var section = type.GetCustomAttribute<SectionAttribute>(false);
-				#endif
-				if (section != null)
+				foreach (var type in asm.ExportedTypes)
 				{
-					if (section.Requires != null && !Platform.Instance.Supports(section.Requires))
-						continue;
+					#if PCL
+					var section = type.GetTypeInfo().GetCustomAttribute<SectionAttribute>(false);
+					#else
+				var section = type.GetCustomAttribute<SectionAttribute>(false);
+					#endif
+					if (section != null)
+					{
+						if (section.Requires != null && !Platform.Instance.Supports(section.Requires))
+							continue;
 
-					Section category;
-					if (!categories.TryGetValue(section.Category, out category))
-						categories.Add(section.Category, category = new Section { Text = section.Category });
+						Section category;
+						if (!categories.TryGetValue(section.Category, out category))
+							categories.Add(section.Category, category = new Section { Text = section.Category });
 
-					var testType = type;
-					category.Add(new SectionItem { Creator = () => Activator.CreateInstance(testType) as Control, Text = section.Name });
+						var testType = type;
+						category.Add(new SectionItem { Creator = () => Activator.CreateInstance(testType) as Control, Text = section.Name });
+					}
 				}
 			}
 			foreach (var category in categories.Values)

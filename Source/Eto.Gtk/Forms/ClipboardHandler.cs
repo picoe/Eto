@@ -72,24 +72,16 @@ namespace Eto.GtkSharp.Forms
 			return null;
 		}
 
-		#region IClipboard implementation
-
 		public void SetString(string value, string type)
 		{
-			AddEntry(type, value, delegate(ClipboardData data, Gtk.SelectionData selection)
-			{
-				selection.Text = data.Data as string;
-			});
+			AddEntry(type, value, (data, selection) => selection.Text = data.Data as string);
 		}
 
 		public string Html
 		{
 			set
 			{ 
-				AddEntry("text/html", value, delegate(ClipboardData data, Gtk.SelectionData selection)
-				{
-					selection.Text = data.Data as string;
-				});
+				AddEntry("text/html", value, (data, selection) => selection.Text = data.Data as string);
 			}
 			get
 			{
@@ -102,10 +94,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			set
 			{ 
-				AddEntry("UTF8_STRING", value, delegate(ClipboardData data, Gtk.SelectionData selection)
-				{
-					selection.Text = data.Data as string;
-				});
+				AddEntry("UTF8_STRING", value, (data, selection) => selection.Text = data.Data as string);
 			}
 			get { return Control.WaitForText(); }
 			
@@ -138,10 +127,7 @@ namespace Eto.GtkSharp.Forms
 
 		public void SetData(byte[] value, string type)
 		{
-			AddEntry(type, value, delegate(ClipboardData data, Gtk.SelectionData selection)
-			{
-				selection.Set(Gdk.Atom.Intern(type, false), 0, value);
-			});
+			AddEntry(type, value, (data, selection) => selection.Set(Gdk.Atom.Intern(type, false), 0, value));
 		}
 
 		public string GetString(string type)
@@ -166,17 +152,14 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				//return Control.Data.Keys.OfType<string> ().ToArray ();
-				return null;
+				Gdk.Atom[] atoms;
+				if (NativeMethods.ClipboardWaitForTargets(Control.Handle, out atoms))
+				{
+					return atoms.Select(r => r.Name).ToArray();
+				}
+				return new string[0];
 			}
 		}
-
-		#endregion
-
-		#region IWidget implementation
-
-		#endregion
-
 	}
 }
 

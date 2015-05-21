@@ -1,7 +1,8 @@
 using System;
-using Eto.Drawing;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.GtkSharp.Drawing
 {
@@ -71,7 +72,7 @@ namespace Eto.GtkSharp.Drawing
 				default:
 					Control = FindCorrectedFamily(familyName);
 					if (Control == null)
-						throw new ArgumentOutOfRangeException("familyName", familyName, "Font Family specified is not supported by this system");
+						throw new ArgumentOutOfRangeException("familyName", familyName, string.Format(CultureInfo.CurrentCulture, "Font Family specified is not supported by this system"));
 					Name = Control.Name;
 					break;
 			}

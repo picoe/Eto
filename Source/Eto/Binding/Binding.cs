@@ -127,7 +127,7 @@ namespace Eto
 		protected virtual void HandleEvent(string id)
 		{
 #if DEBUG
-			throw new EtoException(string.Format(CultureInfo.CurrentCulture, "This binding does not support the {0} event", id));
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "This binding does not support the {0} event", id));
 #endif
 		}
 

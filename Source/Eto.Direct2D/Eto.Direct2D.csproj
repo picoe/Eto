@@ -55,7 +55,7 @@
     <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Conversions.cs" />
+    <Compile Include="2DConversions.cs" />
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="Drawing\ImageHandler.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
@@ -80,6 +80,7 @@
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
     <Compile Include="Platform.cs" />
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">

@@ -381,7 +381,7 @@ namespace Eto.Drawing
 		/// <returns>String representation of this Size</returns>
 		public override string ToString ()
 		{
-			return String.Format (CultureInfo.InvariantCulture, "Width={0} Height={1}", Width, Height);
+			return String.Format (CultureInfo.InvariantCulture, "{0},{1}", Width, Height);
 		}
 		
 		/// <summary>

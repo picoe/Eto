@@ -16,11 +16,12 @@ namespace Eto.Test.Sections.Drawing
 		readonly Image image = TestIcons.TestImage;
 		readonly Drawable drawable;
 		Brush brush;
-		readonly LinearGradientBrush gradientBrush;
-		readonly Brush textureBrush;
-		readonly Brush solidBrush;
+		BrushItem selectedItem;
 		readonly DynamicRow matrixRow;
 		readonly DynamicRow gradientRow;
+		readonly DynamicRow radialRow;
+		readonly DynamicRow radiusRow;
+		readonly DynamicRow linearRow;
 		bool useBackgroundColor;
 
 		public float Rotation { get; set; }
@@ -32,6 +33,16 @@ namespace Eto.Test.Sections.Drawing
 		public float OffsetX { get; set; }
 
 		public float OffsetY { get; set; }
+
+		public SizeF Radius { get; set; }
+
+		public PointF Center { get; set; }
+
+		public PointF GradientOrigin { get; set; }
+
+		public PointF StartPoint { get; set; }
+
+		public PointF EndPoint { get; set; }
 
 		public bool UseBackgroundColor
 		{
@@ -48,17 +59,17 @@ namespace Eto.Test.Sections.Drawing
 		public BrushSection()
 		{
 			var layout = new DynamicLayout();
-			brush = solidBrush = Brushes.LightSkyBlue;
-			gradientBrush = new LinearGradientBrush(Colors.AliceBlue, Colors.Black, new PointF(0, 0), new PointF(100f, 100f));
-			//gradientBrush = new LinearGradientBrush (new RectangleF (0, 0, 50, 50), Colors.AliceBlue, Colors.Black, 10);
-			gradientBrush.Wrap = GradientWrapMode.Repeat;
-			textureBrush = new TextureBrush(image, 0.5f);
-			brush = textureBrush;
 
+			// defaults
 			ScaleX = 100f;
 			ScaleY = 100f;
+			Center = new PointF(100, 50);
+			GradientOrigin = new PointF(150, 80);
+			Radius = new SizeF(100f, 50f);
+			StartPoint = new PointF(50, 50);
+			EndPoint = new PointF(100, 100);
 
-			drawable = new Drawable { Size = new Size(300, 200) };
+			drawable = new Drawable { Size = new Size(450, 400) };
 
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
@@ -70,6 +81,9 @@ namespace Eto.Test.Sections.Drawing
 			}
 			gradientRow = layout.AddSeparateRow(null, GradientWrapControl(), null);
 			gradientRow.Table.Visible = false;
+			radialRow = layout.AddSeparateRow(null, "Center:", CenterControl(), "GradientOrigin:", GradientOriginControl(), null);
+			radiusRow = layout.AddSeparateRow(null, "Radius:", RadiusControl(), null);
+			linearRow = layout.AddSeparateRow(null, "Start:", StartPointControl(), "End:", EndPointControl(), null);
 			layout.AddSeparateRow(null, drawable, null);
 			layout.Add(null);
 
@@ -78,26 +92,53 @@ namespace Eto.Test.Sections.Drawing
 
 		class BrushItem : ListItem
 		{
-			public Brush Brush { get; set; }
+			public Func<Brush> CreateBrush { get; set; }
 
 			public bool SupportsMatrix { get; set; }
 
 			public bool SupportsGradient { get; set; }
+
+			public bool SupportsRadial { get; set; }
+
+			public bool SupportsLinear { get; set; }
 		}
 
 		Control BrushControl()
 		{
 			var control = new DropDown();
-			control.Items.Add(new BrushItem { Text = "Solid", Brush = solidBrush });
-			control.Items.Add(new BrushItem { Text = "Texture", Brush = textureBrush, SupportsMatrix = true });
-			control.Items.Add(new BrushItem { Text = "Gradient", Brush = gradientBrush, SupportsMatrix = true, SupportsGradient = true });
-			control.SelectedValue = control.Items.OfType<BrushItem>().First(r => r.Brush == brush);
-			control.SelectedValueChanged += (sender, e) =>
+			control.Items.Add(new BrushItem { Text = "Solid", CreateBrush = () => new SolidBrush(Colors.LightSkyBlue) });
+			control.Items.Add(new BrushItem
 			{
-				var item = (BrushItem)control.SelectedValue;
-				if (item != null)
-					SetItem(item);
-			};
+				Text = "Texture",
+				SupportsMatrix = true,
+				CreateBrush = () => new TextureBrush(image, 0.5f) { Transform = GetTransform() }
+			});
+			control.Items.Add(new BrushItem
+			{
+				Text = "Linear Gradient",
+				SupportsMatrix = true,
+				SupportsGradient = true,
+				SupportsLinear = true,
+				CreateBrush = () => new LinearGradientBrush(Colors.AliceBlue, Colors.Black, StartPoint, EndPoint)
+				{
+					Wrap = GradientWrap,
+					Transform = GetTransform()
+				}
+			});
+			control.Items.Add(new BrushItem
+			{
+				Text = "Radial Gradient",
+				SupportsMatrix = true,
+				SupportsGradient = true,
+				SupportsRadial = true,
+				CreateBrush = () => new RadialGradientBrush(Colors.AliceBlue, Colors.Black, Center, GradientOrigin, Radius)
+				{
+					Wrap = GradientWrap,
+					Transform = GetTransform()
+				}
+			});
+			control.SelectedValue = control.Items.OfType<BrushItem>().First(); //r => r.Text == "Linear Gradient");
+			control.SelectedValueChanged += (sender, e) => SetItem(control.SelectedValue as BrushItem);
 			LoadComplete += (sender, e) => SetItem(control.SelectedValue as BrushItem);
 			control.SelectedValueChanged += (sender, e) => Refresh();
 			return control;
@@ -105,10 +146,16 @@ namespace Eto.Test.Sections.Drawing
 
 		void SetItem(BrushItem item)
 		{
-			brush = item.Brush;
+			selectedItem = item;
+			if (item == null)
+				item = new BrushItem();
+
 			if (matrixRow != null)
 				matrixRow.Table.Visible = item.SupportsMatrix;
 			gradientRow.Table.Visible = item.SupportsGradient;
+			radialRow.Table.Visible = radiusRow.Table.Visible = item.SupportsRadial;
+			linearRow.Table.Visible = item.SupportsLinear;
+			Refresh();
 		}
 
 		Control ScaleXControl()
@@ -166,6 +213,85 @@ namespace Eto.Test.Sections.Drawing
 			return control;
 		}
 
+		Control CenterControl()
+		{
+			return PointControl(() => Center, v => Center = v);
+		}
+
+		Control GradientOriginControl()
+		{
+			return PointControl(() => GradientOrigin, v => GradientOrigin = v);
+		}
+
+		Control RadiusControl()
+		{
+			return SizeControl(() => Radius, v => Radius = v);
+		}
+
+		Control StartPointControl()
+		{
+			return PointControl(() => StartPoint, v => StartPoint = v);
+		}
+
+		Control EndPointControl()
+		{
+			return PointControl(() => EndPoint, v => EndPoint = v);
+		}
+
+		Control PointControl(Func<PointF> getValue, Action<PointF> setValue)
+		{
+			var xpoint = new NumericUpDown();
+			xpoint.ValueBinding.Bind(() => getValue().X, v =>
+			{
+				var p = getValue();
+				p.X = (float)v;
+				setValue(p);
+				Refresh();
+			});
+
+			var ypoint = new NumericUpDown();
+			ypoint.ValueBinding.Bind(() => getValue().Y, v =>
+			{
+				var p = getValue();
+				p.Y = (float)v;
+				setValue(p);
+				Refresh();
+			});
+
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Items = { "X:", xpoint, "Y:", ypoint }
+			};
+		}
+
+		Control SizeControl(Func<SizeF> getValue, Action<SizeF> setValue)
+		{
+			var xpoint = new NumericUpDown();
+			xpoint.ValueBinding.Bind(() => getValue().Width, v =>
+			{
+				var p = getValue();
+				p.Width = (float)v;
+				setValue(p);
+				Refresh();
+			});
+
+			var ypoint = new NumericUpDown();
+			ypoint.ValueBinding.Bind(() => getValue().Height, v =>
+			{
+				var p = getValue();
+				p.Height = (float)v;
+				setValue(p);
+				Refresh();
+			});
+
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Items = { "W:", xpoint, "H:", ypoint }
+			};
+		}
+
 		Control GradientWrapControl()
 		{
 			var control = new EnumDropDown<GradientWrapMode>();
@@ -186,33 +312,42 @@ namespace Eto.Test.Sections.Drawing
 
 		void Refresh()
 		{
+			if (selectedItem != null)
+				brush = selectedItem.CreateBrush();
 			drawable.Invalidate();
+		}
+
+		IMatrix GetTransform()
+		{
+			var matrix = Matrix.Create();
+			matrix.Translate(OffsetX, OffsetY);
+			matrix.Scale(Math.Max(ScaleX / 100f, 0.01f), Math.Max(ScaleY / 100f, 0.01f));
+			matrix.Rotate(Rotation);
+			return matrix;
 		}
 
 		void Draw(Graphics g)
 		{
-			var matrix = Matrix.Create();
-			matrix.Translate(OffsetX, OffsetY);
-			matrix.Scale(Math.Max(ScaleX / 100f, 0.1f), Math.Max(ScaleY / 100f, 0.1f));
-			matrix.Rotate(Rotation);
-			var tb = brush as ITransformBrush;
-			if (tb != null)
-			{
-				tb.Transform = matrix;
-			}
-			var gb = brush as LinearGradientBrush;
-			if (gb != null)
-			{
-				gb.Wrap = GradientWrap;
-			}
-
+			if (brush == null)
+				return;
 			var rect = new RectangleF(0, 0, 200, 100);
+			/**/
+			//g.FillRectangle(brush, rect);
 			g.FillEllipse(brush, rect);
 			g.DrawEllipse(Colors.Black, rect);
-			
+			/**/
 			rect = new RectangleF(0, 110, 200, 80);
 			g.FillRectangle(brush, rect);
 			g.DrawRectangle(Colors.Black, rect);
+			/**/
+			rect = new RectangleF(0, 200, 200, 80);
+			g.FillPie(brush, rect, 100, 240);
+			g.DrawArc(Colors.Black, rect, 100, 240);
+			/**/
+			var points = new[] { new PointF(300, 0), new PointF(350, 20), new PointF(400, 80), new PointF(320, 90) };
+			g.FillPolygon(brush, points);
+			g.DrawPolygon(Colors.Black, points);
+			/**/
 		}
 	}
 }

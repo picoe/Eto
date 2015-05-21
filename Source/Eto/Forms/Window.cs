@@ -118,6 +118,29 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="OwnerChanged"/> event.
+		/// </summary>
+		private const string OwnerChangedEvent = "Window.OwnerChanged";
+
+		/// <summary>
+		/// Occurs when the <see cref="Owner"/> is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> OwnerChanged
+		{
+			add { Properties.AddEvent(OwnerChangedEvent, value); }
+			remove { Properties.RemoveEvent(OwnerChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="OwnerChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnOwnerChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(OwnerChangedEvent, this, e);
+		}
+
+		/// <summary>
 		/// Identifier for handlers when attaching the <see cref="WindowStateChanged"/> event.
 		/// </summary>
 		public const string WindowStateChangedEvent = "Window.WindowStateChanged";
@@ -246,6 +269,18 @@ namespace Eto.Forms
 		public virtual void Close()
 		{
 			Handler.Close();
+		}
+
+		static readonly object OwnerKey = new object();
+
+		/// <summary>
+		/// Gets or sets the owner of this window.
+		/// </summary>
+		/// <value>The owner of this window.</value>
+		public Window Owner
+		{
+			get { return Properties.Get<Window>(OwnerKey); }
+			set { Properties.Set(OwnerKey, value, () => OnOwnerChanged(EventArgs.Empty)); }
 		}
 
 		/// <summary>
@@ -383,7 +418,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-        /// Sets <see cref="WindowState"/> to <see cref="Eto.Forms.WindowState.Minimized"/>
+		/// Sets <see cref="WindowState"/> to <see cref="Eto.Forms.WindowState.Minimized"/>
 		/// </summary>
 		public void Minimize()
 		{

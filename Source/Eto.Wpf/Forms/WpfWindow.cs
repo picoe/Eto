@@ -84,6 +84,19 @@ namespace Eto.Wpf.Forms
 		{
 			switch (id)
 			{
+				case Eto.Forms.Control.ShownEvent:
+					Control.IsVisibleChanged += (sender, e) =>
+					{
+						if ((bool)e.NewValue)
+						{
+							// this is a trick to achieve similar behaviour as in WinForms
+							// (IsVisibleChanged triggers too early, we want it after measure-lay-render)
+							Control.Dispatcher.BeginInvoke(new Action(() =>
+								Callback.OnShown(Widget, EventArgs.Empty)),
+								sw.Threading.DispatcherPriority.ContextIdle, null);
+						}
+					};
+					break;
 				case Window.ClosedEvent:
 					Control.Closed += delegate
 					{

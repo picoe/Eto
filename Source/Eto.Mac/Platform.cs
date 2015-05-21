@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.IO;
@@ -10,7 +11,6 @@ using Eto.Mac.Forms;
 using Eto.Mac.Forms.Menu;
 using Eto.Mac.Threading;
 using Eto.Threading;
-using System.Reflection;
 using Eto.Mac.Forms.Cells;
 using Eto.Mac.Forms.ToolBar;
 using Eto.Shared.Forms;
@@ -53,7 +53,7 @@ namespace Eto.Mac
 			unsafe
 			{
 				if (sizeof(IntPtr) != 8)
-					throw new EtoException("You can only run this platform in 64-bit mode. Use the 32-bit Eto.Mac platform instead.");
+					throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "You can only run this platform in 64-bit mode. Use the 32-bit Eto.Mac platform instead."));
 			}
 			#endif
 			if (!initialized)
@@ -87,6 +87,7 @@ namespace Eto.Mac
 			p.Add<SolidBrush.IHandler>(() => new SolidBrushHandler());
 			p.Add<TextureBrush.IHandler>(() => new TextureBrushHandler());
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
+			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());

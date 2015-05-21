@@ -167,6 +167,35 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Gets the angle of the width/height as a vector from the specified <paramref name="destination"/>.
+		/// </summary>
+		/// <param name="destination">Destination point to determine the angle</param> 
+		/// <value>The angle in degrees between this point and <paramref name="destination"/></value>
+		public float AngleTo(PointF destination)
+		{
+			return (float)(Math.Atan2(destination.Y - Y, destination.X - X) * 180.0 / Math.PI);
+		}
+
+		/// <summary>
+		/// Gets the length between this point and the <paramref name="destination"/> point.
+		/// </summary>
+		/// <returns>The length between this instance and the <paramref name="destination"/> .</returns>
+		/// <param name="destination">Point to determine the length to.</param>
+		public float LengthTo(PointF destination)
+		{
+			return (destination - this).Length;
+		}
+
+		/// <summary>
+		/// Gets the angle of the point as a vector from origin 0,0.
+		/// </summary>
+		/// <value>The angle of this point as a vector.</value>
+		public float Angle
+		{
+			get { return (float)(Math.Atan2(Y, X) * 180.0 / Math.PI); }
+		}
+
+		/// <summary>
 		/// Gets the length of the point as a vector from origin 0,0
 		/// </summary>
 		/// <value>The length of this point as a vector</value>
@@ -553,7 +582,7 @@ namespace Eto.Drawing
 		/// <returns>String representation of this point</returns>
 		public override string ToString ()
 		{
-			return String.Format (CultureInfo.InvariantCulture, "({0},{1})", x, y);
+			return String.Format (CultureInfo.InvariantCulture, "{0},{1}", x, y);
 		}
 
 		/// <summary>
