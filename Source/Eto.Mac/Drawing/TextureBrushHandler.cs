@@ -54,76 +54,39 @@ namespace Eto.iOS.Drawing
 	{
 		class BrushObject
 		{
-			CGImage image;
 			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
-			CGAffineTransform viewTransform = CGAffineTransform.MakeIdentity();
-			readonly nfloat[] alpha = { 1 };
-			CGPattern pattern;
 
-			public void Apply(GraphicsHandler graphics)
+			public CGImage Image { get; set; }
+
+			public float Opacity { get; set; }
+
+			public BrushObject()
 			{
-				graphics.SetFillColorSpace();
-
-				#if OSX
-				graphics.SetPhase();
-				#endif
-
-				// make current transform apply to the pattern
-				var currentTransform = graphics.CurrentTransform;
-				if (pattern == null || viewTransform != currentTransform)
-				{
-					viewTransform = currentTransform;
-					SetPattern();
-				}
-
-				graphics.Control.SetFillPattern(pattern, alpha);
-			}
-
-			public CGImage Image
-			{
-				get { return image; }
-				set
-				{
-					image = value;
-					ClearPattern();
-				}
-			}
-
-			public float Opacity
-			{
-				get { return (float)alpha[0]; }
-				set { alpha[0] = value; }
+				Opacity = 1;
 			}
 
 			public CGAffineTransform Transform
 			{
 				get { return transform; }
-				set
+				set { transform = value; }
+			}
+
+			public void Draw(GraphicsHandler graphics, RectangleF rect)
+			{
+				var context = graphics.Control;
+
+				context.SaveState();
+				context.ConcatCTM(transform);
+				context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, Image.Height));
+				//transform.ToEto().TransformRectangle(rect);
+
+				if (Opacity < 1f)
 				{
-					transform = value;					
-					ClearPattern();
+					context.SetBlendMode(CGBlendMode.Normal);
+					context.SetAlpha(Opacity);
 				}
-			}
-
-			void ClearPattern()
-			{
-				if (pattern != null)
-					pattern.Dispose();
-				pattern = null;
-			}
-
-			void DrawPattern(CGContext context)
-			{
-				var destRect = new CGRect(0, 0, image.Width, image.Height);
-				context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, image.Height));
-				context.DrawImage(destRect, image);
-			}
-
-			void SetPattern()
-			{
-				var t = CGAffineTransform.Multiply(transform, viewTransform);
-				ClearPattern();
-				pattern = new CGPattern(new CGRect(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.NoDistortion, true, DrawPattern);
+				context.DrawTiledImage(new CGRect(0, 0, Image.Width, Image.Height), Image);
+				context.RestoreState();
 			}
 		}
 
@@ -146,11 +109,6 @@ namespace Eto.iOS.Drawing
 			((BrushObject)widget.ControlObject).Transform = transform.ToCG();
 		}
 
-		public override void Apply(object control, GraphicsHandler graphics)
-		{
-			((BrushObject)control).Apply(graphics);
-		}
-
 		public float GetOpacity(TextureBrush widget)
 		{
 			return ((BrushObject)widget.ControlObject).Opacity;
@@ -159,6 +117,11 @@ namespace Eto.iOS.Drawing
 		public void SetOpacity(TextureBrush widget, float opacity)
 		{
 			((BrushObject)widget.ControlObject).Opacity = opacity;
+		}
+
+		public override void Draw(object control, GraphicsHandler graphics, RectangleF rect)
+		{
+			((BrushObject)control).Draw(graphics, rect);
 		}
 	}
 }

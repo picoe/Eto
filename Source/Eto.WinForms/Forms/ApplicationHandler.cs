@@ -108,7 +108,7 @@ namespace Eto.WinForms.Forms
 
 		static void SetOptions()
 		{
-			if (EnableScrollingUnderMouse)
+			if (EtoEnvironment.Platform.IsWindows && EnableScrollingUnderMouse)
 				swf.Application.AddMessageFilter(new ScrollMessageFilter());
 
 			if (BubbleMouseEvents)

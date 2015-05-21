@@ -56,6 +56,7 @@ namespace Eto.iOS
 			p.Add<SolidBrush.IHandler>(() => new SolidBrushHandler());
 			p.Add<TextureBrush.IHandler>(() => new TextureBrushHandler());
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
+			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());

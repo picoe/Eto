@@ -213,6 +213,10 @@
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>Drawing\GradientHelper.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

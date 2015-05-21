@@ -245,7 +245,7 @@ namespace Eto.Mac.Forms.Controls
 			if (UseTextShadow)
 			{
 				var str = new NSMutableAttributedString(StringValue);
-				str.AddAttribute(NSAttributedString.ShadowAttributeName, Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, (int)str.Length));
+				str.AddAttribute(NSStringAttributeKey.Shadow, Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, (int)str.Length));
 				AttributedStringValue = str;
 			}
 			

@@ -11,12 +11,6 @@ namespace Eto.GtkSharp.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class LinearGradientBrushHandler : BrushHandler, LinearGradientBrush.IHandler
 	{
-		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
-		internal static extern Cairo.Extend cairo_pattern_get_extend (IntPtr pattern);
-
-		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
-		internal static extern void cairo_pattern_set_extend (IntPtr pattern, Cairo.Extend extend);
-
 		class EtoGradient : Cairo.LinearGradient
 		{
 			public EtoGradient (double x0, double y0, double x1, double y1)
@@ -30,8 +24,7 @@ namespace Eto.GtkSharp.Drawing
 		public object Create (Color startColor, Color endColor, PointF startPoint, PointF endPoint)
 		{
 			var gradient = new EtoGradient (startPoint.X, startPoint.Y, endPoint.X, endPoint.Y);
-			cairo_pattern_set_extend (gradient.Pointer, Cairo.Extend.Repeat);
-			// not in windows?? gradient.Extend = Cairo.Extend.Repeat;
+			gradient.Extend = Cairo.Extend.Pad;
 			gradient.AddColorStop (0, startColor.ToCairo ());
 			gradient.AddColorStop (1, endColor.ToCairo ());
 			return gradient;
@@ -54,16 +47,13 @@ namespace Eto.GtkSharp.Drawing
 
 		public GradientWrapMode GetGradientWrap (LinearGradientBrush widget)
 		{
-			var gradient = ((Cairo.LinearGradient)widget.ControlObject);
-			// return gradient.Extend.ToEto ();
-			return cairo_pattern_get_extend (gradient.Pointer).ToEto ();
+			return ((Cairo.LinearGradient)widget.ControlObject).Extend.ToEto();
 		}
 
 		public void SetGradientWrap (LinearGradientBrush widget, GradientWrapMode gradientWrap)
 		{
 			var gradient = ((Cairo.LinearGradient)widget.ControlObject);
-			// gradient.Extend = gradientWrap.ToCairo ();
-			cairo_pattern_set_extend (gradient.Pointer, gradientWrap.ToCairo ());
+			gradient.Extend = gradientWrap.ToCairo ();
 		}
 
 		public override void Apply (object control, GraphicsHandler graphics)

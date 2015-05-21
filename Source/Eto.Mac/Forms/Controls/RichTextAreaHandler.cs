@@ -75,12 +75,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public void SetForeground(Range<int> range, Color color)
 		{
-			Control.TextStorage.AddAttribute(NSAttributedString.ForegroundColorAttributeName, color.ToNSUI(), range.ToNS());
+			Control.TextStorage.AddAttribute(NSStringAttributeKey.ForegroundColor, color.ToNSUI(), range.ToNS());
 		}
 
 		public void SetBackground(Range<int> range, Color color)
 		{
-			Control.TextStorage.AddAttribute(NSAttributedString.BackgroundColorAttributeName, color.ToNSUI(), range.ToNS());
+			Control.TextStorage.AddAttribute(NSStringAttributeKey.BackgroundColor, color.ToNSUI(), range.ToNS());
 		}
 
 		public void SetBold(Range<int> range, bool bold)
@@ -95,12 +95,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public void SetUnderline(Range<int> range, bool underline)
 		{
-			Control.TextStorage.AddAttribute(NSAttributedString.UnderlineStyleAttributeName, new NSNumber((int)(underline ? NSUnderlineStyle.Single : NSUnderlineStyle.None)), range.ToNS());
+			Control.TextStorage.AddAttribute(NSStringAttributeKey.UnderlineStyle, new NSNumber((int)(underline ? NSUnderlineStyle.Single : NSUnderlineStyle.None)), range.ToNS());
 		}
 
 		public void SetStrikethrough(Range<int> range, bool strikethrough)
 		{
-			Control.TextStorage.AddAttribute(NSAttributedString.StrikethroughStyleAttributeName, new NSNumber((int)(strikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None)), range.ToNS());
+			Control.TextStorage.AddAttribute(NSStringAttributeKey.StrikethroughStyle, new NSNumber((int)(strikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None)), range.ToNS());
 		}
 
 		bool HasFontAttribute(NSFontTraitMask traitMask)
@@ -108,7 +108,7 @@ namespace Eto.Mac.Forms.Controls
 			NSRange effectiveRange;
 			var attrib = Control.SelectedRange.Length == 0 ? Control.TypingAttributes : Control.TextStorage.GetAttributes((nnuint)Math.Min(Control.SelectedRange.Location, Control.TextStorage.Length - 1), out effectiveRange, Control.SelectedRange);
 			NSObject value;
-			if (attrib.TryGetValue(NSAttributedString.FontAttributeName, out value))
+			if (attrib.TryGetValue(NSStringAttributeKey.Font, out value))
 			{
 				var font = value as NSFont;
 				if (font != null)
@@ -186,14 +186,14 @@ namespace Eto.Mac.Forms.Controls
 		{
 			NSObject fontValue = null;
 			if ((enabled && attribs == null)
-			    || (attribs != null && attribs.TryGetValue(NSAttributedString.FontAttributeName, out fontValue)))
+				|| (attribs != null && attribs.TryGetValue(NSStringAttributeKey.Font, out fontValue)))
 			{
 				var font = fontValue as NSFont ?? Control.Font;
 
 				font = updateFont(font);
 
 				var mutableAttribs = new NSMutableDictionary(attribs);
-				mutableAttribs.SetValueForKey(font, NSAttributedString.FontAttributeName);
+				mutableAttribs.SetValueForKey(font, NSStringAttributeKey.Font);
 				return mutableAttribs;
 			}
 			return attribs;
@@ -201,20 +201,20 @@ namespace Eto.Mac.Forms.Controls
 
 		public Font SelectionFont
 		{
-			get { return GetSelectedTextAttribute<NSFont>(NSAttributedString.FontAttributeName).ToEto(); }
-			set { SetSelectedAttribute(NSAttributedString.FontAttributeName, value.ToNSFont()); }
+			get { return GetSelectedTextAttribute<NSFont>(NSStringAttributeKey.Font).ToEto(); }
+			set { SetSelectedAttribute(NSStringAttributeKey.Font, value.ToNSFont()); }
 		}
 
 		public Color SelectionForeground
 		{
-			get { return GetSelectedTextAttribute<NSColor>(NSAttributedString.ForegroundColorAttributeName).ToEto(); }
-			set { SetSelectedAttribute(NSAttributedString.ForegroundColorAttributeName, value.ToNSUI()); }
+			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.ForegroundColor).ToEto(); }
+			set { SetSelectedAttribute(NSStringAttributeKey.ForegroundColor, value.ToNSUI()); }
 		}
 
 		public Color SelectionBackground
 		{
-			get { return GetSelectedTextAttribute<NSColor>(NSAttributedString.BackgroundColorAttributeName).ToEto(); }
-			set { SetSelectedAttribute(NSAttributedString.BackgroundColorAttributeName, value.ToNSUI()); }
+			get { return GetSelectedTextAttribute<NSColor>(NSStringAttributeKey.BackgroundColor).ToEto(); }
+			set { SetSelectedAttribute(NSStringAttributeKey.BackgroundColor, value.ToNSUI()); }
 		}
 
 		public bool SelectionBold
@@ -233,25 +233,25 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				var value = GetSelectedTextAttribute<NSNumber>(NSAttributedString.UnderlineStyleAttributeName);
+				var value = GetSelectedTextAttribute<NSNumber>(NSStringAttributeKey.UnderlineStyle);
 				return value != null && value.Int32Value != (int)NSUnderlineStyle.None;
 			}
-			set { SetSelectedAttribute(NSAttributedString.UnderlineStyleAttributeName, new NSNumber((int)(value ? NSUnderlineStyle.Single : NSUnderlineStyle.None))); }
+			set { SetSelectedAttribute(NSStringAttributeKey.UnderlineStyle, new NSNumber((int)(value ? NSUnderlineStyle.Single : NSUnderlineStyle.None))); }
 		}
 
 		public bool SelectionStrikethrough
 		{
 			get
 			{
-				var value = GetSelectedTextAttribute<NSNumber>(NSAttributedString.StrikethroughStyleAttributeName);
+				var value = GetSelectedTextAttribute<NSNumber>(NSStringAttributeKey.StrikethroughStyle);
 				return value != null && value.Int32Value != (int)NSUnderlineStyle.None;
 			}
-			set { SetSelectedAttribute(NSAttributedString.StrikethroughStyleAttributeName, new NSNumber((int)(value ? NSUnderlineStyle.Single : NSUnderlineStyle.None))); }
+			set { SetSelectedAttribute(NSStringAttributeKey.StrikethroughStyle, new NSNumber((int)(value ? NSUnderlineStyle.Single : NSUnderlineStyle.None))); }
 		}
 
 		public FontFamily SelectionFamily
 		{
-			get { return GetSelectedTextAttribute<NSFont>(NSAttributedString.FontAttributeName).ToEto().Family; }
+			get { return GetSelectedTextAttribute<NSFont>(NSStringAttributeKey.Font).ToEto().Family; }
 			set
 			{
 				var familyName = ((FontFamilyHandler)value.Handler).MacName;

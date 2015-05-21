@@ -9,13 +9,16 @@ namespace Eto.iOS.Forms.Controls
 	public class ButtonHandler : IosButton<UIButton, Button, Button.ICallback>, Button.IHandler
 	{
 		public static Size MinimumButtonSize = new Size(80, 23);
-		
-		class MyButton : UIButton {
+
+		class MyButton : UIButton
+		{
 			
 			public ButtonHandler Handler { get; set; }
-			
-			public override CoreGraphics.CGRect Frame {
-				get {
+
+			public override CoreGraphics.CGRect Frame
+			{
+				get
+				{
 					var value = base.Frame;
 					if (Handler.AutoSize)
 					{
@@ -24,7 +27,8 @@ namespace Eto.iOS.Forms.Controls
 					}
 					return value;
 				}
-				set {
+				set
+				{
 					if (Handler.AutoSize)
 					{
 						value.Width = (nfloat)Math.Max(MinimumButtonSize.Width, value.Width);
@@ -35,12 +39,15 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
-		public override Color BackgroundColor {
-			get {
-				return Control.Layer.BackgroundColor.ToEtoColor ();
+		public override Color BackgroundColor
+		{
+			get
+			{
+				return Control.Layer.BackgroundColor.ToEto();
 			}
-			set {
-				Control.Layer.BackgroundColor = value.ToCGColor ();
+			set
+			{
+				Control.Layer.BackgroundColor = value.ToCG();
 			}
 		}
 

@@ -48,6 +48,7 @@
     <Compile Include="Drawing\FillMode.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\RadialGradientBrush.cs" />
     <Compile Include="Drawing\PenLineJoin.cs" />
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />

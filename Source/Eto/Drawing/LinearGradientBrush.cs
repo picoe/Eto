@@ -10,6 +10,10 @@ namespace Eto.Drawing
 	public enum GradientWrapMode
 	{
 		/// <summary>
+		/// The start and end colors fill beyond the gradient
+		/// </summary>
+		Pad,
+		/// <summary>
 		/// The gradient repeats to fill the area
 		/// </summary>
 		Repeat,

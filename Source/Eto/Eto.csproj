@@ -316,6 +316,7 @@
     <Compile Include="Forms\MaskedTextProvider\NumericMaskedTextProvider.cs" />
     <Compile Include="Forms\MaskedTextProvider\VariableMaskedTextProvider.cs" />
     <Compile Include="Forms\Cells\ProgressCell.cs" />
+    <Compile Include="Drawing\RadialGradientBrush.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

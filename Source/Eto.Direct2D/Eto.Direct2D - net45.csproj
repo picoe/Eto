@@ -68,6 +68,7 @@
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SDFactory.cs" />

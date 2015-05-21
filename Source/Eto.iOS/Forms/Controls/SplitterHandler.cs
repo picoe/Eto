@@ -133,5 +133,29 @@ namespace Eto.iOS.Forms.Controls
 				}
 			}
 		}
+
+		public double RelativePosition
+		{
+			get
+			{
+				return 0;
+			}
+			set
+			{
+				
+			}
+		}
+
+		public int SplitterWidth
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{
+				
+			}
+		}
 	}
 }

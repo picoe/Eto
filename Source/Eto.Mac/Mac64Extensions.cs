@@ -41,6 +41,20 @@ namespace Eto.iOS
 namespace Eto.Mac
 #endif
 {
+
+	#if !__UNIFIED__
+	public static class NSStringAttributeKey
+	{
+		public static NSString ForegroundColor = NSAttributedString.ForegroundColorAttributeName;
+		public static NSString Shadow = NSAttributedString.ShadowAttributeName;
+		public static NSString Font = NSAttributedString.FontAttributeName;
+		public static NSString UnderlineStyle = NSAttributedString.UnderlineStyleAttributeName;
+		public static NSString BackgroundColor = NSAttributedString.BackgroundColorAttributeName;
+		public static NSString StrikethroughStyle = NSAttributedString.StrikethroughStyleAttributeName;
+		public static NSString ParagraphStyle = NSAttributedString.ParagraphStyleAttributeName;
+	}
+	#endif
+
 	public static class Mac64Extensions
 	{
 

@@ -165,12 +165,6 @@ namespace Eto.Forms
 
 		#endregion
 
-		#region Properties
-
-		Window owner = null;
-
-		#endregion
-
 		static Window()
 		{
 			EventLookup.Register<Window>(c => c.OnClosed(null), ClosedEvent);
@@ -256,21 +250,16 @@ namespace Eto.Forms
 			Handler.Close();
 		}
 
+		static readonly object OwnerKey = new object();
+
 		/// <summary>
 		/// Gets or sets the owner of this window.
 		/// </summary>
 		/// <value>The owner of this window.</value>
 		public Window Owner
 		{
-			get { return this.owner; }
-			set
-			{
-				if (this.owner != value)
-				{
-					this.owner = value;
-					this.OnOwnerChanged(EventArgs.Empty);
-				}
-			}
+			get { return Properties.Get<Window>(OwnerKey); }
+			set { Properties.Set(OwnerKey, value, () => OnOwnerChanged(EventArgs.Empty)); }
 		}
 
 		/// <summary>

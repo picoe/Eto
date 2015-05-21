@@ -59,7 +59,7 @@ namespace Eto.Mac.Forms.Controls
 			var color = Widget.Properties.Get<Color?>(textColorKey);
 			if (color != null)
 			{
-				var attr = NSDictionary.FromObjectAndKey(color.Value.ToNSUI(), NSAttributedString.ForegroundColorAttributeName);
+				var attr = NSDictionary.FromObjectAndKey(color.Value.ToNSUI(), NSStringAttributeKey.ForegroundColor);
 				var str = new NSMutableAttributedString(Control.AttributedTitle);
 				str.AddAttributes(attr, new NSRange(0, str.Length));
 				Control.AttributedTitle = str;

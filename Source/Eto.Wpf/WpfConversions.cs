@@ -458,6 +458,8 @@ namespace Eto.Wpf
 					return swm.GradientSpreadMethod.Reflect;
 				case GradientWrapMode.Repeat:
 					return swm.GradientSpreadMethod.Repeat;
+				case GradientWrapMode.Pad:
+					return swm.GradientSpreadMethod.Pad;
 				default:
 					throw new NotSupportedException();
 			}
@@ -471,6 +473,8 @@ namespace Eto.Wpf
 					return GradientWrapMode.Reflect;
 				case swm.GradientSpreadMethod.Repeat:
 					return GradientWrapMode.Repeat;
+				case swm.GradientSpreadMethod.Pad:
+					return GradientWrapMode.Pad;
 				default:
 					throw new NotSupportedException();
 			}

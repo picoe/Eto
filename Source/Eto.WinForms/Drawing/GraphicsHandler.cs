@@ -147,7 +147,7 @@ namespace Eto.WinForms.Drawing
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillRectangle(brush.ToSD(), x - 0.5f, y - 0.5f, width, height);
+			Control.FillRectangle(brush.ToSD(new RectangleF(x, y, width, height)), x - 0.5f, y - 0.5f, width, height);
 		}
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
@@ -157,7 +157,7 @@ namespace Eto.WinForms.Drawing
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillEllipse(brush.ToSD(), x - 0.5f, y - 0.5f, width, height);
+			Control.FillEllipse(brush.ToSD(new RectangleF(x, y, width, height)), x - 0.5f, y - 0.5f, width, height);
 		}
 
 		public float GetConvertedAngle(float initialAngle, float majorRadius, float minorRadius, bool circularToElliptical)
@@ -254,14 +254,14 @@ namespace Eto.WinForms.Drawing
 				endAngle = GetConvertedAngle(endAngle, width / 2, height / 2, false);
 				sweepAngle = endAngle - startAngle;
 			}
-			Control.FillPie(brush.ToSD(), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
+			Control.FillPie(brush.ToSD(new RectangleF(x, y, width, height)), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
 		}
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
 			var old = Control.PixelOffsetMode;
 			Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
-			Control.FillPath(brush.ToSD(), path.ToSD());
+			Control.FillPath(brush.ToSD(path.Bounds), path.ToSD());
 			Control.PixelOffsetMode = old;
 		}
 

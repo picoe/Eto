@@ -437,6 +437,8 @@ namespace Eto.GtkSharp
 					return GradientWrapMode.Reflect;
 				case Cairo.Extend.Repeat:
 					return GradientWrapMode.Repeat;
+				case Cairo.Extend.Pad:
+					return GradientWrapMode.Pad;
 				default:
 					throw new NotSupportedException();
 			}
@@ -450,6 +452,8 @@ namespace Eto.GtkSharp
 					return Cairo.Extend.Reflect;
 				case GradientWrapMode.Repeat:
 					return Cairo.Extend.Repeat;
+				case GradientWrapMode.Pad:
+					return Cairo.Extend.Pad;
 				default:
 					throw new NotSupportedException();
 			}
