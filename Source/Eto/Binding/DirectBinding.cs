@@ -72,14 +72,14 @@ namespace Eto
 		/// binding, or get/set a preoperty of the value.
 		/// </remarks>
 		/// <typeparam name="TValue">Type of the value for the new binding</typeparam>
-		/// <param name="getValue">Delegate to translate the value when getting it for the new binding</param>
-		/// <param name="setValue">Delegate to translate the value when setting it to this binding</param>
+		/// <param name="toValue">Delegate to convert to the new value type.</param>
+		/// <param name="fromValue">Delegate to convert from the value to the original binding's type.</param>
 		/// <returns>A new binding with the specified <typeparamref name="TValue"/> type.</returns>
-		public DirectBinding<TValue> Convert<TValue>(Func<T, TValue> getValue, Action<TValue> setValue = null)
+		public DirectBinding<TValue> Convert<TValue>(Func<T, TValue> toValue, Func<TValue, T> fromValue = null)
 		{
 			return new DelegateBinding<TValue>(
-				() => getValue != null ? getValue(DataValue) : default(TValue),
-				r => { if (setValue != null) setValue(r); },
+				() => toValue != null ? toValue(DataValue) : default(TValue),
+				r => { if (fromValue != null) DataValue = fromValue(r); },
 				addChangeEvent: ev => DataValueChanged += ev,
 				removeChangeEvent: ev => DataValueChanged -= ev
 			);
