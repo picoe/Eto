@@ -1,7 +1,8 @@
 using System;
-using Eto.Forms;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using Eto.Drawing;
+using Eto.Forms;
 
 #if XAMMAC2
 using AppKit;
@@ -34,8 +35,8 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.ToolBar
 {
-	// TODO: needs to be changed to MacControl instead of WidgetHandler
-	public class ToolBarHandler : WidgetHandler<NSToolbar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
+
+	public class ToolBarHandler : MacView<NSToolbar, Eto.Forms.ToolBar, Eto.Forms.ToolBar.ICallback>, Eto.Forms.ToolBar.IHandler
 	{
 		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();
 
@@ -119,7 +120,19 @@ namespace Eto.Mac.Forms.ToolBar
 			//Control.ValidateVisibleItems();
 		}
 
-		public void RemoveButton(ToolItem item)
+		public override NSView ContainerControl {
+			// TODO: Is there a way to convert NSToolbar to NSView
+			//get { return Control; }
+			get { return null; }
+		}
+
+		public override bool Enabled
+		{
+			get { return true; }
+			set { }
+		}
+
+        public void RemoveButton(ToolItem item)
 		{
 			var handler = item.Handler as IToolBarBaseItemHandler;
 			var index = items.IndexOf(handler);
