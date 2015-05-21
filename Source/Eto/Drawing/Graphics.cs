@@ -15,6 +15,9 @@ namespace Eto.Drawing
 	[Handler(typeof(Graphics.IHandler))]
 	public class Graphics : Widget
 	{
+		int currentTransformState;
+		int minTransformState;
+
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
@@ -826,6 +829,57 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Maintains the current state of the graphics object.
+		/// </summary>
+		class TransformState : IDisposable
+		{
+			public Graphics Graphics;
+			public int State;
+			public int MinTransformState;
+
+			public void Dispose()
+			{
+				Graphics.minTransformState = MinTransformState;
+				while (Graphics.currentTransformState > State)
+				{
+					Graphics.RestoreTransform();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets an object that will restore to the current transform state when disposed.
+		/// </summary>
+		/// <remarks>
+		/// This saves the current transform state that can be changed by any of the transform calls.
+		/// 
+		/// This is useful when calling into untrusted code that can leave the transform unbalanced.
+		/// It also ensures that RestoreTransform() requires a matching SaveTransform(), until the return value is disposed.
+		/// Disposing the return value guarantees that the transform state is restored to when this method was called.  
+		/// </remarks>
+		/// <example>
+		/// This example shows how you can reliably restore state in a code block:
+		/// <code>
+		/// using (graphics.SaveTransformState())
+		/// {
+		/// 	// ...
+		/// 
+		/// 	graphics.SaveTransform();
+		/// 	graphics.MultiplyTransform(...);
+		/// 
+		/// 	// ... other messy drawing code that doesn't call RestoreTransform()
+		/// }
+		/// </code>
+		/// </example>
+		public IDisposable SaveTransformState()
+		{
+			Handler.SaveTransform();
+			var state = new TransformState { Graphics = this, MinTransformState = minTransformState, State = currentTransformState };
+			minTransformState = ++currentTransformState;
+			return state;
+		}
+
+		/// <summary>
 		/// Saves the current transform state
 		/// </summary>
 		/// <remarks>
@@ -834,17 +888,22 @@ namespace Eto.Drawing
 		/// </remarks>
 		public void SaveTransform()
 		{
+			currentTransformState++;
 			Handler.SaveTransform();
 		}
-
+			
 		/// <summary>
 		/// Restores the transform state
 		/// </summary>
 		/// <remarks>
 		/// This restores the transform state from a previous <see cref="SaveTransform"/> call.
+		/// You must balance calls to SaveTransform() with calls to this method.
 		/// </remarks>
 		public void RestoreTransform()
 		{
+			if (currentTransformState <= minTransformState)
+				throw new InvalidOperationException("No state to restore. RestoreTransform should be balanced with a corresponding call to SaveTranform.");
+			currentTransformState--;
 			Handler.RestoreTransform();
 		}
 
