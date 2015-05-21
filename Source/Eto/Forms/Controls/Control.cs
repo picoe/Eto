@@ -13,11 +13,11 @@ namespace Eto.Forms
 	/// All visual user interface elements should inherit from this class to provide common functionality like binding,
 	/// load/unload, and common events.
 	/// </remarks>
-#if !PCL
+	#if !PCL
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
-#endif
+	#endif
 	public partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }

@@ -60,8 +60,8 @@ namespace Eto.Forms
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 		public virtual bool Enabled
-		{
-			get { return Control.Enabled; }
+		{ 
+			get { return Control.Enabled; } 
 			set { Control.Enabled = value; }
 		}
 

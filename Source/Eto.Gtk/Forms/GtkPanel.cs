@@ -5,9 +5,9 @@ using Eto.Drawing;
 namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkPanel<TControl, TWidget, TCallback> : GtkContainer<TControl, TWidget, TCallback>
-		where TControl : Gtk.Widget
-		where TWidget : Panel
-		where TCallback : Panel.ICallback
+		where TControl: Gtk.Widget
+		where TWidget: Panel
+		where TCallback: Panel.ICallback
 	{
 		readonly Gtk.Alignment alignment;
 		Control content;
@@ -29,10 +29,10 @@ namespace Eto.GtkSharp.Forms
 			base.Initialize();
 			SetContainerContent(alignment);
 
-#if GTK2
+			#if GTK2
 			if (UseMinimumSizeRequested)
 				ContainerControl.SizeRequested += Connector.HandleContentSizeRequested;
-#endif
+			#endif
 		}
 
 		protected new GtkPanelEventConnector Connector { get { return (GtkPanelEventConnector)base.Connector; } }
@@ -45,7 +45,7 @@ namespace Eto.GtkSharp.Forms
 		protected class GtkPanelEventConnector : GtkControlConnector
 		{
 			public new GtkPanel<TControl, TWidget, TCallback> Handler { get { return (GtkPanel<TControl, TWidget, TCallback>)base.Handler; } }
-#if GTK2
+			#if GTK2
 			public void HandleContentSizeRequested(object o, Gtk.SizeRequestedArgs args)
 			{
 				var handler = Handler;
@@ -60,7 +60,7 @@ namespace Eto.GtkSharp.Forms
 					args.Requisition = alloc;
 				}
 			}
-#endif
+			#endif
 		}
 
 		ContextMenu contextMenu;
@@ -78,9 +78,9 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				minimumSize = value;
-#if GTK3
+				#if GTK3
 				ContainerControl.SetSizeRequest(value.Width > 0 ? value.Width : -1, value.Height > 0 ? value.Height : -1);
-#endif
+				#endif
 			}
 		}
 

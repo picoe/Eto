@@ -46,9 +46,9 @@ namespace Eto.Mac.Forms
 {
 
 	public abstract class MacPanel<TControl, TWidget, TCallback> : MacContainer<TControl, TWidget, TCallback>, Panel.IHandler
-		where TControl : NSObject
-		where TWidget : Panel
-		where TCallback : Panel.ICallback
+		where TControl: NSObject
+		where TWidget: Panel
+		where TCallback: Panel.ICallback
 	{
 		Control content;
 		Padding padding;
@@ -63,12 +63,12 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-#if OSX
+		#if OSX
 		protected virtual NSViewResizingMask ContentResizingMask()
 		{
 			return NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 		}
-#endif
+		#endif
 
 		public Control Content
 		{
@@ -76,7 +76,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				if (content != null)
-				{
+				{ 
 					var oldContent = content.GetContainerView();
 					oldContent.RemoveFromSuperview();
 				}
@@ -221,3 +221,4 @@ namespace Eto.Mac.Forms
 		}
 	}
 }
+

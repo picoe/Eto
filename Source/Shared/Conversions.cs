@@ -12,8 +12,14 @@ namespace Eto
 	/// </summary>
 	public static partial class Conversions
 	{
-
+		/// <summary>
+		/// The regex for mnemonic strings to be converted to Eto
+		/// </summary>
 		private static Regex EtoMnemonic = new Regex(@"(?<=([^_](?:[_]{2})*)|^)[_](?![_])", RegexOptions.Compiled);
+
+		/// <summary>
+		/// The regex for mnemonic strings to be converted to a platform
+		/// </summary>
 		private static Regex PlatformMnemonic = new Regex(@"(?<=([^&](?:[&]{2})*)|^)[&](?![&])", RegexOptions.Compiled);
 
 		/// <summary>
