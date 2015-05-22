@@ -11,6 +11,7 @@ namespace Eto.Test.WinForms
 		{
 			var platform = Platform.Get(Platforms.WinForms);
 			var app = new TestApplication(platform);
+			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}
 	}

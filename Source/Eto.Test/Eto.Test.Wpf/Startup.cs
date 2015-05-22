@@ -13,7 +13,8 @@ namespace Eto.Test.Wpf
 			// don't use tiling for the direct drawing test
 			Style.Add<DrawableHandler>("direct", handler => handler.AllowTiling = false);
 
-			var app = new TestApplication(platform, typeof(Startup).Assembly);
+			var app = new TestApplication(platform);
+			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}
 

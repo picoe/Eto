@@ -20,8 +20,7 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class MatrixTests
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
+		public MatrixTests()
 		{
 			// initialize test generator if running through IDE or nunit-gui
 			TestUtils.Initialize();
