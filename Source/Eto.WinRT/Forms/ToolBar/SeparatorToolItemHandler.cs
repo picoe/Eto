@@ -1,9 +1,9 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 using swc = Windows.UI.Xaml.Controls;
-using Eto.Drawing;
 
-namespace Eto.WinRT.Forms
+namespace Eto.WinRT.Forms.ToolBar
 {
 	public class SeparatorToolItemHandler : ToolItemHandler<swc.ContentControl, SeparatorToolItem>, SeparatorToolItem.IHandler
 	{

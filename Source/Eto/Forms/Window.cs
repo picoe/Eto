@@ -230,27 +230,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the tool bar for the window.
-		/// </summary>
-		/// <remarks>
-		/// Note that each window can only have a single tool bar
-		/// </remarks>
-		/// <value>The tool bar for the window</value>
-		public ToolBar ToolBar
-		{
-			get { return Handler.ToolBar; }
-			set
-			{ 
-				var toolbar = Handler.ToolBar;
-				if (toolbar != null)
-					toolbar.OnUnLoad(EventArgs.Empty);
-				Handler.ToolBar = value;
-				if (value != null)
-					value.OnLoad(EventArgs.Empty);
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets the opacity of the window
 		/// </summary>
 		/// <value>The window opacity.</value>
@@ -314,6 +293,20 @@ namespace Eto.Forms
 				if (value != null)
 					value.OnLoad(EventArgs.Empty);
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the tool bar for the window.
+		/// </summary>
+		/// <remarks>
+		/// Note that each window can only have a single tool bar.
+		/// If you want to use multiple tool bars you have to use the <see cref="Eto.Forms.DockView"/> control.
+		/// </remarks>
+		/// <value>The tool bar for the window</value>
+		public ToolBarView ToolBar
+		{
+			get { return Handler.ToolBar; }
+			set { Handler.ToolBar = value; }
 		}
 
 		/// <summary>
@@ -539,10 +532,11 @@ namespace Eto.Forms
 			/// Gets or sets the tool bar for the window.
 			/// </summary>
 			/// <remarks>
-			/// Note that each window can only have a single tool bar
+			/// Note that each window can only have a single tool bar.
+			/// If you want to use multiple tool bars use the <see cref="Eto.Forms.DockView"/> control.
 			/// </remarks>
 			/// <value>The tool bar for the window</value>
-			ToolBar ToolBar { get; set; }
+			ToolBarView ToolBar { get; set; }
 
 			/// <summary>
 			/// Closes the window

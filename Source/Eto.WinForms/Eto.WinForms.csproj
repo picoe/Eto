@@ -97,6 +97,8 @@
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DockViewHandler.cs" />
+    <Compile Include="Forms\Controls\DockViewItemHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
@@ -112,6 +114,7 @@
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="Forms\WindowsControl.cs" />
     <Compile Include="KeyMap.cs">
       <SubType>Code</SubType>

@@ -639,6 +639,7 @@ namespace Eto.GtkSharp.Forms
 		public Point Location
 		{
 			get { return Control.Allocation.Location.ToEto(); }
+			set { Control.SetAllocation(new Gdk.Rectangle(value.ToGdk().X, value.ToGdk().Y, -1, -1)); } // TODO: We need to check if this is the best way to make a rect out of point
 		}
 	}
 }

@@ -1,28 +1,29 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 using swc = Windows.UI.Xaml.Controls;
 using swm = Windows.UI.Xaml.Media;
-using Eto.Drawing;
 
-namespace Eto.WinRT.Forms
+namespace Eto.WinRT.Forms.ToolBar
 {
-	public class ButtonToolItemHandler : ToolItemHandler<swc.Button, ButtonToolItem>, ButtonToolItem.IHandler
+	public class ButtonToolItemHandler : ToolItemHandler<swc.AppBarButton, ButtonToolItem>, ButtonToolItem.IHandler
 	{
 		Image image;
 		readonly swc.Image swcImage;
 		readonly swc.TextBlock label;
 
-		public ButtonToolItemHandler ()
+		public ButtonToolItemHandler()
 		{
-			Control = new swc.Button ();
+			Control = new swc.AppBarButton();
 			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
-			label = new swc.TextBlock ();
+			label = new swc.TextBlock();
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
-			panel.Children.Add (swcImage);
-			panel.Children.Add (label);
+			panel.Children.Add(swcImage);
+			panel.Children.Add(label);
 			Control.Content = panel;
-			Control.Click += delegate {
-				Widget.OnClick (EventArgs.Empty);
+			Control.Click += delegate
+			{
+				Widget.OnClick(EventArgs.Empty);
 			};
 		}
 
@@ -49,7 +50,7 @@ namespace Eto.WinRT.Forms
 			set
 			{
 				image = value;
-				swcImage.Source = image.ToWpf ((int)swcImage.MaxWidth);
+				swcImage.Source = image.ToWpf((int)swcImage.MaxWidth);
 			}
 		}
 

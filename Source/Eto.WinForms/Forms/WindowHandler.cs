@@ -4,8 +4,8 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.WinForms.Forms;
 using Eto.WinForms.Drawing;
+using Eto.WinForms.Forms;
 
 namespace Eto.WinForms.Forms
 {
@@ -23,7 +23,7 @@ namespace Eto.WinForms.Forms
 	{
 		MenuBar menu;
 		Icon icon;
-		Eto.Forms.ToolBar toolBar;
+		ToolBarView toolBar;
 		swf.Panel menuHolder;
 		swf.Panel content;
 		swf.Panel toolbarHolder;
@@ -146,8 +146,8 @@ namespace Eto.WinForms.Forms
 						Callback.OnClosing(Widget, args);
 
 						if (!e.Cancel && swf.Application.OpenForms.Count <= 1
-						    || e.CloseReason == swf.CloseReason.ApplicationExitCall
-						    || e.CloseReason == swf.CloseReason.WindowsShutDown)
+							|| e.CloseReason == swf.CloseReason.ApplicationExitCall
+							|| e.CloseReason == swf.CloseReason.WindowsShutDown)
 						{
 							var app = ((ApplicationHandler)Application.Instance.Handler);
 							app.Callback.OnTerminating(app.Widget, args);
@@ -264,7 +264,7 @@ namespace Eto.WinForms.Forms
 			set { Control.TopMost = value; }
 		}
 
-		public Eto.Forms.ToolBar ToolBar
+		public ToolBarView ToolBar
 		{
 			get
 			{

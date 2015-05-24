@@ -451,12 +451,12 @@ namespace Eto.WinForms.Forms
 			if (Widget.Loaded && Control.IsHandleCreated)
 				Control.Focus();
 			else
-                Widget.LoadComplete += Widget_LoadComplete;
+				Widget.LoadComplete += Widget_LoadComplete;
 		}
 
-        void Widget_LoadComplete(object sender, EventArgs e)
-        {
-            Widget.LoadComplete -= Widget_LoadComplete;
+		void Widget_LoadComplete(object sender, EventArgs e)
+		{
+			Widget.LoadComplete -= Widget_LoadComplete;
 			Control.Focus();
 		}
 
@@ -632,7 +632,7 @@ namespace Eto.WinForms.Forms
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
-            return !Control.IsDisposed ? Control.PointToClient(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
+			return !Control.IsDisposed ? Control.PointToClient(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
 		}
 
 		public virtual PointF PointToScreen(PointF point)

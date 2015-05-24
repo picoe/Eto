@@ -51,15 +51,17 @@ namespace Eto.Test
 
 			Content = MainContent();
 
-			CreateMenuToolBar();
+			CreateMenuBar();
 		}
 
 		public SectionList SectionList { get; set; }
 
 		Control MainContent()
 		{
-			contentContainer = new Panel();
+			Splitter splitter = null;
 
+			contentContainer = new Panel();
+			
 			// set focus when the form is shown
 			Shown += delegate
 			{
@@ -96,7 +98,7 @@ namespace Eto.Test
 
 			if (Splitter.IsSupported)
 			{
-				var splitter = new Splitter
+				splitter = new Splitter
 				{
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
@@ -104,16 +106,58 @@ namespace Eto.Test
 					// for now, don't show log in mobile
 					Panel2 = Platform.IsMobile ? contentContainer : RightPane()
 				};
+			}
 
+			if (DockView.IsSupported)
+			{
+				DockView dockView = new DockView
+				{
+					Content = splitter,
+					Items =
+					{
+						new DockViewItem
+						{
+							Content = new ToolBarView { Content = this.CreateToolBarTop(), Dock = DockPosition.Top },
+							Dock = DockPosition.Top,
+							Order = 1,
+							Position = new Eto.Drawing.Point(0,0)
+						},
+						new DockViewItem
+						{
+							Content = new ToolBarView { Content = this.CreateToolBarRight(), Dock = DockPosition.Bottom },
+							Dock = DockPosition.Right
+						},
+						new DockViewItem
+						{
+							Content = new TextBox { PlaceholderText ="Search", Text = "Search for" },
+							Dock = DockPosition.None,
+							Order = 2,
+							Position = new Eto.Drawing.Point(200,0)
+						}
+					}
+				};
+				
+				return dockView;
+			}
+
+			if (ToolBarView.IsSupported)
+			{
+				this.ToolBar = new ToolBarView { Content = this.CreateToolBarTop(), Dock = DockPosition.Top };
+			}
+
+			if (Splitter.IsSupported)
+			{
 				return splitter;
 			}
+
 			if (Navigation.IsSupported)
 			{
 				navigation = new Navigation(SectionList.Control, "Eto.Test");
+
 				return navigation;
 			}
+			
 			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Platform must support splitter or navigation"));
-
 		}
 
 		Control RightPane()
@@ -168,7 +212,7 @@ namespace Eto.Test
 			return control;
 		}
 
-		void CreateMenuToolBar()
+		void CreateMenuBar()
 		{
 			var about = new Commands.About();
 			var quit = new Commands.Quit();
@@ -199,26 +243,53 @@ namespace Eto.Test
 					AboutItem = about
 				};
 			}
+		}
+
+		ToolBar CreateToolBarRight()
+		{
+			ToolBar toolBar = new ToolBar();
 
 			if (Platform.Supports<ToolBar>())
 			{
-				// create and set the toolbar
-				ToolBar = new ToolBar();
+				toolBar.Items.Add(new Commands.About());
+				toolBar.Items.Add(new Commands.Quit());
+			}
 
-				ToolBar.Items.Add(about);
+			return toolBar;
+		}
+
+		ToolBar CreateToolBarTop()
+		{
+			ToolBar toolBar = new ToolBar();
+
+			if (Platform.Supports<ToolBar>())
+			{
+				if (Platform.Supports<ButtonToolItem>())
+				{
+					toolBar.Items.Add(new ButtonToolItem { Text = "Button1", Image = TestIcons.TestImage });
+					toolBar.Items.Add(new CheckToolItem { Text = "Button2", Image = TestIcons.TestImage });
+					toolBar.Items.Add(new CheckToolItem { Text = "Button3", Image = TestIcons.TestImage });
+					toolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
+				}
 				if (Platform.Supports<CheckToolItem>())
 				{
-					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
-					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
+					toolBar.Items.Add(new CheckToolItem { Text = "Check1", Image = TestIcons.TestImage });
+					toolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
+					toolBar.Items.Add(new CheckToolItem { Text = "Check2", Image = TestIcons.TestImage });
 				}
 				if (Platform.Supports<RadioToolItem>())
 				{
-					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.TestIcon, Checked = true });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
-				};
+					toolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.TestIcon, Checked = true });
+					toolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
+					toolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
+				}
+				if (Platform.Supports<ButtonToolItem>())
+				{
+					toolBar.Items.Add(new ButtonToolItem { Text = "Button4", Image = TestIcons.TestImage });
+				}
 			}
 
+			return toolBar;
 		}
 
 		protected override void OnWindowStateChanged(EventArgs e)

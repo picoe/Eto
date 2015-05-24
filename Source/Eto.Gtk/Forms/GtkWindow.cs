@@ -17,26 +17,25 @@ namespace Eto.GtkSharp.Forms
 	}
 
 	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
-		where TControl: Gtk.Window
-		where TWidget: Window
-		where TCallback: Window.ICallback
+		where TControl : Gtk.Window
+		where TWidget : Window
+		where TCallback : Window.ICallback
 	{
-		Gtk.VBox vbox;
-		readonly Gtk.VBox actionvbox;
-		readonly Gtk.Box topToolbarBox;
-		Gtk.Box menuBox;
-		Gtk.Box containerBox;
-		readonly Gtk.Box bottomToolbarBox;
-		MenuBar menuBar;
-		Icon icon;
-		Eto.Forms.ToolBar toolBar;
 		Gtk.AccelGroup accelGroup;
-		Rectangle? restoreBounds;
+		readonly Gtk.VBox actionvbox;
+		Gtk.Box containerBox;
 		Point? currentLocation;
+		Icon icon;
 		Size? initialSize;
+		MenuBar menuBar;
+		Gtk.Box menuBox;
+		Rectangle? restoreBounds;
 		WindowState state;
 		WindowStyle style;
+		ToolBarView toolBar;
 		bool topmost;
+		readonly Gtk.Alignment toolbarBox;
+		Gtk.VBox vbox;
 
 		protected GtkWindow()
 		{
@@ -44,17 +43,14 @@ namespace Eto.GtkSharp.Forms
 			actionvbox = new Gtk.VBox();
 
 			menuBox = new Gtk.HBox();
-			topToolbarBox = new Gtk.VBox();
+			toolbarBox = new Gtk.Alignment(0, 0, 1, 1);
 
 			containerBox = new Gtk.VBox();
 			containerBox.Visible = true;
 
-			bottomToolbarBox = new Gtk.VBox();
-
 			actionvbox.PackStart(menuBox, false, false, 0);
-			actionvbox.PackStart(topToolbarBox, false, false, 0);
+			actionvbox.PackStart(toolbarBox, false, false, 0);
 			vbox.PackStart(containerBox, true, true, 0);
-			vbox.PackStart(bottomToolbarBox, false, false, 0);
 		}
 
 		protected override Color DefaultBackgroundColor
@@ -96,12 +92,12 @@ namespace Eto.GtkSharp.Forms
 			get { return Control.Resizable; }
 			set
 			{
-				Control.Resizable = value; 
-				#if GTK2
+				Control.Resizable = value;
+#if GTK2
 				Control.AllowGrow = value;
-				#else
+#else
 				Control.HasResizeGrip = value;
-				#endif
+#endif
 			}
 		}
 
@@ -119,7 +115,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return topmost; }
 			set
-			{ 
+			{
 				if (topmost != value)
 				{
 					topmost = value;
@@ -132,7 +128,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return style; }
 			set
-			{ 
+			{
 				if (style != value)
 				{
 					style = value;
@@ -178,9 +174,9 @@ namespace Eto.GtkSharp.Forms
 			var allocation = Control.Allocation.Size;
 			// set initial minimum size
 			Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
-			#if GTK2
+#if GTK2
 			Control.AllowShrink = false;
-			#endif
+#endif
 
 			if (initialSize != null)
 			{
@@ -226,7 +222,7 @@ namespace Eto.GtkSharp.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-			
+
 			HandleEvent(Window.WindowStateChangedEvent); // to set restore bounds properly
 			HandleEvent(Window.ClosingEvent); // to chain application termination events
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
@@ -462,7 +458,7 @@ namespace Eto.GtkSharp.Forms
 			base.Dispose(disposing);
 		}
 
-		public Eto.Forms.ToolBar ToolBar
+		public ToolBarView ToolBar
 		{
 			get
 			{
@@ -471,11 +467,11 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				if (toolBar != null)
-					topToolbarBox.Remove((Gtk.Widget)toolBar.ControlObject);
+					toolbarBox.Remove((Gtk.Widget)toolBar.ControlObject);
 				toolBar = value;
 				if (toolBar != null)
-					topToolbarBox.Add((Gtk.Widget)toolBar.ControlObject);
-				topToolbarBox.ShowAll();
+					toolbarBox.Add((Gtk.Widget)toolBar.ControlObject);
+				toolbarBox.ShowAll();
 			}
 		}
 
@@ -510,7 +506,7 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				if (Control.GdkWindow == null)
-					return state;	
+					return state;
 
 				if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
 					return WindowState.Minimized;
@@ -525,7 +521,7 @@ namespace Eto.GtkSharp.Forms
 				if (state != value)
 				{
 					state = value;
-				
+
 					switch (value)
 					{
 						case WindowState.Maximized:

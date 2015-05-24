@@ -3,9 +3,10 @@ using Eto.Forms;
 using swi = Windows.UI.Xaml.Input;
 using swm = Windows.UI.Xaml.Media;
 using sw = Windows.UI.Xaml;
-//using Eto.WinRT.Forms.Menu;
 using Eto.WinRT.Forms.Controls;
+//using Eto.WinRT.Forms.Menu;
 //using Eto.WinRT.Forms.Printing;
+using Eto.WinRT.Forms.ToolBar;
 using Eto.WinRT.Forms;
 using Eto.IO;
 using Eto.Forms.ThemedControls;
@@ -18,6 +19,7 @@ namespace Eto.WinRT
 	/// </summary>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2015 by Nicolas Pöhlmann</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class Platform : Eto.Platform
 	{
@@ -101,10 +103,11 @@ namespace Eto.WinRT
 			//p.Add<PrintSettings.IHandler>(() => new PrintSettingsHandler());
 			
 			// Forms.ToolBar
+			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
 			p.Add<CheckToolItem.IHandler>(() => new CheckToolItemHandler());
 			p.Add<SeparatorToolItem.IHandler>(() => new SeparatorToolItemHandler());
-			p.Add<ButtonToolItem.IHandler>(() => new ButtonToolItemHandler());
-			//p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
+			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
+			p.Add<ToolBarView.IHandler>(() => new ToolBarViewHandler());
 			
 			// Forms
 			p.Add<Application.IHandler>(() => new ApplicationHandler());

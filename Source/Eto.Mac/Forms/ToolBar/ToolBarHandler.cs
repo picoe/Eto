@@ -1,7 +1,8 @@
 using System;
-using Eto.Forms;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using Eto.Drawing;
+using Eto.Forms;
 
 #if XAMMAC2
 using AppKit;
@@ -34,9 +35,9 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.ToolBar
 {
-	public class ToolBarHandler : WidgetHandler<NSToolbar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
+
+	public class ToolBarHandler : MacView<NSToolbar, Eto.Forms.ToolBar, Eto.Forms.ToolBar.ICallback>, Eto.Forms.ToolBar.IHandler
 	{
-		ToolBarDock dock = ToolBarDock.Top;
 		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();
 
 		class TBDelegate : NSToolbarDelegate
@@ -96,12 +97,6 @@ namespace Eto.Mac.Forms.ToolBar
 			Control.Delegate = new TBDelegate { Handler = this };
 		}
 
-		public ToolBarDock Dock
-		{
-			get { return dock; }
-			set { dock = value; }
-		}
-
 		public void AddButton(ToolItem item, int index)
 		{
 			var handler = (IToolBarBaseItemHandler)item.Handler;
@@ -112,7 +107,32 @@ namespace Eto.Mac.Forms.ToolBar
 			//Control.ValidateVisibleItems();
 		}
 
-		public void RemoveButton(ToolItem item)
+		public void Clear()
+		{
+			for (int i = Control.Items.Length - 1; i >= 0; i--)
+			{
+				Control.RemoveItem(i);
+			}
+			items.Clear();
+			// allow menu items to be GC'd
+			var newitems = Control.Items;
+
+			//Control.ValidateVisibleItems();
+		}
+
+		public override NSView ContainerControl {
+			// TODO: Is there a way to convert NSToolbar to NSView
+			//get { return Control; }
+			get { return null; }
+		}
+
+		public override bool Enabled
+		{
+			get { return true; }
+			set { }
+		}
+
+        public void RemoveButton(ToolItem item)
 		{
 			var handler = item.Handler as IToolBarBaseItemHandler;
 			var index = items.IndexOf(handler);
@@ -146,19 +166,6 @@ namespace Eto.Mac.Forms.ToolBar
 						break;
 				}
 			}
-		}
-
-		public void Clear()
-		{
-			for (int i = Control.Items.Length - 1; i >= 0; i--)
-			{
-				Control.RemoveItem(i);
-			}
-			items.Clear();
-			// allow menu items to be GC'd
-			var newitems = Control.Items;
-
-			//Control.ValidateVisibleItems();
 		}
 	}
 }

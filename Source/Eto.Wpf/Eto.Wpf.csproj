@@ -171,6 +171,7 @@
     <Compile Include="Forms\EnableThemingInScope.cs" />
     <Compile Include="Forms\KeyboardHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarViewHandler.cs" />
     <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />

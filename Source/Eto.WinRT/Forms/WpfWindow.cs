@@ -30,12 +30,10 @@ namespace Eto.WinRT.Forms
 	{
 		Icon icon;
 		MenuBar menu;
-		ToolBar toolBar;
 #if TODO_XAML
 		swc.DockPanel main;
 #endif
 		swc.ContentControl menuHolder;
-		swc.ContentControl toolBarHolder;
 #if TODO_XAML
 		swc.DockPanel content;
 #else
@@ -61,13 +59,10 @@ namespace Eto.WinRT.Forms
 			main = new swc.DockPanel();
 #endif
 			menuHolder = new swc.ContentControl { IsTabStop = false };
-			toolBarHolder = new swc.ContentControl { IsTabStop = false };
 			content.Background = Windows.UI.Xaml.SystemColors.ControlBrush;
 			swc.DockPanel.SetDock (menuHolder, swc.Dock.Top);
-			swc.DockPanel.SetDock (toolBarHolder, swc.Dock.Top);
 #if TODO_XAML
 			main.Children.Add (menuHolder);
-			main.Children.Add (toolBarHolder);
 			main.Children.Add (content);
 			Control.Content = main;
 #endif
@@ -143,16 +138,6 @@ namespace Eto.WinRT.Forms
 			ContainerControl.Height = PreferredSize.Height;
 			ContainerControl.MinWidth = MinimumSize.Width;
 			ContainerControl.MinHeight = MinimumSize.Height;
-		}
-
-		public ToolBar ToolBar
-		{
-			get { return toolBar; }
-			set
-			{
-				toolBar = value;
-				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
-			}
 		}
 
 		public void Close ()
