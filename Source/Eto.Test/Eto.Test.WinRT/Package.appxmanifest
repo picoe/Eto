@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="58ceca97-1cf5-4494-a581-5ca5dbf3cafc" Publisher="CN=curtis" Version="1.1.0.0" />
+  <Identity Name="8b4f99ef-77d3-4dfa-ac38-ab66d45d6790" Publisher="CN=curtis" Version="1.0.0.0" />
   <Properties>
     <DisplayName>Eto.Test.WinRT</DisplayName>
-    <PublisherDisplayName>Vivek</PublisherDisplayName>
+    <PublisherDisplayName>curtis</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
@@ -15,12 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Eto.Test.WinRT.App">
-      <m2:VisualElements DisplayName="Eto.Test.WinRT" Description="Eto.Test.WinRT" BackgroundColor="#464646" ForegroundText="light" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png">
-        <m2:DefaultTile>
-          <m2:ShowNameOnTiles>
-            <m2:ShowOn Tile="square150x150Logo" />
-          </m2:ShowNameOnTiles>
-        </m2:DefaultTile>
+      <m2:VisualElements DisplayName="Eto.Test.WinRT" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png" Description="Eto.Test.WinRT" ForegroundText="light" BackgroundColor="#464646">
         <m2:SplashScreen Image="Assets\SplashScreen.png" />
       </m2:VisualElements>
     </Application>

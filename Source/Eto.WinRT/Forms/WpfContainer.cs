@@ -43,6 +43,7 @@ namespace Eto.WinRT.Forms
 			set
 			{
 				minimumSize = value;
+				Size = value; // hack for now
 				SetSize();
 			}
 		}
