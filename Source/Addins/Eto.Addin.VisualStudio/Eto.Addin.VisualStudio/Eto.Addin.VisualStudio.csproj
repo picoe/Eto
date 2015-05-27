@@ -36,6 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Adornments\ColorAdornment.cs" />
+    <Compile Include="Adornments\AdornmentFactory.cs" />
     <Compile Include="BuilderInfo.cs" />
     <Compile Include="EtoAdapterHandler.cs" />
     <Compile Include="EditorFactory.cs" />

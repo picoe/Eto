@@ -57,7 +57,7 @@ namespace Eto.VisualStudioWizards
 				var currentDef = def;
 				var button = new Button { Size = new Size(-1, 100), Text = def.Name, Image = def.Image, ImagePosition = ButtonImagePosition.Above };
 				button.Click += (sender, e) => Close(currentDef.Type);
-				layout.Rows.Add(new TableRow (button, new Label { Text = def.Description, VerticalAlign = VerticalAlign.Middle }));
+				layout.Rows.Add(new TableRow (button, new Label { Text = def.Description, VerticalAlignment = VerticalAlignment.Center }));
 			}
 
 			Content = new TableLayout
