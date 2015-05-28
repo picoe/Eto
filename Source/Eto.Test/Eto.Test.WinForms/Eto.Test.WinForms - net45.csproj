@@ -37,6 +37,9 @@
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
@@ -89,6 +92,7 @@
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
   <ItemGroup>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
   </ItemGroup>
 </Project>
