@@ -49,7 +49,7 @@ namespace Eto.Wpf.Drawing
 
 		public float PointsPerPixel
 		{
-			get { return (float)DPI * 72f / 96f; }
+			get { return 72f / 96f; }
 		}
 
 		protected override bool DisposeControl { get { return disposeControl; } }
