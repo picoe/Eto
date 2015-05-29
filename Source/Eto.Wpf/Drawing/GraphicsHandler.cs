@@ -324,9 +324,13 @@ namespace Eto.Wpf.Drawing
 				Control.Close();
 				var handler = (BitmapHandler)image.Handler;
 				var bmp = handler.Control;
-				var newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
+				var newbmp = bmp as swmi.RenderTargetBitmap;
+				if (newbmp == null)
+				{
+					newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
+					handler.SetBitmap(newbmp);
+				}
 				newbmp.Render(visual);
-				handler.SetBitmap(newbmp);
 				return true;
 			}
 			return false;
