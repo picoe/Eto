@@ -10,7 +10,8 @@ namespace Eto.Test.Gtk2
 		{
 			var platform = new Eto.GtkSharp.Platform();
 			
-			var app = new TestApplication(platform, typeof(Startup).Assembly);
+			var app = new TestApplication(platform);
+			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}
 	}

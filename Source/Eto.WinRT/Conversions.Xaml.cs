@@ -41,7 +41,7 @@ namespace Eto.WinRT
 		public static swm.Brush ToWpfBrush(this Color value, swm.Brush brush = null)
 		{
 			var solidBrush = brush as swm.SolidColorBrush;
-			if (solidBrush == null 
+			if (solidBrush == null
 #if TODO_XAML
 				|| solidBrush.IsSealed
 #endif

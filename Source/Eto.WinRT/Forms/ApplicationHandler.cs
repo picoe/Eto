@@ -146,6 +146,7 @@ namespace Eto.WinRT.Forms
 		public void Invoke(Action action)
 		{
 			var ev = new ManualResetEvent(false);
+#pragma warning disable 4014
 			dispatcher.RunAsync(wuc.CoreDispatcherPriority.Normal, () => {
 				try
 				{
@@ -156,13 +157,15 @@ namespace Eto.WinRT.Forms
 					ev.Set();
 				}
 			});
-
+#pragma warning restore 4014
 			ev.WaitOne();
 		}
 
 		public void AsyncInvoke(Action action)
 		{
+#pragma warning disable 4014
 			dispatcher.RunAsync(wuc.CoreDispatcherPriority.Normal, () => action());
+#pragma warning restore 4014
 		}
 
 		public Keys CommonModifier

@@ -8,6 +8,14 @@ namespace Eto
 	static class Win32
 	{
 		// Analysis disable InconsistentNaming
+
+		public struct RECT
+		{
+			public int left;
+			public int top;
+			public int right;
+			public int bottom;
+		}
         
 		[Flags]
 		public enum SWP : uint
@@ -203,7 +211,7 @@ namespace Eto
 		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags);
 
 		[DllImport("user32.dll")]
-		public static extern long GetWindowRect(IntPtr hWnd, ref Rectangle lpRect);
+		public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern uint GetWindowLong(IntPtr hWnd, GWL nIndex);

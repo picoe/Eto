@@ -11,7 +11,8 @@ namespace Eto.Test.Gtk3
 		{
 			var generator = new Eto.GtkSharp.Platform();
 			
-			var app = new TestApplication(generator, typeof(Startup).Assembly);
+			var app = new TestApplication(generator);
+			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}
 	}

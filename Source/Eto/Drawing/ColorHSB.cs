@@ -114,9 +114,9 @@ namespace Eto.Drawing
 			float g = 0;
 			float b = 0;
 
-			if (S == 0)
+			if (S <= 0)
 			{
-				r = g = b = 0;
+				r = g = b = B; // grayscale
 			}
 			else
 			{

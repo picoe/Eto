@@ -25,7 +25,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			int wrapWidth;
 
-#if GTK2
+			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				//base.OnSizeRequested (ref requisition);
@@ -34,7 +34,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				requisition.Width = width;
 				requisition.Height = height;
 			}
-#else
+			#else
 			protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 			{
 				base.OnGetPreferredWidth (out minimum_width, out natural_width);
@@ -49,7 +49,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 
 #endif
-			
+
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
 				base.OnSizeAllocated(allocation);
@@ -58,7 +58,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			void SetWrapWidth(int width)
 			{
-				if (width == 0)
+				if (!IsRealized || SingleLineMode || width == 0)
 					return;
 				Layout.Width = (int)(width * Pango.Scale.PangoScale);
 				if (wrapWidth != width)

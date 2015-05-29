@@ -25,9 +25,9 @@ namespace Eto.Test.WinRT.Data
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public sealed class AllTests
     {
-        private static AllTests _sampleDataSource = new AllTests();
+        static AllTests _sampleDataSource = new AllTests();
 
-        private ObservableCollection<TestGroup> _allGroups = new ObservableCollection<TestGroup>();
+        ObservableCollection<TestGroup> _allGroups = new ObservableCollection<TestGroup>();
         public ObservableCollection<TestGroup> AllGroups
         {
             get { return this._allGroups; }
@@ -36,7 +36,6 @@ namespace Eto.Test.WinRT.Data
         public static IEnumerable<TestGroup> GetGroups(string uniqueId)
         {
             if (!uniqueId.Equals("AllGroups")) throw new ArgumentException("Only 'AllGroups' is supported as a collection of groups");
-            
             return _sampleDataSource.AllGroups;
         }
 
@@ -58,9 +57,6 @@ namespace Eto.Test.WinRT.Data
 
         public AllTests()
         {
-			String ITEM_CONTENT = String.Format("Item Content: {0}\n\n{0}\n\n{0}\n\n{0}\n\n{0}\n\n{0}\n\n{0}",
-						"Curabitur class aliquam vestibulum nam curae maecenas sed integer cras phasellus suspendisse quisque donec dis praesent accumsan bibendum pellentesque condimentum adipiscing etiam consequat vivamus dictumst aliquam duis convallis scelerisque est parturient ullamcorper aliquet fusce suspendisse nunc hac eleifend amet blandit facilisi condimentum commodo scelerisque faucibus aenean ullamcorper ante mauris dignissim consectetuer nullam lorem vestibulum habitant conubia elementum pellentesque morbi facilisis arcu sollicitudin diam cubilia aptent vestibulum auctor eget dapibus pellentesque inceptos leo egestas interdum nulla consectetuer suspendisse adipiscing pellentesque proin lobortis sollicitudin augue elit mus congue fermentum parturient fringilla euismod feugiat");
-
 			var groupSections = TestSections.Get(TestApplication.DefaultTestAssemblies()).ToList();
 			for (var i = 0; i < groupSections.Count; ++i)
 			{
@@ -84,7 +80,7 @@ namespace Eto.Test.WinRT.Data
 						subtitle: "",
 						imagePath: "Assets/LightGray.png",
 						description: "",
-						content: ITEM_CONTENT,
+						content: "Hello!",
 						group: testGroup,
 						getControl: () => GetControl(testSection));
 					testGroup.Items.Add(testItem);
@@ -96,7 +92,7 @@ namespace Eto.Test.WinRT.Data
 		/// Creates a control used to populate the test pane.
 		/// This is invoked from SplitPage.xaml via {Binding ContentControl}.
 		/// </summary>
-		private FrameworkElement GetControl(Section testSection)
+		FrameworkElement GetControl(Section testSection)
 		{
 			FrameworkElement result = null;
 			var b = testSection as ISection;

@@ -44,7 +44,7 @@ namespace Eto.Test
 					#if PCL
 					var section = type.GetTypeInfo().GetCustomAttribute<SectionAttribute>(false);
 					#else
-				var section = type.GetCustomAttribute<SectionAttribute>(false);
+					var section = type.GetCustomAttribute<SectionAttribute>(false);
 					#endif
 					if (section != null)
 					{

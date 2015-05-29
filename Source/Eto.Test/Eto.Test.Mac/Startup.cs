@@ -21,7 +21,8 @@ namespace Eto.Test.Mac
 
 			var platform = new Eto.Mac.Platform();
 			
-			var app = new TestApplication(platform, typeof(Startup).Assembly);
+			var app = new TestApplication(platform);
+			app.TestAssemblies.Add(typeof(Startup).Assembly);
 
 			// use this to use your own app delegate:
 			// ApplicationHandler.Instance.AppDelegate = new MyAppDelegate();

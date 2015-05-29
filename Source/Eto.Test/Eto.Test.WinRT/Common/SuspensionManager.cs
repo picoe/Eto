@@ -59,29 +59,28 @@ namespace Eto.Test.WinRT.Common
         {
             try
             {
-            // Save the navigation state for all registered frames
-            foreach (var weakFrameReference in _registeredFrames)
-            {
-                Frame frame;
-                if (weakFrameReference.TryGetTarget(out frame))
+                // Save the navigation state for all registered frames
+                foreach (var weakFrameReference in _registeredFrames)
                 {
-                    SaveFrameNavigationState(frame);
+                    Frame frame;
+                    if (weakFrameReference.TryGetTarget(out frame))
+                    {
+                        SaveFrameNavigationState(frame);
+                    }
                 }
-            }
 
-            // Serialize the session state synchronously to avoid asynchronous access to shared
-            // state
-            MemoryStream sessionData = new MemoryStream();
-            DataContractSerializer serializer = new DataContractSerializer(typeof(Dictionary<string, object>), _knownTypes);
-            serializer.WriteObject(sessionData, _sessionState);
-            
+                // Serialize the session state synchronously to avoid asynchronous access to shared
+                // state
+                MemoryStream sessionData = new MemoryStream();
+                DataContractSerializer serializer = new DataContractSerializer(typeof(Dictionary<string, object>), _knownTypes);
+                serializer.WriteObject(sessionData, _sessionState);
+
                 // Get an output stream for the SessionState file and write the state asynchronously
                 StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(sessionStateFilename, CreationCollisionOption.ReplaceExisting);
                 using (Stream fileStream = await file.OpenStreamForWriteAsync())
                 {
                     sessionData.Seek(0, SeekOrigin.Begin);
                     await sessionData.CopyToAsync(fileStream);
-                    await fileStream.FlushAsync();
                 }
             }
             catch (Exception e)
@@ -96,10 +95,12 @@ namespace Eto.Test.WinRT.Common
         /// state, which in turn gives their active <see cref="Page"/> an opportunity restore its
         /// state.
         /// </summary>
+        /// <param name="sessionBaseKey">An optional key that identifies the type of session.
+        /// This can be used to distinguish between multiple application launch scenarios.</param>
         /// <returns>An asynchronous task that reflects when session state has been read.  The
         /// content of <see cref="SessionState"/> should not be relied upon until this task
         /// completes.</returns>
-        public static async Task RestoreAsync()
+        public static async Task RestoreAsync(String sessionBaseKey = null)
         {
             _sessionState = new Dictionary<String, Object>();
 
@@ -118,7 +119,7 @@ namespace Eto.Test.WinRT.Common
                 foreach (var weakFrameReference in _registeredFrames)
                 {
                     Frame frame;
-                    if (weakFrameReference.TryGetTarget(out frame))
+                    if (weakFrameReference.TryGetTarget(out frame) && (string)frame.GetValue(FrameSessionBaseKeyProperty) == sessionBaseKey)
                     {
                         frame.ClearValue(FrameSessionStateProperty);
                         RestoreFrameNavigationState(frame);
@@ -133,6 +134,8 @@ namespace Eto.Test.WinRT.Common
 
         private static DependencyProperty FrameSessionStateKeyProperty =
             DependencyProperty.RegisterAttached("_FrameSessionStateKey", typeof(String), typeof(SuspensionManager), null);
+        private static DependencyProperty FrameSessionBaseKeyProperty =
+            DependencyProperty.RegisterAttached("_FrameSessionBaseKeyParams", typeof(String), typeof(SuspensionManager), null);
         private static DependencyProperty FrameSessionStateProperty =
             DependencyProperty.RegisterAttached("_FrameSessionState", typeof(Dictionary<String, Object>), typeof(SuspensionManager), null);
         private static List<WeakReference<Frame>> _registeredFrames = new List<WeakReference<Frame>>();
@@ -149,7 +152,9 @@ namespace Eto.Test.WinRT.Common
         /// <see cref="SuspensionManager"/></param>
         /// <param name="sessionStateKey">A unique key into <see cref="SessionState"/> used to
         /// store navigation-related information.</param>
-        public static void RegisterFrame(Frame frame, String sessionStateKey)
+        /// <param name="sessionBaseKey">An optional key that identifies the type of session.
+        /// This can be used to distinguish between multiple application launch scenarios.</param>
+        public static void RegisterFrame(Frame frame, String sessionStateKey, String sessionBaseKey = null)
         {
             if (frame.GetValue(FrameSessionStateKeyProperty) != null)
             {
@@ -159,6 +164,12 @@ namespace Eto.Test.WinRT.Common
             if (frame.GetValue(FrameSessionStateProperty) != null)
             {
                 throw new InvalidOperationException("Frames must be either be registered before accessing frame session state, or not registered at all");
+            }
+
+            if (!string.IsNullOrEmpty(sessionBaseKey))
+            {
+                frame.SetValue(FrameSessionBaseKeyProperty, sessionBaseKey);
+                sessionStateKey = sessionBaseKey + "_" + sessionStateKey;
             }
 
             // Use a dependency property to associate the session key with a frame, and keep a list of frames whose
@@ -197,7 +208,7 @@ namespace Eto.Test.WinRT.Common
         /// that can still be useful when restoring pages that have been discarded from the
         /// navigation cache.
         /// </summary>
-        /// <remarks>Apps may choose to rely on <see cref="LayoutAwarePage"/> to manage
+        /// <remarks>Apps may choose to rely on <see cref="NavigationHelper"/> to manage
         /// page-specific state instead of working with frame session state directly.</remarks>
         /// <param name="frame">The instance for which session state is desired.</param>
         /// <returns>A collection of state subject to the same serialization mechanism as
@@ -249,9 +260,10 @@ namespace Eto.Test.WinRT.Common
         {
         }
 
-        public SuspensionManagerException(Exception e) : base("SuspensionManager failed", e)
+        public SuspensionManagerException(Exception e)
+            : base("SuspensionManager failed", e)
         {
-            
+
         }
     }
 }

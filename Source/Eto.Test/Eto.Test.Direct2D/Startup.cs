@@ -10,7 +10,8 @@ namespace Eto.Test.Direct2D
 		static void Main(string[] args)
 		{
 			var platform = new Eto.Direct2D.Platform();
-			var app = new TestApplication(platform, typeof(Startup).Assembly);
+			var app = new TestApplication(platform);
+			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}
 	}

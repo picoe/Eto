@@ -197,6 +197,7 @@ namespace Eto.GtkSharp.Forms
 				// resize back to allocation
 				Control.Resize(allocation.Width, allocation.Height);
 			}
+			containerBox.SetSizeRequest(-1, -1);
 
 			// only do this the first time
 			Control.Realized -= HandleControlRealized;
@@ -217,17 +218,9 @@ namespace Eto.GtkSharp.Forms
 				}
 				else
 				{
-					//Control.SetSizeRequest(-1, -1);
 					containerBox.SetSizeRequest(value.Width, value.Height);
-					containerBox.Realized += HandleContainerRealized;
 				}
 			}
-		}
-
-		void HandleContainerRealized(object sender, EventArgs e)
-		{
-			containerBox.SetSizeRequest(-1, -1);
-			containerBox.Realized -= HandleContainerRealized;
 		}
 
 		protected override void Initialize()
@@ -388,8 +381,11 @@ namespace Eto.GtkSharp.Forms
 				if (handler != null)
 					handler.SetAccelGroup(accelGroup);
 
-				menuBox.PackStart((Gtk.Widget)value.ControlObject, true, true, 0);
-				((Gtk.Widget)value.ControlObject).ShowAll();
+				if (value != null)
+				{
+					menuBox.PackStart((Gtk.Widget)value.ControlObject, true, true, 0);
+					((Gtk.Widget)value.ControlObject).ShowAll();
+				}
 			}
 		}
 

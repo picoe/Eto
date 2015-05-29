@@ -154,6 +154,14 @@ namespace Eto.WinForms.Drawing
 			Control.UnlockBits((SD.Imaging.BitmapData)bitmapData.ControlObject);
 		}
 
+		public void Save(string fileName, ImageFormat format)
+		{
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
+			}
+		}
+
 		public void Save(Stream stream, ImageFormat format)
 		{
 			if (format == ImageFormat.Gif)

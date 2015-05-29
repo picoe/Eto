@@ -355,10 +355,15 @@ namespace Eto.WinRT.Forms
 					break;
 #endif
 				case Eto.Forms.Control.SizeChangedEvent:
+					Size? oldSize = null;
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
 						newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
-						Callback.OnSizeChanged(Widget, EventArgs.Empty);
+						if (newSize != oldSize)
+						{
+							Callback.OnSizeChanged(Widget, EventArgs.Empty);
+							oldSize = newSize;
+						}
 						newSize = null;
 					};
 					break;

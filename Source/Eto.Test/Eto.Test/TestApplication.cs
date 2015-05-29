@@ -11,8 +11,6 @@ namespace Eto.Test
 {
 	public class TestApplication : Application
 	{
-		List<Assembly> testAssemblies;
-
 		public static IEnumerable<Assembly> DefaultTestAssemblies()
 		{ 
 			#if PCL
@@ -22,10 +20,12 @@ namespace Eto.Test
 			#endif
 		}
 
-		public TestApplication(Platform platform, params Assembly[] additionalTestAssemblies)
+		public List<Assembly> TestAssemblies { get; private set; }
+
+		public TestApplication(Platform platform)
 			: base(platform)
 		{
-			testAssemblies = DefaultTestAssemblies().Union(additionalTestAssemblies ?? Enumerable.Empty<Assembly>()).ToList();
+			TestAssemblies = DefaultTestAssemblies().ToList();
 			this.Name = "Test Application";
 			this.Style = "application";
 
@@ -38,7 +38,7 @@ namespace Eto.Test
 
 		protected override void OnInitialized(EventArgs e)
 		{
-			MainForm = new MainForm(TestSections.Get(testAssemblies));
+			MainForm = new MainForm(TestSections.Get(TestAssemblies));
 
 			base.OnInitialized(e);
 

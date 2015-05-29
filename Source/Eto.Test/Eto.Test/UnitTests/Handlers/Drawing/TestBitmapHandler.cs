@@ -47,6 +47,11 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 			throw new NotImplementedException();
 		}
 
+		public void Save(string fileName, ImageFormat format)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Save(Stream stream, ImageFormat format)
 		{
 			throw new NotImplementedException();
