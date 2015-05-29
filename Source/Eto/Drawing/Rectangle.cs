@@ -1064,7 +1064,7 @@ namespace Eto.Drawing
 		/// <returns>String representation of this rectangle</returns>
 		public override string ToString ()
 		{
-			return String.Format (CultureInfo.InvariantCulture, "{0} {1}", location, size);
+			return String.Format (CultureInfo.InvariantCulture, "{0},{1}", location, size);
 		}
 
 		/// <summary>
