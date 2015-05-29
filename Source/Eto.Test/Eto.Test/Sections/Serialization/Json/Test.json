@@ -7,6 +7,8 @@
 				Text: "Table Layout & Controls",
 				Content: {
 					$type: "TableLayout",
+					Padding: "10",
+					Spacing: "5, 5",
 					Rows: [
 						[ { $type: "Label", Text: "Text Box" }, { $type: "TextBox", TextChanged: "HandleTextChanged" } ],
 						[ { $type: "Label", Text: "Text Area" }, { $type: "TextArea", $name: "MyTextArea" } ],
