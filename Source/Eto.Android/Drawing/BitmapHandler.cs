@@ -11,6 +11,7 @@ using ar = Android.Runtime;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using System.IO;
 
 namespace Eto.Android.Drawing
 {
@@ -84,6 +85,14 @@ namespace Eto.Android.Drawing
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
 			Control = ag.Bitmap.CreateScaledBitmap(image.ToAndroid(), width, height, false);
+		}
+
+		public void Save(string fileName, ImageFormat format)
+		{
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
+			}
 		}
 
 		public void Save(System.IO.Stream stream, ImageFormat format)

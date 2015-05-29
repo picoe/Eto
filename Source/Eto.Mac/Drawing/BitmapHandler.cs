@@ -192,6 +192,14 @@ namespace Eto.Mac.Drawing
 		{
 		}
 
+		public void Save(string fileName, ImageFormat format)
+		{
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
+			}
+		}
+
 		public void Save(Stream stream, ImageFormat format)
 		{
 			NSBitmapImageFileType type;

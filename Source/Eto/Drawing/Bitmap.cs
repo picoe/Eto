@@ -248,7 +248,6 @@ namespace Eto.Drawing
 			return Handler.Lock();
 		}
 
-		#if !PCL
 		/// <summary>
 		/// Saves the bitmap to a file in the specified format
 		/// </summary>
@@ -256,12 +255,8 @@ namespace Eto.Drawing
 		/// <param name="format">Format to save as</param>
 		public void Save(string fileName, ImageFormat format)
 		{
-			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
-			{
-				Save(stream, format);
-			}
+			Handler.Save(fileName, format);
 		}
-		#endif
 
 		/// <summary>
 		/// Saves the bitmap to a stream in the specified format
@@ -416,6 +411,13 @@ namespace Eto.Drawing
 			/// <param name="stream">Stream to save the bitmap to</param>
 			/// <param name="format">Format to save as</param>
 			void Save(Stream stream, ImageFormat format);
+
+			/// <summary>
+			/// Saves the bitmap to a file in the specified format
+			/// </summary>
+			/// <param name="fileName">File to save the bitmap to</param>
+			/// <param name="format">Format to save as</param>
+			void Save(string fileName, ImageFormat format);
 
 			/// <summary>
 			/// Creates a clone of the bitmap

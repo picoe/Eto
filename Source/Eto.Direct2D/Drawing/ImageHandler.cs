@@ -10,6 +10,9 @@ using System.IO;
 using System.Diagnostics;
 #if WINFORMS
 using Eto.WinForms.Drawing;
+#elif WINRT
+using ws = Windows.Storage;
+using wss = Windows.Storage.Streams;
 #endif
 
 namespace Eto.Direct2D.Drawing
@@ -78,6 +81,31 @@ namespace Eto.Direct2D.Drawing
         {
 			Create(width, height, PixelFormat.Format32bppRgba);
 		}
+
+#if WINRT
+		public async void Save(string fileName, ImageFormat format)
+		{
+			var dir = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(fileName)); // correct?
+			var file = await dir.CreateFileAsync(Path.GetFileName(fileName));
+			using (var fileStream = await file.OpenAsync(ws.FileAccessMode.ReadWrite))
+			{
+				using (var outputStream = fileStream.GetOutputStreamAt(0))
+				{
+					var stream = outputStream.AsStreamForWrite();
+					Save(stream, format);
+					await outputStream.FlushAsync();
+				}
+			}
+		}
+#else
+		public void Save(string fileName, ImageFormat format)
+		{
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
+			}
+		}
+#endif
 
         public void Save(Stream stream, ImageFormat format)
         {
