@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
@@ -10,73 +11,74 @@ namespace Eto.Test.Sections.Behaviors
 		Label pointToScreenLabel;
 		Label buttonsLabel;
 
-		public MousePositionSection ()
+		public MousePositionSection()
 		{
-			var layout = new DynamicLayout ();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 
-			layout.AddSeparateRow (null, new Label { Text = "Mouse Position (in screen co-ordinates)"}, MousePositionLabel (), null);
-			layout.AddSeparateRow (null, new Label { Text = "PointFromScreen" }, PointFromScreen (), null);
-			layout.AddSeparateRow (null, new Label { Text = "PointToScreen" }, PointToScreen (), null);
-			layout.AddSeparateRow (null, new Label { Text = "Buttons" }, Buttons (), null);
-			layout.Add (null);
+			layout.Add(null);
+			layout.AddSeparateRow(null, new Label { Text = "Mouse Position (in screen co-ordinates)" }, MousePositionLabel(), null);
+			layout.AddSeparateRow(null, new Label { Text = "PointFromScreen" }, PointFromScreen(), null);
+			layout.AddSeparateRow(null, new Label { Text = "PointToScreen" }, PointToScreen(), null);
+			layout.AddSeparateRow(null, new Label { Text = "Buttons" }, Buttons(), null);
+			layout.Add(null);
 
-			SetLabels ();
+			SetLabels();
 
 			Content = layout;
 		}
 
-		Control MousePositionLabel ()
+		Control MousePositionLabel()
 		{
-			return mousePositionLabel = new Label ();
+			return mousePositionLabel = new Label();
 		}
 
-		Control PointFromScreen ()
+		Control PointFromScreen()
 		{
-			return pointFromScreenLabel = new Label ();
+			return pointFromScreenLabel = new Label();
 		}
 
-		Control PointToScreen ()
+		Control PointToScreen()
 		{
-			return pointToScreenLabel = new Label ();
+			return pointToScreenLabel = new Label();
 		}
 
-		Control Buttons ()
+		Control Buttons()
 		{
-			return buttonsLabel = new Label ();
+			return buttonsLabel = new Label();
 		}
 
-		void SetLabels ()
+		void SetLabels()
 		{
 			var position = Mouse.Position;
-			mousePositionLabel.Text = position.ToString ();
+			mousePositionLabel.Text = position.ToString();
 
 			// convert to control co-ordinates
 			position = PointFromScreen(position);
-			pointFromScreenLabel.Text = position.ToString ();
+			pointFromScreenLabel.Text = position.ToString();
 
 			// convert back to world co-ordinates
 			position = PointToScreen(position);
-			pointToScreenLabel.Text = position.ToString ();
-			
-			buttonsLabel.Text = Mouse.Buttons.ToString ();
+			pointToScreenLabel.Text = position.ToString();
+
+			buttonsLabel.Text = Mouse.Buttons.ToString();
 		}
 
-		protected override void OnMouseMove (MouseEventArgs e)
+		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			base.OnMouseMove (e);
-			SetLabels ();
+			base.OnMouseMove(e);
+			SetLabels();
 		}
 
-		protected override void OnMouseDown (MouseEventArgs e)
+		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			base.OnMouseDown (e);
-			SetLabels ();
+			base.OnMouseDown(e);
+			SetLabels();
 		}
 
-		protected override void OnMouseUp (MouseEventArgs e)
+		protected override void OnMouseUp(MouseEventArgs e)
 		{
-			base.OnMouseUp (e);
-			SetLabels ();
+			base.OnMouseUp(e);
+			SetLabels();
 		}
 	}
 }

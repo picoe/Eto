@@ -12,12 +12,12 @@ namespace Eto.Test
 	public class TestApplication : Application
 	{
 		public static IEnumerable<Assembly> DefaultTestAssemblies()
-		{ 
-			#if PCL
+		{
+#if PCL
 			yield return typeof(TestApplication).GetTypeInfo().Assembly;
-			#else
+#else
 			yield return typeof(TestApplication).Assembly;
-			#endif
+#endif
 		}
 
 		public List<Assembly> TestAssemblies { get; private set; }
@@ -28,12 +28,6 @@ namespace Eto.Test
 			TestAssemblies = DefaultTestAssemblies().ToList();
 			this.Name = "Test Application";
 			this.Style = "application";
-
-			Eto.Style.Add<TableLayout>(null, table =>
-			{
-				table.Padding = new Padding(5);
-				table.Spacing = new Size(5, 5);
-			});
 		}
 
 		protected override void OnInitialized(EventArgs e)
@@ -61,7 +55,7 @@ namespace Eto.Test
 		{
 			base.OnTerminating(e);
 			Log.Write(this, "Terminating");
-			
+
 			var result = MessageBox.Show(MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
 			if (result == DialogResult.No)
 				e.Cancel = true;

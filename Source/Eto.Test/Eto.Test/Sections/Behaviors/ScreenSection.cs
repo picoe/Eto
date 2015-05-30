@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		public ScreenSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			screens = Screen.Screens.ToArray();
 			layout.AddSeparateRow(null, new Label { Text = string.Format("Display Bounds: {0}", displayBounds) }, null);

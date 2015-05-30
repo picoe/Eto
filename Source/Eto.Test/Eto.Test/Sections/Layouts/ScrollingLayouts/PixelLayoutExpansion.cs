@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Layouts.ScrollingLayouts
 
 		public PixelLayoutExpansion()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			defaultScrollable = new Scrollable();
 			layout.AddSeparateRow(null, ExpandContentWidth(), ExpandContentHeight(), null);

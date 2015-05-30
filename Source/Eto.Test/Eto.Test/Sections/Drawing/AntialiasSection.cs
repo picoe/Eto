@@ -10,12 +10,12 @@ namespace Eto.Test.Sections.Drawing
 		{
 			Content = new DynamicLayout(
 				new DynamicRow(
-					new Label { Text = "Antialias On" }, AntialiasOn(), 
-					new Label { Text = "Antialias Off" }, AntialiasOff(), 
+					new Label { Text = "Antialias On" }, AntialiasOn(),
+					new Label { Text = "Antialias Off" }, AntialiasOff(),
 					null
 				),
 				null
-			);
+			) { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 		}
 
 		Control AntialiasOn()

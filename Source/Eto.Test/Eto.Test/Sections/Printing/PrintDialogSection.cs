@@ -17,7 +17,7 @@ namespace Eto.Test.Sections.Printing
 		{
 			this.DataContext = settings;
 
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.BeginVertical();
 			layout.BeginHorizontal();
@@ -41,7 +41,7 @@ namespace Eto.Test.Sections.Printing
 
 		Control PrintDialogOptions()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(null, AllowPageRange());
 			layout.AddRow(null, AllowSelection());
@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Printing
 		PrintDialog CreatePrintDialog()
 		{
 			return new PrintDialog
-			{ 
+			{
 				PrintSettings = settings,
 				AllowSelection = allowSelection.Checked ?? false,
 				AllowPageRange = allowPageRange.Checked ?? false
@@ -92,7 +92,8 @@ namespace Eto.Test.Sections.Printing
 			document.PrintSettings = settings;
 			var font = Fonts.Serif(16);
 			var printTime = DateTime.Now;
-			document.PrintPage += (sender, e) => {
+			document.PrintPage += (sender, e) =>
+			{
 				Size pageSize = Size.Round(e.PageSize);
 
 				// draw a border around the printable area
@@ -161,18 +162,18 @@ namespace Eto.Test.Sections.Printing
 
 		Control Settings()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(new Label { Text = "Orientation" }, TableLayout.AutoSized(PageOrientation()));
 
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Copies" });
-			layout.AddSeparateRow(Padding.Empty).Add(TableLayout.AutoSized(Copies()), TableLayout.AutoSized(Collate()));
+			layout.AddSeparateRow().Add(TableLayout.AutoSized(Copies()), TableLayout.AutoSized(Collate()));
 			layout.EndHorizontal();
 
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Maximum Pages" });
-			layout.AddSeparateRow(Padding.Empty).Add(MaximumStart(), new Label { Text = "to" }, MaximumEnd());
+			layout.AddSeparateRow().Add(MaximumStart(), new Label { Text = "to" }, MaximumEnd());
 			layout.EndHorizontal();
 
 			layout.AddRow(null, Reverse());
@@ -182,13 +183,13 @@ namespace Eto.Test.Sections.Printing
 
 		Control PageRange()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(new Label { Text = "Print Selection" }, TableLayout.AutoSized(PrintSelection()));
 
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Selected Start" });
-			layout.AddSeparateRow(Padding.Empty).Add(SelectedStart(), new Label { Text = "to" }, SelectedEnd());
+			layout.AddSeparateRow().Add(SelectedStart(), new Label { Text = "to" }, SelectedEnd());
 			layout.EndHorizontal();
 
 			layout.Add(null);

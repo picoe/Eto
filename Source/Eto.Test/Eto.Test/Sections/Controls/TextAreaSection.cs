@@ -19,6 +19,8 @@ namespace Eto.Test.Sections.Controls
 
 			return new TableLayout
 			{
+				Padding = new Padding(10),
+				Spacing = new Size(5, 5),
 				Rows =
 				{
 					TextAreaOptions(text),
@@ -31,28 +33,42 @@ namespace Eto.Test.Sections.Controls
 
 		public static Control TextAreaOptions(TextArea text)
 		{
-			return TableLayout.Horizontal(null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), null).With(r => r.Padding = Padding.Empty);
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items = { null, ShowSelectedText(text), SetSelectedText(text), ReplaceSelected(text), SelectAll(text), null }
+			};
 		}
 
 		public static Control TextAreaOptions2(TextArea text)
 		{
-			return TableLayout.Horizontal(null, SetAlignment(text), SetCaretButton(text), ChangeColorButton(text), null).With(r => r.Padding = Padding.Empty);
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items = { null, SetAlignment(text), SetCaretButton(text), ChangeColorButton(text), null }
+			};
 		}
 
 		public static Control TextAreaOptions3(TextArea text)
 		{
-			return TableLayout.Horizontal
-								(
-									null,
-									EnabledCheckBox(text),
-									ReadOnlyCheckBox(text),
-									AcceptsTabCheckBox(text),
-									AcceptsReturnCheckBox(text),
-									WrapCheckBox(text),
-									SpellCheckCheckBox(text),
-									null
-								).With(r => r.Padding = Padding.Empty);
-
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items =
+				{
+					null,
+					EnabledCheckBox(text),
+					ReadOnlyCheckBox(text),
+					AcceptsTabCheckBox(text),
+					AcceptsReturnCheckBox(text),
+					WrapCheckBox(text),
+					SpellCheckCheckBox(text),
+					null
+				}
+			};
 		}
 
 		static Control WrapCheckBox(TextArea text)

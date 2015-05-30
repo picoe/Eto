@@ -10,10 +10,11 @@ namespace Eto.Test.Sections.Drawing
 
 		public PixelOffsetSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			var drawable = new Drawable { Size = canvasSize };
-			drawable.Paint += (sender, pe) => {
+			drawable.Paint += (sender, pe) =>
+			{
 				pe.Graphics.FillRectangle(Brushes.Black, pe.ClipRectangle);
 				pe.Graphics.PixelOffsetMode = PixelOffsetMode.None;
 				Draw(pe.Graphics);
@@ -21,7 +22,8 @@ namespace Eto.Test.Sections.Drawing
 			layout.AddRow(new Label { Text = "None (Default)" }, drawable);
 
 			drawable = new Drawable { Size = canvasSize };
-			drawable.Paint += (sender, pe) => {
+			drawable.Paint += (sender, pe) =>
+			{
 				pe.Graphics.FillRectangle(Brushes.Black, pe.ClipRectangle);
 				pe.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
 				Draw(pe.Graphics);

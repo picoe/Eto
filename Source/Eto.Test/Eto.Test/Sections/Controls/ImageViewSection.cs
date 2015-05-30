@@ -18,7 +18,7 @@ namespace Eto.Test.Sections.Controls
 
 		TabPage FixedSize()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			AddHeaders(layout);
 
 			layout.AddRow(new Label { Text = "Auto Sized" }, AutoSized(GetBitmap()), AutoSized(GetIcon()));
@@ -38,7 +38,7 @@ namespace Eto.Test.Sections.Controls
 
 		TabPage ScaledSize()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			AddHeaders(layout);
 
 			layout.AddRow(new Label { Text = "Scaled Size" }, Scaled(GetBitmap()), Scaled(GetIcon()));
@@ -74,12 +74,12 @@ namespace Eto.Test.Sections.Controls
 
 		Control LargeSize(Image image)
 		{
-			return new ImageView { Image = image, Size = new Size (200, 200) };
+			return new ImageView { Image = image, Size = new Size(200, 200) };
 		}
 
 		Control SmallSize(Image image)
 		{
-			return new ImageView { Image = image, Size = new Size (64, 64) };
+			return new ImageView { Image = image, Size = new Size(64, 64) };
 		}
 
 		Control Scaled(Image image)

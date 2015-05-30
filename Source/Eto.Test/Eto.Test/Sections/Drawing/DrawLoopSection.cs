@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Drawing
 			drawable.Paint += (sender, e) => renderer.DrawFrame(e.Graphics, drawable.Size);
 			renderer = new DirectDrawingRenderer();
 
-			var layout = new DynamicLayout { Padding = new Padding(10) };
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			layout.AddSeparateRow(null, UseTexturesAndGradients(), UseCreateGraphics(), null);
 			layout.Add(content = new Panel { Content = drawable });
 			this.Content = layout;
@@ -95,13 +95,15 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		Control UseTexturesAndGradients ()
+		Control UseTexturesAndGradients()
 		{
-			var control = new CheckBox {
+			var control = new CheckBox
+			{
 				Text = "Use Textures && Gradients",
 				Checked = renderer.UseTexturesAndGradients
 			};
-			control.CheckedChanged += (sender, e) => {
+			control.CheckedChanged += (sender, e) =>
+			{
 				renderer.UseTexturesAndGradients = control.Checked ?? false;
 				lock (renderer.Boxes)
 				{
@@ -131,13 +133,13 @@ namespace Eto.Test.Sections.Drawing
 			return control;
 		}
 
-		protected override void OnLoadComplete (EventArgs e)
+		protected override void OnLoadComplete(EventArgs e)
 		{
-			base.OnLoadComplete (e);
+			base.OnLoadComplete(e);
 			SetMode();
 		}
 
-		protected override void Dispose (bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 				status.Stop = true;

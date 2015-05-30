@@ -15,25 +15,25 @@ namespace Eto.Test.Sections.Controls
 
 		public TreeGridViewSection()
 		{
-			var layout = new DynamicLayout();
-		
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.BeginHorizontal();
 			layout.Add(new Label());
 			layout.BeginVertical();
 			layout.BeginHorizontal();
 			layout.Add(null);
-			layout.Add(allowExpanding = new CheckBox{ Text = "Allow Expanding", Checked = true });
-			layout.Add(allowCollapsing = new CheckBox{ Text = "Allow Collapsing", Checked = true });
+			layout.Add(allowExpanding = new CheckBox { Text = "Allow Expanding", Checked = true });
+			layout.Add(allowCollapsing = new CheckBox { Text = "Allow Collapsing", Checked = true });
 			layout.Add(null);
 			layout.EndHorizontal();
 			layout.EndVertical();
 			layout.EndHorizontal();
-			
-			layout.AddRow(new Label{ Text = "Simple" }, Default());
-			
-			layout.AddRow(new Label{ Text = "With Images\n&& Context Menu" }, ImagesAndMenu());
-			layout.AddRow(new Label{ Text = "Disabled" }, Disabled());
-			
+
+			layout.AddRow(new Label { Text = "Simple" }, Default());
+
+			layout.AddRow(new Label { Text = "With Images\n&& Context Menu" }, ImagesAndMenu());
+			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
+
 			layout.Add(null, false, true);
 
 			Content = layout;
@@ -63,7 +63,7 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150),
 				ShowHeader = false
 			};
-			control.Columns.Add(new GridColumn{ DataCell = new TextBoxCell(0) });
+			control.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0) });
 			control.DataStore = CreateSimpleTreeItem(0, "");
 			LogEvents(control);
 			return control;
@@ -99,7 +99,7 @@ namespace Eto.Test.Sections.Controls
 			if (Platform.Supports<ContextMenu>())
 			{
 				var menu = new ContextMenu();
-				var item = new ButtonMenuItem{ Text = "Click Me!" };
+				var item = new ButtonMenuItem { Text = "Click Me!" };
 				item.Click += delegate
 				{
 					if (control.SelectedItem != null)
@@ -108,7 +108,7 @@ namespace Eto.Test.Sections.Controls
 						Log.Write(item, "Click, no item selected");
 				};
 				menu.Items.Add(item);
-			
+
 				control.ContextMenu = menu;
 			}
 

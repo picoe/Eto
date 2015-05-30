@@ -26,12 +26,12 @@ namespace Eto.Test.Sections.Drawing
 		{
 			PenThickness = 4;
 
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, PenJoinControl(), PenCapControl(), DashStyleControl(), null);
 			if (Platform.Supports<NumericUpDown>())
 				layout.AddSeparateRow(null, PenThicknessControl(), null);
-			layout.AddSeparateRow(GetDrawable());
+			layout.AddCentered(GetDrawable());
 
 			Content = layout;
 		}
@@ -57,7 +57,7 @@ namespace Eto.Test.Sections.Drawing
 			var control = new NumericUpDown { MinValue = 1, MaxValue = 10 };
 			control.Bind(c => c.Value, this, r => r.PenThickness);
 			control.ValueChanged += Refresh;
-			
+
 			var layout = new DynamicLayout { Padding = Padding.Empty };
 			layout.AddRow(new Label { Text = "Thickness Step:", VerticalAlignment = VerticalAlignment.Center }, control);
 			return layout;
@@ -77,7 +77,8 @@ namespace Eto.Test.Sections.Drawing
 			control.Items.Add(new DashStyleItem { Text = "Dash Dot", Style = DashStyles.DashDot });
 			control.Items.Add(new DashStyleItem { Text = "Dash Dot Dot", Style = DashStyles.DashDotDot });
 			control.SelectedIndex = 0;
-			control.SelectedIndexChanged += (sender, e) => {
+			control.SelectedIndexChanged += (sender, e) =>
+			{
 				if (control.SelectedValue != null)
 					DashStyle = ((DashStyleItem)control.SelectedValue).Style;
 				Refresh(sender, e);
@@ -94,7 +95,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			drawable = new Drawable
 			{
-				Size = new Size (560, 300)
+				Size = new Size(560, 300)
 			};
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics, null);
 			return drawable;
@@ -116,16 +117,16 @@ namespace Eto.Test.Sections.Drawing
 					action(pen);
 				var y = i * 20;
 				g.DrawLine(pen, 10, y, 110, y);
-				
+
 				y = 80 + i * 50;
 				g.DrawRectangle(pen, 10, y, 100, 30);
 
 				y = i * 70;
 				g.DrawArc(pen, 140, y, 100, 80, 160, 160);
-				
+
 				y = i * 70;
 				g.DrawEllipse(pen, 260, y, 100, 50);
-				
+
 				g.SaveTransform();
 				y = i * 70;
 				g.TranslateTransform(400, y);

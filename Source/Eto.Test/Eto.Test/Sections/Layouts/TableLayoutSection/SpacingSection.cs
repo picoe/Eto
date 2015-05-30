@@ -11,6 +11,8 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 		public SpacingSection()
 		{
 			var layout = new TableLayout(3, 1);
+			layout.Spacing = new Size(5, 5);
+			layout.Padding = new Padding(10);
 
 			layout.Add(NoSpacing(), 0, 0, true, true);
 			layout.Add(NoPadding(), 1, 0, true, true);
@@ -25,9 +27,9 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 				for (int x = 0; x < layout.Dimensions.Width; x++)
 				{
 					var panel = new Panel
-					{ 
-						Size = SquareSize, 
-						BackgroundColor = (x+y*layout.Dimensions.Width) % 2 == 0 ? Colors.Lime : Colors.Red 
+					{
+						Size = SquareSize,
+						BackgroundColor = (x + y * layout.Dimensions.Width) % 2 == 0 ? Colors.Lime : Colors.Red
 					};
 					layout.Add(panel, x, y);
 				}
@@ -46,26 +48,26 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		Control DifferentSizes()
 		{
-			var layout = new TableLayout(3, 4) { BackgroundColor = Colors.Blue };
+			var layout = new TableLayout(3, 4) { BackgroundColor = Colors.Blue, Spacing = new Size(5, 5) };
 			// row 1
-			layout.Add(new Panel { Size = new Size (10, 10), BackgroundColor = Colors.Lime }, 0, 0);
-			layout.Add(new Panel { Size = new Size (30, 10), BackgroundColor = Colors.Red }, 1, 0);
-			layout.Add(new Panel { Size = new Size (10, 30), BackgroundColor = Colors.Lime }, 2, 0);
+			layout.Add(new Panel { Size = new Size(10, 10), BackgroundColor = Colors.Lime }, 0, 0);
+			layout.Add(new Panel { Size = new Size(30, 10), BackgroundColor = Colors.Red }, 1, 0);
+			layout.Add(new Panel { Size = new Size(10, 30), BackgroundColor = Colors.Lime }, 2, 0);
 
 			// row 2
-			layout.Add(new Panel { Size = new Size (30, 10), BackgroundColor = Colors.Red }, 0, 1);
-			layout.Add(new Panel { Size = new Size (10, 30), BackgroundColor = Colors.Lime }, 1, 1);
-			layout.Add(new Panel { Size = new Size (10, 10), BackgroundColor = Colors.Red }, 2, 1);
+			layout.Add(new Panel { Size = new Size(30, 10), BackgroundColor = Colors.Red }, 0, 1);
+			layout.Add(new Panel { Size = new Size(10, 30), BackgroundColor = Colors.Lime }, 1, 1);
+			layout.Add(new Panel { Size = new Size(10, 10), BackgroundColor = Colors.Red }, 2, 1);
 
 			// row 3
-			layout.Add(new Panel { Size = new Size (30, 30), BackgroundColor = Colors.Lime }, 0, 2);
-			layout.Add(new Panel { Size = new Size (20, 20), BackgroundColor = Colors.Red }, 1, 2);
-			layout.Add(new Panel { Size = new Size (10, 10), BackgroundColor = Colors.Lime }, 2, 2);
+			layout.Add(new Panel { Size = new Size(30, 30), BackgroundColor = Colors.Lime }, 0, 2);
+			layout.Add(new Panel { Size = new Size(20, 20), BackgroundColor = Colors.Red }, 1, 2);
+			layout.Add(new Panel { Size = new Size(10, 10), BackgroundColor = Colors.Lime }, 2, 2);
 
 			// row 4
-			layout.Add(new Panel { Size = new Size (10, 10), BackgroundColor = Colors.Red }, 0, 3);
-			layout.Add(new Panel { Size = new Size (20, 20), BackgroundColor = Colors.Lime }, 1, 3);
-			layout.Add(new Panel { Size = new Size (30, 30), BackgroundColor = Colors.Red }, 2, 3);
+			layout.Add(new Panel { Size = new Size(10, 10), BackgroundColor = Colors.Red }, 0, 3);
+			layout.Add(new Panel { Size = new Size(20, 20), BackgroundColor = Colors.Lime }, 1, 3);
+			layout.Add(new Panel { Size = new Size(30, 30), BackgroundColor = Colors.Red }, 2, 3);
 			return layout;
 		}
 

@@ -37,7 +37,7 @@ namespace Eto.Test.Sections.Drawing
 	{
 		public BitmapSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(new Label { Text = "Load from Stream" }, LoadFromStream());
 

@@ -123,44 +123,70 @@ namespace Eto.Test.Sections.Controls
 			var clearButton = new Button { Text = "Clear" };
 			clearButton.Click += (sender, e) => buffer.Clear();
 
-			var formatting1 = TableLayout.Horizontal(
-				                  null,
-				                  boldButton,
-				                  italicButton,
-				                  underlineButton,
-				                  strikethroughButton,
-				                  null
-			                  );
-
-			var formatting2 = TableLayout.Horizontal(
-				                  null,
-								  new Label { Text = "Foreground", VerticalAlignment = VerticalAlignment.Center },
-				                  TableLayout.AutoSized(foregroundButton, centered: true),
-								  new Label { Text = "Background", VerticalAlignment = VerticalAlignment.Center },
-				                  TableLayout.AutoSized(backgroundButton, centered: true),
-				                  null
-			                  );
-			var formatting3 = TableLayout.Horizontal(
-				                  null,
-				                  fontButton,
-				                  familyDropDown,
-				                  null
-			                  );
-
-			var buttons = TableLayout.Horizontal(
-				              null,
-				              formatEnum,
-				              loadButton,
-				              saveButton,
-				              clearButton,
-				              null
-			              );
-
-			Content = new TableLayout
+			var formatting1 = new StackLayout
 			{
-				Rows =
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items =
+				{
+				    null,
+				    boldButton,
+				    italicButton,
+				    underlineButton,
+				    strikethroughButton,
+				    null
+				}
+			};
+
+			var formatting2 = new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items =
 				{
 					null,
+					new Label { Text = "Foreground", VerticalAlignment = VerticalAlignment.Center },
+					TableLayout.AutoSized(foregroundButton, centered: true),
+					new Label { Text = "Background", VerticalAlignment = VerticalAlignment.Center },
+					TableLayout.AutoSized(backgroundButton, centered: true),
+					null
+				}
+			};
+			var formatting3 = new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items =
+				{
+				    null,
+				    fontButton,
+				    familyDropDown,
+				    null
+				}
+			};
+
+			var buttons = new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items =
+				{
+				    null,
+				    formatEnum,
+				    loadButton,
+				    saveButton,
+				    clearButton,
+				    null
+				}
+			};
+
+			Content = new StackLayout
+			{
+				Padding = new Padding(10),
+				Spacing = 5,
+				HorizontalContentAlignment = HorizontalAlignment.Stretch,
+				Items =
+				{
 					buttons,
 					TextAreaSection.TextAreaOptions(richText),
 					TextAreaSection.TextAreaOptions2(richText),
@@ -168,8 +194,7 @@ namespace Eto.Test.Sections.Controls
 					formatting1,
 					formatting2,
 					formatting3,
-					richText,
-					null
+					new StackLayoutItem(richText, expand: true)
 				}
 			};
 		}

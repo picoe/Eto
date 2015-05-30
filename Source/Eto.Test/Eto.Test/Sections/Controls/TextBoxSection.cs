@@ -8,7 +8,7 @@ namespace Eto.Test.Sections.Controls
 	{
 		public TextBoxSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "Different Size" }, DifferentSize());
@@ -31,7 +31,7 @@ namespace Eto.Test.Sections.Controls
 			var selectAll = new Button { Text = "Select All" };
 			selectAll.Click += (sender, e) => control.SelectAll();
 
-			var layout = new DynamicLayout { Padding = Padding.Empty };
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(control);
 			layout.AddSeparateRow(null, selectAll, null);
 			return layout;
@@ -39,7 +39,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control DifferentSize()
 		{
-			var control = new TextBox { Text = "Some Text", Size = new Size (100, 50) };
+			var control = new TextBox { Text = "Some Text", Size = new Size(100, 50) };
 			LogEvents(control);
 			return control;
 		}

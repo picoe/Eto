@@ -58,7 +58,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public BrushSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			// defaults
 			ScaleX = 100f;
@@ -139,7 +139,7 @@ namespace Eto.Test.Sections.Drawing
 			});
 			control.SelectedValue = control.Items.OfType<BrushItem>().First(); //r => r.Text == "Linear Gradient");
 			control.SelectedValueChanged += (sender, e) => SetItem(control.SelectedValue as BrushItem);
-			LoadComplete += (sender, e) => SetItem(control.SelectedValue as BrushItem);
+			Load += (sender, e) => SetItem(control.SelectedValue as BrushItem);
 			control.SelectedValueChanged += (sender, e) => Refresh();
 			return control;
 		}
@@ -150,12 +150,14 @@ namespace Eto.Test.Sections.Drawing
 			if (item == null)
 				item = new BrushItem();
 
+			SuspendLayout(); // for winforms
 			if (matrixRow != null)
 				matrixRow.Table.Visible = item.SupportsMatrix;
 			gradientRow.Table.Visible = item.SupportsGradient;
 			radialRow.Table.Visible = radiusRow.Table.Visible = item.SupportsRadial;
 			linearRow.Table.Visible = item.SupportsLinear;
 			Refresh();
+			ResumeLayout();
 		}
 
 		Control ScaleXControl()

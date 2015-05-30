@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Diagnostics;
 
 namespace Eto.Test.Sections.Drawing
 {
@@ -17,9 +18,9 @@ namespace Eto.Test.Sections.Drawing
 		bool useOffScreenBitmap;
 		public bool UseOffScreenBitmap
 		{
-			get { return useOffScreenBitmap; } 
+			get { return useOffScreenBitmap; }
 			set
-			{ 
+			{
 				useOffScreenBitmap = value;
 				drawable.Invalidate();
 			}
@@ -31,22 +32,28 @@ namespace Eto.Test.Sections.Drawing
 			UseOffScreenBitmap = false;
 		}
 
+		Size renderSize;
+
 		public Graphics BeginDraw(PaintEventArgs e)
 		{
 			if (UseOffScreenBitmap)
 			{
+				var screen = drawable.ParentWindow.Screen;
+				var scale = screen.RealScale / screen.Scale;
+				renderSize = Size.Round(e.ClipRectangle.Size * scale);
 				if (OffscreenBitmap == null ||
-					OffscreenBitmap.Size.Width < e.ClipRectangle.Width ||
-					OffscreenBitmap.Size.Height < e.ClipRectangle.Height)
+					OffscreenBitmap.Size.Width < renderSize.Width ||
+					OffscreenBitmap.Size.Height < renderSize.Height)
 				{
 					if (OffscreenBitmap != null)
 						OffscreenBitmap.Dispose();
 
-					OffscreenBitmap = new Bitmap(Size.Round(e.ClipRectangle.Size), PixelFormat.Format32bppRgba);
+					OffscreenBitmap = new Bitmap(renderSize, PixelFormat.Format32bppRgba);
 				}
 				bitmapGraphics = new Graphics(OffscreenBitmap);
+				bitmapGraphics.ScaleTransform(scale);
 				bitmapGraphics.TranslateTransform(-e.ClipRectangle.Location);
-				bitmapGraphics.SetClip(e.ClipRectangle);
+				//bitmapGraphics.SetClip(e.ClipRectangle);
 				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor));
 				return bitmapGraphics;
 			}
@@ -59,8 +66,13 @@ namespace Eto.Test.Sections.Drawing
 			{
 				bitmapGraphics.Dispose();
 				bitmapGraphics = null;
-
-				e.Graphics.DrawImage(OffscreenBitmap, new RectangleF(e.ClipRectangle.Size), e.ClipRectangle);
+				e.Graphics.DrawImage(OffscreenBitmap, new RectangleF(renderSize), e.ClipRectangle);
+				if (drawable.Platform.IsWpf)
+				{
+					// wpf runs out of resources fast here, so we garbage collect
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+				}
 			}
 		}
 
@@ -77,7 +89,7 @@ namespace Eto.Test.Sections.Drawing
 	}
 
 	[Section("Drawing", "TextureBrush 2")]
-	class TextureBrushesSection2 : Panel
+	public class TextureBrushesSection2 : Panel
 	{
 		readonly Bitmap image;
 		PointF location = new PointF(100, 100);
@@ -87,7 +99,7 @@ namespace Eto.Test.Sections.Drawing
 			image = TestIcons.Textures;
 			var drawable = new Drawable();
 			var drawableTarget = new DrawableTarget(drawable);
-			var layout = new DynamicLayout { Padding = new Padding(10) };
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
 			layout.Add(drawable);
 			this.Content = layout;
@@ -155,7 +167,7 @@ namespace Eto.Test.Sections.Drawing
 
 		static PointF[] GetPolygon()
 		{
-			var polygon = new [] { new PointF(0, 50), new PointF(50, 100), new PointF(100, 50), new PointF(50, 0) };
+			var polygon = new[] { new PointF(0, 50), new PointF(50, 100), new PointF(100, 50), new PointF(50, 0) };
 			return polygon;
 		}
 	}

@@ -19,7 +19,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		public FontDialogSection()
 		{
-			var layout = new DynamicLayout { Spacing = new Size(5, 5) };
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, PickFont(), PickFontWithStartingFont(), SetToFontFamily(), null);
 			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlignment = VerticalAlignment.Center }, PickFontFamily(), null);
@@ -31,7 +31,7 @@ namespace Eto.Test.Sections.Dialogs
 			tabs.Pages.Add(new TabPage { Text = "Preview", Content = Preview() });
 			tabs.Pages.Add(new TabPage { Text = "Metrics", Content = Metrics() });
 
-			layout.Add(new Panel { MinimumSize = new Size(100, 150), Content = tabs}, yscale: true);
+			layout.Add(new Panel { MinimumSize = new Size(100, 150), Content = tabs }, yscale: true);
 			UpdatePreview(Fonts.Serif(18, FontStyle.Bold));
 
 			Content = layout;
@@ -225,7 +225,8 @@ namespace Eto.Test.Sections.Dialogs
 		Control UnderlineFont()
 		{
 			var control = new CheckBox { Text = "Underline" };
-			control.CheckedBinding.BindDataContext<Font>(f => f.Underline, (f,val) => {
+			control.CheckedBinding.BindDataContext<Font>(f => f.Underline, (f, val) =>
+			{
 				var decoration = selectedFont.FontDecoration;
 				if (val ?? false) decoration |= FontDecoration.Underline;
 				else decoration &= ~FontDecoration.Underline;
@@ -237,7 +238,8 @@ namespace Eto.Test.Sections.Dialogs
 		Control StrikeoutFont()
 		{
 			var control = new CheckBox { Text = "Strikethrough" };
-			control.CheckedBinding.BindDataContext<Font>(f => f.Strikethrough, (f,val) => {
+			control.CheckedBinding.BindDataContext<Font>(f => f.Strikethrough, (f, val) =>
+			{
 				var decoration = selectedFont.FontDecoration;
 				if (val ?? false) decoration |= FontDecoration.Strikethrough;
 				else decoration &= ~FontDecoration.Strikethrough;
@@ -273,7 +275,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control Metrics()
 		{
-			var layout = new DynamicLayout { Padding = Padding.Empty };
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.BeginHorizontal();
 			layout.BeginVertical();
 			layout.Add(null);

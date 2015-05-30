@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Drawing
 	{
 		public DrawTextSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(
 				new Label { Text = "Default" }, Default(),
@@ -58,29 +58,29 @@ namespace Eto.Test.Sections.Drawing
 			yield return new DrawInfo { Font = new Font(SystemFont.Default), Text = "System Font & Size" };
 			yield return new DrawInfo { Font = new Font(SystemFont.Default, 20), Text = "System Font, 20pt" };
 
-			yield return new DrawInfo { Font = Fonts.Sans(12)};
-			yield return new DrawInfo { Font = Fonts.Serif(12)};
-			yield return new DrawInfo { Font = Fonts.Monospace(12)};
-			yield return new DrawInfo { Font = Fonts.Cursive(12)};
-			yield return new DrawInfo { Font = Fonts.Fantasy(12)};
+			yield return new DrawInfo { Font = Fonts.Sans(12) };
+			yield return new DrawInfo { Font = Fonts.Serif(12) };
+			yield return new DrawInfo { Font = Fonts.Monospace(12) };
+			yield return new DrawInfo { Font = Fonts.Cursive(12) };
+			yield return new DrawInfo { Font = Fonts.Fantasy(12) };
 
-			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Bold)};
-			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Bold)};
-			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Bold)};
-			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Bold)};
-			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Bold)};
+			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Bold) };
+			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Bold) };
+			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Bold) };
+			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Bold) };
+			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Bold) };
 
-			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Italic)};
-			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Italic)};
-			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Italic)};
-			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Italic)};
-			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Italic)};
+			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Italic) };
+			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Italic) };
+			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Italic) };
+			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Italic) };
+			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Italic) };
 
-			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Bold | FontStyle.Italic)};
-			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Bold | FontStyle.Italic)};
-			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Bold | FontStyle.Italic)};
-			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Bold | FontStyle.Italic)};
-			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Bold | FontStyle.Italic)};
+			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Bold | FontStyle.Italic) };
+			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Bold | FontStyle.Italic) };
+			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Bold | FontStyle.Italic) };
+			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Bold | FontStyle.Italic) };
+			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Bold | FontStyle.Italic) };
 		}
 
 		internal void DrawFrame(Graphics g)

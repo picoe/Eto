@@ -46,7 +46,7 @@ namespace Eto.Test.Sections.Drawing
 			PenThickness = 1;
 			AntiAlias = true;
 
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), AntiAliasControl(), null);
 			if (Platform.Instance.Supports<NumericUpDown>())
@@ -115,7 +115,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control ShowBounds()
 		{
-			var control = new Label();			
+			var control = new Label();
 			PathChanged += path => control.Text = string.Format("Bounds: {0}", path.Bounds);
 			return control;
 		}
@@ -130,7 +130,7 @@ namespace Eto.Test.Sections.Drawing
 		void Refresh()
 		{
 			path = null;
-			foreach (var d in Children.OfType<Drawable> ())
+			foreach (var d in Children.OfType<Drawable>())
 			{
 				d.Invalidate();
 			}
@@ -139,7 +139,7 @@ namespace Eto.Test.Sections.Drawing
 		Control DrawLinePath()
 		{
 			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
-			control.Paint += (sender, e) => 
+			control.Paint += (sender, e) =>
 			{
 				var pen = new Pen(Colors.White, PenThickness);
 				pen.LineJoin = LineJoin;

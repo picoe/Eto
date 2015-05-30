@@ -21,23 +21,38 @@ namespace Eto.Test.Sections.Controls
 			var modeSelect = new EnumRadioButtonList<CalendarMode>();
 			var current = new Calendar();
 			var setButton = new Button { Text = "Set" };
-			TableLayout toValueSection;
+			var toValueSection = new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Visible = false,
+				Spacing = 5,
+				Items = { " to ", toValue }
+			};
 
-			var layout = new TableLayout(
-				new TableRow(new Label { Text = "Min Value" }, min),
-				new TableRow(new Label { Text = "Max Value" }, max),
-				new TableRow(new Label { Text = "Mode" }, modeSelect), 
-				new TableRow(new Label { Text = "Set to value" },
-					new TableLayout(new TableRow(setValue,
-						toValueSection = new TableLayout(new TableRow(new Label { Text = " to " }, toValue)) { Visible = false, Padding = Padding.Empty },
-						setButton
-					)) { Padding = Padding.Empty }
-				),
-				new TableRow(new Label { Text = "Value" }, TableLayout.AutoSized(current), null),
-				null
-			);
+			var layout = new TableLayout
+			{
+				Spacing = new Size(5, 5),
+				Padding = new Padding(10),
+				Rows = 
+				{
+					new TableRow("Min Value", min),
+					new TableRow("Max Value", max),
+					new TableRow("Mode", modeSelect),
+					new TableRow("Set to value",
+						new StackLayout
+						{
+							Orientation = Orientation.Horizontal,
+							Spacing = 5,
+							Items = { setValue, toValueSection, setButton }
+						}
+					),
+					new TableRow("Value", TableLayout.AutoSized(current), null),
+					null
+				}
+			};
 
-			modeSelect.SelectedValueBinding.Bind(() => current.Mode, v => {
+			modeSelect.SelectedValueBinding.Bind(() => current.Mode, v =>
+			{
 				toValueSection.Visible = v == CalendarMode.Range;
 				current.Mode = v;
 			});
@@ -54,8 +69,8 @@ namespace Eto.Test.Sections.Controls
 
 			return layout;
 		}
-			
-		void LogEvents (Calendar control)
+
+		void LogEvents(Calendar control)
 		{
 			control.SelectedDateChanged += (sender, e) => Log.Write(control, "SelectedDateChanged, Value: {0}", control.SelectedDate);
 			control.SelectedRangeChanged += (sender, e) => Log.Write(control, "SelectedRangeChanged, Value: {0}", control.SelectedRange);

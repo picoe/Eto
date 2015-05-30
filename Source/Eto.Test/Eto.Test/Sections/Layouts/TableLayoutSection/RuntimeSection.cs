@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		public RuntimeSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddCentered(ToggleButton());
 			layout.Add(MainTable());
@@ -64,6 +64,8 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 		Control MainTable()
 		{
 			mainTable = new TableLayout(3, 1);
+			mainTable.Padding = new Padding(10);
+			mainTable.Spacing = new Size(5, 5);
 
 			mainTable.Add(MiddleSection(), 1, 0, true, true);
 			mainTable.Add(rightSection = new Panel(), 2, 0);
@@ -74,6 +76,8 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 		Control MiddleSection()
 		{
 			middleTable = new TableLayout(1, 3);
+			middleTable.Padding = new Padding(10);
+			middleTable.Spacing = new Size(5, 5);
 
 			middleTable.Add(new Label { Text = "Content", BackgroundColor = Colors.LightGrey, TextAlignment = TextAlignment.Center, VerticalAlignment = VerticalAlignment.Center }, 0, 1, true, true);
 			middleTable.Add(topSection = new Panel(), 0, 0);
@@ -83,7 +87,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		Control VerticalSection()
 		{
-			var layout = new DynamicLayout { BackgroundColor = Colors.Blue };
+			var layout = new DynamicLayout { BackgroundColor = Colors.Blue, DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
 			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
 			return layout;
@@ -91,7 +95,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		Control HorizontalSection()
 		{
-			var layout = new DynamicLayout { BackgroundColor = Colors.Blue };
+			var layout = new DynamicLayout { BackgroundColor = Colors.Blue, DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			layout.BeginHorizontal();
 			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
 			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });

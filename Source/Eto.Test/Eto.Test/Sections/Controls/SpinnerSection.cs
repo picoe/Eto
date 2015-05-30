@@ -8,8 +8,8 @@ namespace Eto.Test.Sections.Controls
 	{
 		public SpinnerSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "Larger" }, Default(new Size(100, 100)));
 
@@ -24,14 +24,14 @@ namespace Eto.Test.Sections.Controls
 			if (size != null)
 				control.Size = size.Value;
 
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
+
 			layout.AddCentered(control);
-			
+
 			layout.BeginVertical();
 			layout.AddRow(null, StartStopButton(control), null);
 			layout.EndVertical();
-			
+
 			return layout;
 		}
 
