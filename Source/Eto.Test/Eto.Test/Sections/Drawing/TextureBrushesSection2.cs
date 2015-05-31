@@ -53,7 +53,7 @@ namespace Eto.Test.Sections.Drawing
 				bitmapGraphics = new Graphics(OffscreenBitmap);
 				bitmapGraphics.ScaleTransform(scale);
 				bitmapGraphics.TranslateTransform(-e.ClipRectangle.Location);
-				//bitmapGraphics.SetClip(e.ClipRectangle);
+				bitmapGraphics.SetClip(e.ClipRectangle); // should not be affected by transform
 				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor));
 				return bitmapGraphics;
 			}
