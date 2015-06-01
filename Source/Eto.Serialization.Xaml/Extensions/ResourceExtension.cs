@@ -36,11 +36,7 @@ namespace Eto.Serialization.Xaml.Extensions
 				var propertyInfo = provideValue.TargetProperty as PropertyInfo;
 				if (propertyInfo != null && !propertyInfo.PropertyType.IsAssignableFrom(typeof(Stream)))
 				{
-#if NET45
-					var converter = Eto.TypeConverter.GetConverter(propertyInfo.PropertyType);
-#else
 					var converter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
-#endif
 					if (converter != null)
 					{
 						if (converter.CanConvertFrom(typeof(NamespaceInfo)))

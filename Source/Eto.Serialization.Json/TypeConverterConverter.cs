@@ -31,7 +31,7 @@ namespace Eto.Serialization.Json
 		{
 			if (converters.ContainsKey(objectType))
 				return true;
-			var converter = TypeConverter.GetConverter(objectType);
+			var converter = TypeDescriptor.GetConverter(objectType);
 			if (converter != null && converter.CanConvertFrom(typeof(string)))
 			{
 				converters.Add(objectType, converter);

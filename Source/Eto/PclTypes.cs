@@ -169,9 +169,9 @@ namespace Eto
 	}
 
 	/// <summary>
-	/// Type converter implementation, for type converter compatibility in portable class libraries.
+	/// Type descriptor for conversion compatibility.
 	/// </summary>
-	public class TypeConverter
+	public static class TypeDescriptor
 	{
 		/// <summary>
 		/// Gets the type converter for the specified type.
@@ -185,7 +185,13 @@ namespace Eto
 				return Activator.CreateInstance(Type.GetType(attr.ConverterTypeName)) as TypeConverter;
 			return null;
 		}
+	}
 
+	/// <summary>
+	/// Type converter implementation, for type converter compatibility in portable class libraries.
+	/// </summary>
+	public class TypeConverter
+	{
 		/// <summary>
 		/// Determines whether this instance can convert from the specified sourceType.
 		/// </summary>
