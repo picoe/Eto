@@ -43,8 +43,11 @@ namespace Eto.Serialization.Xaml
 							if (assembly != null)
 							{
 								var realType = assembly.GetType(ns + "." + name);
-								type = xamlNamespace == eto_namespace ? new EtoXamlType(realType, this) : GetXamlType(realType);
-								cache.Add(xamlNamespace + name, type);
+								if (realType != null)
+								{
+									type = xamlNamespace == eto_namespace ? new EtoXamlType(realType, this) : GetXamlType(realType);
+									cache.Add(xamlNamespace + name, type);
+								}
 							}
 						}
 					}
