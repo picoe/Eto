@@ -84,22 +84,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Eto.Wpf\Eto.Wpf - net45.csproj">
-      <Project>{63137fa0-ca55-11e3-9c1a-0800200c9a66}</Project>
-      <Name>Eto.Wpf - Pcl</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Eto\Eto - Pcl.csproj">
-      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto - Pcl</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Eto.File.ico" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Eto.Project.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Eto.Wpf\Eto.Wpf - net45.csproj">
+      <Project>{63137fa0-ca55-11e3-9c1a-0800200c9a66}</Project>
+      <Name>Eto.Wpf - net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Eto\Eto - pcl.csproj">
+      <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
+      <Name>Eto - pcl</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

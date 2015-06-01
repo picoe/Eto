@@ -14,7 +14,7 @@
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
-        <MSBuildCommunityVersion>1.4.0.78</MSBuildCommunityVersion>
+        <MSBuildCommunityVersion>1.4.0.88</MSBuildCommunityVersion>
 		<MSBuildCommunityTasksPath>$(MSBuildThisFileDirectory)\packages\MSBuildTasks.$(MSBuildCommunityVersion)\tools</MSBuildCommunityTasksPath>
 	    <MSBuildCommunityTasksLib>$([MSBUILD]::Unescape($(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll))</MSBuildCommunityTasksLib>
 		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
@@ -164,8 +164,10 @@
     	<!-- addins -->
     	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
     	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<!--
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    	-->
 
     	<Exec Command="$(mdtool) setup pack $(BaseDir)/BuildOutput/Addins/$(Configuration)/XamarinStudio/Eto.Addin.XamarinStudio.dll -d:$(BaseDir)/BuildOutput/Addins/$(Configuration)" Condition="$(Platform) != 'Windows'"/>
 

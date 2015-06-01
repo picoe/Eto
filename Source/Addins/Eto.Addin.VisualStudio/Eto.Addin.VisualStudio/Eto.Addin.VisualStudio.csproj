@@ -53,6 +53,11 @@
       <Link>Packages\%(Filename)%(Extension)</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="..\..\..\..\LICENSE">
+      <Link>LICENSE</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
@@ -81,21 +86,21 @@
       <Name>Eto.Designer</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Eto.Serialization.Json\Eto.Serialization.Json - Pcl.csproj">
-      <Project>{3f8178ef-0710-43f7-92e2-130b9be2212d}</Project>
-      <Name>Eto.Serialization.Json - Pcl</Name>
+    <ProjectReference Include="..\..\..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj">
+      <Project>{fcefd5c0-8705-11e4-b4a9-0800200c9a66}</Project>
+      <Name>Eto.Serialization.Json - net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
       <Project>{231fb3b0-cb71-11e3-9c1a-0800200c9a66}</Project>
-      <Name>Eto.Serialization.Xaml - Pcl</Name>
+      <Name>Eto.Serialization.Xaml - net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Eto.Wpf\Eto.Wpf - net45.csproj">
       <Project>{63137fa0-ca55-11e3-9c1a-0800200c9a66}</Project>
-      <Name>Eto.Wpf - Pcl</Name>
+      <Name>Eto.Wpf - net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Eto\Eto - Pcl.csproj">
+    <ProjectReference Include="..\..\..\Eto\Eto - pcl.csproj">
       <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto - Pcl</Name>
+      <Name>Eto - pcl</Name>
     </ProjectReference>
     <ProjectReference Include="..\Eto.ItemTemplates\Eto.ItemTemplates.csproj">
       <Project>{77F0EC4C-6CD7-415E-8F3D-D55D17C219A4}</Project>
