@@ -8,14 +8,14 @@ namespace Eto.Test.Sections.Controls
 	{
 		public SliderSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "SetInitialValue" }, SetInitialValue());
 			layout.AddRow(new Label { Text = "Snap To Tick" }, SnapToTick());
 			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
 			layout.AddRow(new Label { Text = "Vertical" }, Vertical());
-			
+
 			layout.Add(null, null, true);
 
 			Content = layout;
@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Controls
 			var control = new Slider
 			{
 				MinValue = 0,
-				MaxValue = 1000, 
+				MaxValue = 1000,
 				TickFrequency = 100,
 				Value = 500
 			};

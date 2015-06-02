@@ -1,6 +1,7 @@
 ﻿using System;
 using Eto.Forms;
 using System.Text;
+using Eto.Drawing;
 
 namespace Eto.Test.Sections.Behaviors
 {
@@ -38,11 +39,14 @@ namespace Eto.Test.Sections.Behaviors
 			Content = new StackLayout
 			{
 				HorizontalContentAlignment = HorizontalAlignment.Stretch,
+				Spacing = 5,
 				Items =
 				{
 					new StackLayout
 					{ 
 						Orientation = Orientation.Horizontal, 
+						Spacing = 5,
+						Padding = new Padding(10),
 						Items = { copyTextButton, copyImageButton, pasteTextButton, clearButton }
 					},
 					new StackLayoutItem(pasteData, expand: true)
@@ -52,7 +56,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		void Update()
 		{
-			var panel = new StackLayout();
+			var panel = new StackLayout { Padding = new Padding(10) };
 			if (clipboard.Text != null)
 			{
 				panel.Items.Add("\nText:");

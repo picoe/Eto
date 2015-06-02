@@ -1,4 +1,5 @@
-﻿using Eto.Forms;
+﻿using Eto.Drawing;
+using Eto.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Eto.Test.Sections.Behaviors
 {
-    [Section("Behaviors", "Dynamic Focus")]
-    public class DynamicFocusSection : Panel
-    {
+	[Section("Behaviors", "Dynamic Focus")]
+	public class DynamicFocusSection : Panel
+	{
 		public DynamicFocusSection()
 		{
 			var content = new Panel();
@@ -44,10 +45,15 @@ namespace Eto.Test.Sections.Behaviors
 				);
 			};
 
-			Content = new TableLayout(
-				new TableLayout(new TableRow(null, addContentButton, focusControlCheckBox, null)),
-				content
-				);
+			Content = new TableLayout
+			{
+				Spacing = new Size(5, 5),
+				Padding = new Padding(10),
+				Rows = {
+					new StackLayout { Orientation = Orientation.Horizontal, Spacing = 5, Items = { addContentButton, focusControlCheckBox } },
+					content
+				}
+			};
 		}
-    }
+	}
 }

@@ -8,7 +8,7 @@ namespace Eto.Test.Sections.Drawing
 	{
 		public IndexedBitmapSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(
 				new Label { Text = "Indexed Bitmap on ImageView" }, CreateIndexedImageView(),
@@ -26,7 +26,7 @@ namespace Eto.Test.Sections.Drawing
 			var image = new IndexedBitmap(100, 100, 8);
 			var ega = Palette.GetEgaPalette();
 			var pal = new Palette(ega);
-			
+
 			// must have at least 256 colors for an 8-bit bitmap
 			while (pal.Count < 256)
 				pal.Add(Colors.Black);
@@ -54,7 +54,7 @@ namespace Eto.Test.Sections.Drawing
 				}
 			}
 			return image;
-			
+
 		}
 
 		Control CreateIndexedImageView()

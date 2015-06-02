@@ -45,45 +45,57 @@ namespace Eto.Test.Sections.Controls
 
 			Content = new TableLayout
 			{
+				Padding = new Padding(10),
+				Spacing = new Size(5, 5),
 				Rows =
 				{
 					new TableRow(
-						new Label { Text = "Grid" }, 
+						"Grid", 
 						new TableLayout(
 							CreateOptions(gridView, filteredCollection),
 							gridView
 						)
 					) { ScaleHeight = true },
-					new TableRow(
-						new Label { Text = "Selected Items" }, 
-						selectionGridView
-					)
+					new TableRow("Selected Items", selectionGridView)
 				}
 			};
 		}
 
-		TableLayout CreateOptions(GridView grid, SelectableFilterCollection<MyGridItem> filtered)
+		StackLayout CreateOptions(GridView grid, SelectableFilterCollection<MyGridItem> filtered)
 		{
-			return new TableLayout
+			return new StackLayout
 			{
-				Padding = Padding.Empty,
-				Rows =
+				Spacing = 5,
+				HorizontalContentAlignment = HorizontalAlignment.Stretch,
+				Items =
 				{
-					TableLayout.Horizontal(
-						null,
-						EnabledCheckBox(grid),
-						EditableCheckBox(grid),
-						AllowMultiSelectCheckBox(grid),
-						ShowHeaderCheckBox(grid),
-						GridLinesDropDown(grid),
-						null
-					),
-					TableLayout.Horizontal(
-						null,
-						CreateScrollToRow(grid),
-						CreateBeginEditButton(grid),
-						null
-					),
+					new StackLayout
+					{
+						Orientation = Orientation.Horizontal,
+						Spacing = 5,
+						Items =
+						{
+							null,
+							EnabledCheckBox(grid),
+							EditableCheckBox(grid),
+							AllowMultiSelectCheckBox(grid),
+							ShowHeaderCheckBox(grid),
+							GridLinesDropDown(grid),
+							null
+						}
+					},
+					new StackLayout 
+					{
+						Orientation = Orientation.Horizontal,
+						Spacing = 5,
+						Items =
+						{
+							null,
+							CreateScrollToRow(grid),
+							CreateBeginEditButton(grid),
+							null
+						}
+					},
 					CreateSearchBox(filtered)
 				}
 			};
@@ -120,7 +132,12 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new EnumDropDown<GridLines>();
 			control.SelectedValueBinding.Bind(grid, r => r.GridLines);
-			return control;
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items = { "GridLines", control }
+			};
 		}
 
 		Control EnabledCheckBox(GridView grid)
@@ -133,7 +150,8 @@ namespace Eto.Test.Sections.Controls
 		Control EditableCheckBox(GridView grid)
 		{
 			var control = new CheckBox { Text = "Editable" };
-			control.CheckedBinding.Bind(() => grid.Columns.First().Editable, v => {
+			control.CheckedBinding.Bind(() => grid.Columns.First().Editable, v =>
+			{
 				foreach (var col in grid.Columns)
 				{
 					col.Editable = v ?? false;
@@ -204,8 +222,8 @@ namespace Eto.Test.Sections.Controls
 					}
 				};
 				control.Columns.Add(new GridColumn
-				{ 
-					HeaderText = "Owner drawn", 
+				{
+					HeaderText = "Owner drawn",
 					DataCell = drawableCell
 				});
 			}

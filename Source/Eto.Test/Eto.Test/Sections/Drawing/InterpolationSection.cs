@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.Drawing
 	{
 		public InterpolationSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(
 				new Label { Text = "Default" }, CreateImage(ImageInterpolation.Default),
@@ -40,7 +40,8 @@ namespace Eto.Test.Sections.Drawing
 			var image = new Bitmap(resourceStream);
 			var drawable = new Drawable { Size = new Size(250, 160) };
 
-			drawable.Paint += (sender, pe) => {
+			drawable.Paint += (sender, pe) =>
+			{
 				pe.Graphics.ImageInterpolation = interpolation;
 				pe.Graphics.DrawImage(image, 0, 0, 20, 20);
 				pe.Graphics.DrawImage(image, 0, 20, 50, 50);

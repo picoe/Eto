@@ -16,7 +16,7 @@ namespace Eto.Test.Sections.Controls
 
 		public WebViewSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			var webContainer = WebView();
 			layout.Add(Buttons());
@@ -40,11 +40,13 @@ namespace Eto.Test.Sections.Controls
 			{
 				webView = new WebView();
 
-				webView.Navigated += (sender, e) => {
+				webView.Navigated += (sender, e) =>
+				{
 					Log.Write(webView, "Navigated, Uri: {0}", e.Uri);
 					UpdateButtons();
 				};
-				webView.DocumentLoading += (sender, e) => {
+				webView.DocumentLoading += (sender, e) =>
+				{
 					Log.Write(webView, "DocumentLoading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
 					e.Cancel = cancelLoad.Checked ?? false;
 					if (!e.Cancel)
@@ -53,15 +55,17 @@ namespace Eto.Test.Sections.Controls
 						stopButton.Enabled = true;
 					}
 				};
-				webView.DocumentLoaded += (sender, e) => {
+				webView.DocumentLoaded += (sender, e) =>
+				{
 					Log.Write(webView, "DocumentLoaded, Uri: {0}", e.Uri);
 					UpdateButtons();
 					stopButton.Enabled = false;
 				};
-				webView.OpenNewWindow += (sender, e) => {
+				webView.OpenNewWindow += (sender, e) =>
+				{
 					Log.Write(webView, "OpenNewWindow: {0}, Url: {1}", e.NewWindowName, e.Uri);
 				};
-				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e)
+				webView.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e)
 				{
 					titleLabel.Text = e.Title;
 				};
@@ -71,8 +75,8 @@ namespace Eto.Test.Sections.Controls
 			catch (Exception)
 			{
 				var control = new Label
-				{ 
-					Text = string.Format ("WebView not supported on this platform with the {0} generator", Platform.ID),
+				{
+					Text = string.Format("WebView not supported on this platform with the {0} generator", Platform.ID),
 					BackgroundColor = Colors.Red,
 					TextAlignment = TextAlignment.Center,
 					VerticalAlignment = VerticalAlignment.Center,
@@ -83,7 +87,7 @@ namespace Eto.Test.Sections.Controls
 				return control;
 			}
 
-			
+
 		}
 
 		Control TitleLabel()
@@ -107,7 +111,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Buttons()
 		{
-			var layout = new DynamicLayout { Spacing = Size.Empty };
+			var layout = new DynamicLayout { };
 
 			layout.BeginHorizontal();
 			layout.Add(null);

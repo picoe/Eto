@@ -10,11 +10,11 @@ namespace Eto.Test.Sections.Behaviors
 		public ContextMenuSection()
 		{
 			var layout = new DynamicLayout();
-			
+
 			layout.Add(null, null, true);
-			
+
 			layout.AddRow(null, ContextMenuPanel(), null);
-			
+
 			layout.Add(null, null, true);
 
 			Content = layout;
@@ -37,8 +37,8 @@ namespace Eto.Test.Sections.Behaviors
 		Control ContextMenuPanel()
 		{
 			var label = new Label
-			{ 
-				Size = new Size(100, 100), 
+			{
+				Size = new Size(100, 100),
 				BackgroundColor = Colors.Blue,
 				TextColor = Colors.White,
 				TextAlignment = TextAlignment.Center,

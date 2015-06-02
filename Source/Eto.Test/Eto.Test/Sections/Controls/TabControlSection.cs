@@ -17,10 +17,20 @@ namespace Eto.Test.Sections.Controls
 
 		public virtual Control Create()
 		{
-			return new TableLayout(
-				new TableLayout(new TableRow(null, AddTab(), RemoveTab(), SelectTab(), null)),
-				tabControl = DefaultTabs()
-			);
+			return new StackLayout
+			{
+				Spacing = 5,
+				HorizontalContentAlignment = HorizontalAlignment.Stretch,
+				Items =
+				{
+					new StackLayout
+					{
+						Orientation = Orientation.Horizontal,
+						Items = { null, AddTab(), RemoveTab(), SelectTab(), null }
+					},
+					new StackLayoutItem(tabControl = DefaultTabs(), expand: true)
+				}
+			};
 		}
 
 		Control AddTab()
@@ -29,7 +39,7 @@ namespace Eto.Test.Sections.Controls
 			control.Click += (s, e) =>
 			{
 				var tab = new TabPage
-				{ 
+				{
 					Text = "Tab " + (tabControl.Pages.Count + 1),
 					Content = tabControl.Pages.Count % 2 == 0 ? TabOne() : TabTwo()
 				};
@@ -73,7 +83,7 @@ namespace Eto.Test.Sections.Controls
 			control.Pages.Add(new TabPage { Text = "Tab 1", Content = TabOne() });
 
 			control.Pages.Add(new TabPage
-			{ 
+			{
 				Text = "Tab 2",
 				Image = TestIcons.TestIcon,
 				Content = TabTwo()
@@ -85,7 +95,7 @@ namespace Eto.Test.Sections.Controls
 				LogEvents(page);
 
 			return control;
-			
+
 		}
 
 		protected virtual TabControl CreateTabControl()
@@ -96,18 +106,18 @@ namespace Eto.Test.Sections.Controls
 		Control TabOne()
 		{
 			var control = new Panel();
-			
+
 			control.Content = new LabelSection();
-			
+
 			return control;
 		}
 
 		Control TabTwo()
 		{
 			var control = new Panel();
-			
+
 			control.Content = new TextAreaSection { Border = BorderType.None };
-			
+
 			return control;
 		}
 
@@ -115,7 +125,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			control.SelectedIndexChanged += delegate
 			{
-				Log.Write(control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);	
+				Log.Write(control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);
 			};
 		}
 

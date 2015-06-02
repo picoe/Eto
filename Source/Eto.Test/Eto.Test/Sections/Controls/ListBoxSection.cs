@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 	{
 		public ListBoxSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(new Label { Text = "Default" }, Default());
 
@@ -37,7 +37,7 @@ namespace Eto.Test.Sections.Controls
 				control.Items.Add(new ListItem { Text = "Item " + i });
 			}
 
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(control);
 			layout.BeginVertical();
 			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), null);

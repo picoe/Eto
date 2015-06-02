@@ -21,6 +21,7 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			Content = new TableLayout
 			{
+				Padding = new Padding(10),
 				Spacing = new Size(5, 5),
 				Rows =
 				{

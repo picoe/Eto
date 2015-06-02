@@ -25,12 +25,12 @@ namespace Eto.Test.Sections.Dialogs
 			MessageBoxCaption = "Some caption";
 			AttachToParent = true;
 
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, new Label { Text = "Caption" }, CaptionBox(), null);
 			layout.AddSeparateRow(null, new Label { Text = "Text" }, TitleBox(), null);
 
-			layout.BeginVertical(Padding.Empty);
+			layout.BeginVertical();
 
 			layout.BeginHorizontal();
 			layout.Add(null);

@@ -9,10 +9,10 @@ namespace Eto.Test.Sections.Controls
 	{
 		public ComboBoxSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.AddRow(new Label { Text = "Default" }, Default(), null);
-			
+
 			layout.AddRow(new Label { Text = "With Items" }, TableLayout.AutoSized(Items()));
 
 			layout.AddRow(new Label { Text = "Set Initial Value" }, TableLayout.AutoSized(SetInitialValue()));
@@ -26,11 +26,11 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new ComboBox();
 			LogEvents(control);
-			
-			var layout = new DynamicLayout();
+
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(TableLayout.AutoSized(control));
-			layout.AddSeparateRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
-			layout.AddSeparateRow(null, GetEnabled(control), GetReadOnly(control), AutoComplete(control), ShowComboText(control), SetComboText(control), null);
+			layout.AddSeparateRow(AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
+			layout.AddSeparateRow(GetEnabled(control), GetReadOnly(control), AutoComplete(control), ShowComboText(control), SetComboText(control), null);
 
 			return layout;
 		}
@@ -120,7 +120,7 @@ namespace Eto.Test.Sections.Controls
 			control.CheckedBinding.Bind(list, l => l.Enabled);
 			return control;
 		}
-		
+
 		Control GetReadOnly(ComboBox list)
 		{
 			var control = new CheckBox { Text = "ReadOnly" };

@@ -30,7 +30,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		public WindowsSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), ShowInTaskBar(), TopMost(), CreateCancelClose(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
@@ -80,7 +80,8 @@ namespace Eto.Test.Sections.Behaviors
 			{
 				SelectedValue = Forms.WindowStyle.Default
 			};
-			styleCombo.SelectedIndexChanged += (sender, e) => {
+			styleCombo.SelectedIndexChanged += (sender, e) =>
+			{
 				if (child != null)
 					child.WindowStyle = styleCombo.SelectedValue;
 			};
@@ -93,7 +94,8 @@ namespace Eto.Test.Sections.Behaviors
 			{
 				SelectedValue = Forms.WindowState.Normal
 			};
-			stateCombo.SelectedIndexChanged += (sender, e) => {
+			stateCombo.SelectedIndexChanged += (sender, e) =>
+			{
 				if (child != null)
 					child.WindowState = stateCombo.SelectedValue;
 			};
@@ -107,7 +109,8 @@ namespace Eto.Test.Sections.Behaviors
 				Text = "Resizable",
 				Checked = true
 			};
-			resizableCheckBox.CheckedChanged += (sender, e) => {
+			resizableCheckBox.CheckedChanged += (sender, e) =>
+			{
 				if (child != null)
 					child.Resizable = resizableCheckBox.Checked ?? false;
 			};
@@ -121,7 +124,8 @@ namespace Eto.Test.Sections.Behaviors
 				Text = "Maximizable",
 				Checked = true
 			};
-			maximizableCheckBox.CheckedChanged += (sender, e) => {
+			maximizableCheckBox.CheckedChanged += (sender, e) =>
+			{
 				if (child != null)
 					child.Maximizable = maximizableCheckBox.Checked ?? false;
 			};
@@ -135,7 +139,8 @@ namespace Eto.Test.Sections.Behaviors
 				Text = "Minimizable",
 				Checked = true
 			};
-			minimizableCheckBox.CheckedChanged += (sender, e) => {
+			minimizableCheckBox.CheckedChanged += (sender, e) =>
+			{
 				if (child != null)
 					child.Minimizable = minimizableCheckBox.Checked ?? false;
 			};
@@ -149,7 +154,8 @@ namespace Eto.Test.Sections.Behaviors
 				Text = "Show In TaskBar",
 				Checked = true
 			};
-			showInTaskBarCheckBox.CheckedChanged += (sender, e) => {
+			showInTaskBarCheckBox.CheckedChanged += (sender, e) =>
+			{
 				if (child != null)
 					child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
 			};
@@ -163,7 +169,8 @@ namespace Eto.Test.Sections.Behaviors
 				Text = "Top Most",
 				Checked = false
 			};
-			topMostCheckBox.CheckedChanged += (sender, e) => {
+			topMostCheckBox.CheckedChanged += (sender, e) =>
+			{
 				if (child != null)
 					child.Topmost = topMostCheckBox.Checked ?? false;
 			};
@@ -230,7 +237,7 @@ namespace Eto.Test.Sections.Behaviors
 					left,
 					top
 				}
-				};
+			};
 
 		}
 
@@ -269,7 +276,7 @@ namespace Eto.Test.Sections.Behaviors
 					width,
 					height
 				}
-				};
+			};
 
 		}
 
@@ -425,7 +432,8 @@ namespace Eto.Test.Sections.Behaviors
 		Control BringToFrontButton()
 		{
 			var control = bringToFrontButton = new Button { Text = "Bring to Front", Enabled = false };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				if (child != null)
 					child.BringToFront();
 			};
@@ -435,7 +443,8 @@ namespace Eto.Test.Sections.Behaviors
 		Control CloseButton()
 		{
 			var control = new Button { Text = "Close Window" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				if (child != null)
 					child.Close();
 			};
@@ -445,7 +454,8 @@ namespace Eto.Test.Sections.Behaviors
 		Control SendToBackButton()
 		{
 			var control = new Button { Text = "Send to Back" };
-			control.Click += (sender, e) => {
+			control.Click += (sender, e) =>
+			{
 				if (child != null)
 					child.SendToBack();
 			};

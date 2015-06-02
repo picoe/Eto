@@ -58,17 +58,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Eto.Serialization.Json\Eto.Serialization.Json - Pcl.csproj">
-      <Project>{3f8178ef-0710-43f7-92e2-130b9be2212d}</Project>
-      <Name>Eto.Serialization.Json - Pcl</Name>
+    <ProjectReference Include="..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj">
+      <Project>{fcefd5c0-8705-11e4-b4a9-0800200c9a66}</Project>
+      <Name>Eto.Serialization.Json - net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
       <Project>{231fb3b0-cb71-11e3-9c1a-0800200c9a66}</Project>
-      <Name>Eto.Serialization.Xaml - Pcl</Name>
+      <Name>Eto.Serialization.Xaml - net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Eto\Eto - Pcl.csproj">
+    <ProjectReference Include="..\Eto\Eto - pcl.csproj">
       <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto - Pcl</Name>
+      <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

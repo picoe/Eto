@@ -321,6 +321,7 @@ namespace Eto.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
+					HandleEvent(Eto.Forms.Control.MouseEnterEvent);
 					ContainerControl.MouseLeave += (sender, e) =>
 					{
 						if (isMouseOver != Control.IsMouseOver)
@@ -336,7 +337,7 @@ namespace Eto.Wpf.Forms
 					ContainerControl.PreviewMouseWheel += (sender, e) =>
 					{
 						var args = e.ToEto(Control);
-						Callback.OnMouseLeave(Widget, args);
+						Callback.OnMouseWheel(Widget, args);
 						e.Handled = args.Handled;
 					};
 					break;

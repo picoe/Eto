@@ -5,7 +5,7 @@
 	   xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 	<TabControl>
 		<TabPage Text="Table Layout using Rows &amp; Controls">
-			<TableLayout>
+			<TableLayout Padding="10" Spacing="5,5">
 				<TableRow>
 					<Label Text="Text Box" />
 					<TextBox TextChanged="HandleTextChanged" />

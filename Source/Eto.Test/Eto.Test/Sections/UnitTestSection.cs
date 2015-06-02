@@ -120,10 +120,13 @@ namespace Eto.Test.Sections
 		{
 			startButton = new Button { Text = "Start Tests", Size = new Size(200, 80) };
 			useTestPlatform = new CheckBox { Text = "Use Test Platform" };
-			var buttons = new TableLayout(
-				              TableLayout.AutoSized(startButton, centered: true),
-				              TableLayout.AutoSized(useTestPlatform, centered: true)
-			              );
+			var buttons = new StackLayout
+			{
+				Padding = new Padding(10),
+				Spacing = 5,
+				HorizontalContentAlignment = HorizontalAlignment.Center,
+				Items = { startButton, useTestPlatform }
+			};
 
 			if (Platform.Supports<TreeView>())
 			{
@@ -138,13 +141,15 @@ namespace Eto.Test.Sections
 					}
 				};
 
-				Content = new TableLayout(
-					buttons,
-					tree
-				);
+				Content = new StackLayout
+				{
+					Spacing = 5,
+					HorizontalContentAlignment = HorizontalAlignment.Stretch,
+					Items = { buttons, new StackLayoutItem(tree, expand: true) }
+				};
 			}
 			else
-				Content = new TableLayout(null, buttons, null);
+				Content = buttons;
 
 			startButton.Click += (s, e) => RunTests();
 		}

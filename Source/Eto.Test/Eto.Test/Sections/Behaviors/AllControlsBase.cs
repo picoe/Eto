@@ -8,8 +8,8 @@ namespace Eto.Test.Sections.Behaviors
 	{
 		protected override void OnPreLoad(EventArgs e)
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			var options = CreateOptions();
 			if (options != null)
 				layout.Add(options);
@@ -117,9 +117,9 @@ namespace Eto.Test.Sections.Behaviors
 		Control DropDownControl()
 		{
 			var control = new DropDown();
-			control.Items.Add(new ListItem{ Text = "Item 1" });
-			control.Items.Add(new ListItem{ Text = "Item 2" });
-			control.Items.Add(new ListItem{ Text = "Item 3" });
+			control.Items.Add(new ListItem { Text = "Item 1" });
+			control.Items.Add(new ListItem { Text = "Item 2" });
+			control.Items.Add(new ListItem { Text = "Item 3" });
 			control.SelectedKey = "Item 1";
 			LogEvents(control);
 			return control;
@@ -128,9 +128,9 @@ namespace Eto.Test.Sections.Behaviors
 		Control ComboBoxControl()
 		{
 			var control = new ComboBox();
-			control.Items.Add(new ListItem{ Text = "Item 1" });
-			control.Items.Add(new ListItem{ Text = "Item 2" });
-			control.Items.Add(new ListItem{ Text = "Item 3" });
+			control.Items.Add(new ListItem { Text = "Item 1" });
+			control.Items.Add(new ListItem { Text = "Item 2" });
+			control.Items.Add(new ListItem { Text = "Item 3" });
 			control.SelectedKey = "Item 1";
 			LogEvents(control);
 			return control;
@@ -162,7 +162,7 @@ namespace Eto.Test.Sections.Behaviors
 		Control GroupBoxControl()
 		{
 			var control = new GroupBox { Text = "Some Group Box" };
-			control.Content = new Label{ Text = "Content" };
+			control.Content = new Label { Text = "Content" };
 			LogEvents(control);
 			return control;
 		}
@@ -203,7 +203,7 @@ namespace Eto.Test.Sections.Behaviors
 				Log.Write(control, "Click");
 			};
 
-			LogEvents((Control)control);	
+			LogEvents((Control)control);
 		}
 
 		protected virtual void LogEvents(LinkButton control)
@@ -213,7 +213,7 @@ namespace Eto.Test.Sections.Behaviors
 				Log.Write(control, "Click");
 			};
 
-			LogEvents((Control)control);	
+			LogEvents((Control)control);
 		}
 
 		protected virtual void LogEvents(RadioButton control)
@@ -222,8 +222,8 @@ namespace Eto.Test.Sections.Behaviors
 			{
 				Log.Write(control, "CheckedChanged");
 			};
-			
-			LogEvents((Control)control);	
+
+			LogEvents((Control)control);
 		}
 
 		protected virtual void LogEvents(CheckBox control)
@@ -232,8 +232,8 @@ namespace Eto.Test.Sections.Behaviors
 			{
 				Log.Write(control, "CheckedChanged");
 			};
-			
-			LogEvents((Control)control);	
+
+			LogEvents((Control)control);
 		}
 
 		protected virtual void LogEvents(Slider control)
@@ -243,7 +243,7 @@ namespace Eto.Test.Sections.Behaviors
 				Log.Write(control, "ValueChanged");
 			};
 
-			LogEvents((Control)control);	
+			LogEvents((Control)control);
 		}
 
 		protected virtual void LogEvents(Control control)

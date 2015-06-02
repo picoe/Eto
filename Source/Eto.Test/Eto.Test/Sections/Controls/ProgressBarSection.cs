@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -9,8 +10,8 @@ namespace Eto.Test.Sections.Controls
 
 		public ProgressBarSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "SetInitialValue" }, SetValue());
 			layout.AddRow(new Label { Text = "Indeterminate" }, Indeterminate());
@@ -35,14 +36,14 @@ namespace Eto.Test.Sections.Controls
 				Value = 500
 			};
 
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
+
 			layout.Add(control);
-			
+
 			layout.BeginVertical();
 			layout.AddRow(null, StartStopButton(control), null);
 			layout.EndVertical();
-			
+
 			return layout;
 		}
 

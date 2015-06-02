@@ -9,17 +9,17 @@ namespace Eto.Test.Sections.Serialization.Xaml
 		protected CheckBox MyCheckBox { get; set; }
 		protected TextArea MyTextArea { get; set; }
 
-		public Test ()
+		public Test()
 		{
-			XamlReader.Load (this);
-			
+			XamlReader.Load(this);
+
 			MyCheckBox.Checked = true;
 			MyTextArea.Text = "This form was created via xaml!";
 		}
 
-		protected void HandleButtonClick (object sender, EventArgs e)
+		protected void HandleButtonClick(object sender, EventArgs e)
 		{
-			MessageBox.Show (this, "I was clicked from Xaml!");
+			MessageBox.Show(this, "I was clicked from Xaml!");
 		}
 
 		public void HandleTextChanged(object sender, EventArgs e)

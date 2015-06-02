@@ -16,7 +16,7 @@ namespace Eto.Wpf.Forms
 		{
 			var source = sw.PresentationSource.FromVisual(window);
 			Control = GetCurrentScreen(window);
-			realScale = (float)(source.CompositionTarget.TransformToDevice.M22 / 96f);
+			realScale = (float)source.CompositionTarget.TransformToDevice.M22;
 		}
 
 		public ScreenHandler(swf.Screen screen)

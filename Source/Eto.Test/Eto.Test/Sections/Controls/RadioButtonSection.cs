@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -7,14 +8,14 @@ namespace Eto.Test.Sections.Controls
 	{
 		public RadioButtonSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.AddRow(new Label { Text = "Default" }, Default(), null);
 
 			layout.AddRow(new Label { Text = "Set Initial Value" }, SetInitialValue(), null);
 
 			layout.AddRow(new Label { Text = "Disabled" }, Disabled(), null);
-			
+
 			layout.Add(null, null, true);
 
 			Content = layout;
@@ -22,8 +23,8 @@ namespace Eto.Test.Sections.Controls
 
 		Control Default()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
+
 			var first = new RadioButton { Text = "First" };
 			var second = new RadioButton(first) { Text = "Second" };
 			var third = new RadioButton(first) { Text = "Third" };
@@ -31,14 +32,14 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(first);
 			LogEvents(second);
 			LogEvents(third);
-			
+
 			return layout;
 		}
 
 		Control SetInitialValue()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
+
 			layout.BeginHorizontal();
 			RadioButton controller = null;
 			for (int i = 0; i < 5; i++)
@@ -49,14 +50,14 @@ namespace Eto.Test.Sections.Controls
 				layout.Add(item);
 			}
 			layout.EndHorizontal();
-			
+
 			return layout;
 		}
 
 		Control Disabled()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
+
 			layout.BeginHorizontal();
 			RadioButton controller = null;
 			for (int i = 0; i < 5; i++)
@@ -67,7 +68,7 @@ namespace Eto.Test.Sections.Controls
 				layout.Add(item);
 			}
 			layout.EndHorizontal();
-			
+
 			return layout;
 		}
 

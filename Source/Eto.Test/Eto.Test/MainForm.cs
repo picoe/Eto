@@ -88,10 +88,10 @@ namespace Eto.Test
 					contentContainer.Content = null;
 				}
 
-				#if DEBUG
+#if DEBUG
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
-				#endif
+#endif
 			};
 
 			if (Splitter.IsSupported)
@@ -129,12 +129,12 @@ namespace Eto.Test
 
 		Control EventLogSection()
 		{
-			var layout = new DynamicLayout { Size = new Size(100, 120), Spacing = Size.Empty };
-			
+			var layout = new DynamicLayout { Size = new Size(100, 120), DefaultSpacing = new Size(5, 5) };
+
 			layout.BeginHorizontal();
 			layout.Add(EventLog, true);
-			
-			layout.BeginVertical(new Padding(5, 0));
+
+			layout.BeginVertical(new Padding(0, 0, 5, 0));
 			layout.Add(ClearButton());
 			layout.Add(MemoryButton());
 			layout.Add(null);

@@ -16,7 +16,8 @@ namespace Eto.Test.Sections.Drawing
 			var drawableTarget = new DrawableTarget(drawable) { UseOffScreenBitmap = true };
 			this.Content = drawable;
 
-			EventHandler<MouseEventArgs> mouseHandler = (s, e) => {
+			EventHandler<MouseEventArgs> mouseHandler = (s, e) =>
+			{
 				location = new Point(e.Location);
 				((Control)s).Invalidate();
 				e.Handled = true;
@@ -27,7 +28,8 @@ namespace Eto.Test.Sections.Drawing
 
 			var font = SystemFonts.Default();
 			drawable.BackgroundColor = Colors.Green;
-			drawable.Paint += (s, e) => {
+			drawable.Paint += (s, e) =>
+			{
 				var graphics = drawableTarget.BeginDraw(e);
 				var imageLocation = new PointF(100, 100);
 				graphics.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to read the pixel color.");

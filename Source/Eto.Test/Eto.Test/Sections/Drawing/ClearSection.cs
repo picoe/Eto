@@ -39,7 +39,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public ClearSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			layout.AddSeparateRow(null, UseClearColorControl(), UseGraphicsPathClipControl(), null);
 			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Drawable" }, ClearGraphicsTest(), null);
@@ -68,7 +68,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new Drawable
 			{
-				Size = new Size (200, 200),
+				Size = new Size(200, 200),
 				BackgroundColor = Colors.Yellow
 			};
 			control.Paint += (sender, e) => DrawSample(e.Graphics);
@@ -114,8 +114,8 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new DrawableImageView
 			{
-				Image = CreateImage (),
-				Size = new Size (200, 200),
+				Image = CreateImage(),
+				Size = new Size(200, 200),
 				BackgroundColor = Colors.Yellow
 			};
 

@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
@@ -25,7 +26,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		protected override Control CreateOptions()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { Spacing = new Size(5, 5) };
 
 			layout.AddRow(null, Handled(), ShowParentEvents(), null);
 			layout.Add(null);
@@ -46,7 +47,7 @@ namespace Eto.Test.Sections.Behaviors
 		protected override void LogEvents(Control control)
 		{
 			base.LogEvents(control);
-			
+
 			control.MouseDoubleClick += delegate(object sender, MouseEventArgs e)
 			{
 				LogMouseEvent(control, "MouseDoubleClick", e);

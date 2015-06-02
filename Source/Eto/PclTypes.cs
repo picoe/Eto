@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Reflection;
 
 // This file contains type definitions currently needed to compile Eto
 // as a Portable Class Library, in the project Eto.Pcl.csproj.
@@ -164,6 +165,25 @@ namespace Eto
 		public TypeConverterAttribute(string typeName)
 		{
 			ConverterTypeName = typeName; 
+		}
+	}
+
+	/// <summary>
+	/// Type descriptor for conversion compatibility.
+	/// </summary>
+	public static class TypeDescriptor
+	{
+		/// <summary>
+		/// Gets the type converter for the specified type.
+		/// </summary>
+		/// <returns>The type converter, or null if the type has no defined converter.</returns>
+		/// <param name="type">Type to get the converter for.</param>
+		public static TypeConverter GetConverter(Type type)
+		{
+			var attr = type.GetTypeInfo().GetCustomAttribute<TypeConverterAttribute>();
+			if (attr != null)
+				return Activator.CreateInstance(Type.GetType(attr.ConverterTypeName)) as TypeConverter;
+			return null;
 		}
 	}
 

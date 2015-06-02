@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -7,7 +8,7 @@ namespace Eto.Test.Sections.Controls
 	{
 		public PasswordBoxSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "Read Only" }, ReadOnly());

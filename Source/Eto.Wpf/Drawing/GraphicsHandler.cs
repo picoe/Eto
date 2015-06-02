@@ -388,8 +388,8 @@ namespace Eto.Wpf.Drawing
 				baseContext = Control;
 			group = new swm.DrawingGroup();
 			Control = group.Open();
-			TransformStack.PushAll();
 			ApplyClip();
+			TransformStack.PushAll();
 		}
 
 		void CloseGroup()
@@ -547,8 +547,8 @@ namespace Eto.Wpf.Drawing
 				Control.DrawImage(newbmp, bounds);
 				Control.Pop();
 
-				TransformStack.PushAll();
 				ApplyClip();
+				TransformStack.PushAll();
 			}
 			else
 			{

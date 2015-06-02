@@ -11,7 +11,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		public CustomDialogSection()
 		{
-			var layout = new DynamicLayout { Spacing = new Size(20, 20) };
+			var layout = new DynamicLayout { Spacing = new Size(20, 20), DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, UseAsyncCheckBox(), DisplayModeDropDown(), null);
 			layout.BeginVertical();
@@ -43,7 +43,7 @@ namespace Eto.Test.Sections.Dialogs
 			var dialog = new Dialog();
 			dialog.DisplayMode = DisplayMode;
 
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 
 			layout.AddCentered(new Label { Text = "Content" }, yscale: true);
 

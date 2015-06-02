@@ -9,17 +9,17 @@ namespace Eto.Test.Sections.Controls
 	{
 		public DropDownSection()
 		{
-			var layout = new DynamicLayout();
-			
-			layout.AddRow(new Label { Text = "Default" }, Default(), null);
-			
-			layout.AddRow(new Label { Text = "With Items" }, TableLayout.AutoSized(Items()));
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddRow(new Label { Text = "Disabled" }, TableLayout.AutoSized(Disabled()));
-			
-			layout.AddRow(new Label { Text = "Set Initial Value" }, TableLayout.AutoSized(SetInitialValue()));
-			
-			layout.AddRow(new Label { Text = "EnumDropDown<Key>" }, TableLayout.AutoSized(EnumCombo()));
+			layout.AddRow("Default", Default(), null);
+
+			layout.AddRow("With Items", TableLayout.AutoSized(Items()));
+
+			layout.AddRow("Disabled", TableLayout.AutoSized(Disabled()));
+
+			layout.AddRow("Set Initial Value", TableLayout.AutoSized(SetInitialValue()));
+
+			layout.AddRow("EnumDropDown<Key>", TableLayout.AutoSized(EnumCombo()));
 
 			layout.Add(null, null, true);
 
@@ -30,13 +30,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new DropDown();
 			LogEvents(control);
-			
-			var layout = new DynamicLayout();
+
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(TableLayout.AutoSized(control));
 			layout.BeginVertical();
 			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
 			layout.EndVertical();
-			
+
 			return layout;
 		}
 

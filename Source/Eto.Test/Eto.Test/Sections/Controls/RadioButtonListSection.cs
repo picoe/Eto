@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -7,16 +8,16 @@ namespace Eto.Test.Sections.Controls
 	{
 		public RadioButtonListSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.AddRow(new Label { Text = "Default" }, Default(), null);
-			
+
 			layout.AddRow(new Label { Text = "With Items" }, TableLayout.AutoSized(Items()));
 
 			layout.AddRow(new Label { Text = "Disabled" }, TableLayout.AutoSized(Disabled()));
-			
+
 			layout.AddRow(new Label { Text = "Set Initial Value" }, TableLayout.AutoSized(SetInitialValue()));
-			
+
 			layout.AddRow(new Label { Text = "EnumRadioButtonList<TestEnum>" }, TableLayout.AutoSized(EnumCombo()));
 
 			layout.AddRow(new Label { Text = "Vertical" }, TableLayout.AutoSized(Items(Orientation.Vertical)));
@@ -30,13 +31,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new RadioButtonList();
 			LogEvents(control);
-			
-			var layout = new DynamicLayout();
+
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 			layout.Add(TableLayout.AutoSized(control));
 			layout.BeginVertical();
 			layout.AddRow(null, AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), OrientationDropDown(control), null);
 			layout.EndVertical();
-			
+
 			return layout;
 		}
 

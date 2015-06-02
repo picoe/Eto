@@ -8,19 +8,25 @@ namespace Eto.Test.Sections.Controls
 	{
 		public ColorPickerSection()
 		{
-			Content = new TableLayout(
-				new TableRow(
-					new Label { Text = "Default" },
-					Default(),
+			Content = new TableLayout
+			{
+				Spacing = new Size(5, 5),
+				Padding = new Padding(10),
+				Rows = 
+				{
+					new TableRow(
+						"Default",
+						Default(),
+						null
+					),
+					new TableRow(
+						"Initial Value",
+						InitialValue(),
+						null
+					),
 					null
-				),
-				new TableRow(
-					new Label { Text = "Initial Value" },
-					InitialValue(),
-					null
-				),
-				null
-			);
+				}
+			};
 		}
 
 		Control Default()

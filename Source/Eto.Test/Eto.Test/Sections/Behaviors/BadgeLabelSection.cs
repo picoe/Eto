@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
@@ -7,7 +8,7 @@ namespace Eto.Test.Sections.Behaviors
 	{
 		public BadgeLabelSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { Spacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddRow(null, SetBadgeLabel(), null);
 			layout.Add(null);
@@ -17,7 +18,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		static Control SetBadgeLabel()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { Spacing = new Size(5, 5) };
 
 			layout.BeginHorizontal();
 
