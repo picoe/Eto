@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Eto.Addin.VisualStudio" Version="2.1.0.0" Language="en-US" Publisher="Curtis Wensley" />
+    <Identity Id="Eto.Addin.VisualStudio" Version="2.1.0.1" Language="en-US" Publisher="Curtis Wensley" />
     <DisplayName>Eto.Forms Visual Studio Addin</DisplayName>
     <Description xml:space="preserve">Eto.Forms Support for Visual Studio.  Eto.Forms is a cross platform GUI framework for desktop and mobile applications in .NET that can target Wpf, WinForms, Direct2D, MonoMac, Xamarin.Mac, Gtk2, Gtk3, and iOS with a single codebase.</Description>
     <MoreInfo>https://github.com/picoe/Eto</MoreInfo>

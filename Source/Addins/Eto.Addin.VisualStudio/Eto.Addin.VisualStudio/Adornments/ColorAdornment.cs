@@ -10,6 +10,7 @@ using System;
 using Eto.Wpf;
 using System.Globalization;
 using System.Diagnostics;
+using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Eto.Addin.VisualStudio.Adornments
 {
@@ -159,8 +160,17 @@ namespace Eto.Addin.VisualStudio.Adornments
 		void CreateVisuals(ITextViewLine line)
 		{
 			var textViewLines = view.TextViewLines;
-
-			var text = view.TextSnapshot.GetText(line.Start, line.Length);
+			string text;
+			try
+			{
+				// visual snapshot excludes collapsed lines, and throws an exception if out of visual range
+				text = view.VisualSnapshot.GetText(line.Start, line.Length);
+			}
+			catch (ArgumentOutOfRangeException)
+			{
+				// inside a collapsed region
+				return;
+			}
 
 			if (hasUsing == false)
 				UpdateUsing(text);
