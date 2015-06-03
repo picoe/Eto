@@ -12,9 +12,9 @@ namespace Eto.GtkSharp
 
 		public NetworkRequest Request { get { return Args[1] as NetworkRequest; } }
 
-		public WebNavigationAction Action { get { return Args[0] as WebNavigationAction; } }
+		public WebNavigationAction Action { get { return Args[2] as WebNavigationAction; } }
 
-		public WebPolicyDecision Decision { get { return Args[0] as WebPolicyDecision; } }
+		public WebPolicyDecision Decision { get { return Args[3] as WebPolicyDecision; } }
 	}
 	#endif
 
