@@ -1,5 +1,6 @@
 using System;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
 using Eto.Forms;
 
 namespace Eto.Wpf.Forms.Controls
@@ -77,6 +78,24 @@ namespace Eto.Wpf.Forms.Controls
 					default:
 						throw new NotSupportedException ();
 				}
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Eto.Forms.Control.MouseUpEvent:
+					ContainerControl.PreviewMouseDown += (sender, e) =>
+					{
+						// don't swallow mouse up events for right click and middle click
+						e.Handled |= e.ChangedButton != sw.Input.MouseButton.Left;
+					};
+					base.AttachEvent(id);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 	}
