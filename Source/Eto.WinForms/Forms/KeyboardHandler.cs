@@ -12,6 +12,11 @@ namespace Eto.WinForms.Forms
 			return swf.Control.IsKeyLocked(key.ToSWF());
 		}
 
+		public Keys Modifiers
+		{
+			get { return swf.Control.ModifierKeys.ToEto(); }
+		}
+
 		public IEnumerable<Keys> SupportedLockKeys
 		{
 			get

@@ -12,7 +12,7 @@ namespace Eto.Wpf.Forms
 	{
 		public bool IsKeyLocked(Keys key)
 		{
-			return swi.Keyboard.IsKeyToggled(KeyMap.ConvertKey(key));
+			return swi.Keyboard.IsKeyToggled(key.ToWpfKey());
 		}
 
 		public IEnumerable<Keys> SupportedLockKeys
@@ -24,6 +24,11 @@ namespace Eto.Wpf.Forms
 				yield return Keys.ScrollLock;
 				yield return Keys.Insert;
 			}
+		}
+
+		public Keys Modifiers
+		{
+			get { return swi.Keyboard.Modifiers.ToEto(); }
 		}
 	}
 }

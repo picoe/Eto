@@ -10,16 +10,18 @@ namespace Eto.Test.Sections.Behaviors
 		Label pointFromScreenLabel;
 		Label pointToScreenLabel;
 		Label buttonsLabel;
+		Label modifiersLabel;
 
 		public MousePositionSection()
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
 
 			layout.Add(null);
-			layout.AddSeparateRow(null, new Label { Text = "Mouse Position (in screen co-ordinates)" }, MousePositionLabel(), null);
-			layout.AddSeparateRow(null, new Label { Text = "PointFromScreen" }, PointFromScreen(), null);
-			layout.AddSeparateRow(null, new Label { Text = "PointToScreen" }, PointToScreen(), null);
-			layout.AddSeparateRow(null, new Label { Text = "Buttons" }, Buttons(), null);
+			layout.AddSeparateRow(null, "Mouse Position (in screen co-ordinates)", MousePositionLabel(), null);
+			layout.AddSeparateRow(null, "PointFromScreen", PointFromScreen(), null);
+			layout.AddSeparateRow(null, "PointToScreen", PointToScreen(), null);
+			layout.AddSeparateRow(null, "Mouse.Buttons", Buttons(), null);
+			layout.AddSeparateRow(null, "Keyboard.ModifierKeys", Modifiers(), null);
 			layout.Add(null);
 
 			SetLabels();
@@ -47,6 +49,11 @@ namespace Eto.Test.Sections.Behaviors
 			return buttonsLabel = new Label();
 		}
 
+		Control Modifiers()
+		{
+			return modifiersLabel = new Label();
+		}
+
 		void SetLabels()
 		{
 			var position = Mouse.Position;
@@ -61,6 +68,8 @@ namespace Eto.Test.Sections.Behaviors
 			pointToScreenLabel.Text = position.ToString();
 
 			buttonsLabel.Text = Mouse.Buttons.ToString();
+
+			modifiersLabel.Text = Keyboard.Modifiers.ToString();
 		}
 
 		protected override void OnMouseMove(MouseEventArgs e)

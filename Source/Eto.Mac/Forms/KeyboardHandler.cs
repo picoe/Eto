@@ -16,6 +16,11 @@ namespace Eto.Mac.Forms
 			return NSEvent.CurrentModifierFlags == key.ModifierMask();
 		}
 
+		public Keys Modifiers
+		{
+			get { return NSEvent.CurrentModifierFlags.ToEto(); }
+		}
+
 		public IEnumerable<Keys> SupportedLockKeys
 		{
 			get
