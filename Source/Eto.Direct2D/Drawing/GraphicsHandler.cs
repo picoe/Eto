@@ -23,7 +23,7 @@ namespace Eto.Direct2D.Drawing
 		bool rectClip;
 		bool disposeControl = true;
 		Bitmap image;
-		float offset = 0.5f;
+		float offset = 0.0f;
 		float fillOffset;
 		sd.Layer helperLayer;
 		sd.Geometry clipGeometry;
@@ -298,7 +298,7 @@ namespace Eto.Direct2D.Drawing
 			{
 				if (value == PixelOffsetMode.None)
 				{
-					offset = .5f;
+					offset = .0f;
 					fillOffset = 0f;
 				}
 				else
