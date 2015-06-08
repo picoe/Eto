@@ -23,8 +23,8 @@ namespace Eto.Direct2D.Drawing
 		bool rectClip;
 		bool disposeControl = true;
 		Bitmap image;
-		float offset = 0.0f;
-		float fillOffset;
+		float offset = 0f;
+		float fillOffset = 0f;
 		sd.Layer helperLayer;
 		sd.Geometry clipGeometry;
 		sd.LayerParameters? clipParams;
@@ -298,12 +298,12 @@ namespace Eto.Direct2D.Drawing
 			{
 				if (value == PixelOffsetMode.None)
 				{
-					offset = .0f;
+					offset = 0f;
 					fillOffset = 0f;
 				}
 				else
 				{
-					offset = 0f;
+					offset = -.5f;
 					fillOffset = -.5f;
 				}
 			}
@@ -410,7 +410,7 @@ namespace Eto.Direct2D.Drawing
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
 			SaveTransform();
-			TranslateTransform(-fillOffset, -fillOffset);
+			TranslateTransform(fillOffset, fillOffset);
 			Control.FillGeometry(path.ToGeometry(), brush.ToDx(Control));
 			RestoreTransform();
 		}
