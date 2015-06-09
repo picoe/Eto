@@ -50,15 +50,15 @@ namespace Eto.Wpf.Forms.Menu
 			get
 			{
 				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding>().FirstOrDefault();
-				return keyBinding == null ? Keys.None : KeyMap.Convert(keyBinding.Key, keyBinding.Modifiers);
+				return keyBinding == null ? Keys.None : keyBinding.Key.ToEtoWithModifier(keyBinding.Modifiers);
 			}
 			set
 			{
 				Control.InputBindings.Clear();
 				if (value != Keys.None)
 				{
-					var key = KeyMap.ConvertKey(value);
-					var modifier = KeyMap.ConvertModifier(value);
+					var key = value.ToWpfKey();
+					var modifier = value.ToWpfModifier();
 					Control.InputBindings.Add(new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
 					Control.InputGestureText = value.ToShortcutString();
 				}

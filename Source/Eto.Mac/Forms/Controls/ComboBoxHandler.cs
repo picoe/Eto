@@ -54,11 +54,33 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public class Cell : NSComboBoxCell
+		{
+			[Export("tableView:willDisplayCell:forTableColumn:row:")]
+			public void TableWillDisplayCellForTableColumn(NSTableView tableView, NSCell cell, NSTableColumn tableColumn, nint rowIndex)
+			{
+				// check if anything is null first
+				if (ControlView == null || ControlView.Window == null || ControlView.Window.Screen == null || tableView.Window == null)
+					return;
+				// hack (using public api's) to set size of popup to at least show this item's entire text.
+				var size = cell.CellSizeForBounds(ControlView.Window.Screen.VisibleFrame);
+				var window = tableView.Window;
+				var frame = window.Frame;
+				size.Width += frame.Width - tableView.Frame.Width;
+				if (frame.Width < size.Width)
+				{
+					frame.Width = size.Width;
+					window.SetFrame(frame, true);
+				}
+			}
+		}
+
 		public ComboBoxHandler()
 		{
 			Control = new EtoComboBox
 			{ 
 				Handler = this, 
+				Cell = new Cell(),
 				StringValue = string.Empty,
 				Editable = true,
 				VisibleItems = 20

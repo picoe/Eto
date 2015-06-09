@@ -139,6 +139,14 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			switch (id)
 			{
+				case Eto.Forms.Control.MouseUpEvent:
+					ContainerControl.PreviewMouseDown += (sender, e) =>
+					{
+						// don't swallow mouse up events for right click and middle click
+						e.Handled |= e.ChangedButton != sw.Input.MouseButton.Left;
+					};
+					base.AttachEvent(id);
+					break;
 				case Button.TextChangedEvent:
 					// text is never changed
 					break;

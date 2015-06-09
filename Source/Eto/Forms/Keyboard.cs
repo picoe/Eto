@@ -28,6 +28,17 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the current modifier state for keys such as <see cref="Keys.Control"/>, <see cref="Keys.Alt"/> and <see cref="Keys.Shift"/>.
+		/// </summary>
+		/// <remarks>
+		/// This typically will only return a value for the current event, such as during a mouse or keyboard event.
+		/// </remarks>
+		public static Keys Modifiers
+		{
+			get { return Handler.Modifiers; }
+		}
+
+		/// <summary>
 		/// Handler for platforms to implement the <see cref="Keyboard"/> functionality.
 		/// </summary>
 		public interface IHandler
@@ -45,6 +56,14 @@ namespace Eto.Forms
 			/// <returns><c>true</c> if the specified key is locked; otherwise, <c>false</c>.</returns>
 			/// <param name="key">Key to determine the state.</param>
 			bool IsKeyLocked(Keys key);
+
+			/// <summary>
+			/// Gets the current modifier state for keys such as <see cref="Keys.Control"/>, <see cref="Keys.Alt"/> and <see cref="Keys.Shift"/>.
+			/// </summary>
+			/// <remarks>
+			/// This typically will only return a value for the current event, such as during a mouse or keyboard event.
+			/// </remarks>
+			Keys Modifiers { get; }
 		}
 	}
 }
