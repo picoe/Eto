@@ -26,6 +26,7 @@ namespace Eto.Serialization.Json
 				var familyName = defaultFont.FamilyName;
 				var size = defaultFont.Size;
 				var fontStyle = FontStyle.None;
+				var decoration = FontDecoration.None;
 				string typefaceName = null;
 
 				var items = JToken.ReadFrom(reader);
@@ -58,6 +59,19 @@ namespace Eto.Serialization.Json
 								}
 							}
 							break;
+						case "FontDecoration":
+							if (property.Value.Type == JTokenType.String)
+							{
+								decoration |= ParseFontDecoration(property.Value.Value<string>());
+							}
+							else
+							{
+								foreach (var style in property.Value)
+								{
+									decoration |= ParseFontDecoration(style.Value<string>());
+								}
+							}
+							break;
 					}
 				}
 				var family = new FontFamily(familyName);
@@ -66,9 +80,9 @@ namespace Eto.Serialization.Json
 				{
 					var typeface = family.Typefaces.FirstOrDefault(r => string.Equals(r.Name, typefaceName, StringComparison.OrdinalIgnoreCase));
 					if (typeface != null)
-						return new Font(typeface, size);
+						return new Font(typeface, size, decoration);
 				}
-				return new Font(family, size, fontStyle);
+				return new Font(family, size, fontStyle, decoration);
 			}
 			throw new JsonSerializationException(string.Format(CultureInfo.CurrentCulture, "Font must be defined as a property from Family, Typeface, Size, FontStyle"));
 		}
@@ -84,6 +98,19 @@ namespace Eto.Serialization.Json
 			}
 
 			return FontStyle.None;
+		}
+
+		static FontDecoration ParseFontDecoration(string value)
+		{
+			switch (value)
+			{
+				case "Underline":
+					return FontDecoration.Underline;
+				case "Strikethrough":
+					return FontDecoration.Strikethrough;
+			}
+
+			return FontDecoration.None;
 		}
 
 		public override bool CanConvert(Type objectType)
