@@ -13,7 +13,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[TypeConverter(typeof(ColorConverter))]
-	public struct Color : IEquatable<Color>
+	public struct Color : IEquatable<Color>, IComparable<Color>
 	{
 		// static members for mapping color names from the Colors class
 		static Dictionary<string, Color> colormap;
@@ -468,5 +468,29 @@ namespace Eto.Drawing
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Compares two colors for keeping a Color in a dictionary.
+		/// </summary>
+		/// <returns>The to.</returns>
+		/// <param name="other">Other.</param>
+		int IComparable<Color>.CompareTo(Color other)
+		{
+			var result = A.CompareTo(other.A);
+			if (result == 0)
+			{
+				result = R.CompareTo(other.R);
+				if (result == 0)
+				{
+					result = G.CompareTo(other.G);
+					if (result == 0)
+					{
+						result = B.CompareTo(other.B);
+					}
+				}
+			}
+
+			return result;
+		}
 	}
 }
