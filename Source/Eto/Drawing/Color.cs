@@ -470,10 +470,10 @@ namespace Eto.Drawing
 		#endregion
 
 		/// <summary>
-		/// Compares two colors for keeping a Color in a dictionary.
+		/// Compares two colors for sorting Colors in standard collections.
 		/// </summary>
-		/// <returns>The to.</returns>
-		/// <param name="other">Other.</param>
+		/// <returns>A signed value indicating whether this instance is greater, less, or equal to other.</returns>
+		/// <param name="other">The other color value to compare with.</param>
 		int IComparable<Color>.CompareTo(Color other)
 		{
 			var result = A.CompareTo(other.A);
