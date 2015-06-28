@@ -298,30 +298,39 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (SelectionStrikethrough)
 					decoration |= FontDecoration.Strikethrough;
 				Pango.FontDescription fontDesc = null;
+
+				Pango.FontFamily family = null;
+				Pango.Stretch stretch = Pango.Stretch.Normal;
+
+				const string familyPrefix = FamilyTagName + "-";
+				var familyTag = SelectionIter.Tags.LastOrDefault(r => r.Name.StartsWith(familyPrefix, StringComparison.Ordinal))
+					?? insertTags.LastOrDefault(r => r.Name.StartsWith(familyPrefix, StringComparison.Ordinal));
+				if (familyTag != null)
+					family = FontFamilyHandler.GetFontFamily(familyTag.Family);
+
 				var tag = SelectionIter.Tags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal))
 					?? insertTags.LastOrDefault(r => r.Name.StartsWith(prefix, StringComparison.Ordinal));
-				if (tag != null)
+				if (family == null && tag != null && tag.FamilySet)
 				{
-					var family = FontFamilyHandler.GetFontFamily(tag.Family);
-					var stretch = tag.Stretch;
-					foreach (var face in family.Faces)
-					{
-						var faceDesc = face.Describe();
-						if (faceDesc.Weight == weight && faceDesc.Style == style && faceDesc.Stretch == stretch)
-						{
-							fontDesc = faceDesc;
-							break;
-						}
-					}
-					if (fontDesc == null)
-						fontDesc = family.Faces[0].Describe();
-					fontDesc.Size = tag.Size;
-					return new Font(new FontHandler(fontDesc, decorations: decoration));
+					family = FontFamilyHandler.GetFontFamily(tag.Family);
+					if (tag.StretchSet)
+						stretch = tag.Stretch;
 				}
-				fontDesc = FontControl.Style.FontDescription.Copy();
-				fontDesc.Style = style;
-				fontDesc.Weight = weight;
+				if (family == null)
+					family = Font.Family.ToPango();
 
+				foreach (var face in family.Faces)
+				{
+					var faceDesc = face.Describe();
+					if (faceDesc.Weight == weight && faceDesc.Style == style && faceDesc.Stretch == stretch)
+					{
+						fontDesc = faceDesc;
+						break;
+					}
+				}
+				if (fontDesc == null)
+					fontDesc = family.Faces[0].Describe();
+				fontDesc.Size = tag != null ? tag.Size : (int)(Font.Size * Pango.Scale.PangoScale);
 				return new Font(new FontHandler(fontDesc, decorations: decoration));
 			}
 			set
