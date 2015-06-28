@@ -54,6 +54,12 @@ namespace Eto.GtkSharp.Forms.Controls
 				requisition.Width = Handler._prefer(size1.Width, size2.Width);
 			}
 			#else
+			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
+			{
+				base.OnGetPreferredHeightForWidth(width, out minimum_height, out natural_height);
+				minimum_height = 0;
+			}
+
 			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
 			{
 				int min1, width1, min2, width2, sw = Handler.SplitterWidth;
@@ -100,6 +106,12 @@ namespace Eto.GtkSharp.Forms.Controls
 				requisition.Height = Handler._prefer(size1.Height, size2.Height);
 			}
 			#else
+			protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
+			{
+				base.OnGetPreferredWidthForHeight(height, out minimum_width, out natural_width);
+				minimum_width = 0;
+			}
+
 			protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
 			{
 				int min1, height1, min2, height2, sw = Handler.SplitterWidth;

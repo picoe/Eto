@@ -16,6 +16,34 @@ namespace Eto.GtkSharp.Forms
 		Gtk.Window Control { get; }
 	}
 
+	public class GtkShrinkableVBox : Gtk.VBox
+	{
+		public GtkShrinkableVBox()
+		{
+		}
+
+		public GtkShrinkableVBox(Gtk.Widget child)
+		{
+			if (child != null)
+				PackStart(child, true, true, 0);
+		}
+
+#if GTK3
+		protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
+		{
+			base.OnGetPreferredWidth(out minimum_width, out natural_width);
+			minimum_width = 0;
+		}
+
+		protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
+		{
+			base.OnGetPreferredHeight(out minimum_height, out natural_height);
+			minimum_height = 0;
+		}
+#endif
+	}
+
+
 	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
 		where TControl: Gtk.Window
 		where TWidget: Window
@@ -46,7 +74,7 @@ namespace Eto.GtkSharp.Forms
 			menuBox = new Gtk.HBox();
 			topToolbarBox = new Gtk.VBox();
 
-			containerBox = new Gtk.VBox();
+			containerBox = new GtkShrinkableVBox();
 			containerBox.Visible = true;
 
 			bottomToolbarBox = new Gtk.VBox();
@@ -176,11 +204,7 @@ namespace Eto.GtkSharp.Forms
 		void HandleControlRealized(object sender, EventArgs e)
 		{
 			var allocation = Control.Allocation.Size;
-			// set initial minimum size
-			Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
-			#if GTK2
-			Control.AllowShrink = false;
-			#endif
+			var minSize = MinimumSize;
 
 			if (initialSize != null)
 			{
@@ -189,14 +213,25 @@ namespace Eto.GtkSharp.Forms
 				frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
 
 				var diff = frameExtents - Control.Allocation.Size.ToEto();
-				Control.Resize(initialSize.Value.Width - diff.Width, initialSize.Value.Height - diff.Height);
+				allocation.Width = initialSize.Value.Width - diff.Width;
+				allocation.Height = initialSize.Value.Height - diff.Height;
 				initialSize = null;
+			}
+
+			if (Resizable)
+			{
+				Control.Resize(allocation.Width, allocation.Height);
 			}
 			else
 			{
-				// resize back to allocation
-				Control.Resize(allocation.Width, allocation.Height);
+				// when not resizable, Control.Resize doesn't work
+				minSize.Width = Math.Max(minSize.Width, allocation.Width);
+				minSize.Height = Math.Max(minSize.Height, allocation.Height);
 			}
+
+			// set initial minimum size
+			Control.SetSizeRequest(minSize.Width, minSize.Height);
+
 			containerBox.SetSizeRequest(-1, -1);
 
 			// only do this the first time
@@ -233,6 +268,9 @@ namespace Eto.GtkSharp.Forms
 			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
 			Control.SetSizeRequest(-1, -1);
 			Control.Realized += HandleControlRealized;
+			#if GTK2
+			Control.AllowShrink = false;
+			#endif
 		}
 
 		public override void AttachEvent(string id)

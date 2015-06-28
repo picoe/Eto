@@ -23,7 +23,6 @@ namespace Eto.GtkSharp.Forms
 		{
 			Control = new MyDialog();
 #if GTK2
-			Control.AllowShrink = false;
 			Control.AllowGrow = false;
 			Control.HasSeparator = false;
 			Control.DestroyWithParent = true;
