@@ -60,11 +60,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (!IsRealized || SingleLineMode || width == 0)
 					return;
-				Layout.Width = (int)(width * Pango.Scale.PangoScale);
 				if (wrapWidth != width)
 				{
 					wrapWidth = width;
-					QueueResize();
+					Layout.Width = (int)(width * Pango.Scale.PangoScale);
+					int pixWidth, pixHeight;
+					Layout.GetPixelSize(out pixWidth, out pixHeight);
+					HeightRequest = pixHeight;
 				}
 			}
 		}
