@@ -87,7 +87,7 @@ namespace Eto.GtkSharp.Forms
 
 		protected override Color DefaultBackgroundColor
 		{
-			get { return Control.Style.Background(Gtk.StateType.Normal).ToEto(); }
+			get { return Control.GetBackground(); }
 		}
 
 		protected override bool UseMinimumSizeRequested
@@ -184,13 +184,15 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				return Control.GdkWindow != null ? Control.GdkWindow.FrameExtents.Size.ToEto() : initialSize ?? Control.DefaultSize.ToEto();
+				var window = Control.GetWindow();
+				return window != null ? window.FrameExtents.Size.ToEto() : initialSize ?? Control.DefaultSize.ToEto();
 			}
 			set
 			{
-				if (Control.GdkWindow != null)
+				var window = Control.GetWindow();
+				if (window != null)
 				{
-					var diff = Control.GdkWindow.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
+					var diff = window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
 					Control.Resize(value.Width - diff.Width, value.Height - diff.Height);
 				}
 				else
@@ -208,9 +210,10 @@ namespace Eto.GtkSharp.Forms
 
 			if (initialSize != null)
 			{
-				var frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
+				var gdkWindow = Control.GetWindow();
+				var frameExtents = gdkWindow.FrameExtents.Size.ToEto();
 				// HACK: get twice to get 'real' size? Ubuntu 14.04 returns inflated size the first call.
-				frameExtents = Control.GdkWindow.FrameExtents.Size.ToEto();
+				frameExtents = gdkWindow.FrameExtents.Size.ToEto();
 
 				var diff = frameExtents - Control.Allocation.Size.ToEto();
 				allocation.Width = initialSize.Value.Width - diff.Width;
@@ -242,7 +245,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				return containerBox.IsRealized ? containerBox.Allocation.Size.ToEto() : containerBox.SizeRequest().ToEto();
+				return containerBox.IsRealized ? containerBox.Allocation.Size.ToEto() : containerBox.GetPreferredSize().ToEto();
 			}
 			set
 			{
@@ -450,7 +453,7 @@ namespace Eto.GtkSharp.Forms
 				else
 				{
 					var windows = Gdk.Screen.Default.ToplevelWindows;
-					if (windows.Count(r => r.IsViewable) == 1 && ReferenceEquals(windows.First(r => r.IsViewable), Control.GdkWindow))
+					if (windows.Count(r => r.IsViewable) == 1 && ReferenceEquals(windows.First(r => r.IsViewable), Control.GetWindow()))
 					{
 						var app = ((ApplicationHandler)Application.Instance.Handler);
 						app.Callback.OnTerminating(app.Widget, args);
@@ -547,14 +550,15 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				if (Control.GdkWindow == null)
+				var gdkWindow = Control.GetWindow();
+				if (gdkWindow == null)
 					return state;	
 
-				if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
+				if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
 					return WindowState.Minimized;
-				if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
+				if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
 					return WindowState.Maximized;
-				if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
+				if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
 					return WindowState.Maximized;
 				return WindowState.Normal;
 			}
@@ -563,15 +567,15 @@ namespace Eto.GtkSharp.Forms
 				if (state != value)
 				{
 					state = value;
-				
+					var gdkWindow = Control.GetWindow();				
 					switch (value)
 					{
 						case WindowState.Maximized:
-							if (Control.GdkWindow != null)
+							if (gdkWindow != null)
 							{
-								if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
+								if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
 									Control.Unfullscreen();
-								if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
+								if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
 									Control.Deiconify();
 							}
 							Control.Maximize();
@@ -580,13 +584,13 @@ namespace Eto.GtkSharp.Forms
 							Control.Iconify();
 							break;
 						case WindowState.Normal:
-							if (Control.GdkWindow != null)
+							if (gdkWindow != null)
 							{
-								if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
+								if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
 									Control.Unfullscreen();
-								if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
+								if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
 									Control.Unmaximize();
-								if (Control.GdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
+								if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
 									Control.Deiconify();
 							}
 							break;
@@ -616,7 +620,7 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				var screen = Control.Screen;
-				var gdkWindow = Control.GdkWindow;
+				var gdkWindow = Control.GetWindow();
 				if (screen != null && gdkWindow != null)
 				{
 					var monitor = screen.GetMonitorAtWindow(gdkWindow);
@@ -633,8 +637,9 @@ namespace Eto.GtkSharp.Forms
 
 		public void SendToBack()
 		{
-			if (Control.GdkWindow != null)
-				Control.GdkWindow.Lower();
+			var gdkWindow = Control.GetWindow();
+			if (gdkWindow != null)
+				gdkWindow.Lower();
 		}
 	}
 }

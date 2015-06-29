@@ -31,7 +31,6 @@
     <DebugType>pdbonly</DebugType>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
-    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -46,7 +45,6 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
-    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <ItemGroup>

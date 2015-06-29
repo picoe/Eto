@@ -54,8 +54,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Control.LabelWidget.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
-			set { Control.LabelWidget.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return Control.LabelWidget.GetForeground(); }
+			set { Control.LabelWidget.SetForeground(value); }
 		}
 	}
 }

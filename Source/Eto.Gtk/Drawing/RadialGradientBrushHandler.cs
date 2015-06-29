@@ -70,7 +70,7 @@ namespace Eto.GtkSharp.Drawing
 			if (!object.ReferenceEquals(gradient.Transform, null))
 				graphics.Control.Transform(gradient.Transform);
 			graphics.Control.Transform(new Cairo.Matrix(1, 0f, 0f, scale, 0, gradient.GradientOrigin.Y - gradient.GradientOrigin.Y * scale));
-			graphics.Control.Pattern = gradient;
+			graphics.Control.SetSource(gradient);
 			graphics.Control.Fill();
 		}
 	}

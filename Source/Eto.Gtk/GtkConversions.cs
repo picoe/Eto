@@ -6,6 +6,14 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp
 {
+	public enum GtkStateFlags
+	{
+		Normal,
+		Active,
+		Prelight,
+		Insensitive
+	}
+
 	public static class GtkConversions
 	{
 		public static Gdk.Color ToGdk(this Color color)
@@ -17,18 +25,6 @@ namespace Eto.GtkSharp
 		{
 			return new Cairo.Color((double)color.R, (double)color.G, (double)color.B, (double)color.A);
 		}
-
-		#if GTK3
-		public static Cairo.Color ToCairo(this Gdk.RGBA color)
-		{
-			return new Cairo.Color(color.Red, color.Green, color.Blue, color.Alpha);
-		}
-
-		public static Gdk.RGBA ToRGBA(this Color color)
-		{
-			return new Gdk.RGBA { Red = color.R, Green = color.G, Blue = color.B, Alpha = color.A };
-		}
-#endif
 
 		public static Color ToEto(this Cairo.Color color)
 		{

@@ -134,8 +134,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public virtual Color TextColor
 		{
-			get { return Control.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
-			set { Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return Control.GetForeground(); }
+			set { Control.SetForeground(value); }
 		}
 
 		public override string Text

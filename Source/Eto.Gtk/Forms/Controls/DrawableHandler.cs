@@ -90,7 +90,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void Update(Rectangle rect)
 		{
-			using (var graphics = new Graphics(new GraphicsHandler(Control, Control.GdkWindow)))
+			using (var graphics = new Graphics(new GraphicsHandler(Control, Control.GetWindow())))
 			{
 				Callback.OnPaint(Widget, new PaintEventArgs(graphics, rect));
 			}
@@ -98,7 +98,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Graphics CreateGraphics()
 		{
-			return new Graphics(new GraphicsHandler(Control, Control.GdkWindow));
+			return new Graphics(new GraphicsHandler(Control, Control.GetWindow()));
 		}
 
 		protected override void SetContainerContent(Gtk.Widget content)

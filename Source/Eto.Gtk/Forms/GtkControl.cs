@@ -149,7 +149,7 @@ namespace Eto.GtkSharp.Forms
 
 		protected virtual Color DefaultBackgroundColor
 		{
-			get { return ContainerContentControl.Style.Background(Gtk.StateType.Normal).ToEto(); }
+			get { return ContainerContentControl.GetBackground(); }
 		}
 
 		public virtual Color? SelectedBackgroundColor
@@ -185,11 +185,11 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (color != null)
 			{
-				BackgroundControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+				BackgroundControl.SetBackground(color.Value);
 			}
 			else
 			{
-				BackgroundControl.ModifyBg(Gtk.StateType.Normal);
+				BackgroundControl.ClearBackground();
 			}
 		}
 
@@ -287,7 +287,7 @@ namespace Eto.GtkSharp.Forms
 		void RealizedSetup()
 		{
 			if (cursor != null)
-				Control.GdkWindow.Cursor = cursor.ControlObject as Gdk.Cursor;
+				Control.GetWindow().Cursor = cursor.ControlObject as Gdk.Cursor;
 			SetBackgroundColor();
 		}
 
@@ -576,13 +576,7 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				font = value;
-				if (font == null)
-					FontControl.ModifyFont(null);
-				else
-				{
-					var handler = (FontHandler)font.Handler;
-					FontControl.ModifyFont(handler.Control);
-				}
+				FontControl.SetFont(font.ToPango());
 			}
 		}
 
@@ -592,9 +586,10 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				cursor = value;
-				if (Control.GdkWindow != null)
+				var gdkWindow = Control.GetWindow();
+				if (gdkWindow != null)
 				{
-					Control.GdkWindow.Cursor = cursor != null ? cursor.ControlObject as Gdk.Cursor : null;
+					gdkWindow.Cursor = cursor != null ? cursor.ControlObject as Gdk.Cursor : null;
 				}
 			}
 		}
@@ -616,10 +611,11 @@ namespace Eto.GtkSharp.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			if (Control.GdkWindow != null)
+			var gdkWindow = Control.GetWindow();
+			if (gdkWindow != null)
 			{
 				int x, y;
-				Control.GdkWindow.GetOrigin(out x, out y);
+				gdkWindow.GetOrigin(out x, out y);
 				return new PointF(point.X - x, point.Y - y);
 			}
 			return point;
@@ -627,10 +623,11 @@ namespace Eto.GtkSharp.Forms
 
 		public PointF PointToScreen(PointF point)
 		{
-			if (Control.GdkWindow != null)
+			var gdkWindow = Control.GetWindow();
+			if (gdkWindow != null)
 			{
 				int x, y;
-				Control.GdkWindow.GetOrigin(out x, out y);
+				gdkWindow.GetOrigin(out x, out y);
 				return new PointF(point.X + x, point.Y + y);
 			}
 			return point;

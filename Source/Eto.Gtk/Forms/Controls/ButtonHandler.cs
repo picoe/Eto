@@ -188,8 +188,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return label.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
-			set { label.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return label.GetForeground(); }
+			set { label.SetForeground(value); }
 		}
 	}
 }

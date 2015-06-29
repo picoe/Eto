@@ -231,8 +231,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Style.Base(Gtk.StateType.Normal).ToEto(); }
-			set { Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return Control.GetBase(); }
+			set { Control.SetBase(value); }
 		}
 	}
 }

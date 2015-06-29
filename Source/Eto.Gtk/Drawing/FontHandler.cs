@@ -2,6 +2,7 @@ using System;
 using Eto.Drawing;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Drawing
 {
@@ -48,7 +49,7 @@ namespace Eto.GtkSharp.Drawing
 		}
 
 		public FontHandler(Gtk.Widget widget)
-			: this (widget.Style.FontDescription)
+			: this (widget.GetFont())
 		{
 		}
 
@@ -65,52 +66,32 @@ namespace Eto.GtkSharp.Drawing
 			Control = Pango.FontDescription.FromString(fontName);
 		}
 
+		Dictionary<SystemFont, Gtk.Widget> fontMap = new Dictionary<SystemFont, Gtk.Widget> 
+		{
+			{ SystemFont.Default, new Gtk.Entry() },
+			{ SystemFont.Bold, new Gtk.Entry() },
+			{ SystemFont.Label, new Gtk.Label() },
+			{ SystemFont.Menu, new Gtk.Menu() },
+			{ SystemFont.MenuBar, new Gtk.MenuBar() }
+		};
+
+		static Gtk.Widget DefaultFontWidget = new Gtk.Label();
+
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			switch (systemFont)
+			Gtk.Widget widget;
+			if (!fontMap.TryGetValue(systemFont, out widget))
+				widget = DefaultFontWidget;
+
+			Control = widget.GetFont().Copy();
+			if (systemFont == SystemFont.Bold)
 			{
-				case SystemFont.Default:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Bold:
-					Control = new Pango.FontDescription();
-					Control.Merge(Gtk.Widget.DefaultStyle.FontDescription, true);
-					Control.Weight = Pango.Weight.Bold;
-					break;
-				case SystemFont.TitleBar:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.ToolTip:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Label:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.MenuBar:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Menu:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Message:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Palette:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.StatusBar:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				default:
-					throw new NotSupportedException();
+				Control.Weight = Pango.Weight.Bold;
 			}
+
 			if (size != null)
 			{
-				var old = Control;
-				Control = new Pango.FontDescription();
-				Control.Merge(old, true);
-				if (size != null)
-					Control.Size = (int)(size * Pango.Scale.PangoScale);
+				Control.Size = (int)(size * Pango.Scale.PangoScale);
 			}
 			FontDecoration = decoration;
 		}

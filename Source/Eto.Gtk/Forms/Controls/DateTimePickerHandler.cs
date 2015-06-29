@@ -71,20 +71,20 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Control.Entry.Style.Text(Gtk.StateType.Normal).ToEto(); }
+			get { return Control.Entry.GetTextColor(); }
 			set
 			{
-				Control.NormalColor = value.ToGdk();
-				Control.Entry.ModifyText(Gtk.StateType.Normal, value.ToGdk());
+				Control.NormalColor = value;
+				Control.Entry.SetTextColor(value);
 			}
 		}
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Entry.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			get { return Control.Entry.GetBase(); }
 			set
 			{ 
-				Control.Entry.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
+				Control.Entry.SetBase(value);
 				Control.QueueDraw();
 			}
 		}

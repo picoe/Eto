@@ -70,9 +70,9 @@ namespace Eto.GtkSharp.Forms.Controls
 				font = value;
 				if (font != null)
 				{
-					var newfont = ((FontHandler)font.Handler).Control;
-					entry.ModifyFont(newfont);
-					text.FontDesc = newfont;
+					var pangoFont = font.ToPango();
+					entry.SetFont(pangoFont);
+					text.FontDesc = pangoFont;
 				}
 			}
 		}
@@ -126,6 +126,26 @@ namespace Eto.GtkSharp.Forms.Controls
 						entry.Completion = null;
 					}
 				}
+			}
+		}
+
+		public override Color TextColor
+		{
+			get { return base.TextColor; }
+			set
+			{
+				base.TextColor = value;
+				entry.SetTextColor(value);
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return base.BackgroundColor; }
+			set
+			{
+				base.BackgroundColor = value;
+				entry.SetBase(value);
 			}
 		}
 	}

@@ -289,7 +289,7 @@ namespace Eto.GtkSharp.Drawing
 				font.Apply(layout);
 				layout.SetText(text);
 				Control.Save();
-				Control.Color = brush.Color.ToCairo();
+				Control.SetSourceColor(brush.Color.ToCairo());
 				Control.MoveTo(x, y);
 				Pango.CairoHelper.LayoutPath(Control, layout);
 				Control.Fill();

@@ -80,10 +80,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			set
 			{
 				font = value;
-				if (font != null)
-					Control.Child.ModifyFont(((FontHandler)font.Handler).Control);
-				else
-					Control.Child.ModifyFont(null);
+				Control.Child.SetFont(font.ToPango());
 			}
 		}
 
@@ -110,12 +107,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Control.Child.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			get { return Control.Child.GetForeground(); }
 			set
 			{
-				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyFg(Gtk.StateType.Active, value.ToGdk());
-				Control.Child.ModifyFg(Gtk.StateType.Prelight, value.ToGdk());
+				Control.Child.SetForeground(value, GtkStateFlags.Normal);
+				Control.Child.SetForeground(value, GtkStateFlags.Active);
+				Control.Child.SetForeground(value, GtkStateFlags.Prelight);
 			}
 		}
 	}

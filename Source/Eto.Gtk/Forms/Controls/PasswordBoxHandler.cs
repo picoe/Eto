@@ -58,8 +58,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Control.Style.Text(Gtk.StateType.Normal).ToEto(); }
-			set { Control.ModifyText(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return Control.GetTextColor(); }
+			set { Control.SetTextColor(value); }
 		}
 
 		public bool ReadOnly
@@ -76,8 +76,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Style.Base(Gtk.StateType.Normal).ToEto(); }
-			set { Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return Control.GetBase(); }
+			set { Control.SetBase(value); }
 		}
 	}
 }

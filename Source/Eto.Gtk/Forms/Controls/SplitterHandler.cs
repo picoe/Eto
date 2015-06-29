@@ -389,18 +389,18 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				else if (fixedPanel == SplitterFixedPanel.Panel1)
 				{
-					var size1 = Control.Child1.SizeRequest();
+					var size1 = Control.Child1.GetPreferredSize();
 					SetRelative(Orientation == SplitterOrientation.Horizontal ? size1.Width : size1.Height);
 				}
 				else if (fixedPanel == SplitterFixedPanel.Panel2)
 				{
-					var size2 = Control.Child2.SizeRequest();
+					var size2 = Control.Child2.GetPreferredSize();
 					SetRelative(Orientation == SplitterOrientation.Horizontal ? size2.Width : size2.Height);
 				}
 				else
 				{
-					var size1 = Control.Child1.SizeRequest();
-					var size2 = Control.Child2.SizeRequest();
+					var size1 = Control.Child1.GetPreferredSize();
+					var size2 = Control.Child2.GetPreferredSize();
 					SetRelative(Orientation == SplitterOrientation.Horizontal
 						? size1.Width / (double)(size1.Width + size2.Width)
 						: size1.Height / (double)(size1.Height + size2.Height));
