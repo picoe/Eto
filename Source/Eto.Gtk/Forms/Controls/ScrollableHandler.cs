@@ -158,9 +158,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected override void SetBackgroundColor(Color? color)
 		{
 			if (color != null)
-				vp.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+				vp.SetBackground(color.Value);
 			else
-				vp.ModifyBg(Gtk.StateType.Normal);
+				vp.ClearBackground();
 		}
 
 		public override Size ClientSize

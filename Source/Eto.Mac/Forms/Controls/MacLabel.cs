@@ -59,7 +59,7 @@ namespace Eto.Mac.Forms.Controls
 			switch (VerticalAlign)
 			{
 				case VerticalAlignment.Center:
-					rect.Y = theRect.Y + (theRect.Height - titleSize.Height) / 2.0F;
+					rect.Y = (nfloat)Math.Round(theRect.Y + (theRect.Height - titleSize.Height) / 2.0F);
 					break;
 				case VerticalAlignment.Bottom:
 					rect.Y = theRect.Y + (theRect.Height - titleSize.Height);

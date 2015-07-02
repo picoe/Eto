@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 using System.Globalization;
 
 namespace Eto.GtkSharp.CustomControls
@@ -27,9 +28,9 @@ namespace Eto.GtkSharp.CustomControls
 			}
 		}
 
-		public Gdk.Color ErrorColor { get; set; }
+		public Color ErrorColor { get; set; }
 
-		public Gdk.Color NormalColor { get; set; }
+		public Color NormalColor { get; set; }
 
 		public string Text { get { return Entry.Text; } }
 
@@ -78,8 +79,8 @@ namespace Eto.GtkSharp.CustomControls
 			MinDate = DateTime.MinValue;
 			MaxDate = DateTime.MaxValue;
 			
-			ErrorColor = new Gdk.Color(255, 0, 0);
-			NormalColor = Entry.Style.Text(Gtk.StateType.Normal);
+			ErrorColor = Colors.Red;
+			NormalColor = Entry.GetTextColor();
 
 			Entry.Changed += HandleChanged;
 			PopupButton.Clicked += delegate
@@ -103,7 +104,7 @@ namespace Eto.GtkSharp.CustomControls
 				SetValue();
 				return;
 			}
-			Entry.ModifyText(Gtk.StateType.Normal, isValid ? NormalColor : ErrorColor);
+			Entry.SetTextColor(isValid ? NormalColor : ErrorColor);
 			OnDateChanged(EventArgs.Empty);
 		}
 
@@ -145,4 +146,3 @@ namespace Eto.GtkSharp.CustomControls
 		}
 	}
 }
-

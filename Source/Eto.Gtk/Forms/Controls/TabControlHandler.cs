@@ -24,7 +24,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected override Color DefaultBackgroundColor
 		{
-			get { return ContainerContentControl.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			get { return ContainerContentControl.GetBase(); }
 		}
 
 		protected new TabControlConnector Connector { get { return (TabControlConnector)base.Connector; } }

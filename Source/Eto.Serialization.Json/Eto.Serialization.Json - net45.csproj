@@ -60,6 +60,7 @@
     </Compile>
     <Compile Include="TableLayoutConverter.cs" />
     <Compile Include="TypeConverterConverter.cs" />
+    <Compile Include="FontConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

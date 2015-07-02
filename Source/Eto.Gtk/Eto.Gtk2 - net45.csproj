@@ -27,13 +27,11 @@
     <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
-    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <ItemGroup>

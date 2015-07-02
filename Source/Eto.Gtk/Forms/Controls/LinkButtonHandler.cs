@@ -26,23 +26,23 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Control.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			get { return Control.GetForeground(); }
 			set
 			{
-				Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyText(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyText(Gtk.StateType.Normal, value.ToGdk());
+				Control.SetForeground(value);
+				Control.SetTextColor(value);
+				Control.Child.SetForeground(value);
+				Control.Child.SetTextColor(value);
 			}
 		}
 
 		public Color DisabledTextColor
 		{
-			get { return Control.Style.Foreground(Gtk.StateType.Insensitive).ToEto(); }
+			get { return Control.GetForeground(GtkStateFlags.Insensitive); }
 			set
 			{
-				Control.ModifyFg(Gtk.StateType.Insensitive, value.ToGdk());
-				Control.Child.ModifyFg(Gtk.StateType.Insensitive, value.ToGdk());
+				Control.SetForeground(value, GtkStateFlags.Insensitive);
+				Control.Child.SetForeground(value, GtkStateFlags.Insensitive);
 			}
 		}
 

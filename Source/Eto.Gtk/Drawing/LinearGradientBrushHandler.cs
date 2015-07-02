@@ -61,7 +61,7 @@ namespace Eto.GtkSharp.Drawing
 			var gradient = ((EtoGradient)control);
 			if (!object.ReferenceEquals (gradient.Transform, null))
 				graphics.Control.Transform (gradient.Transform);
-			graphics.Control.Pattern = gradient;
+			graphics.Control.SetSource(gradient);
 			graphics.Control.Fill ();
 		}
 	}

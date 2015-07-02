@@ -185,5 +185,25 @@ namespace Eto.Forms
 				removeChangeEvent: (c, ev) => DataValueChanged -= ev
 			);
 		}
+
+		/// <summary>
+		/// Causes the change event of the binding to occur only when the <see cref="Control.LostFocus"/> event is triggered.
+		/// </summary>
+		/// <remarks>
+		/// This is useful for text-based input controls such as the <see cref="NumericUpDown"/> when a partial input can be invalid.
+		/// The binding will only be updated when the control has lost the input focus, where by default it will be updated for every
+		/// change while the user is updating the control.
+		/// </remarks>
+		/// <returns>A control binding that updates only when the control's input focus is lost.</returns>
+		public ControlBinding<T, TValue> WhenLostFocus()
+		{
+			return new ControlBinding<T, TValue>(
+				DataItem,
+				c => DataValue,
+				(c, v) => DataValue = v,
+				addChangeEvent: (c, ev) => DataItem.LostFocus += ev,
+				removeChangeEvent: (c, ev) => DataItem.LostFocus -= ev
+			);
+		}
 	}
 }

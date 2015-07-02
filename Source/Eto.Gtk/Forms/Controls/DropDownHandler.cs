@@ -128,7 +128,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public Color TextColor
+		public virtual Color TextColor
 		{
 			get { return text.ForegroundGdk.ToEto(); }
 			set
@@ -141,15 +141,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Child.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			get { return Control.Child.GetBackground(); }
 			set
 			{
-				Control.Child.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				Control.Child.SetBackground(value);
+				Control.Child.SetBase(value);
+				Control.SetBackground(value);
+				Control.SetBase(value);
 				if (Widget.Loaded)
 					Control.QueueDraw();
 			}

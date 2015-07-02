@@ -20,6 +20,8 @@ namespace Eto.Serialization.Json
 		public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
 			TypeConverter converter;
+			if (objectType == reader.ValueType)
+				return reader.Value;
 			if (converters.TryGetValue(objectType, out converter))
 			{
 				return converter.ConvertFrom(reader.Value);

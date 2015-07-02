@@ -60,11 +60,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (!IsRealized || SingleLineMode || width == 0)
 					return;
-				Layout.Width = (int)(width * Pango.Scale.PangoScale);
 				if (wrapWidth != width)
 				{
 					wrapWidth = width;
-					QueueResize();
+					Layout.Width = (int)(width * Pango.Scale.PangoScale);
+					int pixWidth, pixHeight;
+					Layout.GetPixelSize(out pixWidth, out pixHeight);
+					HeightRequest = pixHeight;
 				}
 			}
 		}
@@ -134,8 +136,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public virtual Color TextColor
 		{
-			get { return Control.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
-			set { Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return Control.GetForeground(); }
+			set { Control.SetForeground(value); }
 		}
 
 		public override string Text
