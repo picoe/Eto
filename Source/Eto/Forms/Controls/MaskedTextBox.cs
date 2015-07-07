@@ -210,11 +210,10 @@ namespace Eto.Forms
 			{
 				if (!ReferenceEquals(value, provider))
 				{
-					if (value == null)
-						throw new ArgumentNullException("value");
 					var oldProvider = provider;
 					provider = value;
-					provider.Text = oldProvider.Text;
+					if (provider != null && oldProvider != null)
+						provider.Text = oldProvider.Text;
 					UpdateText();
 				}
 			}
