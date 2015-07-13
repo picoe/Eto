@@ -1,0 +1,36 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Eto.Forms Library</_Name>
+		<Category>crossplat/library/eto</Category>
+		<LanguageName>VBNet</LanguageName>
+		<Wizard>Eto.Addin.XamarinStudio.LibraryWizard</Wizard>
+		<_Description>A library assembly for shared Eto.Forms UI and application logic in VB.NET.</_Description>
+    	<GroupId>eto-project-library</GroupId>
+    	<SupportedParameters>None</SupportedParameters>
+	</TemplateConfiguration>
+
+	<Actions>
+		<Open filename="MyPanel.vb"/>
+	</Actions>
+
+	<Combine name="${ProjectName}" directory=".">
+
+		<Project name="${ProjectName}" directory="." type="Eto.VbDotNet">
+			<Options Target="Library" TargetFrameworkVersion="v4.0"/>
+
+			<References>
+				<Reference type="Package" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+			</References>
+
+			<Files>
+				<FileTemplateReference TemplateID="eto.file.panel.vb" name="MyPanel.vb" />
+				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+			</Packages>
+		</Project>
+
+	</Combine>
+</Template>

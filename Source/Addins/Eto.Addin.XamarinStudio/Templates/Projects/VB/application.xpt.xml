@@ -1,0 +1,289 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Eto.Forms App</_Name>
+		<Category>crossplat/app/eto</Category>
+		<LanguageName>VBNet</LanguageName>
+		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
+		<_Description><![CDATA[A new Eto.Forms cross-platform application in VB.NET]]></_Description>
+		<GroupId>eto-project-application</GroupId>
+		<SupportedParameters>GenerateCombined</SupportedParameters>
+	</TemplateConfiguration>
+
+	<Actions>
+		<Open filename="MainForm.vb"/>
+	</Actions>
+
+	<Combine name="${ProjectName}" directory=".">
+		<Options>
+			<StartupProject>${ProjectName}.Mac</StartupProject>
+		</Options>
+
+		<Project name="${ProjectName}" directory="." type="Eto.VBDotNet">
+			<Options Target="Library" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+			</References>
+			<Files>
+				<File name="MainForm.vb" AddStandardHeader="True" src="MainForm.vb" />
+				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+			</Packages>
+		</Project>
+
+		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" namespace="${ProjectName}" type="Eto.VBDotNet" if="GenerateCombined">
+			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic;Eto.Forms" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Project" refto="${ProjectName}"/>
+			</References>
+			<Files>
+				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
+
+Public Class Program
+	<STAThread>
+	Public Shared Sub Main(args As String())
+
+		Dim app As New Application(Eto.Platform.Detect)
+		app.Run(New MainForm())
+
+	End Sub
+End Class
+]]>
+				</File>
+				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Platform.Gtk" /> 
+				<Package Id="Eto.Platform.Gtk3" /> 
+				<Package Id="Eto.Platform.Windows" /> 
+				<Package Id="Eto.Platform.Wpf" /> 
+			</Packages>
+		</Project>
+		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.VBDotNet" if="!GenerateCombined">
+			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Gac" refto="System.Windows.Forms" />
+				<Reference type="Project" refto="${ProjectName}"/>
+			</References>
+			<Files>
+				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
+
+Public Class Program
+	<STAThread>
+	Public Shared Sub Main(args As String())
+
+		Dim app As New Application(Eto.Platforms.WinForms)
+		app.Run(New MainForm())
+
+	End Sub
+End Class
+]]>
+				</File>
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Platform.Windows" /> 
+			</Packages>
+		</Project>
+		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.VBDotNet" if="!GenerateCombined">
+			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Xml" />
+				<Reference type="Gac" refto="System.Xaml" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Gac" refto="System.Windows" />
+				<Reference type="Project" refto="${ProjectName}"/>
+			</References>
+			<Files>
+				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
+
+Public Class Program
+	<STAThread>
+	Public Shared Sub Main(args As String())
+
+		Dim app As New Application(Eto.Platforms.Wpf)
+		app.Run(New MainForm())
+
+	End Sub
+End Class
+]]>
+				</File>
+				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Platform.Wpf" /> 
+			</Packages>
+		</Project>
+		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.VBDotNet" if="!GenerateCombined">
+			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Project" refto="${ProjectName}"/>
+			</References>
+			<Files>
+				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
+
+Public Class Program
+	<STAThread>
+	Public Shared Sub Main(args As String())
+
+		Dim app As New Application(Eto.Platforms.Gtk2)
+		app.Run(New MainForm())
+
+	End Sub
+End Class
+]]>
+				</File>
+				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Platform.Gtk" /> 
+			</Packages>
+		</Project>
+		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.VBDotNet" if="!GenerateCombined">
+			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Project" refto="${ProjectName}"/>
+			</References>
+			<Files>
+				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
+
+Public Class Program
+	<STAThread>
+	Public Shared Sub Main(args As String())
+
+		Dim app As New Application(Eto.Platforms.Gtk3)
+		app.Run(New MainForm())
+
+	End Sub
+End Class
+]]>
+				</File>
+				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Platform.Gtk3" /> 
+			</Packages>
+		</Project>
+
+		<Project name="${ProjectName}.Mac" directory="./${ProjectName}.Mac" type="MonoMac">
+			<Options language="C#" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Project" refto="${ProjectName}"/>
+			</References>
+			<Files>
+				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
+using Eto.Forms;
+
+namespace ${Namespace}
+{
+	public class Program
+	{
+		[STAThread]
+		public static void Main(string[] args)
+		{
+			new Application(Eto.Platforms.Mac).Run(new MainForm());
+		}
+	}
+}
+]]>
+				</File>
+				<File name="Info.plist" src="../Mac/Info.plist" />
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Platform.Mac" /> 
+			</Packages>
+		</Project>
+
+		<Project name="${ProjectName}.XamMac2" directory="./${ProjectName}.XamMac2" type="XamMac2" if="!UseNET">
+			<Options TargetFrameworkVersion="Xamarin.Mac,Version=v2.0" language="C#" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Gac" refto="Xamarin.Mac" />
+				<Reference type="Project" refto="${ProjectName}"/>
+			</References>
+			<Files>
+				<Directory name="Resources"/>
+				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
+using Eto.Forms;
+
+namespace ${Namespace}
+{
+	public class Program
+	{
+		[STAThread]
+		public static void Main(string[] args)
+		{
+			new Application(Eto.Platforms.XamMac2).Run(new ${SolutionName}.MainForm());
+		}
+	}
+}
+]]>
+				</File>
+				<File name="Info.plist" src="../Mac/Info.plist" />
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Platform.XamMac2" /> 
+			</Packages>
+		</Project>
+
+		<Project name="${ProjectName}.XamMac2" directory="./${ProjectName}.XamMac2" type="XamMac2" if="UseNET">
+			<Options language="C#" />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Gac" refto="Xamarin.Mac" />
+				<Reference type="Project" refto="${ProjectName}"/>
+			</References>
+			<Files>
+				<Directory name="Resources"/>
+				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
+using Eto.Forms;
+
+namespace ${Namespace}
+{
+	public class Program
+	{
+		[STAThread]
+		public static void Main(string[] args)
+		{
+			new Application(Eto.Platforms.XamMac2).Run(new ${SolutionName}.MainForm());
+		}
+	}
+}
+]]>
+				</File>
+				<File name="Info.plist" src="../Mac/Info.plist" />
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
+			</Files>
+			<Packages>
+				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Platform.XamMac2" /> 
+			</Packages>
+		</Project>
+
+	</Combine>
+</Template>
