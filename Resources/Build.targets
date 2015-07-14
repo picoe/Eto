@@ -8,6 +8,7 @@
 		<BuildOutputNet40Dir Condition="$(BuildOutputNet40Dir) == ''">$(BaseDir)\BuildOutput\net40\$(Configuration)</BuildOutputNet40Dir>
 		<BuildOutputPCLDir Condition="$(BuildOutputPCLDir) == ''">$(BaseDir)\BuildOutput\pcl\$(Configuration)</BuildOutputPCLDir>
 		<BuildOutputNet45Dir Condition="$(BuildOutputNet45Dir) == ''">$(BaseDir)\BuildOutput\net45\$(Configuration)</BuildOutputNet45Dir>
+		<BuildOutputMobileDir Condition="$(BuildOutputMobileDir) == ''">$(BaseDir)\BuildOutput\mobile\$(Configuration)</BuildOutputMobileDir>
 		<TargetDir Condition="$(TargetDir) == ''">$(BaseDir)\BuildOutput\Nuget\$(Configuration)</TargetDir>
 		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
         <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
@@ -81,13 +82,8 @@
 	</Target>
 	
 	<Target Name="Build" DependsOnTargets="UpdateAssemblyInfo">
-    	<!-- using exec since xbuild messes up properties when using msbuild task -->
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net40.sln'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net45.sln'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration)' '$(SourceDir)\Eto.iOS\Eto.iOS.csproj'" Condition="$(Platform) == 'Mac'"/>
-    	
-    	<MSBuild Projects="$(SourceDir)\Eto - net40.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
-    	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
+    	<MSBuild Projects="$(SourceDir)\Eto - net40.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
+    	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
     	
 		<!-- build XamMac separately if it hasn't been built on mac -->
     	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputNet40Dir)\Eto.XamMac.dll')" />
@@ -120,7 +116,7 @@
 				<Assembly>$(BuildOutputNet45Dir)\Eto.XamMac.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.XamMac2">
-				<Assembly>$(BuildOutputPCLDir)\Eto.XamMac2.dll</Assembly>
+				<Assembly>$(BuildOutputMobileDir)\Eto.XamMac2.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Windows">
 				<Assembly>$(BuildOutputNet45Dir)\Eto.WinForms.dll</Assembly>

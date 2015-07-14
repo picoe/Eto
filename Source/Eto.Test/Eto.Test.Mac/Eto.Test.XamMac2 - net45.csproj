@@ -19,7 +19,7 @@
     <LibrariesPath>..\..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\pcl\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net45\Debug\test</OutputPath>
     <DefineConstants>DEBUG;XAMMAC2</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
@@ -34,7 +34,7 @@
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\pcl\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net45\Release\test</OutputPath>
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <EnableCodeSigning>False</EnableCodeSigning>
@@ -72,10 +72,6 @@
     <Content Include="TestIcon.icns" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto.Mac\Eto.XamMac2.csproj">
-      <Project>{856E8C70-2702-11E4-8C21-0800200C9A66}</Project>
-      <Name>Eto.XamMac2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Eto.Test\Eto.Test - pcl.csproj">
       <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
       <Name>Eto.Test - pcl</Name>
@@ -91,6 +87,10 @@
     <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
       <Project>{231FB3B0-CB71-11E3-9C1A-0800200C9A66}</Project>
       <Name>Eto.Serialization.Xaml - net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Mac\Eto.XamMac2 - net45.csproj">
+      <Project>{856E8C70-2702-11E4-8C21-0800200C9A66}</Project>
+      <Name>Eto.XamMac2 - net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
