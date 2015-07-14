@@ -81,7 +81,23 @@ namespace Eto.Forms
 		{
 			base.OnUnLoad(e);
 			foreach (var item in Items)
-				item.OnLoad(e);
+				item.OnUnLoad(e);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			base.OnDataContextChanged(e);
+			foreach (var item in Items)
+				item.TriggerDataContextChanged(e);
 		}
 
 		/// <summary>

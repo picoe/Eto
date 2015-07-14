@@ -40,7 +40,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="Binding\ColumnBinding.cs" />
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\DashStyle.cs" />
@@ -212,15 +211,6 @@
     <Compile Include="Forms\Cells\TextBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageViewCell.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
-    <Compile Include="Binding\Binding.cs" />
-    <Compile Include="Binding\BindingCollection.cs" />
-    <Compile Include="Binding\BindingChangingEventArgs.cs" />
-    <Compile Include="Binding\BindingChangedEventArgs.cs" />
-    <Compile Include="Binding\IndirectBinding.cs" />
-    <Compile Include="Binding\PropertyBinding.cs" />
-    <Compile Include="Binding\DirectBinding.cs" />
-    <Compile Include="Binding\ObjectBinding.cs" />
-    <Compile Include="Binding\DualBinding.cs" />
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
@@ -251,11 +241,9 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Binding\DelegateBinding.cs" />
     <Compile Include="Forms\IKeyboardInputSource.cs" />
     <Compile Include="Forms\IMouseInputSource.cs" />
     <Compile Include="Drawing\SystemFonts.cs" />
-    <Compile Include="Forms\Controls\Control.binding.cs" />
     <Compile Include="EventLookup.cs" />
     <Compile Include="Forms\Layout\DynamicItemConverter.cs" />
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
@@ -294,8 +282,6 @@
     <Compile Include="Forms\Layout\TableRow.cs" />
     <Compile Include="ExtendedObservableCollection.cs" />
     <Compile Include="Forms\WidgetExtensions.cs" />
-    <Compile Include="Binding\Binding.helpers.cs" />
-    <Compile Include="Binding\PropertyNotifyHelper.cs" />
     <Compile Include="Forms\Layout\TableCellConverter.cs" />
     <Compile Include="Forms\Layout\TableRowConverter.cs" />
     <Compile Include="Forms\Controls\RichTextArea.cs" />
@@ -309,6 +295,25 @@
     <Compile Include="Forms\MaskedTextProvider\NumericMaskedTextProvider.cs" />
     <Compile Include="Forms\MaskedTextProvider\VariableMaskedTextProvider.cs" />
     <Compile Include="Forms\Cells\ProgressCell.cs" />
+    <Compile Include="Forms\ToolBar\Tool.cs" />
+    <Compile Include="Forms\Binding\BindableBinding.cs" />
+    <Compile Include="Forms\Binding\BindableExtensions.cs" />
+    <Compile Include="Forms\Binding\BindableWidget.cs" />
+    <Compile Include="Forms\Binding\Binding.cs" />
+    <Compile Include="Forms\Binding\Binding.helpers.cs" />
+    <Compile Include="Forms\Binding\BindingChangedEventArgs.cs" />
+    <Compile Include="Forms\Binding\BindingChangingEventArgs.cs" />
+    <Compile Include="Forms\Binding\BindingCollection.cs" />
+    <Compile Include="Forms\Binding\ColumnBinding.cs" />
+    <Compile Include="Forms\Binding\DelegateBinding.cs" />
+    <Compile Include="Forms\Binding\DirectBinding.cs" />
+    <Compile Include="Forms\Binding\DualBinding.cs" />
+    <Compile Include="Forms\Binding\IBindable.cs" />
+    <Compile Include="Forms\Binding\ICommand.cs" />
+    <Compile Include="Forms\Binding\IndirectBinding.cs" />
+    <Compile Include="Forms\Binding\ObjectBinding.cs" />
+    <Compile Include="Forms\Binding\PropertyBinding.cs" />
+    <Compile Include="Forms\Binding\PropertyNotifyHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

@@ -243,10 +243,18 @@ namespace Eto.Forms
 			{ 
 				var toolbar = Handler.ToolBar;
 				if (toolbar != null)
-					toolbar.OnUnLoad(EventArgs.Empty);
+				{
+					toolbar.TriggerUnLoad(EventArgs.Empty);
+					toolbar.Parent = null;
+				}
+				if (value != null)
+				{
+					value.Parent = this;
+					value.TriggerPreLoad(EventArgs.Empty);
+				}
 				Handler.ToolBar = value;
 				if (value != null)
-					value.OnLoad(EventArgs.Empty);
+					value.TriggerLoad(EventArgs.Empty);
 			}
 		}
 
@@ -307,9 +315,15 @@ namespace Eto.Forms
 			{
 				var menu = Handler.Menu;
 				if (menu != null)
+				{
 					menu.OnUnLoad(EventArgs.Empty);
+					menu.Parent = null;
+				}
 				if (value != null)
+				{
+					value.Parent = this;
 					value.OnPreLoad(EventArgs.Empty);
+				}
 				Handler.Menu = value;
 				if (value != null)
 					value.OnLoad(EventArgs.Empty);
@@ -457,6 +471,26 @@ namespace Eto.Forms
 		public void SendToBack()
 		{
 			Handler.SendToBack();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			base.OnDataContextChanged(e);
+			var tb = ToolBar;
+			if (tb != null)
+				tb.TriggerDataContextChanged(e);
+			var menu = Menu;
+			if (menu != null)
+				menu.TriggerDataContextChanged(e);
 		}
 
 		#region Callback

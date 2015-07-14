@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq.Expressions;
 using Eto.Forms;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Direct delegate binding.
@@ -57,14 +57,14 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.DelegateBinding{TValue}"/> class.
+		/// Initializes a new instance of the <see cref="DelegateBinding{TValue}"/> class.
 		/// </summary>
 		public DelegateBinding()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.DelegateBinding{TValue}"/> class with the specified delegates.
+		/// Initializes a new instance of the <see cref="DelegateBinding{TValue}"/> class with the specified delegates.
 		/// </summary>
 		/// <param name="getValue">Delegate to get the value for the binding.</param>
 		/// <param name="setValue">Delegate to set the value for the binding.</param>
@@ -165,7 +165,7 @@ namespace Eto
 		public TValue DefaultSetValue { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.DelegateBinding{T,TValue}"/> class.
+		/// Initializes a new instance of the <see cref="DelegateBinding{T,TValue}"/> class.
 		/// </summary>
 		/// <param name="getValue">Delegate to get the value for the binding.</param>
 		/// <param name="setValue">Delegate to set the value for the binding.</param>
@@ -189,7 +189,7 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.DelegateBinding{T,TValue}"/> class.
+		/// Initializes a new instance of the <see cref="DelegateBinding{T,TValue}"/> class.
 		/// </summary>
 		/// <param name="getValue">Delegate to get the value for the binding.</param>
 		/// <param name="setValue">Delegate to set the value for the binding.</param>

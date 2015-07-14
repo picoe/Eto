@@ -121,11 +121,11 @@ namespace Eto.Forms
 		/// Gets the binding for the <see cref="Value"/> property.
 		/// </summary>
 		/// <value>The value binding.</value>
-		public ControlBinding<NumericUpDown, double> ValueBinding
+		public BindableBinding<NumericUpDown, double> ValueBinding
 		{
 			get
 			{
-				return new ControlBinding<NumericUpDown, double>(
+				return new BindableBinding<NumericUpDown, double>(
 					this, 
 					c => c.Value, 
 					(c, v) => c.Value = v, 

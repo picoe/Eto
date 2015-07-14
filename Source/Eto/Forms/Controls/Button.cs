@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using System.Windows.Input;
 
 namespace Eto.Forms
 {
@@ -65,6 +66,22 @@ namespace Eto.Forms
 		{
 			if (click != null)
 				click(this, e);
+		}
+
+		static readonly object Command_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the command to invoke when the button is pressed.
+		/// </summary>
+		/// <remarks>
+		/// This will invoke the specified command when the button is pressed.
+		/// The <see cref="ICommand.CanExecute"/> will also used to set the enabled/disabled state of the button.
+		/// </remarks>
+		/// <value>The command to invoke.</value>
+		public ICommand Command
+		{
+			get { return Properties.GetCommand(Command_Key); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r); }
 		}
 
 		/// <summary>

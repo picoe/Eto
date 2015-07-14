@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Linq;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Indirect binding to get/set values using a property of a specified object
@@ -45,7 +45,7 @@ namespace Eto
 		public bool IgnoreCase { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.PropertyBinding{T}"/> class.
+		/// Initializes a new instance of the <see cref="PropertyBinding{T}"/> class.
 		/// </summary>
 		public PropertyBinding()
 		{

@@ -62,11 +62,11 @@ namespace Eto.Forms
 		/// Gets a binding for the <see cref="Checked"/> property
 		/// </summary>
 		/// <value>The binding for the checked property.</value>
-		public ControlBinding<CheckBox, bool?> CheckedBinding
+		public BindableBinding<CheckBox, bool?> CheckedBinding
 		{
 			get
 			{
-				return new ControlBinding<CheckBox, bool?>(
+				return new BindableBinding<CheckBox, bool?>(
 					this, 
 					c => c.Checked, 
 					(c, v) => c.Checked = v, 

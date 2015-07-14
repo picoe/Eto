@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Arguments for when a binding's value is changing

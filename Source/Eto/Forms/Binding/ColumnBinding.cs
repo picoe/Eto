@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Globalization;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Interface to provide a source for the <see cref="ColumnBinding{T}"/>

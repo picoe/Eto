@@ -122,11 +122,11 @@ namespace Eto.Forms
 		/// Gets a new binding for the <see cref="SelectedValue"/> property.
 		/// </summary>
 		/// <value>A new selected value binding.</value>
-		public new ControlBinding<EnumDropDown<T>, T> SelectedValueBinding
+		public new BindableBinding<EnumDropDown<T>, T> SelectedValueBinding
 		{
 			get
 			{
-				return new ControlBinding<EnumDropDown<T>, T>(
+				return new BindableBinding<EnumDropDown<T>, T>(
 					this,
 					c => c.SelectedValue,
 					(c, v) => c.SelectedValue = v,

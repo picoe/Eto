@@ -1,6 +1,6 @@
 using System;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Arguments to handle when a binding value has changed

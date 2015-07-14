@@ -7,7 +7,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Menu
 {
-	public class ButtonMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
+	public class ButtonMenuItemHandler : MenuItemHandler<SWF.ToolStripMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
 	{
 		Image image;
 		int imageSize = 16;
@@ -36,41 +36,6 @@ namespace Eto.WinForms.Forms.Menu
 			{
 				imageSize = value;
 				Control.Image = image.ToSD(imageSize);
-			}
-		}
-
-		public bool Enabled
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-
-		public string Text
-		{
-			get	{ return Control.Text; }
-			set { Control.Text = value; }
-		}
-
-		public string ToolTip
-		{
-			get
-			{
-				return Control.ToolTipText;
-			}
-			set
-			{
-				Control.ToolTipText = value;
-			}
-		}
-
-		public Keys Shortcut
-		{
-			get { return Control.ShortcutKeys.ToEto(); }
-			set
-			{
-				var key = value.ToSWF();
-				if (SWF.ToolStripManager.IsValidShortcut(key))
-					Control.ShortcutKeys = key;
 			}
 		}
 

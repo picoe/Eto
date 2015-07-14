@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -47,6 +49,19 @@ namespace Eto
 		{
 			object value;
 			return TryGetValue(key, out value) ? (T)value : defaultValue;
+		}
+
+		/// <summary>
+		/// Gets a value from the property store with the specified key of a concrete type
+		/// </summary>
+		/// <param name="key">Key of the property to get</param>
+		/// <param name="defaultValue">Value to return when the specified property is not found in the dictionary</param>
+		/// <typeparam name="T">The type of property to get.</typeparam>
+		/// <returns>Value of the property with the given key, or <paramref name="defaultValue"/> if not found</returns>
+		public T Get<T>(object key, Func<T> defaultValue)
+		{
+			object value;
+			return TryGetValue(key, out value) ? (T)value : defaultValue();
 		}
 
 		/// <summary>
@@ -218,11 +233,11 @@ namespace Eto
 		/// This can be used as an optimized way to set the value in the dictionary as if the value set equal to the <paramref name="defaultValue"/>
 		/// (e.g. null for reference types, false for bool, 0 for int, etc), then it will be removed from the dictionary
 		/// instead of just set to the value, reducing memory usage.
-		/// The <see cref="Get{T}"/> should be passed the same default when retrieving the parameter value.
+		/// The <see cref="Get{T}(object,T)"/> should be passed the same default when retrieving the parameter value.
 		/// </remarks>
 		/// <param name="key">Key of the property to set.</param>
 		/// <param name="value">Value for the property.</param>
-		/// <param name="defaultValue">Value of the property when it should be removed from the dictionary. This should match what is passed to <see cref="Get{T}"/> when getting the value.</param>
+		/// <param name="defaultValue">Value of the property when it should be removed from the dictionary. This should match what is passed to <see cref="Get{T}(object,T)"/> when getting the value.</param>
 		/// <typeparam name="T">The type of the property to set.</typeparam>
 		public void Set<T>(object key, T value, T defaultValue = default(T))
 		{
@@ -271,7 +286,8 @@ namespace Eto
 			if (!Equals(existing, value))
 			{
 				Set<T>(key, value, defaultValue);
-				propertyChanged(Parent, new PropertyChangedEventArgs(propertyName));
+				if (propertyChanged != null)
+					propertyChanged(Parent, new PropertyChangedEventArgs(propertyName));
 				return true;
 			}
 			return false;
@@ -321,6 +337,78 @@ namespace Eto
 				return true;
 			}
 			return false;
+		}
+
+		class CommandWrapper
+		{
+			readonly Action<EventHandler<EventArgs>> removeExecute;
+			readonly Action<bool> setEnabled;
+			public ICommand Command { get; set; }
+
+			public CommandWrapper(ICommand command, Action<bool> setEnabled, Action<EventHandler<EventArgs>> addExecute, Action<EventHandler<EventArgs>> removeExecute)
+			{
+				this.Command = command;
+				this.setEnabled = setEnabled;
+				this.removeExecute = removeExecute;
+				addExecute(Command_Execute);
+				SetEnabled();
+				command.CanExecuteChanged += Command_CanExecuteChanged;;
+			}
+
+			public void Unregister()
+			{
+				removeExecute(Command_Execute);
+				Command.CanExecuteChanged -= Command_CanExecuteChanged;
+			}
+
+			void Command_Execute(object sender, EventArgs e)
+			{
+				Command.Execute(null);
+			}
+
+			void Command_CanExecuteChanged(object sender, EventArgs e)
+			{
+				SetEnabled();
+			}
+
+			void SetEnabled()
+			{
+				if (setEnabled != null)
+					setEnabled(Command.CanExecute(null));
+			}
+		}
+
+		/// <summary>
+		/// Sets an <see cref="ICommand"/> value for the specified property <paramref name="key"/>.
+		/// </summary>
+		/// <param name="key">Key of the property to set</param>
+		/// <param name="value">Command instance</param>
+		/// <param name="setEnabled">Delegate to set the widget as enabled when the command state changes.</param>
+		/// <param name="addExecute">Delegate to attach the execute event handler when the widget invokes the command.</param>
+		/// <param name="removeExecute">Delegate to detach the execute event handler.</param>
+		/// <seealso cref="GetCommand"/>
+		public void SetCommand(object key, ICommand value, Action<bool> setEnabled, Action<EventHandler<EventArgs>> addExecute, Action<EventHandler<EventArgs>> removeExecute)
+		{
+			var cmd = Get<CommandWrapper>(key);
+			if (cmd != null)
+			{
+				if (ReferenceEquals(cmd.Command, value))
+					return;
+				cmd.Unregister();
+			}
+			Set(key, value != null ? new CommandWrapper(value, setEnabled, addExecute, removeExecute) : null);
+		}
+
+		/// <summary>
+		/// Gets the command instance for the specified property key.
+		/// </summary>
+		/// <returns>The command instance, or null if it is not set.</returns>
+		/// <param name="key">Key of the property to get.</param>
+		/// <seealso cref="SetCommand"/>
+		public ICommand GetCommand(object key)
+		{
+			var cmd = Get<CommandWrapper>(key);
+			return cmd != null ? cmd.Command : null;
 		}
 	}
 }

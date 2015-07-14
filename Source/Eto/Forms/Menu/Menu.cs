@@ -7,7 +7,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class Menu : Widget
+	public abstract class Menu : BindableWidget
 	{
 		/// <summary>
 		/// Called before the menu is assigned to a control/window

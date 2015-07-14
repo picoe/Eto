@@ -4,7 +4,7 @@ using Eto.Forms;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Helper to turn a property changed event to an EventHandler for binding

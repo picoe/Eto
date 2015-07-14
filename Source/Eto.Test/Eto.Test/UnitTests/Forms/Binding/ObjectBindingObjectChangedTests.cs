@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using Eto.Forms;
 
 namespace Eto.Test.UnitTests.Forms.Binding
 {

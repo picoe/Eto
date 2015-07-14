@@ -1,6 +1,6 @@
 using System;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Mode of the <see cref="DualBinding{T}"/>

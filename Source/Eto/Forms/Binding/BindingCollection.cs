@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Collection of bindings

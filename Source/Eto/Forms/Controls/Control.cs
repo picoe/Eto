@@ -18,7 +18,7 @@ namespace Eto.Forms
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
-	public partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
+	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -33,15 +33,6 @@ namespace Eto.Forms
 		/// </remarks>
 		public bool Loaded { get; private set; }
 
-		/// <summary>
-		/// Gets the collection of bindings that are attached to this widget
-		/// </summary>
-		public BindingCollection Bindings
-		{
-			get { return Properties.Create<BindingCollection>(BindingsKey); }
-		}
-
-		static readonly object BindingsKey = new object();
 
 		/// <summary>
 		/// Gets or sets a user-defined object that contains data about the control
@@ -535,35 +526,6 @@ namespace Eto.Forms
 			Handler.OnUnLoad(e);
 		}
 
-		/// <summary>
-		/// Event to handle when the <see cref="Control.DataContext"/> has changed
-		/// </summary>
-		/// <remarks>
-		/// This may be fired in the event of a parent in the hierarchy setting the data context.
-		/// For example, the <see cref="Forms.Container"/> widget fires this event when it's event is fired.
-		/// </remarks>
-		public event EventHandler<EventArgs> DataContextChanged
-		{
-			add { Properties.AddEvent(DataContextChangedKey, value); }
-			remove { Properties.RemoveEvent(DataContextChangedKey, value); }
-		}
-
-		static readonly object DataContextChangedKey = new object();
-
-		/// <summary>
-		/// Raises the <see cref="DataContextChanged"/> event
-		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected virtual void OnDataContextChanged(EventArgs e)
-		{
-			Properties.TriggerEvent(DataContextChangedKey, this, e);
-		}
-
 		#endregion
 
 		static Control()
@@ -692,39 +654,15 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the data context for this widget for binding
-		/// </summary>
-		/// <remarks>
-		/// Subclasses may override the standard behaviour so that hierarchy of widgets can be taken into account.
-		/// 
-		/// For example, a Control may return the data context of a parent, if it is not set explicitly.
-		/// </remarks>
-		public virtual object DataContext
-		{
-			get { return Properties.Get<object>(DataContextKey) ?? (Parent == null ? null : Parent.DataContext); }
-			set
-			{
-				if (!ReferenceEquals(value, Properties.Get<object>(DataContextKey)))
-				{
-					Properties[DataContextKey] = value;
-					OnDataContextChanged(EventArgs.Empty);
-				}
-			}
-		}
-
-		static readonly object DataContextKey = new object();
-		Container parent;
-
-		/// <summary>
 		/// Gets the container which this control has been added to, if any
 		/// </summary>
 		/// <value>The parent control, or null if there is no parent</value>
-		public Container Parent
+		public new Container Parent
 		{
-			get { return parent; }
+			get { return base.Parent as Container; }
 			internal set
 			{
-				parent = value;
+				base.Parent = value;
 				Handler.SetParent(value);
 			}
 		}
@@ -839,12 +777,6 @@ namespace Eto.Forms
 		{
 			using (Platform.Context)
 				OnUnLoad(e);
-		}
-
-		internal void TriggerDataContextChanged(EventArgs e)
-		{
-			using (Platform.Context)
-				OnDataContextChanged(e);
 		}
 
 		/// <summary>
@@ -1047,31 +979,6 @@ namespace Eto.Forms
 		{
 			get { return Handler.ToolTip; }
 			set { Handler.ToolTip = value; }
-		}
-
-		/// <summary>
-		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
-		/// </summary>
-		public virtual void Unbind()
-		{
-			var bindings = Properties.Get<BindingCollection>(BindingsKey);
-			if (bindings != null)
-			{
-				bindings.Unbind();
-				Properties[BindingsKey] = null;
-			}
-		}
-
-		/// <summary>
-		/// Updates all bindings in this widget
-		/// </summary>
-		public virtual void UpdateBindings(BindingUpdateMode mode = BindingUpdateMode.Source)
-		{
-			var bindings = Properties.Get<BindingCollection>(BindingsKey);
-			if (bindings != null)
-			{
-				bindings.Update(mode);
-			}
 		}
 
 		/// <summary>

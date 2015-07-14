@@ -1,14 +1,31 @@
 using System;
 using Eto.Drawing;
+using System.Windows.Input;
 
 namespace Eto.Forms
 {
 	/// <summary>
 	/// Base tool item class for a <see cref="ToolBar"/>.
 	/// </summary>
-	public abstract class ToolItem : Widget, ICommandItem
+	public abstract class ToolItem : Tool, ICommandItem
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
+
+		static readonly object Command_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the command to invoke when the tool item is pressed.
+		/// </summary>
+		/// <remarks>
+		/// This will invoke the specified command when the tool item is pressed.
+		/// The <see cref="ICommand.CanExecute"/> will also used to set the enabled/disabled state of the tool item.
+		/// </remarks>
+		/// <value>The command to invoke.</value>
+		public ICommand Command
+		{
+			get { return Properties.GetCommand(Command_Key); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r); }
+		}
 
 		/// <summary>
 		/// Occurs when the user clicks on the item.
@@ -41,10 +58,8 @@ namespace Eto.Forms
 			Text = command.ToolBarText;
 			ToolTip = command.ToolTip;
 			Image = command.Image;
-			Click += (sender, e) => command.Execute();
-			Enabled = command.Enabled;
-			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
 			Order = -1;
+			Command = command;
 		}
 
 		/// <summary>
@@ -98,22 +113,6 @@ namespace Eto.Forms
 		/// </summary>
 		/// <value>The user-defined tag.</value>
 		public object Tag { get; set; }
-
-		/// <summary>
-		/// Called when the tool item is loaded to be shown on the form.
-		/// </summary>
-		/// <param name="e">Event arguments.</param>
-		internal protected virtual void OnLoad(EventArgs e)
-		{
-		}
-
-		/// <summary>
-		/// Called when the tool item is removed from a form.
-		/// </summary>
-		/// <param name="e">Event arguments.</param>
-		internal protected virtual void OnUnLoad(EventArgs e)
-		{
-		}
 
 		/// <summary>
 		/// Handler interface for the <see cref="ToolItem"/>.

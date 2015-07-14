@@ -2,7 +2,7 @@ using System;
 using Eto.Forms;
 using System.Linq.Expressions;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Binding for a particular object to get/set values from/to
@@ -109,7 +109,7 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.ObjectBinding{T,TValue}"/> class.
+		/// Initializes a new instance of the <see cref="ObjectBinding{T,TValue}"/> class.
 		/// </summary>
 		/// <param name="dataItem">Data item to get/set the values from/to.</param>
 		/// <param name="getValue">Delegate to get the value from the object.</param>

@@ -1,6 +1,6 @@
 using System;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Abstraction to get/set values from a provided object

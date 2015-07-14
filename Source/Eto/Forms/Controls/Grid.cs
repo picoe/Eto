@@ -396,11 +396,11 @@ namespace Eto.Forms
 		/// Gets a binding object to bind to the <see cref="SelectedItem"/> property.
 		/// </summary>
 		/// <value>The selected item binding.</value>
-		public ControlBinding<Grid, object> SelectedItemBinding
+		public BindableBinding<Grid, object> SelectedItemBinding
 		{
 			get
 			{
-				return new ControlBinding<Grid, object>(this, 
+				return new BindableBinding<Grid, object>(this, 
 					g => g.SelectedItem,
 					null,
 					(g, eh) => g.SelectionChanged += eh,

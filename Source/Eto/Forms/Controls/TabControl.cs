@@ -107,11 +107,11 @@ namespace Eto.Forms
 		/// Gets the binding for the <see cref="SelectedIndex"/> property.
 		/// </summary>
 		/// <value>The selected index binding.</value>
-		public ControlBinding<TabControl, int> SelectedIndexBinding
+		public BindableBinding<TabControl, int> SelectedIndexBinding
 		{
 			get
 			{
-				return new ControlBinding<TabControl, int>(
+				return new BindableBinding<TabControl, int>(
 					this, 
 					c => c.SelectedIndex, 
 					(c, v) => c.SelectedIndex = v, 

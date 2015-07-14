@@ -5,8 +5,10 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Eto.Forms;
+using System.Windows.Input;
 
-namespace Eto
+namespace Eto.Forms
 {
 	partial class Binding
 	{
@@ -132,6 +134,60 @@ namespace Eto
 			var helper = eh.Target as PropertyNotifyHelper;
 			if (helper != null)
 				helper.Unregister(obj);
+		}
+
+		/// <summary>
+		/// Executes a command retrieved using the specified <paramref name="commandBinding"/> from the <paramref name="dataContext"/>.
+		/// </summary>
+		/// <remarks>
+		/// This helper method is useful for binding general events to fire an <see cref="ICommand"/> that is in your view model.
+		/// The command will only be executed if its <see cref="ICommand.CanExecute"/> returns <c>true</c>.
+		/// 
+		/// Most controls (e.g. <see cref="Eto.Forms.Button"/>) have a special Command parameter that can be set instead, 
+		/// which takes into account the enabled state of the command and will enable/disable the control automatically.
+		/// </remarks>
+		/// <example>
+		/// This example will fire the MyModel.MyCommand when the mouse is down on the specified panel.
+		/// The MyModel instance is based off the panel's current DataContext.
+		/// <code>
+		/// var panel = new Panel();
+		/// panel.MouseDown += (sender, e) => Binding.ExecuteCommand(panel.DataContext, Binding.Property((MyModel m) => m.MyCommand));
+		/// </code>
+		/// </example>
+		/// <param name="dataContext">Data context object to get the ICommand via the commandBinding.</param>
+		/// <param name="commandBinding">Binding to get the ICommand from the data context</param>
+		/// <param name="parameter">Parameter to pass to the command when executing or checking if it can execute.</param>
+		public static void ExecuteCommand(object dataContext, IndirectBinding<ICommand> commandBinding, object parameter = null)
+		{
+			var command = commandBinding.GetValue(dataContext);
+			if (command != null && command.CanExecute(parameter))
+				command.Execute(parameter);
+		}
+
+		/// <summary>
+		/// Executes a command retrieved using a property <paramref name="commandExpression"/> from the  <paramref name="dataContext"/>.
+		/// </summary>
+		/// <remarks>
+		/// This helper method is useful for binding general events to fire an <see cref="ICommand"/> that is in your view model.
+		/// The command will only be executed if its <see cref="ICommand.CanExecute"/> returns <c>true</c>.
+		/// 
+		/// Most controls (e.g. <see cref="Eto.Forms.Button"/>) have a special Command parameter that can be set instead, 
+		/// which takes into account the enabled state of the command and will enable/disable the control automatically.
+		/// </remarks>
+		/// <example>
+		/// This example will fire the MyModel.MyCommand when the mouse is down on the specified panel.
+		/// The MyModel instance is based off the panel's current DataContext.
+		/// <code>
+		/// var panel = new Panel();
+		/// panel.MouseDown += (sender, e) => Binding.ExecuteCommand(panel.DataContext, (MyModel m) => m.MyCommand);
+		/// </code>
+		/// </example>
+		/// <param name="dataContext">Data context object to get the ICommand via the commandBinding.</param>
+		/// <param name="commandExpression">Property expression to get the ICommand from the data context</param>
+		/// <param name="parameter">Parameter to pass to the command when executing or checking if it can execute.</param>
+		public static void ExecuteCommand<T>(object dataContext, Expression<Func<T, ICommand>> commandExpression, object parameter = null)
+		{
+			ExecuteCommand(dataContext, Binding.Property(commandExpression), parameter);
 		}
 	}
 }

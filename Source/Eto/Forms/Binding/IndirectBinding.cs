@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Eto
+namespace Eto.Forms
 {
 	/// <summary>
 	/// Base interface for an indirect binding.

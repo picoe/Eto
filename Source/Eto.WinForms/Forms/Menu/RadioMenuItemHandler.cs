@@ -9,7 +9,7 @@ namespace Eto.WinForms.Forms.Menu
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class RadioMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
+	public class RadioMenuItemHandler : MenuItemHandler<SWF.ToolStripMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
 	{
 		ArrayList group;
 
@@ -40,34 +40,6 @@ namespace Eto.WinForms.Forms.Menu
 			}
 		}
 		#region IMenuItem Members
-
-		public bool Enabled
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-
-		public string Text
-		{
-			get	{ return Control.Text; }
-			set { Control.Text = value; }
-		}
-		
-		public string ToolTip
-		{
-			get { return Control.ToolTipText; }
-			set { Control.ToolTipText = value; }
-		}
-
-		public Keys Shortcut
-		{
-			get { return Control.ShortcutKeys.ToEto (); }
-			set 
-			{
-				var key = value.ToSWF ();
-				if (SWF.ToolStripManager.IsValidShortcut(key)) Control.ShortcutKeys = key;
-			}
-		}
 
 		public bool Checked
 		{
