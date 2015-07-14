@@ -7,24 +7,36 @@
 		<ProjectTemplate id="eto.project.application.cs" file="Templates/Projects/C#/application.xpt.xml" />
 		<ProjectTemplate id="eto.project.library.cs" file="Templates/Projects/C#/library.xpt.xml" />
 
-		<ProjectTemplate id="eto.project.application.vb" file="Templates/Projects/VB/application.xpt.xml" />
-		<ProjectTemplate id="eto.project.library.vb" file="Templates/Projects/VB/library.xpt.xml" />
+		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
+			<ProjectTemplate id="eto.project.application.vb" file="Templates/Projects/VB/application.xpt.xml" />
+			<ProjectTemplate id="eto.project.library.vb" file="Templates/Projects/VB/library.xpt.xml" />
+		</Condition>
 
-		<ProjectTemplate id="eto.project.application.fs" file="Templates/Projects/F#/application.xpt.xml" />
-		<ProjectTemplate id="eto.project.library.fs" file="Templates/Projects/F#/library.xpt.xml" />
-		<!--
-		-->
+		<ComplexCondition>
+			<Or>
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+			</Or>
+			<ProjectTemplate id="eto.project.application.fs" file="Templates/Projects/F#/application.xpt.xml" />
+			<ProjectTemplate id="eto.project.library.fs" file="Templates/Projects/F#/library.xpt.xml" />
+		</ComplexCondition>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id="eto.file.form.cs" file="Templates/Files/C#/form.xft.xml" />
 		<FileTemplate id="eto.file.dialog.cs" file="Templates/Files/C#/dialog.xft.xml" />
 		<FileTemplate id="eto.file.panel.cs" file="Templates/Files/C#/panel.xft.xml" />
 
-		<FileTemplate id="eto.file.panel.vb" file="Templates/Files/VB/panel.xft.xml" />
+		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
+			<FileTemplate id="eto.file.panel.vb" file="Templates/Files/VB/panel.xft.xml" />
+		</Condition>
 
-		<FileTemplate id="eto.file.panel.fs" file="Templates/Files/F#/panel.xft.xml" />
-		<!--
-		-->
+		<ComplexCondition>
+			<Or>
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+			</Or>
+			<FileTemplate id="eto.file.panel.fs" file="Templates/Files/F#/panel.xft.xml" />
+		</ComplexCondition>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
 		<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other">

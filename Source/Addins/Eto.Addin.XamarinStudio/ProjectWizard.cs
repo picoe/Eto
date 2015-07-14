@@ -4,7 +4,6 @@ using Eto.Forms;
 using MonoDevelop.Projects;
 using System.Text;
 using System.Linq;
-using MonoDevelop.FSharp;
 
 namespace Eto.Addin.XamarinStudio
 {
@@ -13,25 +12,6 @@ namespace Eto.Addin.XamarinStudio
 		static ProjectWizard()
 		{
 			EtoInitializer.Initialize();
-
-			MonoDevelop.Ide.IdeApp.ProjectOperations.ProjectCreated += (sender, e) =>
-			{
-					Console.WriteLine("woo");
-				// Fix FSharp NRE until XS is fixed
-				/*var proj = e.SolutionItem as DotNetProject;
-				if (proj != null)
-				{
-					foreach (var config in proj.Configurations.OfType<DotNetProjectConfiguration>())
-					{
-						var fsharpParameters = config.CompilationParameters as FSharpCompilerParameters;
-						if (fsharpParameters != null)
-						{
-							if (fsharpParameters.DefineConstants == null)
-								fsharpParameters.DefineConstants = string.Empty;
-						}
-					}
-				}*/
-			};
 		}
 
 		public override void ConfigureWizard()

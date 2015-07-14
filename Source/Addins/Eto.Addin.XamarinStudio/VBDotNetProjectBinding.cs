@@ -1,6 +1,6 @@
 ﻿using System;
 using MonoDevelop.Projects;
-using MonoDevelop.VBNetBinding;
+using System.Reflection;
 
 namespace Eto.Addin.XamarinStudio
 {
@@ -23,11 +23,24 @@ namespace Eto.Addin.XamarinStudio
 				var imports = projectOptions.GetAttribute("VBImports");
 				if (imports != null)
 				{
-					var importReferences = imports.Split(new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-					foreach (var elem in importReferences)
+					try
 					{
-						assemblyProject.Items.Add(new Import(elem.Trim()));
+						var importType = Type.GetType("MonoDevelop.VBNetBinding.Import, MonoDevelop.VBNetBinding");
+						if (importType != null)
+						{
+							var importReferences = imports.Split(new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+							foreach (var elem in importReferences)
+							{
+								// use reflection to avoid hard ref
+								var import = Activator.CreateInstance(importType, elem.Trim());
+								assemblyProject.Items.Add((ProjectItem)import);
+							}
+						}
+					}
+					catch
+					{
+						// ignore
 					}
 				}
 				assemblyProject.UseMSBuildEngine = false;

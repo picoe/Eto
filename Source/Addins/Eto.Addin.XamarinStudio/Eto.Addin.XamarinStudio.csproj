@@ -201,10 +201,6 @@
     </AddinFile>
   </ItemGroup>
   <ItemGroup>
-    <AddinReference Include="MonoDevelop.VBBinding" />
-    <AddinReference Include="MonoDevelop.FSharpBinding" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
