@@ -11,6 +11,7 @@ using Eto.Wpf;
 using System.Globalization;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Text.Tagging;
+using System.Linq;
 
 namespace Eto.Addin.VisualStudio.Adornments
 {
@@ -159,18 +160,7 @@ namespace Eto.Addin.VisualStudio.Adornments
 
 		void CreateVisuals(ITextViewLine line)
 		{
-			var textViewLines = view.TextViewLines;
-			string text;
-			try
-			{
-				// visual snapshot excludes collapsed lines, and throws an exception if out of visual range
-				text = view.VisualSnapshot.GetText(line.Start, line.Length);
-			}
-			catch (ArgumentOutOfRangeException)
-			{
-				// inside a collapsed region
-				return;
-			}
+			var text = view.TextSnapshot.GetText(line.Start, line.Length);
 
 			if (hasUsing == false)
 				UpdateUsing(text);
@@ -189,9 +179,11 @@ namespace Eto.Addin.VisualStudio.Adornments
 				if (color.A <= 0)
 					continue;
 
-				var span = new SnapshotSpan(view.TextSnapshot, new Span(line.Start + match.Index, match.Length));
-				var geometry = textViewLines.GetMarkerGeometry(span);
-				if (geometry == null)
+				var span = new SnapshotSpan(view.TextSnapshot, line.Start + match.Index, match.Length);
+				var geometry = view.TextViewLines.GetMarkerGeometry(span);
+				if (geometry == null
+					|| !view.TextViewModel.IsPointInVisualBuffer(span.Start, PositionAffinity.Successor)
+					|| !view.TextViewModel.IsPointInVisualBuffer(span.End, PositionAffinity.Predecessor))
 					continue;
 
 				var pen = GetPen(color);
