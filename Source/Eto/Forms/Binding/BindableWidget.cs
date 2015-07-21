@@ -19,6 +19,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="handler">Handler interface for the widget.</param>
 		protected BindableWidget(IHandler handler)
+			: base(handler)
 		{
 		}
 
