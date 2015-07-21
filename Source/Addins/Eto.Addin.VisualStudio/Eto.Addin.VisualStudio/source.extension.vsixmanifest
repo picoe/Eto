@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Eto.Addin.VisualStudio" Version="2.1.0.2" Language="en-US" Publisher="Curtis Wensley" />
+    <Identity Id="Eto.Addin.VisualStudio" Version="2.1.0.3" Language="en-US" Publisher="Curtis Wensley" />
     <DisplayName>Eto.Forms Visual Studio Addin</DisplayName>
     <Description xml:space="preserve">Eto.Forms Support for Visual Studio.  Eto.Forms is a cross platform GUI framework for desktop and mobile applications in .NET that can target Wpf, WinForms, Direct2D, MonoMac, Xamarin.Mac, Gtk2, Gtk3, and iOS with a single codebase.</Description>
     <MoreInfo>https://github.com/picoe/Eto</MoreInfo>
@@ -9,17 +9,19 @@
     <Tags>eto wpf mac osx gtk xamarin mono</Tags>
   </Metadata>
   <Installation>
-    <InstallationTarget Version="[12.0]" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[12.0,15.0)" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[12.0,15.0)" Id="Microsoft.VisualStudio.Community" />
+    <InstallationTarget Version="[12.0,15.0)" Id="Microsoft.VisualStudio.Enterprise" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-    <Dependency d:Source="Installed" Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" Version="[12.0]" />
+    <Dependency d:Source="Installed" Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" Version="[12.0,)" />
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="Eto.ItemTemplates" d:TargetPath="|Eto.ItemTemplates;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="Eto.VisualStudioWizards" Path="|Eto.VisualStudioWizards|" AssemblyName="|Eto.VisualStudioWizards;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="Eto.ProjectTemplates" d:TargetPath="|Eto.ProjectTemplates;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="Eto.ItemTemplates" d:TargetPath="|Eto.ItemTemplates;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
   </Assets>
 </PackageManifest>

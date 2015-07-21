@@ -1,0 +1,45 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+	<Name>Eto.Forms App</Name>
+	<Description>A new Eto.Forms cross-platform application in Python.</Description>
+	<Icon>App.ico</Icon>
+	<ProjectType>Python</ProjectType>
+	<RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+	<SortOrder>1000</SortOrder>
+	<TemplateID>B409441D-D44C-4036-A2E7-01B7D90412C2</TemplateID>
+	<DefaultName>EtoApp</DefaultName>
+	<CreateNewFolder>true</CreateNewFolder>
+	<ProvideDefaultName>true</ProvideDefaultName>
+	<NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="Eto.pyproj" File="Eto.pyproj" ReplaceParameters="true">
+	  <ProjectItem ReplaceParameters="true" TargetFileName="Program.py">Program.py</ProjectItem>
+	  <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.py">MainForm.py</ProjectItem>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
+      <package id="Eto.Forms" version="2.1.0" />
+      <package id="Eto.Platform.Gtk" version="2.1.0" />
+      <package id="Eto.Platform.Gtk3" version="2.1.0" />
+      <package id="Eto.Platform.Windows" version="2.1.0" />
+      <package id="Eto.Platform.Wpf" version="2.1.0" />
+      <package id="Eto.Platform.Mac" version="2.1.0" />
+      <package id="Eto.Platform.Mac.Template" version="2.1.0" />
+    </packages>
+	<Replacements>
+	  <ReplacementGroup>
+		<Replacement name="$EtoPlatform$">Eto.Platform.Detect</Replacement>
+	  </ReplacementGroup>
+	</Replacements>
+  </WizardData>
+</VSTemplate>

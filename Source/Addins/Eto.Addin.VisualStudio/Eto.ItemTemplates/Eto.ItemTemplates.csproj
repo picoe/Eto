@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>12.0</OldToolsVersion>
-    <UpgradeBackupLocation />
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -74,20 +75,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Eto.Code.cs" />
-    <None Include="Eto.Code.eto.cs" />
-    <None Include="Eto.Json.jeto">
+    <None Include="CS\Eto.Code.cs" />
+    <None Include="CS\Eto.Code.eto.cs" />
+    <None Include="CS\Eto.Json.jeto">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Eto.Xaml.xeto.cs" />
-    <None Include="Eto.Json.jeto.cs" />
+    <None Include="CS\Eto.Xaml.xeto.cs" />
+    <None Include="CS\Eto.Json.jeto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Eto.File.ico" />
+    <None Include="CS\Eto.File.ico" />
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="Eto.Code.Panel.vstemplate">
+    <VSTemplate Include="CS\Eto.Code.Panel.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
@@ -109,32 +110,32 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="Eto.Code.Window.vstemplate">
+    <VSTemplate Include="CS\Eto.Code.Window.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Eto.Xaml.xeto">
+    <None Include="CS\Eto.Xaml.xeto">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="Eto.Xaml.Panel.vstemplate">
+    <VSTemplate Include="CS\Eto.Xaml.Panel.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="Eto.Xaml.Window.vstemplate">
+    <VSTemplate Include="CS\Eto.Xaml.Window.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="Eto.Json.Panel.vstemplate">
+    <VSTemplate Include="CS\Eto.Json.Panel.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="Eto.Json.Window.vstemplate">
+    <VSTemplate Include="CS\Eto.Json.Window.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>

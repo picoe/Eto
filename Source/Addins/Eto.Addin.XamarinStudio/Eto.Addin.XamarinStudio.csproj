@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,13 +44,11 @@
     <Compile Include="Properties\AddinInfo.cs" />
     <Compile Include="ProjectWizard.cs" />
     <Compile Include="ProjectWizardPage.cs" />
-    <Compile Include="ProjectWizardPageUI.cs" />
-    <Compile Include="LibraryWizard.cs" />
     <Compile Include="EtoInitializer.cs" />
-    <Compile Include="LibraryWizardPageUI.cs" />
-    <Compile Include="LibraryWizardPage.cs" />
     <Compile Include="VBDotNetProjectBinding.cs" />
     <Compile Include="FSharpProjectBinding.cs" />
+    <Compile Include="ParameterSource.cs" />
+    <Compile Include="ParameterizedFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
@@ -199,6 +197,12 @@
       <Link>Packages\Eto.Serialization.Xaml.2.1.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
+    <AddinFile Include="Templates\Projects\C#\Program.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\F#\Program.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
@@ -208,6 +212,10 @@
     <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk2 - net45.csproj">
       <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
       <Name>Eto.Gtk2 - net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared\Eto.Addin.Shared.csproj">
+      <Project>{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}</Project>
+      <Name>Eto.Addin.Shared</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

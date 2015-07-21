@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+	<TemplateData>
+		<Name>Eto.Forms Library</Name>
+		<Description>A library project to build Eto.Forms UI and logic in F#.</Description>
+		<Icon>Library.ico</Icon>
+		<ProjectType>FSharp</ProjectType>
+		<RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+		<SortOrder>100</SortOrder>
+		<TemplateID>187e19a3-8db1-4f37-9aa7-6cf1a3f5c985</TemplateID>
+		<CreateNewFolder>true</CreateNewFolder>
+		<DefaultName>EtoLibrary</DefaultName>
+		<ProvideDefaultName>true</ProvideDefaultName>
+	</TemplateData>
+	<TemplateContent>
+		<Project TargetFileName="$safeprojectname$.fsproj" File="Library.fsproj" ReplaceParameters="true">
+			<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.fs">AssemblyInfo.fs</ProjectItem>
+			<ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.fs">MyPanel.fs</ProjectItem>
+		</Project>
+	</TemplateContent>
+	<WizardExtension>
+		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+		<FullClassName>Eto.Addin.VisualStudio.Wizards.ProjectWizard</FullClassName>
+	</WizardExtension>
+	<WizardExtension>
+		<Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+		<FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+	</WizardExtension>
+	<WizardExtension>
+		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+		<FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
+	</WizardExtension>
+	<WizardData>
+		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
+			<package id="Eto.Forms" version="2.1.0" />
+		</packages>
+		<SupportedParameters>SupportsPCL,IsLibrary</SupportedParameters>
+		<Replacements>
+			<ReplacementGroup>
+				<Replacement name="$ProjectFiles$">
+					<![CDATA[
+    <Compile Include="MyPanel.fs" />
+    <Compile Include="AssemblyInfo.fs" />]]>
+				</Replacement>
+			</ReplacementGroup>
+			<ReplacementGroup condition="UseNET">
+				<Replacement name="$ProjectProps$">
+					<![CDATA[
+		<TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>]]>
+				</Replacement>
+				<Replacement name="$ProjectReferences$">
+					<![CDATA[
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />]]>
+				</Replacement>
+				<Replacement name="$ProjectImports$">
+					<![CDATA[
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets')">
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+     </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(FSharpTargetsPath)" />]]>
+				</Replacement>
+			</ReplacementGroup>
+			<ReplacementGroup condition="UsePCL">
+				<Replacement name="$ProjectProps$">
+					<![CDATA[
+		<TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+		<TargetProfile>netcore</TargetProfile>
+		<TargetFSharpCoreVersion>3.259.3.1</TargetFSharpCoreVersion>]]>
+				</Replacement>
+				<Replacement name="$ProjectReferences$">
+					<![CDATA[
+		<Reference Include="FSharp.Core">
+			<Name>FSharp.Core</Name>
+			<AssemblyName>FSharp.Core.dll</AssemblyName>
+			<HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
+		</Reference>]]>
+				</Replacement>
+				<Replacement name="$ProjectImports$">
+					<![CDATA[
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">12</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
+]]>
+				</Replacement>
+			</ReplacementGroup>
+		</Replacements>
+	</WizardData>
+</VSTemplate>

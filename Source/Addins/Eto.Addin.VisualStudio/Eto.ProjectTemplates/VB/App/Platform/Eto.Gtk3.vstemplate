@@ -1,0 +1,45 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>Eto.Gtk3</Name>
+    <Description></Description>
+    <ProjectType>VisualBasic</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <Icon></Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="Eto.Gtk3.vbproj" File="Eto.Desktop.vbproj" ReplaceParameters="true">
+	  <ProjectItem ReplaceParameters="true" TargetFileName="App.config">App.config</ProjectItem>
+	  <ProjectItem ReplaceParameters="true" TargetFileName="Program.vb">Program.vb</ProjectItem>
+	  <Folder Name=".." TargetFolderName="My Project">
+		<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.vb">AssemblyInfo.vb</ProjectItem>
+	  </Folder>
+	</Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ChildWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
+      <package id="Eto.Forms" version="2.1.0" />
+      <package id="Eto.Platform.Gtk3" version="2.1.0" />
+    </packages>
+    <ProjectReferences>
+      <ProjectReference guid="$root.guid1$" name="$root.safeprojectname$" extension="vbproj">..\$root.safeprojectname$\$root.safeprojectname$</ProjectReference>
+    </ProjectReferences>
+	<Replacements>
+	  <ReplacementGroup>
+		<Replacement name="$EtoPlatform$">Eto.Platforms.Gtk3</Replacement>
+	  </ReplacementGroup>
+	</Replacements>
+  </WizardData>
+</VSTemplate>

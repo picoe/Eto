@@ -109,6 +109,13 @@ namespace Eto.Addin.VisualStudio
 		[Import]
 		public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
+		public TextViewListener()
+		{
+			Instance = this;
+		}
+
+		public static TextViewListener Instance { get; private set; }
+
 		static readonly object ViewFormKey = new object();
 		static readonly object ViewCodeKey = new object();
 

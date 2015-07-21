@@ -4,6 +4,7 @@ using Eto.Forms;
 using MonoDevelop.Projects;
 using System.Text;
 using System.Linq;
+using Eto.Addin.Shared;
 
 namespace Eto.Addin.XamarinStudio
 {
@@ -25,19 +26,13 @@ namespace Eto.Addin.XamarinStudio
 			get { return "Eto.Addin.XamarinStudio.ProjectWizard"; }
 		}
 
-		public bool ShowGenerateCombined
+		public override int TotalPages
 		{
-			get { return IsSupportedParameter("GenerateCombined"); }
-		}
-
-		public bool ShowSharedCode
-		{
-			get { return IsSupportedParameter("SharedCode"); }
-		}
-
-		public bool SupportsPCL
-		{
-			get { return IsSupportedParameter("SupportsPCL"); }
+			get
+			{
+				var model = new ProjectWizardPageModel(new ParameterSource(this));
+				return model.RequiresInput ? 1 : 0;
+			}
 		}
 
 		public override WizardPage GetPage(int pageNumber)

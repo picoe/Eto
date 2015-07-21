@@ -7,7 +7,7 @@
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in C#]]></_Description>
 		<GroupId>eto-project-application</GroupId>
-		<SupportedParameters>SharedCode,GenerateCombined,SupportsPCL</SupportedParameters>
+		<SupportedParameters>AppName,SupportsCombined,SupportsPCL,SupportsSAL</SupportedParameters>
 	</TemplateConfiguration>
 
 	<Actions>
@@ -47,7 +47,7 @@
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" namespace="${ProjectName}" if="GenerateCombined">
+		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" namespace="${ProjectName}" if="Combined">
 			<Options Target="WinExe"/>
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -55,22 +55,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
-using Eto.Forms;
-
-namespace ${Namespace}
-{
-	public class Program
-	{
-		[STAThread]
-		public static void Main(string[] args)
-		{
-			new Application(Eto.Platform.Detect).Run(new MainForm());
-		}
-	}
-}
-]]>
-				</File>
+				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
+					</Replacements>
+				</ParameterizedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -81,7 +70,7 @@ namespace ${Namespace}
 				<Package Id="Eto.Platform.Wpf" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" if="!GenerateCombined">
+		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" if="!Combined">
 			<Options Target="WinExe"/>
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -90,22 +79,11 @@ namespace ${Namespace}
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
-using Eto.Forms;
-
-namespace ${Namespace}
-{
-	public class Program
-	{
-		[STAThread]
-		public static void Main(string[] args)
-		{
-			new Application(Eto.Platforms.WinForms).Run(new MainForm());
-		}
-	}
-}
-]]>
-				</File>
+				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
+					</Replacements>
+				</ParameterizedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -113,7 +91,7 @@ namespace ${Namespace}
 				<Package Id="Eto.Platform.Windows" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" if="!GenerateCombined">
+		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" if="!Combined">
 			<Options Target="WinExe"/>
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -124,22 +102,11 @@ namespace ${Namespace}
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
-using Eto.Forms;
-
-namespace ${Namespace}
-{
-	public class Program
-	{
-		[STAThread]
-		public static void Main(string[] args)
-		{
-			new Application(Eto.Platforms.Wpf).Run(new MainForm());
-		}
-	}
-}
-]]>
-				</File>
+				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
+					</Replacements>
+				</ParameterizedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -147,7 +114,7 @@ namespace ${Namespace}
 				<Package Id="Eto.Platform.Wpf" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" if="!GenerateCombined">
+		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" if="!Combined">
 			<Options Target="WinExe"/>
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -155,22 +122,11 @@ namespace ${Namespace}
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
-using Eto.Forms;
-
-namespace ${Namespace}
-{
-	public class Program
-	{
-		[STAThread]
-		public static void Main(string[] args)
-		{
-			new Application(Eto.Platforms.Gtk2).Run(new MainForm());
-		}
-	}
-}
-]]>
-				</File>
+				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
+					</Replacements>
+				</ParameterizedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -178,7 +134,7 @@ namespace ${Namespace}
 				<Package Id="Eto.Platform.Gtk" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" if="!GenerateCombined">
+		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" if="!Combined">
 			<Options Target="WinExe"/>
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -186,22 +142,11 @@ namespace ${Namespace}
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
-using Eto.Forms;
-
-namespace ${Namespace}
-{
-	public class Program
-	{
-		[STAThread]
-		public static void Main(string[] args)
-		{
-			new Application(Eto.Platforms.Gtk3).Run(new MainForm());
-		}
-	}
-}
-]]>
-				</File>
+				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
+					</Replacements>
+				</ParameterizedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -217,22 +162,11 @@ namespace ${Namespace}
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
-using Eto.Forms;
-
-namespace ${Namespace}
-{
-	public class Program
-	{
-		[STAThread]
-		public static void Main(string[] args)
-		{
-			new Application(Eto.Platforms.Mac).Run(new MainForm());
-		}
-	}
-}
-]]>
-				</File>
+				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Mac" />
+					</Replacements>
+				</ParameterizedFile>
 				<File name="Info.plist" src="../Mac/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
@@ -252,22 +186,11 @@ namespace ${Namespace}
 			</References>
 			<Files>
 				<Directory name="Resources"/>
-				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
-using Eto.Forms;
-
-namespace ${Namespace}
-{
-	public class Program
-	{
-		[STAThread]
-		public static void Main(string[] args)
-		{
-			new Application(Eto.Platforms.XamMac2).Run(new ${SolutionName}.MainForm());
-		}
-	}
-}
-]]>
-				</File>
+				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
+					</Replacements>
+				</ParameterizedFile>
 				<File name="Info.plist" src="../Mac/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
@@ -286,22 +209,11 @@ namespace ${Namespace}
 			</References>
 			<Files>
 				<Directory name="Resources"/>
-				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
-using Eto.Forms;
-
-namespace ${Namespace}
-{
-	public class Program
-	{
-		[STAThread]
-		public static void Main(string[] args)
-		{
-			new Application(Eto.Platforms.XamMac2).Run(new ${SolutionName}.MainForm());
-		}
-	}
-}
-]]>
-				</File>
+				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
+					</Replacements>
+				</ParameterizedFile>
 				<File name="Info.plist" src="../Mac/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>

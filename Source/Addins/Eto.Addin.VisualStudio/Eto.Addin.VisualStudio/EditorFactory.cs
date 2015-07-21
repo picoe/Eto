@@ -11,7 +11,12 @@ using Eto.Forms;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Eto.Designer;
-using Eto.VisualStudioWizards;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Editor;
+using Eto.Addin.VisualStudio.Wizards;
 
 namespace Eto.Addin.VisualStudio
 {
@@ -91,9 +96,14 @@ namespace Eto.Addin.VisualStudio
 			pbstrPhysicalView = null;    // initialize out parameter
 
 			// we support only a single physical view
-			if (rguidLogicalView == VSConstants.LOGVIEWID.Primary_guid
-				|| rguidLogicalView == VSConstants.LOGVIEWID.Designer_guid)
+			if (
+				//rguidLogicalView == VSConstants.LOGVIEWID.Primary_guid
+				/*||*/ rguidLogicalView == VSConstants.LOGVIEWID.Code_guid
+				|| rguidLogicalView == VSConstants.LOGVIEWID.TextView_guid
+				//|| rguidLogicalView == VSConstants.LOGVIEWID.Designer_guid
+			)
 			{
+				//pbstrPhysicalView = "design";
 				return VSConstants.S_OK;        // primary view uses NULL as pbstrPhysicalView
 			}
 			return VSConstants.E_NOTIMPL;   // you must return E_NOTIMPL for any unrecognized rguidLogicalView values
@@ -167,25 +177,57 @@ namespace Eto.Addin.VisualStudio
 				return VSConstants.E_INVALIDARG;
 			}
 
-			var textBuffer = GetTextBuffer(punkDocDataExisting);
+			var textBuffer = GetTextBuffer(punkDocDataExisting, pszMkDocument);
+			
 
 			if (textBuffer == null)
 				return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 
+			if (punkDocDataExisting != IntPtr.Zero)
+			{
+				ppunkDocData = punkDocDataExisting;
+				Marshal.AddRef(ppunkDocData);
+			}
+			else
+			{
+				ppunkDocData = Marshal.GetIUnknownForObject(textBuffer);
+			}
 
 			// Create the Document (editor)
 			var editor = new EtoPreviewPane(editorPackage, pszMkDocument, textBuffer);
 			ppunkDocView = Marshal.GetIUnknownForObject(editor);
-			ppunkDocData = Marshal.GetIUnknownForObject(textBuffer);
+			//ppunkDocData = Marshal.GetIUnknownForObject(textBuffer);
 			pbstrEditorCaption = " [Preview]";
 			return VSConstants.S_OK;
 		}
 
-		IVsTextLines GetTextBuffer(System.IntPtr punkDocDataExisting)
+		IVsTextLines GetTextBuffer(System.IntPtr punkDocDataExisting, string fileName)
 		{
 			IVsTextLines textBuffer = null;
 			if (punkDocDataExisting == IntPtr.Zero)
 			{
+				var serviceProvider = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
+
+				Type textLinesType = typeof(IVsTextLines);
+				Guid riid = textLinesType.GUID;
+				Guid clsid = typeof(VsTextBufferClass).GUID;
+				textBuffer = editorPackage.CreateInstance(ref clsid, ref riid, textLinesType) as IVsTextLines;
+
+				// set the buffer's site
+				((IObjectWithSite)textBuffer).SetSite(serviceProvider);
+				return textBuffer;
+
+
+				//var serviceProvider = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
+				var editorSvc = Services.GetComponentService<IVsEditorAdaptersFactoryService>();
+				var textSvc = Services.GetComponentService<ITextDocumentFactoryService>();
+				var contentTypeRegistryService = Services.GetComponentService<IContentTypeRegistryService>();
+				var contentType = contentTypeRegistryService.GetContentType("code");
+				var textEditorSvc = Services.GetComponentService<ITextEditorFactoryService>();
+
+				var itd = textSvc.CreateAndLoadTextDocument(fileName, contentType);
+				var buffer = itd.TextBuffer;
+
 				// punkDocDataExisting is null which means the file is not yet open.
 				// We need to create a new text buffer object 
 
@@ -213,8 +255,7 @@ namespace Eto.Addin.VisualStudio
 						IObjectWithSite objWSite = (IObjectWithSite)textBuffer;
 						if (objWSite != null)
 						{
-							Microsoft.VisualStudio.OLE.Interop.IServiceProvider oleServiceProvider = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)GetService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
-							objWSite.SetSite(oleServiceProvider);
+							objWSite.SetSite(Services.ServiceProvider);
 						}
 					}
 				}

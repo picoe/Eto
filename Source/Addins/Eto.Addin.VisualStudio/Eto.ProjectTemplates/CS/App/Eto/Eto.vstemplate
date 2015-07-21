@@ -1,0 +1,68 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+	<TemplateData>
+		<Name>Eto</Name>
+		<Description></Description>
+		<ProjectType>CSharp</ProjectType>
+		<ProjectSubType>
+		</ProjectSubType>
+		<SortOrder>1000</SortOrder>
+		<Icon></Icon>
+	</TemplateData>
+	<TemplateContent>
+		<Project TargetFileName="Eto.csproj" File="Library.csproj" ReplaceParameters="true">
+			<ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.cs">MainForm.cs</ProjectItem>
+			<Folder Name=".." TargetFolderName="Properties">
+				<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+			</Folder>
+		</Project>
+	</TemplateContent>
+	<WizardExtension>
+		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+		<FullClassName>Eto.Addin.VisualStudio.Wizards.ChildWizard</FullClassName>
+	</WizardExtension>
+	<WizardExtension>
+		<Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+		<FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+	</WizardExtension>
+	<WizardExtension>
+		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+		<FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
+	</WizardExtension>
+	<WizardData>
+		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
+			<package id="Eto.Forms" version="2.1.0" />
+		</packages>
+		<Replacements>
+			<ReplacementGroup>
+				<Replacement name="$ProjectProps$" />
+				<Replacement name="$ProjectReferences$" />
+				<Replacement name="$ProjectFiles$"><![CDATA[
+    <Compile Include="MainForm.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />]]>
+				</Replacement>
+				<Replacement name="$ProjectImports$" />
+			</ReplacementGroup>
+			<ReplacementGroup condition="UseNET">
+				<Replacement name="$ProjectReferences$"><![CDATA[
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>]]>
+				</Replacement>
+				<Replacement name="$ProjectImports$"><![CDATA[
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />]]>
+				</Replacement>
+			</ReplacementGroup>
+			<ReplacementGroup condition="UsePCL">
+				<Replacement name="$targetframeworkversion$">4.5</Replacement>
+				<Replacement name="$ProjectProps$"><![CDATA[
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>]]>
+				</Replacement>
+				<Replacement name="$ProjectImports$"><![CDATA[
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />]]>
+				</Replacement>
+			</ReplacementGroup>
+		</Replacements>
+	</WizardData>
+</VSTemplate>
