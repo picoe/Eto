@@ -150,7 +150,8 @@ namespace Eto.Wpf.Forms.Controls
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			UpdateTiles(true);
-		}
+			Control.Loaded -= Control_Loaded; // only perform once
+        }
 
 		public virtual Graphics CreateGraphics()
 		{
@@ -331,6 +332,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override void Invalidate()
 		{
+			if (!Control.IsLoaded)
+				return;
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
@@ -352,6 +355,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override void Invalidate(Rectangle rect)
 		{
+			if (!Control.IsLoaded)
+				return;
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
