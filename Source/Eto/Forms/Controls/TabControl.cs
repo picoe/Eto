@@ -30,10 +30,16 @@ namespace Eto.Forms
 			get { return pages ?? Enumerable.Empty<Control>(); }
 		}
 
+		static readonly object SelectedIndexChangedEvent = new object();
+
 		/// <summary>
 		/// Occurs when the <see cref="SelectedIndex"/> is changed.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedIndexChanged;
+		public event EventHandler<EventArgs> SelectedIndexChanged
+		{
+			add { Properties.AddEvent(SelectedIndexChangedEvent, value); }
+			remove { Properties.RemoveEvent(SelectedIndexChangedEvent, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedIndexChanged"/> event.
@@ -41,8 +47,10 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
-			if (SelectedIndexChanged != null)
-				SelectedIndexChanged(this, e);
+			Properties.TriggerEvent(SelectedIndexChangedEvent, this, e);
+			var page = SelectedPage;
+			if (page != null)
+				page.TriggerClick(e);
 		}
 
 		/// <summary>
