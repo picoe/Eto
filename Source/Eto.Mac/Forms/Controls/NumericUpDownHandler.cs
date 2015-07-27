@@ -2,6 +2,9 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+using System.Linq;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -87,7 +90,14 @@ namespace Eto.Mac.Forms.Controls
 			get { return text; }
 		}
 
-		public static NSNumberFormatter DefaultFormatter = new NSNumberFormatter { NumberStyle = NSNumberFormatterStyle.Decimal, Lenient = true };
+		public static NSNumberFormatter DefaultFormatter = new NSNumberFormatter
+		{ 
+			NumberStyle = NSNumberFormatterStyle.Decimal, 
+			Lenient = true,
+			UsesGroupingSeparator = false,
+			MinimumFractionDigits = 0,
+			MaximumFractionDigits = 0
+		};
 
 		public NumericUpDownHandler()
 		{
@@ -107,9 +117,9 @@ namespace Eto.Mac.Forms.Controls
 			
 			stepper = new EtoStepper();
 			stepper.Activated += HandleStepperActivated;
-			MinValue = double.MinValue;
-			MaxValue = double.MaxValue;
-			Value = 0;
+			MinValue = double.NegativeInfinity;
+			MaxValue = double.PositiveInfinity;
+			text.DoubleValue = stepper.DoubleValue = 0;
 			DecimalPlaces = 0;
 			Control.AddSubview(text);
 			Control.AddSubview(stepper);
@@ -140,11 +150,25 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var text = handler.text;
 				var formatter = (NSNumberFormatter)text.Formatter;
-				var number = formatter.NumberFromString(text.StringValue);
+				// clear formatter - monomac/xammac incorrectly does not allow for null here
+				Messaging.void_objc_msgSend_IntPtr(text.Handle, selSetFormatter, IntPtr.Zero);
+				var str = text.StringValue; // getting the string value formats the input (which we don't want)
+				text.Formatter = formatter;
+				var number = formatter.NumberFromString(str);
 				if (number != null)
 					handler.stepper.DoubleValue = number.DoubleValue;
 				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
 			}
+		}
+
+		string GetStringValue()
+		{
+			var formatter = (NSNumberFormatter)text.Formatter;
+			// clear formatter - monomac/xammac incorrectly does not allow for null here
+			Messaging.void_objc_msgSend_IntPtr(text.Handle, selSetFormatter, IntPtr.Zero);
+			var str = text.StringValue; // getting the string value formats the input (which we don't want)
+			text.Formatter = formatter;
+			return str;
 		}
 
 		protected override void Initialize()
@@ -153,6 +177,28 @@ namespace Eto.Mac.Forms.Controls
 			var size = GetNaturalSize(Size.MaxValue);
 			Control.Frame = new CGRect(0, 0, size.Width, size.Height);
 			HandleEvent(Eto.Forms.Control.KeyDownEvent);
+			Widget.LostFocus += (sender, e) =>
+			{
+				text.DoubleValue = Math.Max(MinValue, Math.Min(MaxValue, text.DoubleValue));
+			};
+			Widget.TextInput += (sender, e) =>
+			{
+				var formatter = (NSNumberFormatter)text.Formatter;
+				if (e.Text == ".")
+					e.Cancel = GetStringValue().Contains(formatter.DecimalSeparator);
+				else
+					e.Cancel = !e.Text.All(r =>
+					{
+						if (Char.IsDigit(r))
+							return true;
+						var str = r.ToString();
+						return 
+							(formatter.MaximumFractionDigits > 0 && str == formatter.DecimalSeparator)
+							|| (formatter.UsesGroupingSeparator && str == formatter.GroupingSeparator)
+							|| (MinValue < 0 && (str == formatter.NegativePrefix || str == formatter.NegativeSuffix))
+							|| (MaxValue > 0 && (str == formatter.PositivePrefix || str == formatter.PositiveSuffix));
+					});
+			};
 		}
 
 		public override void OnKeyDown(KeyEventArgs e)
@@ -206,57 +252,57 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		static readonly IntPtr selSetFormatter = Selector.GetHandle("setFormatter:");
+
 		public double Value
 		{
 			get
 			{ 
-				var formatter = (NSNumberFormatter)text.Formatter;
-				var val = formatter.NumberFromString(text.StringValue);
-				return val != null ? val.DoubleValue : text.DoubleValue;
+				var str = GetStringValue();
+				var val = ((NSNumberFormatter)text.Formatter).NumberFromString(str);
+				return val != null ? val.DoubleValue : 0;
 			}
 			set
 			{
-				if (Math.Abs(value) < 1E-10)
+				var val = Math.Max(MinValue, Math.Min(MaxValue, value));
+				if (Value != val)
 				{
-					stepper.IntValue = text.IntValue = 0;
-				}
-				else
-				{
-					stepper.DoubleValue = text.DoubleValue = value;
+					if (Math.Abs(val) < 1E-10)
+					{
+						stepper.IntValue = text.IntValue = 0;
+					}
+					else
+					{
+						stepper.DoubleValue = text.DoubleValue = val;
+					}
+					Callback.OnValueChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}
 
 		public double MinValue
 		{
-			get
-			{
-				return stepper.MinValue;
-			}
+			get { return stepper.MinValue; }
 			set
 			{
 				stepper.MinValue = value;
+				Value = Value;
 			}
 		}
 
 		public double MaxValue
 		{
-			get
-			{
-				return stepper.MaxValue;
-			}
+			get { return stepper.MaxValue; }
 			set
 			{
 				stepper.MaxValue = value;
+				Value = Value;
 			}
 		}
 
 		public override bool Enabled
 		{
-			get
-			{
-				return stepper.Enabled;
-			}
+			get { return stepper.Enabled; }
 			set
 			{
 				stepper.Enabled = value;
@@ -266,10 +312,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public Font Font
 		{
-			get
-			{
-				return font ?? (font = new Font(new FontHandler(text.Font)));
-			}
+			get { return font ?? (font = text.Font.ToEto()); }
 			set
 			{
 				font = value;
@@ -297,11 +340,13 @@ namespace Eto.Mac.Forms.Controls
 					decimalPlaces = value;
 					var formatter = new NSNumberFormatter
 					{
+						NumberStyle = NSNumberFormatterStyle.Decimal, 
 						Lenient = true,
-						NumberStyle = NSNumberFormatterStyle.Decimal,
+						UsesGroupingSeparator = false,
 						MinimumFractionDigits = (nnint)decimalPlaces,
 						MaximumFractionDigits = (nnint)decimalPlaces
 					};
+
 					text.Formatter = formatter;
 				}
 			}
@@ -317,6 +362,42 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (color != null)
 				text.BackgroundColor = color.Value.ToNSUI();
+		}
+
+		static readonly object CustomFieldEditorKey = new object();
+
+		public override NSObject CustomFieldEditor { get { return Widget.Properties.Get<NSObject>(CustomFieldEditorKey); } }
+
+		public void SetCustomFieldEditor()
+		{
+			if (CustomFieldEditor != null)
+				return;
+			Widget.Properties[CustomFieldEditorKey] = new CustomTextFieldEditor
+			{
+				WeakHandler = new WeakReference(this)
+			};
+		}
+
+		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
+		static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Eto.Forms.Control.TextInputEvent:
+					SetCustomFieldEditor();
+					AddMethod(selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@", CustomFieldEditor);
+					break;
+				case Eto.Forms.Control.LostFocusEvent:
+					SetCustomFieldEditor();
+					// lost focus is on the custom field editor, not on the control itself (it loses focus immediately due to the field editor)
+					AddMethod(selResignFirstResponder, new Func<IntPtr, IntPtr, bool>(TriggerLostFocus), "B@:", CustomFieldEditor);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

@@ -15,10 +15,7 @@ namespace Eto.WinForms.Forms.Controls
 				Minimum = decimal.MinValue,
 				Width = 80
 			};
-			Control.ValueChanged += delegate
-			{
-				Callback.OnValueChanged(Widget, EventArgs.Empty);
-			};
+			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 		}
 
 		public override void OnUnLoad(EventArgs e)
@@ -36,19 +33,19 @@ namespace Eto.WinForms.Forms.Controls
 		public double Value
 		{
 			get { return (double)Control.Value; }
-			set { Control.Value = (decimal)value; }
+			set { Control.Value = Math.Max(Control.Minimum, Math.Min(Control.Maximum, (decimal)value)); }
 		}
 
 		public double MinValue
 		{
-			get { return (double)Control.Minimum; }
-			set { Control.Minimum = (decimal)value; }
+			get { return Control.Minimum == decimal.MinValue ? double.NegativeInfinity : (double)Control.Minimum; }
+			set { Control.Minimum = double.IsNegativeInfinity(value) ? decimal.MinValue : (decimal)value; }
 		}
 
 		public double MaxValue
 		{
-			get { return (double)Control.Maximum; }
-			set { Control.Maximum = (decimal)value; }
+			get { return Control.Maximum == decimal.MaxValue ? double.PositiveInfinity : (double)Control.Maximum; }
+			set { Control.Maximum = double.IsPositiveInfinity(value) ? decimal.MaxValue : (decimal)value; }
 		}
 
 		public int DecimalPlaces

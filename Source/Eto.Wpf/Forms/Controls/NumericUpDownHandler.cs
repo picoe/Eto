@@ -21,11 +21,15 @@ namespace Eto.Wpf.Forms.Controls
 
 		public NumericUpDownHandler()
 		{
-			Control = new EtoDoubleUpDown();
-			Control.Value = 0;
+			Control = new EtoDoubleUpDown
+			{
+				FormatString = "0",
+				Value = 0,
+				DisplayDefaultValueOnEmptyText = true,
+				DefaultValue = 0
+			};
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 			Control.Loaded += Control_Loaded;
-			DecimalPlaces = 0;
 		}
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
@@ -51,33 +55,41 @@ namespace Eto.Wpf.Forms.Controls
 		public double Value
 		{
 			get { return Control.Value ?? 0; }
-			set { Control.Value = value; }
+			set { Control.Value = Math.Max(MinValue, Math.Min(MaxValue, value)); }
 		}
 
 		public double MinValue
 		{
 			get { return Control.Minimum ?? double.MinValue; }
-			set { Control.Minimum = value; }
+			set
+			{
+				Control.Minimum = value;
+				Control.Value = Math.Max(value, Value);
+			}
 		}
 
 		public double MaxValue
 		{
 			get { return Control.Maximum ?? double.MaxValue; }
-			set { Control.Maximum = value; }
+			set
+			{
+				Control.Maximum = value;
+				Control.Value = Math.Min(value, Value);
+			}
 		}
 
-		int decimalPlaces = 0;
+		static readonly object DecimalPlaces_Key = new object();
 
 		public int DecimalPlaces
 		{
-			get { return decimalPlaces; }
+			get { return Widget.Properties.Get<int>(DecimalPlaces_Key); }
 			set
 			{
-				if (value != decimalPlaces)
+				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
 				{
-					decimalPlaces = value;
-					Control.FormatString = "0." + new string('0', decimalPlaces);
-				}
+					var decimalPlaces = DecimalPlaces;
+					Control.FormatString = decimalPlaces > 0 ? "0." + new string('0', decimalPlaces) : "0";
+				});
 			}
 		}
 

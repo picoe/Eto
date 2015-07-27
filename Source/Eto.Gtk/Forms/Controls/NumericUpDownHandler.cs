@@ -54,6 +54,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
+
 		public override string Text
 		{
 			get { return Control.Text; }
@@ -69,19 +70,27 @@ namespace Eto.GtkSharp.Forms.Controls
 		public double Value
 		{
 			get { return Control.Value; }
-			set { Control.Value = value; }
+			set { Control.Value = Math.Max(MinValue, Math.Min(MaxValue, value)); }
 		}
 
 		public double MaxValue
 		{
-			get { return Control.Adjustment.Upper; }
-			set { Control.Adjustment.Upper = value; }
+			get { return Control.Adjustment.Upper == double.MaxValue ? double.PositiveInfinity : Control.Adjustment.Upper; }
+			set
+			{ 
+				Control.Adjustment.Upper = double.IsPositiveInfinity(value) ? double.MaxValue : value; 
+				Value = Value;
+			}
 		}
 
 		public double MinValue
 		{
-			get { return Control.Adjustment.Lower; }
-			set { Control.Adjustment.Lower = value; }
+			get { return Control.Adjustment.Lower == double.MinValue ? double.NegativeInfinity : Control.Adjustment.Lower; }
+			set
+			{
+				Control.Adjustment.Lower = double.IsNegativeInfinity(value) ? double.MinValue : value; 
+				Value = Value;
+			}
 		}
 
 		public double Increment
