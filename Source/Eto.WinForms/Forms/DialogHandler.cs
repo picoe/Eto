@@ -54,23 +54,11 @@ namespace Eto.WinForms.Forms
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public void ShowModal(Control parent)
+		public void ShowModal()
 		{
-			if (parent != null)
-			{
-				var parentWindow = parent.ParentWindow;
-				if (parentWindow != null)
-				{
-					var parentHandler = parentWindow.Handler as IWindowHandler;
-					if (parentHandler != null)
-					{
-						Control.ShowDialog(parentHandler.Win32Window);
-						return;
-					}
-				}
-			}
 			Control.ShowDialog();
-		}
+			Control.Owner = null; // without this, the dialog is still active as part of the owner form
+        }
 
 		protected override void Initialize()
 		{
@@ -87,15 +75,12 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public Task ShowModalAsync(Control parent)
+		public Task ShowModalAsync()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			Application.Instance.AsyncInvoke(() =>
 			{
-				if (parent != null)
-					Control.ShowDialog((swf.Control)parent.ControlObject);
-				else
-					Control.ShowDialog();
+				ShowModal();
 
 				tcs.SetResult(true);
 			});

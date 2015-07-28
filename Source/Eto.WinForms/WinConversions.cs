@@ -729,5 +729,15 @@ namespace Eto.WinForms
 					throw new NotSupportedException();
 			}
 		}
+
+		public static swf.Form ToSWF(this Window window)
+		{
+			if (window == null)
+				return null;
+			var handler = window.Handler as Forms.IWindowHandler;
+			if (handler != null)
+				return handler.Win32Window as swf.Form;
+			return null;
+		}
 	}
 }

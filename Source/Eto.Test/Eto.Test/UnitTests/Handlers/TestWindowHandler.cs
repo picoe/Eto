@@ -119,5 +119,10 @@ namespace Eto.Test.UnitTests.Handlers
 		{
 			throw new NotImplementedException();
 		}
+
+		public void SetOwner(Window owner)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

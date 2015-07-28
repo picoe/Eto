@@ -100,15 +100,9 @@ namespace Eto.Mac.Forms
 			ConfigureWindow();
 		}
 
-		public virtual void ShowModal(Control parent)
+		public virtual void ShowModal()
 		{
 			session = null;
-			if (parent != null && parent.ParentWindow != null)
-			{
-				var nswindow = parent.ParentWindow.ControlObject as NSWindow;
-				if (nswindow != null)
-					Control.ParentWindow = nswindow;
-			}
 			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;
@@ -121,16 +115,10 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public virtual Task ShowModalAsync(Control parent)
+		public virtual Task ShowModalAsync()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			session = null;
-			if (parent != null && parent.ParentWindow != null)
-			{
-				var nswindow = parent.ParentWindow.ControlObject as NSWindow;
-				if (nswindow != null)
-					Control.ParentWindow = nswindow;
-			}
 			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;

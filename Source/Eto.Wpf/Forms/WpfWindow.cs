@@ -510,7 +510,18 @@ namespace Eto.Wpf.Forms
 		public void SetOwnerFor(sw.Window child)
 		{
 			child.Owner = Control;
-			// CenterOwner does not work in certain cases (e.g. with autosizing)
+		}
+
+		public void SetOwner(Window owner)
+		{
+			if (owner == null)
+			{
+				Control.Owner = null;
+				return;
+			}
+			var wpfWindow = owner.Handler as IWpfWindow;
+			if (wpfWindow != null)
+				wpfWindow.SetOwnerFor(Control);
 		}
 	}
 }

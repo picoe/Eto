@@ -415,6 +415,11 @@ namespace Eto.WinForms.Forms
 			Control.SendToBack();
 		}
 
+		public virtual void SetOwner(Window owner)
+		{
+			Control.Owner = owner.ToSWF();
+		}
+
 		public Screen Screen
 		{
 			get { return new Screen(new ScreenHandler(swf.Screen.FromControl(Control))); }

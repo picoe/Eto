@@ -25,20 +25,14 @@ namespace Eto.Wpf.Forms
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public void ShowModal(Control parent)
+		public void ShowModal()
 		{
-			if (parent != null)
+			if (Widget.Owner != null)
 			{
-				var parentWindow = parent.ParentWindow;
-				if (parentWindow != null)
-				{
-					var handler = (IWpfWindow)parentWindow.Handler;
-					handler.SetOwnerFor(Control);
-					// CenterOwner does not work in certain cases (e.g. with autosizing)
-					Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
-					Control.SourceInitialized += HandleSourceInitialized;
-					parentWindowBounds = parentWindow.Bounds;
-				}
+				// CenterOwner does not work in certain cases (e.g. with autosizing)
+				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
+				Control.SourceInitialized += HandleSourceInitialized;
+				parentWindowBounds = Widget.Owner.Bounds;
 			}
 			Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
@@ -53,12 +47,12 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public Task ShowModalAsync(Control parent)
+		public Task ShowModalAsync()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			Application.Instance.AsyncInvoke(() =>
 			{
-				ShowModal(parent);
+				ShowModal();
 				tcs.SetResult(true);
 			});
 			return tcs.Task;

@@ -880,5 +880,9 @@ namespace Eto.Mac.Forms
 				window.MakeKeyWindow();
 			Control.ResignKeyWindow();
 		}
+
+		public virtual void SetOwner(Window owner)
+		{
+		}
 	}
 }

@@ -52,13 +52,9 @@ namespace Eto.GtkSharp.Forms
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public void ShowModal(Control parent)
+		public void ShowModal()
 		{
-			if (parent != null)
-			{
-				Control.TransientFor = ((Gtk.Window)(parent.ParentWindow).ControlObject);
-				Control.Modal = true;
-			}
+			Control.Modal = true;
 			Control.ShowAll();
 
 			if (DefaultButton != null)
@@ -111,12 +107,12 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public Task ShowModalAsync(Control parent)
+		public Task ShowModalAsync()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			Application.Instance.AsyncInvoke(() =>
 			{
-				ShowModal(parent);
+				ShowModal();
 				tcs.SetResult(true);
 			});
 

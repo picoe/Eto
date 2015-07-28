@@ -284,11 +284,23 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets or sets the owner of this window.
 		/// </summary>
+		/// <remarks>
+		/// This sets the parent window that has ownership over this window.
+		/// For a <see cref="Dialog"/>, this will be the window that will be disabled while the modal dialog is shown.
+		/// With a  <see cref="Form"/>, the specified owner will always be below the current window when shown, and will 
+		/// still be responsive to user input.  Typically, but not always, the window will move along with the owner.
+		/// </remarks>
 		/// <value>The owner of this window.</value>
 		public Window Owner
 		{
 			get { return Properties.Get<Window>(OwnerKey); }
-			set { Properties.Set(OwnerKey, value, () => OnOwnerChanged(EventArgs.Empty)); }
+			set {
+				Properties.Set(OwnerKey, value, () =>
+				{
+					Handler.SetOwner(value);
+					OnOwnerChanged(EventArgs.Empty);
+				});
+			}
 		}
 
 		/// <summary>
@@ -711,6 +723,12 @@ namespace Eto.Forms
 			/// Sends the window behind all other windows in the z-order.
 			/// </summary>
 			void SendToBack();
+
+			/// <summary>
+			/// Sets the owner of the window
+			/// </summary>
+			/// <param name="owner">Owner of the window</param>
+			void SetOwner(Window owner);
 		}
 
 		#endregion

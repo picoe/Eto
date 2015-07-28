@@ -443,6 +443,11 @@ namespace Eto.WinForms.Forms
 			throw new NotImplementedException();
 		}
 
+		public void SetOwner(Window owner)
+		{
+			throw new NotImplementedException();
+		}
+
 		public string ToolTip
 		{
 			get
