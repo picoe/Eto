@@ -16,6 +16,12 @@ namespace Eto.WinForms.Forms.Controls
 				Width = 80
 			};
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
+			Control.LostFocus += (sender, e) =>
+			{
+				// ensure value is always shown
+				if (string.IsNullOrEmpty(Control.Text))
+					Control.Text = Math.Round(Math.Max(MinValue, Math.Min(MaxValue, 0)), DecimalPlaces).ToString();
+			};
 		}
 
 		public override void OnUnLoad(EventArgs e)
@@ -32,7 +38,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public double Value
 		{
-			get { return (double)Control.Value; }
+			get { return Math.Round((double)Control.Value, DecimalPlaces); }
 			set { Control.Value = Math.Max(Control.Minimum, Math.Min(Control.Maximum, (decimal)value)); }
 		}
 

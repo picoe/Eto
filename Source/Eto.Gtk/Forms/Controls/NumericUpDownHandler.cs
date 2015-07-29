@@ -32,6 +32,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			Value = 0;
 		}
 
+		static readonly object SuppressValueChanged_Key = new object();
+		bool SuppressValueChanged
+		{
+			get { return Widget.Properties.Get<bool>(SuppressValueChanged_Key); }
+			set { Widget.Properties.Set(SuppressValueChanged_Key, value); }
+		}
+
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -51,7 +58,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleValueChanged(object sender, EventArgs e)
 			{
-				Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
+				if (!Handler.SuppressValueChanged)
+					Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 			}
 		}
 
@@ -69,7 +77,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public double Value
 		{
-			get { return Control.Value; }
+			get { return Math.Round(Control.Value, DecimalPlaces); }
 			set { Control.Value = Math.Max(MinValue, Math.Min(MaxValue, value)); }
 		}
 
@@ -106,7 +114,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int DecimalPlaces
 		{
 			get { return (int)Control.Digits; }
-			set { Control.Digits = (uint)value; }
+			set { 
+				SuppressValueChanged = true;
+				Control.Digits = (uint)value;
+				SuppressValueChanged = false;
+			}
 		}
 
 		public Color TextColor

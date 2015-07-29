@@ -98,8 +98,11 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 		}
 
-		[Test]
-		public void FractionalMinMaxValuesShouldSetValueCorrectly()
+		[TestCase(100, 32.767, 33, 0)]
+		[TestCase(100, 32.167, 32, 0)]
+		[TestCase(100, 32.767, 32.767, 3)]
+		[TestCase(100, 32.767, 32.77, 2)]
+		public void FractionalMaxValueShouldSetValueCorrectly(double value, double maxValue, double newValue, int decimalPlaces)
 		{
 			TestUtils.Invoke(() =>
 			{
@@ -107,11 +110,74 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				int valueChanged = 0;
 				numeric.ValueChanged += (sender, e) => valueChanged++;
 
+				numeric.DecimalPlaces = decimalPlaces;
 
-				numeric.Value = 100;
-				numeric.MaxValue = 32.767;
-				Assert.AreEqual(32.767, numeric.Value, "Value should be changed to match new MaxValue");
+				numeric.Value = value;
+				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
+				numeric.MaxValue = maxValue;
+				Assert.AreEqual(newValue, numeric.Value, "Value should be changed to match new MaxValue");
 				Assert.AreEqual(2, valueChanged, "ValueChanged event was not fired the correct number of times");
+			});
+		}
+
+		[TestCase(10, 32.767, 32.767, 3)]
+		[TestCase(10, 32.767, 32.77, 2)]
+		[TestCase(10, 32.767, 33, 0)]
+		[TestCase(10, 32.167, 32, 0)]
+		public void FractionalMinValueShouldSetValueCorrectly(double value, double minValue, double newValue, int decimalPlaces)
+		{
+			TestUtils.Invoke(() =>
+			{
+				var numeric = new NumericUpDown();
+				int valueChanged = 0;
+				numeric.ValueChanged += (sender, e) => valueChanged++;
+
+				numeric.DecimalPlaces = decimalPlaces;
+
+				numeric.Value = value;
+				numeric.MinValue = minValue;
+				Assert.AreEqual(newValue, numeric.Value, "Value should be changed to match new MaxValue");
+				Assert.AreEqual(2, valueChanged, "ValueChanged event was not fired the correct number of times");
+			});
+		}
+
+		[TestCase(10.126, 10, 0)]
+		[TestCase(10.126, 10.1, 1)]
+		[TestCase(10.126, 10.13, 2)]
+		public void ValueShouldBeRoundedToDecimalPlaces(double value, double newValue, int decimalPlaces)
+		{
+			TestUtils.Invoke(() =>
+			{
+				var numeric = new NumericUpDown();
+				int valueChanged = 0;
+				numeric.ValueChanged += (sender, e) => valueChanged++;
+
+				numeric.DecimalPlaces = decimalPlaces;
+
+				numeric.Value = value;
+				Assert.AreEqual(newValue, numeric.Value, "Value should be be rounded to the number of decimal places");
+				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
+			});
+		}
+
+		[TestCase(10.126, 10, 0)]
+		[TestCase(10.126, 10.1, 1)]
+		[TestCase(10.126, 10.13, 2)]
+		public void ValueShouldBeRoundedToDecimalPlacesWhenSetAfter(double value, double newValue, int decimalPlaces)
+		{
+			TestUtils.Invoke(() =>
+			{
+				var numeric = new NumericUpDown();
+				int valueChanged = 0;
+				numeric.ValueChanged += (sender, e) => valueChanged++;
+
+				numeric.Value = value;
+				Assert.AreEqual(Math.Round(value, 0), numeric.Value, "Value should be set to the initial value");
+
+				numeric.DecimalPlaces = decimalPlaces;
+
+				Assert.AreEqual(newValue, numeric.Value, "Value should be be rounded to the number of decimal places");
+				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
 			});
 		}
 	}

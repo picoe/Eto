@@ -15,6 +15,8 @@ namespace Eto.Wpf.Forms.Controls
 
 	public class NumericUpDownHandler : WpfControl<EtoDoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
 	{
+		double lastValue;
+
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
 
 		protected override bool PreventUserResize { get { return true; } }
@@ -24,11 +26,15 @@ namespace Eto.Wpf.Forms.Controls
 			Control = new EtoDoubleUpDown
 			{
 				FormatString = "0",
-				Value = 0,
-				DisplayDefaultValueOnEmptyText = true,
-				DefaultValue = 0
+				Value = 0
 			};
-			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
+			Control.ValueChanged += (sender, e) =>
+			{
+				if (Control.Value == null)
+					Control.Value = Math.Max(MinValue, Math.Min(MaxValue, 0));
+				else
+					TriggerValueChanged();
+			};
 			Control.Loaded += Control_Loaded;
 		}
 
@@ -37,8 +43,18 @@ namespace Eto.Wpf.Forms.Controls
 			// ensure changed event fires when changing the text, not just when focus is lost
 			if (Control.TextBox != null)
 			{
-				Control.TextBox.TextChanged += (sender2, e2) => Callback.OnValueChanged(Widget, EventArgs.Empty);
+				Control.TextBox.TextChanged += (sender2, e2) => TriggerValueChanged();
 				Control.Loaded -= Control_Loaded;
+			}
+		}
+
+		void TriggerValueChanged()
+		{
+			var val = Value;
+			if (lastValue != val)
+			{
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
+				lastValue = val;
 			}
 		}
 
@@ -54,7 +70,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public double Value
 		{
-			get { return Control.Value ?? 0; }
+			get { return Math.Round(Control.Value ?? 0, DecimalPlaces); }
 			set { Control.Value = Math.Max(MinValue, Math.Min(MaxValue, value)); }
 		}
 
