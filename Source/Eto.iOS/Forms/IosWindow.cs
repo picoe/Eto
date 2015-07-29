@@ -199,6 +199,10 @@ namespace Eto.iOS.Forms
 		}
 
 		public override ContextMenu ContextMenu { get { return null; } set { } }
+
+		public virtual void SetOwner(Window owner)
+		{
+		}
 	}
 }
 
