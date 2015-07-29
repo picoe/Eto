@@ -6,12 +6,13 @@
 		<UtilitiesAssemblyPath Condition="$(UtilitiesAssemblyPath) == ''">$(UtilitiesBasePath)\Eto.UtilitiesTasks</UtilitiesAssemblyPath>
 	</PropertyGroup>
 	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="GetAssemblyInfo" />
+	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="FileUpdate" />
 	<Target Name="BuildUtilities" Condition="!Exists('$(UtilitiesAssemblyPath)\Utilities.dll')" >
 		<MakeDir Directories="$(UtilitiesAssemblyPath)" />
 		
 		<!-- UsingTask is not implemented in mono -->
 		<ItemGroup>
-			<Utilities Include="GetAssemblyInfo"><Text><![CDATA[
+			<GetAssemblyInfo Include="GetAssemblyInfo"><Text><![CDATA[
 using System;
 using System.IO;
 using System.Reflection;
@@ -89,13 +90,70 @@ public class GetAssemblyInfo : Task
 			return false;
 		}
 	}
-}]]></Text></Utilities>
+}]]></Text></GetAssemblyInfo>
+			<FileUpdate Include="FileUpdate"><Text><![CDATA[
+using System;
+using System.IO;
+using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+
+public class FileUpdate : Task
+{
+	public ITaskItem[] Files { get; set; }
+
+	public string Regex { get; set; }
+
+	public string ReplacementText { get; set; }
+	
+	public bool WarnOnNoUpdate { get; set; }
+
+	public override bool Execute()
+	{
+		try
+		{
+			var regex = new Regex(Regex, RegexOptions.None);
+
+			foreach (var item in Files)
+			{
+				var fileName = item.ItemSpec;
+
+				var text = File.ReadAllText(fileName);
+
+				if (!regex.IsMatch(text))
+				{
+					if (WarnOnNoUpdate)
+						Log.LogWarning(string.Format("File '{0}' not updated", fileName));
+					continue;
+				}
+				else
+					Log.LogMessage("Updating file '{0}'", fileName);
+
+				var updatedText = regex.Replace(text, ReplacementText);
+
+				File.WriteAllText(fileName, updatedText);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log.LogErrorFromException(ex);
+			return false;
+		}
+		return true;		
+	}
+}]]></Text></FileUpdate>
 		</ItemGroup>
 		
-		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\Utilities.cs" Lines="@(Utilities->'%(Text)')" Overwrite="true" />
+		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\GetAssemblyInfo.cs" Lines="@(GetAssemblyInfo->'%(Text)')" Overwrite="true" />
+		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\FileUpdate.cs" Lines="@(FileUpdate->'%(Text)')" Overwrite="true" />
 
 		<Csc
-			Sources="$(UtilitiesAssemblyPath)\Utilities.cs"
+			Sources="$(UtilitiesAssemblyPath)\GetAssemblyInfo.cs;$(UtilitiesAssemblyPath)\FileUpdate.cs"
 			OutputAssembly="$(UtilitiesAssemblyPath)\Utilities.dll"
 			References="Microsoft.Build.Framework.dll;Microsoft.Build.Utilities.v4.0.dll;" 
 			TargetType="library"

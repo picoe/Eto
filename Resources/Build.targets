@@ -15,9 +15,6 @@
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
-        <MSBuildCommunityVersion>1.4.0.88</MSBuildCommunityVersion>
-		<MSBuildCommunityTasksPath>$(MSBuildThisFileDirectory)\packages\MSBuildTasks.$(MSBuildCommunityVersion)\tools</MSBuildCommunityTasksPath>
-	    <MSBuildCommunityTasksLib>$([MSBUILD]::Unescape($(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll))</MSBuildCommunityTasksLib>
 		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
 		<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj</XamarinStudioAddinProject>
 		<VisualStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudio\Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
@@ -27,20 +24,15 @@
 	</PropertyGroup>
 	<Import Project="Utilities.targets" Condition="$(UtilitiesImported) == ''" />
 	<Import Project="$(NugetDir)\.nuget\NuGet.targets" Condition="Exists('$(NugetDir)\.nuget\NuGet.targets')" />
-	<UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.FileUpdate" />
 	
 	<Target Name="UpdateAssemblyInfo" Condition="$(BuildVersion) != ''">
-		<Exec Command="$(NuGetCommand) install MSBuildTasks -Version $(MSBuildCommunityVersion) -OutputDirectory packages"
-			Condition="! Exists('$(MSBuildCommunityTasksPath)')" />
 
 		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
             Regex='AssemblyInformationalVersion[(]&quot;.*&quot;[)]'
-            Encoding="utf-8-without-bom"
             ReplacementText='AssemblyInformationalVersion(&quot;$(BuildVersion)&quot;)' />
             
 		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
             Regex='AssemblyFileVersion[(]&quot;.*&quot;[)]'
-            Encoding="utf-8-without-bom"
             ReplacementText='AssemblyFileVersion(&quot;$(BuildVersion)&quot;)' />
         
         <ItemGroup>
@@ -59,7 +51,6 @@
             ReplacementText='.$(BuildVersion).nupkg' />
             
 		<FileUpdate Files="@(VSTemplateFiles)"
-            Encoding="utf-8-without-bom"
             Regex="@(VSTemplateReg->'%(Text)')"
             ReplacementText='version=&quot;$(BuildVersion)&quot;' />
 
