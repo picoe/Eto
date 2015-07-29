@@ -12,7 +12,7 @@
 		<Exec Command="mozroots --import --sync" Condition="'$(Platform)' == 'Linux'" />
 	</Target>
 	
-    <Target Name="Build" DependsOnTargets="PreBuild;UpdateAssemblyInfo">
+    <Target Name="Build" DependsOnTargets="PreBuild;BuildUtilities;UpdateAssemblyInfo">
     	<!-- this builds the Xamarin Studio addin specifically for addins.monodevelop.com -->
 
 		<PropertyGroup>
