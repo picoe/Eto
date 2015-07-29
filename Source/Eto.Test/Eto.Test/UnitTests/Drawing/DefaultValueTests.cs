@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace Eto.Test.UnitTests.Drawing
 {
-	[TestFixture, Category(TestUtils.NoTestPlatformCategory)]
+	[TestFixture]
 	public class DefaultValueTests
 	{
 		class TypeTest

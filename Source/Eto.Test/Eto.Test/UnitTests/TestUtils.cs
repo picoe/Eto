@@ -24,7 +24,7 @@ namespace Eto.Test.UnitTests
 		/// <summary>
 		/// Category to exclude when using the Test platform, and only run when on a "real" platform.
 		/// </summary>
-		public const string NoTestPlatformCategory = "NoTestPlatform";
+		public const string TestPlatformCategory = "TestPlatform";
 
 		/// <summary>
 		/// Default timeout for form operations

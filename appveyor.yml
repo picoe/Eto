@@ -14,8 +14,8 @@ build_script:
 - msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% Resources\Build.targets /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 test: off
 #test_script:
-#- nunit-console --framework=4.0 --exclude=NoTestPlatform BuildOutput/net40/Release/test/Eto.Test.dll
-#- nunit-console --framework=4.5 --exclude=NoTestPlatform BuildOutput/net45/Release/test/Eto.Test.dll
+#- nunit-console --framework=4.0 --include=TestPlatform BuildOutput/net40/Release/test/Eto.Test.dll
+#- nunit-console --framework=4.5 --include=TestPlatform BuildOutput/net45/Release/test/Eto.Test.dll
 artifacts:
 - path: BuildOutput/Nuget/Release/*.nupkg
   name: nuget

@@ -15,7 +15,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TestFixture]
+	[TestFixture, Category(TestUtils.TestPlatformCategory)]
 	public class GridViewSelectTests
 	{
 		GridView grid;

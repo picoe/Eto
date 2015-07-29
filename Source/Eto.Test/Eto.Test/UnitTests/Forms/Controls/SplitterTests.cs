@@ -5,7 +5,7 @@ using System;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
-	[TestFixture, Category("ui"), Category(TestUtils.NoTestPlatformCategory)]
+	[TestFixture, Category("ui")]
 	public class SplitterTests
 	{
 		// currently working only for WinForms

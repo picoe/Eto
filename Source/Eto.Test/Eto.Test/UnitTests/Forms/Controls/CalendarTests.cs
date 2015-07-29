@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
-	[TestFixture]
+	[TestFixture, Category(TestUtils.TestPlatformCategory)]
 	public class CalendarTests
 	{
 		[Test]

@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Test.UnitTests.Forms.Binding
 {
-	[TestFixture]
+	[TestFixture, Category(TestUtils.TestPlatformCategory)]
 	public class ObjectBindingObjectChangedTests
 	{
 		[Test]
