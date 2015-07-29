@@ -26,7 +26,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		where TCallback: DropDown.ICallback
 	{
 		protected Font font;
-		CollectionHandler collection;
+		protected CollectionHandler collection;
 		protected Gtk.ListStore listStore;
 		protected Gtk.CellRendererText text;
 
@@ -47,10 +47,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected class DropDownConnector : GtkControlConnector
 		{
-			int? lastIndex;
+			protected int lastIndex = -1;
 			public new DropDownHandler<TControl, TWidget, TCallback> Handler { get { return (DropDownHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
-			public void HandleChanged(object sender, EventArgs e)
+			public virtual void HandleChanged(object sender, EventArgs e)
 			{
 				var newIndex = Handler.SelectedIndex;
 				if (newIndex != lastIndex)
