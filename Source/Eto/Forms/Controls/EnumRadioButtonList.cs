@@ -93,11 +93,11 @@ namespace Eto.Forms
 		/// Gets a binding to the <see cref="SelectedValue"/> property.
 		/// </summary>
 		/// <value>The selected value binding.</value>
-		public new ControlBinding<EnumRadioButtonList<T>, T> SelectedValueBinding
+		public new BindableBinding<EnumRadioButtonList<T>, T> SelectedValueBinding
 		{
 			get
 			{
-				return new ControlBinding<EnumRadioButtonList<T>, T>(
+				return new BindableBinding<EnumRadioButtonList<T>, T>(
 					this,
 					c => c.SelectedValue,
 					(c, v) => c.SelectedValue = v,

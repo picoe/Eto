@@ -15,9 +15,12 @@ namespace Eto.WinForms.Forms.Controls
 				Minimum = decimal.MinValue,
 				Width = 80
 			};
-			Control.ValueChanged += delegate
+			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
+			Control.LostFocus += (sender, e) =>
 			{
-				Callback.OnValueChanged(Widget, EventArgs.Empty);
+				// ensure value is always shown
+				if (string.IsNullOrEmpty(Control.Text))
+					Control.Text = Math.Round(Math.Max(MinValue, Math.Min(MaxValue, 0)), DecimalPlaces).ToString();
 			};
 		}
 
@@ -35,20 +38,20 @@ namespace Eto.WinForms.Forms.Controls
 
 		public double Value
 		{
-			get { return (double)Control.Value; }
-			set { Control.Value = (decimal)value; }
+			get { return Math.Round((double)Control.Value, DecimalPlaces); }
+			set { Control.Value = Math.Max(Control.Minimum, Math.Min(Control.Maximum, (decimal)value)); }
 		}
 
 		public double MinValue
 		{
-			get { return (double)Control.Minimum; }
-			set { Control.Minimum = (decimal)value; }
+			get { return Control.Minimum == decimal.MinValue ? double.NegativeInfinity : (double)Control.Minimum; }
+			set { Control.Minimum = double.IsNegativeInfinity(value) ? decimal.MinValue : (decimal)value; }
 		}
 
 		public double MaxValue
 		{
-			get { return (double)Control.Maximum; }
-			set { Control.Maximum = (decimal)value; }
+			get { return Control.Maximum == decimal.MaxValue ? double.PositiveInfinity : (double)Control.Maximum; }
+			set { Control.Maximum = double.IsPositiveInfinity(value) ? decimal.MaxValue : (decimal)value; }
 		}
 
 		public int DecimalPlaces

@@ -36,6 +36,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			void PerformExpandItems(ITreeStore store, Gtk.TreePath path)
 			{
+				if (store == null)
+					return;
 				var newpath = path.Copy();
 				newpath.AppendIndex(0);
 				for (int i = 0; i < store.Count; i++)

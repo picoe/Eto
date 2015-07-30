@@ -339,7 +339,11 @@ namespace Eto.Wpf.Drawing
 			base.Dispose(disposing);
 			if (disposing)
 			{
-				sdfont.Dispose();
+				if (sdfont != null)
+				{
+					sdfont.Dispose();
+					sdfont = null;
+				}
 			}
 		}
 	}

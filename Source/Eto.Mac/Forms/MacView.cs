@@ -334,7 +334,10 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				var text = (string)Messaging.GetNSObject<NSString>(textPtr);
-				handler.Callback.OnTextInput(handler.Widget, new TextInputEventArgs(text));
+				var args = new TextInputEventArgs(text);
+				handler.Callback.OnTextInput(handler.Widget, args);
+				if (args.Cancel)
+					return;
 			}
 			Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, textPtr);
 		}

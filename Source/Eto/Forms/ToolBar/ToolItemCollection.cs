@@ -28,6 +28,7 @@ namespace Eto.Forms
 		{
 			base.InsertItem(index, item);
 			parent.Handler.AddButton(item, index);
+			item.Parent = parent;
 		}
 
 		/// <summary>
@@ -39,6 +40,7 @@ namespace Eto.Forms
 			var item = this[index];
 			base.RemoveItem(index);
 			parent.Handler.RemoveButton(item);
+			item.Parent = null;
 		}
 
 		/// <summary>
@@ -46,6 +48,8 @@ namespace Eto.Forms
 		/// </summary>
 		protected override void ClearItems()
 		{
+			foreach (var item in this)
+				item.Parent = null;
 			base.ClearItems();
 			parent.Handler.Clear();
 		}

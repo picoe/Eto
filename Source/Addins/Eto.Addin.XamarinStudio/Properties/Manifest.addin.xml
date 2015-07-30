@@ -1,31 +1,65 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
-	<Runtime>
-		<Import file="Templates/Projects/Eto-PCL-Separate.xpt.xml" />
-		<Import file="Templates/Projects/Eto-PCL-Combined.xpt.xml" />
-		<Import file="Templates/Projects/Eto-SAL-Separate.xpt.xml" />
-		<Import file="Templates/Projects/Eto-SAL-Combined.xpt.xml" />
-		<Import file="Templates/Projects/Eto-Library.xpt.xml" />
-		<Import file="Templates/Files/Eto-Form.xft.xml" />
-		<Import file="Templates/Files/Eto-Dialog.xft.xml" />
-		<Import file="Templates/Files/Eto-Panel.xft.xml" />
-		<Import file="Templates/Projects/Shared/MainForm.cs" />
-		<Import file="Templates/Projects/Shared/MyPanel.cs" />
-		<Import file="Templates/Projects/Mac/Info.plist" />
-	</Runtime>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
 		<PackageRepository path="Packages" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id="Eto-PCL-Combined" file="Templates/Projects/Eto-PCL-Combined.xpt.xml" />
-		<ProjectTemplate id="Eto-PCL-Separate" file="Templates/Projects/Eto-PCL-Separate.xpt.xml" />
-		<ProjectTemplate id="Eto-SAL-Combined" file="Templates/Projects/Eto-SAL-Combined.xpt.xml" />
-		<ProjectTemplate id="Eto-SAL-Separate" file="Templates/Projects/Eto-SAL-Separate.xpt.xml" />
-		<ProjectTemplate id="Eto-Library" file="Templates/Projects/Eto-Library.xpt.xml" />
+		<ProjectTemplate id="eto.project.application.cs" file="Templates/Projects/C#/application.xpt.xml" />
+		<ProjectTemplate id="eto.project.library.cs" file="Templates/Projects/C#/library.xpt.xml" />
+
+		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
+			<ProjectTemplate id="eto.project.application.vb" file="Templates/Projects/VB/application.xpt.xml" />
+			<ProjectTemplate id="eto.project.library.vb" file="Templates/Projects/VB/library.xpt.xml" />
+		</Condition>
+
+		<ComplexCondition>
+			<Or>
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+			</Or>
+			<ProjectTemplate id="eto.project.application.fs" file="Templates/Projects/F#/application.xpt.xml" />
+			<ProjectTemplate id="eto.project.library.fs" file="Templates/Projects/F#/library.xpt.xml" />
+		</ComplexCondition>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id="Eto-Form" file="Templates/Files/Eto-Form.xft.xml" />
-		<FileTemplate id="Eto-Dialog" file="Templates/Files/Eto-Dialog.xft.xml" />
-		<FileTemplate id="Eto-Panel" file="Templates/Files/Eto-Panel.xft.xml" />
+		<FileTemplate id="eto.file.form.cs" file="Templates/Files/C#/form.xft.xml" />
+		<FileTemplate id="eto.file.dialog.cs" file="Templates/Files/C#/dialog.xft.xml" />
+		<FileTemplate id="eto.file.panel.cs" file="Templates/Files/C#/panel.xft.xml" />
+
+		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
+			<FileTemplate id="eto.file.panel.vb" file="Templates/Files/VB/panel.xft.xml" />
+		</Condition>
+
+		<ComplexCondition>
+			<Or>
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+			</Or>
+			<FileTemplate id="eto.file.panel.fs" file="Templates/Files/F#/panel.xft.xml" />
+		</ComplexCondition>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
+		<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other">
+			<Category id="app" name="App" />
+			<Category id="library" name="Library" />
+		</Category>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
+		<Class id="Eto.Addin.XamarinStudio.ProjectWizard" class="Eto.Addin.XamarinStudio.ProjectWizard" />
+		<Class id="Eto.Addin.XamarinStudio.LibraryWizard" class="Eto.Addin.XamarinStudio.LibraryWizard" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/app">
+		<Category id="eto" name="Eto.Forms" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/library">
+		<Category id="eto" name="Eto.Forms" />
+	</Extension>
+	<Runtime>
+		<Import assembly="Eto.dll" />
+		<Import assembly="Eto.Gtk2.dll" />
+	</Runtime>
+	<Extension path="/MonoDevelop/ProjectModel/ProjectBindings">
+		<ProjectBinding id="Eto.VBDotNet" class="Eto.Addin.XamarinStudio.VBDotNetProjectBinding" />
+		<ProjectBinding id="Eto.FSharp" class="Eto.Addin.XamarinStudio.FSharpProjectBinding" />
 	</Extension>
 </ExtensionModel>

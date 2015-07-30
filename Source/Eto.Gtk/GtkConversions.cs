@@ -3,6 +3,7 @@ using System.Globalization;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
+using Eto.GtkSharp.Forms;
 
 namespace Eto.GtkSharp
 {
@@ -579,6 +580,16 @@ namespace Eto.GtkSharp
 		public static Font ToEto(this Pango.FontDescription fontDesc, string familyName = null)
 		{
 			return fontDesc == null ? null : new Font(new FontHandler(fontDesc, familyName));
+		}
+
+		public static Gtk.Window ToGtk(this Window window)
+		{
+			if (window == null)
+				return null;
+			var gtkWindow = window.Handler as IGtkWindow;
+			if (gtkWindow != null)
+				return gtkWindow.Control;
+			return null;
 		}
 	}
 }

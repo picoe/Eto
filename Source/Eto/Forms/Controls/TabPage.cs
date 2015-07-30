@@ -31,10 +31,16 @@ namespace Eto.Forms
 		{
 		}
 
+		const string ClickEvent = "TabPage.Click";
+
 		/// <summary>
 		/// Occurs when the tab is clicked to select it.
 		/// </summary>
-		public event EventHandler<EventArgs> Click;
+		public event EventHandler<EventArgs> Click
+		{
+			add { Properties.AddEvent(ClickEvent, value); }
+			remove { Properties.RemoveEvent(ClickEvent, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="Click"/> event.
@@ -42,8 +48,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnClick(EventArgs e)
 		{
-			if (Click != null)
-				Click(this, e);
+			Properties.TriggerEvent(ClickEvent, this, e);
 		}
 
 		/// <summary>
@@ -87,6 +92,11 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The tab's image.</value>
 			Image Image { get; set; }
+		}
+
+		internal void TriggerClick(EventArgs e)
+		{
+			OnClick(e);
 		}
 	}
 }

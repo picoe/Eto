@@ -61,6 +61,22 @@ namespace Eto.Mac.Forms
 			ConfigureWindow();
 		}
 
+		public override void SetOwner(Window owner)
+		{
+			if (owner != null)
+			{
+				var macWindow = owner.Handler as IMacWindow;
+				if (macWindow != null)
+					macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
+			}
+			else
+			{
+				var parentWindow = Control.ParentWindow;
+				if (parentWindow != null)
+					parentWindow.RemoveChildWindow(Control);
+			}
+		}
+
 		public void Show()
 		{
 			var visible = Control.IsVisible;

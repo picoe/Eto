@@ -134,6 +134,7 @@
     <Compile Include="UnitTests\Drawing\DefaultValueTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\ComboBoxTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\NumericUpDownTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\SplitterTests.cs" />
     <Compile Include="UnitTests\Forms\GridViewUtils.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />

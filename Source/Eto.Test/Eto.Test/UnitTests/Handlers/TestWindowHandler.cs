@@ -16,7 +16,7 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public ToolBar ToolBar
 		{
-			get { throw new NotImplementedException(); }
+			get { return null; }
 			set { throw new NotImplementedException(); }
 		}
 
@@ -53,7 +53,7 @@ namespace Eto.Test.UnitTests.Handlers
 
 		public MenuBar Menu
 		{
-			get { throw new NotImplementedException(); }
+			get { return null; }
 			set { throw new NotImplementedException(); }
 		}
 
@@ -116,6 +116,11 @@ namespace Eto.Test.UnitTests.Handlers
 		}
 
 		public void SendToBack()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetOwner(Window owner)
 		{
 			throw new NotImplementedException();
 		}

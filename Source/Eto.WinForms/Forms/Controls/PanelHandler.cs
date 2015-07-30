@@ -9,6 +9,9 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		public class EtoPanel : swf.Panel
 		{
+			// CWEN: Comment out for now, this causes issues with TableLayout (see UnitTestSection, the search box is obscured),
+			// and actually dramatically decreases performance in some circumstances.
+			/*
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				// WinForms have problems with autosizing vs. docking
@@ -25,7 +28,7 @@ namespace Eto.WinForms.Forms.Controls
 
 				// fallback to default engine
 				return base.GetPreferredSize(proposedSize);
-			}
+			}*/
 
 			// Need to override IsInputKey to capture 
 			// the arrow keys.

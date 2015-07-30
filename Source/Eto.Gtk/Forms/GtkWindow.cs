@@ -641,5 +641,11 @@ namespace Eto.GtkSharp.Forms
 			if (gdkWindow != null)
 				gdkWindow.Lower();
 		}
+
+		public virtual void SetOwner(Window owner)
+		{
+			Control.TransientFor = owner.ToGtk();
+		}
+
 	}
 }

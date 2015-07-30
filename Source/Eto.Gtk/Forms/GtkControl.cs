@@ -222,7 +222,7 @@ namespace Eto.GtkSharp.Forms
 			if (Widget.Loaded)
 				GrabFocus();
 			else
-				Widget.LoadComplete += Widget_LoadComplete;
+				Widget.LoadComplete += Widget_SetFocus;
 		}
 
 		protected virtual void GrabFocus()
@@ -230,10 +230,10 @@ namespace Eto.GtkSharp.Forms
 			Control.GrabFocus();
 		}
 
-		void Widget_LoadComplete(object sender, EventArgs e)
+		void Widget_SetFocus(object sender, EventArgs e)
 		{
-			Widget.LoadComplete -= Widget_LoadComplete;
-			GrabFocus();
+			Widget.LoadComplete -= Widget_SetFocus;
+			Eto.Forms.Application.Instance.AsyncInvoke(GrabFocus);
 		}
 
 		public bool HasFocus

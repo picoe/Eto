@@ -32,7 +32,8 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), ShowInTaskBar(), TopMost(), CreateCancelClose(), null);
+			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), CreateCancelClose(), null);
+			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
@@ -65,7 +66,12 @@ namespace Eto.Test.Sections.Behaviors
 				SelectedKey = "form"
 			};
 
-			setOwnerCheckBox = new CheckBox { Text = "Set Owner", Checked = true };
+			setOwnerCheckBox = new CheckBox { Text = "Set Owner", Checked = false };
+			setOwnerCheckBox.CheckedChanged += (sender, e) => 
+			{
+				if (child != null)
+					child.Owner = setOwnerCheckBox.Checked ?? false ? ParentWindow : null;
+			};
 
 			return new StackLayout
 			{
@@ -344,7 +350,7 @@ namespace Eto.Test.Sections.Behaviors
 			if (setInitialMinimumSize)
 				child.MinimumSize = initialMinimumSize;
 			if (setOwnerCheckBox.Checked ?? false)
-				child.Owner = this.ParentWindow;
+				child.Owner = ParentWindow;
 			bringToFrontButton.Enabled = true;
 			show();
 			// show that the child is now referenced

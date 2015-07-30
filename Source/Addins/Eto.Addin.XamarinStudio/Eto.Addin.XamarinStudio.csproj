@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectTypeGuids>{7DBEB09D-BB9F-4D92-A141-A009135475EF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{86F6BF2A-E449-4B3E-813B-9ACC37E5545F};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{54A88D77-39C6-49E5-971E-05451209F2A9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Addin.XamarinStudio</RootNamespace>
@@ -12,6 +12,7 @@
     <NugetDir>..\..</NugetDir>
     <PackagesDir>.</PackagesDir>
     <UseAddinTargets Condition="'$(UseAddinTargets)' == ''">true</UseAddinTargets>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,122 +36,41 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Addins">
-      <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/Mono.Addins.dll</Package>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Core">
-      <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/MonoDevelop.Core.dll</Package>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide">
-      <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/MonoDevelop.Ide.dll</Package>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.TextEditor">
-      <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/Mono.TextEditor.dll</Package>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory">
-      <Package>/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/ICSharpCode.NRefactory.dll</Package>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="gtk-sharp" />
-    <Reference Include="glib-sharp" />
-    <Reference Include="gdk-sharp" />
-    <Reference Include="pango-sharp" />
+    <Reference Include="Mono.Addins" />
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
+    <Compile Include="ProjectWizard.cs" />
+    <Compile Include="ProjectWizardPage.cs" />
+    <Compile Include="ProjectWizardPageUI.cs" />
+    <Compile Include="LibraryWizard.cs" />
+    <Compile Include="EtoInitializer.cs" />
+    <Compile Include="LibraryWizardPageUI.cs" />
+    <Compile Include="LibraryWizardPage.cs" />
+    <Compile Include="VBDotNetProjectBinding.cs" />
+    <Compile Include="FSharpProjectBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\MonoDevelop.Addins.0.1.4\build\net40\MonoDevelop.Addins.targets" Condition="Exists('packages\MonoDevelop.Addins.0.1.4\build\net40\MonoDevelop.Addins.targets') and $(UseAddinTargets) != false" />
   <ItemGroup>
     <Folder Include="Templates\" />
     <Folder Include="Packages\" />
     <Folder Include="Templates\Projects\" />
     <Folder Include="Templates\Files\" />
+    <Folder Include="Templates\Files\F#\" />
+    <Folder Include="Templates\Files\C#\" />
+    <Folder Include="Templates\Files\VB\" />
+    <Folder Include="Templates\Projects\VB\" />
+    <Folder Include="Templates\Projects\C#\" />
+    <Folder Include="Templates\Projects\F#\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\Projects\Shared\MainForm.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Mac\Info.plist">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Files\Eto-Form.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Files\Eto-Dialog.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Files\Eto-Form.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Files\Eto-Dialog.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Files\Eto-Panel.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Files\Eto-Panel.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Eto-PCL-Combined.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Eto-SAL-Combined.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Eto-PCL-Separate.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Eto-SAL-Separate.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.1.0.nupkg')">
-      <Link>Packages\Eto.Forms.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.1.0.nupkg')">
-      <Link>Packages\Eto.Forms.Sample.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.Direct2D.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.Gtk.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.Gtk3.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.1.0.nupkg')">
       <Link>Packages\Eto.Platform.iOS.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.Mac.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.Mac.Template.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.Mac64.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.Windows.2.1.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.1.0.nupkg')">
@@ -161,30 +81,133 @@
       <Link>Packages\Eto.Platform.Wpf.2.1.0.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.XamMac.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.1.0.nupkg')">
-      <Link>Packages\Eto.Platform.XamMac2.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.1.0.nupkg')">
-      <Link>Packages\Eto.Serialization.Json.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.1.0.nupkg')">
-      <Link>Packages\Eto.Serialization.Xaml.2.1.0.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Eto-Library.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Projects\Shared\MyPanel.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(ProjectDir)\..\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\..\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
+  <Import Project="packages\MonoDevelop.Addins.0.2.3\build\net40\MonoDevelop.Addins.targets" Condition="Exists('packages\MonoDevelop.Addins.0.2.3\build\net40\MonoDevelop.Addins.targets')" />
+  <ItemGroup>
+    <AddinFile Include="Templates\Projects\Mac\Info.plist">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\C#\dialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\C#\form.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\C#\panel.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\F#\panel.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\panel.vb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\C#\dialog.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\C#\form.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\C#\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\F#\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\VB\MainForm.vb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\C#\MainForm.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\C#\application.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\C#\library.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\F#\library.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\VB\application.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\VB\library.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\F#\application.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\F#\MainForm.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.1.0.nupkg')">
+      <Link>Packages\Eto.Forms.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.1.0.nupkg')">
+      <Link>Packages\Eto.Forms.Sample.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.Direct2D.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.Gtk.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.Gtk3.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.Mac.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.Mac.Template.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.Mac64.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.Windows.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.XamMac.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.1.0.nupkg')">
+      <Link>Packages\Eto.Platform.XamMac2.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.1.0.nupkg')">
+      <Link>Packages\Eto.Serialization.Json.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.1.0.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.1.0.nupkg')">
+      <Link>Packages\Eto.Serialization.Xaml.2.1.0.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Gtk\Eto.Gtk2 - net45.csproj">
+      <Project>{80915A80-CA54-11E3-9C1A-0800200C9A66}</Project>
+      <Name>Eto.Gtk2 - net45</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

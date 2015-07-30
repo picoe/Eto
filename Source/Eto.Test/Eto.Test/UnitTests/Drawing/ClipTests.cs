@@ -3,17 +3,17 @@ using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Drawing
 {
-	[TestFixture]
+	[TestFixture, Category(TestUtils.TestPlatformCategory)]
 	public class ClipTests
 	{
 		[Test, Category("ui")]
 		public void ClipBoundsShouldMatchClientSize()
 		{
-			var size = new Size(200, 200);
+			var size = new Size(300, 300);
 			TestUtils.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
-				Assert.AreEqual(size, drawable.ClientSize, "Drawable client size should be 200x200");
+				Assert.AreEqual(size, drawable.ClientSize, "Drawable client size should be 300x300");
 				Assert.AreEqual(Size.Round(drawable.ClientSize), Size.Round(graphics.ClipBounds.Size), "Clip bounds should match drawable client size");
 			}, size);
 		}

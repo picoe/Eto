@@ -453,11 +453,11 @@ namespace Eto.Forms
 		/// Gets a binding to the <see cref="SelectedValue"/> property.
 		/// </summary>
 		/// <value>The selected value binding.</value>
-		public ControlBinding<RadioButtonList, object> SelectedValueBinding
+		public BindableBinding<RadioButtonList, object> SelectedValueBinding
 		{
 			get
 			{
-				return new ControlBinding<RadioButtonList, object>(
+				return new BindableBinding<RadioButtonList, object>(
 					this,
 					c => c.SelectedValue,
 					(c, v) => c.SelectedValue = v,
@@ -471,11 +471,11 @@ namespace Eto.Forms
 		/// Gets a binding to the <see cref="SelectedIndex"/> property.
 		/// </summary>
 		/// <value>The selected index binding.</value>
-		public ControlBinding<RadioButtonList, int> SelectedIndexBinding
+		public BindableBinding<RadioButtonList, int> SelectedIndexBinding
 		{
 			get
 			{
-				return new ControlBinding<RadioButtonList, int>(
+				return new BindableBinding<RadioButtonList, int>(
 					this,
 					c => c.SelectedIndex,
 					(c, v) => c.SelectedIndex = v,
@@ -489,11 +489,11 @@ namespace Eto.Forms
 		/// Gets a binding to the <see cref="SelectedKey"/> property.
 		/// </summary>
 		/// <value>The selected index binding.</value>
-		public ControlBinding<RadioButtonList, string> SelectedKeyBinding
+		public BindableBinding<RadioButtonList, string> SelectedKeyBinding
 		{
 			get
 			{
-				return new ControlBinding<RadioButtonList, string>(
+				return new BindableBinding<RadioButtonList, string>(
 					this,
 					c => c.SelectedKey,
 					(c, v) => c.SelectedKey = v,

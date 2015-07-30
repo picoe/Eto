@@ -169,6 +169,7 @@ namespace Eto.Forms
 		/// <remarks>
 		/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 		/// the dialog is closed.
+		/// Calling this method is identical to setting the <see cref="Window.Owner"/> property and calling <see cref="ShowModal()"/>.
 		/// </remarks>
 		/// <param name="owner">The owner control that is showing the form</param>
 		public void ShowModal(Control owner)
@@ -193,7 +194,7 @@ namespace Eto.Forms
 
 			Application.Instance.AddWindow(this);
 
-			Handler.ShowModal(Owner);
+			Handler.ShowModal();
 		}
 
 		/// <summary>
@@ -202,6 +203,7 @@ namespace Eto.Forms
 		/// <remarks>
 		/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
 		/// the dialog is closed.
+		/// Calling this method is identical to setting the <see cref="Window.Owner"/> property and calling <see cref="ShowModalAsync()"/>.
 		/// </remarks>
 		/// <param name="owner">The owner control that is showing the form</param>
 		public Task ShowModalAsync(Control owner)
@@ -224,7 +226,7 @@ namespace Eto.Forms
 				OnLoadComplete(EventArgs.Empty);
 			}
 
-			return Handler.ShowModalAsync(Owner);
+			return Handler.ShowModalAsync();
 		}
 
 		/// <summary>
@@ -241,22 +243,12 @@ namespace Eto.Forms
 			/// <summary>
 			/// Shows the dialog modally, blocking the current thread until it is closed.
 			/// </summary>
-			/// <remarks>
-			/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
-			/// the dialog is closed.
-			/// </remarks>
-			/// <param name="owner">The owner control that is showing the form</param>
-			void ShowModal(Control owner);
+			void ShowModal();
 
 			/// <summary>
 			/// Shows the dialog modally asynchronously
 			/// </summary>
-			/// <remarks>
-			/// The <paramref name="owner"/> specifies the control on the window that will be blocked from user input until
-			/// the dialog is closed.
-			/// </remarks>
-			/// <param name="owner">The owner control that is showing the form</param>
-			Task ShowModalAsync(Control owner);
+			Task ShowModalAsync();
 
 			/// <summary>
 			/// Gets or sets the default button.

@@ -96,6 +96,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
+		static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
 
 		public override void AttachEvent(string id)
 		{
@@ -103,7 +104,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				case Eto.Forms.Control.TextInputEvent:
 					SetCustomFieldEditor();
-					AddMethod(selResignFirstResponder, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@", CustomFieldEditor);
+					AddMethod(selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@", CustomFieldEditor);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					SetCustomFieldEditor();

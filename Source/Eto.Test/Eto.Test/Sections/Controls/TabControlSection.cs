@@ -43,6 +43,8 @@ namespace Eto.Test.Sections.Controls
 					Text = "Tab " + (tabControl.Pages.Count + 1),
 					Content = tabControl.Pages.Count % 2 == 0 ? TabOne() : TabTwo()
 				};
+				LogEvents(tab);
+
 				tabControl.Pages.Add(tab);
 			};
 			return control;

@@ -41,11 +41,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac - net45", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Direct2D - net45", "Eto.Test\Eto.Test.Direct2D\Eto.Test.Direct2D - net45.csproj", "{74328428-C412-4BC3-BD0C-E1DBC43FB479}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac2.csproj", "{689E4C20-2702-11E4-8C21-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2 - net45", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac2 - net45.csproj", "{689E4C20-2702-11E4-8C21-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac64 - net45", "Eto.Test\Eto.Test.Mac\Eto.Test.Mac64 - net45.csproj", "{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinRT", "Eto.Test\Eto.Test.WinRT\Eto.Test.WinRT.csproj", "{DFAC63ED-7563-4F09-97E0-9FC3F0FD552F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac2 - mobile", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac2 - mobile.csproj", "{A2DD2180-297D-11E5-A2CB-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{451A0C58-A0FE-4DAE-9B57-FB1450C2071B}"
 	ProjectSection(SolutionItems) = preProject
@@ -56,13 +58,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{451A0C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Mac64 - net45", "Eto.Mac\Eto.Mac64 - net45.csproj", "{55DAB390-1CFC-11E4-8C21-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2", "Eto.Mac\Eto.XamMac2.csproj", "{856E8C70-2702-11E4-8C21-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2 - net45", "Eto.Mac\Eto.XamMac2 - net45.csproj", "{856E8C70-2702-11E4-8C21-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.WinRT", "Eto.WinRT\Eto.WinRT.csproj", "{4C2B4FA7-5C94-4582-82CB-FC856BEBFE75}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - net45", "Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - pcl", "Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2 - mobile", "Eto.Mac\Eto.XamMac2 - mobile.csproj", "{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -239,6 +243,14 @@ Global
 		{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}.Release|Mac.Build.0 = Release|Any CPU
 		{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}.Release|Windows.ActiveCfg = Release|Any CPU
 		{9F51798A-354C-47A1-9207-4BB7D7FC7FC4}.Release|Windows.Build.0 = Release|Any CPU
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{A4267C50-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
@@ -259,6 +271,14 @@ Global
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Mac.Build.0 = Release|Any CPU
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Windows.ActiveCfg = Release|Any CPU
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689}.Release|Windows.Build.0 = Release|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
 		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
@@ -358,6 +378,7 @@ Global
 		{689E4C20-2702-11E4-8C21-0800200C9A66} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{B5BC1D10-24ED-441C-A4D6-1F3AB9FF3689} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 		{DFAC63ED-7563-4F09-97E0-9FC3F0FD552F} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
+		{A2DD2180-297D-11E5-A2CB-0800200C9A66} = {E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

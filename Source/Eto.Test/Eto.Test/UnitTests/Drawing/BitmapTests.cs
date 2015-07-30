@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Test.UnitTests.Drawing
 {
-	[TestFixture, Category(TestUtils.NoTestPlatformCategory)]
+	[TestFixture]
 	public class BitmapTests
 	{
 		public BitmapTests()

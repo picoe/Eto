@@ -146,11 +146,11 @@ namespace Eto.Forms
 		/// Gets a binding for the <see cref="Value"/> property.
 		/// </summary>
 		/// <value>The value binding.</value>
-		public ControlBinding<MaskedTextBox<T>, T> ValueBinding
+		public BindableBinding<MaskedTextBox<T>, T> ValueBinding
 		{
 			get
 			{
-				return new ControlBinding<MaskedTextBox<T>, T>(
+				return new BindableBinding<MaskedTextBox<T>, T>(
 					this,
 					c => c.Value,
 					(c, v) => c.Value = v,
@@ -210,11 +210,10 @@ namespace Eto.Forms
 			{
 				if (!ReferenceEquals(value, provider))
 				{
-					if (value == null)
-						throw new ArgumentNullException("value");
 					var oldProvider = provider;
 					provider = value;
-					provider.Text = oldProvider.Text;
+					if (provider != null && oldProvider != null)
+						provider.Text = oldProvider.Text;
 					UpdateText();
 				}
 			}

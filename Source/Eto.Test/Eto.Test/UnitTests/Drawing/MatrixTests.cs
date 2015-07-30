@@ -17,7 +17,7 @@ namespace Eto.Test.UnitTests.Drawing
 	/// </summary>	
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TestFixture]
+	[TestFixture, Category(TestUtils.TestPlatformCategory)]
 	public class MatrixTests
 	{
 		public MatrixTests()

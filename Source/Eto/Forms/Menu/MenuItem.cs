@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 
 namespace Eto.Forms
 {
@@ -53,6 +54,22 @@ namespace Eto.Forms
 		/// </remarks>
 		/// <value>The order to use when inserting into the submenu.</value>
 		public int Order { get; set; }
+
+		static readonly object Command_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the command to invoke when the menu item is pressed.
+		/// </summary>
+		/// <remarks>
+		/// This will invoke the specified command when the menu item is pressed.
+		/// The <see cref="ICommand.CanExecute"/> will also used to set the enabled/disabled state of the menu item.
+		/// </remarks>
+		/// <value>The command to invoke.</value>
+		public ICommand Command
+		{
+			get { return Properties.GetCommand(Command_Key); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r); }
+		}
 
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -109,8 +126,8 @@ namespace Eto.Forms
 		/// Initializes a new instance of the <see cref="Eto.Forms.MenuItem"/> class with the specified command.
 		/// </summary>
 		/// <remarks>
-		/// This links the menu item with the specified command, and will trigger <see cref="Command.Execute"/>
-		/// when the user clicks the item, and enable/disable the menu item based on <see cref="Command.Enabled"/>.
+		/// This links the menu item with the specified command, and will trigger <see cref="Eto.Forms.Command.Execute"/>
+		/// when the user clicks the item, and enable/disable the menu item based on <see cref="Eto.Forms.Command.Enabled"/>.
 		/// 
 		/// This is not a weak link, so you should not re-use the Command instance for other menu items if you are disposing
 		/// this menu item.
@@ -122,10 +139,8 @@ namespace Eto.Forms
 			Text = command.MenuText;
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
-			Click += (sender, e) => command.Execute();
 			Validate += (sender, e) => Enabled = command.Enabled;
-			Enabled = command.Enabled;
-			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
+			Command = command;
 		}
 
 		static MenuItem()

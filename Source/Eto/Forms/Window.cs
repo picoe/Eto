@@ -243,10 +243,18 @@ namespace Eto.Forms
 			{ 
 				var toolbar = Handler.ToolBar;
 				if (toolbar != null)
-					toolbar.OnUnLoad(EventArgs.Empty);
+				{
+					toolbar.TriggerUnLoad(EventArgs.Empty);
+					toolbar.Parent = null;
+				}
+				if (value != null)
+				{
+					value.Parent = this;
+					value.TriggerPreLoad(EventArgs.Empty);
+				}
 				Handler.ToolBar = value;
 				if (value != null)
-					value.OnLoad(EventArgs.Empty);
+					value.TriggerLoad(EventArgs.Empty);
 			}
 		}
 
@@ -276,11 +284,23 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets or sets the owner of this window.
 		/// </summary>
+		/// <remarks>
+		/// This sets the parent window that has ownership over this window.
+		/// For a <see cref="Dialog"/>, this will be the window that will be disabled while the modal dialog is shown.
+		/// With a  <see cref="Form"/>, the specified owner will always be below the current window when shown, and will 
+		/// still be responsive to user input.  Typically, but not always, the window will move along with the owner.
+		/// </remarks>
 		/// <value>The owner of this window.</value>
 		public Window Owner
 		{
 			get { return Properties.Get<Window>(OwnerKey); }
-			set { Properties.Set(OwnerKey, value, () => OnOwnerChanged(EventArgs.Empty)); }
+			set {
+				Properties.Set(OwnerKey, value, () =>
+				{
+					Handler.SetOwner(value);
+					OnOwnerChanged(EventArgs.Empty);
+				});
+			}
 		}
 
 		/// <summary>
@@ -307,9 +327,15 @@ namespace Eto.Forms
 			{
 				var menu = Handler.Menu;
 				if (menu != null)
+				{
 					menu.OnUnLoad(EventArgs.Empty);
+					menu.Parent = null;
+				}
 				if (value != null)
+				{
+					value.Parent = this;
 					value.OnPreLoad(EventArgs.Empty);
+				}
 				Handler.Menu = value;
 				if (value != null)
 					value.OnLoad(EventArgs.Empty);
@@ -457,6 +483,26 @@ namespace Eto.Forms
 		public void SendToBack()
 		{
 			Handler.SendToBack();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			base.OnDataContextChanged(e);
+			var tb = ToolBar;
+			if (tb != null)
+				tb.TriggerDataContextChanged(e);
+			var menu = Menu;
+			if (menu != null)
+				menu.TriggerDataContextChanged(e);
 		}
 
 		#region Callback
@@ -677,6 +723,12 @@ namespace Eto.Forms
 			/// Sends the window behind all other windows in the z-order.
 			/// </summary>
 			void SendToBack();
+
+			/// <summary>
+			/// Sets the owner of the window
+			/// </summary>
+			/// <param name="owner">Owner of the window</param>
+			void SetOwner(Window owner);
 		}
 
 		#endregion

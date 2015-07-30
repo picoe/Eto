@@ -74,10 +74,8 @@ namespace Eto.Test.Sections.Controls
 
 		void LogEvents(TextBox control)
 		{
-			control.TextChanged += delegate
-			{
-				Log.Write(control, "TextChanged, Text: {0}", control.Text);
-			};
+			control.TextChanged += (sender, e) => Log.Write(control, "TextChanged, Text: {0}", control.Text);
+			control.TextInput += (sender, e) => Log.Write(control, "TextInput: {0}", e.Text);
 		}
 	}
 }

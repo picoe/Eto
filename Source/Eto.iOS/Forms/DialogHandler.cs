@@ -79,20 +79,21 @@ namespace Eto.iOS.Forms
 			}
 		}
 
-		public async void ShowModal(Control parent)
+		public async void ShowModal()
 		{
-			await ShowModalAsync(parent);
+			await ShowModalAsync();
 		}
 
-		public async Task ShowModalAsync(Control parent)
+		public async Task ShowModalAsync()
 		{
-			await ShowModalAsync(parent, true);
+			await ShowModalAsync(true);
 		}
 
-		async Task ShowModalAsync(Eto.Forms.Control parent, bool opening)
+		async Task ShowModalAsync(bool opening)
 		{
 			closedcs = new TaskCompletionSource<bool>();
 			inNav = false;
+			var parent = Widget.Owner;
 			if (parent != null && (DisplayMode.HasFlag(DialogDisplayMode.Navigation) || DisplayMode == DialogDisplayMode.Default))
 			{
 				var iosView = parent.Handler as IIosViewControllerSource;
@@ -122,7 +123,7 @@ namespace Eto.iOS.Forms
 
 		public void Show()
 		{
-			ShowModal(null);
+			ShowModal();
 		}
 
 		public override void SendToBack()
@@ -135,7 +136,7 @@ namespace Eto.iOS.Forms
 		public override async void BringToFront()
 		{
 			base.BringToFront();
-			await ShowModalAsync(null, false);
+			await ShowModalAsync(false);
 		}
 	}
 }

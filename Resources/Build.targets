@@ -8,15 +8,13 @@
 		<BuildOutputNet40Dir Condition="$(BuildOutputNet40Dir) == ''">$(BaseDir)\BuildOutput\net40\$(Configuration)</BuildOutputNet40Dir>
 		<BuildOutputPCLDir Condition="$(BuildOutputPCLDir) == ''">$(BaseDir)\BuildOutput\pcl\$(Configuration)</BuildOutputPCLDir>
 		<BuildOutputNet45Dir Condition="$(BuildOutputNet45Dir) == ''">$(BaseDir)\BuildOutput\net45\$(Configuration)</BuildOutputNet45Dir>
+		<BuildOutputMobileDir Condition="$(BuildOutputMobileDir) == ''">$(BaseDir)\BuildOutput\mobile\$(Configuration)</BuildOutputMobileDir>
 		<TargetDir Condition="$(TargetDir) == ''">$(BaseDir)\BuildOutput\Nuget\$(Configuration)</TargetDir>
 		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
         <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
-        <MSBuildCommunityVersion>1.4.0.88</MSBuildCommunityVersion>
-		<MSBuildCommunityTasksPath>$(MSBuildThisFileDirectory)\packages\MSBuildTasks.$(MSBuildCommunityVersion)\tools</MSBuildCommunityTasksPath>
-	    <MSBuildCommunityTasksLib>$([MSBUILD]::Unescape($(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll))</MSBuildCommunityTasksLib>
 		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
 		<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj</XamarinStudioAddinProject>
 		<VisualStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudio\Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
@@ -26,20 +24,15 @@
 	</PropertyGroup>
 	<Import Project="Utilities.targets" Condition="$(UtilitiesImported) == ''" />
 	<Import Project="$(NugetDir)\.nuget\NuGet.targets" Condition="Exists('$(NugetDir)\.nuget\NuGet.targets')" />
-	<UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.FileUpdate" />
 	
 	<Target Name="UpdateAssemblyInfo" Condition="$(BuildVersion) != ''">
-		<Exec Command="$(NuGetCommand) install MSBuildTasks -Version $(MSBuildCommunityVersion) -OutputDirectory packages"
-			Condition="! Exists('$(MSBuildCommunityTasksPath)')" />
 
 		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
             Regex='AssemblyInformationalVersion[(]&quot;.*&quot;[)]'
-            Encoding="utf-8-without-bom"
             ReplacementText='AssemblyInformationalVersion(&quot;$(BuildVersion)&quot;)' />
             
 		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
             Regex='AssemblyFileVersion[(]&quot;.*&quot;[)]'
-            Encoding="utf-8-without-bom"
             ReplacementText='AssemblyFileVersion(&quot;$(BuildVersion)&quot;)' />
         
         <ItemGroup>
@@ -58,7 +51,6 @@
             ReplacementText='.$(BuildVersion).nupkg' />
             
 		<FileUpdate Files="@(VSTemplateFiles)"
-            Encoding="utf-8-without-bom"
             Regex="@(VSTemplateReg->'%(Text)')"
             ReplacementText='version=&quot;$(BuildVersion)&quot;' />
 
@@ -81,13 +73,8 @@
 	</Target>
 	
 	<Target Name="Build" DependsOnTargets="UpdateAssemblyInfo">
-    	<!-- using exec since xbuild messes up properties when using msbuild task -->
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net40.sln'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net45.sln'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration)' '$(SourceDir)\Eto.iOS\Eto.iOS.csproj'" Condition="$(Platform) == 'Mac'"/>
-    	
-    	<MSBuild Projects="$(SourceDir)\Eto - net40.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
-    	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
+    	<MSBuild Projects="$(SourceDir)\Eto - net40.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
+    	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)"/>
     	
 		<!-- build XamMac separately if it hasn't been built on mac -->
     	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="! Exists('$(BuildOutputNet40Dir)\Eto.XamMac.dll')" />
@@ -120,7 +107,7 @@
 				<Assembly>$(BuildOutputNet45Dir)\Eto.XamMac.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.XamMac2">
-				<Assembly>$(BuildOutputPCLDir)\Eto.XamMac2.dll</Assembly>
+				<Assembly>$(BuildOutputMobileDir)\Eto.XamMac2.dll</Assembly>
 			</Package>
 			<Package Include="Eto.Platform.Windows">
 				<Assembly>$(BuildOutputNet45Dir)\Eto.WinForms.dll</Assembly>
