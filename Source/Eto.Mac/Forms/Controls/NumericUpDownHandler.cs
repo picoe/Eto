@@ -259,8 +259,6 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static readonly IntPtr selSetFormatter = Selector.GetHandle("setFormatter:");
-
 		public double Value
 		{
 			get
