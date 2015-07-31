@@ -785,11 +785,9 @@ namespace Eto.Forms
 					bool directInsert = sort == null && matchesFilter;
 					if (index > 0)
 					{
-						var beforeItem = filtered[index - 1];
-						var itemsIndex = items.IndexOf(beforeItem);
-						items.Insert(itemsIndex, item);
+						items.Insert(index, item);
 						if (externalList != null)
-							externalList.Insert(itemsIndex, item);
+							externalList.Insert(index, item);
 						if (directInsert)
 							filtered.Insert(index, item);
 					}
@@ -904,7 +902,7 @@ namespace Eto.Forms
 					externalList.Add(item);
 
 				Rebuild();
-				var index = (filtered != null ? filtered.IndexOf(item) : items.Count) - 1;
+				var index = filtered != null ? filtered.IndexOf(item) : items.Count - 1;
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 			});
 		}
