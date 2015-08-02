@@ -132,6 +132,7 @@
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
     <Compile Include="UnitTests\Drawing\ClipTests.cs" />
     <Compile Include="UnitTests\Drawing\DefaultValueTests.cs" />
+    <Compile Include="UnitTests\Drawing\GraphicsTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\ComboBoxTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\NumericUpDownTests.cs" />
@@ -180,6 +181,8 @@
     <Compile Include="Sections\Controls\RichTextAreaSection.cs" />
     <Compile Include="Sections\Controls\MaskedTextBoxSection.cs" />
     <Compile Include="Sections\Behaviors\ClipboardSection.cs" />
+    <Compile Include="Sections\Drawing\PixelOffsetTransforms.cs" />
+    <Compile Include="Sections\Drawing\ClipTransformSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />

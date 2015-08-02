@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Drawing
 {
-	[Section("Drawing", "Pixel Offset")]
+	[Section("Drawing", "PixelOffsetMode")]
 	public class PixelOffsetSection : Scrollable
 	{
 		Size canvasSize = new Size(501, 221);
@@ -36,20 +36,19 @@ namespace Eto.Test.Sections.Drawing
 
 		public static void Draw(Graphics graphics)
 		{
-			var generator = graphics.Platform;
 			var image = TestIcons.TestImage;
 			// lines
-			var whitePen = Pens.White;
+			var whitePen = new Pen(Colors.White, 1);
 			graphics.DrawLine(whitePen, 1, 1, 99, 99);
 			graphics.DrawLine(whitePen, 50, 1, 50, 99);
 			graphics.DrawLine(whitePen, 1, 51, 99, 51);
 
-			graphics.DrawRectangle(Pens.White, 101, 1, 100, 100);
-			graphics.DrawRectangle(Pens.White, 101, 1, 10, 10);
+			graphics.DrawRectangle(whitePen, 101, 1, 100, 100);
+			graphics.DrawRectangle(whitePen, 101, 1, 10, 10);
 
 			graphics.DrawEllipse(Pens.Green, 101, 1, 100, 100);
 
-			graphics.DrawPolygon(Pens.White, new PointF(203, 1), new PointF(253, 51), new Point(203, 101), new PointF(203, 1), new PointF(253, 1), new PointF(253, 101), new PointF(203, 101));
+			graphics.DrawPolygon(whitePen, new PointF(203, 1), new PointF(253, 51), new Point(203, 101), new PointF(203, 1), new PointF(253, 1), new PointF(253, 101), new PointF(203, 101));
 
 			var rect = new RectangleF(255, 1, 100, 100);
 			graphics.DrawArc(Pens.LightGreen, rect, 180, 90);
@@ -85,6 +84,22 @@ namespace Eto.Test.Sections.Drawing
 
 
 			graphics.DrawImage(image, 101, 120, 100, 100);
+
+			const int offset = 440;
+			var xoffset = offset;
+			var yoffset = 112;
+			for (int i = 1; i < 14; i++)
+			{
+				var pen = new Pen(Colors.White, i);
+				pen.LineCap = PenLineCap.Butt;
+				graphics.DrawLine(pen, xoffset, 1, xoffset, 110);
+
+				graphics.DrawLine(pen, offset, yoffset, offset + 100, yoffset);
+
+				xoffset += i + 2;
+				yoffset += i + 2;
+			}
+
 		}
 	}
 }

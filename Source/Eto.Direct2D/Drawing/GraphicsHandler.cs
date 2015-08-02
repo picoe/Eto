@@ -23,14 +23,14 @@ namespace Eto.Direct2D.Drawing
 		bool rectClip;
 		bool disposeControl = true;
 		Bitmap image;
-		float offset = 0.5f;
-		float fillOffset;
 		sd.Layer helperLayer;
 		sd.Geometry clipGeometry;
 		sd.LayerParameters? clipParams;
 		RectangleF clipBounds;
+		bool isOffset;
+        s.Matrix3x2 currentTransform;
 #if WINFORMS
-		DrawableHandler drawable;
+        DrawableHandler drawable;
 #endif
 		public float PointsPerPixel { get { return 72f / Control.DotsPerInch.Width; } }
 
@@ -221,24 +221,31 @@ namespace Eto.Direct2D.Drawing
 			}
 		}
 
-		public void TranslateTransform(float dx, float dy)
+        void SetTransform(s.Matrix3x2 transform)
+        {
+            if (isOffset)
+                transform = s.Matrix3x2.Multiply(transform, s.Matrix3x2.Translation(0.5f, 0.5f));
+            Control.Transform = transform;
+        }
+
+        public void TranslateTransform(float dx, float dy)
 		{
-			Control.Transform = s.Matrix3x2.Multiply(s.Matrix3x2.Translation(dx, dy), Control.Transform);
+            SetTransform(currentTransform = s.Matrix3x2.Multiply(s.Matrix3x2.Translation(dx, dy), currentTransform));
 		}
 
 		public void RotateTransform(float angle)
 		{
-			Control.Transform = s.Matrix3x2.Multiply(s.Matrix3x2.Rotation((float)(Conversions.DegreesToRadians(angle))), Control.Transform);
+            SetTransform(currentTransform = s.Matrix3x2.Multiply(s.Matrix3x2.Rotation((float)(Conversions.DegreesToRadians(angle))), currentTransform));
 		}
 
 		public void ScaleTransform(float sx, float sy)
 		{
-			Control.Transform = s.Matrix3x2.Multiply(s.Matrix3x2.Scaling(sx, sy), Control.Transform);
+            SetTransform(currentTransform = s.Matrix3x2.Multiply(s.Matrix3x2.Scaling(sx, sy), currentTransform));
 		}
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
-			Control.Transform = s.Matrix3x2.Multiply((s.Matrix3x2)matrix.ControlObject, Control.Transform);
+            SetTransform(currentTransform = s.Matrix3x2.Multiply((s.Matrix3x2)matrix.ControlObject, currentTransform));
 		}
 
 		Stack<s.Matrix3x2> transformStack;
@@ -247,12 +254,17 @@ namespace Eto.Direct2D.Drawing
 		{
 			if (transformStack == null)
 				transformStack = new Stack<s.Matrix3x2>();
-			transformStack.Push(Control.Transform);
+			transformStack.Push(currentTransform);
 		}
 
 		public void RestoreTransform()
 		{
-			Control.Transform = transformStack.Pop();
+			SetTransform(currentTransform = transformStack.Pop());
+		}
+
+		public IMatrix CurrentTransform
+		{
+			get { return currentTransform.ToEto(); }
 		}
 
 		public void CreateFromImage(Bitmap image)
@@ -264,6 +276,7 @@ namespace Eto.Direct2D.Drawing
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
+			SetOffset(true);
 			using (var textLayout = GetTextLayout(font, text))
 			{
 				Control.DrawTextLayout(new s.Vector2(x, y), textLayout, brush.ToDx(Control));
@@ -291,41 +304,44 @@ namespace Eto.Direct2D.Drawing
 			Control.Flush();
 		}
 
+		static readonly object PixelOffsetMode_Key = new object();
+
 		public PixelOffsetMode PixelOffsetMode
 		{
-			get { return offset == 0f ? PixelOffsetMode.None : PixelOffsetMode.Half; }
-			set
+			get { return Widget.Properties.Get<PixelOffsetMode>(PixelOffsetMode_Key); }
+			set { Widget.Properties.Set(PixelOffsetMode_Key, value); }
+		}
+
+		void SetOffset(bool fill)
+		{
+			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			if (requiresOffset != isOffset)
 			{
-				if (value == PixelOffsetMode.None)
-				{
-					offset = .5f;
-					fillOffset = 0f;
-				}
-				else
-				{
-					offset = 0f;
-					fillOffset = -.5f;
-				}
+				isOffset = requiresOffset;
+				SetTransform(currentTransform);
 			}
 		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
+			SetOffset(false);
 			var pd = pen.ToPenData();
-			Control.DrawRectangle(new s.RectangleF(x + offset, y + offset, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
+			Control.DrawRectangle(new s.RectangleF(x, y, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillRectangle(new s.RectangleF(x + fillOffset, y + fillOffset, width, height), brush.ToDx(Control));
+			SetOffset(true);
+			Control.FillRectangle(new s.RectangleF(x, y, width, height), brush.ToDx(Control));
 		}
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
+			SetOffset(false);
 			var pd = pen.ToPenData();
 			Control.DrawLine(
-				new s.Vector2(startx + offset, starty + offset),
-				new s.Vector2(endx + offset, endy + offset),
+				new s.Vector2(startx, starty),
+				new s.Vector2(endx, endy),
 				pd.GetBrush(Control),
 				pd.Width,
 				pd.StrokeStyle);
@@ -333,19 +349,22 @@ namespace Eto.Direct2D.Drawing
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillEllipse(GetEllipse(x + fillOffset, y + fillOffset, width, height), brush.ToDx(Control));
+			SetOffset(true);
+			Control.FillEllipse(GetEllipse(x, y, width, height), brush.ToDx(Control));
 		}
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
+			SetOffset(false);
 			var pd = pen.ToPenData();
-			Control.DrawEllipse(GetEllipse(x + offset, y + offset, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
+			Control.DrawEllipse(GetEllipse(x, y, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
 		}
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(false);
 			PointF start;
-			var arc = CreateArc(x + offset, y + offset, width, height, startAngle, sweepAngle, out start);
+			var arc = CreateArc(x, y, width, height, startAngle, sweepAngle, out start);
 			var path = new sd.PathGeometry(SDFactory.D2D1Factory);
 			var sink = path.Open();
 			sink.BeginFigure(start.ToDx(), sd.FigureBegin.Hollow);
@@ -390,9 +409,8 @@ namespace Eto.Direct2D.Drawing
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(true);
 			PointF start;
-			x += fillOffset;
-			y += fillOffset;
 			var arc = CreateArc(x, y, width, height, startAngle, sweepAngle, out start);
 			var path = new sd.PathGeometry(SDFactory.D2D1Factory);
 			var sink = path.Open();
@@ -409,29 +427,27 @@ namespace Eto.Direct2D.Drawing
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
-			SaveTransform();
-			TranslateTransform(-fillOffset, -fillOffset);
+			SetOffset(true);
 			Control.FillGeometry(path.ToGeometry(), brush.ToDx(Control));
-			RestoreTransform();
 		}
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
+			SetOffset(false);
 			var pd = pen.ToPenData();
-			SaveTransform();
-			TranslateTransform(offset, offset);
 			Control.DrawGeometry(path.ToGeometry(), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
-			RestoreTransform();
 		}
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
+			SetOffset(true);
 			var bmp = image.ToDx(Control);
 			Control.DrawBitmap(bmp, destination.ToDx(), 1f, sd.BitmapInterpolationMode.Linear, source.ToDx());
 		}
 
 		public void DrawImage(Image image, float x, float y)
 		{
+			SetOffset(true);
 			var bmp = image.ToDx(Control);
 			if (bmp != null)
 				Control.DrawBitmap(bmp, new s.RectangleF(x, y, bmp.Size.Width, bmp.Size.Height), 1f, ImageInterpolation.ToDx());
@@ -439,6 +455,7 @@ namespace Eto.Direct2D.Drawing
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			var bmp = image.ToDx(Control);
 			Control.DrawBitmap(bmp, new s.RectangleF(x, y, width, height), 1f, ImageInterpolation.ToDx());
 		}
@@ -569,7 +586,7 @@ namespace Eto.Direct2D.Drawing
 			{
 				CurrentRenderTarget = Control;
 				Control.BeginDraw();
-				Control.Transform = s.Matrix3x2.Identity;
+				SetTransform(currentTransform = s.Matrix3x2.Identity);
 				if (transformStack != null)
 					transformStack.Clear();
 				ResetClip();

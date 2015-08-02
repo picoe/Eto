@@ -259,7 +259,7 @@ namespace Eto.Mac.Drawing
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var sourceRect = new CGRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
-			var destRect = graphics.TranslateView(destination.ToNS(), true, true);
+			var destRect = destination.ToNS();
 			if (alpha)
 				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 			else

@@ -18,7 +18,7 @@ namespace Eto.WinForms.Forms
 
 		protected override bool SetMinimumSize(Size size)
 		{
-			if (columnScale == null || rowScale == null)
+			if (columnScale == null || rowScale == null || !Widget.Loaded)
 				return base.SetMinimumSize(size);
 			// ensure that our width doesn't get smaller than the non-scaled child controls
 			// to make it so the child controls are left-justified when the container
@@ -51,6 +51,7 @@ namespace Eto.WinForms.Forms
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};
+            Control.SuspendLayout();
 		}
 
 		public void Update()
@@ -168,7 +169,8 @@ namespace Eto.WinForms.Forms
 
 		public override void OnLoad(EventArgs e)
 		{
-			SetMinimumSize(useCache: true); // when created during pre-load, we need this to ensure the scale is set on the children properly
+            Control.ResumeLayout();
+            SetMinimumSize(useCache: true); // when created during pre-load, we need this to ensure the scale is set on the children properly
 			base.OnLoad(e);
 		}
 

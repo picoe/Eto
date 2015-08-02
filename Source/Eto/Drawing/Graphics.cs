@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Eto.Forms;
 
 namespace Eto.Drawing
 {
@@ -35,7 +34,6 @@ namespace Eto.Drawing
 		public Graphics(IHandler handler)
 			: base(handler)
 		{
-			Initialize();
 		}
 
 		/// <summary>
@@ -908,6 +906,19 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Gets a copy of the current transform.
+		/// </summary>
+		/// <remarks>
+		/// The current transform is initially an identity matrix.
+		/// Any transform operations performed on this object will change this value.
+		/// </remarks>
+		/// <value>The current transform matrix.</value>
+		public IMatrix CurrentTransform
+		{
+			get { return Handler.CurrentTransform; }
+		}
+
+		/// <summary>
 		/// Gets the bounds of the clipping region
 		/// </summary>
 		/// <remarks>
@@ -923,7 +934,8 @@ namespace Eto.Drawing
 		/// Sets the clip region to the specified <paramref name="rectangle"/>
 		/// </summary>
 		/// <remarks>
-		/// The previous clipping region will be cleared after this call
+		/// The previous clipping region will be cleared after this call.
+		/// The rectangle specified is translated by the current transform, but is not affected by subsequent transform operations.
 		/// </remarks>
 		/// <param name="rectangle">Rectangle for the clipping region</param>
 		public void SetClip(RectangleF rectangle)
@@ -936,6 +948,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <remarks>
 		/// The previous clipping region will be cleared after this call
+		/// The path specified is translated by the current transform, but is not affected by subsequent transform operations.
 		/// </remarks>
 		/// <param name="path">Path to specify the clip region</param>
 		public void SetClip(IGraphicsPath path)
@@ -1211,6 +1224,16 @@ namespace Eto.Drawing
 			/// This restores the transform state from a previous <see cref="SaveTransform"/> call.
 			/// </remarks>
 			void RestoreTransform();
+
+			/// <summary>
+			/// Gets a copy of the current transform.
+			/// </summary>
+			/// <remarks>
+			/// The current transform is initially an identity matrix.
+			/// Any transform operations performed on this object will change this value.
+			/// </remarks>
+			/// <value>The current transform matrix.</value>
+			IMatrix CurrentTransform { get; }
 
 			/// <summary>
 			/// Gets the bounds of the clipping region
