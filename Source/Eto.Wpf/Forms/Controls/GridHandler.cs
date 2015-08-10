@@ -47,7 +47,9 @@ namespace Eto.Wpf.Forms.Controls
 				CanUserResizeRows = false,
 				CanUserAddRows = false,
 				RowHeaderWidth = 0,
-				SelectionMode = swc.DataGridSelectionMode.Single
+				SelectionMode = swc.DataGridSelectionMode.Single,
+				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
+				Background = sw.SystemColors.WindowBrush
 			};
 		}
 

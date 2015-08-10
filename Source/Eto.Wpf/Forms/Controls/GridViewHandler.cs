@@ -11,12 +11,6 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		IEnumerable<object> store;
 
-		protected override void Initialize()
-		{
-			base.Initialize();
-			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
-		}
-
 		protected override object GetItemAtRow (int row)
 		{
 			return store != null ? store.ElementAt(row) : null;
