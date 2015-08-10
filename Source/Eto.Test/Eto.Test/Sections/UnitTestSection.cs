@@ -366,13 +366,7 @@ namespace Eto.Test.Sections
 		void PopulateTree(string filter = null)
 		{
 			var testSuites = GetTestSuites().Select(suite => ToTree(suite.Assembly, suite, filter)).Where(r => r != null).ToList();
-			TreeItem treeData;
-			if (testSuites.Count > 1)
-			{
-				treeData = new TreeItem();
-				treeData.Children.AddRange(testSuites);
-			}
-			else treeData = testSuites.FirstOrDefault();
+			var treeData = new TreeItem(testSuites);
 			Application.Instance.AsyncInvoke(() => tree.DataStore = treeData);
 		}
 
@@ -391,6 +385,19 @@ namespace Eto.Test.Sections
 					var treeItem = ToTree(assembly, child, filter);
 					if (treeItem != null)
 						item.Children.Add(treeItem);
+				}
+				while (item.Children.Count == 1)
+				{
+					// collapse test nodes
+					var child = item.Children[0] as TreeItem;
+					if (child.Children.Count == 0)
+						break;
+					if (!child.Text.StartsWith(item.Text, StringComparison.Ordinal))
+						item.Text += "." + child.Text;
+					else
+						item.Text = child.Text;
+					item.Children.Clear();
+					item.Children.AddRange(child.Children);
 				}
 				if (item.Children.Count == 0)
 					return null;
