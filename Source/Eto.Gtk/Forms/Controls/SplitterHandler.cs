@@ -14,7 +14,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		double relative = double.NaN;
 		int suppressSplitterMoved;
 
-		private int _prefer(int width1, int width2)
+		int GetPreferredPanelSize(int width1, int width2)
 		{
 			if (position.HasValue)
 				width1 = position.Value;
@@ -51,7 +51,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var size1 = Child1.SizeRequest();
 				var size2 = Child2.SizeRequest();
 				requisition.Height = Math.Max(size1.Height, size2.Height);
-				requisition.Width = Handler._prefer(size1.Width, size2.Width);
+				requisition.Width = Handler.GetPreferredPanelSize(size1.Width, size2.Width);
 			}
 			#else
 			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
@@ -65,16 +65,16 @@ namespace Eto.GtkSharp.Forms.Controls
 				int min1, width1, min2, width2, sw = Handler.SplitterWidth;
 				Child1.GetPreferredWidth(out min1, out width1);
 				Child2.GetPreferredWidth(out min2, out width2);
-				minimum_width = Handler._prefer(min1, min2);
-				natural_width = Handler._prefer(width1, width2);
+				minimum_width = Handler.GetPreferredPanelSize(min1, min2);
+				natural_width = Handler.GetPreferredPanelSize(width1, width2);
 			}
 			protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
 			{
 				int min1, width1, min2, width2, sw = Handler.SplitterWidth;
 				Child1.GetPreferredWidthForHeight(height, out min1, out width1);
 				Child2.GetPreferredWidthForHeight(height, out min2, out width2);
-				minimum_width = Handler._prefer(min1, min2);
-				natural_width = Handler._prefer(width1, width2);
+				minimum_width = Handler.GetPreferredPanelSize(min1, min2);
+				natural_width = Handler.GetPreferredPanelSize(width1, width2);
 			}
 			#endif
 
@@ -103,7 +103,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var size1 = Child1.SizeRequest();
 				var size2 = Child2.SizeRequest();
 				requisition.Width = Math.Max(size1.Width, size2.Width);
-				requisition.Height = Handler._prefer(size1.Height, size2.Height);
+				requisition.Height = Handler.GetPreferredPanelSize(size1.Height, size2.Height);
 			}
 			#else
 			protected override void OnGetPreferredWidthForHeight(int height, out int minimum_width, out int natural_width)
@@ -117,16 +117,16 @@ namespace Eto.GtkSharp.Forms.Controls
 				int min1, height1, min2, height2, sw = Handler.SplitterWidth;
 				Child1.GetPreferredHeight(out min1, out height1);
 				Child2.GetPreferredHeight(out min2, out height2);
-				minimum_height = Handler._prefer(min1, min2);
-				natural_height = Handler._prefer(height1, height2);
+				minimum_height = Handler.GetPreferredPanelSize(min1, min2);
+				natural_height = Handler.GetPreferredPanelSize(height1, height2);
 			}
 			protected override void OnGetPreferredHeightForWidth(int width, out int minimum_height, out int natural_height)
 			{
 				int min1, height1, min2, height2, sw = Handler.SplitterWidth;
 				Child1.GetPreferredHeightForWidth(width, out min1, out height1);
 				Child2.GetPreferredHeightForWidth(width, out min2, out height2);
-				minimum_height = Handler._prefer(min1, min2);
-				natural_height = Handler._prefer(height1, height2);
+				minimum_height = Handler.GetPreferredPanelSize(min1, min2);
+				natural_height = Handler.GetPreferredPanelSize(height1, height2);
 			}
 			#endif
 
@@ -173,7 +173,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public int SplitterWidth
 		{
-			get { return 5; /* = default; Control.StyleGetProperty("handle-size") as int ? or gutter_size? */; }
+			get { return Control.StyleGetProperty("handle-size") as int? ?? 5; }
 			set { /* not implemented */ }
 		}
 

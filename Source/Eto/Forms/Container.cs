@@ -117,6 +117,8 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected override void OnLoadComplete(EventArgs e)
 		{
+			base.OnLoadComplete(e);
+
 			if (Handler.RecurseToChildren)
 			{
 				foreach (Control control in Controls)
@@ -124,8 +126,6 @@ namespace Eto.Forms
 					control.TriggerLoadComplete(e);
 				}
 			}
-			
-			base.OnLoadComplete(e);
 		}
 
 		/// <summary>

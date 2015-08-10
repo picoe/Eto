@@ -68,10 +68,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		//TODO: SplitterWidth - at least get correct value
 		public int SplitterWidth
 		{
-			get { return 5; }
+			get { return (int)Math.Round(Control.DividerThickness); }
 			set { }
 		}
 
@@ -109,7 +108,7 @@ namespace Eto.Mac.Forms.Controls
 			var panel2Rect = splitView.Subviews[1].Frame;
 			var newFrame = splitView.Frame;
 				
-			if (oldSize.Height == 0 && oldSize.Width == 0)
+			if (oldSize.Height <= 0 && oldSize.Width <= 0)
 				oldSize = newFrame.Size;
 	
 			if (splitView.IsVertical)
@@ -256,7 +255,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public int Position
 		{
-			get { return position ?? 0; }
+			get { return position ?? (int)(Control.IsVertical ? Control.Subviews[0].Frame.Width : Control.Subviews[0].Frame.Height); }
 			set
 			{
 				position = value;
@@ -326,6 +325,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				switch (fixedPanel)
 				{
+					case SplitterFixedPanel.None:
 					case SplitterFixedPanel.Panel1:
 						var size1 = panel1.GetPreferredSize(SizeF.MaxValue);
 						position = (int)(Orientation == SplitterOrientation.Horizontal ? size1.Width : size1.Height);
@@ -336,6 +336,21 @@ namespace Eto.Mac.Forms.Controls
 							position = (int)(Control.Frame.Width - size2.Width - Control.DividerThickness);
 						else
 							position = (int)(Control.Frame.Height - size2.Height - Control.DividerThickness);
+						break;
+				}
+			}
+			else if (PreferredSize != null)
+			{
+				var preferredSize = Orientation == SplitterOrientation.Horizontal ? PreferredSize.Value.Width : PreferredSize.Value.Height;
+				var size = Orientation == SplitterOrientation.Horizontal ? Size.Width : Size.Height;
+				switch (fixedPanel)
+				{
+					case SplitterFixedPanel.Panel2:
+						position = size - (preferredSize - position.Value);
+						break;
+					case SplitterFixedPanel.None:
+						if (preferredSize > 0)
+							position = position.Value * size / preferredSize;
 						break;
 				}
 			}
