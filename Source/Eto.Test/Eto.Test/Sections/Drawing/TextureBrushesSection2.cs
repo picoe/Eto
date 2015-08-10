@@ -6,84 +6,76 @@ using System.Diagnostics;
 namespace Eto.Test.Sections.Drawing
 {
 	/// <summary>
-	/// Wraps a drawable and renders directly to a passed
-	/// Graphics or optionally via an intermediate bitmap.
+	/// Drawable with option to double buffer drawing operations
 	/// </summary>
-	public class DrawableTarget
+	public class BufferedDrawable : Drawable
 	{
-		readonly Drawable drawable;
-		Graphics bitmapGraphics;
-		public Bitmap OffscreenBitmap { get; private set; }
+		Bitmap bitmap;
+		Size renderSize;
+		bool enableDoubleBuffering;
 
-		bool useOffScreenBitmap;
-		public bool UseOffScreenBitmap
+		public bool EnableDoubleBuffering
 		{
-			get { return useOffScreenBitmap; }
+			get { return enableDoubleBuffering; }
 			set
 			{
-				useOffScreenBitmap = value;
-				drawable.Invalidate();
+				enableDoubleBuffering = value;
+				Invalidate();
 			}
 		}
 
-		public DrawableTarget(Drawable drawable)
+
+		protected virtual void OnBufferedPaint(PaintEventArgs e)
 		{
-			this.drawable = drawable;
-			UseOffScreenBitmap = false;
 		}
 
-		Size renderSize;
-
-		public Graphics BeginDraw(PaintEventArgs e)
+		protected sealed override void OnPaint(PaintEventArgs e)
 		{
-			if (UseOffScreenBitmap)
+			if (EnableDoubleBuffering)
 			{
-				var screen = drawable.ParentWindow.Screen;
+				var screen = ParentWindow.Screen;
 				var scale = screen.RealScale / screen.Scale;
 				renderSize = Size.Round(e.ClipRectangle.Size * scale);
-				if (OffscreenBitmap == null ||
-					OffscreenBitmap.Size.Width < renderSize.Width ||
-					OffscreenBitmap.Size.Height < renderSize.Height)
+				if (bitmap == null ||
+					bitmap.Size.Width < renderSize.Width ||
+					bitmap.Size.Height < renderSize.Height)
 				{
-					if (OffscreenBitmap != null)
-						OffscreenBitmap.Dispose();
+					if (bitmap != null)
+						bitmap.Dispose();
 
-					OffscreenBitmap = new Bitmap(renderSize, PixelFormat.Format32bppRgba);
+					bitmap = new Bitmap(renderSize, PixelFormat.Format32bppRgba);
 				}
-				bitmapGraphics = new Graphics(OffscreenBitmap);
+				var bitmapGraphics = new Graphics(bitmap);
+				bitmapGraphics.Clear(Brushes.Cached(BackgroundColor));
 				bitmapGraphics.ScaleTransform(scale);
 				bitmapGraphics.TranslateTransform(-e.ClipRectangle.Location);
-				bitmapGraphics.SetClip(e.ClipRectangle); // should not be affected by transform
-				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor));
-				return bitmapGraphics;
-			}
-			return e.Graphics;
-		}
+				bitmapGraphics.SetClip(e.ClipRectangle * scale); // should be affected by transform
 
-		public void EndDraw(PaintEventArgs e)
-		{
-			if (bitmapGraphics != null)
-			{
+				var childArgs = new PaintEventArgs(bitmapGraphics, e.ClipRectangle);
+				base.OnPaint(childArgs);
+
+				OnBufferedPaint(childArgs);
+
 				bitmapGraphics.Dispose();
 				bitmapGraphics = null;
-				e.Graphics.DrawImage(OffscreenBitmap, new RectangleF(renderSize), e.ClipRectangle);
-				if (drawable.Platform.IsWpf)
+				e.Graphics.DrawImage(bitmap, new RectangleF(renderSize), e.ClipRectangle);
+				if (Platform.IsWpf)
 				{
 					// wpf runs out of resources fast here, so we garbage collect
 					GC.Collect();
-					GC.WaitForPendingFinalizers();
 				}
+			}
+			else
+			{
+				base.OnPaint(e);
+				OnBufferedPaint(e);
 			}
 		}
 
 		public Control Checkbox()
 		{
-			var control = new CheckBox
-			{
-				Text = "Use Offscreen Bitmap",
-				Checked = UseOffScreenBitmap,
-			};
-			control.CheckedChanged += (sender, e) => UseOffScreenBitmap = control.Checked ?? false;
+			var control = new CheckBox { Text = "Use Double Buffer" };
+			control.CheckedBinding.Bind(this, c => c.EnableDoubleBuffering);
 			return control;
 		}
 	}
@@ -97,10 +89,9 @@ namespace Eto.Test.Sections.Drawing
 		public TextureBrushesSection2()
 		{
 			image = TestIcons.Textures;
-			var drawable = new Drawable();
-			var drawableTarget = new DrawableTarget(drawable);
+			var drawable = new BufferedDrawable();
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
-			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
+			layout.AddSeparateRow(null, drawable.Checkbox(), null);
 			layout.Add(drawable);
 			this.Content = layout;
 
@@ -116,8 +107,7 @@ namespace Eto.Test.Sections.Drawing
 
 			drawable.Paint += (s, e) =>
 			{
-				var graphics = drawableTarget.BeginDraw(e);
-
+				var graphics = e.Graphics;
 				graphics.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
 				// texture brushes
 				var temp = location;
@@ -128,8 +118,6 @@ namespace Eto.Test.Sections.Drawing
 				// linear gradient brushes
 				temp = temp + new PointF(200, 0);
 				DrawShapes(linearGradientBrush, temp, img.Size, graphics);
-
-				drawableTarget.EndDraw(e);
 			};
 		}
 

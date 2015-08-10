@@ -11,10 +11,9 @@ namespace Eto.Test.Sections.Drawing
 		public TextureBrushesSection()
 		{
 			var image = TestIcons.Textures;
-			var drawable = new Drawable { Size = new Size(image.Size.Width, image.Size.Height * 10) };
-			var drawableTarget = new DrawableTarget(drawable);
-			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
-			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
+			var drawable = new BufferedDrawable { Size = new Size(image.Size.Width, image.Size.Height * 10) };
+            var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+			layout.AddSeparateRow(null, drawable.Checkbox(), null);
 			layout.Add(new Scrollable { Content = drawable });
 			Content = layout;
 
@@ -41,10 +40,9 @@ namespace Eto.Test.Sections.Drawing
 
 			drawable.Paint += (s, e) =>
 			{
-				var graphics = drawableTarget.BeginDraw(e);
+				var graphics = e.Graphics;
 				foreach (var renderer in renderers)
 					renderer(graphics);
-				drawableTarget.EndDraw(e);
 			};
 		}
 	}
