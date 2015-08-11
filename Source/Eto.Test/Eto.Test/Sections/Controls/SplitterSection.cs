@@ -19,7 +19,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddCentered(Test2AutoSize());
 			layout.AddCentered(TestDynamic());
 			layout.AddCentered(TestInitResize());
-			var xthemed = new CheckBox() { Text = "Use Themed Splitter" };
+			var xthemed = new CheckBox { Text = "Use Themed Splitter" };
 			layout.AddCentered(xthemed);
 			layout.Add(null);
 			Content = layout;
@@ -98,10 +98,10 @@ namespace Eto.Test.Sections.Controls
 				new Label(), new Label(), new Label(),
 				new Label(), new Label(), new Label()
 			};
-			var statusLayout = new DynamicLayout { };
+			var statusLayout = new DynamicLayout();
 			statusLayout.BeginHorizontal();
 			for (var i = 0; i < status.Length; ++i)
-				statusLayout.Add(status[i], xscale: true);
+				statusLayout.Add(status[i], true);
 			statusLayout.EndHorizontal();
 
 			// Main panel
@@ -139,7 +139,7 @@ namespace Eto.Test.Sections.Controls
 							{
 								Panel1 = new TreeView { Size = new Size(100, 100) },
 								Panel2 = new GridView(),
-								Orientation = SplitterOrientation.Horizontal,
+								Orientation = Orientation.Horizontal,
 								FixedPanel = SplitterFixedPanel.Panel1,
 								Position = 100,
 							}
@@ -206,6 +206,7 @@ namespace Eto.Test.Sections.Controls
 		}
 
 		class SplitLayout
+
 		{
 			public Control Root { get; private set; }
 
@@ -217,8 +218,10 @@ namespace Eto.Test.Sections.Controls
 
 			public SplitLayout(Panel[] panels = null)
 			{
-				this.Panels = panels ?? new Panel[] {
-					new Panel(), new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
+				Panels = panels ?? new []
+				{
+					new Panel(), new Panel(), new Panel(), new Panel(), new Panel(), new Panel()
+				};
 			}
 
 			public Control Layout(Func<int, Control> getContent)
@@ -244,7 +247,7 @@ namespace Eto.Test.Sections.Controls
 					{
 						Panel1 = Panels[0],
 						Panel2 = Panels[1],
-						Orientation = SplitterOrientation.Vertical,
+						Orientation = Orientation.Vertical,
 						Position = 200
 					};
 					// absolute position with height and second panel fixed (issue #309)
@@ -252,9 +255,9 @@ namespace Eto.Test.Sections.Controls
 					{
 						Panel1 = Panels[2],
 						Panel2 = Panels[3],
-						Orientation = SplitterOrientation.Vertical,
+						Orientation = Orientation.Vertical,
 						FixedPanel = SplitterFixedPanel.Panel2,
-						Position = 0,
+						//Position = 0,
 						Height = 205 // ~ RelativePosition=200
 					};
 					// ratio mode (60%)
@@ -262,7 +265,7 @@ namespace Eto.Test.Sections.Controls
 					{
 						Panel1 = Panels[4],
 						Panel2 = Panels[5],
-						Orientation = SplitterOrientation.Vertical,
+						Orientation = Orientation.Vertical,
 						FixedPanel = SplitterFixedPanel.None,
 						RelativePosition = .6
 					};
@@ -271,18 +274,18 @@ namespace Eto.Test.Sections.Controls
 					{
 						Panel1 = p0_1,
 						Panel2 = p2_3,
-						Orientation = SplitterOrientation.Horizontal,
+						Orientation = Orientation.Horizontal,
 					};
 					// relative position with second panel fixed
 					var p0123_45 = new Splitter
 					{
 						Panel1 = p01_23,
 						Panel2 = p4_5,
-						Orientation = SplitterOrientation.Horizontal,
+						Orientation = Orientation.Horizontal,
 						FixedPanel = SplitterFixedPanel.Panel2,
 						RelativePosition = 150
 					};
-					return this.Root = p0123_45;
+					return Root = p0123_45;
 				}
 			}
 		}
@@ -310,7 +313,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				var rightPane = new Splitter
 				{
-					Orientation = SplitterOrientation.Vertical,
+					Orientation = Orientation.Vertical,
 					FixedPanel = SplitterFixedPanel.Panel2,
 					Panel1 = rightTop,
 					Panel2 = rightBottom,
@@ -322,7 +325,7 @@ namespace Eto.Test.Sections.Controls
 					Padding = new Padding(5),
 					Content = new Splitter
 					{
-						Orientation = SplitterOrientation.Horizontal,
+						Orientation = Orientation.Horizontal,
 						FixedPanel = SplitterFixedPanel.Panel1,
 						BackgroundColor = Colors.Gray,
 						Position = 200,
@@ -338,38 +341,38 @@ namespace Eto.Test.Sections.Controls
 
 		static Control TestInitResize()
 		{
+			var app = Application.Instance;
 			var control = new Button
 			{
 				Text = "Show splitter test of initial resize"
 			};
-			Func<Control> makebox = () =>
+			Func<Splitter, Control> makebox = split =>
 			{
 				var area = new TextArea();
 				area.SizeChanged += (s, e) =>
 				{
-					var split = area.Parent as Splitter;
-					if (split == null)
-						return;
 					var size = area.Parent.Size;
-					if (split.Orientation == SplitterOrientation.Horizontal)
+					if (split.Orientation == Orientation.Horizontal)
 						size.Width -= split.SplitterWidth;
 					else
 						size.Height -= split.SplitterWidth;
 					if (size.Width <= 0 || size.Height <= 0)
 						return;
+					app.AsyncInvoke(() => {
 					area.Text = string.Format(
 						"W:{0} ({1}%)\r\nH:{2} ({3}%)",
 						area.Width, (area.Width * 200 + size.Width) / (size.Width + size.Width),
 						area.Height, (area.Height * 200 + size.Height) / (size.Height + size.Height));
+					});
 				};
 				return area;
 			};
-			Func<int, Form> makeform = (i) =>
+			Func<int, Form> makeform = i =>
 			{
 				var wa = new Rectangle(Screen.PrimaryScreen.WorkingArea);
 				var form = new Form
 				{
-					Title = "Test Form #" + (i + 1).ToString(),
+					Title = "Test Form #" + (i + 1),
 					Bounds = i == 0
 					? new Rectangle(wa.X + 20, wa.Y + 20, wa.Width / 3, wa.Height / 3)
 					: i == 1
@@ -390,18 +393,18 @@ namespace Eto.Test.Sections.Controls
 					};
 					var ltop = new Splitter
 					{
-						Orientation = SplitterOrientation.Vertical,
+						Orientation = Orientation.Vertical,
 						Position = 80
 					};
 					var lbottom = new Splitter
 					{
-						Orientation = SplitterOrientation.Vertical,
+						Orientation = Orientation.Vertical,
 						FixedPanel = SplitterFixedPanel.Panel2,
 						RelativePosition = 80
 					};
 					var right = new Splitter
 					{
-						Orientation = SplitterOrientation.Vertical,
+						Orientation = Orientation.Vertical,
 						FixedPanel = SplitterFixedPanel.None,
 						Height = 300 + main.SplitterWidth,
 						Position = 100 // ~33%
@@ -413,16 +416,16 @@ namespace Eto.Test.Sections.Controls
 					};
 					main.Panel1 = ltop;
 					main.Panel2 = middle;
-					ltop.Panel1 = makebox();
+					ltop.Panel1 = makebox(ltop);
 					ltop.Panel2 = lbottom;
-					lbottom.Panel1 = makebox();
-					lbottom.Panel2 = makebox();
+					lbottom.Panel1 = makebox(lbottom);
+					lbottom.Panel2 = makebox(lbottom);
 					middle.Panel1 = center;
 					middle.Panel2 = right;
-					right.Panel1 = makebox();
-					right.Panel2 = makebox();
-					center.Panel1 = makebox();
-					center.Panel2 = makebox();
+					right.Panel1 = makebox(right);
+					right.Panel2 = makebox(right);
+					center.Panel1 = makebox(center);
+					center.Panel2 = makebox(center);
 					form.Content = main;
 				}
 				form.Show();

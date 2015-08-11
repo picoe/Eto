@@ -1,92 +1,46 @@
 using System;
 using MonoDevelop.Ide.Templates;
 using Eto.Forms;
+using Eto.Addin.Shared;
 
 namespace Eto.Addin.XamarinStudio
 {
 	public class ProjectWizardPage : WizardPage
 	{
 		public ProjectWizard Wizard { get; private set; }
-		ProjectWizardPageUI view;
+
+		ProjectWizardPageView view;
+		ProjectWizardPageModel model;
 
 		public ProjectWizardPage(ProjectWizard wizard)
 		{
 			this.Wizard = wizard;
-			GenerateCombined = true;
-			UseSAL = false;
-			UseNET = !wizard.SupportsPCL;
-			UsePCL = wizard.SupportsPCL;
+			var source = new ParameterSource(wizard);
+			source.ParameterChanged += (name, value) =>
+			{
+				if (name == "AppName")
+				{
+					Wizard.Parameters["ProjectName"] = value;
+					Validate();
+				}
+			};
+			this.model = new ProjectWizardPageModel(source);
 			Validate();
-		}
-
-		string appName;
-		public string AppName
-		{
-			get { return appName; }
-			set
-			{
-				appName = value;
-				Wizard.Parameters["AppName"] = value;
-				Wizard.Parameters["ProjectName"] = value;
-				Validate();
-			}
-		}
-
-		bool generateCombined;
-		public bool GenerateCombined
-		{
-			get { return generateCombined; }
-			set
-			{
-				generateCombined = value;
-				Wizard.Parameters["GenerateCombined"] = value.ToString();
-			}
-		}
-
-		bool usePCL;
-		public bool UsePCL
-		{
-			get { return usePCL; }
-			set
-			{
-				usePCL = value;
-				Wizard.Parameters["UsePCL"] = value.ToString();
-			}
-		}
-		bool useSAL;
-		public bool UseSAL
-		{
-			get { return useSAL; }
-			set
-			{
-				useSAL = value;
-				Wizard.Parameters["UseSAL"] = value.ToString();
-			}
-		}
-		bool useNET;
-		public bool UseNET
-		{
-			get { return useNET; }
-			set
-			{
-				useNET = value;
-				Wizard.Parameters["UseNET"] = value.ToString();
-			}
 		}
 
 		public override string Title
 		{
-			get { return "Eto.Forms Application Properties"; }
+			get { return model.Title; }
 		}
 
 		protected override object CreateNativeWidget()
 		{
-			return (view ?? (view = new ProjectWizardPageUI(this))).ToNative(true);
+			return (view ?? (view = new ProjectWizardPageView(model))).ToNative(true);
 		}
 
 		public void Validate()
 		{
-			CanMoveToNextPage = !string.IsNullOrWhiteSpace(AppName);
+			CanMoveToNextPage = !string.IsNullOrWhiteSpace(model.AppName);
 		}
 	}
 }

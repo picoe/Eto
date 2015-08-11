@@ -7,7 +7,7 @@
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in VB.NET]]></_Description>
 		<GroupId>eto-project-application</GroupId>
-		<SupportedParameters>GenerateCombined</SupportedParameters>
+		<SupportedParameters>AppName,SupportsCombined</SupportedParameters>
 	</TemplateConfiguration>
 
 	<Actions>
@@ -34,7 +34,7 @@
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" namespace="${ProjectName}" type="Eto.VBDotNet" if="GenerateCombined">
+		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" namespace="${ProjectName}" type="Eto.VBDotNet" if="Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic;Eto.Forms" />
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -65,7 +65,7 @@ End Class
 				<Package Id="Eto.Platform.Wpf" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.VBDotNet" if="!GenerateCombined">
+		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.VBDotNet" if="!Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -94,7 +94,7 @@ End Class
 				<Package Id="Eto.Platform.Windows" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.VBDotNet" if="!GenerateCombined">
+		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.VBDotNet" if="!Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -125,7 +125,7 @@ End Class
 				<Package Id="Eto.Platform.Wpf" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.VBDotNet" if="!GenerateCombined">
+		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.VBDotNet" if="!Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -153,7 +153,7 @@ End Class
 				<Package Id="Eto.Platform.Gtk" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.VBDotNet" if="!GenerateCombined">
+		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.VBDotNet" if="!Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
 			<References>
 				<Reference type="Gac" refto="System" />

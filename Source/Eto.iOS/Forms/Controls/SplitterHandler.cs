@@ -80,17 +80,17 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 		
-		public SplitterOrientation Orientation {
+		public Orientation Orientation {
 			get {
 				/*if (UseMGSplitViewController)
-					return MGSplitController.Vertical ? SplitterOrientation.Vertical : SplitterOrientation.Horizontal;
+					return MGSplitController.Vertical ? Orientation.Vertical : Orientation.Horizontal;
 				else*/
-					return SplitterOrientation.Horizontal;
+				return Orientation.Horizontal;
 			}
 			set { 
 				/*if (UseMGSplitViewController)
-					MGSplitController.Vertical = value == SplitterOrientation.Vertical;
-				else if (value == SplitterOrientation.Vertical)*/
+					MGSplitController.Vertical = value == Orientation.Vertical;
+				else if (value == Orientation.Vertical)*/
 					Debug.WriteLine ("UISplitViewController cannot set orientation to vertical");
 			}
 		}

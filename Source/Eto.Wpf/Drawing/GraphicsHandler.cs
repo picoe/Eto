@@ -8,46 +8,50 @@ using System.Diagnostics;
 
 namespace Eto.Wpf.Drawing
 {
-	/// <summary>
-	/// Handler for <see cref="Graphics"/>
-	/// </summary>
-	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsHandler : WidgetHandler<swm.DrawingContext, Graphics>, Graphics.IHandler
-	{
-		swm.Visual visual;
-		swm.DrawingGroup group;
-		swm.DrawingVisual drawingVisual;
-		ImageInterpolation imageInterpolation;
-		PixelOffsetMode pixelOffsetMode;
-		double offset = 0.5;
-		double inverseoffset;
-		RectangleF? clipBounds;
-		RectangleF initialClip;
-		swm.PathGeometry clipPath;
-		sw.Rect bounds;
-		readonly bool disposeControl;
+    /// <summary>
+    /// Handler for <see cref="Graphics"/>
+    /// </summary>
+    /// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
+    /// <license type="BSD-3">See LICENSE for full terms</license>
+    public class GraphicsHandler : WidgetHandler<swm.DrawingContext, Graphics>, Graphics.IHandler
+    {
+        swm.Visual visual;
+        swm.DrawingGroup group;
+        swm.DrawingVisual drawingVisual;
+        RectangleF? clipBounds;
+        RectangleF initialClip;
+        swm.PathGeometry clipPath;
+        sw.Rect bounds;
+        readonly bool disposeControl;
+		bool isOffset;
 
 		Bitmap image;
-		double? dpiScale;
-		swm.DrawingContext baseContext;
+        swm.DrawingContext baseContext;
 
-		public GraphicsHandler()
-		{
-		}
+        public GraphicsHandler()
+        {
+        }
 
-		public PixelOffsetMode PixelOffsetMode
+		static readonly object PixelOffsetMode_Key = new object();
+
+        public PixelOffsetMode PixelOffsetMode
+        {
+            get { return Widget != null ? Widget.Properties.Get<PixelOffsetMode>(PixelOffsetMode_Key) : default(PixelOffsetMode); }
+            set { Widget.Properties.Set(PixelOffsetMode_Key, value); }
+        }
+
+		void SetOffset(bool fill)
 		{
-			get { return pixelOffsetMode; }
-			set
+			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			if (requiresOffset != isOffset)
 			{
-				pixelOffsetMode = value;
-				offset = pixelOffsetMode == PixelOffsetMode.None ? 0.5 : 0;
-				inverseoffset = pixelOffsetMode == PixelOffsetMode.None ? 0 : 0.5;
+				RewindAll();
+				isOffset = requiresOffset;
+				ApplyAll();
 			}
 		}
 
-		public float PointsPerPixel
+        public float PointsPerPixel
 		{
 			get { return 72f / 96f; }
 		}
@@ -65,12 +69,8 @@ namespace Eto.Wpf.Drawing
 			this.bounds = bounds;
 			this.initialClip = initialClip;
 
-			PushGuideLines(bounds);
-
 			Control.PushClip(new swm.RectangleGeometry(bounds));
-
-			ImageInterpolation = ImageInterpolation.Default;
-		}
+        }
 
 		public bool IsRetained { get { return true; } }
 
@@ -83,75 +83,65 @@ namespace Eto.Wpf.Drawing
 			visual = drawingVisual;
 			Control = drawingVisual.RenderOpen();
 			Control.DrawImage(image.ControlObject as swm.ImageSource, bounds);
+        }
 
-			PushGuideLines(bounds);
+		protected override void Initialize()
+		{
+			base.Initialize();
 
-			ImageInterpolation = ImageInterpolation.Default;
+			ApplyAll();
 		}
 
-		public double DPI
+		static readonly object DPI_Key = new object();
+
+        public double DPI
 		{
 			get
 			{
-				if (dpiScale == null)
+				return Widget.Properties.Create<double>(DPI_Key, () =>
 				{
 					var presentationSource = sw.PresentationSource.FromVisual(visual);
 					if (presentationSource != null && presentationSource.CompositionTarget != null)
 					{
 						swm.Matrix m = presentationSource.CompositionTarget.TransformToDevice;
-						dpiScale = m.M11;
+						return m.M11;
 					}
-					else
-						dpiScale = 1.0;
-				}
-				return dpiScale.Value;
+					return 1.0;
+				});
 			}
-		}
-
-		public void PushGuideLines(sw.Rect rect)
-		{
-			PushGuideLines(rect.X, rect.Y, rect.Width, rect.Height);
-		}
-
-		public void PushGuideLines(double x, double y, double width, double height)
-		{
-			Control.PushGuidelineSet(new swm.GuidelineSet(new double[] { x, x + width }, new double[] { y, y + height }));
 		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
-			PushGuideLines(x, y, width, height);
-			Control.DrawRectangle(null, pen.ToWpf(true), new sw.Rect(x + offset, y + offset, width, height));
-			Control.Pop();
+			SetOffset(false);
+			Control.DrawRectangle(null, pen.ToWpf(true), new sw.Rect(x, y, width, height));
 		}
 
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
+			SetOffset(false);
 			var wpfPen = pen.ToWpf(true);
-			Control.PushGuidelineSet(new swm.GuidelineSet(new double[] { startx, endx }, new double[] { starty, endy }));
-			Control.DrawLine(wpfPen, new sw.Point(startx + offset, starty + offset), new sw.Point(endx + offset, endy + offset));
-			Control.Pop();
+			Control.DrawLine(wpfPen, new sw.Point(startx, starty), new sw.Point(endx, endy));
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			var wpfBrush = brush.ToWpf(true);
-			PushGuideLines(x, y, width, height);
-			Control.DrawRectangle(wpfBrush, null, new sw.Rect(x + inverseoffset, y + inverseoffset, width, height));
-			Control.Pop();
+			Control.DrawRectangle(wpfBrush, null, new sw.Rect(x, y, width, height));
 		}
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
-			Control.DrawEllipse(null, pen.ToWpf(true), new sw.Point(x + width / 2.0 + offset, y + height / 2.0 + offset), width / 2.0, height / 2.0);
+			SetOffset(false);
+			Control.DrawEllipse(null, pen.ToWpf(true), new sw.Point(x + width / 2.0, y + height / 2.0), width / 2.0, height / 2.0);
 		}
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
-			PushGuideLines(x, y, width, height);
-			Control.DrawEllipse(brush.ToWpf(true), null, new sw.Point(x + width / 2.0 + inverseoffset, y + height / 2.0 + inverseoffset), width / 2.0, height / 2.0);
-			Control.Pop();
+			SetOffset(true);
+			Control.DrawEllipse(brush.ToWpf(true), null, new sw.Point(x + width / 2.0, y + height / 2.0), width / 2.0, height / 2.0);
 		}
 
 		public static swm.Geometry CreateArcDrawing(sw.Rect rect, double startDegrees, double sweepDegrees, bool closed)
@@ -197,93 +187,95 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(false);
 			if (sweepAngle >= 360f)
 				DrawEllipse(pen, x, y, width, height);
 			else
 			{
 				var arc = CreateArcDrawing(new sw.Rect(x, y, width, height), startAngle, sweepAngle, false);
-				Control.PushTransform(new swm.TranslateTransform(offset, offset));
 				Control.DrawGeometry(null, pen.ToWpf(true), arc);
-				Control.Pop();
 			}
 		}
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(true);
 			if (sweepAngle >= 360f)
 				FillEllipse(brush, x, y, width, height);
 			else
 			{
 				var arc = CreateArcDrawing(new sw.Rect(x, y, width, height), startAngle, sweepAngle, true);
-				Control.PushTransform(new swm.TranslateTransform(inverseoffset, inverseoffset));
 				Control.DrawGeometry(brush.ToWpf(true), null, arc);
-				Control.Pop();
 			}
 		}
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
+			SetOffset(true);
 			Control.DrawGeometry(brush.ToWpf(true), null, path.ToWpf());
 		}
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
-			Control.PushTransform(new swm.TranslateTransform(offset, offset));
+			SetOffset(false);
 			Control.DrawGeometry(null, pen.ToWpf(true), path.ToWpf());
-			Control.Pop();
 		}
 
 		public void DrawImage(Image image, float x, float y)
 		{
+			SetOffset(true);
 			var size = image.Size;
 			DrawImage(image, x, y, size.Width, size.Height);
 		}
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			var src = image.ToWpf((int)Math.Max(width, height));
-			if ((imageInterpolation == Eto.Drawing.ImageInterpolation.High || imageInterpolation == Eto.Drawing.ImageInterpolation.Default)
-				&& (width != src.Width || height != src.Height))
-			{
-				// better image quality by using transformed bitmap, plus it is actually faster
-				src = new swmi.TransformedBitmap(
-					src,
-					new swm.ScaleTransform(width / src.Width * 96 / src.DpiX, height / src.Height * 96 / src.DpiY, 0, 0)
-					);
-			}
-			Control.DrawImage(src, new sw.Rect(x + inverseoffset, y + inverseoffset, width, height));
+            if ((ImageInterpolation == ImageInterpolation.High || ImageInterpolation == ImageInterpolation.Default)
+                && (width != src.Width || height != src.Height))
+            {
+                // better image quality by using transformed bitmap, plus it is actually faster
+                src = new swmi.TransformedBitmap(
+                    src,
+                    new swm.ScaleTransform(width / src.Width * 96 / src.DpiX, height / src.Height * 96 / src.DpiY, 0, 0)
+                    );
+            }
+            Control.DrawImage(src, new sw.Rect(x, y, width, height));
 		}
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
+			SetOffset(true);
 			var src = image.ToWpf();
-			Control.PushClip(new swm.RectangleGeometry(destination.ToWpf()));
-			bool scale = source.Size != destination.Size;
-			bool translate = source.X > 0 || source.Y > 0;
-			double scalex = 1.0;
-			double scaley = 1.0;
-			if (scale)
-			{
-				scalex = (double)destination.Width / (double)source.Width;
-				scaley = (double)destination.Height / (double)source.Height;
-				Control.PushTransform(new swm.ScaleTransform(scalex, scaley));
-			}
-			if (translate)
-				Control.PushTransform(new swm.TranslateTransform(-source.X, -source.Y));
-			var rect = new sw.Rect(destination.X / scalex, destination.Y / scaley, image.Size.Width, image.Size.Height);
-			Control.DrawImage(src, rect);
-			// pop for TranslateTransform
-			if (translate)
-				Control.Pop();
-			// pop again for ScaleTransform
-			if (scale)
-				Control.Pop();
-			// pop for PushClip
-			Control.Pop();
-		}
+            Control.PushClip(new swm.RectangleGeometry(destination.ToWpf()));
+            bool scale = source.Size != destination.Size;
+            bool translate = source.X > 0 || source.Y > 0;
+            double scalex = 1.0;
+            double scaley = 1.0;
+            if (scale)
+            {
+                scalex = (double)destination.Width / (double)source.Width;
+                scaley = (double)destination.Height / (double)source.Height;
+                Control.PushTransform(new swm.ScaleTransform(scalex, scaley));
+            }
+            if (translate)
+                Control.PushTransform(new swm.TranslateTransform(-source.X, -source.Y));
+            var rect = new sw.Rect(destination.X / scalex, destination.Y / scaley, image.Size.Width, image.Size.Height);
+            Control.DrawImage(src, rect);
+            // pop for TranslateTransform
+            if (translate)
+                Control.Pop();
+            // pop again for ScaleTransform
+            if (scale)
+                Control.Pop();
+            // pop for PushClip
+            Control.Pop();
+        }
 
 		public void DrawText(Font font, SolidBrush b, float x, float y, string text)
 		{
+			SetOffset(true);
 			var fontHandler = font.Handler as FontHandler;
 			if (fontHandler != null)
 			{
@@ -361,13 +353,16 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
+		static readonly object ImageInterpolation_Key = new object();
+
 		public ImageInterpolation ImageInterpolation
 		{
-			get { return imageInterpolation; }
+			get { return Widget.Properties.Get<ImageInterpolation>(ImageInterpolation_Key); }
 			set
 			{
-				imageInterpolation = value;
-				swm.RenderOptions.SetBitmapScalingMode(visual, value.ToWpf());
+				Widget.Properties.Set(ImageInterpolation_Key, value, () => {
+					swm.RenderOptions.SetBitmapScalingMode(visual, value.ToWpf());
+				});
 			}
 		}
 
@@ -388,72 +383,87 @@ namespace Eto.Wpf.Drawing
 				baseContext = Control;
 			group = new swm.DrawingGroup();
 			Control = group.Open();
-			ApplyClip();
-			TransformStack.PushAll();
+
+			ApplyAll();
 		}
 
 		void CloseGroup()
 		{
 			if (group != null && baseContext != null)
 			{
-				TransformStack.PopAll();
-				ResetClip();
+				RewindAll();
 				Control.Close();
 				baseContext.DrawDrawing(group);
 				Control = baseContext;
 				group = null;
-				ApplyClip();
-				TransformStack.PushAll();
+				ApplyAll();
 			}
 		}
 
-		TransformStack transformStack;
+		TransformStack transforms;
 
-		TransformStack TransformStack
+		TransformStack Transforms
 		{
 			get
 			{
-				if (transformStack == null)
-					transformStack = new TransformStack(
+				if (transforms == null)
+					transforms = new TransformStack(
 						m => Control.PushTransform(m.ToWpfTransform()),
 						() => Control.Pop()
 						);
 
-				return transformStack;
+				return transforms;
 			}
 		}
 
 		public void TranslateTransform(float offsetX, float offsetY)
 		{
-			TransformStack.TranslateTransform(offsetX, offsetY);
+			Transforms.TranslateTransform(offsetX, offsetY);
 		}
 
 		public void RotateTransform(float angle)
 		{
-			TransformStack.RotateTransform(angle);
+			Transforms.RotateTransform(angle);
 		}
 
 		public void ScaleTransform(float scaleX, float scaleY)
 		{
-			TransformStack.ScaleTransform(scaleX, scaleY);
+			Transforms.ScaleTransform(scaleX, scaleY);
 		}
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
-			TransformStack.MultiplyTransform(matrix);
+			Transforms.MultiplyTransform(matrix);
 		}
 
 		public void SaveTransform()
 		{
-			TransformStack.SaveTransform();
+			Transforms.SaveTransform();
 		}
 
 		public void RestoreTransform()
 		{
-			TransformStack.RestoreTransform();
+			Transforms.RestoreTransform();
 		}
 
-		protected void ReverseClip()
+		public IMatrix CurrentTransform
+		{
+			get { return transforms.Current != null ? transforms.Current.Clone() : Matrix.Create(); }
+		}
+
+		void RewindOffset()
+		{
+			if (isOffset)
+				Control.Pop();
+		}
+
+		void ApplyOffset()
+		{
+			if (isOffset)
+				Control.PushTransform(new swm.TranslateTransform(0.5, 0.5));
+		}
+
+		protected void RewindClip()
 		{
 			if (clipBounds != null || clipPath != null)
 				Control.Pop();
@@ -471,14 +481,41 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
+		void RewindAll()
+		{
+			RewindTransform();
+			RewindClip();
+			RewindOffset();
+		}
+
+		void ApplyAll()
+		{
+			ApplyOffset();
+			ApplyClip();
+			ApplyTransform();
+		}
+
+		void RewindTransform()
+		{
+			if (transforms != null)
+				transforms.PopAll();
+		}
+
+		void ApplyTransform()
+		{
+			if (transforms != null)
+				transforms.PushAll();
+		}
+
+
 		public RectangleF ClipBounds
 		{
 			get
 			{
 				var translatedClip = clipBounds ?? initialClip;
-				if (TransformStack.Current != null)
+				if (transforms != null && transforms.Current != null)
 				{
-					var invertedTransform = TransformStack.Current.Clone();
+					var invertedTransform = transforms.Current.Clone();
 					invertedTransform.Invert();
 					translatedClip = invertedTransform.TransformRectangle(translatedClip);
 				}
@@ -488,22 +525,28 @@ namespace Eto.Wpf.Drawing
 
 		public void SetClip(RectangleF rectangle)
 		{
-			TransformStack.PopAll();
-			ResetClip();
-			clipBounds = rectangle;
+			RewindTransform();
+			RewindClip();
+			if (transforms != null && transforms.Current != null)
+				clipBounds = transforms.Current.TransformRectangle(rectangle);
+			else
+				clipBounds = rectangle;
 			clipPath = null;
 			ApplyClip();
-			TransformStack.PushAll();
+			ApplyTransform();
 		}
 
 		public void SetClip(IGraphicsPath path)
 		{
-			TransformStack.PopAll();
-			ResetClip();
-			clipPath = path.Clone().ToWpf(); // require a clone so changes to path don't affect current clip
+			RewindTransform();
+			RewindClip();
+			path = path.Clone();
+			if (transforms != null && transforms.Current != null)
+				path.Transform(transforms.Current);
+            clipPath = path.ToWpf(); // require a clone so changes to path don't affect current clip
 			clipBounds = clipPath.Bounds.ToEtoF();
 			ApplyClip();
-			TransformStack.PushAll();
+			ApplyTransform();
 		}
 
 		public void ResetClip()
@@ -542,13 +585,12 @@ namespace Eto.Wpf.Drawing
 				//db.Transform = new swm.TranslateTransform (0.5, 0.5);
 
 				Control = drawingVisual.RenderOpen();
-				PushGuideLines(bounds.X, bounds.Y, bounds.Width, bounds.Height);
+				Control.PushGuidelineSet(new swm.GuidelineSet(new [] { bounds.Left, bounds.Right }, new [] { bounds.Top, bounds.Bottom }));
 				Control.PushOpacityMask(db);
 				Control.DrawImage(newbmp, bounds);
 				Control.Pop();
 
-				ApplyClip();
-				TransformStack.PushAll();
+				ApplyAll();
 			}
 			else
 			{

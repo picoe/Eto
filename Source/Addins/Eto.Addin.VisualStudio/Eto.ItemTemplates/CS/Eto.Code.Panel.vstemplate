@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Eto.Forms Panel</Name>
+    <Description>
+      <![CDATA[Creates a new cross platform Panel class using Eto.Forms.]]>
+    </Description>
+    <Icon>Eto.File.ico</Icon>
+    <TemplateID>a6a67004-a348-4f86-95db-3ec5260a7c29</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <AppliesTo>CSharp + MultiTarget</AppliesTo>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>Panel.cs</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <References>
+      <Reference>
+        <Assembly>System</Assembly>
+      </Reference>
+    </References>
+    <ProjectItem TargetFileName="$fileinputname$.cs" ReplaceParameters="true">Eto.Code.cs</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.cs\$fileinputname$.eto.cs" ReplaceParameters="true">Eto.Code.eto.cs</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.BaseClassPanelWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.CheckRequiredReferences</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <RequiredReferences>
+      <Reference id="Eto.Forms" version="2.1.0" assembly="Eto" extension="Eto.Addin.VisualStudio" />
+    </RequiredReferences>
+  </WizardData>
+</VSTemplate>

@@ -195,8 +195,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value != SelectedIndex)
 				{
 					Control.SelectItem(value);
-					if (Widget.Loaded)
-						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}

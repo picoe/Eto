@@ -24,7 +24,6 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 			controller = new TreeController { Handler = this };
 			Control.Background = sw.SystemColors.WindowBrush;
-			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
 			Control.KeyDown += (sender, e) =>
 			{
 				if (e.Key == sw.Input.Key.Enter)

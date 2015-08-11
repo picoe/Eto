@@ -264,6 +264,11 @@ namespace Eto.Direct2D
 			return m != null ? (s.Matrix3x2)m.ControlObject : s.Matrix3x2.Identity;
 		}
 
+		public static IMatrix ToEto(this s.Matrix3x2 m)
+		{
+			return new MatrixHandler(ref m);
+		}
+
 		public static float DegreesToRadians(float angle)
 		{
 			return (float)Math.PI * angle / 180.0f;

@@ -80,34 +80,31 @@ namespace Eto.iOS.Drawing
 		readonly NSView view;
 		#endif
 		float height;
-		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
-		float offset = 0.5f;
-		float inverseoffset;
+		bool isOffset;
 		CGRect? clipBounds;
 		IGraphicsPath clipPath;
-		int transformSaveCount;
-		Stack<CGAffineTransform> transforms;
+		readonly Stack<CGAffineTransform> transforms = new Stack<CGAffineTransform>();
 		CGAffineTransform currentTransform = CGAffineTransform.MakeIdentity();
 		static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern(null);
 
-		public float Offset { get { return offset; } }
-
-		public float InverseOffset { get { return inverseoffset; } }
-
 		public NSView DisplayView { get; private set; }
 
-		public RectangleF Bounds { get; set; }
-
-		public CGAffineTransform CurrentTransform { get { return currentTransform; } }
+		static readonly object PixelOffsetMode_Key = new object();
 
 		public PixelOffsetMode PixelOffsetMode
 		{
-			get { return pixelOffsetMode; }
-			set
+			get { return Widget != null ? Widget.Properties.Get<PixelOffsetMode>(PixelOffsetMode_Key) : default(PixelOffsetMode); }
+			set { Widget.Properties.Set(PixelOffsetMode_Key, value); }
+		}
+
+		void SetOffset(bool fill)
+		{
+			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			if (requiresOffset != isOffset)
 			{
-				pixelOffsetMode = value;
-				offset = value == PixelOffsetMode.None ? 0.5f : 0f;
-				inverseoffset = value == PixelOffsetMode.None ? 0f : 0.5f;
+				RewindAll();
+				isOffset = requiresOffset;
+				ApplyAll();
 			}
 		}
 
@@ -143,7 +140,6 @@ namespace Eto.iOS.Drawing
 
 			SetDefaults();
 			InitializeContext(view.IsFlipped);
-			Bounds = view.Bounds.ToEto();
 		}
 
 		static void FrameDidChange(ObserverActionEventArgs e)
@@ -154,10 +150,8 @@ namespace Eto.iOS.Drawing
 				h.RewindAll();
 				
 				h.Control.RestoreState();
-				h.Control.SaveState();
+
 				h.InitializeContext(h.view.IsFlipped);
-				
-				h.ReplayAll();
 			}
 		}
 
@@ -169,8 +163,6 @@ namespace Eto.iOS.Drawing
 			Control = this.graphicsContext.GraphicsPort;
 			SetDefaults();
 			InitializeContext(!flipped);
-			if (view != null)
-				Bounds = view.Bounds.ToEto();
 		}
 
 		#elif IOS
@@ -195,20 +187,20 @@ namespace Eto.iOS.Drawing
 
 		public bool IsRetained { get { return false; } }
 
-		bool antialias;
+		static readonly object AntiAlias_Key = new object();
 
 		public bool AntiAlias
 		{
-			get { return antialias; }
-			set
-			{
-				antialias = value;
-				Control.SetShouldAntialias(value);
-			}
+			get { return Widget.Properties.Get<bool>(AntiAlias_Key, true); }
+			set { Widget.Properties.Set(AntiAlias_Key, value, () => Control.SetShouldAntialias(value)); }
 		}
 
-		float scale = 1f;
-		public float PointsPerPixel { get { return scale; } }
+		static readonly object PointsPerPixel_Key = new object();
+		public float PointsPerPixel
+		{ 
+			get { return Widget.Properties.Get<float>(PointsPerPixel_Key, 1f); } 
+			private set { Widget.Properties.Set(PointsPerPixel_Key, value); }
+		}
 
 		public ImageInterpolation ImageInterpolation
 		{
@@ -225,28 +217,22 @@ namespace Eto.iOS.Drawing
 			graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
 			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
-			scale = (float)(rep.PixelsWide / handler.Control.Size.Width);
+			PointsPerPixel = (float)(rep.PixelsWide / handler.Control.Size.Width);
 #elif IOS
 			var cgimage = handler.Control.CGImage;
 			Control = new CGBitmapContext(handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
-			scale = (float)(cgimage.Width / handler.Control.Size.Width);
+			PointsPerPixel = (float)(cgimage.Width / handler.Control.Size.Width);
 #endif
 
 			height = image.Size.Height;
 			SetDefaults();
 			InitializeContext(true);
-			Bounds = new RectangleF(image.Size);
-
 		}
 
 		public void Reset()
 		{
 			// unwind all SaveState's
-			ResetClip();
-			while (transformSaveCount > 0)
-			{
-				RestoreTransform();
-			}
+			RewindAll();
 			// initial save state
 			Control.RestoreState();
 		}
@@ -272,7 +258,7 @@ namespace Eto.iOS.Drawing
 
 		void SetDefaults()
 		{
-			Control.InterpolationQuality = CGInterpolationQuality.High;
+			Control.InterpolationQuality = CGInterpolationQuality.Default;
 			Control.SetAllowsSubpixelPositioning(false);
 		}
 
@@ -313,15 +299,13 @@ namespace Eto.iOS.Drawing
 				var pos = view.ConvertPointToView(CGPoint.Empty, null);
 				if (!viewFlipped)
 					pos.Y += view.Frame.Height;
-				currentTransform = new CGAffineTransform(1, 0, 0, -1, (float)pos.X, (float)pos.Y);
-				Control.ConcatCTM(currentTransform);
+				Control.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, (float)pos.X, (float)pos.Y));
 			}
 			else
 			{
 				// drawing to a bitmap or during a drawRect operation
-				currentTransform = new CGAffineTransform(1, 0, 0, -1, 0, viewFlipped ? ViewHeight : 0);
 				if (viewFlipped)
-					Control.ConcatCTM(currentTransform);
+					Control.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
 			}
 
 			phase = null;
@@ -330,47 +314,12 @@ namespace Eto.iOS.Drawing
 			if (viewFlipped)
 			{
 				// on ios, we flip the context if we're drawing on a bitmap otherwise we don't need to
-				currentTransform = new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight);
-				Control.ConcatCTM(currentTransform);
+				Control.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
 			}
 			#endif
 
-		}
+			ApplyAll();
 
-		public CGPoint TranslateView(CGPoint point, bool halfers = false, bool inverse = false)
-		{
-			if (halfers)
-			{
-				if (inverse)
-				{
-					point.X += inverseoffset;
-					point.Y += inverseoffset;
-				}
-				else
-				{
-					point.X += offset;
-					point.Y += offset;
-				}
-			}
-			return point;
-		}
-
-		public CGRect TranslateView(CGRect rect, bool halfers = false, bool inverse = false)
-		{
-			if (halfers)
-			{
-				if (inverse)
-				{
-					rect.X += inverseoffset;
-					rect.Y += inverseoffset;
-				}
-				else
-				{
-					rect.X += offset;
-					rect.Y += offset;
-				}
-			}
-			return rect;
 		}
 
 		void StartDrawing()
@@ -396,20 +345,22 @@ namespace Eto.iOS.Drawing
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
+			SetOffset(false);
 			StartDrawing();
 			pen.Apply(this);
 			Control.StrokeLineSegments(new []
 			{
-				TranslateView(new CGPoint(startx, starty), true),
-				TranslateView(new CGPoint(endx, endy), true)
+				new CGPoint(startx, starty),
+				new CGPoint(endx, endy)
 			});
 			EndDrawing();
 		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
+			SetOffset(false);
 			StartDrawing();
-			var rect = TranslateView(new CGRect(x, y, width, height), true);
+			var rect = new CGRect(x, y, width, height);
 			pen.Apply(this);
 			Control.StrokeRect(rect);
 			EndDrawing();
@@ -417,9 +368,10 @@ namespace Eto.iOS.Drawing
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			StartDrawing();
 			var rect = new CGRect(x, y, width, height);
-			Control.AddRect(TranslateView(rect, true, true));
+			Control.AddRect(rect);
 			Control.Clip();
 			brush.Draw(this, rect.ToEto());
 			EndDrawing();
@@ -427,8 +379,9 @@ namespace Eto.iOS.Drawing
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
+			SetOffset(false);
 			StartDrawing();
-			var rect = TranslateView(new CGRect(x, y, width, height), true);
+			var rect = new CGRect(x, y, width, height);
 			pen.Apply(this);
 			Control.StrokeEllipseInRect(rect);
 			EndDrawing();
@@ -436,6 +389,7 @@ namespace Eto.iOS.Drawing
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			StartDrawing();
 			/*	if (width == 1 || height == 1)
 			{
@@ -443,7 +397,7 @@ namespace Eto.iOS.Drawing
 				return;
 			}*/
 			var rect = new CGRect(x, y, width, height);
-			Control.AddEllipseInRect(TranslateView(rect, true, true));
+			Control.AddEllipseInRect(rect);
 			Control.Clip();
 			brush.Draw(this, rect.ToEto());
 			EndDrawing();
@@ -451,9 +405,10 @@ namespace Eto.iOS.Drawing
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(false);
 			StartDrawing();
 
-			var rect = TranslateView(new CGRect(x, y, width, height), true);
+			var rect = new CGRect(x, y, width, height);
 			pen.Apply(this);
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
@@ -466,9 +421,10 @@ namespace Eto.iOS.Drawing
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(true);
 			StartDrawing();
 
-			var rect = TranslateView(new CGRect(x, y, width, height), true, true);
+			var rect = new CGRect(x, y, width, height);
 			Control.SaveState();
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
@@ -486,9 +442,9 @@ namespace Eto.iOS.Drawing
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
+			SetOffset(true);
 			StartDrawing();
 
-			Control.TranslateCTM(inverseoffset, inverseoffset);
 			Control.BeginPath();
 			Control.AddPath(path.ToCG());
 			Control.ClosePath();
@@ -509,9 +465,9 @@ namespace Eto.iOS.Drawing
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
+			SetOffset(false);
 			StartDrawing();
 			
-			Control.TranslateCTM(offset, offset);
 			pen.Apply(this);
 			Control.BeginPath();
 			Control.AddPath(path.ToCG());
@@ -522,6 +478,7 @@ namespace Eto.iOS.Drawing
 
 		public void DrawImage(Image image, float x, float y)
 		{
+			SetOffset(true);
 			StartDrawing();
 
 			var handler = (IImageHandler)image.Handler;
@@ -531,6 +488,7 @@ namespace Eto.iOS.Drawing
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			StartDrawing();
 
 			var handler = (IImageHandler)image.Handler;
@@ -540,6 +498,7 @@ namespace Eto.iOS.Drawing
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
+			SetOffset(true);
 			StartDrawing();
 
 			var handler = (IImageHandler)image.Handler;
@@ -549,6 +508,7 @@ namespace Eto.iOS.Drawing
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
+			SetOffset(true);
 			if (string.IsNullOrEmpty(text))
 				return;
 
@@ -606,24 +566,21 @@ namespace Eto.iOS.Drawing
 
 		public void SaveTransform()
 		{
-			RewindClip();
-			Control.SaveState();
-			transformSaveCount++;
-			ReplayClip();
-			if (transforms == null)
-				transforms = new Stack<CGAffineTransform>();
 			transforms.Push(currentTransform);
 		}
 
 		public void RestoreTransform()
 		{
-			if (transformSaveCount <= 0)
+			if (transforms.Count <= 0)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "No saved transform"));
-			RewindClip();
-			transformSaveCount--;
-			Control.RestoreState();
-			ReplayClip();
+			RewindTransform();
 			currentTransform = transforms.Pop();
+			ApplyTransform();
+		}
+
+		public IMatrix CurrentTransform
+		{
+			get { return currentTransform.ToEto(); }
 		}
 
 		public RectangleF ClipBounds
@@ -633,19 +590,24 @@ namespace Eto.iOS.Drawing
 
 		public void SetClip(RectangleF rectangle)
 		{
+			RewindTransform();
 			ResetClip();
-			clipBounds = rectangle.ToNS();
-			ReplayClip();
+			clipBounds = currentTransform.TransformRect(rectangle.ToNS());
+			ApplyClip();
+			ApplyTransform();
 		}
 
 		public void SetClip(IGraphicsPath path)
 		{
+			RewindTransform();
 			ResetClip();
 			clipPath = path.Clone();
-			ReplayClip();
+			clipPath.Transform(currentTransform.ToEto());
+			ApplyClip();
+			ApplyTransform();
 		}
 
-		void ReplayClip()
+		void ApplyClip()
 		{
 			if (clipPath != null)
 			{
@@ -680,34 +642,34 @@ namespace Eto.iOS.Drawing
 
 		void RewindTransform()
 		{
-			for (int i = 0; i < transformSaveCount; i++)
-				Control.RestoreState();
+			Control.RestoreState();
 		}
 
-		void ReplayTransform()
+		void ApplyTransform()
 		{
-			// replay transforms
-			if (transforms != null)
-			{
-				foreach (var transform in transforms)
-				{
-					Control.ConcatCTM(transform);
-					Control.SaveState();
-				}
-			}
-			//Control.ConcatCTM (currentTransform);
+			Control.SaveState();
+			Control.ConcatCTM(currentTransform);
 		}
 
 		void RewindAll()
 		{
-			RewindClip();
 			RewindTransform();
+			RewindClip();
+			if (isOffset)
+			{
+				Control.RestoreState();
+			}
 		}
 
-		void ReplayAll()
+		void ApplyAll()
 		{
-			ReplayTransform();
-			ReplayClip();
+			if (isOffset)
+			{
+				Control.SaveState();
+				Control.TranslateCTM(0.5f, 0.5f);
+			}
+			ApplyClip();
+			ApplyTransform();
 		}
 
 		public void ResetClip()

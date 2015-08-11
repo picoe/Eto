@@ -4,10 +4,10 @@
 		<_Name>Eto.Forms Library</_Name>
 		<Category>crossplat/library/eto</Category>
 		<LanguageName>C#</LanguageName>
-		<Wizard>Eto.Addin.XamarinStudio.LibraryWizard</Wizard>
+		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in C#.</_Description>
 		<GroupId>eto-project-library</GroupId>
-    	<SupportedParameters>LibraryType</SupportedParameters>
+    	<SupportedParameters>AppName,SupportsPCL,IsLibrary</SupportedParameters>
 	</TemplateConfiguration>
 
 	<Actions>

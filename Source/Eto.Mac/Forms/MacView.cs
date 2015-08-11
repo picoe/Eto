@@ -145,7 +145,11 @@ namespace Eto.Mac.Forms
 
 		public virtual Size Size
 		{
-			get { return ContainerControl.Frame.Size.ToEtoSize(); }
+			get { 
+				if (!Widget.Loaded)
+					return PreferredSize ?? new Size(-1, -1);
+				return ContainerControl.Frame.Size.ToEtoSize(); 
+			}
 			set
 			{ 
 				var oldSize = GetPreferredSize(Size.MaxValue);

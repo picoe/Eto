@@ -120,7 +120,7 @@ namespace Eto.Test
 		{
 			return new Splitter
 			{
-				Orientation = SplitterOrientation.Vertical,
+				Orientation = Orientation.Vertical,
 				FixedPanel = SplitterFixedPanel.Panel2,
 				Panel1 = contentContainer,
 				Panel2 = EventLogSection()

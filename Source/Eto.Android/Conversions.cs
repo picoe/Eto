@@ -117,6 +117,11 @@ namespace Eto.Android
 			return (ag.Matrix)m.ControlObject;
 		}
 
+		public static IMatrix ToEto(this ag.Matrix m)
+		{
+			return new MatrixHandler(m);
+		}
+
 		public static Point ToEto(this ag.Point point)
 		{
 			return new Point(point.X, point.Y);

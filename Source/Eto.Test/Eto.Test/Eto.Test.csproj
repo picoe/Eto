@@ -36,13 +36,12 @@
   </PropertyGroup>
   <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\net40\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Configuration" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\net40\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -176,6 +175,18 @@
     <Compile Include="Sections\Controls\ControlColorsSection.cs" />
     <Compile Include="Sections\Behaviors\DynamicMenuBar.cs" />
     <Compile Include="Sections\Behaviors\ClipboardSection.cs" />
+    <Compile Include="Sections\Controls\DropDownSection.cs" />
+    <Compile Include="Sections\Controls\RichTextAreaSection.cs" />
+    <Compile Include="Sections\Controls\MaskedTextBoxSection.cs" />
+    <Compile Include="Sections\Drawing\ClipTransformSection.cs" />
+    <Compile Include="Sections\Drawing\PixelOffsetTransforms.cs" />
+    <Compile Include="UnitTests\Drawing\DefaultValueTests.cs" />
+    <Compile Include="UnitTests\Drawing\GraphicsTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ComboBoxTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\NumericUpDownTests.cs" />
+    <Compile Include="..\..\Eto\Helper.cs">
+      <Link>Helper.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

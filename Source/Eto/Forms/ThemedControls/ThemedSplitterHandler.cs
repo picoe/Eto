@@ -13,7 +13,7 @@ namespace Eto.Forms.ThemedControls
 		readonly Panel splitter = new Panel();
 		readonly Panel panel1 = new Panel();
 		readonly Panel panel2 = new Panel();
-		SplitterOrientation orient;
+		Orientation orient;
 		SplitterFixedPanel fix;
 		int? position;
 		int swidth = 5;
@@ -33,7 +33,8 @@ namespace Eto.Forms.ThemedControls
 		{
 			if (e.Buttons != MouseButtons.Primary)
 				return;
-			Position = (int)Math.Round((Orientation == SplitterOrientation.Horizontal
+			e.Handled = true;
+			Position = (int)Math.Round((Orientation == Orientation.Horizontal
 				? e.Location.X + splitter.Location.X : e.Location.Y + splitter.Location.Y) - swidth*0.5);
 		}
 
@@ -55,7 +56,7 @@ namespace Eto.Forms.ThemedControls
 			}
 			if (position.HasValue)
 			{
-				if (orient == SplitterOrientation.Horizontal)
+				if (orient == Orientation.Horizontal)
 				{
 					panel1.Width = position.Value;
 					if (Widget.Loaded)
@@ -71,7 +72,7 @@ namespace Eto.Forms.ThemedControls
 			else if (!double.IsNaN(relative)) switch (fix)
 			{
 				case SplitterFixedPanel.Panel1:
-					if (orient == SplitterOrientation.Horizontal)
+					if (orient == Orientation.Horizontal)
 					{
 						panel1.Width = (int)Math.Round(relative);
 						if (Widget.Loaded)
@@ -85,7 +86,7 @@ namespace Eto.Forms.ThemedControls
 					}
 					break;
 				case SplitterFixedPanel.Panel2:
-					if (orient == SplitterOrientation.Horizontal)
+					if (orient == Orientation.Horizontal)
 					{
 						panel2.Width = (int)Math.Round(relative);
 						if (Widget.Loaded)
@@ -99,7 +100,7 @@ namespace Eto.Forms.ThemedControls
 					}
 					break;
 				default:
-					if (orient == SplitterOrientation.Horizontal)
+					if (orient == Orientation.Horizontal)
 					{
 						var sz = Control.Width - swidth;
 						panel1.Width = sz <= 0 ? -1 : (int)Math.Round(relative * sz);
@@ -116,7 +117,7 @@ namespace Eto.Forms.ThemedControls
 
 			if (!positionOnly)
 			{
-				if (orient == SplitterOrientation.Horizontal)
+				if (orient == Orientation.Horizontal)
 				{
 					splitter.Cursor = Cursors.VerticalSplit;
 					splitter.Size = new Size(swidth, -1);
@@ -158,7 +159,7 @@ namespace Eto.Forms.ThemedControls
 		/// <summary>
 		/// Gets or sets the orientation of the panels in the splitter.
 		/// </summary>
-		public SplitterOrientation Orientation
+		public Orientation Orientation
 		{
 			get { return orient; }
 			set
@@ -193,7 +194,7 @@ namespace Eto.Forms.ThemedControls
 			get
 			{
 				return panel1.Content == null || !panel1.Content.Visible ? 0
-					: orient == SplitterOrientation.Horizontal
+						: orient == Orientation.Horizontal
 					? panel1.Width : panel2.Height;
 			}
 			set
@@ -203,6 +204,7 @@ namespace Eto.Forms.ThemedControls
 				position = value;
 				relative = double.NaN;
 				UpdateLayout(true);
+				Callback.OnPositionChanged(Widget, EventArgs.Empty);
 			}
 		}
 
@@ -244,7 +246,7 @@ namespace Eto.Forms.ThemedControls
 				if (value == swidth)
 					return;
 				swidth = value;
-				if (orient == SplitterOrientation.Horizontal)
+				if (orient == Orientation.Horizontal)
 					splitter.Width = swidth;
 				else
 					splitter.Height = swidth;

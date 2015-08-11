@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Drawing
 {
@@ -9,12 +10,12 @@ namespace Eto.GtkSharp.Drawing
 		readonly Gtk.Widget widget;
 		Image image;
 		Cairo.ImageSurface surface;
-		double offset = 0.5;
-		double inverseoffset;
-		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		RectangleF? clipBounds;
 		IGraphicsPath clipPath;
+		Cairo.Matrix currentTransform = new Cairo.Matrix();
+		Stack<Cairo.Matrix> transforms;
 		bool disposeControl = true;
+		bool isOffset;
 		#if GTK2
 		readonly Gdk.Drawable drawable;
 
@@ -25,7 +26,7 @@ namespace Eto.GtkSharp.Drawing
 			this.Control = Gdk.CairoHelper.Create(drawable);
 			disposeControl = dispose;
 		}
-		#else
+#else
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Window drawable)
 		{
 			this.widget = widget;
@@ -39,28 +40,32 @@ namespace Eto.GtkSharp.Drawing
 			this.disposeControl = dispose;
 		}
 
+		public GraphicsHandler()
+		{
+		}
+
 		protected override bool DisposeControl { get { return disposeControl; } }
+
+		static readonly object PixelOffsetMode_Key = new object();
 
 		public PixelOffsetMode PixelOffsetMode
 		{
-			get { return pixelOffsetMode; }
-			set
+			get { return Widget.Properties.Get<PixelOffsetMode>(PixelOffsetMode_Key); }
+			set { Widget.Properties.Set(PixelOffsetMode_Key, value); }
+		}
+
+		void SetOffset(bool fill)
+		{
+			var requiresOffset = !fill && PixelOffsetMode == PixelOffsetMode.None;
+			if (requiresOffset != isOffset)
 			{
-				pixelOffsetMode = value;
-				offset = value == PixelOffsetMode.None ? 0.5 : 0;
-				inverseoffset = value == PixelOffsetMode.None ? 0 : 0.5;
+				ReverseAll();
+				isOffset = requiresOffset;
+				ApplyAll();
 			}
 		}
 
 		public float PointsPerPixel { get { return PangoContext != null ? 72f / (float)Pango.CairoHelper.ContextGetResolution(PangoContext) : 72f / 96f; } }
-
-		public double Offset { get { return offset; } }
-
-		public double InverseOffset { get { return inverseoffset; } }
-
-		public GraphicsHandler()
-		{
-		}
 
 		public bool IsRetained { get { return false; } }
 
@@ -70,10 +75,12 @@ namespace Eto.GtkSharp.Drawing
 			set { Control.Antialias = value ? Cairo.Antialias.Default : Cairo.Antialias.None; }
 		}
 
+		static readonly object ImageInterpolation_Key = new object();
+
 		public ImageInterpolation ImageInterpolation
 		{
-			get;
-			set;
+			get { return Widget.Properties.Get<ImageInterpolation>(ImageInterpolation_Key); }
+			set { Widget.Properties.Set(ImageInterpolation_Key, value); }
 		}
 
 		public Pango.Context PangoContext
@@ -102,6 +109,15 @@ namespace Eto.GtkSharp.Drawing
 			Control.Operator = Cairo.Operator.Source;
 			Control.Fill();
 			Control.Restore();
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+
+			currentTransform.InitIdentity();
+
+			ApplyAll();
 		}
 
 		public void Flush()
@@ -155,20 +171,23 @@ namespace Eto.GtkSharp.Drawing
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
-			Control.MoveTo(startx + offset, starty + offset);
-			Control.LineTo(endx + offset, endy + offset);
+			SetOffset(false);
+			Control.MoveTo(startx, starty);
+			Control.LineTo(endx, endy);
 			pen.Apply(this);
 		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
-			Control.Rectangle(x + offset, y + offset, width, height);
+			SetOffset(false);
+			Control.Rectangle(x, y, width, height);
 			pen.Apply(this);
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
-			Control.Rectangle(x + inverseoffset, y + inverseoffset, width, height);
+			SetOffset(true);
+			Control.Rectangle(x, y, width, height);
 			Control.Save();
 			brush.Apply(this);
 			Control.Restore();
@@ -176,8 +195,9 @@ namespace Eto.GtkSharp.Drawing
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
+			SetOffset(false);
 			Control.Save();
-			Control.Translate(x + width / 2 + offset, y + height / 2 + offset);
+			Control.Translate(x + width / 2, y + height / 2);
 			double radius = Math.Max(width / 2.0, height / 2.0);
 			if (width > height)
 				Control.Scale(1.0, height / width);
@@ -190,8 +210,9 @@ namespace Eto.GtkSharp.Drawing
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			Control.Save();
-			Control.Translate(x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
+			Control.Translate(x + width / 2, y + height / 2);
 			double radius = Math.Max(width / 2.0, height / 2.0);
 			if (width > height)
 				Control.Scale(1.0, height / width);
@@ -206,8 +227,9 @@ namespace Eto.GtkSharp.Drawing
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(false);
 			Control.Save();
-			Control.Translate(x + width / 2 + offset, y + height / 2 + offset);
+			Control.Translate(x + width / 2, y + height / 2);
 			double radius = Math.Max(width / 2.0, height / 2.0);
 			if (width > height)
 				Control.Scale(1.0, height / width);
@@ -223,8 +245,9 @@ namespace Eto.GtkSharp.Drawing
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(true);
 			Control.Save();
-			Control.Translate(x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
+			Control.Translate(x + width / 2, y + height / 2);
 			double radius = Math.Max(width / 2.0, height / 2.0);
 			if (width > height)
 				Control.Scale(1.0, height / width);
@@ -243,11 +266,9 @@ namespace Eto.GtkSharp.Drawing
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
+			SetOffset(true);
 			Control.Save();
-			Control.Translate(inverseoffset, inverseoffset);
 			path.Apply(Control);
-			Control.Restore();
-			Control.Save();
 			Control.FillRule = path.FillMode.ToCairo();
 			brush.Apply(this);
 			Control.Restore();
@@ -255,25 +276,28 @@ namespace Eto.GtkSharp.Drawing
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
+			SetOffset(false);
 			Control.Save();
-			Control.Translate(offset, offset);
 			path.Apply(Control);
-			Control.Restore();
 			pen.Apply(this);
+			Control.Restore();
 		}
 
 		public void DrawImage(Image image, float x, float y)
 		{
+			SetOffset(true);
 			((IImageHandler)image.Handler).DrawImage(this, x, y);
 		}
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			((IImageHandler)image.Handler).DrawImage(this, x, y, width, height);
 		}
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
+			SetOffset(true);
 			((IImageHandler)image.Handler).DrawImage(this, source, destination);
 		}
 
@@ -284,6 +308,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
+			SetOffset(true);
 			using (var layout = CreateLayout())
 			{
 				font.Apply(layout);
@@ -329,34 +354,70 @@ namespace Eto.GtkSharp.Drawing
 		public void TranslateTransform(float offsetX, float offsetY)
 		{
 			Control.Translate(offsetX, offsetY);
+			var cairoMatrix = new Cairo.Matrix();
+			cairoMatrix.InitTranslate(offsetX, offsetY);
+			currentTransform = Cairo.Matrix.Multiply(cairoMatrix, currentTransform);
 		}
 
 		public void RotateTransform(float angle)
 		{
-			Control.Rotate(Conversions.DegreesToRadians(angle));
+			var radians = Conversions.DegreesToRadians(angle);
+            Control.Rotate(radians);
+			var cairoMatrix = new Cairo.Matrix();
+			cairoMatrix.InitRotate(radians);
+			currentTransform = Cairo.Matrix.Multiply(cairoMatrix, currentTransform);
 		}
 
 		public void ScaleTransform(float scaleX, float scaleY)
 		{
 			Control.Scale(scaleX, scaleY);
+			var cairoMatrix = new Cairo.Matrix();
+			cairoMatrix.InitScale(scaleX, scaleY);
+			currentTransform = Cairo.Matrix.Multiply(cairoMatrix, currentTransform);
 		}
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
-			Control.Transform(matrix.ToCairo());
+			var cairoMatrix = matrix.ToCairo();
+            Control.Transform(cairoMatrix);
+			
+			currentTransform = Cairo.Matrix.Multiply(cairoMatrix, currentTransform);
 		}
 
 		public void SaveTransform()
 		{
-			ReverseClip();
-			Control.Save();
-			ApplyClip();
+			if (transforms == null)
+				transforms = new Stack<Cairo.Matrix>();
+			transforms.Push(currentTransform);
 		}
 
 		public void RestoreTransform()
 		{
-			Control.Restore();
-			ApplyClip();
+			if (transforms == null || transforms.Count == 0)
+				throw new InvalidOperationException("No corresponding SaveTransform");
+			ReverseTransform();
+			currentTransform = transforms.Pop();
+			ApplyTransform();
+		}
+
+		public IMatrix CurrentTransform
+		{
+			get { return currentTransform.ToEto(); }
+		}
+
+		void ReverseOffset()
+		{
+			if (isOffset)
+				Control.Restore();
+		}
+
+		void ApplyOffset()
+		{
+			if (isOffset)
+			{
+				Control.Save();
+				Control.Translate(0.5, 0.5);
+			}
 		}
 
 		void ReverseClip()
@@ -379,6 +440,31 @@ namespace Eto.GtkSharp.Drawing
 			}
 		}
 
+		void ReverseTransform()
+		{
+			Control.Restore();
+		}
+
+		void ApplyTransform()
+		{
+			Control.Save();
+			Control.Transform(currentTransform);
+		}
+
+		void ReverseAll()
+		{
+			ReverseTransform();
+			ReverseClip();
+			ReverseOffset();
+		}
+
+		void ApplyAll()
+		{
+			ApplyOffset();
+			ApplyClip();
+			ApplyTransform();
+		}
+
 		public RectangleF ClipBounds
 		{
 			get
@@ -395,17 +481,24 @@ namespace Eto.GtkSharp.Drawing
 
 		public void SetClip(RectangleF rectangle)
 		{
+			ReverseTransform();
 			ResetClip();
-			clipBounds = rectangle;
+			clipBounds = currentTransform.ToEto().TransformRectangle(rectangle);
+			clipPath = null;
 			ApplyClip();
+			ApplyTransform();
 		}
 
 		public void SetClip(IGraphicsPath path)
 		{
+			ReverseTransform();
 			ResetClip();
+			path = path.Clone();
+			path.Transform(currentTransform.ToEto());
 			clipPath = path;
 			clipBounds = path.Bounds;
 			ApplyClip();
+			ApplyTransform();
 		}
 
 		public void ResetClip()

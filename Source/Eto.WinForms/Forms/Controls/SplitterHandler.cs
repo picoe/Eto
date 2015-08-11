@@ -38,7 +38,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				return Handler._prefer();
+				return Handler.GetPreferredSize();
 			}
 
 			// corrections (when too small, or not fixed)
@@ -58,12 +58,12 @@ namespace Eto.WinForms.Forms.Controls
 
 		}
 
-		private sd.Size _prefer()
+		sd.Size GetPreferredSize()
 		{
 			var size = new sd.Size();
 			var size1 = panel1 == null ? Size.Empty : panel1.GetPreferredSize();
 			var size2 = panel2 == null ? Size.Empty : panel2.GetPreferredSize();
-			if (Orientation == SplitterOrientation.Horizontal)
+			if (Orientation == Orientation.Horizontal)
 			{
 				if (position.HasValue)
 					size1.Width = position.Value;
@@ -80,8 +80,7 @@ namespace Eto.WinForms.Forms.Controls
 					else
 					{
 						// both get at least the preferred size
-						size1.Width = (int)Math.Round(Math.Max(
-							size1.Width/relative, size2.Width/(1-relative)));
+						size1.Width = (int)Math.Round(Math.Max(size1.Width/relative, size2.Width/(1-relative)));
 						size2.Width = 0;
 					}
 				}
@@ -105,8 +104,7 @@ namespace Eto.WinForms.Forms.Controls
 					else
 					{
 						// both get at least the preferred size
-						size1.Height = (int)Math.Round(Math.Max(
-							size1.Height/relative, size2.Height/(1-relative)));
+						size1.Height = (int)Math.Round(Math.Max(size1.Height/relative, size2.Height/(1-relative)));
 						size2.Height = 0;
 					}
 				}
@@ -186,12 +184,12 @@ namespace Eto.WinForms.Forms.Controls
 			if (desired)
 			{
 				var size = UserDesiredSize;
-				var pick = Orientation == SplitterOrientation.Horizontal ?
+				var pick = Orientation == Orientation.Horizontal ?
 					size.Width : size.Height;
 				if (pick >= 0)
 					return pick - Control.SplitterWidth;
 			}
-			return (Orientation == SplitterOrientation.Horizontal ?
+			return (Orientation == Orientation.Horizontal ?
 				Control.Width : Control.Height) - Control.SplitterWidth;
 		}
 
@@ -365,16 +363,16 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public SplitterOrientation Orientation
+		public Orientation Orientation
 		{
 			get
 			{
 				switch (Control.Orientation)
 				{
 					case swf.Orientation.Horizontal:
-						return SplitterOrientation.Vertical;
+						return Orientation.Vertical;
 					case swf.Orientation.Vertical:
-						return SplitterOrientation.Horizontal;
+						return Orientation.Horizontal;
 					default:
 						throw new NotSupportedException();
 				}
@@ -383,10 +381,10 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				switch (value)
 				{
-					case SplitterOrientation.Horizontal:
+					case Orientation.Horizontal:
 						Control.Orientation = swf.Orientation.Vertical;
 						break;
-					case SplitterOrientation.Vertical:
+					case Orientation.Vertical:
 						Control.Orientation = swf.Orientation.Horizontal;
 						break;
 					default:

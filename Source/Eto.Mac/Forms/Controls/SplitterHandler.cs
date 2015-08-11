@@ -35,17 +35,20 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class SplitterHandler : MacView<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
+		double relative = double.NaN;
 
 		//TODO: RelativePosition - following is just stub, see WinForm/WPF/GTK or ThemedSplitter
 		public double RelativePosition
 		{
 			get
 			{
+				if (!Widget.Loaded)
+					return relative;
+				
 				var pos = Position;
 				if (fixedPanel == SplitterFixedPanel.Panel1)
 					return pos;
-				var size = Orientation == SplitterOrientation.Horizontal
-					? Control.Bounds.Width : Control.Bounds.Height;
+				var size = Orientation == Orientation.Horizontal ? Control.Bounds.Width : Control.Bounds.Height;
 				size -= SplitterWidth;
 				if (fixedPanel == SplitterFixedPanel.Panel2)
 					return size - pos;
@@ -53,25 +56,37 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				if (fixedPanel == SplitterFixedPanel.Panel1)
-					Position = (int)Math.Round(value);
-				else
+				relative = value;
+				if (Widget.Loaded)
 				{
-					var size = Orientation == SplitterOrientation.Horizontal
-					? Control.Bounds.Width : Control.Bounds.Height;
-					size -= SplitterWidth;
-					if (fixedPanel == SplitterFixedPanel.Panel2)
-						Position = (int)Math.Round(size - value);
-					else
-						Position = (int)Math.Round(size * value);
+					SetRelative();
+					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
 				}
 			}
 		}
 
-		//TODO: SplitterWidth - at least get correct value
+		void SetRelative()
+		{
+			if (double.IsNaN(relative))
+				return;
+
+			if (fixedPanel == SplitterFixedPanel.Panel1)
+				position = (int)Math.Round(relative);
+			else
+			{
+				var size = Orientation == Orientation.Horizontal ? Control.Bounds.Width : Control.Bounds.Height;
+				size -= SplitterWidth;
+				if (fixedPanel == SplitterFixedPanel.Panel2)
+					position = (int)Math.Round(size - relative);
+				else
+					position = (int)Math.Round(size * relative);
+			}
+			relative = double.NaN;
+		}
+
 		public int SplitterWidth
 		{
-			get { return 5; }
+			get { return (int)Math.Round(Control.DividerThickness); }
 			set { }
 		}
 
@@ -109,7 +124,7 @@ namespace Eto.Mac.Forms.Controls
 			var panel2Rect = splitView.Subviews[1].Frame;
 			var newFrame = splitView.Frame;
 				
-			if (oldSize.Height == 0 && oldSize.Width == 0)
+			if (oldSize.Height <= 0 && oldSize.Width <= 0)
 				oldSize = newFrame.Size;
 	
 			if (splitView.IsVertical)
@@ -137,7 +152,7 @@ namespace Eto.Mac.Forms.Controls
 							break;
 						case SplitterFixedPanel.None:
 							var oldscale = newFrame.Width / oldSize.Width;
-							panel1Rect.Width = (nfloat)Math.Max(0, Math.Min(newFrame.Width - dividerThickness, pos * oldscale));
+							panel1Rect.Width = (nfloat)Math.Round(Math.Max(0, Math.Min(newFrame.Width - dividerThickness, pos * oldscale)));
 							panel2Rect.Width = (nfloat)Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
 							break;
 					}
@@ -169,7 +184,7 @@ namespace Eto.Mac.Forms.Controls
 							break;
 						case SplitterFixedPanel.None:
 							var oldscale = newFrame.Height / oldSize.Height;
-							panel1Rect.Height = (nfloat)Math.Max(0, Math.Min(newFrame.Height - dividerThickness, pos * oldscale));
+							panel1Rect.Height = (nfloat)Math.Round(Math.Max(0, Math.Min(newFrame.Height - dividerThickness, pos * oldscale)));
 							panel2Rect.Height = (nfloat)Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
 							break;
 					}
@@ -194,7 +209,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public override nfloat ConstrainSplitPosition(NSSplitView splitView, nfloat proposedPosition, nint subviewDividerIndex)
 			{
-				return Handler.Enabled ? proposedPosition : Handler.Position;
+				return Handler.Enabled ? (nfloat)Math.Round(proposedPosition) : Handler.Position;
 			}
 
 			public override void DidResizeSubviews(NSNotification notification)
@@ -256,24 +271,25 @@ namespace Eto.Mac.Forms.Controls
 
 		public int Position
 		{
-			get { return position ?? 0; }
+			get { return position ?? (int)(Control.IsVertical ? Control.Subviews[0].Frame.Width : Control.Subviews[0].Frame.Height); }
 			set
 			{
 				position = value;
+				relative = double.NaN;
 				if (Widget.Loaded)
 					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
 			}
 		}
 
-		public SplitterOrientation Orientation
+		public Orientation Orientation
 		{
 			get
 			{
-				return Control.IsVertical ? SplitterOrientation.Horizontal : SplitterOrientation.Vertical;
+				return Control.IsVertical ? Orientation.Horizontal : Orientation.Vertical;
 			}
 			set
 			{
-				Control.IsVertical = value == SplitterOrientation.Horizontal;
+				Control.IsVertical = value == Orientation.Horizontal;
 				if (Widget.Loaded)
 					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
 			}
@@ -322,20 +338,38 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetInitialSplitPosition()
 		{
-			if (position == null)
+			if (!double.IsNaN(relative))
+				SetRelative();
+			else if (position == null)
 			{
 				switch (fixedPanel)
 				{
+					case SplitterFixedPanel.None:
 					case SplitterFixedPanel.Panel1:
 						var size1 = panel1.GetPreferredSize(SizeF.MaxValue);
-						position = (int)(Orientation == SplitterOrientation.Horizontal ? size1.Width : size1.Height);
+						position = (int)(Orientation == Orientation.Horizontal ? size1.Width : size1.Height);
 						break;
 					case SplitterFixedPanel.Panel2:
 						var size2 = panel2.GetPreferredSize(SizeF.MaxValue);
-						if (Orientation == SplitterOrientation.Horizontal)
+						if (Orientation == Orientation.Horizontal)
 							position = (int)(Control.Frame.Width - size2.Width - Control.DividerThickness);
 						else
 							position = (int)(Control.Frame.Height - size2.Height - Control.DividerThickness);
+						break;
+				}
+			}
+			else if (PreferredSize != null)
+			{
+				var preferredSize = Orientation == Orientation.Horizontal ? PreferredSize.Value.Width : PreferredSize.Value.Height;
+				var size = Orientation == Orientation.Horizontal ? Size.Width : Size.Height;
+				switch (fixedPanel)
+				{
+					case SplitterFixedPanel.Panel2:
+						position = size - (preferredSize - position.Value);
+						break;
+					case SplitterFixedPanel.None:
+						if (preferredSize > 0)
+							position = position.Value * size / preferredSize;
 						break;
 				}
 			}
@@ -359,47 +393,83 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var size = new SizeF();
 
-			var p1size = panel1.GetPreferredSize(availableSize);
-			var p2size = panel2.GetPreferredSize(availableSize);
+			var size1 = panel1.GetPreferredSize(availableSize);
+			var size2 = panel2.GetPreferredSize(availableSize);
 			if (Control.IsVertical)
 			{
-				if (position != null)
+				if (!double.IsNaN(relative))
+				{
+					switch (FixedPanel)
+					{
+						case SplitterFixedPanel.Panel1:
+							size1.Width = (float)Math.Round(relative);
+							break;
+						case SplitterFixedPanel.Panel2:
+							size2.Width = (float)Math.Round(relative);
+							break;
+						case SplitterFixedPanel.None:
+							size1.Width = (float)Math.Round(Math.Max(size1.Width/relative, size2.Width/(1-relative)));
+							size2.Width = 0;
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				}
+				else if (position != null)
 				{
 					switch (FixedPanel)
 					{
 						case SplitterFixedPanel.None:
 						case SplitterFixedPanel.Panel1:
-							p1size.Width = Math.Max(p1size.Width, position.Value);
+							size1.Width = Math.Max(size1.Width, position.Value);
 							break;
 						case SplitterFixedPanel.Panel2:
-							p2size.Width = Math.Max(p2size.Width, Size.Width - position.Value);
+							size2.Width = Math.Max(size2.Width, Size.Width - position.Value);
 							break;
 					}
 				}
 				if (position != null)
-					p1size.Width = position.Value;
-				size.Width = (float)(p1size.Width + p2size.Width + Control.DividerThickness);
-				size.Height = Math.Max(p1size.Height, p2size.Height);
+					size1.Width = position.Value;
+				size.Width = (float)(size1.Width + size2.Width + Control.DividerThickness);
+				size.Height = Math.Max(size1.Height, size2.Height);
 			}
 			else
 			{
+				if (!double.IsNaN(relative))
+				{
+					switch (FixedPanel)
+					{
+						case SplitterFixedPanel.Panel1:
+							size1.Height = (float)Math.Round(relative);
+							break;
+						case SplitterFixedPanel.Panel2:
+							size2.Height = (float)Math.Round(relative);
+							break;
+						case SplitterFixedPanel.None:
+							size1.Height = (float)Math.Round(Math.Max(size1.Height/relative, size2.Height/(1-relative)));
+							size2.Height = 0;
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				}
 				if (position != null)
 				{
 					switch (FixedPanel)
 					{
 						case SplitterFixedPanel.None:
 						case SplitterFixedPanel.Panel1:
-							p1size.Height = Math.Max(p1size.Height, position.Value);
+							size1.Height = Math.Max(size1.Height, position.Value);
 							break;
 						case SplitterFixedPanel.Panel2:
-							p2size.Height = Math.Max(p2size.Height, Size.Height - position.Value);
+							size2.Height = Math.Max(size2.Height, Size.Height - position.Value);
 							break;
 					}
 				}
 				if (position != null)
-					p1size.Height = position.Value;
-				size.Height = (float)(p1size.Height + p2size.Height + Control.DividerThickness);
-				size.Width = Math.Max(p1size.Width, p2size.Width);
+					size1.Height = position.Value;
+				size.Height = (float)(size1.Height + size2.Height + Control.DividerThickness);
+				size.Width = Math.Max(size1.Width, size2.Width);
 			}
 			return size;
 		}

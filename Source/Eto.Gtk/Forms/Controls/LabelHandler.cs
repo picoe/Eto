@@ -25,6 +25,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			int wrapWidth;
 
+			public void ResetWidth()
+			{
+				wrapWidth = -1;
+			}
+
 			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
@@ -62,11 +67,11 @@ namespace Eto.GtkSharp.Forms.Controls
 					return;
 				if (wrapWidth != width)
 				{
-					wrapWidth = width;
 					Layout.Width = (int)(width * Pango.Scale.PangoScale);
 					int pixWidth, pixHeight;
 					Layout.GetPixelSize(out pixWidth, out pixHeight);
 					HeightRequest = pixHeight;
+					wrapWidth = width;
 				}
 			}
 		}
@@ -97,6 +102,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			set
 			{
+				Control.ResetWidth();
 				switch (value)
 				{
 					case WrapMode.None:
@@ -143,7 +149,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		public override string Text
 		{
 			get { return Control.Text.ToEtoMnemonic(); }
-			set { Control.TextWithMnemonic = value.ToPlatformMnemonic(); }
+			set
+			{
+				Control.ResetWidth();
+				Control.TextWithMnemonic = value.ToPlatformMnemonic();
+			}
 		}
 
 		public TextAlignment TextAlignment
@@ -203,6 +213,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return base.Font; }
 			set
 			{
+				Control.ResetWidth();
 				base.Font = value;
 				Control.Attributes = value != null ? ((FontHandler)value.Handler).Attributes : null;
 			}

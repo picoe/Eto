@@ -7,7 +7,7 @@
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in F#]]></_Description>
 		<GroupId>eto-project-application</GroupId>
-		<SupportedParameters>GenerateCombined</SupportedParameters>
+		<SupportedParameters>AppName,SupportsCombined</SupportedParameters>
 	</TemplateConfiguration>
 
 	<Actions>
@@ -19,7 +19,7 @@
 			<StartupProject>${ProjectName}.Mac</StartupProject>
 		</Options>
 
-		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" type="Eto.FSharp" if="GenerateCombined">
+		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" type="Eto.FSharp" if="Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
@@ -30,20 +30,11 @@
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<File name="Program.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
-module Program =
-
-    open System
-    open ${BaseProjectName}
-
-    [<EntryPoint>]
-    [<STAThread>]
-    let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platform.Detect)
-        app.Run(new MainForm())
-        0
-]]>
-				</File>
+				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
+					</Replacements>
+				</ParameterizedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" /> 
@@ -54,7 +45,7 @@ module Program =
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.FSharp" if="!GenerateCombined">
+		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.FSharp" if="!Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
@@ -64,20 +55,11 @@ module Program =
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<File name="Program.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
-module Program =
-
-    open System
-    open ${BaseProjectName}
-
-    [<EntryPoint>]
-    [<STAThread>]
-    let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platforms.Gtk2)
-        app.Run(new MainForm())
-        0
-]]>
-				</File>
+				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
+					</Replacements>
+				</ParameterizedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" /> 
@@ -110,7 +92,7 @@ module Program =
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.FSharp" if="!GenerateCombined">
+		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.FSharp" if="!Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
@@ -120,20 +102,11 @@ module Program =
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<File name="Program.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
-module Program =
-
-    open System
-    open ${BaseProjectName}
-
-    [<EntryPoint>]
-    [<STAThread>]
-    let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platforms.Gtk3)
-        app.Run(new MainForm())
-        0
-]]>
-				</File>
+				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
+					</Replacements>
+				</ParameterizedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" /> 
@@ -142,7 +115,7 @@ module Program =
 		</Project>
 
 
-		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.FSharp" if="!GenerateCombined">
+		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.FSharp" if="!Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
@@ -153,27 +126,18 @@ module Program =
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<File name="Program.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
-module Program =
-
-    open System
-    open ${BaseProjectName}
-
-    [<EntryPoint>]
-    [<STAThread>]
-    let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platforms.WinForms)
-        app.Run(new MainForm())
-        0
-]]>
-				</File>
+				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
+					</Replacements>
+				</ParameterizedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" /> 
 				<Package Id="Eto.Platform.Windows" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.FSharp" if="!GenerateCombined">
+		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.FSharp" if="!Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
@@ -186,20 +150,11 @@ module Program =
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<File name="Program.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
-module Program =
-
-    open System
-    open ${BaseProjectName}
-
-    [<EntryPoint>]
-    [<STAThread>]
-    let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platforms.Wpf)
-        app.Run(new MainForm())
-        0
-]]>
-				</File>
+				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
+					</Replacements>
+				</ParameterizedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" /> 
@@ -218,20 +173,11 @@ module Program =
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<File name="Program.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
-module Program =
-
-    open System
-    open ${BaseProjectName}
-
-    [<EntryPoint>]
-    [<STAThread>]
-    let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platforms.Mac)
-        app.Run(new MainForm())
-        0
-]]>
-				</File>
+				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Mac" />
+					</Replacements>
+				</ParameterizedFile>
 				<File name="Info.plist" src="../Mac/Info.plist" />
 			</Files>
 			<Packages>
@@ -252,20 +198,11 @@ module Program =
 			<Files>
 				<Directory name="Resources"/>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<File name="Program.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
-module Program =
-
-    open System
-    open ${BaseProjectName}
-
-    [<EntryPoint>]
-    [<STAThread>]
-    let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platforms.XamMac2)
-        app.Run(new MainForm())
-        0
-]]>
-				</File>
+				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
+					</Replacements>
+				</ParameterizedFile>
 				<File name="Info.plist" src="../Mac/Info.plist" />
 			</Files>
 			<Packages>
@@ -285,20 +222,11 @@ module Program =
 			<Files>
 				<Directory name="Resources"/>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<File name="Program.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
-module Program =
-
-    open System
-    open ${BaseProjectName}
-
-    [<EntryPoint>]
-    [<STAThread>]
-    let Main(args) = 
-        let app = new Eto.Forms.Application(Eto.Platforms.XamMac2)
-        app.Run(new MainForm())
-        0
-]]>
-				</File>
+				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
+					</Replacements>
+				</ParameterizedFile>
 				<File name="Info.plist" src="../Mac/Info.plist" />
 			</Files>
 			<Packages>

@@ -13,7 +13,7 @@ namespace Eto.Wpf.Forms.Controls
 		readonly swc.GridSplitter splitter;
 		readonly swc.DockPanel pane1;
 		readonly swc.DockPanel pane2;
-		SplitterOrientation orientation;
+		Orientation orientation;
 		SplitterFixedPanel fixedPanel;
 		int? position;
 		int splitterWidth = 5;
@@ -89,18 +89,18 @@ namespace Eto.Wpf.Forms.Controls
 			else if (fixedPanel == SplitterFixedPanel.Panel1)
 			{
 				var size1 = panel1.GetPreferredSize(WpfConversions.PositiveInfinitySize);
-				SetRelative(orientation == SplitterOrientation.Horizontal ? size1.Width : size1.Height);
+				SetRelative(orientation == Orientation.Horizontal ? size1.Width : size1.Height);
 			}
 			else if (fixedPanel == SplitterFixedPanel.Panel2)
 			{
 				var size2 = panel2.GetPreferredSize(WpfConversions.PositiveInfinitySize);
-				SetRelative(orientation == SplitterOrientation.Horizontal ? size2.Width : size2.Height);
+				SetRelative(orientation == Orientation.Horizontal ? size2.Width : size2.Height);
 			}
 			else
 			{
 				var size1 = panel1.GetPreferredSize(WpfConversions.PositiveInfinitySize);
 				var size2 = panel2.GetPreferredSize(WpfConversions.PositiveInfinitySize);
-				SetRelative(orientation == SplitterOrientation.Horizontal
+				SetRelative(orientation == Orientation.Horizontal
 					? size1.Width / (double)(size1.Width + size2.Width)
 					: size1.Height / (double)(size1.Height + size2.Height));
 			}
@@ -122,7 +122,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		void UpdateOrientation()
 		{
-			if (orientation == SplitterOrientation.Horizontal)
+			if (orientation == Orientation.Horizontal)
 			{
 
 				splitter.ResizeDirection = swc.GridResizeDirection.Columns;
@@ -183,7 +183,7 @@ namespace Eto.Wpf.Forms.Controls
 				UpdateRelative();
 			switch (Orientation)
 			{
-				case SplitterOrientation.Horizontal:
+				case Orientation.Horizontal:
 					var col1 = Control.ColumnDefinitions[0];
 					var col2 = Control.ColumnDefinitions[2];
 					switch (fixedPanel)
@@ -200,7 +200,7 @@ namespace Eto.Wpf.Forms.Controls
 							break;
 					}
 					break;
-				case SplitterOrientation.Vertical:
+				case Orientation.Vertical:
 					var row1 = Control.RowDefinitions[0];
 					var row2 = Control.RowDefinitions[2];
 					switch (fixedPanel)
@@ -229,16 +229,16 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public SplitterOrientation Orientation
+		public Orientation Orientation
 		{
 			get
 			{
 				switch (splitter.ResizeDirection)
 				{
 					case swc.GridResizeDirection.Columns:
-						return SplitterOrientation.Horizontal;
+						return Orientation.Horizontal;
 					case swc.GridResizeDirection.Rows:
-						return SplitterOrientation.Vertical;
+						return Orientation.Vertical;
 					default:
 						throw new NotSupportedException();
 				}
@@ -284,7 +284,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (splitterWidth == value)
 					return;
 				splitterWidth = value;
-				if (orientation == SplitterOrientation.Horizontal)
+				if (orientation == Orientation.Horizontal)
 					splitter.Width = value;
 				else
 					splitter.Height = value;
@@ -300,16 +300,13 @@ namespace Eto.Wpf.Forms.Controls
 			if (desired)
 			{
 				var size = PreferredSize;
-				var pick = Orientation == SplitterOrientation.Horizontal ?
-					size.Width : size.Height;
+				var pick = Orientation == Orientation.Horizontal ? size.Width : size.Height;
 				if (pick >= 0)
 					return pick - splitterWidth;
 			}
-			var width = (Orientation == SplitterOrientation.Horizontal ?
-				Control.ActualWidth : Control.ActualHeight);
+			var width = Orientation == Orientation.Horizontal ? Control.ActualWidth : Control.ActualHeight;
 			if (double.IsNaN(width))
-				width = (Orientation == SplitterOrientation.Horizontal ?
-					Control.Width : Control.Height);
+				width = Orientation == Orientation.Horizontal ? Control.Width : Control.Height;
 			return width - splitterWidth;
 		}
 
@@ -353,14 +350,12 @@ namespace Eto.Wpf.Forms.Controls
 				relative = double.NaN;
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns)
 				{
-					Control.ColumnDefinitions[0].Width = new sw.GridLength(Math.Max(0,
-						newPosition), sw.GridUnitType.Pixel);
+					Control.ColumnDefinitions[0].Width = new sw.GridLength(Math.Max(0, newPosition), sw.GridUnitType.Pixel);
 					Control.ColumnDefinitions[2].Width = new sw.GridLength(1, sw.GridUnitType.Star);
 				}
 				else
 				{
-					Control.RowDefinitions[0].Height = new sw.GridLength(Math.Max(0,
-						newPosition), sw.GridUnitType.Pixel);
+					Control.RowDefinitions[0].Height = new sw.GridLength(Math.Max(0, newPosition), sw.GridUnitType.Pixel);
 					Control.RowDefinitions[2].Height = new sw.GridLength(1, sw.GridUnitType.Star);
 				}
 				return;
@@ -376,17 +371,13 @@ namespace Eto.Wpf.Forms.Controls
 				var col1 = Control.ColumnDefinitions[0];
 				var col2 = Control.ColumnDefinitions[2];
 				if (fixedPanel == SplitterFixedPanel.Panel1)
-					col1.Width = new sw.GridLength(Math.Max(0,
-						newPosition), sw.GridUnitType.Pixel);
+					col1.Width = new sw.GridLength(Math.Max(0, newPosition), sw.GridUnitType.Pixel);
 				else if (fixedPanel == SplitterFixedPanel.Panel2)
-					col2.Width = new sw.GridLength(Math.Max(0,
-						size - newPosition), sw.GridUnitType.Pixel);
+					col2.Width = new sw.GridLength(Math.Max(0, size - newPosition), sw.GridUnitType.Pixel);
 				else
 				{
-					col1.Width = new sw.GridLength(Math.Max(0,
-						newPosition), sw.GridUnitType.Star);
-					col2.Width = new sw.GridLength(Math.Max(0,
-						size - newPosition), sw.GridUnitType.Star);
+					col1.Width = new sw.GridLength(Math.Max(0, newPosition), sw.GridUnitType.Star);
+					col2.Width = new sw.GridLength(Math.Max(0, size - newPosition), sw.GridUnitType.Star);
 				}
 			}
 			else
@@ -417,17 +408,13 @@ namespace Eto.Wpf.Forms.Controls
 				var col1 = Control.ColumnDefinitions[0];
 				var col2 = Control.ColumnDefinitions[2];
 				if (fixedPanel == SplitterFixedPanel.Panel1)
-					col1.Width = new sw.GridLength(Math.Max(0,
-						relative), sw.GridUnitType.Pixel);
+					col1.Width = new sw.GridLength(Math.Max(0, relative), sw.GridUnitType.Pixel);
 				else if (fixedPanel == SplitterFixedPanel.Panel2)
-					col2.Width = new sw.GridLength(Math.Max(0,
-						relative), sw.GridUnitType.Pixel);
+					col2.Width = new sw.GridLength(Math.Max(0, relative), sw.GridUnitType.Pixel);
 				else
 				{
-					col1.Width = new sw.GridLength(Math.Max(0,
-						relative), sw.GridUnitType.Star);
-					col2.Width = new sw.GridLength(Math.Max(0,
-						1 - relative), sw.GridUnitType.Star);
+					col1.Width = new sw.GridLength(Math.Max(0, relative), sw.GridUnitType.Star);
+					col2.Width = new sw.GridLength(Math.Max(0, 1 - relative), sw.GridUnitType.Star);
 				}
 			}
 			else
@@ -435,17 +422,13 @@ namespace Eto.Wpf.Forms.Controls
 				var row1 = Control.RowDefinitions[0];
 				var row2 = Control.RowDefinitions[2];
 				if (fixedPanel == SplitterFixedPanel.Panel1)
-					row1.Height = new sw.GridLength(Math.Max(0,
-						relative), sw.GridUnitType.Pixel);
+					row1.Height = new sw.GridLength(Math.Max(0, relative), sw.GridUnitType.Pixel);
 				else if (fixedPanel == SplitterFixedPanel.Panel2)
-					row2.Height = new sw.GridLength(Math.Max(0,
-						relative), sw.GridUnitType.Pixel);
+					row2.Height = new sw.GridLength(Math.Max(0, relative), sw.GridUnitType.Pixel);
 				else
 				{
-					row1.Height = new sw.GridLength(Math.Max(0,
-						relative), sw.GridUnitType.Star);
-					row2.Height = new sw.GridLength(Math.Max(0,
-						1 - relative), sw.GridUnitType.Star);
+					row1.Height = new sw.GridLength(Math.Max(0, relative), sw.GridUnitType.Star);
+					row2.Height = new sw.GridLength(Math.Max(0, 1 - relative), sw.GridUnitType.Star);
 				}
 			}
 		}

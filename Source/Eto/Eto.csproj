@@ -56,10 +56,16 @@
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\ComboBox.cs" />
+    <Compile Include="Forms\Controls\ComboBox.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\Grid.cs" />
-    <Compile Include="Forms\Controls\PasswordBox.cs" />
-    <Compile Include="Forms\Controls\SearchBox.cs" />
+    <Compile Include="Forms\Controls\PasswordBox.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\SearchBox.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
     <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
@@ -84,48 +90,96 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Application.cs" />
-    <Compile Include="Forms\Container.cs" />
-    <Compile Include="Forms\Dialog.cs" />
+    <Compile Include="Forms\Container.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Dialog.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\FileDialog.cs" />
-    <Compile Include="Forms\Form.cs" />
+    <Compile Include="Forms\Form.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Key.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Layout\Layout.cs" />
+    <Compile Include="Forms\Layout\Layout.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\MessageBox.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\OpenFileDialog.cs" />
-    <Compile Include="Forms\Layout\PixelLayout.cs" />
+    <Compile Include="Forms\Layout\PixelLayout.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\SaveFileDialog.cs" />
     <Compile Include="Forms\SelectFolderDialog.cs" />
-    <Compile Include="Forms\Layout\TableLayout.cs" />
+    <Compile Include="Forms\Layout\TableLayout.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\UITimer.cs" />
-    <Compile Include="Forms\Window.cs" />
-    <Compile Include="Forms\Controls\Button.cs" />
-    <Compile Include="Forms\Controls\CheckBox.cs" />
-    <Compile Include="Forms\Controls\DropDown.cs" />
-    <Compile Include="Forms\Controls\Control.cs" />
+    <Compile Include="Forms\Window.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Button.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\CheckBox.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\DropDown.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Control.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\Drawable.cs" />
-    <Compile Include="Forms\Controls\GroupBox.cs" />
-    <Compile Include="Forms\Controls\ImageView.cs" />
-    <Compile Include="Forms\Controls\Label.cs" />
+    <Compile Include="Forms\Controls\GroupBox.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\ImageView.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Label.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\ListBox.cs" />
     <Compile Include="Forms\Controls\ListControl.cs" />
     <Compile Include="Forms\Controls\MouseEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\ProgressBar.cs" />
-    <Compile Include="Forms\Controls\NumericUpDown.cs" />
-    <Compile Include="Forms\Controls\Panel.cs" />
-    <Compile Include="Forms\Controls\RadioButton.cs" />
+    <Compile Include="Forms\Controls\ProgressBar.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\NumericUpDown.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Panel.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\RadioButton.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\Scrollable.cs" />
-    <Compile Include="Forms\Controls\Splitter.cs" />
-    <Compile Include="Forms\Controls\TabControl.cs" />
-    <Compile Include="Forms\Controls\TabPage.cs" />
-    <Compile Include="Forms\Controls\TextArea.cs" />
-    <Compile Include="Forms\Controls\TextBox.cs" />
-    <Compile Include="Forms\Controls\TextControl.cs" />
+    <Compile Include="Forms\Controls\Splitter.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TabControl.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TabPage.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TextArea.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TextBox.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TextControl.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\TreeGridView.cs" />
     <Compile Include="Forms\Menu\CheckMenuItem.cs" />
     <Compile Include="Forms\Menu\Menu.cs" />
@@ -142,13 +196,21 @@
     <Compile Include="Forms\Clipboard.cs" />
     <Compile Include="Forms\CommonDialog.cs" />
     <Compile Include="Forms\ColorDialog.cs" />
-    <Compile Include="Forms\Controls\DateTimePicker.cs" />
+    <Compile Include="Forms\Controls\DateTimePicker.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
-    <Compile Include="Forms\Layout\DynamicLayout.cs" />
+    <Compile Include="Forms\Layout\DynamicLayout.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\ListItem.cs" />
-    <Compile Include="Forms\Controls\CommonControl.cs" />
-    <Compile Include="Forms\Controls\Slider.cs" />
+    <Compile Include="Forms\Controls\CommonControl.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Slider.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Cursor.cs" />
     <Compile Include="Drawing\Bitmap.cs" />
     <Compile Include="Drawing\Color.cs">
@@ -233,8 +295,12 @@
     <Compile Include="Drawing\LinearGradientBrush.cs" />
     <Compile Include="Forms\Screen.cs" />
     <Compile Include="Helper.cs" />
-    <Compile Include="Forms\Controls\RadioButtonList.cs" />
-    <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />
+    <Compile Include="Forms\Controls\RadioButtonList.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\EnumRadioButtonList.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\KeyEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -247,7 +313,9 @@
     <Compile Include="EventLookup.cs" />
     <Compile Include="Forms\Layout\DynamicItemConverter.cs" />
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
-    <Compile Include="Forms\Controls\Spinner.cs" />
+    <Compile Include="Forms\Controls\Spinner.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
     <Compile Include="Forms\Command.cs">
       <SubType>Code</SubType>
@@ -270,13 +338,19 @@
     <Compile Include="..\Shared\EnumerableExtensions.cs">
       <Link>EnumerableExtensions.cs</Link>
     </Compile>
-    <Compile Include="Forms\Controls\ColorPicker.cs" />
+    <Compile Include="Forms\Controls\ColorPicker.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\FilterCollection.cs" />
-    <Compile Include="Forms\Controls\Calendar.cs" />
+    <Compile Include="Forms\Controls\Calendar.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="..\Shared\PlatformDetect.cs">
       <Link>PlatformDetect.cs</Link>
     </Compile>
-    <Compile Include="Forms\Controls\LinkButton.cs" />
+    <Compile Include="Forms\Controls\LinkButton.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\BindingExtensions.cs" />
     <Compile Include="Forms\ControlBinding.cs" />
     <Compile Include="Forms\Layout\TableRow.cs" />
@@ -286,12 +360,16 @@
     <Compile Include="Forms\WidgetExtensions.cs" />
     <Compile Include="Forms\Layout\TableCellConverter.cs" />
     <Compile Include="Forms\Layout\TableRowConverter.cs" />
-    <Compile Include="Forms\Controls\RichTextArea.cs" />
+    <Compile Include="Forms\Controls\RichTextArea.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Orientation.cs" />
     <Compile Include="Forms\Layout\StackLayout.cs" />
     <Compile Include="Forms\Keyboard.cs" />
     <Compile Include="Forms\Controls\TextChangingEventArgs.cs" />
-    <Compile Include="Forms\Controls\MaskedTextBox.cs" />
+    <Compile Include="Forms\Controls\MaskedTextBox.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\MaskedTextProvider\IMaskedTextProvider.cs" />
     <Compile Include="Forms\MaskedTextProvider\FixedMaskedTextProvider.cs" />
     <Compile Include="Forms\MaskedTextProvider\NumericMaskedTextProvider.cs" />

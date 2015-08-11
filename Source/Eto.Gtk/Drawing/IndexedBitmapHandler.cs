@@ -147,8 +147,6 @@ namespace Eto.GtkSharp.Drawing
 
 				var context = graphics.Control;
 				context.Save();
-				destination.X += (float)graphics.InverseOffset;
-				destination.Y += (float)graphics.InverseOffset;
 				context.Rectangle(destination.ToCairo());
 				double scalex = 1;
 				double scaley = 1;

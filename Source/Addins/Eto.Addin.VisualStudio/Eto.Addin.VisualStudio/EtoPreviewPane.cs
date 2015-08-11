@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Shell;
 using EnvDTE;
 
 using Eto.Forms;
+using System.Linq;
 using System.Windows.Forms.Integration;
 using System.Text;
 using Eto.Designer;
@@ -23,11 +24,17 @@ using Eto.Designer.Builders;
 using System.Windows.Threading;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Eto.Addin.VisualStudio
 {
 	[ComVisible(true)]
 	public sealed class EtoPreviewPane : Microsoft.VisualStudio.Shell.WindowPane,
+		IVsWindowPane,
 		IVsTextBufferDataEvents,
 		IVsTextLinesEvents
 	{
@@ -35,11 +42,17 @@ namespace Eto.Addin.VisualStudio
 		BuilderInfo builderInfo;
 		EtoPreviewPackage package;
 		Panel editorControl;
+		Panel previewControl;
 		UITimer timer;
 		ElementHost host = new ElementHost();
 		uint dataEventsCookie;
 		uint linesEventsCookie;
 		IInterfaceBuilder builder;
+
+		/*void IVsWindowPane.SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider site)
+		{
+			this.site = site;
+		}*/
 
 		void RegisterIndependentView(bool subscribe)
 		{
@@ -85,7 +98,7 @@ namespace Eto.Addin.VisualStudio
 		/// </summary>
 		/// <param name="package">Our Package instance.</param>
 		public EtoPreviewPane(EtoPreviewPackage package, string fileName, IVsTextLines textBuffer)
-			: base(null)
+			: base(package)
 		{
 			this.package = package;
 			this.textBuffer = textBuffer;
@@ -98,8 +111,36 @@ namespace Eto.Addin.VisualStudio
 
 			SetupCommands();
 
+
+			editorControl = new Panel();
+
+
+			previewControl = new Panel();
+
+			var split = new Splitter { Panel1 = previewControl, Panel2 = editorControl, Orientation = SplitterOrientation.Vertical };
+			host.Child = split.ToNative(true);
 		}
 
+		protected override bool PreProcessMessage(ref System.Windows.Forms.Message m)
+		{
+			if (viewAdapter != null)
+			{
+				// copy the Message into a MSG[] array, so we can pass
+				// it along to the active core editor's IVsWindowPane.TranslateAccelerator
+				var pMsg = new MSG[1];
+				pMsg[0].hwnd = m.HWnd;
+				pMsg[0].message = (uint)m.Msg;
+				pMsg[0].wParam = m.WParam;
+				pMsg[0].lParam = m.LParam;
+
+				var vsWindowPane = (IVsWindowPane)viewAdapter;
+				return vsWindowPane.TranslateAccelerator(pMsg) == 0;
+			}
+			return base.PreProcessMessage(ref m);
+		}
+		
+
+		IVsTextView viewAdapter;
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -110,8 +151,67 @@ namespace Eto.Addin.VisualStudio
 			timer.Elapsed += timer_Elapsed;
 
 			TriggerUpdate();
+
+			var initView = new[] { new INITVIEW() };
+			initView[0].fSelectionMargin = 0;
+			initView[0].fWidgetMargin = 0;
+			initView[0].fVirtualSpace = 0;
+			initView[0].fDragDropMove = 1;
+
+			uint flags =
+				(uint)TextViewInitFlags.VIF_SET_SELECTION_MARGIN |
+				(uint)TextViewInitFlags.VIF_SET_DRAGDROPMOVE |
+				(uint)TextViewInitFlags2.VIF_SUPPRESS_STATUS_BAR_UPDATE |
+				(uint)TextViewInitFlags2.VIF_SUPPRESSBORDER |
+				//(uint)TextViewInitFlags2.VIF_SUPPRESSTRACKCHANGES |
+				//(uint)TextViewInitFlags2.VIF_SUPPRESSTRACKGOBACK |
+				(uint)TextViewInitFlags.VIF_HSCROLL |
+				(uint)TextViewInitFlags.VIF_VSCROLL |
+				(uint)TextViewInitFlags3.VIF_NO_HWND_SUPPORT/* |
+				readOnlyValue*/;
+
+			//SetReadOnly(false);
+			var editorSvc = Services.GetComponentService<IVsEditorAdaptersFactoryService>();
+			var textSvc = Services.GetComponentService<ITextDocumentFactoryService>();
+			var textEditorSvc = Services.GetComponentService<ITextEditorFactoryService>();
+
+			//var itd = textSvc.CreateAndLoadTextDocument();
+			
+			var roles = textEditorSvc.CreateTextViewRoleSet(
+				PredefinedTextViewRoles.Interactive,
+				PredefinedTextViewRoles.Editable,
+				PredefinedTextViewRoles.Document,
+				PredefinedTextViewRoles.PrimaryDocument);
+
+			viewAdapter = editorSvc.CreateVsTextViewAdapter(Services.ServiceProvider, roles);
+			((IVsWindowPane)viewAdapter).SetSite(Services.ServiceProvider);
+
+			viewAdapter.Initialize(textBuffer, IntPtr.Zero, flags, initView);
+
+			var textManager = (IVsTextManager)GetService(typeof(SVsTextManager));
+			textManager.RegisterIndependentView((IVsWindowPane)viewAdapter, textBuffer);
+
+			//IntPtr hwnd;
+			//((IVsWindowPane)viewAdapter).CreatePaneWindow(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle, 0, 0, 100, 100, out hwnd);
+			var wpfView = editorSvc.GetWpfTextView(viewAdapter); // need to get first so host will not be null
+			var wpfViewHost = editorSvc.GetWpfTextViewHost(viewAdapter);
+
+			if (wpfViewHost != null)
+				editorControl.Content = wpfViewHost.HostControl.ToEto();
+			else
+				editorControl.Content = new Label { Text = "Could not load editor" };
+
 		}
 
+		public void SetReadOnly(bool isReadOnly)
+		{
+			uint flags;
+			textBuffer.GetStateFlags(out flags);
+			var newFlags = isReadOnly
+			  ? flags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY
+			  : flags & ~(uint)BUFFERSTATEFLAGS.BSF_USER_READONLY;
+			textBuffer.SetStateFlags(newFlags);
+		}
 		void timer_Elapsed(object sender, EventArgs e)
 		{
 			timer.Stop();
@@ -228,7 +328,7 @@ namespace Eto.Addin.VisualStudio
 			{
 				builder.Create(text, SetChild, error =>
 				{
-					host.Child = new Label { Text = error }.ToNative(true);
+					previewControl.Content = new Label { Text = error };
 				});
 			}
 		}
@@ -244,7 +344,7 @@ namespace Eto.Addin.VisualStudio
 				window.Content = null;
 				child = new Panel { Content = content, Padding = window.Padding };
 			}
-			host.Child = child.ToNative(true);
+			previewControl.Content = child;
 		}
 
 

@@ -4,8 +4,7 @@ open System
 open Eto.Forms
 open Eto.Drawing
 
-
-type ${EscapedIdentifier} () =
+type ${EscapedIdentifier} as this () =
     inherit Panel ()
 
     do
