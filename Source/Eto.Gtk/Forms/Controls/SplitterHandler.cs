@@ -8,7 +8,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		readonly Gtk.EventBox container;
 		Control panel1;
 		Control panel2;
-		SplitterOrientation orientation;
+		Orientation orientation;
 		SplitterFixedPanel fixedPanel;
 		int? position;
 		double relative = double.NaN;
@@ -186,12 +186,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (desired)
 			{
 				var size = PreferredSize;
-				var pick = Orientation == SplitterOrientation.Horizontal ?
+				var pick = Orientation == Orientation.Horizontal ?
 					size.Width : size.Height;
 				if (pick >= 0)
 					return pick - SplitterWidth;
 			}
-			return (Orientation == SplitterOrientation.Horizontal ?
+			return (Orientation == Orientation.Horizontal ?
 				Control.Allocation.Width : Control.Allocation.Height) - SplitterWidth;
 		}
 
@@ -239,6 +239,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				: size <= 0 ? 0.5 : Math.Max(0.0, Math.Min(1.0, newPosition / (double)size));
 			Control.Position = newPosition;
 		}
+
 		void SetRelative(double newRelative)
 		{
 			position = null;
@@ -274,9 +275,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public SplitterOrientation Orientation
+		public Orientation Orientation
 		{
-			get	{ return (Control is Gtk.HPaned) ? SplitterOrientation.Horizontal : SplitterOrientation.Vertical; }
+			get	{ return (Control is Gtk.HPaned) ? Orientation.Horizontal : Orientation.Vertical; }
 			set
 			{
 				if (orientation != value)
@@ -290,7 +291,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		void Create()
 		{
 			Gtk.Paned old = Control;
-			if (orientation == SplitterOrientation.Horizontal)
+			if (orientation == Orientation.Horizontal)
 				Control = new EtoHPaned() { Handler = this };
 			else
 				Control = new EtoVPaned() { Handler = this };
@@ -390,18 +391,18 @@ namespace Eto.GtkSharp.Forms.Controls
 				else if (fixedPanel == SplitterFixedPanel.Panel1)
 				{
 					var size1 = Control.Child1.GetPreferredSize();
-					SetRelative(Orientation == SplitterOrientation.Horizontal ? size1.Width : size1.Height);
+					SetRelative(Orientation == Orientation.Horizontal ? size1.Width : size1.Height);
 				}
 				else if (fixedPanel == SplitterFixedPanel.Panel2)
 				{
 					var size2 = Control.Child2.GetPreferredSize();
-					SetRelative(Orientation == SplitterOrientation.Horizontal ? size2.Width : size2.Height);
+					SetRelative(Orientation == Orientation.Horizontal ? size2.Width : size2.Height);
 				}
 				else
 				{
 					var size1 = Control.Child1.GetPreferredSize();
 					var size2 = Control.Child2.GetPreferredSize();
-					SetRelative(Orientation == SplitterOrientation.Horizontal
+					SetRelative(Orientation == Orientation.Horizontal
 						? size1.Width / (double)(size1.Width + size2.Width)
 						: size1.Height / (double)(size1.Height + size2.Height));
 				}
