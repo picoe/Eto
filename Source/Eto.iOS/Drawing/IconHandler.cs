@@ -52,7 +52,7 @@ namespace Eto.iOS.Drawing
 		{
 			var sourceRect = source.ToNS();
 			var imgsize = Control.Size;
-			CGRect destRect = graphics.TranslateView(destination.ToNS(), false);
+			CGRect destRect = destination.ToNS();
 			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize)
 			{
 				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y - sourceRect.Y));

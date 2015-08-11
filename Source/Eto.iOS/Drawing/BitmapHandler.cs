@@ -183,13 +183,13 @@ namespace Eto.iOS.Drawing
 		public override void DrawImage(GraphicsHandler graphics, float x, float y)
 		{
 			var nsimage = Control;
-			var destRect = graphics.TranslateView(new CGRect(x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height), false);
+			var destRect = new CGRect(x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height);
 			nsimage.Draw(destRect, CGBlendMode.Normal, 1);
 		}
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var destRect = graphics.TranslateView(destination.ToNS(), false).ToEto();
+			var destRect = destination;
 			var drawRect = GetDrawRect(ref source, ref destRect, Control.Size.ToEto());
 			graphics.Control.ClipToRect(destRect.ToNS()); // first apply the clip since destination is in view coordinates.
 			Control.Draw(drawRect.ToNS(), CGBlendMode.Normal, 1);
