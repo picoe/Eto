@@ -368,7 +368,11 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				return new Point((int)Control.Left, (int)Control.Top);
+				var left = Control.Left;
+				var top = Control.Top;
+				if (double.IsNaN(left) || double.IsNaN(top))
+					return Point.Empty;
+				return new Point((int)left, (int)top);
 			}
 			set
 			{
