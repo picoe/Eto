@@ -16,14 +16,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			get
 			{
-				foreach (SplitterOrientation orientation in Enum.GetValues(typeof(SplitterOrientation)))
+				foreach (Orientation orientation in Enum.GetValues(typeof(Orientation)))
 					foreach (SplitterFixedPanel fix in Enum.GetValues(typeof(SplitterFixedPanel)))
 						yield return new TestCaseData(orientation, fix);
 			}
 		}
 
 		[Test, TestCaseSource("SplitterCases")]
-		public void PositionShouldNotChange(SplitterOrientation orient, SplitterFixedPanel fix)
+		public void PositionShouldNotChange(Orientation orient, SplitterFixedPanel fix)
 		{
 			bool replay = false;
 			TestUtils.Shown(
@@ -51,7 +51,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[Test, TestCaseSource("SplitterCases")]
-		public void RelativePositionShouldNotChange(SplitterOrientation orient, SplitterFixedPanel fix)
+		public void RelativePositionShouldNotChange(Orientation orient, SplitterFixedPanel fix)
 		{
 			bool replay = false;
 			double pos = fix == SplitterFixedPanel.None ? (1 / 3.0) : 50;
@@ -81,7 +81,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[Test, TestCaseSource("SplitterCases")]
-		public void NoPositionShouldAutoSizeBasic(SplitterOrientation orient, SplitterFixedPanel fix)
+		public void NoPositionShouldAutoSizeBasic(Orientation orient, SplitterFixedPanel fix)
 		{
 			bool replay = false;
 			var sz = new Size(50, 50);
@@ -103,7 +103,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				},
 				it =>
 				{
-					if (orient == SplitterOrientation.Horizontal)
+					if (orient == Orientation.Horizontal)
 						Assert.AreEqual(it.Panel1.Height, it.Panel2.Height,
 							"Height! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
 					else
@@ -112,7 +112,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					switch (fix)
 					{
 						case SplitterFixedPanel.Panel1:
-							if (orient == SplitterOrientation.Horizontal)
+							if (orient == Orientation.Horizontal)
 								Assert.AreEqual(sz.Width, it.Panel1.Width,
 									"P1.Width! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
 							else
@@ -120,7 +120,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 									"P1.Height! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
 							break;
 						case SplitterFixedPanel.Panel2:
-							if (orient == SplitterOrientation.Horizontal)
+							if (orient == Orientation.Horizontal)
 								Assert.AreEqual(sz.Width, it.Panel2.Width,
 									"P2.Width! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
 							else
@@ -128,7 +128,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 									"P2.Height! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
 							break;
 						case SplitterFixedPanel.None:
-							if (orient == SplitterOrientation.Horizontal)
+							if (orient == Orientation.Horizontal)
 								Assert.AreEqual(it.Panel1.Width, it.Panel2.Width, 1,
 									"Width! Fix: {0}; {1} [replay={2}]", fix, orient, replay);
 							else
@@ -143,7 +143,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[Test, TestCaseSource("SplitterCases")]
-		public void NoPositionShouldAutoSizeComplexTest1(SplitterOrientation orient, SplitterFixedPanel fix)
+		public void NoPositionShouldAutoSizeComplexTest1(Orientation orient, SplitterFixedPanel fix)
 		{
 			TestUtils.Shown(
 				form =>
@@ -174,7 +174,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					{
 						Panel1 = new Splitter
 						{
-							Orientation = SplitterOrientation.Vertical,
+							Orientation = Orientation.Vertical,
 							Panel1 = it,
 							Panel2 = new Panel()
 						},
@@ -186,13 +186,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				{
 					Assert.AreEqual(40, it.Position, "{0}; {1}", fix, orient);
 					Assert.AreEqual(fix == SplitterFixedPanel.Panel1 ? 40 : fix == SplitterFixedPanel.Panel2 ? 60 : 0.4, it.RelativePosition, "{0}; {1}", fix, orient);
-					var sz = orient == SplitterOrientation.Horizontal ? new Size(100 + it.SplitterWidth, 60) : new Size(60, 100 + it.SplitterWidth);
+					var sz = orient == Orientation.Horizontal ? new Size(100 + it.SplitterWidth, 60) : new Size(60, 100 + it.SplitterWidth);
 					Assert.AreEqual(sz, it.Size, "{0}; {1}", fix, orient);
 				}, replay: ReplayTests);
 		}
 
 		[Test, TestCaseSource("SplitterCases")]
-		public void NoPositionShouldAutoSizeComplexTest2(SplitterOrientation orient, SplitterFixedPanel fix)
+		public void NoPositionShouldAutoSizeComplexTest2(Orientation orient, SplitterFixedPanel fix)
 		{
 			TestUtils.Shown(
 				form =>
@@ -221,7 +221,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					};
 					form.Content = new Splitter
 					{
-						Orientation = SplitterOrientation.Vertical,
+						Orientation = Orientation.Vertical,
 						FixedPanel = SplitterFixedPanel.Panel2,
 						Panel1 = new Panel(),
 						Panel2 = new Splitter
@@ -237,14 +237,14 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				{
 					Assert.AreEqual(40, it.Position, "{0}; {1}", fix, orient);
 					Assert.AreEqual(fix == SplitterFixedPanel.Panel1 ? 40 : fix == SplitterFixedPanel.Panel2 ? 60 : 0.4, it.RelativePosition, "{0}; {1}", fix, orient);
-					var sz = orient == SplitterOrientation.Horizontal ? new Size(100 + it.SplitterWidth, 60) : new Size(60, 100 + it.SplitterWidth);
+					var sz = orient == Orientation.Horizontal ? new Size(100 + it.SplitterWidth, 60) : new Size(60, 100 + it.SplitterWidth);
 					Assert.AreEqual(sz, it.Size, "{0}; {1}", fix, orient);
 				}, replay: ReplayTests);
 		}
 
 		[Test, TestCaseSource("SplitterCases")]
 		// Issue #309
-		public void PositionShouldTrackInitialResize(SplitterOrientation orient, SplitterFixedPanel fix)
+		public void PositionShouldTrackInitialResize(Orientation orient, SplitterFixedPanel fix)
 		{
 			bool replay = false;
 			TestUtils.Shown(
