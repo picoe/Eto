@@ -265,6 +265,101 @@ namespace Eto.Test.Sections.Controls
 			<a href='http://www.example.com' target='_blank'>Open in new window</a>
 			<a href='http://www.example.com' target='another_name_of_new_window'>Open in named window</a>
 		</p>
+		<h2>Input Types</h2>
+		<table>
+			<tr>
+				<td>Button</td>
+				<td><input type='button'></td>
+			</tr>
+			<tr>
+				<td>Checkbox</td>
+				<td><input type='checkbox'></td>
+			</tr>
+			<tr>
+				<td>Color</td>
+				<td><input type='color'></td>
+			</tr>
+			<tr>
+				<td>Date</td>
+				<td><input type='date'></td>
+			</tr>
+			<tr>
+				<td>DateTime</td>
+				<td><input type='datetime'></td>
+			</tr>
+			<tr>
+				<td>Email</td>
+				<td><input type='email'></td>
+			</tr>
+			<tr>
+				<td>File</td>
+				<td><input type='file'></td>
+			</tr>
+			<tr>
+				<td>Hidden</td>
+				<td><input type='hidden'></td>
+			</tr>
+			<tr>
+				<td>Image</td>
+				<td><input type='image'></td>
+			</tr>
+			<tr>
+				<td>Month</td>
+				<td><input type='month'></td>
+			</tr>
+			<tr>
+				<td>Number</td>
+				<td><input type='number'></td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td><input type='password'></td>
+			</tr>
+			<tr>
+				<td>Radio</td>
+				<td><input type='radio'></td>
+			</tr>
+			<tr>
+				<td>Range</td>
+				<td><input type='range'></td>
+			</tr>
+			<tr>
+				<td>Reset</td>
+				<td><input type='reset'></td>
+			</tr>
+			<tr>
+				<td>Search</td>
+				<td><input type='search'></td>
+			</tr>
+			<tr>
+				<td>Submit</td>
+				<td><input type='submit'></td>
+			</tr>
+			<tr>
+				<td>Tel</td>
+				<td><input type='tel'></td>
+			</tr>
+			<tr>
+				<td>Text</td>
+				<td><input type='text'></td>
+			</tr>
+			<tr>
+				<td>Time</td>
+				<td><input type='time'></td>
+			</tr>
+			<tr>
+				<td>Url</td>
+				<td><input type='url'></td>
+			</tr>
+			<tr>
+				<td>Week</td>
+				<td><input type='week'></td>
+			</tr>
+			<tr>
+				<td>TextArea</td>
+				<td><textarea></textarea></td>
+			</tr>
+		</table>
 	</form>
 </body>
 

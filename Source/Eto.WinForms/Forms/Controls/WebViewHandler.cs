@@ -48,13 +48,26 @@ namespace Eto.WinForms.Forms.Controls
 				ScriptErrorsSuppressed = true
 			};
 			Control.HandleCreated += (sender, e) => HookDocumentEvents();
-			Control.PreviewKeyDown += (sender, args) =>
+			Control.PreviewKeyDown += (sender, e) =>
 			{
+				switch (e.KeyCode)
+				{
+					case swf.Keys.Down:
+					case swf.Keys.Up:
+					case swf.Keys.Left:
+					case swf.Keys.Right:
+					case swf.Keys.PageDown:
+					case swf.Keys.PageUp:
+						// enable scrolling via keyboard
+						e.IsInputKey = true;
+						return;
+				}
+
 				var doc = Control.Document;
 				if (!Control.WebBrowserShortcutsEnabled && doc != null)
 				{
 					// implement shortcut keys for copy/paste
-					switch (args.KeyData)
+					switch (e.KeyData)
 					{
 						case (swf.Keys.C | swf.Keys.Control):
 							doc.ExecCommand("Copy", false, null);
