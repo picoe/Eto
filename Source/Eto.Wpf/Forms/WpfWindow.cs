@@ -356,12 +356,12 @@ namespace Eto.Wpf.Forms
 			set { Control.Title = value; }
 		}
 
-		static readonly object locationSetKey = new object();
+		static readonly object LocationSet_Key = new object();
 
 		protected bool LocationSet
 		{
-			get { return Widget.Properties.Get<bool?>(locationSetKey) ?? false; }
-			set { Widget.Properties[locationSetKey] = value; }
+			get { return Widget.Properties.Get<bool>(LocationSet_Key); }
+			set { Widget.Properties.Set(LocationSet_Key, value); }
 		}
 
 		public new Point Location
