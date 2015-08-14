@@ -102,7 +102,7 @@ namespace Eto.Test.Sections
 		{
 			if (string.IsNullOrEmpty(Keyword))
 				return true;
-			return test.Name.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0;
+			return test.FullName.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
 		bool MatchesIncludeCategory(ITest test)
@@ -374,7 +374,7 @@ namespace Eto.Test.Sections
 		{
 			// add a test
 			var item = new TreeItem { Text = test.Name, Tag = new SingleTestFilter { Test = test, Assembly = assembly } };
-			var nameMatches = filter == null || test.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+			var nameMatches = filter == null || test.FullName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
 			if (test.HasChildren)
 			{
 				if (nameMatches)
