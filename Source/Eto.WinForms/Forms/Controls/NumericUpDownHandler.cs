@@ -63,9 +63,10 @@ namespace Eto.WinForms.Forms.Controls
 		public double Value
 		{
 			get { return Math.Round((double)Control.Value, MaximumDecimalPlaces); }
-			set {
-				var val = Math.Max((double)decimal.MinValue, Math.Min((double)decimal.MaxValue, value));
-                Control.Value = (decimal)val;
+			set
+			{
+				var val = Math.Max((double)Control.Minimum, Math.Min((double)Control.Maximum, value));
+				Control.Value = (decimal)val;
 			}
 		}
 
