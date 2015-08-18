@@ -29,7 +29,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			TestUtils.Shown(
 				form => new Splitter()
 				{
-					Size = new Size(150, 150),
+					Size = new Size(300, 300),
 					Orientation = orient,
 					FixedPanel = fix,
 					Position = 50,
@@ -58,7 +58,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			TestUtils.Shown(
 				form => new Splitter()
 				{
-					Size = new Size(150, 150),
+					Size = new Size(300, 300),
 					Orientation = orient,
 					FixedPanel = fix,
 					RelativePosition = pos,
