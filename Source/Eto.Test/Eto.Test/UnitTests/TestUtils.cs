@@ -218,8 +218,10 @@ namespace Eto.Test.UnitTests
 						test(control);
 						if (replay)
 						{
+							form.Content = null;
 							control = init(form);
-							form.Content = control;
+							if (control != null && form.Content == null)
+								form.Content = control;
 							if (application == null)
 								test(control);
 						}
