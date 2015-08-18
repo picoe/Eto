@@ -180,5 +180,68 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
 			});
 		}
+
+		[TestCase(12.3456789, 12, 0, 0)]
+		[TestCase(12.3456789, 12.3, 0, 1)]
+		[TestCase(12.3456789, 12.35, 0, 2)]
+		[TestCase(12.3456789, 12.346, 0, 3)]
+		[TestCase(12.3456789, 12.3, 1, 1)]
+		[TestCase(12.3456789, 12.35, 1, 2)]
+		[TestCase(12.3456789, 12.346, 1, 3)]
+		[TestCase(12.3456789, 12.346, 3, 3)]
+		[TestCase(12.3456789, 12.3456789, 3, 8)]
+		[TestCase(12.34567891234, 12.34567891, 3, 8)]
+		[TestCase(12.34567891234, 12.34567891234, 3, 15)]
+		[TestCase(12.345678912345, 12.345678912345, 3, 15)]
+		public void MaximumDecimalPlacesShouldAllowMorePreciseNumbers(double value, double newValue, int decimalPlaces, int maxDecimalPlaces)
+		{
+			TestUtils.Invoke(() =>
+			{
+				var numeric = new NumericUpDown();
+				int valueChanged = 0;
+				//numeric.MinimumDecimalPlaces = maxDecimalPlaces;
+				numeric.MaximumDecimalPlaces = maxDecimalPlaces;
+				numeric.DecimalPlaces = decimalPlaces;
+				numeric.ValueChanged += (sender, e) => valueChanged++;
+
+				numeric.Value = value;
+				Assert.AreEqual(Math.Round(value, maxDecimalPlaces), numeric.Value, "Value should be set to the initial value");
+
+				numeric.DecimalPlaces = decimalPlaces;
+
+				Assert.AreEqual(newValue, numeric.Value, "Value should be rounded to the maximum number of decimal places");
+				Assert.AreEqual(1, valueChanged, "ValueChanged event was not fired the correct number of times");
+			});
+		}
+
+		[Test]
+		public void MaximumDecimalPlacesShouldUpdateWhenDecimalPlacesIsChanged()
+		{
+			TestUtils.Invoke(() =>
+			{
+				var numeric = new NumericUpDown();
+
+				numeric.DecimalPlaces = 3;
+				Assert.AreEqual(3, numeric.DecimalPlaces, "DecimalPlaces isn't roundtripping set values");
+				Assert.AreEqual(3, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces should be changed to at minimum DecimalPlaces");
+
+				numeric.DecimalPlaces = 2;
+				Assert.AreEqual(2, numeric.DecimalPlaces, "DecimalPlaces isn't roundtripping set values");
+				Assert.AreEqual(3, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces should only be changed when DecimalPlaces is greater than its current value");
+
+
+				numeric.MaximumDecimalPlaces = 2;
+				Assert.AreEqual(2, numeric.DecimalPlaces, "DecimalPlaces should keep its original value");
+				Assert.AreEqual(2, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces wasn't updated to the new value");
+
+				numeric.MaximumDecimalPlaces = 1;
+				Assert.AreEqual(1, numeric.DecimalPlaces, "DecimalPlaces should be updated to the new value of MaximumDecimalPlaces when its current value is greater");
+				Assert.AreEqual(1, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces wasn't updated to the new value");
+
+				numeric.MaximumDecimalPlaces = 0;
+				Assert.AreEqual(0, numeric.DecimalPlaces, "DecimalPlaces should be updated to the new value of MaximumDecimalPlaces when its current value is greater");
+				Assert.AreEqual(0, numeric.MaximumDecimalPlaces, "MaximumDecimalPlaces wasn't updated to the new value");
+			});
+		}
 	}
 }

@@ -128,6 +128,9 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(((NSView)sender).Superview) as NumericUpDownHandler;
 			if (handler != null)
 			{
+				// prevent spinner from accumulating an inprecise value, which would eventually 
+				// show values like 1.0000000000001 or 1.999999999998
+				handler.stepper.DoubleValue = double.Parse(handler.stepper.DoubleValue.ToString());
 				var val = handler.stepper.DoubleValue;
 				if (Math.Abs(val) < 1E-10)
 				{
@@ -186,13 +189,18 @@ namespace Eto.Mac.Forms.Controls
 				var formatter = (NSNumberFormatter)text.Formatter;
 				if (e.Text == ".")
 				{
-					var str = GetStringValue();
-					e.Cancel = str.Contains(formatter.DecimalSeparator);
-					var editor = text.CurrentEditor;
-					if (editor != null && editor.SelectedRange.Length > 0)
+					if (MaximumDecimalPlaces == 0 && DecimalPlaces == 0)
+						e.Cancel = true;
+					else
 					{
-						var sub = str.Substring((int)editor.SelectedRange.Location, (int)editor.SelectedRange.Length);
-						e.Cancel &= !sub.Contains(formatter.DecimalSeparator);
+						var str = GetStringValue();
+						e.Cancel = str.Contains(formatter.DecimalSeparator);
+						var editor = text.CurrentEditor;
+						if (editor != null && editor.SelectedRange.Length > 0)
+						{
+							var sub = str.Substring((int)editor.SelectedRange.Location, (int)editor.SelectedRange.Length);
+							e.Cancel &= !sub.Contains(formatter.DecimalSeparator);
+						}
 					}
 				}
 				else
@@ -203,9 +211,9 @@ namespace Eto.Mac.Forms.Controls
 						var str = r.ToString();
 						return 
 							(formatter.MaximumFractionDigits > 0 && str == formatter.DecimalSeparator)
-							|| (formatter.UsesGroupingSeparator && str == formatter.GroupingSeparator)
-							|| (MinValue < 0 && (str == formatter.NegativePrefix || str == formatter.NegativeSuffix))
-							|| (MaxValue > 0 && (str == formatter.PositivePrefix || str == formatter.PositiveSuffix));
+						|| (formatter.UsesGroupingSeparator && str == formatter.GroupingSeparator)
+						|| (MinValue < 0 && (str == formatter.NegativePrefix || str == formatter.NegativeSuffix))
+						|| (MaxValue > 0 && (str == formatter.PositivePrefix || str == formatter.PositiveSuffix));
 					});
 			};
 		}
@@ -213,8 +221,9 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			if (e.Handled)
+			if (e.Handled || ReadOnly)
 				return;
+			
 			if (e.KeyData == Keys.Down)
 			{
 				var val = Value;
@@ -251,11 +260,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public bool ReadOnly
 		{
-			get { return text.Enabled; }
+			get { return !text.Editable; }
 			set
 			{ 
-				text.Enabled = value;
-				stepper.Enabled = value;
+				text.Editable = !value;
+				stepper.Enabled = text.Editable && text.Enabled;
 			}
 		}
 
@@ -264,8 +273,12 @@ namespace Eto.Mac.Forms.Controls
 			get
 			{ 
 				var str = GetStringValue();
-				var val = ((NSNumberFormatter)text.Formatter).NumberFromString(str);
-				return val != null ? Math.Round(Math.Max(MinValue, Math.Min(MaxValue, val.DoubleValue)), DecimalPlaces) : 0;
+				var nsval = ((NSNumberFormatter)text.Formatter).NumberFromString(str);
+				if (nsval == null)
+					return 0;
+				var value = nsval != null ? Math.Max(MinValue, Math.Min(MaxValue, nsval.DoubleValue)) : 0;
+				value = Math.Round(value, MaximumDecimalPlaces);
+				return value;
 			}
 			set
 			{
@@ -314,11 +327,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public override bool Enabled
 		{
-			get { return stepper.Enabled; }
+			get { return text.Enabled; }
 			set
 			{
-				stepper.Enabled = value;
 				text.Enabled = value;
+				stepper.Enabled = text.Editable && text.Enabled;
 			}
 		}
 
@@ -326,7 +339,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public Font Font
 		{
-			get { return Widget.Properties.Create(Font_Key, () =>text.Font.ToEto()); }
+			get { return Widget.Properties.Create(Font_Key, () => text.Font.ToEto()); }
 			set
 			{
 				Widget.Properties.Set(Font_Key, value, () =>
@@ -351,20 +364,28 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<int>(DecimalPlaces_Key); }
 			set
 			{
-				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
+				Widget.Properties.Set(DecimalPlaces_Key, value, () => 
 				{
-					var formatter = new NSNumberFormatter
-					{
-						NumberStyle = NSNumberFormatterStyle.Decimal, 
-						Lenient = true,
-						UsesGroupingSeparator = false,
-						MinimumFractionDigits = (nnint)value,
-						MaximumFractionDigits = (nnint)value
-					};
-
-					text.Formatter = formatter;
+					MaximumDecimalPlaces = Math.Max(MaximumDecimalPlaces, DecimalPlaces);
+					SetFormatter();
 				});
 			}
+		}
+
+		void SetFormatter()
+		{
+			var formatter = new NSNumberFormatter
+			{
+				NumberStyle = NSNumberFormatterStyle.Decimal, 
+				Lenient = true,
+				UsesGroupingSeparator = false,
+				MinimumFractionDigits = (nnint)DecimalPlaces,
+				MaximumFractionDigits = (nnint)MaximumDecimalPlaces
+			};
+
+			text.Formatter = formatter;
+			if (Widget.Loaded)
+				text.SetNeedsDisplay();
 		}
 
 		public Color TextColor
@@ -412,6 +433,21 @@ namespace Eto.Mac.Forms.Controls
 				default:
 					base.AttachEvent(id);
 					break;
+			}
+		}
+
+		static readonly object MaximumDecimalDigits_Key = new object();
+
+		public int MaximumDecimalPlaces
+		{
+			get { return Widget.Properties.Get<int>(MaximumDecimalDigits_Key); }
+			set
+			{
+				Widget.Properties.Set(MaximumDecimalDigits_Key, value, () =>
+				{
+					DecimalPlaces = Math.Min(DecimalPlaces, MaximumDecimalPlaces);
+					SetFormatter();
+				});
 			}
 		}
 	}

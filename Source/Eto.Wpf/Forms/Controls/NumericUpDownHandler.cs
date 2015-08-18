@@ -4,7 +4,7 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
 using mwc = Xceed.Wpf.Toolkit;
-using System.ComponentModel;
+using System.Text;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -30,10 +30,8 @@ namespace Eto.Wpf.Forms.Controls
 			};
 			Control.ValueChanged += (sender, e) =>
 			{
-				if (Control.Value == null)
-					Control.Value = Math.Max(MinValue, Math.Min(MaxValue, 0));
-				else
-					TriggerValueChanged();
+				Control.Value = Math.Max(MinValue, Math.Min(MaxValue, double.Parse((Control.Value ?? 0).ToString())));
+				TriggerValueChanged();
 			};
 			Control.Loaded += Control_Loaded;
 		}
@@ -70,7 +68,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public double Value
 		{
-			get { return Math.Round(Control.Value ?? 0, DecimalPlaces); }
+			get { return Math.Round(Control.Value ?? 0, MaximumDecimalPlaces); }
 			set { Control.Value = Math.Max(MinValue, Math.Min(MaxValue, value)); }
 		}
 
@@ -103,8 +101,9 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
 				{
-					var decimalPlaces = DecimalPlaces;
-					Control.FormatString = decimalPlaces > 0 ? "0." + new string('0', decimalPlaces) : "0";
+					if (MaximumDecimalPlaces < value)
+						MaximumDecimalPlaces = value;
+					UpdateRequiredDigits();
 				});
 			}
 		}
@@ -130,5 +129,36 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Loaded -= HandleFocus;
 		}
 
+		static readonly object MaxiumumDecimalPlaces_Key = new object();
+
+		public int MaximumDecimalPlaces
+		{
+			get { return Widget.Properties.Get<int>(MaxiumumDecimalPlaces_Key); }
+			set
+			{
+				Widget.Properties.Set(MaxiumumDecimalPlaces_Key, value, () =>
+				{
+					if (DecimalPlaces > value)
+						DecimalPlaces = value;
+					UpdateRequiredDigits();
+				});
+			}
+		}
+
+		void UpdateRequiredDigits()
+		{
+			if (MaximumDecimalPlaces > 0 || DecimalPlaces > 0)
+			{
+				var format = new StringBuilder();
+				format.Append("0.");
+				if (DecimalPlaces > 0)
+					format.Append(new string('0', DecimalPlaces));
+				if (MaximumDecimalPlaces > DecimalPlaces)
+					format.Append(new string('#', MaximumDecimalPlaces - DecimalPlaces));
+				Control.FormatString = format.ToString();
+			}
+			else
+				Control.FormatString = "0";
+		}
 	}
 }
