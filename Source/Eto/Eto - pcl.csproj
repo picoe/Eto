@@ -22,7 +22,7 @@
     <DefineConstants>TRACE;DEBUG;DESKTOP;MOBILE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\BuildOutput\Pcl\Debug\Eto.xml</DocumentationFile>
+    <DocumentationFile>..\..\BuildOutput\pcl\Debug\Eto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -31,7 +31,7 @@
     <DefineConstants>TRACE;DESKTOP;MOBILE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\BuildOutput\Pcl\Release\Eto.xml</DocumentationFile>
+    <DocumentationFile>..\..\BuildOutput\pcl\Release\Eto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
