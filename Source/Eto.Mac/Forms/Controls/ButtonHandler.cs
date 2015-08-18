@@ -140,6 +140,8 @@ namespace Eto.Mac.Forms.Controls
 		{
 			switch (id)
 			{
+				case TextControl.TextChangedEvent:
+					break;
 				default:
 					base.AttachEvent(id);
 					break;

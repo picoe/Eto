@@ -26,10 +26,10 @@ namespace Eto.Test.Sections
 			if (!result.HasChildren)
 			{
 				if (!string.IsNullOrEmpty(result.Output))
-					Application.Instance.Invoke(() => Log.Write(null, result.Output));
+					Application.Instance.AsyncInvoke(() => Log.Write(null, result.Output));
 				if (result.FailCount > 0)
 				{
-					Application.Invoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
+					Application.AsyncInvoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
 				}
 			}
 		}
@@ -37,7 +37,7 @@ namespace Eto.Test.Sections
 		public void TestStarted(ITest test)
 		{
 			if (!test.HasChildren)
-				Application.Invoke(() => Log.Write(null, test.FullName));
+				Application.AsyncInvoke(() => Log.Write(null, test.FullName));
 		}
 	}
 
@@ -102,7 +102,7 @@ namespace Eto.Test.Sections
 		{
 			if (string.IsNullOrEmpty(Keyword))
 				return true;
-			return test.Name.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0;
+			return test.FullName.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
 		bool MatchesIncludeCategory(ITest test)
@@ -374,7 +374,7 @@ namespace Eto.Test.Sections
 		{
 			// add a test
 			var item = new TreeItem { Text = test.Name, Tag = new SingleTestFilter { Test = test, Assembly = assembly } };
-			var nameMatches = filter == null || test.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+			var nameMatches = filter == null || test.FullName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
 			if (test.HasChildren)
 			{
 				if (nameMatches)

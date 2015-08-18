@@ -204,7 +204,6 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
           <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="MSBuild" />
         </Policies>
       </Properties>
@@ -223,6 +222,7 @@
     <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json - pcl.csproj">
       <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>

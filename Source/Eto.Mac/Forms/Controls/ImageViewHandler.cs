@@ -39,7 +39,7 @@ namespace Eto.Mac.Forms.Controls
 	public class ImageViewHandler : MacControl<NSImageView, ImageView, ImageView.ICallback>, ImageView.IHandler
 	{
 		Image image;
-		
+
 		public class EtoImageView : NSImageView, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
@@ -50,24 +50,29 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
-		
-		public ImageViewHandler ()
+
+		public ImageViewHandler()
 		{
 			Control = new EtoImageView { Handler = this, ImageScaling = NSImageScale.ProportionallyUpOrDown };
 		}
 
-		protected override SizeF GetNaturalSize (SizeF availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			return image == null ? Size.Empty : image.Size;
 		}
-		
-		public Image Image {
-			get {
-				return image;
-			}
-			set {
-				image = value;
-				Control.Image = image == null ? null : ((IImageSource)value.Handler).GetImage();
+
+		public Image Image
+		{
+			get { return image; }
+			set
+			{
+				if (image != value)
+				{
+					var oldSize = GetPreferredSize(Size.MaxValue);
+					image = value;
+					Control.Image = image.ToNS();
+					LayoutIfNeeded(oldSize);
+				}
 			}
 		}
 	}

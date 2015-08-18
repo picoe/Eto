@@ -172,7 +172,7 @@ namespace Eto.Test.UnitTests
 
 					test(form);
 
-					form.Closed += (sender, e) => 
+					form.Closed += (sender, e) =>
 					{
 						form = null;
 						finished();
@@ -207,7 +207,6 @@ namespace Eto.Test.UnitTests
 			where T : Control
 		{
 			var application = Application;
-			bool finished = false;
 			Exception exception = null;
 			Form(form =>
 			{
@@ -226,7 +225,6 @@ namespace Eto.Test.UnitTests
 							if (application == null)
 								test(control);
 						}
-						finished = true;
 					}
 					catch (Exception ex)
 					{
@@ -236,19 +234,17 @@ namespace Eto.Test.UnitTests
 					{
 						if (application == null)
 							form.Close();
-						else if (!replay || !finished)
+						else if (!replay)
 							application.AsyncInvoke(form.Close);
 						else
 						{
-							finished = false;
 							application.AsyncInvoke(() =>
 							{
 								try
 								{
-									test( control );
-									finished = true;
+									test(control);
 								}
-								catch( Exception ex )
+								catch (Exception ex)
 								{
 									exception = ex;
 								}
@@ -265,8 +261,6 @@ namespace Eto.Test.UnitTests
 			}, timeout);
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
-			if (!finished)
-				Assert.Fail("Shown event did not finish");
 		}
 
 		/// <summary>

@@ -8,57 +8,85 @@ namespace Eto.Test.Sections.Controls
 	{
 		public NumericUpDownSection()
 		{
-			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+			var numeric = new NumericUpDown { Width = 200 };
 
-			layout.AddRow(new Label { Text = "Default" }, Default());
+			LogEvents(numeric);
 
-			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
+			var enabled = new CheckBox { Text = "Enabled" };
+			enabled.CheckedBinding.Bind(numeric, n => n.Enabled);
 
-			layout.AddRow(new Label { Text = "Set Min/Max" }, SetMinMax());
+			var readOnly = new CheckBox { Text = "ReadOnly" };
+			readOnly.CheckedBinding.Bind(numeric, n => n.ReadOnly);
 
-			layout.AddRow(new Label { Text = "Decimal Places" }, GetWithDecimalPlaces());
+			var minValue = new NumericUpDown { Enabled = false, Value = -1000 };
+			var minBinding = minValue.ValueBinding.Bind(numeric, n => n.MinValue, DualBindingMode.Manual);
 
-			// growing space at end is blank!
-			layout.Add(null);
+			var chkMinValue = new CheckBox { Text = "MinValue" };
+			chkMinValue.CheckedBinding.Convert(r => r == true ? DualBindingMode.OneWayToSource : DualBindingMode.Manual).Bind(minBinding, m => m.Mode);
+			chkMinValue.CheckedBinding.Bind(minValue, m => m.Enabled);
+			chkMinValue.CheckedBinding.Convert(r => r == false ? double.NegativeInfinity : minValue.Value).Bind(numeric, m => m.MinValue);
 
-			Content = layout;
-		}
+			var maxValue = new NumericUpDown { Enabled = false, Value = 1000 };
+			var maxBinding = maxValue.ValueBinding.Bind(numeric, (n) => n.MaxValue, DualBindingMode.Manual);
 
-		Control Default()
-		{
-			var control = new NumericUpDown();
-			LogEvents(control);
-			return control;
-		}
+			var chkMaxValue = new CheckBox { Text = "MaxValue" };
+			chkMaxValue.CheckedBinding.Convert(r => r == true ? DualBindingMode.OneWayToSource : DualBindingMode.Manual).Bind(maxBinding, m => m.Mode);
+			chkMaxValue.CheckedBinding.Bind(maxValue, m => m.Enabled);
+			chkMaxValue.CheckedBinding.Convert(r => r == false ? double.PositiveInfinity : maxValue.Value).Bind(numeric, m => m.MaxValue);
 
-		Control Disabled()
-		{
-			var control = SetMinMax();
-			control.Enabled = false;
-			return control;
-		}
+			var decimalPlaces = new NumericUpDown { MaxValue = 15, MinValue = 0 };
+			var decimalBinding = decimalPlaces.ValueBinding.Convert(r => (int)r, r => r).Bind(numeric, n => n.DecimalPlaces);
 
-		Control SetMinMax()
-		{
-			var control = new NumericUpDown
+			var maxDecimalPlaces = new NumericUpDown { MaxValue = 15, MinValue = 0 };
+			var maxDecimalBinding = maxDecimalPlaces.ValueBinding.Convert(r => (int)r, r => r).Bind(numeric, n => n.MaximumDecimalPlaces);
+
+			maxDecimalBinding.Changed += (sender, e) => decimalBinding.Update(BindingUpdateMode.Destination);
+			decimalBinding.Changed += (sender, e) => maxDecimalBinding.Update(BindingUpdateMode.Destination);
+
+			var increment = new NumericUpDown { MaximumDecimalPlaces = 15 };
+			increment.ValueBinding.Bind(numeric, n => n.Increment);
+
+			var options1 = new StackLayout
 			{
-				Value = 24,
-				MinValue = 20,
-				MaxValue = 2000
+				Spacing = 5,
+				Orientation = Orientation.Horizontal,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				Items =
+				{
+					enabled,
+					readOnly
+				}
 			};
-			LogEvents(control);
-			return control;
-		}
-		Control GetWithDecimalPlaces()
-		{
-			var control = new NumericUpDown
+			var options2 = new StackLayout
 			{
-				Value = 24,
-				DecimalPlaces = 5,
-				Increment = 0.1
+				Spacing = 5,
+				Orientation = Orientation.Horizontal,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				Items =
+				{
+					chkMinValue, minValue,
+					chkMaxValue, maxValue,
+					"Increment", increment
+				}
 			};
-			LogEvents(control);
-			return control;
+			var options3 = new StackLayout
+			{
+				Spacing = 5,
+				Orientation = Orientation.Horizontal,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				Items =
+				{
+					"DecimalPlaces", decimalPlaces,
+					"MaximumDecimalPlaces", maxDecimalPlaces
+				}
+			};
+
+			Content = new StackLayout
+			{
+				Spacing = 5,
+				HorizontalContentAlignment = HorizontalAlignment.Center,
+				Items = { options1, options2, options3, "Result:", numeric }
+			};
 		}
 
 		void LogEvents(NumericUpDown control)

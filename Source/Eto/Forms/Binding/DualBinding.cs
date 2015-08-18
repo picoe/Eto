@@ -36,7 +36,12 @@ namespace Eto.Forms
 		/// This is ideal when you want to set the values of the destination, then only update the source
 		/// at certain times using the <see cref="DualBinding{T}.Update"/> method.
 		/// </remarks>
-		OneTime
+		OneTime,
+
+		/// <summary>
+		/// Binding will only update when the <see cref="Binding.Update"/> method is called.
+		/// </summary>
+		Manual
 	}
 
 	/// <summary>
@@ -50,6 +55,7 @@ namespace Eto.Forms
 	public class DualBinding<T> : Binding
 	{
 		bool channeling;
+		DualBindingMode mode;
 
 		/// <summary>
 		/// Gets the source binding
@@ -64,7 +70,20 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets the mode of the binding
 		/// </summary>
-		public DualBindingMode Mode { get; private set; }
+		public DualBindingMode Mode
+		{
+			get { return mode; }
+			set
+			{
+				if (value != mode)
+				{
+					ClearBinding();
+					var setInitialValue = mode == DualBindingMode.Manual;
+					mode = value;
+					SetBinding(setInitialValue);
+				}
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the DualBinding class with two object property bindings
@@ -91,17 +110,43 @@ namespace Eto.Forms
 		/// <param name="mode">Mode of the binding</param>
 		public DualBinding(DirectBinding<T> source, DirectBinding<T> destination, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			this.Source = source;
-			this.Destination = destination;
-			this.Mode = mode;
+			Source = source;
+			Destination = destination;
+			this.mode = mode;
 
+			SetBinding(true);
+		}
+
+		void ClearBinding()
+		{
 			if (mode == DualBindingMode.OneWay || mode == DualBindingMode.TwoWay)
-				source.DataValueChanged += HandleSourceChanged;
+				Source.DataValueChanged -= HandleSourceChanged;
 			if (mode == DualBindingMode.OneWayToSource || mode == DualBindingMode.TwoWay)
-				destination.DataValueChanged += HandleDestinationChanged;
+				Destination.DataValueChanged -= HandleDestinationChanged;
+		}
 
-			// set initial value
-			this.SetDestination();
+		void SetBinding(bool setInitialValue)
+		{
+			if (mode == DualBindingMode.OneWay || mode == DualBindingMode.TwoWay)
+				Source.DataValueChanged += HandleSourceChanged;
+			if (mode == DualBindingMode.OneWayToSource || mode == DualBindingMode.TwoWay)
+				Destination.DataValueChanged += HandleDestinationChanged;
+
+
+			if (setInitialValue)
+			{
+				switch (mode)
+				{
+					case DualBindingMode.OneTime:
+					case DualBindingMode.OneWay:
+					case DualBindingMode.TwoWay:
+						SetDestination();
+						break;
+					case DualBindingMode.OneWayToSource:
+						SetSource();
+						break;
+				}
+			}
 		}
 
 		void HandleSourceChanged(object sender, EventArgs e)
@@ -122,7 +167,14 @@ namespace Eto.Forms
 			if (!channeling)
 			{
 				channeling = true;
-				Source.DataValue = Destination.DataValue;
+				var value = Destination.DataValue;
+                var args = new BindingChangingEventArgs(value);
+				OnChanging(args);
+				if (!args.Cancel)
+				{
+					Source.DataValue = value;
+					OnChanged(new BindingChangedEventArgs(value));
+				}
 				channeling = false;
 			}
 		}
@@ -135,7 +187,14 @@ namespace Eto.Forms
 			if (!channeling)
 			{
 				channeling = true;
-				Destination.DataValue = Source.DataValue;
+				var value = Source.DataValue;
+				var args = new BindingChangingEventArgs(value);
+				OnChanging(args);
+				if (!args.Cancel)
+				{
+					Destination.DataValue = value;
+					OnChanged(new BindingChangedEventArgs(value));
+				}
 				channeling = false;
 			}
 		}

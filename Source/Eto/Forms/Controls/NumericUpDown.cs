@@ -100,7 +100,30 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets or sets the number of digits to display after the decimal.
 		/// </summary>
-		/// <value>The number of decimal places.</value>
+		/// <remarks>
+		/// The NumericUpDown control will at least show the number of fraction digits as specified by this value, padded
+		/// by zeros. 
+		/// The <see cref="MaximumDecimalPlaces"/> specifies the maximum number of fraction digits the control will display
+		/// if the value has a value that can be represented by more digits.
+		/// The <see cref="Value"/> property is rounded to the number of fraction digits specified by <see cref="MaximumDecimalPlaces"/>.
+		/// </remarks>
+		/// <example>
+		/// This shows the effect of the <see cref="DecimalPlaces"/> and <see cref="MaximumDecimalPlaces"/> on the display 
+		/// of the control and its returned value.
+		/// <pre>
+		/// var numeric = new NumericUpDown();
+		/// 
+		/// numeric.DecimalPlaces = 2;
+		/// numeric.MaximumDecimalPlaces = 4;
+		/// 
+		/// numeric.Value = 123;         // control will display "123"
+		/// numeric.Value = 123.45;      // control will display "123.45"
+		/// numeric.Value = 123.4567;    // control will display "123.4567"
+		/// numeric.Value = 123.4567890; // control will display "123.4568"
+		/// </pre>
+		/// </example>
+		/// <value>The number of decimal places to always show.</value>
+		/// <seealso cref="MaximumDecimalPlaces"/>
 		public int DecimalPlaces
 		{
 			get { return Handler.DecimalPlaces; }
@@ -115,6 +138,23 @@ namespace Eto.Forms
 		{
 			get { return Handler.Increment; }
 			set { Handler.Increment = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of decimal places that can be shown.
+		/// </summary>
+		/// <remarks>
+		/// Specifies how many fraction digits can be shown if required to display the specified <see cref="Value"/>.
+		/// The number of digits shown will be at least the number of digits specified by <see cref="DecimalPlaces"/>.
+		/// The <see cref="Value"/> and the display is rounded to the number of fraction digits specified by this value.
+		/// <see cref="DecimalPlaces"/> for an example of how the MaximumDecimalPlaces can be used.
+		/// </remarks>
+		/// <value>The maximum number of decimal places that will be shown.</value>
+		/// <seealso cref="MaximumDecimalPlaces"/>
+		public int MaximumDecimalPlaces
+		{
+			get { return Handler.MaximumDecimalPlaces; }
+			set { Handler.MaximumDecimalPlaces = value; }
 		}
 
 		/// <summary>
@@ -218,7 +258,13 @@ namespace Eto.Forms
 			/// <summary>
 			/// Gets or sets the number of digits to display after the decimal.
 			/// </summary>
-			/// <value>The number of decimal places.</value>
+			/// <remarks>
+			/// The NumericUpDown control will at least show the number of fraction digits as specified by this value, padded
+			/// by zeros. 
+			/// The <see cref="MaximumDecimalPlaces"/> specifies the maximum number of fraction digits the control will display
+			/// if the value has a value that can be represented by more digits.
+			/// The <see cref="Value"/> property is rounded to the number of fraction digits specified by <see cref="MaximumDecimalPlaces"/>.
+			/// </remarks>
 			int DecimalPlaces { get; set; }
 
 			/// <summary>
@@ -235,6 +281,18 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The color of the text.</value>
 			Color TextColor { get; set; }
+
+			/// <summary>
+			/// Gets or sets the maximum number of decimal places that can be shown.
+			/// </summary>
+			/// <remarks>
+			/// Specifies how many fraction digits can be shown if required to display the specified <see cref="Value"/>.
+			/// The number of digits shown will be at least the number of digits specified by <see cref="DecimalPlaces"/>.
+			/// The <see cref="Value"/> and the display is rounded to the number of fraction digits specified by this value.
+			/// </remarks>
+			/// <value>The maximum number of decimal places that will be shown.</value>
+			/// <seealso cref="MaximumDecimalPlaces"/>
+			int MaximumDecimalPlaces { get; set; }
 		}
 	}
 }

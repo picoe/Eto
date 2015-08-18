@@ -9,8 +9,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	[TestFixture, Category("ui")]
 	public class SplitterTests
 	{
-		// currently working only for WinForms
-		bool ReplayTests { get { return true; } }
+		// currently not working on Gtk due to deferred size allocation
+		bool ReplayTests { get { return !Platform.Instance.IsGtk; } }
 
 		static IEnumerable SplitterCases
 		{
@@ -29,7 +29,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			TestUtils.Shown(
 				form => new Splitter()
 				{
-					Size = new Size(150, 150),
+					Size = new Size(300, 300),
 					Orientation = orient,
 					FixedPanel = fix,
 					Position = 50,
@@ -58,7 +58,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			TestUtils.Shown(
 				form => new Splitter()
 				{
-					Size = new Size(150, 150),
+					Size = new Size(300, 300),
 					Orientation = orient,
 					FixedPanel = fix,
 					RelativePosition = pos,

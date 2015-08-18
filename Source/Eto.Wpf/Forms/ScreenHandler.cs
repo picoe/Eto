@@ -10,23 +10,44 @@ namespace Eto.Wpf.Forms
 {
 	public class ScreenHandler : WidgetHandler<swf.Screen, Screen>, Screen.IHandler
 	{
-		float realScale;
+		float? realScale;
+		sw.Window window;
 
 		public ScreenHandler(sw.Window window)
 		{
-			var source = sw.PresentationSource.FromVisual(window);
 			Control = GetCurrentScreen(window);
-			realScale = (float)source.CompositionTarget.TransformToDevice.M22;
+			this.window = window;
 		}
 
 		public ScreenHandler(swf.Screen screen)
 		{
 			Control = screen;
-			using (var form = new System.Windows.Forms.Form { Bounds = screen.Bounds })
-			using (var graphics = form.CreateGraphics())
+		}
+
+		float GetRealScale()
+		{
+			if (realScale != null)
+				return realScale.Value;
+
+			if (window != null)
 			{
-				realScale = graphics.DpiY / 96f;
+				var source = sw.PresentationSource.FromVisual(window);
+				if (source != null)
+				{
+					realScale = (float)source.CompositionTarget.TransformToDevice.M22;
+					window = null;
+				}
 			}
+
+			if (realScale == null)
+			{
+				using (var form = new swf.Form { Bounds = Control.Bounds })
+				using (var graphics = form.CreateGraphics())
+				{
+					realScale = graphics.DpiY / 96f;
+				}
+			}
+			return realScale ?? 1f;
 		}
 
 		static swf.Screen GetCurrentScreen(sw.Window window)
@@ -42,7 +63,7 @@ namespace Eto.Wpf.Forms
 
 		public float RealScale
 		{
-			get { return realScale * Scale; }
+			get { return GetRealScale() * Scale; }
 		}
 
 		public float Scale
@@ -52,12 +73,12 @@ namespace Eto.Wpf.Forms
 
 		public RectangleF Bounds
 		{
-			get { return (RectangleF)Control.Bounds.ToEto() / realScale; }
+			get { return (RectangleF)Control.Bounds.ToEto() / GetRealScale(); }
 		}
 
 		public RectangleF WorkingArea
 		{
-			get { return (RectangleF)Control.WorkingArea.ToEto() / realScale; }
+			get { return (RectangleF)Control.WorkingArea.ToEto() / GetRealScale(); }
 		}
 
 		public int BitsPerPixel
