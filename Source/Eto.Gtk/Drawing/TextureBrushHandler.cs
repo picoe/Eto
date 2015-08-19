@@ -26,7 +26,8 @@ namespace Eto.GtkSharp.Drawing
 					graphics.Control.Transform (Transform);
 				
 				Gdk.CairoHelper.SetSourcePixbuf (graphics.Control, Pixbuf, 0, 0);
-				var surfacePattern = graphics.Control.GetSource() as Cairo.SurfacePattern;
+				var pattern = graphics.Control.GetSource();
+				var surfacePattern = pattern as Cairo.SurfacePattern;
 				if (surfacePattern != null)
 					surfacePattern.Extend = Cairo.Extend.Repeat;
 				if (Opacity < 1.0f)
@@ -36,8 +37,7 @@ namespace Eto.GtkSharp.Drawing
 				}
 				else
 					graphics.Control.Fill();
-				if (EtoEnvironment.Platform.IsMac && surfacePattern != null)
-					surfacePattern.Dispose();
+				pattern.Dispose();
 			}
 		}
 

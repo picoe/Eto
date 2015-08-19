@@ -159,9 +159,7 @@ namespace Eto.GtkSharp.Drawing
 			pattern.Filter = graphics.ImageInterpolation.ToCairo();
 			context.Fill();
 			context.Restore();
-
-			if (EtoEnvironment.Platform.IsMac)
-				pattern.Dispose();
+			pattern.Dispose();
 
 			/*
 			Gdk.Pixbuf pb = Control;
