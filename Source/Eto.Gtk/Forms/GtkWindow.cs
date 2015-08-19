@@ -393,6 +393,8 @@ namespace Eto.GtkSharp.Forms
 			public void HandleConfigureEvent(object o, Gtk.ConfigureEventArgs args)
 			{
 				var handler = Handler;
+				if (handler == null)
+					return;
 				handler.currentLocation = new Point(args.Event.X, args.Event.Y);
 				if (handler.Control.IsRealized && handler.Widget.Loaded && oldLocation != handler.currentLocation)
 				{
