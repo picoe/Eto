@@ -72,7 +72,8 @@ namespace Eto.Forms
 				else
 					break;
 			}
-			Insert(previousIndex + 1, item);
+
+			Insert(Count, item);
 		}
 
 		/// <summary>
