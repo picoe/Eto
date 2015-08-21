@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Menu
 {
-	public class ContextMenuHandler : WidgetHandler<swf.ContextMenuStrip, ContextMenu>, ContextMenu.IHandler
+	public class ContextMenuHandler : WidgetHandler<swf.ContextMenuStrip, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
 	{
 
 		public ContextMenuHandler()
@@ -21,6 +21,20 @@ namespace Eto.WinForms.Forms.Menu
 				var callback = ((ICallbackSource)item).Callback as MenuItem.ICallback;
 				if (callback != null)
 					callback.OnValidate(item, e);
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case ContextMenu.MenuOpeningEvent:
+					this.Control.Opening += (sender, e) => Callback.OnMenuOpening(Widget, EventArgs.Empty);
+					break;
+
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
