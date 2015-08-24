@@ -99,7 +99,11 @@ namespace Eto.Forms
 		protected override T InternalGetValue(object dataItem)
 		{
 			EnsureProperty(dataItem);
-			if (descriptor != null && dataItem != null)
+			if (descriptor != null && dataItem != null
+				#if PCL
+				&& descriptor.CanRead
+				#endif
+				)
 			{
 				var propertyType = typeof(T);
 				object val = descriptor.GetValue(dataItem);
@@ -121,7 +125,13 @@ namespace Eto.Forms
 		protected override void InternalSetValue(object dataItem, T value)
 		{
 			EnsureProperty(dataItem);
-			if (descriptor != null && dataItem != null)
+			if (descriptor != null && dataItem != null
+				#if PCL
+				&& descriptor.CanWrite
+				#else
+				&& !descriptor.IsReadOnly
+				#endif
+				)
 			{
 				var propertyType = descriptor.PropertyType;
 				object val = value;
