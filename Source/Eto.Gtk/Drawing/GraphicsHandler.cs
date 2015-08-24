@@ -336,6 +336,8 @@ namespace Eto.GtkSharp.Drawing
 
 		protected override void Dispose(bool disposing)
 		{
+			if (disposing)
+				ReverseAll();
 			if (image != null)
 			{
 				Flush();

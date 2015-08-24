@@ -556,7 +556,7 @@ namespace Eto.Mac.Forms
 					ContainerControl.WantsLayer = false;
 					var layer = ContainerControl.Layer;
 					if (layer != null)
-						layer.BackgroundColor = null;
+						layer.BackgroundColor = Colors.Transparent.ToCG();
 				}
 			}
 		}

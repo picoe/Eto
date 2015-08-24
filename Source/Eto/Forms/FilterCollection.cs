@@ -272,7 +272,15 @@ namespace Eto.Forms
 				if (!selectedAll)
 				{
 					var item = Items[row];
-					selectedItems.Add(item);
+					if (selectedItems == null)
+					{
+						selectedItems = new List<T>() { item };
+					}
+					else
+					{
+						selectedItems.Add(item);
+					}
+
 					int viewRow;
 					if (viewToModel.TryGetValue(item, out row) && modelToView.TryGetValue(row, out viewRow))
 						Parent.SelectRow(viewRow);
