@@ -63,6 +63,7 @@
     <Compile Include="TypeConverterConverter.cs" />
     <Compile Include="TableLayoutConverter.cs" />
     <Compile Include="FontConverter.cs" />
+    <Compile Include="StackLayoutConverter.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

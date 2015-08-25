@@ -115,6 +115,7 @@ namespace Eto.Serialization.Json
 					serializer.Converters.Add(new ImageConverter());
 					serializer.Converters.Add(new TypeConverterConverter());
 					serializer.Converters.Add(new FontConverter());
+					serializer.Converters.Add(new StackLayoutConverter());
 				}
 				serializer.Binder = new EtoBinder
 				{
