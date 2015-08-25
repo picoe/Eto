@@ -97,7 +97,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// This defines the orientation of the panels, with a splitter of the opposite orientation between them.
-		/// For example, when set to <see cref="Orientation.Horizontal"/>, Panel1 and Panel2 will be horizontal to 
+		/// For example, when set to <see cref="T:Orientation.Horizontal"/>, Panel1 and Panel2 will be horizontal to 
 		/// eachother with a vertical splitter/gutter between them.
 		/// </remarks>
 		/// <value>The orientation of the panels.</value>
