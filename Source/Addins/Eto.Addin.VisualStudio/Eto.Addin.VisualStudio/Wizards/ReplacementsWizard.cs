@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TemplateWizard;
+﻿using Eto.Addin.Shared;
+using Microsoft.VisualStudio.TemplateWizard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,45 +30,14 @@ namespace Eto.Addin.VisualStudio.Wizards
 			}
 		}
 
-		public class ReplacementGroup
-		{
-			public string Condition { get; set; }
-			public List<ReplacementItem> Replacements { get; } = new List<ReplacementItem>();
-
-			public ReplacementGroup(XElement element)
-			{
-				Condition = (string)element.Attribute("condition");
-				foreach (var replacement in element.Elements(element.GetDefaultNamespace() + "Replacement"))
-				{
-					Replacements.Add(new ReplacementItem(replacement));
-				}
-			}
-		}
-
-		public class ReplacementItem
-		{
-			public string Condition { get; set; }
-
-			public string Name { get; set; }
-
-			public string Content { get; set; }
-
-			public ReplacementItem(XElement element)
-			{
-				Condition = (string)element.Attribute("condition");
-				Name = (string)element.Attribute("name");
-				Content = element.Value;
-			}
-		}
-
 		public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
 		{
 			var doc = Helpers.LoadWizardXml(replacementsDictionary);
 			var ns = Helpers.WizardNamespace;
 
-			foreach (var element in doc.Root.Elements(ns + "Replacements").Elements(ns + "ReplacementGroup"))
+			var replacementGroups = ReplacementGroup.LoadXml(doc.Root.Elements(ns + "Replacements").FirstOrDefault());
+			foreach (var replacementGroup in replacementGroups)
 			{
-				var replacementGroup = new ReplacementGroup(element);
 				if (replacementsDictionary.MatchesCondition(replacementGroup.Condition))
 				{
 					foreach (var replacement in replacementGroup.Replacements)

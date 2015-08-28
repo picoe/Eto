@@ -16,6 +16,7 @@ namespace Eto.Addin.Shared
 			Source = source;
 			UsePCL = SupportsPCL;
 			UseNET = !SupportsPCL;
+			UseSAL = false;
 			Combined = true;
 		}
 

@@ -109,7 +109,7 @@ namespace Eto.Forms
 		/// <remarks>
 		/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
 		/// 
-		/// Setting this to <see cref="Size.Empty"/> is useful when you want the button to shrink to fit the size
+		/// Setting this to <see cref="Eto.Drawing.Size.Empty"/> is useful when you want the button to shrink to fit the size
 		/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
 		/// </remarks>
 		public Size MinimumSize
@@ -199,7 +199,7 @@ namespace Eto.Forms
 			/// <remarks>
 			/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
 			/// 
-			/// Setting this to <see cref="Size.Empty"/> is useful when you want the button to shrink to fit the size
+			/// Setting this to <see cref="Eto.Drawing.Size.Empty"/> is useful when you want the button to shrink to fit the size
 			/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
 			/// </remarks>
 			Size MinimumSize { get; set;}

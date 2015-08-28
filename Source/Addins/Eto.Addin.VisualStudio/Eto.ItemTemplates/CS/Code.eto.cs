@@ -8,7 +8,7 @@ namespace $rootnamespace$
 	partial class $safeitemname$ : $BaseClassName$
 	{	
 		void InitializeComponent()
-		{$CodeContent$
+		{$Initialization$$Content$
 		}
 	}
 }

@@ -13,6 +13,8 @@ namespace Eto.Designer.Builders
 	{
 		public void Create(string text, Action<Forms.Control> controlCreated, Action<string> error)
 		{
+			var oldDesignMode = XamlReader.DesignMode;
+			XamlReader.DesignMode = true;
 			try
 			{
 				using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(text ?? ""), false))
@@ -27,50 +29,10 @@ namespace Eto.Designer.Builders
 			{
 				error(ex.ToString());
 			}
-		}
-
-		public string GetSample()
-		{
-			return @"<Scrollable
-	   xmlns=""http://schema.picoe.ca/eto.forms"" 
-	   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<TableLayout Padding=""10"" Spacing=""5,5"">
-		<TableRow>
-			<TableCell>
-				<TableLayout Spacing=""5,5"">
-					<TableRow>
-						<TableCell><Label Text=""TextBox"" /></TableCell>
-						<TableCell><TextBox /></TableCell>
-					</TableRow>
-					<TableRow>
-						<TableCell><Label Text=""TextArea"" /></TableCell>
-						<TableCell><TextArea /></TableCell>
-					</TableRow>
-					<TableRow>
-						<TableCell />
-						<TableCell><CheckBox Text=""Some check box"" /></TableCell>
-					</TableRow>
-					<TableRow>
-						<TableCell />
-						<TableCell><Slider SnapToTick=""true"" /></TableCell>
-					</TableRow>
-				</TableLayout>
-			</TableCell>
-		</TableRow>
-		<TableRow>
-			<TableCell>
-				<TableLayout Spacing=""5, 5"">
-					<TableRow>
-						<TableCell ScaleWidth=""true""/>
-						<TableCell><Button Text=""Cancel"" /></TableCell>
-						<TableCell><Button Text=""Apply"" /></TableCell>
-					</TableRow>
-				</TableLayout>
-			</TableCell>
-		</TableRow>
-		<TableRow/>
-	</TableLayout>
-</Scrollable>";
+			finally
+			{
+				XamlReader.DesignMode = oldDesignMode;
+			}
 		}
 	}
 }

@@ -9,12 +9,12 @@
   </TemplateData>
   <TemplateContent>
     <Project TargetFileName="Eto.WinForms.vbproj" File="Eto.Desktop.vbproj" ReplaceParameters="true">
-	  <ProjectItem ReplaceParameters="true" TargetFileName="App.config">App.config</ProjectItem>
-	  <ProjectItem ReplaceParameters="true" TargetFileName="Program.vb">Program.vb</ProjectItem>
-	  <Folder Name=".." TargetFolderName="My Project">
-		<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.vb">AssemblyInfo.vb</ProjectItem>
-	  </Folder>
-	</Project>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.config">App.config</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Program.vb">Program.vb</ProjectItem>
+      <Folder Name=".." TargetFolderName="My Project">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.vb">AssemblyInfo.vb</ProjectItem>
+      </Folder>
+    </Project>
   </TemplateContent>
   <WizardExtension>
     <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
@@ -36,10 +36,10 @@
     <ProjectReferences>
       <ProjectReference guid="$root.guid1$" name="$root.safeprojectname$" extension="vbproj">..\$root.safeprojectname$\$root.safeprojectname$</ProjectReference>
     </ProjectReferences>
-	<Replacements>
-	  <ReplacementGroup>
-		<Replacement name="$EtoPlatform$">Eto.Platforms.WinForms</Replacement>
-	  </ReplacementGroup>
-	</Replacements>
+    <Replacements>
+      <ReplacementGroup>
+        <Replacement name="$EtoPlatform$">Eto.Platforms.WinForms</Replacement>
+      </ReplacementGroup>
+    </Replacements>
   </WizardData>
 </VSTemplate>

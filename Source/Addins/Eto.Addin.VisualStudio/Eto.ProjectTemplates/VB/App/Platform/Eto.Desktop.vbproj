@@ -10,7 +10,7 @@
 		<RootNamespace>$safeprojectname$</RootNamespace>
 		<AssemblyName>$safeprojectname$</AssemblyName>
 		<FileAlignment>512</FileAlignment>
-		<TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+		<TargetFrameworkVersion>v$targetframeworkversion$</TargetFrameworkVersion>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

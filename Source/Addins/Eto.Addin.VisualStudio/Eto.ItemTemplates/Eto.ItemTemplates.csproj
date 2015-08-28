@@ -75,21 +75,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CS\Eto.Code.cs" />
-    <None Include="CS\Eto.Code.eto.cs" />
-    <None Include="CS\Eto.Json.jeto">
+    <None Include="FS\Json.jeto">
       <SubType>Designer</SubType>
     </None>
-    <None Include="CS\Eto.Xaml.xeto.cs" />
-    <None Include="CS\Eto.Json.jeto.cs" />
+    <None Include="FS\Xaml.xeto">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="VB\Json.jeto">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="VB\Xaml.xeto">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CS\Code.cs" />
+    <None Include="CS\Code.eto.cs" />
+    <None Include="CS\Json.jeto">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CS\Xaml.xeto.cs" />
+    <None Include="CS\Json.jeto.cs" />
+    <None Include="VB\Code.vb" />
+    <None Include="VB\Code.eto.vb" />
+    <None Include="VB\Json.jeto.vb" />
+    <None Include="VB\Xaml.xeto.vb" />
+    <None Include="FS\Code.fs" />
+    <None Include="FS\Code.eto.fs" />
+    <None Include="FS\Json.jeto.fs" />
+    <None Include="FS\Xaml.xeto.fs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CS\Eto.File.ico" />
+    <None Include="CS\File.ico" />
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="CS\Eto.Code.Panel.vstemplate">
+    <VSTemplate Include="CS\Code.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
+      <SubType>Designer</SubType>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
@@ -110,32 +131,61 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="CS\Eto.Code.Window.vstemplate">
-      <OutputSubPath>Eto.Forms</OutputSubPath>
-    </VSTemplate>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CS\Eto.Xaml.xeto">
+    <None Include="CS\Xaml.xeto">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="CS\Eto.Xaml.Panel.vstemplate">
+    <VSTemplate Include="CS\Xaml.vstemplate">
+      <OutputSubPath>Eto.Forms</OutputSubPath>
+      <SubType>Designer</SubType>
+    </VSTemplate>
+  </ItemGroup>
+  <ItemGroup>
+    <VSTemplate Include="CS\Json.vstemplate">
+      <OutputSubPath>Eto.Forms</OutputSubPath>
+      <SubType>Designer</SubType>
+    </VSTemplate>
+  </ItemGroup>
+  <ItemGroup>
+    <VSTemplate Include="VB\Code.vstemplate">
+      <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="CS\Eto.Xaml.Window.vstemplate">
+    <None Include="VB\File.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <VSTemplate Include="VB\Json.vstemplate">
+      <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="CS\Eto.Json.Panel.vstemplate">
+    <VSTemplate Include="VB\Xaml.vstemplate">
+      <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="CS\Eto.Json.Window.vstemplate">
+    <VSTemplate Include="FS\Code.vstemplate">
+      <SubType>Designer</SubType>
+      <OutputSubPath>Eto.Forms</OutputSubPath>
+    </VSTemplate>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FS\File.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <VSTemplate Include="FS\Json.vstemplate">
+      <SubType>Designer</SubType>
+      <OutputSubPath>Eto.Forms</OutputSubPath>
+    </VSTemplate>
+  </ItemGroup>
+  <ItemGroup>
+    <VSTemplate Include="FS\Xaml.vstemplate">
+      <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
   </ItemGroup>

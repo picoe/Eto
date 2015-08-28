@@ -10,9 +10,9 @@ using Eto.Wpf.Forms.Controls;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 
-[assembly: PlatformInitializerAttribute(typeof(Eto.Addin.VisualStudio.PlatformInitializer))]
+[assembly: PlatformInitializerAttribute(typeof(Eto.Addin.VisualStudio.Editor.PlatformInitializer))]
 
-namespace Eto.Addin.VisualStudio
+namespace Eto.Addin.VisualStudio.Editor
 {
 	class ControlContract : MarshalByRefObject
 	{
