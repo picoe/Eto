@@ -3,6 +3,9 @@ using System.Reflection;
 using System.Xaml;
 using System.Linq;
 using System.Xaml.Schema;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace Eto.Serialization.Xaml
 {
@@ -91,6 +94,50 @@ namespace Eto.Serialization.Xaml
 			return base.LookupItemType();
 		}
 
+
+
+		class EmptyXamlMember : XamlMember
+		{
+			public EmptyXamlMember(EventInfo eventInfo, XamlSchemaContext context)
+				: base(eventInfo, context)
+			{
+
+			}
+
+			class EmptyConverter : System.ComponentModel.TypeConverter
+			{
+				public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, Type sourceType)
+				{
+					return true;
+				}
+
+				public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, CultureInfo culture, object value)
+				{
+					return null;
+				}
+			}
+
+			protected override XamlValueConverter<System.ComponentModel.TypeConverter> LookupTypeConverter()
+			{
+				var eventConverter = base.LookupTypeConverter();
+				return new XamlValueConverter<System.ComponentModel.TypeConverter>(typeof(EmptyConverter), eventConverter.TargetType);
+			}
+		}
+
+		protected override XamlMember LookupMember(string name, bool skipReadOnlyCheck)
+		{
+			var member = base.LookupMember(name, skipReadOnlyCheck);
+			if (member != null && member.IsEvent)
+			{
+				var context = SchemaContext as EtoXamlSchemaContext;
+				if (context != null && context.DesignMode)
+				{
+					return new EmptyXamlMember(member.UnderlyingMember as EventInfo, context);
+				}
+			}
+			return member;
+        }
+
 		protected override XamlValueConverter<System.ComponentModel.TypeConverter> LookupTypeConverter()
 		{
 			if (typeConverter != null)
@@ -102,6 +149,16 @@ namespace Eto.Serialization.Xaml
 				if (converterType != null)
 					typeConverter = new EtoValueConverter(converterType, this);
 			}
+			if (typeof(MulticastDelegate).IsAssignableFrom(UnderlyingType))
+			{
+				var context = SchemaContext as EtoXamlSchemaContext;
+				if (context.DesignMode)
+				{
+					return null;
+				}
+			}
+
+
 			if (typeConverter == null)
 			// convert from Eto.TypeConverter to System.ComponentModel.TypeConverter
 				typeConverter = base.LookupTypeConverter();
