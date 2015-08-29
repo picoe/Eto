@@ -314,6 +314,7 @@
     <Compile Include="Forms\Binding\ObjectBinding.cs" />
     <Compile Include="Forms\Binding\PropertyBinding.cs" />
     <Compile Include="Forms\Binding\PropertyNotifyHelper.cs" />
+    <Compile Include="Forms\Controls\Expander.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

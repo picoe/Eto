@@ -39,6 +39,15 @@ namespace Eto.Mac.Forms.Controls
 		static readonly NSString CIOutputImage = new NSString("outputImage");
 		static readonly Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
 
+		public MacEventView()
+		{
+		}
+
+		public MacEventView(IntPtr handle)
+			: base(handle)
+		{
+		}
+
 		public static void Colourize(NSView control, Color color, Action drawAction)
 		{
 			var size = control.Frame.Size;
