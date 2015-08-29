@@ -58,6 +58,7 @@
     <Compile Include="..\Eto\TypeHelper.cs">
       <Link>TypeHelper.cs</Link>
     </Compile>
+    <Compile Include="StackLayoutConverter.cs" />
     <Compile Include="TableLayoutConverter.cs" />
     <Compile Include="TypeConverterConverter.cs" />
     <Compile Include="FontConverter.cs" />

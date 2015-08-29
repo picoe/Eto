@@ -14,6 +14,8 @@ namespace Eto.Serialization.Xaml
 		readonly Dictionary<Type, XamlType> typeCache = new Dictionary<Type, XamlType>();
 		readonly object cache_sync = new object();
 
+		public bool DesignMode { get; set; }
+
 		public EtoXamlSchemaContext(IEnumerable<Assembly> assemblies)
 			: base(assemblies)
 		{
@@ -72,6 +74,5 @@ namespace Eto.Serialization.Xaml
 			}
 			return base.GetXamlType(type);
 		}
-
 	}
 }

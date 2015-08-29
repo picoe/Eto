@@ -83,9 +83,25 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
-		#if !PCL
+#if !PCL
 		static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext(new [] { typeof(XamlReader).Assembly });
-		#endif
+#endif
+
+		/// <summary>
+		/// Gets or sets a value indicating that the reader is used in design mode
+		/// </summary>
+		/// <remarks>
+		/// In Design mode, events are not wired up and will not cause exceptions due to missing methods to wire up to.
+		/// </remarks>
+		public static bool DesignMode
+		{
+#if !PCL
+			get { return context.DesignMode; }
+			set { context.DesignMode = value; }
+#else
+			get; set;
+#endif
+		}
 
 		/// <summary>
 		/// Loads the specified type from the specified xaml stream
@@ -97,9 +113,9 @@ namespace Eto.Serialization.Xaml
 		public static T Load<T>(Stream stream, T instance)
 			where T : Widget
 		{
-			#if PCL
+#if PCL
 			throw new NotImplementedException("You must reference the Eto.Serlialization.Xaml package from your net45 project that references your PCL library");
-			#else
+#else
 			var reader = new XamlXmlReader(stream, context);
 			var writerSettings = new XamlObjectWriterSettings();
 			writerSettings.AfterPropertiesHandler += delegate(object sender, XamlObjectEventArgs e)
@@ -110,7 +126,7 @@ namespace Eto.Serialization.Xaml
 					var obj = e.Instance as Widget;
 					if (obj != null && !string.IsNullOrEmpty(obj.ID))
 					{
-						var property = instanceType.GetProperty(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						var property = instanceType.GetProperty(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 						if (property != null)
 							property.SetValue(writerSettings.RootObjectInstance, obj, null);
 						else
@@ -127,7 +143,7 @@ namespace Eto.Serialization.Xaml
 			
 			XamlServices.Transform(reader, writer);
 			return writer.Result as T;
-			#endif
+#endif
 		}
 	}
 }

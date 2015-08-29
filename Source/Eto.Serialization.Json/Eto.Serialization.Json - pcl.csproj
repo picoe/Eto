@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Eto.Serialization.Json</RootNamespace>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Serialization.Json</AssemblyName>
@@ -63,6 +63,7 @@
     <Compile Include="TypeConverterConverter.cs" />
     <Compile Include="TableLayoutConverter.cs" />
     <Compile Include="FontConverter.cs" />
+    <Compile Include="StackLayoutConverter.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
