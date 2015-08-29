@@ -373,7 +373,7 @@ namespace Eto.Forms
 			var cell = Rows.SelectMany(r => r.Cells).FirstOrDefault(r => r.Control == child);
 			if (cell != null)
 			{
-				cell.Control = null;
+				cell.SetControl(null);
 				Handler.Remove(child);
 				RemoveParent(child);
 			}

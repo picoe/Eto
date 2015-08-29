@@ -16,6 +16,8 @@ namespace Eto.Forms
 	[TypeConverter(typeof(TableCellConverter))]
 	public class TableCell
 	{
+		Control control;
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TableCell"/> will scale its width
 		/// </summary>
@@ -35,7 +37,26 @@ namespace Eto.Forms
 		/// Gets or sets the control in this cell, or null for an empty space
 		/// </summary>
 		/// <value>The control.</value>
-		public Control Control { get; set; }
+		public Control Control
+		{
+			get { return control; }
+			set
+			{
+				if (control != value)
+				{
+					if (value != null && value.Parent != null)
+						value.Parent.Remove(value);
+					if (control != null && control.Parent != null)
+						control.Parent.Remove(control);
+					control = value;
+				}
+			}
+		}
+
+		internal void SetControl(Control control)
+		{
+			this.control = control;
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.TableCell"/> class.
