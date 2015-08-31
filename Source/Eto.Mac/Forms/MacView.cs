@@ -581,13 +581,13 @@ namespace Eto.Mac.Forms
 
 		public virtual bool Visible
 		{
-			get { return !ContentControl.Hidden; }
+			get { return !ContainerControl.Hidden; }
 			set
 			{ 
-				if (ContentControl.Hidden == value)
+				if (ContainerControl.Hidden == value)
 				{
 					var oldSize = GetPreferredSize(Size.MaxValue);
-					ContentControl.Hidden = !value;
+					ContainerControl.Hidden = !value;
 					LayoutIfNeeded(oldSize, true);
 				}
 			}
