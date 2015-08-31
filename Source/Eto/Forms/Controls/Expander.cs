@@ -11,6 +11,9 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
+		/// <summary>
+		/// Identifier for the <see cref="ExpandedChanged"/> event.
+		/// </summary>
 		public const string ExpandedChangedEvent = "Expander.ExpandedChanged";
 
 		/// <summary>
@@ -58,7 +61,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the <see cref="Content"/> is expanded/visible.
+		/// Gets or sets a value indicating whether the <see cref="Panel.Content"/> is expanded/visible.
 		/// </summary>
 		/// <value><c>true</c> if expanded; otherwise, <c>false</c>.</value>
 		public bool Expanded
@@ -85,6 +88,11 @@ namespace Eto.Forms
 		/// </summary>
 		public new interface ICallback : Panel.ICallback
 		{
+			/// <summary>
+			/// Raises the expanded changed event.
+			/// </summary>
+			/// <param name="widget">Widget to raise the event.</param>
+			/// <param name="e">Event arguments.</param>
 			void OnExpandedChanged(Expander widget, EventArgs e);
 		}
 
@@ -93,6 +101,11 @@ namespace Eto.Forms
 		/// </summary>
 		protected new class Callback : Panel.Callback, ICallback
 		{
+			/// <summary>
+			/// Raises the expanded changed event.
+			/// </summary>
+			/// <param name="widget">Widget to raise the event.</param>
+			/// <param name="e">Event arguments.</param>
 			public void OnExpandedChanged(Expander widget, EventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnExpandedChanged(e));
@@ -105,7 +118,7 @@ namespace Eto.Forms
 		public new interface IHandler : Panel.IHandler
 		{
 			/// <summary>
-			/// Gets or sets a value indicating whether the <see cref="Content"/> is expanded/visible.
+			/// Gets or sets a value indicating whether the <see cref="Panel.IHandler.Content"/> is expanded/visible.
 			/// </summary>
 			/// <value><c>true</c> if expanded; otherwise, <c>false</c>.</value>
 			bool Expanded { get; set; }

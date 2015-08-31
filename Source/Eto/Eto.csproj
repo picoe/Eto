@@ -59,6 +59,7 @@
     <Compile Include="Forms\Controls\ComboBox.cs">
       <SubType>Eto.Forms</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\Expander.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs">
       <SubType>Eto.Forms</SubType>
@@ -79,6 +80,7 @@
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedExpanderHandler.cs" />
     <Compile Include="Forms\ThemedControls\ThemedSplitterHandler.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />

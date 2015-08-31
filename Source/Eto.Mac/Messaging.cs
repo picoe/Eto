@@ -73,8 +73,6 @@ namespace Eto.Mac
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public static extern bool bool_objc_msgSend_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1);
-		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		public static extern bool bool_objc_msgSend_CGRect(IntPtr receiver, IntPtr selector, CGRect arg1);
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public static extern bool bool_objc_msgSend_IntPtr_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1, IntPtr arg2);

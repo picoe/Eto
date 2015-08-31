@@ -266,6 +266,7 @@
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="Forms\Controls\ExpanderHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
