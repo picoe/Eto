@@ -33,6 +33,8 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\BuildOutput\pcl\Release\Eto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <ItemGroup>
