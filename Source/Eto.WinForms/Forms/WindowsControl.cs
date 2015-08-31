@@ -507,6 +507,7 @@ namespace Eto.WinForms.Forms
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
+			SetMinimumSizeInternal(false);
 			SetToolTip();
 		}
 

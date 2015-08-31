@@ -591,7 +591,8 @@ namespace Eto.iOS.Drawing
 		public void SetClip(RectangleF rectangle)
 		{
 			RewindTransform();
-			ResetClip();
+			RewindClip();
+			clipPath = null;
 			clipBounds = currentTransform.TransformRect(rectangle.ToNS());
 			ApplyClip();
 			ApplyTransform();
@@ -600,7 +601,8 @@ namespace Eto.iOS.Drawing
 		public void SetClip(IGraphicsPath path)
 		{
 			RewindTransform();
-			ResetClip();
+			RewindClip();
+			clipBounds = null;
 			clipPath = path.Clone();
 			clipPath.Transform(currentTransform.ToEto());
 			ApplyClip();
@@ -674,9 +676,11 @@ namespace Eto.iOS.Drawing
 
 		public void ResetClip()
 		{
+			RewindTransform();
 			RewindClip();
 			clipBounds = null;
 			clipPath = null;
+			ApplyTransform();
 		}
 
 		public void Clear(SolidBrush brush)

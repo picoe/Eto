@@ -9,22 +9,39 @@ namespace Eto.Test.Sections.Controls
 	{
 		public ExpanderSection()
 		{
+			var expandedCheckBox = new CheckBox { Text = "Expanded" };
+
 			var expander = new Expander
 			{
-				Header = "Hello",
-				//Size = new Size(200, 200),
+				Header = "Test Header",
 				Content = new Panel {  Size = new Size(200, 200), BackgroundColor = Colors.Blue }
 			};
 
+			expandedCheckBox.CheckedBinding.Bind(expander, e => e.Expanded);
+
 			LogEvents(expander);
 
-			//Content = expander;
-			//return;
+			var expander2 = new Expander
+			{
+				Header = new StackLayout
+				{ 
+					Orientation = Orientation.Horizontal, 
+					Items = { "Test Expanded with custom header", new TextBox() }
+				},
+				Expanded = true,
+				Content = new Panel { Size = new Size(300, 200), BackgroundColor = Colors.Blue }
+			};
+
+			LogEvents(expander2);
+
 			Content = new StackLayout
 			{
+				Padding = new Padding(10),
 				Items =
 				{
-					expander
+					expandedCheckBox,
+					expander,
+					expander2
 				}
 			};
 		}

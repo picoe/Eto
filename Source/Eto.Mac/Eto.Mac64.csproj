@@ -55,6 +55,7 @@
     <Compile Include="Forms\Controls\DropDownHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\ExpanderHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
