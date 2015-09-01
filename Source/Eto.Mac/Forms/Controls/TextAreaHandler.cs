@@ -244,55 +244,46 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		Color? textColor;
+		static readonly object TextColor_Key = new object();
 
 		public Color TextColor
 		{
-			get { return textColor ?? NSColor.ControlText.ToEto(); }
+			get { return Widget.Properties.Get(TextColor_Key, () => NSColor.ControlText.ToEto()); }
 			set
 			{
-				if (value != textColor)
+				Widget.Properties.Set(TextColor_Key, value, () =>
 				{
-					textColor = value;
-					Control.TextColor = textColor.Value.ToNSUI();
-					Control.InsertionPointColor = textColor.Value.ToNSUI();
-				}
+					Control.TextColor = Control.InsertionPointColor = value.ToNSUI();
+				});
 			}
 		}
 
-		Color? backgroundColor;
+		static readonly object BackgroundColor_Key = new object();
 
 		public override Color BackgroundColor
 		{
-			get { return backgroundColor ?? NSColor.ControlBackground.ToEto(); }
+			get { return Widget.Properties.Get<Color>(BackgroundColor_Key, () => NSColor.ControlBackground.ToEto()); }
 			set
 			{
-				if (value != backgroundColor)
+				Widget.Properties.Set(BackgroundColor_Key, value, () =>
 				{
-					backgroundColor = value;
-					Control.BackgroundColor = backgroundColor.Value.ToNSUI();
-				}
+					Control.BackgroundColor = value.ToNSUI();
+				});
 			}
 		}
 
-		Font font;
+		static readonly object Font_Key = new object();
 
 		public Font Font
 		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(Control.Font));
-				return font;
-			}
+			get { return Widget.Properties.Create(Font_Key, () => new Font(new FontHandler(Control.Font))); }
 			set
 			{
-				if (value != font)
+				Widget.Properties.Set(Font_Key, value, () =>
 				{
-					font = value;
-					Control.Font = font.ToNSFont();
-				}
-				LayoutIfNeeded();
+					Control.Font = value.ToNSFont();
+					LayoutIfNeeded();
+				});
 			}
 		}
 
@@ -355,27 +346,27 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.SelectedRange = new NSRange(value, 0); }
 		}
 
-		static readonly object AcceptsTabKey = new object();
+		static readonly object AcceptsTab_Key = new object();
 
 		public bool AcceptsTab
 		{
-			get { return Widget.Properties.Get<bool?>(AcceptsTabKey) ?? true; }
+			get { return Widget.Properties.Get<bool?>(AcceptsTab_Key) ?? true; }
 			set
 			{
-				Widget.Properties[AcceptsTabKey] = value;
+				Widget.Properties[AcceptsTab_Key] = value;
 				if (!value)
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 			}
 		}
 
-		static readonly object AcceptsReturnKey = new object();
+		static readonly object AcceptsReturn_Key = new object();
 
 		public bool AcceptsReturn
 		{
-			get { return Widget.Properties.Get<bool?>(AcceptsReturnKey) ?? true; }
+			get { return Widget.Properties.Get<bool?>(AcceptsReturn_Key) ?? true; }
 			set
 			{
-				Widget.Properties[AcceptsReturnKey] = value;
+				Widget.Properties[AcceptsReturn_Key] = value;
 				if (!value)
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 			}
