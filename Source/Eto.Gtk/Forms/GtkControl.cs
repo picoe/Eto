@@ -53,11 +53,9 @@ namespace Eto.GtkSharp.Forms
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
-		Font font;
 		Size size;
 		Size asize;
 		bool mouseDownHandled;
-		Cursor cursor;
 		Color? cachedBackgroundColor;
 		Color? backgroundColor;
 		public static float ScrollAmount = 2f;
@@ -286,8 +284,8 @@ namespace Eto.GtkSharp.Forms
 
 		void RealizedSetup()
 		{
-			if (cursor != null)
-				Control.GetWindow().Cursor = cursor.ControlObject as Gdk.Cursor;
+			if (Cursor != null)
+				Control.GetWindow().Cursor = Cursor.ControlObject as Gdk.Cursor;
 			SetBackgroundColor();
 		}
 
@@ -565,32 +563,29 @@ namespace Eto.GtkSharp.Forms
 			get { return Control; }
 		}
 
+		static readonly object Font_Key = new object();
+
 		public virtual Font Font
 		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(FontControl));
-				return font;
-			}
-			set
-			{
-				font = value;
-				FontControl.SetFont(font.ToPango());
-			}
+			get { return Widget.Properties.Get<Font>(Font_Key, () => new Font(new FontHandler(FontControl))); }
+			set { Widget.Properties.Set(Font_Key, value, () => FontControl.SetFont(value.ToPango())); }
 		}
+
+		static readonly object Cursor_Key = new object();
 
 		public Cursor Cursor
 		{
-			get { return cursor; }
+			get { return Widget.Properties.Get<Cursor>(Cursor_Key); }
 			set
 			{
-				cursor = value;
-				var gdkWindow = Control.GetWindow();
-				if (gdkWindow != null)
+				Widget.Properties.Set(Cursor_Key, value, () =>
 				{
-					gdkWindow.Cursor = cursor != null ? cursor.ControlObject as Gdk.Cursor : null;
-				}
+					var gdkWindow = Control.GetWindow();
+					if (gdkWindow != null)
+					{
+						gdkWindow.Cursor = value != null ? value.ControlObject as Gdk.Cursor : null;
+					}
+				});
 			}
 		}
 

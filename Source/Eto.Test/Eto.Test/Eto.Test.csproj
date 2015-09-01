@@ -187,6 +187,7 @@
     <Compile Include="..\..\Eto\Helper.cs">
       <Link>Helper.cs</Link>
     </Compile>
+    <Compile Include="Sections\Behaviors\CursorSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

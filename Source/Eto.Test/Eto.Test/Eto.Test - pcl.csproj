@@ -184,6 +184,7 @@
     <Compile Include="Sections\Behaviors\ClipboardSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetTransforms.cs" />
     <Compile Include="Sections\Drawing\ClipTransformSection.cs" />
+    <Compile Include="Sections\Behaviors\CursorSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />

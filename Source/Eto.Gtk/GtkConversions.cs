@@ -179,9 +179,9 @@ namespace Eto.GtkSharp
 				case CursorType.Default:
 					return Gdk.CursorType.Arrow;
 				case CursorType.HorizontalSplit:
-					return Gdk.CursorType.SbHDoubleArrow;
-				case CursorType.VerticalSplit:
 					return Gdk.CursorType.SbVDoubleArrow;
+				case CursorType.VerticalSplit:
+					return Gdk.CursorType.SbHDoubleArrow;
 				case CursorType.IBeam:
 					return Gdk.CursorType.Xterm;
 				case CursorType.Move:

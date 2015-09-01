@@ -20,7 +20,7 @@ namespace Eto.Wpf.Forms
 					Control = swi.Cursors.Arrow;
 					break;
 				case CursorType.HorizontalSplit:
-					Control = swi.Cursors.ScrollWE;
+					Control = swi.Cursors.SizeNS;
 					break;
 				case CursorType.IBeam:
 					Control = swi.Cursors.IBeam;
@@ -32,7 +32,7 @@ namespace Eto.Wpf.Forms
 					Control = swi.Cursors.Hand;
 					break;
 				case CursorType.VerticalSplit:
-					Control = swi.Cursors.SizeNS;
+					Control = swi.Cursors.SizeWE;
 					break;
 				default:
 					throw new NotSupportedException ();
