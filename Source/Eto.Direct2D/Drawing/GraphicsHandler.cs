@@ -296,6 +296,10 @@ namespace Eto.Direct2D.Drawing
 		{
 			var fontHandler = (FontHandler)font.Handler;
 			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
+			if (font.Strikethrough)
+				textLayout.SetStrikethrough(true, new sw.TextRange(0, text.Length));
+			if (font.Underline)
+				textLayout.SetUnderline(true, new sw.TextRange(0, text.Length));
 			return textLayout;
 		}
 
