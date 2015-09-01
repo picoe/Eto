@@ -64,7 +64,7 @@ namespace Eto.Mac.Forms.Controls
 						base.DrawBezelWithFrame(frame, controlView);
 					});
 				}
-				else 
+				else
 					base.DrawBezelWithFrame(frame, controlView);
 			}
 		}
@@ -72,6 +72,7 @@ namespace Eto.Mac.Forms.Controls
 		class EtoButton : NSButton, IMacControl
 		{
 			bool setBezel = true;
+
 			public WeakReference WeakHandler { get; set; }
 
 			public ButtonHandler Handler
@@ -117,7 +118,7 @@ namespace Eto.Mac.Forms.Controls
 			Control = new EtoButton
 			{ 
 				Handler = this,
-				Cell = new EtoButtonCell (),
+				Cell = new EtoButtonCell(),
 				Title = string.Empty,
 				BezelStyle = NSBezelStyle.Rounded,
 				ImagePosition = NSCellImagePosition.ImageLeft
@@ -175,12 +176,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<Image>(Image_Key); }
 			set
 			{
-				var oldSize = GetPreferredSize(Size.MaxValue);
 				Widget.Properties.Set(Image_Key, value, () =>
 				{
 					Control.Image = value.ToNS();
-					SetBezel();
-					LayoutIfNeeded(oldSize);
+					SetImagePosition();
+					LayoutIfNeeded();
 				});
 			}
 		}
@@ -225,7 +225,13 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetBezel()
 		{
-			Control.BezelStyle = GetBezelStyle();
+			var bezel = Control.BezelStyle;
+			var requiredBezel = GetBezelStyle();
+			if (bezel != requiredBezel)
+			{
+				Control.BezelStyle = requiredBezel;
+				LayoutIfNeeded();
+			}
 		}
 
 		public override string Text
@@ -241,7 +247,12 @@ namespace Eto.Mac.Forms.Controls
 		void SetImagePosition()
 		{
 			var position = ImagePosition.ToNS();
-			if ((position == NSCellImagePosition.ImageAbove || position == NSCellImagePosition.ImageBelow || MinimumSize.Width == 0) && string.IsNullOrEmpty(Text))
+			if (string.IsNullOrEmpty(Text) &&
+			    (
+			        position == NSCellImagePosition.ImageAbove
+			        || position == NSCellImagePosition.ImageBelow
+			        || Image != null && Image.Width > MinimumSize.Width
+			    ))
 				position = NSCellImagePosition.ImageOnly;
 			Control.ImagePosition = position;
 			SetBezel();
@@ -268,8 +279,10 @@ namespace Eto.Mac.Forms.Controls
 			get { return base.MinimumSize; }
 			set
 			{
+				var oldSize = GetPreferredSize(Size.MaxValue);
 				base.MinimumSize = value;
 				SetImagePosition();
+				LayoutIfNeeded(oldSize);
 			}
 		}
 	}
