@@ -47,15 +47,15 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		EventHandler<EventArgs> click;
+		static readonly object Click_Key = new object();
 
 		/// <summary>
 		/// Event to handle when the user clicks the button
 		/// </summary>
 		public event EventHandler<EventArgs> Click
 		{
-			add { click += value; }
-			remove { click -= value; }
+			add { Properties.AddEvent(Click_Key, value); }
+			remove { Properties.RemoveEvent(Click_Key, value); }
 		}
 
 		/// <summary>
@@ -64,8 +64,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected virtual void OnClick(EventArgs e)
 		{
-			if (click != null)
-				click(this, e);
+			Properties.TriggerEvent(Click_Key, this, e);
 		}
 
 		static readonly object Command_Key = new object();
