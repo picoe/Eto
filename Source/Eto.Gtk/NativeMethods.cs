@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using GLib;
+using System.Reflection;
 
 namespace Eto.GtkSharp
 {
@@ -29,6 +30,9 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
 		}
 
 		static class NativeMethodsLinux
@@ -48,7 +52,10 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
-		}
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
+        }
 
 		static class NativeMethodsMac
 		{
@@ -67,46 +74,74 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
+        }
+
+#pragma warning disable 0649
+
+		static class Impl
+		{
+			public static readonly Action<IntPtr, IntPtr> g_signal_stop_emission_by_name;
+
+			public delegate bool ClipboardWaitForTargetsDelegate(IntPtr cp, out IntPtr atoms, out int number);
+
+			public static readonly ClipboardWaitForTargetsDelegate gtk_clipboard_wait_for_targets;
+
+			public static readonly Action<IntPtr, IntPtr> gtk_entry_set_placeholder_text;
 		}
 
-		static readonly Action<IntPtr, IntPtr> stopEmmisionByName;
-
-		public delegate bool ClipboardWaitForTargetsDelegate(IntPtr cp, out IntPtr atoms, out int number);
-
-		static readonly ClipboardWaitForTargetsDelegate clipboardWaitForTargets;
+#pragma warning restore 0649
 
 		static NativeMethods()
 		{
-			// instead of requiring an accompanying .config file.
+			var fields = typeof(Impl).GetFields();
+			Type platformType;
 			if (EtoEnvironment.Platform.IsLinux)
-			{
-				stopEmmisionByName = NativeMethodsLinux.g_signal_stop_emission_by_name;
-				clipboardWaitForTargets = NativeMethodsLinux.gtk_clipboard_wait_for_targets;
-			}
+				platformType = typeof(NativeMethodsLinux);
 			else if (EtoEnvironment.Platform.IsMac)
-			{
-				stopEmmisionByName = NativeMethodsMac.g_signal_stop_emission_by_name;
-				clipboardWaitForTargets = NativeMethodsMac.gtk_clipboard_wait_for_targets;
-			}
+				platformType = typeof(NativeMethodsMac);
 			else
+				platformType = typeof(NativeMethodsWindows);
+			
+			// instead of requiring an accompanying .config file.
+			foreach (var field in fields)
 			{
-				stopEmmisionByName = NativeMethodsWindows.g_signal_stop_emission_by_name;
-				clipboardWaitForTargets = NativeMethodsWindows.gtk_clipboard_wait_for_targets;
+				var method = platformType.GetMethod(field.Name);
+				if (method != null)
+					field.SetValue(null, Delegate.CreateDelegate(field.FieldType, method));
 			}
 		}
 
 		public static void StopEmissionByName(GLib.Object o, string signal)
 		{
+			if (Impl.g_signal_stop_emission_by_name == null)
+				return;
 			IntPtr intPtr = Marshaller.StringToPtrGStrdup(signal);
-			stopEmmisionByName(o.Handle, intPtr);
+			Impl.g_signal_stop_emission_by_name(o.Handle, intPtr);
 			Marshaller.Free(intPtr);
+		}
+
+		public static void gtk_entry_set_placeholder_text(Gtk.Entry entry, string text)
+		{
+			if (Impl.gtk_entry_set_placeholder_text == null)
+				return;
+			IntPtr textPtr = Marshaller.StringToPtrGStrdup(text);
+			Impl.gtk_entry_set_placeholder_text(entry.Handle, textPtr);
+			Marshaller.Free(textPtr);
 		}
 
 		public static bool ClipboardWaitForTargets(IntPtr cp, out Gdk.Atom[] atoms)
 		{
+			if (Impl.gtk_clipboard_wait_for_targets == null)
+			{
+				atoms = null;
+				return false;
+			}
 			IntPtr atomPtrs;
 			int count;
-			var success = clipboardWaitForTargets(cp, out atomPtrs, out count);
+			var success = Impl.gtk_clipboard_wait_for_targets(cp, out atomPtrs, out count);
 			if (!success || count <= 0)
 			{
 				atoms = null;
