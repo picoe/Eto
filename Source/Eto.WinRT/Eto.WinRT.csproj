@@ -167,6 +167,9 @@
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\Forms\Controls\ButtonHandler.cs">
+      <Link>Forms\Controls\ButtonHandler.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
@@ -230,9 +233,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ColorDialogHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ButtonHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\CheckBoxHandler.cs">

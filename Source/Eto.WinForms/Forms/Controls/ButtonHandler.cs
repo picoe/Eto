@@ -14,10 +14,8 @@ namespace Eto.WinForms.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ButtonHandler : WindowsControl<ButtonHandler.EtoButton, Button, Button.ICallback>, Button.IHandler
 	{
-		Image image;
-
 		// windows guidelines specify default height of 23
-		public static Size MinimumSize = new Size(80, 23);
+		public static Size DefaultMinimumSize = new Size(80, 23);
 
 		public class EtoButton : swf.Button
 		{
@@ -34,6 +32,12 @@ namespace Eto.WinForms.Forms.Controls
 						// fix bug with image and no text
 						size.Height += 1;
 				}
+				if (Image != null)
+				{
+					var imgSize = Image.Size.ToEto() + 8;
+					size.Width = Math.Max(size.Width, imgSize.Width);
+					size.Height = Math.Max(size.Height, imgSize.Height);
+				}
 
 				return size;
 			}
@@ -41,7 +45,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public override Size? DefaultSize
 		{
-			get { return ButtonHandler.MinimumSize; }
+			get { return MinimumSize; }
 		}
 
 		public ButtonHandler()
@@ -68,14 +72,12 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		static readonly object Image_Key = new object();
+
 		public Image Image
 		{
-			get { return image; }
-			set
-			{
-				image = value;
-				Control.Image = image.ToSD();
-			}
+			get { return Widget.Properties.Get<Image>(Image_Key); }
+			set { Widget.Properties.Set(Image_Key, value, () => Control.Image = value.ToSD()); }
 		}
 
 		void SetAlign()
@@ -100,6 +102,22 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				Control.TextImageRelation = value.ToSD();
 				SetAlign();
+			}
+		}
+
+		static readonly object MinimumSize_Key = new object();
+
+		public Size MinimumSize
+		{
+			get { return Widget.Properties.Get(MinimumSize_Key, DefaultMinimumSize); }
+			set
+			{
+				if (MinimumSize != value)
+				{
+					Widget.Properties[MinimumSize_Key] = value;
+					ClearCachedDefaultSize();
+					SetMinimumSize(true);
+				}
 			}
 		}
 

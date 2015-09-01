@@ -104,6 +104,21 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the minimum size for the button.
+		/// </summary>
+		/// <remarks>
+		/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
+		/// 
+		/// Setting this to <see cref="Size.Empty"/> is useful when you want the button to shrink to fit the size
+		/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
+		/// </remarks>
+		public Size MinimumSize
+		{
+			get { return Handler.MinimumSize; }
+			set { Handler.MinimumSize = value; }
+		}
+
+		/// <summary>
 		/// Triggers the <see cref="Click"/> event for the button, if the button is visable and enabled.
 		/// </summary>
 		public void PerformClick()
@@ -162,6 +177,17 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The image position</value>
 			ButtonImagePosition ImagePosition { get; set; }
+
+			/// <summary>
+			/// Gets or sets the minimum size for the button.
+			/// </summary>
+			/// <remarks>
+			/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
+			/// 
+			/// Setting this to <see cref="Size.Empty"/> is useful when you want the button to shrink to fit the size
+			/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
+			/// </remarks>
+			Size MinimumSize { get; set;}
 		}
 	}
 }

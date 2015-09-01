@@ -22,8 +22,6 @@ namespace Eto.Mac.Forms.Controls
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
-		internal Font font;
-
 		public override NSView ContainerControl { get { return Control; } }
 
 		public override bool Enabled
@@ -32,20 +30,19 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.Enabled = value; }
 		}
 
+		internal static readonly object Font_Key = new object();
+
 		public virtual Font Font
 		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(Control.Font));
-				return font;
-			}
+			get { return Widget.Properties.Create(Font_Key, () => new Font(new FontHandler(Control.Font))); }
 			set
 			{
-				font = value;
-				Control.Font = font.ToNSFont();
-				Control.AttributedStringValue = font.AttributedString(Control.AttributedStringValue);
-				LayoutIfNeeded();
+				Widget.Properties.Set(Font_Key, value, () =>
+				{
+					Control.Font = value.ToNSFont();
+					Control.AttributedStringValue = value.AttributedString(Control.AttributedStringValue);
+					LayoutIfNeeded();
+				});
 			}
 		}
 	}
