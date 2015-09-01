@@ -17,7 +17,7 @@ namespace Eto.Test.Sections.Behaviors
 
 			layout.Rows.Add(row = new TableRow());
 
-			foreach (var type in Enum.GetValues(typeof(CursorType)).OfType<CursorType?>().Union(new CursorType?[] { null }))
+			foreach (var type in Enum.GetValues(typeof(CursorType)).OfType<CursorType?>())
 			{
 				var label = new Label
 				{ 
