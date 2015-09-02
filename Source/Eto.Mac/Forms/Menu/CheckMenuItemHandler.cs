@@ -28,6 +28,15 @@ namespace Eto.Mac.Forms.Menu
 		
 		public override void Activate()
 		{
+			if (Control.State == NSCellStateValue.Off)
+			{
+				Control.State = NSCellStateValue.On;
+			}
+			else
+			{
+				Control.State = NSCellStateValue.Off;
+			}
+
 			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
