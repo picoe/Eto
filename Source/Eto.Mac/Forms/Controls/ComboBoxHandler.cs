@@ -41,6 +41,12 @@ namespace Eto.Mac.Forms.Controls
 	public class ComboBoxHandler : MacControl<NSComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		int lastSelected = -1;
+		static readonly object SuppressChangeEvents_Key = new object();
+		int SuppressChangeEvents
+		{
+			get { return Widget.Properties.Get<int>(SuppressChangeEvents_Key); }
+			set { Widget.Properties.Set(SuppressChangeEvents_Key, value); }
+		}
 		CollectionHandler collection;
 
 		public class EtoComboBox : NSComboBox, IMacControl
@@ -51,6 +57,12 @@ namespace Eto.Mac.Forms.Controls
 			{
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); }
+			}
+
+			[Export("cellClass")]
+			public static Class CellClass()
+			{
+				return new Class(typeof(Cell));
 			}
 		}
 
@@ -80,12 +92,11 @@ namespace Eto.Mac.Forms.Controls
 			Control = new EtoComboBox
 			{ 
 				Handler = this, 
-				Cell = new Cell(),
 				StringValue = string.Empty,
 				Editable = true,
 				VisibleItems = 20
 			};
-			AddObserver(NSComboBox.SelectionIsChangingNotification, SelectionDidChange);
+			AddObserver(NSComboBox.SelectionDidChangeNotification, SelectionDidChange);
 			Control.Changed += HandleChanged;
 		}
 
@@ -130,10 +141,12 @@ namespace Eto.Mac.Forms.Controls
 			var handler = e.Handler as ComboBoxHandler;
 			if (handler != null)
 			{
+				if (handler.SuppressChangeEvents > 0)
+					return;
 				Application.Instance.AsyncInvoke(() =>
 				{
 					handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
-					Application.Instance.AsyncInvoke(() => handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty));
+					handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty);
 				});
 			}
 		}
@@ -212,11 +225,12 @@ namespace Eto.Mac.Forms.Controls
 			get { return (int)Control.SelectedIndex; }
 			set
 			{
-				var selectedIndex = SelectedIndex;
+				lastSelected = SelectedIndex;
+				SuppressChangeEvents++;
 				var lastText = Text;
 				if (value == -1)
 				{
-					if (selectedIndex != -1)
+					if (lastSelected != -1)
 					{
 						Control.DeselectItem(Control.SelectedIndex);
 						Control.StringValue = string.Empty;
@@ -224,7 +238,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 				else
 					Control.SelectItem(value);
-				if (value != selectedIndex)
+				if (value != lastSelected)
 				{
 					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
@@ -232,6 +246,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
+				SuppressChangeEvents--;
 			}
 		}
 

@@ -73,7 +73,7 @@ namespace Eto.Test.Sections.Controls
 			control.Click += delegate
 			{
 				if (list.Items.Count > 0)
-					list.SelectedIndex = new Random().Next(list.Items.Count - 1);
+					list.SelectedIndex = new Random().Next(list.Items.Count) - 1;
 			};
 			return control;
 		}
