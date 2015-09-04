@@ -4,6 +4,8 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
+using System.Linq;
+using System.ComponentModel;
 
 namespace Eto.Wpf.Forms.Menu
 {
@@ -11,12 +13,24 @@ namespace Eto.Wpf.Forms.Menu
 	{
 		List<RadioMenuItem> group;
 
-		public RadioMenuItemHandler ()
+		public RadioMenuItemHandler()
 		{
-			Control = new swc.MenuItem {
+			Control = new swc.MenuItem
+			{
 				IsCheckable = true
 			};
-			Setup ();
+		}
+
+		protected override void OnClick()
+		{
+			if (group != null)
+			{
+				var checkedItem = group.FirstOrDefault(r => r.Checked && r != Widget);
+				if (checkedItem != null)
+					checkedItem.Checked = false;
+			}
+			Checked = true;
+			base.OnClick();
 		}
 
 
@@ -26,26 +40,33 @@ namespace Eto.Wpf.Forms.Menu
 			set { Control.IsChecked = value; }
 		}
 
-		public void Create (RadioMenuItem controller)
+		public void Create(RadioMenuItem controller)
 		{
-			if (controller != null) {
+			if (controller != null)
+			{
 				var controllerInner = (RadioMenuItemHandler)controller.Handler;
-				if (controllerInner.group == null) {
-					controllerInner.group = new List<RadioMenuItem> ();
-					controllerInner.group.Add (controller);
-					controllerInner.Control.Click += controllerInner.control_RadioSwitch;
+				if (controllerInner.group == null)
+				{
+					controllerInner.group = new List<RadioMenuItem>();
+					controllerInner.group.Add(controller);
 				}
-				controllerInner.group.Add(Widget);
-				Control.Click += controllerInner.control_RadioSwitch;
+				group = controllerInner.group;
+				group.Add(Widget);
 			}
 		}
 
-		void control_RadioSwitch (object sender, EventArgs e)
+		static DependencyPropertyDescriptor dpdIsChecked = DependencyPropertyDescriptor.FromProperty(swc.MenuItem.IsCheckedProperty, typeof(swc.MenuItem));
+
+		public override void AttachEvent(string id)
 		{
-			if (group != null) {
-				foreach (RadioMenuItem item in group) {
-					item.Checked = (item.ControlObject == sender);
-				}
+			switch (id)
+			{
+				case RadioMenuItem.CheckedChangedEvent:
+					dpdIsChecked.AddValueChanged(Control, (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty));
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 	}

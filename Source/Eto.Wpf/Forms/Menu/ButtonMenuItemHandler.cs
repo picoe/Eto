@@ -10,7 +10,6 @@ namespace Eto.Wpf.Forms.Menu
 		public ButtonMenuItemHandler ()
 		{
 			Control = new swc.MenuItem();
-			Setup ();
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 
 			[Export("cellClass")]
-			public static Class CellClass()
+			public new static Class CellClass()
 			{
 				return new Class(typeof(Cell));
 			}

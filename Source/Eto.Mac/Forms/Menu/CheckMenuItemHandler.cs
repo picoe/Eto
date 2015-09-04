@@ -1,11 +1,13 @@
 using System;
 using Eto.Forms;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -18,59 +20,81 @@ namespace Eto.Mac.Forms.Menu
 {
 	public class CheckMenuItemHandler : MenuHandler<NSMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler, IMenuActionHandler
 	{
-		public CheckMenuItemHandler ()
+		public CheckMenuItemHandler()
 		{
-			Control = new NSMenuItem ();
+			Control = new NSMenuItem();
 			Enabled = true;
 			Control.Target = new MenuActionHandler{ Handler = this };
 			Control.Action = MenuActionHandler.selActivate;
 		}
-		
+
 		public override void Activate()
 		{
+			Checked = !Checked;
 			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		#region IMenuItem Members
 
-		public bool Enabled {
+		public bool Enabled
+		{
 			get { return Control.Enabled; }
 			set { Control.Enabled = value; }
 		}
 
-		public string Text {
+		public string Text
+		{
 			get	{ return Control.Title; }
-			set { Control.SetTitleWithMnemonic (value); }
+			set { Control.SetTitleWithMnemonic(value); }
 		}
-		
-		public string ToolTip {
+
+		public string ToolTip
+		{
 			get { return Control.ToolTip; }
 			set { Control.ToolTip = value ?? string.Empty; }
 		}
 
-		public Keys Shortcut {
-			get { return KeyMap.Convert (Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
-			set { 
-				Control.KeyEquivalent = KeyMap.KeyEquivalent (value);
-				Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask (value);
+		public Keys Shortcut
+		{
+			get { return KeyMap.Convert(Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
+			set
+			{ 
+				Control.KeyEquivalent = KeyMap.KeyEquivalent(value);
+				Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask(value);
 			}
 		}
 
-		public bool Checked {
+		public bool Checked
+		{
 			get { return Control.State == NSCellStateValue.On; }
-			set { Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; }
+			set
+			{ 
+				if (Checked != value)
+				{
+					Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; 
+					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+				}
+			}
 		}
 
 		#endregion
 
-		MenuItem IMenuActionHandler.Widget {
+		MenuItem IMenuActionHandler.Widget
+		{
 			get { return Widget; }
+		}
+
+		MenuItem.ICallback IMenuActionHandler.Callback
+		{
+			get { return Callback; }
 		}
 
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
+				case CheckMenuItem.CheckedChangedEvent:
+					break;
 				case MenuItem.ValidateEvent:
 					// handled in MenuActionHandler
 					break;
