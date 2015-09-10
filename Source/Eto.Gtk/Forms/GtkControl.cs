@@ -430,15 +430,19 @@ namespace Eto.GtkSharp.Forms
 				Handler.Callback.OnMouseMove(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
+			[GLib.ConnectBefore]
 			public void HandleButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 
-				Handler.Callback.OnMouseUp(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+				var mouseArgs = new MouseEventArgs(buttons, modifiers, p);
+				Handler.Callback.OnMouseUp(Handler.Widget, mouseArgs);
+				args.RetVal = mouseArgs.Handled;
 			}
 
+			[GLib.ConnectBefore]
 			public void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
@@ -446,14 +450,16 @@ namespace Eto.GtkSharp.Forms
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 				if (Handler.Control.CanFocus && !Handler.Control.HasFocus)
 					Handler.Control.GrabFocus();
+				var mouseArgs = new MouseEventArgs(buttons, modifiers, p);
 				if (args.Event.Type == Gdk.EventType.ButtonPress)
 				{
-					Handler.Callback.OnMouseDown(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+					Handler.Callback.OnMouseDown(Handler.Widget, mouseArgs);
 				}
 				else if (args.Event.Type == Gdk.EventType.TwoButtonPress)
 				{
-					Handler.Callback.OnMouseDoubleClick(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+					Handler.Callback.OnMouseDoubleClick(Handler.Widget, mouseArgs);
 				}
+				args.RetVal = mouseArgs.Handled;
 			}
 
 			public void HandleSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
