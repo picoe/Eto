@@ -119,6 +119,21 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the size of the control. Use -1 to specify auto sizing for either the width and/or height.
+		/// </summary>
+		/// <value>The size of the control.</value>
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				base.Size = value;
+				// Ensure minimum size is at least as small as the desired explicit size
+				MinimumSize = Size.Min(value, MinimumSize);
+			}
+		}
+
+		/// <summary>
 		/// Triggers the <see cref="Click"/> event for the button, if the button is visable and enabled.
 		/// </summary>
 		public void PerformClick()
