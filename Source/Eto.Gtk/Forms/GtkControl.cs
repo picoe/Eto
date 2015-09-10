@@ -448,8 +448,6 @@ namespace Eto.GtkSharp.Forms
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
-				if (Handler.Control.CanFocus && !Handler.Control.HasFocus)
-					Handler.Control.GrabFocus();
 				var mouseArgs = new MouseEventArgs(buttons, modifiers, p);
 				if (args.Event.Type == Gdk.EventType.ButtonPress)
 				{
@@ -459,6 +457,8 @@ namespace Eto.GtkSharp.Forms
 				{
 					Handler.Callback.OnMouseDoubleClick(Handler.Widget, mouseArgs);
 				}
+				if (!mouseArgs.Handled && Handler.Control.CanFocus && !Handler.Control.HasFocus)
+					Handler.Control.GrabFocus();
 				args.RetVal = mouseArgs.Handled;
 			}
 
