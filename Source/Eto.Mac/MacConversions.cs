@@ -396,5 +396,39 @@ namespace Eto.Mac
 				return null;
 			return new Font(new FontHandler(font));
 		}
+
+		public static DockPosition ToEto(this NSTabViewType type)
+		{
+			switch (type)
+			{
+				case NSTabViewType.NSTopTabsBezelBorder:
+					return DockPosition.Top;
+				case NSTabViewType.NSLeftTabsBezelBorder:
+					return DockPosition.Left;
+				case NSTabViewType.NSBottomTabsBezelBorder:
+					return DockPosition.Bottom;
+				case NSTabViewType.NSRightTabsBezelBorder:
+					return DockPosition.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static NSTabViewType ToNS(this DockPosition position)
+		{
+			switch (position)
+			{
+				case DockPosition.Top:
+					return NSTabViewType.NSTopTabsBezelBorder;
+				case DockPosition.Left:
+					return NSTabViewType.NSLeftTabsBezelBorder;
+				case DockPosition.Right:
+					return NSTabViewType.NSRightTabsBezelBorder;
+				case DockPosition.Bottom:
+					return NSTabViewType.NSBottomTabsBezelBorder;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

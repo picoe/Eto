@@ -74,6 +74,12 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.SelectedIndex = value; }
 		}
 
+		public DockPosition TabPosition
+		{
+			get { return Control.TabStripPlacement.ToEtoTabPosition(); }
+			set { Control.TabStripPlacement = value.ToWpf(); }
+		}
+
 		public void InsertTab(int index, TabPage page)
 		{
 			if (index == -1)

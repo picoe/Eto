@@ -68,6 +68,12 @@ namespace Eto.Test.Handlers
 		{
 			tabs.Remove(index);
 		}
+
+		public DockPosition TabPosition
+		{
+			get;
+			set;
+		}
 	}
 
 	class Tab : Button

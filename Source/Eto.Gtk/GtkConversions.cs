@@ -591,5 +591,39 @@ namespace Eto.GtkSharp
 				return gtkWindow.Control;
 			return null;
 		}
+
+		public static Gtk.PositionType ToGtk(this DockPosition position)
+		{
+			switch (position)
+			{
+				case DockPosition.Top:
+					return Gtk.PositionType.Top;
+				case DockPosition.Left:
+					return Gtk.PositionType.Left;
+				case DockPosition.Right:
+					return Gtk.PositionType.Right;
+				case DockPosition.Bottom:
+					return Gtk.PositionType.Bottom;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static DockPosition ToEto(this Gtk.PositionType position)
+		{
+			switch (position)
+			{
+				case Gtk.PositionType.Left:
+					return DockPosition.Left;
+				case Gtk.PositionType.Right:
+					return DockPosition.Right;
+				case Gtk.PositionType.Top:
+					return DockPosition.Top;
+				case Gtk.PositionType.Bottom:
+					return DockPosition.Bottom;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

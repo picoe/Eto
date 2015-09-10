@@ -739,5 +739,39 @@ namespace Eto.WinForms
 				return handler.Win32Window as swf.Form;
 			return null;
 		}
+
+		public static swf.TabAlignment ToSWF(this DockPosition position)
+		{
+			switch (position)
+			{
+				case DockPosition.Top:
+					return swf.TabAlignment.Top;
+				case DockPosition.Left:
+					return swf.TabAlignment.Left;
+				case DockPosition.Right:
+					return swf.TabAlignment.Right;
+				case DockPosition.Bottom:
+					return swf.TabAlignment.Bottom;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static DockPosition ToEto(this swf.TabAlignment alignment)
+		{
+			switch (alignment)
+			{
+				case swf.TabAlignment.Top:
+					return DockPosition.Top;
+				case swf.TabAlignment.Bottom:
+					return DockPosition.Bottom;
+				case swf.TabAlignment.Left:
+					return DockPosition.Left;
+				case swf.TabAlignment.Right:
+					return DockPosition.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }
