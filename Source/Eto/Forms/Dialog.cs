@@ -226,6 +226,8 @@ namespace Eto.Forms
 				OnLoadComplete(EventArgs.Empty);
 			}
 
+			Application.Instance.AddWindow(this);
+
 			return Handler.ShowModalAsync();
 		}
 
