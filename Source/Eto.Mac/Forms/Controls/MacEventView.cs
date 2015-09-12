@@ -116,16 +116,22 @@ namespace Eto.Mac.Forms.Controls
 			if (control != null)
 			{
 				var handler = control.Handler as IMacViewHandler;
-				var kpea = theEvent.ToEtoKeyEventArgs();
-				handler.Callback.OnKeyUp(control, kpea);
-				return kpea.Handled;
+				if (handler != null)
+				{
+					var kpea = theEvent.ToEtoKeyEventArgs ();
+					handler.Callback.OnKeyUp (control, kpea);
+					return kpea.Handled;
+				}
 			}
 			return false;
 		}
 
 		public override void ResetCursorRects()
 		{
-			var cursor = Handler.CurrentCursor;
+			var handler = Handler;
+			if (handler == null)
+				return;
+			var cursor = handler.CurrentCursor;
 			if (cursor != null)
 			{
 				AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
