@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -7,18 +8,18 @@ namespace Eto.Test.Sections.Controls
 	{
 		public CheckBoxSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.Add(Default());
 
 			layout.Add(Disabled());
-			
+
 			layout.Add(SetInitialValue());
-			
+
 			layout.Add(ThreeState());
-			
+
 			layout.Add(ThreeStateInitialValue());
-			
+
 			layout.Add(null, false, true);
 
 			Content = layout;
@@ -53,7 +54,7 @@ namespace Eto.Test.Sections.Controls
 				Checked = true
 			};
 			LogEvents(control);
-			
+
 			return control;
 		}
 

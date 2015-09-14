@@ -2,7 +2,6 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using sd = System.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -38,21 +37,74 @@ using nnint = System.Int32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TextAreaHandler : MacView<NSTextView, TextArea, TextArea.ICallback>, TextArea.IHandler
+	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
-		int? lastCaretIndex;
-		Range<int> lastSelection;
+	}
 
-		public class EtoTextView : NSTextView, IMacControl
+	public interface ITextAreaHandler
+	{
+		TextArea.ICallback Callback { get; }
+
+		TextArea Widget { get; }
+
+		Range<int> Selection { get; }
+
+		int CaretIndex { get; }
+
+		Range<int> lastSelection { get; set; }
+		int? lastCaretIndex { get; set; }
+	}
+
+	public class EtoTextAreaDelegate : NSTextViewDelegate
+	{
+		WeakReference handler;
+
+		public ITextAreaHandler Handler { get { return (ITextAreaHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
+		public override void TextDidChange(NSNotification notification)
 		{
-			public WeakReference WeakHandler { get; set; }
+			Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+		}
 
-			public object Handler
-			{ 
-				get { return WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
+		public override void DidChangeSelection(NSNotification notification)
+		{
+			var selection = Handler.Selection;
+			if (selection != Handler.lastSelection)
+			{
+				Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+				Handler.lastSelection = selection;
+			}
+			var caretIndex = Handler.CaretIndex;
+			if (caretIndex != Handler.lastCaretIndex)
+			{
+				Handler.Callback.OnCaretIndexChanged(Handler.Widget, EventArgs.Empty);
+				Handler.lastCaretIndex = caretIndex;
 			}
 		}
+	}
+
+	public class EtoTextView : NSTextView, IMacControl
+	{
+		public WeakReference WeakHandler { get; set; }
+
+		public object Handler
+		{ 
+			get { return WeakHandler.Target; }
+			set { WeakHandler = new WeakReference(value); } 
+		}
+
+		public override void ChangeColor(NSObject sender)
+		{
+			// ignore color changes
+		}
+	}
+
+	public class TextAreaHandler<TControl, TCallback> : MacView<NSTextView, TControl, TCallback>, TextArea.IHandler, ITextAreaHandler
+		where TControl: TextArea
+		where TCallback: TextArea.ICallback
+	{
+		int? ITextAreaHandler.lastCaretIndex { get; set; }
+		Range<int> ITextAreaHandler.lastSelection { get; set; }
 
 		public override void OnKeyDown(KeyEventArgs e)
 		{
@@ -84,41 +136,13 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Scroll; }
 		}
-		// Remove use of delegate when events work correctly in MonoMac
-		public class EtoDelegate : NSTextViewDelegate
-		{
-			WeakReference handler;
-
-			public TextAreaHandler Handler { get { return (TextAreaHandler)handler.Target; } set { handler = new WeakReference(value); } }
-
-			public override void TextDidChange(NSNotification notification)
-			{
-				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
-			}
-
-			public override void DidChangeSelection(NSNotification notification)
-			{
-				var selection = Handler.Selection;
-				if (selection != Handler.lastSelection)
-				{
-					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
-					Handler.lastSelection = selection;
-				}
-				var caretIndex = Handler.CaretIndex;
-				if (caretIndex != Handler.lastCaretIndex)
-				{
-					Handler.Callback.OnCaretIndexChanged(Handler.Widget, EventArgs.Empty);
-					Handler.lastCaretIndex = caretIndex;
-				}
-			}
-		}
 
 		public TextAreaHandler()
 		{
 			Control = new EtoTextView
 			{
 				Handler = this,
-				Delegate = new EtoDelegate { Handler = this },
+				Delegate = new EtoTextAreaDelegate { Handler = this },
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
 				HorizontallyResizable = true,
 				VerticallyResizable = true,
@@ -146,9 +170,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			#pragma warning disable 612,618
-			return TextArea.DefaultSize;
-			#pragma warning restore 612,618
+			return new SizeF(100, 60);
 		}
 
 		public override void AttachEvent(string id)
@@ -209,7 +231,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public string Text
+		public virtual string Text
 		{
 			get
 			{
@@ -217,60 +239,51 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
-				Control.Value = value;
+				Control.Value = value ?? string.Empty;
 				Control.DisplayIfNeeded();
 			}
 		}
 
-		Color? textColor;
+		static readonly object TextColor_Key = new object();
 
 		public Color TextColor
 		{
-			get { return textColor ?? NSColor.ControlText.ToEto(); }
+			get { return Widget.Properties.Get(TextColor_Key, () => NSColor.ControlText.ToEto()); }
 			set
 			{
-				if (value != textColor)
+				Widget.Properties.Set(TextColor_Key, value, () =>
 				{
-					textColor = value;
-					Control.TextColor = textColor.Value.ToNSUI();
-					Control.InsertionPointColor = textColor.Value.ToNSUI();
-				}
+					Control.TextColor = Control.InsertionPointColor = value.ToNSUI();
+				});
 			}
 		}
 
-		Color? backgroundColor;
+		static readonly object BackgroundColor_Key = new object();
 
 		public override Color BackgroundColor
 		{
-			get { return backgroundColor ?? NSColor.ControlBackground.ToEto(); }
+			get { return Widget.Properties.Get<Color>(BackgroundColor_Key, () => NSColor.ControlBackground.ToEto()); }
 			set
 			{
-				if (value != backgroundColor)
+				Widget.Properties.Set(BackgroundColor_Key, value, () =>
 				{
-					backgroundColor = value;
-					Control.BackgroundColor = backgroundColor.Value.ToNSUI();
-				}
+					Control.BackgroundColor = value.ToNSUI();
+				});
 			}
 		}
 
-		Font font;
+		static readonly object Font_Key = new object();
 
 		public Font Font
 		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(Control.Font));
-				return font;
-			}
+			get { return Widget.Properties.Create(Font_Key, () => new Font(new FontHandler(Control.Font))); }
 			set
 			{
-				if (value != font)
+				Widget.Properties.Set(Font_Key, value, () =>
 				{
-					font = value;
-					Control.Font = font.ToNSFont();
-				}
-				LayoutIfNeeded();
+					Control.Font = value.ToNSFont();
+					LayoutIfNeeded();
+				});
 			}
 		}
 
@@ -333,27 +346,27 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.SelectedRange = new NSRange(value, 0); }
 		}
 
-		static readonly object AcceptsTabKey = new object();
+		static readonly object AcceptsTab_Key = new object();
 
 		public bool AcceptsTab
 		{
-			get { return Widget.Properties.Get<bool?>(AcceptsTabKey) ?? true; }
+			get { return Widget.Properties.Get<bool?>(AcceptsTab_Key) ?? true; }
 			set
 			{
-				Widget.Properties[AcceptsTabKey] = value;
+				Widget.Properties[AcceptsTab_Key] = value;
 				if (!value)
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 			}
 		}
 
-		static readonly object AcceptsReturnKey = new object();
+		static readonly object AcceptsReturn_Key = new object();
 
 		public bool AcceptsReturn
 		{
-			get { return Widget.Properties.Get<bool?>(AcceptsReturnKey) ?? true; }
+			get { return Widget.Properties.Get<bool?>(AcceptsReturn_Key) ?? true; }
 			set
 			{
-				Widget.Properties[AcceptsReturnKey] = value;
+				Widget.Properties[AcceptsReturn_Key] = value;
 				if (!value)
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 			}
@@ -369,10 +382,28 @@ namespace Eto.Mac.Forms.Controls
 				Control.ScrollRangeToVisible(range);
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.Alignment.ToEto(); }
 			set { Control.Alignment = value.ToNS(); }
+		}
+
+		public bool SpellCheck
+		{
+			get { return Control.ContinuousSpellCheckingEnabled; }
+			set { Control.ContinuousSpellCheckingEnabled = value; }
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
+
+		TextArea.ICallback ITextAreaHandler.Callback
+		{
+			get { return Callback; }
+		}
+
+		TextArea ITextAreaHandler.Widget
+		{
+			get { return Widget; }
 		}
 	}
 }

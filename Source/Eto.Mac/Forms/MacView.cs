@@ -1,7 +1,6 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
-using SD = System.Drawing;
 using Eto.Mac.Forms.Controls;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Printing;
@@ -48,13 +47,13 @@ namespace Eto.Mac.Forms
 		[Export("mouseMoved:")]
 		public void MouseMoved(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseMove(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
+			Handler.Callback.OnMouseMove(Handler.Widget, MacConversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("mouseEntered:")]
 		public void MouseEntered(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseEnter(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
+			Handler.Callback.OnMouseEnter(Handler.Widget, MacConversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("cursorUpdate:")]
@@ -65,13 +64,13 @@ namespace Eto.Mac.Forms
 		[Export("mouseExited:")]
 		public void MouseExited(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseLeave(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, false));
+			Handler.Callback.OnMouseLeave(Handler.Widget, MacConversions.GetMouseEvent(Handler.EventControl, theEvent, false));
 		}
 
 		[Export("scrollWheel:")]
 		public void ScrollWheel(NSEvent theEvent)
 		{
-			Handler.Callback.OnMouseWheel(Handler.Widget, Conversions.GetMouseEvent(Handler.EventControl, theEvent, true));
+			Handler.Callback.OnMouseWheel(Handler.Widget, MacConversions.GetMouseEvent(Handler.EventControl, theEvent, true));
 		}
 	}
 
@@ -88,6 +87,10 @@ namespace Eto.Mac.Forms
 		void OnKeyDown(KeyEventArgs e);
 
 		void OnSizeChanged(EventArgs e);
+
+		NSObject CustomFieldEditor { get; }
+
+		bool? ShouldHaveFocus { get; set; }
 	}
 
 	public abstract class MacView<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Control.IHandler, IMacViewHandler
@@ -95,13 +98,12 @@ namespace Eto.Mac.Forms
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
-		bool focus;
 		bool mouseMove;
 		NSTrackingArea tracking;
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
-		Cursor cursor;
-		SizeF? naturalSize;
+
+		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
 		Control.ICallback IMacViewHandler.Callback { get { return Callback; } }
 
@@ -111,28 +113,64 @@ namespace Eto.Mac.Forms
 
 		public virtual NSView EventControl { get { return ContainerControl; } }
 
-		public virtual bool AutoSize { get; protected set; }
+		public virtual NSView FocusControl { get { return EventControl; } }
 
-		public virtual Size MinimumSize { get; set; }
+		static readonly object AutoSize_Key = new object();
+		public virtual bool AutoSize
+		{
+			get { return Widget.Properties.Get<bool?>(AutoSize_Key) ?? true; }
+			protected set { Widget.Properties[AutoSize_Key] = value; }
+		}
 
-		public virtual SizeF MaximumSize { get; set; }
+		protected virtual Size DefaultMinimumSize
+		{
+			get { return Size.Empty; }
+		}
 
-		public Size? PreferredSize { get; set; }
+		static readonly object MinimumSize_Key = new object();
+		public virtual Size MinimumSize
+		{
+			get { return Widget.Properties.Get<Size?>(MinimumSize_Key) ?? DefaultMinimumSize; }
+			set { Widget.Properties[MinimumSize_Key] = value; NaturalSize = null; }
+		}
+
+		static readonly object MaximumSize_Key = new object();
+		public virtual SizeF MaximumSize
+		{
+			get { return Widget.Properties.Get<SizeF?>(MaximumSize_Key) ?? SizeF.MaxValue; }
+			set { Widget.Properties[MaximumSize_Key] = value; }
+		}
+
+		static readonly object PreferredSize_Key = new object();
+		public Size? PreferredSize
+		{
+			get { return Widget.Properties.Get<Size?>(PreferredSize_Key); }
+			set { Widget.Properties[PreferredSize_Key] = value; }
+		}
 
 		public virtual Size Size
 		{
-			get { return ContainerControl.Frame.Size.ToEtoSize(); }
+			get { 
+				if (!Widget.Loaded)
+					return PreferredSize ?? new Size(-1, -1);
+				return ContainerControl.Frame.Size.ToEtoSize(); 
+			}
 			set
 			{ 
 				var oldSize = GetPreferredSize(Size.MaxValue);
 				PreferredSize = value;
 
-				var newSize = ContainerControl.Frame.Size;
+				var oldFrameSize = ContainerControl.Frame.Size;
+				var newSize = oldFrameSize;
 				if (value.Width >= 0)
 					newSize.Width = value.Width;
 				if (value.Height >= 0)
 					newSize.Height = value.Height;
+
+				// this doesn't get to our overridden method to handle the event (since it calls [super setFrameSize:]) so trigger event manually.
 				ContainerControl.SetFrameSize(newSize);
+				if (oldFrameSize != newSize)
+					Callback.OnSizeChanged(Widget, EventArgs.Empty);
 
 				AutoSize = value.Width == -1 && value.Height == -1;
 				CreateTracking();
@@ -140,15 +178,18 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		static readonly object NaturalSize_Key = new object();
 		protected SizeF? NaturalSize
 		{
-			get { return naturalSize; }
-			set { naturalSize = value; }
+			get { return Widget.Properties.Get<SizeF?>(NaturalSize_Key); }
+			set { Widget.Properties[NaturalSize_Key] = value; }
 		}
+
+		public virtual NSObject CustomFieldEditor { get { return null; } }
 
 		protected virtual bool LayoutIfNeeded(SizeF? oldPreferredSize = null, bool force = false)
 		{
-			naturalSize = null;
+			NaturalSize = null;
 			if (Widget.Loaded)
 			{
 				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize();
@@ -164,14 +205,9 @@ namespace Eto.Mac.Forms
 			return false;
 		}
 
-		protected MacView()
-		{
-			AutoSize = true;
-			MaximumSize = SizeF.MaxValue;
-		}
-
 		protected virtual SizeF GetNaturalSize(SizeF availableSize)
 		{
+			var naturalSize = NaturalSize;
 			if (naturalSize != null)
 				return naturalSize.Value;
 			var control = Control as NSControl;
@@ -182,6 +218,7 @@ namespace Eto.Mac.Forms
 				naturalSize = control.Frame.Size.ToEto();
 				if (size != null)
 					control.SetFrameSize(size.Value);
+				NaturalSize = naturalSize;
 				return naturalSize.Value;
 			}
 			return Size.Empty;
@@ -231,8 +268,9 @@ namespace Eto.Mac.Forms
 		static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
 		static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
 		static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
-		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
 		static readonly IntPtr selSetFrameSize = Selector.GetHandle("setFrameSize:");
+		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
+		static readonly IntPtr selInsertText = Selector.GetHandle("insertText:");
 
 		public override void AttachEvent(string id)
 		{
@@ -287,11 +325,30 @@ namespace Eto.Mac.Forms
 				case Eto.Forms.Control.ShownEvent:
 				// TODO
 					break;
+				case Eto.Forms.Control.TextInputEvent:
+					AddMethod(selInsertText, new Action<IntPtr, IntPtr, IntPtr>(TriggerTextInput), "v@:@");
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 
 			}
+		}
+
+		protected static void TriggerTextInput(IntPtr sender, IntPtr sel, IntPtr textPtr)
+		{
+			var obj = Runtime.GetNSObject(sender);
+
+			var handler = GetHandler(obj) as IMacViewHandler;
+			if (handler != null)
+			{
+				var text = (string)Messaging.GetNSObject<NSString>(textPtr);
+				var args = new TextInputEventArgs(text);
+				handler.Callback.OnTextInput(handler.Widget, args);
+				if (args.Cancel)
+					return;
+			}
+			Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, textPtr);
 		}
 
 		static void SetFrameSizeAction(IntPtr sender, IntPtr sel, CGSize size)
@@ -307,25 +364,29 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		static bool TriggerGotFocus(IntPtr sender, IntPtr sel)
+		protected static bool TriggerGotFocus(IntPtr sender, IntPtr sel)
 		{
 			var obj = Runtime.GetNSObject(sender);
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
+				handler.ShouldHaveFocus = true;
 				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
+				handler.ShouldHaveFocus = null;
 				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 			}
 			return false;
 		}
 
-		static bool TriggerLostFocus(IntPtr sender, IntPtr sel)
+		protected static bool TriggerLostFocus(IntPtr sender, IntPtr sel)
 		{
 			var obj = Runtime.GetNSObject(sender);
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
+				handler.ShouldHaveFocus = false;
 				handler.Callback.OnLostFocus(handler.Widget, EventArgs.Empty);
+				handler.ShouldHaveFocus = null;
 				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 			}
 			return false;
@@ -337,7 +398,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				if (!MacEventView.KeyDown(handler.Widget, theEvent))
 				{
 					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
@@ -351,7 +412,7 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				if (!MacEventView.KeyUp(handler.Widget, theEvent))
 				{
 					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
@@ -365,8 +426,8 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
-				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
+				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				if (theEvent.ClickCount >= 2)
 					handler.Callback.OnMouseDoubleClick(handler.Widget, args);
 			
@@ -388,8 +449,8 @@ namespace Eto.Mac.Forms
 
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
-				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
+				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				handler.Callback.OnMouseUp(handler.Widget, args);
 				if (!args.Handled)
 				{
@@ -404,8 +465,8 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
-				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
+				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				handler.Callback.OnMouseMove(handler.Widget, args);
 				if (!args.Handled)
 				{
@@ -420,8 +481,8 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(obj) as IMacViewHandler;
 			if (handler != null)
 			{
-				var theEvent = new NSEvent(e);
-				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, true);
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
+				var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, true);
 				if (!args.Delta.IsZero)
 				{
 					handler.Callback.OnMouseWheel(handler.Widget, args);
@@ -445,7 +506,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void Invalidate(Rectangle rect)
 		{
-			var region = rect.ToSDRectangleF().ToNS();
+			var region = rect.ToNS();
 			region.Y = EventControl.Frame.Height - region.Y - region.Height;
 			EventControl.SetNeedsDisplayInRect(region);
 		}
@@ -458,23 +519,32 @@ namespace Eto.Mac.Forms
 		{
 		}
 
-		public virtual void Focus()
+
+		static readonly object InitialFocusKey = new object();
+
+		bool InitialFocus
 		{
-			if (EventControl.Window != null)
-				EventControl.Window.MakeFirstResponder(EventControl);
-			else
-				focus = true;
+			get { return Widget.Properties.Get<bool?>(InitialFocusKey) ?? false; }
+			set { Widget.Properties[InitialFocusKey] = value ? (object)true : null; }
 		}
 
-		Color? backgroundColor;
+		public virtual void Focus()
+		{
+			if (FocusControl.Window != null)
+				FocusControl.Window.MakeFirstResponder(FocusControl);
+			else
+				InitialFocus = true;
+		}
+
+		static readonly object BackgroundColorKey = new object();
 		public virtual Color BackgroundColor
 		{
-			get { return backgroundColor ?? Colors.Transparent; }
+			get { return Widget.Properties.Get<Color?>(BackgroundColorKey) ?? Colors.Transparent; }
 			set
 			{
-				backgroundColor = value;
+				Widget.Properties[BackgroundColorKey] = value;
 				if (Widget.Loaded)
-					SetBackgroundColor(backgroundColor);
+					SetBackgroundColor(value);
 			}
 		}
 
@@ -485,36 +555,44 @@ namespace Eto.Mac.Forms
 					ContainerControl.WantsLayer = true;
 					var layer = ContainerControl.Layer;
 					if (layer != null)
-						layer.BackgroundColor = color.Value.ToCGColor();
+						layer.BackgroundColor = color.Value.ToCG();
 				}
 				else {
 					ContainerControl.WantsLayer = false;
 					var layer = ContainerControl.Layer;
 					if (layer != null)
-						layer.BackgroundColor = null;
+						layer.BackgroundColor = Colors.Transparent.ToCG();
 				}
 			}
 		}
 
 		public abstract bool Enabled { get; set; }
 
+		static readonly object ShouldHaveFocusKey = new object();
+
+		public bool? ShouldHaveFocus
+		{
+			get { return Widget.Properties.Get<bool?>(ShouldHaveFocusKey); }
+			set { Widget.Properties[ShouldHaveFocusKey] = value; }
+		}
+
 		public virtual bool HasFocus
 		{
 			get
 			{
-				return EventControl.Window != null && EventControl.Window.FirstResponder == Control;
+				return ShouldHaveFocus ?? (FocusControl.Window != null && FocusControl.Window.FirstResponder == Control);
 			}
 		}
 
 		public virtual bool Visible
 		{
-			get { return !ContentControl.Hidden; }
+			get { return !ContainerControl.Hidden; }
 			set
 			{ 
-				if (ContentControl.Hidden == value)
+				if (ContainerControl.Hidden == value)
 				{
 					var oldSize = GetPreferredSize(Size.MaxValue);
-					ContentControl.Hidden = !value;
+					ContainerControl.Hidden = !value;
 					LayoutIfNeeded(oldSize, true);
 				}
 			}
@@ -541,13 +619,15 @@ namespace Eto.Mac.Forms
 			get { return Cursor; }
 		}
 
+		static readonly object Cursor_Key = new object();
+
 		public virtual Cursor Cursor
 		{
-			get { return cursor; }
+			get { return Widget.Properties.Get<Cursor>(Cursor_Key); }
 			set {
-				if (cursor != value)
+				if (Cursor != value)
 				{
-					cursor = value;
+					Widget.Properties[Cursor_Key] = value;
 					AddMethod(selResetCursorRects, new Action<IntPtr, IntPtr>(TriggerResetCursorRects), "v@:");
 				}
 			}
@@ -556,7 +636,7 @@ namespace Eto.Mac.Forms
 		public string ToolTip
 		{
 			get { return ContentControl.ToolTip; }
-			set { ContentControl.ToolTip = value; }
+			set { ContentControl.ToolTip = value ?? string.Empty; }
 		}
 
 		public void Print(PrintSettings settings)
@@ -578,9 +658,12 @@ namespace Eto.Mac.Forms
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
-			if (focus && EventControl.Window != null)
-				EventControl.Window.MakeFirstResponder(EventControl);
-			SetBackgroundColor(backgroundColor);
+			if (InitialFocus && FocusControl.Window != null)
+			{
+				FocusControl.Window.MakeFirstResponder(FocusControl);
+				InitialFocus = false;
+			}
+			SetBackgroundColor(Widget.Properties.Get<Color?>(BackgroundColorKey));
 		}
 
 		public virtual void OnUnLoad(EventArgs e)
@@ -622,7 +705,15 @@ namespace Eto.Mac.Forms
 
 		Point Control.IHandler.Location
 		{
-			get { return ContentControl.Frame.Location.ToEtoPoint(); }
+			get
+			{ 
+				var frame = ContentControl.Frame;
+				var location = frame.Location;
+				var super = ContentControl.Superview;
+				if (super == null || super.IsFlipped)
+					return location.ToEtoPoint();
+				return new Point((int)location.X, (int)(super.Frame.Height - location.Y - frame.Height));
+			}
 		}
 
 		static void TriggerSystemAction(IntPtr sender, IntPtr sel, IntPtr e)
@@ -634,50 +725,46 @@ namespace Eto.Mac.Forms
 				Command command;
 				if (handler.systemActions != null && handler.systemActions.TryGetValue(sel, out command))
 				{
-					command.Execute();
+					if (command != null)
+					{
+						command.Execute();
+						return;
+					}
 				}
 			}
+			Messaging.void_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, e);
 		}
 
-		static bool ValidateSystemMenuAction(IntPtr sender, IntPtr sel, IntPtr item)
+		static bool ValidateSystemUserInterfaceItem(IntPtr sender, IntPtr sel, IntPtr item)
 		{
-			var menuItem = new NSMenuItem(item);
-			
+			var actionHandle = Messaging.IntPtr_objc_msgSend(item, selGetAction);
+
 			var control = Runtime.GetNSObject(sender);
 			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
 			if (handler != null)
 			{
 				Command command;
-				if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue(menuItem.Action.Handle, out command))
+				if (handler.systemActions != null && actionHandle != IntPtr.Zero && handler.systemActions.TryGetValue(actionHandle, out command))
 				{
 					if (command != null)
 						return command.Enabled;
 				}
 			}
-			return false;
-		}
+			var objClass = ObjCExtensions.object_getClass(sender);
 
-		static bool ValidateSystemToolbarAction(IntPtr sender, IntPtr sel, IntPtr item)
-		{
-			var toolbarItem = new NSToolbarItem(item);
-			
-			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<TControl,TWidget,TCallback>;
-			if (handler != null)
-			{
-				Command command;
-				if (handler.systemActions != null && toolbarItem.Action != null && handler.systemActions.TryGetValue(toolbarItem.Action.Handle, out command))
-				{
-					if (command != null)
-						return command.Enabled;
-				}
-			}
-			return false;
+			if (objClass == IntPtr.Zero)
+				return false;
+
+			var superClass = ObjCExtensions.class_getSuperclass(objClass);
+			return
+				superClass != IntPtr.Zero
+				&& ObjCExtensions.ClassInstancesRespondToSelector(superClass, sel)
+				&& Messaging.bool_objc_msgSendSuper_IntPtr(control.SuperHandle, sel, item);
 		}
 
 		Dictionary<IntPtr, Command> systemActions;
-		static readonly IntPtr selValidateMenuItem = Selector.GetHandle("validateMenuItem:");
-		static readonly IntPtr selValidateToolbarItem = Selector.GetHandle("validateToolbarItem:");
+		static readonly IntPtr selGetAction = Selector.GetHandle("action");
+		static readonly IntPtr selValidateUserInterfaceItem = Selector.GetHandle("validateUserInterfaceItem:");
 		static readonly IntPtr selCut = Selector.GetHandle("cut:");
 		static readonly IntPtr selCopy = Selector.GetHandle("copy:");
 		static readonly IntPtr selPaste = Selector.GetHandle("paste:");
@@ -711,7 +798,12 @@ namespace Eto.Mac.Forms
 			get { return systemActionSelectors.Keys; }
 		}
 
-		public virtual void MapPlatformCommand(string systemAction, Command command)
+		public void MapPlatformCommand(string systemAction, Command command)
+		{
+			InnerMapPlatformCommand(systemAction, command, null);
+		}
+
+		protected virtual void InnerMapPlatformCommand(string systemAction, Command command, NSObject control)
 		{
 			IntPtr sel;
 			if (systemActionSelectors.TryGetValue(systemAction, out sel))
@@ -719,10 +811,9 @@ namespace Eto.Mac.Forms
 				if (systemActions == null)
 				{
 					systemActions = new Dictionary<IntPtr, Command>();
-					AddMethod(selValidateMenuItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemMenuAction), "B@:@");
-					AddMethod(selValidateToolbarItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemToolbarAction), "B@:@");
+					AddMethod(selValidateUserInterfaceItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemUserInterfaceItem), "B@:@", control);
 				}
-				AddMethod(sel, new Action<IntPtr, IntPtr, IntPtr>(TriggerSystemAction), "v@:@");
+				AddMethod(sel, new Action<IntPtr, IntPtr, IntPtr>(TriggerSystemAction), "v@:@", control);
 				systemActions[sel] = command;
 			}
 		}

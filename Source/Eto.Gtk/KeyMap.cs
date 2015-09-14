@@ -17,10 +17,10 @@ namespace Eto.GtkSharp
 		public static Keys ToEtoKey (this Gdk.ModifierType modifier)
 		{
 			Keys result = Keys.None;
-			if ((modifier & Gdk.ModifierType.Mod1Mask) > 0) result |= Keys.Alt;
-			if ((modifier & Gdk.ModifierType.ControlMask) > 0) result |= Keys.Control;
-			if ((modifier & Gdk.ModifierType.SuperMask) > 0) result |= Keys.Application;
-			if ((modifier & Gdk.ModifierType.ShiftMask) > 0) result |= Keys.Shift;
+			if (modifier.HasFlag(Gdk.ModifierType.Mod1Mask)) result |= Keys.Alt;
+			if (modifier.HasFlag(Gdk.ModifierType.ControlMask)) result |= Keys.Control;
+			if (modifier.HasFlag(Gdk.ModifierType.SuperMask)) result |= Keys.Application;
+			if (modifier.HasFlag(Gdk.ModifierType.ShiftMask)) result |= Keys.Shift;
 			return result;
 		}
 
@@ -122,7 +122,12 @@ namespace Eto.GtkSharp
 				inversekeymap.Add(val.Value, val.Key);
 			}
 
-			keymap.Add((Gdk.Key)0x1000010, Keys.ContextMenu); // os x
+			if (EtoEnvironment.Platform.IsMac)
+			{
+				// os x
+				keymap.Add(Gdk.Key.KP_Enter, Keys.Insert);
+				keymap.Add((Gdk.Key)0x1000010, Keys.ContextMenu);
+			}
 			keymap.Add(Gdk.Key.a, Keys.A);
 			keymap.Add(Gdk.Key.b, Keys.B);
 			keymap.Add(Gdk.Key.c, Keys.C);

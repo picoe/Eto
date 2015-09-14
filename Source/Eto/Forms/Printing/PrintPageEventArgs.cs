@@ -42,17 +42,6 @@ namespace Eto.Forms
 			this.PageSize = pageSize;
 			this.CurrentPage = currentPage;
 		}
-
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Gets the generator.
-		/// </summary>
-		/// <value>The generator.</value>
-		[Obsolete("Use Platform.Instance instead")]
-		public Generator Generator { get { return Graphics.Platform; } }
-
-		#pragma warning restore 612,618
 	}
 }
 

@@ -34,6 +34,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[ContentProperty("Items")]
 	[Handler(typeof(MenuBar.IHandler))]
 	public class MenuBar : Menu, ISubmenu
 	{
@@ -175,23 +176,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Creates a menu bar with standard menu items
-		/// </summary>
-		/// <remarks>
-		/// On OS X there are standard menu items required for all apps, otherwise keyboard commands like copy, paste, minimize, hide, etc
-		/// will not function.  This creates a menu you can overlay your custom menu overtop.
-		/// </remarks>
-		/// <returns>A new instance of a standard menu for the platform</returns>
-		/// <param name="commands">Commands to use from the platform, or null to use platform-supplied commands</param>
-		[Obsolete("Use MenuBar.SystemActions to specify whether system actions get created or not")]
-		public static MenuBar CreateStandardMenu(IEnumerable<Command> commands = null)
-		{
-			var menu = new MenuBar();
-			menu.CreateLegacySystemMenu();
-			return menu;
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
 		/// </summary>
 		public MenuBar()
@@ -221,39 +205,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public MenuBar(Generator generator) : this(generator, typeof(MenuBar.IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected MenuBar(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-			Trim = true;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MenuBar"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="items">Items.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public MenuBar(Generator g, IEnumerable<MenuItem> items) : this(g)
-		{
-			Items.AddRange(items);
-		}
-
-		/// <summary>
 		/// Called before the menu is assigned to a control/window
 		/// </summary>
 		/// <param name="e">Event arguments</param>
@@ -270,14 +221,6 @@ namespace Eto.Forms
 			base.OnPreLoad(e);
 			foreach (var item in Items)
 				item.OnPreLoad(e);
-		}
-
-		[Obsolete]
-		internal void CreateLegacySystemMenu()
-		{
-			IncludeSystemItems = MenuBarSystemItems.Common;
-			Handler.CreateLegacySystemMenu();
-			IncludeSystemItems = MenuBarSystemItems.None;
 		}
 
 		/// <summary>
@@ -301,6 +244,23 @@ namespace Eto.Forms
 			foreach (var item in Items)
 				item.OnLoad(e);
 		}
+
+		/// <summary>
+		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			base.OnDataContextChanged(e);
+			foreach (var item in Items)
+				item.TriggerDataContextChanged(e);
+		}
+
 
 		/// <summary>
 		/// Handler interface for the <see cref="MenuBar"/>

@@ -2,50 +2,35 @@
 	/* $type can be specified if loading json directly (without existing instance), but when loading from a specific instance (like this example) you omit it */
 	Content: {
 		$type: "TabControl",
-		TabPages: [
+		Pages: [
 			{
-				Text: "Dynamic Layout & Controls",
+				Text: "Table Layout & Controls",
 				Content: {
-					$type: "DynamicLayout",
+					$type: "TableLayout",
+					Padding: "10",
+					Spacing: "5, 5",
 					Rows: [
-						[ { $type: "Label", Text: "Text Box" }, { $type: "TextBox" } ],
+						[ { $type: "Label", Text: "Text Box" }, { $type: "TextBox", TextChanged: "HandleTextChanged", KeyDown: "HandleKeyDown" } ],
 						[ { $type: "Label", Text: "Text Area" }, { $type: "TextArea", $name: "MyTextArea" } ],
-						[ { $type: "DynamicControl" }, { $type: "CheckBox", $name: "MyCheckBox", Text: "Check Box" } ],
+						[ { }, { $type: "CheckBox", $name: "MyCheckBox", Text: "Check Box" } ],
 						[ { $type: "Label", Text: "Combo Box" }, { $type: "ComboBox", Items: [
 								{ $type: "ListItem", Text: "Item 1" },
 								{ $type: "ListItem", Text: "Item 2" },
 								{ $type: "ListItem", Text: "Item 3" },
 								{ $type: "ListItem", Text: "Item 4" }
 							] } ],
-						[ { $type: "Label", Text: "Image", VerticalAlign: "Middle" }, 
-							[ /* DynamicTable */
-								[ /* DynamicRow */
-									{ XScale: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.TestImage.png, Eto.Test" } },
-									{ XScale: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.TestIcon.ico, Eto.Test" } }
+						[ { $type: "Label", Text: "Image", VerticalAlignment: "Center" }, 
+							[ /* TableLayout */
+								[ /* TableRow */
+									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.TestImage.png, Eto.Test" } },
+									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.TestIcon.ico, Eto.Test" } }
 								]
 							]
 						],
 						[ { $type: "Label", Text: "Button" },
 							[ [ { $type: "Button", Text: "Bind to Click event in code behind", Click: "HandleButtonClick" }, null ] ]
 						],
-
 						null
-					]
-				}
-			},
-			{
-				Text: "Table Layout",
-				Content: {
-					$type: "TableLayout",
-					CellSize: "3,3",
-					ColumnScale: [ 0, 2 ],
-					RowScale:  [ 0, 2 ],
-					Contents: [
-						{
-							$type: "Label",
-							Properties: [ { $type: "TableLayout", Location: "1,1" }],
-							Text: "Centered in Tab"
-						}
 					]
 				}
 			},

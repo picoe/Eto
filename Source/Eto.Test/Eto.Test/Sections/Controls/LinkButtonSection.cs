@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.Controls
 	{
 		public LinkButtonSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddAutoSized(NormalButton(), centered: true);
 			layout.AddAutoSized(LongerButton(), centered: true);

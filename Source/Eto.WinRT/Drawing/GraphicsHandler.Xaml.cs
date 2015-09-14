@@ -22,7 +22,7 @@ namespace Eto.Direct2D.Drawing
 			drawableHandler.Widget.LoadComplete += (s, e) => CreateXamlRenderTarget(); 
 			drawableHandler.Control.Loaded += (s, e) => CreateXamlRenderTarget();
 			//drawableHandler.Control.LayoutUpdated += (s, e) => CreateXamlRenderTarget();
-			drawableHandler.Control.SizeChanged += (s, e) => CreateXamlRenderTarget();
+			drawableHandler.Widget.SizeChanged += (s, e) => CreateXamlRenderTarget();
 		}
 
 		public Bitmap Image { get { return image; } }

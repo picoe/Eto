@@ -1,6 +1,8 @@
 using System;
 using Eto.Drawing;
 using System.Linq;
+using System.Text;
+using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Drawing
 {
@@ -40,19 +42,23 @@ namespace Eto.GtkSharp.Drawing
 		FontTypeface typeface;
 		FontStyle? style;
 		Pango.AttrList attributes;
+		string familyName;
 
 		public FontHandler()
 		{
 		}
 
 		public FontHandler(Gtk.Widget widget)
-			: this (widget.Style.FontDescription)
+			: this (widget.GetFont())
 		{
 		}
 
-		public FontHandler(Pango.FontDescription fontDescription)
+		public FontHandler(Pango.FontDescription fontDescription, string familyName = null, FontDecoration? decorations = null)
 		{
 			Control = fontDescription;
+			this.familyName = familyName;
+			if (decorations != null)
+				FontDecoration = decorations.Value;
 		}
 
 		public FontHandler(string fontName)
@@ -60,52 +66,32 @@ namespace Eto.GtkSharp.Drawing
 			Control = Pango.FontDescription.FromString(fontName);
 		}
 
+		Dictionary<SystemFont, Gtk.Widget> fontMap = new Dictionary<SystemFont, Gtk.Widget> 
+		{
+			{ SystemFont.Default, new Gtk.Entry() },
+			{ SystemFont.Bold, new Gtk.Entry() },
+			{ SystemFont.Label, new Gtk.Label() },
+			{ SystemFont.Menu, new Gtk.Menu() },
+			{ SystemFont.MenuBar, new Gtk.MenuBar() }
+		};
+
+		static Gtk.Widget DefaultFontWidget = new Gtk.Label();
+
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			switch (systemFont)
+			Gtk.Widget widget;
+			if (!fontMap.TryGetValue(systemFont, out widget))
+				widget = DefaultFontWidget;
+
+			Control = widget.GetFont().Copy();
+			if (systemFont == SystemFont.Bold)
 			{
-				case SystemFont.Default:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Bold:
-					Control = new Pango.FontDescription();
-					Control.Merge(Gtk.Widget.DefaultStyle.FontDescription, true);
-					Control.Weight = Pango.Weight.Bold;
-					break;
-				case SystemFont.TitleBar:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.ToolTip:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Label:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.MenuBar:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Menu:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Message:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.Palette:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				case SystemFont.StatusBar:
-					Control = Gtk.Widget.DefaultStyle.FontDescription;
-					break;
-				default:
-					throw new NotSupportedException();
+				Control.Weight = Pango.Weight.Bold;
 			}
+
 			if (size != null)
 			{
-				var old = Control;
-				Control = new Pango.FontDescription();
-				Control.Merge(old, true);
-				if (size != null)
-					Control.Size = (int)(size * Pango.Scale.PangoScale);
+				Control.Size = (int)(size * Pango.Scale.PangoScale);
 			}
 			FontDecoration = decoration;
 		}
@@ -165,9 +151,9 @@ namespace Eto.GtkSharp.Drawing
 				if (style == null)
 				{
 					style = FontStyle.None;
-					if (Control.Weight == Pango.Weight.Bold)
+					if (Control.Weight == Pango.Weight.Bold || Control.Weight == Pango.Weight.Heavy || Control.Weight == Pango.Weight.Semibold || Control.Weight == Pango.Weight.Ultrabold)
 						style |= FontStyle.Bold;
-					if (Control.Style == Pango.Style.Italic)
+					if (Control.Style == Pango.Style.Italic || Control.Style == Pango.Style.Oblique)
 						style |= FontStyle.Italic;
 				}
 				return style.Value;
@@ -178,7 +164,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public string FamilyName
 		{
-			get { return Control.Family; }
+			get { return familyName ?? Family.Name; }
 		}
 
 		public FontFamily Family
@@ -187,11 +173,33 @@ namespace Eto.GtkSharp.Drawing
 			{
 				if (family == null)
 				{
-					family = new FontFamily(Control.Family);
+					family = new FontFamily(familyName ?? Control.Family);
 				}
 				return family;
 			}
 		}
+
+		public static Pango.FontFace FindFontFace(Pango.FontDescription desc, Pango.FontFamily family = null)
+		{
+			if (family == null)
+			{
+				family = FontFamilyHandler.FindCorrectedFamily(desc.Family);
+			}
+			var weight = desc.Weight;
+			var style = desc.Style;
+			var stretch = desc.Stretch;
+
+			foreach (var face in family.Faces)
+			{
+				var faceDesc = face.Describe();
+				if (faceDesc.Weight == weight && faceDesc.Style == style && faceDesc.Stretch == stretch)
+				{
+					return face;
+				}
+			}
+			return null;
+		}
+
 
 		public FontTypeface Typeface
 		{
@@ -199,7 +207,9 @@ namespace Eto.GtkSharp.Drawing
 			{
 				if (typeface == null)
 				{
-					typeface = Family.Typefaces.FirstOrDefault(r => r.FontStyle == FontStyle);
+					var familyHandler = Family.Handler as FontFamilyHandler;
+					var face = FindFontFace(Control, familyHandler.Control) ?? familyHandler.Control.Faces.First();
+					typeface = new FontTypeface(Family, new FontTypefaceHandler(face));
 				}
 				return typeface;
 			}

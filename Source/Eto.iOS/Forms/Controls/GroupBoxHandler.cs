@@ -1,8 +1,9 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using Eto.Mac.Forms;
 using Eto.Drawing;
+using CoreGraphics;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -49,12 +50,12 @@ namespace Eto.iOS.Forms.Controls
 			{
 				label.SizeToFit();
 				label.Hidden = false;
-				content.Frame = new System.Drawing.RectangleF(0, label.Frame.Height, frame.Width, Math.Max(0, frame.Height - label.Frame.Height));
+				content.Frame = new CGRect(0, label.Frame.Height, frame.Width, (nfloat)Math.Max(0, frame.Height - label.Frame.Height));
 			}
 			else
 			{
 				label.Hidden = true;
-				content.Frame = new System.Drawing.RectangleF(0, 0, frame.Width, frame.Height);
+				content.Frame = new CoreGraphics.CGRect(0, 0, frame.Width, frame.Height);
 			}
 		}
 
@@ -62,7 +63,7 @@ namespace Eto.iOS.Forms.Controls
 		{
 			var size = base.GetPreferredSize(availableSize);
 			if (!string.IsNullOrEmpty(Text))
-				size.Height += label.Frame.Height;
+				size.Height += (float)label.Frame.Height;
 			return size;
 		}
 

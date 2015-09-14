@@ -1,7 +1,8 @@
 using System;
-using System.ComponentModel;
-using Eto.Drawing;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -17,7 +18,7 @@ namespace Eto.Forms
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
-	public partial class Control : Widget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
+	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -32,15 +33,6 @@ namespace Eto.Forms
 		/// </remarks>
 		public bool Loaded { get; private set; }
 
-		/// <summary>
-		/// Gets the collection of bindings that are attached to this widget
-		/// </summary>
-		public BindingCollection Bindings
-		{
-			get { return Properties.Create<BindingCollection>(BindingsKey); }
-		}
-
-		static readonly object BindingsKey = new object();
 
 		/// <summary>
 		/// Gets or sets a user-defined object that contains data about the control
@@ -474,7 +466,7 @@ namespace Eto.Forms
 		{
 #if DEBUG
 			if (Loaded)
-				throw new EtoException("Control was loaded more than once");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Control was loaded more than once"));
 #endif
 			Properties.TriggerEvent(LoadKey, this, e);
 			Handler.OnLoad(e);
@@ -527,40 +519,11 @@ namespace Eto.Forms
 		{
 #if DEBUG
 			if (!Loaded)
-				throw new EtoException("Control was unloaded more than once");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Control was unloaded more than once"));
 #endif
 			Loaded = false;
 			Properties.TriggerEvent(UnLoadKey, this, e);
 			Handler.OnUnLoad(e);
-		}
-
-		/// <summary>
-		/// Event to handle when the <see cref="Control.DataContext"/> has changed
-		/// </summary>
-		/// <remarks>
-		/// This may be fired in the event of a parent in the hierarchy setting the data context.
-		/// For example, the <see cref="Forms.Container"/> widget fires this event when it's event is fired.
-		/// </remarks>
-		public event EventHandler<EventArgs> DataContextChanged
-		{
-			add { Properties.AddEvent(DataContextChangedKey, value); }
-			remove { Properties.RemoveEvent(DataContextChangedKey, value); }
-		}
-
-		static readonly object DataContextChangedKey = new object();
-
-		/// <summary>
-		/// Raises the <see cref="DataContextChanged"/> event
-		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected virtual void OnDataContextChanged(EventArgs e)
-		{
-			Properties.TriggerEvent(DataContextChangedKey, this, e);
 		}
 
 		#endregion
@@ -582,34 +545,6 @@ namespace Eto.Forms
 			EventLookup.Register<Control>(c => c.OnSizeChanged(null), Control.SizeChangedEvent);
 			EventLookup.Register<Control>(c => c.OnTextInput(null), Control.TextInputEvent);
 		}
-
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Control"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler to create (must implement <see cref="IHandler"/>)</param>
-		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Control(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Container with the specified handler
-		/// </summary>
-		/// <param name="generator">Generator for the widget</param>
-		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		[Obsolete("Use Control(IHandler) instead")]
-		protected Control(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, initialize)
-		{
-		}
-
-		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Control"/> class.
@@ -719,39 +654,15 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the data context for this widget for binding
-		/// </summary>
-		/// <remarks>
-		/// Subclasses may override the standard behaviour so that hierarchy of widgets can be taken into account.
-		/// 
-		/// For example, a Control may return the data context of a parent, if it is not set explicitly.
-		/// </remarks>
-		public virtual object DataContext
-		{
-			get { return Properties.Get<object>(DataContextKey) ?? (Parent == null ? null : Parent.DataContext); }
-			set
-			{
-				if (!ReferenceEquals(value, Properties.Get<object>(DataContextKey)))
-				{
-					Properties[DataContextKey] = value;
-					OnDataContextChanged(EventArgs.Empty);
-				}
-			}
-		}
-
-		static readonly object DataContextKey = new object();
-		Container parent;
-
-		/// <summary>
 		/// Gets the container which this control has been added to, if any
 		/// </summary>
 		/// <value>The parent control, or null if there is no parent</value>
-		public Container Parent
+		public new Container Parent
 		{
-			get { return parent; }
+			get { return base.Parent as Container; }
 			internal set
 			{
-				parent = value;
+				base.Parent = value;
 				Handler.SetParent(value);
 			}
 		}
@@ -833,7 +744,7 @@ namespace Eto.Forms
 		public void AttachNative()
 		{
 			if (Parent != null)
-				throw new EtoException("You can only attach a parentless control");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "You can only attach a parentless control"));
 
 			using (Platform.Context)
 			{
@@ -866,12 +777,6 @@ namespace Eto.Forms
 		{
 			using (Platform.Context)
 				OnUnLoad(e);
-		}
-
-		internal void TriggerDataContextChanged(EventArgs e)
-		{
-			using (Platform.Context)
-				OnDataContextChanged(e);
 		}
 
 		/// <summary>
@@ -987,7 +892,7 @@ namespace Eto.Forms
 		/// </code>
 		/// </example>
 		/// <param name="systemCommand">System command</param>
-		/// <param name="command">Command object to execute</param>
+		/// <param name="command">Command to execute, or null to restore to the default behavior</param>
 		/// <seealso cref="SupportedPlatformCommands"/>
 		public void MapPlatformCommand(string systemCommand, Command command)
 		{
@@ -1077,31 +982,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
-		/// </summary>
-		public virtual void Unbind()
-		{
-			var bindings = Properties.Get<BindingCollection>(BindingsKey);
-			if (bindings != null)
-			{
-				bindings.Unbind();
-				Properties[BindingsKey] = null;
-			}
-		}
-
-		/// <summary>
-		/// Updates all bindings in this widget
-		/// </summary>
-		public virtual void UpdateBindings()
-		{
-			var bindings = Properties.Get<BindingCollection>(BindingsKey);
-			if (bindings != null)
-			{
-				bindings.Update();
-			}
-		}
-
-		/// <summary>
 		/// Handles the disposal of this control
 		/// </summary>
 		/// <param name="disposing">True if the caller called <see cref="Widget.Dispose()"/> manually, false if being called from a finalizer</param>
@@ -1113,6 +993,18 @@ namespace Eto.Forms
 			}
 
 			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Converts a string to a label control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add labels to your layout through code, without having to create <see cref="Label"/> instances.
+		/// </remarks>
+		/// <param name="labelText">Text to convert to a Label control.</param>
+		public static implicit operator Control(string labelText)
+		{
+			return new Label { Text = labelText };
 		}
 
 		#region Callback
@@ -1470,8 +1362,8 @@ namespace Eto.Forms
 			/// }
 			/// </code>
 			/// </example>
-			/// <param name="systemCommand">System action.</param>
-			/// <param name="command">Command.</param>
+			/// <param name="systemCommand">System command.</param>
+			/// <param name="command">Command to execute, or null to restore to the default behavior</param>
 			/// <seealso cref="SupportedPlatformCommands"/>
 			void MapPlatformCommand(string systemCommand, Command command);
 

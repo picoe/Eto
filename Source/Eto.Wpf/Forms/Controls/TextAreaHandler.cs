@@ -6,19 +6,82 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
+	public class TextAreaHandler : TextAreaHandler<swc.TextBox, TextArea, TextArea.ICallback>
 	{
-		int? lastCaretIndex;
-		#pragma warning disable 612,618
-		static Size defaultSize = TextArea.DefaultSize;
-		#pragma warning restore 612,618
-		protected override Size DefaultSize { get { return defaultSize; } }
+		public override string Text
+		{
+			get { return Control.Text; }
+			set { Control.Text = value; }
+		}
+
+		public override bool Wrap
+		{
+			get { return Control.TextWrapping == sw.TextWrapping.Wrap; }
+			set
+			{
+				Control.TextWrapping = value ? sw.TextWrapping.Wrap : sw.TextWrapping.NoWrap;
+			}
+		}
+
+		public override string SelectedText
+		{
+			get { return Control.SelectedText; }
+			set { Control.SelectedText = value; }
+		}
+
+		public override Range<int> Selection
+		{
+			get { return new Range<int>(Control.SelectionStart, Control.SelectionStart + Control.SelectionLength - 1); }
+			set { Control.Select(value.Start, value.End - value.Start + 1); }
+		}
+
+		public override int CaretIndex
+		{
+			get { return Control.CaretIndex; }
+			set { Control.CaretIndex = value; }
+		}
+
+
+		protected override void SetDecorations(sw.TextDecorationCollection decorations)
+		{
+			Control.TextDecorations = decorations;
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case TextArea.CaretIndexChangedEvent:
+					int? lastCaretIndex = null;
+					Control.SelectionChanged += (sender, e) =>
+					{
+						var caretIndex = Control.CaretIndex;
+						if (lastCaretIndex != caretIndex)
+						{
+							Callback.OnCaretIndexChanged(Widget, EventArgs.Empty);
+							lastCaretIndex = caretIndex;
+						}
+					};
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+	}
+
+	public abstract class TextAreaHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextArea.IHandler
+		where TControl : swc.Primitives.TextBoxBase, new()
+		where TWidget : TextArea
+		where TCallback : TextArea.ICallback
+	{
+		protected override Size DefaultSize { get { return new Size(100, 60); } }
 
 		protected override bool PreventUserResize { get { return true; } }
 
-		public TextAreaHandler ()
+		public TextAreaHandler()
 		{
-			Control = new swc.TextBox
+			Control = new TControl
 			{
 				AcceptsReturn = true,
 				AcceptsTab = true,
@@ -28,103 +91,74 @@ namespace Eto.Wpf.Forms.Controls
 			Wrap = true;
 		}
 
-		protected override void SetDecorations(sw.TextDecorationCollection decorations)
-		{
-			Control.TextDecorations = decorations;
-		}
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
-			return base.GetPreferredSize(Conversions.ZeroSize);
+			return base.GetPreferredSize(WpfConversions.ZeroSize);
 		}
 
 		public override bool UseMousePreview { get { return true; } }
 
 		public override bool UseKeyPreview { get { return true; } }
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
-			case TextControl.TextChangedEvent:
-				Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
-				break;
-			case TextArea.SelectionChangedEvent:
-				Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
-				break;
-			case TextArea.CaretIndexChangedEvent:
-				Control.SelectionChanged += (sender, e) => {
-					var caretIndex = Control.CaretIndex;
-					if (lastCaretIndex != caretIndex)
-					{
-						Callback.OnCaretIndexChanged(Widget, EventArgs.Empty);
-						lastCaretIndex = caretIndex;
-					}
-				};
-				break;
-			default:
-				base.AttachEvent (id);
-				break;
+				case TextControl.TextChangedEvent:
+					Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
+					break;
+				case TextArea.SelectionChangedEvent:
+					Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
 		public bool ReadOnly
 		{
 			get { return Control.IsReadOnly; }
-			set {
+			set
+			{
 				Control.IsReadOnly = value;
-				Control.AcceptsTab = !value;
-				Control.AcceptsReturn = !value;
+				Control.AcceptsTab = value ? false : AcceptsTab;
 			}
 		}
 
-		public void Append (string text, bool scrollToCursor)
+		public void Append(string text, bool scrollToCursor)
 		{
-			Control.AppendText (text);
-			if (scrollToCursor) Control.ScrollToEnd ();
+			Control.AppendText(text);
+			if (scrollToCursor) Control.ScrollToEnd();
 		}
 
-		public string Text
+		public abstract string Text { get; set; }
+
+		public abstract bool Wrap { get; set; }
+
+		public abstract string SelectedText { get; set; }
+
+		public abstract Range<int> Selection { get; set; }
+
+		public abstract int CaretIndex { get; set; }
+
+		public void SelectAll()
 		{
-			get	{ return Control.Text; }
-			set	{ Control.Text = value;	}
+			Control.SelectAll();
 		}
 
-		public bool Wrap
-		{
-			get { return Control.TextWrapping == sw.TextWrapping.Wrap; }
-			set	{
-				Control.TextWrapping = value ? sw.TextWrapping.Wrap : sw.TextWrapping.NoWrap;
-			}
-		}
-
-		public string SelectedText
-		{
-			get { return Control.SelectedText; }
-			set { Control.SelectedText = value; }
-		}
-
-		public Range<int> Selection
-		{
-			get { return new Range<int>(Control.SelectionStart, Control.SelectionStart + Control.SelectionLength - 1); }
-			set { Control.Select (value.Start, value.End - value.Start + 1); }
-		}
-
-		public void SelectAll ()
-		{
-			Control.SelectAll ();
-		}
-
-		public int CaretIndex
-		{
-			get { return Control.CaretIndex; }
-			set { Control.CaretIndex = value; }
-		}
+		static readonly object AcceptsTabKey = new object();
 
 		public bool AcceptsTab
 		{
-			get { return Control.AcceptsTab; }
-			set { Control.AcceptsTab = value; }
+			get { return Widget.Properties.Get<bool?>(AcceptsTabKey) ?? true; }
+			set
+			{
+				Widget.Properties[AcceptsTabKey] = value;
+				if (!Control.IsReadOnly)
+					Control.AcceptsTab = value;
+			}
 		}
 
 		public bool AcceptsReturn
@@ -133,16 +167,24 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.AcceptsReturn = value; }
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public virtual TextAlignment TextAlignment
 		{
 			get { return Control.HorizontalContentAlignment.ToEto(); }
 			set { Control.HorizontalContentAlignment = value.ToWpf(); }
 		}
 
-		public VerticalAlign VerticalAlign
+		public virtual VerticalAlignment VerticalAlign
 		{
 			get { return Control.VerticalContentAlignment.ToEto(); }
 			set { Control.VerticalContentAlignment = value.ToWpf(); }
 		}
+
+		public bool SpellCheck
+		{
+			get { return Control.SpellCheck.IsEnabled; }
+			set { Control.SpellCheck.IsEnabled = value; }
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
 	}
 }

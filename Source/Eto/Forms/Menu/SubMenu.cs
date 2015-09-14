@@ -5,12 +5,11 @@ using System.Linq;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Sub menu widget interface
+	/// Interface for submenus to access common Items properties
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[Obsolete("Use ISubmenu instead")]
-	public interface ISubMenuWidget
+	public interface ISubmenu
 	{
 		/// <summary>
 		/// Gets the collection of menu items to show in the submenu.
@@ -27,18 +26,5 @@ namespace Eto.Forms
 		/// <value><c>true</c> to trim the child menu items; otherwise, <c>false</c>.</value>
 		bool Trim { get; }
 	}
-
-	#pragma warning disable 612,618
-
-	/// <summary>
-	/// Interface for submenus to access common Items properties
-	/// </summary>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
-	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface ISubmenu : ISubMenuWidget
-	{
-	}
-
-	#pragma warning restore 612,618
 }
 

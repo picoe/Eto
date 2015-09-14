@@ -21,25 +21,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextControl"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected TextControl(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextControl"/> class.
-		/// </summary>
-		protected TextControl()
-		{
-		}
-
-		/// <summary>
 		/// Identifier for handlers when attaching the <see cref="TextChanged"/> event
 		/// </summary>
 		public const string TextChangedEvent = "TextControl.TextChanged";
@@ -89,11 +70,11 @@ namespace Eto.Forms
 		/// Gets the binding for the <see cref="Text"/> property.
 		/// </summary>
 		/// <value>The text binding.</value>
-		public ControlBinding<TextControl, string> TextBinding
+		public BindableBinding<TextControl, string> TextBinding
 		{
 			get
 			{
-				return new ControlBinding<TextControl, string>(
+				return new BindableBinding<TextControl, string>(
 					this,
 					c => c.Text,
 					(c, v) => c.Text = v,

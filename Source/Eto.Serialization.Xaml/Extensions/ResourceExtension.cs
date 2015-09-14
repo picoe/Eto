@@ -44,6 +44,11 @@ namespace Eto.Serialization.Xaml.Extensions
 						if (converter.CanConvertFrom(typeof(Stream)))
 							return converter.ConvertFrom(Resource.FindResource());
 					}
+					var constructor = propertyInfo.PropertyType.GetConstructor(new[] { typeof(Stream) });
+					if (constructor != null)
+					{
+						return constructor.Invoke(new[] { Resource.FindResource() });
+					}
 				}
 			}
 			Stream stream = null;

@@ -1,17 +1,17 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class TabControlHandler : WindowsContainer<SWF.TabControl, TabControl, TabControl.ICallback>, TabControl.IHandler
+	public class TabControlHandler : WindowsContainer<swf.TabControl, TabControl, TabControl.ICallback>, TabControl.IHandler
 	{
 		bool disableSelectedIndexChanged;
 		public TabControlHandler ()
 		{
-			this.Control = new SWF.TabControl ();
-			this.Control.ImageList = new SWF.ImageList{ ColorDepth = SWF.ColorDepth.Depth32Bit };
+			this.Control = new swf.TabControl ();
+			this.Control.ImageList = new swf.ImageList{ ColorDepth = swf.ColorDepth.Depth32Bit };
 			this.Control.SelectedIndexChanged += (sender, e) => {
 				if (!disableSelectedIndexChanged)
 					Callback.OnSelectedIndexChanged(Widget, e);
@@ -22,7 +22,13 @@ namespace Eto.WinForms.Forms.Controls
 			get { return Control.SelectedIndex; }
 			set { Control.SelectedIndex = value; }
 		}
-		
+
+		public DockPosition TabPosition
+		{
+			get { return Control.Alignment.ToEto(); }
+			set { Control.Alignment = value.ToSWF(); }
+		}
+
 		public void InsertTab (int index, TabPage page)
 		{
 			var pageHandler = (TabPageHandler)page.Handler;

@@ -9,18 +9,20 @@ namespace Eto.Wpf.Forms.Cells
 {
 	public class TextBoxCellHandler : CellHandler<swc.DataGridTextColumn, TextBoxCell, TextBoxCell.ICallback>, TextBoxCell.IHandler
 	{
-		string GetValue (object dataItem)
+		string GetValue(object dataItem)
 		{
-			if (Widget.Binding != null) {
-				return Widget.Binding.GetValue (dataItem);
+			if (Widget.Binding != null)
+			{
+				return Widget.Binding.GetValue(dataItem);
 			}
 			return null;
 		}
 
-		void SetValue (object dataItem, string value)
+		void SetValue(object dataItem, string value)
 		{
-			if (Widget.Binding != null) {
-				Widget.Binding.SetValue (dataItem, value);
+			if (Widget.Binding != null)
+			{
+				Widget.Binding.SetValue(dataItem, value);
 			}
 		}
 
@@ -28,44 +30,48 @@ namespace Eto.Wpf.Forms.Cells
 		{
 			public TextBoxCellHandler Handler { get; set; }
 
-			protected override sw.FrameworkElement GenerateElement (swc.DataGridCell cell, object dataItem)
+			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				var element = base.GenerateElement (cell, dataItem);
-				element.DataContextChanged += (sender, e) => {
+				var element = base.GenerateElement(cell, dataItem);
+				element.DataContextChanged += (sender, e) =>
+				{
 					var control = sender as swc.TextBlock;
-					control.Text = Handler.GetValue (control.DataContext);
-					Handler.FormatCell (control, cell, dataItem);
-				};
-				return Handler.SetupCell (element);
-			}
-
-			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
-			{
-				var element = (swc.TextBox)base.GenerateEditingElement (cell, dataItem);
-				element.Name = "control";
-				element.DataContextChanged += (sender, e) => {
-					var control = sender as swc.TextBox;
-					control.Text = Handler.GetValue (control.DataContext);
-					Handler.FormatCell (control, cell, dataItem);
+					control.Text = Handler.GetValue(control.DataContext);
+					Handler.FormatCell(control, cell, dataItem);
 				};
 				return Handler.SetupCell(element);
 			}
 
-			protected override object PrepareCellForEdit (sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
+			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("control");
-				return base.PrepareCellForEdit (control, editingEventArgs);
+				var element = (swc.TextBox)base.GenerateEditingElement(cell, dataItem);
+				element.Name = "control";
+				element.DataContextChanged += (sender, e) =>
+				{
+					var control = sender as swc.TextBox;
+					control.Text = Handler.GetValue(control.DataContext);
+					Handler.FormatCell(control, cell, dataItem);
+				};
+				return Handler.SetupCell(element);
 			}
 
-			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
+			protected override object PrepareCellForEdit(sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
 			{
-				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("control");
-				Handler.SetValue (control.DataContext, control.Text);
+				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox>("control");
+				return base.PrepareCellForEdit(control, editingEventArgs);
+			}
+
+			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
+			{
+				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox>("control");
+				if (control != null)
+					Handler.SetValue(control.DataContext, control.Text);
+				Handler.ContainerHandler.CellEdited(Handler, editingElement);
 				return true;
 			}
 		}
 
-		public TextBoxCellHandler ()
+		public TextBoxCellHandler()
 		{
 			Control = new Column { Handler = this };
 		}

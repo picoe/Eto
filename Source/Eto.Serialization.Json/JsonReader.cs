@@ -8,6 +8,22 @@ namespace Eto.Serialization.Json
 {
 	public static class JsonReader
 	{
+		static Stream GetStream(Type type)
+		{
+			return
+				GetStream(type, type.FullName + ".jeto")
+				?? GetStream(type, type.FullName + ".json")
+				?? GetStream(type, type.Name + ".jeto"); // for f# projects
+		}
+
+		static Stream GetStream(Type type, string resourceName)
+		{
+#if PCL
+			return type.GetTypeInfo().Assembly.GetManifestResourceStream(resourceName);
+#else
+			return type.Assembly.GetManifestResourceStream(resourceName);
+#endif
+		}
 
 		/// <summary>
 		/// Loads the specified type from a json of the same name
@@ -20,19 +36,17 @@ namespace Eto.Serialization.Json
 		/// </remarks>
 		/// <typeparam name="T">Type of object to load from json</typeparam>
 		/// <returns>A new instance of the specified type with the contents loaded from json</returns>
-		public static T Load<T> (NamespaceManager namespaceManager = null)
-			where T: Widget, new()
+		public static T Load<T>(NamespaceManager namespaceManager = null)
+			where T : Widget, new()
 		{
 			var type = typeof(T);
 
-			#if PCL
-			var stream = type.GetTypeInfo().Assembly.GetManifestResourceStream(type.FullName + ".json");
-			#else
-			var stream = type.Assembly.GetManifestResourceStream(type.FullName + ".json");
-			#endif
-			return Load<T> (stream, null, namespaceManager);
+			using (var stream = GetStream(type))
+			{
+				return Load<T>(stream, null, namespaceManager);
+			}
 		}
-		
+
 		/// <summary>
 		/// Loads the specified type from the specified json stream
 		/// </summary>
@@ -44,12 +58,12 @@ namespace Eto.Serialization.Json
 		/// <param name="stream">json content to load (e.g. from resources)</param>
 		/// <param name="namespaceManager">Namespace manager to use when loading</param>
 		/// <returns>A new instance of the specified type with the contents loaded from the json stream</returns>
-		public static T Load<T> (Stream stream, NamespaceManager namespaceManager = null)
-			where T: Widget, new()
+		public static T Load<T>(Stream stream, NamespaceManager namespaceManager = null)
+			where T : Widget, new()
 		{
-			return Load<T> (stream, null, namespaceManager);
+			return Load<T>(stream, null, namespaceManager);
 		}
-		
+
 		/// <summary>
 		/// Loads the specified instance with json of the same name
 		/// </summary>
@@ -62,52 +76,76 @@ namespace Eto.Serialization.Json
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <param name="namespaceManager">Namespace manager to use when loading</param>
-		/// <returns>A new or existing instance of the specified type with the contents loaded from the json stream</returns>
-		public static T Load<T> (T instance, NamespaceManager namespaceManager = null)
-			where T: Widget
+		public static void Load<T>(T instance, NamespaceManager namespaceManager = null)
+			where T : Widget
 		{
-			var type = typeof(T);
-			#if PCL
-			var stream = type.GetTypeInfo().Assembly.GetManifestResourceStream(type.FullName + ".json");
-			#else
-			var stream = type.Assembly.GetManifestResourceStream(type.FullName + ".json");
-			#endif
-			return Load<T> (stream, instance, namespaceManager);
+			using (var stream = GetStream(typeof(T)))
+			{
+				Load<T>(stream, instance, namespaceManager);
+			}
 		}
+
+		/// <summary>
+		/// Loads the specified instance with json from the specified embedded resource.
+		/// </summary>
+		/// <remarks>
+		/// This will load the embedded resource from the same assembly as <paramref name="instance"/> with the 
+		/// specified <paramref name="resourceName"/> embedded resource.
+		/// 
+		/// If you want to specify a different json, use <see cref="Load{T}(Stream, T)"/>
+		/// </remarks>
+		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
+		/// <param name="instance">Instance to use as the starting object</param>
+		/// <param name="namespaceManager">Namespace manager to use when loading</param>
+		/// <param name="resourceName">Fully qualified name of the embedded resource to load.</param>
+		public static void Load<T>(T instance, string resourceName, NamespaceManager namespaceManager = null)
+			where T : Widget
+		{
+			using (var stream = GetStream(typeof(T), resourceName))
+			{
+				Load<T>(stream, instance, namespaceManager);
+			}
+		}
+
+		static JsonSerializer serializer;
 
 		/// <summary>
 		/// Loads the specified type from the specified json stream
 		/// </summary>
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="stream">json content to load (e.g. from resources)</param>
-		/// <param name="instance">Instance to use as the starting object</param>
+		/// <param name="instance">Instance to use as the starting object, or null to create a new instance</param>
 		/// <param name="namespaceManager">Namespace manager to use to lookup type names</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the json stream</returns>
-		public static T Load<T> (Stream stream, T instance, NamespaceManager namespaceManager = null)
+		public static T Load<T>(Stream stream, T instance, NamespaceManager namespaceManager = null)
 			where T : Widget
 		{
 			var type = typeof(T);
 
 			using (var reader = new StreamReader(stream))
 			{
-				if (namespaceManager == null)
+				if (serializer == null)
 				{
-					namespaceManager = new DefaultNamespaceManager();
+					serializer = new JsonSerializer
+					{
+						TypeNameHandling = TypeNameHandling.Auto,
+						MissingMemberHandling = MissingMemberHandling.Error,
+						ContractResolver = new EtoContractResolver(),
+					};
+					serializer.Converters.Add(new TableLayoutConverter());
+					serializer.Converters.Add(new DynamicLayoutConverter());
+					serializer.Converters.Add(new DelegateConverter());
+					serializer.Converters.Add(new PropertyStoreConverter());
+					serializer.Converters.Add(new ImageConverter());
+					serializer.Converters.Add(new TypeConverterConverter());
+					serializer.Converters.Add(new FontConverter());
+					serializer.Converters.Add(new StackLayoutConverter());
 				}
-				var serializer = new JsonSerializer
+				serializer.Binder = new EtoBinder
 				{
-					TypeNameHandling = TypeNameHandling.Auto,
-					MissingMemberHandling = MissingMemberHandling.Error,
-					ContractResolver = new EtoContractResolver(),
-					Binder = new EtoBinder { NamespaceManager = namespaceManager, Instance = instance }
+					NamespaceManager = namespaceManager ?? new DefaultNamespaceManager(),
+					Instance = instance
 				};
-				serializer.Converters.Add(new DynamicLayoutConverter());
-				serializer.Converters.Add(new DelegateConverter());
-				serializer.Converters.Add(new PropertyStoreConverter());
-				serializer.Converters.Add(new ImageConverter());
-				#if PCL
-				serializer.Converters.Add(new TypeConverterConverter());
-				#endif
 
 				if (instance == null)
 					return serializer.Deserialize(reader, type) as T;

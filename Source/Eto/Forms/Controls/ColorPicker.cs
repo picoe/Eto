@@ -49,11 +49,11 @@ namespace Eto.Forms
 		/// Gets a binding to the <see cref="Value"/> property.
 		/// </summary>
 		/// <value>The value binding.</value>
-		public ControlBinding<ColorPicker, Color> ValueBinding
+		public BindableBinding<ColorPicker, Color> ValueBinding
 		{
 			get
 			{
-				return new ControlBinding<ColorPicker,Color>(
+				return new BindableBinding<ColorPicker,Color>(
 					this,
 					r => r.Value,
 					(r,val) => r.Value = val,

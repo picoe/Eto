@@ -2,8 +2,8 @@ using System;
 using System.Reflection;
 using Eto.Forms;
 using System.Collections.Generic;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 using System.Linq;
 using Eto.iOS.Drawing;
 using Eto.Drawing;
@@ -22,12 +22,12 @@ namespace Eto.iOS.Forms.Controls
 
 			public ListBoxHandler Handler { get; set; }
 
-			public override int RowsInSection(UITableView tableView, int section)
+			public override nint RowsInSection(UITableView tableView, nint section)
 			{
 				return Handler.collection != null ? Handler.collection.Collection.Count() : 0;
 			}
 
-			public override int NumberOfSections(UITableView tableView)
+			public override nint NumberOfSections(UITableView tableView)
 			{
 				return 1;
 			}
@@ -40,8 +40,8 @@ namespace Eto.iOS.Forms.Controls
 					cell = new UITableViewCell(UITableViewCellStyle.Default, kCellIdentifier);
 				}
 				var item = Handler.collection.ElementAt(indexPath.Row);
-				cell.TextLabel.Text = Handler.Widget.TextBinding.GetValue(item);
-				var imageBinding = Handler.Widget.ImageBinding;
+				cell.TextLabel.Text = Handler.Widget.ItemTextBinding.GetValue(item);
+				var imageBinding = Handler.Widget.ItemImageBinding;
 				if (imageBinding != null)
 					cell.ImageView.Image = imageBinding.GetValue(item).ToUI();
 				else

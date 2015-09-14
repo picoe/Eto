@@ -4,12 +4,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProjectGuid>{AB42209E-E87F-4749-96CF-8CAE83981808}</ProjectGuid>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>Eto.Test.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>EtoTestiOS</AssemblyName>
     <TargetFrameworkProfile />
+    <TargetFrameworkIdentifier>Xamarin.iOS</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -26,11 +28,12 @@
     <Optimize>False</Optimize>
     <ConsolePause>False</ConsolePause>
     <MtouchDebug>True</MtouchDebug>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>x86_64</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
     <MtouchUseSGen>True</MtouchUseSGen>
     <MtouchProfiling>true</MtouchProfiling>
+    <MtouchLink>None</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Release\iPhoneSimulator</OutputPath>
@@ -40,7 +43,7 @@
     <MtouchLink>None</MtouchLink>
     <MtouchI18n>
     </MtouchI18n>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>i386</MtouchArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Debug\iPhone</OutputPath>
@@ -52,13 +55,14 @@
     <MtouchDebug>True</MtouchDebug>
     <IpaPackageName>
     </IpaPackageName>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
     <MtouchLink>None</MtouchLink>
     <CrashReportingApiKey>
     </CrashReportingApiKey>
     <MtouchUseSGen>True</MtouchUseSGen>
+    <MtouchProfiling>true</MtouchProfiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Release\iPhone</OutputPath>
@@ -66,7 +70,7 @@
     <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
   </PropertyGroup>
@@ -77,7 +81,7 @@
     <ConsolePause>False</ConsolePause>
     <BuildIpa>True</BuildIpa>
     <CodesignKey>iPhone Distribution</CodesignKey>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
   </PropertyGroup>
@@ -87,7 +91,7 @@
     <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
     <CodesignKey>iPhone Distribution</CodesignKey>
-    <MtouchArch>ARMv7</MtouchArch>
+    <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
     <IpaPackageName>
@@ -98,7 +102,7 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="monotouch" />
+    <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -112,25 +116,25 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
     <BundleResource Include="Resources\Default-568h%402x.png" />
     <BundleResource Include="Resources\Default.png" />
     <BundleResource Include="Resources\Default%402x.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto\Eto - Pcl.csproj">
-      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
-      <Name>Eto - Pcl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test - Pcl.csproj">
-      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
-      <Name>Eto.Test - Pcl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto.iOS\Eto.iOS.csproj">
       <Project>{E711B298-D141-4EC5-9BFD-84962B264F90}</Project>
       <Name>Eto.iOS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
+      <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
+      <Name>Eto - pcl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test - pcl.csproj">
+      <Project>{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}</Project>
+      <Name>Eto.Test - pcl</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		public ScreenSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			screens = Screen.Screens.ToArray();
 			layout.AddSeparateRow(null, new Label { Text = string.Format("Display Bounds: {0}", displayBounds) }, null);
@@ -63,24 +63,24 @@ namespace Eto.Test.Sections.Behaviors
 				var scale = Math.Min(scaleSize.Width, scaleSize.Height);
 				var offset = (drawable.Size - (displayBounds.Size * scale)) / 2;
 				offset.Height -= displayBounds.Y * scale;
+                offset = Size.Round(offset);
 				foreach (var screen in screens)
 				{
 					var screenBounds = (screen.Bounds * scale) + offset;
-					pe.Graphics.FillRectangle(Colors.White, screenBounds);
+                    screenBounds.Size -= 1;
+
+                    pe.Graphics.FillRectangle(Colors.White, screenBounds);
 
 					var workingArea = (screen.WorkingArea * scale) + offset;
 					pe.Graphics.FillRectangle(Colors.Blue, workingArea);
 
-					screenBounds.Width -= 1;
-					screenBounds.Height -= 1;
 					pe.Graphics.DrawRectangle(Colors.Black, screenBounds);
 				}
 
-				var windowBounds = ((RectangleF)ParentWindow.Bounds * scale) + offset;
-				pe.Graphics.FillRectangle(new Color(Colors.LightSkyBlue, 0.8f), windowBounds);
-				windowBounds.Width -= 1;
-				windowBounds.Height -= 1;
-				pe.Graphics.DrawRectangle(Colors.White, windowBounds);
+                var windowBounds = ((RectangleF)ParentWindow.Bounds * scale) + offset;
+                windowBounds.Size -= 1;
+                pe.Graphics.FillRectangle(new Color(Colors.LightSkyBlue, 0.8f), windowBounds);
+                pe.Graphics.DrawRectangle(Colors.White, windowBounds);
 			};
 			return drawable;
 		}

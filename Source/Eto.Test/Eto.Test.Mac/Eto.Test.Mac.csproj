@@ -22,7 +22,7 @@
     <LibrariesPath>..\..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net40\Debug\test</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
@@ -32,9 +32,10 @@
     <EnablePackageSigning>False</EnablePackageSigning>
     <IncludeMonoRuntime>False</IncludeMonoRuntime>
     <UseSGen>False</UseSGen>
+    <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net40\Release\test</OutputPath>
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
@@ -43,6 +44,7 @@
     <EnablePackageSigning>False</EnablePackageSigning>
     <IncludeMonoRuntime>False</IncludeMonoRuntime>
     <UseSGen>False</UseSGen>
+    <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <Import Project="../../Shared/Common.targets" />
   <ItemGroup>

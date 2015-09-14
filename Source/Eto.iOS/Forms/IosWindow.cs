@@ -1,5 +1,5 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using Eto.iOS.Forms.Controls;
 using Eto.Drawing;
@@ -27,7 +27,7 @@ namespace Eto.iOS.Forms
 			set
 			{
 				var frame = this.Control.Frame;
-				frame.Location = value.ToSDPointF();
+				frame.Location = value.ToNS();
 				this.Control.Frame = frame;
 			}
 		}
@@ -98,7 +98,7 @@ namespace Eto.iOS.Forms
 			return content == null ? null : content.Handler as NavigationHandler;
 		}
 
-		protected override sd.RectangleF AdjustContent(sd.RectangleF rect)
+		protected override CoreGraphics.CGRect AdjustContent(CoreGraphics.CGRect rect)
 		{
 			rect = base.AdjustContent(rect);
 			if (ToolBar != null)
@@ -137,13 +137,13 @@ namespace Eto.iOS.Forms
 			{
 				control.SizeToFit();
 				var height = control.Frame.Height;
-				sd.SizeF screenSize;
+				CoreGraphics.CGSize screenSize;
 				if (Platform.IsIos7)
 					screenSize = UIScreen.MainScreen.Bounds.Size;
 				else
 					screenSize = UIScreen.MainScreen.ApplicationFrame.Size;
 				var bottom = toolBar.Dock == ToolBarDock.Bottom;
-				var frame = new sd.RectangleF(0, 0, screenSize.Width, height);
+				var frame = new CoreGraphics.CGRect(0, 0, screenSize.Width, height);
 				var mask = UIViewAutoresizing.FlexibleWidth;
 				if (bottom)
 				{
@@ -183,9 +183,9 @@ namespace Eto.iOS.Forms
 
 		public WindowState WindowState { get; set; }
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
-			get { return null; }
+			get { return Widget.Bounds; }
 		}
 
 		public WindowStyle WindowStyle { get { return WindowStyle.Default; } set { } }
@@ -198,7 +198,11 @@ namespace Eto.iOS.Forms
 		{
 		}
 
-		public ContextMenu ContextMenu { get { return null; } set { } }
+		public override ContextMenu ContextMenu { get { return null; } set { } }
+
+		public virtual void SetOwner(Window owner)
+		{
+		}
 	}
 }
 

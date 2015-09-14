@@ -7,27 +7,8 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class Menu : Widget
+	public abstract class Menu : BindableWidget
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Menu"/> class.
-		/// </summary>
-		protected Menu()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Menu"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Menu(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
-		{
-		}
-
 		/// <summary>
 		/// Called before the menu is assigned to a control/window
 		/// </summary>

@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Drawing
 			drawable.Paint += (sender, e) => renderer.DrawFrame(e.Graphics, drawable.Size);
 			renderer = new DirectDrawingRenderer();
 
-			var layout = new DynamicLayout { Padding = new Padding(10) };
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			layout.AddSeparateRow(null, UseTexturesAndGradients(), UseCreateGraphics(), null);
 			layout.Add(content = new Panel { Content = drawable });
 			this.Content = layout;
@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Drawing
 				if (!drawable.SupportsCreateGraphics)
 				{
 					content.BackgroundColor = Colors.Red;
-					content.Content = new Label { Text = "This platform does not support Drawable.CreateGraphics", TextColor = Colors.White, VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
+					content.Content = new Label { Text = "This platform does not support Drawable.CreateGraphics", TextColor = Colors.White, VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center };
 					return;
 				}
 				drawFrame = DrawWithCreateGraphics;
@@ -95,13 +95,15 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		Control UseTexturesAndGradients ()
+		Control UseTexturesAndGradients()
 		{
-			var control = new CheckBox {
+			var control = new CheckBox
+			{
 				Text = "Use Textures && Gradients",
 				Checked = renderer.UseTexturesAndGradients
 			};
-			control.CheckedChanged += (sender, e) => {
+			control.CheckedChanged += (sender, e) =>
+			{
 				renderer.UseTexturesAndGradients = control.Checked ?? false;
 				lock (renderer.Boxes)
 				{
@@ -131,13 +133,13 @@ namespace Eto.Test.Sections.Drawing
 			return control;
 		}
 
-		protected override void OnLoadComplete (EventArgs e)
+		protected override void OnLoadComplete(EventArgs e)
 		{
-			base.OnLoadComplete (e);
+			base.OnLoadComplete(e);
 			SetMode();
 		}
 
-		protected override void Dispose (bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 				status.Stop = true;
@@ -210,7 +212,7 @@ namespace Eto.Test.Sections.Drawing
 				var colorPen = new Pen(color);
 				var blackPen = Pens.Black;
 				var blackBrush = Brushes.Black;
-				switch (random.Next(useTexturesAndGradients ? 4 : 2))
+				switch (random.Next(useTexturesAndGradients ? 5 : 2))
 				{
 					case 0:
 						draw = g => g.DrawRectangle(colorPen, rect);
@@ -237,7 +239,7 @@ namespace Eto.Test.Sections.Drawing
 						erase = g => g.FillEllipse(blackBrush, rect);
 						break;
 					case 3:
-						switch (random.Next(2))
+						switch (random.Next(3))
 						{
 							case 0:
 								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height));
@@ -248,9 +250,17 @@ namespace Eto.Test.Sections.Drawing
 									Transform = Matrix.FromScale(size / 80)
 								};
 								break;
+							case 2:
+								fillBrush = new RadialGradientBrush(GetRandomColor(random), GetRandomColor(random), (PointF)size / 2, (PointF)size / 2, size);
+								break;
 						}
 						draw = g => g.FillRectangle(fillBrush, rect);
 						erase = g => g.FillRectangle(blackBrush, rect);
+						break;
+					case 4:
+						var font = Fonts.Sans(random.Next(20) + 4);
+						draw = g => g.DrawText(font, color, 0, 0, "Some Text");
+						erase = g => g.DrawText(font, Colors.Black, 0, 0, "Some Text");
 						break;
 				}
 			}

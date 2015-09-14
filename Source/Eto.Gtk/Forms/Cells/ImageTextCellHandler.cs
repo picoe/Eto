@@ -101,7 +101,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			return new ImageTextCellEventConnector();
 		}
 
-		protected class ImageTextCellEventConnector : WeakConnector
+		protected class ImageTextCellEventConnector : CellConnector
 		{
 			public new ImageTextCellHandler Handler { get { return (ImageTextCellHandler)base.Handler; } }
 

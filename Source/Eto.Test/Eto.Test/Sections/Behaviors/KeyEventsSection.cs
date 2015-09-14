@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Behaviors
@@ -22,7 +23,7 @@ namespace Eto.Test.Sections.Behaviors
 			ParentWindow.KeyDown -= control_KeyDown;
 			ParentWindow.KeyUp -= control_KeyUp;
 		}
-		
+
 		void LogKeyEvent(object sender, string type, KeyEventArgs e)
 		{
 			if (!showParentEvents.Checked == true && sender == this)
@@ -65,7 +66,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		protected override Control CreateOptions()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { Spacing = new Size(5, 5) };
 
 			layout.AddRow(null, Handled(), ShowParentEvents(), ShowWindowEvents(), null);
 			layout.Add(null);

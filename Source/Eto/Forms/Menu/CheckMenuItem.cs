@@ -31,44 +31,67 @@ namespace Eto.Forms
 		{
 			Checked = command.Checked;
 			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
+			CheckedChanged += (sender, e) => command.Checked = Checked;
 			Handler.CreateFromCommand(command);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckMenuItem"/> class.
+		/// Event identifier for the <see cref="CheckedChanged"/> event.
 		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public CheckMenuItem(Generator generator)
-			: this(generator, typeof(CheckMenuItem.IHandler))
+		public const string CheckedChangedEvent = "CheckMenuItem.CheckedChanged";
+
+		/// <summary>
+		/// Event to handle when the <see cref="Checked"/> property changes.
+		/// </summary>
+		public event EventHandler<EventArgs> CheckedChanged
 		{
+			add { Properties.AddHandlerEvent(CheckedChangedEvent, value); }
+			remove { Properties.RemoveEvent(CheckedChangedEvent, value); }
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckMenuItem"/> class.
+		/// Raises the <see cref="CheckedChanged"/> event.
 		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public CheckMenuItem(CheckCommand command, Generator generator = null)
-			: base(command, generator, typeof(CheckMenuItem.IHandler))
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnCheckedChanged(EventArgs e)
 		{
-			Checked = command.Checked;
-			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
+			Properties.TriggerEvent(CheckedChangedEvent, this, e);
+		}
+
+		static readonly Callback callback = new Callback();
+
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback.</returns>
+		protected override object GetCallback()
+		{
+			return callback;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CheckMenuItem"/> class.
+		/// Callback interface for the <see cref="CheckMenuItem"/> class.
 		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected CheckMenuItem(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
+		public new interface ICallback : MenuItem.ICallback
 		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
+			void OnCheckedChanged(CheckMenuItem widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for the <see cref="CheckMenuItem"/>.
+		/// </summary>
+		protected new class Callback : MenuItem.Callback, ICallback
+		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
+			public void OnCheckedChanged(CheckMenuItem widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCheckedChanged(e));
+			}
 		}
 
 		/// <summary>

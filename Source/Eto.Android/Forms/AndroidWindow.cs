@@ -71,7 +71,7 @@ namespace Eto.Android.Forms
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return null;
 			}
 			set
 			{
@@ -153,7 +153,7 @@ namespace Eto.Android.Forms
 			}
 		}
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
 			get { throw new NotImplementedException(); }
 		}
@@ -178,6 +178,10 @@ namespace Eto.Android.Forms
 		public void SendToBack()
 		{
 			throw new NotImplementedException();
+		}
+
+		public void SetOwner(Window owner)
+		{
 		}
 	}
 }

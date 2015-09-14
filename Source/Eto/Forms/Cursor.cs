@@ -71,41 +71,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Cursor"/> class.
-		/// </summary>
-		/// <param name="cursor">Cursor.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public Cursor(CursorType cursor, Generator generator = null)
-			: base(generator, typeof(IHandler), false)
-		{
-			Handler.Create(cursor);
-			Initialize();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Cursor"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		protected Cursor(Generator generator)
-			: this(generator, typeof(Cursor.IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Cursor"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Cursor(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Platform interface for the <see cref="Cursor"/> class
 		/// </summary>
 		[AutoInitialize(false)]

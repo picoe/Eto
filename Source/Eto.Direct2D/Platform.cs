@@ -46,6 +46,7 @@ namespace Eto.Direct2D
 			p.Add<SolidBrush.IHandler>(() => new SolidBrushHandler());
 			p.Add<TextureBrush.IHandler>(() => new TextureBrushHandler());
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
+			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 
 			// Forms.Cells
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());

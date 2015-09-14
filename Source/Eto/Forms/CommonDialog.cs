@@ -58,18 +58,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CommonDialog"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected CommonDialog(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Shows the dialog with the specified parent, blocking until a result is returned.
 		/// </summary>
 		/// <returns>The dialog result.</returns>
@@ -84,7 +72,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The dialog result.</returns>
 		/// <param name="parent">Parent window.</param>
-		public DialogResult ShowDialog(Window parent)
+		public virtual DialogResult ShowDialog(Window parent)
 		{
 			return Handler.ShowDialog(parent);
 		}

@@ -111,5 +111,26 @@ namespace Eto.WinRT.Forms.Controls
 			get { return Control.Foreground.ToEtoColor(); }
 			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
-    }
+
+
+		public int CaretIndex
+		{
+			get { return Control.SelectionStart; }
+			set
+			{
+				Control.SelectionStart = value;
+				Control.SelectionLength = 0;
+			}
+		}
+
+		public Range<int> Selection
+		{
+			get { return new Range<int>(Control.SelectionStart, Control.SelectionStart + Control.SelectionLength - 1); }
+			set
+			{
+				Control.SelectionStart = value.Start;
+				Control.SelectionLength = value.Length();
+			}
+		}
+	}
 }

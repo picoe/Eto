@@ -31,7 +31,7 @@ namespace Eto.Wpf.Forms
 				if (Widget.Properties.Get<Font>(FontKey) != value)
 				{
 					Widget.Properties[FontKey] = value;
-					FontHandler.Apply(Control, SetDecorations, value);
+					Control.SetEtoFont(value, SetDecorations);
 				}
 			}
 		}

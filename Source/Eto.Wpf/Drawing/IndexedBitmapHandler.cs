@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swmi = System.Windows.Media.Imaging;
@@ -77,7 +78,7 @@ namespace Eto.Wpf.Drawing
 			set
 			{
 				if (value.Count != numColors)
-					throw new ArgumentException("Palette must have the same number of colors as the image");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Palette must have the same number of colors as the image"));
 				palette = value;
 				if (isLocked)
 					paletteSetInLocked = true;

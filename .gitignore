@@ -8,9 +8,6 @@ obj/
 /BuildOutput
 *.shfbproj_*
 UpgradeLog*.htm
-Source/packages
 Source/Components
 AppPackages
-Resources/packages
-Samples/packages
-Source/Addins/Eto.Addin.XamarinStudio/packages
+packages/

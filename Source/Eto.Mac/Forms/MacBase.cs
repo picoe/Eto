@@ -1,26 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Eto.Drawing;
-#if XAMMAC2
+using Eto.Forms;
+#if IOS
+using NSView = UIKit.UIView;
+using ObjCRuntime;
+using Foundation;
+#elif XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
-using MonoTouch.ObjCRuntime;
-using MonoTouch.Foundation;
 #endif
-using Eto.Forms;
 
-#if IOS
-using NSView = MonoTouch.UIKit.UIView;
-#endif
 namespace Eto.Mac.Forms
 {
 	public interface IMacControlHandler
@@ -175,7 +175,7 @@ namespace Eto.Mac.Forms
 			var type = control.GetType();
 			#if OSX
 			if (!typeof(IMacControl).IsAssignableFrom(type))
-				throw new EtoException(string.Format("Control '{0}' does not inherit from IMacControl", type));
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Control '{0}' does not inherit from IMacControl", type));
 			#endif
 			var classHandle = Class.GetHandle(type);
 			ObjCExtensions.AddMethod(classHandle, selector, action, arguments);
@@ -184,7 +184,11 @@ namespace Eto.Mac.Forms
 		public NSObject AddObserver(NSString key, Action<ObserverActionEventArgs> action, NSObject control)
 		{
 			if (observers == null)
+			{
 				observers = new List<ObserverHelper>();
+				// ensure we finalize to clean this up later
+				GC.ReRegisterForFinalize(this);
+			}
 			var observer = new ObserverHelper
 			{
 				Action = action,
@@ -201,7 +205,11 @@ namespace Eto.Mac.Forms
 		public void AddControlObserver(NSString key, Action<ObserverActionEventArgs> action, NSObject control)
 		{
 			if (observers == null)
+			{
 				observers = new List<ObserverHelper>();
+				// ensure we finalize to clean this up later
+				GC.ReRegisterForFinalize(this);
+			}
 			var observer = new ObserverHelper
 			{
 				Action = action,
@@ -212,6 +220,19 @@ namespace Eto.Mac.Forms
 			};
 			observer.AddToControl();
 			observers.Add(observer);
+		}
+
+		~MacBase()
+		{
+			//Console.WriteLine("Finalizing {0}", GetType());
+			// need to remove observers so we can GC the native object
+			Dispose(false);
+		}
+
+		public MacBase()
+		{
+			// finalizer is not actually needed until we add an observer.
+			GC.SuppressFinalize(this);
 		}
 
 		protected override void Dispose(bool disposing)

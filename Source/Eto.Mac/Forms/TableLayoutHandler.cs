@@ -2,7 +2,6 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
-using sd = System.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -11,7 +10,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -36,10 +35,12 @@ using nuint = System.UInt32;
 #endif
 
 #if IOS
-using MonoTouch.UIKit;
-using NSView = MonoTouch.UIKit.UIView;
+using UIKit;
+using CoreGraphics;
+using Eto.iOS;
+using NSView = UIKit.UIView;
 using IMacView = Eto.iOS.Forms.IIosView;
-using MacContainer = Eto.iOS.Forms.IosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
+using MacContainer = Eto.iOS.Forms.IosLayout<UIKit.UIView, Eto.Forms.TableLayout, Eto.Forms.TableLayout.ICallback>;
 
 #elif OSX
 using Eto.Mac.Forms.Controls;
@@ -62,7 +63,7 @@ namespace Eto.Mac.Forms
 		int lastyscale;
 		Size spacing;
 		Padding padding;
-		sd.SizeF oldFrameSize;
+		CGSize oldFrameSize;
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -95,11 +96,6 @@ namespace Eto.Mac.Forms
 #elif IOS
 			Control = new NSView();
 #endif
-
-			#pragma warning disable 612,618
-			spacing = TableLayout.DefaultSpacing;
-			padding = TableLayout.DefaultPadding;
-			#pragma warning restore 612,618
 		}
 
 		protected override void Initialize()
@@ -283,7 +279,7 @@ namespace Eto.Mac.Forms
 				}
 				starty += heights[y] + Spacing.Height;
 			}
-			oldFrameSize = controlFrame.Size.ToSD();
+			oldFrameSize = controlFrame.Size;
 		}
 
 		public void Add(Control child, int x, int y)

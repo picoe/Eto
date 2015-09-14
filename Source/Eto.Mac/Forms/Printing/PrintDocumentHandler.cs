@@ -2,7 +2,6 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using sd = System.Drawing;
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -78,7 +77,7 @@ namespace Eto.Mac.Forms.Printing
 			{
 				var operation = NSPrintOperation.CurrentOperation;
 
-				var context = new NSGraphicsContext(Messaging.IntPtr_objc_msgSend(classNSGraphicsContext, selCurrentContext));
+				var context = Messaging.GetNSObject<NSGraphicsContext>(Messaging.IntPtr_objc_msgSend(classNSGraphicsContext, selCurrentContext));
 				// this causes monomac to hang for some reason:
 				//var context = NSGraphicsContext.CurrentContext;
 

@@ -5,13 +5,15 @@ using Eto.Forms;
 using Eto.Threading;
 using System.Collections.Generic;
 using NUnit.Framework.Internal;
-using NUnitLite.Runner;
 using NUnit.Framework.Api;
 using System.Threading.Tasks;
 using Eto.Drawing;
 using System.Linq;
 using Eto.Test.UnitTests.Handlers;
 using NUnit;
+using NUnit.Framework.Interfaces;
+using System.Collections;
+using NUnit.Framework;
 
 namespace Eto.Test.Sections
 {
@@ -23,22 +25,19 @@ namespace Eto.Test.Sections
 		{
 			if (!result.HasChildren)
 			{
+				if (!string.IsNullOrEmpty(result.Output))
+					Application.Instance.AsyncInvoke(() => Log.Write(null, result.Output));
 				if (result.FailCount > 0)
 				{
-					Application.Invoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
+					Application.AsyncInvoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
 				}
 			}
-		}
-
-		public void TestOutput(TestOutput testOutput)
-		{
-			Application.Instance.Invoke(() => Log.Write(null, testOutput.Text));
 		}
 
 		public void TestStarted(ITest test)
 		{
 			if (!test.HasChildren)
-				Application.Invoke(() => Log.Write(null, test.FullName));
+				Application.AsyncInvoke(() => Log.Write(null, test.FullName));
 		}
 	}
 
@@ -57,27 +56,14 @@ namespace Eto.Test.Sections
 				parent = parent.Parent;
 			}
 			// execute all children of the test
-			while (test != null)
+			parent = test;
+			while (parent != null)
 			{
-				if (test.FullName == Test.FullName)
+				if (parent.FullName == Test.FullName)
 					return base.Pass(test);
-				test = test.Parent;
+				parent = parent.Parent;
 			}
 			return false;
-		}
-	}
-
-	class NamespaceTestFilter : CategoryFilter
-	{
-		public string Namespace { get; set; }
-
-		public override bool Pass(ITest test)
-		{
-			if (test.FixtureType == null && test.Parent != null)
-				return Pass(test.Parent);
-			var ns = test.FixtureType.Namespace;
-			var pass = ns == Namespace || ns.StartsWith(Namespace + ".", StringComparison.Ordinal);
-			return pass && base.Pass(test);
 		}
 	}
 
@@ -85,9 +71,17 @@ namespace Eto.Test.Sections
 	{
 		public Application Application { get; set; }
 
+		public Assembly Assembly { get; set; }
+
+		public Assembly ExecutingAssembly { get; set; }
+
 		public List<string> IncludeCategories { get; private set; }
 
 		public List<string> ExcludeCategories { get; private set; }
+
+		public string Keyword { get; set; }
+
+		public int SkipCount { get; set; }
 
 		public CategoryFilter()
 		{
@@ -95,22 +89,61 @@ namespace Eto.Test.Sections
 			ExcludeCategories = new List<string>();
 		}
 
+		protected static IEnumerable<ITest> GetParents(ITest test)
+		{
+			while (test != null)
+			{
+				yield return test;
+				test = test.Parent;
+			}
+		}
+
+		bool MatchesKeyword(ITest test)
+		{
+			if (string.IsNullOrEmpty(Keyword))
+				return true;
+			return test.FullName.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+
+		bool MatchesIncludeCategory(ITest test)
+		{
+			if (IncludeCategories.Count == 0)
+				return true;
+
+			var categoryList = test.Properties["Category"];
+			if (categoryList == null || categoryList.Count == 0)
+				return false;
+			
+			return categoryList.OfType<string>().Any(IncludeCategories.Contains);
+		}
+
+		bool MatchesExcludeCategory(ITest test)
+		{
+			if (ExcludeCategories.Count == 0)
+				return false;
+
+			var categoryList = test.Properties["Category"];
+			if (categoryList == null || categoryList.Count == 0)
+				return false;
+
+			return categoryList.OfType<string>().Any(ExcludeCategories.Contains);
+		}
 		public virtual bool Pass(ITest test)
 		{
-			var categoryList = test.Properties["Category"] as ObjectList;
+			if (Assembly != null && ExecutingAssembly != Assembly)
+				return false;
 
 			bool pass = true;
-			if (categoryList != null)
+			if (!test.IsSuite)
 			{
-				var categories = categoryList.OfType<string>().ToList();
-				if (IncludeCategories.Count > 0)
-					pass = categories.Any(IncludeCategories.Contains);
-
-				if (ExcludeCategories.Count > 0)
-					pass &= !categories.Any(ExcludeCategories.Contains);
+				var parents = GetParents(test).ToList();
+				pass &= parents.Any(MatchesKeyword);
+				pass &= parents.Any(MatchesIncludeCategory);
+				pass &= !parents.Any(MatchesExcludeCategory);
 			}
+
 			if (!pass)
-				Application.Invoke(() => Log.Write(null, "Skipping {0} (excluded)", test.FullName));
+				SkipCount++;
 			return pass;
 		}
 
@@ -123,18 +156,47 @@ namespace Eto.Test.Sections
 		TreeView tree;
 		Button startButton;
 		CheckBox useTestPlatform;
+		SearchBox search;
 
 		public UnitTestSection()
 		{
 			startButton = new Button { Text = "Start Tests", Size = new Size(200, 80) };
 			useTestPlatform = new CheckBox { Text = "Use Test Platform" };
-			var buttons = new TableLayout(
-				              TableLayout.AutoSized(startButton, centered: true),
-				              TableLayout.AutoSized(useTestPlatform, centered: true)
-			              );
+			var buttons = new StackLayout
+			{
+				Padding = new Padding(10),
+				Spacing = 5,
+				HorizontalContentAlignment = HorizontalAlignment.Center,
+				Items = { startButton, useTestPlatform }
+			};
 
 			if (Platform.Supports<TreeView>())
 			{
+
+				search = new SearchBox();
+				search.Focus();
+				search.KeyDown += (sender, e) =>
+				{
+					if (e.KeyData == Keys.Enter)
+					{	
+						startButton.PerformClick();
+						e.Handled = true;
+					}
+				};
+
+				var timer = new UITimer();
+				timer.Interval = 0.5;
+				timer.Elapsed += (sender, e) =>
+				{
+					timer.Stop();
+					PopulateTree(search.Text);
+				};
+				search.TextChanged += (sender, e) => {
+					if (timer.Started)
+						timer.Stop();
+					timer.Start();
+				};
+
 				tree = new TreeView();
 
 				tree.Activated += (sender, e) =>
@@ -146,15 +208,71 @@ namespace Eto.Test.Sections
 					}
 				};
 
-				Content = new TableLayout(
-					buttons,
-					tree
-				);
+				Content = new StackLayout
+				{
+					Spacing = 5,
+					HorizontalContentAlignment = HorizontalAlignment.Stretch,
+					Items = { buttons, search, new StackLayoutItem(tree, expand: true) }
+				};
 			}
 			else
-				Content = new TableLayout(null, buttons, null);
+				Content = buttons;
 
 			startButton.Click += (s, e) => RunTests();
+		}
+
+		class MultipleTestResult : ITestResult
+		{
+			public List<ITestResult> Results { get; private set; }
+
+			public MultipleTestResult()
+			{
+				Results = new List<ITestResult>();
+			}
+
+			public int AssertCount { get { return Results.Sum(r => r.AssertCount); } }
+
+			public IList<ITestResult> Children { get { return Results.SelectMany(r => r.Children).ToList(); } }
+
+			public double Duration { get { return Results.Sum(r => r.Duration); } }
+
+			public DateTime EndTime { get { return Results.Max(r => r.EndTime); } }
+
+			public int FailCount { get { return Results.Sum(r => r.FailCount); } }
+
+			public string FullName { get { return string.Empty; } }
+
+			public bool HasChildren { get { return Results.Any(r => r.HasChildren); } }
+
+			public int InconclusiveCount { get { return Results.Sum(r => r.InconclusiveCount); } }
+
+			public string Message { get { return string.Join("\n", Results.Select(r => r.Message)); } }
+
+			public string Name { get { return string.Join(", ", Results.Select(r => r.Name)); } }
+
+			public string Output { get { return string.Join("\n", Results.Select(r => r.Output)); } }
+
+			public int PassCount { get { return Results.Sum(r => r.PassCount); } }
+
+			public ResultState ResultState { get { throw new NotImplementedException(); } }
+
+			public int SkipCount { get { return Results.Sum(r => r.SkipCount); } }
+
+			public string StackTrace { get { throw new NotImplementedException(); } }
+
+			public DateTime StartTime { get { return Results.Min(r => r.StartTime); } }
+
+			public ITest Test { get { return Results.Select(r => r.Test).FirstOrDefault(); } }
+
+			public XmlNode AddToXml(XmlNode parentNode, bool recursive)
+			{
+				throw new NotImplementedException();
+			}
+
+			public XmlNode ToXml(bool recursive)
+			{
+				return null;
+			}
 		}
 
 		async void RunTests(CategoryFilter filter = null)
@@ -162,6 +280,7 @@ namespace Eto.Test.Sections
 			if (!startButton.Enabled)
 				return;
 			startButton.Enabled = false;
+			var keywords = search.Text;
 			Log.Write(null, "Starting tests...");
 			var testPlatform = useTestPlatform.Checked == true ? new TestPlatform() : Platform;
 			try
@@ -172,28 +291,34 @@ namespace Eto.Test.Sections
 					{
 						try
 						{
-							var assembly = GetType().GetTypeInfo().Assembly;
-							var runner = new NUnitLiteTestAssemblyRunner(new NUnitLiteTestAssemblyBuilder());
-							if (!runner.Load(assembly, new Dictionary<string, object>()))
-							{
-								Log.Write(null, "Failed to load test assembly");
-								return;
-							}
-							ITestResult result;
 							var listener = new TestListener { Application = Application.Instance }; // use running application for logging
-							filter = filter ?? new CategoryFilter();
-							filter.Application = Application.Instance;
-							if (testPlatform is TestPlatform)
+
+							var builder = new DefaultTestAssemblyBuilder();
+							var runner = new NUnitTestAssemblyRunner(builder);
+							var settings = new Dictionary<string, object>();
+							var result = new MultipleTestResult();
+							if (filter != null)
+								filter.SkipCount = 0;
+							foreach (var assembly in ((TestApplication)TestApplication.Instance).TestAssemblies)
 							{
-								filter.ExcludeCategories.Add(UnitTests.TestUtils.NoTestPlatformCategory);
-							}
-							using (testPlatform.Context)
-							{
-								result = runner.Run(listener, filter);
+								runner.Load(assembly, settings);
+
+								filter = filter ?? new CategoryFilter();
+								filter.Application = Application.Instance;
+								filter.ExecutingAssembly = assembly;
+								if (testPlatform is TestPlatform)
+									filter.IncludeCategories.Add(UnitTests.TestUtils.TestPlatformCategory);
+								else
+									filter.IncludeCategories.RemoveAll(r => r == UnitTests.TestUtils.TestPlatformCategory);
+								filter.Keyword = keywords;
+								using (testPlatform.Context)
+								{
+									result.Results.Add(runner.Run(listener, filter));
+								}
 							}
 							var writer = new StringWriter();
 							writer.WriteLine(result.FailCount > 0 ? "FAILED" : "PASSED");
-							writer.WriteLine("\tPass: {0}, Fail: {1}, Skipped: {2}, Inconclusive: {3}", result.PassCount, result.FailCount, result.SkipCount, result.InconclusiveCount);
+							writer.WriteLine("\tPass: {0}, Fail: {1}, Skipped: {2}, Inconclusive: {3}", result.PassCount, result.FailCount, result.SkipCount + filter.SkipCount, result.InconclusiveCount);
 							writer.Write("\tDuration: {0}", result.Duration);
 							Application.Instance.Invoke(() => Log.Write(null, writer.ToString()));
 						}
@@ -220,7 +345,7 @@ namespace Eto.Test.Sections
 			try
 			{
 				if (tree != null)
-					await Task.Factory.StartNew(PopulateTree);
+					await Task.Factory.StartNew(() => PopulateTree());
 			}
 			catch (Exception ex)
 			{
@@ -228,76 +353,60 @@ namespace Eto.Test.Sections
 			}
 		}
 
-		TestSuite GetTestSuite()
+		IEnumerable<TestAssembly> GetTestSuites()
 		{
-			var assembly = GetType().GetTypeInfo().Assembly;
-			var builder = new NUnitLiteTestAssemblyBuilder();
-			return builder.Build(assembly, new Dictionary<string, object>());
+			var builder = new DefaultTestAssemblyBuilder();
+			var settings = new Dictionary<string, object>();
+			foreach (var assembly in ((TestApplication)TestApplication.Instance).TestAssemblies)
+			{
+				yield return builder.Build(assembly, settings) as TestAssembly;
+			}
 		}
 
-		void PopulateTree()
+		void PopulateTree(string filter = null)
 		{
-			var testSuite = GetTestSuite();
-			var treeData = ToTree(testSuite);
+			var testSuites = GetTestSuites().Select(suite => ToTree(suite.Assembly, suite, filter)).Where(r => r != null).ToList();
+			var treeData = new TreeItem(testSuites);
 			Application.Instance.AsyncInvoke(() => tree.DataStore = treeData);
 		}
 
-		TreeItem ToTree(ITest test, int startIndex = 0)
+		TreeItem ToTree(Assembly assembly, ITest test, string filter)
 		{
 			// add a test
-			var item = new TreeItem { Text = test.Name, Tag = new SingleTestFilter { Test = test } };
+			var item = new TreeItem { Text = test.Name, Tag = new SingleTestFilter { Test = test, Assembly = assembly } };
+			var nameMatches = filter == null || test.FullName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
 			if (test.HasChildren)
 			{
-				item.Children.AddRange(ToTree(test.Tests, startIndex));
+				if (nameMatches)
+					filter = null;
+				item.Expanded = !(test is ParameterizedMethodSuite);
+				foreach (var child in test.Tests)
+				{
+					var treeItem = ToTree(assembly, child, filter);
+					if (treeItem != null)
+						item.Children.Add(treeItem);
+				}
+				while (item.Children.Count == 1)
+				{
+					// collapse test nodes
+					var child = item.Children[0] as TreeItem;
+					if (child.Children.Count == 0)
+						break;
+					if (!child.Text.StartsWith(item.Text, StringComparison.Ordinal))
+						item.Text += "." + child.Text;
+					else
+						item.Text = child.Text;
+					item.Children.Clear();
+					item.Children.AddRange(child.Children);
+				}
+				if (item.Children.Count == 0)
+					return null;
+			}
+			else if (!nameMatches)
+			{
+				return null;
 			}
 			return item;
-		}
-
-		IEnumerable<TreeItem> ToTree(IEnumerable<ITest> tests, int startIndex)
-		{
-			if (startIndex == -1)
-			{
-				foreach (var test in tests)
-				{
-					yield return ToTree(test, -1);
-				}
-				yield break;
-			}
-
-			// split namespaces and group them to the startIndex
-			var namespaces = from s in
-			                     (
-			                         from r in tests
-			                         group r by r.FixtureType.Namespace into g
-			                         orderby g.Key
-			                         select g.Key.Split('.').Take(startIndex + 1)
-			                     )
-			                 group s by s.Last() into gg // group by last namespace
-			                 select gg.First();
-
-			foreach (var ns in namespaces)
-			{
-				var fullns = string.Join(".", ns);
-				var childtests = ToTree(from t in tests
-				                        where t.FixtureType.Namespace.StartsWith(fullns + ".", StringComparison.Ordinal)
-				                        select t, startIndex + 1);
-
-				var nstests = ToTree(from t in tests
-				                     where t.FixtureType.Namespace == fullns
-				                     select t, -1);
-
-				// add a namespace
-				var ti = new TreeItem
-				{
-					Text = ns.Last(),
-					Expanded = true,
-					Tag = new NamespaceTestFilter { Namespace = fullns }
-				};
-				ti.Children.AddRange(from t in nstests.Concat(childtests)
-				                     orderby t.Text
-				                     select t);
-				yield return ti;
-			}
 		}
 	}
 }

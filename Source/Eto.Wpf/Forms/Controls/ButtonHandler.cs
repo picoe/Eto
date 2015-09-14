@@ -1,24 +1,34 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+#if WINRT
+using sw = Windows.UI.Xaml;
+using swc = Windows.UI.Xaml.Controls;
+
+using WpfLabel = Windows.UI.Xaml.Controls.TextBlock;
+
+namespace Eto.WinRT.Forms.Controls
+#else
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 
+using WpfLabel = System.Windows.Controls.Label;
+
 namespace Eto.Wpf.Forms.Controls
+#endif
 {
 	/// <summary>
 	/// Button handler.
 	/// </summary>
-	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
+	/// <copyright>(c) 2012-2015 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ButtonHandler : WpfControl<swc.Button, Button, Button.ICallback>, Button.IHandler
 	{
-		Image image;
 		readonly swc.Image swcimage;
-		readonly swc.Label label;
-		ButtonImagePosition imagePosition;
+		readonly WpfLabel label;
 
-		public static Size MinimumSize = new Size(80, 23);
+		public static Size DefaultMinimumSize = new Size(80, 23);
 
 		protected override Size DefaultSize { get { return MinimumSize; } }
 
@@ -26,7 +36,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control = new swc.Button();
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
-			label = new swc.Label
+			label = new WpfLabel
 			{
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				HorizontalAlignment = sw.HorizontalAlignment.Center,
@@ -36,7 +46,6 @@ namespace Eto.Wpf.Forms.Controls
 			swc.Grid.SetColumn(label, 1);
 			swc.Grid.SetRow(label, 1);
 			swcimage = new swc.Image();
-			SetImagePosition();
 			var grid = new swc.Grid();
 			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
 			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Star) });
@@ -47,46 +56,53 @@ namespace Eto.Wpf.Forms.Controls
 			grid.Children.Add(swcimage);
 			grid.Children.Add(label);
 
-			/*
-			var panel = new swc.Control { IsTabStop = false };
-			panel.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
-			panel.VerticalAlignment = sw.VerticalAlignment.Stretch;
-			swc.Grid.SetColumn (panel, 1);
-			swc.Grid.SetRow (panel, 1);
-			grid.Children.Add (panel);
-			 * */
 			Control.Content = grid;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			SetImagePosition();
 		}
 
 		public override bool UseMousePreview { get { return true; } }
 
 		public override bool UseKeyPreview { get { return true; } }
 
+#if WINRT
 		public string Text
 		{
-			get { return (label.Content as string).ToEtoMneumonic(); }
+			get { return label.Text; }
 			set
 			{
-				label.Content = value.ToWpfMneumonic();
+				label.Text = value;
 				SetImagePosition();
 			}
 		}
+#else
+		public string Text
+		{
+			get { return (label.Content as string).ToEtoMnemonic(); }
+			set
+			{
+				label.Content = value.ToPlatformMnemonic();
+				SetImagePosition();
+			}
+		}
+#endif
+		static readonly object Image_Key = new object();
 
 		public Image Image
 		{
-			get { return image; }
-			set
-			{
-				image = value;
-				swcimage.Source = image.ToWpf();
-			}
+			get { return Widget.Properties.Get<Image>(Image_Key); }
+			set { Widget.Properties.Set(Image_Key, value, () => swcimage.Source = value.ToWpf()); }
 		}
 
 		void SetImagePosition()
 		{
-			bool hideLabel = string.IsNullOrEmpty((string)label.Content);
+			bool hideLabel = string.IsNullOrEmpty(Text);
 			int col, row;
-			switch (imagePosition)
+			switch (ImagePosition)
 			{
 				case ButtonImagePosition.Left:
 					col = 0; row = 1;
@@ -122,23 +138,28 @@ namespace Eto.Wpf.Forms.Controls
 			label.Visibility = hideLabel ? sw.Visibility.Collapsed : sw.Visibility.Visible;
 		}
 
+		static readonly object ImagePosition_Key = new object();
+
 		public ButtonImagePosition ImagePosition
 		{
-			get { return imagePosition; }
-			set
-			{
-				if (imagePosition != value)
-				{
-					imagePosition = value;
-					SetImagePosition();
-				}
-			}
+			get { return Widget.Properties.Get<ButtonImagePosition>(ImagePosition_Key); }
+			set { Widget.Properties.Set(ImagePosition_Key, value, SetImagePosition); }
 		}
 
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
+				case Eto.Forms.Control.MouseUpEvent:
+#if WPF
+					ContainerControl.PreviewMouseDown += (sender, e) =>
+					{
+						// don't swallow mouse up events for right click and middle click
+						e.Handled |= e.ChangedButton != sw.Input.MouseButton.Left;
+					};
+#endif
+					base.AttachEvent(id);
+					break;
 				case Button.TextChangedEvent:
 					// text is never changed
 					break;
@@ -148,10 +169,29 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public override Color TextColor
+		public
+#if WPF
+		override 
+#endif
+		Color TextColor
 		{
 			get { return label.Foreground.ToEtoColor(); }
 			set { label.Foreground = value.ToWpfBrush(Control.Foreground); }
+		}
+
+		static readonly object MinimumSize_Key = new object();
+
+		public Size MinimumSize
+		{
+			get { return Widget.Properties.Get<Size>(MinimumSize_Key, DefaultMinimumSize); }
+			set
+			{
+				if (MinimumSize != value)
+				{
+					Widget.Properties[MinimumSize_Key] = value;
+					Control.UpdateLayout();
+				}
+			}
 		}
 	}
 }

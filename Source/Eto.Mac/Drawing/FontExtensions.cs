@@ -6,7 +6,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -34,11 +34,11 @@ using nuint = System.UInt32;
 namespace Eto.Mac.Drawing
 #elif IOS
 
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.ObjCRuntime;
+using UIKit;
+using Foundation;
+using ObjCRuntime;
 using Eto.Mac;
-using NSFont = MonoTouch.UIKit.UIFont;
+using NSFont = UIKit.UIFont;
 
 namespace Eto.iOS.Drawing
 #endif
@@ -46,7 +46,7 @@ namespace Eto.iOS.Drawing
 	public static class FontExtensions
 	{
 		#if OSX
-		static readonly NSString ForegroundColorAttribute = NSAttributedString.ForegroundColorAttributeName;
+		static readonly NSString ForegroundColorAttribute = NSStringAttributeKey.ForegroundColor;
 		#elif IOS
 		static readonly NSString ForegroundColorAttribute = UIStringAttributeKey.ForegroundColor;
 		static readonly Selector selSetSize = new Selector("setSize:");
@@ -121,7 +121,7 @@ namespace Eto.iOS.Drawing
 			#if OSX
 			return (float)layout.DefaultLineHeightForFont(font);
 			#elif IOS
-			return font.LineHeight;
+			return (float)font.LineHeight;
 			#endif
 			/**
 			var leading = Math.Floor (Math.Max (0, font.Leading) + 0.5f);
@@ -172,7 +172,7 @@ namespace Eto.iOS.Drawing
 			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToNS();
 			#elif IOS
 			if (container.RespondsToSelector(selSetSize))
-				container.Size = (availableSize ?? SizeF.MaxValue).ToSD();
+				container.Size = (availableSize ?? SizeF.MaxValue).ToNS();
 			#endif
 		}
 

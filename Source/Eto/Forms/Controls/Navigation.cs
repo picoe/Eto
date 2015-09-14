@@ -4,6 +4,27 @@ using System.Collections.Generic;
 namespace Eto.Forms
 {
 	/// <summary>
+	/// Event arguments with a <see cref="NavigationItem"/> reference
+	/// </summary>
+	public sealed class NavigationItemEventArgs : EventArgs
+	{
+		/// <summary>
+		/// Gets the item that triggered the event
+		/// </summary>
+		/// <value>The item.</value>
+		public INavigationItem Item { get; private set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.NavigationItemEventArgs"/> class.
+		/// </summary>
+		/// <param name="item">Item that triggered the event</param>
+		public NavigationItemEventArgs(INavigationItem item)
+		{
+			Item = item;
+		}
+	}
+
+	/// <summary>
 	/// Control to show child panels in a hirarchical stack using a navigation button to go back to a previous panel.
 	/// </summary>
 	/// <remarks>
@@ -37,34 +58,56 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Occurs when a <see cref="NavigationItem"/> is shown.
+		/// Event identifier for handlers when attaching the <see cref="ItemShown"/> event
 		/// </summary>
-		public event EventHandler<EventArgs> ItemShown;
+		public const string ItemShownEvent = "Navigation.ItemShown";
+
+		/// <summary>
+		/// Event to handle when an item is shown on the navigation stack
+		/// </summary>
+		public event EventHandler<NavigationItemEventArgs> ItemShown
+		{
+			add { Properties.AddHandlerEvent(ItemShownEvent, value); }
+			remove { Properties.RemoveEvent(ItemShownEvent, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="ItemShown"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected virtual void OnItemShown(EventArgs e)
+		protected virtual void OnItemShown(NavigationItemEventArgs e)
 		{
-			if (ItemShown != null)
-				ItemShown(this, e);
+			Properties.TriggerEvent(ItemShownEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="ItemRemoved"/> event
+		/// </summary>
+		public const string ItemRemovedEvent = "Navigation.ItemRemoved";
+
+		/// <summary>
+		/// Event to handle when an item is removed from the navigation stack, either by the user or by code.
+		/// </summary>
+		public event EventHandler<NavigationItemEventArgs> ItemRemoved
+		{
+			add { Properties.AddHandlerEvent(ItemRemovedEvent, value); }
+			remove { Properties.RemoveEvent(ItemRemovedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="ItemRemoved"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnItemRemoved(NavigationItemEventArgs e)
+		{
+			RemoveParent(e.Item.Content);
+			Properties.TriggerEvent(ItemRemovedEvent, this, e);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Navigation"/> class.
 		/// </summary>
 		public Navigation()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Navigation"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Navigation(Generator generator)
-			: base(generator, typeof(IHandler))
 		{
 		}
 
@@ -144,7 +187,12 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the item shown event.
 			/// </summary>
-			void OnItemShown(Navigation widget, EventArgs e);
+			void OnItemShown(Navigation widget, NavigationItemEventArgs e);
+
+			/// <summary>
+			/// Raises the item removed event.
+			/// </summary>
+			void OnItemRemoved(Navigation widget, NavigationItemEventArgs e);
 		}
 
 		/// <summary>
@@ -155,9 +203,17 @@ namespace Eto.Forms
 			/// <summary>
 			/// Raises the item shown event.
 			/// </summary>
-			public void OnItemShown(Navigation widget, EventArgs e)
+			public void OnItemShown(Navigation widget, NavigationItemEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnItemShown(e));
+			}
+
+			/// <summary>
+			/// Raises the item removed event.
+			/// </summary>
+			public void OnItemRemoved(Navigation widget, NavigationItemEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnItemRemoved(e));
 			}
 		}
 

@@ -66,7 +66,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				var content = (swc.Border)scroller.Content;
 				var viewportSize = new sw.Size(info.ViewportWidth, info.ViewportHeight);
-				var prefSize = Content.GetPreferredSize(Conversions.PositiveInfinitySize);
+				var prefSize = Content.GetPreferredSize(WpfConversions.PositiveInfinitySize);
 
 				// hack for when a scrollable is in a group box it expands vertically
 				if (Widget.FindParent<GroupBox>() != null)

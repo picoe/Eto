@@ -15,14 +15,19 @@ namespace Eto.Drawing
 	public class RectangleConverter : TypeConverter
 	{
 		/// <summary>
+		/// The character to split up the string which will be converted
+		/// </summary>
+		static readonly char[] DimensionSplitter = new char[1] { ',' };
+
+		/// <summary>
 		/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
 		/// </summary>
 		/// <param name="context">Conversion context</param>
 		/// <param name="sourceType">Type to convert from</param>
 		/// <returns>True if this converter can convert from the specified type, false otherwise</returns>
-		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof (string) || base.CanConvertFrom (context, sourceType);
+			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
 		}
 
 		/// <summary>
@@ -32,22 +37,30 @@ namespace Eto.Drawing
 		/// <param name="culture">Culture to perform the conversion</param>
 		/// <param name="value">Value to convert</param>
 		/// <returns>A new instance of a <see cref="Rectangle"/> converted from the specified <paramref name="value"/></returns>
-		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			string text = value as string;
-			if (text != null) {
-				var parts = text.Split (culture.TextInfo.ListSeparator.ToCharArray ());
+			if (text != null)
+			{
+				string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
 				if (parts.Length != 4)
-					throw new ArgumentException (string.Format (CultureInfo.CurrentCulture, "Cannot parse value '{0}'. Should be in the form of 'x, y, width, height'", text));
-				var converter = new Int32Converter ();
-				return new Rectangle (
-					(int)converter.ConvertFromString (context, culture, parts [0]),
-					(int)converter.ConvertFromString (context, culture, parts [1]),
-					(int)converter.ConvertFromString (context, culture, parts [2]),
-					(int)converter.ConvertFromString (context, culture, parts [3])
-				);
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Rectangle. Should be in the form of 'x, y, width, height'", text));
+
+				try
+				{
+					return new Rectangle(
+						int.Parse(parts[0]),
+						int.Parse(parts[1]),
+						int.Parse(parts[2]),
+						int.Parse(parts[3])
+					);
+				}
+				catch
+				{
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Rectangle. Should be in the form of 'x, y, width, height'", text));
+				}
 			}
-			return base.ConvertFrom (context, culture, value);
+			return base.ConvertFrom(context, culture, value);
 		}
 	}
 }

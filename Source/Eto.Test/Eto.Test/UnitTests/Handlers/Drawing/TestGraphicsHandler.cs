@@ -187,6 +187,11 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 			transform = transforms.Pop();
 		}
 
+		public IMatrix CurrentTransform
+		{
+			get { return transform; }
+		}
+
 		RectangleF clipBounds;
 		public RectangleF ClipBounds
 		{

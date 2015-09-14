@@ -5,6 +5,7 @@ using System.Diagnostics;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using System.Threading;
+using System.Windows.Threading;
 
 namespace Eto.Wpf.Forms
 {
@@ -15,6 +16,7 @@ namespace Eto.Wpf.Forms
 		string badgeLabel;
 		static ApplicationHandler instance;
 		List<sw.Window> delayShownWindows;
+		static Dispatcher dispatcher;
 
 		public static ApplicationHandler Instance
 		{
@@ -25,7 +27,7 @@ namespace Eto.Wpf.Forms
 
 		public static void InvokeIfNecessary(Action action)
 		{
-			if (sw.Application.Current == null || Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
+			if (dispatcher == null || Thread.CurrentThread == dispatcher.Thread)
 				action();
 			else
 			{
@@ -35,12 +37,12 @@ namespace Eto.Wpf.Forms
 
 		public static T InvokeIfNecessary<T>(Func<T> action)
 		{
-			if (sw.Application.Current == null || Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
+			if (dispatcher == null || Thread.CurrentThread == dispatcher.Thread)
 				return action();
 			else
 			{
 				T ret = default(T);
-				sw.Application.Current.Dispatcher.Invoke(new Action(() =>
+				dispatcher.Invoke(new Action(() =>
 				{
 					ret = action();
 				}));
@@ -69,6 +71,7 @@ namespace Eto.Wpf.Forms
 				Control = new sw.Application { ShutdownMode = sw.ShutdownMode.OnExplicitShutdown };
 				System.Windows.Forms.Application.EnableVisualStyles();
 			}
+			dispatcher = sw.Application.Current.Dispatcher ?? Dispatcher.CurrentDispatcher;
 			instance = this;
 			Control.Startup += HandleStartup;
 		}
@@ -146,12 +149,12 @@ namespace Eto.Wpf.Forms
 
 		public void Invoke(Action action)
 		{
-			Control.Dispatcher.Invoke(action, sw.Threading.DispatcherPriority.Background);
+			Control.Dispatcher.Invoke(action, sw.Threading.DispatcherPriority.ApplicationIdle);
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-			Control.Dispatcher.BeginInvoke(action);
+			Control.Dispatcher.BeginInvoke(action, sw.Threading.DispatcherPriority.ApplicationIdle);
 		}
 
 		public Keys CommonModifier

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
-using MonoTouch.ObjCRuntime;
-using MonoTouch.UIKit;
+using ObjCRuntime;
+using UIKit;
 using sd = System.Drawing;
 
 namespace Eto.iOS.Forms.Toolbar
@@ -51,14 +51,12 @@ namespace Eto.iOS.Forms.Toolbar
 		{
 		}
 		
-		static readonly Selector selAction = new Selector("action");
-
 		protected override void Initialize()
 		{
 			base.Initialize();
 			// Create a button so that any image can be used.
 			// (A standard toolbar item uses only the alpha channel of the image.)
-			button = new UIButton(new sd.RectangleF(0, 0, 40, 40));
+			button = new UIButton(new CoreGraphics.CGRect(0, 0, 40, 40));
 			button.TouchUpInside += (s, e) => OnClick();
 			Control = (TControl)new UIBarButtonItem(button);
 

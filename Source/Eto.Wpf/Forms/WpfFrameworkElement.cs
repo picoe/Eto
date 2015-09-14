@@ -62,7 +62,7 @@ namespace Eto.Wpf.Forms
 			var handler = control.GetWpfFrameworkElement();
 			if (handler != null)
 				return handler.GetPreferredSize(available);
-			return Conversions.ZeroSize;
+			return WpfConversions.ZeroSize;
 		}
 	}
 
@@ -84,6 +84,15 @@ namespace Eto.Wpf.Forms
 		bool isMouseCaptured;
 		public bool XScale { get; private set; }
 		public bool YScale { get; private set; }
+
+		public override IntPtr NativeHandle
+		{
+			get
+			{
+				var hwnd = sw.PresentationSource.FromVisual(Control) as sw.Interop.HwndSource;
+				return hwnd != null ? hwnd.Handle : IntPtr.Zero;
+			}
+		}
 
 		protected sw.Size PreferredSize { get { return preferredSize; } set { preferredSize = value; } }
 
@@ -122,7 +131,7 @@ namespace Eto.Wpf.Forms
 			{
 				if (newSize != null)
 					return newSize.Value;
-				if (!Control.IsLoaded)
+				if (!Widget.Loaded)
 					return preferredSize.ToEtoSize();
 				return Control.GetSize();
 			}
@@ -312,6 +321,7 @@ namespace Eto.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
+					HandleEvent(Eto.Forms.Control.MouseEnterEvent);
 					ContainerControl.MouseLeave += (sender, e) =>
 					{
 						if (isMouseOver != Control.IsMouseOver)
@@ -327,7 +337,7 @@ namespace Eto.Wpf.Forms
 					ContainerControl.PreviewMouseWheel += (sender, e) =>
 					{
 						var args = e.ToEto(Control);
-						Callback.OnMouseLeave(Widget, args);
+						Callback.OnMouseWheel(Widget, args);
 						e.Handled = args.Handled;
 					};
 					break;
@@ -350,6 +360,9 @@ namespace Eto.Wpf.Forms
 						Control.KeyDown += HandleKeyDown;
 						Control.TextInput += HandleTextInput;
 					}
+					break;
+				case Eto.Forms.Control.TextInputEvent:
+					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					Control.KeyUp += (sender, e) =>
@@ -382,6 +395,14 @@ namespace Eto.Wpf.Forms
 
 		void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
 		{
+			var tiargs = new TextInputEventArgs(e.Text);
+			Callback.OnTextInput(Widget, tiargs);
+			if (tiargs.Cancel)
+			{
+				e.Handled = true;
+				return;
+			}
+
 			foreach (var keyChar in e.Text)
 			{
 				var key = Keys.None;

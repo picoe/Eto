@@ -20,7 +20,7 @@ namespace Eto.WinRT.Forms
 	{
 		wuc.CoreDispatcher dispatcher;
 		bool attached;
-		bool shutdown;
+		//bool shutdown;
 		string badgeLabel;
 		static ApplicationHandler instance;
 		List<sw.Window> delayShownWindows;
@@ -126,8 +126,8 @@ namespace Eto.WinRT.Forms
 
 		public void Quit()
 		{
-			bool cancel = false;
 #if TODO_XAML
+			bool cancel = false;
 			foreach (sw.Window window in Control.Windows)
 			{
 				window.Close();
@@ -146,6 +146,7 @@ namespace Eto.WinRT.Forms
 		public void Invoke(Action action)
 		{
 			var ev = new ManualResetEvent(false);
+#pragma warning disable 4014
 			dispatcher.RunAsync(wuc.CoreDispatcherPriority.Normal, () => {
 				try
 				{
@@ -156,13 +157,15 @@ namespace Eto.WinRT.Forms
 					ev.Set();
 				}
 			});
-
+#pragma warning restore 4014
 			ev.WaitOne();
 		}
 
 		public void AsyncInvoke(Action action)
 		{
+#pragma warning disable 4014
 			dispatcher.RunAsync(wuc.CoreDispatcherPriority.Normal, () => action());
+#pragma warning restore 4014
 		}
 
 		public Keys CommonModifier
@@ -190,7 +193,7 @@ namespace Eto.WinRT.Forms
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
-				if (shutdown) return;
+				//if (shutdown) return;
 				if (Widget.MainForm != null)
 				{
 #if TODO_XAML

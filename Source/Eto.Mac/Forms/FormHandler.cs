@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using SD = System.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -37,7 +36,10 @@ namespace Eto.Mac.Forms
 {
 	public class FormHandler : MacWindow<NSWindow, Form, Form.ICallback>, Form.IHandler
 	{
+		#pragma warning disable 414
+		// keep reference to controller so it doesn't get disposed
 		NSWindowController controller;
+		#pragma warning restore 414
 		protected override bool DisposeControl { get { return false; } }
 
 		public FormHandler(NSWindow window)
@@ -59,13 +61,30 @@ namespace Eto.Mac.Forms
 			ConfigureWindow();
 		}
 
+		public override void SetOwner(Window owner)
+		{
+			if (owner != null)
+			{
+				var macWindow = owner.Handler as IMacWindow;
+				if (macWindow != null)
+					macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
+			}
+			else
+			{
+				var parentWindow = Control.ParentWindow;
+				if (parentWindow != null)
+					parentWindow.RemoveChildWindow(Control);
+			}
+		}
+
 		public void Show()
 		{
+			var visible = Control.IsVisible;
 			if (WindowState == WindowState.Minimized)
 				Control.MakeKeyWindow();
 			else
 				Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
-			if (!Control.IsVisible)
+			if (!visible)
 				Callback.OnShown(Widget, EventArgs.Empty);
 		}
 	}

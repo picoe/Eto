@@ -1,5 +1,4 @@
 using System;
-using SD = System.Drawing;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
@@ -56,7 +55,7 @@ namespace Eto.Mac.Forms.Controls
 				set
 				{
 					textColor = value;
-					textAttributes = textColor != null ? NSDictionary.FromObjectAndKey(textColor.Value.ToNSUI(), NSAttributedString.ForegroundColorAttributeName) : null;
+					textAttributes = textColor != null ? NSDictionary.FromObjectAndKey(textColor.Value.ToNSUI(), NSStringAttributeKey.ForegroundColor) : null;
 				}
 			}
 
@@ -114,14 +113,14 @@ namespace Eto.Mac.Forms.Controls
 
 			public override int IndexOf(object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				return (int)Handler.Control.Menu.IndexOf(binding.GetValue(item));
 			}
 
 			public override void AddRange(IEnumerable<object> items)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				foreach (var item in items.Select(r => binding.GetValue(r)))
 				{
 					Handler.Control.Menu.AddItem(new NSMenuItem(item));
@@ -134,7 +133,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void AddItem(object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Menu.AddItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))));
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
@@ -144,7 +143,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void InsertItem(int index, object item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Menu.InsertItem(new NSMenuItem(Convert.ToString(binding.GetValue(item))), index);
 				if (oldIndex == -1)
 					Handler.Control.SelectItem(-1);
@@ -196,8 +195,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value != SelectedIndex)
 				{
 					Control.SelectItem(value);
-					if (Widget.Loaded)
-						Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
 			}
 		}

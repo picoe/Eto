@@ -121,7 +121,7 @@ namespace Eto.Mac.Forms.Cells
 		{
 			var font = cell.Font ?? NSFont.BoldSystemFontOfSize (NSFont.SystemFontSize);
 			var str = new NSString (Convert.ToString (value));
-			var attrs = NSDictionary.FromObjectAndKey (font, NSAttributedString.FontAttributeName);
+			var attrs = NSDictionary.FromObjectAndKey (font, NSStringAttributeKey.Font);
 			return (float)str.StringSize (attrs).Width + 8; // for border
 			
 		}

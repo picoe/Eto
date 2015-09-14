@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using Eto.Drawing;
-using MonoTouch.UIKit;
+using UIKit;
 
 namespace Eto.iOS.Drawing
 {

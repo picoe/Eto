@@ -22,13 +22,13 @@
     <DefineConstants>TRACE;WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
+    <OutputPath>..\..\BuildOutput\net40\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WINFORMS</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\BuildOutput\Release\</OutputPath>
+    <OutputPath>..\..\BuildOutput\net40\Release\</OutputPath>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
@@ -65,14 +65,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Eto.Mac\Conversions.sd.cs">
-      <Link>Conversions.sd.cs</Link>
+    <Compile Include="..\Eto.Mac\SDConversions.cs">
+      <Link>SDConversions.cs</Link>
     </Compile>
     <Compile Include="..\Eto.Wpf\CustomControls\HttpServer.cs">
       <Link>CustomControls\HttpServer.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\Conversions.cs">
+      <Link>Conversions.cs</Link>
+    </Compile>
     <Compile Include="BubbleEventFilter.cs" />
-    <Compile Include="Conversions.cs" />
     <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -300,11 +302,22 @@
     <Compile Include="Platform.cs" />
     <Compile Include="Win32TextBox.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
+    <Compile Include="WinConversions.cs" />
     <Compile Include="WinFormsHelpers.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
+    <Compile Include="Forms\KeyboardHandler.cs" />
+    <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
+      <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>Drawing\GradientHelper.cs</Link>
+    </Compile>
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -337,7 +350,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" WhileNewLinePlacement="DoNotCare" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" NewLineBeforeConstructorInitializerColon="NewLine" NewLineAfterConstructorInitializerColon="SameLine" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>

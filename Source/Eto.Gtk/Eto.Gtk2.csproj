@@ -22,17 +22,15 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
+    <OutputPath>..\..\BuildOutput\net40\Debug\</OutputPath>
     <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
-    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\BuildOutput\Release\</OutputPath>
+    <OutputPath>..\..\BuildOutput\net40\Release\</OutputPath>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <ItemGroup>
@@ -58,7 +56,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared\Conversions.cs">
+      <Link>Conversions.cs</Link>
+    </Compile>
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ExpanderHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
@@ -114,6 +116,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
+    <Compile Include="GtkConversions.cs" />
     <Compile Include="IO\SystemIcons.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -204,7 +207,6 @@
     <Compile Include="MenuActionItemHandler.cs" />
     <Compile Include="Forms\Cells\GridCellFormattingEventArgs.cs" />
     <Compile Include="EtoWebView.cs" />
-    <Compile Include="Conversions.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
@@ -241,6 +243,14 @@
     <Compile Include="Forms\GtkSynchronizationContext.cs" />
     <Compile Include="GtkHelpers.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
+    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
+    <Compile Include="Forms\KeyboardHandler.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
+      <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="../Shared/Build.targets" />
@@ -255,8 +265,8 @@
     <MonoDevelop>
       <Properties>
         <Policies>
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" WhileNewLinePlacement="DoNotCare" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" NewLineBeforeConstructorInitializerColon="NewLine" NewLineAfterConstructorInitializerColon="SameLine" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>

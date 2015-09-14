@@ -64,6 +64,7 @@ namespace Eto
 	/// </remarks>
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[RuntimeNameProperty("ID")]
 	public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 	{
 		IHandler WidgetHandler { get { return Handler as IHandler; } }
@@ -78,16 +79,18 @@ namespace Eto
 		public Platform Platform { get; private set; }
 
 		/// <summary>
-		/// Gets the generator. Obsolete.
-		/// </summary>
-		/// <value>The generator.</value>
-		[Obsolete("Use Platform instead")]
-		public Generator Generator { get { return Platform; } }
-
-		/// <summary>
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
 		public object Handler { get; internal set; }
+
+		/// <summary>
+		/// Gets the native platform-specific handle for integration purposes
+		/// </summary>
+		/// <value>The native handle.</value>
+		public IntPtr NativeHandle
+		{
+			get { return WidgetHandler.NativeHandle; }
+		}
 
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
@@ -129,6 +132,12 @@ namespace Eto
 			/// Gets the widget this handler is implemented for
 			/// </summary>
 			Widget Widget { get; set; }
+
+			/// <summary>
+			/// Gets the native platform-specific handle for integration purposes
+			/// </summary>
+			/// <value>The native handle.</value>
+			IntPtr NativeHandle { get; }
 
 			/// <summary>
 			/// Called after the widget is constructed
@@ -206,56 +215,14 @@ namespace Eto
 		/// <summary>
 		/// Initializes a new instance of the Widget class
 		/// </summary>
-		/// <param name="generator">Generator the widget handler was created with, or null to use <see cref="Eto.Generator.Current"/></param>
-		/// <param name="handler">Handler to assign to this widget for its implementation</param>
-		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
-		[Obsolete("Use Widget(IHandler) instead")]
-		protected Widget(Generator generator, IHandler handler, bool initialize = true)
-		{
-			if (generator == null)
-				generator = Platform.Instance;
-			Handler = handler;
-			Platform = (Platform)generator;
-			if (handler != null)
-			{
-				handler.Widget = this; // tell the handler who we are
-			}
-			if (initialize)
-				Initialize();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Widget class
-		/// </summary>
-		/// <param name="generator">Generator to create the handler with, or null to use <see cref="Eto.Generator.Current"/></param>
-		/// <param name="type">Type of widget handler to create from the generator for this widget</param>
-		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
-		[Obsolete("Use default constructor and HandlerAttribute to specify handler to use")]
-		protected Widget(Generator generator, Type type, bool initialize = true)
-		{
-			var platform = (Platform)generator ?? Platform.Instance;
-			this.Handler = platform.Create(type);
-			this.Platform = (Platform)generator;
-			var widgetHandler = WidgetHandler;
-			if (widgetHandler != null)
-			{
-				widgetHandler.Widget = this;
-			}
-			if (initialize)
-				Initialize();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Widget class
-		/// </summary>
 		protected Widget()
 		{
 			var platform = Platform.Instance;
 			if (platform == null)
-				throw new EtoException("Platform instance is null. Have you created your application?");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Platform instance is null. Have you created your application?"));
 			var info = platform.FindHandler(GetType());
 			if (info == null)
-				throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "type for '{0}' could not be found in this platform", GetType().FullName));
+				throw new ArgumentOutOfRangeException(string.Format(CultureInfo.CurrentCulture, "Type for '{0}' could not be found in this platform", GetType().FullName));
 			Handler = info.Instantiator();
 			Platform = platform;
 			var widgetHandler = this.Handler as IHandler;
@@ -297,8 +264,8 @@ namespace Eto
 			var handler = WidgetHandler;
 			if (handler != null)
 				handler.Initialize();
-			Eto.Style.OnStyleWidgetDefaults(this);
 			EventLookup.HookupEvents(this);
+			Platform.Instance.TriggerWidgetCreated(new WidgetCreatedEventArgs(this));
 		}
 
 		PropertyStore properties;

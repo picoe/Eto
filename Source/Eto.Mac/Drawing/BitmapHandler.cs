@@ -1,8 +1,8 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Eto.Drawing;
-using sd = System.Drawing;
 using Eto.Mac.Forms;
 
 #if XAMMAC2
@@ -163,7 +163,7 @@ namespace Eto.Mac.Drawing
 					control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
 					break;*/
 				default:
-					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, "Not supported");
+					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, string.Format(CultureInfo.CurrentCulture, "Not supported"));
 			}
 		}
 
@@ -190,6 +190,14 @@ namespace Eto.Mac.Drawing
 
 		public void Unlock(BitmapData bitmapData)
 		{
+		}
+
+		public void Save(string fileName, ImageFormat format)
+		{
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
+			}
 		}
 
 		public void Save(Stream stream, ImageFormat format)
@@ -251,7 +259,7 @@ namespace Eto.Mac.Drawing
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var sourceRect = new CGRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
-			var destRect = graphics.TranslateView(destination.ToNS(), true, true);
+			var destRect = destination.ToNS();
 			if (alpha)
 				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 			else
@@ -266,7 +274,11 @@ namespace Eto.Mac.Drawing
 			{
 				var rect = new CGRect(CGPoint.Empty, Control.Size);
 				var image = new NSImage();
+				#if __UNIFIED__
+				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToNS());
+				#else
 				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToSDRectangleF());
+				#endif
 				image.AddRepresentation(new NSBitmapImageRep(cgimage));
 				return new Bitmap(new BitmapHandler(image));
 			}
@@ -275,7 +287,7 @@ namespace Eto.Mac.Drawing
 		public Color GetPixel(int x, int y)
 		{
 			if (bmprep == null)
-				throw new InvalidOperationException(string.Format("Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
 
 			return bmprep.ColorAt(x, y).ToEto();
 		}

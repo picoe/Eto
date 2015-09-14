@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using SD = System.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Drawing;
 
 namespace Eto.iOS.Forms.Controls
@@ -92,6 +92,12 @@ namespace Eto.iOS.Forms.Controls
 		{
 			get { return Control.TextColor.ToEto(); }
 			set { Control.TextColor = value.ToNSUI(); }
+		}
+
+		public int MaximumDecimalPlaces
+		{
+			get;
+			set;
 		}
 	}
 }

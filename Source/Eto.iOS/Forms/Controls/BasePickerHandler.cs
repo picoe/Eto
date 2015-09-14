@@ -2,12 +2,12 @@ using System;
 using System.Reflection;
 using SD = System.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Drawing;
-using MonoTouch.Foundation;
+using Foundation;
 using System.Collections.Generic;
 using System.Linq;
-using MonoTouch.ObjCRuntime;
+using ObjCRuntime;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -54,9 +54,9 @@ namespace Eto.iOS.Forms.Controls
 				picker.SizeToFit();
 				var view = new UIViewController { View = picker };
 				if (view.RespondsToSelector(selPreferredContentSize))
-					view.PreferredContentSize = picker.SizeThatFits(SD.SizeF.Empty);
+					view.PreferredContentSize = picker.SizeThatFits(CoreGraphics.CGSize.Empty);
 				else
-					view.ContentSizeForViewInPopover = picker.SizeThatFits(SD.SizeF.Empty);
+					view.ContentSizeForViewInPopover = picker.SizeThatFits(CoreGraphics.CGSize.Empty);
 				popover = new UIPopoverController(view);
 				popover.PresentFromRect(Bounds, this, UIPopoverArrowDirection.Any, true);
 				popover.DidDismiss += (sender, e) =>

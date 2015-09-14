@@ -26,7 +26,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		where TCallback: DropDown.ICallback
 	{
 		protected Font font;
-		CollectionHandler collection;
+		protected CollectionHandler collection;
 		protected Gtk.ListStore listStore;
 		protected Gtk.CellRendererText text;
 
@@ -47,10 +47,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected class DropDownConnector : GtkControlConnector
 		{
-			int? lastIndex;
+			protected int lastIndex = -1;
 			public new DropDownHandler<TControl, TWidget, TCallback> Handler { get { return (DropDownHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
-			public void HandleChanged(object sender, EventArgs e)
+			public virtual void HandleChanged(object sender, EventArgs e)
 			{
 				var newIndex = Handler.SelectedIndex;
 				if (newIndex != lastIndex)
@@ -71,7 +71,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				return font ?? (font = new Font(new FontHandler(text.FontDesc)));
+				return font ?? (font = text.FontDesc.ToEto());
 			}
 			set
 			{
@@ -89,14 +89,14 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public override void AddItem(object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.listStore.AppendValues(binding.GetValue(item));
 				Handler.Control.QueueResize();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.listStore.InsertWithValues(index, binding.GetValue(item));
 				Handler.Control.QueueResize();
 			}
@@ -128,7 +128,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public Color TextColor
+		public virtual Color TextColor
 		{
 			get { return text.ForegroundGdk.ToEto(); }
 			set
@@ -141,15 +141,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Child.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			get { return Control.Child.GetBackground(); }
 			set
 			{
-				Control.Child.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
-				Control.Child.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyBg(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk());
-				Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
+				Control.Child.SetBackground(value);
+				Control.Child.SetBase(value);
+				Control.SetBackground(value);
+				Control.SetBase(value);
 				if (Widget.Loaded)
 					Control.QueueDraw();
 			}

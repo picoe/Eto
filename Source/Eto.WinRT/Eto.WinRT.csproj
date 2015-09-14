@@ -22,8 +22,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\BuildOutput\Pcl\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <OutputPath>..\..\BuildOutput\pcl\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -31,8 +31,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\BuildOutput\Pcl\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <OutputPath>..\..\BuildOutput\pcl\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -107,8 +107,8 @@
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <ItemGroup>
-    <Compile Include="..\Eto.Direct2D\Conversions.cs">
-      <Link>Conversions.cs</Link>
+    <Compile Include="..\Eto.Direct2D\2DConversions.cs">
+      <Link>2DConversions.cs</Link>
     </Compile>
     <Compile Include="..\Eto.Direct2D\Drawing\BitmapHandler.cs">
       <Link>Drawing\BitmapHandler.cs</Link>
@@ -152,6 +152,9 @@
     <Compile Include="..\Eto.Direct2D\Drawing\PenHandler.cs">
       <Link>Drawing\PenHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Direct2D\Drawing\RadialGradientBrushHandler.cs">
+      <Link>Drawing\RadialGradientBrushHandler.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.Direct2D\Drawing\SDFactory.cs">
       <Link>Drawing\SDFactory.cs</Link>
     </Compile>
@@ -163,6 +166,9 @@
     </Compile>
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Wpf\Forms\Controls\ButtonHandler.cs">
+      <Link>Forms\Controls\ButtonHandler.cs</Link>
     </Compile>
     <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -227,9 +233,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ColorDialogHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\ButtonHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\CheckBoxHandler.cs">
@@ -462,9 +465,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto - Pcl.csproj">
+    <ProjectReference Include="..\Eto\Eto - pcl.csproj">
       <Project>{35ef0a4e-2a1a-492c-8bed-106774ea09f2}</Project>
-      <Name>Eto - Pcl</Name>
+      <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">

@@ -123,11 +123,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			switch (column)
 			{
 				case 0:
-					return new GLib.Value(Widget.TextBinding.GetValue(item));
+					return new GLib.Value(Widget.ItemTextBinding.GetValue(item));
 				case 1:
-					if (Widget.ImageBinding != null)
+					if (Widget.ItemImageBinding != null)
 					{
-						var img = Widget.ImageBinding.GetValue(item);
+						var img = Widget.ItemImageBinding.GetValue(item);
 						if (img != null)
 						{
 							var imgHandler = img.Handler as IGtkPixbuf;
@@ -231,8 +231,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Style.Base(Gtk.StateType.Normal).ToEto(); }
-			set { Control.ModifyBase(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return Control.GetBase(); }
+			set { Control.SetBase(value); }
 		}
 	}
 }

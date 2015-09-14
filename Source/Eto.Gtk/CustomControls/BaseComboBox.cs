@@ -64,7 +64,7 @@ namespace Eto.GtkSharp.CustomControls
 
 				StyleContext.RenderArrow(cr, Math.PI, arrowPos, (rect.Height - arrowSize) / 2, arrowSize);
 
-				cr.Color = new Cairo.Color(.8, .8, .8);
+				cr.SetSourceColor(new Cairo.Color(.8, .8, .8));
 				cr.Rectangle(arrowPos - 5, 2, 1, rect.Height - 4);
 				cr.Fill();
 

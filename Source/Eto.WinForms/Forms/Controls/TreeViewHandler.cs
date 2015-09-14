@@ -189,6 +189,8 @@ namespace Eto.WinForms.Forms.Controls
 		void PerformPopulateNodes(System.Windows.Forms.TreeNodeCollection nodes, ITreeStore item)
 		{
 			nodes.Clear();
+			if (item == null)
+				return;
 			var count = item.Count;
 			for (int i = 0; i < count; i++)
 			{

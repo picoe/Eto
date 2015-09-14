@@ -59,6 +59,8 @@ namespace Eto.Mac.Forms.Cells
 		Color GetForegroundColor (NSCell cell);
 
 		bool Editable { get; set; }
+
+		void EnabledChanged(bool value);
 	}
 	
 	public abstract class CellHandler<TControl, TWidget, TCallback> : MacObject<TControl, TWidget, TCallback>, Cell.IHandler, ICellHandler
@@ -75,7 +77,7 @@ namespace Eto.Mac.Forms.Cells
 		public virtual bool Editable {
 			get { return Control.Editable; }
 			set {
-				Control.Enabled = Control.Editable = value;
+				Control.Editable = value;
 			}
 		}
 		
@@ -109,6 +111,9 @@ namespace Eto.Mac.Forms.Cells
 			return GetPreferredSize (value, cellSize, copy);
 		}
 
+		public virtual void EnabledChanged(bool value)
+		{
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 using System;
-using Eto.Forms;
+using System.Globalization;
 using System.Threading;
+using Eto.Forms;
 #if GTK3
 using NewWindowPolicyDecisionRequestedArgs = WebKit.NewWindowPolicyDecisionRequestedArgs;
 #endif
@@ -34,7 +35,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			catch (Exception ex)
 			{
-				throw new EtoException("GTK WebView is only supported on Linux, and requires webkit-sharp", ex);
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "GTK WebView is only supported on Linux, and requires webkit-sharp", ex));
 			}
 			scroll.Add(Control);
 		}
@@ -156,16 +157,20 @@ namespace Eto.GtkSharp.Forms.Controls
 				var e = new WebViewNewWindowEventArgs(new Uri(args.Request.Uri), args.Frame.Name);
 				handler.Callback.OnOpenNewWindow(handler.Widget, e);
 				#if GTK2
-				if (e.Cancel)
-					args.Decision.Ignore();
-				else
-					args.Decision.Use();
+				var decision = args.Decision;
 				#else
-				if (e.Cancel)
-					args.PolicyDecision.Ignore();
-				else
-					args.PolicyDecision.Use();
+				var decision = args.PolicyDecision;
 				#endif
+				if (decision != null)
+				{
+					if (e.Cancel)
+						decision.Ignore();
+					else
+					{
+						decision.Use();
+						Application.Instance.Open(args.Request.Uri);
+					}
+				}
 				args.RetVal = true;
 			}
 

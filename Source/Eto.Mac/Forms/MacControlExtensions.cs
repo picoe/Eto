@@ -1,7 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
 using System;
-using sd = System.Drawing;
 using System.Text.RegularExpressions;
 
 
@@ -12,7 +11,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreText;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -37,10 +36,12 @@ using nuint = System.UInt32;
 #endif
 
 #if IOS
-using NSView = MonoTouch.UIKit.UIView;
-using NSControl = MonoTouch.UIKit.UIControl;
-using MonoTouch.Foundation;
-using MonoTouch.CoreText;
+using NSView = UIKit.UIView;
+using NSControl = UIKit.UIControl;
+using Foundation;
+using CoreText;
+using CoreGraphics;
+using Eto.iOS;
 #endif
 namespace Eto.Mac.Forms
 {

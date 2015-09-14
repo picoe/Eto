@@ -6,6 +6,7 @@ using swc = System.Windows.Controls;
 using swn = System.Windows.Navigation;
 using sw = System.Windows;
 using swf = System.Windows.Forms;
+using swi = System.Windows.Input;
 using Eto.Forms;
 using System.Runtime.InteropServices;
 using Eto.CustomControls;
@@ -65,13 +66,27 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				Child = Browser
 			};
-			Browser.PreviewKeyDown += (sender, args) =>
+
+			Browser.PreviewKeyDown += (sender, e) =>
 			{
+				switch (e.KeyCode)
+				{
+					case swf.Keys.Down:
+					case swf.Keys.Up:
+					case swf.Keys.Left:
+					case swf.Keys.Right:
+					case swf.Keys.PageDown:
+					case swf.Keys.PageUp:
+						// enable scrolling via keyboard
+						e.IsInputKey = true;
+						return;
+				}
+
 				var doc = Browser.Document;
 				if (!Browser.WebBrowserShortcutsEnabled && doc != null)
 				{
 					// implement shortcut keys for copy/paste
-					switch (args.KeyData)
+					switch (e.KeyData)
 					{
 						case (swf.Keys.C | swf.Keys.Control):
 							doc.ExecCommand("Copy", false, null);

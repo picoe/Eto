@@ -1,5 +1,5 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -62,6 +62,18 @@ namespace Eto.iOS.Forms.Controls
 		}
 
 		public Color TextColor
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+
+		public int CaretIndex
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+
+		public Range<int> Selection
 		{
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }

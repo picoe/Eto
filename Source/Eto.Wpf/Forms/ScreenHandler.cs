@@ -10,50 +10,75 @@ namespace Eto.Wpf.Forms
 {
 	public class ScreenHandler : WidgetHandler<swf.Screen, Screen>, Screen.IHandler
 	{
-		float scale;
+		float? realScale;
+		sw.Window window;
 
-		public ScreenHandler (sw.Window window)
+		public ScreenHandler(sw.Window window)
 		{
-			var source = sw.PresentationSource.FromVisual (window);
-			Control = GetCurrentScreen (window);
-			scale = (float)(source.CompositionTarget.TransformToDevice.M22 * 96.0 / 72.0);
+			Control = GetCurrentScreen(window);
+			this.window = window;
 		}
 
-		public ScreenHandler (swf.Screen screen)
+		public ScreenHandler(swf.Screen screen)
 		{
 			Control = screen;
-			var form = new swf.Form ();
-			var graphics = form.CreateGraphics ();
-			scale = graphics.DpiY / 72f;
 		}
 
-		static swf.Screen GetCurrentScreen (sw.Window window)
+		float GetRealScale()
 		{
-			var centerPoint = new sd.Point ((int)(window.Left + window.ActualWidth / 2), (int)(window.Top + window.ActualHeight / 2));
-			foreach (var s in swf.Screen.AllScreens) {
-				if (s.Bounds.Contains (centerPoint))
+			if (realScale != null)
+				return realScale.Value;
+
+			if (window != null)
+			{
+				var source = sw.PresentationSource.FromVisual(window);
+				if (source != null)
+				{
+					realScale = (float)source.CompositionTarget.TransformToDevice.M22;
+					window = null;
+				}
+			}
+
+			if (realScale == null)
+			{
+				using (var form = new swf.Form { Bounds = Control.Bounds })
+				using (var graphics = form.CreateGraphics())
+				{
+					realScale = graphics.DpiY / 96f;
+				}
+			}
+			return realScale ?? 1f;
+		}
+
+		static swf.Screen GetCurrentScreen(sw.Window window)
+		{
+			var centerPoint = new sd.Point((int)(window.Left + window.ActualWidth / 2), (int)(window.Top + window.ActualHeight / 2));
+			foreach (var s in swf.Screen.AllScreens)
+			{
+				if (s.Bounds.Contains(centerPoint))
 					return s;
 			}
 			return swf.Screen.PrimaryScreen;
 		}
+
 		public float RealScale
 		{
-			get { return scale; }
+			get { return GetRealScale() * Scale; }
 		}
 
 		public float Scale
 		{
-			get { return scale; }
+			get { return 96f / 72f; }
 		}
 
 		public RectangleF Bounds
 		{
-			get { return Control.Bounds.ToEto (); }
+			get { return (RectangleF)Control.Bounds.ToEto() / GetRealScale(); }
 		}
 
 		public RectangleF WorkingArea
 		{
-			get { return Control.WorkingArea.ToEto (); }
+			get { return (RectangleF)Control.WorkingArea.ToEto() / GetRealScale(); }
 		}
 
 		public int BitsPerPixel
@@ -67,4 +92,3 @@ namespace Eto.Wpf.Forms
 		}
 	}
 }
-

@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using System.Windows.Input;
 
 namespace Eto.Forms
 {
@@ -46,24 +47,15 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		/// <summary>
-		/// The default minimum size for buttons
-		/// </summary>
-		/// <remarks>
-		/// You can set this size to ensure that all buttons are at least of this size
-		/// </remarks>
-		[Obsolete("This is no longer supported. Set the size of your buttons directly or use styles")]
-		public static Size DefaultSize = new Size(80, 26);
-
-		EventHandler<EventArgs> click;
+		static readonly object Click_Key = new object();
 
 		/// <summary>
 		/// Event to handle when the user clicks the button
 		/// </summary>
 		public event EventHandler<EventArgs> Click
 		{
-			add { click += value; }
-			remove { click -= value; }
+			add { Properties.AddEvent(Click_Key, value); }
+			remove { Properties.RemoveEvent(Click_Key, value); }
 		}
 
 		/// <summary>
@@ -72,41 +64,23 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected virtual void OnClick(EventArgs e)
 		{
-			if (click != null)
-				click(this, e);
+			Properties.TriggerEvent(Click_Key, this, e);
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
-		/// </summary>
-		public Button()
-		{
-		}
+		static readonly object Command_Key = new object();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the button</param>
-		[Obsolete("Use default constructor instead")]
-		public Button(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Button"/> class
+		/// Gets or sets the command to invoke when the button is pressed.
 		/// </summary>
 		/// <remarks>
-		/// Used by subclasses of a button to allow them to define a different handler interface
-		/// to create as the platform handler of the button
+		/// This will invoke the specified command when the button is pressed.
+		/// The <see cref="ICommand.CanExecute"/> will also used to set the enabled/disabled state of the button.
 		/// </remarks>
-		/// <param name="generator">Generator to create the button</param>
-		/// <param name="type">Type of the button handler to use for the subclass</param>
-		/// <param name="initialize">True to initialize the button, false if you will initialize after constructor logic</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Button(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
+		/// <value>The command to invoke.</value>
+		public ICommand Command
 		{
+			get { return Properties.GetCommand(Command_Key); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r); }
 		}
 
 		/// <summary>
@@ -127,6 +101,45 @@ namespace Eto.Forms
 		{
 			get { return Handler.ImagePosition; }
 			set { Handler.ImagePosition = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the minimum size for the button.
+		/// </summary>
+		/// <remarks>
+		/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
+		/// 
+		/// Setting this to <see cref="Eto.Drawing.Size.Empty"/> is useful when you want the button to shrink to fit the size
+		/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
+		/// </remarks>
+		public Size MinimumSize
+		{
+			get { return Handler.MinimumSize; }
+			set { Handler.MinimumSize = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the size of the control. Use -1 to specify auto sizing for either the width and/or height.
+		/// </summary>
+		/// <value>The size of the control.</value>
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				base.Size = value;
+				// Ensure minimum size is at least as small as the desired explicit size
+				MinimumSize = Size.Min(value, MinimumSize);
+			}
+		}
+
+		/// <summary>
+		/// Triggers the <see cref="Click"/> event for the button, if the button is visable and enabled.
+		/// </summary>
+		public void PerformClick()
+		{
+			if (Enabled && Visible)
+				OnClick(EventArgs.Empty);
 		}
 
 		static readonly object callback = new Callback();
@@ -179,6 +192,17 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The image position</value>
 			ButtonImagePosition ImagePosition { get; set; }
+
+			/// <summary>
+			/// Gets or sets the minimum size for the button.
+			/// </summary>
+			/// <remarks>
+			/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
+			/// 
+			/// Setting this to <see cref="Eto.Drawing.Size.Empty"/> is useful when you want the button to shrink to fit the size
+			/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
+			/// </remarks>
+			Size MinimumSize { get; set;}
 		}
 	}
 }

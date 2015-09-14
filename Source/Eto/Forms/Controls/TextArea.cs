@@ -16,12 +16,6 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		/// <summary>
-		/// The default size of text area controls.
-		/// </summary>
-		[Obsolete("Set the size of the control directly or use styles")]
-		public static Size DefaultSize = new Size(100, 60);
-
 		#region Events
 
 		/// <summary>
@@ -76,34 +70,6 @@ namespace Eto.Forms
 		{
 			EventLookup.Register<TextArea>(c => c.OnSelectionChanged(null), TextArea.SelectionChangedEvent);
 			EventLookup.Register<TextArea>(c => c.OnCaretIndexChanged(null), TextArea.CaretIndexChangedEvent);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextArea"/> class.
-		/// </summary>
-		public TextArea()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextArea"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public TextArea(Generator generator) : this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TextArea"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected TextArea(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
 		}
 
 		/// <summary>
@@ -213,10 +179,45 @@ namespace Eto.Forms
 		/// Gets or sets the horizontal alignment of the text.
 		/// </summary>
 		/// <value>The horizontal alignment.</value>
+		public TextAlignment TextAlignment
+		{
+			get { return Handler.TextAlignment; }
+			set { Handler.TextAlignment = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the horizontal alignment of the text.
+		/// </summary>
+		/// <value>The horizontal alignment.</value>
+		[Obsolete("Since 2.1: Use TextAlignment instead")]
 		public HorizontalAlign HorizontalAlign
 		{
-			get { return Handler.HorizontalAlign; }
-			set { Handler.HorizontalAlign = value; }
+			get { return Handler.TextAlignment; }
+			set { Handler.TextAlignment = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TextArea"/> will perform spell checking.
+		/// </summary>
+		/// <remarks>
+		/// When <c>true</c>, platforms will typically show misspelled or unknown words with a red underline.
+		/// This is a hint, and is only supported by the platform when <see cref="SpellCheckIsSupported"/> is true.
+		/// When not supported, setting this property will do nothing.
+		/// </remarks>
+		/// <value><c>true</c> if spell check; otherwise, <c>false</c>.</value>
+		public bool SpellCheck
+		{
+			get { return Handler.SpellCheck; }
+			set { Handler.SpellCheck = value; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the <see cref="SpellCheck"/> property is supported on the control's platform.
+		/// </summary>
+		/// <value><c>true</c> if spell check is supported; otherwise, <c>false</c>.</value>
+		public bool SpellCheckIsSupported
+		{
+			get { return Handler.SpellCheckIsSupported; }
 		}
 
 		/// <summary>
@@ -367,7 +368,24 @@ namespace Eto.Forms
 			/// Gets or sets the horizontal alignment of the text.
 			/// </summary>
 			/// <value>The horizontal alignment.</value>
-			HorizontalAlign HorizontalAlign { get; set; }
+			TextAlignment TextAlignment { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TextArea"/> will perform spell checking.
+			/// </summary>
+			/// <remarks>
+			/// When <c>true</c>, platforms will typically show misspelled or unknown words with a red underline.
+			/// This is a hint, and is only supported by the platform when <see cref="SpellCheckIsSupported"/> is true.
+			/// When not supported, setting this property will do nothing.
+			/// </remarks>
+			/// <value><c>true</c> if spell check; otherwise, <c>false</c>.</value>
+			bool SpellCheck { get; set; }
+
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="SpellCheck"/> property is supported on the control's platform.
+			/// </summary>
+			/// <value><c>true</c> if spell check is supported; otherwise, <c>false</c>.</value>
+			bool SpellCheckIsSupported { get; }
 		}
 	}
 }

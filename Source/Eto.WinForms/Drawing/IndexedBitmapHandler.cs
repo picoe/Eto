@@ -1,8 +1,9 @@
 using System;
+using System.Globalization;
+using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
-using System.Linq;
 
 namespace Eto.WinForms.Drawing
 {
@@ -42,7 +43,7 @@ namespace Eto.WinForms.Drawing
 					sdPixelFormat = SD.Imaging.PixelFormat.Format1bppIndexed;
 					break;
 				default:
-					throw new ArgumentOutOfRangeException("bitsPerPixel", bitsPerPixel, "Not supported");
+					throw new ArgumentOutOfRangeException("bitsPerPixel", bitsPerPixel, string.Format(CultureInfo.CurrentCulture, "Not supported"));
 			}
 			Control = new SD.Bitmap(width, height, sdPixelFormat);
 		}
@@ -78,7 +79,8 @@ namespace Eto.WinForms.Drawing
 			set
 			{
 				SD.Imaging.ColorPalette cp = Control.Palette;
-				if (value.Count != cp.Entries.Length) throw new ArgumentException("Input palette must have the same colors as the output");
+				if (value.Count != cp.Entries.Length)
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Input palette must have the same colors as the output"));
 				for (int i=0; i<value.Count; i++)
 				{
 					cp.Entries[i] = value[i].ToSD ();

@@ -4,9 +4,6 @@ using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms.Menu
 {
-	/// <summary>
-	/// Summary description for MenuBarHandler.
-	/// </summary>
 	public class MenuBarHandler : WidgetHandler<SWF.MenuStrip, MenuBar>, MenuBar.IHandler
 	{
 		public MenuBarHandler()

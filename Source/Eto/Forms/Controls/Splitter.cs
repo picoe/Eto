@@ -4,21 +4,6 @@ using System.Collections.Generic;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Orientation of a <see cref="Splitter"/> control.
-	/// </summary>
-	public enum SplitterOrientation
-	{
-		/// <summary>
-		/// Controls are in horizontal orientation, with a vertical divider between them.
-		/// </summary>
-		Horizontal,
-		/// <summary>
-		/// Controls are in vertical orientation, with a horizontal divider betwen them.
-		/// </summary>
-		Vertical
-	}
-
-	/// <summary>
 	/// Specifies which panel has a fixed size the parent container is resized.
 	/// </summary>
 	public enum SplitterFixedPanel
@@ -108,38 +93,15 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Splitter"/> class.
-		/// </summary>
-		public Splitter()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Splitter"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Splitter(Generator generator) : this (generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Splitter"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Splitter(Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the orientation of the panels in the splitter.
 		/// </summary>
+		/// <remarks>
+		/// This defines the orientation of the panels, with a splitter of the opposite orientation between them.
+		/// For example, when set to <see cref="T:Orientation.Horizontal"/>, Panel1 and Panel2 will be horizontal to 
+		/// eachother with a vertical splitter/gutter between them.
+		/// </remarks>
 		/// <value>The orientation of the panels.</value>
-		public SplitterOrientation Orientation
+		public Orientation Orientation
 		{
 			get { return Handler.Orientation; }
 			set { Handler.Orientation = value; }
@@ -167,6 +129,29 @@ namespace Eto.Forms
 		{
 			get { return Handler.Position; }
 			set { Handler.Position = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the relative position of the splitter which is based on <see cref="FixedPanel"/>.
+		/// </summary>
+		/// <remarks>
+		/// Same as <see cref="Position"/> with SplitterFixedPanel.Panel1,
+		/// width/height of second panel with SplitterFixedPanel.Panel2
+		/// and ratio of width/height of first panel against available size with SplitterFixedPanel.None.
+		/// </remarks>
+		public double RelativePosition
+		{
+			get { return Handler.RelativePosition; }
+			set { Handler.RelativePosition = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets size of the splitter/gutter
+		/// </summary>
+		public int SplitterWidth
+		{
+			get { return Handler.SplitterWidth; }
+			set { Handler.SplitterWidth = value; }
 		}
 
 		/// <summary>
@@ -252,7 +237,7 @@ namespace Eto.Forms
 			/// Gets or sets the orientation of the panels in the splitter.
 			/// </summary>
 			/// <value>The orientation of the panels.</value>
-			SplitterOrientation Orientation { get; set; }
+			Orientation Orientation { get; set; }
 
 			/// <summary>
 			/// Gets or sets the panel with fixed size.
@@ -271,6 +256,21 @@ namespace Eto.Forms
 			int Position { get; set; }
 
 			/// <summary>
+			/// Gets or sets the relative position of the splitter which is based on <see cref="FixedPanel"/>.
+			/// </summary>
+			/// <remarks>
+			/// Same as <see cref="Position"/> with SplitterFixedPanel.Panel1,
+			/// width/height of second panel with SplitterFixedPanel.Panel2
+			/// and ratio of width/height of first panel against available size with SplitterFixedPanel.None.
+			/// </remarks>
+			double RelativePosition { get; set; }
+
+			/// <summary>
+			/// Gets or sets size of the splitter/gutter
+			/// </summary>
+			int SplitterWidth { get; set; }
+
+			/// <summary>
 			/// Gets or sets the top or left panel of the splitter.
 			/// </summary>
 			/// <value>The first panel.</value>
@@ -283,4 +283,78 @@ namespace Eto.Forms
 			Control Panel2 { get; set; }
 		}
 	}
+
+	/// <summary>
+	/// Orientation of a <see cref="Splitter"/> control.
+	/// </summary>
+	[Obsolete("Since 2.1: Use Orientation instead")]
+	public struct SplitterOrientation
+	{
+		readonly Orientation orientation;
+
+		SplitterOrientation(Orientation orientation)
+		{
+			this.orientation = orientation;
+		}
+
+		/// <summary>
+		/// Controls are in horizontal orientation, with a vertical divider between them.
+		/// </summary>
+		public static SplitterOrientation Horizontal { get { return Orientation.Horizontal; } }
+
+		/// <summary>
+		/// Controls are in vertical orientation, with a horizontal divider betwen them.
+		/// </summary>
+		public static SplitterOrientation Vertical { get { return Orientation.Vertical; } }
+
+		/// <summary>Converts to an Orientation</summary>
+		public static implicit operator Orientation(SplitterOrientation orientation)
+		{
+			return orientation.orientation;
+		}
+
+		/// <summary>Converts an Orientation to a SplitterOrientation</summary>
+		public static implicit operator SplitterOrientation(Orientation orientation)
+		{
+			return new SplitterOrientation(orientation);
+		}
+
+		/// <summary>Compares for equality</summary>
+		/// <param name="orientation1">Orientation1.</param>
+		/// <param name="orientation2">Orientation2.</param>
+		public static bool operator ==(Orientation orientation1, SplitterOrientation orientation2)
+		{
+			return orientation1 == orientation2.orientation;
+		}
+
+		/// <summary>Compares for inequality</summary>
+		/// <param name="orientation1">Orientation1.</param>
+		/// <param name="orientation2">Orientation2.</param>
+		public static bool operator !=(Orientation orientation1, SplitterOrientation orientation2)
+		{
+			return orientation1 != orientation2.orientation;
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="Eto.Forms.SplitterOrientation"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with the current <see cref="Eto.Forms.SplitterOrientation"/>.</param>
+		/// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current
+		/// <see cref="Eto.Forms.SplitterOrientation"/>; otherwise, <c>false</c>.</returns>
+		public override bool Equals(object obj)
+		{
+			return (obj is SplitterOrientation && (this == (SplitterOrientation)obj))
+				|| (obj is Orientation && (this == (Orientation)obj));
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a <see cref="Eto.Forms.SplitterOrientation"/> object.
+		/// </summary>
+		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+		public override int GetHashCode()
+		{
+			return orientation.GetHashCode();
+		}
+	}
+
 }

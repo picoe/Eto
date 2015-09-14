@@ -1,12 +1,12 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using System.Linq;
 using Eto.iOS.Forms.Cells;
-using MonoTouch.Foundation;
+using Foundation;
 using Eto.Drawing;
 using Eto.iOS.Drawing;
-using NSCell = MonoTouch.UIKit.UITableViewCell;
+using NSCell = UIKit.UITableViewCell;
 using System.Collections.Generic;
 
 namespace Eto.iOS.Forms.Controls
@@ -38,12 +38,6 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
-		public bool ShowCellBorders
-		{
-			get { return false; }
-			set { } // TODO
-		}
-
 		protected override UITableViewDelegate CreateDelegate ()
 		{
 			return new GridTableDelegate(this);
@@ -60,13 +54,13 @@ namespace Eto.iOS.Forms.Controls
 
 			public const string CELL_ID = "GridView_Cell";
 
-			public override int RowsInSection (UITableView tableView, int section)
+			public override nint RowsInSection (UITableView tableView, nint section)
 			{
 				var result = Handler.store.Count;
 				return result;
 			}
 
-			public override UITableViewCell GetCell (UITableView tableView, MonoTouch.Foundation.NSIndexPath indexPath)
+			public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
 			{
 				var cell = tableView.DequeueReusableCell(CELL_ID);
 				if (cell == null)

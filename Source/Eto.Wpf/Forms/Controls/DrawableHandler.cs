@@ -17,9 +17,17 @@ namespace Eto.Wpf.Forms.Controls
 		sw.FrameworkElement content;
 		Scrollable scrollable;
 		readonly Dictionary<int, EtoTile> visibleTiles = new Dictionary<int, EtoTile>();
+		List<EtoTile> invalidateTiles;
 		readonly List<EtoTile> unusedTiles = new List<EtoTile>();
 		Size maxTiles;
 		Size tileSize = new Size(100, 100);
+
+		static readonly object OptimizedInvalidateRectKey = new object();
+		public bool OptimizedInvalidateRect
+		{
+			get { return Widget.Properties.Get<bool>(OptimizedInvalidateRectKey, true); }
+			set { Widget.Properties.Set(OptimizedInvalidateRectKey, value, true); }
+		}
 
 		public bool AllowTiling { get; set; }
 
@@ -62,8 +70,14 @@ namespace Eto.Wpf.Forms.Controls
 				if (!Handler.tiled)
 				{
 					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
-					var graphics = new Graphics(new GraphicsHandler(this, dc, rect, new RectangleF(Handler.ClientSize), false));
-					Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, rect.ToEto()));
+					var cliprect = rect.ToEto();
+					if (!cliprect.IsEmpty)
+					{
+						using (var graphics = new Graphics(new GraphicsHandler(this, dc, rect, new RectangleF(Handler.ClientSize), false)))
+						{
+							Handler.Callback.OnPaint(Handler.Widget, new PaintEventArgs(graphics, cliprect));
+						}
+					}
 				}
 			}
 		}
@@ -87,8 +101,6 @@ namespace Eto.Wpf.Forms.Controls
 						Width = Handler.tileSize.Width;
 						Height = Handler.tileSize.Height;
 						RenderTransform = new swm.TranslateTransform(-bounds.X, -bounds.Y);
-						if (IsVisible)
-							InvalidateVisual();
 					}
 				}
 			}
@@ -117,11 +129,6 @@ namespace Eto.Wpf.Forms.Controls
 			UnRegisterScrollable();
 		}
 
-		public DrawableHandler()
-		{
-			AllowTiling = true;
-		}
-
 		public void Create()
 		{
 			Control = new EtoMainCanvas
@@ -136,13 +143,15 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void Create(bool largeCanvas)
 		{
+			AllowTiling = largeCanvas;
 			Create();
 		}
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			UpdateTiles(true);
-		}
+			Control.Loaded -= Control_Loaded; // only perform once
+        }
 
 		public virtual Graphics CreateGraphics()
 		{
@@ -289,6 +298,7 @@ namespace Eto.Wpf.Forms.Controls
 							tile.Position = position;
 							tile.Bounds = bounds;
 							tile.Visibility = sw.Visibility.Visible;
+							tile.InvalidateVisual();
 						}
 						else
 						{
@@ -306,7 +316,10 @@ namespace Eto.Wpf.Forms.Controls
 						visibleTiles[key] = tile;
 					}
 					else
+					{
 						tile.Bounds = bounds;
+						tile.InvalidateVisual();
+					}
 
 				}
 			}
@@ -319,6 +332,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override void Invalidate()
 		{
+			if (!Control.IsLoaded)
+				return;
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
@@ -327,17 +342,80 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 			else
+			{
+				if (invalidateTiles != null)
+				{
+					invalidateTiles.ForEach(t => t.Visibility = sw.Visibility.Collapsed);
+					unusedTiles.AddRange(invalidateTiles);
+					invalidateTiles.Clear();
+				}
 				base.Invalidate();
+			}
 		}
 
 		public override void Invalidate(Rectangle rect)
 		{
+			if (!Control.IsLoaded)
+				return;
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
 				{
 					if (tile.Bounds.Intersects(rect))
 						tile.InvalidateVisual();
+				}
+			}
+			else if (OptimizedInvalidateRect)
+			{
+				if (((rect.Width * rect.Height) / (Control.ActualWidth * Control.ActualHeight)) > 0.9)
+				{
+					Invalidate();
+					return;
+				}
+
+				if (invalidateTiles == null)
+					invalidateTiles = new List<EtoTile>();
+
+				var overlappingTiles = new List<EtoTile>();
+				foreach (var overlappingTile in invalidateTiles)
+				{
+					if (rect == overlappingTile.Bounds)
+					{
+						overlappingTile.InvalidateVisual();
+						return;
+					}
+					else if (rect.Intersects(overlappingTile.Bounds))
+					{
+						rect.Union(overlappingTile.Bounds);
+						overlappingTiles.Add(overlappingTile);
+					}
+				}
+
+				EtoTile tile;
+				if (unusedTiles.Count > 0)
+				{
+					tile = unusedTiles[unusedTiles.Count - 1];
+					tile.Bounds = rect;
+					tile.Visibility = sw.Visibility.Visible;
+					unusedTiles.Remove(tile);
+				}
+				else
+				{
+					tile = new EtoTile
+					{
+						Handler = this,
+						SnapsToDevicePixels = true
+					};
+					tile.Bounds = rect;
+					Control.Children.Add(tile);
+				}
+				invalidateTiles.Add(tile);
+
+				foreach (var overlappingTile in overlappingTiles)
+				{
+					overlappingTile.Visibility = sw.Visibility.Collapsed;
+					invalidateTiles.Remove(overlappingTile);
+					unusedTiles.Add(overlappingTile);
 				}
 			}
 			else

@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 
 namespace Eto.Test.UnitTests.Drawing
 {
-	[TestFixture, Category(TestUtils.NoTestPlatformCategory)]
+	[TestFixture]
 	public class BitmapTests
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
+		public BitmapTests()
 		{
 			// initialize test generator if running through IDE or nunit-gui
 			TestUtils.Initialize();

@@ -25,19 +25,6 @@ namespace Eto.Forms
 		/// <value>The graphics.</value>
 		public Graphics Graphics { get; private set; }
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Obsolete.
-		/// </summary>
-		[Obsolete("Use Platform.Instance instead")]
-		public Generator Generator
-		{
-			get { return Graphics.Platform; }
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Gets the rectangle of the region being painted
 		/// </summary>
@@ -101,57 +88,6 @@ namespace Eto.Forms
 			Handler.Create(largeCanvas);
 			Initialize();
 		}
-
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Drawable"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="largeCanvas">If set to <c>true</c> large canvas.</param>
-		[Obsolete("Use Drawable(bool) instead")]
-		public Drawable (Generator generator, bool largeCanvas) : base(generator, typeof(IHandler))
-		{
-			Handler.Create (largeCanvas);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Drawable"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public Drawable(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Drawable"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor with HandlerAttribute instead")]
-		protected Drawable(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, false)
-		{
-			Handler.Create();
-			if (initialize) Initialize();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Drawable"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="handler">Handler.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use Drawable(IDrawable) instead")]
-		public Drawable(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, initialize)
-		{
-		}
-
-		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Raises the <see cref="Paint"/> event

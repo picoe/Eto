@@ -10,6 +10,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[ContentProperty("Items")]
 	[Handler(typeof(ButtonMenuItem.IHandler))]
 	public class ButtonMenuItem : MenuItem, ISubmenu
 	{
@@ -37,16 +38,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ButtonMenuItem(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class with the specified command.
 		/// </summary>
 		/// <param name="command">Command to initialize the menu item with.</param>
@@ -55,30 +46,6 @@ namespace Eto.Forms
 		{
 			Image = command.Image;
 			Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public ButtonMenuItem(Command command, Generator generator = null)
-			: base(command, generator, typeof(IHandler))
-		{
-			Image = command.Image;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ButtonMenuItem(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
 		}
 
 		/// <summary>
@@ -114,7 +81,23 @@ namespace Eto.Forms
 		{
 			base.OnUnLoad(e);
 			foreach (var item in Items)
-				item.OnLoad(e);
+				item.OnUnLoad(e);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			base.OnDataContextChanged(e);
+			foreach (var item in Items)
+				item.TriggerDataContextChanged(e);
 		}
 
 		/// <summary>

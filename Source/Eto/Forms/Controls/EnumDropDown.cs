@@ -24,7 +24,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="value">value to be added</param>
 		/// <param name="shouldAdd">true if by default the item will be added, false otherwise</param>
-		public AddValueEventArgs (T value, bool shouldAdd)
+		public AddValueEventArgs(T value, bool shouldAdd)
 		{
 			this.Value = value;
 			this.ShouldAdd = shouldAdd;
@@ -55,9 +55,9 @@ namespace Eto.Forms
 		/// <summary>
 		/// Handles the <see cref="AddValue"/> event
 		/// </summary>
-		protected virtual void OnAddValue (AddValueEventArgs<T> e)
+		protected virtual void OnAddValue(AddValueEventArgs<T> e)
 		{
-			if (AddValue != null) AddValue (this, e);
+			if (AddValue != null) AddValue(this, e);
 		}
 
 		#endregion
@@ -67,26 +67,23 @@ namespace Eto.Forms
 		/// </summary>
 		public new T SelectedValue
 		{
-			get { return (T)Enum.ToObject (typeof (T), Convert.ToInt32 (SelectedKey, CultureInfo.InvariantCulture)); }
-			set { SelectedKey = Convert.ToString (Convert.ToInt32(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture); }
+			get { return (T)Enum.ToObject(typeof(T), Convert.ToInt32(SelectedKey, CultureInfo.InvariantCulture)); }
+			set { SelectedKey = Convert.ToString(Convert.ToInt32(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture); }
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the EnumDropDown
+		/// Gets or sets a delegate used to get the text value for each item.
 		/// </summary>
-		public EnumDropDown()
-		{
-		}
+		/// <remarks>
+		/// You can use this delegate to provide translated or custom text for each enumeration.
+		/// Otherwise, the name of the enum is used.
+		/// </remarks>
+		public Func<T, string> GetText { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the EnumDropDown with the specified generator
+		/// Gets or sets a value indicating that the items in the list are sorted alphabetically, instead of by numerical value of the enumeration
 		/// </summary>
-		/// <param name="generator">Generator generator</param>
-		[Obsolete("Use default constructor instead")]
-		public EnumDropDown (Generator generator)
-			: base (generator)
-		{
-		}
+		public bool SortAlphabetically { get; set; }
 
 		/// <summary>
 		/// Creates the default data store for the list.
@@ -96,23 +93,28 @@ namespace Eto.Forms
 		/// <returns>The default data store.</returns>
 		protected override IEnumerable<object> CreateDefaultDataStore()
 		{
-			var type = typeof (T);
-			if (!type.IsEnum()) throw new EtoException ("T must be an enumeration");
+			var type = typeof(T);
+			if (!type.IsEnum())
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "T must be an enumeration"));
 
-			var items = new ListItemCollection ();
-			var values = Enum.GetValues (type);
-			var names = Enum.GetNames (type);
-			for (int i = 0; i < names.Length; i++) {
-
-				var e = new AddValueEventArgs<T> ((T)values.GetValue (i), true);
-				if (e.ShouldAdd) {
-					items.Add(new EnumValue {
-						Text = names[i],
-						Key = Convert.ToString (Convert.ToInt32(e.Value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture)
+			var items = new ListItemCollection();
+			var values = Enum.GetValues(type);
+			var names = Enum.GetNames(type);
+			for (int i = 0; i < names.Length; i++)
+			{
+				var e = new AddValueEventArgs<T>((T)values.GetValue(i), true);
+				OnAddValue(e);
+				if (e.ShouldAdd)
+				{
+					items.Add(new EnumValue
+					{
+						Text = GetText != null ? GetText(e.Value) : names[i],
+						Key = Convert.ToString(Convert.ToInt32(e.Value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture)
 					});
 				}
 			}
-			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			if (SortAlphabetically)
+				items.Sort((x, y) => string.Compare(x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			return items;
 		}
 
@@ -120,15 +122,15 @@ namespace Eto.Forms
 		/// Gets a new binding for the <see cref="SelectedValue"/> property.
 		/// </summary>
 		/// <value>A new selected value binding.</value>
-		public new ControlBinding<EnumDropDown<T>, T> SelectedValueBinding
+		public new BindableBinding<EnumDropDown<T>, T> SelectedValueBinding
 		{
 			get
 			{
-				return new ControlBinding<EnumDropDown<T>, T>(
-					this, 
-					c => c.SelectedValue, 
-					(c, v) => c.SelectedValue = v, 
-					(c, h) => c.SelectedValueChanged += h, 
+				return new BindableBinding<EnumDropDown<T>, T>(
+					this,
+					c => c.SelectedValue,
+					(c, v) => c.SelectedValue = v,
+					(c, h) => c.SelectedValueChanged += h,
 					(c, h) => c.SelectedValueChanged -= h
 				)
 				{

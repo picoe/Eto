@@ -95,23 +95,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PrintDocument"/> class.
-		/// </summary>
-		public PrintDocument()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PrintDocument"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public PrintDocument(Generator generator)
-			: base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets the name of the document to show in the printer queue
 		/// </summary>
 		/// <value>The name of the document</value>

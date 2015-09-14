@@ -43,9 +43,13 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
 				AutoGenerateColumns = false,
+				CanUserDeleteRows = false,
+				CanUserResizeRows = false,
 				CanUserAddRows = false,
 				RowHeaderWidth = 0,
-				SelectionMode = swc.DataGridSelectionMode.Single
+				SelectionMode = swc.DataGridSelectionMode.Single,
+				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
+				Background = sw.SystemColors.WindowBrush
 			};
 		}
 
@@ -75,12 +79,43 @@ namespace Eto.Wpf.Forms.Controls
 					};
 					break;
 				case Grid.CellEditedEvent:
-					Control.CellEditEnding += (sender, e) =>
+					// handled by each cell after value is set with the CellEdited method
+					break;
+				case Grid.CellClickEvent:
+					Control.PreviewMouseLeftButtonDown += (sender, e) =>
 					{
-						var row = e.Row.GetIndex();
-						var item = GetItemAtRow(row);
-						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-						Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, e.Column.DisplayIndex, item));
+						var dep = e.OriginalSource as sw.DependencyObject;
+						while (dep != null && !(dep is swc.DataGridCell))
+							dep = swm.VisualTreeHelper.GetParent(dep);
+
+						var cell = dep as swc.DataGridCell;
+						while (dep != null && !(dep is swc.DataGridRow))
+							dep = swm.VisualTreeHelper.GetParent(dep);
+
+						var row = dep as swc.DataGridRow;
+
+						int rowIndex;
+						if (row != null && (rowIndex = row.GetIndex()) >= 0)
+						{
+							var columnIndex = cell.Column == null ? -1 : cell.Column.DisplayIndex;
+
+							var item = Control.Items[rowIndex];
+							var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+							Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						}
+					};
+					break;
+				case Grid.CellDoubleClickEvent:
+					Control.MouseDoubleClick += (sender, e) =>
+					{
+						int rowIndex;
+						if ((rowIndex = Control.SelectedIndex) >= 0)
+						{
+							var columnIndex = Control.CurrentColumn == null ? -1 : Control.CurrentColumn.DisplayIndex;
+							var item = Control.SelectedItem;
+							var column = Widget.Columns[columnIndex];
+							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						}
 					};
 					break;
 				case Grid.SelectionChangedEvent:
@@ -293,7 +328,7 @@ namespace Eto.Wpf.Forms.Controls
 				set
 				{
 					font = value;
-					FontHandler.Apply(Cell, null, font);
+					Cell.SetEtoFont(font);
 				}
 			}
 
@@ -393,5 +428,55 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public void CellEdited(int row, swc.DataGridColumn dataGridColumn, object dataItem)
+		{
+			var gridColumn = Widget.Columns[dataGridColumn.DisplayIndex];
+			Callback.OnCellEdited(Widget, new GridViewCellEventArgs(gridColumn, row, dataGridColumn.DisplayIndex, dataItem));
+		}
+
+		public void ScrollToRow(int row)
+		{
+			Control.ScrollIntoView(Control.Items[row]);
+		}
+
+		public GridLines GridLines
+		{
+			get
+			{
+				switch (Control.GridLinesVisibility)
+				{
+					case System.Windows.Controls.DataGridGridLinesVisibility.All:
+						return Eto.Forms.GridLines.Both;
+					case System.Windows.Controls.DataGridGridLinesVisibility.Horizontal:
+						return Eto.Forms.GridLines.Horizontal;
+					case System.Windows.Controls.DataGridGridLinesVisibility.None:
+						return Eto.Forms.GridLines.None;
+					case System.Windows.Controls.DataGridGridLinesVisibility.Vertical:
+						return Eto.Forms.GridLines.Vertical;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+			set
+			{
+				switch (value)
+				{
+					case GridLines.None:
+						Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
+						break;
+					case GridLines.Horizontal:
+						Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.Horizontal;
+						break;
+					case GridLines.Vertical:
+						Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.Vertical;
+						break;
+					case GridLines.Both:
+						Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.All;
+						break;
+					default:
+						break;
+				}
+			}
+		}
 	}
 }

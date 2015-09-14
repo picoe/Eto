@@ -47,7 +47,20 @@ namespace Eto.Forms
 		/// By default will be an public Image property on your object
 		/// </remarks>
 		/// <value>The image binding.</value>
-		public IIndirectBinding<Image> ImageBinding { get; set; }
+		public IIndirectBinding<Image> ItemImageBinding { get; set; }
+
+		/// <summary>
+		/// Gets or sets the binding for the Image of each item
+		/// </summary>
+		/// <remarks>
+		/// By default will be an public Image property on your object
+		/// </remarks>
+		/// <value>The image binding.</value>
+		[Obsolete("Since 2.1: Use ItemImageBinding instead")]
+		public IIndirectBinding<Image> ImageBinding {
+			get { return ItemImageBinding; }
+			set { ItemImageBinding = value; }
+		}
 
 		/// <summary>
 		/// Occurs when an item is activated, usually with a double click or by pressing enter.
@@ -69,29 +82,7 @@ namespace Eto.Forms
 		/// </summary>
 		public ListBox()
 		{
-			ImageBinding = new ImageListItemImageBinding();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ListBox"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ListBox (Generator generator) : this (generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ListBox"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ListBox (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
-		{
-			ImageBinding = new ImageListItemImageBinding();
+			ItemImageBinding = new ImageListItemImageBinding();
 		}
 
 		/// <summary>

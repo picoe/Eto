@@ -1,5 +1,4 @@
 using System;
-using SD = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
 #if XAMMAC2
@@ -39,6 +38,15 @@ namespace Eto.Mac.Forms.Controls
 	{
 		static readonly NSString CIOutputImage = new NSString("outputImage");
 		static readonly Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
+
+		public MacEventView()
+		{
+		}
+
+		public MacEventView(IntPtr handle)
+			: base(handle)
+		{
+		}
 
 		public static void Colourize(NSView control, Color color, Action drawAction)
 		{
@@ -108,16 +116,22 @@ namespace Eto.Mac.Forms.Controls
 			if (control != null)
 			{
 				var handler = control.Handler as IMacViewHandler;
-				var kpea = theEvent.ToEtoKeyEventArgs();
-				handler.Callback.OnKeyUp(control, kpea);
-				return kpea.Handled;
+				if (handler != null)
+				{
+					var kpea = theEvent.ToEtoKeyEventArgs ();
+					handler.Callback.OnKeyUp (control, kpea);
+					return kpea.Handled;
+				}
 			}
 			return false;
 		}
 
 		public override void ResetCursorRects()
 		{
-			var cursor = Handler.CurrentCursor;
+			var handler = Handler;
+			if (handler == null)
+				return;
+			var cursor = handler.CurrentCursor;
 			if (cursor != null)
 			{
 				AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);

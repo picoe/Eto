@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using Eto.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 using SD = System.Drawing;
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 
 namespace Eto.iOS.Drawing
 {
@@ -50,14 +50,14 @@ namespace Eto.iOS.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = source.ToSD();
+			var sourceRect = source.ToNS();
 			var imgsize = Control.Size;
-			SD.RectangleF destRect = graphics.TranslateView(destination.ToSD(), false);
+			CGRect destRect = destination.ToNS();
 			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize)
 			{
 				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y - sourceRect.Y));
 				graphics.Control.ScaleCTM(imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
-				graphics.Control.DrawImage(new SD.RectangleF(SD.PointF.Empty, destRect.Size), Control.CGImage);
+				graphics.Control.DrawImage(new CGRect(CGPoint.Empty, destRect.Size), Control.CGImage);
 			}
 			else
 			{

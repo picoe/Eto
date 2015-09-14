@@ -1,5 +1,4 @@
 using System;
-using sd = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
@@ -50,7 +49,7 @@ namespace Eto.Mac.Forms.Controls
 
 	public class EtoLabelFieldCell : NSTextFieldCell
 	{
-		public VerticalAlign VerticalAlign { get; set; }
+		public VerticalAlignment VerticalAlign { get; set; }
 
 		public override CGRect DrawingRectForBounds(CGRect theRect)
 		{
@@ -59,13 +58,10 @@ namespace Eto.Mac.Forms.Controls
 
 			switch (VerticalAlign)
 			{
-				case VerticalAlign.Middle:
-					rect.Y = theRect.Y + (theRect.Height - titleSize.Height) / 2.0F;
+				case VerticalAlignment.Center:
+					rect.Y = (nfloat)Math.Round(theRect.Y + (theRect.Height - titleSize.Height) / 2.0F);
 					break;
-				case VerticalAlign.Top:
-					// do nothing!
-					break;
-				case VerticalAlign.Bottom:
+				case VerticalAlignment.Bottom:
 					rect.Y = theRect.Y + (theRect.Height - titleSize.Height);
 					break;
 			}
@@ -109,8 +105,6 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			if (string.IsNullOrEmpty(Text))
-				return Size.Empty;
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
 				#if XAMMAC2 // TODO: Fix when Xamarin.Mac2 NSEdgeInsets is fixed to use nfloat instead of float
@@ -247,7 +241,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return paragraphStyle.Alignment.ToEto(); }
 			set
@@ -277,7 +271,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get { return ((EtoLabelFieldCell)Control.Cell).VerticalAlign; }
 			set { ((EtoLabelFieldCell)Control.Cell).VerticalAlign = value; }
@@ -297,14 +291,14 @@ namespace Eto.Mac.Forms.Controls
 					var range = new NSRange(0, (int)str.Length);
 					var attr = new NSMutableDictionary();
 					Widget.Properties.Get<Font>(FontKey).Apply(attr);
-					attr.Add(NSAttributedString.ParagraphStyleAttributeName, paragraphStyle);
-					attr.Add(NSAttributedString.ForegroundColorAttributeName, CurrentColor);
+					attr.Add(NSStringAttributeKey.ParagraphStyle, paragraphStyle);
+					attr.Add(NSStringAttributeKey.ForegroundColor, CurrentColor);
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{
-						var num = (NSNumber)str.GetAttribute(NSAttributedString.UnderlineStyleAttributeName, (nnint)underlineIndex, out range);
+						var num = (NSNumber)str.GetAttribute(NSStringAttributeKey.UnderlineStyle, (nnint)underlineIndex, out range);
 						var newStyle = (num != null && (NSUnderlineStyle)num.Int64Value == NSUnderlineStyle.Single) ? NSUnderlineStyle.Double : NSUnderlineStyle.Single;
-						str.AddAttribute(NSAttributedString.UnderlineStyleAttributeName, new NSNumber((int)newStyle), new NSRange(underlineIndex, 1));
+						str.AddAttribute(NSStringAttributeKey.UnderlineStyle, new NSNumber((int)newStyle), new NSRange(underlineIndex, 1));
 					}
 				}
 				Control.AttributedStringValue = str;

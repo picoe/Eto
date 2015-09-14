@@ -8,40 +8,47 @@ using Eto.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class TextAreaHandler : WindowsControl<TextAreaHandler.EtoRichTextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
+	public class TextAreaHandler : TextAreaHandler<TextArea, TextArea.ICallback>
+	{
+
+	}
+
+	public class EtoRichTextBox : swf.RichTextBox
+	{
+		public bool AcceptsReturn { get; set; }
+
+		protected override bool IsInputKey(swf.Keys keyData)
+		{
+			if (!AcceptsTab &&
+				(keyData & ~swf.Keys.Modifiers) == swf.Keys.Tab &&
+				(keyData & (swf.Keys.Control | swf.Keys.Alt)) == 0
+			)
+				return false;
+
+			if (!AcceptsReturn && keyData == swf.Keys.Return)
+				return false;
+
+			return base.IsInputKey(keyData);
+		}
+
+		protected override void OnKeyDown(swf.KeyEventArgs e)
+		{
+			if (!AcceptsReturn && e.KeyData == swf.Keys.Return)
+			{
+				e.Handled = true;
+				return;
+			}
+
+			base.OnKeyDown(e);
+		}
+	}
+
+	public class TextAreaHandler<TWidget, TCallback> : WindowsControl<EtoRichTextBox, TWidget, TCallback>, TextArea.IHandler
+		where TWidget : TextArea
+		where TCallback : TextArea.ICallback
 	{
 		int? lastCaretIndex;
 		swf.TableLayoutPanel container;
-
-		public class EtoRichTextBox : swf.RichTextBox
-		{
-			public bool AcceptsReturn { get; set; }
-
-			protected override bool IsInputKey(swf.Keys keyData)
-			{
-				if (!AcceptsTab &&
-					(keyData & ~swf.Keys.Modifiers) == swf.Keys.Tab &&
-					(keyData & (swf.Keys.Control | swf.Keys.Alt)) == 0
-				)
-					return false;
-
-				if (!AcceptsReturn && keyData == swf.Keys.Return)
-					return false;
-
-				return base.IsInputKey(keyData);
-			}
-
-			protected override void OnKeyDown(swf.KeyEventArgs e)
-			{
-				if (!AcceptsReturn && e.KeyData == swf.Keys.Return)
-				{
-					e.Handled = true;
-					return;
-				}
-
-				base.OnKeyDown(e);
-			}
-		}
 
 		public static Size DefaultMinimumSize = new Size(100, 60);
 
@@ -78,18 +85,27 @@ namespace Eto.WinForms.Forms.Controls
 			container.Controls.Add(Control, 0, 0);
 		}
 
+		/// <summary>
+		/// Supresses the selection/caret changed events if greater than zero
+		/// </summary>
+		protected int SuppressSelectionChanged { get; set; }
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case TextArea.SelectionChangedEvent:
-					Control.SelectionChanged += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					Control.SelectionChanged += (sender, e) =>
+					{
+						if (SuppressSelectionChanged <= 0)
+							Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					};
 					break;
 				case TextArea.CaretIndexChangedEvent:
 					Control.SelectionChanged += (sender, e) =>
 					{
 						var caretIndex = CaretIndex;
-						if (caretIndex != lastCaretIndex)
+						if (SuppressSelectionChanged <= 0 && caretIndex != lastCaretIndex)
 						{
 							Callback.OnCaretIndexChanged(Widget, EventArgs.Empty);
 							lastCaretIndex = caretIndex;
@@ -182,17 +198,26 @@ namespace Eto.WinForms.Forms.Controls
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.SelectionAlignment.ToEto(); }
 			set
 			{
-				if (value == HorizontalAlign) return;
+				if (value == TextAlignment) return;
 				var sel = Selection;
 				Control.SelectAll();
 				Control.SelectionAlignment = value.ToSWF();
 				Selection = sel;
 			}
 		}
+
+
+		public bool SpellCheck
+		{
+			get { return false; }
+			set { }
+		}
+
+		public bool SpellCheckIsSupported { get { return false; } }
 	}
 }

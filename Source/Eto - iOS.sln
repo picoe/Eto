@@ -5,11 +5,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.iOS", "Eto.iOS\Eto.iOS.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.iOS", "Eto.Test\Eto.Test.iOS\Eto.Test.iOS.csproj", "{AB42209E-E87F-4749-96CF-8CAE83981808}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - Pcl", "Eto\Eto - Pcl.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - pcl", "Eto\Eto - pcl.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - Pcl", "Eto.Serialization.Json\Eto.Serialization.Json - Pcl.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - pcl", "Eto.Serialization.Json\Eto.Serialization.Json - pcl.csproj", "{3F8178EF-0710-43F7-92E2-130B9BE2212D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - Pcl", "Eto.Test\Eto.Test\Eto.Test - Pcl.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - pcl", "Eto.Test\Eto.Test\Eto.Test - pcl.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - pcl", "Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,18 @@ Global
 		Release|iPhoneSimulator = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.AppStore|iPhone.Build.0 = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|iPhone.Build.0 = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.AppStore|iPhone.ActiveCfg = Release|Any CPU
@@ -87,9 +101,6 @@ Global
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|iPhone.Build.0 = Release|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Eto.Test\Eto.Test.iOS\Eto.Test.iOS.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

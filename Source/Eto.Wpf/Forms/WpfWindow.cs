@@ -36,6 +36,11 @@ namespace Eto.Wpf.Forms
 		bool maximizable = true;
 		bool minimizable = true;
 
+		public override IntPtr NativeHandle
+		{
+			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
+		}
+
 		protected override void Initialize()
 		{
 			content = new swc.DockPanel();
@@ -79,6 +84,19 @@ namespace Eto.Wpf.Forms
 		{
 			switch (id)
 			{
+				case Eto.Forms.Control.ShownEvent:
+					Control.IsVisibleChanged += (sender, e) =>
+					{
+						if ((bool)e.NewValue)
+						{
+							// this is a trick to achieve similar behaviour as in WinForms
+							// (IsVisibleChanged triggers too early, we want it after measure-lay-render)
+							Control.Dispatcher.BeginInvoke(new Action(() =>
+								Callback.OnShown(Widget, EventArgs.Empty)),
+								sw.Threading.DispatcherPriority.ContextIdle, null);
+						}
+					};
+					break;
 				case Window.ClosedEvent:
 					Control.Closed += delegate
 					{
@@ -95,8 +113,8 @@ namespace Eto.Wpf.Forms
 							// last window closing, so call OnTerminating to let the app abort terminating
 							var app = ((ApplicationHandler)Application.Instance.Handler);
 							app.Callback.OnTerminating(app.Widget, args);
-							e.Cancel = args.Cancel;
 						}
+						e.Cancel = args.Cancel;
 					};
 					break;
 				case Window.WindowStateChangedEvent:
@@ -115,6 +133,12 @@ namespace Eto.Wpf.Forms
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			SetScale(false, false);
 		}
 
 		protected virtual void UpdateClientSize(Size size)
@@ -332,25 +356,29 @@ namespace Eto.Wpf.Forms
 			set { Control.Title = value; }
 		}
 
-		static readonly object locationSetKey = new object();
+		static readonly object LocationSet_Key = new object();
 
 		protected bool LocationSet
 		{
-			get { return Widget.Properties.Get<bool?>(locationSetKey) ?? false; }
-			set { Widget.Properties[locationSetKey] = value; }
+			get { return Widget.Properties.Get<bool>(LocationSet_Key); }
+			set { Widget.Properties.Set(LocationSet_Key, value); }
 		}
 
 		public new Point Location
 		{
 			get
 			{
-				return new Point((int)Control.Left, (int)Control.Top);
+				var left = Control.Left;
+				var top = Control.Top;
+				if (double.IsNaN(left) || double.IsNaN(top))
+					return Point.Empty;
+				return new Point((int)left, (int)top);
 			}
 			set
 			{
 				Control.Left = value.X;
 				Control.Top = value.Y;
-				if (!Widget.Loaded)
+				if (!Control.IsLoaded)
 					LocationSet = true;
 			}
 		}
@@ -396,9 +424,9 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
-			get { return Control.RestoreBounds.ToEto(); }
+			get { return Control.WindowState == sw.WindowState.Normal || Control.RestoreBounds.IsEmpty ? Widget.Bounds : Control.RestoreBounds.ToEto(); }
 		}
 
 		sw.Window IWpfWindow.Control
@@ -486,7 +514,18 @@ namespace Eto.Wpf.Forms
 		public void SetOwnerFor(sw.Window child)
 		{
 			child.Owner = Control;
-			// CenterOwner does not work in certain cases (e.g. with autosizing)
+		}
+
+		public void SetOwner(Window owner)
+		{
+			if (owner == null)
+			{
+				Control.Owner = null;
+				return;
+			}
+			var wpfWindow = owner.Handler as IWpfWindow;
+			if (wpfWindow != null)
+				wpfWindow.SetOwnerFor(Control);
 		}
 	}
 }

@@ -139,7 +139,7 @@ namespace Eto.WinForms
 				return false;
 
 			var modifiers = swf.Control.ModifierKeys.ToEto();
-			var delta = new SizeF(0, Win32.GetWheelDeltaWParam(be.Message.WParam) / Conversions.WheelDelta);
+			var delta = new SizeF(0, Win32.GetWheelDeltaWParam(be.Message.WParam) / WinConversions.WheelDelta);
 			var buttons = Win32.GetMouseButtonWParam(be.Message.WParam).ToEto();
 			if (modifyButtons != null)
 				buttons = modifyButtons(buttons);
@@ -209,6 +209,8 @@ namespace Eto.WinForms
 					num = 5;
 					break;
 			}
+			if (!EtoEnvironment.Platform.IsWindows)
+				return false;
 			return ((int)((long)Win32.SendMessage(hwnd, Win32.WM.GETDLGCODE, IntPtr.Zero, IntPtr.Zero)) & num) != 0;
 		}
 

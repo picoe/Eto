@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Eto.Drawing;
+using System.Globalization;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -55,11 +56,11 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Raises the <see cref="Control.DataContextChanged"/> event
+		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
 		/// </summary>
 		/// <remarks>
 		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="Control.DataContext"/>, which would be set
+		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
 		/// on one of the parent control(s).
 		/// </remarks>
 		/// <param name="e">Event arguments</param>
@@ -116,6 +117,8 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected override void OnLoadComplete(EventArgs e)
 		{
+			base.OnLoadComplete(e);
+
 			if (Handler.RecurseToChildren)
 			{
 				foreach (Control control in Controls)
@@ -123,8 +126,6 @@ namespace Eto.Forms
 					control.TriggerLoadComplete(e);
 				}
 			}
-			
-			base.OnLoadComplete(e);
 		}
 
 		/// <summary>
@@ -161,31 +162,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Container"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler</param>
-		/// <param name="type">Type of the handler to create (must implement <see cref="IHandler"/>)</param>
-		/// <param name="initialize"><c>true</c> to initialize the handler, false if the caller will initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Container(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Container with the specified handler
-		/// </summary>
-		/// <param name="generator">Generator for the widget</param>
-		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		[Obsolete("Use Container(IContainer) instead")]
-		protected Container(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Unbinds any bindings in the <see cref="Control.Bindings"/> collection and removes the bindings, and recurses to this container's children
+		/// Unbinds any bindings in the <see cref="BindableWidget.Bindings"/> collection and removes the bindings, and recurses to this container's children
 		/// </summary>
 		public override void Unbind()
 		{
@@ -202,14 +179,14 @@ namespace Eto.Forms
 		/// <summary>
 		/// Updates all bindings in this widget, and recurses to this container's children
 		/// </summary>
-		public override void UpdateBindings()
+		public override void UpdateBindings(BindingUpdateMode mode = BindingUpdateMode.Source)
 		{
-			base.UpdateBindings();
+			base.UpdateBindings(mode);
 			if (Handler.RecurseToChildren)
 			{
 				foreach (var control in Controls)
 				{
-					control.UpdateBindings();
+					control.UpdateBindings(mode);
 				}
 			}
 		}
@@ -251,7 +228,7 @@ namespace Eto.Forms
 			{
 #if DEBUG
 				if (!ReferenceEquals(child.Parent, this))
-					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a child of this container. Ensure you only remove children that you own."));
 #endif
 				if (child.Loaded)
 				{
@@ -281,7 +258,7 @@ namespace Eto.Forms
 			{
 #if DEBUG
 				if (!ReferenceEquals(previousChild.Parent, this))
-					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a child of this container. Ensure you only remove children that you own."));
 #endif
 				if (previousChild.Loaded)
 				{

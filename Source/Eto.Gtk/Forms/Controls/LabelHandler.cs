@@ -8,8 +8,8 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label, Label.ICallback>, Label.IHandler
 	{
 		readonly Gtk.EventBox eventBox;
-		HorizontalAlign horizontalAlign = HorizontalAlign.Left;
-		VerticalAlign verticalAlign = VerticalAlign.Top;
+		TextAlignment horizontalAlign = TextAlignment.Left;
+		VerticalAlignment verticalAlign = VerticalAlignment.Top;
 
 		public override Gtk.Widget ContainerControl
 		{
@@ -25,7 +25,12 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			int wrapWidth;
 
-#if GTK2
+			public void ResetWidth()
+			{
+				wrapWidth = -1;
+			}
+
+			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				//base.OnSizeRequested (ref requisition);
@@ -34,7 +39,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				requisition.Width = width;
 				requisition.Height = height;
 			}
-#else
+			#else
 			protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
 			{
 				base.OnGetPreferredWidth (out minimum_width, out natural_width);
@@ -49,7 +54,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 
 #endif
-			
+
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
 				base.OnSizeAllocated(allocation);
@@ -58,13 +63,15 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			void SetWrapWidth(int width)
 			{
-				if (width == 0)
+				if (!IsRealized || SingleLineMode || width == 0)
 					return;
-				Layout.Width = (int)(width * Pango.Scale.PangoScale);
 				if (wrapWidth != width)
 				{
+					Layout.Width = (int)(width * Pango.Scale.PangoScale);
+					int pixWidth, pixHeight;
+					Layout.GetPixelSize(out pixWidth, out pixHeight);
+					HeightRequest = pixHeight;
 					wrapWidth = width;
-					QueueResize();
 				}
 			}
 		}
@@ -95,6 +102,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			set
 			{
+				Control.ResetWidth();
 				switch (value)
 				{
 					case WrapMode.None:
@@ -134,17 +142,21 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public virtual Color TextColor
 		{
-			get { return Control.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
-			set { Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return Control.GetForeground(); }
+			set { Control.SetForeground(value); }
 		}
 
 		public override string Text
 		{
-			get { return MnuemonicToString(Control.Text); }
-			set { Control.TextWithMnemonic = StringToMnuemonic(value); }
+			get { return Control.Text.ToEtoMnemonic(); }
+			set
+			{
+				Control.ResetWidth();
+				Control.TextWithMnemonic = value.ToPlatformMnemonic();
+			}
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return horizontalAlign; }
 			set
@@ -163,22 +175,22 @@ namespace Eto.GtkSharp.Forms.Controls
 				default:
 					xalignment = 0F;
 					break;
-				case HorizontalAlign.Center:
+				case TextAlignment.Center:
 					xalignment = 0.5F;
 					break;
-				case HorizontalAlign.Right:
+				case TextAlignment.Right:
 					xalignment = 1F;
 					break;
 			}
 			switch (verticalAlign)
 			{
-				case VerticalAlign.Middle:
+				case VerticalAlignment.Center:
 					yalignment = 0.5F;
 					break;
 				default:
 					yalignment = 0F;
 					break;
-				case VerticalAlign.Bottom:
+				case VerticalAlignment.Bottom:
 					yalignment = 1F;
 					break;
 			}
@@ -186,7 +198,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.Justify = horizontalAlign.ToGtk();
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get { return verticalAlign; }
 			set
@@ -201,6 +213,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return base.Font; }
 			set
 			{
+				Control.ResetWidth();
 				base.Font = value;
 				Control.Attributes = value != null ? ((FontHandler)value.Handler).Attributes : null;
 			}

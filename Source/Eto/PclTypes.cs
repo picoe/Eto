@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Runtime.Serialization;
+using System.Reflection;
 
 // This file contains type definitions currently needed to compile Eto
 // as a Portable Class Library, in the project Eto.Pcl.csproj.
@@ -68,6 +70,22 @@ namespace Eto
 					result = FromString(text, formatInfo);
 					return result;
 				}
+				catch (InvalidOperationException innerException)
+				{
+					throw new InvalidOperationException(text, innerException);
+				}
+				catch (ArgumentNullException innerException)
+				{
+					throw new ArgumentNullException(text, innerException);
+				}
+				catch (ArgumentOutOfRangeException innerException)
+				{
+					throw new ArgumentOutOfRangeException(text, innerException);
+				}
+				catch (ArgumentException innerException)
+				{
+					throw new ArgumentException(text, innerException);
+				}
 				catch (Exception innerException)
 				{
 					throw new Exception(text, innerException);
@@ -88,26 +106,6 @@ namespace Eto
 				return ToString(value, formatInfo);
 			}
 			return base.ConvertTo(context, culture, value, destinationType);
-		}
-	}
-
-	class Int32Converter : BaseNumberConverter
-	{
-		internal override Type NumberType { get { return typeof(int); } }
-
-		internal override object FromString(string value, int fromBase)
-		{
-			return Convert.ToInt32(value, fromBase);
-		}
-
-		internal override object FromString(string value, NumberFormatInfo formatInfo)
-		{
-			return int.Parse(value, NumberStyles.Integer, formatInfo);
-		}
-
-		internal override string ToString(object value, NumberFormatInfo formatInfo)
-		{
-			return ((int)value).ToString("G", formatInfo);
 		}
 	}
 
@@ -149,7 +147,7 @@ namespace Eto
 		/// Gets the name of the type for the type converter of the associated type.
 		/// </summary>
 		/// <value>The name of the type.</value>
-		public string TypeName { get; private set; }
+		public string ConverterTypeName { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.TypeConverterAttribute"/> class.
@@ -157,7 +155,7 @@ namespace Eto
 		/// <param name="type">Type of the type converter.</param>
 		public TypeConverterAttribute(Type type)
 		{
-			TypeName = type.AssemblyQualifiedName;
+			ConverterTypeName = type.AssemblyQualifiedName;
 		}
 
 		/// <summary>
@@ -166,7 +164,26 @@ namespace Eto
 		/// <param name="typeName">Type name of the type converter.</param>
 		public TypeConverterAttribute(string typeName)
 		{
-			TypeName = typeName; 
+			ConverterTypeName = typeName; 
+		}
+	}
+
+	/// <summary>
+	/// Type descriptor for conversion compatibility.
+	/// </summary>
+	public static class TypeDescriptor
+	{
+		/// <summary>
+		/// Gets the type converter for the specified type.
+		/// </summary>
+		/// <returns>The type converter, or null if the type has no defined converter.</returns>
+		/// <param name="type">Type to get the converter for.</param>
+		public static TypeConverter GetConverter(Type type)
+		{
+			var attr = type.GetTypeInfo().GetCustomAttribute<TypeConverterAttribute>();
+			if (attr != null)
+				return Activator.CreateInstance(Type.GetType(attr.ConverterTypeName)) as TypeConverter;
+			return null;
 		}
 	}
 
@@ -400,9 +417,7 @@ namespace Eto
 			else
 				destinationType = value.GetType().FullName;
 
-			throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture,
-				"{0} cannot convert from {1}.", GetType().Name,
-				destinationType));
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "{0} cannot convert from {1}.", GetType().Name, destinationType));
 		}
 
 		/// <summary>
@@ -419,9 +434,7 @@ namespace Eto
 			else
 				sourceType = value.GetType().FullName;
 
-			throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture,
-				"'{0}' is unable to convert '{1}' to '{2}'.", GetType().Name,
-				sourceType, destinationType.FullName));
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "'{0}' is unable to convert '{1}' to '{2}'.", GetType().Name, sourceType, destinationType.FullName));
 		}
 
 		/// <summary>
@@ -458,10 +471,6 @@ namespace Eto
 				return false;
 			}
 		}
-	}
-
-	class SerializableAttribute : Attribute
-	{
 	}
 }
 #endif

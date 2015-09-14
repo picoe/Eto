@@ -352,10 +352,10 @@ namespace Eto.WinRT.Forms.Controls
 #if TODO_XAML
 				var scrollableHandler = (ScrollableHandler)scroll.Handler;
 				visibleRect.Offset(-Control.TranslatePoint(new wf.Point(), scrollableHandler.ContentControl).ToEtoPoint());
+				rect.Intersect(visibleRect);
 #else
 				throw new NotImplementedException();
 #endif
-				rect.Intersect(visibleRect);
 			}
 
 			// cache unused tiles and remove them from the visible tiles list

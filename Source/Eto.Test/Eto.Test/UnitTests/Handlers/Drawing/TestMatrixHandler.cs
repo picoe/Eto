@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
@@ -146,7 +147,7 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 			var e = Elements;
 
 			if(e[0] == 0)
-				throw new InvalidOperationException("The matrix is not invertible");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The matrix is not invertible"));
 
 			var det = 1 / (e[0] * e[3] - e[1] * e[2]);
 			Elements = new float[]

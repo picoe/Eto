@@ -30,7 +30,9 @@ namespace Eto.WinRT.Forms
 #endif
 			{
 				var messageDialog = new wup.MessageDialog(Text ?? "", Caption ?? "");
+#pragma warning disable 4014
 				messageDialog.ShowAsync();
+#pragma warning restore 4014
 
 #if TODO_XAML
 				var element = parent == null ? null : parent.GetContainerControl();

@@ -40,7 +40,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (!AutoComplete)
 				{
 					// with autocomplete off, items aren't selected based on typed text but should be
-					var item = DataStore.FirstOrDefault(o => Widget.TextBinding.GetValue(o) == text);
+					var item = DataStore.FirstOrDefault(o => Widget.ItemTextBinding.GetValue(o) == text);
 					if (item != null)
 					{
 						Control.SelectedItem = item;
@@ -50,7 +50,7 @@ namespace Eto.Wpf.Forms.Controls
 				else if (Control.SelectedItem != null)
 				{
 					// with autocomplete on, selected item is set even though text doesn't actually match
-					var val = Widget.TextBinding.GetValue(Control.SelectedItem);
+					var val = Widget.ItemTextBinding.GetValue(Control.SelectedItem);
 					if (text == val) return;
 				}
 
@@ -101,6 +101,21 @@ namespace Eto.Wpf.Forms.Controls
 					Control.Text = value;
 					HandleTextChanged();
 				}
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get
+			{
+				var contentHost = Control.ContentHost;
+				return (contentHost != null ? contentHost.Background : sw.SystemColors.WindowBrush).ToEtoColor();
+			}
+			set
+			{
+				var contentHost = Control.ContentHost;
+				if (contentHost != null)
+					contentHost.Background = value.ToWpfBrush(contentHost.Background);
 			}
 		}
 

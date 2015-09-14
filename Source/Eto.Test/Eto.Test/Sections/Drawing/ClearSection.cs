@@ -8,7 +8,14 @@ namespace Eto.Test.Sections.Drawing
 	public class ClearSection : Scrollable, INotifyPropertyChanged
 	{
 		bool useClearColor;
-		bool useGraphicsPathClip;
+		ClearClipMode clipMode;
+
+		public enum ClearClipMode
+		{
+			None,
+			GraphicsPath,
+			Rectangle
+		}
 
 		public bool UseClearColor
 		{
@@ -20,19 +27,19 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		public bool UseGraphicsPathClip
+		public ClearClipMode ClipMode
 		{
-			get { return useGraphicsPathClip; }
+			get { return clipMode; }
 			set
 			{
-				useGraphicsPathClip = value;
-				OnPropertyChanged(new PropertyChangedEventArgs("UseGraphicsPathClip"));
+				clipMode = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("ClipMode"));
 			}
 		}
 
 		public ClearSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			layout.AddSeparateRow(null, UseClearColorControl(), UseGraphicsPathClipControl(), null);
 			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Drawable" }, ClearGraphicsTest(), null);
@@ -52,16 +59,16 @@ namespace Eto.Test.Sections.Drawing
 
 		Control UseGraphicsPathClipControl()
 		{
-			var control = new CheckBox { Text = "Use graphics path clip" };
-			control.CheckedBinding.Bind(() => UseGraphicsPathClip, v => UseGraphicsPathClip = v ?? false);
-			return control;
+			var control = new EnumDropDown<ClearClipMode>();
+			control.SelectedValueBinding.Bind(this, r => r.ClipMode);
+			return new StackLayout { Orientation = Orientation.Horizontal, Items = { "Clip Mode:", control } };
 		}
 
 		Control ClearGraphicsTest()
 		{
 			var control = new Drawable
 			{
-				Size = new Size (200, 200),
+				Size = new Size(200, 200),
 				BackgroundColor = Colors.Yellow
 			};
 			control.Paint += (sender, e) => DrawSample(e.Graphics);
@@ -74,13 +81,16 @@ namespace Eto.Test.Sections.Drawing
 			using (graphics.Platform.Context)
 			{
 				graphics.FillRectangle(Brushes.Green, 0, 0, 200, 200);
-				if (UseGraphicsPathClip)
+				switch (clipMode)
 				{
-					var path = GraphicsPath.GetRoundRect(new RectangleF(10, 10, 180, 180), 20);
-					graphics.SetClip(path);
+					case ClearClipMode.GraphicsPath:
+						var path = GraphicsPath.GetRoundRect(new RectangleF(10, 10, 180, 180), 20);
+						graphics.SetClip(path);
+						break;
+					case ClearClipMode.Rectangle:
+						graphics.SetClip(new RectangleF(10, 10, 180, 180));
+						break;
 				}
-				else
-					graphics.SetClip(new RectangleF(10, 10, 180, 180));
 
 				if (UseClearColor)
 					graphics.Clear(new SolidBrush(new Color(Colors.Red, 0.5f)));
@@ -104,8 +114,8 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new DrawableImageView
 			{
-				Image = CreateImage (),
-				Size = new Size (200, 200),
+				Image = CreateImage(),
+				Size = new Size(200, 200),
 				BackgroundColor = Colors.Yellow
 			};
 

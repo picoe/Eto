@@ -2,9 +2,9 @@ using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Drawing;
-using sd = System.Drawing;
 using System.Collections;
 using System.Linq;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -64,6 +64,22 @@ namespace Eto.Mac.Forms.Controls
 				}
 				else
 					base.DrawBackground(clipRect);
+			}
+
+			public override void MouseDown(NSEvent theEvent)
+			{
+				var point = ConvertPointFromView(theEvent.LocationInWindow, null);
+
+				int rowIndex;
+				if ((rowIndex = (int)GetRow(point)) >= 0)
+				{
+					int columnIndex = (int)GetColumn(point);
+					var item = Handler.GetItem(rowIndex);
+					var column = columnIndex == -1 || columnIndex > Handler.Widget.Columns.Count ? null : Handler.Widget.Columns[columnIndex];
+					Handler.Callback.OnCellClick(Handler.Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+				}
+
+				base.MouseDown(theEvent);
 			}
 		}
 
@@ -132,7 +148,6 @@ namespace Eto.Mac.Forms.Controls
 				var colHandler = Handler.GetColumn(tableColumn);
 				var item = Handler.GetItem((int)row);
 				Handler.OnCellFormatting(colHandler.Widget, item, (int)row, cell as NSCell);
-
 			}
 
 			public override void ColumnDidResize(NSNotification notification)
@@ -148,12 +163,6 @@ namespace Eto.Mac.Forms.Controls
 					}
 				}
 			}
-		}
-
-		public bool ShowCellBorders
-		{
-			get { return Control.IntercellSpacing.Width > 0 || Control.IntercellSpacing.Height > 0; }
-			set { Control.IntercellSpacing = value ? new CGSize(1, 1) : CGSize.Empty; } 
 		}
 
 		public override void AttachEvent(string id)
@@ -188,20 +197,10 @@ namespace Eto.Mac.Forms.Controls
 				};
 				*/
 					break;
-				case Grid.CellFormattingEvent:
+				case Grid.CellClickEvent:
+					// Handled in EtoTableView
 					break;
-				case GridView.CellDoubleClickEvent:
-					Control.DoubleClick += (sender, e) =>
-					{
-						int rowIndex;
-						if ((rowIndex = (int)Control.ClickedRow) >= 0)
-						{
-							var columnIndex = (int)Control.ClickedColumn;
-							var item = GetItem(rowIndex);
-							var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
-							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-						}
-					};
+				case Grid.CellFormattingEvent:
 					break;
 				default:
 					base.AttachEvent(id);

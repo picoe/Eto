@@ -4,20 +4,56 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
 using mwc = Xceed.Wpf.Toolkit;
+using System.Text;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	public class EtoDoubleUpDown : mwc.DoubleUpDown
 	{
+		public new swc.TextBox TextBox { get { return base.TextBox; } }
+	}
+
+	public class NumericUpDownHandler : WpfControl<EtoDoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	{
+		double lastValue;
+
 		protected override Size DefaultSize { get { return new Size(80, -1); } }
 
 		protected override bool PreventUserResize { get { return true; } }
 
 		public NumericUpDownHandler()
 		{
-			Control = new mwc.DoubleUpDown();
-			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
-			DecimalPlaces = 0;
+			Control = new EtoDoubleUpDown
+			{
+				FormatString = "0",
+				Value = 0
+			};
+			Control.ValueChanged += (sender, e) =>
+			{
+				Control.Value = Math.Max(MinValue, Math.Min(MaxValue, double.Parse((Control.Value ?? 0).ToString())));
+				TriggerValueChanged();
+			};
+			Control.Loaded += Control_Loaded;
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			// ensure changed event fires when changing the text, not just when focus is lost
+			if (Control.TextBox != null)
+			{
+				Control.TextBox.TextChanged += (sender2, e2) => TriggerValueChanged();
+				Control.Loaded -= Control_Loaded;
+			}
+		}
+
+		void TriggerValueChanged()
+		{
+			var val = Value;
+			if (lastValue != val)
+			{
+				Callback.OnValueChanged(Widget, EventArgs.Empty);
+				lastValue = val;
+			}
 		}
 
 		public override bool UseMousePreview { get { return true; } }
@@ -32,34 +68,43 @@ namespace Eto.Wpf.Forms.Controls
 
 		public double Value
 		{
-			get { return Control.Value ?? 0; }
-			set { Control.Value = value; }
+			get { return Math.Round(Control.Value ?? 0, MaximumDecimalPlaces); }
+			set { Control.Value = Math.Max(MinValue, Math.Min(MaxValue, value)); }
 		}
 
 		public double MinValue
 		{
 			get { return Control.Minimum ?? double.MinValue; }
-			set { Control.Minimum = value; }
+			set
+			{
+				Control.Minimum = value;
+				Control.Value = Math.Max(value, Value);
+			}
 		}
 
 		public double MaxValue
 		{
 			get { return Control.Maximum ?? double.MaxValue; }
-			set { Control.Maximum = value; }
+			set
+			{
+				Control.Maximum = value;
+				Control.Value = Math.Min(value, Value);
+			}
 		}
 
-		int decimalPlaces = 0;
+		static readonly object DecimalPlaces_Key = new object();
 
 		public int DecimalPlaces
 		{
-			get { return decimalPlaces; }
+			get { return Widget.Properties.Get<int>(DecimalPlaces_Key); }
 			set
 			{
-				if (value != decimalPlaces)
+				Widget.Properties.Set(DecimalPlaces_Key, value, () =>
 				{
-					decimalPlaces = value;
-					Control.FormatString = "0." + new string('0', decimalPlaces);
-				}
+					if (MaximumDecimalPlaces < value)
+						MaximumDecimalPlaces = value;
+					UpdateRequiredDigits();
+				});
 			}
 		}
 
@@ -67,6 +112,53 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Control.Increment ?? 1; }
 			set { Control.Increment = value; }
+		}
+
+		public override void Focus()
+		{
+			// focus the inner text box
+			if (Control.IsLoaded)
+				Control.TextBox.Focus();
+			else
+				Control.Loaded += HandleFocus;
+		}
+
+		void HandleFocus(object sender, sw.RoutedEventArgs e)
+		{
+			Control.TextBox.Focus();
+			Control.Loaded -= HandleFocus;
+		}
+
+		static readonly object MaxiumumDecimalPlaces_Key = new object();
+
+		public int MaximumDecimalPlaces
+		{
+			get { return Widget.Properties.Get<int>(MaxiumumDecimalPlaces_Key); }
+			set
+			{
+				Widget.Properties.Set(MaxiumumDecimalPlaces_Key, value, () =>
+				{
+					if (DecimalPlaces > value)
+						DecimalPlaces = value;
+					UpdateRequiredDigits();
+				});
+			}
+		}
+
+		void UpdateRequiredDigits()
+		{
+			if (MaximumDecimalPlaces > 0 || DecimalPlaces > 0)
+			{
+				var format = new StringBuilder();
+				format.Append("0.");
+				if (DecimalPlaces > 0)
+					format.Append(new string('0', DecimalPlaces));
+				if (MaximumDecimalPlaces > DecimalPlaces)
+					format.Append(new string('#', MaximumDecimalPlaces - DecimalPlaces));
+				Control.FormatString = format.ToString();
+			}
+			else
+				Control.FormatString = "0";
 		}
 	}
 }

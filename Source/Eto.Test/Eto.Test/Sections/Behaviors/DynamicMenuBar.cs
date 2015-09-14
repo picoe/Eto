@@ -1,6 +1,7 @@
 ﻿using System;
 using Eto.Forms;
 using System.Linq;
+using Eto.Drawing;
 
 
 namespace Eto.Test.Sections.Behaviors
@@ -18,7 +19,7 @@ namespace Eto.Test.Sections.Behaviors
 			var menuToEdit = new DropDown
 			{
 				DataStore = menu.Items.OfType<ISubmenu>().Union(new ISubmenu[] { menu }).ToList(),
-				TextBinding = Binding.Delegate((MenuItem item) => item.Text, defaultGetValue: "Main Menu")
+				ItemTextBinding = Binding.Delegate((MenuItem item) => item.Text, defaultGetValue: "Main Menu")
 			};
 			menuToEdit.SelectedValueBinding.Bind(() => editMenu, v => editMenu = v as ISubmenu);
 
@@ -47,13 +48,15 @@ namespace Eto.Test.Sections.Behaviors
 			};
 
 			// layout of the form
-			Content = new TableLayout
+			Content = new StackLayout
 			{
-				Rows =
+				Spacing = 5,
+				HorizontalContentAlignment = HorizontalAlignment.Center,
+				Items =
 				{
 					null,
-					TableLayout.Horizontal(null, new Label { Text = "Submenu to add to", VerticalAlign = VerticalAlign.Middle }, menuToEdit, null),
-					TableLayout.Horizontal(null, addToEditMenu, removeFromEditMenu, null),
+					new StackLayout { Orientation = Orientation.Horizontal, Spacing = 5, Items = { new Label { Text = "Submenu to add to", VerticalAlignment = VerticalAlignment.Center }, menuToEdit } },
+					new StackLayout { Orientation = Orientation.Horizontal, Spacing = 5, Items = { addToEditMenu, removeFromEditMenu } },
 					null
 				}
 			};

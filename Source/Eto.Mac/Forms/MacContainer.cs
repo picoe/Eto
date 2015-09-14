@@ -1,17 +1,15 @@
 using System;
 using Eto.Forms;
-using SD = System.Drawing;
 using System.Linq;
 using Eto.Drawing;
 
 #if XAMMAC2
-using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -36,10 +34,15 @@ using nuint = System.UInt32;
 #endif
 
 #if IOS
-using MonoTouch.Foundation;
+using Foundation;
+using CoreGraphics;
+using ObjCRuntime;
+using CoreAnimation;
+using CoreImage;
+using Eto.iOS;
 
-using NSResponder = MonoTouch.UIKit.UIResponder;
-using NSView = MonoTouch.UIKit.UIView;
+using NSResponder = UIKit.UIResponder;
+using NSView = UIKit.UIView;
 using Eto.iOS.Forms;
 #endif
 

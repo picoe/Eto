@@ -374,12 +374,12 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
 			get
 			{
 				if (WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty)
-					return null;
+					return Widget.Bounds;
 				return Control.RestoreBounds.ToEto();
 			}
 		}
@@ -413,6 +413,11 @@ namespace Eto.WinForms.Forms
 		public void SendToBack()
 		{
 			Control.SendToBack();
+		}
+
+		public virtual void SetOwner(Window owner)
+		{
+			Control.Owner = owner.ToSWF();
 		}
 
 		public Screen Screen

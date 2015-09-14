@@ -8,6 +8,14 @@ namespace Eto
 	static class Win32
 	{
 		// Analysis disable InconsistentNaming
+
+		public struct RECT
+		{
+			public int left;
+			public int top;
+			public int right;
+			public int bottom;
+		}
         
 		[Flags]
 		public enum SWP : uint
@@ -108,7 +116,15 @@ namespace Eto
 			MBUTTONDBLCLK = 0x0209,
 			MOUSEWHEEL = 0x20A,
 
-			ERASEBKGND = 0x14
+			CUT = 0x0300,
+			COPY = 0x0301,
+			PASTE = 0x0302,
+			CLEAR = 0x0303,
+
+			ERASEBKGND = 0x14,
+
+			ECM_FIRST = 0x1500,
+			EM_SETCUEBANNER = ECM_FIRST + 1
 		}
 
 		public static ushort LOWORD(IntPtr word)
@@ -195,7 +211,7 @@ namespace Eto
 		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags);
 
 		[DllImport("user32.dll")]
-		public static extern long GetWindowRect(IntPtr hWnd, ref Rectangle lpRect);
+		public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern uint GetWindowLong(IntPtr hWnd, GWL nIndex);
@@ -205,6 +221,10 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
+		public static extern IntPtr SendMessage(IntPtr hWnd, WM msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
+
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		public static extern bool PeekMessage(ref Message wMsg, IntPtr hwnd, int msgMin, int msgMax, int remove);

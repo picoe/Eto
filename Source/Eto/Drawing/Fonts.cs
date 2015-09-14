@@ -56,7 +56,7 @@ namespace Eto.Drawing
 		/// Clears the font cache
 		/// </summary>
 		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached(FontFamily,float,FontStyle,FontDecoration,Generator)"/> method to cache fonts and want to clear it
+		/// This is useful if you are using the <see cref="Cached(FontFamily,float,FontStyle,FontDecoration)"/> method to cache fonts and want to clear it
 		/// to conserve memory or resources.
 		/// </remarks>
 		public static void ClearCache ()
@@ -136,122 +136,6 @@ namespace Eto.Drawing
 			}
 		}
 
-
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Cached the specified familyName, size, style, decoration and generator.
-		/// </summary>
-		/// <param name="familyName">Family name.</param>
-		/// <param name="size">Size.</param>
-		/// <param name="style">Style.</param>
-		/// <param name="decoration">Decoration.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use variation without generator instead")]
-		public static Font Cached(string familyName, float size, FontStyle style, FontDecoration decoration, Generator generator)
-		{
-			return GetFont(new FontFamily(familyName), size, style, decoration);
-		}
-
-		/// <summary>
-		/// Gets a cached font
-		/// </summary>
-		/// <param name="family">Family of the font</param>
-		/// <param name="size">Size in points of the font</param>
-		/// <param name="style">Style of the font</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		/// <param name="generator">Generator to create the font</param>
-		[Obsolete("Use variation without generator instead")]
-		public static Font Cached (FontFamily family, float size, FontStyle style, FontDecoration decoration, Generator generator)
-		{
-			return GetFont (family, size, style, decoration);
-		}
-
-		/// <summary>
-		/// Clears the font cache
-		/// </summary>
-		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached(FontFamily,float,FontStyle,FontDecoration,Generator)"/> method to cache fonts and want to clear it
-		/// to conserve memory or resources.
-		/// </remarks>
-		/// <param name="generator">Generator to clear the font cache for</param>
-		[Obsolete("Use variation without generator instead")]
-		public static void ClearCache (Generator generator)
-		{
-			var cache = generator.Cache<FontCacheKey, Font>(cacheKey);
-			lock (cache) {
-				cache.Clear ();
-			}
-		}
-
-		/// <summary>
-		/// Gets a font with the <see cref="FontFamilies.Monospace"/> family and the specified size and style
-		/// </summary>
-		/// <param name="size">Size of the font</param>
-		/// <param name="style">Style of the font</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		/// <param name="generator">Generator to get the font</param>
-		[Obsolete("Use variation without generator instead")]
-		public static Font Monospace (float size, FontStyle style, FontDecoration decoration, Generator generator)
-		{
-			return GetFont (FontFamilies.Monospace, size, style, decoration);
-		}
-
-		/// <summary>
-		/// Gets a font with the <see cref="FontFamilies.Sans"/> family and the specified size and style
-		/// </summary>
-		/// <param name="size">Size of the font</param>
-		/// <param name="style">Style of the font</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		/// <param name="generator">Generator to get the font</param>
-		[Obsolete("Use variation without generator instead")]
-		public static Font Sans (float size, FontStyle style, FontDecoration decoration, Generator generator)
-		{
-			return GetFont (FontFamilies.Sans, size, style, decoration);
-		}
-
-		/// <summary>
-		/// Gets a font with the <see cref="FontFamilies.Serif"/> family and the specified size and style
-		/// </summary>
-		/// <param name="size">Size of the font</param>
-		/// <param name="style">Style of the font</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		/// <param name="generator">Generator to get the font</param>
-		[Obsolete("Use variation without generator instead")]
-		public static Font Serif (float size, FontStyle style, FontDecoration decoration, Generator generator)
-		{
-			return GetFont (FontFamilies.Serif, size, style, decoration);
-		}
-
-		/// <summary>
-		/// Gets a font with the <see cref="FontFamilies.Cursive"/> family and the specified size and style
-		/// </summary>
-		/// <param name="size">Size of the font</param>
-		/// <param name="style">Style of the font</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		/// <param name="generator">Generator to get the font</param>
-		[Obsolete("Use variation without generator instead")]
-		public static Font Cursive (float size, FontStyle style, FontDecoration decoration, Generator generator)
-		{
-			return GetFont (FontFamilies.Cursive, size, style, decoration);
-		}
-
-		/// <summary>
-		/// Gets a font with the <see cref="FontFamilies.Fantasy"/> family and the specified size and style
-		/// </summary>
-		/// <param name="size">Size of the font</param>
-		/// <param name="style">Style of the font</param>
-		/// <param name="decoration">Decorations to apply to the font</param>
-		/// <param name="generator">Generator to get the font</param>
-		[Obsolete("Use variation without generator instead")]
-		public static Font Fantasy (float size, FontStyle style, FontDecoration decoration, Generator generator)
-		{
-			return GetFont (FontFamilies.Fantasy, size, style, decoration);
-		}
-
-		#pragma warning restore 612,618
-
-
 		/// <summary>
 		/// Platform handler interface for the <see cref="Fonts"/> class
 		/// </summary>
@@ -276,4 +160,3 @@ namespace Eto.Drawing
 		}
 	}
 }
-

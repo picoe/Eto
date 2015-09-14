@@ -19,7 +19,7 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class SliderHandler : MacControl<NSSlider, Slider, Slider.ICallback>, Slider.IHandler
 	{
-		SliderOrientation orientation;
+		Orientation orientation;
 
 		public class EtoSlider : NSSlider, IMacControl
 		{
@@ -50,12 +50,22 @@ namespace Eto.Mac.Forms.Controls
 					handler.Control.IntValue = newval;
 
 				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
+
+				var ev = NSApplication.SharedApplication.CurrentEvent;
+				if (ev != null)
+				{
+					// trigger mouse events when value is changed as they are buried by the slider
+					if (ev.Type == NSEventType.LeftMouseUp || ev.Type == NSEventType.RightMouseUp)
+						handler.Callback.OnMouseUp(handler.Widget, MacConversions.GetMouseEvent(handler.Control, ev, false));
+					else if (ev.Type == NSEventType.LeftMouseDragged || ev.Type == NSEventType.RightMouseDragged)
+						handler.Callback.OnMouseMove(handler.Widget, MacConversions.GetMouseEvent(handler.Control, ev, false));
+				}
 			}
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return Orientation == SliderOrientation.Horizontal ? new Size(80, 30) : new Size(30, 80);
+			return Orientation == Orientation.Horizontal ? new Size(80, 30) : new Size(30, 80);
 		}
 
 		public int MaxValue
@@ -106,7 +116,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public SliderOrientation Orientation
+		public Orientation Orientation
 		{
 			get
 			{
@@ -117,7 +127,7 @@ namespace Eto.Mac.Forms.Controls
 				orientation = value;
 				// wha?!?! no way to do this other than change size or sumthun?
 				var size = Control.Frame.Size;
-				if (value == SliderOrientation.Vertical)
+				if (value == Orientation.Vertical)
 				{
 					size.Height = size.Width + 1;
 				}

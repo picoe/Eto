@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Forms.Controls;
@@ -54,8 +53,12 @@ namespace Eto.Mac.Forms
 		{
 		}
 
+		public bool DisableCenterParent { get; set; }
+
 		public override void Center()
 		{
+			if (DisableCenterParent)
+				return;
 			// implement centering to parent if there is a parent window for this one..
 			if (ParentWindow != null)
 			{
@@ -78,7 +81,7 @@ namespace Eto.Mac.Forms
 			else
 			{
 				oldFrame = Frame;
-				base.Zoom(sender);
+				base.Zoom(sender ?? this); // null when double clicking the title bar, but xammac/monomac doesn't allow it
 				zoom = true;
 			}
 			Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
@@ -106,10 +109,6 @@ namespace Eto.Mac.Forms
 
 	public class CustomFieldEditor : NSTextView
 	{
-		WeakReference widget;
-
-		public Control Widget { get { return (Control)widget.Target; } set { widget = new WeakReference(value); } }
-
 		public CustomFieldEditor()
 		{
 			FieldEditor = true;
@@ -122,10 +121,14 @@ namespace Eto.Mac.Forms
 
 		public override void KeyDown(NSEvent theEvent)
 		{
-			if (!MacEventView.KeyDown(Widget, theEvent))
+			var macControl = WeakDelegate as IMacControl;
+			if (macControl != null)
 			{
-				base.KeyDown(theEvent);
+				var macViewHandler = macControl.WeakHandler.Target as IMacViewHandler;
+				if (macViewHandler != null && MacEventView.KeyDown(macViewHandler.Widget, theEvent))
+					return;
 			}
+			base.KeyDown(theEvent);
 		}
 	}
 
@@ -134,7 +137,6 @@ namespace Eto.Mac.Forms
 		where TWidget: Window
 		where TCallback: Window.ICallback
 	{
-
 		CustomFieldEditor fieldEditor;
 		MenuBar menuBar;
 		Icon icon;
@@ -144,7 +146,6 @@ namespace Eto.Mac.Forms
 		WindowState? initialState;
 		bool maximizable = true;
 		bool topmost;
-		bool setInitialPosition = true;
 		Point? oldLocation;
 
 		Window.ICallback IMacWindow.Callback { get { return Callback; } }
@@ -164,7 +165,7 @@ namespace Eto.Mac.Forms
 				var contentControl = Content.GetMacControl();
 				if (contentControl != null)
 				{
-					return contentControl.GetPreferredSize(availableSize);
+					return contentControl.GetPreferredSize(availableSize) + Padding.Size;
 				}
 			}
 			return new Size(200, 200);
@@ -176,8 +177,6 @@ namespace Eto.Mac.Forms
 			set
 			{
 				base.MinimumSize = value;
-				// TODO: Mac64
-				#if !Mac64
 				if (value != Size.Empty)
 				{
 					Control.WillResize = (sender, frameSize) =>
@@ -191,7 +190,6 @@ namespace Eto.Mac.Forms
 				}
 				else
 					Control.WillResize = null;
-				#endif
 			}
 		}
 
@@ -200,18 +198,19 @@ namespace Eto.Mac.Forms
 			get { return menuBar == null ? null : menuBar.ControlObject as NSMenu; }
 		}
 
-		protected MacWindow()
-		{
-			AutoSize = true;
-		}
-
 		protected override void Initialize()
 		{
 			base.Initialize();
 			Control.DidBecomeKey += HandleDidBecomeKey;
+			Control.DidResignKey += HandleDidResignKey;
 			Control.ShouldZoom = HandleShouldZoom;
 			Control.WillMiniaturize += HandleWillMiniaturize;
 		}
+
+		IntPtr oldMenu;
+
+		static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
+		static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
 
 		static void HandleDidBecomeKey(object sender, EventArgs e)
 		{
@@ -220,9 +219,31 @@ namespace Eto.Mac.Forms
 				return;
 			if (handler.MenuBar != null)
 			{
+				var ptr = Messaging.IntPtr_objc_msgSend(NSApplication.SharedApplication.Handle, selMainMenu);
+				if (Runtime.TryGetNSObject(ptr) == null)
+				{
+					// it's a native menu, so let's hold on to it till we resign key of the form
+					MacExtensions.Retain(ptr);
+					handler.oldMenu = ptr;
+				}
 				NSApplication.SharedApplication.MainMenu = handler.MenuBar;
 			}
+			else
+				handler.oldMenu = IntPtr.Zero;
+		}
 
+		static void HandleDidResignKey(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget,TCallback>;
+			if (handler == null)
+				return;
+			if (handler.oldMenu != IntPtr.Zero)
+			{
+				// restore old native menu
+				Messaging.void_objc_msgSend_IntPtr(NSApplication.SharedApplication.Handle, selSetMainMenu, handler.oldMenu);
+				MacExtensions.Release(handler.oldMenu);
+				handler.oldMenu = IntPtr.Zero;
+			}
 		}
 
 		static bool HandleShouldZoom(NSWindow window, CGRect newFrame)
@@ -429,15 +450,14 @@ namespace Eto.Mac.Forms
 			if (control != null)
 			{
 				var childHandler = control.WeakHandler.Target as IMacViewHandler;
-				if (childHandler != null && childHandler.IsEventHandled(Eto.Forms.Control.KeyDownEvent))
+				if (childHandler != null)
 				{
-					if (handler.fieldEditor == null)
-						handler.fieldEditor = new CustomFieldEditor();
-					handler.fieldEditor.Widget = childHandler.Widget;
-					return handler.fieldEditor;
+					var fieldEditor = childHandler.CustomFieldEditor;
+					if (fieldEditor != null)
+						return fieldEditor;
 				}
 			}
-			return null;
+			return handler.fieldEditor ?? (handler.fieldEditor = new CustomFieldEditor());;
 		}
 
 		public override NSView ContentControl { get { return Control.ContentView; } }
@@ -562,7 +582,10 @@ namespace Eto.Mac.Forms
 
 		public virtual void Close()
 		{
-			Control.Close();
+			var args = new CancelEventArgs();
+			Callback.OnClosing(Widget, args);
+			if (!args.Cancel)
+				Control.Close();
 		}
 
 		public Eto.Forms.ToolBar ToolBar
@@ -662,7 +685,9 @@ namespace Eto.Mac.Forms
 
 					Control.SetFrameOrigin(point);
 				}
-				setInitialPosition = false;
+				var etoWindow = Control as MyWindow;
+				if (etoWindow != null)
+					etoWindow.DisableCenterParent = true;
 			}
 		}
 
@@ -707,9 +732,9 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
-			get { return WindowState == WindowState.Normal ? null : restoreBounds; }
+			get { return WindowState == WindowState.Normal ? Widget.Bounds : restoreBounds ?? Widget.Bounds; }
 			set { restoreBounds = value; }
 		}
 
@@ -732,12 +757,8 @@ namespace Eto.Mac.Forms
 				SetContentSize(size.ToNS());
 				setInitialSize = true;
 
-				PositionWindow();
 			}
-			else
-			{
-				PositionWindow();
-			}
+			PositionWindow();
 		}
 		public override void OnLoadComplete(EventArgs e)
 		{
@@ -751,11 +772,7 @@ namespace Eto.Mac.Forms
 
 		protected virtual void PositionWindow()
 		{
-			if (setInitialPosition)
-			{
-				Control.Center();
-				setInitialPosition = false;
-			}
+			Control.Center();
 		}
 
 		#region IMacContainer implementation
@@ -862,6 +879,10 @@ namespace Eto.Mac.Forms
 			if (window != null)
 				window.MakeKeyWindow();
 			Control.ResignKeyWindow();
+		}
+
+		public virtual void SetOwner(Window owner)
+		{
 		}
 	}
 }

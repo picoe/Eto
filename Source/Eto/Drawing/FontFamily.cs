@@ -54,40 +54,6 @@ namespace Eto.Drawing
 			Handler.Create (familyName);
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Initializes a new instance of the FontFamily class with the specified handler
-		/// </summary>
-		/// <remarks>
-		/// Used by platform implementations to create instances of the FontFamily class directly
-		/// </remarks>
-		/// <param name="generator">Generator for this instance</param>
-		/// <param name="handler">Handler to use</param>
-		[Obsolete("Use variation without generator instead")]
-		public FontFamily(Generator generator, IHandler handler)
-			: base(generator, handler, true)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the FontFamily class with the given font <paramref name="familyName"/>
-		/// </summary>
-		/// <param name="generator">Generator to create this font family on</param>
-		/// <param name="familyName">Name of the font family to assign to this instance</param>
-		[Obsolete("Use variation without generator instead")]
-		public FontFamily(Generator generator, string familyName)
-			: base(generator, typeof(IHandler), true)
-		{
-			if (familyName.IndexOf(',') > 0)
-				familyName = SplitFamilyName(familyName);
-
-			Handler.Create(familyName);
-		}
-
-		#pragma warning restore 612,618
-
-
 		static string SplitFamilyName (string familyName)
 		{
 			var handler = Platform.Instance.CreateShared<Fonts.IHandler>();

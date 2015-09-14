@@ -20,6 +20,8 @@ namespace Eto.Test.Sections.Drawing
 
 		public PenLineCap LineCap { get; set; }
 
+		public bool AntiAlias { get; set; }
+
 		public Action<GraphicsPath> PathChanged;
 
 		GraphicsPath path;
@@ -42,10 +44,11 @@ namespace Eto.Test.Sections.Drawing
 		{
 			StartFigures = true;
 			PenThickness = 1;
+			AntiAlias = true;
 
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
+			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), AntiAliasControl(), null);
 			if (Platform.Instance.Supports<NumericUpDown>())
 				layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
 			layout.AddSeparateRow(null, ShowBounds(), CurrentPoint(), null);
@@ -56,6 +59,13 @@ namespace Eto.Test.Sections.Drawing
 			layout.Add(null);
 
 			Content = layout;
+		}
+
+		Control AntiAliasControl()
+		{
+			var control = new CheckBox { Text = "AntiAlias" };
+			control.CheckedBinding.Bind(() => AntiAlias, val => { AntiAlias = val ?? false; Refresh(); });
+			return control;
 		}
 
 		Control StartFiguresControl()
@@ -85,7 +95,7 @@ namespace Eto.Test.Sections.Drawing
 			control.ValueBinding.Bind(() => PenThickness, val => { PenThickness = (float)val; Refresh(); });
 
 			var layout = new DynamicLayout { Padding = Padding.Empty };
-			layout.AddRow(new Label { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
+			layout.AddRow(new Label { Text = "Thickness:", VerticalAlignment = VerticalAlignment.Center }, control);
 			return layout;
 		}
 
@@ -105,7 +115,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control ShowBounds()
 		{
-			var control = new Label();			
+			var control = new Label();
 			PathChanged += path => control.Text = string.Format("Bounds: {0}", path.Bounds);
 			return control;
 		}
@@ -120,7 +130,7 @@ namespace Eto.Test.Sections.Drawing
 		void Refresh()
 		{
 			path = null;
-			foreach (var d in Children.OfType<Drawable> ())
+			foreach (var d in Children.OfType<Drawable>())
 			{
 				d.Invalidate();
 			}
@@ -129,12 +139,14 @@ namespace Eto.Test.Sections.Drawing
 		Control DrawLinePath()
 		{
 			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
-			control.Paint += (sender, e) => 
+			control.Paint += (sender, e) =>
 			{
 				var pen = new Pen(Colors.White, PenThickness);
 				pen.LineJoin = LineJoin;
 				pen.LineCap = LineCap;
+				e.Graphics.AntiAlias = AntiAlias;
 				e.Graphics.DrawPath(pen, Path);
+				e.Graphics.AntiAlias = false;
 			};
 			return control;
 		}
@@ -142,7 +154,12 @@ namespace Eto.Test.Sections.Drawing
 		Control FillLinePath()
 		{
 			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
-			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.White, Path);
+			control.Paint += (sender, e) =>
+			{
+				e.Graphics.AntiAlias = AntiAlias;
+				e.Graphics.FillPath(Brushes.White, Path);
+				e.Graphics.AntiAlias = false;
+			};
 			return control;
 		}
 

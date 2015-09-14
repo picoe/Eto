@@ -42,8 +42,8 @@ namespace Eto.Wpf.Forms.ToolBar
 
 		public override string Text
 		{
-			get { return label.Text.ToEtoMneumonic(); }
-			set { label.Text = value.ToWpfMneumonic(); }
+			get { return label.Text.ToEtoMnemonic(); }
+			set { label.Text = value.ToPlatformMnemonic(); }
 		}
 
 		public override string ToolTip

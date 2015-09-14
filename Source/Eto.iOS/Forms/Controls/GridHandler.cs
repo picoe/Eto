@@ -1,9 +1,9 @@
 using System;
 using MonoTouch;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using System.Collections.Generic;
-using MonoTouch.Foundation;
+using Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -94,6 +94,18 @@ namespace Eto.iOS.Forms.Controls
 		public void BeginEdit(int row, int column)
 		{
 		}
+
+		public void ScrollToRow(int row)
+		{
+			var index = NSIndexPath.FromRowSection(row, 0);
+			Control.ScrollToRow(index, UITableViewScrollPosition.None, Widget.Loaded);
+		}
+
+		public GridLines GridLines
+		{
+			get;
+			set;
+		}
 	}
 
 	public class GridHandlerTableDelegate : UITableViewDelegate
@@ -122,7 +134,6 @@ namespace Eto.iOS.Forms.Controls
 			return UIInterfaceOrientationMask.All;
 		}
 
-		[Obsolete]
 		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true;

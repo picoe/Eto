@@ -56,5 +56,11 @@ namespace Eto.Android.Forms.Controls
 			get { return Control.TextColors.ToEto(); }
 			set { Control.SetTextColor(value.ToAndroid()); }
 		}
+
+		public Size MinimumSize
+		{
+			get; // TODO:
+			set;
+		}
 	}
 }

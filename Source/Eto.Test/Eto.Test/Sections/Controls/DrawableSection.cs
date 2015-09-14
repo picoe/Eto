@@ -9,19 +9,19 @@ namespace Eto.Test.Sections.Controls
 	{
 		public DrawableSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.BeginVertical();
 			layout.BeginHorizontal();
-			layout.Add(new Label { Text = "Default" });
+			layout.Add("Default");
 			layout.Add(this.Default(), xscale: true);
-			layout.Add(new Label { Text = "With Background" });
+			layout.Add("With Background");
 			layout.Add(this.WithBackground(), xscale: true);
 			layout.EndHorizontal();
 			layout.EndVertical();
 			layout.BeginVertical();
 			// use a separate containing panel to test calculations in those cases
-			layout.AddRow(new Label { Text = "Large Canvas" }, new Panel { Content = this.LargeCanvas () });
+			layout.AddRow("Large Canvas", new Panel { Content = this.LargeCanvas() });
 			layout.EndVertical();
 
 			layout.Add(null);
@@ -32,9 +32,9 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Drawable
 			{
-				Size = new Size (50, 50)
+				Size = new Size(50, 50)
 			};
-			control.Paint += delegate (object sender, PaintEventArgs pe)
+			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
 				pe.Graphics.DrawLine(Pens.Black, Point.Empty, new Point(control.Size));
 			};
@@ -47,10 +47,10 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Drawable
 			{
-				Size = new Size (50, 50),
+				Size = new Size(50, 50),
 				BackgroundColor = Colors.Lime
 			};
-			control.Paint += delegate (object sender, PaintEventArgs pe)
+			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
 				pe.Graphics.DrawLine(Pens.Black, Point.Empty, new Point(control.Size));
 			};
@@ -63,7 +63,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Drawable
 			{
-				Size = new Size (1000, 1000),
+				Size = new Size(1000, 1000),
 				BackgroundColor = Colors.Blue
 			};
 			var image = TestIcons.TestImage;
@@ -90,14 +90,14 @@ namespace Eto.Test.Sections.Controls
 			layout.Add(control, 25, 25);
 			return new Scrollable
 			{
-				Size = new Size (250, 250),
+				Size = new Size(250, 250),
 				Content = layout
 			};
 		}
 
 		void LogEvents(Drawable control)
 		{
-			control.Paint += delegate (object sender, PaintEventArgs pe)
+			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
 				Log.Write(control, "Paint, ClipRectangle: {0}", pe.ClipRectangle);
 			};

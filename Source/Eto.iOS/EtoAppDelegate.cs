@@ -1,12 +1,12 @@
 using System;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 using Eto.iOS.Forms;
 using Eto.Forms;
 
 namespace Eto.iOS
 {
-	[MonoTouch.Foundation.Register("EtoAppDelegate")]
+	[Foundation.Register("EtoAppDelegate")]
 	public class EtoAppDelegate : UIApplicationDelegate
 	{
 		public EtoAppDelegate()

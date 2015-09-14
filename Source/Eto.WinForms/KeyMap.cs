@@ -138,6 +138,9 @@ namespace Eto.WinForms
             keymap.Add(swf.Keys.OemPeriod, Keys.Period);
             keymap.Add(swf.Keys.Tab, Keys.Tab);
 			keymap.Add(swf.Keys.Apps, Keys.ContextMenu);
+			keymap.Add(swf.Keys.CapsLock, Keys.CapsLock);
+			keymap.Add(swf.Keys.Scroll, Keys.ScrollLock);
+			keymap.Add(swf.Keys.NumLock, Keys.NumberLock);
 			
 			foreach (var entry in keymap)
 			{

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Eto.Drawing;
@@ -20,7 +21,7 @@ namespace Eto.Serialization.Json
 				var converter = new Eto.Drawing.ImageConverter();
 				return converter.ConvertFrom(val);
 			}
-			throw new JsonSerializationException("Image or Icon must be defined as a resource or file string");
+			throw new JsonSerializationException(string.Format(CultureInfo.CurrentCulture, "Image or Icon must be defined as a resource or file string"));
 		}
 
 		public override bool CanConvert (Type objectType)

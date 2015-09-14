@@ -23,25 +23,19 @@
     <LibrariesPath>..\..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net40\Debug\test</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net40\Release\test</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
-    <Reference Include="nunitlite">
-      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\nunitlite.dll</HintPath>
-    </Reference>
-    <Reference Include="Portable.Reflection">
-      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -54,6 +48,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\net40\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Shared\GlobalAssemblyInfo.cs">
@@ -86,7 +83,9 @@
     <Resource Include="TestIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(PackagesDir)\.nuget\NuGet.targets" Condition="Exists('$(PackagesDir)\.nuget\NuGet.targets')" />

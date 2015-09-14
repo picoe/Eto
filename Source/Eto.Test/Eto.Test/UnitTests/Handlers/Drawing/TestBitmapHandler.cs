@@ -20,6 +20,7 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 		public Size Size { get; set; }
 		public string ID { get; set; }
 		public object ControlObject { get; set; }
+		public IntPtr NativeHandle { get { return IntPtr.Zero; } }
 
 		public void Create(string fileName)
 		{
@@ -42,6 +43,11 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 		}
 
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Save(string fileName, ImageFormat format)
 		{
 			throw new NotImplementedException();
 		}

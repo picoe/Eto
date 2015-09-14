@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
+using System.Collections;
 
 namespace Eto.Forms
 {
@@ -13,6 +14,7 @@ namespace Eto.Forms
 	/// Represents the contents of a row in a <see cref="TableLayout"/> 
 	/// </summary>
 	[ContentProperty("Cells")]
+	[TypeConverter(typeof(TableRowConverter))]
 	public class TableRow
 	{
 		Collection<TableCell> cells;
@@ -89,6 +91,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Converts a string to a TableRow with a label control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add labels to your layout through code, without having to create <see cref="Label"/> instances.
+		/// </remarks>
+		/// <param name="labelText">Text to convert to a Label control.</param>
+		public static implicit operator TableRow(string labelText)
+		{
+			return new TableRow(new Label { Text = labelText });
+		}
+
+		/// <summary>
 		/// Implicitly converts a TableRow to a control
 		/// </summary>
 		/// <remarks>
@@ -114,7 +128,7 @@ namespace Eto.Forms
 		}
 	}
 
-	class TableRowCollection : Collection<TableRow>
+	class TableRowCollection : Collection<TableRow>, IList
 	{
 		public TableRowCollection()
 		{
@@ -138,5 +152,17 @@ namespace Eto.Forms
 				item = new TableRow { ScaleHeight = true };
 			base.SetItem(index, item);
 		}
+
+		int IList.Add(object value)
+		{
+			// allow adding a control directly from xaml
+			var control = value as Control;
+			if (control != null)
+				Add((TableRow)control);
+			else
+				Add((TableRow)value);
+			return Count - 1;
+		}
+
 	}
 }

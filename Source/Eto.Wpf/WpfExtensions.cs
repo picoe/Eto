@@ -108,7 +108,7 @@ namespace Eto.Wpf
 			{
 				if (!control.IsLoaded)
 				{
-					control.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ContextIdle, null);
+					control.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ApplicationIdle, null);
 				}
 			});
 		}

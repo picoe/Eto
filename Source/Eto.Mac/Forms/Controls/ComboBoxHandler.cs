@@ -1,5 +1,4 @@
 ﻿using System;
-using SD = System.Drawing;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
@@ -42,6 +41,12 @@ namespace Eto.Mac.Forms.Controls
 	public class ComboBoxHandler : MacControl<NSComboBox, ComboBox, ComboBox.ICallback>, ComboBox.IHandler
 	{
 		int lastSelected = -1;
+		static readonly object SuppressChangeEvents_Key = new object();
+		int SuppressChangeEvents
+		{
+			get { return Widget.Properties.Get<int>(SuppressChangeEvents_Key); }
+			set { Widget.Properties.Set(SuppressChangeEvents_Key, value); }
+		}
 		CollectionHandler collection;
 
 		public class EtoComboBox : NSComboBox, IMacControl
@@ -52,6 +57,33 @@ namespace Eto.Mac.Forms.Controls
 			{
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); }
+			}
+
+			[Export("cellClass")]
+			public new static Class CellClass()
+			{
+				return new Class(typeof(Cell));
+			}
+		}
+
+		public class Cell : NSComboBoxCell
+		{
+			[Export("tableView:willDisplayCell:forTableColumn:row:")]
+			public void TableWillDisplayCellForTableColumn(NSTableView tableView, NSCell cell, NSTableColumn tableColumn, nint rowIndex)
+			{
+				// check if anything is null first
+				if (ControlView == null || ControlView.Window == null || ControlView.Window.Screen == null || tableView.Window == null)
+					return;
+				// hack (using public api's) to set size of popup to at least show this item's entire text.
+				var size = cell.CellSizeForBounds(ControlView.Window.Screen.VisibleFrame);
+				var window = tableView.Window;
+				var frame = window.Frame;
+				size.Width += frame.Width - tableView.Frame.Width;
+				if (frame.Width < size.Width)
+				{
+					frame.Width = size.Width;
+					window.SetFrame(frame, true);
+				}
 			}
 		}
 
@@ -64,7 +96,7 @@ namespace Eto.Mac.Forms.Controls
 				Editable = true,
 				VisibleItems = 20
 			};
-			AddObserver(NSComboBox.SelectionIsChangingNotification, SelectionDidChange);
+			AddObserver(NSComboBox.SelectionDidChangeNotification, SelectionDidChange);
 			Control.Changed += HandleChanged;
 		}
 
@@ -109,10 +141,12 @@ namespace Eto.Mac.Forms.Controls
 			var handler = e.Handler as ComboBoxHandler;
 			if (handler != null)
 			{
+				if (handler.SuppressChangeEvents > 0)
+					return;
 				Application.Instance.AsyncInvoke(() =>
 				{
 					handler.Callback.OnSelectedIndexChanged(handler.Widget, EventArgs.Empty);
-					Application.Instance.AsyncInvoke(() => handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty));
+					handler.Callback.OnTextChanged(handler.Widget, EventArgs.Empty);
 				});
 			}
 		}
@@ -124,7 +158,7 @@ namespace Eto.Mac.Forms.Controls
 			public override void AddRange(IEnumerable<object> items)
 			{
 				var oldIndex = Handler.Control.SelectedIndex;
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				foreach (var item in items.Select(r => binding.GetValue(r)))
 				{
 					Handler.Control.Add(NSObject.FromObject(item));
@@ -134,14 +168,14 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void AddItem(object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Add(NSObject.FromObject(binding.GetValue(item)));
 				Handler.LayoutIfNeeded();
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var binding = Handler.Widget.TextBinding;
+				var binding = Handler.Widget.ItemTextBinding;
 				Handler.Control.Insert(NSObject.FromObject(binding.GetValue(item)), index);
 				Handler.LayoutIfNeeded();
 			}
@@ -191,11 +225,12 @@ namespace Eto.Mac.Forms.Controls
 			get { return (int)Control.SelectedIndex; }
 			set
 			{
-				var selectedIndex = SelectedIndex;
+				lastSelected = SelectedIndex;
+				SuppressChangeEvents++;
 				var lastText = Text;
 				if (value == -1)
 				{
-					if (selectedIndex != -1)
+					if (lastSelected != -1)
 					{
 						Control.DeselectItem(Control.SelectedIndex);
 						Control.StringValue = string.Empty;
@@ -203,7 +238,7 @@ namespace Eto.Mac.Forms.Controls
 				}
 				else
 					Control.SelectItem(value);
-				if (value != selectedIndex)
+				if (value != lastSelected)
 				{
 					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 				}
@@ -211,6 +246,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Callback.OnTextChanged(Widget, EventArgs.Empty);
 				}
+				SuppressChangeEvents--;
 			}
 		}
 
@@ -250,7 +286,7 @@ namespace Eto.Mac.Forms.Controls
 					Control.StringValue = value ?? string.Empty;
 					if (collection != null)
 					{
-						var binding = Widget.TextBinding;
+						var binding = Widget.ItemTextBinding;
 						var item = collection.Collection.FirstOrDefault(r => binding.GetValue(r) == value);
 						var index = item != null ? collection.IndexOf(item) : -1;
 

@@ -81,23 +81,6 @@ namespace Eto
 			}
 		}
 
-		#pragma warning disable 612,618
-
-		/// <summary>
-		/// Gets the folder path for the specified special folder
-		/// </summary>
-		/// <param name="folder">Special folder to retrieve the path for</param>
-		/// <param name="generator">Generator to get the folder path with</param>
-		/// <returns>Path of the specified folder</returns>
-		[Obsolete("Use variation without generator instead")]
-		public static string GetFolderPath(EtoSpecialFolder folder, Generator generator)
-		{
-			var handler = generator.CreateShared<IHandler>();
-			return handler.GetFolderPath(folder);
-		}
-
-		#pragma warning restore 612,618
-
 		/// <summary>
 		/// Handler interface for the <see cref="EtoEnvironment"/> class
 		/// </summary>

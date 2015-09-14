@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using SD = System.Drawing;
 using Eto.Drawing;
 
 #if XAMMAC2
@@ -73,8 +72,6 @@ namespace Eto.Mac.Forms.Controls
 				base.DrawLabel(shouldTruncateLabel, labelRect);
 			}
 
-			// TODO: Mac64
-			#if !Mac64 && !XAMMAC2
 			public override CGSize SizeOfLabel (bool computeMin)
 			{
 				var size = base.SizeOfLabel (computeMin);
@@ -83,7 +80,6 @@ namespace Eto.Mac.Forms.Controls
 				}
 				return size;
 			}
-			#endif
 		}
 
 		public TabPageHandler()

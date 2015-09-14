@@ -25,9 +25,11 @@ namespace Eto.Android.Drawing
 		{
 		}
 
-		public float PointsPerPixel { get { return 1f; } } // TODO
+		public float PointsPerPixel { get { return 1f; } }
+		// TODO
 
-		public PixelOffsetMode PixelOffsetMode { get; set; } // TODO
+		public PixelOffsetMode PixelOffsetMode { get; set; }
+		// TODO
 
 		public void CreateFromImage(Bitmap image)
 		{
@@ -107,7 +109,7 @@ namespace Eto.Android.Drawing
 
 		public SizeF MeasureString(Font font, string text)
 		{
-			if(string.IsNullOrEmpty(text)) // needed to avoid exception
+			if (string.IsNullOrEmpty(text)) // needed to avoid exception
 				return SizeF.Empty;			
 			var paint = GetTextPaint(font);
 
@@ -176,6 +178,11 @@ namespace Eto.Android.Drawing
 		public void RestoreTransform()
 		{
 			Control.Restore();
+		}
+
+		public IMatrix CurrentTransform
+		{
+			get { return Control.Matrix.ToEto(); }
 		}
 
 		public RectangleF ClipBounds

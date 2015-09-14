@@ -1,13 +1,13 @@
-﻿using Eto.Test.WinRT.Data;
-
+﻿using Eto.Test.WinRT.Common;
+using Eto.Test.WinRT.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Windows.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -21,35 +21,79 @@ using Windows.UI.Xaml.Navigation;
 namespace Eto.Test.WinRT
 {
     /// <summary>
-    /// A page that displays a group title, a list of items within the group, and details for the
-    /// currently selected item.
+    /// A page that displays a group title, a list of items within the group, and details for
+    /// the currently selected item.
     /// </summary>
-	public sealed partial class SplitPage : Eto.Test.WinRT.Common.LayoutAwarePage
+    public sealed partial class SplitPage : Page
     {
+        private NavigationHelper navigationHelper;
+        private ObservableDictionary defaultViewModel = new ObservableDictionary();
+
+        /// <summary>
+        /// NavigationHelper is used on each page to aid in navigation and 
+        /// process lifetime management
+        /// </summary>
+        public NavigationHelper NavigationHelper
+        {
+            get { return this.navigationHelper; }
+        }
+
+        /// <summary>
+        /// This can be changed to a strongly typed view model.
+        /// </summary>
+        public ObservableDictionary DefaultViewModel
+        {
+            get { return this.defaultViewModel; }
+        }
+
         public SplitPage()
         {
             this.InitializeComponent();
+
+            // Setup the navigation helper
+            this.navigationHelper = new NavigationHelper(this);
+            this.navigationHelper.LoadState += navigationHelper_LoadState;
+            this.navigationHelper.SaveState += navigationHelper_SaveState;
+
+            // Setup the logical page navigation components that allow
+            // the page to only show one pane at a time.
+            this.navigationHelper.GoBackCommand = new RelayCommand(() => this.GoBack(), () => this.CanGoBack());
+            this.itemListView.SelectionChanged += ItemListView_SelectionChanged;
+
+            // Start listening for Window size changes 
+            // to change from showing two panes to showing a single pane
+            Window.Current.SizeChanged += Window_SizeChanged;
+            this.InvalidateVisualState();
+
+            this.Unloaded += SplitPage_Unloaded;
         }
 
-        #region Page state management
+        /// <summary>
+        /// Unhook from the SizedChanged event when the SplitPage is Unloaded.
+        /// </summary>
+        private void SplitPage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Window.Current.SizeChanged -= Window_SizeChanged;
+        }
 
         /// <summary>
         /// Populates the page with content passed during navigation.  Any saved state is also
         /// provided when recreating a page from a prior session.
         /// </summary>
-        /// <param name="navigationParameter">The parameter value passed to
-        /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested.
+        /// <param name="sender">
+        /// The source of the event; typically <see cref="NavigationHelper"/>
         /// </param>
-        /// <param name="pageState">A dictionary of state preserved by this page during an earlier
-        /// session.  This will be null the first time a page is visited.</param>
-        protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+        /// <param name="e">Event data that provides both the navigation parameter passed to
+        /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested and
+        /// a dictionary of state preserved by this page during an earlier
+        /// session.  The state will be null the first time a page is visited.</param>
+        private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            // TODO: Create an appropriate data model for your problem domain to replace the sample data
-            var group = AllTests.GetGroup((String)navigationParameter);
-            this.DefaultViewModel["Group"] = group;
+			var group = AllTests.GetGroup((String)e.NavigationParameter);
+			this.DefaultViewModel["Group"] = group;
             this.DefaultViewModel["Items"] = group.Items;
 
-            if (pageState == null)
+            if (e.PageState == null)
             {
                 this.itemListView.SelectedItem = null;
                 // When this is a new page, select the first item automatically unless logical page
@@ -62,9 +106,9 @@ namespace Eto.Test.WinRT
             else
             {
                 // Restore the previously saved state associated with this page
-                if (pageState.ContainsKey("SelectedItem") && this.itemsViewSource.View != null)
+                if (e.PageState.ContainsKey("SelectedItem") && this.itemsViewSource.View != null)
                 {
-                    var selectedItem = AllTests.GetItem((String)pageState["SelectedItem"]);
+					var selectedItem = AllTests.GetItem((String)e.PageState["SelectedItem"]);
                     this.itemsViewSource.View.MoveCurrentTo(selectedItem);
                 }
             }
@@ -75,51 +119,58 @@ namespace Eto.Test.WinRT
         /// page is discarded from the navigation cache.  Values must conform to the serialization
         /// requirements of <see cref="SuspensionManager.SessionState"/>.
         /// </summary>
-        /// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
-        protected override void SaveState(Dictionary<String, Object> pageState)
+        /// <param name="navigationParameter">The parameter value passed to
+        /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested.
+        /// </param>
+        /// <param name="sender">The source of the event; typically <see cref="NavigationHelper"/></param>
+        /// <param name="e">Event data that provides an empty dictionary to be populated with
+        /// serializable state.</param>
+        private void navigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
             if (this.itemsViewSource.View != null)
             {
-                var selectedItem = (TestItem)this.itemsViewSource.View.CurrentItem;
-                if (selectedItem != null) pageState["SelectedItem"] = selectedItem.UniqueId;
+				var selectedItem = (TestItem)this.itemsViewSource.View.CurrentItem;
+                if (selectedItem != null) e.PageState["SelectedItem"] = selectedItem.UniqueId;
             }
         }
 
-        #endregion
-
         #region Logical page navigation
 
-        // Visual state management typically reflects the four application view states directly
-        // (full screen landscape and portrait plus snapped and filled views.)  The split page is
-        // designed so that the snapped and portrait view states each have two distinct sub-states:
-        // either the item list or the details are displayed, but not both at the same time.
+        // The split page isdesigned so that when the Window does have enough space to show
+        // both the list and the dteails, only one pane will be shown at at time.
         //
         // This is all implemented with a single physical page that can represent two logical
         // pages.  The code below achieves this goal without making the user aware of the
         // distinction.
 
+        private const int MinimumWidthForSupportingTwoPanes = 768;
+
         /// <summary>
         /// Invoked to determine whether the page should act as one logical page or two.
         /// </summary>
-        /// <param name="viewState">The view state for which the question is being posed, or null
-        /// for the current view state.  This parameter is optional with null as the default
-        /// value.</param>
-        /// <returns>True when the view state in question is portrait or snapped, false
+        /// <returns>True if the window should show act as one logical page, false
         /// otherwise.</returns>
-        private bool UsingLogicalPageNavigation(ApplicationViewState? viewState = null)
+        private bool UsingLogicalPageNavigation()
         {
-            if (viewState == null) viewState = ApplicationView.Value;
-            return viewState == ApplicationViewState.FullScreenPortrait ||
-                viewState == ApplicationViewState.Snapped;
+            return Window.Current.Bounds.Width < MinimumWidthForSupportingTwoPanes;
+        }
+
+        /// <summary>
+        /// Invoked with the Window changes size
+        /// </summary>
+        /// <param name="sender">The current Window</param>
+        /// <param name="e">Event data that describes the new size of the Window</param>
+        private void Window_SizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+        {
+            this.InvalidateVisualState();
         }
 
         /// <summary>
         /// Invoked when an item within the list is selected.
         /// </summary>
-        /// <param name="sender">The GridView (or ListView when the application is Snapped)
-        /// displaying the selected item.</param>
+        /// <param name="sender">The GridView displaying the selected item.</param>
         /// <param name="e">Event data that describes how the selection was changed.</param>
-        void ItemListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ItemListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Invalidate the view state when logical page navigation is in effect, as a change
             // in selection may cause a corresponding change in the current logical page.  When
@@ -129,60 +180,79 @@ namespace Eto.Test.WinRT
             if (this.UsingLogicalPageNavigation()) this.InvalidateVisualState();
         }
 
-        /// <summary>
-        /// Invoked when the page's back button is pressed.
-        /// </summary>
-        /// <param name="sender">The back button instance.</param>
-        /// <param name="e">Event data that describes how the back button was clicked.</param>
-        protected override void GoBack(object sender, RoutedEventArgs e)
+        private bool CanGoBack()
         {
-            if (this.UsingLogicalPageNavigation() && itemListView.SelectedItem != null)
+            if (this.UsingLogicalPageNavigation() && this.itemListView.SelectedItem != null)
+            {
+                return true;
+            }
+            else
+            {
+                return this.navigationHelper.CanGoBack();
+            }
+        }
+        private void GoBack()
+        {
+            if (this.UsingLogicalPageNavigation() && this.itemListView.SelectedItem != null)
             {
                 // When logical page navigation is in effect and there's a selected item that
-                // item's details are currently displayed.  Clearing the selection will return
-                // to the item list.  From the user's point of view this is a logical backward
+                // item's details are currently displayed.  Clearing the selection will return to
+                // the item list.  From the user's point of view this is a logical backward
                 // navigation.
                 this.itemListView.SelectedItem = null;
             }
             else
             {
-                // When logical page navigation is not in effect, or when there is no selected
-                // item, use the default back button behavior.
-                base.GoBack(sender, e);
+                this.navigationHelper.GoBack();
             }
+        }
+
+        private void InvalidateVisualState()
+        {
+            var visualState = DetermineVisualState();
+            VisualStateManager.GoToState(this, visualState, false);
+            this.navigationHelper.GoBackCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
         /// Invoked to determine the name of the visual state that corresponds to an application
         /// view state.
         /// </summary>
-        /// <param name="viewState">The view state for which the question is being posed.</param>
         /// <returns>The name of the desired visual state.  This is the same as the name of the
         /// view state except when there is a selected item in portrait and snapped views where
         /// this additional logical page is represented by adding a suffix of _Detail.</returns>
-        protected override string DetermineVisualState(ApplicationViewState viewState)
+        private string DetermineVisualState()
         {
+            if (!UsingLogicalPageNavigation())
+                return "PrimaryView";
+
             // Update the back button's enabled state when the view state changes
-            var logicalPageBack = this.UsingLogicalPageNavigation(viewState) && this.itemListView.SelectedItem != null;
-            var physicalPageBack = this.Frame != null && this.Frame.CanGoBack;
-            this.DefaultViewModel["CanGoBack"] = logicalPageBack || physicalPageBack;
+            var logicalPageBack = this.UsingLogicalPageNavigation() && this.itemListView.SelectedItem != null;
 
-            // Determine visual states for landscape layouts based not on the view state, but
-            // on the width of the window.  This page has one layout that is appropriate for
-            // 1366 virtual pixels or wider, and another for narrower displays or when a snapped
-            // application reduces the horizontal space available to less than 1366.
-            if (viewState == ApplicationViewState.Filled ||
-                viewState == ApplicationViewState.FullScreenLandscape)
-            {
-                var windowWidth = Window.Current.Bounds.Width;
-                if (windowWidth >= 1366) return "FullScreenLandscapeOrWide";
-                return "FilledOrNarrow";
-            }
+            return logicalPageBack ? "SinglePane_Detail" : "SinglePane";
+        }
 
-            // When in portrait or snapped start with the default visual state name, then add a
-            // suffix when viewing details instead of the list
-            var defaultStateName = base.DetermineVisualState(viewState);
-            return logicalPageBack ? defaultStateName + "_Detail" : defaultStateName;
+        #endregion
+
+        #region NavigationHelper registration
+
+        /// The methods provided in this section are simply used to allow
+        /// NavigationHelper to respond to the page's navigation methods.
+        /// 
+        /// Page specific logic should be placed in event handlers for the  
+        /// <see cref="GridCS.Common.NavigationHelper.LoadState"/>
+        /// and <see cref="GridCS.Common.NavigationHelper.SaveState"/>.
+        /// The navigation parameter is available in the LoadState method 
+        /// in addition to page state preserved during an earlier session.
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            navigationHelper.OnNavigatedTo(e);
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            navigationHelper.OnNavigatedFrom(e);
         }
 
         #endregion

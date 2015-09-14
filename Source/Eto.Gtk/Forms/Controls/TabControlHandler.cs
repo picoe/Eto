@@ -24,7 +24,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected override Color DefaultBackgroundColor
 		{
-			get { return ContainerContentControl.Style.Base(Gtk.StateType.Normal).ToEto(); }
+			get { return ContainerContentControl.GetBase(); }
 		}
 
 		protected new TabControlConnector Connector { get { return (TabControlConnector)base.Connector; } }
@@ -79,6 +79,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.RemovePage(index);
 			if (Widget.Loaded && Control.NPages == 0)
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
+		}
+
+		public DockPosition TabPosition
+		{
+			get { return Control.TabPos.ToEto(); }
+			set { Control.TabPos = value.ToGtk(); }
 		}
 	}
 }

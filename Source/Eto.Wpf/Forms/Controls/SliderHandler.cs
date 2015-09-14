@@ -1,5 +1,6 @@
 using System;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
 using Eto.Forms;
 
 namespace Eto.Wpf.Forms.Controls
@@ -52,15 +53,15 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.TickFrequency = value; }
 		}
 
-		public SliderOrientation Orientation
+		public Orientation Orientation
 		{
 			get
 			{
 				switch (Control.Orientation) {
 					case swc.Orientation.Vertical:
-						return SliderOrientation.Vertical;
+						return Orientation.Vertical;
 					case swc.Orientation.Horizontal:
-						return SliderOrientation.Horizontal;
+						return Orientation.Horizontal;
 					default:
 						throw new NotSupportedException ();
 				}
@@ -68,15 +69,33 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				switch (value) {
-					case SliderOrientation.Vertical:
+					case Orientation.Vertical:
 						Control.Orientation = swc.Orientation.Vertical;
 						break;
-					case SliderOrientation.Horizontal:
+					case Orientation.Horizontal:
 						Control.Orientation = swc.Orientation.Horizontal;
 						break;
 					default:
 						throw new NotSupportedException ();
 				}
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Eto.Forms.Control.MouseUpEvent:
+					ContainerControl.PreviewMouseDown += (sender, e) =>
+					{
+						// don't swallow mouse up events for right click and middle click
+						e.Handled |= e.ChangedButton != sw.Input.MouseButton.Left;
+					};
+					base.AttachEvent(id);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 	}

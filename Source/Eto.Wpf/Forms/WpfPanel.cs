@@ -24,7 +24,10 @@ namespace Eto.Wpf.Forms
 			get
 			{
 				if (!Control.IsLoaded)
-					return clientSize ?? Size.Max(Size.Empty, base.Size - Padding.Size);
+					return clientSize ?? Size;
+				// when the child of a border is null, it doesn't return the correct size
+				if (border.Child == null)
+					return Size;
 				return border.GetSize();
 			}
 			set
@@ -118,7 +121,8 @@ namespace Eto.Wpf.Forms
 					element.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
 					element.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
 					border.Child = element;
-					SetContentScale(XScale, YScale);
+					if (Widget.Loaded)
+						SetContentScale(XScale, YScale);
 				}
 				else
 					border.Child = null;

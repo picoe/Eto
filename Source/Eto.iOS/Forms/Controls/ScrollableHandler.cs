@@ -1,6 +1,6 @@
 using System;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Mac.Forms;
@@ -90,7 +90,7 @@ namespace Eto.iOS.Forms.Controls
 			scrollBounds.Width -= insets.Left + insets.Right;
 			scrollBounds.Height -= insets.Top + insets.Bottom;
 
-			var location = new sd.PointF(Math.Max(0, (scrollBounds.Width - contentSize.Width) / 2f), Math.Max(0, (scrollBounds.Height - contentSize.Height) / 2f));
+			var location = new CoreGraphics.CGPoint((nfloat)Math.Max(0, (scrollBounds.Width - contentSize.Width) / 2f), (nfloat)Math.Max(0, (scrollBounds.Height - contentSize.Height) / 2f));
 
 			IsResizing = true;
 			Child.SetFrameOrigin(location);
@@ -110,19 +110,19 @@ namespace Eto.iOS.Forms.Controls
 
 		public float MinimumZoom
 		{
-			get { return Control.MinimumZoomScale; }
+			get { return (float)Control.MinimumZoomScale; }
 			set { Control.MinimumZoomScale = value; }
 		}
 
 		public float MaximumZoom
 		{
-			get { return Control.MaximumZoomScale; }
+			get { return (float)Control.MaximumZoomScale; }
 			set { Control.MaximumZoomScale = value; }
 		}
 
 		public float Zoom
 		{
-			get { return Control.ZoomScale; }
+			get { return (float)Control.ZoomScale; }
 			set { Control.SetZoomScale(value, false); }
 		}
 
@@ -154,7 +154,7 @@ namespace Eto.iOS.Forms.Controls
 		public void UpdateScrollSizes()
 		{
 			if (Widget.Loaded)
-				SetContentSize(Content.GetPreferredSize(Size.MaxValue).ToSD());
+				SetContentSize(Content.GetPreferredSize(Size.MaxValue).ToNS());
 		}
 
 		public Point ScrollPosition
@@ -167,7 +167,7 @@ namespace Eto.iOS.Forms.Controls
 			}
 			set
 			{
-				Control.SetContentOffset(new sd.PointF(value.X * Control.ZoomScale, value.Y * Control.ZoomScale), false);
+				Control.SetContentOffset(new CoreGraphics.CGPoint(value.X * Control.ZoomScale, value.Y * Control.ZoomScale), false);
 			}
 		}
 
@@ -185,29 +185,29 @@ namespace Eto.iOS.Forms.Controls
 			}
 			set
 			{
-				var size = value.ToSDSizeF();
-				size = new sd.SizeF(size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
+				var size = value.ToNS();
+				size = new CoreGraphics.CGSize(size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
 				Child.SetFrameSize(size);
 				Control.ContentSize = size;
 				Adjust();
 			}
 		}
 
-		public override void SetContentSize(sd.SizeF contentSize)
+		public override void SetContentSize(CoreGraphics.CGSize contentSize)
 		{
 			if (!Widget.Loaded)
 				return;
-			contentSize = new sd.SizeF(contentSize.Width * Control.ZoomScale, contentSize.Height * Control.ZoomScale);
+			contentSize = new CoreGraphics.CGSize(contentSize.Width * Control.ZoomScale, contentSize.Height * Control.ZoomScale);
 			if (MinimumSize != Size.Empty)
 			{
-				contentSize.Width = Math.Max(contentSize.Width, MinimumSize.Width);
-				contentSize.Height = Math.Max(contentSize.Height, MinimumSize.Height);
+				contentSize.Width = (nfloat)Math.Max(contentSize.Width, MinimumSize.Width);
+				contentSize.Height = (nfloat)Math.Max(contentSize.Height, MinimumSize.Height);
 			}
 			var inset = Control.ContentInset;
 			if (ExpandContentWidth)
-				contentSize.Width = Math.Max(ClientSize.Width - inset.Left - inset.Right, contentSize.Width);
+				contentSize.Width = (nfloat)Math.Max(ClientSize.Width - inset.Left - inset.Right, contentSize.Width);
 			if (ExpandContentHeight)
-				contentSize.Height = Math.Max(ClientSize.Height - inset.Top - inset.Bottom, contentSize.Height);
+				contentSize.Height = (nfloat)Math.Max(ClientSize.Height - inset.Top - inset.Bottom, contentSize.Height);
 
 			Control.ContentSize = contentSize;
 			Child.SetFrameSize(contentSize);

@@ -70,23 +70,6 @@ namespace Eto.Forms
 				Paint(this, e);
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DrawableCell"/> class.
-		/// </summary>
-		public DrawableCell()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.DrawableCell"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public DrawableCell(Generator generator)
-			: base(generator, typeof(IHandler), true)
-		{
-		}
-
 		static readonly object callback = new Callback();
 
 		/// <summary>

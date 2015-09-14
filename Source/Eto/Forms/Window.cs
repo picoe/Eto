@@ -118,6 +118,29 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="OwnerChanged"/> event.
+		/// </summary>
+		private const string OwnerChangedEvent = "Window.OwnerChanged";
+
+		/// <summary>
+		/// Occurs when the <see cref="Owner"/> is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> OwnerChanged
+		{
+			add { Properties.AddEvent(OwnerChangedEvent, value); }
+			remove { Properties.RemoveEvent(OwnerChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="OwnerChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnOwnerChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(OwnerChangedEvent, this, e);
+		}
+
+		/// <summary>
 		/// Identifier for handlers when attaching the <see cref="WindowStateChanged"/> event.
 		/// </summary>
 		public const string WindowStateChangedEvent = "Window.WindowStateChanged";
@@ -164,21 +187,6 @@ namespace Eto.Forms
 		protected Window(IHandler handler)
 			: base(handler)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Window"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the handler instance</param>
-		/// <param name="type">Type of interface to create for the handler, must implement <see cref="IHandler"/></param>
-		/// <param name="initialize"><c>true</c> to initialize the handler, false if the subclass will initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Window(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, false)
-		{
-			if (initialize)
-				Initialize();
-			HandleEvent(ClosedEvent);
 		}
 
 		/// <summary>
@@ -235,10 +243,18 @@ namespace Eto.Forms
 			{ 
 				var toolbar = Handler.ToolBar;
 				if (toolbar != null)
-					toolbar.OnUnLoad(EventArgs.Empty);
+				{
+					toolbar.TriggerUnLoad(EventArgs.Empty);
+					toolbar.Parent = null;
+				}
+				if (value != null)
+				{
+					value.Parent = this;
+					value.TriggerPreLoad(EventArgs.Empty);
+				}
 				Handler.ToolBar = value;
 				if (value != null)
-					value.OnLoad(EventArgs.Empty);
+					value.TriggerLoad(EventArgs.Empty);
 			}
 		}
 
@@ -261,6 +277,30 @@ namespace Eto.Forms
 		public virtual void Close()
 		{
 			Handler.Close();
+		}
+
+		static readonly object OwnerKey = new object();
+
+		/// <summary>
+		/// Gets or sets the owner of this window.
+		/// </summary>
+		/// <remarks>
+		/// This sets the parent window that has ownership over this window.
+		/// For a <see cref="Dialog"/>, this will be the window that will be disabled while the modal dialog is shown.
+		/// With a  <see cref="Form"/>, the specified owner will always be below the current window when shown, and will 
+		/// still be responsive to user input.  Typically, but not always, the window will move along with the owner.
+		/// </remarks>
+		/// <value>The owner of this window.</value>
+		public Window Owner
+		{
+			get { return Properties.Get<Window>(OwnerKey); }
+			set {
+				Properties.Set(OwnerKey, value, () =>
+				{
+					Handler.SetOwner(value);
+					OnOwnerChanged(EventArgs.Empty);
+				});
+			}
 		}
 
 		/// <summary>
@@ -287,9 +327,15 @@ namespace Eto.Forms
 			{
 				var menu = Handler.Menu;
 				if (menu != null)
+				{
 					menu.OnUnLoad(EventArgs.Empty);
+					menu.Parent = null;
+				}
 				if (value != null)
+				{
+					value.Parent = this;
 					value.OnPreLoad(EventArgs.Empty);
+				}
 				Handler.Menu = value;
 				if (value != null)
 					value.OnLoad(EventArgs.Empty);
@@ -386,19 +432,19 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the bounds of the window before it was minimized or maximized.
+		/// Gets the bounds of the window before it was minimized or maximized, or the current bounds if <see cref="WindowState"/> is Normal.
 		/// </summary>
 		/// <remarks>
 		/// This is useful to retrieve the desired size and position of the window even though it is currently maximized or minimized.
 		/// </remarks>
 		/// <value>The restore bounds.</value>
-		public Rectangle? RestoreBounds
+		public Rectangle RestoreBounds
 		{
 			get { return Handler.RestoreBounds; }
 		}
 
 		/// <summary>
-        /// Sets <see cref="WindowState"/> to <see cref="Eto.Forms.WindowState.Minimized"/>
+		/// Sets <see cref="WindowState"/> to <see cref="Eto.Forms.WindowState.Minimized"/>
 		/// </summary>
 		public void Minimize()
 		{
@@ -437,6 +483,26 @@ namespace Eto.Forms
 		public void SendToBack()
 		{
 			Handler.SendToBack();
+		}
+
+		/// <summary>
+		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			base.OnDataContextChanged(e);
+			var tb = ToolBar;
+			if (tb != null)
+				tb.TriggerDataContextChanged(e);
+			var menu = Menu;
+			if (menu != null)
+				menu.TriggerDataContextChanged(e);
 		}
 
 		#region Callback
@@ -640,7 +706,7 @@ namespace Eto.Forms
 			/// This is useful to retrieve the desired size and position of the window even though it is currently maximized or minimized.
 			/// </remarks>
 			/// <value>The restore bounds.</value>
-			Rectangle? RestoreBounds { get; }
+			Rectangle RestoreBounds { get; }
 
 			/// <summary>
 			/// Gets or sets the style of this window.
@@ -657,6 +723,12 @@ namespace Eto.Forms
 			/// Sends the window behind all other windows in the z-order.
 			/// </summary>
 			void SendToBack();
+
+			/// <summary>
+			/// Sets the owner of the window
+			/// </summary>
+			/// <param name="owner">Owner of the window</param>
+			void SetOwner(Window owner);
 		}
 
 		#endregion

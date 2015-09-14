@@ -87,8 +87,8 @@ namespace Eto.Mac.Forms.Cells
 				{
 					var newtitle = (NSMutableAttributedString)title.MutableCopy();
 					var range = new NSRange(0, (int)title.Length);
-					newtitle.RemoveAttribute(NSAttributedString.ForegroundColorAttributeName, range);
-					newtitle.AddAttribute(NSAttributedString.ForegroundColorAttributeName, TextColor, range);
+					newtitle.RemoveAttribute(NSStringAttributeKey.ForegroundColor, range);
+					newtitle.AddAttribute(NSStringAttributeKey.ForegroundColor, TextColor, range);
 					title = newtitle;
 				}
 				var rect = base.DrawTitle(title, frame, controlView);
@@ -140,6 +140,25 @@ namespace Eto.Mac.Forms.Cells
 		{
 			Control = new EtoCell { Handler = this, ControlSize = NSControlSize.Regular, Bordered = false };
 			Control.Title = string.Empty;
+		}
+
+		bool editable = true;
+
+		public override bool Editable
+		{
+			get { return editable; }
+			set
+			{ 
+				editable = value;
+				Control.Enabled = value;
+			}
+		}
+
+		public override void EnabledChanged(bool value)
+		{
+			base.EnabledChanged(value);
+			if (value)
+				Control.Enabled = editable;
 		}
 
 		public override void SetBackgroundColor(NSCell cell, Color color)

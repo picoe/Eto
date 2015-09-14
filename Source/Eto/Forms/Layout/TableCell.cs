@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
+using System.Collections;
 
 namespace Eto.Forms
 {
@@ -12,8 +13,11 @@ namespace Eto.Forms
 	/// Represents a cell in a <see cref="TableRow"/>
 	/// </summary>
 	[ContentProperty("Control")]
+	[TypeConverter(typeof(TableCellConverter))]
 	public class TableCell
 	{
+		Control control;
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TableCell"/> will scale its width
 		/// </summary>
@@ -33,7 +37,26 @@ namespace Eto.Forms
 		/// Gets or sets the control in this cell, or null for an empty space
 		/// </summary>
 		/// <value>The control.</value>
-		public Control Control { get; set; }
+		public Control Control
+		{
+			get { return control; }
+			set
+			{
+				if (control != value)
+				{
+					if (value != null && value.Parent != null)
+						value.Parent.Remove(value);
+					if (control != null && control.Parent != null)
+						control.Parent.Remove(control);
+					control = value;
+				}
+			}
+		}
+
+		internal void SetControl(Control control)
+		{
+			this.control = control;
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.TableCell"/> class.
@@ -79,9 +102,21 @@ namespace Eto.Forms
 		{
 			return new TableCell(new TableLayout(rows));
 		}
+
+		/// <summary>
+		/// Converts a string to a TableCell with a label control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add labels to your layout through code, without having to create <see cref="Label"/> instances.
+		/// </remarks>
+		/// <param name="labelText">Text to convert to a Label control.</param>
+		public static implicit operator TableCell(string labelText)
+		{
+			return new TableCell(new Label { Text = labelText });
+		}
 	}
 
-	class TableCellCollection : Collection<TableCell>
+	class TableCellCollection : Collection<TableCell>, IList
 	{
 		public TableCellCollection()
 		{
@@ -104,6 +139,17 @@ namespace Eto.Forms
 			if (item == null)
 				item = new TableCell { ScaleWidth = true };
 			base.SetItem(index, item);
+		}
+
+		int IList.Add(object value)
+		{
+			// allow adding a control directly from xaml
+			var control = value as Control;
+			if (control != null)
+				Add((TableCell)control);
+			else
+				Add((TableCell)value);
+			return Count - 1;
 		}
 	}
 }

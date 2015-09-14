@@ -102,10 +102,20 @@ namespace Eto.WinForms.Drawing
 			}
 		}
 
+		static readonly object PixelOffsetMode_Key = new object();
+
 		public PixelOffsetMode PixelOffsetMode
 		{
-			get { return Control.PixelOffsetMode.ToEto(); }
-			set { Control.PixelOffsetMode = value.ToSD(); }
+			get { return Widget.Properties.Get<PixelOffsetMode>(PixelOffsetMode_Key); }
+			set { Widget.Properties.Set(PixelOffsetMode_Key, value); }
+		}
+
+		void SetOffset(bool fill)
+		{
+			var mode = sdd.PixelOffsetMode.Half;
+			if (!fill && PixelOffsetMode == PixelOffsetMode.None)
+				mode = sdd.PixelOffsetMode.None;
+			Control.PixelOffsetMode = mode;
 		}
 
 		public float PointsPerPixel
@@ -121,6 +131,11 @@ namespace Eto.WinForms.Drawing
 		protected override void Initialize()
 		{
 			base.Initialize();
+			SetInitialState();
+		}
+
+		public void SetInitialState()
+		{
 			Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
 			Control.SmoothingMode = sdd.SmoothingMode.AntiAlias;
 			Control.InterpolationMode = sdd.InterpolationMode.HighQualityBilinear;
@@ -132,27 +147,32 @@ namespace Eto.WinForms.Drawing
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
-			this.Control.DrawLine(pen.ToSD(), startx, starty, endx, endy);
+			SetOffset(false);
+            Control.DrawLine(pen.ToSD(), startx, starty, endx, endy);
 		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
+			SetOffset(false);
 			Control.DrawRectangle(pen.ToSD(), x, y, width, height);
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillRectangle(brush.ToSD(), x - 0.5f, y - 0.5f, width, height);
+			SetOffset(true);
+			Control.FillRectangle(brush.ToSD(new RectangleF(x, y, width, height)), x, y, width, height);
 		}
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
+			SetOffset(false);
 			Control.DrawEllipse(pen.ToSD(), x, y, width, height);
 		}
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillEllipse(brush.ToSD(), x - 0.5f, y - 0.5f, width, height);
+			SetOffset(false);
+			Control.FillEllipse(brush.ToSD(new RectangleF(x, y, width, height)), x, y, width, height);
 		}
 
 		public float GetConvertedAngle(float initialAngle, float majorRadius, float minorRadius, bool circularToElliptical)
@@ -230,6 +250,7 @@ namespace Eto.WinForms.Drawing
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(false);
 			if (width != height)
 			{
 				var endAngle = startAngle + sweepAngle;
@@ -242,6 +263,7 @@ namespace Eto.WinForms.Drawing
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
+			SetOffset(true);
 			if (width != height)
 			{
 				var endAngle = startAngle + sweepAngle;
@@ -249,42 +271,45 @@ namespace Eto.WinForms.Drawing
 				endAngle = GetConvertedAngle(endAngle, width / 2, height / 2, false);
 				sweepAngle = endAngle - startAngle;
 			}
-			Control.FillPie(brush.ToSD(), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
+			Control.FillPie(brush.ToSD(new RectangleF(x, y, width, height)), x, y, width, height, startAngle, sweepAngle);
 		}
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
-			var old = Control.PixelOffsetMode;
-			Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
-			Control.FillPath(brush.ToSD(), path.ToSD());
-			Control.PixelOffsetMode = old;
+			SetOffset(true);
+			Control.FillPath(brush.ToSD(path.Bounds), path.ToSD());
 		}
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
+			SetOffset(false);
 			Control.DrawPath(pen.ToSD(), path.ToSD());
 		}
 
 		public void DrawImage(Image image, float x, float y)
 		{
+			SetOffset(true);
 			var handler = image.Handler as IWindowsImage;
 			handler.DrawImage(this, x, y);
 		}
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
+			SetOffset(true);
 			var handler = image.Handler as IWindowsImage;
 			handler.DrawImage(this, x, y, width, height);
 		}
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
+			SetOffset(true);
 			var handler = image.Handler as IWindowsImage;
 			handler.DrawImage(this, source, destination);
 		}
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
+			SetOffset(false);
 			if (UseCompatibleTextRendering)
 			{
 				Control.DrawString(text, (sd.Font)font.ControlObject, (sd.Brush)brush.ControlObject, x, y, DefaultStringFormat);
@@ -359,6 +384,11 @@ namespace Eto.WinForms.Drawing
 
 				t.Dispose();
 			}
+		}
+
+		public IMatrix CurrentTransform
+		{
+			get { return Control.Transform.ToEto(); }
 		}
 
 		public RectangleF ClipBounds

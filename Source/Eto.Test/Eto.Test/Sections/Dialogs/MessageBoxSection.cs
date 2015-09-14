@@ -25,16 +25,16 @@ namespace Eto.Test.Sections.Dialogs
 			MessageBoxCaption = "Some caption";
 			AttachToParent = true;
 
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, new Label { Text = "Caption" }, CaptionBox(), null);
 			layout.AddSeparateRow(null, new Label { Text = "Text" }, TitleBox(), null);
 
-			layout.BeginVertical(Padding.Empty);
+			layout.BeginVertical();
 
 			layout.BeginHorizontal();
 			layout.Add(null);
-			layout.Add(new Label { Text = "Type", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Right });
+			layout.Add(new Label { Text = "Type", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Right });
 			layout.Add(MessageBoxTypeCombo());
 			layout.Add(AttachToParentCheckBox());
 			layout.Add(null);
@@ -43,9 +43,9 @@ namespace Eto.Test.Sections.Dialogs
 			layout.EndBeginVertical();
 			layout.BeginHorizontal();
 			layout.Add(null);
-			layout.Add(new Label { Text = "Buttons", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Right });
+			layout.Add(new Label { Text = "Buttons", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Right });
 			layout.Add(MessageBoxButtonsCombo());
-			layout.Add(new Label { Text = "Default Button", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Right });
+			layout.Add(new Label { Text = "Default Button", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Right });
 			layout.Add(MessageBoxDefaultButtonCombo());
 			layout.Add(null);
 			layout.EndHorizontal();
@@ -61,7 +61,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control CaptionBox()
 		{
 			var control = new TextBox { Size = new Size(300, -1) };
-			var binding = new ControlBinding<MessageBoxSection, string>(this, r => r.MessageBoxCaption, (r, val) => r.MessageBoxCaption = val);
+			var binding = new BindableBinding<MessageBoxSection, string>(this, r => r.MessageBoxCaption, (r, val) => r.MessageBoxCaption = val);
 			control.TextBinding.Bind(binding);
 			return control;
 		}
@@ -69,7 +69,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control TitleBox()
 		{
 			var control = new TextArea { Size = new Size(300, -1) };
-			var binding = new ControlBinding<MessageBoxSection, string>(this, r => r.MessageBoxText, (r, val) => r.MessageBoxText = val);
+			var binding = new BindableBinding<MessageBoxSection, string>(this, r => r.MessageBoxText, (r, val) => r.MessageBoxText = val);
 			control.TextBinding.Bind(binding);
 			return control;
 		}
@@ -77,7 +77,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control MessageBoxTypeCombo()
 		{
 			var control = new EnumDropDown<MessageBoxType>();
-			var binding = new ControlBinding<MessageBoxSection, MessageBoxType>(this, r => r.MessageBoxType, (r, val) => r.MessageBoxType = val);
+			var binding = new BindableBinding<MessageBoxSection, MessageBoxType>(this, r => r.MessageBoxType, (r, val) => r.MessageBoxType = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;
 		}
@@ -85,7 +85,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control MessageBoxButtonsCombo()
 		{
 			var control = new EnumDropDown<MessageBoxButtons>();
-			var binding = new ControlBinding<MessageBoxSection, MessageBoxButtons>(this, r => r.MessageBoxButtons, (r, val) => r.MessageBoxButtons = val);
+			var binding = new BindableBinding<MessageBoxSection, MessageBoxButtons>(this, r => r.MessageBoxButtons, (r, val) => r.MessageBoxButtons = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;
 		}
@@ -93,7 +93,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control MessageBoxDefaultButtonCombo()
 		{
 			var control = new EnumDropDown<MessageBoxDefaultButton>();
-			var binding = new ControlBinding<MessageBoxSection, MessageBoxDefaultButton>(this, r => r.MessageBoxDefaultButton, (r, val) => r.MessageBoxDefaultButton = val);
+			var binding = new BindableBinding<MessageBoxSection, MessageBoxDefaultButton>(this, r => r.MessageBoxDefaultButton, (r, val) => r.MessageBoxDefaultButton = val);
 			control.SelectedValueBinding.Bind(binding);
 			return control;
 		}
@@ -101,7 +101,7 @@ namespace Eto.Test.Sections.Dialogs
 		Control AttachToParentCheckBox()
 		{
 			var control = new CheckBox { Text = "Attach to Parent Window" };
-			var binding = new ControlBinding<MessageBoxSection, bool?>(this, r => r.AttachToParent, (r, val) => r.AttachToParent = val ?? false);
+			var binding = new BindableBinding<MessageBoxSection, bool?>(this, r => r.AttachToParent, (r, val) => r.AttachToParent = val ?? false);
 			control.CheckedBinding.Bind(binding);
 			return control;
 		}

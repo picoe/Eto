@@ -27,6 +27,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			entry = (Gtk.Entry)Control.Child;
 			entry.IsEditable = true;
 			Control.Changed += Connector.HandleChanged;
+        }
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			HandleEvent(ComboBox.TextChangedEvent);
 		}
 
 		protected new ComboBoxConnector Connector { get { return (ComboBoxConnector)base.Connector; } }
@@ -43,6 +49,27 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
 				Handler.Callback.OnTextChanged(Handler.Widget, EventArgs.Empty);
+				Handler.UpdateSelectedIndexFromText();
+			}
+		}
+
+		void UpdateSelectedIndexFromText()
+		{
+			if (collection != null && Widget.ItemTextBinding != null)
+			{
+				var value = Text;
+				// find existing item and set it as selected
+				var textBinding = Widget.ItemTextBinding;
+				for (int i = 0; i < collection.Count; i++)
+				{
+					var item = collection.ElementAt(i);
+					if (string.Equals(value, textBinding.GetValue(item)))
+					{
+						base.SelectedIndex = i;
+						return;
+					}
+				}
+				base.SelectedIndex = -1;
 			}
 		}
 
@@ -63,16 +90,16 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get
 			{
-				return font ?? (font = new Font(new FontHandler(text.FontDesc)));
+				return font ?? (font = text.FontDesc.ToEto());
 			}
 			set
 			{
 				font = value;
 				if (font != null)
 				{
-					var newfont = ((FontHandler)font.Handler).Control;
-					entry.ModifyFont(newfont);
-					text.FontDesc = newfont;
+					var pangoFont = font.ToPango();
+					entry.SetFont(pangoFont);
+					text.FontDesc = pangoFont;
 				}
 			}
 		}
@@ -97,10 +124,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			set
 			{
-				base.SelectedIndex = value;
-				if (value == -1)
+				if (SelectedIndex != value)
 				{
-					Text = null;
+					base.SelectedIndex = value;
+					if (value == -1)
+						Text = null;
 				}
 			}
 		}
@@ -126,6 +154,26 @@ namespace Eto.GtkSharp.Forms.Controls
 						entry.Completion = null;
 					}
 				}
+			}
+		}
+
+		public override Color TextColor
+		{
+			get { return base.TextColor; }
+			set
+			{
+				base.TextColor = value;
+				entry.SetTextColor(value);
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return base.BackgroundColor; }
+			set
+			{
+				base.BackgroundColor = value;
+				entry.SetBase(value);
 			}
 		}
 	}

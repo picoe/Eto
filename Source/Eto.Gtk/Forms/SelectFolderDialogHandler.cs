@@ -10,7 +10,7 @@ namespace Eto.GtkSharp.Forms
 			Control.SetCurrentFolder(System.IO.Directory.GetCurrentDirectory());
 			
 			Control.AddButton(Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
-			Control.AddButton(Gtk.Stock.Save, Gtk.ResponseType.Ok);
+			Control.AddButton(Gtk.Stock.Open, Gtk.ResponseType.Ok);
 		}
 	
 

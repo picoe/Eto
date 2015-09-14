@@ -12,17 +12,14 @@ namespace Eto.GtkSharp.Forms.Menu
 		Keys shortcut;
 		Gtk.AccelLabel label;
 		Gtk.Label accelLabel;
-		bool isActivating;
 		bool enabled = true;
 		bool isChecked;
-		RadioMenuItemHandler controller;
 
 		public RadioMenuItemHandler()
 		{
 			label = new Gtk.AccelLabel(string.Empty);
 			label.Xalign = 0;
 			label.UseUnderline = true;
-			label.AccelWidget = Control;
 			accelLabel = new Gtk.Label();
 			accelLabel.Xalign = 1;
 			accelLabel.Visible = false;
@@ -33,11 +30,9 @@ namespace Eto.GtkSharp.Forms.Menu
 			if (controller != null)
 			{
 				Control = new Gtk.RadioMenuItem((Gtk.RadioMenuItem)controller.ControlObject);
-				this.controller = (RadioMenuItemHandler)controller.Handler;
 			}
 			else
 			{
-				this.controller = this;
 				Control = new Gtk.RadioMenuItem(string.Empty);
 				foreach (Gtk.Widget w in Control.Children)
 				{
@@ -50,8 +45,10 @@ namespace Eto.GtkSharp.Forms.Menu
 			hbox.Add(label);
 			hbox.Add(accelLabel);
 			Control.Add(hbox);
-			Control.Toggled += Connector.HandleToggled;
+			Control.Activated += Connector.HandleActivated;
 			Control.ShowAll();
+
+			label.AccelWidget = Control;
 		}
 
 		protected new RadioMenuItemConnector Connector { get { return (RadioMenuItemConnector)base.Connector; } }
@@ -65,13 +62,30 @@ namespace Eto.GtkSharp.Forms.Menu
 		{
 			public new RadioMenuItemHandler Handler { get { return (RadioMenuItemHandler)base.Handler; } }
 
+			public void HandleActivated(object sender, EventArgs e)
+			{
+				var handler = Handler;
+				if (handler.Checked)
+					handler.Callback.OnClick(handler.Widget, e);
+			}
+
 			public void HandleToggled(object sender, EventArgs e)
 			{
 				var handler = Handler;
-				if (!handler.controller.isActivating)
-				{
-					handler.Callback.OnClick(handler.Widget, e);
-				}
+				handler.Callback.OnCheckedChanged(handler.Widget, e);
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case RadioMenuItem.CheckedChangedEvent:
+					Control.Toggled += Connector.HandleToggled;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
@@ -116,9 +130,7 @@ namespace Eto.GtkSharp.Forms.Menu
 				isChecked = value;
 				if (Control != null)
 				{
-					controller.isActivating = true;
 					Control.Active = value;
-					controller.isActivating = false;
 				}
 			}
 		}

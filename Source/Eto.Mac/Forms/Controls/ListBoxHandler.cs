@@ -76,8 +76,8 @@ namespace Eto.Mac.Forms.Controls
 				var item = Handler.collection.ElementAt((int)row);
 				return new MacImageData
 				{
-					Text = new NSString(Convert.ToString(w.TextBinding.GetValue(item))),
-					Image = w.ImageBinding != null ? ((Image)w.ImageBinding.GetValue(item)).ToNS() : null
+					Text = new NSString(Convert.ToString(w.ItemTextBinding.GetValue(item))),
+					Image = w.ItemImageBinding != null ? ((Image)w.ItemImageBinding.GetValue(item)).ToNS() : null
 				};
 			}
 
@@ -187,23 +187,20 @@ namespace Eto.Mac.Forms.Controls
 
 		public override Font Font
 		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(Control.Font));
-				return font;
-			}
+			get { return base.Font; }
 			set
 			{
-				font = value;
-				if (font != null)
+				Widget.Properties.Set(Font_Key, value, () =>
 				{
-					var fontHandler = (FontHandler)font.Handler;
-					cell.Font = fontHandler.Control;
-					Control.RowHeight = fontHandler.LineHeight;
-				}
-				else
-					cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+					if (value != null)
+					{
+						var fontHandler = (FontHandler)value.Handler;
+						cell.Font = fontHandler.Control;
+						Control.RowHeight = fontHandler.LineHeight;
+					}
+					else
+						cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+				});
 			}
 		}
 

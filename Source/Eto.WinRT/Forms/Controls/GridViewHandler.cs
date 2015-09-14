@@ -34,12 +34,6 @@ namespace Eto.WinRT.Forms.Controls
 					Control.ItemsSource = new ObservableCollection<object>(store.AsEnumerable());
 			}
 		}
-
-		public bool ShowCellBorders
-		{
-			get { return Control.GridLinesVisibility != swc.DataGridGridLinesVisibility.None; }
-			set { Control.GridLinesVisibility = value ? swc.DataGridGridLinesVisibility.All : swc.DataGridGridLinesVisibility.None; }
-		}
 	}
 }
 #endif

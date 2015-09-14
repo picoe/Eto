@@ -96,18 +96,19 @@ namespace Eto.Wpf.Forms.Controls
 				if (Widget.Properties.Get<Font>(FontKey) != value)
 				{
 					Widget.Properties[FontKey] = value;
-					FontHandler.Apply(Control, null, value);
+					Control.SetEtoFont(value);
 				}
 			}
 		}
 
 		public string Text
 		{
-			get { return Control.Text; }
+			get { return Hyperlink.Inlines.GetText(); }
 			set
 			{
 				Hyperlink.Inlines.Clear();
-				Hyperlink.Inlines.Add(value);
+				if (value != null)
+					Hyperlink.Inlines.Add(value);
 			}
 		}
 
@@ -115,6 +116,9 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			switch (id)
 			{
+				case TextControl.TextChangedEvent:
+					// doesn't change
+					break;
 				case LinkButton.ClickEvent:
 					Hyperlink.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 					break;

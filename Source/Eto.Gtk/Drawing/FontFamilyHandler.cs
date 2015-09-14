@@ -1,7 +1,8 @@
 using System;
-using Eto.Drawing;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.GtkSharp.Drawing
 {
@@ -11,54 +12,77 @@ namespace Eto.GtkSharp.Drawing
 
 		public IEnumerable<FontTypeface> Typefaces
 		{
-			get { return Control.Faces.Select (r => new FontTypeface(Widget, new FontTypefaceHandler(r))); }
+			get { return Control.Faces.Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r))); }
 		}
 
-		public FontFamilyHandler ()
+		public FontFamilyHandler()
 		{
 		}
-		
-		public FontFamilyHandler (Pango.FontFamily pangoFamily)
+
+		public FontFamilyHandler(Pango.FontFamily pangoFamily)
 		{
 			Control = pangoFamily;
 			Name = Control.Name;
 		}
 
-		public void Create (string familyName)
+		public static Pango.FontFamily FindCorrectedFamily(string familyName)
+		{
+			var family = GetFontFamily(familyName);
+			if (family == null)
+			{
+				// HACK: Sometimes font description is not actually valid?
+				familyName = familyName.TrimStart('.');
+				family = GetFontFamily(familyName);
+				if (family == null)
+				{
+					var idx = familyName.LastIndexOf(' ');
+					while (family == null && idx > 0)
+					{
+						familyName = familyName.Substring(0, idx);
+						family = GetFontFamily(familyName);
+						idx = familyName.LastIndexOf(' ');
+					}
+				}
+			}
+			return family;
+		}
+
+		public void Create(string familyName)
 		{
 			Name = familyName;
-			switch (familyName.ToUpperInvariant()) {
-			case FontFamilies.MonospaceFamilyName:
-				Control = GetFontFamily("monospace", "FreeMono", "Courier");
-				break;
-			case FontFamilies.SansFamilyName:
-				Control = GetFontFamily("sans", "FreeSans");
-				break;
-			case FontFamilies.SerifFamilyName:
-				Control = GetFontFamily("serif", "FreeSerif");
-				break;
-			case FontFamilies.CursiveFamilyName:
+			switch (familyName.ToUpperInvariant())
+			{
+				case FontFamilies.MonospaceFamilyName:
+					Control = GetFontFamily("monospace", "FreeMono", "Courier");
+					break;
+				case FontFamilies.SansFamilyName:
+					Control = GetFontFamily("sans", "FreeSans");
+					break;
+				case FontFamilies.SerifFamilyName:
+					Control = GetFontFamily("serif", "FreeSerif");
+					break;
+				case FontFamilies.CursiveFamilyName:
 				// from http://www.codestyle.org/css/font-family/sampler-Cursive.shtml#cursive-linux
-				Control = GetFontFamily("URW Chancery L", "Comic Sans MS", "Purisa", "Vemana2000", "Domestic Manners", "serif");
-				break;
-			case FontFamilies.FantasyFamilyName:
+					Control = GetFontFamily("URW Chancery L", "Comic Sans MS", "Purisa", "Vemana2000", "Domestic Manners", "serif");
+					break;
+				case FontFamilies.FantasyFamilyName:
 				// from http://www.codestyle.org/css/font-family/sampler-Fantasy.shtml#fantasy-linux
-				Control = GetFontFamily("Impact", "Penguin Attack", "Balker", "Marked Fool", "Junkyard", "Linux Biolinum", "serif");
-				break;
-			default:
-				Control = GetFontFamily(familyName);
-				if (Control == null)
-					throw new ArgumentOutOfRangeException("familyName", familyName, "Font Family specified is not supported by this system");
-				Name = Control.Name;
-				break;
+					Control = GetFontFamily("Impact", "Penguin Attack", "Balker", "Marked Fool", "Junkyard", "Linux Biolinum", "serif");
+					break;
+				default:
+					Control = FindCorrectedFamily(familyName);
+					if (Control == null)
+						throw new ArgumentOutOfRangeException("familyName", familyName, string.Format(CultureInfo.CurrentCulture, "Font Family specified is not supported by this system"));
+					Name = Control.Name;
+					break;
 			}
 		}
 
-		static Pango.FontFamily GetFontFamily(params string [] familyNames)
+		static Pango.FontFamily GetFontFamily(params string[] familyNames)
 		{
 			foreach (var familyName in familyNames)
 			{
-				var family = GetFontFamily (familyName);
+				var family = GetFontFamily(familyName);
 				if (family != null)
 					return family;
 			}

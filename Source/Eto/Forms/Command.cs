@@ -1,6 +1,7 @@
 using System;
 using Eto.Drawing;
 using System.Globalization;
+using System.Windows.Input;
 
 namespace Eto.Forms
 {
@@ -9,7 +10,7 @@ namespace Eto.Forms
 	/// </summary>
 	public class CheckCommand : Command
 	{
-		#region Events
+#region Events
 
 		/// <summary>
 		/// Occurs when the <see cref="Checked"/> value has changed.
@@ -26,9 +27,9 @@ namespace Eto.Forms
 				CheckedChanged(this, e);
 		}
 
-		#endregion
+#endregion
 
-		#region Properties
+#region Properties
 
 		bool ischecked;
 
@@ -49,7 +50,7 @@ namespace Eto.Forms
 			}
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.CheckCommand"/> class.
@@ -67,14 +68,11 @@ namespace Eto.Forms
 		{
 		}
 
-		#pragma warning disable 672,612,618
-
 		/// <summary>
 		/// Creates a new menu item attached to this command.
 		/// </summary>
 		/// <returns>The menu item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		public override MenuItem CreateMenuItem(Generator generator)
+		public override MenuItem CreateMenuItem()
 		{
 			return new CheckMenuItem(this);
 		}
@@ -83,13 +81,10 @@ namespace Eto.Forms
 		/// Creates a new tool item attached to this command.
 		/// </summary>
 		/// <returns>The tool item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		public override ToolItem CreateToolItem(Generator generator)
+		public override ToolItem CreateToolItem()
 		{
 			return new CheckToolItem(this);
 		}
-
-		#pragma warning restore 672,612,618
 	}
 
 	/// <summary>
@@ -125,14 +120,11 @@ namespace Eto.Forms
 		{
 		}
 
-		#pragma warning disable 672,612,618
-
 		/// <summary>
 		/// Creates a new menu item attached to this command.
 		/// </summary>
 		/// <returns>The menu item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		public override MenuItem CreateMenuItem(Generator generator)
+		public override MenuItem CreateMenuItem()
 		{
 			return menuItem = new RadioMenuItem(this, Controller != null ? Controller.menuItem : null);
 		}
@@ -141,13 +133,10 @@ namespace Eto.Forms
 		/// Creates a new tool item attached to this command.
 		/// </summary>
 		/// <returns>The tool item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		public override ToolItem CreateToolItem(Generator generator)
+		public override ToolItem CreateToolItem()
 		{
-			throw new NotSupportedException();
+			return new RadioToolItem(this);
 		}
-
-		#pragma warning restore 672,612,618
 	}
 
 	/// <summary>
@@ -156,9 +145,9 @@ namespace Eto.Forms
 	/// <remarks>
 	/// Commands allow you to create a single class that can be used for both menu and tool items.
 	/// </remarks>
-	public class Command
+	public class Command : IBindable, ICommand
 	{
-		#region Events
+#region Events
 
 		/// <summary>
 		/// Occurs when the <see cref="Enabled"/> property is changed.
@@ -171,7 +160,8 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnEnabledChanged(EventArgs e)
 		{
-			if (EnabledChanged != null) EnabledChanged(this, e);
+			if (EnabledChanged != null)
+				EnabledChanged(this, e);
 		}
 
 		/// <summary>
@@ -185,12 +175,13 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnExecuted(EventArgs e)
 		{
-			if (Executed != null) Executed(this, e);
+			if (Executed != null)
+				Executed(this, e);
 		}
 
-		#endregion
+#endregion
 
-		#region Properties
+#region Properties
 
 		/// <summary>
 		/// Gets or sets the ID of the command
@@ -202,6 +193,7 @@ namespace Eto.Forms
 		public string ID { get; set; }
 
 		bool enabled = true;
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Command"/> is enabled.
 		/// </summary>
@@ -259,7 +251,7 @@ namespace Eto.Forms
 		/// <value>The command shortcut.</value>
 		public Keys Shortcut { get; set; }
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Command"/> class.
@@ -285,15 +277,13 @@ namespace Eto.Forms
 			OnExecuted(EventArgs.Empty);
 		}
 
-		#pragma warning disable 612,618
-
 		/// <summary>
 		/// Creates a new tool item attached to this command.
 		/// </summary>
 		/// <returns>The tool item for the command.</returns>
 		public virtual ToolItem CreateToolItem()
 		{
-			return CreateToolItem(Platform.Instance);
+			return new ButtonToolItem(this);
 		}
 
 		/// <summary>
@@ -302,32 +292,8 @@ namespace Eto.Forms
 		/// <returns>The menu item for the command.</returns>
 		public virtual MenuItem CreateMenuItem()
 		{
-			return CreateMenuItem(Platform.Instance);
+			return new ButtonMenuItem(this);
 		}
-
-		/// <summary>
-		/// Creates a new tool item attached to this command.
-		/// </summary>
-		/// <returns>The tool item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use variation without generator instead")]
-		public virtual ToolItem CreateToolItem(Generator generator)
-		{
-			return new ButtonToolItem(this, generator);
-		}
-
-		/// <summary>
-		/// Creates a new menu item attached to this command.
-		/// </summary>
-		/// <returns>The menu item for the command.</returns>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use variation without generator instead")]
-		public virtual MenuItem CreateMenuItem(Generator generator)
-		{
-			return new ButtonMenuItem(this, generator);
-		}
-
-		#pragma warning restore 612,618
 
 		/// <summary>
 		/// Implicitly converts the command to a menu item
@@ -346,5 +312,147 @@ namespace Eto.Forms
 		{
 			return command.CreateToolItem();
 		}
+
+		PropertyStore properties;
+
+		/// <summary>
+		/// Gets the dictionary of properties for this widget
+		/// </summary>
+		public PropertyStore Properties
+		{ 
+			get { return properties ?? (properties = new PropertyStore(this)); } 
+		}
+
+		static readonly object Command_Key = new object();
+
+		/// <summary>
+		/// Gets or sets a command to delegate to when the command is invoked.
+		/// </summary>
+		/// <remarks>
+		/// This allows you to use a command to define menu/toolbar items or other functionality, and use
+		/// a delegated command to chain to when invoked.
+		/// This is especially useful when binding to a view model, you can do something like the following:
+		/// <code>
+		/// var myCommand = new Command { MenuText = "My Command", Parent = myForm };
+		/// myCommand.BindDataContext(c => c.DelegatedCommand, (MyModel m) => m.MyModelCommand);
+		/// 
+		/// //...
+		/// 
+		/// myForm.DataContext = new MyModel { MyModelCommand = ... };
+		/// </code>
+		/// The <see cref="ICommand.CanExecute"/> will also used to set the enabled/disabled state of the current command.
+		/// </remarks>
+		/// <value>The command to invoke.</value>
+		public ICommand DelegatedCommand
+		{
+			get { return Properties.GetCommand(Command_Key); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Executed += r, r => Executed -= r); }
+		}
+
+		event EventHandler ICommand.CanExecuteChanged
+		{
+			add { EnabledChanged += new EventHandler<EventArgs>(value.Invoke); }
+			remove { EnabledChanged -= new EventHandler<EventArgs>(value.Invoke); }
+		}
+
+		bool ICommand.CanExecute(object parameter)
+		{ 
+			return Enabled;
+		}
+
+		void ICommand.Execute(object parameter)
+		{
+			Execute();
+		}
+
+#region IBindable implementation
+
+		/// <summary>
+		/// Event to handle when the <see cref="DataContext"/> has changed
+		/// </summary>
+		/// <remarks>
+		/// This may be fired in the event of a parent in the hierarchy setting the data context.
+		/// For example, the <see cref="Forms.Container"/> widget fires this event when it's event is fired.
+		/// </remarks>
+		public event EventHandler<EventArgs> DataContextChanged;
+
+		/// <summary>
+		/// Raises the <see cref="DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected internal virtual void OnDataContextChanged(EventArgs e)
+		{
+			if (DataContextChanged != null)
+				DataContextChanged(this, e);
+		}
+
+		static readonly object Parent_Key = new object();
+
+		/// <summary>
+		/// Gets the parent widget which this widget has been added to, if any
+		/// </summary>
+		/// <value>The parent widget, or null if there is no parent</value>
+		public IBindable Parent
+		{
+			get { return Properties.Get<IBindable>(Parent_Key); }
+			set
+			{ 
+				var old = Parent;
+				Properties.Set(Parent_Key, value, () =>
+				{
+					if (old != null)
+						old.DataContextChanged -= Value_DataContextChanged;
+					if (value != null)
+						value.DataContextChanged += Value_DataContextChanged;
+					if (!Properties.ContainsKey(DataContext_Key))
+						OnDataContextChanged(EventArgs.Empty);
+				});
+			}
+		}
+
+		void Value_DataContextChanged(object sender, EventArgs e)
+		{
+			OnDataContextChanged(e);
+		}
+
+		static readonly object DataContext_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the data context for this widget for binding
+		/// </summary>
+		/// <remarks>
+		/// Subclasses may override the standard behaviour so that hierarchy of widgets can be taken into account.
+		/// 
+		/// For example, a Control may return the data context of a parent, if it is not set explicitly.
+		/// </remarks>
+		public object DataContext
+		{
+			get
+			{
+				return Properties.Get(DataContext_Key, () =>
+				{
+					var bindable = Parent as IBindable;
+					return bindable != null ? bindable.DataContext : null;
+				});
+			}
+			set { Properties.Set(DataContext_Key, value, () => OnDataContextChanged(EventArgs.Empty)); }
+		}
+
+		static readonly  object Bindings_Key = new object();
+
+		/// <summary>
+		/// Gets the collection of bindings that are attached to this widget
+		/// </summary>
+		public BindingCollection Bindings
+		{
+			get { return Properties.Create(Bindings_Key, () => new BindingCollection()); }
+		}
+
+#endregion
 	}
 }

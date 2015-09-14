@@ -33,9 +33,11 @@ namespace Eto.Test.Sections.Controls
 			formColorPicker.ValueChanged += (sender, e) => BackgroundColor = formColorPicker.Value;
 
 			var fontPicker = new Button { Text = "Pick Font" };
-			fontPicker.Click += (sender, e) => {
+			fontPicker.Click += (sender, e) =>
+			{
 				var dlg = new FontDialog();
-				dlg.FontChanged += (sender2, e2) => {
+				dlg.FontChanged += (sender2, e2) =>
+				{
 					var font = dlg.Font;
 					foreach (var update in fontUpdates)
 						update(font);
@@ -43,19 +45,22 @@ namespace Eto.Test.Sections.Controls
 				dlg.ShowDialog(this);
 			};
 
-			return new TableLayout(
-				new TableRow(
-					null, 
-					new Label { Text = "Text", VerticalAlign = VerticalAlign.Middle },
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items = {
+					null,
+					new Label { Text = "Text", VerticalAlignment = VerticalAlignment.Center },
 					foregroundPicker,
-					new Label { Text = "Background", VerticalAlign = VerticalAlign.Middle },
+					new Label { Text = "Background", VerticalAlignment = VerticalAlignment.Center },
 					backgroundPicker,
-					new Label { Text = "Form", VerticalAlign = VerticalAlign.Middle },
+					new Label { Text = "Form", VerticalAlignment = VerticalAlignment.Center },
 					formColorPicker,
 					fontPicker,
 					null
-				)
-			);
+				}
+			};
 		}
 
 		protected override void LogEvents(Control control)

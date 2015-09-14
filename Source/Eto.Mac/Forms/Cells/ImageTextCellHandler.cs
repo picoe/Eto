@@ -77,7 +77,9 @@ namespace Eto.Mac.Forms.Cells
 			Control = new EtoCell
 			{ 
 				Handler = this, 
-				UsesSingleLineMode = true
+				UsesSingleLineMode = true,
+				Wraps = false,
+				Scrollable = true
 			};
 		}
 
@@ -137,17 +139,9 @@ namespace Eto.Mac.Forms.Cells
 
 		public override nfloat GetPreferredSize(object value, CGSize cellSize, NSCell cell)
 		{
-			var val = value as MacImageData;
-			if (val == null)
-				return 0;
-			
-			var font = cell.Font ?? NSFont.BoldSystemFontOfSize(NSFont.SystemFontSize);
-			var str = val.Text;
-			var attrs = NSDictionary.FromObjectAndKey(font, NSAttributedString.FontAttributeName);
-			
-			var size = str.StringSize(attrs).Width + 4 + 16 + MacImageListItemCell.ImagePadding * 2; // for border + image
-			return (float)size;
-			
+			cell.ObjectValue = value as NSObject;
+			var size = cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
+			return size;
 		}
 
 		public ImageInterpolation ImageInterpolation

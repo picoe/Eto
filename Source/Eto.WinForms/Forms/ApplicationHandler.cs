@@ -104,9 +104,11 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		static readonly object SuppressKeyPressKey = new object();
+
 		static void SetOptions()
 		{
-			if (EnableScrollingUnderMouse)
+			if (EtoEnvironment.Platform.IsWindows && EnableScrollingUnderMouse)
 				swf.Application.AddMessageFilter(new ScrollMessageFilter());
 
 			if (BubbleMouseEvents)
@@ -128,10 +130,38 @@ namespace Eto.WinForms.Forms
 			if (BubbleKeyEvents)
 			{
 				var bubble = new BubbleEventFilter();
-				bubble.AddBubbleKeyEvent((c, cb, e) => cb.OnKeyDown(c, e), Win32.WM.KEYDOWN, KeyEventType.KeyDown);
-				bubble.AddBubbleKeyEvent((c, cb, e) => cb.OnKeyDown(c, e), Win32.WM.SYSKEYDOWN, KeyEventType.KeyDown);
-				bubble.AddBubbleKeyCharEvent((c, cb, e) => cb.OnKeyDown(c, e), Win32.WM.CHAR, KeyEventType.KeyDown);
-				bubble.AddBubbleKeyCharEvent((c, cb, e) => cb.OnKeyDown(c, e), Win32.WM.SYSCHAR, KeyEventType.KeyDown);
+
+				Action<Control, Control.ICallback, KeyEventArgs> keyDown = (c, cb, e) =>
+				{
+					cb.OnKeyDown(c, e);
+					c.Properties[SuppressKeyPressKey] = e.Handled;
+				};
+
+				Action<Control, Control.ICallback, KeyEventArgs> keyPress = (c, cb, e) =>
+				{
+					if (!c.Properties.Get<bool>(SuppressKeyPressKey))
+					{
+						if (!char.IsControl(e.KeyChar))
+						{
+							var tia = new TextInputEventArgs(e.KeyChar.ToString());
+							cb.OnTextInput(c, tia);
+							e.Handled = tia.Cancel;
+						}
+
+						if (!e.Handled)
+							cb.OnKeyDown(c, e);
+					}
+					else
+					{
+						e.Handled = true;
+						c.Properties.Remove(SuppressKeyPressKey);
+					}
+				};
+
+				bubble.AddBubbleKeyEvent(keyDown, Win32.WM.KEYDOWN, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyEvent(keyDown, Win32.WM.SYSKEYDOWN, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyCharEvent(keyPress, Win32.WM.CHAR, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyCharEvent(keyPress, Win32.WM.SYSCHAR, KeyEventType.KeyDown);
 				bubble.AddBubbleKeyEvent((c, cb, e) => cb.OnKeyUp(c, e), Win32.WM.KEYUP, KeyEventType.KeyUp);
 				bubble.AddBubbleKeyEvent((c, cb, e) => cb.OnKeyUp(c, e), Win32.WM.SYSKEYUP, KeyEventType.KeyUp);
 				swf.Application.AddMessageFilter(bubble);

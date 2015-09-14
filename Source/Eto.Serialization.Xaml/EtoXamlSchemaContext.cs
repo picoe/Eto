@@ -14,6 +14,8 @@ namespace Eto.Serialization.Xaml
 		readonly Dictionary<Type, XamlType> typeCache = new Dictionary<Type, XamlType>();
 		readonly object cache_sync = new object();
 
+		public bool DesignMode { get; set; }
+
 		public EtoXamlSchemaContext(IEnumerable<Assembly> assemblies)
 			: base(assemblies)
 		{
@@ -43,8 +45,11 @@ namespace Eto.Serialization.Xaml
 							if (assembly != null)
 							{
 								var realType = assembly.GetType(ns + "." + name);
-								type = xamlNamespace == eto_namespace ? new EtoXamlType(realType, this) : GetXamlType(realType);
-								cache.Add(xamlNamespace + name, type);
+								if (realType != null)
+								{
+									type = xamlNamespace == eto_namespace ? new EtoXamlType(realType, this) : GetXamlType(realType);
+									cache.Add(xamlNamespace + name, type);
+								}
 							}
 						}
 					}
@@ -56,18 +61,18 @@ namespace Eto.Serialization.Xaml
 
 		public override XamlType GetXamlType(Type type)
 		{
-			if (type.Assembly == typeof(Platform).Assembly)
+			// Use EtoXamlType for all types on mono so we can override incorrect behavior when getting collection 
+			// item types in EtoItemType.LookupItemType
+			if (EtoEnvironment.Platform.IsMono || type.Assembly == typeof(Platform).Assembly)
 			{
 				XamlType xamlType;
-				if (!typeCache.TryGetValue(type, out xamlType))
-				{
-					xamlType = new EtoXamlType(type, this);
-					typeCache.Add(type, xamlType);
-				}
+				if (typeCache.TryGetValue(type, out xamlType))
+					return xamlType;
+				xamlType = new EtoXamlType(type, this);
+				typeCache.Add(type, xamlType);
 				return xamlType;
 			}
 			return base.GetXamlType(type);
 		}
-
 	}
 }

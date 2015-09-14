@@ -4,6 +4,7 @@ using System.Windows;
 using Eto.Forms;
 using System.Windows.Controls;
 using Eto.CustomControls;
+using swc = System.Windows.Controls;
 
 namespace Eto.Wpf.CustomControls.TreeGridView
 {
@@ -22,7 +23,7 @@ namespace Eto.Wpf.CustomControls.TreeGridView
 
 		public static FrameworkElement Create (FrameworkElement content, TreeController controller)
 		{
-			var panel = new StackPanel { Orientation = Orientation.Horizontal };
+			var panel = new StackPanel { Orientation = swc.Orientation.Horizontal };
 			var button = new TreeToggleButton { Controller = controller, Width = 16 };
 			panel.Children.Add (button);
 			panel.DataContextChanged += (sender, e) => button.Configure(panel.DataContext as ITreeGridItem);

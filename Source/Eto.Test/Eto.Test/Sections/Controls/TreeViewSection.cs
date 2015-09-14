@@ -19,15 +19,15 @@ namespace Eto.Test.Sections.Controls
 
 		public TreeViewSection()
 		{
-			var layout = new DynamicLayout();
-			
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+
 			layout.BeginHorizontal();
 			layout.Add(new Label());
 			layout.BeginVertical();
 			layout.BeginHorizontal();
 			layout.Add(null);
-			layout.Add(allowExpanding = new CheckBox{ Text = "Allow Expanding", Checked = true });
-			layout.Add(allowCollapsing = new CheckBox{ Text = "Allow Collapsing", Checked = true });
+			layout.Add(allowExpanding = new CheckBox { Text = "Allow Expanding", Checked = true });
+			layout.Add(allowCollapsing = new CheckBox { Text = "Allow Collapsing", Checked = true });
 			layout.Add(RefreshButton());
 			layout.Add(null);
 			layout.EndHorizontal();
@@ -36,7 +36,7 @@ namespace Eto.Test.Sections.Controls
 
 			treeView = ImagesAndMenu();
 
-			layout.AddRow(new Label{ Text = "Simple" }, Default());
+			layout.AddRow(new Label { Text = "Simple" }, Default());
 			layout.BeginHorizontal();
 			layout.Add(new Panel());
 			layout.BeginVertical();
@@ -44,7 +44,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow(LabelEditCheck(), EnabledCheck(), null);
 			layout.EndVertical();
 			layout.EndHorizontal();
-			layout.AddRow(new Label{ Text = "With Images\n&& Context Menu" }, treeView);
+			layout.AddRow(new Label { Text = "With Images\n&& Context Menu" }, treeView);
 			layout.AddRow(new Panel(), HoverNodeLabel());
 
 			layout.Add(null, false, true);

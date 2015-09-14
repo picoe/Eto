@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
-using MonoTouch.UIKit;
-using NSCell = MonoTouch.UIKit.UITableViewCell;
+using UIKit;
+using NSCell = UIKit.UITableViewCell;
 using System.Collections.Generic;
 
 namespace Eto.iOS.Forms.Cells

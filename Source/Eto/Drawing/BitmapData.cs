@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Eto.Drawing
 {
@@ -172,7 +173,7 @@ namespace Eto.Drawing
 					return bmp.Palette[col];
 				}
 			}
-			throw new NotSupportedException("This PixelFormat is not supported by GetPixel. Must be 24 or 32 bits per pixel, or 8 bit indexed");
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "This PixelFormat is not supported by GetPixel. Must be 24 or 32 bits per pixel, or 8 bit indexed"));
 		}
 
 		/// <summary>
@@ -208,7 +209,7 @@ namespace Eto.Drawing
 				*(pos++) = (byte)((col >> 16) & 0xFF);
 			}
 			else
-				throw new NotSupportedException("This PixelFormat is not supported by SetPixel. Must be 3 or 4 bytes per pixel");
+				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "This PixelFormat is not supported by SetPixel. Must be 3 or 4 bytes per pixel"));
 		}
 
 		/// <summary>

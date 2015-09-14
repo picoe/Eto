@@ -26,7 +26,7 @@ namespace Eto.Direct2D.Drawing
 					new sd.GradientStopCollection(GraphicsHandler.CurrentRenderTarget, new[] {
 					new sd.GradientStop { Color = StartColor.ToDx(), Position = 0f }, 
 					new sd.GradientStop { Color = EndColor.ToDx(), Position = 1f }
-				}, WrapMode == GradientWrapMode.Reflect ? sd.ExtendMode.Mirror : sd.ExtendMode.Wrap)
+				}, WrapMode.ToDx())
 				);
 			}
 		}

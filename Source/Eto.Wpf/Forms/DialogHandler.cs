@@ -4,14 +4,14 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Wpf.Forms.Controls;
 using System.Threading.Tasks;
+using Eto.Drawing;
 
 namespace Eto.Wpf.Forms
 {
 	public class DialogHandler : WpfWindow<sw.Window, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button defaultButton;
-		Button abortButton;
-		Window parentWindow;
+		Rectangle? parentWindowBounds;
 
 		public DialogHandler()
 		{
@@ -20,34 +20,39 @@ namespace Eto.Wpf.Forms
 			Resizable = false;
 			Minimizable = false;
 			Maximizable = false;
+			Control.PreviewKeyDown += Control_PreviewKeyDown;
 		}
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public void ShowModal(Control parent)
+		public void ShowModal()
 		{
-			if (parent != null && !LocationSet)
+			if (Widget.Owner != null)
 			{
-				parentWindow = parent.ParentWindow;
-				if (parentWindow != null)
-				{
-					var handler = (IWpfWindow)parentWindow.Handler;
-					handler.SetOwnerFor(Control);
-					// CenterOwner does not work in certain cases (e.g. with autosizing)
-					Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
-					Control.SourceInitialized += HandleSourceInitialized;
-				}
+				// CenterOwner does not work in certain cases (e.g. with autosizing)
+				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
+				Control.SourceInitialized += HandleSourceInitialized;
+				parentWindowBounds = Widget.Owner.Bounds;
 			}
 			Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 		}
 
-		public Task ShowModalAsync(Control parent)
+		void Control_PreviewKeyDown(object sender, sw.Input.KeyEventArgs e)
+		{
+			if (e.Key == sw.Input.Key.Escape && AbortButton != null)
+			{
+				AbortButton.PerformClick();
+				e.Handled = true;
+			}
+		}
+
+		public Task ShowModalAsync()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			Application.Instance.AsyncInvoke(() =>
 			{
-				ShowModal(parent);
+				ShowModal();
 				tcs.SetResult(true);
 			});
 			return tcs.Task;
@@ -55,12 +60,14 @@ namespace Eto.Wpf.Forms
 
 		void HandleSourceInitialized(object sender, EventArgs e)
 		{
-			if (parentWindow != null)
+			if (parentWindowBounds != null && !LocationSet)
 			{
-				var bounds = parentWindow.Bounds;
+				var bounds = parentWindowBounds.Value;
 				Control.Left = bounds.Left + (bounds.Width - Control.ActualWidth) / 2;
 				Control.Top = bounds.Top + (bounds.Height - Control.ActualHeight) / 2;
+				parentWindowBounds = null;
 			}
+			LocationSet = false;
 			Control.SourceInitialized -= HandleSourceInitialized;
 		}
 
@@ -83,23 +90,6 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public Button AbortButton
-		{
-			get { return abortButton; }
-			set
-			{
-				if (abortButton != null)
-				{
-					var handler = (ButtonHandler)abortButton.Handler;
-					handler.Control.IsCancel = false;
-				}
-				abortButton = value;
-				if (abortButton != null)
-				{
-					var handler = (ButtonHandler)abortButton.Handler;
-					handler.Control.IsCancel = true;
-				}
-			}
-		}
+		public Button AbortButton { get; set; }
 	}
 }

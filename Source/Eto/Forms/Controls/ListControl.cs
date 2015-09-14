@@ -8,24 +8,12 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Data store interface for a <see cref="ListControl"/>
-	/// </summary>
-	/// <remarks>
-	/// Note that you should use an <see cref="System.Collections.ObjectModel.ObservableCollection{T}"/> if you are using a
-	/// POCO, or the <see cref="ListItemCollection"/> if you want to add items without custom objects.
-	/// </remarks>
-	[Obsolete("Use IList<IListItem>/IList instead if you want a virtual collection, or ObservableCollection<IListItem> to have change tracking")]
-	public interface IListStore : IDataStore<IListItem>
-	{
-	}
-
-	/// <summary>
 	/// A collection of <see cref="ListItem"/> objects for use with <see cref="ListControl"/> objects
 	/// </summary>
 	/// <remarks>
 	/// This is used to provide an easy way to add items to a <see cref="ListControl"/>.
 	/// It is not mandatory to use this collection, however, since each control can specify bindings to your own
-	/// model objects using <see cref="ListControl.KeyBinding"/>, <see cref="ListControl.TextBinding"/>, or other
+	/// model objects using <see cref="ListControl.ItemKeyBinding"/>, <see cref="ListControl.ItemTextBinding"/>, or other
 	/// subclass bindings.
 	/// </remarks>
 	public class ListItemCollection : ExtendedObservableCollection<IListItem>
@@ -123,13 +111,35 @@ namespace Eto.Forms
 		/// Gets or sets the binding for the text value of each item.
 		/// </summary>
 		/// <value>The text binding.</value>
-		public IIndirectBinding<string> TextBinding { get; set; }
+		public IIndirectBinding<string> ItemTextBinding { get; set; }
 
 		/// <summary>
 		/// Gets or sets the binding for the key value of each item.
 		/// </summary>
 		/// <value>The key binding.</value>
-		public IIndirectBinding<string> KeyBinding { get; set; }
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+
+		/// <summary>
+		/// Gets or sets the binding for the text value of each item.
+		/// </summary>
+		/// <value>The text binding.</value>
+		[Obsolete("Since 2.1: Use ItemTextBinding instead")]
+		public IIndirectBinding<string> TextBinding
+		{
+			get { return ItemTextBinding; }
+			set { ItemTextBinding = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the binding for the key value of each item.
+		/// </summary>
+		/// <value>The key binding.</value>
+		[Obsolete("Since 2.1: Use ItemKeyBinding instead")]
+		public IIndirectBinding<string> KeyBinding
+		{
+			get { return ItemKeyBinding; }
+			set { ItemKeyBinding = value; }
+		}
 
 		static readonly object SelectedIndexChangedKey = new object();
 
@@ -198,22 +208,8 @@ namespace Eto.Forms
 		/// </summary>
 		protected ListControl()
 		{
-			TextBinding = new ListItemTextBinding();
-			KeyBinding = new ListItemKeyBinding();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ListControl"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ListControl(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
-		{
-			TextBinding = new ListItemTextBinding();
-			KeyBinding = new ListItemKeyBinding();
+			ItemTextBinding = new ListItemTextBinding();
+			ItemKeyBinding = new ListItemKeyBinding();
 		}
 
 		/// <summary>
@@ -277,16 +273,16 @@ namespace Eto.Forms
 		/// Gets or sets the key of the selected item in the <see cref="DataStore"/>.
 		/// </summary>
 		/// <remarks>
-		/// This uses the <see cref="KeyBinding"/> to map the key for each item in the list.
+		/// This uses the <see cref="ItemKeyBinding"/> to map the key for each item in the list.
 		/// </remarks>
 		/// <value>The selected key.</value>
 		public string SelectedKey
 		{
-			get { return KeyBinding.GetValue(SelectedValue); }
+			get { return ItemKeyBinding.GetValue(SelectedValue); }
 			set
 			{
 				EnsureDataStore();
-				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.FindIndex<object>(r => KeyBinding.GetValue(r) == value) : -1;
+				SelectedIndex = Handler.DataStore != null ? Handler.DataStore.FindIndex<object>(r => ItemKeyBinding.GetValue(r) == value) : -1;
 			}
 		}
 
@@ -313,16 +309,6 @@ namespace Eto.Forms
 			EnsureDataStore();
 		}
 
-		/// <summary>
-		/// Creates the default items.
-		/// </summary>
-		/// <returns>The default items.</returns>
-		[Obsolete("Use CreateDefaultDataStore")]
-		protected virtual ListItemCollection CreateDefaultItems()
-		{
-			return new ListItemCollection();
-		}
-
 		internal void EnsureDataStore()
 		{
 			if (DataStore == null)
@@ -339,20 +325,18 @@ namespace Eto.Forms
 		/// <returns>The default data store.</returns>
 		protected virtual IEnumerable<object> CreateDefaultDataStore()
 		{
-			#pragma warning disable 612,618
-			return CreateDefaultItems();
-			#pragma warning restore 612,618
+			return new ListItemCollection();
 		}
 
 		/// <summary>
 		/// Gets the binding to the <see cref="SelectedIndex"/> property.
 		/// </summary>
 		/// <value>The selected index binding.</value>
-		public ControlBinding<ListControl, int> SelectedIndexBinding
+		public BindableBinding<ListControl, int> SelectedIndexBinding
 		{
 			get
 			{
-				return new ControlBinding<ListControl, int>(
+				return new BindableBinding<ListControl, int>(
 					this, 
 					c => c.SelectedIndex, 
 					(c, v) => c.SelectedIndex = v, 
@@ -366,11 +350,11 @@ namespace Eto.Forms
 		/// Gets the binding to the <see cref="SelectedKey"/> property.
 		/// </summary>
 		/// <value>The selected key binding.</value>
-		public ControlBinding<ListControl, string> SelectedKeyBinding
+		public BindableBinding<ListControl, string> SelectedKeyBinding
 		{
 			get
 			{
-				return new ControlBinding<ListControl, string>(
+				return new BindableBinding<ListControl, string>(
 					this, 
 					c => c.SelectedKey, 
 					(c, v) => c.SelectedKey = v, 
@@ -384,11 +368,11 @@ namespace Eto.Forms
 		/// Gets the binding to the <see cref="SelectedValue"/> property.
 		/// </summary>
 		/// <value>The selected value binding.</value>
-		public ControlBinding<ListControl, object> SelectedValueBinding
+		public BindableBinding<ListControl, object> SelectedValueBinding
 		{
 			get
 			{
-				return new ControlBinding<ListControl, object>(
+				return new BindableBinding<ListControl, object>(
 					this, 
 					c => c.SelectedValue, 
 					(c, v) => c.SelectedValue = v, 

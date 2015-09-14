@@ -4,6 +4,8 @@
 		<BaseIntermediateOutputPath>obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
 		<XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current</XamarinMacPath>
 		<XamarinMacLibPath>$(XamarinMacPath)/lib/mono</XamarinMacLibPath>
+		<!-- Prevent VS2015 from copying files from the GAC to the output folder -->
+		<DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
 	</PropertyGroup>
 	<Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
 </Project>

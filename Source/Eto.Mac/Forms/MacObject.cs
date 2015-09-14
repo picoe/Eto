@@ -7,7 +7,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -32,7 +32,7 @@ using nuint = System.UInt32;
 #endif
 
 #if IOS
-using MonoTouch.Foundation;
+using Foundation;
 #endif
 
 namespace Eto.Mac.Forms

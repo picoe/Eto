@@ -23,13 +23,13 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net40\Debug</OutputPath>
     <DefineConstants>DEBUG;DESKTOP;XAML</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\net40\Release</OutputPath>
     <DefineConstants>DESKTOP;XAML</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -39,11 +39,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Configuration" />
-    <Reference Include="Portable.Reflection">
-      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\Portable.Reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="nunitlite">
-      <HintPath>..\..\packages\Portable.NUnitLite.1.0.0.1\lib\portable-win+net45+MonoAndroid16+MonoMac40+MonoTouch40+sl40+wp71\nunitlite.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -136,6 +133,7 @@
     <Compile Include="UnitTests\Drawing\BitmapTests.cs" />
     <Compile Include="UnitTests\Drawing\ClipTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\SplitterTests.cs" />
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestCalendarHandler.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestGridColumnHandler.cs" />
@@ -176,6 +174,20 @@
     <Compile Include="Commands\Quit.cs" />
     <Compile Include="Sections\Controls\ControlColorsSection.cs" />
     <Compile Include="Sections\Behaviors\DynamicMenuBar.cs" />
+    <Compile Include="Sections\Behaviors\ClipboardSection.cs" />
+    <Compile Include="Sections\Controls\DropDownSection.cs" />
+    <Compile Include="Sections\Controls\RichTextAreaSection.cs" />
+    <Compile Include="Sections\Controls\MaskedTextBoxSection.cs" />
+    <Compile Include="Sections\Drawing\ClipTransformSection.cs" />
+    <Compile Include="Sections\Drawing\PixelOffsetTransforms.cs" />
+    <Compile Include="UnitTests\Drawing\DefaultValueTests.cs" />
+    <Compile Include="UnitTests\Drawing\GraphicsTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ComboBoxTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\NumericUpDownTests.cs" />
+    <Compile Include="..\..\Eto\Helper.cs">
+      <Link>Helper.cs</Link>
+    </Compile>
+    <Compile Include="Sections\Behaviors\CursorSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
@@ -217,8 +229,14 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
           <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="MSBuild" />
+          <TextStylePolicy inheritsSet="null" scope="application/xaml+xml" />
+          <XmlFormattingPolicy inheritsSet="null" scope="application/xaml+xml" />
+          <TextStylePolicy inheritsSet="null" scope="application/xml" />
+          <XmlFormattingPolicy inheritsSet="Mono" inheritsScope="application/xml" scope="application/xml" />
+          <TextStylePolicy inheritsSet="null" scope="application/json" />
+          <TextStylePolicy inheritsSet="null" scope="application/config+xml" />
+          <XmlFormattingPolicy inheritsSet="null" scope="application/config+xml" />
         </Policies>
       </Properties>
     </MonoDevelop>

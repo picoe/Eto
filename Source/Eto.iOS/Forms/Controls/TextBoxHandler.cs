@@ -1,5 +1,5 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -18,16 +18,16 @@ namespace Eto.iOS.Forms.Controls
 			Control = new UITextField();
 			MaxLength = Int32.MaxValue;
 			Control.BorderStyle = UITextBorderStyle.RoundedRect;
-			Control.ShouldChangeCharacters = delegate(UITextField textField, MonoTouch.Foundation.NSRange range, string replacementString)
+			Control.ShouldChangeCharacters = delegate(UITextField textField, Foundation.NSRange range, string replacementString)
 			{
 				var text = textField.Text;
 				if (text.Length + replacementString.Length - range.Length > MaxLength)
 				{
 
 					if (range.Length > 0)
-						text = text.Remove(range.Location, range.Length);
-					replacementString = replacementString.Substring(0, MaxLength - text.Length + range.Length);
-					text = text.Insert(range.Location, replacementString);
+						text = text.Remove((int)range.Location, (int)range.Length);
+					replacementString = replacementString.Substring(0, (int)(MaxLength - text.Length + range.Length));
+					text = text.Insert((int)range.Location, replacementString);
 					//UIApplication.SharedApplication.BeginInvokeOnMainThread(delegate {
 
 					//});
@@ -94,6 +94,39 @@ namespace Eto.iOS.Forms.Controls
 		{
 			get { return Control.TextColor.ToEto(); }
 			set { Control.TextColor = value.ToNSUI(); }
+		}
+
+		public int CaretIndex
+		{
+			get {
+				var selectedRange = Control.SelectedTextRange;
+				var selectionStart = selectedRange.Start;
+				return (int)Control.GetOffsetFromPosition(Control.BeginningOfDocument, selectionStart);
+			}
+			set
+			{
+				Selection = new Range<int>(value, value - 1);
+			}
+		}
+
+		public Range<int> Selection
+		{
+			get
+			{
+				var selectedRange = Control.SelectedTextRange;
+				var selectionStart = selectedRange.Start;
+				var selectionEnd = selectedRange.End;
+
+				var start = (int)Control.GetOffsetFromPosition(Control.BeginningOfDocument, selectionStart);
+				var end = (int)Control.GetOffsetFromPosition(Control.BeginningOfDocument, selectionEnd);
+				return new Range<int>(start, end - 1);
+			}
+			set
+			{
+				var start = Control.GetPosition(Control.BeginningOfDocument, value.Start);
+				var end = Control.GetPosition(Control.BeginningOfDocument, value.End);
+				Control.SelectedTextRange = Control.GetTextRange(start, end);
+			}
 		}
 	}
 }

@@ -204,9 +204,9 @@ namespace Eto.GtkSharp.Drawing
 					exec.Context.Scale (width / height, 1.0);
 
 				if (sweepAngle < 0)
-					exec.Context.ArcNegative (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+					exec.Context.ArcNegative(0, 0, radius, Conversions.DegreesToRadians(startAngle), Conversions.DegreesToRadians(startAngle + sweepAngle));
 				else
-					exec.Context.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+					exec.Context.Arc(0, 0, radius, Conversions.DegreesToRadians(startAngle), Conversions.DegreesToRadians(startAngle + sweepAngle));
 				exec.Context.Restore ();
 			}, new PointF (x, y), new PointF (x + width, y + height));
 		}

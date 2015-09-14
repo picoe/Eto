@@ -46,7 +46,11 @@ namespace Eto.Mac.Forms.Controls
 
 		int RowCount { get; }
 
+		int RowHeight { get; }
+
 		CGRect GetVisibleRect();
+
+		bool Loaded { get; }
 
 		void OnCellFormatting(GridColumn column, object item, int row, NSCell cell);
 	}
@@ -66,6 +70,8 @@ namespace Eto.Mac.Forms.Controls
 		void Resize(bool force = false);
 
 		void Loaded(IDataViewHandler handler, int column);
+
+		void EnabledChanged(bool value);
 	}
 
 	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn, GridColumn.ICallback>, GridColumn.IHandler, IDataColumnHandler
@@ -111,6 +117,7 @@ namespace Eto.Mac.Forms.Controls
 					var range = handler.Table.RowsInRect(rect);
 
 					var cellSize = Control.DataCell.CellSize;
+					cellSize.Height = (nfloat)Math.Max(cellSize.Height, handler.RowHeight);
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
 					for (var i = range.Location; i < range.Location + range.Length; i++)
 					{
@@ -177,6 +184,12 @@ namespace Eto.Mac.Forms.Controls
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					cellHandler.Editable = value;
 				}
+				var table = Control.TableView;
+				if (DataViewHandler != null && DataViewHandler.Loaded && table != null)
+				{
+					table.SetNeedsDisplay();
+				}
+
 			}
 		}
 
@@ -250,6 +263,15 @@ namespace Eto.Mac.Forms.Controls
 				}
 				else
 					Control.DataCell.Font = null;
+			}
+		}
+
+		public void EnabledChanged(bool value)
+		{
+			if (dataCell != null)
+			{
+				var cellHandler = (ICellHandler)dataCell.Handler;
+				cellHandler.EnabledChanged(value);
 			}
 		}
 	}

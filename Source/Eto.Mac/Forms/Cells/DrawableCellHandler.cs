@@ -2,7 +2,6 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using sd = System.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -83,13 +82,10 @@ namespace Eto.Mac.Forms.Cells
 
 			public bool DrawsBackground { get; set; }
 
-			// TODO: Mac64
-			#if !Mac64 && !XAMMAC2
 			public override CGSize CellSizeForBounds(CGRect bounds)
 			{
 				return CGSize.Empty;
 			}
-			#endif
 
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone(IntPtr zone)
@@ -109,7 +105,7 @@ namespace Eto.Mac.Forms.Cells
 				if (DrawsBackground)
 				{
 					var context = nscontext.GraphicsPort;
-					context.SetFillColor(BackgroundColor.ToCGColor());
+					context.SetFillColor(BackgroundColor.ToCG());
 					context.FillRect(cellFrame);
 				}
 

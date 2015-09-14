@@ -12,6 +12,7 @@ using Eto.Forms.ThemedControls;
 using Eto.WinForms.Forms.Cells;
 using Eto.WinForms.Forms.Menu;
 using Eto.WinForms.Forms.ToolBar;
+using Eto.Shared.Forms;
 
 namespace Eto.WinForms
 {
@@ -49,6 +50,7 @@ namespace Eto.WinForms
 			p.Add<SolidBrush.IHandler>(() => new SolidBrushHandler());
 			p.Add<TextureBrush.IHandler>(() => new TextureBrushHandler());
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
+			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());
@@ -57,6 +59,7 @@ namespace Eto.WinForms
 			p.Add<ImageViewCell.IHandler>(() => new ImageViewCellHandler());
 			p.Add<TextBoxCell.IHandler>(() => new TextBoxCellHandler());
 			p.Add<DrawableCell.IHandler>(() => new DrawableCellHandler());
+			p.Add<ProgressCell.IHandler>(() => new ProgressCellHandler());
 			
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
@@ -67,6 +70,7 @@ namespace Eto.WinForms
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
+			p.Add<Expander.IHandler>(() => new ThemedExpanderHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
 			p.Add<GridView.IHandler>(() => new GridViewHandler());
 			p.Add<GroupBox.IHandler>(() => new GroupBoxHandler());
@@ -91,7 +95,7 @@ namespace Eto.WinForms
 			p.Add<TreeGridView.IHandler>(() => new TreeGridViewHandler());
 			p.Add<TreeView.IHandler>(() => new TreeViewHandler());
 			p.Add<WebView.IHandler>(() => new WebViewHandler());
-			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
+			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
@@ -129,7 +133,10 @@ namespace Eto.WinForms
 			p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
-			
+			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
+			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
+			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
+
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
 			

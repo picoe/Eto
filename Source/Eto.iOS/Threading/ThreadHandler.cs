@@ -1,7 +1,7 @@
 using System;
-using MonoTouch.Foundation;
+using Foundation;
 using Eto.Threading;
-using MonoTouch.ObjCRuntime;
+using ObjCRuntime;
 
 namespace Eto.iOS.Threading
 {

@@ -1,4 +1,3 @@
-#if XAML && !PCL
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Serialization
@@ -12,4 +11,3 @@ namespace Eto.Test.Sections.Serialization
 		}
 	}
 }
-#endif

@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.CoreGraphics;
+using UIKit;
+using Foundation;
+using CoreGraphics;
 
 namespace Eto.iOS.Drawing
 {
@@ -120,7 +120,7 @@ namespace Eto.iOS.Drawing
 		{
 			var source = image.ToUI();
 			// todo: use interpolation
-			Control = source.Scale(new SD.SizeF(width, height), 0f);
+			Control = source.Scale(new CGSize(width, height), 0f);
 		}
 
 		public void Create(int width, int height, Graphics graphics)
@@ -135,15 +135,23 @@ namespace Eto.iOS.Drawing
 			{
 				Data = (NSMutableData)cgimage.DataProvider.CopyData().MutableCopy();
 				provider = new CGDataProvider(Data.MutableBytes, (int)Data.Length, false);
-				cgimage = new CGImage(cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BitsPerPixel, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo, provider, null, cgimage.ShouldInterpolate, cgimage.RenderingIntent);
+				cgimage = new CGImage((int)cgimage.Width, (int)cgimage.Height, (int)cgimage.BitsPerComponent, (int)cgimage.BitsPerPixel, (int)cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo, provider, null, cgimage.ShouldInterpolate, cgimage.RenderingIntent);
 				Control = UIImage.FromImage(cgimage);
 			}
-			return new BitmapDataHandler(Widget, Data.MutableBytes, cgimage.BytesPerRow, cgimage.BitsPerPixel, Control);
+			return new BitmapDataHandler(Widget, Data.MutableBytes, (int)cgimage.BytesPerRow, (int)cgimage.BitsPerPixel, Control);
 		}
 
 		public void Unlock(BitmapData bitmapData)
 		{
 			// don't need to do anythin
+		}
+
+		public void Save(string fileName, ImageFormat format)
+		{
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
+			}
 		}
 
 		public void Save(Stream stream, ImageFormat format)
@@ -175,16 +183,16 @@ namespace Eto.iOS.Drawing
 		public override void DrawImage(GraphicsHandler graphics, float x, float y)
 		{
 			var nsimage = Control;
-			var destRect = graphics.TranslateView(new SD.RectangleF(x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height), false);
+			var destRect = new CGRect(x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height);
 			nsimage.Draw(destRect, CGBlendMode.Normal, 1);
 		}
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var destRect = graphics.TranslateView(destination.ToSD(), false).ToEto();
+			var destRect = destination;
 			var drawRect = GetDrawRect(ref source, ref destRect, Control.Size.ToEto());
-			graphics.Control.ClipToRect(destRect.ToSD()); // first apply the clip since destination is in view coordinates.
-			Control.Draw(drawRect.ToSD(), CGBlendMode.Normal, 1);
+			graphics.Control.ClipToRect(destRect.ToNS()); // first apply the clip since destination is in view coordinates.
+			Control.Draw(drawRect.ToNS(), CGBlendMode.Normal, 1);
 		}
 
 		private static RectangleF GetDrawRect(ref RectangleF source, ref RectangleF destRect, SizeF imageSize)

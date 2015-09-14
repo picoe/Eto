@@ -8,11 +8,10 @@ namespace Eto.GtkSharp.Forms.Menu
 	public class ButtonMenuItemHandler : MenuActionItemHandler<Gtk.ImageMenuItem, ButtonMenuItem, ButtonMenuItem.ICallback>, ButtonMenuItem.IHandler
 	{
 		string tooltip;
-		string text;
 		Keys shortcut;
 		Image image;
 		readonly Gtk.AccelLabel label;
-		
+
 		public ButtonMenuItemHandler()
 		{
 			Control = new Gtk.ImageMenuItem();
@@ -28,6 +27,7 @@ namespace Eto.GtkSharp.Forms.Menu
 		{
 			base.Initialize();
 			Control.Activated += Connector.HandleActivated;
+			Control.Selected += Connector.HandleSelected;
 		}
 
 		protected new ButtonMenuItemConnector Connector { get { return (ButtonMenuItemConnector)base.Connector; } }
@@ -45,30 +45,40 @@ namespace Eto.GtkSharp.Forms.Menu
 			{
 				var handler = Handler;
 				if (handler.Control.Submenu != null)
-					handler.ValidateItems ();
+					handler.ValidateItems();
 				handler.Callback.OnClick(handler.Widget, e);
 			}
+
+			public void HandleSelected(object sender, EventArgs e)
+			{
+				var handler = Handler;
+				var menu = handler.Control.Parent as Gtk.MenuBar;
+				if (menu != null && handler.Control.Submenu == null)
+				{
+					// if there's no submenu, trigger the click and deactivate the menu to make it act 'normally'.
+					// this does not work in ubuntu's unity menu
+					handler.Callback.OnClick(handler.Widget, e);
+					Gtk.Application.Invoke(delegate { menu.Deactivate(); });
+				}
+			}
 		}
-		
+
 		public bool Enabled
 		{
 			get { return Control.Sensitive; }
 			set { Control.Sensitive = value; }
 		}
-		
 
 		public string Text
 		{
-			get { return text; }
+			get { return label.Text; }
 			set
 			{
-				text = value;
-				//string val = (shortcutText.Length > 0) ? text+"\t"+shortcutText : text;
-				label.Text = GtkControl<Gtk.Widget, Control, Control.ICallback>.StringToMnuemonic(text);
+				label.Text = value.ToPlatformMnemonic();
 				label.UseUnderline = true;
 			}
 		}
-		
+
 		public string ToolTip
 		{
 			get { return tooltip; }
@@ -78,7 +88,7 @@ namespace Eto.GtkSharp.Forms.Menu
 				//label.TooltipText = value;
 			}
 		}
-		
+
 
 		public Keys Shortcut
 		{
@@ -101,7 +111,7 @@ namespace Eto.GtkSharp.Forms.Menu
 			set
 			{
 				image = value;
-				Control.Image = image.ToGtk (Gtk.IconSize.Menu);
+				Control.Image = image.ToGtk(Gtk.IconSize.Menu);
 			}
 		}
 

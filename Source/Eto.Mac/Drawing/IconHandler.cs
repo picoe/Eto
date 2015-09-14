@@ -1,6 +1,7 @@
+using System;
+using System.Globalization;
 using System.IO;
 using Eto.Drawing;
-using sd = System.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -55,7 +56,7 @@ namespace Eto.Mac.Drawing
 		public void Create(string fileName)
 		{
 			if (!File.Exists(fileName))
-				throw new FileNotFoundException("Icon not found", fileName);
+				throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "Icon not found"), fileName);
 			Control = new NSImage(fileName);
 		}
 
@@ -72,7 +73,7 @@ namespace Eto.Mac.Drawing
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var sourceRect = new CGRect(source.X, (float)Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
-			var destRect = graphics.TranslateView(destination.ToNS(), true, true);
+			var destRect = destination.ToNS();
 			Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 		}
 	}

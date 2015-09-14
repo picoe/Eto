@@ -9,12 +9,10 @@ namespace Eto.Test.Gtk3
 		//[STAThread]
 		static void Main(string[] args)
 		{
-#if DEBUG
-			Debug.Listeners.Add(new ConsoleTraceListener());
-#endif
-			var generator = Platform.Get(Platforms.Gtk3);
+			var generator = new Eto.GtkSharp.Platform();
 			
 			var app = new TestApplication(generator);
+			app.TestAssemblies.Add(typeof(Startup).Assembly);
 			app.Run();
 		}
 	}

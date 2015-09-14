@@ -47,56 +47,11 @@ namespace Eto.Forms
 			: base(command)
 		{
 			Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
+			CheckedChanged += (sender, e) => command.Checked = Checked;
 			command.CheckedChanged += (sender, e) => Checked = command.Checked;
 			Handler.Create(controller);
 			Initialize();
 			Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioMenuItem"/> class.
-		/// </summary>
-		/// <param name="controller">Controller.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public RadioMenuItem(RadioMenuItem controller, Generator generator = null)
-			: this(generator, typeof(RadioMenuItem.IHandler), controller)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioMenuItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="controller">Controller.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public RadioMenuItem(RadioCommand command, RadioMenuItem controller, Generator generator = null)
-			: base(command, generator, typeof(RadioMenuItem.IHandler), false)
-		{
-			Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
-			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Handler.Create(controller);
-			Initialize();
-			Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioMenuItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="controller">Controller.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected RadioMenuItem(Generator generator, Type type, RadioMenuItem controller, bool initialize = true)
-			: base(generator, type, false)
-		{
-			Handler.Create(controller);
-			if (initialize)
-				Initialize();
 		}
 
 		/// <summary>
@@ -108,6 +63,66 @@ namespace Eto.Forms
 			get { return Handler.Checked; }
 			set { Handler.Checked = value; }
 		}
+
+		/// <summary>
+		/// Event identifier for the <see cref="CheckedChanged"/> event.
+		/// </summary>
+		public const string CheckedChangedEvent = "RadioMenuItem.CheckedChanged";
+
+		/// <summary>
+		/// Event to handle when the <see cref="Checked"/> property changes.
+		/// </summary>
+		public event EventHandler<EventArgs> CheckedChanged
+		{
+			add { Properties.AddHandlerEvent(CheckedChangedEvent, value); }
+			remove { Properties.RemoveEvent(CheckedChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="CheckedChanged"/> event.
+		/// </summary>
+		/// <param name="e">E.</param>
+		protected virtual void OnCheckedChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(CheckedChangedEvent, this, e);
+		}
+
+		static readonly Callback callback = new Callback();
+
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback.</returns>
+		protected override object GetCallback()
+		{
+			return callback;
+		}
+
+		/// <summary>
+		/// Callback interface for the <see cref="RadioMenuItem"/>.
+		/// </summary>
+		public new interface ICallback : MenuItem.ICallback
+		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
+			void OnCheckedChanged(RadioMenuItem widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for the <see cref="RadioMenuItem"/>.
+		/// </summary>
+		protected new class Callback : MenuItem.Callback, ICallback
+		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
+			public void OnCheckedChanged(RadioMenuItem widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCheckedChanged(e));
+			}
+		}
+
 
 		/// <summary>
 		/// Handler interface for the <see cref="RadioMenuItem"/>.

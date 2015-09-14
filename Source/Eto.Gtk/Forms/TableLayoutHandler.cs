@@ -83,8 +83,6 @@ namespace Eto.GtkSharp.Forms
 		{
 			align = new Gtk.Alignment(0, 0, 1.0F, 1.0F);
 			box = new Gtk.EventBox { Child = align };
-			Spacing = TableLayout.DefaultSpacing;
-			Padding = TableLayout.DefaultPadding;
 		}
 
 		public void CreateControl(int cols, int rows)

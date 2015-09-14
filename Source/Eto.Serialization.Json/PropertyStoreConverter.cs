@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
 
 namespace Eto.Serialization.Json
 {
@@ -29,12 +30,12 @@ namespace Eto.Serialization.Json
 						foreach (var prop in (IDictionary<string, JToken>)item) {
 							if (prop.Key == "$type") continue;
 							var memberName = "Set" + prop.Key;
-							var member = type.GetRuntimeMethods().FirstOrDefault(r => r.Name == memberName && r.IsStatic);
+							var member = type.GetRuntimeMethods().FirstOrDefault(r => r.IsStatic && r.Name == memberName);
 							if (member == null)
-								throw new JsonSerializationException(string.Format ("Could not find attachable property {0}.{1}", type.Name, memberName));
+								throw new JsonSerializationException(string.Format(CultureInfo.CurrentCulture, "Could not find attachable property {0}.{1}", type.Name, memberName));
 							var parameters = member.GetParameters();
 							if (parameters.Length != 2)
-								throw new JsonSerializationException("Invalid number of parameters");
+								throw new JsonSerializationException(string.Format(CultureInfo.CurrentCulture, "Invalid number of parameters"));
 							var propType = parameters[1].ParameterType;
 							using (var propReader = new JTokenReader(prop.Value)) {
 								var propValue = serializer.Deserialize(propReader, propType);

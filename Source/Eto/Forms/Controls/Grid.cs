@@ -29,6 +29,30 @@ namespace Eto.Forms
 	}
 
 	/// <summary>
+	/// Enumeration for the type of grid lines to show around each column/row in a <see cref="Grid"/>
+	/// </summary>
+	[Flags]
+	public enum GridLines
+	{
+		/// <summary>
+		/// No grid lines shown
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// A horizontal line is shown between each row
+		/// </summary>
+		Horizontal = 1 << 0,
+		/// <summary>
+		/// A vertical line is shown between each column
+		/// </summary>
+		Vertical = 1 << 1,
+		/// <summary>
+		/// Shows both vertical and horizontal lines between each column/row
+		/// </summary>
+		Both = Horizontal | Vertical
+	}
+
+	/// <summary>
 	/// Event arguments to format a cell in a <see cref="Grid"/>
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
@@ -152,6 +176,52 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Event identifier for the <see cref="CellClick"/> event.
+		/// </summary>
+		public const string CellClickEvent = "Grid.CellClick";
+
+		/// <summary>
+		/// Occurs when an individual cell is clicked.
+		/// </summary>
+		public event EventHandler<GridViewCellEventArgs> CellClick
+		{
+			add { Properties.AddHandlerEvent(CellClickEvent, value); }
+			remove { Properties.RemoveEvent(CellClickEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="CellClick"/> event.
+		/// </summary>
+		/// <param name="e">Grid cell event arguments.</param>
+		protected virtual void OnCellClick(GridViewCellEventArgs e)
+		{
+			Properties.TriggerEvent(CellClickEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for the <see cref="CellDoubleClick"/> event.
+		/// </summary>
+		public const string CellDoubleClickEvent = "Grid.CellDoubleClick";
+
+		/// <summary>
+		/// Occurs when an individual cell is double clicked.
+		/// </summary>
+		public event EventHandler<GridViewCellEventArgs> CellDoubleClick
+		{
+			add { Properties.AddHandlerEvent(CellDoubleClickEvent, value); }
+			remove { Properties.RemoveEvent(CellDoubleClickEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="CellDoubleClick"/> event.
+		/// </summary>
+		/// <param name="e">Grid cell event arguments.</param>
+		protected virtual void OnCellDoubleClick(GridViewCellEventArgs e)
+		{
+			Properties.TriggerEvent(CellDoubleClickEvent, this, e);
+		}
+
+		/// <summary>
 		/// Event identifier for handlers when attaching the <see cref="Grid.SelectionChanged"/> event
 		/// </summary>
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";
@@ -245,6 +315,8 @@ namespace Eto.Forms
 			EventLookup.Register<Grid>(c => c.OnCellEdited(null), Grid.CellEditedEvent);
 			EventLookup.Register<Grid>(c => c.OnCellEditing(null), Grid.CellEditingEvent);
 			EventLookup.Register<Grid>(c => c.OnCellFormatting(null), Grid.CellFormattingEvent);
+			EventLookup.Register<Grid>(c => c.OnCellClick(null), Grid.CellClickEvent);
+			EventLookup.Register<Grid>(c => c.OnCellDoubleClick(null), Grid.CellDoubleClickEvent);
 			EventLookup.Register<Grid>(c => c.OnSelectionChanged(null), Grid.SelectionChangedEvent);
 			EventLookup.Register<Grid>(c => c.OnColumnHeaderClick(null), Grid.ColumnHeaderClickEvent);
 		}
@@ -262,30 +334,6 @@ namespace Eto.Forms
 		/// <param name="handler">Handler implementation for the control</param>
 		protected Grid(IHandler handler)
 			: base(handler)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to instantiate the handler with</param>
-		/// <param name="type">Type of handler to create</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Grid(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, false)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to instantiate the handler with</param>
-		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use Grid(IGrid) instead")]
-		protected Grid(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, false)
 		{
 		}
 
@@ -345,6 +393,23 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets a binding object to bind to the <see cref="SelectedItem"/> property.
+		/// </summary>
+		/// <value>The selected item binding.</value>
+		public BindableBinding<Grid, object> SelectedItemBinding
+		{
+			get
+			{
+				return new BindableBinding<Grid, object>(this, 
+					g => g.SelectedItem,
+					null,
+					(g, eh) => g.SelectionChanged += eh,
+					(g, eh) => g.SelectionChanged -= eh
+				);
+			}
+		}
+
+		/// <summary>
 		/// Gets the selected rows indexes
 		/// </summary>
 		/// <value>The selected rows.</value>
@@ -362,6 +427,16 @@ namespace Eto.Forms
 		{
 			get { return Handler.RowHeight; }
 			set { Handler.RowHeight = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the style of grid lines to show between columns and rows
+		/// </summary>
+		/// <value>The grid line style.</value>
+		public GridLines GridLines
+		{
+			get { return Handler.GridLines; }
+			set { Handler.GridLines = value; }
 		}
 
 		/// <summary>
@@ -408,6 +483,15 @@ namespace Eto.Forms
 			Handler.BeginEdit(row, column);
 		}
 
+		/// <summary>
+		/// Scrolls to show the specified row in the view
+		/// </summary>
+		/// <param name="row">Row to scroll to.</param>
+		public void ScrollToRow(int row)
+		{
+			Handler.ScrollToRow(row);
+		}
+
 		static readonly object callback = new Callback();
 
 		/// <summary>
@@ -433,6 +517,16 @@ namespace Eto.Forms
 			/// Raises the cell edited event.
 			/// </summary>
 			void OnCellEdited(Grid widget, GridViewCellEventArgs e);
+
+			/// <summary>
+			/// Raises the cell click event.
+			/// </summary>
+			void OnCellClick(Grid widget, GridViewCellEventArgs e);
+
+			/// <summary>
+			/// Raises the cell double click event.
+			/// </summary>
+			void OnCellDoubleClick(Grid widget, GridViewCellEventArgs e);
 
 			/// <summary>
 			/// Raises the selection changed event.
@@ -469,6 +563,22 @@ namespace Eto.Forms
 			public void OnCellEdited(Grid widget, GridViewCellEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnCellEdited(e));
+			}
+
+			/// <summary>
+			/// Raises the cell click event.
+			/// </summary>
+			public void OnCellClick(Grid widget, GridViewCellEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCellClick(e));
+			}
+
+			/// <summary>
+			/// Raises the cell double click event.
+			/// </summary>
+			public void OnCellDoubleClick(Grid widget, GridViewCellEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCellDoubleClick(e));
 			}
 
 			/// <summary>
@@ -537,6 +647,12 @@ namespace Eto.Forms
 			IEnumerable<int> SelectedRows { get; set; }
 
 			/// <summary>
+			/// Gets or sets the style of grid lines to show between columns and rows
+			/// </summary>
+			/// <value>The grid line style.</value>
+			GridLines GridLines { get; set; }
+
+			/// <summary>
 			/// Selects the row to the specified <paramref name="row"/>, clearing other selections
 			/// </summary>
 			/// <param name="row">Row to select</param>
@@ -564,6 +680,12 @@ namespace Eto.Forms
 			/// <param name="row">Row to edit</param>
 			/// <param name="column">Column to edit</param>
 			void BeginEdit(int row, int column);
+
+			/// <summary>
+			/// Scrolls to show the specified row in the view
+			/// </summary>
+			/// <param name="row">Row to scroll to.</param>
+			void ScrollToRow(int row);
 		}
 
 		#endregion

@@ -21,5 +21,15 @@ namespace Eto.Test.Sections.Serialization.Json
 		{
 			MessageBox.Show(this, "I was clicked from Json!");
 		}
+
+		public void HandleTextChanged(object sender, EventArgs e)
+		{
+			Log.Write(sender, "Text was changed: {0}", ((TextBox)sender).Text);
+		}
+
+		public void HandleKeyDown(object sender, KeyEventArgs e)
+		{
+			Log.Write(sender, "Key was pressed: {0}", e.Key);
+		}
 	}
 }

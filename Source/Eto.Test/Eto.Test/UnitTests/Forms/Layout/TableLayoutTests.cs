@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.UnitTests.Forms.Layout
 {
-	[TestFixture]
+	[TestFixture, Category(TestUtils.TestPlatformCategory)]
 	public class TableLayoutTests
 	{
 		[Test]

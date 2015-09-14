@@ -6,7 +6,6 @@ namespace Eto.GtkSharp.Forms.Menu
 {
 	public class CheckMenuItemHandler : MenuActionItemHandler<Gtk.CheckMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler
 	{
-		string text;
 		string tooltip;
 		Keys shortcut;
 		readonly Gtk.AccelLabel label;
@@ -25,7 +24,7 @@ namespace Eto.GtkSharp.Forms.Menu
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.Toggled += Connector.HandleToggled;
+			Control.Activated += Connector.HandleActivated;
 		}
 
 		protected new CheckMenuItemConnector Connector { get { return (CheckMenuItemConnector)base.Connector; } }
@@ -39,27 +38,38 @@ namespace Eto.GtkSharp.Forms.Menu
 		{
 			public new CheckMenuItemHandler Handler { get { return (CheckMenuItemHandler)base.Handler; } }
 
+			public void HandleActivated(object sender, EventArgs e)
+			{
+				var handler = Handler;
+				handler.Callback.OnClick(handler.Widget, e);
+			}
+
 			public void HandleToggled(object sender, EventArgs e)
 			{
 				var handler = Handler;
-				if (!handler.isBeingChecked)
-				{
-					handler.isBeingChecked = true;
-					handler.Control.Active = !handler.Control.Active; // don't let Gtk turn it on/off
-					handler.isBeingChecked = false;
-					handler.Callback.OnClick(handler.Widget, e);
-				}
+				handler.Callback.OnCheckedChanged(handler.Widget, e);
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case CheckMenuItem.CheckedChangedEvent:
+					Control.Toggled += Connector.HandleToggled;
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
 		public string Text
 		{
-			get { return text; }
+			get { return label.Text; }
 			set
 			{
-				text = value;
-				string val = text;
-				label.Text = GtkControl<Gtk.Widget, Control, Control.ICallback>.StringToMnuemonic(val);
+				label.Text = value.ToPlatformMnemonic();
 				label.UseUnderline = true;
 			}
 		}
@@ -89,17 +99,10 @@ namespace Eto.GtkSharp.Forms.Menu
 			return Shortcut;
 		}
 
-		bool isBeingChecked;
-
 		public bool Checked
 		{
 			get { return Control.Active; }
-			set
-			{
-				isBeingChecked = true;
-				Control.Active = value;
-				isBeingChecked = false;
-			}
+			set { Control.Active = value; }
 		}
 
 		public bool Enabled

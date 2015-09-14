@@ -251,7 +251,7 @@ namespace Eto.Test
 
 		public SectionListGridView(IEnumerable<Section> topNodes)
 		{
-			gridView = new GridView { ShowCellBorders = false };
+			gridView = new GridView { GridLines = GridLines.None };
 			gridView.Columns.Add(new GridColumn { HeaderText = "Name", Width = 100, AutoSize = false, DataCell = new TextBoxCell { Binding = new DelegateBinding<MyItem, string>(r => r.Name) }, Sortable = true });
 			gridView.Columns.Add(new GridColumn { HeaderText = "Section", DataCell = new TextBoxCell { Binding = new DelegateBinding<MyItem, string>(r => r.SectionName) }, Sortable = true });
 			var items = new FilterCollection<MyItem>();

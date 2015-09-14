@@ -2,11 +2,12 @@ using System;
 using System.Reflection;
 using Eto.Drawing;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using System.Linq;
 using Eto.Mac.Forms;
 using System.Collections.Generic;
 using sd = System.Drawing;
+using System.Diagnostics;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -46,10 +47,19 @@ namespace Eto.iOS.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return Control.SelectedIndex; }
+			get { return (int)Control.SelectedIndex; }
 			set
 			{
 				Control.SelectedIndex = value;
+			}
+		}
+
+		public DockPosition TabPosition
+		{
+			get { return DockPosition.Bottom; }
+			set
+			{
+				Debug.WriteLine("Warning: TabControl.TabPosition is not supported");
 			}
 		}
 	}

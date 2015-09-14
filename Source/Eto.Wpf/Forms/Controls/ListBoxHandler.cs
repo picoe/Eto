@@ -27,7 +27,7 @@ namespace Eto.Wpf.Forms.Controls
 			//Control.DisplayMemberPath = "Text";
 			var template = new sw.DataTemplate();
 
-			template.VisualTree = new WpfImageTextBindingBlock(() => Widget.TextBinding, () => Widget.ImageBinding, false);
+			template.VisualTree = new WpfImageTextBindingBlock(() => Widget.ItemTextBinding, () => Widget.ItemImageBinding, false);
 			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate
 			{
@@ -84,7 +84,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				store = value;
 				var source = store as IEnumerable<object>;
-				if (!(source is INotifyCollectionChanged))
+				if (source != null && !(source is INotifyCollectionChanged))
 					source = new ObservableCollection<object>(source);
 				Control.ItemsSource = source;
 			}
@@ -96,7 +96,7 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				Control.SelectedIndex = value;
-				if (value >= 0)
+				if (value >= 0 && store != null)
 				{
 					var item = store.AsEnumerable().Skip(value).FirstOrDefault();
 					Control.ScrollIntoView(item);

@@ -30,6 +30,7 @@ namespace Eto.Forms
 		{
 			base.InsertItem(index, item);
 			parent.AddMenu(index, item);
+			item.Parent = parentItem;
 		}
 
 		/// <summary>
@@ -41,6 +42,7 @@ namespace Eto.Forms
 			var item = this[index];
 			base.RemoveItem(index);
 			parent.RemoveMenu(item);
+			item.Parent = null;
 		}
 
 		/// <summary>
@@ -48,6 +50,8 @@ namespace Eto.Forms
 		/// </summary>
 		protected override void ClearItems()
 		{
+			foreach (var item in this)
+				item.Parent = null;
 			base.ClearItems();
 			parent.Clear();
 		}
@@ -134,15 +138,9 @@ namespace Eto.Forms
 		/// <param name="items">Items to add.</param>
 		public void AddRange(IEnumerable<MenuItem> items)
 		{
-			var list = Items as List<MenuItem>;
-			if (list != null)
-				list.AddRange(items);
-			else
+			foreach (var item in items)
 			{
-				foreach (var item in items)
-				{
-					Add(item);
-				}
+				Add(item);
 			}
 		}
 

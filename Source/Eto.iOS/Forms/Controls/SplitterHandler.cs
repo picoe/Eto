@@ -1,8 +1,8 @@
 using System;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using System.Linq;
-using MonoTouch.Foundation;
+using Foundation;
 using System.Diagnostics;
 using Eto.Mac.Forms;
 
@@ -80,17 +80,17 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 		
-		public SplitterOrientation Orientation {
+		public Orientation Orientation {
 			get {
 				/*if (UseMGSplitViewController)
-					return MGSplitController.Vertical ? SplitterOrientation.Vertical : SplitterOrientation.Horizontal;
+					return MGSplitController.Vertical ? Orientation.Vertical : Orientation.Horizontal;
 				else*/
-					return SplitterOrientation.Horizontal;
+				return Orientation.Horizontal;
 			}
 			set { 
 				/*if (UseMGSplitViewController)
-					MGSplitController.Vertical = value == SplitterOrientation.Vertical;
-				else if (value == SplitterOrientation.Vertical)*/
+					MGSplitController.Vertical = value == Orientation.Vertical;
+				else if (value == Orientation.Vertical)*/
 					Debug.WriteLine ("UISplitViewController cannot set orientation to vertical");
 			}
 		}
@@ -131,6 +131,30 @@ namespace Eto.iOS.Forms.Controls
 					SetViewControllers ();
 					panel2 = value;
 				}
+			}
+		}
+
+		public double RelativePosition
+		{
+			get
+			{
+				return 0;
+			}
+			set
+			{
+				
+			}
+		}
+
+		public int SplitterWidth
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{
+				
 			}
 		}
 	}

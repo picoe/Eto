@@ -56,8 +56,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override string Text
 		{
-			get { return MnuemonicToString(label.Text); }
-			set { label.TextWithMnemonic = StringToMnuemonic(value); }
+			get { return label.Text.ToEtoMnemonic(); }
+			set { label.TextWithMnemonic = value.ToPlatformMnemonic(); }
 		}
 
 		public bool Checked
@@ -68,12 +68,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return label.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			get { return label.GetForeground(); }
 			set
 			{
-				label.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				label.ModifyFg(Gtk.StateType.Active, value.ToGdk());
-				label.ModifyFg(Gtk.StateType.Prelight, value.ToGdk());
+				label.SetForeground(value, GtkStateFlags.Normal);
+				label.SetForeground(value, GtkStateFlags.Active);
+				label.SetForeground(value, GtkStateFlags.Prelight);
 			}
 		}
 	}

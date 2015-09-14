@@ -148,6 +148,12 @@ namespace Eto
 			}
 		}
 
+		/// <summary>
+		/// Gets the native platform-specific handle for integration purposes
+		/// </summary>
+		/// <value>The native handle.</value>
+		public virtual IntPtr NativeHandle { get { return IntPtr.Zero; } }
+
 		#region IDisposable Members
 
 		/// <summary>

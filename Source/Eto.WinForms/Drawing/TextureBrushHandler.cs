@@ -12,43 +12,44 @@ namespace Eto.WinForms.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class TextureBrushHandler : BrushHandler, TextureBrush.IHandler
 	{
-		public object Create (Image image, float opacity)
+		public object Create(Image image, float opacity)
 		{
-			var sdimage = new sd.Bitmap (image.ToSD ());
-			var att = new sdi.ImageAttributes ();
-			att.SetWrapMode (sd2.WrapMode.Tile);
-			if (opacity < 1.0f) {
-				var colorMatrix = new sdi.ColorMatrix (new float[][] {
+			var sdimage = new sd.Bitmap(image.ToSD());
+			var att = new sdi.ImageAttributes();
+			att.SetWrapMode(sd2.WrapMode.Tile);
+			if (opacity < 1.0f)
+			{
+				var colorMatrix = new sdi.ColorMatrix(new float[][] {
 										  new float [] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
 										  new float [] { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
 										  new float [] { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
 										  new float [] { 0.0f, 0.0f, 0.0f, opacity, 0.0f },
 										  new float [] { 0.0f, 0.0f, 0.0f, 0.0f, 1.0f }
 									  });
-				att.SetColorMatrix (colorMatrix);
+				att.SetColorMatrix(colorMatrix);
 			}
-			return new sd.TextureBrush (sdimage, new sd.RectangleF (0, 0, sdimage.Width, sdimage.Height), att);
+			return new sd.TextureBrush(sdimage, new sd.RectangleF(0, 0, sdimage.Width, sdimage.Height), att);
 		}
 
-		public IMatrix GetTransform (TextureBrush widget)
+		public IMatrix GetTransform(TextureBrush widget)
 		{
-			return ((sd.TextureBrush)widget.ControlObject).Transform.ToEto ();
+			return ((sd.TextureBrush)widget.ControlObject).Transform.ToEto();
 		}
 
-		public void SetTransform (TextureBrush widget, IMatrix transform)
+		public void SetTransform(TextureBrush widget, IMatrix transform)
 		{
-			((sd.TextureBrush)widget.ControlObject).Transform = transform.ToSD ();
+			((sd.TextureBrush)widget.ControlObject).Transform = transform.ToSD();
 		}
 
-		public void SetOpacity (TextureBrush widget, float opacity)
+		public void SetOpacity(TextureBrush widget, float opacity)
 		{
 			var brush = ((sd.TextureBrush)widget.ControlObject);
-			widget.ControlObject = Create (widget.Image, opacity);
+			widget.ControlObject = Create(widget.Image, opacity);
 			var newbrush = ((sd.TextureBrush)widget.ControlObject);
 			newbrush.Transform = brush.Transform;
 		}
 
-		public override sd.Brush GetBrush (Brush brush)
+		public override sd.Brush GetBrush(Brush brush, RectangleF rect)
 		{
 			return (sd.Brush)brush.ControlObject;
 		}

@@ -1,5 +1,7 @@
 using Eto.Forms;
 using Eto.Mac.Forms.Actions;
+using System;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -18,18 +20,30 @@ namespace Eto.Mac.Forms.Menu
 {
 	public interface IMenuHandler
 	{
-		void EnsureSubMenu();
+		void SetTopLevel();
+
+		void Activate();
 	}
 
-	public abstract class MenuHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Eto.Forms.Menu.IHandler, IMenuHandler
+	public abstract class MenuHandler<TControl, TWidget, TCallback> : MacBase<TControl, TWidget, TCallback>, Eto.Forms.Menu.IHandler, IMenuHandler
 		where TControl: NSMenuItem
 		where TWidget: Eto.Forms.Menu
 		where TCallback: Eto.Forms.Menu.ICallback
 	{
+
 		public void EnsureSubMenu()
 		{
 			if (!Control.HasSubmenu)
 				Control.Submenu = new NSMenu { AutoEnablesItems = true, ShowsStateColumn = true, Title = Control.Title };
+		}
+
+		public void SetTopLevel()
+		{
+			EnsureSubMenu();
+		}
+
+		public virtual void Activate()
+		{
 		}
 
 		public virtual void AddMenu(int index, MenuItem item)
@@ -43,6 +57,8 @@ namespace Eto.Mac.Forms.Menu
 			if (Control.Submenu == null)
 				return;
 			Control.Submenu.RemoveItem((NSMenuItem)item.ControlObject);
+			if (Control.Submenu.Count == 0)
+				Control.Submenu = null;
 		}
 
 		public virtual void Clear()

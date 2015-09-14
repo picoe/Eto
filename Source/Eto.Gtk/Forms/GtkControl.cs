@@ -53,19 +53,21 @@ namespace Eto.GtkSharp.Forms
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
-		Font font;
 		Size size;
 		Size asize;
 		bool mouseDownHandled;
-		Cursor cursor;
 		Color? cachedBackgroundColor;
 		Color? backgroundColor;
 		public static float ScrollAmount = 2f;
+
+		public override IntPtr NativeHandle { get { return Control.Handle; } }
 
 		protected GtkControl()
 		{
 			size = new Size(-1, -1);
 		}
+
+		public Size PreferredSize { get { return size; } }
 
 		public virtual Size DefaultSize { get { return new Size(-1, -1); } }
 
@@ -84,36 +86,9 @@ namespace Eto.GtkSharp.Forms
 			get { return ContainerControl; }
 		}
 
-		public static string StringToMnuemonic(string label)
+		public virtual Gtk.Widget BackgroundControl
 		{
-			if (label == null)
-				return string.Empty;
-			label = label.Replace("_", "__");
-			var match = Regex.Match(label, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
-			if (match.Success)
-			{
-				var sb = new StringBuilder(label);
-				sb[match.Index] = '_';
-				sb.Replace("&&", "&");
-				return sb.ToString();
-			}
-			return label.Replace("&&", "&");
-		}
-
-		public static string MnuemonicToString(string label)
-		{
-			if (label == null)
-				return null;
-			var match = Regex.Match(label, @"(?<=([^_](?:[_]{2})*)|^)[_](?![_])");
-			if (match.Success)
-			{
-				var sb = new StringBuilder(label);
-				sb[match.Index] = '&';
-				sb.Replace("__", "_");
-				return sb.ToString();
-			}
-			label = label.Replace("__", "_");
-			return label;
+			get { return ContainerContentControl; }
 		}
 
 		public virtual Point CurrentLocation { get; set; }
@@ -137,8 +112,6 @@ namespace Eto.GtkSharp.Forms
 						if (size.Height == -1)
 							size.Height = defSize.Height;
 					}
-					var alloc = Control.Allocation;
-					alloc.Size = value.ToGdk();
 					ContainerControl.SetSizeRequest(size.Width, size.Height);
 				}
 			}
@@ -174,7 +147,7 @@ namespace Eto.GtkSharp.Forms
 
 		protected virtual Color DefaultBackgroundColor
 		{
-			get { return ContainerContentControl.Style.Background(Gtk.StateType.Normal).ToEto(); }
+			get { return ContainerContentControl.GetBackground(); }
 		}
 
 		public virtual Color? SelectedBackgroundColor
@@ -210,11 +183,11 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (color != null)
 			{
-				ContainerContentControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+				BackgroundControl.SetBackground(color.Value);
 			}
 			else
 			{
-				ContainerContentControl.ModifyBg(Gtk.StateType.Normal);
+				BackgroundControl.ClearBackground();
 			}
 		}
 
@@ -247,7 +220,7 @@ namespace Eto.GtkSharp.Forms
 			if (Widget.Loaded)
 				GrabFocus();
 			else
-				Widget.LoadComplete += Widget_LoadComplete;
+				Widget.LoadComplete += Widget_SetFocus;
 		}
 
 		protected virtual void GrabFocus()
@@ -255,10 +228,10 @@ namespace Eto.GtkSharp.Forms
 			Control.GrabFocus();
 		}
 
-		void Widget_LoadComplete(object sender, EventArgs e)
+		void Widget_SetFocus(object sender, EventArgs e)
 		{
-			Widget.LoadComplete -= Widget_LoadComplete;
-			GrabFocus();
+			Widget.LoadComplete -= Widget_SetFocus;
+			Eto.Forms.Application.Instance.AsyncInvoke(GrabFocus);
 		}
 
 		public bool HasFocus
@@ -311,8 +284,8 @@ namespace Eto.GtkSharp.Forms
 
 		void RealizedSetup()
 		{
-			if (cursor != null)
-				Control.GdkWindow.Cursor = cursor.ControlObject as Gdk.Cursor;
+			if (Cursor != null)
+				Control.GetWindow().Cursor = Cursor.ControlObject as Gdk.Cursor;
 			SetBackgroundColor();
 		}
 
@@ -323,6 +296,9 @@ namespace Eto.GtkSharp.Forms
 				case Eto.Forms.Control.KeyDownEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
 					EventControl.KeyPressEvent += Connector.HandleKeyPressEvent;
+					break;
+				case Eto.Forms.Control.TextInputEvent:
+					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.KeyReleaseMask);
@@ -454,30 +430,36 @@ namespace Eto.GtkSharp.Forms
 				Handler.Callback.OnMouseMove(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
 			}
 
+			[GLib.ConnectBefore]
 			public void HandleButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
 
-				Handler.Callback.OnMouseUp(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+				var mouseArgs = new MouseEventArgs(buttons, modifiers, p);
+				Handler.Callback.OnMouseUp(Handler.Widget, mouseArgs);
+				args.RetVal = mouseArgs.Handled;
 			}
 
+			[GLib.ConnectBefore]
 			public void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
 				MouseButtons buttons = args.Event.ToEtoMouseButtons();
-				if (Handler.Control.CanFocus && !Handler.Control.HasFocus)
-					Handler.Control.GrabFocus();
+				var mouseArgs = new MouseEventArgs(buttons, modifiers, p);
 				if (args.Event.Type == Gdk.EventType.ButtonPress)
 				{
-					Handler.Callback.OnMouseDown(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+					Handler.Callback.OnMouseDown(Handler.Widget, mouseArgs);
 				}
 				else if (args.Event.Type == Gdk.EventType.TwoButtonPress)
 				{
-					Handler.Callback.OnMouseDoubleClick(Handler.Widget, new MouseEventArgs(buttons, modifiers, p));
+					Handler.Callback.OnMouseDoubleClick(Handler.Widget, mouseArgs);
 				}
+				if (!mouseArgs.Handled && Handler.Control.CanFocus && !Handler.Control.HasFocus)
+					Handler.Control.GrabFocus();
+				args.RetVal = mouseArgs.Handled;
 			}
 
 			public void HandleSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
@@ -490,30 +472,75 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
+			Gtk.IMContext context;
+			bool commitHandled;
+
+			Gtk.IMContext Context
+			{
+				get
+				{
+					if (context != null)
+						return context; 
+					context = new Gtk.IMContextSimple();
+
+					context.Commit += (o, args) => 
+					{
+						var handler = Handler;
+						if (handler == null || string.IsNullOrEmpty(args.Str))
+							return;
+
+						var tia = new TextInputEventArgs(args.Str);
+						handler.Callback.OnTextInput(handler.Widget, tia);
+						commitHandled = tia.Cancel;
+						context.Reset();
+					};
+					return context;
+				}
+			}
+
 			[ConnectBefore]
 			public void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+
 				var e = args.Event.ToEto();
 				if (e != null)
 				{
-					Handler.Callback.OnKeyDown(Handler.Widget, e);
+					handler.Callback.OnKeyDown(Handler.Widget, e);
 					args.RetVal = e.Handled;
+				}
+
+				if (e == null || !e.Handled)
+				{
+					commitHandled = false;
+					if (Context.FilterKeypress(args.Event))
+					{
+						args.RetVal = commitHandled;
+					}
 				}
 			}
 
 			public void HandleKeyReleaseEvent(object o, Gtk.KeyReleaseEventArgs args)
 			{
+				var handler = Handler;
+				if (handler == null)
+					return;
 				var e = args.Event.ToEto();
 				if (e != null)
 				{
-					Handler.Callback.OnKeyUp(Handler.Widget, e);
+					handler.Callback.OnKeyUp(handler.Widget, e);
 					args.RetVal = e.Handled;
 				}
 			}
 
 			public void FocusInEvent(object o, Gtk.FocusInEventArgs args)
 			{
-				Handler.Callback.OnGotFocus(Handler.Widget, EventArgs.Empty);
+				var handler = Handler;
+				if (handler == null)
+					return;
+				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
 			}
 
 			public void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
@@ -542,37 +569,29 @@ namespace Eto.GtkSharp.Forms
 			get { return Control; }
 		}
 
+		static readonly object Font_Key = new object();
+
 		public virtual Font Font
 		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(FontControl));
-				return font;
-			}
-			set
-			{
-				font = value;
-				if (font == null)
-					FontControl.ModifyFont(null);
-				else
-				{
-					var handler = (FontHandler)font.Handler;
-					FontControl.ModifyFont(handler.Control);
-				}
-			}
+			get { return Widget.Properties.Get<Font>(Font_Key, () => new Font(new FontHandler(FontControl))); }
+			set { Widget.Properties.Set(Font_Key, value, () => FontControl.SetFont(value.ToPango())); }
 		}
+
+		static readonly object Cursor_Key = new object();
 
 		public Cursor Cursor
 		{
-			get { return cursor; }
+			get { return Widget.Properties.Get<Cursor>(Cursor_Key); }
 			set
 			{
-				cursor = value;
-				if (Control.GdkWindow != null)
+				Widget.Properties.Set(Cursor_Key, value, () =>
 				{
-					Control.GdkWindow.Cursor = cursor != null ? cursor.ControlObject as Gdk.Cursor : null;
-				}
+					var gdkWindow = Control.GetWindow();
+					if (gdkWindow != null)
+					{
+						gdkWindow.Cursor = value != null ? value.ControlObject as Gdk.Cursor : null;
+					}
+				});
 			}
 		}
 
@@ -593,10 +612,11 @@ namespace Eto.GtkSharp.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			if (Control.GdkWindow != null)
+			var gdkWindow = Control.GetWindow();
+			if (gdkWindow != null)
 			{
 				int x, y;
-				Control.GdkWindow.GetOrigin(out x, out y);
+				gdkWindow.GetOrigin(out x, out y);
 				return new PointF(point.X - x, point.Y - y);
 			}
 			return point;
@@ -604,10 +624,11 @@ namespace Eto.GtkSharp.Forms
 
 		public PointF PointToScreen(PointF point)
 		{
-			if (Control.GdkWindow != null)
+			var gdkWindow = Control.GetWindow();
+			if (gdkWindow != null)
 			{
 				int x, y;
-				Control.GdkWindow.GetOrigin(out x, out y);
+				gdkWindow.GetOrigin(out x, out y);
 				return new PointF(point.X + x, point.Y + y);
 			}
 			return point;

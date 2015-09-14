@@ -1,10 +1,11 @@
 using System;
-using Eto.Drawing;
-using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
+using System.Runtime.Serialization;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -21,21 +22,8 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		static object rowsKey = new object();
-		static object contentsKey = new object();
 		Size dimensions;
 		bool created;
-
-		/// <summary>
-		/// The default spacing for all tables
-		/// </summary>
-		[Obsolete("Use styles to set control defaults, e.g. Style.Add<TableLayout>(null, table => table.Spacing = new Size(5));")]
-		public static Size DefaultSpacing = Size.Empty;
-
-		/// <summary>
-		/// The default padding for all tables
-		/// </summary>
-		[Obsolete("Use styles to set control defaults, e.g. Style.Add<TableLayout>(null, table => table.Padding = new Padding(5));")]
-		public static Padding DefaultPadding = Padding.Empty;
 
 		/// <summary>
 		/// Gets an enumeration of controls that are directly contained by this container
@@ -57,30 +45,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the collection of controls contained in this container.
-		/// </summary>
-		/// <value>The contents.</value>
-		[Obsolete("Use Rows instead to add rows hierarchically")]
-		public Collection<Control> Contents
-		{
-			get { return Properties.Create<Collection<Control>>(contentsKey); }
-		}
-
-		/// <summary>
-		/// Gets or sets the dimensions of the table
-		/// </summary>
-		/// <value>The dimensions of the table.</value>
-		[Obsolete("Use the Rows property to add the number of rows/cells for the table, or Dimensions to get the dimensions of the table")]
-		public Size CellSize
-		{
-			get { return dimensions; }
-			set
-			{
-				SetCellSize(value, true);
-			}
-		}
-
-		/// <summary>
 		/// Gets the dimensions of the table in cells.
 		/// </summary>
 		/// <value>The dimensions of the table.</value>
@@ -88,148 +52,6 @@ namespace Eto.Forms
 		{
 			get { return dimensions; }
 		}
-
-		/// <summary>
-		/// Gets or sets the scaled columns in the table.
-		/// </summary>
-		/// <value>The scaled columns</value>
-		[Obsolete("Use the ScaleWidth on TableCell instead")]
-		[TypeConverter(typeof(Int32ArrayConverter))]
-		public int[] ColumnScale
-		{
-			set
-			{
-				for (int col = 0; col < dimensions.Width; col++)
-				{
-					SetColumnScale(col, false);
-				}
-				foreach (var col in value)
-				{
-					SetColumnScale(col);
-				}
-			}
-			get
-			{
-				var vals = new List<int>();
-				for (int col = 0; col < dimensions.Width; col++)
-				{
-					if (GetColumnScale(col))
-						vals.Add(col);
-				}
-				return vals.ToArray();
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the scaled rows in the table.
-		/// </summary>
-		/// <value>The scaled rows.</value>
-		[TypeConverter(typeof(Int32ArrayConverter))]
-		[Obsolete("Use the ScaleHeight on TableRow instead")]
-		public int[] RowScale
-		{
-			set
-			{
-				for (int row = 0; row < dimensions.Height; row++)
-				{
-					SetRowScale(row, false);
-				}
-				foreach (var row in value)
-				{
-					SetRowScale(row);
-				}
-			}
-			get
-			{
-				var vals = new List<int>();
-				for (int row = 0; row < dimensions.Height; row++)
-				{
-					if (GetRowScale(row))
-						vals.Add(row);
-				}
-				return vals.ToArray();
-			}
-		}
-
-		#region Attached Properties
-
-		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
-
-		/// <summary>
-		/// Gets the table location of the specified control.
-		/// </summary>
-		/// <returns>The location.</returns>
-		/// <param name="control">Control.</param>
-		[Obsolete("Use Rows instead to add rows hierarchically")]
-		public static Point GetLocation(Control control)
-		{
-			return control.Properties.Get<Point>(LocationProperty);
-		}
-
-		/// <summary>
-		/// Sets the table location of the specified control.
-		/// </summary>
-		/// <returns>The location.</returns>
-		/// <param name="control">Control to set the location.</param>
-		/// <param name="value">Location value</param>
-		[Obsolete("Use Rows instead to add rows hierarchically")]
-		public static void SetLocation(Control control, Point value)
-		{
-			control.Properties[LocationProperty] = value;
-			var layout = control.Parent as TableLayout;
-			if (layout != null)
-				layout.Move(control, value);
-		}
-
-		static readonly EtoMemberIdentifier ColumnScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "ColumnScale");
-
-		/// <summary>
-		/// Gets the column scale for the specified control.
-		/// </summary>
-		/// <returns><c>true</c>, if column scale was gotten, <c>false</c> otherwise.</returns>
-		/// <param name="control">Control.</param>
-		[Obsolete("Use TableCell instead to set column scaling, or get directly using GetColumnScale(int)")]
-		public static bool GetColumnScale(Control control)
-		{
-			return control.Properties.Get<bool>(ColumnScaleProperty);
-		}
-
-		/// <summary>
-		/// Sets the column scale for the specified control.
-		/// </summary>
-		/// <param name="control">Control.</param>
-		/// <param name="value">If set to <c>true</c> value.</param>
-		[Obsolete("Use TableCell instead to set column scaling, or set directly using SetColumnScale(int)")]
-		public static void SetColumnScale(Control control, bool value)
-		{
-			control.Properties[ColumnScaleProperty] = value;
-		}
-
-		static readonly EtoMemberIdentifier RowScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "RowScale");
-
-		/// <summary>
-		/// Gets the row scale for the specified control.
-		/// </summary>
-		/// <returns><c>true</c>, if row scale was gotten, <c>false</c> otherwise.</returns>
-		/// <param name="control">Control.</param>
-		[Obsolete("Use TableRow instead to set row scaling, or get directly using GetRowScale(int)")]
-		public static bool GetRowScale(Control control)
-		{
-			return control.Properties.Get<bool>(RowScaleProperty);
-		}
-
-		/// <summary>
-		/// Sets the row scale for the specified control.
-		/// </summary>
-		/// <param name="control">Control.</param>
-		/// <param name="value">If set to <c>true</c> value.</param>
-		[Obsolete("Use TableRow instead to set row scaling, or get directly using SetRowScale(int)")]
-		public static void SetRowScale(Control control, bool value)
-		{
-			control.Properties[RowScaleProperty] = value;
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Creates a table layout with an auto sized control.
@@ -339,11 +161,11 @@ namespace Eto.Forms
 		static readonly object DataContextChangedKey = new object();
 
 		/// <summary>
-		/// Raises the <see cref="Control.DataContextChanged"/> event
+		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
 		/// </summary>
 		/// <remarks>
 		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="Control.DataContext"/>, which would be set
+		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
 		/// on one of the parent control(s).
 		/// </remarks>
 		/// <param name="e">Event arguments</param>
@@ -358,24 +180,27 @@ namespace Eto.Forms
 		void Create()
 		{
 			var rows = Rows;
-			var columnCount = rows.Max(r => r != null ? r.Cells.Count : 0);
+			var columnCount = rows.DefaultIfEmpty().Max(r => r != null ? r.Cells.Count : 0);
 			SetCellSize(new Size(columnCount, rows.Count), false);
-			for (int y = 0; y < rows.Count; y++)
+			if (columnCount > 0)
 			{
-				var row = rows[y];
-				while (row.Cells.Count < columnCount)
-					row.Cells.Add(new TableCell());
-				for (int x = 0; x < columnCount; x++)
+				for (int y = 0; y < rows.Count; y++)
 				{
-					var cell = row.Cells[x];
-					Add(cell.Control, x, y);
-					if (cell.ScaleWidth)
-						SetColumnScale(x);
+					var row = rows[y];
+					while (row.Cells.Count < columnCount)
+						row.Cells.Add(new TableCell());
+					for (int x = 0; x < columnCount; x++)
+					{
+						var cell = row.Cells[x];
+						Add(cell.Control, x, y);
+						if (cell.ScaleWidth)
+							SetColumnScale(x);
+					}
+					while (row.Cells.Count < columnCount)
+						row.Cells.Add(new TableCell());
+					if (row.ScaleHeight)
+						SetRowScale(y);
 				}
-				while (row.Cells.Count < columnCount)
-					row.Cells.Add(new TableCell());
-				if (row.ScaleHeight)
-					SetRowScale(y);
 			}
 			created = true;
 			if (Properties.Get<bool>(DataContextChangedKey))
@@ -385,39 +210,14 @@ namespace Eto.Forms
 			}
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class.
-		/// </summary>
-		/// <param name="width">Width.</param>
-		/// <param name="height">Height.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public TableLayout(int width, int height, Generator generator = null)
-			: this(new Size(width, height), generator)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class.
-		/// </summary>
-		/// <param name="size">Size.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public TableLayout(Size size, Generator generator = null)
-			: base(generator, typeof(IHandler), false)
-		{
-			SetCellSize(size, true);
-			Initialize();
-		}
-
 		void SetCellSize(Size value, bool createRows)
 		{
 			if (created)
-				throw new InvalidOperationException("Can only set the cell size of a table once");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Can only set the cell size of a table once"));
 			dimensions = value;
+			Handler.CreateControl(dimensions.Width, dimensions.Height);
 			if (!dimensions.IsEmpty)
 			{
-				Handler.CreateControl(dimensions.Width, dimensions.Height);
 				if (createRows)
 				{
 					var rows = Enumerable.Range(0, value.Height).Select(r => new TableRow(Enumerable.Range(0, value.Width).Select(c => new TableCell())));
@@ -478,15 +278,13 @@ namespace Eto.Forms
 		/// <param name="y">The y coordinate.</param>
 		public void Add(Control control, int x, int y)
 		{
-			if (control != null)
-				control.Properties[LocationProperty] = new Point(x, y);
 			InnerAdd(control, x, y);
 		}
 
 		void InnerAdd(Control control, int x, int y)
 		{
 			if (dimensions.IsEmpty)
-				throw new InvalidOperationException("You must set the size of the TableLayout before adding controls");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "You must set the size of the TableLayout before adding controls"));
 			var cell = Rows[y].Cells[x];
 
 			SetParent(control, () => {
@@ -510,7 +308,6 @@ namespace Eto.Forms
 		/// <param name="yscale">If set to <c>true</c> yscale.</param>
 		public void Add(Control control, int x, int y, bool xscale, bool yscale)
 		{
-			control.Properties[LocationProperty] = new Point(x, y);
 			SetColumnScale(x, xscale);
 			SetRowScale(y, yscale);
 			Add(control, x, y);
@@ -550,7 +347,6 @@ namespace Eto.Forms
 			if (old != null)
 				RemoveParent(old);
 			cell.Control = control;
-			control.Properties[LocationProperty] = new Point(x, y);
 			Handler.Move(control, x, y);
 		}
 
@@ -577,7 +373,7 @@ namespace Eto.Forms
 			var cell = Rows.SelectMany(r => r.Cells).FirstOrDefault(r => r.Control == child);
 			if (cell != null)
 			{
-				cell.Control = null;
+				cell.SetControl(null);
 				Handler.Remove(child);
 				RemoveParent(child);
 			}
@@ -651,24 +447,6 @@ namespace Eto.Forms
 						Create();
 					}
 				}
-
-				#pragma warning disable 612,618
-				// remove when obsolete code is removed
-				var contents = Properties.Get<Collection<Control>>(contentsKey);
-				if (contents != null)
-				{
-					foreach (var control in contents)
-					{
-						var location = GetLocation(control);
-						Add(control, location);
-						if (GetColumnScale(control))
-							SetColumnScale(location.X);
-						if (GetRowScale(control))
-							SetRowScale(location.Y);
-					}
-					Properties.Remove(contentsKey);
-				}
-				#pragma warning restore 612,618
 			}
 		}
 

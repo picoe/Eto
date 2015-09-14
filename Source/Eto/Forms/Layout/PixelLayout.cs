@@ -46,23 +46,6 @@ namespace Eto.Forms
 			}
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PixelLayout"/> class.
-		/// </summary>
-		public PixelLayout()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PixelLayout"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public PixelLayout(Generator generator)
-			: base(generator, typeof(IHandler))
-		{
-		}
-
 		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
 
 		/// <summary>

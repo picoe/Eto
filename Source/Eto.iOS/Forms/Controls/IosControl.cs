@@ -1,9 +1,9 @@
 using System;
 using Eto.Forms;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.iOS.Drawing;
 using Eto.Drawing;
-using MonoTouch.Foundation;
+using Foundation;
 
 namespace Eto.iOS.Forms.Controls
 {

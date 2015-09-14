@@ -33,15 +33,15 @@ namespace Eto.Wpf.Forms.Controls
 		public Font Font
 		{
 			get { return font; }
-			set { font = FontHandler.Apply(Header, r => AccessText.TextDecorations = r, value); }
+			set { font = Header.SetEtoFont(value, r => AccessText.TextDecorations = r); }
 		}
 
 		public string Text
 		{
-			get { return AccessText.Text.ToEtoMneumonic(); }
+			get { return AccessText.Text.ToEtoMnemonic(); }
 			set
 			{
-				AccessText.Text = value.ToWpfMneumonic();
+				AccessText.Text = value.ToPlatformMnemonic();
 				Control.Header = string.IsNullOrEmpty(value) ? null : Header;
 			}
 		}

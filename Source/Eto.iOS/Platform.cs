@@ -1,9 +1,9 @@
 using System;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 using System.Linq;
 using Eto.Drawing;
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 using Eto.Forms;
 using Eto.iOS.Drawing;
 using Eto.iOS.Forms.Cells;
@@ -56,6 +56,7 @@ namespace Eto.iOS
 			p.Add<SolidBrush.IHandler>(() => new SolidBrushHandler());
 			p.Add<TextureBrush.IHandler>(() => new TextureBrushHandler());
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
+			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());
@@ -132,6 +133,7 @@ namespace Eto.iOS
 			//p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler ());
 			p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
+			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
 			
 			// IO
 			//p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler ());

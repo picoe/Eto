@@ -1,7 +1,7 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
-using MonoTouch.ObjCRuntime;
+using ObjCRuntime;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,6 @@ namespace Eto.iOS.Forms.Controls
 {
 	internal class RotatableNavigationController : UINavigationController
 	{
-		[Obsolete]
 		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true; 
@@ -63,12 +62,19 @@ namespace Eto.iOS.Forms.Controls
 
 			public override void DidShowViewController(UINavigationController navigationController, UIViewController viewController, bool animated)
 			{
-				Handler.Callback.OnItemShown(Handler.Widget, EventArgs.Empty);
+				var shownItem = Handler.items.FirstOrDefault(r => r.Content.GetViewController(false) == viewController);
+				if (shownItem != null)
+					Handler.Callback.OnItemShown(Handler.Widget, new NavigationItemEventArgs(shownItem));
 				// need to get the view controllers to reset the references to the popped controllers
 				// this is due to how xamarin.ios keeps the controllers in an array
 				// and this resets that array
 				var controllers = Handler.Navigation.ViewControllers;
-				Handler.items.RemoveAll(r => !controllers.Contains(r.Content.GetViewController(false)));
+				var removedItems = Handler.items.Where(r => !controllers.Contains(r.Content.GetViewController(false))).ToList();
+				foreach (var removedItem in removedItems)
+				{
+					Handler.Callback.OnItemRemoved(Handler.Widget, new NavigationItemEventArgs(removedItem));
+				}
+				Handler.items.RemoveAll(removedItems.Contains);
 
 				/* for testing garbage collection after a view is popped
 				#if DEBUG
@@ -100,14 +106,14 @@ namespace Eto.iOS.Forms.Controls
 			view.NavigationItem.Title = item.Text ?? string.Empty;
 			if (!(view.View is UIScrollView) && view.EdgesForExtendedLayoutIsSupported())
 				view.EdgesForExtendedLayout = UIRectEdge.None;
-			view.View.Frame = new System.Drawing.RectangleF(0, 0, 0, 0);
+			view.View.Frame = new CoreGraphics.CGRect(0, 0, 0, 0);
 			view.View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			Navigation.PushViewController(view, true);
 		}
 
 		public void Pop()
 		{
-			Navigation.PopViewControllerAnimated(true);
+			Navigation.PopViewController(true);
 		}
 
 		public virtual Size ClientSize

@@ -12,6 +12,11 @@ namespace Eto.Drawing
 	public class PaddingConverter : TypeConverter
 	{
 		/// <summary>
+		/// The character to split up the string which will be converted
+		/// </summary>
+		static readonly char[] DimensionSplitter = new char[1] { ',' };
+
+		/// <summary>
 		/// Determines if the specified <paramref name="sourceType"/> can be converted to a <see cref="Padding"/> object
 		/// </summary>
 		/// <param name="context">Conversion context</param>
@@ -34,30 +39,36 @@ namespace Eto.Drawing
 			string text = value as string;
 			if (text != null)
 			{
-				var parts = text.Split(culture.TextInfo.ListSeparator.ToCharArray());
-				var converter = new Int32Converter();
-				switch (parts.Length)
+				string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+
+				try
 				{
-					case 1:
-						return new Padding(
-							(int)converter.ConvertFromString(context, culture, parts[0])
-						);
-					case 2:
-						return new Padding(
-							(int)converter.ConvertFromString(context, culture, parts[0]),
-							(int)converter.ConvertFromString(context, culture, parts[1])
-						);
-					case 4:
-						return new Padding(
-							(int)converter.ConvertFromString(context, culture, parts[0]),
-							(int)converter.ConvertFromString(context, culture, parts[1]),
-							(int)converter.ConvertFromString(context, culture, parts[2]),
-							(int)converter.ConvertFromString(context, culture, parts[3])
-						);
-					default:
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}'. Should be in the form of 'all', 'horizontal,vertical', or 'left, top, right, bottom'", text));
+					switch (parts.Length)
+					{
+						case 1:
+							return new Padding(
+								int.Parse(parts[0])
+							);
+						case 2:
+							return new Padding(
+								int.Parse(parts[0]),
+								int.Parse(parts[1])
+							);
+						case 4:
+							return new Padding(
+								int.Parse(parts[0]),
+								int.Parse(parts[1]),
+								int.Parse(parts[2]),
+								int.Parse(parts[3])
+							);
+						default:
+							throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Padding. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));
+					}
 				}
-					
+				catch
+				{
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Padding. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));
+				}
 			}
 			return base.ConvertFrom(context, culture, value);
 		}

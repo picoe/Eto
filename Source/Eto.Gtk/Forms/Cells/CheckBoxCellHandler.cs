@@ -65,7 +65,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			return new CheckBoxCellEventConnector();
 		}
 
-		protected class CheckBoxCellEventConnector : SingleCellConnector
+		protected class CheckBoxCellEventConnector : CellConnector
 		{
 			public new CheckBoxCellHandler Handler { get { return (CheckBoxCellHandler)base.Handler; } }
 

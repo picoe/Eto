@@ -9,7 +9,6 @@ namespace Eto.WinForms.Forms
 	public class DialogHandler : WindowHandler<swf.Form, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button button;
-		Button abortButton;
 
 		
 		public DialogHandler()
@@ -32,24 +31,7 @@ namespace Eto.WinForms.Forms
 			get { return swf.FormBorderStyle.FixedDialog; }
 		}
 
-		public Button AbortButton
-		{
-			get
-			{
-				return abortButton;
-			}
-			set
-			{
-				abortButton = value;
-				if (abortButton != null)
-				{
-					var b = abortButton.ControlObject as swf.IButtonControl;
-					Control.CancelButton = b;
-				}
-				else
-					Control.CancelButton = null;
-			}
-		}
+		public Button AbortButton { get; set; }
 
 		public Button DefaultButton
 		{
@@ -72,33 +54,33 @@ namespace Eto.WinForms.Forms
 
 		public DialogDisplayMode DisplayMode { get; set; }
 
-		public void ShowModal(Control parent)
+		public void ShowModal()
 		{
-			if (parent != null)
-			{
-				var parentWindow = parent.ParentWindow;
-				if (parentWindow != null)
-				{
-					var parentHandler = parentWindow.Handler as IWindowHandler;
-					if (parentHandler != null)
-					{
-						Control.ShowDialog(parentHandler.Win32Window);
-						return;
-					}
-				}
-			}
 			Control.ShowDialog();
+			Control.Owner = null; // without this, the dialog is still active as part of the owner form
+        }
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Widget.KeyDown += Widget_KeyDown;
 		}
 
-		public Task ShowModalAsync(Control parent)
+		void Widget_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Escape && AbortButton != null)
+			{
+				AbortButton.PerformClick();
+				e.Handled = true;
+			}
+		}
+
+		public Task ShowModalAsync()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			Application.Instance.AsyncInvoke(() =>
 			{
-				if (parent != null)
-					Control.ShowDialog((swf.Control)parent.ControlObject);
-				else
-					Control.ShowDialog();
+				ShowModal();
 
 				tcs.SetResult(true);
 			});

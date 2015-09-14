@@ -1,7 +1,9 @@
 using System;
-using Eto.Drawing;
 using System.Collections.Generic;
+using System.Globalization;
+using Eto.Drawing;
 using sd = System.Drawing;
+using System.Diagnostics;
 
 #if OSX
 #if XAMMAC2
@@ -36,7 +38,7 @@ using nuint = System.UInt32;
 using Eto.Mac;
 namespace Eto.Mac.Drawing
 #elif IOS
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 using Eto.iOS;
 
 namespace Eto.iOS.Drawing
@@ -114,7 +116,11 @@ namespace Eto.iOS.Drawing
 
 		public void AddRectangle (float x, float y, float width, float height)
 		{
-			Control.AddRect (new sd.RectangleF(x, y, width, height));
+			#if __UNIFIED__
+			Control.AddRect(new CGRect(x, y, width, height));
+			#else
+			Control.AddRect(new sd.RectangleF(x, y, width, height));
+			#endif
 			startFigure = true;
 			isFirstFigure = false;
 		}
@@ -140,7 +146,7 @@ namespace Eto.iOS.Drawing
 				MoveTo ((float)xs, (float)ys);
 			}
 
-			Control.AddArc (affine, x+ width / 2, centerY, width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc (affine, x+ width / 2, centerY, width / 2, CGConversions.DegreesToRadians (startAngle), CGConversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
 		}
 
 		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)
@@ -158,7 +164,7 @@ namespace Eto.iOS.Drawing
 		private void Check(float f)
 		{
 			if (float.IsInfinity(f) || float.IsNaN(f))
-				throw new InvalidOperationException("Invalid point specified to AddCurveToPoint");
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Invalid point specified to AddCurveToPoint"));
 		}
 
 		private void Check(PointF p)
@@ -172,7 +178,11 @@ namespace Eto.iOS.Drawing
 			Check(point1);
 			Check(point2);
 			Check(point3);
+			#if __UNIFIED__
+			Control.AddCurveToPoint(point1.ToNS(), point2.ToNS(), point3.ToNS());
+			#else
 			Control.AddCurveToPoint(point1.ToSD(), point2.ToSD(), point3.ToSD());
+			#endif
 		}
 
 		public void AddPath (IGraphicsPath path, bool connect = false)
@@ -246,7 +256,7 @@ namespace Eto.iOS.Drawing
 
 		public void AddEllipse (float x, float y, float width, float height)
 		{
-			#if XAMMAC || XAMMAC2
+			#if XAMMAC || XAMMAC2 || IOS
 			Control.AddEllipseInRect(new CGRect(x, y, width, height));
 			#else
 			Control.AddElipseInRect (new sd.RectangleF (x, y, width, height));

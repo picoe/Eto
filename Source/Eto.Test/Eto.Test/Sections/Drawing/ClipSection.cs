@@ -21,7 +21,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public ClipSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, ResetClipControl(), null);
 			layout.BeginVertical();
@@ -35,8 +35,9 @@ namespace Eto.Test.Sections.Drawing
 
 		Control RectangleClip()
 		{
-			var control = new Drawable { Size = new Size (300, 100) };
-			control.Paint += (sender, e) => {
+			var control = new Drawable { Size = new Size(300, 100) };
+			control.Paint += (sender, e) =>
+			{
 				e.Graphics.SetClip(new RectangleF(25, 25, 50, 50));
 				if (ResetClip)
 					e.Graphics.ResetClip();
@@ -62,8 +63,9 @@ namespace Eto.Test.Sections.Drawing
 
 		Control PathClip()
 		{
-			var control = new Drawable { Size = new Size (350, 250) };
-			control.Paint += (sender, e) => {
+			var control = new Drawable { Size = new Size(350, 250) };
+			control.Paint += (sender, e) =>
+			{
 				var path = new GraphicsPath();
 				path.AddEllipse(25, 25, 50, 50);
 				path.AddRectangle(125, 25, 50, 50);

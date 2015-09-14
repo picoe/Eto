@@ -47,8 +47,6 @@ namespace Eto.GtkSharp.Drawing
 		{
 			var context = graphics.Control;
 			context.Save();
-			destination.X += (float)graphics.InverseOffset;
-			destination.Y += (float)graphics.InverseOffset;
 			context.Rectangle(destination.ToCairo());
 			double scalex = 1;
 			double scaley = 1;
@@ -59,13 +57,11 @@ namespace Eto.GtkSharp.Drawing
 				context.Scale(scalex, scaley);
 			}
 			Gdk.CairoHelper.SetSourcePixbuf(context, Pixbuf, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
-			var pattern = (Cairo.SurfacePattern)context.Source;
+			var pattern = (Cairo.SurfacePattern)context.GetSource();
 			pattern.Filter = graphics.ImageInterpolation.ToCairo();
 			context.Fill();
 			context.Restore();
-
-			if (EtoEnvironment.Platform.IsMac)
-				pattern.Dispose();
+			pattern.Dispose();
 		}
 
 		protected override void Dispose(bool disposing)

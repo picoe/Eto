@@ -95,7 +95,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				EqualityComparer<T> comparer = EqualityComparer<T>.Default;
 				for (int i = 0; i < a1.Length; i++)
 				{
-					if (!comparer.Equals(a1[i], a2[i])) return false;
+					if (!comparer.Equals(a1[i], a2[i]))
+						return false;
 				}
 				return true;
 			}
@@ -124,6 +125,19 @@ namespace Eto.GtkSharp.Forms.Controls
 				case Grid.CellFormattingEvent:
 					SetupColumnEvents();
 					break;
+				case Grid.CellClickEvent:
+					Tree.ButtonPressEvent += OnTreeButtonPress;
+					break;
+				case Grid.CellDoubleClickEvent:
+					Tree.RowActivated += (sender, e) =>
+					{
+						var rowIndex = GetRowIndexOfPath(e.Path);
+						var columnIndex = GetColumnOfItem(e.Column);
+						var item = GetItem(e.Path);
+						var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
+						Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+					};
+					break;
 				case Grid.SelectionChangedEvent:
 					Tree.Selection.Changed += Connector.HandleGridSelectionChanged;
 					break;
@@ -131,6 +145,29 @@ namespace Eto.GtkSharp.Forms.Controls
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		[GLib.ConnectBefore]
+		protected virtual void OnTreeButtonPress (object sender, Gtk.ButtonPressEventArgs e)
+		{
+			// If clicked mouse button is not the primary button, return.
+			if (e.Event.Button != 1 || e.Event.Type == Gdk.EventType.TwoButtonPress || e.Event.Type == Gdk.EventType.ThreeButtonPress)
+				return;
+
+			Gtk.TreePath path;
+			Gtk.TreeViewColumn clickedColumn;
+
+			// Get path and column from mouse position
+			Tree.GetPathAtPos((int)e.Event.X, (int)e.Event.Y, out path, out clickedColumn);
+			if (path == null || clickedColumn == null)
+				return;
+
+			var rowIndex = GetRowIndexOfPath(path);
+			var columnIndex = GetColumnOfItem(clickedColumn);
+			var item = GetItem(path);
+			var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
+
+			Callback.OnCellClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
 		}
 
 		public override void OnLoadComplete(EventArgs e)
@@ -225,7 +262,29 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public abstract object GetItem(Gtk.TreePath path);
 
+		public int GetColumnOfItem(Gtk.TreeViewColumn item)
+		{
+			return Widget.Columns.Select(r => r.Handler as GridColumnHandler).Select(r => r.Control).ToList().IndexOf(item);
+		}
+
+		public virtual int GetRowIndexOfPath(Gtk.TreePath path)
+		{
+			int rowIndex = 0;
+			if (path.Indices.Length > 0)
+			{
+				for (int i = 0; i < path.Depth; i++)
+					rowIndex += path.Indices[i] + 1;
+
+				rowIndex--;
+			}
+			else
+				rowIndex = -1;
+
+			return rowIndex;
+		}
+
 		public abstract Gtk.TreeIter GetIterAtRow(int row);
+
 		public abstract Gtk.TreePath GetPathAtRow(int row);
 
 		public void SetColumnMap(int dataIndex, int column)
@@ -323,6 +382,53 @@ namespace Eto.GtkSharp.Forms.Controls
 		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
 			Callback.OnCellFormatting(Widget, args);
+		}
+
+		public void ScrollToRow(int row)
+		{
+			var path = this.GetPathAtRow(row);
+			var column = Tree.Columns.First();
+			Tree.ScrollToCell(path, column, false, 0, 0);
+		}
+
+		public GridLines GridLines
+		{
+			get
+			{
+				switch (Tree.EnableGridLines)
+				{
+					case Gtk.TreeViewGridLines.None:
+						return GridLines.None;
+					case Gtk.TreeViewGridLines.Horizontal:
+						return GridLines.Horizontal;
+					case Gtk.TreeViewGridLines.Vertical:
+						return GridLines.Vertical;
+					case Gtk.TreeViewGridLines.Both:
+						return GridLines.Both;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+			set
+			{
+				switch (value)
+				{
+					case GridLines.None:
+						Tree.EnableGridLines = Gtk.TreeViewGridLines.None;
+						break;
+					case GridLines.Horizontal:
+						Tree.EnableGridLines = Gtk.TreeViewGridLines.Horizontal;
+						break;
+					case GridLines.Vertical:
+						Tree.EnableGridLines = Gtk.TreeViewGridLines.Vertical;
+						break;
+					case GridLines.Both:
+						Tree.EnableGridLines = Gtk.TreeViewGridLines.Both;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+			}
 		}
 
 	}

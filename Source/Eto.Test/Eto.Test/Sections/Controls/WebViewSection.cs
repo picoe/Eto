@@ -16,7 +16,7 @@ namespace Eto.Test.Sections.Controls
 
 		public WebViewSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			var webContainer = WebView();
 			layout.Add(Buttons());
@@ -40,11 +40,13 @@ namespace Eto.Test.Sections.Controls
 			{
 				webView = new WebView();
 
-				webView.Navigated += (sender, e) => {
+				webView.Navigated += (sender, e) =>
+				{
 					Log.Write(webView, "Navigated, Uri: {0}", e.Uri);
 					UpdateButtons();
 				};
-				webView.DocumentLoading += (sender, e) => {
+				webView.DocumentLoading += (sender, e) =>
+				{
 					Log.Write(webView, "DocumentLoading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
 					e.Cancel = cancelLoad.Checked ?? false;
 					if (!e.Cancel)
@@ -53,29 +55,31 @@ namespace Eto.Test.Sections.Controls
 						stopButton.Enabled = true;
 					}
 				};
-				webView.DocumentLoaded += (sender, e) => {
+				webView.DocumentLoaded += (sender, e) =>
+				{
 					Log.Write(webView, "DocumentLoaded, Uri: {0}", e.Uri);
 					UpdateButtons();
 					stopButton.Enabled = false;
 				};
-				webView.OpenNewWindow += (sender, e) => {
+				webView.OpenNewWindow += (sender, e) =>
+				{
 					Log.Write(webView, "OpenNewWindow: {0}, Url: {1}", e.NewWindowName, e.Uri);
 				};
-				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e)
+				webView.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e)
 				{
 					titleLabel.Text = e.Title;
 				};
 				return webView;
 
 			}
-			catch (HandlerInvalidException)
+			catch (Exception)
 			{
 				var control = new Label
-				{ 
-					Text = string.Format ("WebView not supported on this platform with the {0} generator", Platform.ID),
+				{
+					Text = string.Format("WebView not supported on this platform with the {0} generator", Platform.ID),
 					BackgroundColor = Colors.Red,
-					HorizontalAlign = HorizontalAlign.Center,
-					VerticalAlign = VerticalAlign.Middle,
+					TextAlignment = TextAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center,
 					TextColor = Colors.White
 				};
 				if (Platform.IsGtk)
@@ -83,7 +87,7 @@ namespace Eto.Test.Sections.Controls
 				return control;
 			}
 
-			
+
 		}
 
 		Control TitleLabel()
@@ -107,7 +111,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Buttons()
 		{
-			var layout = new DynamicLayout { Spacing = Size.Empty };
+			var layout = new DynamicLayout { };
 
 			layout.BeginHorizontal();
 			layout.Add(null);
@@ -261,6 +265,101 @@ namespace Eto.Test.Sections.Controls
 			<a href='http://www.example.com' target='_blank'>Open in new window</a>
 			<a href='http://www.example.com' target='another_name_of_new_window'>Open in named window</a>
 		</p>
+		<h2>Input Types</h2>
+		<table>
+			<tr>
+				<td>Button</td>
+				<td><input type='button'></td>
+			</tr>
+			<tr>
+				<td>Checkbox</td>
+				<td><input type='checkbox'></td>
+			</tr>
+			<tr>
+				<td>Color</td>
+				<td><input type='color'></td>
+			</tr>
+			<tr>
+				<td>Date</td>
+				<td><input type='date'></td>
+			</tr>
+			<tr>
+				<td>DateTime</td>
+				<td><input type='datetime'></td>
+			</tr>
+			<tr>
+				<td>Email</td>
+				<td><input type='email'></td>
+			</tr>
+			<tr>
+				<td>File</td>
+				<td><input type='file'></td>
+			</tr>
+			<tr>
+				<td>Hidden</td>
+				<td><input type='hidden'></td>
+			</tr>
+			<tr>
+				<td>Image</td>
+				<td><input type='image'></td>
+			</tr>
+			<tr>
+				<td>Month</td>
+				<td><input type='month'></td>
+			</tr>
+			<tr>
+				<td>Number</td>
+				<td><input type='number'></td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td><input type='password'></td>
+			</tr>
+			<tr>
+				<td>Radio</td>
+				<td><input type='radio'></td>
+			</tr>
+			<tr>
+				<td>Range</td>
+				<td><input type='range'></td>
+			</tr>
+			<tr>
+				<td>Reset</td>
+				<td><input type='reset'></td>
+			</tr>
+			<tr>
+				<td>Search</td>
+				<td><input type='search'></td>
+			</tr>
+			<tr>
+				<td>Submit</td>
+				<td><input type='submit'></td>
+			</tr>
+			<tr>
+				<td>Tel</td>
+				<td><input type='tel'></td>
+			</tr>
+			<tr>
+				<td>Text</td>
+				<td><input type='text'></td>
+			</tr>
+			<tr>
+				<td>Time</td>
+				<td><input type='time'></td>
+			</tr>
+			<tr>
+				<td>Url</td>
+				<td><input type='url'></td>
+			</tr>
+			<tr>
+				<td>Week</td>
+				<td><input type='week'></td>
+			</tr>
+			<tr>
+				<td>TextArea</td>
+				<td><textarea></textarea></td>
+			</tr>
+		</table>
 	</form>
 </body>
 

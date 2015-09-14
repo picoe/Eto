@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 
 namespace ImageManipulation
 {
@@ -418,7 +419,7 @@ namespace ImageManipulation
 						if (null != _children[index])
 							paletteIndex = _children[index].GetPaletteIndex(pixel, level + 1);
 						else
-							throw new Exception("Didn't expect this!");
+							throw new ArgumentNullException(string.Format(CultureInfo.CurrentCulture, "Didn't expect this!"));
 					}
 
 					return paletteIndex;

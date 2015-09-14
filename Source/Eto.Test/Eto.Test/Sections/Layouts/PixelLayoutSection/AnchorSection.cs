@@ -6,7 +6,7 @@ using Eto.Drawing;
 namespace Eto.Test.Sections.Layouts.PixelLayoutSection
 {
 	[Flags]
-	enum Anchor
+	public enum Anchor
 	{
 		Left = 0x01,
 		Right = 0x02,
@@ -17,7 +17,7 @@ namespace Eto.Test.Sections.Layouts.PixelLayoutSection
 	}
 
 	[Section("PixelLayout", "Anchor")]
-	class AnchorSection : Panel
+	public class AnchorSection : Panel
 	{
 		Anchor anchor;
 

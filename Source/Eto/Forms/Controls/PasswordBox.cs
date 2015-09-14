@@ -13,35 +13,6 @@ namespace Eto.Forms
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PasswordBox"/> class.
-		/// </summary>
-		public PasswordBox()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PasswordBox"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the control</param>
-		[Obsolete("Use default constructor instead")]
-		public PasswordBox(Generator generator)
-			: this(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.PasswordBox"/> class.
-		/// </summary>
-		/// <param name="generator">Generator to create the control</param>
-		/// <param name="type">Type of platform handler interface to create (must implement IPasswordBox)</param>
-		/// <param name="initialize">Initialize the handler if true, false if the caller will initialize</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected PasswordBox(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether the value is read only
 		/// </summary>
 		/// <value><c>true</c> if the control is read only; otherwise, <c>false</c>.</value>

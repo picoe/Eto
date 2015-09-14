@@ -1,5 +1,5 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
 using Eto.iOS.Drawing;
 using Eto.Drawing;
@@ -22,45 +22,16 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
-			get
-			{
-				switch (Control.TextAlignment)
-				{
-					case UITextAlignment.Center:
-						return HorizontalAlign.Center;
-					case UITextAlignment.Left:
-						return HorizontalAlign.Left;
-					case UITextAlignment.Right:
-						return HorizontalAlign.Right;
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			get { return Control.TextAlignment.ToEto(); }
 			set
 			{
-				LayoutIfNeeded(() =>
-				{
-					switch (value)
-					{
-						case HorizontalAlign.Center:
-							Control.TextAlignment = UITextAlignment.Center;
-							break;
-						case HorizontalAlign.Left:
-							Control.TextAlignment = UITextAlignment.Left;
-							break;
-						case HorizontalAlign.Right:
-							Control.TextAlignment = UITextAlignment.Right;
-							break;
-						default:
-							throw new NotSupportedException();
-					}
-				});
+				LayoutIfNeeded(() => Control.TextAlignment = value.ToUI());
 			}
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
 			get;
 			set;

@@ -15,7 +15,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
-    <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
+    <OutputPath>..\..\BuildOutput\net40\Debug\</OutputPath>
     <DefineConstants>DEBUG;OSX;DESKTOP;MONOMAC;Mac64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\BuildOutput\Release\</OutputPath>
+    <OutputPath>..\..\BuildOutput\net40\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -46,6 +46,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CGConversions.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Forms\Controls\DropDownHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\ExpanderHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
@@ -114,7 +116,6 @@
     <Compile Include="Forms\Controls\PanelHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
-    <Compile Include="Forms\Menu\ImageMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\MenuBarHandler.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
@@ -141,6 +142,8 @@
     <Compile Include="Forms\Controls\MacImageAndTextCell.cs" />
     <Compile Include="Forms\Controls\SliderHandler.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
+    <Compile Include="MacConversions.cs" />
+    <Compile Include="MacConversions.ns.cs" />
     <Compile Include="ObjCExtensions.cs" />
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\MacCommon.cs" />
@@ -159,10 +162,6 @@
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\MacControlExtensions.cs" />
     <Compile Include="Forms\MacBase.cs" />
-    <Compile Include="Conversions.sd.cs" />
-    <Compile Include="Conversions.cg.cs" />
-    <Compile Include="Conversions.cs" />
-    <Compile Include="Conversions.ns.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
@@ -177,6 +176,7 @@
     <Compile Include="NSImageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
+    <Compile Include="SDConversions.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="Forms\iosCompatibility.cs" />
@@ -199,6 +199,17 @@
     <Compile Include="MacHelpers.cs" />
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs" />
+    <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
+    <Compile Include="Forms\KeyboardHandler.cs" />
+    <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
+      <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="..\Shared\GradientHelper.cs">
+      <Link>Drawing\GradientHelper.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -219,7 +230,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" WhileNewLinePlacement="DoNotCare" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" NewLineBeforeConstructorInitializerColon="NewLine" NewLineAfterConstructorInitializerColon="SameLine" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>

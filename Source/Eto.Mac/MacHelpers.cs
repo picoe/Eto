@@ -1,5 +1,6 @@
 ﻿using System;
 using Eto.Forms;
+using Eto.Mac;
 using Eto.Mac.Forms;
 using Eto.Mac.Forms.Controls;
 using Eto.Drawing;
@@ -44,7 +45,7 @@ namespace Eto.Forms
 				control.AttachNative();
 				var macControl = control.GetMacControl();
 				if (macControl != null && macControl.AutoSize)
-					macControl.ContainerControl.SetFrameSize(macControl.GetPreferredSize(SizeF.MaxValue).ToSD());
+					macControl.ContainerControl.SetFrameSize(macControl.GetPreferredSize(SizeF.MaxValue).ToNS());
 			}
 			return control.GetContainerView();
 		}

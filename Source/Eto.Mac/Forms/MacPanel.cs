@@ -1,7 +1,6 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using SD = System.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -9,7 +8,7 @@ using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -33,11 +32,12 @@ using nuint = System.UInt32;
 #endif
 
 #if IOS
-using NSResponder = MonoTouch.UIKit.UIResponder;
-using NSView = MonoTouch.UIKit.UIView;
+using NSResponder = UIKit.UIResponder;
+using NSView = UIKit.UIView;
 using Eto.iOS.Forms;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
+using CoreGraphics;
 #elif OSX
 using Eto.Mac.Forms.Menu;
 #endif
@@ -92,7 +92,7 @@ namespace Eto.Mac.Forms
 					container.AddSubview(control); // default
 #elif IOS
 					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
-					control.Frame = new SD.RectangleF(0, 0, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
+					control.Frame = new CGRect(0, 0, ContentControl.Bounds.Width, ContentControl.Bounds.Height);
 					this.AddChild(value);
 #endif
 				}
@@ -116,7 +116,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 #else
-		public ContextMenu ContextMenu
+		public virtual ContextMenu ContextMenu
 		{
 			get
 			{

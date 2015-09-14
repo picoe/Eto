@@ -1,7 +1,8 @@
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
-using System.Linq;
 
 #if XAMMAC2
 using AppKit;
@@ -93,7 +94,7 @@ namespace Eto.Mac.Drawing
 
 		public void Resize(int width, int height)
 		{
-			throw new NotSupportedException("Cannot resize an indexed image");
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Cannot resize an indexed image"));
 		}
 
 		public BitmapData Lock()
@@ -120,7 +121,7 @@ namespace Eto.Mac.Drawing
 			set
 			{
 				if (value.Count != colors.Length)
-					throw new ArgumentException("Input palette must have the same colors as the output");
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Input palette must have the same colors as the output"));
 				for (int i=0; i<value.Count; i++)
 				{
 					colors[i] = BitmapDataHandler.ArgbToData(value[i].ToArgb());
@@ -139,7 +140,7 @@ namespace Eto.Mac.Drawing
 		void CopyTo(BitmapHandler bmp, Rectangle source)
 		{
 			if (source.Top < 0 || source.Left < 0 || source.Right > size.Width || source.Bottom > size.Height)
-				throw new Exception("Source rectangle exceeds image size");
+				throw new ArgumentOutOfRangeException(string.Format(CultureInfo.CurrentCulture, "Source rectangle exceeds image size"));
 			
 			// we have to draw to a temporary bitmap pixel by pixel
 			var bd = bmp.Lock();

@@ -40,12 +40,12 @@ https://github.com/picoe/Eto/wiki
 		<tags>cross platform gui ui framework desktop winforms wpf mac osx gtk eto.forms</tags>
 	</metadata>
 	<files>
-		<file src="BuildOutput/Pcl/$configuration$/Eto.dll" target="lib\portable-win8+net45+wp8+wpa81+monotouch+monoandroid+xamarin.mac" />
-		<file src="BuildOutput/Pcl/$configuration$/Eto.xml" target="lib\portable-win8+net45+wp8+wpa81+monotouch+monoandroid+xamarin.mac" />
-		<file src="BuildOutput/Pcl/$configuration$/Eto.dll" target="lib\net45" />
-		<file src="BuildOutput/Pcl/$configuration$/Eto.xml" target="lib\net45" />
-		<file src="BuildOutput/$configuration$/Eto.dll" target="lib\net40" />
-		<file src="BuildOutput/$configuration$/Eto.xml" target="lib\net40" />
-		<file src="BuildOutput/$configuration$/LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/pcl/$configuration$/Eto.dll" target="lib\portable-win8+net45+wp8+wpa81+monotouch+monoandroid+xamarin.mac" />
+		<file src="BuildOutput/pcl/$configuration$/Eto.xml" target="lib\portable-win8+net45+wp8+wpa81+monotouch+monoandroid+xamarin.mac" />
+		<file src="BuildOutput/net45/$configuration$/Eto.dll" target="lib\net45" />
+		<file src="BuildOutput/net45/$configuration$/Eto.xml" target="lib\net45" />
+		<file src="BuildOutput/net40/$configuration$/Eto.dll" target="lib\net40" />
+		<file src="BuildOutput/net40/$configuration$/Eto.xml" target="lib\net40" />
+		<file src="BuildOutput/net40/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

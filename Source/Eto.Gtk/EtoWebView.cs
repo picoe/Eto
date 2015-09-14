@@ -12,9 +12,9 @@ namespace Eto.GtkSharp
 
 		public NetworkRequest Request { get { return Args[1] as NetworkRequest; } }
 
-		public WebNavigationAction Action { get { return Args[0] as WebNavigationAction; } }
+		public WebNavigationAction Action { get { return Args[2] as WebNavigationAction; } }
 
-		public WebPolicyDecision Decision { get { return Args[0] as WebPolicyDecision; } }
+		public WebPolicyDecision Decision { get { return Args[3] as WebPolicyDecision; } }
 	}
 	#endif
 
@@ -51,7 +51,7 @@ namespace Eto.GtkSharp
 				var webView = (EtoWebView)GLib.Object.GetObject (webview, false);
 				result = webView.OnNewWindowPolicyDecisionRequested (GLib.Object.GetObject (frame) as WebFrame, GLib.Object.GetObject (request) as NetworkRequest, GLib.Object.GetObject (action) as WebNavigationAction, GLib.Object.GetObject (decision) as WebPolicyDecision);
 			} catch (Exception ex) {
-				ExceptionManager.RaiseUnhandledException (ex, true);
+				ExceptionManager.RaiseUnhandledException(ex, true);
 				throw;
 			}
 			return result;

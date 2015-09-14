@@ -16,9 +16,7 @@ namespace Eto.WinRT.Forms.Controls
 	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
-		readonly Size defaultSize = TextArea.DefaultSize;
-
-		protected override Size DefaultSize { get { return defaultSize; } }
+		protected override Size DefaultSize { get { return new Size(100, 60); } }
 
 		public TextAreaHandler()
 		{
@@ -158,7 +156,7 @@ namespace Eto.WinRT.Forms.Controls
 			set { Control.AcceptsReturn = value; }
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.TextAlignment.ToEto(); }
 			set { Control.TextAlignment = value.ToWpfTextAlignment(); }
@@ -192,5 +190,14 @@ namespace Eto.WinRT.Forms.Controls
 				e.Handled = true;
 			}
 		}
+
+
+		public bool SpellCheck
+		{
+			get { return Control.IsSpellCheckEnabled; }
+			set { Control.IsSpellCheckEnabled = value; }
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
 	}
 }

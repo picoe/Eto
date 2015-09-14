@@ -9,25 +9,25 @@ namespace Eto.GtkSharp.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SolidBrushHandler : BrushHandler, SolidBrush.IHandler
 	{
-		public override void Apply (object control, GraphicsHandler graphics)
+		public override void Apply(object control, GraphicsHandler graphics)
 		{
-			graphics.Control.Color = (Cairo.Color)control;
-			graphics.Control.Fill ();
+			graphics.Control.SetSourceColor((Cairo.Color)control);
+			graphics.Control.Fill();
 		}
 
-		public Color GetColor (SolidBrush widget)
+		public Color GetColor(SolidBrush widget)
 		{
-			return ((Cairo.Color)widget.ControlObject).ToEto ();
+			return ((Cairo.Color)widget.ControlObject).ToEto();
 		}
 
-		public void SetColor (SolidBrush widget, Color color)
+		public void SetColor(SolidBrush widget, Color color)
 		{
-			widget.ControlObject = color.ToCairo ();
+			widget.ControlObject = color.ToCairo();
 		}
 
-		public object Create (Color color)
+		public object Create(Color color)
 		{
-			return color.ToCairo ();
+			return color.ToCairo();
 		}
 	}
 }

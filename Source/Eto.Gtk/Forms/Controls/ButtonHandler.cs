@@ -11,11 +11,9 @@ namespace Eto.GtkSharp.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ButtonHandler : GtkControl<Gtk.Button, Button, Button.ICallback>, Button.IHandler
 	{
-		Image image;
 		readonly Gtk.AccelLabel label;
 		readonly Gtk.Image gtkimage;
 		readonly Gtk.Table table;
-		ButtonImagePosition imagePosition;
 
 		public static int MinimumWidth = 80;
 
@@ -37,7 +35,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			table.Attach(label, 1, 2, 1, 2, Gtk.AttachOptions.Expand, Gtk.AttachOptions.Expand, 0, 0);
 			gtkimage = new Gtk.Image();
 			gtkimage.NoShowAll = true;
-			SetImagePosition(false);
 			Control.Add(table);
 		}
 
@@ -46,6 +43,10 @@ namespace Eto.GtkSharp.Forms.Controls
 			base.Initialize();
 			Control.Clicked += Connector.HandleClicked;
 			Control.SizeAllocated += Connector.HandleButtonSizeAllocated;
+			#if GTK2
+			Control.SizeRequested += Connector.HandleButtonSizeRequested;
+			#endif
+			SetImagePosition(false);
 		}
 
 		protected new ButtonConnector Connector { get { return (ButtonConnector)base.Connector; } }
@@ -69,39 +70,65 @@ namespace Eto.GtkSharp.Forms.Controls
 				var handler = Handler;
 				if (handler != null)
 				{
-					var c = (Gtk.Button)o;
 					var size = args.Allocation;
-					if (size.Width > 1 || size.Height > 1)
+					//if (handler.PreferredSize.Width == -1 && (size.Width > 1 || size.Height > 1))
 					{
-						size.Width = Math.Max(size.Width, MinimumWidth);
+						var minSize = handler.MinimumSize;
+						size.Width = Math.Max(size.Width, minSize.Width);
+						size.Height = Math.Max(size.Height, minSize.Height);
 						if (args.Allocation != size)
+						{
+							var c = (Gtk.Button)o;
 							c.SetSizeRequest(size.Width, size.Height);
+						}
 					}
 				}
 			}
+
+			#if GTK2
+			public void HandleButtonSizeRequested(object o, Gtk.SizeRequestedArgs args)
+			{
+				var handler = Handler;
+				if (handler != null)
+				{
+					var size = args.Requisition;
+					//if (handler.PreferredSize.Width == -1 && (size.Width > 1 || size.Height > 1))
+					{
+						var minSize = handler.MinimumSize;
+						size.Width = Math.Max(size.Width, minSize.Width);
+						size.Height = Math.Max(size.Height, minSize.Height);
+						args.Requisition = size;
+					}
+				}
+			}
+			#endif
 		}
 
 		public override string Text
 		{
-			get { return MnuemonicToString(label.Text); }
+			get { return label.Text.ToEtoMnemonic(); }
 			set
 			{
-				label.TextWithMnemonic = StringToMnuemonic(value);
+				label.TextWithMnemonic = value.ToPlatformMnemonic();
 				SetImagePosition();
 			}
 		}
 
+		static readonly object Image_Key = new object();
+
 		public Image Image
 		{
-			get { return image; }
+			get { return Widget.Properties.Get<Image>(Image_Key); }
 			set
 			{
-				image = value;
-				image.SetGtkImage(gtkimage);
-				if (value == null)
-					gtkimage.Hide();
-				else
-					gtkimage.Show();
+				Widget.Properties.Set(Image_Key, value, () =>
+				{
+					value.SetGtkImage(gtkimage);
+					if (value == null)
+						gtkimage.Hide();
+					else
+						gtkimage.Show();
+				});
 			}
 		}
 
@@ -152,23 +179,45 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		}
 
+		static readonly object ImagePosition_Key = new object();
+
 		public ButtonImagePosition ImagePosition
 		{
-			get { return imagePosition; }
-			set
-			{
-				if (imagePosition != value)
-				{
-					imagePosition = value;
-					SetImagePosition();
-				}
-			}
+			get { return Widget.Properties.Get<ButtonImagePosition>(ImagePosition_Key); }
+			set { Widget.Properties.Set(ImagePosition_Key, value, () => SetImagePosition()); }
 		}
 
 		public Color TextColor
 		{
-			get { return label.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
-			set { label.ModifyFg(Gtk.StateType.Normal, value.ToGdk()); }
+			get { return label.GetForeground(); }
+			set { label.SetForeground(value); }
+		}
+
+		static readonly object MinimumSize_Key = new object();
+
+		public Size MinimumSize
+		{
+			get { return Widget.Properties.Get(MinimumSize_Key, () => new Size(MinimumWidth, 0)); }
+			set
+			{
+				if (MinimumSize != value)
+				{
+					Widget.Properties[MinimumSize_Key] = value;
+					Control.QueueResize(); 
+				}
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case TextControl.TextChangedEvent:
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

@@ -13,7 +13,6 @@ namespace Eto.GtkSharp.Forms
 		{
 			Control = new Gtk.Window(Gtk.WindowType.Toplevel);
 #if GTK2
-			Control.AllowShrink = true;
 			Control.AllowGrow = true;
 #else
 			Control.Resizable = true;

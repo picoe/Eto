@@ -91,8 +91,8 @@ namespace Eto.WinRT.Forms
 		Size? newSize;
 		Cursor cursor;
 		wf.Size parentMinimumSize;
-		bool isMouseOver;
-		bool isMouseCaptured;
+		//bool isMouseOver;
+		//bool isMouseCaptured;
 		public bool XScale { get; private set; }
 		public bool YScale { get; private set; }
 
@@ -355,10 +355,15 @@ namespace Eto.WinRT.Forms
 					break;
 #endif
 				case Eto.Forms.Control.SizeChangedEvent:
+					Size? oldSize = null;
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
 						newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
-						Callback.OnSizeChanged(Widget, EventArgs.Empty);
+						if (newSize != oldSize)
+						{
+							Callback.OnSizeChanged(Widget, EventArgs.Empty);
+							oldSize = newSize;
+						}
 						newSize = null;
 					};
 					break;

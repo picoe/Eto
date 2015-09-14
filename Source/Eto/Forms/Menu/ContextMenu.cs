@@ -22,6 +22,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[ContentProperty("Items")]
 	[Handler(typeof(ContextMenu.IHandler))]
 	public class ContextMenu : Menu, ISubmenu
 	{
@@ -66,39 +67,6 @@ namespace Eto.Forms
 		/// <param name="items">Items to populate the menu</param>
 		public ContextMenu(params MenuItem[] items)
 			: this()
-		{
-			Items.AddRange(items);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public ContextMenu(Generator generator) : this(generator, typeof(ContextMenu.IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected ContextMenu(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-			Trim = true;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.ContextMenu"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="items">Items.</param>
-		[Obsolete("Use constructor without generator instead")]
-		public ContextMenu(Generator g, IEnumerable<MenuItem> items) : this(g)
 		{
 			Items.AddRange(items);
 		}

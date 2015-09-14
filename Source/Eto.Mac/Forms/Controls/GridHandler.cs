@@ -5,7 +5,6 @@ using Eto.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
-using sd = System.Drawing;
 using Eto.Mac.Forms.Cells;
 
 
@@ -77,23 +76,11 @@ namespace Eto.Mac.Forms.Controls
 
 		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-		static readonly Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
-
-		#if Mac64
-		CGPoint ConvertPointFromBacking(CGPoint point)
-		{
-			return base.ConvertNSPointromBacking(point);
-		}
-		#endif
 
 		public override void MouseDown(NSEvent theEvent)
 		{
-			var point = theEvent.LocationInWindow;
+			var point = ConvertPointFromView(theEvent.LocationInWindow, null);
 
-			if (RespondsToSelector(selConvertPointFromBacking))
-				point = ConvertPointFromBacking(point);
-			else
-				point = ConvertPointFromBase(point);
 			var col = GetColumn(point);
 			if (col >= 0)
 			{
@@ -123,12 +110,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
-				return font ?? (font = new Font(new FontHandler(Cell.Font)));
+				return font ?? (font = Cell.Font.ToEto());
 			}
 			set
 			{
 				font = value;
-				Cell.Font = font != null ? ((FontHandler)font.Handler).Control : null;
+				Cell.Font = font.ToNSFont();
 			}
 		}
 
@@ -160,6 +147,11 @@ namespace Eto.Mac.Forms.Controls
 		public NSTableView Table
 		{
 			get { return Control; }
+		}
+
+		protected IEnumerable<IDataColumnHandler> ColumnHandlers 
+		{
+			get { return Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>(); }
 		}
 
 		public NSScrollView ScrollView { get; private set; }
@@ -283,6 +275,19 @@ namespace Eto.Mac.Forms.Controls
 		{
 			switch (id)
 			{
+				case Grid.CellDoubleClickEvent:
+					Control.DoubleClick += (sender, e) =>
+					{
+						int rowIndex;
+						if ((rowIndex = (int)Control.ClickedRow) >= 0)
+						{
+							var columnIndex = (int)Control.ClickedColumn;
+							var item = GetItem(rowIndex);
+							var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
+							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+						}
+					};
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -302,10 +307,16 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			
+
+			if (!Widget.Properties.Get<bool>(ScrolledToRowKey))
+				// Yosemite bug: hides first row when DataStore is set before control is visible
+				Control.ScrollRowToVisible(0);
+			else
+				Widget.Properties.Remove(ScrolledToRowKey);
+
 			int i = 0;
 			IsAutoSizingColumns = true;
-			foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
+			foreach (var col in ColumnHandlers)
 			{
 				col.Loaded(this, i++);
 				col.Resize(true);
@@ -321,7 +332,7 @@ namespace Eto.Mac.Forms.Controls
 				if (rect.Width > 0 || rect.Height > 0)
 				{
 					IsAutoSizingColumns = true;
-					foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>())
+					foreach (var col in ColumnHandlers)
 					{
 						col.Resize();
 					}
@@ -433,6 +444,19 @@ namespace Eto.Mac.Forms.Controls
 			get { return (int)Control.RowCount; }
 		}
 
+		public override bool Enabled
+		{
+			get { return base.Enabled; }
+			set
+			{
+				base.Enabled = value;
+				foreach (var ctl in ColumnHandlers)
+				{
+					ctl.EnabledChanged(value);
+				}
+			}
+		}
+
 		Grid IGridHandler.Widget
 		{
 			get { return Widget; }
@@ -457,6 +481,42 @@ namespace Eto.Mac.Forms.Controls
 		public void OnCellFormatting(GridColumn column, object item, int row, NSCell cell)
 		{
 			Callback.OnCellFormatting(Widget, new MacCellFormatArgs(column, item, row, cell));
+		}
+
+		static readonly object ScrolledToRowKey = new object();
+
+		public void ScrollToRow(int row)
+		{
+			Control.ScrollRowToVisible(row);
+			if (!Widget.Loaded)
+				Widget.Properties[ScrolledToRowKey] = true;
+		}
+
+		public bool Loaded
+		{
+			get { return Widget.Loaded; }
+		}
+
+		public GridLines GridLines
+		{
+			get
+			{
+				var lines = GridLines.None;
+				if (Control.GridStyleMask.HasFlag(NSTableViewGridStyle.SolidHorizontalLine))
+					lines |= GridLines.Horizontal;
+				if (Control.GridStyleMask.HasFlag(NSTableViewGridStyle.SolidVerticalLine))
+					lines |= GridLines.Vertical;
+				return lines;
+			}
+			set
+			{
+				var mask = NSTableViewGridStyle.None;
+				if (value.HasFlag(GridLines.Horizontal))
+					mask |= NSTableViewGridStyle.SolidHorizontalLine;
+				if (value.HasFlag(GridLines.Vertical))
+					mask |= NSTableViewGridStyle.SolidVerticalLine;
+				Control.GridStyleMask = mask;
+			}
 		}
 	}
 }

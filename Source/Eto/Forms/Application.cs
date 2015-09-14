@@ -144,30 +144,6 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
 		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor or Application(Platform) and HandlerAttribute instead")]
-		protected Application(Generator generator, Type type, bool initialize = true)
-			: base(generator ?? Platform.Detect, type, initialize)
-		{
-			Application.Instance = this;
-			Platform.Initialize(generator as Platform ?? Platform.Detect); // make everything use this by default
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use Application(Platform) instead")]
-		public Application(Generator generator)
-			: this((Platform)generator)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Application"/> class.
-		/// </summary>
 		public Application()
 			: this(Platform.Detect)
 		{
@@ -206,16 +182,6 @@ namespace Eto.Forms
 		{
 			Platform.Initialize(platform);
 			return null;
-		}
-
-		/// <summary>
-		/// Runs the application with the specified arguments
-		/// </summary>
-		/// <param name="args">Arguments to run the application</param>
-		[Obsolete("Use Run() instead")]
-		public virtual void Run(params string[] args)
-		{
-			Handler.Run();
 		}
 
 		/// <summary>
@@ -271,11 +237,31 @@ namespace Eto.Forms
 		/// <summary>
 		/// Invoke the specified action on the UI thread, blocking the current execution until it is complete.
 		/// </summary>
+		/// <remarks>
+		/// Use this method when you want to perform changes to the UI from a worker thread, and return when
+		/// the changes are complete.
+		/// </remarks>
 		/// <param name="action">Action to invoke</param>
 		public virtual void Invoke(Action action)
 		{
 			Handler.Invoke(action);
 		}
+
+		/// <summary>
+		/// Invoke the specified function on the UI thread returning its value after the execution is complete.
+		/// </summary>
+		/// <remarks>
+		/// Use this method when you want to return values from the UI in a worker thread.
+		/// </remarks>
+		/// <param name="func">Function to execute and return the value on the UI thread.</param>
+		/// <typeparam name="T">The type of the return value.</typeparam>
+		public T Invoke<T>(Func<T> func)
+		{
+			T value = default(T);
+			Invoke(new Action(() => value = func()));
+			return value;
+		}
+
 
 		/// <summary>
 		/// Invoke the action asynchronously on the UI thread
@@ -344,21 +330,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the system commands used for standard menu items
-		/// </summary>
-		/// <remarks>
-		/// The system commands are used when creating a <see cref="MenuBar"/>.
-		/// This is useful to be able to access the system command list to build your own menu instead of using the standard
-		/// menu.
-		/// </remarks>
-		/// <returns>The system commands.</returns>
-		[Obsolete("Use MenuBar.SystemCommands instead")]
-		public IEnumerable<Command> GetSystemCommands()
-		{
-			return new MenuBar().SystemCommands;
-		}
-
-		/// <summary>
 		/// Gets or sets the badge label on the application icon in the dock, taskbar, etc.
 		/// </summary>
 		/// <remarks>
@@ -389,21 +360,6 @@ namespace Eto.Forms
 		public void Restart()
 		{
 			Handler.Restart();
-		}
-
-		/// <summary>
-		/// Creates the standard menu.
-		/// </summary>
-		/// <param name="menuItems">Menu items.</param>
-		/// <param name="commands">Commands.</param>
-		[Obsolete("Use MenuBar.IncludeSystemItems to specify which actions to create instead")]
-		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands = null)
-		{
-			var menuBar = menuItems.parentItem as MenuBar;
-			if (menuBar != null)
-			{
-				menuBar.CreateLegacySystemMenu();
-			}
 		}
 
 		static readonly object callback = new Callback();

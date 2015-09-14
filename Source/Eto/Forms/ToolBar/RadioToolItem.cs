@@ -34,32 +34,7 @@ namespace Eto.Forms
 		{
 			Checked = command.Checked;
 			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
-			Handler.CreateFromCommand(command);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioToolItem"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public RadioToolItem(Generator generator)
-			: base(generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.RadioToolItem"/> class.
-		/// </summary>
-		/// <param name="command">Command.</param>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use RadioToolItem(CheckCommand) instead")]
-		public RadioToolItem(CheckCommand command, Generator generator = null)
-			: base(command, generator, typeof(IHandler))
-		{
-			Checked = command.Checked;
-			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
+			CheckedChanged += (sender, e) => command.Checked = Checked;
 			Handler.CreateFromCommand(command);
 		}
 

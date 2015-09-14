@@ -32,6 +32,17 @@ namespace Eto.Wpf.Forms.Controls
 			SelectedIndex = -1;
 		}
 
+		public swc.ScrollViewer ContentHost
+		{
+			get
+			{
+				var tb = TextBox;
+				if (tb == null)
+					return null;
+				return tb.Template.FindName("PART_ContentHost", tb) as swc.ScrollViewer;
+			}
+		}
+
 		public swc.TextBox TextBox
 		{
 			get { return GetTemplateChild("PART_EditableTextBox") as swc.TextBox; }
@@ -65,14 +76,14 @@ namespace Eto.Wpf.Forms.Controls
 			var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
 			if (popup == null)
 				return size;
-			popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
+			popup.Child.Measure(WpfConversions.PositiveInfinitySize); // force generating containers
 			if (ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
 				return size;
 			double maxWidth = 0;
 			foreach (var item in Items)
 			{
 				var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
-				comboBoxItem.Measure(Conversions.PositiveInfinitySize);
+				comboBoxItem.Measure(WpfConversions.PositiveInfinitySize);
 				maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
 			}
 
@@ -162,7 +173,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control.ItemTemplate = new sw.DataTemplate
 			{
-				VisualTree = new WpfTextBindingBlock(() => Widget.TextBinding, setMargin: false)
+				VisualTree = new WpfTextBindingBlock(() => Widget.ItemTextBinding, setMargin: false)
 			};
 		}
 	}

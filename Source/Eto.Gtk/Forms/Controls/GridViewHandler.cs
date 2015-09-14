@@ -10,8 +10,6 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		GtkEnumerableModel<object> model;
 		CollectionHandler collection;
-		bool showCellBorders;
-
 		protected override ITreeModelImplementor CreateModelImplementor()
 		{
 			model = new GtkEnumerableModel<object> { Handler = this, Count = collection != null ? collection.Count : 0 };
@@ -69,51 +67,13 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public bool ShowCellBorders
-		{
-			get { return showCellBorders; }
-			set
-			{
-				if (showCellBorders != value)
-				{
-					showCellBorders = value;
-					SetBorders();
-				}
-			}
-		}
-
-		protected override void UpdateColumns()
-		{
-			base.UpdateColumns();
-			SetBorders();
-		}
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
-				case GridView.CellDoubleClickEvent:
-					Tree.RowActivated += (sender, e) =>
-					{
-						var rowIndex = e.Path.Indices.Length > 0 ? e.Path.Indices[0] : -1;
-						var columnIndex = GetColumnOfItem(e.Column);
-						var item = GetItem(e.Path);
-						var column = columnIndex == -1 ? null : Widget.Columns[columnIndex];
-						Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
-					};
-					break;
 				default:
 					base.AttachEvent(id);
 					break;
-			}
-		}
-
-		void SetBorders()
-		{
-			int spacing = showCellBorders ? 10 : 0;
-			foreach (var column in Tree.Columns)
-			{
-				column.Spacing = spacing;
 			}
 		}
 
@@ -160,7 +120,7 @@ namespace Eto.GtkSharp.Forms.Controls
 							Tree.Selection.SelectIter(GetIterAtRow(start));
 						else
 							Tree.Selection.SelectRange(GetPathAtRow(start), GetPathAtRow(end));
-						start = end = -1;
+						start = end = row;
 					}
 				}
 				if (start != -1)
@@ -192,11 +152,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int GetRowOfItem(object item)
 		{
 			return collection != null ? collection.IndexOf(item) : -1;
-		}
-
-		public int GetColumnOfItem(Gtk.TreeViewColumn item)
-		{
-			return Widget.Columns.Select(r => r.Handler as GridColumnHandler).Select(r => r.Control).ToList().IndexOf(item);
 		}
 
 		public EnumerableChangedHandler<object> Collection

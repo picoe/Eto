@@ -5,7 +5,14 @@ using Eto.GtkSharp.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class TextAreaHandler : GtkControl<Gtk.TextView, TextArea, TextArea.ICallback>, TextArea.IHandler
+	public class TextAreaHandler : TextAreaHandler<Gtk.TextView, TextArea, TextArea.ICallback>
+	{
+	}
+
+	public class TextAreaHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, TextArea.IHandler
+		where TControl: Gtk.TextView, new()
+		where TWidget: TextArea
+		where TCallback: TextArea.ICallback
 	{
 		bool sendSelectionChanged = true;
 		readonly Gtk.ScrolledWindow scroll;
@@ -16,14 +23,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return scroll; }
 		}
 
-		public override Size DefaultSize { get { return TextArea.DefaultSize; } }
+		public override Size DefaultSize { get { return new Size(100, 60); } }
 
 		public TextAreaHandler()
 		{
 			scroll = new Gtk.ScrolledWindow();
 			scroll.ShadowType = Gtk.ShadowType.In;
-			Control = new Gtk.TextView();
-			Size = TextArea.DefaultSize;
+			Control = new TControl();
+			Size = new Size(100, 60);
 			scroll.Add(Control);
 			Wrap = true;
 		}
@@ -59,7 +66,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Range<int> lastSelection;
 			int? lastCaretIndex;
 
-			public new TextAreaHandler Handler { get { return (TextAreaHandler)base.Handler; } }
+			public new TextAreaHandler<TControl, TWidget, TCallback> Handler { get { return (TextAreaHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleBufferChanged(object sender, EventArgs e)
 			{
@@ -109,36 +116,24 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public virtual Color TextColor
 		{
-			get { return Control.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
+			get { return Control.GetForeground(); }
 			set
 			{
-				#if GTK2
-				Control.ModifyText(Gtk.StateType.Normal, value.ToGdk());
-				#else
-				Control.ModifyFg(Gtk.StateType.Normal, value.ToGdk());
-				#endif
+				Control.SetForeground(value);
+				Control.SetTextColor(value);
 			}
 		}
-
-		Color? backgroundColor;
 
 		public override Color BackgroundColor
 		{
 			get
 			{
-				return backgroundColor ?? Colors.White;
+				return Control.GetBase();
 			}
 			set
 			{
-				backgroundColor = value;
-				if (backgroundColor != null)
-				{
-					#if GTK2
-					Control.ModifyBase(Gtk.StateType.Normal, backgroundColor.Value.ToGdk());
-					#else
-					Control.ModifyBg(Gtk.StateType.Normal, backgroundColor.Value.ToGdk());
-					#endif
-				}
+				Control.SetBackground(value);
+				Control.SetBase(value);
 			}
 		}
 
@@ -207,14 +202,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Gtk.TextIter start, end;
 				if (Control.Buffer.GetSelectionBounds(out start, out end))
-					return new Range<int>(start.Offset, end.Offset);
+					return new Range<int>(start.Offset, end.Offset - 1);
 				return new Range<int>(Control.Buffer.CursorPosition, 0);
 			}
 			set
 			{
 				sendSelectionChanged = false;
 				var start = Control.Buffer.GetIterAtOffset(value.Start);
-				var end = Control.Buffer.GetIterAtOffset(value.End);
+				var end = Control.Buffer.GetIterAtOffset(value.End + 1);
 				Control.Buffer.SelectRange(start, end);
 				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 				sendSelectionChanged = true;
@@ -253,16 +248,16 @@ namespace Eto.GtkSharp.Forms.Controls
 				{
 					if (!acceptsReturn)
 						Widget.KeyDown -= HandleKeyDown;
-						//Control.KeyPressEvent -= PreventEnterKey;
+					//Control.KeyPressEvent -= PreventEnterKey;
 					acceptsReturn = value;
 					if (!acceptsReturn)
 						Widget.KeyDown += HandleKeyDown;
-						//Control.KeyPressEvent += PreventEnterKey;
+					//Control.KeyPressEvent += PreventEnterKey;
 				}
 			}
 		}
 
-		void HandleKeyDown (object sender, KeyEventArgs e)
+		void HandleKeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyData == Keys.Enter)
 				e.Handled = true;
@@ -298,11 +293,19 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.Justification.ToEto(); }
 			set { Control.Justification = value.ToGtk(); }
 		}
+
+		public bool SpellCheck
+		{
+			get { return false; }
+			set { }
+		}
+
+		public bool SpellCheckIsSupported { get { return false; } }
 
 	}
 }

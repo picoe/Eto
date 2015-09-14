@@ -32,30 +32,6 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Layout"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected Layout(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.Layout"/> class.
-		/// </summary>
-		/// <param name="g">The green component.</param>
-		/// <param name="handler">Handler.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use Layout(ILayout) instead")]
-		protected Layout(Generator g, IHandler handler, bool initialize = true)
-			: base(g, handler, initialize)
-		{
-		}
-
-		/// <summary>
 		/// Re-calculates the layout of the controls and re-positions them, if necessary
 		/// </summary>
 		/// <remarks>

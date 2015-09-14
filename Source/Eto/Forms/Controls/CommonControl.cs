@@ -19,18 +19,6 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.CommonControl"/> class.
 		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected CommonControl(Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.CommonControl"/> class.
-		/// </summary>
 		protected CommonControl()
 		{
 		}

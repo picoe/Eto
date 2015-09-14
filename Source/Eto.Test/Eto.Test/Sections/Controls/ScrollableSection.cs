@@ -9,21 +9,23 @@ namespace Eto.Test.Sections.Controls
 		public ScrollableSection()
 		{
 			var layout = new TableLayout(4, 2);
-			
+			layout.Spacing = new Size(5, 5);
+			layout.Padding = new Padding(10);
+
 			layout.SetColumnScale(1);
 			layout.SetColumnScale(3);
 			layout.SetRowScale(0);
 			layout.SetRowScale(1);
-			
+
 			layout.Add(new Label { Text = "Default" }, 0, 0);
 			layout.Add(DefaultScrollable(), 1, 0);
-			
+
 			layout.Add(new Label { Text = "No Border" }, 2, 0);
 			layout.Add(NoBorderScrollable(), 3, 0);
-			
+
 			layout.Add(new Label { Text = "Bezeled" }, 0, 1);
 			layout.Add(BezelScrollable(), 1, 1);
-			
+
 			layout.Add(new Label { Text = "Line" }, 2, 1);
 			layout.Add(LineScrollable(), 3, 1);
 

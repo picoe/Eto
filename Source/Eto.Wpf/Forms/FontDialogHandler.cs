@@ -10,7 +10,6 @@ namespace Eto.Wpf.Forms
 	{
 		public FontDialogHandler()
 		{
-			Control = new CustomControls.FontDialog.FontChooser();
 		}
 
 		public override void AttachEvent(string id)
@@ -34,6 +33,8 @@ namespace Eto.Wpf.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
+			Control = new CustomControls.FontDialog.FontChooser();
+			
 			if (parent != null)
 			{
 				var owner = parent.ControlObject as sw.Window;

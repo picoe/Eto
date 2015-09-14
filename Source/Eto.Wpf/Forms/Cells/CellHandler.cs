@@ -8,6 +8,7 @@ namespace Eto.Wpf.Forms.Cells
 	{
 		sw.FrameworkElement SetupCell(ICellHandler cell, sw.FrameworkElement defaultContent);
 		void FormatCell(ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell datacell, object dataItem);
+		void CellEdited(ICellHandler cell, sw.FrameworkElement element);
 	}
 
 	public interface ICellHandler : Cell.IHandler

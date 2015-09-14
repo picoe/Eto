@@ -18,6 +18,11 @@ namespace Eto.WinForms.Forms.Cells
 
 			public sd.Drawing2D.InterpolationMode InterpolationMode { get; set; }
 
+			public EtoCell()
+			{
+				InterpolationMode = sd.Drawing2D.InterpolationMode.HighQualityBicubic;
+			}
+
 			public override void PositionEditingControl(bool setLocation, bool setSize, sd.Rectangle cellBounds, sd.Rectangle cellClip, swf.DataGridViewCellStyle cellStyle, bool singleVerticalBorderAdded, bool singleHorizontalBorderAdded, bool isFirstDisplayedColumn, bool isFirstDisplayedRow)
 			{
 				Handler.PositionEditingControl(RowIndex, ref cellClip, ref cellBounds, IconSize + IconPadding * 2);
@@ -40,7 +45,7 @@ namespace Eto.WinForms.Forms.Cells
 				return size;
 			}
 
-			protected override void Paint(System.Drawing.Graphics graphics, System.Drawing.Rectangle clipBounds, System.Drawing.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
+			protected override void Paint(sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
 			{
 				Handler.Paint(graphics, clipBounds, ref cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
 
@@ -50,6 +55,9 @@ namespace Eto.WinForms.Forms.Cells
 				{
 					var container = graphics.BeginContainer();
 					graphics.SetClip(cellBounds);
+					if (paintParts.HasFlag(swf.DataGridViewPaintParts.Background))
+						using (var background = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor))
+							graphics.FillRectangle(background, cellBounds);
 					graphics.InterpolationMode = InterpolationMode;
 					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + IconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(img.Height, cellBounds.Height)) / 2, IconSize, IconSize));
 					graphics.EndContainer(container);

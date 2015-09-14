@@ -1,9 +1,9 @@
-
 #define GTK_2_6
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
-using System.Linq;
 
 namespace Eto.GtkSharp.Drawing
 {
@@ -79,7 +79,7 @@ namespace Eto.GtkSharp.Drawing
 			}
 			set {
 				if (value.Count != colors.Length)
-					throw new ArgumentException ("Input palette must have the same colors as the output");
+					throw new ArgumentException (string.Format(CultureInfo.CurrentCulture, "Input palette must have the same colors as the output"));
 				for (int i=0; i<value.Count; i++) {
 					colors [i] = (uint)value [i].ToArgb ();
 				}
@@ -147,8 +147,6 @@ namespace Eto.GtkSharp.Drawing
 
 				var context = graphics.Control;
 				context.Save();
-				destination.X += (float)graphics.InverseOffset;
-				destination.Y += (float)graphics.InverseOffset;
 				context.Rectangle(destination.ToCairo());
 				double scalex = 1;
 				double scaley = 1;

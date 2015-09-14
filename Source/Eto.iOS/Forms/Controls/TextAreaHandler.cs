@@ -1,7 +1,7 @@
 using System;
-using MonoTouch.UIKit;
+using UIKit;
 using Eto.Forms;
-using MonoTouch.Foundation;
+using Foundation;
 using Eto.iOS.Drawing;
 using Eto.Drawing;
 
@@ -12,11 +12,11 @@ namespace Eto.iOS.Forms.Controls
 		public class EtoTextView : UITextView
 		{
 
-			public override System.Drawing.SizeF SizeThatFits(System.Drawing.SizeF size)
+			public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
 			{
 				var newSize = base.SizeThatFits(size);
-				newSize.Width = Math.Max(newSize.Width, TextArea.DefaultSize.Width);
-				newSize.Height = Math.Max(newSize.Height, TextArea.DefaultSize.Height);
+				newSize.Width = (nfloat)Math.Max(newSize.Width, 100);
+				newSize.Height = (nfloat)Math.Max(newSize.Height, 60);
 				return newSize;
 			}
 		}
@@ -84,7 +84,7 @@ namespace Eto.iOS.Forms.Controls
 			get
 			{ 
 				var range = Control.SelectedRange;
-				return new Range(range.Location, range.Location + range.Length);
+				return new Range<int>((int)range.Location, (int)(range.Location + range.Length - 1));
 			}
 			set
 			{
@@ -94,7 +94,7 @@ namespace Eto.iOS.Forms.Controls
 
 		public int CaretIndex
 		{
-			get { return Control.SelectedRange.Location; }
+			get { return (int)Control.SelectedRange.Location; }
 			set
 			{
 				Control.SelectedRange = new NSRange(value, 0);
@@ -119,10 +119,21 @@ namespace Eto.iOS.Forms.Controls
 			set;
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
 			get { return Control.TextAlignment.ToEto(); }
 			set { Control.TextAlignment = value.ToUI(); }
 		}
+
+		public bool SpellCheck
+		{
+			get { return Control.SpellCheckingType != UITextSpellCheckingType.No; }
+			set
+			{
+				Control.SpellCheckingType = value ? UITextSpellCheckingType.Yes : UITextSpellCheckingType.No;
+			}
+		}
+
+		public bool SpellCheckIsSupported { get { return true; } }
 	}
 }

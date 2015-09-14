@@ -8,7 +8,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
-#else
+#elif OSX
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
@@ -32,7 +32,7 @@ using nuint = System.UInt32;
 #endif
 #endif
 
-#if XAMMAC2
+#if XAMMAC2 || IOS
 using nnfloat = System.nfloat;
 #else
 using nnfloat = System.Single;
@@ -43,7 +43,7 @@ using nnfloat = System.Single;
 
 namespace Eto.Mac.Drawing
 #elif IOS
-using MonoTouch.CoreGraphics;
+using CoreGraphics;
 
 namespace Eto.iOS.Drawing
 #endif
@@ -141,7 +141,7 @@ namespace Eto.iOS.Drawing
 		public object Create (Color color, float thickness)
 		{
 			return new PenControl {
-				Color = color.ToCGColor (),
+				Color = color.ToCG (),
 				Thickness = thickness,
 				MiterLimit = 10f,
 				LineCap = PenLineCap.Square.ToCG ()
@@ -150,12 +150,12 @@ namespace Eto.iOS.Drawing
 
 		public Color GetColor (Pen widget)
 		{
-			return ((PenControl)widget.ControlObject).Color.ToEtoColor ();
+			return ((PenControl)widget.ControlObject).Color.ToEto();
 		}
 
 		public void SetColor (Pen widget, Color color)
 		{
-			((PenControl)widget.ControlObject).Color = color.ToCGColor ();
+			((PenControl)widget.ControlObject).Color = color.ToCG();
 		}
 
 		public float GetThickness (Pen widget)

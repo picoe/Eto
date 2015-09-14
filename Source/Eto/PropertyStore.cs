@@ -1,5 +1,9 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -17,19 +21,19 @@ namespace Eto
 	public class PropertyStore : Dictionary<object, object>
 	{
 		/// <summary>
-		/// Gets the parent widget that this property store is attached to
+		/// Gets the parent object that this property store is attached to
 		/// </summary>
 		/// <remarks>
 		/// This is used to attach/remove events
 		/// </remarks>
-		/// <value>The parent widget</value>
-		public Widget Parent { get; private set; }
+		/// <value>The parent object</value>
+		public object Parent { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.PropertyStore"/> class.
 		/// </summary>
 		/// <param name="parent">Parent to attach the properties to</param>
-		internal PropertyStore(Widget parent)
+		public PropertyStore(object parent)
 		{
 			this.Parent = parent;
 		}
@@ -38,12 +42,26 @@ namespace Eto
 		/// Gets a value from the property store with the specified key of a concrete type
 		/// </summary>
 		/// <param name="key">Key of the property to get</param>
+		/// <param name="defaultValue">Value to return when the specified property is not found in the dictionary</param>
 		/// <typeparam name="T">The type of property to get.</typeparam>
-		/// <returns>Value of the property with the given key, or default(T) if not found</returns>
-		public T Get<T>(object key)
+		/// <returns>Value of the property with the given key, or <paramref name="defaultValue"/> if not found</returns>
+		public T Get<T>(object key, T defaultValue = default(T))
 		{
 			object value;
-			return TryGetValue(key, out value) ? (T)value : default(T);
+			return TryGetValue(key, out value) ? (T)value : defaultValue;
+		}
+
+		/// <summary>
+		/// Gets a value from the property store with the specified key of a concrete type
+		/// </summary>
+		/// <param name="key">Key of the property to get</param>
+		/// <param name="defaultValue">Value to return when the specified property is not found in the dictionary</param>
+		/// <typeparam name="T">The type of property to get.</typeparam>
+		/// <returns>Value of the property with the given key, or <paramref name="defaultValue"/> if not found</returns>
+		public T Get<T>(object key, Func<T> defaultValue)
+		{
+			object value;
+			return TryGetValue(key, out value) ? (T)value : defaultValue();
 		}
 
 		/// <summary>
@@ -144,18 +162,17 @@ namespace Eto
 		/// <param name="value">Delegate to add to the event</param>
 		public void AddHandlerEvent(string key, Delegate value)
 		{
+			var parentWidget = Parent as Widget;
+			if (parentWidget == null)
+				throw new InvalidOperationException("Parent must subclass Widget");
 			object existingDelegate;
 			if (TryGetValue(key, out existingDelegate))
 				this[key] = Delegate.Combine((Delegate)existingDelegate, value);
 			else
 			{
-				if (!EventLookup.IsDefault(Parent, key))
+				if (!EventLookup.IsDefault(parentWidget, key))
 				{
-					var handler = Parent.Handler as Widget.IHandler;
-					if (handler != null)
-					{
-						handler.HandleEvent(key);
-					}
+					parentWidget.HandleEvent(key);
 				}
 				Add(key, value);
 			}
@@ -207,6 +224,191 @@ namespace Eto
 			{
 				((EventHandler<T>)existingDelegate)(sender, args);
 			}
+		}
+
+		/// <summary>
+		/// Set the value for the specified property key, removing the value from the dictionary if it is the default value of T.
+		/// </summary>
+		/// <remarks>
+		/// This can be used as an optimized way to set the value in the dictionary as if the value set equal to the <paramref name="defaultValue"/>
+		/// (e.g. null for reference types, false for bool, 0 for int, etc), then it will be removed from the dictionary
+		/// instead of just set to the value, reducing memory usage.
+		/// The <see cref="Get{T}(object,T)"/> should be passed the same default when retrieving the parameter value.
+		/// </remarks>
+		/// <param name="key">Key of the property to set.</param>
+		/// <param name="value">Value for the property.</param>
+		/// <param name="defaultValue">Value of the property when it should be removed from the dictionary. This should match what is passed to <see cref="Get{T}(object,T)"/> when getting the value.</param>
+		/// <typeparam name="T">The type of the property to set.</typeparam>
+		public void Set<T>(object key, T value, T defaultValue = default(T))
+		{
+			if (Equals(value, defaultValue))
+				Remove(key);
+			else
+				this[key] = value;
+		}
+
+		/// <summary>
+		/// Set the value for the specified property key, raising the <paramref name="propertyChanged"/> handler if it has changed.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when creating properties that need to trigger changed events without having to write boilerplate code.
+		/// </remarks>
+		/// <example>
+		/// <code>
+		/// public class MyForm : Form, INotifyPropertyChanged
+		/// {
+		/// 	static readonly MyPropertyKey = new object();
+		/// 
+		/// 	public bool MyProperty
+		///		{
+		/// 		get { return Properties.Get&lt;bool&gt;(MyPropertyKey); }
+		/// 		set { Properties.Set(MyPropertyKey, value, PropertyChanged); }
+		/// 	}
+		/// 
+		/// 	public event PropertyChangedEventHandler PropertyChanged;
+		/// }
+		/// </code>
+		/// </example>
+		/// <param name="key">Key of the property to set.</param>
+		/// <param name="value">Value for the property.</param>
+		/// <param name="defaultValue">Default value of the property to compare when removing the key</param>
+		/// <param name="propertyChanged">Property changed event handler to raise if the property value has changed.</param>
+		/// <param name="propertyName">Name of the property, or omit to get the property name from the caller.</param>
+		/// <typeparam name="T">The type of the property to set.</typeparam>
+		/// <returns>true if the property was changed, false if not</returns>
+		#if PCL
+		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, T defaultValue = default(T), [CallerMemberName] string propertyName = null)
+		#else
+		public bool Set<T>(object key, T value, PropertyChangedEventHandler propertyChanged, T defaultValue, string propertyName)
+		#endif
+		{
+			var existing = Get<T>(key);
+			if (!Equals(existing, value))
+			{
+				Set<T>(key, value, defaultValue);
+				if (propertyChanged != null)
+					propertyChanged(Parent, new PropertyChangedEventArgs(propertyName));
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Set the value for the specified property key, calling the <paramref name="propertyChanged"/> delegate if it has changed.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when creating properties that need to trigger changed events without having to write boilerplate code.
+		/// </remarks>
+		/// <example>
+		/// <code>
+		/// public class MyForm : Form
+		/// {
+		/// 	static readonly MyPropertyKey = new object();
+		/// 
+		/// 	public bool MyProperty
+		///		{
+		/// 		get { return Properties.Get&lt;bool&gt;(MyPropertyKey); }
+		/// 		set { Properties.Set(MyPropertyKey, value, OnMyPropertyChanged); }
+		/// 	}
+		/// 
+		/// 	public event EventHandler&lt;EventArgs&gt; MyPropertyChanged;
+		/// 	
+		///		protected virtual void MyPropertyChanged(EventArgs e)
+		///		{
+		///			if (MyPropertyChanged != null)
+		///				MyPropertyChanged(this, e);
+		///		}
+		/// }
+		/// </code>
+		/// </example>
+		/// <param name="key">Key of the property to set.</param>
+		/// <param name="value">Value for the property.</param>
+		/// <param name="defaultValue">Default value of the property to compare when removing the key</param>
+		/// <param name="propertyChanged">Property changed event handler to raise if the property value has changed.</param>
+		/// <typeparam name="T">The type of the property to set.</typeparam>
+		/// <returns>true if the property was changed, false if not</returns>
+		public bool Set<T>(object key, T value, Action propertyChanged, T defaultValue = default(T))
+		{
+			var existing = Get<T>(key);
+			if (!Equals(existing, value))
+			{
+				Set<T>(key, value, defaultValue);
+				propertyChanged();
+				return true;
+			}
+			return false;
+		}
+
+		class CommandWrapper
+		{
+			readonly Action<EventHandler<EventArgs>> removeExecute;
+			readonly Action<bool> setEnabled;
+			public ICommand Command { get; set; }
+
+			public CommandWrapper(ICommand command, Action<bool> setEnabled, Action<EventHandler<EventArgs>> addExecute, Action<EventHandler<EventArgs>> removeExecute)
+			{
+				this.Command = command;
+				this.setEnabled = setEnabled;
+				this.removeExecute = removeExecute;
+				addExecute(Command_Execute);
+				SetEnabled();
+				command.CanExecuteChanged += Command_CanExecuteChanged;;
+			}
+
+			public void Unregister()
+			{
+				removeExecute(Command_Execute);
+				Command.CanExecuteChanged -= Command_CanExecuteChanged;
+			}
+
+			void Command_Execute(object sender, EventArgs e)
+			{
+				Command.Execute(null);
+			}
+
+			void Command_CanExecuteChanged(object sender, EventArgs e)
+			{
+				SetEnabled();
+			}
+
+			void SetEnabled()
+			{
+				if (setEnabled != null)
+					setEnabled(Command.CanExecute(null));
+			}
+		}
+
+		/// <summary>
+		/// Sets an <see cref="ICommand"/> value for the specified property <paramref name="key"/>.
+		/// </summary>
+		/// <param name="key">Key of the property to set</param>
+		/// <param name="value">Command instance</param>
+		/// <param name="setEnabled">Delegate to set the widget as enabled when the command state changes.</param>
+		/// <param name="addExecute">Delegate to attach the execute event handler when the widget invokes the command.</param>
+		/// <param name="removeExecute">Delegate to detach the execute event handler.</param>
+		/// <seealso cref="GetCommand"/>
+		public void SetCommand(object key, ICommand value, Action<bool> setEnabled, Action<EventHandler<EventArgs>> addExecute, Action<EventHandler<EventArgs>> removeExecute)
+		{
+			var cmd = Get<CommandWrapper>(key);
+			if (cmd != null)
+			{
+				if (ReferenceEquals(cmd.Command, value))
+					return;
+				cmd.Unregister();
+			}
+			Set(key, value != null ? new CommandWrapper(value, setEnabled, addExecute, removeExecute) : null);
+		}
+
+		/// <summary>
+		/// Gets the command instance for the specified property key.
+		/// </summary>
+		/// <returns>The command instance, or null if it is not set.</returns>
+		/// <param name="key">Key of the property to get.</param>
+		/// <seealso cref="SetCommand"/>
+		public ICommand GetCommand(object key)
+		{
+			var cmd = Get<CommandWrapper>(key);
+			return cmd != null ? cmd.Command : null;
 		}
 	}
 }

@@ -1,10 +1,11 @@
 using System;
+using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using ImageManipulation;
-using System.Runtime.InteropServices;
 
 namespace Eto.WinForms.Drawing
 {
@@ -107,7 +108,7 @@ namespace Eto.WinForms.Drawing
 					sdPixelFormat = SD.Imaging.PixelFormat.Format32bppPArgb;
 					break;
 				default:
-					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, "Not supported");
+					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, string.Format(CultureInfo.CurrentCulture, "Not supported"));
 			}
 			Control = new SD.Bitmap(width, height, sdPixelFormat);
 		}
@@ -151,6 +152,14 @@ namespace Eto.WinForms.Drawing
 		public void Unlock(BitmapData bitmapData)
 		{
 			Control.UnlockBits((SD.Imaging.BitmapData)bitmapData.ControlObject);
+		}
+
+		public void Save(string fileName, ImageFormat format)
+		{
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+			{
+				Save(stream, format);
+			}
 		}
 
 		public void Save(Stream stream, ImageFormat format)

@@ -13,11 +13,12 @@ namespace Eto.Forms
 	/// It is advised to utilize different methods (e.g. a listbox or combo box) to switch between many sections
 	/// if there are too many tabs.
 	/// </remarks>
-	[ContentProperty("TabPages")]
+	[ContentProperty("Pages")]
 	[Handler(typeof(TabControl.IHandler))]
 	public class TabControl : Container
 	{
 		TabPageCollection pages;
+
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
@@ -26,13 +27,19 @@ namespace Eto.Forms
 		/// <value>The contained controls.</value>
 		public override IEnumerable<Control> Controls
 		{
-			get { return pages; }
+			get { return pages ?? Enumerable.Empty<Control>(); }
 		}
+
+		static readonly object SelectedIndexChangedEvent = new object();
 
 		/// <summary>
 		/// Occurs when the <see cref="SelectedIndex"/> is changed.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedIndexChanged;
+		public event EventHandler<EventArgs> SelectedIndexChanged
+		{
+			add { Properties.AddEvent(SelectedIndexChangedEvent, value); }
+			remove { Properties.RemoveEvent(SelectedIndexChangedEvent, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedIndexChanged"/> event.
@@ -40,8 +47,10 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
-			if (SelectedIndexChanged != null)
-				SelectedIndexChanged(this, e);
+			Properties.TriggerEvent(SelectedIndexChangedEvent, this, e);
+			var page = SelectedPage;
+			if (page != null)
+				page.TriggerClick(e);
 		}
 
 		/// <summary>
@@ -57,39 +66,6 @@ namespace Eto.Forms
 		/// <param name="handler">Handler for the implementation of the tab control.</param>
 		protected TabControl(IHandler handler)
 			: base(handler)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TabControl"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		[Obsolete("Use default constructor instead")]
-		public TabControl(Generator generator) : this (generator, typeof(IHandler))
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TabControl"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="type">Type.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use default constructor and HandlerAttribute instead")]
-		protected TabControl(Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.TabControl"/> class.
-		/// </summary>
-		/// <param name="generator">Generator.</param>
-		/// <param name="handler">Handler.</param>
-		/// <param name="initialize">If set to <c>true</c> initialize.</param>
-		[Obsolete("Use TabControl(ITabControl) instead")]
-		protected TabControl(Generator generator, IHandler handler, bool initialize = true)
-			: base(generator, handler, initialize)
 		{
 		}
 
@@ -116,16 +92,6 @@ namespace Eto.Forms
 		/// <summary>
 		/// Gets the collection of tab pages.
 		/// </summary>
-		/// <value>The tab pages.</value>
-		[Obsolete("Use Pages instead")]
-		public Collection<TabPage> TabPages
-		{
-			get { return pages ?? (pages = new TabPageCollection(this)); }
-		}
-
-		/// <summary>
-		/// Gets the collection of tab pages.
-		/// </summary>
 		/// <value>The pages.</value>
 		public Collection<TabPage> Pages
 		{
@@ -146,14 +112,28 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the position of the tabs relative to the content.
+		/// </summary>
+		/// <remarks>
+		/// Note that on some platforms the text is rotated when using Left or Right (e.g. OS X).
+		/// This means that is is not suitable when you have a lot of tabs.
+		/// Some platforms (mobile) may ignore this hint and display the tabs according to the platform.
+		/// </remarks>
+		public DockPosition TabPosition
+		{
+			get { return Handler.TabPosition; }
+			set { Handler.TabPosition = value; }
+		}
+
+		/// <summary>
 		/// Gets the binding for the <see cref="SelectedIndex"/> property.
 		/// </summary>
 		/// <value>The selected index binding.</value>
-		public ControlBinding<TabControl, int> SelectedIndexBinding
+		public BindableBinding<TabControl, int> SelectedIndexBinding
 		{
 			get
 			{
-				return new ControlBinding<TabControl, int>(
+				return new BindableBinding<TabControl, int>(
 					this, 
 					c => c.SelectedIndex, 
 					(c, v) => c.SelectedIndex = v, 
@@ -265,6 +245,11 @@ namespace Eto.Forms
 			/// <param name="index">Index of the page to remove.</param>
 			/// <param name="page">Page to remove.</param>
 			void RemoveTab(int index, TabPage page);
+
+			/// <summary>
+			/// Gets or sets the position of the tabs relative to the content.
+			/// </summary>
+			DockPosition TabPosition { get; set; }
 		}
 
 		#endregion

@@ -7,22 +7,6 @@ using System.Collections;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Orientation of buttons in a <see cref="RadioButtonList"/>
-	/// </summary>
-	public enum RadioButtonListOrientation
-	{
-		/// <summary>
-		/// Radio buttons are displayed horizontally.
-		/// </summary>
-		Horizontal,
-
-		/// <summary>
-		/// Radio buttons are displayed vertically.
-		/// </summary>
-		Vertical
-	}
-
-	/// <summary>
 	/// Shows a list of radio buttons.
 	/// </summary>
 	/// <remarks>
@@ -31,7 +15,7 @@ namespace Eto.Forms
 	/// </remarks>
 	public class RadioButtonList : Panel
 	{
-		RadioButtonListOrientation orientation;
+		Orientation orientation;
 		ItemDataStore dataStore;
 		readonly List<RadioButton> buttons = new List<RadioButton>();
 		RadioButton controller;
@@ -46,7 +30,7 @@ namespace Eto.Forms
 		/// By default, this will bind to a "Text" property, or <see cref="IListItem.Text"/> when implemented.
 		/// </remarks>
 		/// <value>The text binding.</value>
-		public IIndirectBinding<string> TextBinding { get; set; }
+		public IIndirectBinding<string> ItemTextBinding { get; set; }
 
 		/// <summary>
 		/// Gets or sets the binding to get the key for each radio button.
@@ -55,12 +39,44 @@ namespace Eto.Forms
 		/// By default, this will bind to a "Key" property, or <see cref="IListItem.Key"/> when implemented.
 		/// </remarks>
 		/// <value>The key binding.</value>
-		public IIndirectBinding<string> KeyBinding { get; set; }
+		public IIndirectBinding<string> ItemKeyBinding { get; set; }
+
+		/// <summary>
+		/// Gets or sets the binding to get the text for each radio button.
+		/// </summary>
+		/// <remarks>
+		/// By default, this will bind to a "Text" property, or <see cref="IListItem.Text"/> when implemented.
+		/// </remarks>
+		/// <value>The text binding.</value>
+		[Obsolete("Since 2.1: Use ItemTextBinding instead")]
+		public IIndirectBinding<string> TextBinding {
+			get { return ItemTextBinding; }
+			set { ItemTextBinding = value; }
+		}
+		
+		/// <summary>
+		/// Gets or sets the binding to get the key for each radio button.
+		/// </summary>
+		/// <remarks>
+		/// By default, this will bind to a "Key" property, or <see cref="IListItem.Key"/> when implemented.
+		/// </remarks>
+		/// <value>The key binding.</value>
+		[Obsolete("Since 2.1: Use ItemKeyBinding instead")]
+		public IIndirectBinding<string> KeyBinding {
+			get { return ItemKeyBinding; }
+			set { ItemKeyBinding = value; }
+		}
+
+		static readonly object SelectedIndexChangedKey = new object();
 
 		/// <summary>
 		/// Occurs when the <see cref="SelectedIndex"/> changes.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedIndexChanged;
+		public event EventHandler<EventArgs> SelectedIndexChanged
+		{
+			add { Properties.AddEvent(SelectedIndexChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedIndexChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedIndexChanged"/> event.
@@ -68,15 +84,21 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedIndexChanged(EventArgs e)
 		{
-			if (SelectedIndexChanged != null)
-				SelectedIndexChanged(this, e);
+			Properties.TriggerEvent(SelectedIndexChangedKey, this, e);
 			OnSelectedValueChanged(e);
+			OnSelectedKeyChanged(e);
 		}
 
+		static readonly object SelectedValueChangedKey = new object();
+		
 		/// <summary>
 		/// Occurs when <see cref="SelectedValue"/> changes.
 		/// </summary>
-		public event EventHandler<EventArgs> SelectedValueChanged;
+		public event EventHandler<EventArgs> SelectedValueChanged
+		{
+			add { Properties.AddEvent(SelectedValueChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedValueChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Raises the <see cref="SelectedValueChanged"/> event.
@@ -84,20 +106,39 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments.</param>
 		protected virtual void OnSelectedValueChanged(EventArgs e)
 		{
-			if (SelectedValueChanged != null)
-				SelectedValueChanged(this, e);
+			Properties.TriggerEvent(SelectedValueChangedKey, this, e);
+		}
+
+		static readonly object SelectedKeyChangedKey = new object();
+
+		/// <summary>
+		/// Occurs when <see cref="SelectedKey"/> changes.
+		/// </summary>
+		public event EventHandler<EventArgs> SelectedKeyChanged
+		{
+			add { Properties.AddEvent(SelectedKeyChangedKey, value); }
+			remove { Properties.RemoveEvent(SelectedKeyChangedKey, value); }
 		}
 
 		/// <summary>
-		/// Gets or sets the selected key of the currently selected item using the <see cref="KeyBinding"/>.
+		/// Raises the <see cref="SelectedKeyChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnSelectedKeyChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(SelectedKeyChangedKey, this, e);
+		}
+
+		/// <summary>
+		/// Gets or sets the selected key of the currently selected item using the <see cref="ItemKeyBinding"/>.
 		/// </summary>
 		/// <value>The selected key.</value>
 		public string SelectedKey
 		{
-			get { return SelectedValue == null ? null : KeyBinding.GetValue(SelectedValue); }
+			get { return SelectedValue == null ? null : ItemKeyBinding.GetValue(SelectedValue); }
 			set
 			{
-				if (SelectedValue == null || KeyBinding.GetValue(SelectedValue) != value)
+				if (SelectedValue == null || ItemKeyBinding.GetValue(SelectedValue) != value)
 				{
 					SetSelectedKey(value);
 				}
@@ -137,7 +178,7 @@ namespace Eto.Forms
 				if (SelectedValue != value)
 				{
 					if (value != null)
-						SetSelectedKey(KeyBinding.GetValue(value));
+						SetSelectedKey(ItemKeyBinding.GetValue(value));
 					else
 						SetSelected(null);
 				}
@@ -209,7 +250,7 @@ namespace Eto.Forms
 		/// Gets or sets the orientation of the radio buttons.
 		/// </summary>
 		/// <value>The radio button orientation.</value>
-		public RadioButtonListOrientation Orientation
+		public Orientation Orientation
 		{
 			get { return orientation; }
 			set
@@ -265,7 +306,7 @@ namespace Eto.Forms
 		/// Gets or sets the data store of the items shown in the list.
 		/// </summary>
 		/// <remarks>
-		/// When using a custom object collection, you can use the <see cref="TextBinding"/> and <see cref="KeyBinding"/> 
+		/// When using a custom object collection, you can use the <see cref="ItemTextBinding"/> and <see cref="ItemKeyBinding"/> 
 		/// to specify how to get the text/key values for each item.
 		/// </remarks>
 		/// <value>The data store.</value>
@@ -284,8 +325,8 @@ namespace Eto.Forms
 		/// </summary>
 		public RadioButtonList()
 		{
-			TextBinding = new ListItemTextBinding();
-			KeyBinding = new ListItemKeyBinding();
+			ItemTextBinding = new ListItemTextBinding();
+			ItemKeyBinding = new ListItemKeyBinding();
 		}
 
 		/// <summary>
@@ -316,7 +357,7 @@ namespace Eto.Forms
 				return;
 			SuspendLayout();
 			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = spacing };
-			var horizontal = orientation == RadioButtonListOrientation.Horizontal;
+			var horizontal = orientation == Orientation.Horizontal;
 			if (horizontal)
 				layout.BeginHorizontal();
 			foreach (var button in buttons)
@@ -353,7 +394,7 @@ namespace Eto.Forms
 		void SetSelectedKey(string key, bool force = false)
 		{
 			EnsureButtons();
-			SetSelected(buttons.FirstOrDefault(r => KeyBinding.GetValue(r.Tag) == key), force);
+			SetSelected(buttons.FirstOrDefault(r => ItemKeyBinding.GetValue(r.Tag) == key), force);
 		}
 
 		void SetSelected(RadioButton button, bool force = false, bool sendEvent = true)
@@ -376,7 +417,7 @@ namespace Eto.Forms
 		{
 			var button = new RadioButton(controller);
 			button.CheckedChanged += HandleCheckedChanged;
-			button.Text = TextBinding.GetValue(item);
+			button.Text = ItemTextBinding.GetValue(item);
 			button.Tag = item;
 			button.Enabled = base.Enabled;
 			if (controller == null)
@@ -412,18 +453,127 @@ namespace Eto.Forms
 		/// Gets a binding to the <see cref="SelectedValue"/> property.
 		/// </summary>
 		/// <value>The selected value binding.</value>
-		public ControlBinding<RadioButtonList, object> SelectedValueBinding
+		public BindableBinding<RadioButtonList, object> SelectedValueBinding
 		{
 			get
 			{
-				return new ControlBinding<RadioButtonList, object>(
-					this, 
-					c => c.SelectedValue, 
-					(c, v) => c.SelectedValue = v, 
-					(c, h) => c.SelectedValueChanged += h, 
+				return new BindableBinding<RadioButtonList, object>(
+					this,
+					c => c.SelectedValue,
+					(c, v) => c.SelectedValue = v,
+					(c, h) => c.SelectedValueChanged += h,
 					(c, h) => c.SelectedValueChanged -= h
 				);
 			}
+		}
+
+		/// <summary>
+		/// Gets a binding to the <see cref="SelectedIndex"/> property.
+		/// </summary>
+		/// <value>The selected index binding.</value>
+		public BindableBinding<RadioButtonList, int> SelectedIndexBinding
+		{
+			get
+			{
+				return new BindableBinding<RadioButtonList, int>(
+					this,
+					c => c.SelectedIndex,
+					(c, v) => c.SelectedIndex = v,
+					(c, h) => c.SelectedIndexChanged += h,
+					(c, h) => c.SelectedIndexChanged -= h
+				);
+			}
+		}
+
+		/// <summary>
+		/// Gets a binding to the <see cref="SelectedKey"/> property.
+		/// </summary>
+		/// <value>The selected index binding.</value>
+		public BindableBinding<RadioButtonList, string> SelectedKeyBinding
+		{
+			get
+			{
+				return new BindableBinding<RadioButtonList, string>(
+					this,
+					c => c.SelectedKey,
+					(c, v) => c.SelectedKey = v,
+					(c, h) => c.SelectedKeyChanged += h,
+					(c, h) => c.SelectedKeyChanged -= h
+				);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Orientation of buttons in a <see cref="RadioButtonList"/>
+	/// </summary>
+	[Obsolete("Since 2.1: Use Orientation instead")]
+	public struct RadioButtonListOrientation
+	{
+		readonly Orientation orientation;
+
+		RadioButtonListOrientation(Orientation orientation)
+		{
+			this.orientation = orientation;
+		}
+
+		/// <summary>
+		/// Radio buttons are displayed horizontally.
+		/// </summary>
+		public static RadioButtonListOrientation Horizontal { get { return Orientation.Horizontal; } }
+
+		/// <summary>
+		/// Radio buttons are displayed vertically.
+		/// </summary>
+		public static RadioButtonListOrientation Vertical { get { return Orientation.Vertical; } }
+
+		/// <summary>Converts to an Orientation</summary>
+		public static implicit operator Orientation(RadioButtonListOrientation orientation)
+		{
+			return orientation.orientation;
+		}
+
+		/// <summary>Converts an Orientation to a RadioButtonListOrientation</summary>
+		public static implicit operator RadioButtonListOrientation(Orientation orientation)
+		{
+			return new RadioButtonListOrientation(orientation);
+		}
+
+		/// <summary>Compares for equality</summary>
+		/// <param name="orientation1">Orientation1.</param>
+		/// <param name="orientation2">Orientation2.</param>
+		public static bool operator ==(Orientation orientation1, RadioButtonListOrientation orientation2)
+		{
+			return orientation1 == orientation2.orientation;
+		}
+
+		/// <summary>Compares for inequality</summary>
+		/// <param name="orientation1">Orientation1.</param>
+		/// <param name="orientation2">Orientation2.</param>
+		public static bool operator !=(Orientation orientation1, RadioButtonListOrientation orientation2)
+		{
+			return orientation1 != orientation2.orientation;
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="Eto.Forms.SliderOrientation"/>.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with the current <see cref="Eto.Forms.SliderOrientation"/>.</param>
+		/// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current
+		/// <see cref="Eto.Forms.SliderOrientation"/>; otherwise, <c>false</c>.</returns>
+		public override bool Equals(object obj)
+		{
+			return (obj is RadioButtonListOrientation && (this == (RadioButtonListOrientation)obj))
+				|| (obj is Orientation && (this == (Orientation)obj));
+		}
+
+		/// <summary>
+		/// Serves as a hash function for a <see cref="Eto.Forms.SliderOrientation"/> object.
+		/// </summary>
+		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+		public override int GetHashCode()
+		{
+			return orientation.GetHashCode();
 		}
 	}
 }

@@ -12,11 +12,11 @@ namespace Eto.WinForms.Forms.Controls
 		public class EtoLabel : swf.Label
 		{
 			WrapMode wrapMode;
-			HorizontalAlign horizontalAlign;
+			TextAlignment horizontalAlign;
 			sd.SizeF? measuredSize;
 			sd.Size proposedSizeCache;
 			sd.SizeF? measuredSizeMax;
-			VerticalAlign verticalAlign;
+			VerticalAlignment verticalAlign;
 			swf.TextFormatFlags textFormat = swf.TextFormatFlags.Default;
 
 			void ClearSize()
@@ -55,7 +55,7 @@ namespace Eto.WinForms.Forms.Controls
 				}
 			}
 
-			public HorizontalAlign HorizontalAlign
+			public TextAlignment TextAlignment
 			{
 				get { return horizontalAlign; }
 				set
@@ -66,7 +66,7 @@ namespace Eto.WinForms.Forms.Controls
 				}
 			}
 
-			public VerticalAlign VerticalAlign
+			public VerticalAlignment VerticalAlignment
 			{
 				get { return verticalAlign; }
 				set
@@ -87,9 +87,15 @@ namespace Eto.WinForms.Forms.Controls
 				var bordersAndPadding = Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
 				if (proposedSize.Width <= 1)
 					proposedSize.Width = int.MaxValue;
+
 				if (proposedSize.Width == int.MaxValue)
 				{
-					if (measuredSizeMax == null)
+					if (measuredSizeMax == null && string.IsNullOrEmpty(Text))
+					{
+						var emptySize = swf.TextRenderer.MeasureText(" ", Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
+						measuredSizeMax = new sd.SizeF(0, emptySize.Height);
+					}
+					else if (measuredSizeMax == null)
 					{
 						proposedSize -= bordersAndPadding;
 						proposedSize.Height = Math.Max(0, proposedSize.Height);
@@ -105,7 +111,6 @@ namespace Eto.WinForms.Forms.Controls
 					measuredSize = swf.TextRenderer.MeasureText(Text, Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
 				}
 				var size = measuredSize.Value;
-				size += bordersAndPadding;
 				if (size.Width < MinimumSize.Width)
 					size.Width = MinimumSize.Width;
 				if (size.Height < MinimumSize.Height)
@@ -127,27 +132,28 @@ namespace Eto.WinForms.Forms.Controls
 					case WrapMode.Character:
 						break;
 				}
-				switch (HorizontalAlign)
+				switch (TextAlignment)
 				{
-					case HorizontalAlign.Left:
+					case TextAlignment.Left:
 						textFormat |= swf.TextFormatFlags.Left;
 						break;
-					case HorizontalAlign.Right:
+					case TextAlignment.Right:
 						textFormat |= swf.TextFormatFlags.Right;
 						break;
-					case HorizontalAlign.Center:
+					case TextAlignment.Center:
 						textFormat |= swf.TextFormatFlags.HorizontalCenter;
 						break;
 				}
-				switch (VerticalAlign)
+				switch (VerticalAlignment)
 				{
-					case VerticalAlign.Top:
+					case VerticalAlignment.Top:
+					case VerticalAlignment.Stretch:
 						textFormat |= swf.TextFormatFlags.Top;
 						break;
-					case VerticalAlign.Bottom:
+					case VerticalAlignment.Bottom:
 						textFormat |= swf.TextFormatFlags.Bottom;
 						break;
-					case VerticalAlign.Middle:
+					case VerticalAlignment.Center:
 						textFormat |= swf.TextFormatFlags.VerticalCenter;
 						break;
 				}
@@ -156,7 +162,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 			{
-				var rect = new sd.Rectangle(Margin.Left, Margin.Top, Bounds.Width - Margin.Horizontal, Bounds.Height - Margin.Vertical);
+				var rect = new sd.Rectangle(0, 0, Bounds.Width, Bounds.Height);
 				swf.TextRenderer.DrawText(e.Graphics, Text, Font, rect, ForeColor, BackColor, textFormat);
 			}
 		}
@@ -175,14 +181,14 @@ namespace Eto.WinForms.Forms.Controls
 			set { Control.ForeColor = value.ToSD(); }
 		}
 
-		public HorizontalAlign HorizontalAlign
+		public TextAlignment TextAlignment
 		{
-			get { return Control.HorizontalAlign; }
+			get { return Control.TextAlignment; }
 			set
 			{
-				if (Control.HorizontalAlign != value)
+				if (Control.TextAlignment != value)
 				{
-					Control.HorizontalAlign = value;
+					Control.TextAlignment = value;
 					Control.Invalidate();
 				}
 				/*if (Control.Dock != SWF.DockStyle.None) {
@@ -204,14 +210,14 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public VerticalAlign VerticalAlign
+		public VerticalAlignment VerticalAlignment
 		{
-			get { return Control.VerticalAlign; }
+			get { return Control.VerticalAlignment; }
 			set
 			{
-				if (Control.VerticalAlign != value)
+				if (Control.VerticalAlignment != value)
 				{
-					Control.VerticalAlign = value;
+					Control.VerticalAlignment = value;
 					Control.Invalidate();
 				}
 			}
