@@ -5,7 +5,7 @@ install:
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
 - set BUILD_VERSION=000%APPVEYOR_BUILD_NUMBER%
-- set BUILD_VERSION=2.1.0-build%BUILD_VERSION:~-4%
+- set BUILD_VERSION=2.2.0-build%BUILD_VERSION:~-4%
 - echo Downloading XamMac.dll for build..
 - mkdir %BASE%\BuildOutput\net40\Release
 - mkdir %BASE%\BuildOutput\net45\Release
