@@ -12,7 +12,7 @@
 		<CreateNewFolder>true</CreateNewFolder>
 		<ProvideDefaultName>true</ProvideDefaultName>
 		<NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
-	</TemplateData>
+  </TemplateData>
 	<TemplateContent>
 		<ProjectItem>AssemblyInfo.cs</ProjectItem>
 		<ProjectItem>Eto\Eto.vstemplate</ProjectItem>
