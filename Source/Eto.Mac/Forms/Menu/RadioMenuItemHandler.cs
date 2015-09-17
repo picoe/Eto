@@ -1,12 +1,15 @@
 using System;
 using Eto.Forms;
 using System.Collections.Generic;
+using System.Linq;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -32,15 +35,14 @@ namespace Eto.Mac.Forms.Menu
 
 		public override void Activate()
 		{
-			Callback.OnClick(Widget, EventArgs.Empty);
-			
 			if (radioGroup != null)
 			{
-				foreach (RadioMenuItem item in radioGroup)
-				{
-					item.Checked = (item.ControlObject == Control);
-				}
+				var checkedItem = radioGroup.FirstOrDefault(r => r.Checked);
+				if (checkedItem != null)
+					checkedItem.Checked = false;
 			}
+			Checked = true;
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public void Create(RadioMenuItem controller)
@@ -89,7 +91,14 @@ namespace Eto.Mac.Forms.Menu
 		public bool Checked
 		{
 			get { return Control.State == NSCellStateValue.On; }
-			set { Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; }
+			set
+			{ 
+				if (Checked != value)
+				{
+					Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; 
+					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+				}
+			}
 		}
 
 		MenuItem IMenuActionHandler.Widget
@@ -97,10 +106,17 @@ namespace Eto.Mac.Forms.Menu
 			get { return Widget; }
 		}
 
+		MenuItem.ICallback IMenuActionHandler.Callback
+		{
+			get { return Callback; }
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
+				case RadioMenuItem.CheckedChangedEvent:
+					break;
 				case MenuItem.ValidateEvent:
 					// handled in MenuActionHandler
 					break;

@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Editor;
 using Eto.Addin.VisualStudio.Wizards;
 
-namespace Eto.Addin.VisualStudio
+namespace Eto.Addin.VisualStudio.Editor
 {
 	[Guid(Constants.EtoPreviewEditorFactory_string)]
 	public sealed class EditorFactory : IVsEditorFactory, IDisposable
@@ -97,10 +97,10 @@ namespace Eto.Addin.VisualStudio
 
 			// we support only a single physical view
 			if (
-				//rguidLogicalView == VSConstants.LOGVIEWID.Primary_guid
-				/*||*/ rguidLogicalView == VSConstants.LOGVIEWID.Code_guid
+				rguidLogicalView == VSConstants.LOGVIEWID.Primary_guid
+				//|| rguidLogicalView == VSConstants.LOGVIEWID.Code_guid
 				|| rguidLogicalView == VSConstants.LOGVIEWID.TextView_guid
-				//|| rguidLogicalView == VSConstants.LOGVIEWID.Designer_guid
+				|| rguidLogicalView == VSConstants.LOGVIEWID.Designer_guid
 			)
 			{
 				//pbstrPhysicalView = "design";
@@ -177,9 +177,9 @@ namespace Eto.Addin.VisualStudio
 				return VSConstants.E_INVALIDARG;
 			}
 
+			// Get or open text buffer
 			var textBuffer = GetTextBuffer(punkDocDataExisting, pszMkDocument);
 			
-
 			if (textBuffer == null)
 				return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 
@@ -196,8 +196,7 @@ namespace Eto.Addin.VisualStudio
 			// Create the Document (editor)
 			var editor = new EtoPreviewPane(editorPackage, pszMkDocument, textBuffer);
 			ppunkDocView = Marshal.GetIUnknownForObject(editor);
-			//ppunkDocData = Marshal.GetIUnknownForObject(textBuffer);
-			pbstrEditorCaption = " [Preview]";
+			//pbstrEditorCaption = " [Preview]";
 			return VSConstants.S_OK;
 		}
 
@@ -206,64 +205,39 @@ namespace Eto.Addin.VisualStudio
 			IVsTextLines textBuffer = null;
 			if (punkDocDataExisting == IntPtr.Zero)
 			{
-				var serviceProvider = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
+				// load file using invisible editor
+				var invisibleEditorManager = Services.GetService<SVsInvisibleEditorManager, IVsInvisibleEditorManager>();
+				IVsInvisibleEditor invisibleEditor;
+				invisibleEditorManager.RegisterInvisibleEditor(
+					fileName
+					, pProject: null
+					, dwFlags: (uint)_EDITORREGFLAGS.RIEF_ENABLECACHING
+					, pFactory: null
+					, ppEditor: out invisibleEditor);
+				IntPtr docDataPointer;
+				var guidIVsTextLines = typeof(IVsTextLines).GUID;
+				invisibleEditor.GetDocData(
+					fEnsureWritable: 1
+					, riid: ref guidIVsTextLines
+					, ppDocData: out docDataPointer);
+				var docData = (IVsTextLines)Marshal.GetObjectForIUnknown(docDataPointer);
 
-				Type textLinesType = typeof(IVsTextLines);
-				Guid riid = textLinesType.GUID;
-				Guid clsid = typeof(VsTextBufferClass).GUID;
-				textBuffer = editorPackage.CreateInstance(ref clsid, ref riid, textLinesType) as IVsTextLines;
-
-				// set the buffer's site
-				((IObjectWithSite)textBuffer).SetSite(serviceProvider);
-				return textBuffer;
-
-
-				//var serviceProvider = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
-				var editorSvc = Services.GetComponentService<IVsEditorAdaptersFactoryService>();
-				var textSvc = Services.GetComponentService<ITextDocumentFactoryService>();
-				var contentTypeRegistryService = Services.GetComponentService<IContentTypeRegistryService>();
-				var contentType = contentTypeRegistryService.GetContentType("code");
-				var textEditorSvc = Services.GetComponentService<ITextEditorFactoryService>();
-
-				var itd = textSvc.CreateAndLoadTextDocument(fileName, contentType);
-				var buffer = itd.TextBuffer;
-
-				// punkDocDataExisting is null which means the file is not yet open.
-				// We need to create a new text buffer object 
-
-				// get the ILocalRegistry interface so we can use it to
-				// create the text buffer from the shell's local registry
-				try
+				// assign the right language service for xml/json
+				if (fileName.EndsWith(".xeto", StringComparison.OrdinalIgnoreCase))
 				{
-					ILocalRegistry localRegistry = (ILocalRegistry)GetService(typeof(SLocalRegistry));
-					if (localRegistry != null)
-					{
-						IntPtr ptr;
-						Guid iid = typeof(IVsTextLines).GUID;
-						Guid CLSID_VsTextBuffer = typeof(VsTextBufferClass).GUID;
-						localRegistry.CreateInstance(CLSID_VsTextBuffer, null, ref iid, 1 /*CLSCTX_INPROC_SERVER*/, out ptr);
-						try
-						{
-							textBuffer = Marshal.GetObjectForIUnknown(ptr) as IVsTextLines;
-						}
-						finally
-						{
-							Marshal.Release(ptr); // Release RefCount from CreateInstance call
-						}
-
-						// It is important to site the TextBuffer object
-						IObjectWithSite objWSite = (IObjectWithSite)textBuffer;
-						if (objWSite != null)
-						{
-							objWSite.SetSite(Services.ServiceProvider);
-						}
-					}
+					Guid langId;
+					var textManagerSvc = Services.GetService<SVsTextManager, IVsTextManager>();
+					textManagerSvc.MapFilenameToLanguageSID("file.xml", out langId);
+					docData.SetLanguageServiceID(ref langId);
 				}
-				catch (Exception ex)
+				else if (fileName.EndsWith(".jeto", StringComparison.OrdinalIgnoreCase))
 				{
-					Debug.WriteLine("Can not get IVsCfgProviderEventsHelper" + ex.Message);
-					throw;
+					Guid langId;
+					var textManagerSvc = Services.GetService<SVsTextManager, IVsTextManager>();
+					textManagerSvc.MapFilenameToLanguageSID("file.json", out langId);
+					docData.SetLanguageServiceID(ref langId);
 				}
+				return docData;
 			}
 			else
 			{

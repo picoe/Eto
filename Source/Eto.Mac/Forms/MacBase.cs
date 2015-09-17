@@ -184,7 +184,11 @@ namespace Eto.Mac.Forms
 		public NSObject AddObserver(NSString key, Action<ObserverActionEventArgs> action, NSObject control)
 		{
 			if (observers == null)
+			{
 				observers = new List<ObserverHelper>();
+				// ensure we finalize to clean this up later
+				GC.ReRegisterForFinalize(this);
+			}
 			var observer = new ObserverHelper
 			{
 				Action = action,
@@ -201,7 +205,11 @@ namespace Eto.Mac.Forms
 		public void AddControlObserver(NSString key, Action<ObserverActionEventArgs> action, NSObject control)
 		{
 			if (observers == null)
+			{
 				observers = new List<ObserverHelper>();
+				// ensure we finalize to clean this up later
+				GC.ReRegisterForFinalize(this);
+			}
 			var observer = new ObserverHelper
 			{
 				Action = action,
@@ -212,6 +220,19 @@ namespace Eto.Mac.Forms
 			};
 			observer.AddToControl();
 			observers.Add(observer);
+		}
+
+		~MacBase()
+		{
+			//Console.WriteLine("Finalizing {0}", GetType());
+			// need to remove observers so we can GC the native object
+			Dispose(false);
+		}
+
+		public MacBase()
+		{
+			// finalizer is not actually needed until we add an observer.
+			GC.SuppressFinalize(this);
 		}
 
 		protected override void Dispose(bool disposing)

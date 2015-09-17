@@ -5,26 +5,35 @@ using Eto.Forms;
 
 namespace Eto.WinForms.Forms.Menu
 {
-	/// <summary>
-	/// Summary description for MenuBarHandler.
-	/// </summary>
 	public class CheckMenuItemHandler : MenuItemHandler<SWF.ToolStripMenuItem, CheckMenuItem, CheckMenuItem.ICallback>, CheckMenuItem.IHandler
 	{
 		public CheckMenuItemHandler()
 		{
 			Control = new SWF.ToolStripMenuItem();
-			Control.Click += control_Click;
-		}
-
-		void control_Click(object sender, EventArgs e)
-		{
-			Callback.OnClick(Widget, e);
+			Control.Click += (sender, e) =>
+			{
+				Control.Checked = !Control.Checked;
+				Callback.OnClick(Widget, e);
+			};
 		}
 
 		public bool Checked
 		{
 			get { return Control.Checked; }
 			set { Control.Checked = value; }
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case CheckMenuItem.CheckedChangedEvent:
+					Control.CheckedChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

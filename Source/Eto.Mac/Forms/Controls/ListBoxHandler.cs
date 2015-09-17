@@ -187,23 +187,20 @@ namespace Eto.Mac.Forms.Controls
 
 		public override Font Font
 		{
-			get
-			{
-				if (font == null)
-					font = new Font(new FontHandler(Control.Font));
-				return font;
-			}
+			get { return base.Font; }
 			set
 			{
-				font = value;
-				if (font != null)
+				Widget.Properties.Set(Font_Key, value, () =>
 				{
-					var fontHandler = (FontHandler)font.Handler;
-					cell.Font = fontHandler.Control;
-					Control.RowHeight = fontHandler.LineHeight;
-				}
-				else
-					cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+					if (value != null)
+					{
+						var fontHandler = (FontHandler)value.Handler;
+						cell.Font = fontHandler.Control;
+						Control.RowHeight = fontHandler.LineHeight;
+					}
+					else
+						cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+				});
 			}
 		}
 

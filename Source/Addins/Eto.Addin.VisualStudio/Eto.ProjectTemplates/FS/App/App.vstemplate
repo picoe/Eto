@@ -6,6 +6,7 @@
     <Icon>App.ico</Icon>
     <ProjectType>FSharp</ProjectType>
     <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <MaxFrameworkVersion>4.5</MaxFrameworkVersion>
     <SortOrder>20</SortOrder>
     <TemplateID>BD5681E1-B115-4370-98F2-1E414562C600</TemplateID>
     <DefaultName>EtoApp</DefaultName>

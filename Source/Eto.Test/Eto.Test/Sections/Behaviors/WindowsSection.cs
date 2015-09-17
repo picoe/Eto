@@ -370,6 +370,7 @@ namespace Eto.Test.Sections.Behaviors
 			child.LocationChanged -= child_LocationChanged;
 			child.SizeChanged -= child_SizeChanged;
 			bringToFrontButton.Enabled = false;
+			child.Unbind();
 			child = null;
 			// write out number of open windows after the closed event is called
 			Application.Instance.AsyncInvoke(() => Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count()));

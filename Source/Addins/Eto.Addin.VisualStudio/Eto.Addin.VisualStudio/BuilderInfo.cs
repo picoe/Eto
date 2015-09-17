@@ -41,8 +41,16 @@ namespace Eto.Addin.VisualStudio
 			},
 			new BuilderInfo
 			{
+				Extension = ".eto.fs",
+				DesignExtension = "^.+(?<![jx]eto)[.]fs$",
+				CreateBuilder = () => new FSharpInterfaceBuilder { InitializeAssembly = Assembly.GetExecutingAssembly().Location },
+				GetCodeFile = fileName => Regex.Replace(fileName, @"(.+)[.]eto([.]fs)", "$1$2"),
+				GetDesignFile = fileName => Regex.Replace(fileName, @"(.+)([.]fs)", "$1.eto$2")
+			},
+			new BuilderInfo
+			{
 				Extension = ".xeto",
-				DesignExtension = "^.+[.]xeto[.]cs$",
+				DesignExtension = "^.+[.]xeto[.](cs|fs|vb)$",
 				CreateBuilder = () => new XamlInterfaceBuilder(),
 				GetCodeFile = fileName => fileName + ".cs",
 				GetDesignFile = fileName => Regex.Replace(fileName, @"(.+[.]xeto)[.]cs", "$1")
@@ -50,7 +58,7 @@ namespace Eto.Addin.VisualStudio
 			new BuilderInfo
 			{
 				Extension = ".jeto",
-				DesignExtension = "^.+[.]jeto[.]cs$",
+				DesignExtension = "^.+[.]jeto[.](cs|fs|vb)$",
 				CreateBuilder = () => new JsonInterfaceBuilder(),
 				GetCodeFile = fileName => fileName + ".cs",
 				GetDesignFile = fileName => Regex.Replace(fileName, @"(.+[.]jeto)[.]cs", "$1")

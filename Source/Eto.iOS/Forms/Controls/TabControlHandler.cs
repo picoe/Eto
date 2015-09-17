@@ -7,6 +7,7 @@ using System.Linq;
 using Eto.Mac.Forms;
 using System.Collections.Generic;
 using sd = System.Drawing;
+using System.Diagnostics;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -50,6 +51,15 @@ namespace Eto.iOS.Forms.Controls
 			set
 			{
 				Control.SelectedIndex = value;
+			}
+		}
+
+		public DockPosition TabPosition
+		{
+			get { return DockPosition.Bottom; }
+			set
+			{
+				Debug.WriteLine("Warning: TabControl.TabPosition is not supported");
 			}
 		}
 	}

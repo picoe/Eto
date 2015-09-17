@@ -128,5 +128,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 			return size + borderSize;
 		}
+
+		public DockPosition TabPosition
+		{
+			get { return Control.TabViewType.ToEto(); }
+			set { Control.TabViewType = value.ToNS(); }
+		}
 	}
 }

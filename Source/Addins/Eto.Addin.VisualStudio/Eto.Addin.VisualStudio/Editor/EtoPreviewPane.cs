@@ -30,13 +30,14 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Eto.Addin.VisualStudio
+namespace Eto.Addin.VisualStudio.Editor
 {
 	[ComVisible(true)]
 	public sealed class EtoPreviewPane : Microsoft.VisualStudio.Shell.WindowPane,
 		IVsWindowPane,
 		IVsTextBufferDataEvents,
-		IVsTextLinesEvents
+		IVsTextLinesEvents,
+		IOleCommandTarget
 	{
 		IVsTextLines textBuffer;
 		BuilderInfo builderInfo;
@@ -48,11 +49,6 @@ namespace Eto.Addin.VisualStudio
 		uint dataEventsCookie;
 		uint linesEventsCookie;
 		IInterfaceBuilder builder;
-
-		/*void IVsWindowPane.SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider site)
-		{
-			this.site = site;
-		}*/
 
 		void RegisterIndependentView(bool subscribe)
 		{
@@ -109,116 +105,172 @@ namespace Eto.Addin.VisualStudio
 				throw new InvalidOperationException(string.Format("Could not find builder for file {0}", fileName));
 			builder = builderInfo.CreateBuilder();
 
-			SetupCommands();
-
-
 			editorControl = new Panel();
-
-
 			previewControl = new Panel();
 
-			var split = new Splitter { Panel1 = previewControl, Panel2 = editorControl, Orientation = SplitterOrientation.Vertical };
-			host.Child = split.ToNative(true);
+			var split = new Splitter { Panel1 = previewControl, Panel2 = editorControl, Orientation = Orientation.Vertical, FixedPanel = SplitterFixedPanel.None, RelativePosition = 0.5 };
+			var native = split.ToNative(true);
+            host.Child = native;
+
+			control = split;
 		}
+
+		Control control;
 
 		protected override bool PreProcessMessage(ref System.Windows.Forms.Message m)
 		{
+			// copy the Message into a MSG[] array, so we can pass
+			// it along to the active core editor's IVsWindowPane.TranslateAccelerator
+			var pMsg = new MSG[1];
+			pMsg[0].hwnd = m.HWnd;
+			pMsg[0].message = (uint)m.Msg;
+			pMsg[0].wParam = m.WParam;
+			pMsg[0].lParam = m.LParam;
+
+			var filterKeys2 = Services.GetService<SVsFilterKeys, IVsFilterKeys2>();
+			if (filterKeys2 != null)
+			{
+				// support global keyboard shortcuts
+				Guid cmdGuid;
+				uint cmdCode;
+				int cmdTranslated;
+				int keyComboStarts;
+
+				int hr = filterKeys2.TranslateAcceleratorEx(pMsg,
+					(uint)__VSTRANSACCELEXFLAGS.VSTAEXF_UseGlobalKBScope,
+					0,
+					null,
+					out cmdGuid,
+					out cmdCode,
+					out cmdTranslated,
+					out keyComboStarts);
+				if (hr == 0)
+					return true;
+			}
+
 			if (viewAdapter != null)
 			{
-				// copy the Message into a MSG[] array, so we can pass
-				// it along to the active core editor's IVsWindowPane.TranslateAccelerator
-				var pMsg = new MSG[1];
-				pMsg[0].hwnd = m.HWnd;
-				pMsg[0].message = (uint)m.Msg;
-				pMsg[0].wParam = m.WParam;
-				pMsg[0].lParam = m.LParam;
-
 				var vsWindowPane = (IVsWindowPane)viewAdapter;
+
 				return vsWindowPane.TranslateAccelerator(pMsg) == 0;
 			}
 			return base.PreProcessMessage(ref m);
 		}
-		
+
+		const int NotSupported = (int)Microsoft.VisualStudio.OLE.Interop.Constants.OLECMDERR_E_NOTSUPPORTED;
+        int IOleCommandTarget.Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+		{
+			var hr = NotSupported;
+			if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == (int)VSConstants.VSStd97CmdID.ViewCode)
+			{
+				ViewCode();
+				return VSConstants.S_OK;
+			}
+			if (viewAdapter != null)
+			{
+				var cmdTarget = (IOleCommandTarget)viewAdapter;
+				hr = cmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+			}
+			return hr;
+		}
+
+		int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[]prgCmds, IntPtr pCmdText)
+		{
+			var hr = NotSupported;
+			if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97)
+			{
+				for (int i = 0; i < prgCmds.Length; i++)
+				{
+					if (prgCmds[i].cmdID == (int)VSConstants.VSStd97CmdID.ViewCode)
+					{
+						prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_ENABLED | OLECMDF.OLECMDF_SUPPORTED);
+						return VSConstants.S_OK;
+                    }
+				}
+			}
+
+			if (viewAdapter != null)
+			{
+				var cmdTarget = (IOleCommandTarget)viewAdapter;
+				hr = cmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+			}
+			return hr;
+		}
 
 		IVsTextView viewAdapter;
 		protected override void Initialize()
 		{
 			base.Initialize();
 
-			RegisterIndependentView(true);
-
 			timer = new UITimer { Interval = 0.2 };
 			timer.Elapsed += timer_Elapsed;
 
+			RegisterIndependentView(true);
+
+			CreateCodeEditor();
+
+			SetupCommands();
+
+			InheritKeyBindings();
+
 			TriggerUpdate();
-
-			var initView = new[] { new INITVIEW() };
-			initView[0].fSelectionMargin = 0;
-			initView[0].fWidgetMargin = 0;
-			initView[0].fVirtualSpace = 0;
-			initView[0].fDragDropMove = 1;
-
-			uint flags =
-				(uint)TextViewInitFlags.VIF_SET_SELECTION_MARGIN |
-				(uint)TextViewInitFlags.VIF_SET_DRAGDROPMOVE |
-				(uint)TextViewInitFlags2.VIF_SUPPRESS_STATUS_BAR_UPDATE |
-				(uint)TextViewInitFlags2.VIF_SUPPRESSBORDER |
-				//(uint)TextViewInitFlags2.VIF_SUPPRESSTRACKCHANGES |
-				//(uint)TextViewInitFlags2.VIF_SUPPRESSTRACKGOBACK |
-				(uint)TextViewInitFlags.VIF_HSCROLL |
-				(uint)TextViewInitFlags.VIF_VSCROLL |
-				(uint)TextViewInitFlags3.VIF_NO_HWND_SUPPORT/* |
-				readOnlyValue*/;
-
-			//SetReadOnly(false);
-			var editorSvc = Services.GetComponentService<IVsEditorAdaptersFactoryService>();
-			var textSvc = Services.GetComponentService<ITextDocumentFactoryService>();
-			var textEditorSvc = Services.GetComponentService<ITextEditorFactoryService>();
-
-			//var itd = textSvc.CreateAndLoadTextDocument();
-			
-			var roles = textEditorSvc.CreateTextViewRoleSet(
-				PredefinedTextViewRoles.Interactive,
-				PredefinedTextViewRoles.Editable,
-				PredefinedTextViewRoles.Document,
-				PredefinedTextViewRoles.PrimaryDocument);
-
-			viewAdapter = editorSvc.CreateVsTextViewAdapter(Services.ServiceProvider, roles);
-			((IVsWindowPane)viewAdapter).SetSite(Services.ServiceProvider);
-
-			viewAdapter.Initialize(textBuffer, IntPtr.Zero, flags, initView);
-
-			var textManager = (IVsTextManager)GetService(typeof(SVsTextManager));
-			textManager.RegisterIndependentView((IVsWindowPane)viewAdapter, textBuffer);
-
-			//IntPtr hwnd;
-			//((IVsWindowPane)viewAdapter).CreatePaneWindow(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle, 0, 0, 100, 100, out hwnd);
-			var wpfView = editorSvc.GetWpfTextView(viewAdapter); // need to get first so host will not be null
-			var wpfViewHost = editorSvc.GetWpfTextViewHost(viewAdapter);
-
-			if (wpfViewHost != null)
-				editorControl.Content = wpfViewHost.HostControl.ToEto();
-			else
-				editorControl.Content = new Label { Text = "Could not load editor" };
-
 		}
 
-		public void SetReadOnly(bool isReadOnly)
+		void InheritKeyBindings()
 		{
-			uint flags;
-			textBuffer.GetStateFlags(out flags);
-			var newFlags = isReadOnly
-			  ? flags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY
-			  : flags & ~(uint)BUFFERSTATEFLAGS.BSF_USER_READONLY;
-			textBuffer.SetStateFlags(newFlags);
+			// allow text editor keyboard shortcuts to be used in our embedded editor
+			var frame = (IVsWindowFrame)GetService(typeof(SVsWindowFrame));
+			if (frame != null)
+			{
+				Guid commandUiGuid = VSConstants.GUID_TextEditorFactory;
+				frame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_InheritKeyBindings, ref commandUiGuid);
+			}
 		}
+
+		void CreateCodeEditor()
+		{
+			var editorSvc = Services.GetComponentService<IVsEditorAdaptersFactoryService>();
+
+			var codeWindow = editorSvc.CreateVsCodeWindowAdapter(Services.ServiceProvider);
+			codeWindow.SetBuffer(textBuffer);
+
+			Guid clsIdView = VSConstants.LOGVIEWID.TextView_guid;
+			codeWindow.SetViewClassID(ref clsIdView);
+
+			if (codeWindow.GetPrimaryView(out viewAdapter) == 0)
+			{
+				// disable splitter since it will cause a crash
+				var codeWindowEx = (IVsCodeWindowEx)codeWindow;
+				var initView = new INITVIEW[1];
+				codeWindowEx.Initialize((uint)_codewindowbehaviorflags.CWB_DISABLESPLITTER,
+										 VSUSERCONTEXTATTRIBUTEUSAGE.VSUC_Usage_Filter,
+										 szNameAuxUserContext: string.Empty,
+										 szValueAuxUserContext: string.Empty,
+										 InitViewFlags: 0,
+										 pInitView: initView);
+				
+				// get the view first so host is created 
+				var wpfView = editorSvc.GetWpfTextView(viewAdapter);
+				var wpfViewHost = editorSvc.GetWpfTextViewHost(viewAdapter);
+
+				var wpfElement = wpfViewHost?.HostControl;
+				if (wpfElement != null)
+				{
+					editorControl.Content = wpfElement.ToEto();
+					return;
+				}
+			}
+			// something went wrong
+			editorControl.Content = new Scrollable { Content = new Label { Text = "Could not load editor" } };
+		}
+
 		void timer_Elapsed(object sender, EventArgs e)
 		{
 			timer.Stop();
 			UpdateView();
 		}
 
-		private IConnectionPoint GetConnectionPoint<T>()
+		IConnectionPoint GetConnectionPoint<T>()
 		{
 			var container = textBuffer as IConnectionPointContainer;
 			var guid = typeof(T).GUID;
@@ -283,7 +335,7 @@ namespace Eto.Addin.VisualStudio
 			var mcs = GetService(typeof(IMenuCommandService)) as IMenuCommandService;
 			if (mcs != null)
 			{
-				mcs.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ViewForm, ViewTextDesign);
+				//mcs.AddCommand(new MenuCommand((sender, e) => ViewCode(), new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ViewCode)));
 				mcs.AddCommand(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ViewCode, ViewCode);
 			}
 		}
@@ -300,20 +352,6 @@ namespace Eto.Addin.VisualStudio
 				&& !VsShellUtilities.IsDocumentOpen(this, codeFile, VSConstants.LOGVIEWID.TextView_guid, out hierarchy, out itemid, out frame))
 			{
 				VsShellUtilities.OpenDocumentWithSpecificEditor(this, codeFile, VSConstants.VsEditorFactoryGuid.TextEditor_guid, VSConstants.LOGVIEWID.Primary_guid, out hierarchy, out itemid, out frame);
-			}
-			ErrorHandler.ThrowOnFailure(frame.Show());
-		}
-
-		void ViewTextDesign()
-		{
-			// Open the referenced document using the standard text editor.
-			IVsWindowFrame frame;
-			IVsUIHierarchy hierarchy;
-			uint itemid;
-			if (!VsShellUtilities.IsDocumentOpen(this, FileName, VSConstants.LOGVIEWID.Code_guid, out hierarchy, out itemid, out frame)
-				&& !VsShellUtilities.IsDocumentOpen(this, FileName, VSConstants.LOGVIEWID.TextView_guid, out hierarchy, out itemid, out frame))
-			{
-				VsShellUtilities.OpenDocumentWithSpecificEditor(this, FileName, VSConstants.VsEditorFactoryGuid.TextEditor_guid, VSConstants.LOGVIEWID.Code_guid, out hierarchy, out itemid, out frame);
 			}
 			ErrorHandler.ThrowOnFailure(frame.Show());
 		}

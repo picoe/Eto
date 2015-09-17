@@ -15,12 +15,17 @@ namespace Eto.Wpf.Forms.Menu
 		where TCallback: MenuItem.ICallback
 	{
 		Image image;
-		readonly swi.RoutedCommand command = new swi.RoutedCommand();
 		bool openingHandled;
 
-		protected void Setup()
+		protected override void Initialize()
 		{
-			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
+			base.Initialize();
+			Control.Click += (sender, e) => OnClick();
+		}
+
+		protected virtual void OnClick()
+		{
+			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
 		public Image Image

@@ -115,5 +115,17 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.Child.SetForeground(value, GtkStateFlags.Prelight);
 			}
 		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case TextControl.TextChangedEvent:
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
 	}
 }

@@ -17,6 +17,8 @@ namespace Eto.Test.Sections.Controls
 
 		public virtual Control Create()
 		{
+			tabControl = DefaultTabs();
+
 			return new StackLayout
 			{
 				Spacing = 5,
@@ -26,9 +28,9 @@ namespace Eto.Test.Sections.Controls
 					new StackLayout
 					{
 						Orientation = Orientation.Horizontal,
-						Items = { null, AddTab(), RemoveTab(), SelectTab(), null }
+						Items = { null, AddTab(), RemoveTab(), SelectTab(), TabPositionControl(), null }
 					},
-					new StackLayoutItem(tabControl = DefaultTabs(), expand: true)
+					new StackLayoutItem(tabControl, expand: true)
 				}
 			};
 		}
@@ -74,6 +76,13 @@ namespace Eto.Test.Sections.Controls
 					tabControl.SelectedIndex = rnd.Next(tabControl.Pages.Count);
 				}
 			};
+			return control;
+		}
+
+		Control TabPositionControl()
+		{
+			var control = new EnumDropDown<DockPosition>();
+			control.SelectedValueBinding.Bind(tabControl, t => t.TabPosition);
 			return control;
 		}
 

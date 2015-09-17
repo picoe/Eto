@@ -3,15 +3,14 @@ using System.Collections;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.WinForms.Forms.Menu
 {
-	/// <summary>
-	/// Summary description for MenuBarHandler.
-	/// </summary>
 	public class RadioMenuItemHandler : MenuItemHandler<SWF.ToolStripMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
 	{
-		ArrayList group;
+		List<RadioMenuItem> group;
 
 		public RadioMenuItemHandler()
 		{
@@ -21,6 +20,13 @@ namespace Eto.WinForms.Forms.Menu
 
 		void control_Click(object sender, EventArgs e)
 		{
+			if (group != null)
+			{
+				var checkedItem = group.FirstOrDefault(r => r.Checked && r != Widget);
+				if (checkedItem != null)
+					checkedItem.Checked = false;
+			}
+			Checked = true;
 			Callback.OnClick(Widget, e);
 		}
 
@@ -31,15 +37,13 @@ namespace Eto.WinForms.Forms.Menu
 				var controllerInner = (RadioMenuItemHandler)controller.Handler;
 				if (controllerInner.group == null)
 				{
-					controllerInner.group = new ArrayList();
+					controllerInner.group = new List<RadioMenuItem>();
 					controllerInner.group.Add(controller);
-					controllerInner.Control.Click += controllerInner.control_RadioSwitch;
 				}
 				controllerInner.group.Add(Widget);
-				Control.Click += controllerInner.control_RadioSwitch;
+				group = controllerInner.group;
 			}
 		}
-		#region IMenuItem Members
 
 		public bool Checked
 		{
@@ -47,16 +51,16 @@ namespace Eto.WinForms.Forms.Menu
 			set { Control.Checked = value; }
 		}
 
-		#endregion
-
-		void control_RadioSwitch(object sender, EventArgs e)
+		public override void AttachEvent(string id)
 		{
-			if (group != null)
+			switch (id)
 			{
-				foreach (RadioMenuItem item in group)
-				{
-					item.Checked = (item.ControlObject == sender);
-				}
+				case RadioMenuItem.CheckedChangedEvent:
+					Control.CheckedChanged += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 	}

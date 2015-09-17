@@ -112,6 +112,20 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the position of the tabs relative to the content.
+		/// </summary>
+		/// <remarks>
+		/// Note that on some platforms the text is rotated when using Left or Right (e.g. OS X).
+		/// This means that is is not suitable when you have a lot of tabs.
+		/// Some platforms (mobile) may ignore this hint and display the tabs according to the platform.
+		/// </remarks>
+		public DockPosition TabPosition
+		{
+			get { return Handler.TabPosition; }
+			set { Handler.TabPosition = value; }
+		}
+
+		/// <summary>
 		/// Gets the binding for the <see cref="SelectedIndex"/> property.
 		/// </summary>
 		/// <value>The selected index binding.</value>
@@ -231,6 +245,11 @@ namespace Eto.Forms
 			/// <param name="index">Index of the page to remove.</param>
 			/// <param name="page">Page to remove.</param>
 			void RemoveTab(int index, TabPage page);
+
+			/// <summary>
+			/// Gets or sets the position of the tabs relative to the content.
+			/// </summary>
+			DockPosition TabPosition { get; set; }
 		}
 
 		#endregion

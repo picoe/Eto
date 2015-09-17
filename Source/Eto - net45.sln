@@ -421,6 +421,9 @@ Global
 		$0.StandardHeader = $4
 		$4.Text = 
 		$4.IncludeInNewFiles = True
+		$0.DotNetNamingPolicy = $5
+		$5.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$5.ResourceNamePolicy = MSBuild
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

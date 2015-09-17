@@ -6,6 +6,7 @@
 		<Icon>Library.ico</Icon>
 		<ProjectType>FSharp</ProjectType>
 		<RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <MaxFrameworkVersion>4.5</MaxFrameworkVersion>
 		<SortOrder>100</SortOrder>
 		<TemplateID>187e19a3-8db1-4f37-9aa7-6cf1a3f5c985</TemplateID>
 		<CreateNewFolder>true</CreateNewFolder>
@@ -32,7 +33,7 @@
 	</WizardExtension>
 	<WizardData>
 		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-			<package id="Eto.Forms" version="2.1.0" />
+			<package id="Eto.Forms" version="2.2.0-alpha" />
 		</packages>
 		<SupportedParameters>SupportsPCL,IsLibrary</SupportedParameters>
 		<Replacements>

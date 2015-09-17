@@ -5,16 +5,13 @@ using Eto.Drawing;
 namespace Eto.Addin.Shared
 {
 
-	public class ProjectWizardPageView : Panel
+	public class ProjectWizardPageView : BasePageView
 	{
 		public ProjectWizardPageView(ProjectWizardPageModel model)
 		{
-			BackgroundColor = Color.FromArgb(225, 228, 232);
-
 			var content = new TableLayout
 			{
-				Spacing = new Size(10, 10),
-				Padding = new Padding(50, 0, 20, 0)
+				Spacing = new Size(10, 10)
 			};
 			if (model.ShowAppName)
 			{
@@ -90,20 +87,11 @@ namespace Eto.Addin.Shared
 				content.Rows.Add(new TableRow(new Label { Text = model.IsLibrary ? "Type:" : "Shared Code:", TextAlignment = TextAlignment.Right }, sharedCodeList));
 			}
 
-			var information = new Label();
-			information.TextBinding.BindDataContext((ProjectWizardPageModel m) => m.Information);
+			var informationLabel = new Label();
+			informationLabel.TextBinding.BindDataContext((ProjectWizardPageModel m) => m.Information);
+			Information = informationLabel;
 
-			Content = new StackLayout
-			{
-				Orientation = Orientation.Horizontal,
-				VerticalContentAlignment = VerticalAlignment.Stretch,
-				Items =
-				{
-					new StackLayoutItem(content, VerticalAlignment.Center, expand: true),
-					new Panel { BackgroundColor = Colors.White, Size = new Size(280, 200), Content = information, Padding = new Padding(20) }
-				}
-			};
-
+			Content = content;
 			DataContext = model;
 		}
 	}

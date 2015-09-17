@@ -42,11 +42,14 @@ namespace Eto.Mac.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ButtonHandler : MacButton<NSButton, Button, Button.ICallback>, Button.IHandler
 	{
-		Image image;
-		ButtonImagePosition imagePosition;
 		static readonly Size originalSize;
 
 		public static int MinimumWidth = 80;
+
+		protected override Size DefaultMinimumSize
+		{
+			get { return new Size(MinimumWidth, originalSize.Height); }
+		}
 
 		public class EtoButtonCell : NSButtonCell
 		{
@@ -61,7 +64,7 @@ namespace Eto.Mac.Forms.Controls
 						base.DrawBezelWithFrame(frame, controlView);
 					});
 				}
-				else 
+				else
 					base.DrawBezelWithFrame(frame, controlView);
 			}
 		}
@@ -69,6 +72,7 @@ namespace Eto.Mac.Forms.Controls
 		class EtoButton : NSButton, IMacControl
 		{
 			bool setBezel = true;
+
 			public WeakReference WeakHandler { get; set; }
 
 			public ButtonHandler Handler
@@ -85,7 +89,9 @@ namespace Eto.Mac.Forms.Controls
 				if (Handler.AutoSize)
 				{
 					var size = Frame.Size;
-					size.Width = (nfloat)Math.Max(size.Width, MinimumWidth);
+					var minSize = Handler.MinimumSize;
+					size.Height = (nfloat)Math.Max(size.Height, minSize.Height);
+					size.Width = (nfloat)Math.Max(size.Width, minSize.Width);
 					SetFrameSize(size);
 				}
 				setBezel = true;
@@ -112,7 +118,7 @@ namespace Eto.Mac.Forms.Controls
 			Control = new EtoButton
 			{ 
 				Handler = this,
-				Cell = new EtoButtonCell (),
+				Cell = new EtoButtonCell(),
 				Title = string.Empty,
 				BezelStyle = NSBezelStyle.Rounded,
 				ImagePosition = NSCellImagePosition.ImageLeft
@@ -163,16 +169,19 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		static readonly object Image_Key = new object();
+
 		public Image Image
 		{
-			get { return image; }
+			get { return Widget.Properties.Get<Image>(Image_Key); }
 			set
 			{
-				var oldSize = GetPreferredSize(Size.MaxValue);
-				image = value;
-				Control.Image = image.ToNS();
-				SetBezel();
-				LayoutIfNeeded(oldSize);
+				Widget.Properties.Set(Image_Key, value, () =>
+				{
+					Control.Image = value.ToNS();
+					SetImagePosition();
+					LayoutIfNeeded();
+				});
 			}
 		}
 
@@ -198,7 +207,8 @@ namespace Eto.Mac.Forms.Controls
 				return NSBezelStyle.SmallSquare;
 			if (size.Height > originalSize.Height)
 				return NSBezelStyle.RegularSquare;
-			if (Image == null)
+			var image = Image;
+			if (image == null)
 				return NSBezelStyle.Rounded;
 			if (image.Size.Height > 18)
 				return NSBezelStyle.RegularSquare;
@@ -215,7 +225,13 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetBezel()
 		{
-			Control.BezelStyle = GetBezelStyle();
+			var bezel = Control.BezelStyle;
+			var requiredBezel = GetBezelStyle();
+			if (bezel != requiredBezel)
+			{
+				Control.BezelStyle = requiredBezel;
+				LayoutIfNeeded();
+			}
 		}
 
 		public override string Text
@@ -230,25 +246,43 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetImagePosition()
 		{
-			var position = imagePosition.ToNS();
-			if ((position == NSCellImagePosition.ImageAbove || position == NSCellImagePosition.ImageBelow) && string.IsNullOrEmpty(Text))
+			var position = ImagePosition.ToNS();
+			if (string.IsNullOrEmpty(Text) &&
+			    (
+			        position == NSCellImagePosition.ImageAbove
+			        || position == NSCellImagePosition.ImageBelow
+			        || Image != null && Image.Width > MinimumSize.Width
+			    ))
 				position = NSCellImagePosition.ImageOnly;
 			Control.ImagePosition = position;
 			SetBezel();
 		}
 
+		static readonly object ImagePosition_Key = new object();
+
 		public ButtonImagePosition ImagePosition
 		{
-			get { return imagePosition; }
+			get { return Widget.Properties.Get<ButtonImagePosition>(ImagePosition_Key); }
 			set
 			{
-				if (imagePosition != value)
+				var oldSize = GetPreferredSize(Size.MaxValue);
+				Widget.Properties.Set(ImagePosition_Key, value, () =>
 				{
-					var oldSize = GetPreferredSize(Size.MaxValue);
-					imagePosition = value;
 					SetImagePosition();
 					LayoutIfNeeded(oldSize);
-				}
+				});
+			}
+		}
+
+		public override Size MinimumSize
+		{
+			get { return base.MinimumSize; }
+			set
+			{
+				var oldSize = GetPreferredSize(Size.MaxValue);
+				base.MinimumSize = value;
+				SetImagePosition();
+				LayoutIfNeeded(oldSize);
 			}
 		}
 	}

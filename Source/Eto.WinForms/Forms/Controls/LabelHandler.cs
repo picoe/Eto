@@ -111,7 +111,6 @@ namespace Eto.WinForms.Forms.Controls
 					measuredSize = swf.TextRenderer.MeasureText(Text, Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
 				}
 				var size = measuredSize.Value;
-				size += bordersAndPadding;
 				if (size.Width < MinimumSize.Width)
 					size.Width = MinimumSize.Width;
 				if (size.Height < MinimumSize.Height)
@@ -163,7 +162,7 @@ namespace Eto.WinForms.Forms.Controls
 
 			protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 			{
-				var rect = new sd.Rectangle(Margin.Left, Margin.Top, Bounds.Width - Margin.Horizontal, Bounds.Height - Margin.Vertical);
+				var rect = new sd.Rectangle(0, 0, Bounds.Width, Bounds.Height);
 				swf.TextRenderer.DrawText(e.Graphics, Text, Font, rect, ForeColor, BackColor, textFormat);
 			}
 		}

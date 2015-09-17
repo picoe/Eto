@@ -132,12 +132,12 @@ namespace Eto.Addin.VisualStudio
 			if (BuilderInfo.Supports(document.FilePath))
 			{
 				// add commands to view form or code
-				textView.Properties.AddProperty(ViewFormKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewForm, () => ViewDesigner(document)));
-				textView.Properties.AddProperty(ViewCodeKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewCode, () => ViewCode(document)));
+				//textView.Properties.AddProperty(ViewFormKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewForm, () => ViewDesigner(document)));
+				//textView.Properties.AddProperty(ViewCodeKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewCode, () => ViewCode(document)));
 			}
 			else if (BuilderInfo.IsCodeBehind(document.FilePath))
 			{
-				textView.Properties.AddProperty(ViewFormKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewForm, () => ViewDesignSource(document)));
+				textView.Properties.AddProperty(ViewFormKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewForm, () => ViewDesigner(document)));
 			}
 		}
 
@@ -164,7 +164,13 @@ namespace Eto.Addin.VisualStudio
 
 		void ViewDesigner(ITextDocument document)
 		{
-			var codeFile = document.FilePath;
+			var builderInfo = BuilderInfo.FindCodeBehind(document.FilePath);
+			if (builderInfo == null)
+				return;
+			var codeFile = builderInfo.GetDesignFile(document.FilePath);
+
+			if (!File.Exists(codeFile))
+				return;
 
 			IVsWindowFrame frame;
 			IVsUIHierarchy hierarchy;

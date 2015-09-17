@@ -74,12 +74,34 @@ namespace Eto.Serialization.Xaml
 		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
-		public static T Load<T>(T instance)
+		public static void Load<T>(T instance)
 			where T : Widget
 		{
 			using (var stream = GetStream(typeof(T)))
 			{
-				return Load<T>(stream, instance);
+				Load<T>(stream, instance);
+			}
+		}
+
+		/// <summary>
+		/// Loads the specified instance with a specified fully qualified xaml embedded resource
+		/// </summary>
+		/// <remarks>
+		/// This will load the embedded resource from the same assembly as <paramref name="instance"/> with the 
+		/// specified <paramref name="resourceName"/> embedded resource.
+		/// 
+		/// If you want to specify a different xaml, use <see cref="Load{T}(Stream, T)"/>
+		/// </remarks>
+		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
+		/// <param name="instance">Instance to use as the starting object</param>
+		/// <param name="resourceName">Fully qualified name of the embedded resource to load.</param>
+		/// <returns>An existing instance of the specified type with the contents loaded from the xaml stream</returns>
+		public static void Load<T>(T instance, string resourceName)
+			where T : Widget
+		{
+			using (var stream = GetStream(typeof(T), resourceName))
+			{
+				Load<T>(stream, instance);
 			}
 		}
 
@@ -108,7 +130,7 @@ namespace Eto.Serialization.Xaml
 		/// </summary>
 		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
 		/// <param name="stream">Xaml content to load (e.g. from resources)</param>
-		/// <param name="instance">Instance to use as the starting object</param>
+		/// <param name="instance">Instance to use as the starting object, or null to create a new instance</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(Stream stream, T instance)
 			where T : Widget

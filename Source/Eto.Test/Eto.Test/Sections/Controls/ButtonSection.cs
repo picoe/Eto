@@ -10,6 +10,7 @@ namespace Eto.Test.Sections.Controls
 		Bitmap smallImage = new Bitmap(TestIcons.TestImage, 16, 16);
 		Bitmap largeImage = TestIcons.TestImage;
 		ButtonImagePosition imagePosition;
+		bool clearMinimumSize;
 
 		public ButtonImagePosition ImagePosition
 		{
@@ -19,6 +20,16 @@ namespace Eto.Test.Sections.Controls
 				imagePosition = value;
 				OnPropertyChanged(new PropertyChangedEventArgs("ImagePosition"));
 			}
+		}
+
+		public bool ClearMinimumSize
+		{
+			get { return clearMinimumSize; }
+			set
+			{
+				clearMinimumSize = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("ClearMinimumSize"));
+            }
 		}
 
 		public ButtonSection()
@@ -31,7 +42,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddAutoSized(ColourButton(), centered: true);
 			layout.AddAutoSized(DisabledButton(), centered: true);
 			layout.Add(StretchedButton());
-			layout.AddSeparateRow(null, new Label { Text = "Image Position:", VerticalAlignment = VerticalAlignment.Center }, ImagePositionControl(), null);
+			layout.AddSeparateRow(null, new Label { Text = "Image Position:", VerticalAlignment = VerticalAlignment.Center }, ImagePositionControl(), ClearMinimumSizeControl(), null);
 			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(smallImage)), TableLayout.AutoSized(ImageTextButton(smallImage)), null);
 			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(largeImage)), TableLayout.AutoSized(ImageTextButton(largeImage)), null);
 
@@ -91,6 +102,8 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Button { Image = image };
 			control.Bind(r => r.ImagePosition, this, r => r.ImagePosition);
+			var defaultMinimiumSize = control.MinimumSize;
+            control.Bind(r => r.MinimumSize, Binding.Property(this, r => r.ClearMinimumSize).Convert(r => r ? Size.Empty : defaultMinimiumSize));
 			LogEvents(control);
 			return control;
 		}
@@ -110,12 +123,16 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+		Control ClearMinimumSizeControl()
+		{
+			var control = new CheckBox { Text = "Clear MinimumSize" };
+			control.CheckedBinding.Bind(this, r => r.ClearMinimumSize);
+			return control;
+		}
+
 		void LogEvents(Button button)
 		{
-			button.Click += delegate
-			{
-				Log.Write(button, "Click");
-			};
+			button.Click += (sender, e) => Log.Write(button, "Click");
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

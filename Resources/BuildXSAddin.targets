@@ -2,12 +2,11 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-		<BuildVersion>2.0.7</BuildVersion>
+		<BuildVersion>2.1.0</BuildVersion>
 	</PropertyGroup>
 	<Import Project="Build.targets" />
 	
 	<Target Name="PreBuild">
-	
 		<!-- need this to download packages from nuget through https -->
 		<Exec Command="mozroots --import --sync" Condition="'$(Platform)' == 'Linux'" />
 	</Target>
@@ -16,8 +15,10 @@
     	<!-- this builds the Xamarin Studio addin specifically for addins.monodevelop.com -->
 
 		<PropertyGroup>
+			<BuildOutputDir>$(BaseDir)\BuildOutput</BuildOutputDir>
     		<AllPackagesConfig>$(MSBuildThisFileDirectory)\packages.config</AllPackagesConfig>
-    		<NugetOutputDir>$(BaseDir)\BuildOutput\Nuget\$(Configuration)</NugetOutputDir>
+    		<NugetOutputDir>$(BuildOutputDir)\Nuget\$(Configuration)</NugetOutputDir>
+			<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj</XamarinStudioAddinProject>
 		</PropertyGroup>
 
     	<Exec Command="xbuild /t:'RestorePackages' /p:'PackagesDir=$(MSBuildThisFileDirectory);PackagesConfig=$(AllPackagesConfig)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows'"/>
@@ -28,13 +29,13 @@
     	
     	<MakeDir Directories="$(NugetOutputDir)" />
 		<Copy SourceFiles="%(SourceNupkg.Identity)" DestinationFiles="$(NugetOutputDir)\%(Filename)%(Extension)" />
-
-    	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration);UseAddinTargets=false;ReferencePath=$(ReferencePath)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
-    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
-    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+		
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)"  />
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" />
     </Target>
 	<Target Name="Clean">
-		<!-- placeholder -->
+		<!-- clean output from previous builds -->
+		<Exec Command="rm -rf $(BaseDir)\BuildOutput" />
+		<Exec Command="rm -rf $(MSBuildThisFileDirectory)\packages\Eto.*" />
 	</Target>
 </Project>

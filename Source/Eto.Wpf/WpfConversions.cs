@@ -679,5 +679,38 @@ namespace Eto.Wpf
 			return font;
 		}
 
+		public static swc.Dock ToWpf(this DockPosition position)
+		{
+			switch (position)
+			{
+				case DockPosition.Top:
+					return swc.Dock.Top;
+				case DockPosition.Left:
+					return swc.Dock.Left;
+				case DockPosition.Right:
+					return swc.Dock.Right;
+				case DockPosition.Bottom:
+					return swc.Dock.Bottom;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static DockPosition ToEtoTabPosition(this swc.Dock dock)
+		{
+			switch (dock)
+			{
+				case swc.Dock.Left:
+					return DockPosition.Left;
+				case swc.Dock.Top:
+					return DockPosition.Top;
+				case swc.Dock.Right:
+					return DockPosition.Right;
+				case swc.Dock.Bottom:
+					return DockPosition.Bottom;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

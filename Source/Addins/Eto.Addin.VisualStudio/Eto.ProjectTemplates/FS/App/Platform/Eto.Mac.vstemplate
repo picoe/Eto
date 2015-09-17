@@ -31,9 +31,9 @@
 	</WizardExtension>
 	<WizardData>
 		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-			<package id="Eto.Forms" version="2.1.0" />
-			<package id="Eto.Platform.Mac" version="2.1.0" />
-			<package id="Eto.Platform.Mac.Template" version="2.1.0" />
+			<package id="Eto.Forms" version="2.2.0-alpha" />
+			<package id="Eto.Platform.Mac" version="2.2.0-alpha" />
+			<package id="Eto.Platform.Mac.Template" version="2.2.0-alpha" />
 		</packages>
 		<ProjectReferences>
 			<ProjectReference guid="$root.guid1$" name="$root.safeprojectname$" extension="fsproj">..\$root.safeprojectname$\$root.safeprojectname$</ProjectReference>

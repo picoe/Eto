@@ -175,15 +175,53 @@ namespace Eto.Test
 
 			if (Platform.Supports<MenuBar>())
 			{
+				var file = new ButtonMenuItem { Text = "&File", Items = { new Command { MenuText = "File Command" } } };
+				var edit = new ButtonMenuItem { Text = "&Edit", Items = { new Command { MenuText = "Edit Command" } } };
+				var view = new ButtonMenuItem { Text = "&View", Items = { new Command { MenuText = "View Command" } } };
+				var window = new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { new Command { MenuText = "Window Command" } } };
+
+				if (Platform.Supports<CheckMenuItem>())
+				{
+					edit.Items.AddSeparator();
+
+					var checkMenuItem1 = new CheckMenuItem { Text = "Check Menu Item" };
+					checkMenuItem1.Click += (sender, e) => Log.Write(checkMenuItem1, "Click, {0}, Checked: {1}", checkMenuItem1.Text, checkMenuItem1.Checked);
+					checkMenuItem1.CheckedChanged += (sender, e) => Log.Write(checkMenuItem1, "CheckedChanged, {0}: {1}", checkMenuItem1.Text, checkMenuItem1.Checked);
+					edit.Items.Add(checkMenuItem1);
+
+					var checkMenuItem2 = new CheckMenuItem { Text = "Initially Checked Menu Item", Checked = true };
+					checkMenuItem2.Click += (sender, e) => Log.Write(checkMenuItem2, "Click, {0}, Checked: {1}", checkMenuItem2.Text, checkMenuItem2.Checked);
+					checkMenuItem2.CheckedChanged += (sender, e) => Log.Write(checkMenuItem2, "CheckedChanged, {0}: {1}", checkMenuItem2.Text, checkMenuItem2.Checked);
+					edit.Items.Add(checkMenuItem2);
+				}
+
+				if (Platform.Supports<RadioMenuItem>())
+				{
+					edit.Items.AddSeparator();
+
+					RadioMenuItem controller = null;
+					for (int i = 0; i < 5; i++)
+					{
+						var radio = new RadioMenuItem(controller) { Text = "Radio Menu Item " + (i + 1) };
+						radio.Click += (sender, e) => Log.Write(radio, "Click, {0}, Checked: {1}", radio.Text, radio.Checked);
+						radio.CheckedChanged += (sender, e) => Log.Write(radio, "CheckedChanged, {0}: {1}", radio.Text, radio.Checked);
+						edit.Items.Add(radio);
+
+						if (controller == null)
+						{
+							radio.Checked = true; // check the first item initially
+							controller = radio;
+						}
+					}
+
+				}
+
 				Menu = new MenuBar
 				{
 					Items =
 					{
 						// custom top-level menu items
-						new ButtonMenuItem { Text = "&File", Items = { new Command { MenuText = "File Command" } } },
-						new ButtonMenuItem { Text = "&Edit", Items = { new Command { MenuText = "Edit Command" } } },
-						new ButtonMenuItem { Text = "&View", Items = { new Command { MenuText = "View Command" } } },
-						new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { new Command { MenuText = "Window Command" } } },
+						file, edit, view, window
 					},
 					ApplicationItems =
 					{

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+	<TemplateData>
+		<Name>Eto.Forms Panel</Name>
+		<Description>Creates a new cross platform Panel or Window class using Eto.Forms.</Description>
+		<Icon>File.ico</Icon>
+		<TemplateID>A176F4F7-5029-46CC-AE24-8B498EB6491B</TemplateID>
+		<ProjectType>FSharp</ProjectType>
+		<AppliesTo>FSharp</AppliesTo>
+		<RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+		<NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+		<DefaultName>Panel.fs</DefaultName>
+	</TemplateData>
+	<TemplateContent>
+		<References>
+			<Reference>
+				<Assembly>System</Assembly>
+			</Reference>
+		</References>
+    <ProjectItem TargetFileName="$fileinputname$.eto.fs" OpenInEditor="true" ReplaceParameters="true">Code.eto.fs</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.fs" DependentUpon="$fileinputname$.eto.fs" OpenInEditor="false" ReplaceParameters="true">Code.fs</ProjectItem>
+  </TemplateContent>
+	<WizardExtension>
+		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+		<FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
+	</WizardExtension>
+	<WizardExtension>
+		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+		<FullClassName>Eto.Addin.VisualStudio.Wizards.OptionsWizard</FullClassName>
+	</WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.CheckRequiredReferences</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.KeepFSharpOrderWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+		<RequiredReferences>
+			<Reference id="Eto.Forms" version="2.2.0-alpha" assembly="Eto" extension="Eto.Addin.VisualStudio" />
+		</RequiredReferences>
+		<Replacements>
+			<ReplacementGroup>
+				<Replacement name="$Content$">
+					<![CDATA[
+        this.Content <- new Label(Text = "Some Content")]]>
+				</Replacement>
+        <Replacement name="$Initialization$"></Replacement>
+        <Replacement name="$Methods$"></Replacement>
+      </ReplacementGroup>
+		</Replacements>
+		<Options title="Select new file options">
+			<Option name="Select the base class for your new panel/window">
+				<Value name="Panel" description="An empty panel with your custom content">
+					<Replacement name="$BaseClassName$">Panel</Replacement>
+				</Value>
+				<Value name="Scrollable" description="An empty panel with content that can be scrolled">
+					<Replacement name="$BaseClassName$">Scrollable</Replacement>
+				</Value>
+				<Value name="Drawable" description="An custom drawn panel">
+					<Replacement name="$BaseClassName$">Drawable</Replacement>
+					<Replacement name="$Content$"></Replacement>
+					<Replacement name="$Methods$">
+						<![CDATA[
+
+    override base.OnPaint(e: PaintEventArgs) =
+        // your custom drawing
+        e.Graphics.FillRectangle(Colors.Blue, e.ClipRectangle)
+]]>
+					</Replacement>
+				</Value>
+				<Value name="GroupBox" description="An box panel with a title">
+					<Replacement name="$BaseClassName$">GroupBox</Replacement>
+					<Replacement name="$Initialization$">
+						<![CDATA[
+        this.Text <- "My group box"]]>
+					</Replacement>
+				</Value>
+				<Value name="Form" description="A modeless form window">
+					<Replacement name="$BaseClassName$">Form</Replacement>
+					<Replacement name="$Initialization$">
+						<![CDATA[
+        this.Title <- "My Form"]]>
+					</Replacement>
+				</Value>
+				<Value name="Dialog" description="A modal dialog window">
+					<Replacement name="$BaseClassName$">Dialog</Replacement>
+					<Replacement name="$Content$">
+						<![CDATA[
+        this.Title <- "My Dialog"
+
+        // buttons
+        this.DefaultButton <- new Button(Text = "OK")
+        this.DefaultButton.Click.Add(fun e -> this.Close())
+
+        this.AbortButton <- new Button(Text = "C&ancel")
+        this.AbortButton.Click.Add(fun e -> this.Close())
+        let buttons = new TableLayout (Spacing = new Size(5, 5))
+        buttons.Rows.Add(new TableRow(null, new TableCell(this.DefaultButton), new TableCell(this.AbortButton)));
+
+        let layout = new StackLayout(Padding = new Padding(10), Spacing = 5)
+        layout.Items.Add(new StackLayoutItem(new Label(Text = "Some Content"), true))
+        layout.Items.Add(new StackLayoutItem(buttons, Nullable<HorizontalAlignment>(HorizontalAlignment.Right), false))
+
+        this.Content <- layout]]></Replacement>
+				</Value>
+			</Option>
+		</Options>
+	</WizardData>
+</VSTemplate>

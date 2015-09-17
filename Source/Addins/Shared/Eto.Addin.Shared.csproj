@@ -29,14 +29,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseDialog.cs" />
+    <Compile Include="BasePageView.cs" />
+    <Compile Include="Option.cs" />
+    <Compile Include="OptionsPageModel.cs" />
+    <Compile Include="OptionsPageView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectWizardPageView.cs" />
     <Compile Include="ProjectWizardPageModel.cs" />
     <Compile Include="IParameterSource.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="ReplacementItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

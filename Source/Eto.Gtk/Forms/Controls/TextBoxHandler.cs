@@ -178,6 +178,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.ExposeEvent += Connector.HandleExposeEvent;
 #else
 				placeholderText = value;
+				NativeMethods.gtk_entry_set_placeholder_text(Control, value);
 #endif
 			}
 		}

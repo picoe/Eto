@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Eto.Forms Panel (Json)</Name>
+    <Description>Creates a new cross platform Panel class using Eto.Forms with a Json UI and code behind.</Description>
+    <Icon>File.ico</Icon>
+    <TemplateID>0E3603C2-3305-489C-993C-D68194F6F75E</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <AppliesTo>CSharp + MultiTarget</AppliesTo>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>Panel.jeto</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <References>
+      <Reference>
+        <Assembly>System</Assembly>
+      </Reference>
+    </References>
+    <ProjectItem TargetFileName="$fileinputname$.jeto" ReplaceParameters="true" CustomTool="" ItemType="EmbeddedResource">Json.jeto</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.jeto\$fileinputname$.jeto.cs" ReplaceParameters="true">Json.jeto.cs</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.OptionsWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.CheckRequiredReferences</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <RequiredReferences>
+      <Reference id="Eto.Forms" version="2.2.0-alpha" assembly="Eto" extension="Eto.Addin.VisualStudio" />
+      <Reference id="Newtonsoft.Json" version="6.0.6" />
+      <Reference id="Eto.Serialization.Json" version="2.2.0-alpha" extension="Eto.Addin.VisualStudio" />
+    </RequiredReferences>
+    <Replacements>
+      <ReplacementGroup>
+        <Replacement name="$Content$">
+			<![CDATA[
+	"Content": { "$type": "Label", "Text": "Some Content" }]]>
+		</Replacement>
+        <Replacement name="$Methods$"></Replacement>
+        <Replacement name="$Initialization$"></Replacement>
+      </ReplacementGroup>
+    </Replacements>
+    <Options title="Select new file options">
+      <Option name="Select the base class for your new panel/window">
+        <Value name="Panel" description="An empty panel with your custom content">
+          <Replacement name="$BaseClassName$">Panel</Replacement>
+        </Value>
+        <Value name="Scrollable" description="An empty panel with content that can be scrolled">
+          <Replacement name="$BaseClassName$">Scrollable</Replacement>
+        </Value>
+        <Value name="Drawable" description="An custom drawn panel">
+          <Replacement name="$BaseClassName$">Drawable</Replacement>
+          <Replacement name="$Content$"></Replacement>
+          <Replacement name="$Methods$">
+            <![CDATA[
+
+protected override void OnPaint(PaintEventArgs e)
+{
+    // your custom drawing
+    e.Graphics.FillRectangle(Colors.Blue, e.ClipRectangle);
+}]]>
+          </Replacement>
+        </Value>
+        <Value name="GroupBox" description="An box panel with a title">
+          <Replacement name="$BaseClassName$">GroupBox</Replacement>
+          <Replacement name="$Initialization$">
+            <![CDATA[
+"Text": "My group box",
+]]>
+          </Replacement>
+        </Value>
+        <Value name="Form" description="A modeless form window">
+          <Replacement name="$BaseClassName$">Form</Replacement>
+          <Replacement name="$Initialization$">
+            <![CDATA[
+"Title": "My Form",
+]]>
+          </Replacement>
+        </Value>
+        <Value name="Dialog" description="A modal dialog window">
+          <Replacement name="$BaseClassName$">Dialog</Replacement>
+          <Replacement name="$Methods$">
+            <![CDATA[
+
+protected void DefaultButton_Click(object sender, EventArgs e)
+{
+	Close();
+}
+
+protected void AbortButton_Click(object sender, EventArgs e)
+{
+	Close();
+}]]>
+          </Replacement>
+          <Replacement name="$Content$">
+            <![CDATA[
+	"Title": "My Dialog",
+	"Content": {
+		"$type": "StackLayout",
+		"Padding": "10",
+		"Spacing": "5",
+		"Items": [
+			{ "Control": { "$type": "Label", "Text": "Some Content" }, "Expand": "true" },
+			{ 
+				"HorizontalAlignment": "Right",
+				"Control": 
+				{
+					"$type": "StackLayout",
+					"Orientation": "Horizontal",
+					"Spacing": "5",
+					"Items": [
+						{
+						  "$type": "Button",
+						  "$name": "DefaultButton",
+						  "Text": "OK",
+						  "Click": "DefaultButton_Click"
+						},
+						{
+						  "$type": "Button",
+						  "$name": "AbortButton",
+						  "Text": "C&ancel",
+						  "Click": "AbortButton_Click"
+						}
+					]
+				}
+			}
+		]
+	}]]>
+          </Replacement>
+        </Value>
+      </Option>
+    </Options>
+  </WizardData>
+</VSTemplate>

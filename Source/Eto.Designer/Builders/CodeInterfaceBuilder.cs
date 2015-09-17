@@ -25,8 +25,6 @@ namespace Eto.Designer.Builders
 		public string InitializeAssembly { get; set; }
 		protected string BaseDir { get; private set; }
 
-		public abstract string GetSample();
-
 		protected CodeInterfaceBuilder(string baseDir = null)
 		{
 			BaseDir = baseDir ?? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -165,13 +163,37 @@ namespace Eto.Designer.Builders
 
 		protected virtual void SetParameters(CompilerParameters parameters)
 		{
+			const string ReferenceAssembliesFolder = @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5";
+
+			string referenceDir = null;
+			if (EtoEnvironment.Platform.IsWindows)
+			{
+				referenceDir = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), ReferenceAssembliesFolder);
+				if (!Directory.Exists(referenceDir))
+					referenceDir = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles"), ReferenceAssembliesFolder);
+			}
+			else if (EtoEnvironment.Platform.IsMac)
+				referenceDir = @"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5";
+
 			parameters.ReferencedAssemblies.AddRange(new[]
 			{ 
-				"mscorlib.dll",
-				"System.dll",
-				"System.Core.dll",
+				//Path.Combine(referenceDir, "mscorlib.dll"),
+				Path.Combine(referenceDir, "System.dll"),
+				Path.Combine(referenceDir, "System.Core.dll"),
 				typeof(Control).Assembly.Location
 			});
+
+			/* Needed for PCL version of Eto.dll
+			 */
+			var facadeDir = Path.Combine(referenceDir, "Facades");
+
+			if (Directory.Exists(facadeDir))
+			{
+				foreach (var file in Directory.GetFiles(facadeDir))
+				{
+					parameters.ReferencedAssemblies.Add(file);
+				}
+			}
 		}
 
 		public class CompileResult

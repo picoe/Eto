@@ -9,7 +9,8 @@
 		<RootNamespace>$safeprojectname$</RootNamespace>
 		<AssemblyName>$safeprojectname$</AssemblyName>
 		<TargetFrameworkVersion>v$targetframeworkversion$</TargetFrameworkVersion>
-	</PropertyGroup>
+		<DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
+  </PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>full</DebugType>

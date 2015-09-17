@@ -10,7 +10,10 @@ namespace Eto.Serialization.Json
 	{
 		static Stream GetStream(Type type)
 		{
-			return GetStream(type, type.FullName + ".jeto") ?? GetStream(type, type.FullName + ".json");
+			return
+				GetStream(type, type.FullName + ".jeto")
+				?? GetStream(type, type.FullName + ".json")
+				?? GetStream(type, type.Name + ".jeto"); // for f# projects
 		}
 
 		static Stream GetStream(Type type, string resourceName)
@@ -73,13 +76,34 @@ namespace Eto.Serialization.Json
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <param name="namespaceManager">Namespace manager to use when loading</param>
-		/// <returns>A new or existing instance of the specified type with the contents loaded from the json stream</returns>
-		public static T Load<T>(T instance, NamespaceManager namespaceManager = null)
+		public static void Load<T>(T instance, NamespaceManager namespaceManager = null)
 			where T : Widget
 		{
 			using (var stream = GetStream(typeof(T)))
 			{
-				return Load<T>(stream, instance, namespaceManager);
+				Load<T>(stream, instance, namespaceManager);
+			}
+		}
+
+		/// <summary>
+		/// Loads the specified instance with json from the specified embedded resource.
+		/// </summary>
+		/// <remarks>
+		/// This will load the embedded resource from the same assembly as <paramref name="instance"/> with the 
+		/// specified <paramref name="resourceName"/> embedded resource.
+		/// 
+		/// If you want to specify a different json, use <see cref="Load{T}(Stream, T)"/>
+		/// </remarks>
+		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
+		/// <param name="instance">Instance to use as the starting object</param>
+		/// <param name="namespaceManager">Namespace manager to use when loading</param>
+		/// <param name="resourceName">Fully qualified name of the embedded resource to load.</param>
+		public static void Load<T>(T instance, string resourceName, NamespaceManager namespaceManager = null)
+			where T : Widget
+		{
+			using (var stream = GetStream(typeof(T), resourceName))
+			{
+				Load<T>(stream, instance, namespaceManager);
 			}
 		}
 
@@ -90,7 +114,7 @@ namespace Eto.Serialization.Json
 		/// </summary>
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="stream">json content to load (e.g. from resources)</param>
-		/// <param name="instance">Instance to use as the starting object</param>
+		/// <param name="instance">Instance to use as the starting object, or null to create a new instance</param>
 		/// <param name="namespaceManager">Namespace manager to use to lookup type names</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the json stream</returns>
 		public static T Load<T>(Stream stream, T instance, NamespaceManager namespaceManager = null)

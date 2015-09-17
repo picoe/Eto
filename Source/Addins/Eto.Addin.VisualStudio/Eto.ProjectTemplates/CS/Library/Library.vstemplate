@@ -34,7 +34,7 @@
 	</WizardExtension>
 	<WizardData>
 		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-			<package id="Eto.Forms" version="2.1.0" />
+			<package id="Eto.Forms" version="2.2.0-alpha" />
 		</packages>
 		<SupportedParameters>SupportsPCL,IsLibrary</SupportedParameters>
 		<Replacements>

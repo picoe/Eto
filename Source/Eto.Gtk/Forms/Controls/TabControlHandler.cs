@@ -80,5 +80,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (Widget.Loaded && Control.NPages == 0)
 				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 		}
+
+		public DockPosition TabPosition
+		{
+			get { return Control.TabPos.ToEto(); }
+			set { Control.TabPos = value.ToGtk(); }
+		}
 	}
 }

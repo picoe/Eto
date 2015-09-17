@@ -5,9 +5,6 @@ using System;
 
 namespace Eto.WinForms.Forms.Menu
 {
-	/// <summary>
-	/// Summary description for MenuBarHandler.
-	/// </summary>
 	public class SeparatorMenuItemHandler : MenuHandler<SWF.ToolStripSeparator, SeparatorMenuItem, SeparatorMenuItem.ICallback>, SeparatorMenuItem.IHandler
 	{
 		

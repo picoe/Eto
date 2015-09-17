@@ -59,6 +59,11 @@ namespace Eto.Forms.ThemedControls
 			};
 
 			toggle.Click += (sender, e) => Expanded = !Expanded;
+			header.MouseDown += (sender, e) =>
+			{
+				Expanded = !Expanded;
+				e.Handled = true;
+			};
 		}
 
 		/// <summary>

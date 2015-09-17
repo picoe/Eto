@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Eto.Addin.VisualStudio.Editor;
 
 namespace Eto.Addin.VisualStudio
 {
@@ -20,10 +21,16 @@ namespace Eto.Addin.VisualStudio
 		MatchExtensionAndNamespace = false)]*/
 	//[ProvideEditorFactory(typeof(EditorFactory), 106)]
 	//[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Designer_string)]
-	[ProvideEditorExtension(typeof(EditorFactory), ".cs", 0x10, NameResourceID = 106)]
-	[ProvideEditorExtension(typeof(EditorFactory), ".vb", 0x10, NameResourceID = 106)]
-	[ProvideEditorExtension(typeof(EditorFactory), ".jeto", 0x32, NameResourceID = 106)]
-	[ProvideEditorExtension(typeof(EditorFactory), ".xeto", 0x10, NameResourceID = 106)]
+	[ProvideEditorExtension(typeof(EditorFactory), ".cs", 0x100, NameResourceID = 106)]
+	[ProvideEditorExtension(typeof(EditorFactory), ".vb", 0x100, NameResourceID = 106)]
+	[ProvideEditorExtension(typeof(EditorFactory), ".fs", 0x100, NameResourceID = 106)]
+	[ProvideEditorExtension(typeof(EditorFactory), ".jeto", 0x1000, NameResourceID = 106)]
+	[ProvideEditorExtension(typeof(EditorFactory), ".xeto", 0x1000, NameResourceID = 106)]
+	[ProvideEditorFactory(typeof(EditorFactory), 106)]
+	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Any_string)]
+	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Code_string)]
+	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.TextView_string)]
+	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Designer_string)]
 
 	//[ProvideLanguageExtension(VSConstants.VsLanguageServiceGuid.HtmlLanguageService_string, ".jeto")]
 

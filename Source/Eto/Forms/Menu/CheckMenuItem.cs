@@ -31,8 +31,67 @@ namespace Eto.Forms
 		{
 			Checked = command.Checked;
 			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Click += (sender, e) => command.Checked = Checked;
+			CheckedChanged += (sender, e) => command.Checked = Checked;
 			Handler.CreateFromCommand(command);
+		}
+
+		/// <summary>
+		/// Event identifier for the <see cref="CheckedChanged"/> event.
+		/// </summary>
+		public const string CheckedChangedEvent = "CheckMenuItem.CheckedChanged";
+
+		/// <summary>
+		/// Event to handle when the <see cref="Checked"/> property changes.
+		/// </summary>
+		public event EventHandler<EventArgs> CheckedChanged
+		{
+			add { Properties.AddHandlerEvent(CheckedChangedEvent, value); }
+			remove { Properties.RemoveEvent(CheckedChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="CheckedChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnCheckedChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(CheckedChangedEvent, this, e);
+		}
+
+		static readonly Callback callback = new Callback();
+
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback.</returns>
+		protected override object GetCallback()
+		{
+			return callback;
+		}
+
+		/// <summary>
+		/// Callback interface for the <see cref="CheckMenuItem"/> class.
+		/// </summary>
+		public new interface ICallback : MenuItem.ICallback
+		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
+			void OnCheckedChanged(CheckMenuItem widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for the <see cref="CheckMenuItem"/>.
+		/// </summary>
+		protected new class Callback : MenuItem.Callback, ICallback
+		{
+			/// <summary>
+			/// Raises the checked changed event.
+			/// </summary>
+			public void OnCheckedChanged(CheckMenuItem widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnCheckedChanged(e));
+			}
 		}
 
 		/// <summary>

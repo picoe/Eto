@@ -8,7 +8,7 @@ goto end
 
 set MSBUILD=c:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe
 
-%MSBUILD% -t:Publish Publish.targets 
+%MSBUILD% -t:Publish Build.targets 
 
 :end
 

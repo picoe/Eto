@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Compiler.CodeDom, Version=0.9.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Addins\Eto.Addin.VisualStudio\packages\FSharp.Compiler.CodeDom.0.9.2\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Addins\Eto.Addin.VisualStudio\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -43,6 +47,7 @@
   <ItemGroup>
     <Compile Include="AssemblyResolver.cs" />
     <Compile Include="Builders\CodeInterfaceBuilder.cs" />
+    <Compile Include="Builders\FSharpInterfaceBuilder.cs" />
     <Compile Include="Builders\CSharpInterfaceBuilder.cs" />
     <Compile Include="Builders\JsonInterfaceBuilder.cs" />
     <Compile Include="Builders\VbInterfaceBuilder.cs" />
@@ -55,6 +60,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

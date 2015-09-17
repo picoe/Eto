@@ -47,15 +47,15 @@ namespace Eto.Forms
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
-		EventHandler<EventArgs> click;
+		static readonly object Click_Key = new object();
 
 		/// <summary>
 		/// Event to handle when the user clicks the button
 		/// </summary>
 		public event EventHandler<EventArgs> Click
 		{
-			add { click += value; }
-			remove { click -= value; }
+			add { Properties.AddEvent(Click_Key, value); }
+			remove { Properties.RemoveEvent(Click_Key, value); }
 		}
 
 		/// <summary>
@@ -64,8 +64,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected virtual void OnClick(EventArgs e)
 		{
-			if (click != null)
-				click(this, e);
+			Properties.TriggerEvent(Click_Key, this, e);
 		}
 
 		static readonly object Command_Key = new object();
@@ -102,6 +101,36 @@ namespace Eto.Forms
 		{
 			get { return Handler.ImagePosition; }
 			set { Handler.ImagePosition = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the minimum size for the button.
+		/// </summary>
+		/// <remarks>
+		/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
+		/// 
+		/// Setting this to <see cref="Eto.Drawing.Size.Empty"/> is useful when you want the button to shrink to fit the size
+		/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
+		/// </remarks>
+		public Size MinimumSize
+		{
+			get { return Handler.MinimumSize; }
+			set { Handler.MinimumSize = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the size of the control. Use -1 to specify auto sizing for either the width and/or height.
+		/// </summary>
+		/// <value>The size of the control.</value>
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				base.Size = value;
+				// Ensure minimum size is at least as small as the desired explicit size
+				MinimumSize = Size.Min(value, MinimumSize);
+			}
 		}
 
 		/// <summary>
@@ -163,6 +192,17 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The image position</value>
 			ButtonImagePosition ImagePosition { get; set; }
+
+			/// <summary>
+			/// Gets or sets the minimum size for the button.
+			/// </summary>
+			/// <remarks>
+			/// Each platform may have a different initial minimum size set for buttons to match their standard sizes.
+			/// 
+			/// Setting this to <see cref="Eto.Drawing.Size.Empty"/> is useful when you want the button to shrink to fit the size
+			/// of the specified <see cref="Image"/> and/or <see cref="TextControl.Text"/>.
+			/// </remarks>
+			Size MinimumSize { get; set;}
 		}
 	}
 }

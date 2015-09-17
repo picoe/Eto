@@ -34,6 +34,11 @@ namespace Eto.Forms
 			Properties.TriggerEvent(ExpandedChangedEvent, this, e);
 		}
 
+		static Expander()
+		{
+			EventLookup.Register<Expander>(c => c.OnExpandedChanged(null), Expander.ExpandedChangedEvent);
+		}
+
 		/// <summary>
 		/// Gets an enumeration of controls that are directly contained by this container
 		/// </summary>

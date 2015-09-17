@@ -28,5 +28,12 @@ namespace Eto.Addin.VisualStudio
 				vsServiceProvider = new ServiceProvider(ServiceProvider);
 			return vsServiceProvider.GetService(typeof(T)) as T;
 		}
+		public static TInterface GetService<T, TInterface>()
+			where T : class
+		{
+			if (vsServiceProvider == null)
+				vsServiceProvider = new ServiceProvider(ServiceProvider);
+			return (TInterface)vsServiceProvider.GetService(typeof(T));
+		}
 	}
 }
