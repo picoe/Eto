@@ -6,12 +6,10 @@
 	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id="eto.project.application.cs" file="Templates/Projects/C#/application.xpt.xml" />
 		<ProjectTemplate id="eto.project.library.cs" file="Templates/Projects/C#/library.xpt.xml" />
-
 		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
 			<ProjectTemplate id="eto.project.application.vb" file="Templates/Projects/VB/application.xpt.xml" />
 			<ProjectTemplate id="eto.project.library.vb" file="Templates/Projects/VB/library.xpt.xml" />
 		</Condition>
-
 		<ComplexCondition>
 			<Or>
 				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
@@ -25,11 +23,9 @@
 		<FileTemplate id="eto.file.form.cs" file="Templates/Files/C#/form.xft.xml" />
 		<FileTemplate id="eto.file.dialog.cs" file="Templates/Files/C#/dialog.xft.xml" />
 		<FileTemplate id="eto.file.panel.cs" file="Templates/Files/C#/panel.xft.xml" />
-
 		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
 			<FileTemplate id="eto.file.panel.vb" file="Templates/Files/VB/panel.xft.xml" />
 		</Condition>
-
 		<ComplexCondition>
 			<Or>
 				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
@@ -62,7 +58,22 @@
 		<ProjectBinding id="Eto.VBDotNet" class="Eto.Addin.XamarinStudio.VBDotNetProjectBinding" />
 		<ProjectBinding id="Eto.FSharp" class="Eto.Addin.XamarinStudio.FSharpProjectBinding" />
 	</Extension>
-	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
+	<Extension path="/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name="ParameterizedFile" class="Eto.Addin.XamarinStudio.ParameterizedFile" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding insertbefore="DefaultDisplayBinding" class="Eto.Addin.XamarinStudio.Editor.DisplayBinding" />
+		<!--DisplayBinding class = "MonoDevelop.GtkCore.GuiBuilder.ActionGroupDisplayBinding" /-->
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions=".xeto" class="Eto.Addin.XamarinStudio.Editor.XetoTextEditorExtension" insertbefore="XmlTextEditorExtension" />
+	</Extension>
+	<Extension path="/MonoDevelop/Core/MimeTypes">
+		<MimeType id="application/x-xeto" _description="Eto Xaml document" icon="md-xml-file-icon" isText="true" baseType="application/xml">
+			<File pattern="*.xeto" />
+		</MimeType>
+		<MimeType id="application/x-jeto" _description="Eto Json document" isText="true" baseType="application/json">
+			<File pattern="*.jeto" />
+		</MimeType>
 	</Extension>
 </ExtensionModel>

@@ -1,5 +1,4 @@
-﻿using Eto.Designer;
-using Eto.Designer.Builders;
+﻿using Eto.Designer.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Eto.Addin.VisualStudio
+namespace Eto.Designer
 {
 	public class BuilderInfo
 	{

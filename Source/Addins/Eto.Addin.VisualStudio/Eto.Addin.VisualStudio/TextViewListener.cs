@@ -21,6 +21,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.IO;
+using Eto.Designer;
 
 namespace Eto.Addin.VisualStudio
 {

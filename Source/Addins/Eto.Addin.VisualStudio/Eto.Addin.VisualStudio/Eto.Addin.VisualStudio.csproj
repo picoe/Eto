@@ -72,7 +72,6 @@
   <ItemGroup>
     <Compile Include="Adornments\ColorAdornment.cs" />
     <Compile Include="Adornments\AdornmentFactory.cs" />
-    <Compile Include="BuilderInfo.cs" />
     <Compile Include="Editor\EtoAdapterHandler.cs" />
     <Compile Include="Editor\EditorFactory.cs" />
     <Compile Include="EtoPreviewPackage.cs" />

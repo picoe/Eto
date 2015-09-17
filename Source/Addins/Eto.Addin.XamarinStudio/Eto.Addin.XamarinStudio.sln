@@ -9,12 +9,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2 - net45", "..\..\E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared", "..\Shared\Eto.Addin.Shared.csproj", "{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer", "..\..\Eto.Designer\Eto.Designer.csproj", "{7FAA1841-0869-474C-9D89-87E1B4BAB190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - net45", "..\..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - net45", "..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj", "{231FB3B0-CB71-11E3-9C1A-0800200C9A66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35EF0A4E-2A1A-492C-8BED-106774EA09F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -23,6 +33,10 @@ Global
 		{54A88D77-39C6-49E5-971E-05451209F2A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54A88D77-39C6-49E5-971E-05451209F2A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54A88D77-39C6-49E5-971E-05451209F2A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FAA1841-0869-474C-9D89-87E1B4BAB190}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80915A80-CA54-11E3-9C1A-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -31,6 +45,10 @@ Global
 		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
