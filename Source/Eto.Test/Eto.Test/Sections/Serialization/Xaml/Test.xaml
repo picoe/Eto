@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Panel x:Class="Eto.Test.Sections.Serialization.Xaml.Test" 
-	   xmlns="http://schema.picoe.ca/eto.forms" 
-	   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	   xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+<Panel x:Class="Eto.Test.Sections.Serialization.Xaml.Test" xmlns="http://schema.picoe.ca/eto.forms" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 	<TabControl>
 		<TabPage Text="Table Layout using Rows &amp; Controls">
 			<TableLayout Padding="10" Spacing="5,5">
@@ -52,6 +49,20 @@
 				</TableRow>
 				<TableRow />
 			</TableLayout>
+		</TabPage>
+		<TabPage Text="Stack Layout">
+			<StackLayout>
+				<Label>Hello</Label>
+				<StackLayoutItem Expand="true" HorizontalAlignment="Stretch">
+					<TextArea />
+				</StackLayoutItem>
+				<StackLayoutItem HorizontalAlignment="Right">
+					<StackLayout Orientation="Horizontal">
+						<Button Text="OK" />
+						<Button Text="C&amp;ancel" />
+					</StackLayout>
+				</StackLayoutItem>
+			</StackLayout>
 		</TabPage>
 		<TabPage Text="External Control">
 			<e:LabelSection />

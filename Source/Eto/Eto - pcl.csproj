@@ -319,6 +319,7 @@
     <Compile Include="Forms\Binding\PropertyNotifyHelper.cs" />
     <Compile Include="Forms\Controls\Expander.cs" />
     <Compile Include="Forms\DockPosition.cs" />
+    <Compile Include="Forms\Layout\StackLayoutItemConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">
