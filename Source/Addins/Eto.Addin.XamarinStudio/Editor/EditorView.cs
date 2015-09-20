@@ -18,50 +18,21 @@ namespace Eto.Addin.XamarinStudio.Editor
 	public class EditorView : AbstractViewContent
 	{
 		readonly IViewContent content;
-		Splitter splitter;
-		Panel previewPanel;
 		Gtk.Widget control;
-		BuilderInfo builder;
-		IInterfaceBuilder interfaceBuilder;
-		UITimer timer;
+		PreviewEditorView preview;
 
 		public EditorView(IViewContent content)
 		{
 			this.content = content;
-			splitter = new Splitter
-			{ 
-				Orientation = Orientation.Vertical,
-				FixedPanel = SplitterFixedPanel.None, 
-				RelativePosition = 0.4
-			};
-
-			previewPanel = new Panel();
-			splitter.Panel1 = previewPanel;
-			splitter.Panel2 = content.Control.ToEto();
+			preview = new PreviewEditorView(content.Control.ToEto(), () => content?.WorkbenchWindow?.Document?.Editor?.Text);
 			content.ContentChanged += content_ContentChanged;
 			content.DirtyChanged += content_DirtyChanged;
-			var commandRouterContainer = new CommandRouterContainer(splitter.ToNative(true), content, true);
+			var commandRouterContainer = new CommandRouterContainer(preview.ToNative(true), content, true);
 			commandRouterContainer.Show();
 			control = commandRouterContainer;
 			IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
 
-			timer = new UITimer { Interval = 0.2 };
-			timer.Elapsed += Timer_Elapsed;
 			base.ContentName = content.ContentName;
-		}
-
-		void Timer_Elapsed(object sender, EventArgs e)
-		{
-			if (interfaceBuilder == null || content == null)
-				return;
-			timer.Stop();
-			var code = content?.WorkbenchWindow?.Document?.Editor?.Text;
-			if (!string.IsNullOrEmpty(code))
-			{
-				interfaceBuilder.Create(code, 
-					ctl => previewPanel.Content = ctl, 
-					error => previewPanel.Content = error);
-			}
 		}
 
 		public override Gtk.Widget Control
@@ -71,15 +42,14 @@ namespace Eto.Addin.XamarinStudio.Editor
 
 		public override void Load(string fileName)
 		{
-			builder = BuilderInfo.Find(fileName);
-			interfaceBuilder = builder.CreateBuilder();
+			preview.SetBuilder(fileName);
 			content.Load(fileName);
 			base.ContentName = fileName;
 		}
 
 		public override bool CanReuseView(string fileName)
 		{
-			return content.CanReuseView(fileName); //content?.WorkbenchWindow?.Document?.FileName.FileName == fileName;
+			return content.CanReuseView(fileName);
 		}
 
 		public override string ContentName
@@ -167,20 +137,13 @@ namespace Eto.Addin.XamarinStudio.Editor
 			}
 		}
 
-		void WorkbenchWindow_ActiveViewContentChanged(object o, ActiveViewContentEventArgs e)
-		{
-			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.GetContent<EditorView>() == this)
-			{
-			}
-		}
-
 		void WorkbenchWindow_DocumentChanged(object sender, EventArgs e)
 		{
 			var doc = WorkbenchWindow?.Document?.Editor?.Document;
 			if (doc != null)
 			{
-				doc.LineChanged += (senderr, ee) => timer.Start();
-				timer.Start();
+				doc.LineChanged += (senderr, ee) => preview.Update();
+				preview.Update();
 			}
 		}
 

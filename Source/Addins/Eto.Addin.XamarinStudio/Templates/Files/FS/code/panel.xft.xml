@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Panel</_Name>
+		<_Name>Panel (with form preview)</_Name>
 		<Icon>md-text-file-icon</Icon>
 		<_Category>Eto.Forms</_Category>
 		<LanguageName>F#</LanguageName>
@@ -13,5 +13,6 @@
 	</TemplateConfiguration>
 	<TemplateFiles>
         <File name="${Name}.fs" AddStandardHeader="true" src="panel.fs"/>
+        <File name="${Name}.eto.fs" AddStandardHeader="true" src="panel.eto.fs"/>
 	</TemplateFiles>
 </Template>

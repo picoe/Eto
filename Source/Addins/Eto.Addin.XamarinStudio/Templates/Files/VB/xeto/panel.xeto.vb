@@ -1,15 +1,14 @@
 ﻿Imports Eto.Forms
 Imports Eto.Drawing
+Imports Eto.Serialization.Xaml
 
 Public Class ${EscapedIdentifier}
 	Inherits Panel
-	
+
 	Public Sub New ()
 
-		Dim label as New Label ()
-		label.Text = "Some Content"
+		XamlReader.Load (Me)
 
-		Me.Content = label
 	End Sub
 
 End Class

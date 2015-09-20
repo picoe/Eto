@@ -3,9 +3,10 @@
 open System
 open Eto.Forms
 open Eto.Drawing
+open Eto.Serialization.Json;
 
-type ${EscapedIdentifier} as this () =
+type ${EscapedIdentifier} () as this =
     inherit Panel ()
 
     do
-        base.Content <- new Label (Text = "Some Content")
+        JsonReader.Load (this)

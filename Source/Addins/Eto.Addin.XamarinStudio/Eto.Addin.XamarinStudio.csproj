@@ -50,9 +50,8 @@
     <Compile Include="ParameterSource.cs" />
     <Compile Include="ParameterizedFile.cs" />
     <Compile Include="Editor\DisplayBinding.cs" />
-    <Compile Include="Editor\EditorView.cs" />
     <Compile Include="Editor\XetoTextEditorExtension.cs" />
-    <Compile Include="Editor\Completion.cs" />
+    <Compile Include="Editor\EditorView.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
@@ -63,13 +62,18 @@
     <Folder Include="Packages\" />
     <Folder Include="Templates\Projects\" />
     <Folder Include="Templates\Files\" />
-    <Folder Include="Templates\Files\F#\" />
-    <Folder Include="Templates\Files\C#\" />
     <Folder Include="Templates\Files\VB\" />
     <Folder Include="Templates\Projects\VB\" />
-    <Folder Include="Templates\Projects\C#\" />
-    <Folder Include="Templates\Projects\F#\" />
     <Folder Include="Editor\" />
+    <Folder Include="Templates\Files\VB\code\" />
+    <Folder Include="Templates\Files\FS\" />
+    <Folder Include="Templates\Files\FS\code\" />
+    <Folder Include="Templates\Files\FS\jeto\" />
+    <Folder Include="Templates\Files\CS\" />
+    <Folder Include="Templates\Files\CS\code\" />
+    <Folder Include="Templates\Files\CS\xeto\" />
+    <Folder Include="Templates\Projects\CS\" />
+    <Folder Include="Templates\Projects\FS\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.2.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.2.0-alpha.nupkg')">
@@ -93,61 +97,13 @@
     <AddinFile Include="Templates\Projects\Mac\Info.plist">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="Templates\Files\C#\dialog.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\C#\form.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\C#\panel.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\F#\panel.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\VB\panel.vb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\C#\dialog.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\C#\form.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\C#\panel.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\F#\panel.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Files\VB\panel.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
     <AddinFile Include="Templates\Projects\VB\MainForm.vb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Projects\C#\MainForm.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Projects\C#\application.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Projects\C#\library.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Projects\F#\library.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
     <AddinFile Include="Templates\Projects\VB\application.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
     <AddinFile Include="Templates\Projects\VB\library.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Projects\F#\application.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AddinFile>
-    <AddinFile Include="Templates\Projects\F#\MainForm.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
     <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.2.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.2.0-alpha.nupkg')">
@@ -202,10 +158,124 @@
       <Link>Packages\Eto.Serialization.Xaml.2.2.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="Templates\Projects\C#\Program.cs">
+    <AddinFile Include="Templates\Files\VB\code\dialog.vb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="Templates\Projects\F#\Program.fs">
+    <AddinFile Include="Templates\Files\VB\code\dialog.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\code\form.vb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\code\form.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\code\panel.vb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\code\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\code\panel.eto.vb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\xeto\panel.xeto">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\xeto\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\xeto\panel.xeto.vb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\jeto\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\jeto\panel.jeto">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\VB\jeto\panel.jeto.vb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\xeto\panel.xeto">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\xeto\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\xeto\panel.xeto.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\code\panel.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\code\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\jeto\panel.jeto">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\jeto\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\code\dialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\code\dialog.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\code\form.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\code\form.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\code\panel.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\code\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\xeto\panel.xeto">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\xeto\panel.xeto.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\xeto\panel.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\CS\code\panel.eto.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\CS\MainForm.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\CS\application.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\CS\library.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\CS\Program.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\FS\library.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\FS\application.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\FS\MainForm.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Projects\FS\Program.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\jeto\panel.jeto.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
+    <AddinFile Include="Templates\Files\FS\code\panel.eto.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
   </ItemGroup>

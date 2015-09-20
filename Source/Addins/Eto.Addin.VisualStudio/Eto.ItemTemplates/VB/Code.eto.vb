@@ -4,7 +4,7 @@ Imports Eto.Drawing
 Partial Class $safeitemname$
 	Inherits $BaseClassName$
 
-	Public Sub InitializeComponent()
+	Private Sub InitializeComponent()
 
 		$Initialization$$Content$
 

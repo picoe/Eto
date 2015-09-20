@@ -5,9 +5,9 @@ using Eto.Drawing;
 
 namespace ${Namespace}
 {	
-	public class ${EscapedIdentifier} : Panel
+	public partial class ${EscapedIdentifier} : Panel
 	{	
-		public ${EscapedIdentifier}()
+		void InitializeComponent()
 		{
 			Content = new Label { Text = "Some Content" };
 		}

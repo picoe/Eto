@@ -40,11 +40,9 @@ namespace Eto.Addin.VisualStudio.Editor
 		IOleCommandTarget
 	{
 		IVsTextLines textBuffer;
-		BuilderInfo builderInfo;
 		EtoPreviewPackage package;
+		PreviewEditorView preview;
 		Panel editorControl;
-		Panel previewControl;
-		UITimer timer;
 		ElementHost host = new ElementHost();
 		uint dataEventsCookie;
 		uint linesEventsCookie;
@@ -100,22 +98,13 @@ namespace Eto.Addin.VisualStudio.Editor
 			this.textBuffer = textBuffer;
 			FileName = fileName;
 
-			builderInfo = BuilderInfo.Find(fileName);
-			if (builderInfo == null)
-				throw new InvalidOperationException(string.Format("Could not find builder for file {0}", fileName));
-			builder = builderInfo.CreateBuilder();
-
 			editorControl = new Panel();
-			previewControl = new Panel();
+			preview = new PreviewEditorView(editorControl, () => textBuffer?.GetText());
+			if (!preview.SetBuilder(fileName))
+				throw new InvalidOperationException(string.Format("Could not find builder for file {0}", fileName));
 
-			var split = new Splitter { Panel1 = previewControl, Panel2 = editorControl, Orientation = Orientation.Vertical, FixedPanel = SplitterFixedPanel.None, RelativePosition = 0.5 };
-			var native = split.ToNative(true);
-            host.Child = native;
-
-			control = split;
+			host.Child = preview.ToNative(true);
 		}
-
-		Control control;
 
 		protected override bool PreProcessMessage(ref System.Windows.Forms.Message m)
 		{
@@ -202,9 +191,6 @@ namespace Eto.Addin.VisualStudio.Editor
 		{
 			base.Initialize();
 
-			timer = new UITimer { Interval = 0.2 };
-			timer.Elapsed += timer_Elapsed;
-
 			RegisterIndependentView(true);
 
 			CreateCodeEditor();
@@ -213,7 +199,7 @@ namespace Eto.Addin.VisualStudio.Editor
 
 			InheritKeyBindings();
 
-			TriggerUpdate();
+			preview.Update();
 		}
 
 		void InheritKeyBindings()
@@ -264,12 +250,6 @@ namespace Eto.Addin.VisualStudio.Editor
 			editorControl.Content = new Scrollable { Content = new Label { Text = "Could not load editor" } };
 		}
 
-		void timer_Elapsed(object sender, EventArgs e)
-		{
-			timer.Stop();
-			UpdateView();
-		}
-
 		IConnectionPoint GetConnectionPoint<T>()
 		{
 			var container = textBuffer as IConnectionPointContainer;
@@ -295,11 +275,10 @@ namespace Eto.Addin.VisualStudio.Editor
 			{
 				if (disposing)
 				{
-					if (timer != null)
+					if (preview != null)
 					{
-						timer.Stop();
-						timer.Dispose();
-						timer = null;
+						preview.Dispose();
+						preview = null;
 					}
 
 					RegisterIndependentView(false);
@@ -343,7 +322,7 @@ namespace Eto.Addin.VisualStudio.Editor
 		void ViewCode()
 		{
 			// Open the referenced document using the standard text editor.
-			var codeFile = builderInfo.GetCodeFile(FileName);
+			var codeFile = preview.Builder.GetCodeFile(FileName);
 
 			IVsWindowFrame frame;
 			IVsUIHierarchy hierarchy;
@@ -359,41 +338,14 @@ namespace Eto.Addin.VisualStudio.Editor
 		#endregion
 
 
-		void UpdateView()
-		{
-			var text = textBuffer.GetText();
-			if (!string.IsNullOrEmpty(text))
-			{
-				builder.Create(text, SetChild, error =>
-				{
-					previewControl.Content = new Label { Text = error };
-				});
-			}
-		}
-
-		void SetChild(Control control)
-		{
-			var child = control;
-			var window = child as Eto.Forms.Window;
-			if (window != null)
-			{
-				// swap out window for a panel so we can add it as a child
-				var content = window.Content;
-				window.Content = null;
-				child = new Panel { Content = content, Padding = window.Padding };
-			}
-			previewControl.Content = child;
-		}
-
-
 		void IVsTextBufferDataEvents.OnFileChanged(uint grfChange, uint dwFileAttrs)
 		{
-			TriggerUpdate();
+			preview.Update();
 		}
 
 		int IVsTextBufferDataEvents.OnLoadCompleted(int fReload)
 		{
-			TriggerUpdate();
+			preview.Update();
 			return VSConstants.S_OK;
 		}
 
@@ -403,14 +355,7 @@ namespace Eto.Addin.VisualStudio.Editor
 
 		void IVsTextLinesEvents.OnChangeLineText(TextLineChange[] pTextLineChange, int fLast)
 		{
-			TriggerUpdate();
-		}
-
-		void TriggerUpdate()
-		{
-			timer.Stop();
-			timer.Interval = 0.5;
-			timer.Start();
+			preview.Update();
 		}
 	}
 }
