@@ -25,6 +25,26 @@ namespace Eto.Mac.Forms.Controls
 		public class EtoColorWell : NSColorWell, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
+
+			public override void Activate(bool exclusive)
+			{
+				base.Activate(exclusive);
+				var handler = GetHandler(this) as ColorPickerHandler;
+				if (handler != null)
+				{
+					handler.TriggerMouseCallback();
+				}
+			}
+
+			public override void Deactivate()
+			{
+				base.Deactivate();
+				var handler = GetHandler(this) as ColorPickerHandler;
+				if (handler != null)
+				{
+					handler.TriggerMouseCallback();
+				}
+			}
 		}
 
 		public ColorPickerHandler()

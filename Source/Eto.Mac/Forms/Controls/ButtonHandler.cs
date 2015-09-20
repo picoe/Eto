@@ -138,6 +138,7 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(sender) as ButtonHandler;
 			if (handler != null)
 			{
+				handler.TriggerMouseCallback();
 				handler.Callback.OnClick(handler.Widget, EventArgs.Empty);
 			}
 		}

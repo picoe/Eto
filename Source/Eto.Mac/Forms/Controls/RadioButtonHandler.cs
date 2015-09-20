@@ -84,6 +84,8 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(sender) as RadioButtonHandler;
 			if (handler != null)
 			{
+				handler.TriggerMouseCallback();
+
 				if (handler.Activated != null)
 					handler.Activated(handler, e);
 				handler.Callback.OnClick(handler.Widget, EventArgs.Empty);

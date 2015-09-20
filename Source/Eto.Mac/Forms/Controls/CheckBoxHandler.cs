@@ -57,6 +57,7 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleActivated(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as CheckBoxHandler;
+			handler.TriggerMouseCallback();
 			handler.Callback.OnCheckedChanged(handler.Widget, EventArgs.Empty);
 		}
 

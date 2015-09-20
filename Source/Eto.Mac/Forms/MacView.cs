@@ -442,6 +442,28 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		/// <summary>
+		/// Triggers a mouse callback from a different event. 
+		/// e.g. when an NSButton is clicked it is triggered from a mouse up event.
+		/// </summary>
+		protected void TriggerMouseCallback()
+		{
+			// trigger mouse up event since it's buried by cocoa
+			var evt = NSApplication.SharedApplication.CurrentEvent;
+			if (evt == null)
+				return;
+			if (evt.Type == NSEventType.LeftMouseUp || evt.Type == NSEventType.RightMouseUp || evt.Type == NSEventType.OtherMouseUp)
+			{
+				Callback.OnMouseUp(Widget, MacConversions.GetMouseEvent(ContainerControl, evt, false));
+			}
+			if (evt.Type == NSEventType.LeftMouseDragged || evt.Type == NSEventType.RightMouseDragged || evt.Type == NSEventType.OtherMouseDragged)
+			{
+				Callback.OnMouseMove(Widget, MacConversions.GetMouseEvent(ContainerControl, evt, false));
+			}
+		}
+
+
+
 		static void TriggerMouseUp(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var obj = Runtime.GetNSObject(sender);
