@@ -5,35 +5,46 @@ namespace Eto.GtkSharp.Forms
 {
 	public class UITimerHandler : WidgetHandler<object, UITimer, UITimer.ICallback>, UITimer.IHandler
 	{
-		bool enabled;
-		bool stopped = true;
-		
-		public void Start ()
+		uint? handle;
+		double interval = 1;
+
+		public void Start()
 		{
-			if (enabled) return;
-			enabled = true;
-			if (!stopped) return;
-			stopped = false;
-			GLib.Timeout.Add((uint)(Interval * 1000), delegate {
-				if (!enabled) { 
-					stopped = true; return false;
-				}
+			Stop();
+			handle = GLib.Timeout.Add((uint)(Interval * 1000), delegate
+			{
 				Callback.OnElapsed(Widget, EventArgs.Empty);
 				return true;
 			});
 		}
 
-		public void Stop ()
+		public void Stop()
 		{
-			enabled = false;
+			if (handle != null)
+			{
+				GLib.Source.Remove(handle.Value);
+				handle = null;
+			}
 		}
 
-		public double Interval { get; set; }
+		public double Interval
+		{
+			get { return interval; }
+			set
+			{
+				if (Math.Abs(interval - value) > double.Epsilon)
+				{
+					interval = value;
+					if (handle != null)
+						Start();
+				}
+			}
+		}
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose (disposing);
-			enabled = false;
+			Stop();
+			base.Dispose(disposing);
 		}
 	}
 }
