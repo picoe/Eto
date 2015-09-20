@@ -5,7 +5,7 @@ using Eto.Forms;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-namespace Eto.Serialization.Json
+namespace Eto.Serialization.Json.Converters
 {
 	public class StackLayoutConverter : JsonConverter
 	{
@@ -22,12 +22,16 @@ namespace Eto.Serialization.Json
 		public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
 			object instance;
-			JContainer container;
 			if (reader.TokenType == JsonToken.Null)
 			{
 				return null;
 			}
-			container = JObject.Load(reader);
+			if (reader.TokenType == JsonToken.String)
+			{
+				return new StackLayoutItem { Control = Convert.ToString(reader.Value) };
+			}
+
+			var container = JObject.Load(reader);
 			if (container["$type"] == null)
 			{
 				instance = new StackLayoutItem();

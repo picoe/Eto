@@ -5,7 +5,7 @@ using System.Reflection;
 using Newtonsoft.Json.Serialization;
 using System.Linq;
 
-namespace Eto.Serialization.Json
+namespace Eto.Serialization.Json.Converters
 {
 	public class NameConverter : JsonConverter
 	{

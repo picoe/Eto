@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Eto.Drawing;
 
-namespace Eto.Serialization.Json
+namespace Eto.Serialization.Json.Converters
 {
 	public class ImageConverter : JsonConverter
 	{

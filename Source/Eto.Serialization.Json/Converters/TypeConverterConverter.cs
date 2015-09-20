@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Eto.Serialization.Json
+namespace Eto.Serialization.Json.Converters
 {
 	public class TypeConverterConverter : JsonConverter
 	{

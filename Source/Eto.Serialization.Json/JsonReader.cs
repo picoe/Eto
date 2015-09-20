@@ -3,6 +3,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using System.Reflection;
+using Eto.Serialization.Json.Converters;
 
 namespace Eto.Serialization.Json
 {
@@ -140,6 +141,7 @@ namespace Eto.Serialization.Json
 					serializer.Converters.Add(new TypeConverterConverter());
 					serializer.Converters.Add(new FontConverter());
 					serializer.Converters.Add(new StackLayoutConverter());
+					serializer.Converters.Add(new ListItemConverter());
 				}
 				serializer.Binder = new EtoBinder
 				{

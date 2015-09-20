@@ -6,7 +6,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Eto.Serialization.Json
+namespace Eto.Serialization.Json.Converters
 {
 	public class PropertyStoreConverter : JsonConverter
 	{

@@ -5,9 +5,9 @@ using Eto.Forms;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-namespace Eto.Serialization.Json
+namespace Eto.Serialization.Json.Converters
 {
-	public class TableLayoutConverter : JsonConverter
+	public class DynamicLayoutConverter : JsonConverter
 	{
 		public override bool CanWrite
 		{
@@ -16,7 +16,7 @@ namespace Eto.Serialization.Json
 
 		public override bool CanConvert(Type objectType)
 		{
-			return typeof(TableRow).IsAssignableFrom(objectType) || typeof(TableCell).IsAssignableFrom(objectType);
+			return typeof(DynamicItem).IsAssignableFrom(objectType) || typeof(DynamicRow).IsAssignableFrom(objectType);
 		}
 
 		public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -30,17 +30,17 @@ namespace Eto.Serialization.Json
 			if (reader.TokenType == JsonToken.StartArray)
 			{
 				container = JArray.Load(reader);
-				if (objectType == typeof(TableRow))
+				if (objectType == typeof(DynamicRow))
 				{
-					var row = new TableRow();
-					instance = row;
-					serializer.Populate(container.CreateReader(), row.Cells);
+					var dynamicRow = new DynamicRow();
+					instance = dynamicRow;
+					serializer.Populate(container.CreateReader(), dynamicRow.Items);
 				}
-				else if (objectType == typeof(TableCell))
+				else if (objectType == typeof(DynamicItem))
 				{
-					var table = new TableLayout();
-					serializer.Populate(container.CreateReader(), table.Rows);
-					instance = new TableCell(table);
+					var dynamicTable = new DynamicTable();
+					instance = dynamicTable;
+					serializer.Populate(container.CreateReader(), dynamicTable.Rows);
 				}
 				else
 					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid object graph"));
@@ -51,15 +51,9 @@ namespace Eto.Serialization.Json
 				if (container["$type"] == null)
 				{
 					if (container["Rows"] != null)
-						instance = new TableLayout();
-					else if (container["Cells"] != null)
-						instance = new TableRow();
+						instance = new DynamicTable();
 					else if (container["Control"] != null)
-						instance = new TableCell();
-					else if (objectType == typeof(TableRow))
-						instance = new TableRow();
-					else if (objectType == typeof(TableCell))
-						instance = new TableCell();
+						instance = new DynamicControl();
 					else
 						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Could not infer the type of object to create"));
 
@@ -68,11 +62,11 @@ namespace Eto.Serialization.Json
 				else
 				{
 					var type = Type.GetType((string)container["$type"]);
-					if (!typeof(TableCell).IsAssignableFrom(type))
+					if (!typeof(DynamicItem).IsAssignableFrom(type))
 					{
-						var cell = new TableCell();
-						cell.Control = serializer.Deserialize(container.CreateReader()) as Control;
-						instance = cell;
+						var dynamicControl = new DynamicControl();
+						dynamicControl.Control = serializer.Deserialize(container.CreateReader()) as Control;
+						instance = dynamicControl;
 					}
 					else
 					{
@@ -80,13 +74,10 @@ namespace Eto.Serialization.Json
 					}
 				}
 			}
-			if (objectType == typeof(TableRow) && !(instance is TableRow))
+			if (objectType == typeof(DynamicRow) && instance.GetType() != typeof(DynamicRow))
 			{
-				var row = new TableRow();
-				var cell = instance as TableCell;
-				if (cell == null)
-					cell = new TableCell(instance as Control);
-				row.Cells.Add(cell);
+				var row = new DynamicRow();
+				row.Items.Add(instance as DynamicItem);
 				return row;
 			}
 

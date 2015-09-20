@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using Eto.Drawing;
 using System.Linq;
 
-namespace Eto.Serialization.Json
+namespace Eto.Serialization.Json.Converters
 {
 	public class FontConverter : JsonConverter
 	{
