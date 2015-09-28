@@ -450,8 +450,7 @@ namespace Eto.Forms
 				using (CreateChange())
 				{
 					filter = value;
-					Rebuild();
-					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					Refresh();
 				}
 			}
 		}
@@ -468,8 +467,7 @@ namespace Eto.Forms
 				using (CreateChange())
 				{
 					sort = value;
-					Rebuild();
-					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					Refresh();
 				}
 			}
 		}
@@ -502,6 +500,19 @@ namespace Eto.Forms
 			}
 			else
 				filtered = null;
+		}
+
+		/// <summary>
+		/// Refreshes the list by applying the filter and sort to the contained items
+		/// </summary>
+		/// <remarks>
+		/// This is useful when the state of the items change, or your filter delegate is dynamic and isn't set
+		/// each time it changes.
+		/// </remarks>
+		public void Refresh()
+		{
+			Rebuild();
+			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 
 		/// <summary>
@@ -593,8 +604,7 @@ namespace Eto.Forms
 				using (List.CreateChange())
 				{
 					List.items.AddRange(items);
-					List.Rebuild();
-					List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					List.Refresh();
 				}
 			}
 
@@ -605,8 +615,7 @@ namespace Eto.Forms
 				using (List.CreateChange())
 				{
 					List.items.InsertRange(index, items);
-					List.Rebuild();
-					List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					List.Refresh();
 				}
 			}
 
@@ -620,7 +629,7 @@ namespace Eto.Forms
 
 					List.Rebuild();
 					var filtered = List.filtered;
-					var index = (filtered != null ? filtered.IndexOf(item) : List.items.Count) - 1;
+					var index = filtered != null ? filtered.IndexOf(item) : List.items.Count - 1;
 					if (index >= 0)
 						List.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 				}
@@ -754,8 +763,7 @@ namespace Eto.Forms
 						if (sort != null)
 							index = filtered.IndexOf((T)enumerable[0]);
 						InsertItemRange(index, items);
-						Rebuild();
-						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+						Refresh();
 					}
 				}
 				else
@@ -912,8 +920,9 @@ namespace Eto.Forms
 					externalList.Add(item);
 
 				Rebuild();
-				var index = (filtered != null ? filtered.IndexOf(item) : items.Count) - 1;
-				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+				var index = filtered != null ? filtered.IndexOf(item) : items.Count - 1;
+				if (index >= 0)
+					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 			});
 		}
 
