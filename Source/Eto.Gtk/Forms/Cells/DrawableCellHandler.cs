@@ -13,11 +13,17 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public DrawableCellHandler Handler { get { return (DrawableCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			[GLib.Property("item")]
-			public object Item { get; set; }
-
+			int row;
 			[GLib.Property("row")]
-			public int Row { get; set; }
+			public int Row
+			{
+				get { return row; }
+				set {
+					row = value;
+					if (Handler.FormattingEnabled)
+						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
+			}
 
 			#if GTK2
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
@@ -28,16 +34,16 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Item, Row));
-
 				using (var graphics = new Graphics(new GraphicsHandler(widget, window)))
 				{
-					var args = new DrawableCellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), Item);
+					var item = Handler.Source.GetItem(Row);
+#pragma warning disable 618
+					var args = new DrawableCellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
 					Handler.Callback.OnPaint(Handler.Widget, args);
+#pragma warning restore 618
 				}
 			}
-			#else
+#else
 			protected override void OnGetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.OnGetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
@@ -46,15 +52,16 @@ namespace Eto.GtkSharp.Forms.Cells
 			
 			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
 			{
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkGridCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
 				using (var graphics = new Graphics(new GraphicsHandler(cr, null, false)))
 				{
-					var args = new DrawableCellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), Item);
+					var item = Handler.Source.GetItem(Row);
+#pragma warning disable 618
+					var args = new DrawableCellPaintEventArgs(graphics, cell_area.ToEto(), flags.ToEto(), item);
 					Handler.Callback.OnPaint(Handler.Widget, args);
+#pragma warning restore 618
 				}
 			}
-			#endif
+#endif
 		}
 
 
@@ -66,8 +73,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		protected override void BindCell(ref int dataIndex)
 		{
 			Column.Control.ClearAttributes(Control);
-			SetColumnMap(dataIndex);
-			Column.Control.AddAttribute(Control, "item", dataIndex++);
+			base.BindCell(ref dataIndex);
 		}
 
 		public override void SetEditable(Gtk.TreeViewColumn column, bool editable)

@@ -52,12 +52,16 @@ namespace Eto.Mac.Forms.Controls
 
 		bool Loaded { get; }
 
-		void OnCellFormatting(GridColumn column, object item, int row, NSCell cell);
+		void OnCellFormatting(GridCellFormatEventArgs args);
+
+		Grid.ICallback Callback { get; }
+
+		Grid Widget { get; }
 	}
 
 	public interface IDataColumnHandler
 	{
-		void Setup(int column);
+		void Setup(IDataViewHandler handler, int column);
 
 		NSObject GetObjectValue(object dataItem);
 
@@ -69,9 +73,11 @@ namespace Eto.Mac.Forms.Controls
 
 		void Resize(bool force = false);
 
-		void Loaded(IDataViewHandler handler, int column);
+		void AutoSizeColumn(NSRange rowRange);
 
 		void EnabledChanged(bool value);
+
+		nfloat GetPreferredWidth(NSRange? range = null);
 	}
 
 	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn, GridColumn.ICallback>, GridColumn.IHandler, IDataColumnHandler
@@ -80,6 +86,14 @@ namespace Eto.Mac.Forms.Controls
 		Font font;
 
 		public IDataViewHandler DataViewHandler { get; private set; }
+
+		public ICellHandler DataCellHandler
+		{
+			get
+			{
+				return dataCell != null ? dataCell.Handler as ICellHandler : null;
+			}
+		}
 
 		public int Column { get; private set; }
 
@@ -94,51 +108,57 @@ namespace Eto.Mac.Forms.Controls
 			DataCell = new TextBoxCell();
 		}
 
-		public void Loaded(IDataViewHandler handler, int column)
-		{
-			Column = column;
-			DataViewHandler = handler;
-		}
-
 		public void Resize(bool force = false)
 		{
 			var handler = DataViewHandler;
 			if (AutoSize && handler != null)
 			{
-				var width = Control.DataCell.CellSize.Width;
-				var outlineView = handler.Table as NSOutlineView;
-				if (handler.ShowHeader)
-					width = (nfloat)Math.Max(Control.HeaderCell.CellSize.Width, width);
-					
-				if (dataCell != null)
-				{
-					/* Auto size based on visible cells only */
-					var rect = handler.GetVisibleRect();
-					var range = handler.Table.RowsInRect(rect);
-
-					var cellSize = Control.DataCell.CellSize;
-					cellSize.Height = (nfloat)Math.Max(cellSize.Height, handler.RowHeight);
-					var dataCellHandler = ((ICellHandler)dataCell.Handler);
-					for (var i = range.Location; i < range.Location + range.Length; i++)
-					{
-						var cellWidth = GetRowWidth(dataCellHandler, (int)i, cellSize) + 4;
-						if (outlineView != null && Column == 0)
-						{
-							cellWidth += (float)((outlineView.LevelForRow((nint)i) + 1) * outlineView.IndentationPerLevel);
-						}
-						width = (nfloat)Math.Max(width, cellWidth);
-					}
-				}
+				var width = GetPreferredWidth();
 				if (force || width > Control.Width)
 					Control.Width = width;
 			}
 		}
 
-		protected virtual nfloat GetRowWidth(ICellHandler cell, int row, CGSize cellSize)
+		public void AutoSizeColumn(NSRange rowRange)
 		{
-			var item = DataViewHandler.GetItem(row);
-			var val = GetObjectValue(item);
-			return cell.GetPreferredSize(val, cellSize, row, item);
+			var handler = DataViewHandler;
+			if (AutoSize && handler != null)
+			{
+				var width = GetPreferredWidth(rowRange);
+				if (width > Control.Width)
+					Control.Width = width;
+			}
+		}
+
+		public nfloat GetPreferredWidth(NSRange? range = null)
+		{
+			var handler = DataViewHandler;
+			nfloat width = (nfloat)0; //Control.DataCell.CellSize.Width;
+			var outlineView = handler.Table as NSOutlineView;
+			if (handler.ShowHeader)
+				width = (nfloat)Math.Max(Control.HeaderCell.CellSize.Width, width);
+
+			if (dataCell != null)
+			{
+				/* If no range specified, size based on visible cells */
+				var currentRange = range ?? handler.Table.RowsInRect(handler.GetVisibleRect());
+
+				var cellSize = Control.DataCell.CellSize;
+				cellSize.Height = (nfloat)Math.Max(cellSize.Height, handler.RowHeight);
+				var cell = DataCellHandler;
+				for (int i = (int)currentRange.Location; i < (int)(currentRange.Location + currentRange.Length); i++)
+				{
+					var item = DataViewHandler.GetItem(i);
+					var val = GetObjectValue(item);
+					var cellWidth = cell.GetPreferredWidth(val, cellSize, i, item);
+					if (outlineView != null && Column == 0)
+					{
+						cellWidth += (float)((outlineView.LevelForRow((nint)i) + 1) * outlineView.IndentationPerLevel);
+					}
+					width = (nfloat)Math.Max(width, cellWidth);
+				}
+			}
+			return width;
 		}
 
 		public string HeaderText
@@ -215,19 +235,19 @@ namespace Eto.Mac.Forms.Controls
 				{
 					var editable = Editable;
 					var cellHandler = (ICellHandler)dataCell.Handler;
-					Control.DataCell = cellHandler.Control;
 					cellHandler.ColumnHandler = this;
 					cellHandler.Editable = editable;
 				}
-				else
-					Control.DataCell = null;
+				//else
+				//Control.DataCell = null;
 			}
 		}
 
-		public void Setup(int column)
+		public void Setup(IDataViewHandler handler, int column)
 		{
 			Column = column;
 			Control.Identifier = new NSString(column.ToString());
+			DataViewHandler = handler;
 		}
 
 		public NSObject GetObjectValue(object dataItem)

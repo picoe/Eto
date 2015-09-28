@@ -298,6 +298,7 @@
     <Compile Include="Forms\MaskedTextProvider\NumericMaskedTextProvider.cs" />
     <Compile Include="Forms\MaskedTextProvider\VariableMaskedTextProvider.cs" />
     <Compile Include="Forms\Cells\ProgressCell.cs" />
+    <Compile Include="Forms\Cells\CustomCell.cs" />
     <Compile Include="Forms\ToolBar\Tool.cs" />
     <Compile Include="Forms\Binding\BindableBinding.cs" />
     <Compile Include="Forms\Binding\BindableExtensions.cs" />
@@ -321,6 +322,7 @@
     <Compile Include="Forms\DockPosition.cs" />
     <Compile Include="Forms\Layout\StackLayoutItemConverter.cs" />
     <Compile Include="Drawing\SystemColors.cs" />
+    <Compile Include="Forms\Cells\PropertyCell.cs" />
     <Compile Include="Forms\RelayCommand.cs" />
   </ItemGroup>
   <ItemGroup>

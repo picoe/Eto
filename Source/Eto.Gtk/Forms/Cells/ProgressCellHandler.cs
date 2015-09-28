@@ -5,16 +5,27 @@ namespace Eto.GtkSharp.Forms.Cells
 {
 	public class ProgressCellHandler : SingleCellHandler<Gtk.CellRendererProgress, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
 	{
+		int valueCol;
 		class Renderer : Gtk.CellRendererProgress
 		{
 			WeakReference handler;
 			public ProgressCellHandler Handler { get { return (ProgressCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			[GLib.Property("item")]
-			public object Item { get; set; }
+			[GLib.Property("hasValue")]
+			public bool HasValue { get; set; }
 
+			int row;
 			[GLib.Property("row")]
-			public int Row { get; set; }
+			public int Row
+			{
+				get { return row; }
+				set {
+					row = value;
+					if (Handler.FormattingEnabled)
+						Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
+			}
+
 			#if GTK2
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
@@ -24,11 +35,8 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
-				if (float.IsNaN((float)Handler.GetValueInternal(Item, Handler.ColumnIndex, Row).Val))
+				if (!HasValue)
 					return;
-
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkGridCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Item, Row));
 
 				// calling base crashes on windows
 				GtkCell.gtksharp_cellrenderer_invoke_render(Gtk.CellRendererProgress.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
@@ -43,11 +51,9 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
 			{
-				if (float.IsNaN((float)Handler.GetValueInternal(Item, Handler.ColumnIndex, Row).Val))
+				if (!HasValue)
 					return;
 
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkGridCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
 				base.OnRender (cr, widget, background_area, cell_area, flags);
 			}
 			#endif
@@ -63,8 +69,11 @@ namespace Eto.GtkSharp.Forms.Cells
 		protected override void BindCell(ref int dataIndex)
 		{
 			Column.Control.ClearAttributes(Control);
-			SetColumnMap(dataIndex);
+			valueCol = SetColumnMap(dataIndex);
 			Column.Control.AddAttribute(Control, "value", dataIndex++);
+			SetColumnMap(dataIndex);
+			Column.Control.AddAttribute(Control, "hasValue", dataIndex++);
+			base.BindCell(ref dataIndex);
 		}
 
 		public override void SetEditable(Gtk.TreeViewColumn column, bool editable)
@@ -84,14 +93,24 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		protected override GLib.Value GetValueInternal(object dataItem, int dataColumn, int row)
 		{
-			float? progress = Widget.Binding.GetValue(dataItem);
-			if (Widget.Binding != null && progress.HasValue)
+			if (Widget.Binding != null)
 			{
-				progress = progress < 0f ? 0f : progress > 1f ? 1f : progress;
-				return new GLib.Value(progress * 100f);
+				float? progress = Widget.Binding.GetValue(dataItem);
+				if (progress.HasValue)
+				{
+					if (dataColumn == valueCol)
+					{
+						progress = progress < 0f ? 0f : progress > 1f ? 1f : progress;
+						return new GLib.Value((int)(progress * 100f));
+					}
+					return new GLib.Value(true);
+				}
 			}
 
-			return new GLib.Value(float.NaN);
+			if (dataColumn == valueCol)
+				return new GLib.Value(0);
+			else
+				return new GLib.Value(false);
 		}
 
 		public override void AttachEvent(string id)

@@ -7,6 +7,8 @@ namespace Eto.GtkSharp.Forms.Cells
 {
 	public interface ICellDataSource
 	{
+		object GetItem(int row);
+
 		object GetItem(Gtk.TreePath path);
 
 		void EndCellEditing(Gtk.TreePath path, int column);
@@ -18,6 +20,8 @@ namespace Eto.GtkSharp.Forms.Cells
 		int RowHeight { get; set; }
 
 		void OnCellFormatting(GridCellFormatEventArgs args);
+
+		int RowDataColumn { get; }
 	}
 
 	public interface ICellHandler
@@ -54,8 +58,6 @@ namespace Eto.GtkSharp.Forms.Cells
 		where TControl: Gtk.CellRenderer
 	{
 		int? dataIndex;
-		int itemCol;
-		int rowCol;
 
 		public GridColumnHandler Column { get; private set; }
 
@@ -63,7 +65,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		public ICellDataSource Source { get; private set; }
 
-		public bool FormattingEnabled { get; private set; }
+		public bool FormattingEnabled { get; protected set; }
 
 		public abstract void AddCells(Gtk.TreeViewColumn column);
 
@@ -74,7 +76,6 @@ namespace Eto.GtkSharp.Forms.Cells
 			ColumnIndex = columnIndex;
 			this.dataIndex = dataIndex;
 			BindCell(ref dataIndex);
-			BindBase(ref dataIndex);
 		}
 
 		protected void ReBind()
@@ -83,18 +84,6 @@ namespace Eto.GtkSharp.Forms.Cells
 			{
 				var dataIndexValue = dataIndex.Value;
 				BindCell(ref dataIndexValue);
-				BindBase(ref dataIndexValue);
-			}
-		}
-
-		protected void BindBase(ref int dataIndex)
-		{
-			if (FormattingEnabled)
-			{
-				itemCol = SetColumnMap(dataIndex);
-				Column.Control.AddAttribute(Control, "item", dataIndex++);
-				rowCol = SetColumnMap(dataIndex);
-				Column.Control.AddAttribute(Control, "row", dataIndex++);
 			}
 		}
 
@@ -103,7 +92,13 @@ namespace Eto.GtkSharp.Forms.Cells
 			Source.OnCellFormatting(args);
 		}
 
-		protected abstract void BindCell(ref int dataIndex);
+		protected virtual void BindCell(ref int dataIndex)
+		{
+			//if (FormattingEnabled)
+			{
+				Column.Control.AddAttribute(Control, "row", Source.RowDataColumn);
+			}
+		}
 
 		protected int SetColumnMap(int dataIndex)
 		{
@@ -128,13 +123,6 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		public GLib.Value GetValue(object dataItem, int dataColumn, int row)
 		{
-			if (FormattingEnabled)
-			{
-				if (dataColumn == itemCol)
-					return new GLib.Value(dataItem);
-				if (dataColumn == rowCol)
-					return new GLib.Value(row);
-			}
 			return GetValueInternal(dataItem, dataColumn, row);
 		}
 

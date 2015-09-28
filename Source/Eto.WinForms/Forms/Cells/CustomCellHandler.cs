@@ -7,20 +7,70 @@ using Eto.WinForms.Drawing;
 
 namespace Eto.WinForms.Forms.Cells
 {
-	public class DrawableCellHandler : CellHandler<DrawableCellHandler.EtoCell, DrawableCell, DrawableCell.ICallback>, DrawableCell.IHandler
+	public class CustomCellHandler : CellHandler<CustomCellHandler.EtoCell, CustomCell, CustomCell.ICallback>, CustomCell.IHandler
 	{
-		public class EtoCell : swf.DataGridViewCell
+		public class EtoEditType : swf.Control, swf.IDataGridViewEditingControl
 		{
-			public DrawableCellHandler Handler { get; set; }
-
-			public override Type FormattedValueType
+			public swf.DataGridView EditingControlDataGridView
 			{
-				get { return typeof(object); } // sd.DataGridView requires this.
+				get; set;
 			}
 
-			protected override object GetFormattedValue(object value, int rowIndex, ref swf.DataGridViewCellStyle cellStyle, System.ComponentModel.TypeConverter valueTypeConverter, System.ComponentModel.TypeConverter formattedValueTypeConverter, swf.DataGridViewDataErrorContexts context)
+			public object EditingControlFormattedValue
+			{
+				get; set;
+			}
+
+			public int EditingControlRowIndex
+			{
+				get; set;
+			}
+
+			public bool EditingControlValueChanged
+			{
+				get; set;
+			}
+
+			public swf.Cursor EditingPanelCursor
+			{
+				get { return swf.Cursors.Default; }
+			}
+
+			public bool RepositionEditingControlOnValueChange
+			{
+				get { return false; }
+			}
+
+			public void ApplyCellStyleToEditingControl(swf.DataGridViewCellStyle dataGridViewCellStyle)
+			{
+			}
+
+			public bool EditingControlWantsInputKey(swf.Keys keyData, bool dataGridViewWantsInputKey)
+			{
+				return false;
+			}
+
+			public object GetEditingControlFormattedValue(swf.DataGridViewDataErrorContexts context)
 			{
 				return null;
+			}
+
+			public void PrepareEditingControlForEdit(bool selectAll)
+			{
+			}
+		}
+		public class EtoCell : swf.DataGridViewTextBoxCell
+		{
+			public CustomCellHandler Handler { get; set; }
+
+			public override Type EditType
+			{
+				get { return typeof(EtoEditType); }
+			}
+
+			public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, swf.DataGridViewCellStyle dataGridViewCellStyle)
+			{
+				base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
 			}
 
 			public override void PositionEditingControl(bool setLocation, bool setSize, sd.Rectangle cellBounds, sd.Rectangle cellClip, swf.DataGridViewCellStyle cellStyle, bool singleVerticalBorderAdded, bool singleHorizontalBorderAdded, bool isFirstDisplayedColumn, bool isFirstDisplayedRow)
@@ -45,7 +95,7 @@ namespace Eto.WinForms.Forms.Cells
 			{
 				// save graphics state to prevent artifacts in other paint operations in the grid
 				var state = graphics.Save();
-				if (!object.ReferenceEquals(cachedGraphicsKey, graphics) || cachedGraphics == null)
+				if (!ReferenceEquals(cachedGraphicsKey, graphics) || cachedGraphics == null)
 				{
 					cachedGraphicsKey = graphics;
 					cachedGraphics = new Graphics(new GraphicsHandler(graphics, shouldDisposeGraphics: false));
@@ -54,11 +104,12 @@ namespace Eto.WinForms.Forms.Cells
 				{
 					((GraphicsHandler)cachedGraphics.Handler).SetInitialState();
 				}
+				graphics.PixelOffsetMode = sd.Drawing2D.PixelOffsetMode.Half;
 				graphics.SetClip(cellBounds);
-#pragma warning disable 618
-				var args = new DrawableCellPaintEventArgs(cachedGraphics, cellBounds.ToEto(), cellState.ToEto(), value);
+				var color = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor);
+                graphics.FillRectangle(color, cellBounds);
+				var args = new CellPaintEventArgs(cachedGraphics, cellBounds.ToEto(), cellState.ToEto(), value);
 				Handler.Callback.OnPaint(Handler.Widget, args);
-#pragma warning restore 618
 				graphics.ResetClip();
 				graphics.Restore(state);
 			}
@@ -66,7 +117,19 @@ namespace Eto.WinForms.Forms.Cells
 			protected override void OnMouseClick(swf.DataGridViewCellMouseEventArgs e)
 			{
 				if (!Handler.MouseClick(e, e.RowIndex))
+				{
+					if (DataGridView == null)
+						return;
+					var currentCellAddress = DataGridView.CurrentCellAddress;
+					if (currentCellAddress.X == e.ColumnIndex && currentCellAddress.Y == e.RowIndex && e.Button == swf.MouseButtons.Left)
+					{
+						if (DataGridView.EditMode != swf.DataGridViewEditMode.EditProgrammatically)
+						{
+							DataGridView.BeginEdit(true);
+						}
+					}
 					base.OnMouseClick(e);
+				}
 			}
 
 			public override object Clone()
@@ -78,7 +141,7 @@ namespace Eto.WinForms.Forms.Cells
 		}
 
 
-		public DrawableCellHandler()
+		public CustomCellHandler()
 		{
 			Control = new EtoCell { Handler = this };
 		}

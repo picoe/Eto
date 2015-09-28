@@ -24,6 +24,8 @@ namespace Eto.Forms
 		/// <param name="attach">If set to <c>true</c> the control is to be attached to an existing application, or <c>false</c> to get the native control directly.</param>
 		public static sw.FrameworkElement ToNative(this Control control, bool attach = false)
 		{
+			if (control == null)
+				return null;
 			if (attach && !control.Loaded)
 				control.AttachNative();
 			return control.GetContainerControl();

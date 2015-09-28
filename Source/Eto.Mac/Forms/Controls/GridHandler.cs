@@ -7,7 +7,6 @@ using Eto.Drawing;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Cells;
 
-
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -79,14 +78,18 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void MouseDown(NSEvent theEvent)
 		{
-			var point = ConvertPointFromView(theEvent.LocationInWindow, null);
-
-			var col = GetColumn(point);
-			if (col >= 0)
+			if (!Handler.Table.AllowsColumnReordering)
 			{
-				var column = Handler.Widget.Columns[(int)col];
-				if (!column.Sortable)
-					return;
+				var point = ConvertPointFromView(theEvent.LocationInWindow, null);
+
+				var col = GetColumn(point);
+				if (col >= 0)
+				{
+					var column = Handler.Widget.Columns[(int)col];
+					var rect = Handler.Table.RectForColumn(col);
+					if (!column.Sortable && point.X < rect.Right - 4 && point.X > rect.Left + 2)
+						return;
+				}
 			}
 			base.MouseDown(theEvent);
 		}
@@ -94,41 +97,44 @@ namespace Eto.Mac.Forms.Controls
 
 	class MacCellFormatArgs : GridCellFormatEventArgs
 	{
-		Font font;
-
 		public ICellHandler CellHandler { get { return Column.DataCell.Handler as ICellHandler; } }
 
-		public NSCell Cell { get; private set; }
+		public NSView View { get; private set; }
 
-		public MacCellFormatArgs(GridColumn column, object item, int row, NSCell cell)
+		public MacCellFormatArgs(GridColumn column, object item, int row, NSView view)
 			: base(column, item, row)
 		{
-			this.Cell = cell;
+			View = view;
 		}
+
+		public bool FontSet { get; set; }
+
+		Font font;
 
 		public override Font Font
 		{
-			get
-			{
-				return font ?? (font = Cell.Font.ToEto());
-			}
+			get { return font ?? (font = CellHandler.GetFont(View)); }
 			set
-			{
-				font = value;
-				Cell.Font = font.ToNSFont();
+			{ 
+				if (!ReferenceEquals(font, value))
+				{
+					font = value;
+					CellHandler.SetFont(View, value);
+					FontSet = true;
+				}
 			}
 		}
 
 		public override Color BackgroundColor
 		{
-			get { return CellHandler.GetBackgroundColor(Cell); }
-			set { CellHandler.SetBackgroundColor(Cell, value); }
+			get { return CellHandler.GetBackgroundColor(View); }
+			set { CellHandler.SetBackgroundColor(View, value); }
 		}
 
 		public override Color ForegroundColor
 		{
-			get { return CellHandler.GetForegroundColor(Cell); }
-			set { CellHandler.SetForegroundColor(Cell, value); }
+			get { return CellHandler.GetForegroundColor(View); }
+			set { CellHandler.SetForegroundColor(View, value); }
 		}
 	}
 
@@ -149,7 +155,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control; }
 		}
 
-		protected IEnumerable<IDataColumnHandler> ColumnHandlers 
+		protected IEnumerable<IDataColumnHandler> ColumnHandlers
 		{
 			get { return Widget.Columns.Select(r => r.Handler).OfType<IDataColumnHandler>(); }
 		}
@@ -194,7 +200,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var colhandler = (GridColumnHandler)item.Handler;
 				Handler.Control.AddColumn(colhandler.Control);
-				colhandler.Setup((int)(Handler.Control.ColumnCount - 1));
+				colhandler.Setup(Handler, (int)(Handler.Control.ColumnCount - 1));
 				
 				Handler.UpdateColumns();
 			}
@@ -211,12 +217,12 @@ namespace Eto.Mac.Forms.Controls
 				var colhandler = (GridColumnHandler)item.Handler;
 				columns.Insert(index, colhandler.Control);
 				outline.AddColumn(colhandler.Control);
-				colhandler.Setup(index);
+				colhandler.Setup(Handler, index);
 				for (int i = index + 1; i < columns.Count; i++)
 				{
 					var col = columns[i];
 					var colHandler = Handler.GetColumn(i);
-					colHandler.Setup(i);
+					colHandler.Setup(Handler, i);
 					outline.AddColumn(col);
 				}
 				Handler.UpdateColumns();
@@ -236,7 +242,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					var col = columns[i];
 					var colHandler = Handler.GetColumn(i);
-					colHandler.Setup(i);
+					colHandler.Setup(Handler, i);
 					outline.AddColumn(col);
 				}
 				Handler.UpdateColumns();
@@ -278,8 +284,8 @@ namespace Eto.Mac.Forms.Controls
 				case Grid.CellDoubleClickEvent:
 					Control.DoubleClick += (sender, e) =>
 					{
-						int rowIndex;
-						if ((rowIndex = (int)Control.ClickedRow) >= 0)
+						int rowIndex = (int)Control.ClickedRow;
+						if (rowIndex >= 0)
 						{
 							var columnIndex = (int)Control.ClickedColumn;
 							var item = GetItem(rowIndex);
@@ -297,6 +303,7 @@ namespace Eto.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control.AllowsColumnReordering = false;
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
 
@@ -314,28 +321,30 @@ namespace Eto.Mac.Forms.Controls
 			else
 				Widget.Properties.Remove(ScrolledToRowKey);
 
-			int i = 0;
 			IsAutoSizingColumns = true;
 			foreach (var col in ColumnHandlers)
 			{
-				col.Loaded(this, i++);
 				col.Resize(true);
 			}
 			IsAutoSizingColumns = false;
 		}
+
+		NSRange autoSizeRange;
 
 		public bool AutoSizeColumns()
 		{
 			if (Widget.Loaded)
 			{
 				var rect = Table.VisibleRect();
-				if (rect.Width > 0 || rect.Height > 0)
+				var newRange = Table.RowsInRect(rect);
+				if (newRange.Length > 0 && (autoSizeRange.Location != newRange.Location || autoSizeRange.Length != newRange.Length))
 				{
 					IsAutoSizingColumns = true;
 					foreach (var col in ColumnHandlers)
 					{
-						col.Resize();
+						col.AutoSizeColumn(newRange);
 					}
+					autoSizeRange = newRange;
 					IsAutoSizingColumns = false;
 					return true;
 				}
@@ -478,9 +487,9 @@ namespace Eto.Mac.Forms.Controls
 			return new Size(width, height);
 		}
 
-		public void OnCellFormatting(GridColumn column, object item, int row, NSCell cell)
+		public void OnCellFormatting(GridCellFormatEventArgs args)
 		{
-			Callback.OnCellFormatting(Widget, new MacCellFormatArgs(column, item, row, cell));
+			Callback.OnCellFormatting(Widget, args);
 		}
 
 		static readonly object ScrolledToRowKey = new object();
@@ -517,6 +526,16 @@ namespace Eto.Mac.Forms.Controls
 					mask |= NSTableViewGridStyle.SolidVerticalLine;
 				Control.GridStyleMask = mask;
 			}
+		}
+
+		Grid.ICallback IDataViewHandler.Callback
+		{
+			get { return Callback; }
+		}
+
+		Grid IDataViewHandler.Widget
+		{
+			get { return Widget; }
 		}
 	}
 }

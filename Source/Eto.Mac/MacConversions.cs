@@ -431,5 +431,12 @@ namespace Eto.Mac
 					throw new NotSupportedException();
 			}
 		}
+		
+		public static NSFont ToNS(this Font font)
+		{
+			if (font == null)
+				return null;
+			return ((FontHandler)font.Handler).Control;
+		}
 	}
 }

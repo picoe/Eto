@@ -35,13 +35,18 @@ namespace Eto.GtkSharp.CustomControls
 			
 			if (rect.Width > 0 && rect.Height > 0)
 			{
-				Gtk.Style.PaintShadow(Entry.Style, GdkWindow, Entry.State, ShadowType.In, evnt.Area, Entry, "entry", rect.X, rect.Y, rect.Width, rect.Height);
+				var area = evnt.Area;
+				area.Height++;
+				if (BorderWidth > 0)
+					Gtk.Style.PaintShadow(Entry.Style, GdkWindow, Entry.State, ShadowType.In, area, Entry, "entry", rect.X, rect.Y, rect.Width, rect.Height + 1);
+				else
+					GdkWindow.DrawRectangle(Entry.Style.BaseGC(Entry.State), true, area);
 				var popupWidth = popupButton.Allocation.Width;
 				var vline = rect.Right - popupWidth - 2;
-				Gtk.Style.PaintVline(Entry.Style, GdkWindow, Entry.State, evnt.Area, this, "line", rect.Top + 4, rect.Bottom - 4, vline);
+				Gtk.Style.PaintVline(Entry.Style, GdkWindow, Entry.State, area, this, "line", rect.Top + 4, rect.Bottom - 4, vline);
 				var arrowWidth = popupWidth / 2;
 				var arrowPos = vline + (popupWidth - arrowWidth) / 2 + 1;
-				Gtk.Style.PaintArrow(Entry.Style, GdkWindow, Entry.State, ShadowType.None, evnt.Area, this, "arrow", ArrowType.Down, true, arrowPos, rect.Top, arrowWidth, rect.Height);
+				Gtk.Style.PaintArrow(Entry.Style, GdkWindow, Entry.State, ShadowType.None, area, this, "arrow", ArrowType.Down, true, arrowPos, rect.Top, arrowWidth, rect.Height);
 			}
 			return true;
 		}
@@ -137,6 +142,7 @@ namespace Eto.GtkSharp.CustomControls
 #if GTK2
 			CreateEntry();
 			vpadding = (DefaultEntryHeight - entry.SizeRequest().Height) / 2;
+			entry.HeightRequest = -1;
 			hbox.PackStart(entry, true, true, 4);
 			hbox.PackEnd(CreatePopupButton(), false, false, 2);
 			vbox.PackStart(hbox, true, true, (uint)vpadding);

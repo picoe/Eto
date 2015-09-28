@@ -52,11 +52,6 @@ namespace Eto.iOS.Drawing
 		static readonly Selector selSetSize = new Selector("setSize:");
 		#endif
 
-		public static NSFont ToNSFont(this Font font)
-		{
-			return font == null ? null : ((FontHandler)font.Handler).Control;
-		}
-
 		public static NSDictionary Attributes(this Font font)
 		{
 			if (font != null)

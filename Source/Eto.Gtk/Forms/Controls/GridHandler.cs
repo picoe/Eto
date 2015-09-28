@@ -46,7 +46,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			Tree = new Gtk.TreeView();
 			UpdateModel();
 			Tree.HeadersVisible = true;
-
 			Control.Add(Tree);
 
 			Tree.Events |= Gdk.EventMask.ButtonPressMask;
@@ -187,6 +186,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		static readonly object RowDataColumn_Key = new object();
+
+		public int RowDataColumn
+		{
+			get { return Widget.Properties.Get<int>(RowDataColumn_Key); }
+			private set { Widget.Properties.Set(RowDataColumn_Key, value); }
+		}
+
 		protected virtual void UpdateColumns()
 		{
 			if (!Widget.Loaded)
@@ -194,8 +201,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			columnMap.Clear();
 			int columnIndex = 0;
 			int dataIndex = 0;
+			RowDataColumn = dataIndex++;
+
 			foreach (var col in Widget.Columns.Select(r => r.Handler).OfType<IGridColumnHandler>())
 			{
+				col.Control.Reorderable = AllowColumnReordering;
 				col.BindCell(this, this, columnIndex++, ref dataIndex);
 				col.SetupEvents();
 			}
@@ -246,10 +256,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { Tree.HeadersVisible = value; }
 		}
 
+		static readonly object AllowColumnReordering_Key = new object();
+
 		public bool AllowColumnReordering
 		{
-			get { return Tree.Reorderable; }
-			set { Tree.Reorderable = value; }
+			get { return Widget.Properties.Get<bool>(AllowColumnReordering_Key, true); }
+			set { 
+				Widget.Properties.Set(AllowColumnReordering_Key, value, true);
+				UpdateColumns();
+			}
 		}
 
 		public int NumberOfColumns
@@ -261,6 +276,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 
 		public abstract object GetItem(Gtk.TreePath path);
+
+		public object GetItem(int row)
+		{
+			return GetItem(GetPathAtRow(row));
+		}
 
 		public int GetColumnOfItem(Gtk.TreeViewColumn item)
 		{

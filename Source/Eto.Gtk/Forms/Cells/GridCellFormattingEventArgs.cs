@@ -34,8 +34,6 @@ namespace Eto.GtkSharp.Forms.Cells
 	public class GtkTextCellFormatEventArgs<T> : GtkGridCellFormatEventArgs<T>
 		where T: Gtk.CellRendererText
 	{
-		Font font;
-
 		public GtkTextCellFormatEventArgs (T renderer, GridColumn column, object item, int row)
 					: base(renderer, column, item, row)
 		{
@@ -48,11 +46,11 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		public override Font Font {
 			get {
-				return font ?? (font = Renderer.FontDesc.ToEto());
+				return base.Font ?? (base.Font = Renderer.FontDesc.ToEto());
 			}
 			set {
-				font = value;
-				Renderer.FontDesc = Font != null ? font.ControlObject as Pango.FontDescription : null;
+				base.Font = value;
+				Renderer.FontDesc = value.ToPango();
 			}
 		}
 

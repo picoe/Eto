@@ -93,12 +93,13 @@ namespace Eto.Mac
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());
 			p.Add<ComboBoxCell.IHandler>(() => new ComboBoxCellHandler());
+			p.Add<CustomCell.IHandler>(() => new CustomCellHandler());
 			p.Add<ImageTextCell.IHandler>(() => new ImageTextCellHandler());
 			p.Add<ImageViewCell.IHandler>(() => new ImageViewCellHandler());
 			p.Add<TextBoxCell.IHandler>(() => new TextBoxCellHandler());
 			p.Add<DrawableCell.IHandler>(() => new DrawableCellHandler());
 			p.Add<ProgressCell.IHandler>(() => new ProgressCellHandler());
-			
+
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<Calendar.IHandler>(() => new CalendarHandler());

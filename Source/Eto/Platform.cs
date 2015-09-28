@@ -63,6 +63,24 @@ namespace Eto
 	}
 
 	/// <summary>
+	/// Flags to specify which global features are supported for a platform
+	/// </summary>
+	[Flags]
+	public enum PlatformFeatureFlags
+	{
+		/// <summary>
+		/// No extra features supported.
+		/// </summary>
+		None = 0,
+
+		/// <summary>
+		/// Specifies that the <see cref="Forms.CustomCell"/> supports creating a Control for each cell.
+		/// If not specified, then the CustomCell will paint its content when not in edit mode.
+		/// </summary>
+		CustomCellSupportsControlView = 1 << 0
+	}
+
+	/// <summary>
 	/// Base platform class
 	/// </summary>
 	/// <remarks>
@@ -242,6 +260,15 @@ namespace Eto
 		public virtual bool Supports(Type type)
 		{
 			return Find(type) != null;
+		}
+
+		/// <summary>
+		/// Gets the supported features of the platform.
+		/// </summary>
+		/// <value>The supported features.</value>
+		public virtual PlatformFeatureFlags SupportedFeatures
+		{
+			get { return PlatformFeatureFlags.None; }
 		}
 
 		/// <summary>

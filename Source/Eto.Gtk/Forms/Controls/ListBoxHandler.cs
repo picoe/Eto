@@ -89,7 +89,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 				if (Control.Selection != null && Control.Selection.GetSelected(out iter))
 				{
-					var val = model.NodeFromIter(iter);
+					var val = model.GetRow(iter);
 					if (val >= 0)
 						return val;
 				}

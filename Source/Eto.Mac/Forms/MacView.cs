@@ -294,7 +294,7 @@ namespace Eto.Mac.Forms
 					AddMethod(selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), "v@:{CGSize=ff}", ContainerControl);
+					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), EtoEnvironment.Is64BitProcess ? "v@:{CGSize=dd}" : "v@:{CGSize=ff}", ContainerControl);
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					AddMethod(selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");

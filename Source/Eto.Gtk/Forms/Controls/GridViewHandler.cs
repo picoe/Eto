@@ -140,6 +140,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public GLib.Value GetColumnValue(object item, int dataColumn, int row)
 		{
+			if (dataColumn == RowDataColumn)
+				return new GLib.Value(row);
 			int column;
 			if (ColumnMap.TryGetValue(dataColumn, out column))
 			{

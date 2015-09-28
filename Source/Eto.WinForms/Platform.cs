@@ -61,7 +61,8 @@ namespace Eto.WinForms
 			p.Add<TextBoxCell.IHandler>(() => new TextBoxCellHandler());
 			p.Add<DrawableCell.IHandler>(() => new DrawableCellHandler());
 			p.Add<ProgressCell.IHandler>(() => new ProgressCellHandler());
-			
+			p.Add<CustomCell.IHandler>(() => new CustomCellHandler());
+
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());
 			p.Add<Calendar.IHandler>(() => new CalendarHandler());

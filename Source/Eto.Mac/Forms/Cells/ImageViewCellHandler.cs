@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+using Eto.Mac.Forms.Controls;
 
 #if XAMMAC2
 using AppKit;
@@ -34,7 +35,7 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Cells
 {
-	public class ImageViewCellHandler : CellHandler<ImageViewCellHandler.EtoCell, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
+	public class ImageViewCellHandler : CellHandler<ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
 	{
 		public class EtoCell : NSImageCell, IMacControl
 		{
@@ -60,17 +61,6 @@ namespace Eto.Mac.Forms.Cells
 
 			public NSImageInterpolation ImageInterpolation { get; set; }
 
-			[Export("copyWithZone:")]
-			NSObject CopyWithZone(IntPtr zone)
-			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr(
-					          SuperHandle,
-					          MacCommon.CopyWithZoneHandle,
-					          zone
-				          );
-				return new EtoCell(ptr) { Handler = Handler };
-			}
-
 			public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 			{
 				var nscontext = NSGraphicsContext.CurrentContext;
@@ -88,37 +78,9 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
-		public override bool Editable
-		{
-			get { return base.Editable; }
-			set { Control.Editable = value; }
-		}
-
 		public ImageViewCellHandler()
 		{
 			Control = new EtoCell { Handler = this, Enabled = true };
-		}
-
-		public override void SetBackgroundColor(NSCell cell, Color color)
-		{
-			var c = (EtoCell)cell;
-			c.BackgroundColor = color;
-			c.DrawsBackground = color != Colors.Transparent;
-		}
-
-		public override Color GetBackgroundColor(NSCell cell)
-		{
-			var c = (EtoCell)cell;
-			return c.BackgroundColor;
-		}
-
-		public override void SetForegroundColor(NSCell cell, Color color)
-		{
-		}
-
-		public override Color GetForegroundColor(NSCell cell)
-		{
-			return Colors.Transparent;
 		}
 
 		public override NSObject GetObjectValue(object dataItem)
@@ -139,20 +101,62 @@ namespace Eto.Mac.Forms.Cells
 		{
 		}
 
-		public override nfloat GetPreferredSize(object value, CGSize cellSize, NSCell cell)
+		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
 			var img = value as Image;
 			if (img != null)
 			{
-				return (float)(cellSize.Height / (float)img.Size.Height * (float)img.Size.Width);
+				return cellSize.Height / img.Size.Height * img.Size.Width;
 			}
 			return 16;
 		}
 
-		public ImageInterpolation ImageInterpolation
+		public ImageInterpolation ImageInterpolation { get; set; }
+
+		public override Color GetBackgroundColor(NSView view)
 		{
-			get { return Control.ImageInterpolation.ToEto(); }
-			set { Control.ImageInterpolation = value.ToNS(); }
+			return ((EtoImageView)view).BackgroundColor.ToEto();
+		}
+
+		public override void SetBackgroundColor(NSView view, Color color)
+		{
+			var field = ((EtoImageView)view);
+			field.BackgroundColor = color.ToNSUI();
+		}
+
+		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
+		{
+			var view = tableView.MakeView(tableColumn.Identifier, tableView) as EtoImageView;
+			if (view == null)
+			{
+				view = new EtoImageView { Identifier = tableColumn.Identifier };
+			}
+			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			ColumnHandler.DataViewHandler.OnCellFormatting(args);
+			return view;
+		}
+
+		public class EtoImageView : NSImageView
+		{
+			public EtoImageView() { }
+
+			public EtoImageView(IntPtr handle)
+				: base(handle)
+			{
+			}
+
+			[Export("backgroundColor")]
+			public NSColor BackgroundColor { get; set; }
+
+			public override void DrawRect(CGRect dirtyRect)
+			{
+				if (BackgroundColor != null && BackgroundColor.AlphaComponent > 0)
+				{
+					BackgroundColor.Set();
+					NSGraphics.RectFill(dirtyRect);
+				}
+				base.DrawRect(dirtyRect);
+			}
 		}
 	}
 }
