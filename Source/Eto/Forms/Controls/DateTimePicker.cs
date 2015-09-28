@@ -78,6 +78,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets a binding to the <see cref="Value"/> property.
+		/// </summary>
+		/// <value>The value binding.</value>
+		public BindableBinding<DateTimePicker, DateTime?> ValueBinding
+		{
+			get
+			{
+				return new BindableBinding<DateTimePicker,DateTime?>(
+					this,
+					r => r.Value,
+					(r,val) => r.Value = val,
+					(r, ev) => r.ValueChanged += ev,
+					(r, ev) => r.ValueChanged -= ev
+				);
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the mode of the date/time picker.
 		/// </summary>
 		/// <value>The picker mode.</value>
