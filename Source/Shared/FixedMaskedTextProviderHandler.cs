@@ -94,7 +94,7 @@ namespace Eto.Shared.Forms
 			}
 			set
 			{
-				Provider.Set(value);
+				Provider.Set(value ?? string.Empty);
 			}
 		}
 
