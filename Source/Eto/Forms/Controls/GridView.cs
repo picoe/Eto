@@ -251,6 +251,42 @@ namespace Eto.Forms
 			set { Handler.ContextMenu = value; }
 		}
 
+		/// <summary>
+		/// Reloads the data at the specified row.
+		/// </summary>
+		/// <remarks>
+		/// This will refresh the cells of the specified row with the current data in the model for that row.
+		/// </remarks>
+		/// <param name="row">Row to update.</param>
+		public void ReloadData(int row)
+		{
+			Handler.ReloadData(new [] { row });
+		}
+
+		/// <summary>
+		/// Reloads the data at the specified rows.
+		/// </summary>
+		/// <remarks>
+		/// This will refresh the cells of the specified rows with the current data in the model for each row.
+		/// </remarks>
+		/// <param name="rows">Rows to update.</param>
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			Handler.ReloadData(rows);
+		}
+
+		/// <summary>
+		/// Reloads the data at the specified range of rows.
+		/// </summary>
+		/// <remarks>
+		/// This will refresh the cells of the specified range of rows with the current data in the model for each row.
+		/// </remarks>
+		/// <param name="range">Range of rows to update.</param>
+		public void ReloadData(Range<int> range)
+		{
+			Handler.ReloadData(Enumerable.Range(range.Start, range.Length()));
+		}
+
 		static readonly object callback = new Callback();
 
 		/// <summary>
@@ -278,6 +314,15 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The selected items.</value>
 			IEnumerable<object> SelectedItems { get; }
+
+			/// <summary>
+			/// Reloads the data at the specified rows.
+			/// </summary>
+			/// <remarks>
+			/// This will refresh the cells of the specified rows with the current data in the model for each row.
+			/// </remarks>
+			/// <param name="rows">Rows to update.</param>
+			void ReloadData(IEnumerable<int> rows);
 		}
 	}
 }

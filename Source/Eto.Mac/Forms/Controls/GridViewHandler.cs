@@ -333,7 +333,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public override object GetItem(int row)
 		{
-			return collection.ElementAt(row);
+			return collection.ElementAt((int)row);
+		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			Control.ReloadData(NSIndexSet.FromArray(rows.Select(r => (nuint)r).ToArray()), NSIndexSet.FromNSRange(new NSRange(0, Control.TableColumns().Length)));
 		}
 	}
 }

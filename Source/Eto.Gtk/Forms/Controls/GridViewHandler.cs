@@ -158,6 +158,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return collection; }
 		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			UpdateModel();
+		}
 	}
 }
 

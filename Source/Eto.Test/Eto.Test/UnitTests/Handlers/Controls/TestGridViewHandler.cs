@@ -203,5 +203,10 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 		}
 
 		public GridLines GridLines { get; set; }
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
