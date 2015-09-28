@@ -232,6 +232,7 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				key = Guid.NewGuid().ToString();
 				Control.ImageList.AddImage(image, key);
+				images.Add(image, key);
 			}
 			return key;
 		}
