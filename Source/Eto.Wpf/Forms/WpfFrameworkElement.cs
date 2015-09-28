@@ -457,7 +457,13 @@ namespace Eto.Wpf.Forms
 				Callback.OnMouseDown(Widget, args);
 			}
 			e.Handled = args.Handled || !WpfFrameworkElementHelper.ShouldCaptureMouse;
-			if (WpfFrameworkElementHelper.ShouldCaptureMouse && (!UseMousePreview || e.Handled))
+			if (WpfFrameworkElementHelper.ShouldCaptureMouse 
+				&& (
+					// capture mouse automatically so mouse moves outside control are captured until released
+					// but only if the control that was clicked is this control
+					(!UseMousePreview && (e.OriginalSource == ContainerControl || e.OriginalSource == Control))
+					|| e.Handled
+				))
 			{
 				e.Handled = true;
 				isMouseCaptured = true;
