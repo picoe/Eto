@@ -340,10 +340,13 @@ namespace Eto.WinForms.CustomControls
 			}
 			g.DrawImage(img, ClientRectangle.Width - img.Width - 7, (ClientRectangle.Height - img.Height) / 2 + 1);
 
-			// border
-			using (var p = new sd.Pen(borderCol))
+			if (ShowBorder)
 			{
-				g.DrawRectangle(p, rect);
+				// border
+				using (var p = new sd.Pen(borderCol))
+				{
+					g.DrawRectangle(p, rect);
+				}
 			}
 		}
 
@@ -387,6 +390,20 @@ namespace Eto.WinForms.CustomControls
 			{
 				base.BackColor = value;
 				ExtendedMode = true;
+			}
+		}
+
+		bool showBorder = true;
+        public bool ShowBorder
+		{
+			get { return showBorder; }
+			set
+			{
+				if (showBorder != value)
+				{
+					showBorder = value;
+					Invalidate();
+				}
 			}
 		}
 

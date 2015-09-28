@@ -101,6 +101,22 @@ namespace Eto.Forms
 			set { Handler.TextColor = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether to show the control's border.
+		/// </summary>
+		/// <remarks>
+		/// This is a hint to omit the border of the control and show it as plainly as possible.
+		/// 
+		/// Typically used when you want to show the control within a cell of the <see cref="GridView"/>.
+		/// </remarks>
+		/// <value><c>true</c> to show the control border; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
+		public bool ShowBorder
+		{
+			get { return Handler.ShowBorder; }
+			set { Handler.ShowBorder = value; }
+		}
+
 		static readonly object callback = new Callback();
 		/// <summary>
 		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
@@ -172,6 +188,17 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The color of the text.</value>
 			Color TextColor { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether to show the control's border.
+			/// </summary>
+			/// <remarks>
+			/// This is a hint to omit the border of the control and show it as plainly as possible.
+			/// 
+			/// Typically used when you want to show the control within a cell of the <see cref="GridView"/>.
+			/// </remarks>
+			/// <value><c>true</c> to show the control border; otherwise, <c>false</c>.</value>
+			bool ShowBorder { get; set; }
 		}
 
 		#endregion

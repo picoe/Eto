@@ -685,7 +685,9 @@ namespace Eto.Mac.Forms
 				FocusControl.Window.MakeFirstResponder(FocusControl);
 				InitialFocus = false;
 			}
-			SetBackgroundColor(Widget.Properties.Get<Color?>(BackgroundColorKey));
+			var bg = Widget.Properties.Get<Color?>(BackgroundColorKey);
+			if (bg != null)
+				SetBackgroundColor(bg);
 		}
 
 		public virtual void OnUnLoad(EventArgs e)

@@ -42,7 +42,16 @@ namespace Eto.Mac.Forms.Controls
 			public override void DrawRect(CGRect dirtyRect)
 			{
 				if (Handler.curValue != null)
-					base.DrawRect(dirtyRect);
+				{
+					if (Cell.BackgroundStyle == NSBackgroundStyle.Dark && Cell.TextColor == NSColor.ControlText)
+					{
+						Cell.TextColor = NSColor.AlternateSelectedControlText;
+						base.DrawRect(dirtyRect);
+						Cell.TextColor = NSColor.ControlText;
+					}
+					else
+						base.DrawRect(dirtyRect);
+				}
 				else
 				{
 					// paint with no elements visible
@@ -194,13 +203,24 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (color != null)
 			{
-				Control.Cell.BackgroundColor = color.Value.ToNSUI();
-				Control.Cell.DrawsBackground = true;
+				Control.BackgroundColor = color.Value.ToNSUI();
+				Control.DrawsBackground = color.Value.A > 0;
 			}
 			else
 			{
-				Control.Cell.BackgroundColor = NSColor.ControlBackground;
-				Control.Cell.DrawsBackground = true;
+				Control.BackgroundColor = NSColor.ControlBackground;
+				Control.DrawsBackground = true;
+			}
+		}
+
+		public bool ShowBorder
+		{
+			get { return Control.Bordered; }
+			set
+			{ 
+				Control.Bordered = value; 
+
+				Control.DatePickerStyle = value ? NSDatePickerStyle.TextFieldAndStepper : NSDatePickerStyle.TextField;
 			}
 		}
 	}

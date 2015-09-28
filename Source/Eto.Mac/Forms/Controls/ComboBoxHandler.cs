@@ -313,5 +313,11 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control.Completes; }
 			set { Control.Completes = value; }
 		}
+
+		public bool ShowBorder
+		{
+			get { return Control.Bordered; }
+			set { Control.Bordered = value; }
+		}
 	}
 }

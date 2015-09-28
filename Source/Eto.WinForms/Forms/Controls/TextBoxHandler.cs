@@ -66,6 +66,12 @@ namespace Eto.WinForms.Forms.Controls
 			Control = new EtoTextBox();
 		}
 
+		public bool ShowBorder
+		{
+			get { return Control.BorderStyle != swf.BorderStyle.None; }
+			set { Control.BorderStyle = value ? swf.BorderStyle.Fixed3D : swf.BorderStyle.None; }
+		}
+
 		static Func<char, bool> testIsNonWord = ch => char.IsWhiteSpace(ch) || char.IsPunctuation(ch);
 
 		public override void AttachEvent(string id)

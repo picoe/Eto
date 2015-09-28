@@ -225,5 +225,11 @@ namespace Eto.Mac.Forms.Controls
 				}
 			}
 		}
+
+		public bool ShowBorder
+		{
+			get { return Control.Bordered; }
+			set { Control.Bordered = value; }
+		}
 	}
 }
