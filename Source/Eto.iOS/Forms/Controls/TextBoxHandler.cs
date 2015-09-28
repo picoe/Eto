@@ -128,6 +128,12 @@ namespace Eto.iOS.Forms.Controls
 				Control.SelectedTextRange = Control.GetTextRange(start, end);
 			}
 		}
+
+		public bool ShowBorder
+		{
+			get { return Control.BorderStyle != UITextBorderStyle.None; }
+			set { Control.BorderStyle = value ? UITextBorderStyle.RoundedRect : UITextBorderStyle.None; }
+		}
 	}
 }
 

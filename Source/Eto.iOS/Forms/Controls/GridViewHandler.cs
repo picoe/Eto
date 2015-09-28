@@ -152,6 +152,11 @@ namespace Eto.iOS.Forms.Controls
 				throw new NotImplementedException();
 			}
 		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			Control.ReloadData();
+		}
 	}
 
 	class IosCellFormatArgs : GridCellFormatEventArgs
