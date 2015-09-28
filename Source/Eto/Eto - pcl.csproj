@@ -321,6 +321,7 @@
     <Compile Include="Forms\DockPosition.cs" />
     <Compile Include="Forms\Layout\StackLayoutItemConverter.cs" />
     <Compile Include="Drawing\SystemColors.cs" />
+    <Compile Include="Forms\RelayCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

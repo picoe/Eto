@@ -400,6 +400,7 @@
     <Compile Include="Forms\DockPosition.cs" />
     <Compile Include="Forms\Layout\StackLayoutItemConverter.cs" />
     <Compile Include="Drawing\SystemColors.cs" />
+    <Compile Include="Forms\RelayCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
