@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Xaml;
-using System.Windows.Markup;
 using System.Linq;
 using Eto.Drawing;
 
