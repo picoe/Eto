@@ -218,6 +218,7 @@
       <Link>Drawing\GradientHelper.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

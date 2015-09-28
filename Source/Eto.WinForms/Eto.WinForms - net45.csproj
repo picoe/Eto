@@ -77,6 +77,7 @@
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="WinConversions.cs" />
     <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
       <SubType>Component</SubType>

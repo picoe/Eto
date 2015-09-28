@@ -320,6 +320,7 @@
     <Compile Include="Forms\Controls\Expander.cs" />
     <Compile Include="Forms\DockPosition.cs" />
     <Compile Include="Forms\Layout\StackLayoutItemConverter.cs" />
+    <Compile Include="Drawing\SystemColors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

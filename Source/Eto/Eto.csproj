@@ -399,6 +399,7 @@
     <Compile Include="Forms\Binding\PropertyNotifyHelper.cs" />
     <Compile Include="Forms\DockPosition.cs" />
     <Compile Include="Forms\Layout\StackLayoutItemConverter.cs" />
+    <Compile Include="Drawing\SystemColors.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

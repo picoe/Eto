@@ -255,6 +255,7 @@
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

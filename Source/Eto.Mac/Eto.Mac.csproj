@@ -210,6 +210,7 @@
     <Compile Include="..\Shared\GradientHelper.cs">
       <Link>Drawing\GradientHelper.cs</Link>
     </Compile>
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

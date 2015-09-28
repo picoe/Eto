@@ -318,6 +318,7 @@
       <Link>Drawing\GradientHelper.cs</Link>
     </Compile>
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
