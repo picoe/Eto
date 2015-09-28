@@ -156,6 +156,15 @@ namespace Eto.Drawing
 		{
 			return !(value1 == value2);
 		}
+
+		/// <summary>
+		/// Implicitly converts a single integer to a padding with all sides of equal value.
+		/// </summary>
+		/// <param name="all">Value for padding on all sides</param>
+		public static implicit operator Padding (int all)
+		{
+			return new Padding(all);
+		}
 		
 		/// <summary>
 		/// Determines the equality between this instance and the specified object
