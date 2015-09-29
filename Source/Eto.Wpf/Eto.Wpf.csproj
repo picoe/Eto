@@ -123,6 +123,7 @@
     <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">

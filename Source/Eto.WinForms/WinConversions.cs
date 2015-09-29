@@ -665,12 +665,12 @@ namespace Eto.WinForms
 			}
 		}
 
-		public static DrawableCellStates ToEto(this swf.DataGridViewElementStates state)
+		public static CellStates ToEto(this swf.DataGridViewElementStates state)
 		{
 			if (state.HasFlag(swf.DataGridViewElementStates.Selected))
-				return DrawableCellStates.Selected;
+				return CellStates.Selected;
 
-			return DrawableCellStates.None;
+			return CellStates.None;
 		}
 
 		public static PrintSettings ToEto(this sdp.PrinterSettings settings)

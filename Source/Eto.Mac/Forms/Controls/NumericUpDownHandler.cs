@@ -344,7 +344,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Widget.Properties.Set(Font_Key, value, () =>
 				{
-					text.Font = value.ToNSFont();
+					text.Font = value.ToNS();
 					text.SizeToFit();
 					LayoutIfNeeded();
 				});

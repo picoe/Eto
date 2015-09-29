@@ -478,5 +478,10 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			Control.Items.Refresh();
+		}
 	}
 }

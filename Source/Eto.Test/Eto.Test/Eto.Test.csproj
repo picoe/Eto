@@ -188,6 +188,9 @@
       <Link>Helper.cs</Link>
     </Compile>
     <Compile Include="Sections\Behaviors\CursorSection.cs" />
+    <Compile Include="Sections\Controls\ExpanderSection.cs" />
+    <Compile Include="Sections\Controls\PropertyCellSection.cs" />
+    <Compile Include="Sections\Drawing\SystemColorSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

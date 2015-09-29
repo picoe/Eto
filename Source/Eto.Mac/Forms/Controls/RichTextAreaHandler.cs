@@ -61,7 +61,7 @@ namespace Eto.Mac.Forms.Controls
 		public void SetFont(Range<int> range, Font font)
 		{
 			var nsrange = range.ToNS();
-			Control.SetFont(font.ToNSFont(), nsrange);
+			Control.SetFont(font.ToNS(), nsrange);
 			var attr = font.Attributes();
 			if (attr != null && attr.Count > 0)
 				Control.TextStorage.AddAttributes(attr, nsrange);
@@ -202,7 +202,7 @@ namespace Eto.Mac.Forms.Controls
 		public Font SelectionFont
 		{
 			get { return GetSelectedTextAttribute<NSFont>(NSStringAttributeKey.Font).ToEto(); }
-			set { SetSelectedAttribute(NSStringAttributeKey.Font, value.ToNSFont()); }
+			set { SetSelectedAttribute(NSStringAttributeKey.Font, value.ToNS()); }
 		}
 
 		public Color SelectionForeground

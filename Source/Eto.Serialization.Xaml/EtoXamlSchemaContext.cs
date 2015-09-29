@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Xaml;
 using System.Windows.Markup;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Serialization.Xaml
 {
@@ -41,15 +42,30 @@ namespace Eto.Serialization.Xaml
 						{
 							var assemblyName = nsComponents[1].Substring(clr_assembly.Length);
 							var ns = nsComponents[0].Substring(clr_namespace.Length);
-							var assembly = Assembly.Load(assemblyName);
-							if (assembly != null)
+
+							try
 							{
-								var realType = assembly.GetType(ns + "." + name);
-								if (realType != null)
+								var assembly = Assembly.Load(assemblyName);
+								if (assembly != null)
 								{
-									type = xamlNamespace == eto_namespace ? new EtoXamlType(realType, this) : GetXamlType(realType);
+									var realType = assembly.GetType(ns + "." + name);
+									if (realType != null)
+									{
+										type = xamlNamespace == eto_namespace ? new EtoXamlType(realType, this) : GetXamlType(realType);
+										cache.Add(xamlNamespace + name, type);
+									}
+								}
+							}
+							catch
+							{
+								if (DesignMode && xamlNamespace != eto_namespace)
+								{
+									// in design mode, just show a placeholder when we can't load the assembly
+									type = GetXamlType(typeof(DesignerUserControl));
 									cache.Add(xamlNamespace + name, type);
 								}
+								else
+									throw;
 							}
 						}
 					}

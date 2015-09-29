@@ -185,16 +185,18 @@
     <Compile Include="Sections\Drawing\PixelOffsetTransforms.cs" />
     <Compile Include="Sections\Drawing\ClipTransformSection.cs" />
     <Compile Include="Sections\Behaviors\CursorSection.cs" />
+    <Compile Include="Sections\Drawing\SystemColorSection.cs" />
+    <Compile Include="Sections\Controls\PropertyCellSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
-    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Textures.gif" />
+    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestImage.png" />

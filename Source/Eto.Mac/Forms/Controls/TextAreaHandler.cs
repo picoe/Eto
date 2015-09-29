@@ -281,7 +281,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Widget.Properties.Set(Font_Key, value, () =>
 				{
-					Control.Font = value.ToNSFont();
+					Control.Font = value.ToNS();
 					LayoutIfNeeded();
 				});
 			}

@@ -1,7 +1,7 @@
 ﻿Imports Eto.Forms
 Imports Eto.Drawing
 
-Partial Class $safeitemname$
+Partial Public Class $safeitemname$
 
 	Public Sub New()
 

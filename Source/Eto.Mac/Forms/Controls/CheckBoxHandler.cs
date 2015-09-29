@@ -57,6 +57,7 @@ namespace Eto.Mac.Forms.Controls
 		static void HandleActivated(object sender, EventArgs e)
 		{
 			var handler = GetHandler(sender) as CheckBoxHandler;
+			handler.TriggerMouseCallback();
 			handler.Callback.OnCheckedChanged(handler.Widget, EventArgs.Empty);
 		}
 
@@ -76,12 +77,16 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{ 
-				if (value == null)
-					Control.State = ThreeState ? NSCellStateValue.Mixed : NSCellStateValue.Off;
-				else if (value.Value)
-					Control.State = NSCellStateValue.On;
-				else
-					Control.State = NSCellStateValue.Off;
+				if (Checked != value)
+				{
+					if (value == null)
+						Control.State = ThreeState ? NSCellStateValue.Mixed : NSCellStateValue.Off;
+					else if (value.Value)
+						Control.State = NSCellStateValue.On;
+					else
+						Control.State = NSCellStateValue.Off;
+					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+				}
 			}
 		}
 

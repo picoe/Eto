@@ -16,26 +16,22 @@ namespace Eto.GtkSharp.Forms.Cells
 			WeakReference handler;
 			public ImageTextCellHandler Handler { get { return (ImageTextCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			[GLib.Property("item")]
-			public object Item { get; set; }
-
+			int row;
 			[GLib.Property("row")]
-			public int Row { get; set; }
+			public int Row
+			{
+				get { return row; }
+				set {
+					row = value;
+					if (Handler.FormattingEnabled)
+						Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
+			}
 			#if GTK2
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				height = Math.Max(height, Handler.Source.RowHeight);
-			}
-
-			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
-			{
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Item, Row));
-			
-				// calling base crashes on windows /w gtk 2.12.9
-				GtkCell.gtksharp_cellrenderer_invoke_render(Gtk.CellRendererText.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
-				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 			#else
 			protected override void OnGetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
@@ -43,14 +39,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				base.OnGetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				height = Math.Max(height, Handler.Source.RowHeight);
 			}
-			
-			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
-			{
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkGridCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
-				base.OnRender (cr, widget, background_area, cell_area, flags);
-			}
-#endif
+			#endif
 		}
 
 		class ImageRenderer : Gtk.CellRendererPixbuf
@@ -60,26 +49,17 @@ namespace Eto.GtkSharp.Forms.Cells
 			[GLib.Property("item")]
 			public object Item { get; set; }
 
+			int row;
 			[GLib.Property("row")]
-			public int Row { get; set; }
-			#if GTK2
-			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
+			public int Row
 			{
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkGridCellFormatEventArgs<ImageRenderer>(this, Handler.Column.Widget, Item, Row));
-
-				// calling base crashes on windows /w gtk 2.12.9
-				GtkCell.gtksharp_cellrenderer_invoke_render(Gtk.CellRendererPixbuf.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
-				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
+				get { return row; }
+				set {
+					row = value;
+					if (Handler.FormattingEnabled)
+						Handler.Format(new GtkGridCellFormatEventArgs<ImageRenderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
 			}
-			#else
-			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
-			{
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkGridCellFormatEventArgs<ImageRenderer> (this, Handler.Column.Widget, Item, Row));
-				base.OnRender (cr, widget, background_area, cell_area, flags);
-			}
-#endif
 		}
 
 		public ImageTextCellHandler()
@@ -125,11 +105,17 @@ namespace Eto.GtkSharp.Forms.Cells
 		protected override void BindCell(ref int dataIndex)
 		{
 			Column.Control.ClearAttributes(Control);
+			Column.Control.ClearAttributes(imageCell);
 			imageDataIndex = SetColumnMap(dataIndex);
 			Column.Control.AddAttribute(imageCell, "pixbuf", dataIndex++);
 			textDataIndex = SetColumnMap(dataIndex);
 			Column.Control.AddAttribute(Control, "text", dataIndex++);
-			BindBase(ref dataIndex);
+			base.BindCell(ref dataIndex);
+
+			if (FormattingEnabled)
+			{
+				Column.Control.AddAttribute(imageCell, "row", Source.RowDataColumn);
+			}
 		}
 
 		public override void SetEditable(Gtk.TreeViewColumn column, bool editable)

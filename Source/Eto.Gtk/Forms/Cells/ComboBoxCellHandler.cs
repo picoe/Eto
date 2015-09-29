@@ -15,25 +15,23 @@ namespace Eto.GtkSharp.Forms.Cells
 			WeakReference handler;
 			public ComboBoxCellHandler Handler { get { return (ComboBoxCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			[GLib.Property("item")]
-			public object Item { get; set; }
-
+			int row;
 			[GLib.Property("row")]
-			public int Row { get; set; }
+			public int Row
+			{
+				get { return row; }
+				set {
+					row = value;
+					if (Handler.FormattingEnabled)
+						Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Handler.Source.GetItem(Row), Row));
+				}
+			}
+
 			#if GTK2
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				height = Math.Max(height, Handler.Source.RowHeight);
-			}
-
-			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
-			{
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkTextCellFormatEventArgs<Renderer>(this, Handler.Column.Widget, Item, Row));
-				// calling base crashes on windows
-				GtkCell.gtksharp_cellrenderer_invoke_render(Gtk.CellRendererCombo.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
-				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 			#else
 			protected override void OnGetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
@@ -41,14 +39,7 @@ namespace Eto.GtkSharp.Forms.Cells
 				base.OnGetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				height = Math.Max(height, Handler.Source.RowHeight);
 			}
-			
-			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
-			{
-				if (Handler.FormattingEnabled)
-					Handler.Format(new GtkGridCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
-				base.OnRender (cr, widget, background_area, cell_area, flags);
-			}
-#endif
+			#endif
 		}
 
 		public ComboBoxCellHandler()
@@ -96,6 +87,7 @@ namespace Eto.GtkSharp.Forms.Cells
 			Column.Control.ClearAttributes(Control);
 			SetColumnMap(dataIndex);
 			Column.Control.AddAttribute(Control, "text", dataIndex++);
+			base.BindCell(ref dataIndex);
 		}
 
 		public override void SetEditable(Gtk.TreeViewColumn column, bool editable)

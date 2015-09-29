@@ -2,6 +2,9 @@ using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Mac.Forms.Cells;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -164,13 +167,18 @@ namespace Eto.Mac.Forms.Controls
 				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs (column.Widget));
 			}
 
-			public override void WillDisplayCell (NSOutlineView outlineView, NSObject cell, NSTableColumn tableColumn, NSObject item)
+			public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
-				var colHandler = Handler.GetColumn (tableColumn);
-				var myitem = item as EtoTreeItem;
-				if (myitem != null) {
-					Handler.OnCellFormatting(colHandler.Widget, myitem.Item, -1, cell as NSCell);
+				var colHandler = Handler.GetColumn(tableColumn);
+				if (colHandler != null && colHandler.DataCell != null)
+				{
+					var cellHandler = colHandler.DataCell.Handler as ICellHandler;
+					if (cellHandler != null)
+					{
+						return cellHandler.GetViewForItem(outlineView, tableColumn, -1, item, (obj, row) => obj != null ? ((EtoTreeItem)obj).Item : null);
+					}
 				}
+				return outlineView.MakeView(tableColumn.Identifier, this);
 			}
 		}
 			
@@ -247,8 +255,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var point = ConvertPointFromView(theEvent.LocationInWindow, null);
 
-				int rowIndex;
-				if ((rowIndex = (int)GetRow(point)) >= 0)
+				int rowIndex = (int)GetRow(point);
+				if (rowIndex >= 0)
 				{
 					int columnIndex = (int)GetColumn(point);
 					var item = (Handler as TreeGridViewHandler).GetItem(rowIndex);

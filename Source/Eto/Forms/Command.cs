@@ -346,7 +346,19 @@ namespace Eto.Forms
 		public ICommand DelegatedCommand
 		{
 			get { return Properties.GetCommand(Command_Key); }
-			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Executed += r, r => Executed -= r); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Executed += r, r => Executed -= r, () => CommandParameter); }
+		}
+
+		static readonly object CommandParameter_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the parameter to pass to the <see cref="Command"/> when executing or determining its CanExecute state.
+		/// </summary>
+		/// <value>The command parameter.</value>
+		public object CommandParameter
+		{
+			get { return Properties.Get<object>(CommandParameter_Key); }
+			set { Properties.Set(CommandParameter_Key, value, () => Properties.UpdateCommandCanExecute(Command_Key)); }
 		}
 
 		event EventHandler ICommand.CanExecuteChanged

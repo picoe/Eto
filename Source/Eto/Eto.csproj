@@ -60,6 +60,7 @@
       <SubType>Eto.Forms</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Expander.cs" />
+    <Compile Include="Forms\Cells\CustomCell.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs">
       <SubType>Eto.Forms</SubType>
@@ -398,6 +399,10 @@
     <Compile Include="Forms\Binding\PropertyBinding.cs" />
     <Compile Include="Forms\Binding\PropertyNotifyHelper.cs" />
     <Compile Include="Forms\DockPosition.cs" />
+    <Compile Include="Forms\Layout\StackLayoutItemConverter.cs" />
+    <Compile Include="Forms\Cells\PropertyCell.cs" />
+    <Compile Include="Drawing\SystemColors.cs" />
+    <Compile Include="Forms\RelayCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

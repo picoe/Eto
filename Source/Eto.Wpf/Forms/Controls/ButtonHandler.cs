@@ -189,7 +189,12 @@ namespace Eto.Wpf.Forms.Controls
 				if (MinimumSize != value)
 				{
 					Widget.Properties[MinimumSize_Key] = value;
+#if WPF
+					if (Control.IsLoaded)
+						Control.UpdateLayout();
+#else
 					Control.UpdateLayout();
+#endif
 				}
 			}
 		}

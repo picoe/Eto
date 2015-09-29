@@ -55,8 +55,10 @@ namespace Eto.WinForms.Forms.Cells
 					((GraphicsHandler)cachedGraphics.Handler).SetInitialState();
 				}
 				graphics.SetClip(cellBounds);
+#pragma warning disable 618
 				var args = new DrawableCellPaintEventArgs(cachedGraphics, cellBounds.ToEto(), cellState.ToEto(), value);
 				Handler.Callback.OnPaint(Handler.Widget, args);
+#pragma warning restore 618
 				graphics.ResetClip();
 				graphics.Restore(state);
 			}

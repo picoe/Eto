@@ -210,6 +210,11 @@
     <Compile Include="..\Shared\GradientHelper.cs">
       <Link>Drawing\GradientHelper.cs</Link>
     </Compile>
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
+    <Compile Include="..\Shared\MutableCellEventArgs.cs">
+      <Link>Forms\Cells\MutableCellEventArgs.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

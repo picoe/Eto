@@ -343,13 +343,15 @@ namespace Eto
 		{
 			readonly Action<EventHandler<EventArgs>> removeExecute;
 			readonly Action<bool> setEnabled;
-			public ICommand Command { get; set; }
+			readonly Func<object> getArgument;
+            public ICommand Command { get; set; }
 
-			public CommandWrapper(ICommand command, Action<bool> setEnabled, Action<EventHandler<EventArgs>> addExecute, Action<EventHandler<EventArgs>> removeExecute)
+			public CommandWrapper(ICommand command, Action<bool> setEnabled, Action<EventHandler<EventArgs>> addExecute, Action<EventHandler<EventArgs>> removeExecute, Func<object> getParameter)
 			{
 				this.Command = command;
 				this.setEnabled = setEnabled;
 				this.removeExecute = removeExecute;
+				this.getArgument = getParameter;
 				addExecute(Command_Execute);
 				SetEnabled();
 				command.CanExecuteChanged += Command_CanExecuteChanged;;
@@ -363,7 +365,7 @@ namespace Eto
 
 			void Command_Execute(object sender, EventArgs e)
 			{
-				Command.Execute(null);
+				Command.Execute(Parameter);
 			}
 
 			void Command_CanExecuteChanged(object sender, EventArgs e)
@@ -371,10 +373,15 @@ namespace Eto
 				SetEnabled();
 			}
 
-			void SetEnabled()
+			object Parameter
+			{
+				get { return getArgument != null ? getArgument() : null; }
+            }
+
+			public void SetEnabled()
 			{
 				if (setEnabled != null)
-					setEnabled(Command.CanExecute(null));
+					setEnabled(Command.CanExecute(Parameter));
 			}
 		}
 
@@ -386,8 +393,9 @@ namespace Eto
 		/// <param name="setEnabled">Delegate to set the widget as enabled when the command state changes.</param>
 		/// <param name="addExecute">Delegate to attach the execute event handler when the widget invokes the command.</param>
 		/// <param name="removeExecute">Delegate to detach the execute event handler.</param>
+		/// <param name="getParameter">Delegate to get the parameter to pass to the command</param>
 		/// <seealso cref="GetCommand"/>
-		public void SetCommand(object key, ICommand value, Action<bool> setEnabled, Action<EventHandler<EventArgs>> addExecute, Action<EventHandler<EventArgs>> removeExecute)
+		public void SetCommand(object key, ICommand value, Action<bool> setEnabled, Action<EventHandler<EventArgs>> addExecute, Action<EventHandler<EventArgs>> removeExecute, Func<object> getParameter)
 		{
 			var cmd = Get<CommandWrapper>(key);
 			if (cmd != null)
@@ -396,7 +404,20 @@ namespace Eto
 					return;
 				cmd.Unregister();
 			}
-			Set(key, value != null ? new CommandWrapper(value, setEnabled, addExecute, removeExecute) : null);
+			Set(key, value != null ? new CommandWrapper(value, setEnabled, addExecute, removeExecute, getParameter) : null);
+		}
+
+		/// <summary>
+		/// Updates the command's execute status, typically when the CommandParameter changes.
+		/// </summary>
+		/// <param name="key">Key of the command to execute.</param>
+		public void UpdateCommandCanExecute(object key)
+		{
+			var cmd = Get<CommandWrapper>(key);
+			if (cmd != null)
+			{
+				cmd.SetEnabled();
+			}
 		}
 
 		/// <summary>

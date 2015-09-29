@@ -57,6 +57,7 @@ namespace Eto.Forms
 	/// Item for a single control in a <see cref="StackLayout"/>.
 	/// </summary>
 	[ContentProperty("Control")]
+	[TypeConverter(typeof(StackLayoutItemConverter))]
 	public class StackLayoutItem
 	{
 		/// <summary>

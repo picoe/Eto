@@ -18,7 +18,8 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control = new swc.CheckBox {
 				IsThreeState = false,
-				VerticalAlignment = sw.VerticalAlignment.Center
+				VerticalAlignment = sw.VerticalAlignment.Center,
+				VerticalContentAlignment = sw.VerticalAlignment.Center
 			};
 			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);

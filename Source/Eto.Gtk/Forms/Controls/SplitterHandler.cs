@@ -324,7 +324,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			Control.AddNotification("position", (o, args) =>
 			{
-				if (Widget.ParentWindow == null || !Widget.Loaded || suppressSplitterMoved > 0)
+				if (!Widget.Loaded || suppressSplitterMoved > 0)
 					return;
 				// keep track of the desired position (for removing/re-adding/resizing the control)
 				UpdateRelative();

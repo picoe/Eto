@@ -25,7 +25,7 @@ namespace Eto.Designer.Builders
 			}
 			catch (Exception ex)
 			{
-				error(ex.ToString());
+				error(ex.Message);
 			}
 		}
 	}

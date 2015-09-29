@@ -66,5 +66,10 @@ namespace Eto.WinRT.Forms
 		{
 		}
 #endif
+		public virtual bool ShowBorder
+		{
+			get { return true; }
+			set { }
+		}
 	}
 }

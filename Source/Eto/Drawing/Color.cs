@@ -492,5 +492,32 @@ namespace Eto.Drawing
 
 			return result;
 		}
+
+		/// <summary>
+		/// Converts this RGB color to the HSB colorspace.
+		/// </summary>
+		/// <returns>A new ColorHSB structure.</returns>
+		public ColorHSB ToHSB()
+		{
+			return new ColorHSB(this);
+		}
+
+		/// <summary>
+		/// Converts this RGB color to the HSL colorspace.
+		/// </summary>
+		/// <returns>A new ColorHSL structure.</returns>
+		public ColorHSL ToHSL()
+		{
+			return new ColorHSL(this);
+		}
+
+		/// <summary>
+		/// Converts this RGB color to the CMYK colorspace.
+		/// </summary>
+		/// <returns>A new ColorCMYK structure.</returns>
+		public ColorCMYK ToCMYK()
+		{
+			return new ColorCMYK(this);
+		}
 	}
 }

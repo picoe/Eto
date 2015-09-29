@@ -43,6 +43,14 @@ namespace Eto.GtkSharp.Drawing
 		{
 		}
 
+#if GTK2
+		public BitmapHandler(Gdk.Image image)
+		{
+			Create(image.Width, image.Height, image.BitsPerPixel == 32 ? PixelFormat.Format32bppRgb : PixelFormat.Format24bppRgb);
+			Control.GetFromImage(image, image.Colormap ?? Gdk.Colormap.System, 0, 0, 0, 0, image.Width, image.Height);
+		}
+#endif
+
 		public BitmapHandler(Gdk.Pixbuf pixbuf)
 		{
 			this.Control = pixbuf;

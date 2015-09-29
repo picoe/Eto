@@ -29,6 +29,8 @@ namespace Eto.GtkSharp
 					return Gtk.StateType.Prelight;
 				case GtkStateFlags.Insensitive:
 					return Gtk.StateType.Insensitive;
+				case GtkStateFlags.Selected:
+					return Gtk.StateType.Selected;
 				default:
 					throw new NotSupportedException();
 			}
@@ -111,6 +113,8 @@ namespace Eto.GtkSharp
 					return Gtk.StateFlags.Insensitive;
 				case GtkStateFlags.Prelight:
 					return Gtk.StateFlags.Prelight;
+				case GtkStateFlags.Selected:
+					return Gtk.StateFlags.Selected;
 				default:
 					throw new NotSupportedException();
 			}

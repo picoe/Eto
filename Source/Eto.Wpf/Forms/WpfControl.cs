@@ -17,6 +17,12 @@ namespace Eto.Wpf.Forms
 			set { (ContainerControl as swc.Control ?? Control).Background = value.ToWpfBrush(Control.Background); }
 		}
 
+		public virtual bool ShowBorder
+		{
+			get { return true; }
+			set { }
+		}
+
 		protected virtual void SetDecorations(sw.TextDecorationCollection decorations)
 		{
 		}

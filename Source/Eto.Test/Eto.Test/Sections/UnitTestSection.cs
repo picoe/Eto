@@ -150,7 +150,7 @@ namespace Eto.Test.Sections
 		public virtual bool IsEmpty { get { return false; } }
 	}
 
-	[Section("Tests", "Unit Tests")]
+	[Section("Automated Tests", "Unit Tests")]
 	public class UnitTestSection : Panel
 	{
 		TreeView tree;

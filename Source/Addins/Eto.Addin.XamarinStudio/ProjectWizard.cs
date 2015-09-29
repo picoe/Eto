@@ -5,6 +5,7 @@ using MonoDevelop.Projects;
 using System.Text;
 using System.Linq;
 using Eto.Addin.Shared;
+using MonoDevelop.Ide;
 
 namespace Eto.Addin.XamarinStudio
 {
@@ -41,4 +42,3 @@ namespace Eto.Addin.XamarinStudio
 		}
 	}
 }
-

@@ -445,6 +445,11 @@ namespace Eto.WinForms.Forms.Controls
 				}
 			}
 		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			Control.Refresh();
+		}
 	}
 }
 

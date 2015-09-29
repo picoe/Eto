@@ -13,6 +13,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 	public interface IGridColumnHandler
 	{
+		Gtk.TreeViewColumn Control { get; }
+
 		GLib.Value GetValue(object dataItem, int dataColumn, int row);
 
 		void BindCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex);
@@ -169,6 +171,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			if (dataCell != null)
 				return ((ICellHandler)dataCell.Handler).GetValue(dataItem, dataColumn, row);
 			return new GLib.Value((string)null);
+		}
+
+		Gtk.TreeViewColumn IGridColumnHandler.Control
+		{
+			get { return Control; }
 		}
 	}
 }

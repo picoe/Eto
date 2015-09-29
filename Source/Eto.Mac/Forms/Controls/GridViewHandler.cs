@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Eto.Drawing;
 using System.Collections;
 using System.Linq;
+using Eto.Mac.Forms.Cells;
 
 #if XAMMAC2
 using AppKit;
@@ -129,25 +130,38 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 
+			NSIndexSet previouslySelected;
 			public override void SelectionDidChange(NSNotification notification)
 			{
 				if (Handler.SuppressSelectionChanged == 0)
 				{
 					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+					var columns = NSIndexSet.FromNSRange(new NSRange(0, Handler.Control.TableColumns().Length));
+					if (previouslySelected != null)
+						Handler.Control.ReloadData(previouslySelected, columns);
+					var selected = Handler.Control.SelectedRows;
+					Handler.Control.ReloadData(selected, columns);
+					previouslySelected = selected;
 				}
+			}
+
+			public override nfloat GetSizeToFitColumnWidth(NSTableView tableView, nint column)
+			{
+				var colHandler = Handler.GetColumn(tableView.TableColumns()[column]);
+				if (colHandler != null)
+				{
+					// turn on autosizing for this column again
+					Application.Instance.AsyncInvoke(() => colHandler.AutoSize = true);
+					return colHandler.GetPreferredWidth();
+				}
+				return 20;
 			}
 
 			public override void DidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn)
 			{
 				var colHandler = Handler.GetColumn(tableColumn);
-				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(colHandler.Widget));
-			}
-
-			public override void WillDisplayCell(NSTableView tableView, NSObject cell, NSTableColumn tableColumn, nint row)
-			{
-				var colHandler = Handler.GetColumn(tableColumn);
-				var item = Handler.GetItem((int)row);
-				Handler.OnCellFormatting(colHandler.Widget, item, (int)row, cell as NSCell);
+				if (colHandler.Sortable)
+					Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(colHandler.Widget));
 			}
 
 			public override void ColumnDidResize(NSNotification notification)
@@ -162,6 +176,21 @@ namespace Eto.Mac.Forms.Controls
 						colHandler.AutoSize = false;
 					}
 				}
+			}
+
+			public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, nint row)
+			{
+				var colHandler = Handler.GetColumn(tableColumn);
+				if (colHandler != null)
+				{
+					var cellHandler = colHandler.DataCellHandler;
+					if (cellHandler != null)
+					{
+						return cellHandler.GetViewForItem(tableView, tableColumn, (int)row, null, (obj, r) => Handler.GetItem(r));
+					}
+				}
+
+				return tableView.MakeView(tableColumn.Identifier, this);
 			}
 		}
 
@@ -333,7 +362,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public override object GetItem(int row)
 		{
-			return collection.ElementAt(row);
+			return collection.ElementAt((int)row);
+		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			Control.ReloadData(NSIndexSet.FromArray(rows.Select(r => (nuint)r).ToArray()), NSIndexSet.FromNSRange(new NSRange(0, Control.TableColumns().Length)));
 		}
 	}
 }

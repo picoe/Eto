@@ -189,5 +189,11 @@ namespace Eto.iOS.Forms.Controls
 		{
 			return CreateAccessoryView();
 		}
+
+		public virtual bool ShowBorder 
+		{
+			get { return true; }
+			set { }
+		}
 	}
 }

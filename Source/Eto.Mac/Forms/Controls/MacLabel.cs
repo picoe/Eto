@@ -49,14 +49,24 @@ namespace Eto.Mac.Forms.Controls
 
 	public class EtoLabelFieldCell : NSTextFieldCell
 	{
-		public VerticalAlignment VerticalAlign { get; set; }
-
-		public override CGRect DrawingRectForBounds(CGRect theRect)
+		public EtoLabelFieldCell()
 		{
-			var rect = base.DrawingRectForBounds(theRect);
-			var titleSize = CellSizeForBounds(theRect);
+		}
 
-			switch (VerticalAlign)
+		public EtoLabelFieldCell(IntPtr handle)
+			: base(handle)
+		{
+		}
+
+		[Export("verticalAlignment")]
+		public VerticalAlignment VerticalAlignment { get; set; }
+
+		public override CGRect TitleRectForBounds(CGRect theRect)
+		{
+			var titleSize = AttributedStringValue.Size;
+			var rect = base.TitleRectForBounds(theRect);
+
+			switch (VerticalAlignment)
 			{
 				case VerticalAlignment.Center:
 					rect.Y = (nfloat)Math.Round(theRect.Y + (theRect.Height - titleSize.Height) / 2.0F);
@@ -66,6 +76,26 @@ namespace Eto.Mac.Forms.Controls
 					break;
 			}
 			return rect;
+		}
+
+		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
+		{
+			if (DrawsBackground && BackgroundColor != null && BackgroundColor.AlphaComponent > 0)
+			{
+				BackgroundColor.Set();
+				NSGraphics.RectFill(cellFrame);
+			}
+			var str = AttributedStringValue;
+			if (BackgroundStyle == NSBackgroundStyle.Dark && TextColor == NSColor.ControlText)
+			{
+				var mutable = AttributedStringValue.MutableCopy() as NSMutableAttributedString;
+				var attr = new NSMutableDictionary();
+				attr.Add(NSStringAttributeKey.ForegroundColor, NSColor.AlternateSelectedControlText);
+				mutable.SetAttributes(attr, new NSRange(0, mutable.Length));
+				str = mutable;
+			}
+
+			str.DrawString(TitleRectForBounds(cellFrame));
 		}
 	}
 
@@ -273,8 +303,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public VerticalAlignment VerticalAlignment
 		{
-			get { return ((EtoLabelFieldCell)Control.Cell).VerticalAlign; }
-			set { ((EtoLabelFieldCell)Control.Cell).VerticalAlign = value; }
+			get { return ((EtoLabelFieldCell)Control.Cell).VerticalAlignment; }
+			set { ((EtoLabelFieldCell)Control.Cell).VerticalAlignment = value; }
 		}
 
 		protected virtual void SetAttributes()
@@ -292,7 +322,10 @@ namespace Eto.Mac.Forms.Controls
 					var attr = new NSMutableDictionary();
 					Widget.Properties.Get<Font>(FontKey).Apply(attr);
 					attr.Add(NSStringAttributeKey.ParagraphStyle, paragraphStyle);
-					attr.Add(NSStringAttributeKey.ForegroundColor, CurrentColor);
+					var col = Widget.Properties.Get<Color?>(TextColorKey);
+					if (col != null)
+						attr.Add(NSStringAttributeKey.ForegroundColor, col.Value.ToNSUI());
+					//attr.Add(NSStringAttributeKey.ForegroundColor, CurrentColor);
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{

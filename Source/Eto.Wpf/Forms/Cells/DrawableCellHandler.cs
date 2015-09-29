@@ -27,8 +27,10 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var handler = Column.Handler;
 				var graphics = new Graphics(new GraphicsHandler(this, dc, new sw.Rect(RenderSize), new RectangleF(RenderSize.ToEto()), false));
-				var state = IsSelected ? DrawableCellStates.Selected : DrawableCellStates.None;
+				var state = IsSelected ? CellStates.Selected : CellStates.None;
+#pragma warning disable 618
 				var args = new DrawableCellPaintEventArgs(graphics, new Rectangle(RenderSize.ToEtoSize()), state, DataContext);
+#pragma warning restore 618
 				handler.Callback.OnPaint(handler.Widget, args);
 			}
 		}

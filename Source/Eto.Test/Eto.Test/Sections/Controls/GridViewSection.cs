@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -186,6 +187,43 @@ namespace Eto.Test.Sections.Controls
 			return filterText;
 		}
 
+		class MyCustomCell : CustomCell
+		{
+			protected override Control OnCreateCell(CellEventArgs args)
+			{
+				//Log.Write(this, "OnCreateCell: Row: {1}, CellState: {2}, Item: {0}", args.Item, args.Row, args.CellState);
+
+				var control = new Button();
+				control.TextBinding.BindDataContext((MyGridItem m) => m.Text);
+				control.BindDataContext(c => c.Command, (MyGridItem m) => m.Command);
+				//control.Click += (sender, e) => Log.Write(sender, "Clicked row button {0}", ((Button)sender).Text);
+				return control;
+			}
+
+			protected override void OnConfigureCell(CellEventArgs args, Control control)
+			{
+				// if you don't use binding or have other scenarios, you can use ConfigureCell:
+				/**
+				var item = (MyGridItem)args.Item;
+				var button = (Button)control;
+				button.BackgroundColor = args.CellState.HasFlag(CellStates.Selected) ? Colors.Blue : Colors.White;
+				//button.Text = item.Text;
+				//button.Enabled = ((GridColumn)Parent).Editable;
+				/**/
+				base.OnConfigureCell(args, control);
+
+				//Log.Write(this, "OnConfigureCell: Control: {0}, Row: {2}, CellState: {3}, Item: {1}", control, args.Item, args.Row, args.CellState);
+			}
+
+			protected override void OnPaint(CellPaintEventArgs args)
+			{
+				var item = (MyGridItem)args.Item;
+				if (!args.IsEditing)
+					args.Graphics.DrawText(SystemFonts.Default(), Colors.Black, args.ClipRectangle.Location, item.Text);
+				//args.Graphics.DrawLine(Colors.Blue, args.ClipRectangle.TopLeft, args.ClipRectangle.BottomRight);
+			}
+		}
+
 		GridView CreateGrid()
 		{
 			var control = new GridView
@@ -196,11 +234,18 @@ namespace Eto.Test.Sections.Controls
 
 			var dropDown = MyDropDown("DropDownKey");
 			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell("Check"), AutoSize = true, Resizable = false });
-			control.Columns.Add(new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image") });
+			control.Columns.Add(new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image"), Resizable = false });
 			control.Columns.Add(new GridColumn { HeaderText = "ImageText", DataCell = new ImageTextCell("Image", "Text") });
 			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Sortable = true });
 			control.Columns.Add(new GridColumn { HeaderText = "Progress", DataCell = new ProgressCell("Progress") });
 			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Sortable = true });
+			if (Platform.Supports<CustomCell>())
+			{
+				//control.ReloadSelectedCells = true;
+				//control.SelectedRowsChanged += (sender, e) => control.ReloadData(control.SelectedRows);
+				var col = new GridColumn { HeaderText = "Custom", Sortable = true, DataCell = new MyCustomCell() };
+				control.Columns.Add(col);
+			}
 
 			if (Platform.Supports<DrawableCell>())
 			{
@@ -210,15 +255,17 @@ namespace Eto.Test.Sections.Controls
 					var m = e.Item as MyGridItem;
 					if (m != null)
 					{
-						if (e.CellState.HasFlag(DrawableCellStates.Selected))
+						if (e.CellState.HasFlag(CellStates.Selected))
 							e.Graphics.FillRectangle(Colors.Blue, e.ClipRectangle);
 						else
 							e.Graphics.FillRectangle(Brushes.Cached(m.Color), e.ClipRectangle);
 						var rect = e.ClipRectangle;
 						rect.Inflate(-5, -5);
-						e.Graphics.DrawRectangle(Colors.White, rect);
-						e.Graphics.DrawLine(Colors.White, rect.Left, rect.Bottom, rect.MiddleX, rect.Top);
-						e.Graphics.DrawLine(Colors.White, rect.Right, rect.Bottom, rect.MiddleX, rect.Top);
+
+						var color = e.CellState.HasFlag(CellStates.Editing) ? Colors.Black : Colors.White;
+						e.Graphics.DrawRectangle(color, rect);
+						e.Graphics.DrawLine(color, rect.Left, rect.Bottom, rect.MiddleX, rect.Top);
+						e.Graphics.DrawLine(color, rect.Right, rect.Bottom, rect.MiddleX, rect.Top);
 					}
 				};
 				control.Columns.Add(new GridColumn
@@ -322,12 +369,13 @@ namespace Eto.Test.Sections.Controls
 		/// <summary>
 		/// POCO (Plain Old CLR Object) to test property bindings
 		/// </summary>
-		class MyGridItem
+		protected class MyGridItem
 		{
 			bool? check;
 			string text;
 			string dropDownKey;
 			float? progress;
+			Command command;
 
 			public int Row { get; set; }
 
@@ -381,6 +429,14 @@ namespace Eto.Test.Sections.Controls
 				}
 			}
 
+			public Command Command
+			{
+				get
+				{
+					return command ?? (command = new Command((sender, e) => Test.Log.Write(null, "Command Executed for item: {0}", this)));
+				}
+			}
+
 			public MyGridItem(Random rand, int row)
 			{
 				// initialize to random values
@@ -398,6 +454,11 @@ namespace Eto.Test.Sections.Controls
 				dropDownKey = "Item " + Convert.ToString(rand.Next(4) + 1);
 
 				progress = rand.Next() % 10 != 0 ? (float?)rand.NextDouble() : null;
+			}
+
+			public override string ToString()
+			{
+				return string.Format("[MyGridItem: Row={0}, Check={1}, Text={2}, Image={3}, DropDownKey={4}, Color={5}, Progress={6}]", Row, Check, Text, Image, DropDownKey, Color, Progress);
 			}
 		}
 	}

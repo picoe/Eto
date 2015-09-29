@@ -3,6 +3,9 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
+using Eto.Mac.Forms.Controls;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -34,9 +37,10 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Cells
 {
-	public class ComboBoxCellHandler : CellHandler<NSPopUpButtonCell, ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
+	public class ComboBoxCellHandler : CellHandler<ComboBoxCell, ComboBoxCell.ICallback>, ComboBoxCell.IHandler
 	{
 		CollectionHandler collection;
+		NSMenu menu = new NSMenu();
 
 		public class EtoCell : NSPopUpButtonCell, IMacControl
 		{
@@ -59,13 +63,6 @@ namespace Eto.Mac.Forms.Cells
 			public NSColor TextColor { get; set; }
 
 			public bool DrawsBackground { get; set; }
-
-			[Export("copyWithZone:")]
-			NSObject CopyWithZone(IntPtr zone)
-			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr(SuperHandle, MacCommon.CopyWithZoneHandle, zone);
-				return new EtoCell(ptr) { Handler = Handler };
-			}
 
 			public override void DrawBorderAndBackground(CGRect cellFrame, NSView controlView)
 			{
@@ -99,6 +96,7 @@ namespace Eto.Mac.Forms.Cells
 		class CollectionHandler : EnumerableChangedHandler<object>
 		{
 			public ComboBoxCellHandler Handler { get; set; }
+
 			ILookup<string, int> indexLookupByKey;
 
 			public ILookup<string, int> IndexLookup
@@ -108,82 +106,37 @@ namespace Eto.Mac.Forms.Cells
 
 			public override void AddItem(object item)
 			{
-				var menu = Handler.Control.Menu;
+				var menu = Handler.menu;
 				var textBinding = Handler.Widget.ComboTextBinding;
 				menu.AddItem(new NSMenuItem(textBinding.GetValue(item)));
+				menu.Title = Guid.NewGuid().ToString();
 				indexLookupByKey = null;
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var menu = Handler.Control.Menu;
+				var menu = Handler.menu;
 				var textBinding = Handler.Widget.ComboTextBinding;
 				menu.InsertItem(new NSMenuItem(textBinding.GetValue(item)), index);
+				menu.Title = Guid.NewGuid().ToString();
 				indexLookupByKey = null;
 			}
 
 			public override void RemoveItem(int index)
 			{
-				var menu = Handler.Control.Menu;
+				var menu = Handler.menu;
 				menu.RemoveItemAt(index);
+				menu.Title = Guid.NewGuid().ToString();
 				indexLookupByKey = null;
 			}
 
 			public override void RemoveAllItems()
 			{
-				Handler.Control.RemoveAllItems();
+				var menu = Handler.menu;
+				menu.RemoveAllItems();
+				menu.Title = Guid.NewGuid().ToString();
 				indexLookupByKey = null;
 			}
-		}
-
-		public ComboBoxCellHandler()
-		{
-			Control = new EtoCell { Handler = this, ControlSize = NSControlSize.Regular, Bordered = false };
-			Control.Title = string.Empty;
-		}
-
-		bool editable = true;
-
-		public override bool Editable
-		{
-			get { return editable; }
-			set
-			{ 
-				editable = value;
-				Control.Enabled = value;
-			}
-		}
-
-		public override void EnabledChanged(bool value)
-		{
-			base.EnabledChanged(value);
-			if (value)
-				Control.Enabled = editable;
-		}
-
-		public override void SetBackgroundColor(NSCell cell, Color color)
-		{
-			var c = (EtoCell)cell;
-			c.BackgroundColor = color.ToNSUI();
-			c.DrawsBackground = color != Colors.Transparent;
-		}
-
-		public override Color GetBackgroundColor(NSCell cell)
-		{
-			var c = (EtoCell)cell;
-			return c.BackgroundColor.ToEto();
-		}
-
-		public override void SetForegroundColor(NSCell cell, Color color)
-		{
-			var c = (EtoCell)cell;
-			c.TextColor = color.ToNSUI();
-		}
-
-		public override Color GetForegroundColor(NSCell cell)
-		{
-			var c = (EtoCell)cell;
-			return c.TextColor.ToEto();
 		}
 
 		public IEnumerable<object> DataStore
@@ -222,9 +175,118 @@ namespace Eto.Mac.Forms.Cells
 			return null;
 		}
 
-		public override nfloat GetPreferredSize(object value, CGSize cellSize, NSCell cell)
+		static EtoPopUpButton field = new EtoPopUpButton { Cell = new EtoCell() };
+		static NSFont defaultFont = field.Font;
+
+		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
-			return 100;
+			var args = new MacCellFormatArgs(ColumnHandler.Widget, dataItem, row, field);
+			ColumnHandler.DataViewHandler.Callback.OnCellFormatting(ColumnHandler.DataViewHandler.Widget, args);
+
+			field.Font = defaultFont;
+			if (args.FontSet)
+				field.Font = args.Font.ToNS();
+			if (field.Title != menu.Title)
+			{
+				field.Menu = menu.Copy() as NSMenu;
+			}
+			field.ObjectValue = value as NSObject;
+			return field.Cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
+		}
+
+		public class EtoPopUpButton : NSPopUpButton
+		{
+			public ComboBoxCellHandler Handler { get; set; }
+
+			public EtoPopUpButton() { }
+
+			public EtoPopUpButton(IntPtr handle) : base(handle) { }
+
+			public override NSMenu MenuForEvent(NSEvent theEvent)
+			{
+				return null;
+			}
+		}
+
+		public override Color GetBackgroundColor(NSView view)
+		{
+			return ((EtoPopUpButton)view).Cell.BackgroundColor.ToEto();
+		}
+
+		public override void SetBackgroundColor(NSView view, Color color)
+		{
+			var field = ((EtoCell)((EtoPopUpButton)view).Cell);
+			field.BackgroundColor = color.ToNSUI();
+			field.DrawsBackground = color.A > 0;
+		}
+
+		public override Color GetForegroundColor(NSView view)
+		{
+			return ((EtoCell)((EtoPopUpButton)view).Cell).TextColor.ToEto();
+		}
+
+		public override void SetForegroundColor(NSView view, Color color)
+		{
+			((EtoCell)((EtoPopUpButton)view).Cell).TextColor = color.ToNSUI();
+		}
+
+		public override Font GetFont(NSView view)
+		{
+			return ((EtoPopUpButton)view).Font.ToEto();
+		}
+
+		public override void SetFont(NSView view, Font font)
+		{
+			((EtoPopUpButton)view).Font = font.ToNS();
+		}
+
+		class CellView : EtoPopUpButton
+		{
+			[Export("item")]
+			public NSObject Item { get; set; }
+			public CellView() { }
+			public CellView(IntPtr handle) : base(handle) { }
+		}
+
+		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
+		{
+			var view = tableView.MakeView(tableColumn.Identifier, tableView) as CellView;
+			if (view == null)
+			{
+				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
+
+				view = new CellView
+				{
+					Handler = this,
+					Cell = new EtoCell(),
+					Identifier = tableColumn.Identifier,
+					Bordered = false,
+					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable
+				};
+				view.Activated += (sender, e) =>
+				{
+					var control = (CellView)sender;
+					var r = (int)control.Tag;
+					var item = getItem(control.Item, r);
+					var cellArgs = new GridViewCellEventArgs(ColumnHandler.Widget, r, (int)col, item);
+					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, cellArgs);
+					SetObjectValue(item, control.ObjectValue);
+
+					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, cellArgs);
+					control.ObjectValue = GetObjectValue(item);
+
+				};
+				view.Bind("enabled", tableColumn, "editable", null);
+				view.Menu = menu.Copy() as NSMenu;
+			}
+			else if (view.Title != menu.Title)
+				view.Menu = menu.Copy() as NSMenu;
+
+			view.Tag = row;
+			view.Item = obj;
+			var formatArgs = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			ColumnHandler.DataViewHandler.OnCellFormatting(formatArgs);
+			return view;
 		}
 	}
 }

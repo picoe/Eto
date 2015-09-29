@@ -78,6 +78,7 @@ namespace Eto.GtkSharp
 			p.Add<TextureBrush.IHandler>(() => new TextureBrushHandler());
 			p.Add<LinearGradientBrush.IHandler>(() => new LinearGradientBrushHandler());
 			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
+			p.Add<SystemColors.IHandler>(() => new SystemColorsHandler());
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());
@@ -87,6 +88,7 @@ namespace Eto.GtkSharp
 			p.Add<TextBoxCell.IHandler>(() => new TextBoxCellHandler());
 			p.Add<DrawableCell.IHandler>(() => new DrawableCellHandler());
 			p.Add<ProgressCell.IHandler>(() => new ProgressCellHandler());
+			p.Add<CustomCell.IHandler>(() => new CustomCellHandler());
 
 			// Forms.Controls
 			p.Add<Button.IHandler>(() => new ButtonHandler());

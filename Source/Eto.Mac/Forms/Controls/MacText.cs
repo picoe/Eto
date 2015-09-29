@@ -42,16 +42,23 @@ namespace Eto.Mac.Forms.Controls
 			{ 
 				var color = value.ToNSUI();
 				Control.BackgroundColor = color;
+				Control.DrawsBackground = value.A > 0;
 				if (Widget.Loaded && HasFocus)
 				{
 					var editor = Control.CurrentEditor;
 					if (editor != null)
 					{
 						editor.BackgroundColor = color;
-						editor.DrawsBackground = true;
+						editor.DrawsBackground = value.A > 0;
 					}
 				}
 			}
+		}
+
+		public bool ShowBorder
+		{
+			get { return Control.Bordered; }
+			set { Control.Bordered = value; }
 		}
 
 		TextControl.ICallback IMacText.Callback

@@ -14,7 +14,10 @@ namespace Eto.Serialization.Xaml
 	{
 		static Stream GetStream(Type type)
 		{
-			return GetStream(type, type.FullName + ".xeto") ?? GetStream(type, type.FullName + ".xaml");
+			return
+				GetStream(type, type.FullName + ".xeto")
+				?? GetStream(type, type.FullName + ".xaml")
+				?? GetStream(type, type.Name + ".xeto"); // for f# projects
 		}
 
 		static Stream GetStream(Type type, string resourceName)

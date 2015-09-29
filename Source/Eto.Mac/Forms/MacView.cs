@@ -294,7 +294,7 @@ namespace Eto.Mac.Forms
 					AddMethod(selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), "v@:{CGSize=ff}", ContainerControl);
+					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, CGSize>(SetFrameSizeAction), EtoEnvironment.Is64BitProcess ? "v@:{CGSize=dd}" : "v@:{CGSize=ff}", ContainerControl);
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					AddMethod(selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
@@ -441,6 +441,28 @@ namespace Eto.Mac.Forms
 				}
 			}
 		}
+
+		/// <summary>
+		/// Triggers a mouse callback from a different event. 
+		/// e.g. when an NSButton is clicked it is triggered from a mouse up event.
+		/// </summary>
+		protected void TriggerMouseCallback()
+		{
+			// trigger mouse up event since it's buried by cocoa
+			var evt = NSApplication.SharedApplication.CurrentEvent;
+			if (evt == null)
+				return;
+			if (evt.Type == NSEventType.LeftMouseUp || evt.Type == NSEventType.RightMouseUp || evt.Type == NSEventType.OtherMouseUp)
+			{
+				Callback.OnMouseUp(Widget, MacConversions.GetMouseEvent(ContainerControl, evt, false));
+			}
+			if (evt.Type == NSEventType.LeftMouseDragged || evt.Type == NSEventType.RightMouseDragged || evt.Type == NSEventType.OtherMouseDragged)
+			{
+				Callback.OnMouseMove(Widget, MacConversions.GetMouseEvent(ContainerControl, evt, false));
+			}
+		}
+
+
 
 		static void TriggerMouseUp(IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -663,7 +685,9 @@ namespace Eto.Mac.Forms
 				FocusControl.Window.MakeFirstResponder(FocusControl);
 				InitialFocus = false;
 			}
-			SetBackgroundColor(Widget.Properties.Get<Color?>(BackgroundColorKey));
+			var bg = Widget.Properties.Get<Color?>(BackgroundColorKey);
+			if (bg != null)
+				SetBackgroundColor(bg);
 		}
 
 		public virtual void OnUnLoad(EventArgs e)

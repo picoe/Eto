@@ -106,6 +106,22 @@ namespace Eto.WinForms.Forms.Controls
 			oldText = Text;
 			oldIndex = SelectedIndex;
 		}
+
+		bool showBorder = true;
+		public bool ShowBorder
+		{
+			get { return showBorder; }
+			set
+			{
+				SetStyle(swf.ControlStyles.UserPaint, !value);
+				showBorder = value;
+			}
+		}
+
+		protected override void OnPaint(swf.PaintEventArgs e)
+		{
+			base.OnPaint(e);
+		}
 	}
 
 	public class DropDownHandler<TControl, TWidget, TCallback> : WindowsControl<TControl, TWidget, TCallback>, DropDown.IHandler
@@ -114,6 +130,14 @@ namespace Eto.WinForms.Forms.Controls
 		where TCallback: DropDown.ICallback
 	{
 		CollectionHandler collection;
+
+		public bool ShowBorder
+		{
+			get { return true; }
+			set
+			{
+			}
+		}
 
 		public DropDownHandler()
 		{

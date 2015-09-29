@@ -276,6 +276,8 @@
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

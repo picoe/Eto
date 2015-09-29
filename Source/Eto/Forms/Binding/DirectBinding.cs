@@ -194,5 +194,52 @@ namespace Eto.Forms
 				removeChangeEvent: eh => DataValueChanged -= eh
 			);
 		}
+
+		/// <summary>
+		/// Uses System.Convert.ChangeType to change the value of the binding to the specified type.
+		/// </summary>
+		/// <remarks>
+		/// This has additional logic to deal with nullable types so they can be converted properly as well.
+		/// </remarks>
+		/// <param name="invalidGetValue">Delegate to get a value when it cannot be converted to the specified <typeparamref name="TType"/>. When null, an exception will be thrown when the value cannot be converted.</param>
+		/// <param name="invalidSetValue">Delegate to set a value when it cannot be converted from the specified <typeparamref name="TType"/>. When null, an exception will be thrown when the value cannot be converted.</param>
+		/// <typeparam name="TType">Type to convert the value to</typeparam>
+		/// <returns>A binding of the new type that is a converted version of this binding</returns>
+		public DirectBinding<TType> ToType<TType>(Func<T, TType> invalidGetValue = null, Func<TType, T> invalidSetValue = null)
+		{
+			return new DelegateBinding<TType>(
+				() =>
+				{
+					var val = DataValue;
+					try
+					{
+						var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+						return (TType)System.Convert.ChangeType(val, type);
+					}
+					catch
+					{
+						if (invalidGetValue == null)
+							throw;
+						return invalidGetValue(val);
+					}
+				},
+				val =>
+				{
+					try
+					{
+						var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+						DataValue = (T)System.Convert.ChangeType(val, type);
+					}
+					catch
+					{
+						if (invalidSetValue == null)
+							throw;
+						DataValue = invalidSetValue(val);
+					}
+				},
+				addChangeEvent: eh => DataValueChanged += eh,
+				removeChangeEvent: eh => DataValueChanged -= eh
+			);
+		}
 	}
 }
