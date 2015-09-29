@@ -75,9 +75,6 @@ namespace Eto.Wpf.Forms.Cells
 			EtoBorder Create(swc.DataGridCell cell)
 			{
 				var control = new EtoBorder { Column = this };
-				var style = new sw.Style(typeof(swc.Label));
-				style.Setters.Add(new sw.Setter(swc.Label.ForegroundProperty, swm.Brushes.AliceBlue));
-				control.Resources.Add(typeof(swc.Label), style);
 				control.Args = new WpfCellEventArgs(-1, null, CellStates.None);
 				control.DataContextChanged += (sender, e) =>
 				{
