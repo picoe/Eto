@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Xaml;
-using System.Windows.Markup;
 using System.Linq;
 using Eto.Drawing;
+#if PORTABLE
+using Portable.Xaml;
+using Portable.Xaml.Markup;
+#else
+using System.Xaml;
+using System.Windows.Markup;
+#endif
 
 namespace Eto.Serialization.Xaml
 {
@@ -45,7 +50,7 @@ namespace Eto.Serialization.Xaml
 
 							try
 							{
-								var assembly = Assembly.Load(assemblyName);
+								var assembly = Assembly.Load(new AssemblyName(assemblyName));
 								if (assembly != null)
 								{
 									var realType = assembly.GetType(ns + "." + name);
@@ -79,7 +84,7 @@ namespace Eto.Serialization.Xaml
 		{
 			// Use EtoXamlType for all types on mono so we can override incorrect behavior when getting collection 
 			// item types in EtoItemType.LookupItemType
-			if (EtoEnvironment.Platform.IsMono || type.Assembly == typeof(Platform).Assembly)
+			if (EtoEnvironment.Platform.IsMono || type.GetTypeInfo().Assembly == typeof(Platform).GetTypeInfo().Assembly)
 			{
 				XamlType xamlType;
 				if (typeCache.TryGetValue(type, out xamlType))

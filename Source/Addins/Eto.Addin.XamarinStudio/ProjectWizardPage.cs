@@ -24,7 +24,7 @@ namespace Eto.Addin.XamarinStudio
 					Validate();
 				}
 			};
-			this.model = new ProjectWizardPageModel(source);
+			this.model = new ProjectWizardPageModel(source, null);
 			Validate();
 		}
 

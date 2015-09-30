@@ -8,7 +8,7 @@
 		<_Description>
 			<![CDATA[Creates a new cross platform Panel class using Eto.Forms in F#.]]>
 		</_Description>
-		<DefaultFilename>EtoPanel</DefaultFilename>
+		<DefaultFilename>MyPanel</DefaultFilename>
 		<GroupId>eto-file-panel</GroupId>
 	</TemplateConfiguration>
 	<TemplateFiles>

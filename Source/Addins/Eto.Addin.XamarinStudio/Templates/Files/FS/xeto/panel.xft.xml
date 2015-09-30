@@ -8,7 +8,7 @@
 		<_Description><![CDATA[Creates a new Eto.Forms cross platform Panel class using Xaml.
 
 You must add the Eto.Serialization.Xaml nuget package to your project to use this template.]]></_Description>
-		<DefaultFilename>EtoPanel</DefaultFilename>
+		<DefaultFilename>MyPanel</DefaultFilename>
 	</TemplateConfiguration>
 	<TemplateFiles>
 		<!-- using DependsOn causes compile order to be incorrect: DependsOn="${Name}.xeto" -->

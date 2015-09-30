@@ -32,7 +32,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
     <Reference Include="Newtonsoft.Json">
@@ -57,8 +56,14 @@
     <Compile Include="IInterfaceBuilder.cs" />
     <Compile Include="PlatformInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Completion.cs" />
     <Compile Include="PreviewEditorView.cs" />
+    <Compile Include="Completion\Completion.cs" />
+    <Compile Include="Completion\CompletionType.cs" />
+    <Compile Include="Completion\CompletionItem.cs" />
+    <Compile Include="Completion\XmlComments.cs" />
+    <Compile Include="Completion\TypeCompletion.cs" />
+    <Compile Include="Completion\XamlCompletion.cs" />
+    <Compile Include="Completion\GeneralCompletion.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -69,13 +74,13 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj">
+      <Project>{12603B32-65B9-4DB7-82FC-C52E18537D6C}</Project>
+      <Name>Eto.Serialization.Xaml - pcl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj">
       <Project>{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}</Project>
       <Name>Eto.Serialization.Json - net45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
-      <Project>{231FB3B0-CB71-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Serialization.Xaml - net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -86,4 +91,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Completion\" />
+  </ItemGroup>
 </Project>

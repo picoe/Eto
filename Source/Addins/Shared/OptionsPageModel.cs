@@ -15,7 +15,7 @@ namespace Eto.Addin.Shared
 
 		public OptionsPageModel(XElement element)
 		{
-			Title = (string)element.Attribute("title");
+			Title = (string)element?.Attribute("title");
 			Options.AddRange(Option.LoadXml(element));
 		}
 	}

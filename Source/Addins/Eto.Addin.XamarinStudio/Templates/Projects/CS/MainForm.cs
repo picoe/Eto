@@ -13,7 +13,7 @@ namespace ${Namespace}
 		{
 			Title = "My Eto Form";
 			ClientSize = new Size(400, 350);
-
+			$if$($UseCode$==True)
 			// scrollable region as the main content
 			Content = new Scrollable
 			{
@@ -25,7 +25,13 @@ namespace ${Namespace}
 					null
 				)
 			};
-
+			$endif$$if$($UseXeto$==True)
+			Content = new MyPanel();
+			$endif$$if$($UseJeto$==True)
+			Content = new MyPanel();
+			$endif$$if$($UseCodePreview$==True)
+			Content = new MyPanel();
+			$endif$
 			// create a few commands that can be used for the menu and toolbar
 			var clickMe = new Command { MenuText = "Click Me!", ToolBarText = "Click Me!" };
 			clickMe.Executed += (sender, e) => MessageBox.Show(this, "I was clicked!");

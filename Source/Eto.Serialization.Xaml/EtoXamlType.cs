@@ -1,54 +1,84 @@
 using System;
 using System.Reflection;
-using System.Xaml;
 using System.Linq;
-using System.Xaml.Schema;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
+#if PORTABLE
+using Portable.Xaml;
+using Portable.Xaml.Schema;
+using cm = Portable.Xaml.ComponentModel;
+#if NET40
+using EtoTypeConverter = System.ComponentModel.TypeConverter;
+using EtoTypeConverterAttribute = System.ComponentModel.TypeConverterAttribute;
+#else
+using EtoTypeConverter = Eto.TypeConverter;
+using EtoTypeConverterAttribute = Eto.TypeConverterAttribute;
+#endif
+#else
+using System.Xaml;
+using System.Xaml.Schema;
+using cm = System.ComponentModel;
+using EtoTypeConverter = Eto.TypeConverter;
+using EtoTypeConverterAttribute = Eto.TypeConverterAttribute;
+#endif
 
 namespace Eto.Serialization.Xaml
 {
-#if NET45
-	class TypeConverterConverter : System.ComponentModel.TypeConverter
+	#if NET40
+	static class TypeExtensions
 	{
-		readonly Eto.TypeConverter etoConverter;
-		public TypeConverterConverter(Eto.TypeConverter etoConverter)
+		public static Type GetTypeInfo(this Type type)
+		{
+			return type;
+		}
+
+		public static T GetCustomAttribute<T>(this Type type, bool inherit = true)
+		{
+			return type.GetCustomAttributes(typeof(T), inherit).OfType<T>().FirstOrDefault();
+		}
+	}
+	#endif 
+
+	#if PORTABLE || NET45
+	class TypeConverterConverter : cm.TypeConverter
+	{
+		readonly EtoTypeConverter etoConverter;
+		public TypeConverterConverter(EtoTypeConverter etoConverter)
 		{
 			this.etoConverter = etoConverter;
 		}
 
-		public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, Type sourceType)
+		public override bool CanConvertFrom(cm.ITypeDescriptorContext context, Type sourceType)
 		{
 			return etoConverter.CanConvertFrom(sourceType);
 		}
 
-		public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context, Type destinationType)
+		public override bool CanConvertTo(cm.ITypeDescriptorContext context, Type destinationType)
 		{
 			return etoConverter.CanConvertTo(destinationType);
 		}
 
-		public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(cm.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
 			return etoConverter.ConvertFrom(null, culture, value);
 		}
 
-		public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(cm.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
 		{
 			return etoConverter.ConvertTo(null, culture, value, destinationType);
 		}
 	}
 
-	class EtoValueConverter : XamlValueConverter<System.ComponentModel.TypeConverter>
+	class EtoValueConverter : XamlValueConverter<cm.TypeConverter>
 	{
 		public EtoValueConverter(Type converterType, XamlType targetType)
 			: base(converterType, targetType)
 		{
 		}
 
-		protected override System.ComponentModel.TypeConverter CreateInstance()
+		protected override cm.TypeConverter CreateInstance()
 		{
-			var etoConverter = Activator.CreateInstance(ConverterType) as Eto.TypeConverter;
+			var etoConverter = Activator.CreateInstance(ConverterType) as EtoTypeConverter;
 			return new TypeConverterConverter(etoConverter);
 		}
 	}
@@ -62,39 +92,41 @@ namespace Eto.Serialization.Xaml
 		}
 
 		T GetCustomAttribute<T>(bool inherit = true)
+			where T: Attribute
 		{
-			return UnderlyingType.GetCustomAttributes(typeof(T), inherit).OfType<T>().FirstOrDefault();
+			return UnderlyingType.GetTypeInfo().GetCustomAttribute<T>(inherit);
 		}
 
-#if NET45
-		XamlValueConverter<System.ComponentModel.TypeConverter> typeConverter;
+		#if PORTABLE || NET45
+		XamlValueConverter<cm.TypeConverter> typeConverter;
 
-		protected override XamlType LookupItemType()
+		protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
 		{
-			if (EtoEnvironment.Platform.IsMono)
+			if (typeConverter != null)
+				return typeConverter;
+			var typeConverterAttrib = GetCustomAttribute<EtoTypeConverterAttribute>();
+			if (typeConverterAttrib != null)
 			{
-				// mono doesn't use SchemaContext.GetXamlType here, which we need to override the type converter.
-				var underlyingType = UnderlyingType;
-				Type type;
-				if (IsArray)
-					type = underlyingType.GetElementType();
-				else if (IsDictionary)
-				{
-					type = !IsGeneric ? typeof(object) : underlyingType.GetGenericArguments()[1];
-				}
-				else if (!IsCollection)
-					type = null;
-				else if (!IsGeneric)
-					type = typeof(object);
-				else
-					type = underlyingType.GetGenericArguments()[0];
-
-				return type != null ? SchemaContext.GetXamlType(type) : null;
+				var converterType = Type.GetType(typeConverterAttrib.ConverterTypeName);
+				if (converterType != null)
+					typeConverter = new EtoValueConverter(converterType, this);
 			}
-			return base.LookupItemType();
+			if (typeof(MulticastDelegate).GetTypeInfo().IsAssignableFrom(UnderlyingType.GetTypeInfo()))
+			{
+				var context = SchemaContext as EtoXamlSchemaContext;
+				if (context.DesignMode)
+				{
+					return null;
+				}
+			}
+
+			if (typeConverter == null)
+		// convert from EtoTypeConverter to cm.TypeConverter
+				typeConverter = base.LookupTypeConverter();
+			return typeConverter;
 		}
 
-
+		#endif
 
 		class EmptyXamlMember : XamlMember
 		{
@@ -104,23 +136,23 @@ namespace Eto.Serialization.Xaml
 
 			}
 
-			class EmptyConverter : System.ComponentModel.TypeConverter
+			class EmptyConverter : cm.TypeConverter
 			{
-				public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, Type sourceType)
+				public override bool CanConvertFrom(cm.ITypeDescriptorContext context, Type sourceType)
 				{
 					return true;
 				}
 
-				public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, CultureInfo culture, object value)
+				public override object ConvertFrom(cm.ITypeDescriptorContext context, CultureInfo culture, object value)
 				{
 					return null;
 				}
 			}
 
-			protected override XamlValueConverter<System.ComponentModel.TypeConverter> LookupTypeConverter()
+			protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
 			{
 				var eventConverter = base.LookupTypeConverter();
-				return new XamlValueConverter<System.ComponentModel.TypeConverter>(typeof(EmptyConverter), eventConverter.TargetType);
+				return new XamlValueConverter<cm.TypeConverter>(typeof(EmptyConverter), eventConverter.TargetType);
 			}
 		}
 
@@ -132,39 +164,12 @@ namespace Eto.Serialization.Xaml
 				var context = SchemaContext as EtoXamlSchemaContext;
 				if (context != null && context.DesignMode)
 				{
+					// in design mode, ignore wiring up events
 					return new EmptyXamlMember(member.UnderlyingMember as EventInfo, context);
 				}
 			}
 			return member;
-        }
-
-		protected override XamlValueConverter<System.ComponentModel.TypeConverter> LookupTypeConverter()
-		{
-			if (typeConverter != null)
-				return typeConverter;
-			var typeConverterAttrib = UnderlyingType.GetCustomAttribute<Eto.TypeConverterAttribute>();
-			if (typeConverterAttrib != null)
-			{
-				var converterType = Type.GetType(typeConverterAttrib.ConverterTypeName);
-				if (converterType != null)
-					typeConverter = new EtoValueConverter(converterType, this);
-			}
-			if (typeof(MulticastDelegate).IsAssignableFrom(UnderlyingType))
-			{
-				var context = SchemaContext as EtoXamlSchemaContext;
-				if (context.DesignMode)
-				{
-					return null;
-				}
-			}
-
-
-			if (typeConverter == null)
-			// convert from Eto.TypeConverter to System.ComponentModel.TypeConverter
-				typeConverter = base.LookupTypeConverter();
-			return typeConverter;
 		}
-#endif
 
 		XamlMember contentProperty;
 		protected override XamlMember LookupContentProperty()
@@ -183,13 +188,9 @@ namespace Eto.Serialization.Xaml
 		{
 			if (directive == XamlLanguage.Name)
 			{
-				// mono doesn't support the name attribute yet (throws null exception)
-				if (!EtoEnvironment.Platform.IsMono)
-				{
-					var nameAttribute = GetCustomAttribute<RuntimeNamePropertyAttribute>();
-					if (nameAttribute != null && nameAttribute.Name != null)
-						return GetMember(nameAttribute.Name);
-				}
+				var nameAttribute = GetCustomAttribute<RuntimeNamePropertyAttribute>();
+				if (nameAttribute != null && nameAttribute.Name != null)
+					return GetMember(nameAttribute.Name);
 			}
 			return base.LookupAliasedProperty(directive);
 		}

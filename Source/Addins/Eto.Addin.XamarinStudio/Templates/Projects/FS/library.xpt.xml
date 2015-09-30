@@ -18,7 +18,7 @@
 				<Reference type="Gac" refto="System" />
 			</References>
 			<Files>
-				<FileTemplateReference TemplateID="eto.file.panel.fs" name="MyPanel.fs" />
+				<FileTemplateReference TemplateID="eto.fs.code.panel" name="MyPanel.fs" />
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="Properties/AssemblyInfo.fs" />
 			</Files>
 			<Packages>
@@ -34,7 +34,7 @@
 				<Reference type="Gac" refto="System" />
 			</References>
 			<Files>
-				<FileTemplateReference TemplateID="eto.file.panel.fs" name="MyPanel.fs" />
+				<FileTemplateReference TemplateID="eto.fs.code.panel" name="MyPanel.fs" />
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="Properties/AssemblyInfo.fs" />
 			</Files>
 			<Packages>
