@@ -61,10 +61,10 @@ namespace Eto.Mac.Forms.Controls
 		[Export("verticalAlignment")]
 		public VerticalAlignment VerticalAlignment { get; set; }
 
-		public override CGRect TitleRectForBounds(CGRect theRect)
+		public override CGRect DrawingRectForBounds(CGRect theRect)
 		{
-			var titleSize = AttributedStringValue.Size;
-			var rect = base.TitleRectForBounds(theRect);
+			var rect = base.DrawingRectForBounds(theRect);
+			var titleSize = CellSizeForBounds(theRect);
 
 			switch (VerticalAlignment)
 			{
@@ -76,26 +76,6 @@ namespace Eto.Mac.Forms.Controls
 					break;
 			}
 			return rect;
-		}
-
-		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
-		{
-			if (DrawsBackground && BackgroundColor != null && BackgroundColor.AlphaComponent > 0)
-			{
-				BackgroundColor.Set();
-				NSGraphics.RectFill(cellFrame);
-			}
-			var str = AttributedStringValue;
-			if (BackgroundStyle == NSBackgroundStyle.Dark && TextColor == NSColor.ControlText)
-			{
-				var mutable = AttributedStringValue.MutableCopy() as NSMutableAttributedString;
-				var attr = new NSMutableDictionary();
-				attr.Add(NSStringAttributeKey.ForegroundColor, NSColor.AlternateSelectedControlText);
-				mutable.SetAttributes(attr, new NSRange(0, mutable.Length));
-				str = mutable;
-			}
-
-			str.DrawString(TitleRectForBounds(cellFrame));
 		}
 	}
 
