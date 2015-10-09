@@ -111,12 +111,10 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		static readonly sw.PropertyPath TextPath = PropertyPathHelper.Create("(Eto.Forms.IListItem,Eto.Text)");
-
 		public static sw.FrameworkElementFactory TextBlock(bool setMargin = true)
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(swc.TextBlock));
-			factory.SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Path = TextPath });
+			factory.SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Path = new sw.PropertyPath("Text") });
 			if (setMargin)
 				factory.SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(2));
 			return factory;
@@ -125,7 +123,7 @@ namespace Eto.Wpf.Forms.Controls
 		public static sw.FrameworkElementFactory EditableBlock(swd.RelativeSource relativeSource)
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(EditableTextBlock));
-			var binding = new sw.Data.Binding { Path = TextPath, RelativeSource = relativeSource, Mode = swd.BindingMode.TwoWay, UpdateSourceTrigger = swd.UpdateSourceTrigger.PropertyChanged };
+			var binding = new sw.Data.Binding { Path = new sw.PropertyPath("Text"), RelativeSource = relativeSource, Mode = swd.BindingMode.TwoWay, UpdateSourceTrigger = swd.UpdateSourceTrigger.LostFocus };
 			factory.SetBinding(EditableTextBlock.TextProperty, binding);
 			return factory;
 		}

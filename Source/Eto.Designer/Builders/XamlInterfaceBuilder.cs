@@ -11,7 +11,7 @@ namespace Eto.Designer.Builders
 {
 	public class XamlInterfaceBuilder : IInterfaceBuilder
 	{
-		public void Create(string text, Action<Forms.Control> controlCreated, Action<string> error)
+		public void Create(string text, Action<Forms.Control> controlCreated, Action<Exception> error)
 		{
 			var oldDesignMode = XamlReader.DesignMode;
 			XamlReader.DesignMode = true;
@@ -27,7 +27,7 @@ namespace Eto.Designer.Builders
 			}
 			catch (Exception ex)
 			{
-				error(ex.Message);
+				error(ex);
 			}
 			finally
 			{

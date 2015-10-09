@@ -148,5 +148,24 @@ namespace Eto.Mac.Forms
 			// layout everything!
 			LayoutAllChildren();
 		}
+
+		public override void Invalidate()
+		{
+			base.Invalidate();
+			foreach (var child in Widget.Controls)
+			{
+				child.Invalidate();
+			}
+		}
+
+		public override void Invalidate(Rectangle rect)
+		{
+			base.Invalidate(rect);
+			var screenRect = Widget.RectangleToScreen(rect);
+			foreach (var child in Widget.Controls)
+			{
+				child.Invalidate(Rectangle.Round(child.RectangleFromScreen(screenRect)));
+			}
+		}
 	}
 }

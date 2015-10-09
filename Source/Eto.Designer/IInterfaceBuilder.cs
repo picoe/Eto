@@ -16,7 +16,7 @@ namespace Eto.Designer
 {
 	public interface IInterfaceBuilder
 	{
-		void Create(string text, Action<Control> controlCreated, Action<string> error);
+		void Create(string text, Action<Control> controlCreated, Action<Exception> error);
 	}
 	
 }

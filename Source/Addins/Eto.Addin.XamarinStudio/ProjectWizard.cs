@@ -31,7 +31,7 @@ namespace Eto.Addin.XamarinStudio
 		{
 			get
 			{
-				var model = new ProjectWizardPageModel(new ParameterSource(this));
+				var model = new ProjectWizardPageModel(new ParameterSource(this), null);
 				return model.RequiresInput ? 1 : 0;
 			}
 		}

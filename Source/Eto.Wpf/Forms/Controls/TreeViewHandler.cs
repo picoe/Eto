@@ -37,6 +37,14 @@ namespace Eto.Wpf.Forms.Controls
 					sw.EventManager.RegisterRoutedEvent("Expanding",
 					sw.RoutingStrategy.Bubble, typeof(sw.RoutedEventHandler),
 					typeof(EtoTreeViewItem));
+			public static readonly sw.RoutedEvent LabelEditingEvent =
+					sw.EventManager.RegisterRoutedEvent("LabelEditing",
+					sw.RoutingStrategy.Direct, typeof(sw.RoutedEventHandler),
+					typeof(EtoTreeViewItem));
+			public static readonly sw.RoutedEvent LabelEditedEvent =
+					sw.EventManager.RegisterRoutedEvent("LabelEdited",
+					sw.RoutingStrategy.Direct, typeof(sw.RoutedEventHandler),
+					typeof(EtoTreeViewItem));
 
 			public event sw.RoutedEventHandler Collapsing
 			{
@@ -49,10 +57,53 @@ namespace Eto.Wpf.Forms.Controls
 				remove { RemoveHandler(ExpandingEvent, value); }
 			}
 
+			public event sw.RoutedEventHandler LabelEditing
+			{
+				add { AddHandler(LabelEditingEvent, value); }
+				remove { RemoveHandler(LabelEditingEvent, value); }
+			}
+
+			public event sw.RoutedEventHandler LabelEdited
+			{
+				add { AddHandler(LabelEditedEvent, value); }
+				remove { RemoveHandler(LabelEditedEvent, value); }
+			}
+
 			public TreeViewHandler Handler
 			{
 				get { return this.GetParent<EtoTreeView>().Handler; }
 			}
+
+			public EtoTreeViewItem()
+			{
+				LabelEditing += HandleLabelEditing;
+				LabelEdited += HandleLabelEdited;
+			}
+
+			void HandleLabelEdited(object sender, sw.RoutedEventArgs e)
+			{
+				var args = new TreeViewItemEditEventArgs(DataContext as ITreeItem, text);
+				Handler.Callback.OnLabelEdited(Handler.Widget, args);
+				if (!args.Cancel)
+				{
+					var item = DataContext as ITreeItem;
+					if (item != null)
+					{
+						item.Text = text;
+					}
+				}
+				OnPropertyChanged("Text");
+                e.Handled = args.Cancel;
+			}
+
+			void HandleLabelEditing(object sender, sw.RoutedEventArgs e)
+			{
+				var args = new TreeViewItemCancelEventArgs(DataContext as ITreeItem);
+				Handler.Callback.OnLabelEditing(Handler.Widget, args);
+				e.Handled = args.Cancel;
+			}
+
+			string text;
 
 			public string Text
 			{
@@ -63,9 +114,7 @@ namespace Eto.Wpf.Forms.Controls
 				}
 				set
 				{
-					var item = DataContext as ITreeItem;
-					if (item != null)
-						item.Text = value;
+					text = value;
 				}
 			}
 

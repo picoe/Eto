@@ -13,6 +13,7 @@ namespace Eto.Forms
 	/// The list of items can be added manually using <see cref="RadioButtonList.Items"/>, or 
 	/// use the <see cref="RadioButtonList.DataStore"/> to have a dynamic list of items controlled by a custom collection.
 	/// </remarks>
+	[ContentProperty("Items")]
 	public class RadioButtonList : Panel
 	{
 		Orientation orientation;

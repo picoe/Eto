@@ -7,7 +7,7 @@
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in C#]]></_Description>
 		<GroupId>eto-project-application</GroupId>
-		<SupportedParameters>AppName,SupportsCombined,SupportsPCL,SupportsSAL</SupportedParameters>
+		<SupportedParameters>AppName,SupportsCombined,SupportsPCL,SupportsSAL,SupportsXeto,SupportsCodePreview,SupportsJeto</SupportedParameters>
 	</TemplateConfiguration>
 
 	<Actions>
@@ -30,9 +30,14 @@
 			<Files>
 				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
+				<FileTemplateReference TemplateID="eto.cs.xeto.panel" name="MyPanel.xeto" if="UseXeto" />
+				<FileTemplateReference TemplateID="eto.cs.jeto.panel" name="MyPanel.jeto" if="UseJeto" />
+				<FileTemplateReference TemplateID="eto.cs.code.panel" name="MyPanel.cs" if="UseCodePreview" />
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Serialization.Json" if="UseJeto" /> 
 			</Packages>
 		</Project>
 
@@ -41,9 +46,12 @@
 			<Files>
 				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
+				<FileTemplateReference TemplateID="eto.cs.xeto.panel" name="MyPanel.xeto" />
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Serialization.Json" if="UseJeto" /> 
 			</Packages>
 		</Project>
 
@@ -68,6 +76,7 @@
 				<Package Id="Eto.Platform.Gtk3" /> 
 				<Package Id="Eto.Platform.Windows" /> 
 				<Package Id="Eto.Platform.Wpf" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" if="!Combined">
@@ -89,6 +98,7 @@
 			<Packages>
 				<Package Id="Eto.Forms" /> 
 				<Package Id="Eto.Platform.Windows" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" if="!Combined">
@@ -112,6 +122,7 @@
 			<Packages>
 				<Package Id="Eto.Forms" /> 
 				<Package Id="Eto.Platform.Wpf" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" if="!Combined">
@@ -132,6 +143,7 @@
 			<Packages>
 				<Package Id="Eto.Forms" /> 
 				<Package Id="Eto.Platform.Gtk" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" if="!Combined">
@@ -152,6 +164,7 @@
 			<Packages>
 				<Package Id="Eto.Forms" /> 
 				<Package Id="Eto.Platform.Gtk3" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
 			</Packages>
 		</Project>
 
@@ -173,6 +186,7 @@
 			<Packages>
 				<Package Id="Eto.Forms" /> 
 				<Package Id="Eto.Platform.Mac" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
 			</Packages>
 		</Project>
 
@@ -197,6 +211,7 @@
 			<Packages>
 				<Package Id="Eto.Forms" /> 
 				<Package Id="Eto.Platform.XamMac2" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
 			</Packages>
 		</Project>
 
@@ -220,6 +235,7 @@
 			<Packages>
 				<Package Id="Eto.Forms" /> 
 				<Package Id="Eto.Platform.XamMac2" /> 
+				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
 			</Packages>
 		</Project>
 	</Combine>

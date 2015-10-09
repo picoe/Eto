@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Panel x:Class="Eto.Test.Sections.Serialization.Xaml.Test" xmlns="http://schema.picoe.ca/eto.forms" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 	<TabControl>
-		<TabPage Text="Table Layout using Rows &amp; Controls">
+		<TabPage Text="Table Layout">
 			<TableLayout Padding="10" Spacing="5,5">
 				<TableRow>
 					<Label Text="Text Box" />
-					<TextBox TextChanged="HandleTextChanged" />
+					<TextBox TextChanged="HandleTextChanged" Text="{Binding SomeText}" />
 				</TableRow>
 				<TableRow>
-					<Label Text="Text Area" />
+					<Label>Text Area</Label>
 					<TextArea ID="MyTextArea" />
 				</TableRow>
 				<TableRow>
 					<TableCell />
-					<CheckBox ID="MyCheckBox" Text="Check Box" />
+					<CheckBox x:Name="MyCheckBox" Text="Check Box" />
 				</TableRow>
 				<TableRow>
 					<Label Text="Combo Box" />
@@ -29,11 +29,10 @@
 					<TableLayout>
 						<TableRow>
 							<TableCell ScaleWidth="True">
-								<!-- mono has bugs using extension {Resource Eto.Test.TestImage.png, Eto.Test} as a source, but it is implemented -->
-								<ImageView Image="resource:Eto.Test.TestImage.png, Eto.Test" />
+								<ImageView Image="{Resource Eto.Test.TestImage.png}" />
 							</TableCell>
 							<TableCell ScaleWidth="True">
-								<ImageView Image="resource:Eto.Test.TestIcon.ico, Eto.Test" />
+								<ImageView Image="{Resource Eto.Test.TestIcon.ico, Eto.Test}" />
 							</TableCell>
 						</TableRow>
 					</TableLayout>
@@ -53,6 +52,7 @@
 		<TabPage Text="Stack Layout">
 			<StackLayout>
 				<Label>Hello</Label>
+				<Button Command="{Binding ClickMe}">Click Me!</Button>
 				<StackLayoutItem Expand="true" HorizontalAlignment="Stretch">
 					<TextArea />
 				</StackLayoutItem>

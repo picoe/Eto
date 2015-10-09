@@ -114,6 +114,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[ContentProperty("Columns")]
 	public abstract class Grid : Control, ISelectable<object>
 	{
 		GridColumnCollection columns;

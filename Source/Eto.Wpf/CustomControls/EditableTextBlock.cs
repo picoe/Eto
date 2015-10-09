@@ -1,7 +1,9 @@
+using Eto.Wpf.Forms.Controls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System;
 
 namespace Eto.Wpf.CustomControls
 {
@@ -16,6 +18,7 @@ namespace Eto.Wpf.CustomControls
 			textBox.AddHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler(TextBox_Loaded));
 			textBox.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(TextBox_KeyDown));
 			textBox.AddHandler(UIElement.LostFocusEvent, new RoutedEventHandler(TextBox_LostFocus));
+			textBox.AddHandler(UIElement.GotFocusEvent, new RoutedEventHandler(TextBox_GotFocus));
 			textBox.SetBinding(TextBox.TextProperty, new System.Windows.Data.Binding("Text") { Source = this, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 			var editTemplate = new DataTemplate { VisualTree = textBox };
 
@@ -34,6 +37,13 @@ namespace Eto.Wpf.CustomControls
 			trigger.Setters.Add(new Setter { Property = ContentTemplateProperty, Value = viewTemplate });
 			style.Triggers.Add(trigger);
 			Style = style;
+		}
+
+		void TextBox_GotFocus(object sender, RoutedEventArgs e)
+		{
+			var args = new RoutedEventArgs(TreeViewHandler.EtoTreeViewItem.LabelEditingEvent, this);
+			this.GetParent<TreeViewHandler.EtoTreeViewItem>().RaiseEvent(args);
+			args.Handled = args.Handled;
 		}
 
 		public string Text
@@ -93,29 +103,48 @@ namespace Eto.Wpf.CustomControls
 
 		void TextBox_LostFocus(object sender, RoutedEventArgs e)
 		{
-			IsInEditMode = false;
-		}
+			if (!settingFocus)
+			{
+				e.Handled = SetParentFocus();
+				if (!e.Handled)
+					IsInEditMode = false;
+			}
+        }
 
-		void SetParentFocus()
+		bool settingFocus;
+		bool SetParentFocus()
 		{
+			if (settingFocus)
+				return true;
+			settingFocus = true;
 			var item = this.GetParent<TreeViewItem>();
 			if (item != null)
 				item.Focus();
+			settingFocus = false;
+			RaiseEvent(new RoutedEventArgs(LostFocusEvent, this));
+
+			var args = new RoutedEventArgs(TreeViewHandler.EtoTreeViewItem.LabelEditedEvent, this);
+			this.GetParent<TreeViewHandler.EtoTreeViewItem>().RaiseEvent(args);
+			return args.Handled;
 		}
+
 
 		void TextBox_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Enter)
 			{
-				IsInEditMode = false;
-				SetParentFocus();
+				if (!SetParentFocus())
+					IsInEditMode = false;
 				e.Handled = true;
 			}
 			else if (e.Key == Key.Escape)
 			{
-				IsInEditMode = false;
-				SetParentFocus();
+				var prev = Text;
 				Text = oldText;
+				if (!SetParentFocus())
+					IsInEditMode = false;
+				else
+					Text = prev;
 				e.Handled = true;
 			}
 		}

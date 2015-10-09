@@ -10,6 +10,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using Eto.Designer;
+using Eto.Designer.Completion;
 
 namespace Eto.Addin.XamarinStudio.Editor
 {
@@ -27,7 +28,7 @@ namespace Eto.Addin.XamarinStudio.Editor
 
 		static IEnumerable<string> GetPath(List<XObject> p)
 		{
-			return p.OfType<XElement>().Select(r => r.Name.FullName);
+			return p.OfType<XElement>().Select(r => r.Name.Name);
 		}
 
 		protected override void GetElementCompletions(CompletionDataList list)
@@ -35,10 +36,10 @@ namespace Eto.Addin.XamarinStudio.Editor
 			var currentPath = GetCurrentPath();
 			var path = GetPath(currentPath);
 			var namespaces = GetNamespaces(currentPath);
-
-			foreach (var completion in Completion.GetCompletions(namespaces))
+			var prefix = currentPath.OfType<XElement>().Select(r => r.Name.Prefix).LastOrDefault();
+			foreach (var completion in Completion.GetCompletions(namespaces, prefix))
 			{
-				foreach (var item in completion.GetElements(path))
+				foreach (var item in completion.GetClasses(path))
 				{
 					var xmlCompletion = new XmlCompletionData(item.Name, item.Description, XmlCompletionData.DataType.XmlAttribute);
 					xmlCompletion.Icon = Stock.Class;
@@ -57,9 +58,29 @@ namespace Eto.Addin.XamarinStudio.Editor
 			var path = GetPath(currentPath);
 			var namespaces = GetNamespaces(currentPath);
 			var objectName = attributedOb.Name.Name;
-			foreach (var completion in Completion.GetCompletions(namespaces))
+			foreach (var completion in Completion.GetCompletions(namespaces, attributedOb.Name.Prefix))
 			{
-				foreach (var item in completion.GetAttributes(objectName, path).Where(r => !existingAtts.ContainsKey(r.Name)))
+				foreach (var item in completion.GetProperties(objectName, path).Where(r => !existingAtts.ContainsKey(r.Name)))
+				{
+					var xmlCompletion = new XmlCompletionData(item.Name, item.Description, XmlCompletionData.DataType.XmlAttribute);
+					xmlCompletion.Icon = GetIcon(item.Type);
+					list.Add(xmlCompletion);
+				}
+			}
+			return list;
+		}
+
+		protected override CompletionDataList GetAttributeValueCompletions(IAttributedXObject attributedOb, XAttribute att)
+		{
+			var list = base.GetAttributeValueCompletions(attributedOb, att) ?? new CompletionDataList();
+
+			var currentPath = GetCurrentPath();
+			var path = GetPath(currentPath);
+			var namespaces = GetNamespaces(currentPath);
+			var objectName = attributedOb.Name.Name;
+			foreach (var completion in Completion.GetCompletions(namespaces, attributedOb.Name.Prefix))
+			{
+				foreach (var item in completion.GetPropertyValues(objectName, att.Name.FullName, path))
 				{
 					var xmlCompletion = new XmlCompletionData(item.Name, item.Description, XmlCompletionData.DataType.XmlAttribute);
 					xmlCompletion.Icon = GetIcon(item.Type);
@@ -79,6 +100,10 @@ namespace Eto.Addin.XamarinStudio.Editor
 					return Stock.Property;
 				case CompletionType.Event:
 					return Stock.Event;
+				case CompletionType.Field:
+					return Stock.Field;
+				case CompletionType.Literal:
+					return Stock.Literal;
 				case CompletionType.Attribute:
 					return null;
 				default:

@@ -56,19 +56,19 @@ namespace Eto.Designer
 			{
 				try
 				{
-					interfaceBuilder.Create(code, ctl => FinishProcessing(ctl, null), error => FinishProcessing(null, error));
+					interfaceBuilder.Create(code, ctl => FinishProcessing(ctl, null), ex => FinishProcessing(null, ex));
 				}
 				catch (Exception ex)
 				{
-					FinishProcessing(null, ex.Message);
+					FinishProcessing(null, ex);
                 }
 			}
 		}
 
-		void FinishProcessing(Control child, string error)
+		void FinishProcessing(Control child, Exception error)
 		{
-			errorPanel.Visible = !string.IsNullOrEmpty(error);
-			errorPanel.Content = error;
+			errorPanel.Visible = error != null;
+			errorPanel.Content = new Label { Text = error?.Message, ToolTip = error?.ToString() };
 			if (child != null)
 			{
 				var window = child as Eto.Forms.Window;

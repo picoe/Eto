@@ -97,12 +97,12 @@ namespace Eto.Mac.Forms.Cells
 
 		public override Color GetBackgroundColor(NSView view)
 		{
-			return ((EtoButton)view).Cell.BackgroundColor.ToEto();
+			return ((CellView)view).Cell.BackgroundColor.ToEto();
 		}
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
-			var field = ((EtoButton)view).Cell;
+			var field = ((CellView)view).Cell;
 			field.BackgroundColor = color.ToNSUI();
 		}
 

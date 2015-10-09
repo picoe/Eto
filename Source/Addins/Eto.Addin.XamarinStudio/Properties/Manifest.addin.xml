@@ -4,19 +4,19 @@
 		<PackageRepository path="Packages" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id="eto.project.application.cs" file="Templates/Projects/CS/application.xpt.xml" />
-		<ProjectTemplate id="eto.project.library.cs" file="Templates/Projects/CS/library.xpt.xml" />
+		<ProjectTemplate id="eto.cs.application" file="Templates/Projects/CS/application.xpt.xml" />
+		<ProjectTemplate id="eto.cs.library" file="Templates/Projects/CS/library.xpt.xml" />
 		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
-			<ProjectTemplate id="eto.project.application.vb" file="Templates/Projects/VB/application.xpt.xml" />
-			<ProjectTemplate id="eto.project.library.vb" file="Templates/Projects/VB/library.xpt.xml" />
+			<ProjectTemplate id="eto.vb.application" file="Templates/Projects/VB/application.xpt.xml" />
+			<ProjectTemplate id="eto.vb.library" file="Templates/Projects/VB/library.xpt.xml" />
 		</Condition>
 		<ComplexCondition>
 			<Or>
 				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
 				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
 			</Or>
-			<ProjectTemplate id="eto.project.application.fs" file="Templates/Projects/FS/application.xpt.xml" />
-			<ProjectTemplate id="eto.project.library.fs" file="Templates/Projects/FS/library.xpt.xml" />
+			<ProjectTemplate id="eto.fs.application" file="Templates/Projects/FS/application.xpt.xml" />
+			<ProjectTemplate id="eto.fs.library" file="Templates/Projects/FS/library.xpt.xml" />
 		</ComplexCondition>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
@@ -24,6 +24,7 @@
 		<FileTemplate id="eto.cs.code.dialog" file="Templates/Files/CS/code/dialog.xft.xml" />
 		<FileTemplate id="eto.cs.code.panel" file="Templates/Files/CS/code/panel.xft.xml" />
 		<FileTemplate id="eto.cs.xeto.panel" file="Templates/Files/CS/xeto/panel.xft.xml" />
+		<FileTemplate id="eto.cs.jeto.panel" file="Templates/Files/CS/jeto/panel.xft.xml" />
 		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
 			<FileTemplate id="eto.vb.code.panel" file="Templates/Files/VB/code/panel.xft.xml" />
 			<!-- mono's VB compiler doesn't support embedded resources for some reason
