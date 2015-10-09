@@ -235,7 +235,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextBoxHandler.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
@@ -264,9 +264,7 @@
     <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarHandler.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
