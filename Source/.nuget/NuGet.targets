@@ -43,6 +43,9 @@
         <NuGetToolsPath>$(NugetDir)/.nuget</NuGetToolsPath>
         <PackagesConfig>packages.config</PackagesConfig>
         <PaddedSolutionDir>"$(PackagesDir)"</PaddedSolutionDir>
+        <MonoExe Condition="$(MonoExe) == '' and Exists('/usr/bin/mono')">/usr/bin/mono</MonoExe>
+        <MonoExe Condition="$(MonoExe) == '' and Exists('/usr/local/bin/mono')">/usr/local/bin/mono</MonoExe>
+        <MonoExe Condition="$(MonoExe) == ''">mono</MonoExe>
     </PropertyGroup>
     <Target Name="_GetAssemblyInfo" Condition="$(NuspecInfoAssembly) != ''">
         <GetAssemblyInfo AssemblyFileName="$(NuspecInfoAssembly)">
@@ -65,7 +68,7 @@
         <PackageSources Condition=" $(PackageSources) == '' ">@(PackageSource)</PackageSources>
         
         <NuGetCommand Condition=" '$(OS)' == 'Windows_NT'">"$(NuGetExePath)"</NuGetCommand>
-        <NuGetCommand Condition=" '$(OS)' != 'Windows_NT' ">mono --runtime=v4.0.30319 $(NuGetExePath)</NuGetCommand>
+        <NuGetCommand Condition=" '$(OS)' != 'Windows_NT' ">$(MonoExe) --runtime=v4.0.30319 $(NuGetExePath)</NuGetCommand>
 
         <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
         
