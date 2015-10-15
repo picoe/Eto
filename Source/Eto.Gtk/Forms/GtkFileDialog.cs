@@ -97,15 +97,33 @@ namespace Eto.GtkSharp.Forms
 
 		public void InsertFilter(int index, FileDialogFilter filter)
 		{
+			var gtkFilter = new Gtk.FileFilter();
+			gtkFilter.Name = filter.Name;
+			foreach (var extension in filter.Extensions)
+				gtkFilter.AddPattern(extension);
 
+			var filters = new List<Gtk.FileFilter>(Control.Filters);
+			if (index < filters.Count)
+			{
+				for (int i = 0; i < filters.Count; i++)
+					Control.RemoveFilter(filters[i]);
+				filters.Insert(index, gtkFilter);
+				for (int i = 0; i < filters.Count; i++)
+					Control.AddFilter(filters[i]);
+			}
+			else
+				Control.AddFilter(gtkFilter);
 		}
+
 		public void RemoveFilter(int index)
 		{
-
+			Control.RemoveFilter(Control.Filters[index]);
 		}
+
 		public void ClearFilters()
 		{
-
+			for (int i = 0; i < Control.Filters.Length; i++)
+				Control.RemoveFilter(Control.Filters[0]);
 		}
 	}
 }
