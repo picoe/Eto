@@ -49,6 +49,7 @@
     <Compile Include="DesignerUserControl.cs" />
     <Compile Include="Extensions\BindingExtension.cs" />
     <Compile Include="Extensions\OnExtension.cs" />
+    <Compile Include="EtoNameScope.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

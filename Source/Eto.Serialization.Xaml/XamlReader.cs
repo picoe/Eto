@@ -130,60 +130,6 @@ namespace Eto.Serialization.Xaml
 			set { context.DesignMode = value; }
 		}
 
-		class NameScope : INameScope
-		{
-			public object Instance { get; set; }
-
-			Dictionary<string, object> registeredNames = new Dictionary<string, object>();
-
-			public object FindName (string name)
-			{
-				object result;
-				if (registeredNames.TryGetValue(name, out result))
-					return result;
-				return null;
-			}
-
-			public void RegisterName (string name, object scopedElement)
-			{
-				if (scopedElement != null)
-					registeredNames.Add(name, scopedElement);
-				
-				if (Instance == null)
-					return;
-				var instanceType = Instance.GetType();
-				var obj = scopedElement as Widget;
-				if (obj != null && !string.IsNullOrEmpty(name))
-				{
-					#if !NET40
-					var property = instanceType.GetRuntimeProperties().FirstOrDefault(r => r.Name == name && r.SetMethod != null &&!r.SetMethod.IsStatic);
-					if (property != null)
-						property.SetValue(Instance, obj, null);
-					else
-					{
-						var field = instanceType.GetRuntimeField(name);
-						if (field != null && !field.IsStatic)
-							field.SetValue(Instance, obj);
-					}
-					#else
-					var property = instanceType.GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-					if (property != null)
-					property.SetValue(Instance, obj, null);
-					else
-					{
-					var field = instanceType.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-					if (field != null)
-					field.SetValue(Instance, obj);
-					}
-					#endif
-				}
-			}
-
-			public void UnregisterName (string name)
-			{
-			}
-		}
-
 		/// <summary>
 		/// Loads the specified type from the specified xaml stream
 		/// </summary>
@@ -196,7 +142,7 @@ namespace Eto.Serialization.Xaml
 		{
 			var reader = new XamlXmlReader(stream, context);
 			var writerSettings = new XamlObjectWriterSettings();
-			writerSettings.ExternalNameScope = new NameScope { Instance = instance };
+			writerSettings.ExternalNameScope = new EtoNameScope { Instance = instance };
 			writerSettings.RegisterNamesOnExternalNamescope = true;
 			writerSettings.RootObjectInstance = instance;
 			var writer = new XamlObjectWriter(context, writerSettings);
