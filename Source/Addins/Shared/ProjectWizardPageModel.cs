@@ -80,6 +80,7 @@ namespace Eto.Addin.Shared
 				Source.SetParameter("UseSAL", value.ToString());
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
 			}
 		}
 
@@ -113,6 +114,7 @@ namespace Eto.Addin.Shared
 				Source.SetParameter("UseXeto", value.ToString());
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
 			}
 		}
 
@@ -124,6 +126,7 @@ namespace Eto.Addin.Shared
 				Source.SetParameter("UseJeto", value.ToString());
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
 			}
 		}
 
@@ -227,6 +230,12 @@ namespace Eto.Addin.Shared
 		{
 			if (PropertyChanged != null)
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		void UpdateCommon()
+		{
+			Source.SetParameter("UseSharedXeto", (UseSAL && UseXeto).ToString());
+			Source.SetParameter("UseSharedJeto", (UseSAL && UseJeto).ToString());
 		}
 	}
 

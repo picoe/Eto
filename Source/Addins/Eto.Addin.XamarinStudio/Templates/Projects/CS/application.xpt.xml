@@ -23,9 +23,9 @@
 		<Project name="${ProjectName}" directory="." type="SharedAssetsProject" if="UseSAL">
 			<Files>
 				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCode" />
-				<File name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" />
+				<ParameterizedFile name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.MainForm.xeto" />
 				<File name="MainForm.xeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseXeto" DependsOn="MainForm.xeto" />
-				<File name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" />
+				<ParameterizedFile name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.MainForm.jeto" />
 				<File name="MainForm.jeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseJeto" DependsOn="MainForm.jeto" />
 				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.preview.cs" if="UseCodePreview" />
 				<File name="MainForm.eto.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCodePreview" DependsOn="MainForm.cs" />
@@ -91,6 +91,8 @@
 				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" if="!Combined">
@@ -112,6 +114,8 @@
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" if="!Combined">
@@ -135,6 +139,8 @@
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" if="!Combined">
@@ -155,6 +161,8 @@
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Gtk" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" if="!Combined">
@@ -175,6 +183,8 @@
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -196,6 +206,8 @@
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Mac" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -220,6 +232,8 @@
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -243,6 +257,8 @@
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 	</Combine>

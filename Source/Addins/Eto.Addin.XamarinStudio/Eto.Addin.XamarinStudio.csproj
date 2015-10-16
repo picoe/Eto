@@ -85,10 +85,6 @@
       <Link>Packages\Eto.Platform.WinRT.2.2.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.2.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.2.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Wpf.2.2.0-alpha.nupkg</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(ProjectDir)\..\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\..\.nuget\NuGet.targets')" />
@@ -321,6 +317,10 @@
     <AddinFile Include="Templates\Projects\VB\Program.vb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.2.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.2.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Wpf.2.2.0-alpha.nupkg</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AddinFile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
@@ -343,5 +343,6 @@
   <ItemGroup>
     <AddinReference Include="MonoDevelop.Xml" />
     <AddinReference Include="MonoDevelop.DesignerSupport" />
+    <AddinReference Include="MonoDevelop.PackageManagement" />
   </ItemGroup>
 </Project>
