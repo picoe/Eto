@@ -17,7 +17,7 @@
         <PackagesDir Condition="$(PackagesDir) == '' Or $(PackagesDir) == '*Undefined*'">$(ProjectDir)..</PackagesDir>
         <NugetDir Condition="$(NugetDir) == '' Or $(NugetDir) == '*Undefined*'">$(PackagesDir)</NugetDir>
         <NugetBuildOptions Condition="$(NugetBuildOptions) == ''"></NugetBuildOptions>
-        <UtilitiesBasePath Condition="$(UtilitiesBasePath) == ''">$(PackagesDir)\packages</UtilitiesBasePath>
+        <UtilitiesBasePath Condition="$(UtilitiesBasePath) == ''">$(MSBuildThisFileDirectory)\..\..\BuildOutput\obj</UtilitiesBasePath>
     </PropertyGroup>
     
 	<Import Project="..\..\Resources\Utilities.targets" Condition="$(UtilitiesImported) == ''" />
@@ -47,7 +47,7 @@
         <MonoExe Condition="$(MonoExe) == '' and Exists('/usr/local/bin/mono')">/usr/local/bin/mono</MonoExe>
         <MonoExe Condition="$(MonoExe) == ''">mono</MonoExe>
     </PropertyGroup>
-    <Target Name="_GetAssemblyInfo" Condition="$(NuspecInfoAssembly) != ''">
+    <Target Name="_GetAssemblyInfo" Condition="$(NuspecInfoAssembly) != ''" DependsOnTargets="BuildUtilities">
         <GetAssemblyInfo AssemblyFileName="$(NuspecInfoAssembly)">
 			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
 			<Output TaskParameter="AssemblyTitle" PropertyName="AssemblyTitle" />
