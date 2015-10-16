@@ -1,12 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace Eto.Forms
 {
 	/// <summary>
 	/// ToolBar item collection.
 	/// </summary>
-	public class ToolItemCollection : Collection<ToolItem>
+	public class ToolItemCollection : Collection<ToolItem>, IList
 	{
 		readonly ToolBar parent;
 
@@ -120,6 +121,16 @@ namespace Eto.Forms
 			{
 				Add(command, order);
 			}
+		}
+
+		int IList.Add(object value)
+		{
+			var command = value as Command;
+			if (command != null)
+				Add(command.CreateToolItem());
+			else
+				Add((ToolItem)value);
+			return Count - 1;
 		}
 	}
 }

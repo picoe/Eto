@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 namespace Eto.Forms
 {
@@ -10,7 +11,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class MenuItemCollection : Collection<MenuItem>
+	public class MenuItemCollection : Collection<MenuItem>, IList
 	{
 		internal readonly Menu.ISubmenuHandler parent;
 		internal readonly Menu parentItem;
@@ -179,6 +180,16 @@ namespace Eto.Forms
 				Add(submenu);
 			}
 			return submenu;
+		}
+
+		int IList.Add(object value)
+		{
+			var command = value as Command;
+			if (command != null)
+				Add(command.CreateMenuItem());
+			else
+				Add((MenuItem)value);
+			return Count - 1;
 		}
 	}
 }
