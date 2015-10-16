@@ -16,7 +16,7 @@
 					<CheckBox x:Name="MyCheckBox" Text="Check Box" />
 				</TableRow>
 				<TableRow>
-					<Label Text="Combo Box" />
+					<Label Text="Drop Down" />
 					<DropDown>
 						<ListItem Text="Item 1" />
 						<ListItem Text="Item 2" />
@@ -51,7 +51,7 @@
 		</TabPage>
 		<TabPage Text="Stack Layout">
 			<StackLayout>
-				<Label>Hello</Label>
+				<Label>Button that executes command from model:</Label>
 				<Button Command="{Binding ClickMe}">Click Me!</Button>
 				<StackLayoutItem Expand="true" HorizontalAlignment="Stretch">
 					<TextArea />

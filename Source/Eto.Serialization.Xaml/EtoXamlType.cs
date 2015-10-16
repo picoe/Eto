@@ -104,6 +104,8 @@ namespace Eto.Serialization.Xaml
 		{
 			if (typeConverter != null)
 				return typeConverter;
+			
+			// convert from Eto.TypeConverter to Portable.Xaml.ComponentModel.TypeConverter
 			var typeConverterAttrib = GetCustomAttribute<EtoTypeConverterAttribute>();
 			if (typeConverterAttrib != null)
 			{
@@ -121,7 +123,6 @@ namespace Eto.Serialization.Xaml
 			}
 
 			if (typeConverter == null)
-		// convert from EtoTypeConverter to cm.TypeConverter
 				typeConverter = base.LookupTypeConverter();
 			return typeConverter;
 		}
@@ -151,8 +152,7 @@ namespace Eto.Serialization.Xaml
 
 			protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
 			{
-				var eventConverter = base.LookupTypeConverter();
-				return new XamlValueConverter<cm.TypeConverter>(typeof(EmptyConverter), eventConverter.TargetType);
+				return new XamlValueConverter<cm.TypeConverter>(typeof(EmptyConverter), Type);
 			}
 		}
 

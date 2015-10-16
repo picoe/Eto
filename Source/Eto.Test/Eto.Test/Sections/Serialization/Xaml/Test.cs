@@ -35,12 +35,18 @@ namespace Eto.Test.Sections.Serialization.Xaml
 
 		public Test()
 		{
+			var sw = new Stopwatch();
+			sw.Start();
+
 			XamlReader.Load(this);
+
+			sw.Stop();
+			Log.Write(this, "loaded in {0} seconds", sw.Elapsed.TotalSeconds);
 
 			MyCheckBox.Checked = true;
 			MyTextArea.Text = "This form was created via xaml!";
 
-			DataContext = new MyModel { SomeText = "Woerijoweijr " };
+			DataContext = new MyModel { SomeText = "Text from data model" };
 		}
 
 		protected void HandleButtonClick(object sender, EventArgs e)

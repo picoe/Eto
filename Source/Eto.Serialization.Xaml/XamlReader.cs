@@ -2,6 +2,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using System.Collections.Generic;
+
+
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;
@@ -113,7 +116,7 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
-		static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext(new [] { typeof(XamlReader).GetTypeInfo().Assembly });
+		internal static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext(new [] { typeof(XamlReader).GetTypeInfo().Assembly });
 
 		/// <summary>
 		/// Gets or sets a value indicating that the reader is used in design mode
@@ -131,13 +134,21 @@ namespace Eto.Serialization.Xaml
 		{
 			public object Instance { get; set; }
 
+			Dictionary<string, object> registeredNames = new Dictionary<string, object>();
+
 			public object FindName (string name)
 			{
+				object result;
+				if (registeredNames.TryGetValue(name, out result))
+					return result;
 				return null;
 			}
 
 			public void RegisterName (string name, object scopedElement)
 			{
+				if (scopedElement != null)
+					registeredNames.Add(name, scopedElement);
+				
 				if (Instance == null)
 					return;
 				var instanceType = Instance.GetType();
