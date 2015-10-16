@@ -292,7 +292,7 @@ namespace Eto.Mac.Drawing
 		static readonly NSObject[] attributeKeys =
 		{
 #if OSX
-			#if __UNIFIED__
+			#if UNIFIED
 			NSStringAttributeKey.Font,
 			NSStringAttributeKey.UnderlineStyle,
 			NSStringAttributeKey.StrikethroughStyle

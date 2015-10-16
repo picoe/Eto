@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\BuildOutput\mobile\Debug\</OutputPath>
-    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;XAMMAC2</DefineConstants>
+    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>OSX;DESKTOP;XAMMAC;XAMMAC2</DefineConstants>
+    <DefineConstants>OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>false</CreatePackage>

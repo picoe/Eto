@@ -274,7 +274,7 @@ namespace Eto.Mac.Drawing
 			{
 				var rect = new CGRect(CGPoint.Empty, Control.Size);
 				var image = new NSImage();
-				#if __UNIFIED__
+				#if UNIFIED
 				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToNS());
 				#else
 				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToSDRectangleF());
