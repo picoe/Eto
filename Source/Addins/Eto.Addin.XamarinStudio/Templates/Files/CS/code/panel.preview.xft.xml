@@ -13,7 +13,7 @@ This template provides a partial *.eto.cs file for form preview.]]>
 		<GroupId>eto-file-panel</GroupId>
 	</TemplateConfiguration>
 	<TemplateFiles>
-        <File name="${Name}.cs" AddStandardHeader="true" src="panel.cs" BuildAction="EmbeddedResource" />
-        <File name="${Name}.eto.cs" AddStandardHeader="true" src="panel.eto.cs" DependsOn="${Name}.cs" />
+        <File name="${Name}.cs" AddStandardHeader="true" src="panel.preview.cs" />
+        <File name="${Name}.eto.cs" AddStandardHeader="true" src="panel.preview.eto.cs" DependsOn="${Name}.cs" />
 	</TemplateFiles>
 </Template>

@@ -7,8 +7,8 @@
     <ProjectGuid>{7FAA1841-0869-474C-9D89-87E1B4BAB190}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Eto.Design</RootNamespace>
-    <AssemblyName>Eto.Design</AssemblyName>
+    <RootNamespace>Eto.Designer</RootNamespace>
+    <AssemblyName>Eto.Designer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -22,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -34,11 +33,14 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Addins\Eto.Addin.VisualStudio\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.Compiler.CodeDom">
       <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\FSharp.Compiler.CodeDom.0.9.3.0\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Xaml">
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Portable.Xaml.0.4.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

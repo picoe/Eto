@@ -7,11 +7,11 @@
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in C#.</_Description>
 		<GroupId>eto-project-library</GroupId>
-    	<SupportedParameters>AppName,SupportsPCL,IsLibrary</SupportedParameters>
+    	<SupportedParameters>AppName,SupportsPCL,IsLibrary,SupportsCodePreview,SupportsXeto,SupportsJeto</SupportedParameters>
 	</TemplateConfiguration>
 
 	<Actions>
-		<Open filename="MyPanel.cs"/>
+		<!--Open filename="MyPanel.cs"/-->
 	</Actions>
 
 	<Combine name="${ProjectName}" directory=".">
@@ -19,22 +19,28 @@
 		<Project name="${ProjectName}" directory="." if="UseNET">
 			<Options Target="Library" />
 			<Files>
-				<FileTemplateReference TemplateID="eto.file.panel.cs" name="MyPanel.cs" />
+				<FileTemplateReference TemplateID="eto.cs.code.panel" name="MyPanel.cs" if="UseCode" />
+				<FileTemplateReference TemplateID="eto.cs.preview.panel" name="MyPanel.cs" if="UseCodePreview" />
+				<FileTemplateReference TemplateID="eto.cs.jeto.panel" name="MyPanel.jeto" if="UseJeto" />
+				<FileTemplateReference TemplateID="eto.cs.xeto.panel" name="MyPanel.xeto" if="UseXeto" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 
 		<Project name="${ProjectName}" directory="." type="PortableDotNet" if="UsePCL">
 			<Options Target="Library" TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"/>
 			<Files>
-				<FileTemplateReference TemplateID="eto.file.panel.cs" name="MyPanel.cs" />
+				<FileTemplateReference TemplateID="eto.cs.code.panel" name="MyPanel.cs" if="UseCode" />
+				<FileTemplateReference TemplateID="eto.cs.preview.panel" name="MyPanel.cs" if="UseCodePreview" />
+				<FileTemplateReference TemplateID="eto.cs.jeto.panel" name="MyPanel.jeto" if="UseJeto" />
+				<FileTemplateReference TemplateID="eto.cs.xeto.panel" name="MyPanel.xeto" if="UseXeto" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 

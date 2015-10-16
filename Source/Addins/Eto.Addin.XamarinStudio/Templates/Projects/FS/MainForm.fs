@@ -4,9 +4,9 @@ open System
 open Eto.Forms
 open Eto.Drawing
 
-type MainForm() as this = 
+type MainForm$if$($UseCodePreview$==True)Base$endif$ () as this = 
     inherit Form()
-    do 
+    $if$($UseCodePreview$==True)member this.InitializeComponent() =$endif$$if$($UseCode$==True)do$endif$ 
         base.Title <- "My Eto Form"
         base.ClientSize <- new Size(400, 350)
 

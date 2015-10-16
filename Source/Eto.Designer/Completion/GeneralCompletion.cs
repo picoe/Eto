@@ -36,7 +36,6 @@ namespace Eto.Designer.Completion
 			if (propertyName == "xmlns" || propertyName.StartsWith("xmlns:"))
 			{
 				yield return new CompletionItem { Name = XamlNamespace2006, Type = CompletionType.Literal };
-				yield return new CompletionItem { Name = XamlNamespace2009, Type = CompletionType.Literal };
 				yield return new CompletionItem { Name = EtoFormsNamespace, Type = CompletionType.Literal };
 				yield return new CompletionItem { Name = "clr-namespace:[namespace];assembly=[assembly]", Type = CompletionType.Literal };
 			}

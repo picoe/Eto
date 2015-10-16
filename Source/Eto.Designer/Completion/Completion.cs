@@ -35,7 +35,6 @@ namespace Eto.Designer.Completion
 		}
 
 		public const string EtoFormsNamespace = "http://schema.picoe.ca/eto.forms";
-		public const string XamlNamespace2009 = "http://schemas.microsoft.com/winfx/2009/xaml";
 		public const string XamlNamespace2006 = "http://schemas.microsoft.com/winfx/2006/xaml";
 
 		public static IEnumerable<Completion> GetCompletions(IEnumerable<CompletionNamespace> namespaces)
@@ -53,7 +52,7 @@ namespace Eto.Designer.Completion
 						Namespace = "Eto.Forms"
 					};
 				}
-				if (ns.Namespace == XamlNamespace2009 || ns.Namespace == XamlNamespace2006)
+				if (ns.Namespace == XamlNamespace2006)
 				{
 					yield return new XamlCompletion { Prefix = ns.Prefix };
 				}

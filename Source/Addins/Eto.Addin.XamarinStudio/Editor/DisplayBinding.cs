@@ -12,25 +12,7 @@ namespace Eto.Addin.XamarinStudio.Editor
 {
 	public class DisplayBinding : IViewDisplayBinding, IDisplayBinding
 	{
-		bool exclude = false;
-
-		EditorView viewContent = null;
-
-		/*internal EditorView GetViewContent()
-		{
-			if (viewContent == null)
-			{
-				viewContent = new EditorView();
-				viewContent.Control.Destroyed += HandleDestroyed;
-			}
-			return viewContent;
-		}*/
-
-		void HandleDestroyed(object sender, EventArgs e)
-		{
-			((Gtk.Widget)sender).Destroyed -= HandleDestroyed;
-			this.viewContent = null;
-		}
+		bool exclude;
 
 		public IViewContent CreateContent(MonoDevelop.Core.FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
 		{
