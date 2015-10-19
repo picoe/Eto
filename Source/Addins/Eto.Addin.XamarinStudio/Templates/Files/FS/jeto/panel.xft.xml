@@ -13,6 +13,6 @@ You must add the Eto.Serialization.Json nuget package to your project to use thi
 	<TemplateFiles>
 		<!-- using DependsOn causes compile order to be incorrect: DependsOn="${Name}.jeto" -->
 		<File name="${Name}.jeto.fs" AddStandardHeader="true" src="panel.jeto.fs" /> 
-		<File name="${Name}.jeto" AddStandardHeader="true" src="panel.jeto" BuildAction="EmbeddedResource" />
+		<EnhancedFile name="${Name}.jeto" AddStandardHeader="true" src="panel.jeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.${Name}.jeto" />
 	</TemplateFiles>
 </Template>

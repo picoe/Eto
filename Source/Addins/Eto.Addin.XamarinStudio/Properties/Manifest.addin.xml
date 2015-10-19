@@ -22,9 +22,11 @@
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id="eto.cs.code.form" file="Templates/Files/CS/code/form.xft.xml" />
 		<FileTemplate id="eto.cs.code.dialog" file="Templates/Files/CS/code/dialog.xft.xml" />
-		<FileTemplate id="eto.cs.code.panel" file="Templates/Files/CS/code/panel.xft.xml" />
+		<FileTemplate id="eto.cs.preview.panel" file="Templates/Files/CS/code/panel.preview.xft.xml" />
+		<FileTemplate id="eto.cs.code.panel" file="Templates/Files/CS/code/panel.code.xft.xml" />
 		<FileTemplate id="eto.cs.xeto.panel" file="Templates/Files/CS/xeto/panel.xft.xml" />
 		<FileTemplate id="eto.cs.jeto.panel" file="Templates/Files/CS/jeto/panel.xft.xml" />
+
 		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
 			<FileTemplate id="eto.vb.code.panel" file="Templates/Files/VB/code/panel.xft.xml" />
 			<!-- mono's VB compiler doesn't support embedded resources for some reason
@@ -37,7 +39,8 @@
 				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
 				<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
 			</Or>
-			<FileTemplate id="eto.fs.code.panel" file="Templates/Files/FS/code/panel.xft.xml" />
+			<FileTemplate id="eto.fs.code.panel" file="Templates/Files/FS/code/panel.code.xft.xml" />
+			<FileTemplate id="eto.fs.preview.panel" file="Templates/Files/FS/code/panel.preview.xft.xml" />
 			<FileTemplate id="eto.fs.xeto.panel" file="Templates/Files/FS/xeto/panel.xft.xml" />
 			<FileTemplate id="eto.fs.jeto.panel" file="Templates/Files/FS/jeto/panel.xft.xml" />
 		</ComplexCondition>
@@ -61,6 +64,11 @@
 		<Import assembly="Eto.dll" />
 		<Import assembly="Eto.Gtk2.dll" />
 		<Import assembly="Eto.Addin.Shared.dll" />
+		<Import assembly="Eto.Designer.dll" />
+		<Import assembly="Eto.Serialization.Json.dll" />
+		<Import assembly="Eto.Serialization.Xaml.dll" />
+		<Import assembly="Portable.Xaml.dll" />
+		<Import assembly="FSharp.Compiler.CodeDom.dll" />
 		<Import file="Eto.xml" />
 	</Runtime>
 	<Extension path="/MonoDevelop/ProjectModel/ProjectBindings">
@@ -68,7 +76,7 @@
 		<ProjectBinding id="Eto.FSharp" class="Eto.Addin.XamarinStudio.FSharpProjectBinding" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/FileTemplateTypes">
-		<FileTemplateType name="ParameterizedFile" class="Eto.Addin.XamarinStudio.ParameterizedFile" />
+		<FileTemplateType name="EnhancedFile" class="Eto.Addin.XamarinStudio.EnhancedFile" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding insertbefore="DefaultDisplayBinding" class="Eto.Addin.XamarinStudio.Editor.DisplayBinding" />

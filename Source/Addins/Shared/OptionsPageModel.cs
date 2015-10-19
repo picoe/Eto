@@ -9,7 +9,7 @@ namespace Eto.Addin.Shared
 {
 	public class OptionsPageModel
 	{
-		public string Title { get; set; }
+		public virtual string Title { get; set; }
 
 		public List<Option> Options { get; } = new List<Option>();
 

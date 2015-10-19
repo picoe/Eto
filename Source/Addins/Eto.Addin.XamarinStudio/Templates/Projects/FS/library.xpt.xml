@@ -7,7 +7,7 @@
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in F#.</_Description>
     	<GroupId>eto-project-library</GroupId>
-    	<SupportedParameters>AppName,IsLibrary</SupportedParameters>
+    	<SupportedParameters>AppName,IsLibrary,SupportsCodePreview,SupportsXeto,SupportsJeto</SupportedParameters>
 	</TemplateConfiguration>
 
 	<Combine name="${ProjectName}" directory=".">
@@ -18,11 +18,16 @@
 				<Reference type="Gac" refto="System" />
 			</References>
 			<Files>
-				<FileTemplateReference TemplateID="eto.fs.code.panel" name="MyPanel.fs" />
+				<FileTemplateReference TemplateID="eto.fs.code.panel" name="MyPanel.fs" if="UseCode" />
+				<FileTemplateReference TemplateID="eto.fs.preview.panel" name="MyPanel.fs" if="UseCodePreview" />
+				<FileTemplateReference TemplateID="eto.fs.xeto.panel" name="MyPanel.fs" if="UseXeto" />
+				<FileTemplateReference TemplateID="eto.fs.jeto.panel" name="MyPanel.fs" if="UseJeto" />
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="Properties/AssemblyInfo.fs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseJeto" /> 
 				<Package Id="FSharp.Core" />
 			</Packages>
 		</Project>
@@ -38,7 +43,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="Properties/AssemblyInfo.fs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="FSharp.Core" />
 			</Packages>
 		</Project>

@@ -28,7 +28,7 @@
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 

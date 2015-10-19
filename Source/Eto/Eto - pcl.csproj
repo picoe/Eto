@@ -324,6 +324,10 @@
     <Compile Include="Drawing\SystemColors.cs" />
     <Compile Include="Forms\Cells\PropertyCell.cs" />
     <Compile Include="Forms\RelayCommand.cs" />
+    <Compile Include="Forms\ControlConverter.cs" />
+    <Compile Include="Forms\Menu\MenuItemConverter.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemConverter.cs" />
+    <Compile Include="Forms\KeysConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

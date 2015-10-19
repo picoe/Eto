@@ -42,7 +42,7 @@ namespace Eto.Mac
 #endif
 {
 
-	#if !__UNIFIED__
+	#if !UNIFIED
 	public static class NSStringAttributeKey
 	{
 		public static NSString ForegroundColor = NSAttributedString.ForegroundColorAttributeName;
@@ -132,7 +132,7 @@ namespace Eto.Mac
 
 		#endif
 
-#if !IOS
+#if !UNIFIED
 
 		public static CGPoint ToNS(this System.Drawing.PointF point)
 		{

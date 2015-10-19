@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project InitialTargets="BuildUtilities" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="BuildUtilities" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<UtilitiesImported>true</UtilitiesImported>
 		<UtilitiesBasePath Condition="$(UtilitiesBasePath) == ''">packages</UtilitiesBasePath>
-		<UtilitiesAssemblyPath Condition="$(UtilitiesAssemblyPath) == ''">$(UtilitiesBasePath)\Eto.UtilitiesTasks</UtilitiesAssemblyPath>
+		<UtilitiesAssemblyPath Condition="$(UtilitiesAssemblyPath) == ''">$(UtilitiesBasePath)\UtilitiesTasks</UtilitiesAssemblyPath>
 	</PropertyGroup>
 	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="GetAssemblyInfo" />
 	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="FileUpdate" />
+	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="FileExtract" />
+	<UsingTask AssemblyFile="$(UtilitiesAssemblyPath)\Utilities.dll" TaskName="IncrementVersion" />
 	<Target Name="BuildUtilities" Condition="!Exists('$(UtilitiesAssemblyPath)\Utilities.dll')" >
 		<MakeDir Directories="$(UtilitiesAssemblyPath)" />
 		
 		<!-- UsingTask is not implemented in mono -->
 		<ItemGroup>
-			<GetAssemblyInfo Include="GetAssemblyInfo"><Text><![CDATA[
+			<Utilities Include="GetAssemblyInfo"><Text><![CDATA[
 using System;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Diagnostics;
 using System.Linq;
@@ -31,8 +35,20 @@ public static class Extensions
 			return null;
 		return attributes.OfType<T>().SingleOrDefault();
 	}
-}
-
+	
+	public static bool IsMono
+	{
+		get { return Type.GetType("Mono.Runtime", false) != null; }
+	}
+	
+	public static string FixParameter(string value)
+	{
+		if (IsMono)
+			return value.Replace("//", "\\");
+		return value;
+	}
+}]]></Text></Utilities>
+			<Utilities Include="GetAssemblyInfo"><Text><![CDATA[
 public class GetAssemblyInfo : Task
 {
 	public string AssemblyFileName { get; set; }
@@ -90,34 +106,28 @@ public class GetAssemblyInfo : Task
 			return false;
 		}
 	}
-}]]></Text></GetAssemblyInfo>
-			<FileUpdate Include="FileUpdate"><Text><![CDATA[
-using System;
-using System.IO;
-using System.Reflection;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-
-
+}]]></Text></Utilities>
+			<Utilities Include="FileUpdate"><Text><![CDATA[
 public class FileUpdate : Task
 {
 	public ITaskItem[] Files { get; set; }
 
-	public string Regex { get; set; }
+	public string Pattern { get; set; }
 
-	public string ReplacementText { get; set; }
+	public string Replacement { get; set; }
 	
 	public bool WarnOnNoUpdate { get; set; }
+	
+	public FileUpdate()
+	{
+		WarnOnNoUpdate = true;
+	}
 
 	public override bool Execute()
 	{
 		try
 		{
-			var regex = new Regex(Regex, RegexOptions.None);
+			var regex = new Regex(Extensions.FixParameter(Pattern), RegexOptions.None);
 
 			foreach (var item in Files)
 			{
@@ -134,7 +144,7 @@ public class FileUpdate : Task
 				else
 					Log.LogMessage("Updating file '{0}'", fileName);
 
-				var updatedText = regex.Replace(text, ReplacementText);
+				var updatedText = regex.Replace(text, Replacement);
 
 				File.WriteAllText(fileName, updatedText);
 			}
@@ -146,14 +156,126 @@ public class FileUpdate : Task
 		}
 		return true;		
 	}
-}]]></Text></FileUpdate>
+}]]></Text></Utilities>
+			<Utilities Include="IncrementVersion"><Text><![CDATA[
+public class IncrementVersion : Task
+{
+	public string Version { get; set; }
+	
+	public string Increment { get; set; }
+	
+	public bool RemovePrerelease { get; set; }
+
+	[Output]
+	public string AssemblyVersion { get; set; }
+
+	[Output]
+	public string AssemblyInformationalVersion { get; set; }
+
+	public override bool Execute()
+	{
+		try
+		{
+			var input = Version;
+			var suffix = string.Empty;
+			var idx = input.IndexOf ("-");
+			if (idx >= 0) {
+				suffix = input.Substring (idx);
+				input = input.Substring (0, idx );
+			}
+			var num = input.Count (r => r == '.');
+
+			var version = System.Version.Parse (input);
+
+			if (!string.IsNullOrEmpty(Increment))
+			{
+				var inc = System.Version.Parse(Increment);
+				version = new Version (
+					Math.Max(0, version.Major) + Math.Max(0, inc.Major),
+					Math.Max(0, version.Minor) + Math.Max(0, inc.Minor),
+					Math.Max(0, version.Build) + Math.Max(0, inc.Build),
+					Math.Max(0, version.Revision) + Math.Max(0, inc.Revision)
+				);
+			}
+
+			var assemblyVersion = version;
+			if (!string.IsNullOrEmpty(suffix))
+				assemblyVersion = new Version (version.Major, version.Minor - 1, Math.Max(0, version.Build), Math.Max(0, version.Revision));
+
+			var assemblyString = new StringBuilder(string.Format("{0}.{1}", assemblyVersion.Major, assemblyVersion.Minor));
+			if (!string.IsNullOrEmpty (suffix))
+				assemblyString.Append (".*");
+			else
+				assemblyString.Append (".0.0");
+			
+
+			var infoString = new StringBuilder(string.Format("{0}.{1}", version.Major, version.Minor));
+			if (num > 1)
+				infoString.AppendFormat (".{0}", version.Build);
+			if (num > 2)
+				infoString.AppendFormat (".{0}", version.Revision);
+			if (!RemovePrerelease)
+				infoString.Append (suffix);
+			else if (string.IsNullOrEmpty(suffix))
+			{
+				Log.LogError("Version is not a prerelease but RemovePrerelease was specified");
+				return false;
+			}
+		
+			AssemblyVersion = assemblyString.ToString();
+			AssemblyInformationalVersion = infoString.ToString();
+		}
+		catch (Exception ex)
+		{
+			Log.LogErrorFromException(ex);
+			return false;
+		}
+		return true;
+	}
+}
+]]></Text></Utilities>
+			<Utilities Include="FileExtract"><Text><![CDATA[
+public class FileExtract : Task
+{
+	public ITaskItem File { get; set; }
+
+	public string Pattern { get; set; }
+	
+	[Output]
+	public string Output { get; set; }
+
+	public override bool Execute()
+	{
+		try
+		{
+			var regex = new Regex(Extensions.FixParameter(Pattern), RegexOptions.None);
+
+			var fileName = File.ItemSpec;
+
+			var text = System.IO.File.ReadAllText(fileName);
+
+			var match = regex.Match (text);
+			if (match.Success) {
+				Output = match.Value;
+				return true;
+			}
+			
+			Log.LogError(string.Format("Could not extract from '{0}'", fileName));
+		}
+		catch (Exception ex)
+		{
+			Log.LogErrorFromException(ex);
+			return false;
+		}
+		return false;
+	}
+}]]></Text></Utilities>
 		</ItemGroup>
 		
-		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\GetAssemblyInfo.cs" Lines="@(GetAssemblyInfo->'%(Text)')" Overwrite="true" />
-		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\FileUpdate.cs" Lines="@(FileUpdate->'%(Text)')" Overwrite="true" />
+		<WriteLinesToFile File="$(UtilitiesAssemblyPath)\Utilities.cs" Lines="@(Utilities->'%(Text)')" Overwrite="true" />
 
 		<Csc
-			Sources="$(UtilitiesAssemblyPath)\GetAssemblyInfo.cs;$(UtilitiesAssemblyPath)\FileUpdate.cs"
+			Sources="$(UtilitiesAssemblyPath)\Utilities.cs"
 			OutputAssembly="$(UtilitiesAssemblyPath)\Utilities.dll"
 			References="Microsoft.Build.Framework.dll;Microsoft.Build.Utilities.v4.0.dll;" 
 			TargetType="library"

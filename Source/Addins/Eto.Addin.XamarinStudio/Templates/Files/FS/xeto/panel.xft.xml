@@ -13,6 +13,6 @@ You must add the Eto.Serialization.Xaml nuget package to your project to use thi
 	<TemplateFiles>
 		<!-- using DependsOn causes compile order to be incorrect: DependsOn="${Name}.xeto" -->
         <File name="${Name}.xeto.fs" AddStandardHeader="true" src="panel.xeto.fs" />
-        <File name="${Name}.xeto" AddStandardHeader="true" src="panel.xeto" BuildAction="EmbeddedResource" />
+        <EnhancedFile name="${Name}.xeto" AddStandardHeader="true" src="panel.xeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.${Name}.xeto" />
 	</TemplateFiles>
 </Template>

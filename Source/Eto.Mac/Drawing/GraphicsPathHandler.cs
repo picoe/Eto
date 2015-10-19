@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Eto.Drawing;
-using sd = System.Drawing;
 using System.Diagnostics;
 
 #if OSX
@@ -33,6 +32,10 @@ using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
 #endif
+#endif
+
+#if !UNIFIED
+using sd = System.Drawing;
 #endif
 
 using Eto.Mac;
@@ -116,7 +119,7 @@ namespace Eto.iOS.Drawing
 
 		public void AddRectangle (float x, float y, float width, float height)
 		{
-			#if __UNIFIED__
+			#if UNIFIED
 			Control.AddRect(new CGRect(x, y, width, height));
 			#else
 			Control.AddRect(new sd.RectangleF(x, y, width, height));
@@ -178,7 +181,7 @@ namespace Eto.iOS.Drawing
 			Check(point1);
 			Check(point2);
 			Check(point3);
-			#if __UNIFIED__
+			#if UNIFIED
 			Control.AddCurveToPoint(point1.ToNS(), point2.ToNS(), point3.ToNS());
 			#else
 			Control.AddCurveToPoint(point1.ToSD(), point2.ToSD(), point3.ToSD());

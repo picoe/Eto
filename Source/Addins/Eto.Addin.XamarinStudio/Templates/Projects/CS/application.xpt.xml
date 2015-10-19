@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms App</_Name>
@@ -11,7 +11,8 @@
 	</TemplateConfiguration>
 
 	<Actions>
-		<Open filename="MainForm.cs"/>
+		<!--Open filename="MainForm.cs" if="UseCode" />
+		<Open filename="MainForm.xeto" if="UseXeto" /-->
 	</Actions>
 
 	<Combine name="${ProjectName}" directory=".">
@@ -21,37 +22,51 @@
 
 		<Project name="${ProjectName}" directory="." type="SharedAssetsProject" if="UseSAL">
 			<Files>
-				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" />
+				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCode" />
+				<EnhancedFile name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.MainForm.xeto" />
+				<File name="MainForm.xeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseXeto" DependsOn="MainForm.xeto" />
+				<EnhancedFile name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.MainForm.jeto" />
+				<File name="MainForm.jeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseJeto" DependsOn="MainForm.jeto" />
+				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.preview.cs" if="UseCodePreview" />
+				<File name="MainForm.eto.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCodePreview" DependsOn="MainForm.cs" />
 			</Files>
 		</Project>
 
 		<Project name="${ProjectName}" directory="." type="PortableDotNet" if="UsePCL">
-			<Options Target="Library" TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile259"/>
+			<Options Target="Library" TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile259" />
 			<Files>
-				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
-				<FileTemplateReference TemplateID="eto.cs.xeto.panel" name="MyPanel.xeto" if="UseXeto" />
-				<FileTemplateReference TemplateID="eto.cs.jeto.panel" name="MyPanel.jeto" if="UseJeto" />
-				<FileTemplateReference TemplateID="eto.cs.code.panel" name="MyPanel.cs" if="UseCodePreview" />
+				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCode" />
+				<File name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" />
+				<File name="MainForm.xeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseXeto" DependsOn="MainForm.xeto" />
+				<File name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" />
+				<File name="MainForm.jeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseJeto" DependsOn="MainForm.jeto" />
+				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.preview.cs" if="UseCodePreview" />
+				<File name="MainForm.eto.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCodePreview" DependsOn="MainForm.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
-				<Package Id="Eto.Serialization.Json" if="UseJeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseJeto" /> 
 			</Packages>
 		</Project>
 
 		<Project name="${ProjectName}" directory="." if="UseNet">
 			<Options Target="Library" />
 			<Files>
-				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
-				<FileTemplateReference TemplateID="eto.cs.xeto.panel" name="MyPanel.xeto" />
+				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCode" />
+				<File name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" />
+				<File name="MainForm.xeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseXeto" DependsOn="MainForm.xeto" />
+				<File name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" />
+				<File name="MainForm.jeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseJeto" DependsOn="MainForm.jeto" />
+				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.preview.cs" if="UseCodePreview" />
+				<File name="MainForm.eto.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCodePreview" DependsOn="MainForm.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
-				<Package Id="Eto.Serialization.Json" if="UseJeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseJeto" /> 
 			</Packages>
 		</Project>
 
@@ -63,20 +78,21 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Gtk" /> 
-				<Package Id="Eto.Platform.Gtk3" /> 
-				<Package Id="Eto.Platform.Windows" /> 
-				<Package Id="Eto.Platform.Wpf" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" if="!Combined">
@@ -88,17 +104,18 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Windows" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" if="!Combined">
@@ -112,17 +129,18 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Wpf" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" if="!Combined">
@@ -133,17 +151,18 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Gtk" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" if="!Combined">
@@ -154,17 +173,18 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Gtk3" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -175,18 +195,19 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Mac" />
 					</Replacements>
-				</ParameterizedFile>
-				<File name="Info.plist" src="../Mac/Info.plist" />
+				</EnhancedFile>
+				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Mac" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Mac" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -200,18 +221,19 @@
 			</References>
 			<Files>
 				<Directory name="Resources"/>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
 					</Replacements>
-				</ParameterizedFile>
-				<File name="Info.plist" src="../Mac/Info.plist" />
+				</EnhancedFile>
+				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.XamMac2" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -224,18 +246,19 @@
 			</References>
 			<Files>
 				<Directory name="Resources"/>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
 					</Replacements>
-				</ParameterizedFile>
-				<File name="Info.plist" src="../Mac/Info.plist" />
+				</EnhancedFile>
+				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.XamMac2" /> 
-				<Package Id="Eto.Serialization.Xaml" if="UseXeto" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 	</Combine>

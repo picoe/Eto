@@ -114,7 +114,7 @@ namespace Eto.Addin.Shared
 					panelTypeList.SelectedKeyBinding.Convert(v => v == "codePreview", v => v ? "codePreview" : panelTypeList.SelectedKey).BindDataContext((ProjectWizardPageModel m) => m.UseCodePreview);
 				}
 
-				content.Rows.Add(new TableRow(new Label { Text = "Panel:", TextAlignment = TextAlignment.Right }, panelTypeList));
+				content.Rows.Add(new TableRow(new Label { Text = "Form:", TextAlignment = TextAlignment.Right }, panelTypeList));
 			}
 
 

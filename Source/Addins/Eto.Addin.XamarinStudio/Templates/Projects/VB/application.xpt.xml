@@ -30,7 +30,7 @@
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -42,27 +42,19 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
-
-Public Class Program
-	<STAThread>
-	Public Shared Sub Main(args As String())
-
-		Dim app As New Application(Eto.Platform.Detect)
-		app.Run(New MainForm())
-
-	End Sub
-End Class
-]]>
-				</File>
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
+					</Replacements>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Gtk" /> 
-				<Package Id="Eto.Platform.Gtk3" /> 
-				<Package Id="Eto.Platform.Windows" /> 
-				<Package Id="Eto.Platform.Wpf" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.VBDotNet" if="!Combined">
@@ -74,24 +66,16 @@ End Class
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
-
-Public Class Program
-	<STAThread>
-	Public Shared Sub Main(args As String())
-
-		Dim app As New Application(Eto.Platforms.WinForms)
-		app.Run(New MainForm())
-
-	End Sub
-End Class
-]]>
-				</File>
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
+					</Replacements>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Windows" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.VBDotNet" if="!Combined">
@@ -105,24 +89,16 @@ End Class
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
-
-Public Class Program
-	<STAThread>
-	Public Shared Sub Main(args As String())
-
-		Dim app As New Application(Eto.Platforms.Wpf)
-		app.Run(New MainForm())
-
-	End Sub
-End Class
-]]>
-				</File>
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
+					</Replacements>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Wpf" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.VBDotNet" if="!Combined">
@@ -133,24 +109,16 @@ End Class
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
-
-Public Class Program
-	<STAThread>
-	Public Shared Sub Main(args As String())
-
-		Dim app As New Application(Eto.Platforms.Gtk2)
-		app.Run(New MainForm())
-
-	End Sub
-End Class
-]]>
-				</File>
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
+					</Replacements>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Gtk" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.VBDotNet" if="!Combined">
@@ -161,24 +129,16 @@ End Class
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<File name="Program.vb" AddStandardHeader="True"><![CDATA[Imports Eto.Forms
-
-Public Class Program
-	<STAThread>
-	Public Shared Sub Main(args As String())
-
-		Dim app As New Application(Eto.Platforms.Gtk3)
-		app.Run(New MainForm())
-
-	End Sub
-End Class
-]]>
-				</File>
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+					<Replacements>
+						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
+					</Replacements>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Gtk3" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -206,12 +166,12 @@ namespace ${Namespace}
 }
 ]]>
 				</File>
-				<File name="Info.plist" src="../Mac/Info.plist" />
+				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.Mac" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.Mac" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -241,12 +201,12 @@ namespace ${Namespace}
 }
 ]]>
 				</File>
-				<File name="Info.plist" src="../Mac/Info.plist" />
+				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.XamMac2" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -276,12 +236,12 @@ namespace ${Namespace}
 }
 ]]>
 				</File>
-				<File name="Info.plist" src="../Mac/Info.plist" />
+				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" /> 
-				<Package Id="Eto.Platform.XamMac2" /> 
+				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
 			</Packages>
 		</Project>
 

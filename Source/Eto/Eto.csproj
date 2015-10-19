@@ -403,6 +403,10 @@
     <Compile Include="Forms\Cells\PropertyCell.cs" />
     <Compile Include="Drawing\SystemColors.cs" />
     <Compile Include="Forms\RelayCommand.cs" />
+    <Compile Include="Forms\ControlConverter.cs" />
+    <Compile Include="Forms\Menu\MenuItemConverter.cs" />
+    <Compile Include="Forms\KeysConverter.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

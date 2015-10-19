@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using Eto.Drawing;
+using Portable.Xaml;
 
 namespace Eto.Designer.Completion
 {
@@ -23,17 +24,31 @@ namespace Eto.Designer.Completion
 
 			var types = Assembly.ExportedTypes.Where(r => !r.IsGenericType && !r.IsAbstract && r.Namespace == Namespace).ToList();
 
+			Func<Type, bool> filter = null;
 			var contentType = GetContentType(path.LastOrDefault(), types);
 			if (contentType != null)
 			{
 				var converter = TypeDescriptor.GetConverter(contentType);
 				if (converter != null)
 				{
-					types.RemoveAll(r => !converter.CanConvertFrom(r));
+					filter = t => contentType.IsAssignableFrom(t) || converter.CanConvertFrom(t);
 				}
 				else
 				{
-					types.RemoveAll(r => !contentType.IsAssignableFrom(r));
+					filter = contentType.IsAssignableFrom;
+				}
+
+				types.RemoveAll(r => !filter(r));
+
+				// todo: move this out somehow
+				foreach (var xt in XamlLanguage.AllTypes)
+				{
+					if (filter(xt.UnderlyingType))
+						yield return new CompletionItem
+						{
+							Name = "x:" + xt.Name,
+							Type = CompletionType.Class
+						};
 				}
 
 				if (!contentType.IsAbstract && !types.Contains(contentType))

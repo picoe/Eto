@@ -82,9 +82,7 @@ namespace Eto.Serialization.Xaml
 
 		public override XamlType GetXamlType(Type type)
 		{
-			// Use EtoXamlType for all types on mono so we can override incorrect behavior when getting collection 
-			// item types in EtoItemType.LookupItemType
-			if (EtoEnvironment.Platform.IsMono || type.GetTypeInfo().Assembly == typeof(Platform).GetTypeInfo().Assembly)
+			if (type.GetTypeInfo().Assembly == typeof(Platform).GetTypeInfo().Assembly)
 			{
 				XamlType xamlType;
 				if (typeCache.TryGetValue(type, out xamlType))

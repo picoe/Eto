@@ -3,6 +3,9 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+using System.Linq;
+
+
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;
@@ -33,12 +36,21 @@ namespace Eto.Serialization.Xaml.Extensions
 			var provideValue = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
 			if (provideValue != null)
 			{
-				var widget = provideValue.TargetObject as BindableWidget;
 				var propertyInfo = provideValue.TargetProperty as PropertyInfo;
 				if (propertyInfo != null)
 				{
-					widget.BindDataContext<object>(propertyInfo.Name, Path, DualBindingMode.TwoWay);
-					return propertyInfo.GetValue(provideValue.TargetObject, null);
+					var widget = provideValue.TargetObject as BindableWidget;
+					var propertyType = propertyInfo.PropertyType;
+					if (widget != null && !typeof(IBinding).GetTypeInfo().IsAssignableFrom(propertyType.GetTypeInfo()))
+					{
+						widget.BindDataContext<object>(propertyInfo.Name, Path, DualBindingMode.TwoWay);
+						return propertyInfo.GetValue(provideValue.TargetObject, null);
+					}
+
+					if (provideValue.TargetObject == null)
+						throw new InvalidOperationException("Target object cannot be null");
+
+					throw new InvalidOperationException(string.Format("Type '{0}' is not bindable", provideValue.TargetObject.GetType()));
 				}
 			}
 			return null;

@@ -2,6 +2,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using System.Collections.Generic;
+
+
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;
@@ -113,7 +116,7 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
-		static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext(new [] { typeof(XamlReader).GetTypeInfo().Assembly });
+		internal static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext(new [] { typeof(XamlReader).GetTypeInfo().Assembly });
 
 		/// <summary>
 		/// Gets or sets a value indicating that the reader is used in design mode
@@ -125,52 +128,6 @@ namespace Eto.Serialization.Xaml
 		{
 			get { return context.DesignMode; }
 			set { context.DesignMode = value; }
-		}
-
-		class NameScope : INameScope
-		{
-			public object Instance { get; set; }
-
-			public object FindName (string name)
-			{
-				return null;
-			}
-
-			public void RegisterName (string name, object scopedElement)
-			{
-				if (Instance == null)
-					return;
-				var instanceType = Instance.GetType();
-				var obj = scopedElement as Widget;
-				if (obj != null && !string.IsNullOrEmpty(name))
-				{
-					#if !NET40
-					var property = instanceType.GetRuntimeProperties().FirstOrDefault(r => r.Name == name && r.SetMethod != null &&!r.SetMethod.IsStatic);
-					if (property != null)
-						property.SetValue(Instance, obj, null);
-					else
-					{
-						var field = instanceType.GetRuntimeField(name);
-						if (field != null && !field.IsStatic)
-							field.SetValue(Instance, obj);
-					}
-					#else
-					var property = instanceType.GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-					if (property != null)
-					property.SetValue(Instance, obj, null);
-					else
-					{
-					var field = instanceType.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-					if (field != null)
-					field.SetValue(Instance, obj);
-					}
-					#endif
-				}
-			}
-
-			public void UnregisterName (string name)
-			{
-			}
 		}
 
 		/// <summary>
@@ -185,7 +142,7 @@ namespace Eto.Serialization.Xaml
 		{
 			var reader = new XamlXmlReader(stream, context);
 			var writerSettings = new XamlObjectWriterSettings();
-			writerSettings.ExternalNameScope = new NameScope { Instance = instance };
+			writerSettings.ExternalNameScope = new EtoNameScope { Instance = instance };
 			writerSettings.RegisterNamesOnExternalNamescope = true;
 			writerSettings.RootObjectInstance = instance;
 			var writer = new XamlObjectWriter(context, writerSettings);

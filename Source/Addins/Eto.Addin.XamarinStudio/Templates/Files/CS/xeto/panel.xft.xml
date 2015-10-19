@@ -12,6 +12,6 @@ You must add the Eto.Serialization.Xaml nuget package to your project to use thi
 	</TemplateConfiguration>
 	<TemplateFiles>
 		<File name="${Name}.xeto.cs" AddStandardHeader="true" src="panel.xeto.cs" DependsOn="${Name}.xeto" />
-		<File name="${Name}.xeto" AddStandardHeader="true" src="panel.xeto" BuildAction="EmbeddedResource" />
+		<EnhancedFile name="${Name}.xeto" AddStandardHeader="true" src="panel.xeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.${Name}.xeto" />
 	</TemplateFiles>
 </Template>

@@ -20,7 +20,7 @@ namespace Eto.Addin.XamarinStudio
 			{
 				if (name == "AppName")
 				{
-					Wizard.Parameters["ProjectName"] = value;
+					source.SetParameter("ProjectName", value);
 					Validate();
 				}
 			};

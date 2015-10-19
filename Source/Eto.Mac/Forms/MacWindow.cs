@@ -198,15 +198,6 @@ namespace Eto.Mac.Forms
 			get { return menuBar == null ? null : menuBar.ControlObject as NSMenu; }
 		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
-			Control.DidBecomeKey += HandleDidBecomeKey;
-			Control.DidResignKey += HandleDidResignKey;
-			Control.ShouldZoom = HandleShouldZoom;
-			Control.WillMiniaturize += HandleWillMiniaturize;
-		}
-
 		IntPtr oldMenu;
 
 		static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
@@ -316,6 +307,9 @@ namespace Eto.Mac.Forms
 
 		public override void AttachEvent(string id)
 		{
+			// when attaching to a native control, we can't handle any events as it'll override its delegate.
+			if (!(Control is IMacControl))
+				return;
 			switch (id)
 			{
 				case Window.ClosedEvent:
@@ -436,8 +430,11 @@ namespace Eto.Mac.Forms
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
 			Control.AutorecalculatesKeyViewLoop = true;
-			//Control.Delegate = new MacWindowDelegate{ Handler = this };
 			Control.WillReturnFieldEditor = HandleWillReturnFieldEditor;
+			Control.DidBecomeKey += HandleDidBecomeKey;
+			Control.DidResignKey += HandleDidResignKey;
+			Control.ShouldZoom = HandleShouldZoom;
+			Control.WillMiniaturize += HandleWillMiniaturize;
 		}
 
 		static NSObject HandleWillReturnFieldEditor(NSWindow sender, NSObject client)

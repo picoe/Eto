@@ -12,6 +12,6 @@ You must add the Eto.Serialization.Json nuget package to your project to use thi
 	</TemplateConfiguration>
 	<TemplateFiles>
 		<File name="${Name}.jeto.cs" AddStandardHeader="true" src="panel.jeto.cs" DependsOn="${Name}.jeto" />
-		<File name="${Name}.jeto" AddStandardHeader="true" src="panel.jeto" BuildAction="EmbeddedResource" />
+		<EnhancedFile name="${Name}.jeto" AddStandardHeader="true" src="panel.jeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.${Name}.jeto" />
 	</TemplateFiles>
 </Template>

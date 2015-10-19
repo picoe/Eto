@@ -7,6 +7,7 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Documents;
 using swm = System.Windows.Media;
+using swi = System.Windows.Input;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
@@ -25,6 +26,10 @@ namespace Eto.Wpf.Forms.Controls
 			var style = new sw.Style { TargetType = typeof(swd.Paragraph) };
 			style.Setters.Add(new sw.Setter(swd.Paragraph.MarginProperty, new sw.Thickness(0)));
 			Control.Resources.Add(typeof(swd.Paragraph), style);
+
+			// toggle underline command doesn't actually work properly in the default implementation
+			// e.g. if you select only a portion of underlined text, you will have to toggle underline twice to remove the underline.
+			Control.CommandBindings.Add(new swi.CommandBinding(swd.EditingCommands.ToggleUnderline, (sender, e) => SelectionUnderline = !SelectionUnderline));
 		}
 
 		swd.TextRange ContentRange
@@ -227,55 +232,61 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		// Existing GetPropertyValue for the TextDecorationCollection will return the first collection, even if it is empty.
-		// this skips empty collections so we can get the actual value.
-		// slightly modified code from https://social.msdn.microsoft.com/Forums/vstudio/en-US/3ac626cf-60aa-427f-80e9-794f3775a70e/how-to-tell-if-richtextbox-selection-is-underlined?forum=wpf
-		object GetPropertyValue(swd.TextRange textRange, sw.DependencyProperty formattingProperty)
-		{
-			object value = null;
-			var pointer = textRange.Start as swd.TextPointer;
-			if (pointer != null)
-			{
-				var needsContinue = true;
-				sw.DependencyObject element = pointer.Parent as swd.TextElement;
-				while (needsContinue && (element is swd.Inline || element is swd.Paragraph || element is swc.TextBlock))
-				{
-					value = element.GetValue(formattingProperty);
-					var seq = value as IEnumerable;
-					needsContinue = (seq == null) ? value == null : seq.Cast<Object>().Count() == 0;
-					element = element is swd.TextElement ? ((swd.TextElement)element).Parent : null;
-				}
-			}
-			return value;
-		}
 
 		bool HasDecorations(swd.TextRange range, sw.TextDecorationCollection decorations)
 		{
-			var existingDecorations = GetPropertyValue(range, swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
+			swd.TextRange realRange;
+            var existingDecorations = range.GetRealPropertyValue(swd.Inline.TextDecorationsProperty, out realRange) as sw.TextDecorationCollection;
 			return existingDecorations != null && decorations.All(r => existingDecorations.Contains(r));
 		}
 
 		void SetDecorations(swd.TextRange range, sw.TextDecorationCollection decorations, bool value)
 		{
-			var existingDecorations = range.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
-			if (existingDecorations != null)
-				existingDecorations = new sw.TextDecorationCollection(existingDecorations);
-			if (value)
+			using (Control.DeclareChangeBlock())
 			{
-				existingDecorations = existingDecorations ?? new sw.TextDecorationCollection();
-				existingDecorations.Add(decorations);
-			}
-			else if (existingDecorations != null)
-			{
-				foreach (var decoration in decorations)
+				// set the property to each element in the range so it keeps all other decorations
+				foreach (var element in range.GetElements().OfType<swd.Inline>().Distinct())
 				{
-					if (existingDecorations.Contains(decoration))
-						existingDecorations.Remove(decoration);
+					var existingDecorations = element.GetValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
+
+					// need to keep the range before changing otherwise the range changes
+					var elementRange = new swd.TextRange(element.ElementStart, element.ElementEnd);
+
+					sw.TextDecorationCollection newDecorations = null;
+
+					// remove decorations from the element
+					element.SetValue(swd.Inline.TextDecorationsProperty, null);
+
+					if (existingDecorations != null && existingDecorations.Count > 0)
+					{
+						// merge desired decorations with existing decorations.
+						if (value)
+							newDecorations = new sw.TextDecorationCollection(existingDecorations.Union(decorations));
+						else
+							newDecorations = new sw.TextDecorationCollection(existingDecorations.Except(decorations));
+
+						// split up existing decorations to the parts of the element that don't fall within the range
+						existingDecorations = new sw.TextDecorationCollection(existingDecorations); // copy so we don't update existing elements
+						if (elementRange.Start.CompareTo(range.Start) < 0)
+							new swd.TextRange(elementRange.Start, range.Start).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, existingDecorations);
+						if (elementRange.End.CompareTo(range.End) > 0)
+							new swd.TextRange(range.End, elementRange.End).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, existingDecorations);
+					}
+					else
+					{
+						// no existing decorations, just set the new value
+						newDecorations = value ? decorations : null;
+					}
+
+					if (newDecorations != null && newDecorations.Count > 0)
+					{
+						// apply new decorations to the desired range, which may be a combination of existing decorations
+						swd.TextPointer start = elementRange.Start.CompareTo(range.Start) < 0 ? range.Start : elementRange.Start;
+						swd.TextPointer end = elementRange.End.CompareTo(range.End) > 0 ? range.End : elementRange.End;
+						new swd.TextRange(start, end).ApplyPropertyValue(swd.Inline.TextDecorationsProperty, newDecorations);
+					}
 				}
-				if (existingDecorations.Count == 0)
-					existingDecorations = null;
 			}
-			range.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, existingDecorations);
 		}
 
 		public bool SelectionUnderline
@@ -393,6 +404,7 @@ namespace Eto.Wpf.Forms.Controls
 
 	static class FlowDocumentExtensions
 	{
+		static readonly Type[] runAndParagraphTypes = new Type[] { typeof(swd.Run), typeof(swd.Paragraph) };
 		static IEnumerable<swd.TextElement> GetRunsAndParagraphs(swd.FlowDocument doc)
 		{
 			for (var position = doc.ContentStart;
@@ -401,17 +413,25 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				if (position.GetPointerContext(swd.LogicalDirection.Forward) == swd.TextPointerContext.ElementEnd)
 				{
-					var run = position.Parent as swd.Run;
+					if (runAndParagraphTypes.Any(r => r.IsInstanceOfType(position.Parent)))
+						yield return position.Parent as swd.TextElement;
+				}
+			}
+		}
 
-					if (run != null)
-						yield return run;
-					else
-					{
-						var para = position.Parent as swd.Paragraph;
-
-						if (para != null)
-							yield return para;
-					}
+		public static IEnumerable<swd.TextElement> GetElements(this swd.TextRange range)
+		{
+			for (var position = range.Start;
+			  position != null && position.CompareTo(range.End) <= 0;
+			  position = position.GetNextContextPosition(swd.LogicalDirection.Forward))
+			{
+				var obj = position.Parent as sw.FrameworkContentElement;
+				while (obj != null)
+				{
+					var elem = obj as swd.TextElement;
+					if (elem != null)
+						yield return elem;
+					obj = obj.Parent as sw.FrameworkContentElement;
 				}
 			}
 		}
@@ -528,6 +548,35 @@ namespace Eto.Wpf.Forms.Controls
 			return position;
 		}
 
-		
+		// Existing GetPropertyValue for the TextDecorationCollection will return the first collection, even if it is empty.
+		// this skips empty collections so we can get the actual value.
+		// slightly modified code from https://social.msdn.microsoft.com/Forums/vstudio/en-US/3ac626cf-60aa-427f-80e9-794f3775a70e/how-to-tell-if-richtextbox-selection-is-underlined?forum=wpf
+		public static object GetRealPropertyValue(this swd.TextRange textRange, sw.DependencyProperty formattingProperty, out swd.TextRange fullRange)
+		{
+			object value = null;
+			fullRange = null;
+			var pointer = textRange.Start as swd.TextPointer;
+			if (pointer != null)
+			{
+				var needsContinue = true;
+				swd.TextElement text = null;
+				sw.DependencyObject element = pointer.Parent as swd.TextElement;
+				while (needsContinue && (element is swd.Inline || element is swd.Paragraph || element is swc.TextBlock))
+				{
+					value = element.GetValue(formattingProperty);
+					text = element as swd.TextElement;
+					var seq = value as IEnumerable;
+					needsContinue = (seq == null) ? value == null : seq.Cast<object>().Count() == 0;
+					element = element is swd.TextElement ? ((swd.TextElement)element).Parent : null;
+					
+				}
+				if (text != null)
+				{
+					fullRange = new swd.TextRange(text.ElementStart, text.ElementEnd);
+                }
+            }
+			return value;
+		}
+
 	}
 }

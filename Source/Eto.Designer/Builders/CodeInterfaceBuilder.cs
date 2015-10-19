@@ -16,7 +16,6 @@ namespace Eto.Designer.Builders
 {
 	public abstract class CodeInterfaceBuilder : IInterfaceBuilder, IDisposable
 	{
-		readonly object generate_lock = new object();
 		AppDomain newDomain;
 		string output;
 		const string assemblyName = "Generated";
@@ -161,20 +160,31 @@ namespace Eto.Designer.Builders
 
 		protected abstract CodeDomProvider CreateCodeProvider();
 
+		const string ReferenceAssembliesFolder = @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5";
+
+		string GetReferenceAssembliesPath(string basePath)
+		{
+			if (string.IsNullOrEmpty(basePath))
+				return null;
+			var path = Path.Combine(basePath, ReferenceAssembliesFolder);
+			return Directory.Exists(path) ? path : null;
+		}
+
 		protected virtual void SetParameters(CompilerParameters parameters)
 		{
-			const string ReferenceAssembliesFolder = @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5";
-
 			string referenceDir = null;
 			if (EtoEnvironment.Platform.IsWindows)
 			{
-				referenceDir = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), ReferenceAssembliesFolder);
-				if (!Directory.Exists(referenceDir))
-					referenceDir = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles"), ReferenceAssembliesFolder);
+				referenceDir = GetReferenceAssembliesPath(Environment.GetEnvironmentVariable("ProgramFiles(x86)"));
+				if (referenceDir == null)
+					referenceDir = GetReferenceAssembliesPath(Environment.GetEnvironmentVariable("ProgramFiles"));
 			}
 			else if (EtoEnvironment.Platform.IsMac)
 				referenceDir = @"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5";
-			
+
+			if (string.IsNullOrEmpty(referenceDir))
+				throw new InvalidOperationException("Cannot find reference assemblies folder");
+
 			if (EtoEnvironment.Platform.IsMono)
 				parameters.ReferencedAssemblies.Add(Path.Combine(referenceDir, "mscorlib.dll"));
 
@@ -215,6 +225,19 @@ namespace Eto.Designer.Builders
 				GenerateExecutable = false,
 				OutputAssembly = inMemory ? null : output
 			};
+
+			if (EtoEnvironment.Platform.IsMac)
+			{
+				// hack for OS X el capitan. mcs moved from /usr/bin to /usr/local/bin and is not on the path when XS is running
+				// this should be removed when mono/XS is fixed.
+				var path = Environment.GetEnvironmentVariable("PATH");
+				var paths = path.Split(':');
+				if (!paths.Contains("/usr/local/bin", StringComparer.Ordinal))
+				{
+					path += ":/usr/local/bin";
+					Environment.SetEnvironmentVariable("PATH", path);
+				}
+			}
 
 			SetParameters(parameters);
 

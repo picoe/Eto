@@ -27,6 +27,13 @@ namespace Eto.Serialization.Json.Converters
 			{
 				return null;
 			}
+			if (reader.TokenType == JsonToken.String)
+			{
+				if (objectType == typeof(TableRow))
+					return new TableRow(Convert.ToString(reader.Value));
+				if (objectType == typeof(TableCell))
+					return new TableCell(Convert.ToString(reader.Value));
+			}
 			if (reader.TokenType == JsonToken.StartArray)
 			{
 				container = JArray.Load(reader);

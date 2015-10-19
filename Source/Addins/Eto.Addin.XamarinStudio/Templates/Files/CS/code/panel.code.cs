@@ -9,7 +9,7 @@ namespace ${Namespace}
 	{	
 		public ${EscapedIdentifier}()
 		{
-			InitializeComponent();
+			Content = new Label { Text = "Some Content" };
 		}
 	}
 }

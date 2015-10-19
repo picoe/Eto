@@ -1,0 +1,33 @@
+﻿{
+	"$type": "Form",
+	"Menu": {
+		"Items": [
+			{ 
+				"$type": "ButtonMenuItem",
+				"Text": "&File",
+				"Items": [
+					{ "$type": "ButtonMenuItem", "Text": "Click Me!", "Click": "HandleClickMe" }
+				]
+			}
+		],
+		"ApplicationItems": [
+			{ "$type": "ButtonMenuItem", "Text": "Preferences..." }
+
+		],
+		"QuitItem": { "$type": "ButtonMenuItem", "Text": "Quit!!", "Shortcut": "CommonModifier+Q", "Click": "HandleQuit" }
+	},
+	"ToolBar": {
+		"Items": [
+			{ "$type": "ButtonToolItem", "Text": "Click Me", "Click": "HandleClickMe" }
+		]
+	},
+	"ClientSize": "200,200",
+	"Content": {
+		"$type": "StackLayout",
+		"Items": [
+			"Some Content"
+		]
+	}
+}
+
+

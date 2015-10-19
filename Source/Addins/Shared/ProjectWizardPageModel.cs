@@ -80,6 +80,7 @@ namespace Eto.Addin.Shared
 				Source.SetParameter("UseSAL", value.ToString());
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
 			}
 		}
 
@@ -113,6 +114,7 @@ namespace Eto.Addin.Shared
 				Source.SetParameter("UseXeto", value.ToString());
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
 			}
 		}
 
@@ -124,6 +126,7 @@ namespace Eto.Addin.Shared
 				Source.SetParameter("UseJeto", value.ToString());
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
 			}
 		}
 
@@ -138,9 +141,10 @@ namespace Eto.Addin.Shared
 			}
 		}
 
-		public string Title
+		public override string Title
 		{
 			get { return string.Format("Eto.Forms {0} Properties", IsLibrary ? "Library" : "Application"); }
+			set { base.Title = value; }
 		}
 
 		public bool RequiresInput
@@ -175,6 +179,22 @@ namespace Eto.Addin.Shared
 			new CombinedInfo { Text = "A separate .exe assembly for each platform." },
 		};
 
+		struct FormatInfo
+		{
+			public string Text;
+			public bool UseXeto;
+			public bool UseJeto;
+			public bool UseCode;
+			public bool UseCodePreview;
+		}
+
+		static FormatInfo[] formatInformation = {
+			new FormatInfo { UseXeto = true, Text = "Use xaml (.xeto) to define the layout of your form, with code behind for logic and event handlers" },
+			new FormatInfo { UseJeto = true, Text = "Use json (.jeto) to define the layout of your form, with code behind for logic and event handlers" },
+			new FormatInfo { UseCode = true, Text = "Write your form entirely in a single source file (no preview)" },
+			new FormatInfo { UseCodePreview = true, Text = "Define your view layout in a partial class with form preview, with logic and event handlers in a separate file." },
+		};
+
 		public string Information
 		{
 			get
@@ -192,7 +212,15 @@ namespace Eto.Addin.Shared
 							   select i.Text;
 				var typeText = typeInfo.FirstOrDefault();
 
-				return string.Join("\n\n", combinedText, typeText);
+				var formatInfo = from i in formatInformation
+						where i.UseCode == UseCode
+					&& i.UseCodePreview == UseCodePreview
+					&& i.UseXeto == UseXeto
+					&& i.UseJeto == UseJeto
+					select i.Text;
+				var formatText = formatInfo.FirstOrDefault();
+
+				return string.Join("\n\n", combinedText, typeText, formatText);
 			}
 		}
 
@@ -202,6 +230,12 @@ namespace Eto.Addin.Shared
 		{
 			if (PropertyChanged != null)
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		void UpdateCommon()
+		{
+			Source.SetParameter("UseSharedXeto", (UseSAL && UseXeto).ToString());
+			Source.SetParameter("UseSharedJeto", (UseSAL && UseJeto).ToString());
 		}
 	}
 

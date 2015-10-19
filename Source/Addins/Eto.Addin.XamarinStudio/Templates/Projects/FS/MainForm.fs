@@ -4,9 +4,9 @@ open System
 open Eto.Forms
 open Eto.Drawing
 
-type MainForm() as this = 
+type MainForm$if$($UseCodePreview$==True)Base$endif$ () as this = 
     inherit Form()
-    do 
+    $if$($UseCodePreview$==True)member this.InitializeComponent() =$endif$$if$($UseCode$==True)do$endif$ 
         base.Title <- "My Eto Form"
         base.ClientSize <- new Size(400, 350)
 
@@ -21,18 +21,18 @@ type MainForm() as this =
 
         // create a few commands that can be used for the menu and toolbar
         let clickMe = new Command(MenuText = "Click Me!", ToolBarText = "Click Me!")
-        clickMe.Executed.Add(fun e -> ignore(MessageBox.Show(this, "I was clicked!")))
+        clickMe.Executed.Add(fun e -> MessageBox.Show(this, "I was clicked!") |> ignore)
 
         let quitCommand = new Command(MenuText = "Quit")
         quitCommand.Shortcut <- Application.Instance.CommonModifier ||| Keys.Q
         quitCommand.Executed.Add(fun e -> Application.Instance.Quit())
 
         let aboutCommand = new Command(MenuText = "About...")
-        aboutCommand.Executed.Add(fun e -> ignore(MessageBox.Show(this, "About my app...")))
+        aboutCommand.Executed.Add(fun e -> MessageBox.Show(this, "About my app...") |> ignore)
 
         base.Menu <- new MenuBar()
         let fileItem = new ButtonMenuItem(Text = "&File")
-        ignore(fileItem.Items.Add(clickMe))
+        fileItem.Items.Add(clickMe) |> ignore
         base.Menu.Items.Add(fileItem)
 
         (* add more menu items to the main menu...

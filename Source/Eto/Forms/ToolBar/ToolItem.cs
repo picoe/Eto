@@ -1,12 +1,14 @@
 using System;
 using Eto.Drawing;
 using System.Windows.Input;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
 	/// <summary>
 	/// Base tool item class for a <see cref="ToolBar"/>.
 	/// </summary>
+	[TypeConverter(typeof(ToolItemConverter))]
 	public abstract class ToolItem : Tool, ICommandItem
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
