@@ -296,6 +296,50 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Finds a child control in this container or any of its child containers with the specified <typeparamref name="id"/>
+		/// </summary>
+		/// <returns>The child control if found, or null if not.</returns>
+		/// <param name="id">Optional identifier of the control to find that matches the <see cref="Widget.ID"/>.</param>
+		/// <typeparam name="T">The type of control to find.</typeparam>
+		public T FindChild<T>(string id = null)
+			where T: Control
+		{
+			if (string.IsNullOrEmpty(id))
+				return Children.OfType<T>().FirstOrDefault();
+			else
+				return Children.OfType<T>().FirstOrDefault(r => r.ID == id);
+		}
+
+		/// <summary>
+		/// Finds a child control in this container or any of its child containers with the specified <paramref name="type"/>
+		/// </summary>
+		/// <returns>The child control if found, or null if not.</returns>
+		/// <param name="type">The type of control to find.</param>
+		/// <param name="id">Optional identifier of the control to find that matches the <see cref="Widget.ID"/>.</param>
+		public Control FindChild(Type type, string id = null)
+		{
+			if (id == null)
+				throw new ArgumentNullException("type");
+			if (string.IsNullOrEmpty(id))
+				return Children.FirstOrDefault(r => type.IsInstanceOfType(r));
+			else
+				return Children.FirstOrDefault(r => type.IsInstanceOfType(r) && r.ID == id);
+		}
+
+		/// <summary>
+		/// Finds a child control in this container or any of its child containers with the specified <paramref name="id"/>.
+		/// </summary>
+		/// <returns>The child control if found, or null if not.</returns>
+		/// <param name="id">Identifier of the control to find that matches the <see cref="Widget.ID"/>.</param>
+		public Control FindChild(string id)
+		{
+			if (id == null)
+				throw new ArgumentNullException("id");
+			return Children.FirstOrDefault(r => r.ID == id);
+		}
+
+
+		/// <summary>
 		/// Handler interface for the <see cref="Container"/> control
 		/// </summary>
 		public new interface IHandler : Control.IHandler
