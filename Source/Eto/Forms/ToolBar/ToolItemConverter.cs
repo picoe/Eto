@@ -10,6 +10,11 @@ namespace Eto.Forms
 			return typeof(Command).IsAssignableFrom(sourceType) || base.CanConvertFrom(context, sourceType);
 		}
 
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		{
+			return false;
+		}
+
 		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
 			var command = value as Command;

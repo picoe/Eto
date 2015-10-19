@@ -37,6 +37,11 @@ namespace Eto.Drawing
 			return sourceType == typeof (string) || sourceType == typeof(NamespaceInfo) || sourceType == typeof(Stream) || base.CanConvertFrom (context, sourceType);
 		}
 
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		{
+			return false;
+		}
+
 		static Image LoadImage (Stream stream)
 		{
 			return stream == null ? null : new Bitmap(stream);
