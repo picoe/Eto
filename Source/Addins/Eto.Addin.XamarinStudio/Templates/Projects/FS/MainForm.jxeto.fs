@@ -7,11 +7,12 @@ open Eto.Serialization.$if$($UseXeto$==True)Xaml$endif$$if$($UseJeto$==True)Json
 
 type MainForm() as this = 
     inherit Form()
+
     do 
         $if$($UseXeto$==True)Xaml$endif$$if$($UseJeto$==True)Json$endif$Reader.Load(this)
 
-    member this.HandleClickMe(sender:Object, e:EventArgs) =
-        ignore(MessageBox.Show("Hello!"))
+    member this.HandleClickMe(sender:obj, e:EventArgs) =
+        MessageBox.Show("Hello!") |> ignore
 
-    member this.HandleQuit(sender:Object, e:EventArgs) =
+    member this.HandleQuit(sender:obj, e:EventArgs) =
         Application.Instance.Quit()

@@ -49,10 +49,10 @@
     <Compile Include="VBDotNetProjectBinding.cs" />
     <Compile Include="FSharpProjectBinding.cs" />
     <Compile Include="ParameterSource.cs" />
-    <Compile Include="ParameterizedFile.cs" />
     <Compile Include="Editor\DisplayBinding.cs" />
     <Compile Include="Editor\XetoTextEditorExtension.cs" />
     <Compile Include="Editor\EditorView.cs" />
+    <Compile Include="EnhancedFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />

@@ -42,11 +42,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
@@ -66,11 +66,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -89,11 +89,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
@@ -109,11 +109,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
@@ -129,11 +129,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
+				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>

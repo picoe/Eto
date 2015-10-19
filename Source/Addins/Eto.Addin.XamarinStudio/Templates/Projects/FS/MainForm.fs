@@ -21,18 +21,18 @@ type MainForm$if$($UseCodePreview$==True)Base$endif$ () as this =
 
         // create a few commands that can be used for the menu and toolbar
         let clickMe = new Command(MenuText = "Click Me!", ToolBarText = "Click Me!")
-        clickMe.Executed.Add(fun e -> ignore(MessageBox.Show(this, "I was clicked!")))
+        clickMe.Executed.Add(fun e -> MessageBox.Show(this, "I was clicked!") |> ignore)
 
         let quitCommand = new Command(MenuText = "Quit")
         quitCommand.Shortcut <- Application.Instance.CommonModifier ||| Keys.Q
         quitCommand.Executed.Add(fun e -> Application.Instance.Quit())
 
         let aboutCommand = new Command(MenuText = "About...")
-        aboutCommand.Executed.Add(fun e -> ignore(MessageBox.Show(this, "About my app...")))
+        aboutCommand.Executed.Add(fun e -> MessageBox.Show(this, "About my app...") |> ignore)
 
         base.Menu <- new MenuBar()
         let fileItem = new ButtonMenuItem(Text = "&File")
-        ignore(fileItem.Items.Add(clickMe))
+        fileItem.Items.Add(clickMe) |> ignore
         base.Menu.Items.Add(fileItem)
 
         (* add more menu items to the main menu...

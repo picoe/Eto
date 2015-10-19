@@ -11,7 +11,7 @@
 				<Command x:Name="clickCommand" MenuText="Click Me!" ToolBarText="Click Me!" Executed="HandleClickMe" />
 			</ButtonMenuItem>
 			<MenuBar.ApplicationItems>
-				<ButtonMenuItem Text="Preferences.." Shortcut="{On Mac=Application+Comma}" />
+				<ButtonMenuItem Text="Preferences.." Shortcut="{On Control+O, Mac=Application+Comma}" />
 			</MenuBar.ApplicationItems>
 			<MenuBar.QuitItem>
 				<ButtonMenuItem Text="Quit!" Shortcut="CommonModifier+Q" Click="HandleQuit" />

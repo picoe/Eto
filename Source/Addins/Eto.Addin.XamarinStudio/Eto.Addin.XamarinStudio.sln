@@ -15,6 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - pc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - net45", "..\..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4E4F6B1-48B2-4D57-8CEB-39796557ECB5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\addin-project.xml = ..\..\..\addin-project.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +54,8 @@ Global
 		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

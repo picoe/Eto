@@ -32,11 +32,11 @@
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
@@ -44,6 +44,8 @@
 				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -57,15 +59,17 @@
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Gtk" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -73,9 +77,9 @@
 			<Files>
 				<File name="MainForm.fs" AddStandardHeader="True" src="MainForm.fs" if="UseCode" />
 				<File name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" />
-				<File name="MainForm.xeto.fs" AddStandardHeader="True" src="MainForm.jxeto.fs" if="UseXeto" />
+				<EnhancedFile name="MainForm.xeto.fs" AddStandardHeader="True" src="MainForm.jxeto.fs" if="UseXeto" FormatCode="False" />
 				<File name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" />
-				<File name="MainForm.jeto.fs" AddStandardHeader="True" src="MainForm.jxeto.fs" if="UseJeto" />
+				<EnhancedFile name="MainForm.jeto.fs" AddStandardHeader="True" src="MainForm.jxeto.fs" if="UseJeto" FormatCode="False" />
 				<File name="MainForm.eto.fs" AddStandardHeader="True" src="MainForm.fs" if="UseCodePreview" />
 				<File name="MainForm.fs" AddStandardHeader="True" src="MainForm.preview.fs" if="UseCodePreview" />
 			</Files>
@@ -95,9 +99,9 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<File name="MainForm.fs" AddStandardHeader="True" src="MainForm.fs" if="UseCode" />
 				<File name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" />
-				<File name="MainForm.xeto.fs" AddStandardHeader="True" src="MainForm.jxeto.fs" if="UseXeto" />
+				<EnhancedFile name="MainForm.xeto.fs" AddStandardHeader="True" src="MainForm.jxeto.fs" if="UseXeto" FormatCode="False" />
 				<File name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" />
-				<File name="MainForm.jeto.fs" AddStandardHeader="True" src="MainForm.jxeto.fs" if="UseJeto" />
+				<EnhancedFile name="MainForm.jeto.fs" AddStandardHeader="True" src="MainForm.jxeto.fs" if="UseJeto" FormatCode="False" />
 				<File name="MainForm.eto.fs" AddStandardHeader="True" src="MainForm.fs" if="UseCodePreview" />
 				<File name="MainForm.fs" AddStandardHeader="True" src="MainForm.preview.fs" if="UseCodePreview" />
 			</Files>
@@ -118,15 +122,17 @@
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -142,15 +148,17 @@
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.FSharp" if="!Combined">
@@ -166,15 +174,17 @@
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -189,16 +199,18 @@
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Mac" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.Mac" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -214,16 +226,18 @@
 			<Files>
 				<Directory name="Resources"/>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -238,16 +252,18 @@
 			<Files>
 				<Directory name="Resources"/>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<ParameterizedFile name="Program.fs" AddStandardHeader="True" src="Program.fs">
+				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
 				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 

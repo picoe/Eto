@@ -10,11 +10,11 @@
 				]
 			}
 		],
-		ApplicationItems: [
+		"ApplicationItems": [
 			{ "$type": "ButtonMenuItem", "Text": "Preferences..." }
 
 		],
-		QuitItem: { "$type": "ButtonMenuItem", "Text": "Quit!!", "Shortcut": "CommonModifier+Q", "Click": "HandleQuit" }
+		"QuitItem": { "$type": "ButtonMenuItem", "Text": "Quit!!", "Shortcut": "CommonModifier+Q", "Click": "HandleQuit" }
 	},
 	"ToolBar": {
 		"Items": [

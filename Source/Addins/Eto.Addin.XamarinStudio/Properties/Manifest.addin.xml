@@ -68,6 +68,7 @@
 		<Import assembly="Eto.Serialization.Json.dll" />
 		<Import assembly="Eto.Serialization.Xaml.dll" />
 		<Import assembly="Portable.Xaml.dll" />
+		<Import assembly="FSharp.Compiler.CodeDom.dll" />
 		<Import file="Eto.xml" />
 	</Runtime>
 	<Extension path="/MonoDevelop/ProjectModel/ProjectBindings">
@@ -75,7 +76,7 @@
 		<ProjectBinding id="Eto.FSharp" class="Eto.Addin.XamarinStudio.FSharpProjectBinding" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/FileTemplateTypes">
-		<FileTemplateType name="ParameterizedFile" class="Eto.Addin.XamarinStudio.ParameterizedFile" />
+		<FileTemplateType name="EnhancedFile" class="Eto.Addin.XamarinStudio.EnhancedFile" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding insertbefore="DefaultDisplayBinding" class="Eto.Addin.XamarinStudio.Editor.DisplayBinding" />

@@ -26,6 +26,8 @@
 			</Files>
 			<Packages>
 				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" Version="2.2.0-alpha" if="UseXeto" /> 
+				<Package Id="Eto.Serialization.Json" Version="2.2.0-alpha" if="UseJeto" /> 
 				<Package Id="FSharp.Core" />
 			</Packages>
 		</Project>

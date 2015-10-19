@@ -23,9 +23,9 @@
 		<Project name="${ProjectName}" directory="." type="SharedAssetsProject" if="UseSAL">
 			<Files>
 				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCode" />
-				<ParameterizedFile name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.MainForm.xeto" />
+				<EnhancedFile name="MainForm.xeto" AddStandardHeader="True" src="../Shared/MainForm.xeto" if="UseXeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.MainForm.xeto" />
 				<File name="MainForm.xeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseXeto" DependsOn="MainForm.xeto" />
-				<ParameterizedFile name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.MainForm.jeto" />
+				<EnhancedFile name="MainForm.jeto" AddStandardHeader="True" src="../Shared/MainForm.jeto" if="UseJeto" BuildAction="EmbeddedResource" ResourceId="${Namespace}.MainForm.jeto" />
 				<File name="MainForm.jeto.cs" AddStandardHeader="True" src="MainForm.jxeto.cs" if="UseJeto" DependsOn="MainForm.jeto" />
 				<File name="MainForm.cs" AddStandardHeader="True" src="MainForm.preview.cs" if="UseCodePreview" />
 				<File name="MainForm.eto.cs" AddStandardHeader="True" src="MainForm.cs" if="UseCodePreview" DependsOn="MainForm.cs" />
@@ -78,11 +78,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -104,11 +104,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -129,11 +129,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -151,11 +151,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -173,11 +173,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
@@ -195,11 +195,11 @@
 				<Reference type="Project" refto="${ProjectName}"/>
 			</References>
 			<Files>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.Mac" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
@@ -221,11 +221,11 @@
 			</References>
 			<Files>
 				<Directory name="Resources"/>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
@@ -246,11 +246,11 @@
 			</References>
 			<Files>
 				<Directory name="Resources"/>
-				<ParameterizedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
+				<EnhancedFile name="Program.cs" AddStandardHeader="True" src="Program.cs">
 					<Replacements>
 						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
 					</Replacements>
-				</ParameterizedFile>
+				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
