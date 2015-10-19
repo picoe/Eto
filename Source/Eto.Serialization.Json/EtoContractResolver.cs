@@ -53,15 +53,29 @@ namespace Eto.Serialization.Json
 				list.Add(prop);
 			}
 
-			var idprop = type.GetRuntimeProperty("ID");
+			var idprop = list.FirstOrDefault(r => r.PropertyName == "ID");
 			if (idprop != null)
 			{
-				var prop = CreateProperty(idprop, memberSerialization);
-				prop.PropertyName = "$name";
-				prop.PropertyType = typeof(NameConverter.Info);
-				prop.MemberConverter = new NameConverter();
-				prop.ValueProvider = new NameConverter.ValueProvider();
-				list.Add(prop);
+				var propertyInfo = type.GetRuntimeProperty("ID");
+				if (propertyInfo != null)
+				{
+					list.Remove(idprop); // replaced with our own.
+
+					// allow for $name or ID.
+					var prop = CreateProperty(propertyInfo, memberSerialization);
+					prop.PropertyName = "$name";
+					prop.PropertyType = typeof(NameConverter.Info);
+					prop.MemberConverter = new NameConverter();
+					prop.ValueProvider = new NameConverter.ValueProvider();
+					list.Add(prop);
+
+					prop = CreateProperty(propertyInfo, memberSerialization);
+					prop.PropertyName = "ID";
+					prop.PropertyType = typeof(NameConverter.Info);
+					prop.MemberConverter = new NameConverter();
+					prop.ValueProvider = new NameConverter.ValueProvider();
+					list.Add(prop);
+				}
 			}
 
 			if (list.All(r => r.PropertyName != "$type"))
