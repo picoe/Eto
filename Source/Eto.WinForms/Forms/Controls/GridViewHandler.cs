@@ -12,7 +12,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected override object GetItemAtRow(int row)
 		{
-			if (collection != null && collection.Collection != null && collection.Count > row)
+			if (row >= 0 && collection != null && collection.Collection != null && collection.Count > row)
 				return collection.ElementAt(row);
 			return null;
 		}
