@@ -372,11 +372,17 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		static readonly IntPtr selGetString = Selector.GetHandle("string");
+
 		public void Append(string text, bool scrollToCursor)
 		{
-			var range = new NSRange(Control.Value.Length, 0);
+			// get NSString object so we don't have to marshal the entire string to get its length
+			var stringValuePtr = Messaging.IntPtr_objc_msgSend(Control.Handle, selGetString);
+			var str = Runtime.GetNSObject(stringValuePtr) as NSString;
+
+			var range = new NSRange(str != null ? str.Length : 0, 0);
 			Control.Replace(range, text);
-			range = new NSRange(Control.Value.Length, 0);
+			range.Location += (nnint)text.Length;
 			Control.SelectedRange = range;
 			if (scrollToCursor)
 				Control.ScrollRangeToVisible(range);
