@@ -296,7 +296,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Finds a child control in this container or any of its child containers with the specified <typeparamref name="id"/>
+		/// Finds a child control in this container or any of its child containers with the specified <paramref name="id"/>
 		/// </summary>
 		/// <returns>The child control if found, or null if not.</returns>
 		/// <param name="id">Optional identifier of the control to find that matches the <see cref="Widget.ID"/>.</param>

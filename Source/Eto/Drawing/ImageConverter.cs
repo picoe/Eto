@@ -37,6 +37,12 @@ namespace Eto.Drawing
 			return sourceType == typeof (string) || sourceType == typeof(NamespaceInfo) || sourceType == typeof(Stream) || base.CanConvertFrom (context, sourceType);
 		}
 
+		/// <summary>
+		/// Gets a value indicating that this converter can convert to the specified type.
+		/// </summary>
+		/// <param name="context">Conversion context</param>
+		/// <param name="destinationType">Type to convert to</param>
+		/// <returns>True if this converter can convert to the specified <paramref name="destinationType"/>, otherwise false.</returns>
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			return false;
