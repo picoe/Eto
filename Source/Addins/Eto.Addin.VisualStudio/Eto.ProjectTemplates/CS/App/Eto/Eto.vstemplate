@@ -9,7 +9,7 @@
 		<Icon></Icon>
 	</TemplateData>
 	<TemplateContent>
-		<Project TargetFileName="Eto.csproj" File="Library.csproj" ReplaceParameters="true">
+		<Project TargetFileName="Eto.csproj" File="..\..\Library\Library.csproj" ReplaceParameters="true">
 			<ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.cs">MainForm.cs</ProjectItem>
 			<Folder Name=".." TargetFolderName="Properties">
 				<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>

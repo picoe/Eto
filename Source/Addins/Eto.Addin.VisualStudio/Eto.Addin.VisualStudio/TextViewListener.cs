@@ -84,6 +84,7 @@ namespace Eto.Addin.VisualStudio
 
 	internal static class Components
 	{
+#pragma warning disable 649
 		// Use XML editor for xeto files
 		[Export]
 		[FileExtension(".xeto")]
@@ -95,6 +96,7 @@ namespace Eto.Addin.VisualStudio
 		[FileExtension(".jeto")]
 		[ContentType("Json")]
 		internal static FileExtensionToContentTypeDefinition JetoFileExtensionDefinition;
+#pragma warning restore 649
 	}
 
 	[Export(typeof(IWpfTextViewCreationListener))]

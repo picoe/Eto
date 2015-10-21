@@ -46,7 +46,6 @@ namespace Eto.Addin.VisualStudio.Editor
 		ElementHost host = new ElementHost();
 		uint dataEventsCookie;
 		uint linesEventsCookie;
-		IInterfaceBuilder builder;
 
 		void RegisterIndependentView(bool subscribe)
 		{
@@ -294,9 +293,6 @@ namespace Eto.Addin.VisualStudio.Editor
 						host.Dispose();
 						host = null;
 					}
-					var builderDispose = builder as IDisposable;
-					if (builderDispose != null)
-						builderDispose.Dispose();
 
 					GC.SuppressFinalize(this);
 				}

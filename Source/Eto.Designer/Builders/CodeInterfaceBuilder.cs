@@ -100,9 +100,11 @@ namespace Eto.Designer.Builders
 								Control control = null;
 								if (useAppDomain)
 								{
-									// doesn't work without for some reason
+#pragma warning disable 618
+									// doesn't work without for some reason, and there's no non-obsolete alternative.
 									if (!AppDomain.CurrentDomain.ShadowCopyFiles)
 										AppDomain.CurrentDomain.SetShadowCopyFiles();
+#pragma warning restore 618
 
 									var setup = new AppDomainSetup
 									{
