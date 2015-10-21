@@ -80,9 +80,18 @@ namespace Eto.Serialization.Xaml
 			return type;
 		}
 
+		static Assembly EtoAssembly = typeof(Platform).GetTypeInfo().Assembly;
+
 		public override XamlType GetXamlType(Type type)
 		{
-			if (type.GetTypeInfo().Assembly == typeof(Platform).GetTypeInfo().Assembly)
+			var info = type.GetTypeInfo();
+
+			if (info.Assembly == EtoAssembly
+				|| (
+				    info.IsGenericType
+				    && info.GetGenericTypeDefinition() == typeof(Nullable<>)
+				    && Nullable.GetUnderlyingType(type).GetTypeInfo().Assembly == EtoAssembly
+				))
 			{
 				XamlType xamlType;
 				if (typeCache.TryGetValue(type, out xamlType))

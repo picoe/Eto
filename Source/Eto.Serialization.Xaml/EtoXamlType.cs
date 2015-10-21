@@ -84,7 +84,7 @@ namespace Eto.Serialization.Xaml
 	}
 #endif
 
-	public class EtoXamlType : XamlType
+	class EtoXamlType : XamlType
 	{
 		public EtoXamlType(Type underlyingType, XamlSchemaContext schemaContext)
 			: base(underlyingType, schemaContext)
@@ -107,6 +107,14 @@ namespace Eto.Serialization.Xaml
 			
 			// convert from Eto.TypeConverter to Portable.Xaml.ComponentModel.TypeConverter
 			var typeConverterAttrib = GetCustomAttribute<EtoTypeConverterAttribute>();
+
+			if (typeConverterAttrib == null
+			    && UnderlyingType.GetTypeInfo().IsGenericType
+			    && UnderlyingType.GetTypeInfo().GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				typeConverterAttrib = Nullable.GetUnderlyingType(UnderlyingType).GetTypeInfo().GetCustomAttribute<EtoTypeConverterAttribute>();
+			}
+
 			if (typeConverterAttrib != null)
 			{
 				var converterType = Type.GetType(typeConverterAttrib.ConverterTypeName);

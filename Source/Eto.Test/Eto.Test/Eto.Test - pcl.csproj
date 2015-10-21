@@ -187,6 +187,7 @@
     <Compile Include="Sections\Behaviors\CursorSection.cs" />
     <Compile Include="Sections\Drawing\SystemColorSection.cs" />
     <Compile Include="Sections\Controls\PropertyCellSection.cs" />
+    <Compile Include="UnitTests\Forms\XamlTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
