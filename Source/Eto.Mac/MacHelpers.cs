@@ -4,6 +4,8 @@ using Eto.Mac;
 using Eto.Mac.Forms;
 using Eto.Mac.Forms.Controls;
 using Eto.Drawing;
+using MonoMac.Foundation;
+using MonoMac.ObjCRuntime;
 
 #if XAMMAC2
 using AppKit;
@@ -88,6 +90,35 @@ namespace Eto.Forms
 		public static Window ToEtoWindow(this NSWindowController windowController)
 		{
 			return new Form(new FormHandler(windowController));
+		}
+
+		/// <summary>
+		/// Gets the field editor required for the specified control.
+		/// </summary>
+		/// <remarks>
+		/// When you are embedding an Eto control inside a native NSWindow, certain events for the TextBox and similar controls
+		/// may not fire as they are handled through a custom field editor.
+		/// 
+		/// You must wire up your native NSWindowDelegate to handle windowWillReturnFieldEditor:toObject: and call this method
+		/// with the handle of the client object.
+		/// </remarks>
+		/// <returns>The field editor for the specified client control, or null if none is required.</returns>
+		/// <param name="clientHandle">Handle to the client object from the 2nd parameter of windowWillReturnFieldEditor:toObject:</param>
+		public static NSObject GetFieldEditor(IntPtr clientHandle)
+		{
+			var client = Runtime.TryGetNSObject(clientHandle);
+			var control = client as IMacControl;
+			if (control != null)
+			{
+				var childHandler = control.WeakHandler.Target as IMacViewHandler;
+				if (childHandler != null)
+				{
+					var fieldEditor = childHandler.CustomFieldEditor;
+					if (fieldEditor != null)
+						return fieldEditor;
+				}
+			}
+			return null;
 		}
 	}
 }
