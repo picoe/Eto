@@ -99,12 +99,15 @@ namespace Eto.Serialization.Xaml
 
 		#if PORTABLE || NET45
 		XamlValueConverter<cm.TypeConverter> typeConverter;
+		bool gotTypeConverter;
 
 		protected override XamlValueConverter<cm.TypeConverter> LookupTypeConverter()
 		{
-			if (typeConverter != null)
+			if (gotTypeConverter)
 				return typeConverter;
-			
+
+			gotTypeConverter = true;
+
 			// convert from Eto.TypeConverter to Portable.Xaml.ComponentModel.TypeConverter
 			var typeConverterAttrib = GetCustomAttribute<EtoTypeConverterAttribute>();
 
@@ -132,7 +135,7 @@ namespace Eto.Serialization.Xaml
 
 			if (typeConverter == null)
 				typeConverter = base.LookupTypeConverter();
-			return typeConverter;
+            return typeConverter;
 		}
 
 		#endif
@@ -179,11 +182,13 @@ namespace Eto.Serialization.Xaml
 			return member;
 		}
 
+		bool gotContentProperty;
 		XamlMember contentProperty;
 		protected override XamlMember LookupContentProperty()
 		{
-			if (contentProperty != null)
+			if (gotContentProperty)
 				return contentProperty;
+			gotContentProperty = true;
 			var contentAttribute = GetCustomAttribute<ContentPropertyAttribute>();
 			if (contentAttribute == null || contentAttribute.Name == null)
 				contentProperty = base.LookupContentProperty();
@@ -192,13 +197,21 @@ namespace Eto.Serialization.Xaml
 			return contentProperty;
 		}
 
+		XamlMember nameAliasedProperty;
 		protected override XamlMember LookupAliasedProperty(XamlDirective directive)
 		{
 			if (directive == XamlLanguage.Name)
 			{
-				var nameAttribute = GetCustomAttribute<RuntimeNamePropertyAttribute>();
+				if (nameAliasedProperty != null)
+					return nameAliasedProperty;
+
+                var nameAttribute = GetCustomAttribute<RuntimeNamePropertyAttribute>();
 				if (nameAttribute != null && nameAttribute.Name != null)
-					return GetMember(nameAttribute.Name);
+				{
+					nameAliasedProperty = GetMember(nameAttribute.Name);
+					return nameAliasedProperty;
+                }
+
 			}
 			return base.LookupAliasedProperty(directive);
 		}
