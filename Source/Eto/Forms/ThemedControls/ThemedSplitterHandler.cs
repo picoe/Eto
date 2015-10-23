@@ -271,5 +271,13 @@ namespace Eto.Forms.ThemedControls
 			get { return panel2; }
 			set { panel2.Content = value; }
 		}
+
+		/// <summary>
+		/// Gets the panel used as the splitter between the two panes.
+		/// </summary>
+		public Panel Splitter
+		{
+			get { return splitter; }
+		}
 	}
 }
