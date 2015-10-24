@@ -113,7 +113,7 @@ namespace Eto.Wpf.Forms.Controls
 						{
 							var columnIndex = Control.CurrentColumn == null ? -1 : Control.CurrentColumn.DisplayIndex;
 							var item = Control.SelectedItem;
-							var column = Widget.Columns[columnIndex];
+							var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
 							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
 						}
 					};
