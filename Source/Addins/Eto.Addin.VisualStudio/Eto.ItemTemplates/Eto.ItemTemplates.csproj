@@ -92,8 +92,7 @@
     <None Include="CS\Json.jeto">
       <SubType>Designer</SubType>
     </None>
-    <None Include="CS\Xaml.xeto.cs" />
-    <None Include="CS\Json.jeto.cs" />
+    <None Include="CS\jxeto.cs" />
     <None Include="VB\Code.vb" />
     <None Include="VB\Code.eto.vb" />
     <None Include="VB\Json.jeto.vb" />

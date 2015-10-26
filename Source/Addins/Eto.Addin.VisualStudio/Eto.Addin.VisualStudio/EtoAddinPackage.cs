@@ -14,13 +14,14 @@ namespace Eto.Addin.VisualStudio
 {
 	[PackageRegistration(UseManagedResourcesOnly = true)]
 	[InstalledProductRegistration("#110", "#112", Constants.VersionString)]
-	/*[ProvideXmlEditorChooserDesignerView("Eto.Forms preview", ".xeto", LogicalViewID.Designer, 0x60,
-		//DesignerLogicalViewEditor = typeof(EditorFactory),
+	/*
+	[ProvideXmlEditorChooserDesignerView("Eto.Forms preview", ".xeto", LogicalViewID.Designer, 0x1000,
+		DesignerLogicalViewEditor = Constants.EtoPreviewEditorFactory_string)]
+	[ProvideXmlEditorChooserDesignerView("Eto.Forms preview", ".xaml", LogicalViewID.Designer, 0x1000,
 		DesignerLogicalViewEditor = typeof(EditorFactory),
-		CodeLogicalViewEditor = typeof(EditorFactory), //VSConstants.VsEditorFactoryGuid.TextEditor_string,
-		MatchExtensionAndNamespace = false)]*/
-	//[ProvideEditorFactory(typeof(EditorFactory), 106)]
-	//[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Designer_string)]
+		Namespace = "http://schema.picoe.ca/eto.forms",
+		MatchExtensionAndNamespace = true)]
+	*/
 	[ProvideEditorExtension(typeof(EditorFactory), ".cs", 0x100, NameResourceID = 106)]
 	[ProvideEditorExtension(typeof(EditorFactory), ".vb", 0x100, NameResourceID = 106)]
 	[ProvideEditorExtension(typeof(EditorFactory), ".fs", 0x100, NameResourceID = 106)]
@@ -35,9 +36,9 @@ namespace Eto.Addin.VisualStudio
 	//[ProvideLanguageExtension(VSConstants.VsLanguageServiceGuid.HtmlLanguageService_string, ".jeto")]
 
 	[Guid(Constants.EtoPreviewPackagePkg_string)]
-	public sealed class EtoPreviewPackage : Package
+	public sealed class EtoAddinPackage : Package
 	{
-		public EtoPreviewPackage()
+		public EtoAddinPackage()
 		{
 			Instance = this;
 		}
@@ -51,7 +52,7 @@ namespace Eto.Addin.VisualStudio
 			base.RegisterEditorFactory(new EditorFactory(this));
 		}
 
-		public static EtoPreviewPackage Instance { get; private set; }
+		public static EtoAddinPackage Instance { get; private set; }
 
 		IComponentModel componentModel;
 		public IComponentModel ComponentModel

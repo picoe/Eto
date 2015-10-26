@@ -11,7 +11,6 @@ using Portable.Xaml;
 
 namespace Eto.Designer.Completion
 {
-
 	class TypeCompletion : Completion
 	{
 		public Assembly Assembly { get; set; }
@@ -51,7 +50,7 @@ namespace Eto.Designer.Completion
 						};
 				}
 
-				if (!contentType.IsAbstract && !types.Contains(contentType))
+				if (!contentType.IsAbstract && !types.Contains(contentType) && contentType.Assembly == Assembly)
 					types.Add(contentType);
 			}
 

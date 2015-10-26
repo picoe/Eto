@@ -22,6 +22,8 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.IO;
 using Eto.Designer;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Eto.Addin.VisualStudio.Intellisense;
 
 namespace Eto.Addin.VisualStudio
 {
@@ -111,6 +113,8 @@ namespace Eto.Addin.VisualStudio
 		public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 		[Import]
 		public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+		[Import]
+		internal ICompletionBroker CompletionBroker { get; set; }
 
 		public TextViewListener()
 		{
@@ -137,6 +141,8 @@ namespace Eto.Addin.VisualStudio
 				// add commands to view form or code
 				//textView.Properties.AddProperty(ViewFormKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewForm, () => ViewDesigner(document)));
 				//textView.Properties.AddProperty(ViewCodeKey, new AdapterCommand(textViewAdapter, ServiceProvider, VSConstants.GUID_VSStandardCommandSet97, (uint)VSConstants.VSStd97CmdID.ViewCode, () => ViewCode(document)));
+
+				textView.Properties.GetOrCreateSingletonProperty(() => new XamlCompletionHandler(textViewAdapter, textView, this));
 			}
 			else if (BuilderInfo.IsCodeBehind(document.FilePath))
 			{

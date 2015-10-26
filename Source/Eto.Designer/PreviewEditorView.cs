@@ -29,7 +29,7 @@ namespace Eto.Designer
 			RelativePosition = 0.4;
 
 			previewPanel = new Panel();
-			errorPanel = new Panel { Padding = new Padding(5), Visible = false };
+			errorPanel = new Panel { Padding = new Padding(5), Visible = false, BackgroundColor = new Color(Colors.Red, .4f) };
 
 			Panel1 = new StackLayout
 			{
@@ -68,7 +68,8 @@ namespace Eto.Designer
 		void FinishProcessing(Control child, Exception error)
 		{
 			errorPanel.Visible = error != null;
-			errorPanel.Content = new Label { Text = error?.Message, ToolTip = error?.ToString() };
+			if (error != null)
+				errorPanel.Content = new Label { Text = error.Message, ToolTip = error.ToString() };
 			if (child != null)
 			{
 				var window = child as Eto.Forms.Window;

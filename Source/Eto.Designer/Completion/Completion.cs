@@ -16,6 +16,35 @@ namespace Eto.Designer.Completion
 		public string Namespace { get; set; }
 	}
 
+	public enum CompletionMode
+	{
+		Class,
+		Property,
+		Value
+	}
+
+	public class CompletionPathNode
+	{
+		public List<CompletionNamespace> Namespaces { get; set; }
+		List<string> attributes;
+		public List<string> Attributes { get { return attributes ?? (attributes = new List<string>()); } }
+		public string LocalName { get; set; }
+		public string Prefix { get; set; }
+		public CompletionMode Mode { get; set; }
+
+		public string Name
+		{
+			get { return (Prefix ?? "") + LocalName; }
+		}
+
+		public CompletionPathNode(string prefix, string localName, CompletionMode mode)
+		{
+			Prefix = prefix;
+			LocalName = localName;
+			Mode = mode;
+		}
+	}
+
 	public abstract class Completion
 	{
 		public string Prefix { get; set; }
@@ -36,6 +65,21 @@ namespace Eto.Designer.Completion
 
 		public const string EtoFormsNamespace = "http://schema.picoe.ca/eto.forms";
 		public const string XamlNamespace2006 = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+		public static IEnumerable<CompletionItem> GetCompletionItems(IEnumerable<CompletionNamespace> namespaces, CompletionMode mode, IEnumerable<string> path, CompletionPathNode context)
+		{
+            var completions = GetCompletions(namespaces);
+			IEnumerable<CompletionItem> items;
+			if (mode == CompletionMode.Property && context != null)
+				items = completions
+					.SelectMany(r => r.GetProperties(context.Name, path))
+					.Where(r => !context.Attributes.Contains(r.Name));
+			else if (mode == CompletionMode.Value && context != null && context.Mode == CompletionMode.Property)
+				items = completions.SelectMany(r => r.GetPropertyValues(path.Last(), context.LocalName, path));
+			else
+				items = completions.SelectMany(r => r.GetClasses(path));
+			return items;
+		}
 
 		public static IEnumerable<Completion> GetCompletions(IEnumerable<CompletionNamespace> namespaces)
 		{

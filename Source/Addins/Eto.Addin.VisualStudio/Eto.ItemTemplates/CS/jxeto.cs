@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
-using Eto.Serialization.Json;
+using Eto.Serialization.$SerializationType$;
 
 namespace $rootnamespace$
 {	
@@ -10,7 +10,7 @@ namespace $rootnamespace$
 	{	
 		public $safeitemname$()
 		{
-			JsonReader.Load(this);
+			$SerializationType$Reader.Load(this);
 		}$Methods$
 	}
 }

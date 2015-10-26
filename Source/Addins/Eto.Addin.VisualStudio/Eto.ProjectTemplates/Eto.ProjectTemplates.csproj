@@ -90,11 +90,12 @@
       <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
-    <None Include="CS\App\Eto\Library.csproj">
+    <None Include="CS\Library\Library.csproj">
       <SubType>Designer</SubType>
     </None>
     <None Include="FS\App\Eto\Eto.vstemplate" />
     <Content Include="FS\Library\AssemblyInfo.fs" />
+    <Content Include="MultiOutput.tt" />
     <Content Include="PY\App\Eto.pyproj">
       <SubType>Designer</SubType>
     </Content>
@@ -119,10 +120,10 @@
     <Content Include="VB\App\Platform\Program.vb" />
     <Content Include="VB\App\Eto\Eto-sal.projitems" />
     <Content Include="VB\App\Eto\Eto-sal.shproj" />
-    <None Include="CS\App\Eto\Eto-sal.projitems" />
-    <None Include="CS\App\Eto\Eto-sal.shproj" />
-    <None Include="CS\App\Eto\MainForm.cs" />
-    <None Include="CS\App\AssemblyInfo.cs" />
+    <None Include="CS\Library\Eto-sal.projitems" />
+    <None Include="CS\Library\Eto-sal.shproj" />
+    <None Include="CS\Library\MainForm.cs" />
+    <None Include="CS\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -145,6 +146,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shared\MainForm.jeto" />
+    <None Include="Shared\MainForm.xeto">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="VB\App\App.ico" />
     <VSTemplate Include="VB\App\App.vstemplate">
       <SubType>Designer</SubType>
@@ -167,43 +172,48 @@
     <Content Include="VB\App\Platform\Eto.Mac.vstemplate" />
     <Content Include="VB\App\Platform\Eto.WinForms.vstemplate" />
     <Content Include="VB\App\Platform\Eto.Wpf.vstemplate" />
-    <Content Include="CS\App\Platform\Eto.Gtk2.vstemplate" />
-    <Content Include="CS\App\Platform\Eto.Gtk3.vstemplate" />
-    <VSTemplate Include="CS\Library\Library.vstemplate">
+    <Content Include="CS\App\Eto.Gtk2.vstemplate" />
+    <Content Include="CS\App\Eto.Gtk3.vstemplate" />
+    <VSTemplate Include="CS.Library.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
       <SubType>Designer</SubType>
     </VSTemplate>
     <None Include="CS\Library\Library.ico" />
-    <None Include="CS\Library\Library.csproj" />
-    <Content Include="CS\App\Platform\Eto.Mac.vstemplate" />
-    <None Include="CS\App\Eto\Eto-sal.vstemplate">
+    <Content Include="CS\App\Eto.Mac.vstemplate" />
+    <None Include="CS\Library\Eto-sal.vstemplate">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="CS\App\Eto\Eto.vstemplate" />
-    <VSTemplate Include="CS\App\App.vstemplate">
+    <Content Include="CS\Library\Eto.vstemplate">
+      <SubType>Designer</SubType>
+    </Content>
+    <VSTemplate Include="CS.App.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
       <SubType>Designer</SubType>
     </VSTemplate>
     <None Include="CS\App\App.ico" />
-    <Content Include="CS\App\Platform\Eto.WinForms.vstemplate" />
-    <Content Include="CS\App\Platform\Eto.Wpf.vstemplate" />
-    <None Include="CS\App\Platform\Eto.Desktop.csproj" />
-    <Content Include="CS\App\Platform\Eto.Desktop.vstemplate" />
+    <Content Include="CS\App\Eto.WinForms.vstemplate" />
+    <Content Include="CS\App\Eto.Wpf.vstemplate" />
+    <None Include="CS\App\Eto.Desktop.csproj" />
+    <Content Include="CS\App\Eto.Desktop.vstemplate" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="CS\Library\MyPanel.cs" />
-    <None Include="CS\Library\AssemblyInfo.cs" />
     <Content Include="VB\App\AssemblyInfo.vb" />
     <Content Include="VB\App\Eto\MainForm.vb" />
     <Content Include="VB\Library\MyPanel.vb" />
-    <Content Include="CS\App\Platform\Program.cs" />
+    <Content Include="CS\App\Program.cs" />
     <Content Include="FS\App\AssemblyInfo.fs" />
     <Content Include="FS\App\Eto\MainForm.fs" />
     <Content Include="FS\App\Platform\Program.fs" />
     <Content Include="FS\Library\MyPanel.fs" />
+    <None Include="CS\Library\MainForm.jxeto.cs" />
+    <None Include="CS\Library\MainForm.preview.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

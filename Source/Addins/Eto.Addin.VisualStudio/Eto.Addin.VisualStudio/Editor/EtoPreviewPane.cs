@@ -40,7 +40,7 @@ namespace Eto.Addin.VisualStudio.Editor
 		IOleCommandTarget
 	{
 		IVsTextLines textBuffer;
-		EtoPreviewPackage package;
+		EtoAddinPackage package;
 		PreviewEditorView preview;
 		Panel editorControl;
 		ElementHost host = new ElementHost();
@@ -90,7 +90,7 @@ namespace Eto.Addin.VisualStudio.Editor
 		/// our initialization functions.
 		/// </summary>
 		/// <param name="package">Our Package instance.</param>
-		public EtoPreviewPane(EtoPreviewPackage package, string fileName, IVsTextLines textBuffer)
+		public EtoPreviewPane(EtoAddinPackage package, string fileName, IVsTextLines textBuffer)
 			: base(package)
 		{
 			this.package = package;
@@ -224,6 +224,7 @@ namespace Eto.Addin.VisualStudio.Editor
 
 			if (codeWindow.GetPrimaryView(out viewAdapter) == 0)
 			{
+
 				// disable splitter since it will cause a crash
 				var codeWindowEx = (IVsCodeWindowEx)codeWindow;
 				var initView = new INITVIEW[1];
