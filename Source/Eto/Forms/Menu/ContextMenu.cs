@@ -105,6 +105,71 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="ContextMenu.MenuOpening"/> event.
+		/// </summary>
+		public const string MenuOpeningEvent = "ContextMenu.MenuOpening";
+
+		/// <summary>
+		/// Occurs when context menu is opening.
+		/// </summary>
+		public event EventHandler<EventArgs> MenuOpening
+		{
+			add
+			{
+				Properties.AddHandlerEvent(MenuOpeningEvent, value);
+			}
+			remove
+			{
+				Properties.RemoveEvent(MenuOpeningEvent, value);
+			}
+		}
+
+		/// <summary>
+		/// Raises the <see cref="ContextMenu.MenuOpening"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnMenuOpening(EventArgs e)
+		{
+			Properties.TriggerEvent(MenuOpeningEvent, this, e);
+		}
+
+		static readonly object callback = new Callback();
+
+		/// <summary>
+		/// Gets an instance of an object used to perform callbacks to the widget from handler implementations
+		/// </summary>
+		/// <returns>The callback instance to use for this widget</returns>
+		protected override object GetCallback()
+		{
+			return callback;
+		}
+
+		/// <summary>
+		/// Callback interface for instances of <see cref="ContextMenu"/>
+		/// </summary>
+		public new interface ICallback : Menu.ICallback
+		{
+			/// <summary>
+			/// Raises the <see cref="ContextMenu.MenuOpening"/> event.
+			/// </summary>
+			void OnMenuOpening(ContextMenu widget, EventArgs e);
+		}
+
+		/// <summary>
+		/// Callback implementation for handlers of the <see cref="ColorDialog"/>
+		/// </summary>
+		protected class Callback : ICallback
+		{
+			/// <summary>
+			/// Raises the <see cref="ContextMenu.MenuOpening"/> event.
+			/// </summary>
+			public void OnMenuOpening(ContextMenu widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnMenuOpening(e));
+			}
+		}
+
+		/// <summary>
 		/// Handler interface for the <see cref="ContextMenu"/>
 		/// </summary>
 		public new interface IHandler : Menu.IHandler, ISubmenuHandler

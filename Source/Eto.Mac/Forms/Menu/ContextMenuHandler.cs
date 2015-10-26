@@ -16,13 +16,66 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac.Forms.Menu
 {
-	public class ContextMenuHandler : WidgetHandler<NSMenu, ContextMenu>, ContextMenu.IHandler
+	class ContextHandler : NSMenuDelegate
+	{
+		public static ContextHandler Instance
+		{
+			get;
+			set;
+		}
+
+		WeakReference handler;
+		public ContextMenuHandler Handler
+		{
+			get
+			{
+				return (ContextMenuHandler)handler.Target;
+			}
+			set
+			{
+				handler = new WeakReference(value);
+			}
+		}
+
+		public override void MenuWillHighlightItem(NSMenu menu, NSMenuItem item)
+		{
+
+		}
+
+		[Export("menuWillOpen:")]
+		public void HandleMenuWillOpen(NSMenu menu)
+		{
+			Handler.Callback.OnMenuOpening(Handler.Widget, EventArgs.Empty);
+		}
+	}
+
+	public class ContextMenuHandler : WidgetHandler<NSMenu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
 	{
 		public ContextMenuHandler ()
 		{
 			Control = new NSMenu ();
 			Control.AutoEnablesItems = false;
 			Control.ShowsStateColumn = true;
+			ContextHandler.Instance = new ContextHandler()
+			{
+				Handler = this
+			};
+
+			Control.Delegate = ContextHandler.Instance;
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case ContextMenu.MenuOpeningEvent:
+					// handled by delegate
+					break;
+
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 
 		public void AddMenu (int index, MenuItem item)

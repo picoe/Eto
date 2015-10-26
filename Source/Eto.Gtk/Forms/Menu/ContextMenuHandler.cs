@@ -1,3 +1,4 @@
+using System;
 using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms.Menu
@@ -8,6 +9,49 @@ namespace Eto.GtkSharp.Forms.Menu
 		{
 			Control = new Gtk.Menu();
 			Control.ShowAll();
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case ContextMenu.MenuOpeningEvent:
+					Control.Shown += Connector.HandleMenuOpening;
+					break;
+
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		protected new ContextMenuConnector Connector
+		{
+			get
+			{
+				return (ContextMenuConnector)base.Connector;
+			}
+		}
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new ContextMenuConnector();
+		}
+
+		protected class ContextMenuConnector : WeakConnector
+		{
+			public new ContextMenuHandler Handler
+			{
+				get
+				{
+					return (ContextMenuHandler)base.Handler;
+				}
+			}
+
+			public void HandleMenuOpening(object sender, EventArgs e)
+			{
+				Handler.Callback.OnMenuOpening(Handler.Widget, EventArgs.Empty);
+			}
 		}
 
 		public void AddMenu(int index, MenuItem item)
