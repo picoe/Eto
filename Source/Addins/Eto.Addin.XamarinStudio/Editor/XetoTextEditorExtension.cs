@@ -28,7 +28,7 @@ namespace Eto.Addin.XamarinStudio.Editor
 
 		static IEnumerable<string> GetPath(List<XObject> p)
 		{
-			return p.OfType<XElement>().Select(r => r.Name.Name);
+			return p.OfType<XElement>().Select(r => r.Name.FullName);
 		}
 
 		protected override void GetElementCompletions(CompletionDataList list)
@@ -57,8 +57,8 @@ namespace Eto.Addin.XamarinStudio.Editor
 			var currentPath = GetCurrentPath();
 			var path = GetPath(currentPath);
 			var namespaces = GetNamespaces(currentPath);
-			var objectName = attributedOb.Name.Name;
-			foreach (var completion in Completion.GetCompletions(namespaces, attributedOb.Name.Prefix))
+			var objectName = attributedOb.Name.FullName;
+			foreach (var completion in Completion.GetCompletions(namespaces))
 			{
 				foreach (var item in completion.GetProperties(objectName, path).Where(r => !existingAtts.ContainsKey(r.Name)))
 				{
@@ -77,8 +77,8 @@ namespace Eto.Addin.XamarinStudio.Editor
 			var currentPath = GetCurrentPath();
 			var path = GetPath(currentPath);
 			var namespaces = GetNamespaces(currentPath);
-			var objectName = attributedOb.Name.Name;
-			foreach (var completion in Completion.GetCompletions(namespaces, attributedOb.Name.Prefix))
+			var objectName = attributedOb.Name.FullName;
+			foreach (var completion in Completion.GetCompletions(namespaces))
 			{
 				foreach (var item in completion.GetPropertyValues(objectName, att.Name.FullName, path))
 				{

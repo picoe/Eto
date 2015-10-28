@@ -29,11 +29,12 @@ namespace Eto.Addin.VisualStudio.Intellisense
 		public static XmlParseInfo Read(string text)
 		{
 			var nodes = new List<CompletionPathNode>();
-			var info = new XmlParseInfo { Nodes = nodes };
+			var info = new XmlParseInfo { Nodes = nodes, Mode = CompletionMode.Class };
 
 			// complete the last node and/or attribute so the reader can find it.
 			string supplement = null;
 			bool hadLetter = false;
+			char last = char.MinValue;
 			for (int i = text.Length - 1; i >= 0; i--)
 			{
 				var ch = text[i];
@@ -41,6 +42,8 @@ namespace Eto.Addin.VisualStudio.Intellisense
 				{
 					if (i == text.Length - 1)
 						break;
+					if (last == '/') // we're in an ending tag
+						info.Mode = CompletionMode.None;
 					if (supplement != null)
 						text += supplement;
 					text += ">";
@@ -68,7 +71,8 @@ namespace Eto.Addin.VisualStudio.Intellisense
 					if (char.IsLetterOrDigit(ch))
 						hadLetter = true;
 				}
-			}
+				last = ch;
+            }
 
 			CompletionPathNode current = null;
 			CompletionPathNode attribute = null;

@@ -20,6 +20,11 @@ namespace Eto.Addin.VisualStudio.Intellisense
 		ITextBuffer buffer;
 		XamlCompletionProvider provider;
 
+		static XamlCompletionSource()
+		{
+			XmlComments.EncodeHtml = false;
+        }
+
 		public XamlCompletionSource(XamlCompletionProvider provider, ITextBuffer buffer)
 		{
 			this.buffer = buffer;

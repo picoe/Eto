@@ -18,6 +18,7 @@ namespace Eto.Designer.Completion
 
 	public enum CompletionMode
 	{
+		None,
 		Class,
 		Property,
 		Value
@@ -34,11 +35,15 @@ namespace Eto.Designer.Completion
 
 		public string Name
 		{
-			get { return (Prefix ?? "") + LocalName; }
+			get {
+				return (Prefix ?? "") + LocalName;
+			}
 		}
 
 		public CompletionPathNode(string prefix, string localName, CompletionMode mode)
 		{
+			if (!string.IsNullOrEmpty(prefix) && !prefix.EndsWith(":"))
+				prefix += ":";
 			Prefix = prefix;
 			LocalName = localName;
 			Mode = mode;
@@ -68,6 +73,8 @@ namespace Eto.Designer.Completion
 
 		public static IEnumerable<CompletionItem> GetCompletionItems(IEnumerable<CompletionNamespace> namespaces, CompletionMode mode, IEnumerable<string> path, CompletionPathNode context)
 		{
+			if (mode == CompletionMode.None)
+				return Enumerable.Empty<CompletionItem>();
             var completions = GetCompletions(namespaces);
 			IEnumerable<CompletionItem> items;
 			if (mode == CompletionMode.Property && context != null)

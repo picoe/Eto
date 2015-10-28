@@ -11,7 +11,13 @@ namespace ${Namespace}
 		{
 			Title = "My ${EscapedIdentifier} form";
 
-			Content = new Label { Text = "Some content" };
+			Content = new StackLayout
+			{
+				Items =
+				{
+					new Label { Text = "Some Content" }
+				}
+			};
 		}
 	}
 }

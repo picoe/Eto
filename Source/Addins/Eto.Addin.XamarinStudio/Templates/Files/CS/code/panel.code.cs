@@ -9,7 +9,13 @@ namespace ${Namespace}
 	{	
 		public ${EscapedIdentifier}()
 		{
-			Content = new Label { Text = "Some Content" };
+			Content = new StackLayout
+			{
+				Items =
+				{
+					new Label { Text = "Some Content" }
+				}
+			};
 		}
 	}
 }

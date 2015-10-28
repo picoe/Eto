@@ -67,6 +67,13 @@ namespace Eto.Designer.Completion
 
 		Type GetContentType(string last, List<Type> types)
 		{
+			if (Prefix != null)
+			{
+				if (!last.StartsWith(Prefix))
+					return null;
+				last = last.Substring(Prefix.Length);
+			}
+
 			if (string.IsNullOrEmpty(last))
 				return null;
 			last = Namespace + "." + last;
@@ -95,6 +102,13 @@ namespace Eto.Designer.Completion
 
 		public override IEnumerable<CompletionItem> GetProperties(string objectName, IEnumerable<string> path)
 		{
+			if (Prefix != null)
+			{
+				if (!objectName.StartsWith(Prefix))
+					yield break;
+				objectName = objectName.Substring(Prefix.Length);
+			}
+				
 			var fullName = Namespace + "." + objectName;
 			var type = Assembly.GetType(fullName, false);
 			if (type != null)
@@ -127,6 +141,13 @@ namespace Eto.Designer.Completion
 
 		public override IEnumerable<CompletionItem> GetPropertyValues(string objectName, string propertyName, IEnumerable<string> path)
 		{
+			if (Prefix != null)
+			{
+				if (!objectName.StartsWith(Prefix))
+					yield break;
+				objectName = objectName.Substring(Prefix.Length);
+			}
+
 			var fullName = Namespace + "." + objectName;
 			var type = Assembly.GetType(fullName, false);
 			if (type != null)

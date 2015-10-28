@@ -111,7 +111,7 @@ namespace Eto.Addin.VisualStudio.Intellisense
 				if (cmd != CompleteWordCmd)
 					retVal = nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 				if (session == null || session.IsDismissed)
-					Eto.Forms.Application.Instance.AsyncInvoke(() => TriggerCompletion());
+					Eto.Forms.Application.Instance.AsyncInvoke(TriggerCompletion);
 
 				return retVal;
 			}
@@ -119,20 +119,23 @@ namespace Eto.Addin.VisualStudio.Intellisense
 			return nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 		}
 
-		private bool TriggerCompletion()
+		void TriggerCompletion()
 		{
+			var session = listener.CompletionBroker.GetSessions(textView).FirstOrDefault(r => !r.IsDismissed);
+			if (session != null && !session.IsDismissed)
+				return;
 			//the caret must be in a non-projection location 
 			SnapshotPoint? caretPoint = textView.Caret.Position.Point.GetPoint(
 				textBuffer => !textBuffer.ContentType.IsOfType("projection"),
 				PositionAffinity.Predecessor);
 			if (!caretPoint.HasValue)
 			{
-				return false;
+				return;
 			}
 
 			var trackingPoint = caretPoint.Value.Snapshot.CreateTrackingPoint(caretPoint.Value.Position, PointTrackingMode.Positive);
 			session = listener.CompletionBroker.TriggerCompletion(textView, trackingPoint, true);
-			return true;
+			return;
 		}
 	}
 }
