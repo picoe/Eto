@@ -150,7 +150,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="commands">Commands to add.</param>
 		/// <param name="order">Order of the items to add.</param>
-		public void AddRange(IEnumerable<Command> commands, int order = -1)
+		public void AddRange(IEnumerable<Command> commands, int order = 0)
 		{
 			foreach (var command in commands)
 			{

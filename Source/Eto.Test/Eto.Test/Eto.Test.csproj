@@ -193,6 +193,7 @@
     <Compile Include="Sections\Controls\PropertyCellSection.cs" />
     <Compile Include="Sections\Drawing\SystemColorSection.cs" />
     <Compile Include="UnitTests\Forms\XamlTests.cs" />
+    <Compile Include="UnitTests\Forms\ToolItemCollectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

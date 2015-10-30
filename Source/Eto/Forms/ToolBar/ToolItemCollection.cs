@@ -81,7 +81,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="command">Command to add.</param>
 		/// <param name="order">Order to add it at.</param>
-		public void Add(Command command, int order = -1)
+		public void Add(Command command, int order = 0)
 		{
 			var item = command.CreateToolItem();
 			item.Order = order;
@@ -93,7 +93,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="order">Order to add the separator.</param>
 		/// <param name="type">Type of separator.</param>
-		public void AddSeparator(int order = -1, SeparatorToolItemType type = SeparatorToolItemType.Divider)
+		public void AddSeparator(int order = 0, SeparatorToolItemType type = SeparatorToolItemType.Divider)
 		{
 			Add(new SeparatorToolItem { Order = order, Type = type });
 		}
@@ -115,7 +115,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="commands">Commands to add.</param>
 		/// <param name="order">Order of the items to add.</param>
-		public void AddRange(IEnumerable<Command> commands, int order = -1)
+		public void AddRange(IEnumerable<Command> commands, int order = 0)
 		{
 			foreach (var command in commands)
 			{
