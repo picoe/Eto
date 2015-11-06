@@ -81,6 +81,7 @@ namespace Eto.GtkSharp.Drawing
 					break;
 				case PixelFormat.Format24bppRgb:
 					Control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, width, height);
+					Control.Fill(0);
 					break;
 			/*case PixelFormat.Format16bppRgb555:
 						control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);

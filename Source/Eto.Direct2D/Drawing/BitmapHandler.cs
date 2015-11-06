@@ -42,7 +42,8 @@ namespace Eto.Direct2D.Drawing
         public BitmapData Lock()
         {
 			var data = Control.Lock(sw.BitmapLockFlags.Write);
-			return new WicBitmapData(Widget, data, 32);
+			var bpp = Control.PixelFormat == PixelFormat.Format24bppRgb.ToWic() ? 24 : 32;
+			return new WicBitmapData(Widget, data, bpp);
         }
 
         public void Unlock(BitmapData bitmapData)

@@ -39,22 +39,26 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddRow(new Label { Text = "Load from Stream" }, LoadFromStream());
-
 			layout.AddRow(
-				new Label { Text = "Custom 32-bit" }, CreateCustom32(),
-				new Label { Text = "Custom 32-bit alpha" }, CreateCustom32Alpha(),
+				"Load from Stream", LoadFromStream(), 
+				"Custom 24-bit", CreateCustom24(),
 				null
 			);
 
 			layout.AddRow(
-				new Label { Text = "Clone" }, Cloning(),
-				new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloneRectangle(), centered: true),
+				"Custom 32-bit", CreateCustom32(),
+				"Custom 32-bit alpha", CreateCustom32Alpha(),
+				null
+			);
+
+			layout.AddRow(
+				"Clone", Cloning(),
+				"Clone rectangle", TableLayout.AutoSized(CloneRectangle(), centered: true),
 				null);
 
 			layout.AddRow(
-				new Label { Text = "Draw to a rect" }, TableLayout.AutoSized(DrawImageToRect(), centered: true)
-				);
+				"Draw to a rect", TableLayout.AutoSized(DrawImageToRect(), centered: true)
+			);
 
 			layout.Add(null);
 
@@ -68,16 +72,51 @@ namespace Eto.Test.Sections.Drawing
 			return new DrawableImageView { Image = image };
 		}
 
-		Control CreateCustom32()
+		void DrawTest(Bitmap image)
 		{
-			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
+			// should always ensure .Dispose() is called when you are done with a Graphics or BitmapData object.
 
-			// should always ensure .Dispose() is called when you are done with a Graphics object
+			// Test setting pixels directly
+			using (var bd = image.Lock())
+			{
+				var sz = image.Size / 5;
+				for (int x = sz.Width; x < sz.Width * 2; x++)
+					for (int y = sz.Height; y < sz.Height * 2; y++)
+						bd.SetPixel(x, y, Colors.Green);
+			}
+
+			// Test using Graphics object
 			using (var graphics = new Graphics(image))
 			{
 				graphics.DrawLine(Pens.Blue, Point.Empty, new Point(image.Size));
 				graphics.DrawRectangle(Pens.Blue, new Rectangle(image.Size - 1));
 			}
+
+			// should be able to set pixels after using graphics object
+			using (var bd = image.Lock())
+			{
+				var sz = image.Size / 5;
+				for (int x = sz.Width * 3; x < sz.Width * 4; x++)
+					for (int y = sz.Height * 3; y < sz.Height * 4; y++)
+						bd.SetPixel(x, y, Colors.Red);
+			}
+
+		}
+
+		Control CreateCustom24()
+		{
+			var image = new Bitmap(100, 100, PixelFormat.Format24bppRgb);
+
+			DrawTest(image);
+
+			return new DrawableImageView { Image = image };
+		}
+
+		Control CreateCustom32()
+		{
+			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
+
+			DrawTest(image);
 
 			return new DrawableImageView { Image = image };
 		}
@@ -86,12 +125,7 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
 
-			// should always ensure .Dispose() is called when you are done with a Graphics object
-			using (var graphics = new Graphics(image))
-			{
-				graphics.DrawLine(Pens.Blue, Point.Empty, new Point(image.Size));
-				graphics.DrawRectangle(Pens.Black, new Rectangle(image.Size - 1));
-			}
+			DrawTest(image);
 			return new DrawableImageView { Image = image };
 		}
 
