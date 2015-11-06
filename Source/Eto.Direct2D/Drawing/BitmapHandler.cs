@@ -7,10 +7,11 @@ using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.WIC;
 using System.IO;
+using Eto.Shared.Drawing;
 
 namespace Eto.Direct2D.Drawing
 {
-	public class WicBitmapData : BitmapData
+	public class WicBitmapData : BaseBitmapData
 	{
 		public WicBitmapData(Image image, sw.BitmapLock bitmapLock, int bitsPerPixel)
 			: base(image, bitmapLock.Data.DataPointer, bitmapLock.Data.Pitch, bitsPerPixel, bitmapLock)

@@ -320,6 +320,9 @@
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

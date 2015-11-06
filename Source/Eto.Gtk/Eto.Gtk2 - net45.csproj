@@ -257,6 +257,9 @@
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Drawing\SystemColorsHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

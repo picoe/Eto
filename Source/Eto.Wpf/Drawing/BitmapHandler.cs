@@ -5,6 +5,7 @@ using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
 using Eto.Wpf.Forms;
 using System.IO;
+using Eto.Shared.Drawing;
 
 namespace Eto.Wpf.Drawing
 {
@@ -13,7 +14,7 @@ namespace Eto.Wpf.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapDataHandler : BitmapData
+	public class BitmapDataHandler : BaseBitmapData
 	{
 		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(image, data, scanWidth, bitsPerPixel, controlObject)
