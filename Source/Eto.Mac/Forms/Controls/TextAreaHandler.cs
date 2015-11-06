@@ -324,7 +324,7 @@ namespace Eto.Mac.Forms.Controls
 					var range = Control.SelectedRange;
 					Control.Replace(range, value);
 					range.Length = (nnint)value.Length;
-					Control.SelectedRange = range;
+					Control.SetSelectedRange(range);
 				}
 			}
 		}
@@ -332,7 +332,7 @@ namespace Eto.Mac.Forms.Controls
 		public Range<int> Selection
 		{
 			get { return Control.SelectedRange.ToEto(); }
-			set { Control.SelectedRange = value.ToNS(); }
+			set { Control.SetSelectedRange(value.ToNS()); }
 		}
 
 		public void SelectAll()
@@ -343,7 +343,7 @@ namespace Eto.Mac.Forms.Controls
 		public int CaretIndex
 		{
 			get { return (int)Control.SelectedRange.Location; }
-			set { Control.SelectedRange = new NSRange(value, 0); }
+			set { Control.SetSelectedRange(new NSRange(value, 0)); }
 		}
 
 		static readonly object AcceptsTab_Key = new object();
@@ -383,7 +383,7 @@ namespace Eto.Mac.Forms.Controls
 			var range = new NSRange(str != null ? str.Length : 0, 0);
 			Control.Replace(range, text);
 			range.Location += (nnint)text.Length;
-			Control.SelectedRange = range;
+			Control.SetSelectedRange(range);
 			if (scrollToCursor)
 				Control.ScrollRangeToVisible(range);
 		}
