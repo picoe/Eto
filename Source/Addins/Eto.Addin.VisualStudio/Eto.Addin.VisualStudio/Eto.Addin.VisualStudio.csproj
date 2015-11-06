@@ -72,7 +72,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="TextViewListener.cs" />
+    <Compile Include="Util\AdapterCommand.cs" />
     <Compile Include="Util\Cmd.cs" />
+    <Compile Include="Util\TextViewExtensions.cs" />
     <Compile Include="Wizards\BaseWizard.cs" />
     <Compile Include="Wizards\CheckRequiredReferences.cs" />
     <Compile Include="Wizards\ChildWizard.cs" />

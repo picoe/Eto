@@ -21,7 +21,6 @@ namespace Eto.Addin.VisualStudio.Intellisense
 		IOleCommandTarget nextCommandHandler;
         ITextView textView;
 		TextViewListener listener;
-		ICompletionSession session;
 
 		public XamlCompletionHandler(IVsTextView textViewAdapter, ITextView textView, TextViewListener listener)
 		{
@@ -83,8 +82,10 @@ namespace Eto.Addin.VisualStudio.Intellisense
 							session.Commit();
 							if (endChar == '"' || endChar == '\'')
 								session.TextView.Caret.MoveToNextCaretPosition();
+							if (ch == '.')
+								TriggerCompletion();
                         };
-						if (cmd == ReturnCmd || cmd == TabCmd)
+						if (cmd == ReturnCmd || cmd == TabCmd || ch == '.')
 						{
 							Eto.Forms.Application.Instance.AsyncInvoke(complete);
 							return VSConstants.S_OK;

@@ -13,9 +13,22 @@ namespace Eto.Designer.Completion
 
 	class XamlCompletion : Completion
 	{
-		public override IEnumerable<CompletionItem> GetClasses(IEnumerable<string> path)
+		public override IEnumerable<CompletionItem> GetClasses(IEnumerable<string> path, Func<Type, bool> filter)
 		{
-			var prefix = Prefix ?? "";
+			var prefix = PrefixWithColon;
+			if (filter != null)
+			{
+				foreach (var xt in XamlLanguage.AllTypes)
+				{
+					if (filter(xt.UnderlyingType))
+						yield return new CompletionItem
+						{
+							Name = prefix + xt.Name,
+							Type = CompletionType.Class
+						};
+				}
+			}
+
 			yield return new CompletionItem {
 				Name = prefix + "Reference",
 				Type = CompletionType.Class,
@@ -30,8 +43,8 @@ namespace Eto.Designer.Completion
 
 		public override IEnumerable<CompletionItem> GetProperties(string objectName, IEnumerable<string> path)
 		{
-			var prefix = Prefix ?? "";
-			if (objectName == Prefix + "Reference")
+			var prefix = PrefixWithColon;
+			if (objectName == prefix + "Reference")
 			{
 				yield return new CompletionItem { Name = "Name", Type = CompletionType.Attribute, Description = "Name of the element to reference" };
 				yield break;
@@ -40,11 +53,15 @@ namespace Eto.Designer.Completion
 			{
 				yield return new CompletionItem { Name = prefix + "Class", Type = CompletionType.Attribute };
 			}
-			yield return new CompletionItem {
-				Name = prefix + "Name",
-				Type = CompletionType.Attribute,
-				Description = "Sets the name of the object, which will automatically bind to a field or property of the same name in your backing class."
-			};
+			if (!objectName.Contains('.'))
+			{
+				yield return new CompletionItem
+				{
+					Name = prefix + "Name",
+					Type = CompletionType.Attribute,
+					Description = "Sets the name of the object, which will automatically bind to a field or property of the same name in your backing class."
+				};
+			}
 		}
 	}
 

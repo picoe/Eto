@@ -43,7 +43,7 @@ namespace Eto.Addin.VisualStudio.Intellisense
 			{
 				var temp = start - 1;
 				ch = temp.GetChar();
-				if (!(char.IsLetterOrDigit(ch) || ch == '.' || ch == ':' || ch == '_') || ch == '"' || ch == '\'')
+				if (!(char.IsLetterOrDigit(ch) || ch == ':' || ch == '_') || ch == '"' || ch == '\'' || ch == '.')
 					break;
 				start = temp;
 			}
@@ -59,7 +59,8 @@ namespace Eto.Addin.VisualStudio.Intellisense
 			if (info.Mode == CompletionMode.Class)
 			{
 				var prevPoint = point - 1;
-				if (prevPoint.GetChar() != '<')
+				var prevCh = prevPoint.GetChar();
+                if (prevCh != '<' && prevCh != '.')
 				{
 					session.Dismiss();
 					return;

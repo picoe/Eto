@@ -42,8 +42,8 @@ namespace Eto.Designer.Completion
 
 		public CompletionPathNode(string prefix, string localName, CompletionMode mode)
 		{
-			if (!string.IsNullOrEmpty(prefix) && !prefix.EndsWith(":"))
-				prefix += ":";
+			if (!string.IsNullOrEmpty(prefix) && prefix.EndsWith(":"))
+				prefix = prefix.TrimEnd(':');
 			Prefix = prefix;
 			LocalName = localName;
 			Mode = mode;
@@ -54,13 +54,23 @@ namespace Eto.Designer.Completion
 	{
 		public string Prefix { get; set; }
 
-		public abstract IEnumerable<CompletionItem> GetClasses(IEnumerable<string> path);
+		public virtual Func<Type, bool> GetFilter(IEnumerable<string> path)
+		{
+			return null;
+		}
+
+		public abstract IEnumerable<CompletionItem> GetClasses(IEnumerable<string> path, Func<Type, bool> filter);
 
 		public abstract IEnumerable<CompletionItem> GetProperties(string objectName, IEnumerable<string> path);
 
 		public virtual IEnumerable<CompletionItem> GetPropertyValues(string objectName, string propertyName, IEnumerable<string> path)
 		{
 			yield break;
+		}
+
+		public string PrefixWithColon
+		{
+			get { return string.IsNullOrEmpty(Prefix) ? string.Empty : Prefix + ":"; }
 		}
 
 		public virtual bool HandlesPrefix(string prefix)
@@ -75,16 +85,28 @@ namespace Eto.Designer.Completion
 		{
 			if (mode == CompletionMode.None)
 				return Enumerable.Empty<CompletionItem>();
-            var completions = GetCompletions(namespaces);
+			var completions = GetCompletions(namespaces);
 			IEnumerable<CompletionItem> items;
 			if (mode == CompletionMode.Property && context != null)
+			{
+				var contextName = context.Name;
+				if (contextName.EndsWith("."))
+				{
+					// if it contains a dot it is a property element. only show completions for the current namespace.
+					contextName = contextName.TrimEnd('.');
+					completions = completions.Where(r => r.Prefix == context.Prefix).ToList();
+				}
 				items = completions
-					.SelectMany(r => r.GetProperties(context.Name, path))
+					.SelectMany(r => r.GetProperties(contextName, path))
 					.Where(r => !context.Attributes.Contains(r.Name));
+			}
 			else if (mode == CompletionMode.Value && context != null && context.Mode == CompletionMode.Property)
 				items = completions.SelectMany(r => r.GetPropertyValues(path.Last(), context.LocalName, path));
 			else
-				items = completions.SelectMany(r => r.GetClasses(path));
+			{
+				var filter = completions.Select(r => r.GetFilter(path)).FirstOrDefault(r => r != null);
+				items = completions.SelectMany(r => r.GetClasses(path, filter));
+			}
 			return items;
 		}
 
@@ -108,10 +130,6 @@ namespace Eto.Designer.Completion
 					yield return new XamlCompletion { Prefix = ns.Prefix };
 				}
 			}
-		}
-		public static IEnumerable<Completion> GetCompletions(IEnumerable<CompletionNamespace> namespaces, string prefix)
-		{
-			return GetCompletions(namespaces).Where(r => r.HandlesPrefix(prefix));
 		}
 	}
 }

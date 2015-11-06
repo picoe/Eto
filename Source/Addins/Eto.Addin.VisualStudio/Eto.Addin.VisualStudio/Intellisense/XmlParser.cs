@@ -62,6 +62,10 @@ namespace Eto.Addin.VisualStudio.Intellisense
 						text = text.Substring(0, i + 1);
 						supplement = "''";
 					}
+					if (ch == '.')
+					{
+						info.Mode = CompletionMode.Property;
+					}
 					if (ch == ' ')
 					{
 						info.Mode = CompletionMode.Property;
@@ -99,7 +103,7 @@ namespace Eto.Addin.VisualStudio.Intellisense
 											// record namespaces
 											if (current.Namespaces == null)
 												current.Namespaces = new List<CompletionNamespace>();
-											var prefix = reader.Prefix == "xmlns" ? reader.LocalName + ":" : string.Empty;
+											var prefix = reader.Prefix == "xmlns" ? reader.LocalName : string.Empty;
 											current.Namespaces.Add(new CompletionNamespace { Prefix = prefix, Namespace = reader.Value });
 										}
 										else
