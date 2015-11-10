@@ -37,13 +37,15 @@ namespace Eto.GtkSharp.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
-#if GTK2
+			#if GTK2
 			Control.VBox.PackStart(WindowActionControl, false, true, 0);
 			Control.VBox.PackStart(WindowContentControl, true, true, 0);
-#else
-			Control.ActionArea.Add(WindowActionControl);
-			Control.ContentArea.Add(WindowContentControl);
-#endif
+			#else 
+			Control.ContentArea.PackStart(WindowActionControl, false, true, 0);
+			Control.ContentArea.PackStart(WindowContentControl, true, true, 0);
+			#endif
+			Control.ActionArea.NoShowAll = true;
+			Control.ActionArea.Hide();
 		}
 
 		public Button AbortButton { get; set; }
