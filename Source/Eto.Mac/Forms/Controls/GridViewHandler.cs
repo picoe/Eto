@@ -84,7 +84,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class EtoTableViewDataSource : NSTableViewDataSource
+		public class EtoTableViewDataSource : NSTableViewDataSource
 		{
 			WeakReference handler;
 
@@ -115,7 +115,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class EtoTableDelegate : NSTableViewDelegate
+		public class EtoTableDelegate : NSTableViewDelegate
 		{
 			WeakReference handler;
 
