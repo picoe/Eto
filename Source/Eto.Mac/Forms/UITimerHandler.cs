@@ -48,17 +48,20 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		protected override NSTimer CreateControl()
+		{
+			return NSTimer.CreateRepeatingTimer(interval, new Helper { Handler = this }.Elapsed);
+		}
+
 		public void Start ()
 		{
 			Stop();
-			var helper = new Helper { Handler = this };
-			Control = NSTimer.CreateRepeatingTimer(interval, helper.Elapsed);
 			NSRunLoop.Current.AddTimer(Control, NSRunLoopMode.Default);
 		}
 
 		public void Stop ()
 		{
-			if (Control != null)
+			if (HasControl)
 			{
 				Control.Invalidate();
 				Control.Dispose ();
@@ -69,7 +72,11 @@ namespace Eto.Mac.Forms
 		public double Interval
 		{
 			get { return interval; }
-			set { interval = value; }
+			set { 
+				interval = value;
+				if (Widget.Started)
+					Start();
+			}
 		}
 	}
 }

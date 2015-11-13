@@ -196,7 +196,7 @@ namespace Eto.Mac.Forms.Controls
 			splitView.Subviews[1].Frame = panel2Rect;
 		}
 
-		class SVDelegate : NSSplitViewDelegate
+		public class EtoSplitViewDelegate : NSSplitViewDelegate
 		{
 			WeakReference handler;
 
@@ -223,7 +223,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 		// stupid hack for OSX 10.5 so that mouse down/drag/up events fire in children properly..
-		class EtoSplitView : NSSplitView, IMacControl
+		public class EtoSplitView : NSSplitView, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -231,6 +231,15 @@ namespace Eto.Mac.Forms.Controls
 			{ 
 				get { return (SplitterHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
+			}
+
+			public EtoSplitView(SplitterHandler handler)
+			{
+				DividerStyle = NSSplitViewDividerStyle.Thin;
+				IsVertical = true;
+				AddSubview(new NSView { AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
+				AddSubview(new NSView { AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
+				Delegate = new EtoSplitViewDelegate { Handler = handler };
 			}
 
 			public override void MouseDown(NSEvent theEvent)
@@ -258,15 +267,16 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public SplitterHandler()
+
+		protected override NSSplitView CreateControl()
+		{
+			return new EtoSplitView(this);
+		}
+
+		protected override void Initialize()
 		{
 			Enabled = true;
-			Control = new EtoSplitView { Handler = this };
-			Control.DividerStyle = NSSplitViewDividerStyle.Thin;
-			Control.AddSubview(new NSView { AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
-			Control.AddSubview(new NSView { AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
-			Control.IsVertical = true;
-			Control.Delegate = new SVDelegate { Handler = this };
+			base.Initialize();
 		}
 
 		public int Position

@@ -27,21 +27,27 @@ namespace Eto.Mac.Forms.Controls
 				get { return (CalendarHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public EtoDatePicker()
+			{
+				TimeZone = NSTimeZone.LocalTimeZone;
+				Calendar = NSCalendar.CurrentCalendar;
+				Bezeled = false;
+				DateValue = (NSDate)DateTime.Today;
+				DatePickerStyle = NSDatePickerStyle.ClockAndCalendar;
+				DatePickerElements = NSDatePickerElementFlags.YearMonthDateDay;
+			}
 		}
 
-		public CalendarHandler()
+		protected override NSDatePicker CreateControl()
 		{
-			Control = new EtoDatePicker
-			{
-				Handler = this,
-				TimeZone = NSTimeZone.LocalTimeZone,
-				Calendar = NSCalendar.CurrentCalendar,
-				Bezeled = false,
-				DateValue = (NSDate)DateTime.Today,
-				DatePickerStyle = NSDatePickerStyle.ClockAndCalendar,
-				DatePickerElements = NSDatePickerElementFlags.YearMonthDateDay
-			};
+			return new EtoDatePicker();
+		}
+
+		protected override void Initialize()
+		{
 			Control.Activated += HandleActivated;
+			base.Initialize();
 		}
 
 		public override void AttachEvent(string id)

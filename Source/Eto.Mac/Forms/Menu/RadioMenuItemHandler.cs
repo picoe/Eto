@@ -24,13 +24,19 @@ namespace Eto.Mac.Forms.Menu
 	{
 		List<RadioMenuItem> radioGroup;
 
-		public RadioMenuItemHandler()
+		protected override NSMenuItem CreateControl()
 		{
-			Control = new NSMenuItem();
+			return new NSMenuItem();
+		}
+
+		protected override void Initialize()
+		{
 			Enabled = true;
 			//control.SetButtonType(NSButtonType.Radio);
 			Control.Target = new MenuActionHandler { Handler = this };
 			Control.Action = MenuActionHandler.selActivate;
+
+			base.Initialize();
 		}
 
 		public override void Activate()

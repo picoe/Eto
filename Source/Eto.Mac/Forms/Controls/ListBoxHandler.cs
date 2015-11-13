@@ -50,9 +50,9 @@ namespace Eto.Mac.Forms.Controls
 
 	public class ListBoxHandler : MacControl<NSTableView, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
-		readonly NSScrollView scroll;
-		readonly CollectionHandler collection;
-		readonly MacImageListItemCell cell;
+		NSScrollView scroll;
+		CollectionHandler collection;
+		MacImageListItemCell cell;
 
 		public override NSView ContainerControl
 		{
@@ -64,7 +64,7 @@ namespace Eto.Mac.Forms.Controls
 			get { return scroll; }
 		}
 
-		class DataSource : NSTableViewDataSource
+		public class EtoDataSource : NSTableViewDataSource
 		{
 			WeakReference handler;
 
@@ -87,7 +87,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class Delegate : NSTableViewDelegate
+		public class EtoDelegate : NSTableViewDelegate
 		{
 			WeakReference handler;
 
@@ -104,7 +104,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class EtoListBoxTableView : NSTableView, IMacControl
+		public class EtoListBoxTableView : NSTableView, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -119,6 +119,11 @@ namespace Eto.Mac.Forms.Controls
 				if (Handler.ContextMenu != null)
 					return Handler.ContextMenu.ControlObject as NSMenu;
 				return base.MenuForEvent(theEvent);
+			}
+
+			public EtoListBoxTableView()
+			{
+				HeaderView = null;
 			}
 		}
 
@@ -145,11 +150,14 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.Enabled = value; }
 		}
 
-		public ListBoxHandler()
+		protected override NSTableView CreateControl()
+		{
+			return new EtoListBoxTableView();
+		}
+			
+		protected override void Initialize()
 		{
 			collection = new CollectionHandler { Handler = this };
-			Control = new EtoListBoxTableView { Handler = this };
-			
 			var col = new NSTableColumn();
 			col.ResizingMask = NSTableColumnResizing.Autoresizing;
 			col.Editable = false;
@@ -158,11 +166,10 @@ namespace Eto.Mac.Forms.Controls
 			col.DataCell = cell;
 			Control.AddColumn(col);
 
-			Control.DataSource = new DataSource { Handler = this };
-			Control.HeaderView = null;
 			Control.DoubleClick += HandleDoubleClick;
-			Control.Delegate = new Delegate { Handler = this };
-			
+			Control.DataSource = new EtoDataSource { Handler = this };
+			Control.Delegate = new EtoDelegate { Handler = this };
+
 			scroll = new EtoScrollView { Handler = this };
 			scroll.AutoresizesSubviews = true;
 			scroll.DocumentView = Control;
@@ -170,10 +177,7 @@ namespace Eto.Mac.Forms.Controls
 			scroll.HasHorizontalScroller = true;
 			scroll.AutohidesScrollers = true;
 			scroll.BorderType = NSBorderType.BezelBorder;
-		}
 
-		protected override void Initialize()
-		{
 			base.Initialize();
 			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 		}

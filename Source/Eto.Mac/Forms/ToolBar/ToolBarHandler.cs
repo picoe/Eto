@@ -85,15 +85,21 @@ namespace Eto.Mac.Forms.ToolBar
 			}
 		}
 
-		public ToolBarHandler()
+		protected override NSToolbar CreateControl()
 		{
-			Control = new NSToolbar("main");
+			return new NSToolbar("main");
+		}
+
+		protected override void Initialize()
+		{
 			Control.SizeMode = NSToolbarSizeMode.Default;
 			Control.Visible = true;
 			Control.ShowsBaselineSeparator = true;
 			//Control.AllowsUserCustomization = true;
 			Control.DisplayMode = NSToolbarDisplayMode.IconAndLabel;
 			Control.Delegate = new TBDelegate { Handler = this };
+
+			base.Initialize();
 		}
 
 		public ToolBarDock Dock

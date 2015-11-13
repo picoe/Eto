@@ -19,7 +19,7 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac.Drawing
 {
-	public class FontTypefaceHandler : WidgetHandler<object, FontTypeface>, FontTypeface.IHandler
+	public class FontTypefaceHandler : WidgetHandler<FontTypeface>, FontTypeface.IHandler
 	{
 		readonly string name;
 

@@ -18,11 +18,13 @@ namespace Eto.Mac.Forms.Menu
 {
 	public class SeparatorMenuItemHandler : MenuHandler<NSMenuItem, SeparatorMenuItem, SeparatorMenuItem.ICallback>, SeparatorMenuItem.IHandler
 	{
-		public SeparatorMenuItemHandler ()
+		protected override NSMenuItem CreateControl()
 		{
-			Control = NSMenuItem.SeparatorItem;
+			return NSMenuItem.SeparatorItem;
 		}
-		
+
+		protected override bool DisposeControl { get { return false; } }
+
 		public bool Enabled {
 			get { return Control.Enabled; }
 			set { Control.Enabled = value; }

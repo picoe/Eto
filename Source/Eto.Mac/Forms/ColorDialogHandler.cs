@@ -55,12 +55,19 @@ namespace Eto.Mac.Forms
 	
 	public class ColorDialogHandler : MacObject<NSColorPanel, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler, IColorDialogHandler
 	{
-		public ColorDialogHandler()
+		protected override NSColorPanel CreateControl()
 		{
-			Control = NSColorPanel.SharedColorPanel;
-			this.Color = Colors.White;
+			return NSColorPanel.SharedColorPanel;
 		}
-		
+
+		protected override bool DisposeControl { get { return false; } }
+
+		protected override void Initialize()
+		{
+			Color = Colors.White;
+			base.Initialize();
+		}
+
 		public Color Color { get; set; }
 
 		#region IDialog implementation

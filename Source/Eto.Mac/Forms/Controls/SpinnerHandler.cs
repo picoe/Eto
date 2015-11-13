@@ -29,13 +29,17 @@ namespace Eto.Mac.Forms.Controls
 			return new SizeF(16, 16);
 		}
 
-		public SpinnerHandler()
+		protected override NSProgressIndicator CreateControl()
 		{
-			Control = new NSProgressIndicator
+			return new NSProgressIndicator
 			{
 				Style = NSProgressIndicatorStyle.Spinning,
 				ControlSize = NSControlSize.Regular
 			};
+		}
+
+		public SpinnerHandler()
+		{
 			view = new MacEventView { Handler = this };
 			view.AddSubview(Control);
 		}

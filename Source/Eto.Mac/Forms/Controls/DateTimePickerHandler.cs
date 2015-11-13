@@ -69,24 +69,26 @@ namespace Eto.Mac.Forms.Controls
 				get { return (DateTimePickerHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public EtoDatePicker()
+			{
+				TimeZone = NSTimeZone.LocalTimeZone;
+				Calendar = NSCalendar.CurrentCalendar;
+				DateValue = DateTime.Now.ToNS();
+			}
 		}
 
-		public DateTimePickerHandler()
+		protected override NSDatePicker CreateControl()
 		{
-			Control = new EtoDatePicker
-			{
-				Handler = this,
-				TimeZone = NSTimeZone.LocalTimeZone,
-				Calendar = NSCalendar.CurrentCalendar,
-				DateValue = DateTime.Now.ToNS()
-			};
-			this.Mode = DateTimePickerMode.Date;
-			// apple+backspace clears the value
-			Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
+			return new EtoDatePicker();
 		}
 
 		protected override void Initialize()
 		{
+			this.Mode = DateTimePickerMode.Date;
+			// apple+backspace clears the value
+			Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
+
 			base.Initialize();
 			Widget.KeyDown += HandleKeyDown;
 			// when clicking, set the value if it is null

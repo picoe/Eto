@@ -97,15 +97,20 @@ namespace Eto.Mac.Forms.Controls
 
 		public int Column { get; private set; }
 
-		public GridColumnHandler()
+		protected override NSTableColumn CreateControl()
 		{
-			Control = new NSTableColumn();
+			return new NSTableColumn();
+		}
+
+		protected override void Initialize()
+		{
 			Control.ResizingMask = NSTableColumnResizing.None;
 			Sortable = false;
 			HeaderText = string.Empty;
 			Editable = false;
 			AutoSize = true;
 			DataCell = new TextBoxCell();
+			base.Initialize();
 		}
 
 		public void Resize(bool force = false)

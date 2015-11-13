@@ -39,9 +39,9 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class ExpanderHandler : MacPanel<NSView, Expander, Expander.ICallback>, Expander.IHandler
 	{
-		readonly NSButton disclosureButton;
-		readonly NSView header;
-		readonly NSView content;
+		NSButton disclosureButton;
+		NSView header;
+		NSView content;
 		int suspendContentSizing;
 
 		static readonly object EnableAnimation_Key = new object();
@@ -60,13 +60,14 @@ namespace Eto.Mac.Forms.Controls
 			set { Widget.Properties.Set(AnimationDuration_Key, value); }
 		}
 
-		public ExpanderHandler()
+		protected override NSView CreateControl()
 		{
-			Control = new MacEventView
-			{ 
-				Handler = this,
-				AutoresizesSubviews = false
-			};
+			return new MacEventView();
+		}
+
+		protected override void Initialize()
+		{
+			Control.AutoresizesSubviews = false;
 
 			disclosureButton = new NSButton
 			{
@@ -87,6 +88,8 @@ namespace Eto.Mac.Forms.Controls
 			Control.AddSubview(disclosureButton);
 			Control.AddSubview(header);
 			Control.AddSubview(content);
+
+			base.Initialize();
 		}
 
 		void UpdateExpandedState()

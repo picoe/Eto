@@ -93,12 +93,23 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); }
 			}
+
+			public EtoPopUpButton()
+			{
+				Cell = new EtoPopUpButtonCell();
+			}
 		}
 
-		public DropDownHandler()
+		protected override NSPopUpButton CreateControl()
 		{
-			Control = new EtoPopUpButton { Handler = this, Cell = new EtoPopUpButtonCell() };
+			return new EtoPopUpButton();
+		}
+
+		protected override void Initialize()
+		{
 			Control.Activated += HandleActivated;
+
+			base.Initialize();
 		}
 
 		static void HandleActivated(object sender, EventArgs e)

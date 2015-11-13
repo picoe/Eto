@@ -62,11 +62,18 @@ namespace Eto.Mac.Forms.Controls
 			[Export("cellClass")]
 			public new static Class CellClass()
 			{
-				return new Class(typeof(Cell));
+				return new Class(typeof(EtoCell));
+			}
+
+			public EtoComboBox()
+			{
+				StringValue = string.Empty;
+				Editable = true;
+				VisibleItems = 20;
 			}
 		}
 
-		public class Cell : NSComboBoxCell
+		public class EtoCell : NSComboBoxCell
 		{
 			[Export("tableView:willDisplayCell:forTableColumn:row:")]
 			public void TableWillDisplayCellForTableColumn(NSTableView tableView, NSCell cell, NSTableColumn tableColumn, nint rowIndex)
@@ -87,17 +94,16 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public ComboBoxHandler()
+		protected override NSComboBox CreateControl()
 		{
-			Control = new EtoComboBox
-			{ 
-				Handler = this, 
-				StringValue = string.Empty,
-				Editable = true,
-				VisibleItems = 20
-			};
+			return new EtoComboBox();
+		}
+
+		protected override void Initialize()
+		{
 			AddObserver(NSComboBox.SelectionDidChangeNotification, SelectionDidChange);
 			Control.Changed += HandleChanged;
+			base.Initialize();
 		}
 
 		static void HandleChanged(object sender, EventArgs e)

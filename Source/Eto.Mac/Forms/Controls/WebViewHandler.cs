@@ -29,18 +29,14 @@ namespace Eto.Mac.Forms.Controls
 
 		NewWindowHandler newWindowHandler;
 
-		public WebViewHandler()
+		protected override wk.WebView CreateControl()
 		{
-			Enabled = true;
-			Control = new EtoWebView
-			{
-				Handler = this,
-				UIDelegate = new UIDelegate { Handler = this }
-			};
+			return new EtoWebView(this);
 		}
 
 		protected override void Initialize()
 		{
+			Enabled = true;
 			base.Initialize();
 			HandleEvent(WebView.OpenNewWindowEvent); // needed to provide default implementation
 			HandleEvent(WebView.DocumentLoadingEvent);
@@ -51,6 +47,12 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 
 			public WebViewHandler Handler { get { return (WebViewHandler)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
+
+			public EtoWebView(WebViewHandler handler)
+			{
+				Handler = handler;
+				UIDelegate = new EtoWebUIDelegate { Handler = handler };
+			}
 		}
 
 		public class NewWindowHandler : NSObject
@@ -61,7 +63,7 @@ namespace Eto.Mac.Forms.Controls
 
 			public NewWindowHandler()
 			{
-				WebView = new EtoWebView();
+				WebView = new EtoWebView(Handler);
 				WebView.WeakUIDelegate = this;
 				WebView.WeakPolicyDelegate = this;
 				WebView.WeakResourceLoadDelegate = this;
@@ -127,7 +129,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public class UIDelegate : wk.WebUIDelegate
+		public class EtoWebUIDelegate : wk.WebUIDelegate
 		{
 			WeakReference handler;
 

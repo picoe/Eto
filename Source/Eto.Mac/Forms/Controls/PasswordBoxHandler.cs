@@ -37,7 +37,7 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox, PasswordBox.ICallback>, PasswordBox.IHandler, ITextBoxWithMaxLength
 	{
-		class EtoTextField : NSSecureTextField, IMacControl
+		public class EtoSecureTextField : NSSecureTextField, IMacControl, ITextBoxWithMaxLength
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -45,6 +45,22 @@ namespace Eto.Mac.Forms.Controls
 			{ 
 				get { return (PasswordBoxHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
+			}
+
+			public int MaxLength
+			{
+				get { return Handler.MaxLength; }
+			}
+
+			public EtoSecureTextField()
+			{
+				Bezeled = true;
+				Editable = true;
+				Selectable = true;
+				Cell.Scrollable = true;
+				Cell.Wraps = false;
+				Cell.UsesSingleLineMode = true;
+				Formatter = new EtoFormatter { Handler = this };
 			}
 		}
 
@@ -58,22 +74,16 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public PasswordBoxHandler()
+		protected override NSTextField CreateControl()
 		{
-			Control = new EtoTextField
-			{
-				Handler = this,
-				Bezeled = true,
-				Editable = true,
-				Selectable = true,
-				Formatter = new EtoFormatter { Handler = this }
-			};
+			return new EtoSecureTextField();
+		}
 
-			Control.Cell.Scrollable = true;
-			Control.Cell.Wraps = false;
-			Control.Cell.UsesSingleLineMode = true;
-
+		protected override void Initialize()
+		{
 			MaxLength = -1;
+
+			base.Initialize();
 		}
 
 		public override void AttachEvent(string id)

@@ -39,10 +39,12 @@ namespace Eto.Mac.Forms
 	{
 		nint changeCount;
 
-		public ClipboardHandler()
+		protected override NSPasteboard CreateControl()
 		{
-			Control = NSPasteboard.GeneralPasteboard;
+			return NSPasteboard.GeneralPasteboard;
 		}
+
+		protected override bool DisposeControl { get { return false; } }
 
 		void ClearIfNeeded()
 		{

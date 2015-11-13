@@ -51,9 +51,13 @@ namespace Eto.Mac.Forms.Menu
 
 	public class ContextMenuHandler : WidgetHandler<NSMenu, ContextMenu, ContextMenu.ICallback>, ContextMenu.IHandler
 	{
-		public ContextMenuHandler ()
+		protected override NSMenu CreateControl()
 		{
-			Control = new NSMenu ();
+			return new NSMenu();
+		}
+
+		protected override void Initialize()
+		{
 			Control.AutoEnablesItems = false;
 			Control.ShowsStateColumn = true;
 			ContextHandler.Instance = new ContextHandler()
@@ -62,6 +66,8 @@ namespace Eto.Mac.Forms.Menu
 			};
 
 			Control.Delegate = ContextHandler.Instance;
+
+			base.Initialize();
 		}
 
 		public override void AttachEvent(string id)

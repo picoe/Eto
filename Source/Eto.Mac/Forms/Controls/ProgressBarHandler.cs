@@ -47,16 +47,25 @@ namespace Eto.Mac.Forms.Controls
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
+			public EtoSlider()
+			{
+				Indeterminate = false;
+			}
+
 		}
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		public ProgressBarHandler ()
+		protected override NSProgressIndicator CreateControl()
 		{
-			Control = new EtoSlider { Handler = this, Indeterminate = false };
+			return new EtoSlider();
+		}
 
+		protected override void Initialize()
+		{
 			MinValue = 0;
 			MaxValue = 100;
+			base.Initialize();
 		}
 
 		protected override SizeF GetNaturalSize (SizeF availableSize)

@@ -45,13 +45,24 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public EtoCheckBoxButton()
+			{
+				Title = string.Empty;
+				SetButtonType(NSButtonType.Switch);
+			}
 		}
 
-		public CheckBoxHandler()
+		protected override NSButton CreateControl()
 		{
-			Control = new EtoCheckBoxButton { Handler = this, Title = string.Empty };
-			Control.SetButtonType(NSButtonType.Switch);
+			return new EtoCheckBoxButton();
+		}
+
+		protected override void Initialize()
+		{
 			Control.Activated += HandleActivated;
+
+			base.Initialize();
 		}
 
 		static void HandleActivated(object sender, EventArgs e)

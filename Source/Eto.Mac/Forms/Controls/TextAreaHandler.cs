@@ -97,6 +97,22 @@ namespace Eto.Mac.Forms.Controls
 		{
 			// ignore color changes
 		}
+
+		public EtoTextView(ITextAreaHandler handler)
+		{
+			Delegate = new EtoTextAreaDelegate { Handler = handler };
+			AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+			HorizontallyResizable = true;
+			VerticallyResizable = true;
+			Editable = true;
+			RichText = false;
+			AllowsDocumentBackgroundColorChange = false;
+			Selectable = true;
+			AllowsUndo = true;
+			MinSize = CGSize.Empty;
+			MaxSize = new CGSize(float.MaxValue, float.MaxValue);
+			TextContainer.WidthTracksTextView = true;
+		}
 	}
 
 	public class TextAreaHandler<TControl, TCallback> : MacView<NSTextView, TControl, TCallback>, TextArea.IHandler, ITextAreaHandler
@@ -137,25 +153,13 @@ namespace Eto.Mac.Forms.Controls
 			get { return Scroll; }
 		}
 
-		public TextAreaHandler()
+		protected override NSTextView CreateControl()
 		{
-			Control = new EtoTextView
-			{
-				Handler = this,
-				Delegate = new EtoTextAreaDelegate { Handler = this },
-				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
-				HorizontallyResizable = true,
-				VerticallyResizable = true,
-				Editable = true,
-				RichText = false,
-				AllowsDocumentBackgroundColorChange = false,
-				Selectable = true,
-				AllowsUndo = true,
-				MinSize = CGSize.Empty,
-				MaxSize = new CGSize(float.MaxValue, float.MaxValue)
-			};
-			Control.TextContainer.WidthTracksTextView = true;
+			return new EtoTextView(this);
+		}
 
+		protected override void Initialize()
+		{
 			Scroll = new EtoScrollView
 			{
 				Handler = this,
@@ -166,6 +170,7 @@ namespace Eto.Mac.Forms.Controls
 				BorderType = NSBorderType.BezelBorder,
 				DocumentView = Control
 			};
+			base.Initialize();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
