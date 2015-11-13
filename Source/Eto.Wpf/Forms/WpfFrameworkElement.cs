@@ -267,10 +267,10 @@ namespace Eto.Wpf.Forms
 
 		public bool Visible
 		{
-			get { return Control.IsVisible; }
+			get { return Control.Visibility != sw.Visibility.Collapsed; }
 			set
 			{
-				Control.Visibility = (value) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+				Control.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
 			}
 		}
 
