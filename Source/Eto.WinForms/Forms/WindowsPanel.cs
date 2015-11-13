@@ -45,7 +45,7 @@ namespace Eto.WinForms.Forms
 			if (handler != null)
 			{
 				var desiredContentSize = handler.GetPreferredSize(availableSize);
-				if (!handler.XScale)
+				//if (!handler.XScale)
 				{
 					if (desiredSize.Width > 0)
 						desiredSize.Width = Math.Max(desiredSize.Width, desiredContentSize.Width);
@@ -53,7 +53,7 @@ namespace Eto.WinForms.Forms
 						desiredSize.Width = desiredContentSize.Width;
 				}
 
-				if (!handler.YScale)
+				//if (!handler.YScale)
 				{
 					if (desiredSize.Height > 0)
 						desiredSize.Height = Math.Max(desiredSize.Height, desiredContentSize.Height);
