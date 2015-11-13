@@ -307,5 +307,36 @@ namespace Eto.GtkSharp.Drawing
 				return xheight ?? 0f;
 			}
 		}
+
+		Pango.Layout measureLayout;
+
+		public SizeF MeasureString(string text)
+		{
+			if (measureLayout == null)
+			{
+				measureLayout = new Pango.Layout(FontsHandler.Context);
+				measureLayout.FontDescription = Control;
+				measureLayout.Spacing = 0;
+				measureLayout.Alignment = Pango.Alignment.Left;
+				measureLayout.Width = int.MaxValue;
+			}
+			measureLayout.SetText(text);
+			int width, height;
+			measureLayout.GetPixelSize(out width, out height);
+			return new SizeF(width, height);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (measureLayout != null)
+				{
+					measureLayout.Dispose();
+					measureLayout = null;
+				}
+			}
+			base.Dispose(disposing);
+		}
 	}
 }

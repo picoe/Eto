@@ -2,6 +2,7 @@ using System;
 using Eto.Drawing;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
+using System.ComponentModel;
 
 namespace Eto.WinForms.Drawing
 {
@@ -17,9 +18,11 @@ namespace Eto.WinForms.Drawing
 
 		public FontHandler()
 		{
-		}
+			UseCompatibleTextRendering = true;
+        }
 
 		public FontHandler(sd.Font font)
+			: this()
 		{
 			Control = font;
 		}
@@ -127,6 +130,33 @@ namespace Eto.WinForms.Drawing
 		public sd.Font GetFont()
 		{
 			return Control;
+		}
+
+		[DefaultValue(true)]
+		public bool UseCompatibleTextRendering { get; set; }
+
+		sd.Graphics measureGraphics;
+
+		public SizeF MeasureString(string text)
+		{
+			if (UseCompatibleTextRendering)
+			{
+				if (measureGraphics == null)
+					measureGraphics = sd.Graphics.FromImage(new sd.Bitmap(1, 1));
+
+				sd.CharacterRange[] ranges = { new sd.CharacterRange(0, text.Length) };
+				var stringFormat = GraphicsHandler.DefaultStringFormat;
+				lock (stringFormat)
+				{
+					stringFormat.SetMeasurableCharacterRanges(ranges);
+					var regions = measureGraphics.MeasureCharacterRanges(text, Control, sd.RectangleF.Empty, stringFormat);
+					var rect = regions[0].GetBounds(measureGraphics);
+					return rect.Size.ToEto();
+				}
+			}
+
+			var size = swf.TextRenderer.MeasureText(text, Control, sd.Size.Empty, GraphicsHandler.DefaultTextFormat);
+			return size.ToEto();
 		}
 	}
 }

@@ -328,6 +328,21 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Measures the specified string to get its size in logical pixels.
+		/// </summary>
+		/// <remarks>
+		/// This is equivalent to <see cref="Graphics.MeasureString"/>.  When you have a Graphics object, it is recommended
+		/// to use that to measure the string if available, as it may be more efficient and take into account the current graphics state.
+		/// </remarks>
+		/// <seealso cref="Graphics.MeasureString"/>
+		/// <returns>The size of the text in logical pixels if drawn using Graphics.DrawText.</returns>
+		/// <param name="text">Text string to measure.</param>
+		public SizeF MeasureString(string text)
+		{
+			return Handler.MeasureString(text);
+		}
+
+		/// <summary>
 		/// Gets a string representation of the font object
 		/// </summary>
 		/// <returns>String representation of the font object</returns>
@@ -475,6 +490,18 @@ namespace Eto.Drawing
 			/// This should always return an instance that represents the typeface of this font
 			/// </remarks>
 			FontTypeface Typeface { get; }
+
+			/// <summary>
+			/// Measures the specified string to get its size in logical pixels.
+			/// </summary>
+			/// <remarks>
+			/// This is equivalent to <see cref="Graphics.MeasureString"/>.  When you have a Graphics object, it is recommended
+			/// to use that to measure the string if available, as it may be more efficient and take into account the current graphics state.
+			/// </remarks>
+			/// <seealso cref="Graphics.MeasureString"/>
+			/// <returns>The size of the text in logical pixels if drawn using Graphics.DrawText.</returns>
+			/// <param name="text">Text string to measure.</param>
+			SizeF MeasureString(string text);
 		}
 
 		#endregion

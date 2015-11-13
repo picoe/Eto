@@ -320,5 +320,10 @@ namespace Eto.Mac.Drawing
 				attributeKeys
 			);
 		}
+
+		public SizeF MeasureString(string text)
+		{
+			return FontExtensions.MeasureString(text, Widget);
+		}
 	}
 }

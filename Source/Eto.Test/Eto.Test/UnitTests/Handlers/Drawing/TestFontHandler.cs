@@ -59,5 +59,10 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 			Size = size;
 			FontDecoration = decoration;
 		}
+
+		public SizeF MeasureString(string text)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

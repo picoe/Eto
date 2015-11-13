@@ -328,7 +328,7 @@ namespace Eto.Direct2D.Drawing
 			}
 		}
 
-		static sw.TextLayout GetTextLayout(Font font, string text)
+		public static sw.TextLayout GetTextLayout(Font font, string text)
 		{
 			var fontHandler = (FontHandler)font.Handler;
 			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
