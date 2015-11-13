@@ -10,36 +10,39 @@ namespace Eto.Test.UnitTests.Forms
 		[Test]
 		public void MixedCommandsAndToolItemsShouldBeInCorrectOrder()
 		{
-			var toolbar = new ToolBar();
-			for (int i = 0; i < 15; i++)
+			TestUtils.Invoke(() =>
 			{
-				switch (i % 5)
+				var toolbar = new ToolBar();
+				for (int i = 0; i < 15; i++)
 				{
-					case 0:
-						toolbar.Items.Add(new ButtonToolItem { Text = i.ToString() });
-						break;
-					case 1:
-						toolbar.Items.Add(new ButtonToolItem { Text = i.ToString() });
-						break;
-					case 2:
-						toolbar.Items.Add(new Command { ToolBarText = i.ToString() });
-						break;
-					case 3:
-						toolbar.Items.AddSeparator();
-						break;
-					case 4:
-						// convert to toolitem first
-						ToolItem toolItem = new Command { ToolBarText = i.ToString() };
-						toolbar.Items.Add(toolItem);
-						break;
+					switch (i % 5)
+					{
+						case 0:
+							toolbar.Items.Add(new ButtonToolItem { Text = i.ToString() });
+							break;
+						case 1:
+							toolbar.Items.Add(new ButtonToolItem { Text = i.ToString() });
+							break;
+						case 2:
+							toolbar.Items.Add(new Command { ToolBarText = i.ToString() });
+							break;
+						case 3:
+							toolbar.Items.AddSeparator();
+							break;
+						case 4:
+							// convert to toolitem first
+							ToolItem toolItem = new Command { ToolBarText = i.ToString() };
+							toolbar.Items.Add(toolItem);
+							break;
+					}
 				}
-			}
-			for (int i = 0; i < toolbar.Items.Count; i++)
-			{
-				if (toolbar.Items[i] is SeparatorToolItem)
-					continue;
-				Assert.AreEqual(i.ToString(), toolbar.Items[i].Text, "Items are out of order");
-			}
+				for (int i = 0; i < toolbar.Items.Count; i++)
+				{
+					if (toolbar.Items[i] is SeparatorToolItem)
+						continue;
+					Assert.AreEqual(i.ToString(), toolbar.Items[i].Text, "Items are out of order");
+				}
+			});
 		}
 	}
 }
