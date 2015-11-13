@@ -16,6 +16,7 @@ namespace Eto.WinForms.Forms.Controls
 
 		public bool RecurseToChildren { get { return true; } }
 
+
 		public override Size? DefaultSize
 		{
 			get
@@ -23,10 +24,7 @@ namespace Eto.WinForms.Forms.Controls
 				var size = base.DefaultSize;
 				if (size == null && Control.AutoSize)
 				{
-					var min = Control.MinimumSize;
-					Control.MinimumSize = sd.Size.Empty;
-					size = Control.GetPreferredSize(sd.Size.Empty).ToEto();
-					Control.MinimumSize = min;
+					size = GetPreferredSize().ToEto();
 				}
 				return size;
 			}
@@ -55,14 +53,13 @@ namespace Eto.WinForms.Forms.Controls
 				it.SetRelative(it.relative);
 				it.suppressSplitterMoved--;
 			}
-
 		}
 
-		sd.Size GetPreferredSize()
+		sd.Size GetPreferredSize(bool limit = false)
 		{
 			var size = new sd.Size();
-			var size1 = panel1 == null ? Size.Empty : panel1.GetPreferredSize();
-			var size2 = panel2 == null ? Size.Empty : panel2.GetPreferredSize();
+			var size1 = panel1 == null || !panel1.Visible ? Size.Empty : panel1.GetPreferredSize();
+			var size2 = panel2 == null || !panel2.Visible ? Size.Empty : panel2.GetPreferredSize();
 			if (Orientation == Orientation.Horizontal)
 			{
 				if (position.HasValue)
@@ -81,6 +78,8 @@ namespace Eto.WinForms.Forms.Controls
 					{
 						// both get at least the preferred size
 						size1.Width = (int)Math.Round(Math.Max(size1.Width/relative, size2.Width/(1-relative)));
+						if (Widget.Loaded && Control.IsHandleCreated)
+							size1.Width = Math.Min(Control.Width - SplitterWidth, size1.Width);
 						size2.Width = 0;
 					}
 				}
@@ -105,6 +104,8 @@ namespace Eto.WinForms.Forms.Controls
 					{
 						// both get at least the preferred size
 						size1.Height = (int)Math.Round(Math.Max(size1.Height/relative, size2.Height/(1-relative)));
+						if (Widget.Loaded && Control.IsHandleCreated)
+							size1.Height = Math.Min(Control.Height - SplitterWidth, size1.Height);
 						size2.Height = 0;
 					}
 				}
@@ -184,13 +185,11 @@ namespace Eto.WinForms.Forms.Controls
 			if (desired)
 			{
 				var size = UserDesiredSize;
-				var pick = Orientation == Orientation.Horizontal ?
-					size.Width : size.Height;
+				var pick = Orientation == Orientation.Horizontal ? size.Width : size.Height;
 				if (pick >= 0)
 					return pick - Control.SplitterWidth;
 			}
-			return (Orientation == Orientation.Horizontal ?
-				Control.Width : Control.Height) - Control.SplitterWidth;
+			return (Orientation == Orientation.Horizontal ? Control.Width : Control.Height) - Control.SplitterWidth;
 		}
 
 		void UpdateRelative()
@@ -276,13 +275,18 @@ namespace Eto.WinForms.Forms.Controls
 			suppressSplitterMoved--;
 		}
 
+		void SetCollapsed()
+		{
+			Control.Panel1Collapsed = !Panel1Visible;
+			Control.Panel2Collapsed = !Panel2Visible;
+		}
+
 		void SetInitialPosition()
 		{
 			suppressSplitterMoved++;
 			try
 			{
-				Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsHandler()).InternalVisible;
-				Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
+				SetCollapsed();
 				if (position != null)
 				{
 					var pos = position.Value;
@@ -341,7 +345,10 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				fixedPanel = value;
 				if (Control.IsHandleCreated)
+				{
 					SetFixedPanel();
+					UpdateRelative();
+				}
 			}
 		}
 
@@ -420,7 +427,7 @@ namespace Eto.WinForms.Forms.Controls
 					}
 					if (Widget.Loaded)
 					{
-						Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsHandler()).InternalVisible;
+						Control.Panel1Collapsed = Panel1Visible;
 						Control.ResumeLayout();
 					}
 				}
@@ -454,27 +461,49 @@ namespace Eto.WinForms.Forms.Controls
 					}
 					if (Widget.Loaded)
 					{
-						Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsHandler()).InternalVisible;
+						Control.Panel2Collapsed = Panel2Visible;
 						Control.ResumeLayout();
 					}
 				}
 			}
 		}
 
+		bool Panel1Visible
+		{
+			get { return panel1 != null && panel1.GetWindowsHandler().InternalVisible; }
+		}
+
+		bool Panel2Visible
+		{
+			get { return panel2 != null && panel2.GetWindowsHandler().InternalVisible; }
+		}
+
 		void c1_VisibleChanged(object sender, EventArgs e)
 		{
-			if (panel1 != null && (panel1.GetWindowsHandler()).InternalVisible)
-				Control.Panel1Collapsed = false;
-			else
-				Control.Panel1Collapsed = true;
+			VisibleChanged(Panel1Visible);
 		}
 
 		void c2_VisibleChanged(object sender, EventArgs e)
 		{
-			if (panel2 != null && (panel2.GetWindowsHandler()).InternalVisible)
-				Control.Panel2Collapsed = false;
-			else
-				Control.Panel2Collapsed = true;
+			VisibleChanged(Panel2Visible);
 		}
+
+		void VisibleChanged(bool isVisible)
+		{
+			if (isVisible)
+			{
+				SetCollapsed();
+				if (!double.IsNaN(relative))
+					SetRelative(relative);
+			}
+			else
+			{
+				position = null;
+				if (double.IsNaN(relative))
+					UpdateRelative();
+				SetCollapsed();
+			}
+		}
+
 	}
 }

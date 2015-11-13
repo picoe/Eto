@@ -11,16 +11,14 @@ namespace Eto.Test.Sections.Controls
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 			layout.Add(null);
-			layout.AddCentered(Test1WithSize());
-			layout.AddCentered(Test1AutoSize());
-			layout.AddCentered(Test1WithFullScreenAndSize());
-			layout.AddCentered(Test1FullScreenAndAutoSize());
-			layout.AddCentered(Test2WithSize());
-			layout.AddCentered(Test2AutoSize());
-			layout.AddCentered(TestDynamic());
-			layout.AddCentered(TestInitResize());
 			var xthemed = new CheckBox { Text = "Use Themed Splitter" };
 			layout.AddCentered(xthemed);
+			layout.AddSeparateRow(null, Test1WithSize(), Test1AutoSize(), null);
+			layout.AddSeparateRow(null, Test1WithFullScreenAndSize(), Test1FullScreenAndAutoSize(), null);
+			layout.AddSeparateRow(null, Test2WithSize(), Test2AutoSize(), null);
+			layout.AddCentered(TestDynamic());
+			layout.AddCentered(TestInitResize());
+			layout.AddCentered(TestHiding());
 			layout.Add(null);
 			Content = layout;
 
@@ -448,6 +446,67 @@ namespace Eto.Test.Sections.Controls
 					};
 				}
 			};
+			return control;
+		}
+
+		Button TestHiding()
+		{
+			var control = new Button { Text = "Test Hiding" };
+			control.Click += (sender, e) =>
+			{
+				var form = new Form();
+				using (Context)
+				{
+					var splitter = new Splitter
+					{
+						Orientation = Orientation.Horizontal,
+						FixedPanel = SplitterFixedPanel.None,
+						RelativePosition = 0.5,
+						Panel1 = new Panel { Padding = 20, BackgroundColor = Colors.Red, Content = new Panel { BackgroundColor = Colors.White, Size = new Size(200, 400) } },
+						Panel2 = new Panel { Padding = 20, BackgroundColor = Colors.Blue, Content = new Panel { BackgroundColor = Colors.White, Size = new Size(200, 400) } }
+					};
+
+					var showPanel1 = new CheckBox { Text = "Panel1.Visible" };
+					showPanel1.CheckedBinding.Bind(splitter.Panel1, r => r.Visible);
+
+					var showPanel2 = new CheckBox { Text = "Panel2.Visible" };
+					showPanel2.CheckedBinding.Bind(splitter.Panel2, r => r.Visible);
+
+					var fixedPanel = new EnumDropDown<SplitterFixedPanel>();
+					fixedPanel.SelectedValueBinding.Bind(splitter, r => r.FixedPanel);
+
+					var orientation = new EnumDropDown<Orientation>();
+					orientation.SelectedValueBinding.Bind(splitter, r => r.Orientation);
+
+					var splitPanel = new Panel { Content = splitter };
+
+					var showSplitter = new CheckBox { Text = "Show Splitter", Checked = true };
+					showSplitter.CheckedChanged += (sender2, e2) => {
+						if (showSplitter.Checked == true)
+							splitPanel.Content = splitter;
+						else
+							splitPanel.Content = null;
+					};
+
+					var buttons = new StackLayout
+					{
+						Orientation = Orientation.Horizontal,
+						Items = { showSplitter, showPanel1, showPanel2, fixedPanel, orientation }
+					};
+				
+					form.Content = new StackLayout
+					{
+						HorizontalContentAlignment = HorizontalAlignment.Stretch,
+						Items =
+						{
+							buttons,
+							new StackLayoutItem(splitPanel, true)
+						}
+					};
+				}
+				form.Show();
+			};
+
 			return control;
 		}
 	}

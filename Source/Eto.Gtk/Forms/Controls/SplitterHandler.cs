@@ -33,8 +33,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					else
 					{
 						// both get at least the preferred size
-						return (int)Math.Round(Math.Max(
-							width1 / relative, width2 / (1 - relative)));
+						return (int)Math.Round(Math.Max(width1 / relative, width2 / (1 - relative))) + SplitterWidth;
 					}
 				}
 			}
@@ -269,8 +268,17 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (fixedPanel != value)
 				{
 					fixedPanel = value;
+					var position = Position;
+					if (WasLoaded)
+						UpdateRelative();
+
 					((Gtk.Paned.PanedChild)Control[Control.Child1]).Resize = value != SplitterFixedPanel.Panel1;
 					((Gtk.Paned.PanedChild)Control[Control.Child2]).Resize = value != SplitterFixedPanel.Panel2;
+
+					if (Control.IsRealized)
+						SetPosition(position);
+					else if (WasLoaded)
+						SetRelative(relative);
 				}
 			}
 		}
@@ -295,9 +303,17 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control = new EtoHPaned() { Handler = this };
 			else
 				Control = new EtoVPaned() { Handler = this };
+
+			Control.ShowAll();
+			Control.Realized += (sender, e) =>
+			{
+				SetInitialPosition();
+				HookEvents();
+			};
+
 			if (container.Child != null)
 				container.Remove(container.Child);
-			container.Child = Control;
+
 			if (old != null)
 			{
 				var child1 = old.Child1;
@@ -313,11 +329,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.Pack1(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
 				Control.Pack2(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
 			}
-			Control.Realized += (sender, e) =>
-			{
-				SetInitialPosition();
-				HookEvents();
-			};
+
+			container.Child = Control;
 		}
 
 		void HookEvents()
@@ -347,6 +360,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+			WasLoaded = false;
 			suppressSplitterMoved++;
 			if (Control.IsRealized)
 				SetInitialPosition();
@@ -356,6 +370,22 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			base.OnLoadComplete(e);
 			suppressSplitterMoved--;
+		}
+
+		static readonly object WasLoaded_Key = new object();
+
+		bool WasLoaded
+		{
+			get { return Widget.Properties.Get<bool>(WasLoaded_Key); }
+			set { Widget.Properties.Set(WasLoaded_Key, value); }
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			WasLoaded = true;
+			position = null;
+			relative = RelativePosition;
 		}
 
 		void SetInitialPosition()
