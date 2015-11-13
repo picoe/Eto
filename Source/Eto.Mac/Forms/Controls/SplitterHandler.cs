@@ -33,28 +33,13 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class SplitterHandler : MacView<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler, IMacContainer
+	public class SplitterHandler : MacContainer<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
-		public void SetContentSize(CGSize contentSize)
-		{
-		}
 
-		public void LayoutParent(bool updateSize = true)
+		public override void LayoutParent(bool updateSize = true)
 		{
-			Control.ResizeSubviewsWithOldSize(CGSize.Empty);
-		}
-
-		public void LayoutChildren()
-		{
-		}
-
-		public void LayoutAllChildren()
-		{
-		}
-
-		public bool InitialLayout
-		{
-			get { return false; }
+			UpdatePosition();
+			base.LayoutParent(updateSize);
 		}
 
 		double relative = double.NaN;
@@ -86,7 +71,7 @@ namespace Eto.Mac.Forms.Controls
 				if (Widget.Loaded)
 				{
 					SetRelative();
-					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+					UpdatePosition();
 				}
 			}
 		}
@@ -350,7 +335,7 @@ namespace Eto.Mac.Forms.Controls
 				position = value;
 				relative = double.NaN;
 				if (Widget.Loaded)
-					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+					UpdatePosition();
 			}
 		}
 
@@ -364,7 +349,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Control.IsVertical = value == Orientation.Horizontal;
 				if (Widget.Loaded)
-					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+					UpdatePosition();
 			}
 		}
 
@@ -380,7 +365,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					if (double.IsNaN(relative))
 						relative = RelativePosition;
-					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+					UpdatePosition();
 				}
 				else if (WasLoaded)
 				{
@@ -461,7 +446,7 @@ namespace Eto.Mac.Forms.Controls
 			base.OnLoadComplete(e);
 			WasLoaded = false;
 			SetInitialSplitPosition();
-			Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+			UpdatePosition();
 			initialPositionSet = true;
 		}
 
@@ -558,6 +543,11 @@ namespace Eto.Mac.Forms.Controls
 				size.Width = Math.Max(size1.Width, size2.Width);
 			}
 			return size;
+		}
+
+		void UpdatePosition()
+		{
+			Control.ResizeSubviewsWithOldSize(CGSize.Empty);
 		}
 	}
 }
