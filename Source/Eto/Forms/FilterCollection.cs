@@ -962,14 +962,15 @@ namespace Eto.Forms
 		{
 			return Update(() =>
 			{
+				var index = IndexOf(item);
 				if (items.Remove(item))
 				{
-					var index = IndexOf(item);
 					if (filtered != null)
 						filtered.RemoveAt(index);
 					if (externalList != null)
 						externalList.Remove(item);
-					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+					if (index >= 0)
+						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
 					return true;
 				}
 				return false;
