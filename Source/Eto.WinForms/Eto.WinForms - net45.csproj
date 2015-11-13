@@ -231,12 +231,8 @@
     <Compile Include="Forms\Controls\TabPageHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\TextAreaHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\TextBoxHandler.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
+    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
