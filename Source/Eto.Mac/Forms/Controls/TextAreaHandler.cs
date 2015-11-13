@@ -416,5 +416,16 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Widget; }
 		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			if (Wrap)
+			{
+				// set initial width of content to the size of the control
+				Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
+			}
+			
+		}
 	}
 }
