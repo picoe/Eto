@@ -472,7 +472,7 @@ namespace Eto.WinForms.Forms
 			get { return Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
 		}
 
-		public bool Visible
+		public virtual bool Visible
 		{
 			get { return ContainerControl.IsHandleCreated ? ContainerControl.Visible : Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
 			set

@@ -432,5 +432,19 @@ namespace Eto.WinForms.Forms
 		{
 			get { return new Screen(new ScreenHandler(swf.Screen.FromControl(Control))); }
 		}
+
+		public override bool Visible
+		{
+			get { return base.Visible; }
+			set
+			{
+				if (Visible != value)
+				{
+					base.Visible = value;
+					if (Widget.Loaded && value)
+						Callback.OnShown(Widget, EventArgs.Empty);
+				}
+			}
+		}
 	}
 }

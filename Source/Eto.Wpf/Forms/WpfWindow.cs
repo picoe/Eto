@@ -115,6 +115,9 @@ namespace Eto.Wpf.Forms
 							app.Callback.OnTerminating(app.Widget, args);
 						}
 						e.Cancel = args.Cancel;
+						IsApplicationClosing = !args.Cancel 
+							&& sw.Application.Current.MainWindow == Control
+							&& sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose;
 					};
 					break;
 				case Window.WindowStateChangedEvent:
@@ -134,6 +137,8 @@ namespace Eto.Wpf.Forms
 					break;
 			}
 		}
+
+		static bool IsApplicationClosing { get; set; }
 
 		public override void OnLoad(EventArgs e)
 		{
@@ -171,7 +176,10 @@ namespace Eto.Wpf.Forms
 
 		public void Close()
 		{
+			if (!IsApplicationClosing)
 			Control.Close();
+			else
+				Visible = false;
 		}
 
 		void CopyKeyBindings(swc.ItemCollection items)

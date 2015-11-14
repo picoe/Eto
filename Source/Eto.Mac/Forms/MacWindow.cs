@@ -638,11 +638,12 @@ namespace Eto.Mac.Forms
 			get { return Control.IsVisible; }
 			set
 			{
-				if (value && !Control.IsVisible)
-					Control.MakeKeyAndOrderFront(NSApplication.SharedApplication);
-				if (!value && Control.IsVisible)
-					Control.PerformClose(NSApplication.SharedApplication);
-				// huh?
+				if (Visible != value)
+				{
+					Control.IsVisible = value;
+					if (Widget.Loaded && value)
+						Callback.OnShown(Widget, EventArgs.Empty);
+				}
 			}
 		}
 
