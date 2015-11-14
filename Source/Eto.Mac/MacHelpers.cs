@@ -81,7 +81,7 @@ namespace Eto.Forms
 		/// <param name="window">Cocoa Window to wrap.</param>
 		public static Window ToEtoWindow(this NSWindow window)
 		{
-			return new Form(new FormHandler(window));
+			return new Form(new NativeFormHandler(window));
 		}
 
 		/// <summary>
@@ -91,7 +91,7 @@ namespace Eto.Forms
 		/// <param name="windowController">Cocoa Window to wrap.</param>
 		public static Window ToEtoWindow(this NSWindowController windowController)
 		{
-			return new Form(new FormHandler(windowController));
+			return new Form(new NativeFormHandler(windowController));
 		}
 
 		/// <summary>

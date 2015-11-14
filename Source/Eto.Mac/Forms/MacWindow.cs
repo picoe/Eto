@@ -418,7 +418,7 @@ namespace Eto.Mac.Forms
 			});
 		}
 
-		protected void ConfigureWindow()
+		protected virtual void ConfigureWindow()
 		{
 			var myWindow = Control as EtoWindow;
 			if (myWindow != null)
