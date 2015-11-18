@@ -59,7 +59,10 @@
     <Compile Include="Forms\Controls\ComboBox.cs">
       <SubType>Eto.Forms</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\Expander.cs" />
+    <Compile Include="Forms\Controls\DragEventArgs.cs" />
+    <Compile Include="Forms\Controls\Expander.cs">
+      <SubType>Eto.Forms</SubType>
+    </Compile>
     <Compile Include="Forms\Cells\CustomCell.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs">
@@ -74,6 +77,7 @@
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Controls\TreeView.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
+    <Compile Include="Forms\DragDropData.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
     <Compile Include="Forms\Layout\DynamicTable.cs" />

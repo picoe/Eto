@@ -54,6 +54,10 @@
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\DragDropSources.cs">
+      <Link>DragDropSources.cs</Link>
+    </Compile>
+    <Compile Include="DragDropConversions.cs" />
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="Forms\Controls\DropDownHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />

@@ -91,6 +91,7 @@ namespace Eto.WinForms.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
+		bool dragEnabled = false;
 		Size parentMinimumSize;
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
@@ -112,20 +113,20 @@ namespace Eto.WinForms.Forms
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
 			var size = UserDesiredSize;
-            if (size.Width == -1 || size.Height == -1)
-            {
-                Size? defSize;
-                if (useCache)
-                    defSize = cachedDefaultSize ?? GetDefaultSize(availableSize);
-                else
-                    defSize = GetDefaultSize(availableSize);
-                if (defSize != null)
-                {
-                    if (size.Width == -1) size.Width = defSize.Value.Width;
-                    if (size.Height == -1) size.Height = defSize.Value.Height;
-                }
-            }
-            return Size.Max(parentMinimumSize, size);
+			if (size.Width == -1 || size.Height == -1)
+			{
+				Size? defSize;
+				if (useCache)
+					defSize = cachedDefaultSize ?? GetDefaultSize(availableSize);
+				else
+					defSize = GetDefaultSize(availableSize);
+				if (defSize != null)
+				{
+					if (size.Width == -1) size.Width = defSize.Value.Width;
+					if (size.Height == -1) size.Height = defSize.Value.Height;
+				}
+			}
+			return Size.Max(parentMinimumSize, size);
 		}
 
 		static readonly object DesiredSizeKey = new object();
@@ -314,10 +315,39 @@ namespace Eto.WinForms.Forms
 				case Eto.Forms.Control.LostFocusEvent:
 					Control.LostFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
 					break;
+
+				case Eto.Forms.Control.DragDropEvent:
+					Control.DragDrop += (sender, e) =>
+					{
+						Callback.OnDragDrop(Widget, GetDragData(e));
+					};
+					break;
+				case Eto.Forms.Control.DragOverEvent:                  
+
+					Control.DragEnter += (sender, e) =>
+					{
+						if (Control.AllowDrop == true)
+						{
+							var dragParams = GetDragData(e);
+							Callback.OnDragEnter(Widget, dragParams);
+
+							e.Effect = dragParams.Effect.ToPlatformDropAction();
+						}
+					};
+					break;
+
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		DragEventArgs GetDragData(swf.DragEventArgs data)
+		{
+			var dragData = (data.Data as swf.DataObject).ToEtoDataObject();
+			var sourceWidget = data.Data.GetData("source");
+			var source = sourceWidget == null ? null : (Control)sourceWidget;
+			return new DragEventArgs(source, dragData, data.AllowedEffect.ToEtoDropAction());
 		}
 
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
@@ -377,10 +407,10 @@ namespace Eto.WinForms.Forms
 			}
 			set
 			{
-                UserDesiredSize = value;
+				UserDesiredSize = value;
 				SetAutoSize();
-                if (Widget.Loaded)
-                    SetScale();
+				if (Widget.Loaded)
+					SetScale();
 				var minset = SetMinimumSize();
 				ContainerControl.Size = value.ToSD();
 				if (minset && ContainerControl.IsHandleCreated)
@@ -476,12 +506,12 @@ namespace Eto.WinForms.Forms
 			if (Widget.Loaded && Control.IsHandleCreated)
 				Control.Focus();
 			else
-                Widget.LoadComplete += Widget_LoadComplete;
+				Widget.LoadComplete += Widget_LoadComplete;
 		}
 
-        void Widget_LoadComplete(object sender, EventArgs e)
-        {
-            Widget.LoadComplete -= Widget_LoadComplete;
+		void Widget_LoadComplete(object sender, EventArgs e)
+		{
+			Widget.LoadComplete -= Widget_LoadComplete;
 			Control.Focus();
 		}
 
@@ -658,7 +688,7 @@ namespace Eto.WinForms.Forms
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
-            return !Control.IsDisposed ? Control.PointToClient(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
+			return !Control.IsDisposed ? Control.PointToClient(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
 		}
 
 		public virtual PointF PointToScreen(PointF point)
@@ -681,6 +711,40 @@ namespace Eto.WinForms.Forms
 		{
 			get { return Control.ForeColor.ToEto(); }
 			set { Control.ForeColor = value.ToSD(); }
+		}
+
+		public bool AllowDrag
+		{
+			get
+			{
+				return dragEnabled;
+			}
+
+			set
+			{
+				dragEnabled = value;
+			}
+		}
+
+		public bool AllowDrop
+		{
+			get
+			{
+				return Control.AllowDrop;
+			}
+
+			set
+			{
+				Control.AllowDrop = value;
+			}
+		}
+
+		public void DoDragDrop(DragDropData data, DragDropAction allowedAction)
+		{
+			var dataObject = data.ToPlatformDataObject();
+			dataObject.SetData("source", Widget);
+			var action = allowedAction.ToPlatformDropAction();
+			Control.DoDragDrop(dataObject, action);
 		}
 	}
 }

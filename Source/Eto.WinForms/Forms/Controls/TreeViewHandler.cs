@@ -280,12 +280,6 @@ namespace Eto.WinForms.Forms.Controls
 			set { Control.LabelEdit = value; }
 		}
 
-		public bool AllowDrop
-		{
-			get { return Control.AllowDrop; }
-			set { Control.AllowDrop = value; }
-		}
-
 		public void AddTo(ITreeItem dest, ITreeItem item)
 		{
 			var treeNode = GetTreeNode(item);

@@ -527,6 +527,52 @@ namespace Eto.Forms
 			Handler.OnUnLoad(e);
 		}
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.DragDrop"/> event
+		/// </summary>
+		public const string DragDropEvent = "Control.DragDrop";
+
+		/// <summary>
+		/// Occurs when control is dropped onto the control.
+		/// </summary>
+		public event EventHandler<DragEventArgs> DragDrop
+		{
+			add { Properties.AddHandlerEvent(DragDropEvent, value); }
+			remove { Properties.RemoveEvent(DragDropEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragDrop"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragDrop(DragEventArgs e)
+		{
+			Properties.TriggerEvent(DragDropEvent, this, e);
+		}
+
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Control.DragOver"/> event
+		/// </summary>
+		public const string DragOverEvent = "Control.DragOver";
+
+		/// <summary>
+		/// Occurs when control is dragged over the control.
+		/// </summary>
+		public event EventHandler<DragEventArgs> DragOver
+		{
+			add { Properties.AddHandlerEvent(DragOverEvent, value); }
+			remove { Properties.RemoveEvent(DragOverEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="DragOver"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnDragOver(DragEventArgs e)
+		{
+			Properties.TriggerEvent(DragOverEvent, this, e);
+		}
+
 		#endregion
 
 		static Control()
@@ -1014,6 +1060,34 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this control can be dragged.
+		/// </summary>
+		public virtual bool AllowDrag
+		{
+			get { return Handler.AllowDrag; }
+			set { Handler.AllowDrag = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this control can serve as drop target.
+		/// </summary>
+		public virtual bool AllowDrop
+		{
+			get { return Handler.AllowDrop; }
+			set { Handler.AllowDrop = value; }
+		}
+
+		/// <summary>
+		/// Starts drag operation using this control as drag source.
+		/// </summary>
+		/// <param name="data">Drag data.</param>
+		/// <param name="allowedAction">Allowed action.</param>
+		public virtual void DoDragDrop(DragDropData data, DragDropAction allowedAction)
+		{
+			Handler.DoDragDrop(data, allowedAction);
+		}
+
+		/// <summary>
 		/// Handles the disposal of this control
 		/// </summary>
 		/// <param name="disposing">True if the caller called <see cref="Widget.Dispose()"/> manually, false if being called from a finalizer</param>
@@ -1121,6 +1195,14 @@ namespace Eto.Forms
 			/// Raises the shown event.
 			/// </summary>
 			void OnShown(Control widget, EventArgs e);
+			/// <summary>
+			/// Raises the DragDrop event.
+			/// </summary>
+			void OnDragDrop(Control widget, DragEventArgs e);
+			/// <summary>
+			/// Raises the DragEnter event.
+			/// </summary>
+			void OnDragEnter(Control widget, DragEventArgs e);
 		}
 
 		/// <summary>
@@ -1225,6 +1307,22 @@ namespace Eto.Forms
 			public void OnShown(Control widget, EventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnShown(e));
+			}
+
+			/// <summary>
+			/// Raises the DragDrop event.
+			/// </summary>
+			public void OnDragDrop(Control widget, DragEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnDragDrop(e));
+			}
+
+			/// <summary>
+			/// Raises the DragEnter event.
+			/// </summary>
+			public void OnDragEnter(Control widget, DragEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnDragOver(e));
 			}
 		}
 
@@ -1446,6 +1544,23 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The mouse cursor</value>
 			Cursor Cursor { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this control can be dragged.
+			/// </summary>
+			bool AllowDrag { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether this control can serve as drop target.
+			/// </summary>
+			bool AllowDrop { get; set; }
+
+			/// <summary>
+			/// Starts drag operation using this control as drag source.
+			/// </summary>
+			/// <param name="data">Drag data.</param>
+			/// <param name="allowedAction">Allowed action.</param>
+			void DoDragDrop(DragDropData data, DragDropAction allowedAction);
 		}
 		#endregion
 	}

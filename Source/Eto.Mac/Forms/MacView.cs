@@ -840,6 +840,20 @@ namespace Eto.Mac.Forms
 				systemActions[sel] = command;
 			}
 		}
-	}
+
+        public bool AllowDrag
+        {
+            get; set;
+        }
+
+        public bool AllowDrop
+        {
+            get; set;
+        }
+
+        public void DoDragDrop(DragDropData data, DragDropAction allowedAction)
+        {
+        }
+    }
 }
 

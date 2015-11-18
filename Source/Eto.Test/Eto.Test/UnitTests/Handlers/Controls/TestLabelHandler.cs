@@ -71,6 +71,11 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 				throw new NotImplementedException();
 			}
 		}
+
+		public void DoDragDrop()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
 

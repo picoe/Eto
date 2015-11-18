@@ -7,6 +7,7 @@ using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using System.Linq;
 using System.Collections.Generic;
+using System.Windows.Interop;
 
 namespace Eto.Wpf.Forms
 {
@@ -76,6 +77,7 @@ namespace Eto.Wpf.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
+		bool dragEnabled = false;
 		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
 		Cursor cursor;
@@ -230,6 +232,32 @@ namespace Eto.Wpf.Forms
 		{
 			get { return Control.ToolTip as string; }
 			set { Control.ToolTip = value; }
+		}
+
+		public bool AllowDrag
+		{
+			get
+			{
+				return dragEnabled;
+			}
+
+			set
+			{
+				dragEnabled = value;
+			}
+		}
+
+		public bool AllowDrop
+		{
+			get
+			{
+				return Control.AllowDrop;
+			}
+
+			set
+			{
+				Control.AllowDrop = value;
+			}
 		}
 
 		public virtual void Invalidate()
@@ -401,13 +429,44 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.LostFocusEvent:
 					Control.LostKeyboardFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
 					break;
+				case Eto.Forms.Control.DragDropEvent:
+					Control.Drop += (sender, e) =>
+					{
+						Callback.OnDragDrop(Widget, GetDragData(e));
+                    };
+					break;
+				case Eto.Forms.Control.DragOverEvent:
+					Control.DragOver += (sender, e) =>
+					{
+                        if (Control.AllowDrop == true)
+                        {
+                            var dragParams = GetDragData(e);
+                            Callback.OnDragEnter(Widget, dragParams);
+                            
+                            e.Effects = dragParams.Effect.ToPlatformDropAction();
+                        }
+                        else
+                        {
+                            e.Effects = System.Windows.DragDropEffects.None;
+                        }
+                    };
+					break;
+
 				default:
 					base.AttachEvent(id);
 					break;
 			}
 		}
 
-		void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
+        DragEventArgs GetDragData(sw.DragEventArgs data)
+        {
+            var dragData = (data.Data as sw.DataObject).ToEtoDataObject();
+            var sourceWidget = data.Data.GetData("source");
+            var source = sourceWidget == null ? null : (Control)sourceWidget;
+            return new DragEventArgs(source, dragData, data.AllowedEffects.ToEtoDropAction());
+        }
+
+        void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
 		{
 			var tiargs = new TextInputEventArgs(e.Text);
 			Callback.OnTextInput(Widget, tiargs);
@@ -440,7 +499,7 @@ namespace Eto.Wpf.Forms
 		{
 			var args = e.ToEto(Control);
 			Callback.OnMouseMove(Widget, args);
-			e.Handled = args.Handled || isMouseCaptured;
+            e.Handled = args.Handled || isMouseCaptured;
 		}
 
 		void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
@@ -464,31 +523,37 @@ namespace Eto.Wpf.Forms
 
 		void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			isMouseCaptured = false;
-			var args = e.ToEto(Control);
-			if (!(Control is swc.Control) && e.ClickCount == 2)
-				Callback.OnMouseDoubleClick(Widget, args);
-			if (!args.Handled)
-			{
-				WpfFrameworkElementHelper.ShouldCaptureMouse = true;
-				Callback.OnMouseDown(Widget, args);
-			}
-			e.Handled = args.Handled || !WpfFrameworkElementHelper.ShouldCaptureMouse;
-			if (WpfFrameworkElementHelper.ShouldCaptureMouse 
-				&& (
-					// capture mouse automatically so mouse moves outside control are captured until released
-					// but only if the control that was clicked is this control
-					(!UseMousePreview && (e.OriginalSource == ContainerControl || e.OriginalSource == Control))
-					|| e.Handled
-				))
-			{
-				e.Handled = true;
-				isMouseCaptured = true;
-				Control.CaptureMouse();
-			}
-		}
+            isMouseCaptured = false;
+            var args = e.ToEto(Control);
+            if (!(Control is swc.Control) && e.ClickCount == 2)
+                Callback.OnMouseDoubleClick(Widget, args);
+            if (!args.Handled)
+            {
+                WpfFrameworkElementHelper.ShouldCaptureMouse = true;
+                Callback.OnMouseDown(Widget, args);
+            }
+            e.Handled = args.Handled || !WpfFrameworkElementHelper.ShouldCaptureMouse;
+            if (WpfFrameworkElementHelper.ShouldCaptureMouse
+                && (
+                    // capture mouse automatically so mouse moves outside control are captured until released
+                    // but only if the control that was clicked is this control
+                    (!UseMousePreview && (e.OriginalSource == ContainerControl || e.OriginalSource == Control))
+                    || e.Handled
+                ))
+            {
+                // do not capture mouse if drag operation is active (breaks drag completely)
+                if (AllowDrag == true)
+                {
+                    return;
+                }
 
-		protected override void Initialize()
+                e.Handled = true;
+                isMouseCaptured = true;
+                Control.CaptureMouse();
+            }
+        }
+
+        protected override void Initialize()
 		{
 			base.Initialize();
 			Control.Tag = this;
@@ -517,7 +582,7 @@ namespace Eto.Wpf.Forms
 		public virtual void OnUnLoad(EventArgs e)
 		{
 			SetScale(false, false);
-		}
+        }
 
 		public virtual void SetParent(Container parent)
 		{
@@ -557,5 +622,12 @@ namespace Eto.Wpf.Forms
 				return Control.TranslatePoint(new sw.Point(0, 0), Widget.VisualParent.GetContainerControl()).ToEtoPoint();
 			}
 		}
+
+        public void DoDragDrop(DragDropData data, DragDropAction allowedAction)
+        {
+            var dataObject = data.ToPlatformDataObject();
+            dataObject.SetData("source", Widget);
+            sw.DragDrop.DoDragDrop(Control, dataObject, allowedAction.ToPlatformDropAction());
+        }
 	}
 }

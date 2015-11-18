@@ -284,6 +284,34 @@ namespace Eto.Forms
 			get { return Control; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this control can be dragged.
+		/// </summary>
+		public virtual bool AllowDrag
+		{
+			get { return Control.AllowDrag; }
+			set { Control.AllowDrag = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this control can serve as drop target.
+		/// </summary>
+		public virtual bool AllowDrop
+		{
+			get { return Control.AllowDrop; }
+			set { Control.AllowDrop = value; }
+		}
+
+		/// <summary>
+		/// Starts drag operation using this control as drag source.
+		/// </summary>
+		/// <param name="data">Drag data.</param>
+		/// <param name="allowedAction">Allowed action.</param>
+		public void DoDragDrop(DragDropData data, DragDropAction allowedAction)
+		{
+			Control.DoDragDrop(data, allowedAction);
+		}
+
 		#region Events
 
 		/// <summary>
