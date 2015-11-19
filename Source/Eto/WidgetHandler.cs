@@ -236,7 +236,7 @@ namespace Eto
 		/// Gets a value indicating whether this instance has a <see cref="Control"/> instance.
 		/// </summary>
 		/// <value><c>true</c> if this instance has a control; otherwise, <c>false</c>.</value>
-		public bool HasControl { get { return ReferenceEquals(control, default(TControl)); } }
+		public bool HasControl { get { return !ReferenceEquals(control, default(TControl)); } }
 
 		/// <summary>
 		/// Gets the platform-specific control object
