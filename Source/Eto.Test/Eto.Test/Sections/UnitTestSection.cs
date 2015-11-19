@@ -147,7 +147,20 @@ namespace Eto.Test.Sections
 			return pass;
 		}
 
-		public virtual bool IsEmpty { get { return false; } }
+		public bool IsExplicitMatch(ITest test)
+		{
+			return MatchesKeyword(test) && MatchesIncludeCategory(test) && MatchesIncludeCategory(test);
+		}
+
+		public TNode ToXml(bool recursive)
+		{
+			throw new NotImplementedException();
+		}
+
+		public TNode AddToXml(TNode parentNode, bool recursive)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	[Section("Automated Tests", "Unit Tests")]
@@ -264,12 +277,12 @@ namespace Eto.Test.Sections
 
 			public ITest Test { get { return Results.Select(r => r.Test).FirstOrDefault(); } }
 
-			public XmlNode AddToXml(XmlNode parentNode, bool recursive)
+			public TNode AddToXml(TNode parentNode, bool recursive)
 			{
 				throw new NotImplementedException();
 			}
 
-			public XmlNode ToXml(bool recursive)
+			public TNode ToXml(bool recursive)
 			{
 				return null;
 			}
@@ -373,7 +386,14 @@ namespace Eto.Test.Sections
 		TreeItem ToTree(Assembly assembly, ITest test, string filter)
 		{
 			// add a test
-			var item = new TreeItem { Text = test.Name, Tag = new SingleTestFilter { Test = test, Assembly = assembly } };
+			var name = test.Name;
+			if (test.IsSuite)
+			{
+				var an = new AssemblyName(test.Name);
+				name = an.Name;
+			}
+
+			var item = new TreeItem { Text = name, Tag = new SingleTestFilter { Test = test, Assembly = assembly } };
 			var nameMatches = filter == null || test.FullName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
 			if (test.HasChildren)
 			{
