@@ -671,32 +671,10 @@ namespace Eto.Forms
 		/// <summary>
 		/// Finds a control in the parent hierarchy with the specified type and <see cref="Widget.ID"/> if specified
 		/// </summary>
-		/// <returns>The parent if found, or null if not found</returns>
-		/// <param name="id">Identifier of the parent control to find, or null to ignore</param>
-		/// <typeparam name="T">The type of control to find</typeparam>
-		public T FindParent<T>(string id = null)
-			where T : Container
-		{
-			var control = Parent;
-			while (control != null)
-			{
-				var ctl = control as T;
-				if (ctl != null && (string.IsNullOrEmpty(id) || control.ID == id))
-				{
-					return ctl;
-				}
-				control = control.Parent;
-			}
-			return default(T);
-		}
-
-		/// <summary>
-		/// Finds a control in the parent hierarchy with the specified type and <see cref="Widget.ID"/> if specified
-		/// </summary>
 		/// <returns>The parent if found, or null if not found.</returns>
 		/// <param name="type">The type of control to find.</param>
 		/// <param name="id">Identifier of the parent control to find, or null to find by type only.</param>
-		public Container FindParent(Type type, string id = null)
+		public new Container FindParent(Type type, string id = null)
 		{
 			var control = Parent;
 			while (control != null)
@@ -715,7 +693,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The parent if found, or null if not found.</returns>
 		/// <param name="id">Identifier of the parent control to find.</param>
-		public Container FindParent(string id)
+		public new Container FindParent(string id)
 		{
 			return FindParent(null, id);
 		}
