@@ -19,11 +19,8 @@ namespace Eto.Test.Sections.Drawing
 			};
 
 			var type = typeof(SystemColors);
-			#if PCL
-			var properties = type.GetTypeInfo().DeclaredProperties;
-			#else
+
 			var properties = type.GetRuntimeProperties();
-			#endif
 
 			var skip = new List<PropertyInfo>();
 			var colorProperties = properties.Where(r => r.PropertyType == typeof(Color)).OrderBy(r => r.Name).ToList();

@@ -120,11 +120,7 @@ namespace Eto.Mac.Forms.Controls
 			set { Widget.Properties.Set(WasLoaded_Key, value); }
 		}
 
-		public bool RecurseToChildren { get { return true; } }
-
 		public override NSView ContainerControl { get { return Control; } }
-
-		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
 		public override void AttachEvent(string id)
 		{
