@@ -9,7 +9,7 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class MenuItemHandler<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, MenuItem.IHandler, swi.ICommand
+	public class MenuItemHandler<TControl, TWidget, TCallback> : MenuHandler<TControl, TWidget, TCallback>, MenuItem.IHandler, swi.ICommand, IWpfValidateBinding
 		where TControl : swc.MenuItem
 		where TWidget : MenuItem
 		where TCallback: MenuItem.ICallback
@@ -59,13 +59,15 @@ namespace Eto.Wpf.Forms.Menu
 			}
 			set
 			{
-				Control.InputBindings.Clear();
+				RemoveKeyBindings(Control);
+                Control.InputBindings.Clear();
 				if (value != Keys.None)
 				{
 					var key = value.ToWpfKey();
 					var modifier = value.ToWpfModifier();
-					Control.InputBindings.Add(new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
+                    Control.InputBindings.Add(new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
 					Control.InputGestureText = value.ToShortcutString();
+					AddKeyBindings(Control);
 				}
 				else
 					Control.InputGestureText = null;
@@ -98,7 +100,8 @@ namespace Eto.Wpf.Forms.Menu
 		public void AddMenu(int index, MenuItem item)
 		{
 			Control.Items.Insert(index, item.ControlObject);
-			if (!openingHandled)
+			AddKeyBindings(item.ControlObject as sw.FrameworkElement);
+            if (!openingHandled)
 			{
 				Control.SubmenuOpened += HandleContextMenuOpening;
 				openingHandled = true;
@@ -107,11 +110,14 @@ namespace Eto.Wpf.Forms.Menu
 
 		public void RemoveMenu(MenuItem item)
 		{
+			RemoveKeyBindings(item.ControlObject as sw.FrameworkElement);
 			Control.Items.Remove(item.ControlObject);
 		}
 
 		public void Clear()
 		{
+			foreach (var item in Control.Items.OfType<sw.FrameworkElement>())
+				RemoveKeyBindings(item);
 			Control.Items.Clear();
 		}
 
@@ -145,11 +151,26 @@ namespace Eto.Wpf.Forms.Menu
 
 		void swi.ICommand.Execute(object parameter)
 		{
-			Callback.OnClick(Widget, EventArgs.Empty);
+			var contextMenu = Control.GetParents().OfType<swc.ContextMenu>().LastOrDefault();
+			if (contextMenu != null)
+			{
+				contextMenu.IsOpen = false;
+			}
+			var menu = Control.GetParents().OfType<swc.Menu>().LastOrDefault();
+			if (menu != null && menu.IsKeyboardFocusWithin)
+			{
+				swi.Keyboard.ClearFocus();
+			}
+			Widget.PerformClick();
 		}
 
 		public void CreateFromCommand(Command command)
 		{
+		}
+
+		public void Validate()
+		{
+			Callback.OnValidate(Widget, EventArgs.Empty);
 		}
 	}
 }

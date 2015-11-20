@@ -44,8 +44,10 @@ namespace Eto.Mac.Forms.Menu
 			if (radioGroup != null)
 			{
 				var checkedItem = radioGroup.FirstOrDefault(r => r.Checked);
-				if (checkedItem != null)
+				if (checkedItem != null && !ReferenceEquals(checkedItem, Widget))
+				{
 					checkedItem.Checked = false;
+				}
 			}
 			Checked = true;
 			Callback.OnClick(Widget, EventArgs.Empty);

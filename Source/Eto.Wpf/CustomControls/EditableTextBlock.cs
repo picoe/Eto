@@ -42,7 +42,7 @@ namespace Eto.Wpf.CustomControls
 		void TextBox_GotFocus(object sender, RoutedEventArgs e)
 		{
 			var args = new RoutedEventArgs(TreeViewHandler.EtoTreeViewItem.LabelEditingEvent, this);
-			this.GetParent<TreeViewHandler.EtoTreeViewItem>().RaiseEvent(args);
+			this.GetVisualParent<TreeViewHandler.EtoTreeViewItem>().RaiseEvent(args);
 			args.Handled = args.Handled;
 		}
 
@@ -117,14 +117,14 @@ namespace Eto.Wpf.CustomControls
 			if (settingFocus)
 				return true;
 			settingFocus = true;
-			var item = this.GetParent<TreeViewItem>();
+			var item = this.GetVisualParent<TreeViewItem>();
 			if (item != null)
 				item.Focus();
 			settingFocus = false;
 			RaiseEvent(new RoutedEventArgs(LostFocusEvent, this));
 
 			var args = new RoutedEventArgs(TreeViewHandler.EtoTreeViewItem.LabelEditedEvent, this);
-			this.GetParent<TreeViewHandler.EtoTreeViewItem>().RaiseEvent(args);
+			this.GetVisualParent<TreeViewHandler.EtoTreeViewItem>().RaiseEvent(args);
 			return args.Handled;
 		}
 

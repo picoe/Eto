@@ -95,6 +95,19 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Performs the click handler for this item which toggles the check state.
+		/// </summary>
+		/// <remarks>
+		/// This performs the click by calling <see cref="MenuItem.OnClick"/> which triggers the <see cref="MenuItem.Click"/> event.
+		/// The <see cref="Checked"/> state will also be toggled.
+		/// </remarks>
+		public override void PerformClick()
+		{
+			Checked = !Checked;
+			base.PerformClick();
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.CheckMenuItem"/> is checked.
 		/// </summary>
 		/// <value><c>true</c> if checked; otherwise, <c>false</c>.</value>

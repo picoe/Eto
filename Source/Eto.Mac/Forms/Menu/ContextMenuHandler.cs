@@ -18,34 +18,31 @@ namespace Eto.Mac.Forms.Menu
 {
 	class ContextHandler : NSMenuDelegate
 	{
-		public static ContextHandler Instance
-		{
-			get;
-			set;
-		}
-
 		WeakReference handler;
 		public ContextMenuHandler Handler
 		{
-			get
-			{
-				return (ContextMenuHandler)handler.Target;
-			}
-			set
-			{
-				handler = new WeakReference(value);
-			}
+			get { return (ContextMenuHandler)handler.Target; }
+			set { handler = new WeakReference(value); }
 		}
 
 		public override void MenuWillHighlightItem(NSMenu menu, NSMenuItem item)
 		{
-
 		}
 
-		[Export("menuWillOpen:")]
-		public void HandleMenuWillOpen(NSMenu menu)
+		public override void MenuWillOpen(NSMenu menu)
 		{
-			Handler.Callback.OnMenuOpening(Handler.Widget, EventArgs.Empty);
+			var h = Handler;
+			if (h == null)
+				return;
+			h.Callback.OnOpening(h.Widget, EventArgs.Empty);
+		}
+
+		public override void MenuDidClose(NSMenu menu)
+		{
+			var h = Handler;
+			if (h == null)
+				return;
+			h.Callback.OnClosed(h.Widget, EventArgs.Empty);
 		}
 	}
 
@@ -60,12 +57,7 @@ namespace Eto.Mac.Forms.Menu
 		{
 			Control.AutoEnablesItems = false;
 			Control.ShowsStateColumn = true;
-			ContextHandler.Instance = new ContextHandler()
-			{
-				Handler = this
-			};
-
-			Control.Delegate = ContextHandler.Instance;
+			Control.Delegate = new ContextHandler() { Handler = this };
 
 			base.Initialize();
 		}
@@ -74,7 +66,8 @@ namespace Eto.Mac.Forms.Menu
 		{
 			switch (id)
 			{
-				case ContextMenu.MenuOpeningEvent:
+				case ContextMenu.OpeningEvent:
+				case ContextMenu.ClosedEvent:
 					// handled by delegate
 					break;
 
@@ -98,20 +91,23 @@ namespace Eto.Mac.Forms.Menu
 		{
 			Control.RemoveAllItems ();
 		}
-		
+
 		public void Show (Control relativeTo)
 		{
 			NSEvent nsevent = NSApplication.SharedApplication.CurrentEvent;
-			if (nsevent == null) {
+			if (nsevent == null)
+			{
+				var keyWindow = NSApplication.SharedApplication.KeyWindow;
 				var location = NSEvent.CurrentMouseLocation;
-				location = NSApplication.SharedApplication.KeyWindow.ConvertScreenToBase (location);
+				location = keyWindow.ConvertScreenToBase(location);
 				
 				var time = DateTime.Now.ToOADate();
-				var windowNumber = NSApplication.SharedApplication.KeyWindow.WindowNumber;
+				var windowNumber = keyWindow.WindowNumber;
 				
 				nsevent = NSEvent.MouseEvent(NSEventType.RightMouseDown, location, 0, time, windowNumber, null, 0, 0, 0.1f);
 			}
 			var view = relativeTo != null ? relativeTo.ControlObject as NSView : null;
+
 			NSMenu.PopUpContextMenu(Control, nsevent, view);
 		}
 

@@ -175,16 +175,25 @@ namespace Eto.Test
 
 			if (Platform.Supports<MenuBar>())
 			{
-				var file = new ButtonMenuItem { Text = "&File", Items = { new Command { MenuText = "File Command" } } };
-				var edit = new ButtonMenuItem { Text = "&Edit", Items = { new Command { MenuText = "Edit Command" } } };
-				var view = new ButtonMenuItem { Text = "&View", Items = { new Command { MenuText = "View Command" } } };
-				var window = new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { new Command { MenuText = "Window Command" } } };
+				var fileCommand = new Command { MenuText = "File Command", Shortcut = Application.Instance.CommonModifier | Keys.F };
+				fileCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
+				var editCommand = new Command { MenuText = "Edit Command", Shortcut = Keys.Shift | Keys.E };
+				editCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
+				var viewCommand = new Command { MenuText = "View Command", Shortcut = Keys.Control | Keys.V };
+				viewCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
+				var windowCommand = new Command { MenuText = "Window Command" };
+				windowCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
+
+				var file = new ButtonMenuItem { Text = "&File", Items = { fileCommand } };
+				var edit = new ButtonMenuItem { Text = "&Edit", Items = { editCommand } };
+                var view = new ButtonMenuItem { Text = "&View", Items = { viewCommand } };
+				var window = new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { windowCommand } };
 
 				if (Platform.Supports<CheckMenuItem>())
 				{
 					edit.Items.AddSeparator();
 
-					var checkMenuItem1 = new CheckMenuItem { Text = "Check Menu Item" };
+					var checkMenuItem1 = new CheckMenuItem { Text = "Check Menu Item", Shortcut = Keys.Shift | Keys.K };
 					checkMenuItem1.Click += (sender, e) => Log.Write(checkMenuItem1, "Click, {0}, Checked: {1}", checkMenuItem1.Text, checkMenuItem1.Checked);
 					checkMenuItem1.CheckedChanged += (sender, e) => Log.Write(checkMenuItem1, "CheckedChanged, {0}: {1}", checkMenuItem1.Text, checkMenuItem1.Checked);
 					edit.Items.Add(checkMenuItem1);
