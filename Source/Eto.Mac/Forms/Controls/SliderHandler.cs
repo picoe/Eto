@@ -32,12 +32,17 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public SliderHandler()
+		protected override NSSlider CreateControl()
 		{
-			Control = new EtoSlider { Handler = this };
+			return new EtoSlider();
+		}
+
+		protected override void Initialize()
+		{
 			Control.Activated += HandleActivated;
 			MinValue = 0;
 			MaxValue = 100;
+			base.Initialize();
 		}
 
 		static void HandleActivated(object sender, EventArgs e)

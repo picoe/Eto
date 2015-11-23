@@ -23,7 +23,7 @@ namespace Eto.Wpf.Forms
 			using (var visualStyles = new EnableThemingInScope(ApplicationHandler.EnableVisualStyles))
 			{
 				var element = parent == null ? null : parent.GetContainerControl();
-				var window = element == null ? null : element.GetParent<sw.Window>();
+				var window = element == null ? null : element.GetVisualParent<sw.Window>();
 				sw.MessageBoxResult result;
 				var buttons = Convert(Buttons);
 				var defaultButton = Convert(DefaultButton, Buttons);

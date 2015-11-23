@@ -649,5 +649,15 @@ namespace Eto.GtkSharp.Forms
 			Control.TransientFor = owner.ToGtk();
 		}
 
+		public override bool Visible
+		{
+			get { return base.Visible; }
+			set
+			{
+				base.Visible = value;
+				Control.NoShowAll = false; // always show all.
+			}
+		}
+
 	}
 }

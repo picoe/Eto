@@ -110,8 +110,8 @@ namespace Eto.WinForms.Forms
 			Control.Load += (sender, e) =>
 			{
 				// ensure we auto size to the content
-				if (!clientSizeSet && Control.AutoSize)
-					ContainerContentControl.MinimumSize = Content.GetPreferredSize().ToSD();
+				if (!clientSizeSet && Control.AutoSize && contentSize != null)
+					ContainerContentControl.MinimumSize = contentSize.Value.ToSD(); // Content.GetPreferredSize().ToSD();
 				Control.MinimumSize = Control.Size;
 				Control.AutoSize = false;
 				Control.MinimumSize = MinimumSize.ToSD();
@@ -125,6 +125,14 @@ namespace Eto.WinForms.Forms
 			// Always handle closing because we want to send Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
 		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			if (!clientSizeSet && Control.AutoSize)
+				contentSize = Content.GetPreferredSize();
+		}
+		Size? contentSize;
 
 		protected override void SetContent(swf.Control contentControl)
 		{
@@ -423,6 +431,20 @@ namespace Eto.WinForms.Forms
 		public Screen Screen
 		{
 			get { return new Screen(new ScreenHandler(swf.Screen.FromControl(Control))); }
+		}
+
+		public override bool Visible
+		{
+			get { return base.Visible; }
+			set
+			{
+				if (Visible != value)
+				{
+					base.Visible = value;
+					if (Widget.Loaded && value)
+						Callback.OnShown(Widget, EventArgs.Empty);
+				}
+			}
 		}
 	}
 }

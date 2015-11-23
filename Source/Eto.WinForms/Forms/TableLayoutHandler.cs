@@ -227,7 +227,7 @@ namespace Eto.WinForms.Forms
 			for (int i = 0; i < rowScale.Length; i++)
 			{
 				var control = views[column, i];
-				control.SetScale(xscale, rowScale[i]);
+				control.SetScale(xscale, i == lastRowScale || rowScale[i]);
 			}
 		}
 
@@ -237,7 +237,7 @@ namespace Eto.WinForms.Forms
 			for (int i = 0; i < columnScale.Length; i++)
 			{
 				var control = views[i, row];
-				control.SetScale(columnScale[i], yscale);
+				control.SetScale(i == lastColumnScale || columnScale[i], yscale);
 			}
 		}
 

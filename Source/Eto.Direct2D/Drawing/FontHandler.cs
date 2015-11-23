@@ -217,5 +217,14 @@ namespace Eto.Direct2D.Drawing
 			return new System.Drawing.Font(familyName, Size, style);
 		}
 #endif
+
+		public SizeF MeasureString(string text)
+		{
+			using (var textLayout = GraphicsHandler.GetTextLayout(Widget, text))
+			{
+				var metrics = textLayout.Metrics;
+				return new SizeF(metrics.WidthIncludingTrailingWhitespace, metrics.Height);
+			}
+		}
 	}
 }

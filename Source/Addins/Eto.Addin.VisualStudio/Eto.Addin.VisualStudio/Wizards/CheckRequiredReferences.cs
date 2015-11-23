@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.ComponentModel.Composition;
 using NuGet.VisualStudio;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Eto.Addin.VisualStudio.Wizards
 {
@@ -25,6 +27,8 @@ namespace Eto.Addin.VisualStudio.Wizards
 
 			public string Package { get; set; }
 
+			public string Condition { get; set; }
+
 			public ReferenceInfo(XmlElement element)
 			{
 				Package = element.GetAttribute("id");
@@ -33,10 +37,13 @@ namespace Eto.Addin.VisualStudio.Wizards
 					Assembly = Package;
 				Version = element.GetAttribute("version");
 				ExtensionId = element.GetAttribute("extension");
+				Condition = element.GetAttribute("condition");
 			}
 
 			public string ExtensionId { get; set; }
 		}
+
+		public bool Quiet { get; set; }
 
 		public class MissingReference
 		{
@@ -45,77 +52,98 @@ namespace Eto.Addin.VisualStudio.Wizards
 			public EnvDTE.Project Project { get; set; }
 		}
 
+		List<ReferenceInfo> requiredReferences;
+		object automationObject;
+
 		public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
 		{
-			var requiredReferences = GetRequiredReferences(replacementsDictionary);
-
-	
-			using (var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)automationObject))
+			requiredReferences = GetRequiredReferences(replacementsDictionary).ToList();
+			if (runKind == WizardRunKind.AsNewItem)
 			{
-				var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
-				var installerServices = componentModel.GetService<IVsPackageInstaller>();
-
-				//installerServices.InstallPackage()
-				//installerServices.InstallPackage("http://packages.nuget.org", project, "Microsoft.AspNet.SignalR.JS", "1.0.0-alpha2", false);
-
-				var dte = (EnvDTE.DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
-				var missingReferences = FindMissingReferences(requiredReferences, installerServices, dte).ToList();
-
-				if (missingReferences.Count > 0)
+				using (var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)automationObject))
 				{
-					var packages = string.Join(", ", missingReferences.Select(r => r.Reference.Package));
-					var msg = string.Format("This template requires these references. Do you want to add them using nuget?\n\n{0}", packages);
+					var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
+					var installerServices = componentModel.GetService<IVsPackageInstaller>();
+					var dte = (EnvDTE.DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
 
-					var result = MessageBox.Show(Helpers.MainWindow, msg, "Missing packages", MessageBoxButtons.OKCancel, MessageBoxType.Information, MessageBoxDefaultButton.OK);
-					if (result == DialogResult.Cancel)
-						throw new WizardCancelledException();
-
-					foreach (var missingRef in missingReferences)
-					{
-						var reference = missingRef.Reference;
-						if (!string.IsNullOrEmpty(reference.ExtensionId))
-						{
-							installerServices.InstallPackagesFromVSExtensionRepository(reference.ExtensionId, false, false, false, missingRef.Project, new Dictionary<string, string>
-						{
-							{ reference.Package, reference.Version }
-						});
-						}
-						else
-						{
-							installerServices.InstallPackage("https://packages.nuget.org", missingRef.Project, reference.Package, reference.Version, false);
-						}
-					}
+					var missingReferences = FindMissingReferences(installerServices, dte).ToList();
+					InstallReferences(installerServices, missingReferences);
 				}
-
 			}
+			else
+				this.automationObject = automationObject;
 
 		}
 
-		static IEnumerable<MissingReference> FindMissingReferences(IEnumerable<ReferenceInfo> requiredReferences, IVsPackageInstaller installerServices, EnvDTE.DTE dte)
+		private void InstallReferences(IVsPackageInstaller installerServices, List<MissingReference> missingReferences)
+		{
+			if (missingReferences.Count > 0)
+			{
+				var packages = string.Join(", ", missingReferences.Select(r => r.Reference.Package));
+				var msg = string.Format("This template requires these references. Do you want to add them using nuget?\n\n{0}", packages);
+
+				if (!Quiet)
+				{
+					var result = MessageBox.Show(Helpers.MainWindow, msg, "Missing packages", MessageBoxButtons.OKCancel, MessageBoxType.Information, MessageBoxDefaultButton.OK);
+					if (result == DialogResult.Cancel)
+						throw new WizardCancelledException();
+				}
+
+				foreach (var missingRef in missingReferences)
+				{
+					SetStatusMessage(string.Format("Adding {0}.{1} to project...", missingRef.Reference.Package, missingRef.Reference.Version));
+					var reference = missingRef.Reference;
+					if (!string.IsNullOrEmpty(reference.ExtensionId))
+					{
+						installerServices.InstallPackagesFromVSExtensionRepository(reference.ExtensionId, false, false, false, missingRef.Project, new Dictionary<string, string>
+							{
+								{ reference.Package, reference.Version }
+							});
+					}
+					else
+					{
+						installerServices.InstallPackage("https://packages.nuget.org", missingRef.Project, reference.Package, reference.Version, false);
+					}
+				}
+			}
+		}
+
+		IEnumerable<MissingReference> FindMissingReferences(IVsPackageInstaller installerServices, EnvDTE.DTE dte)
 		{
 			var activeProjects = ((Array)dte.ActiveSolutionProjects).OfType<EnvDTE.Project>().ToList();
 			foreach (var proj in activeProjects)
 			{
-				var vsproject = proj.Object as VSLangProj.VSProject;
-				var references = vsproject.References.OfType<VSLangProj.Reference>().ToList();
-				foreach (var requiredRef in requiredReferences)
+				foreach (var item in FindMissingReferences(proj))
+					yield return item;
+			}
+		}
+
+		IEnumerable<MissingReference> FindMissingReferences(Project proj)
+		{
+			var vsproject = proj.Object as VSLangProj.VSProject;
+			var references = vsproject.References.OfType<VSLangProj.Reference>().ToList();
+			foreach (var requiredRef in requiredReferences)
+			{
+				if (!references.Any(r => r.Name == requiredRef.Assembly))
 				{
-					if (!references.Any(r => r.Name == requiredRef.Assembly))
-					{
-						yield return new MissingReference { Project = proj, Reference = requiredRef };
-					}
+					yield return new MissingReference { Project = proj, Reference = requiredRef };
 				}
 			}
 		}
 
-		static IEnumerable<ReferenceInfo> GetRequiredReferences(Dictionary<string, string> replacementsDictionary)
+		IEnumerable<ReferenceInfo> GetRequiredReferences(Dictionary<string, string> replacementsDictionary)
 		{
 			var wizardData = "<root>" + replacementsDictionary["$wizarddata$"] + "</root>";
 			var doc = new XmlDocument();
 			doc.LoadXml(wizardData);
 			var nsmgr = new XmlNamespaceManager(doc.NameTable);
 			nsmgr.AddNamespace("vs", "http://schemas.microsoft.com/developer/vstemplate/2005");
-			var requiredReferences = doc.SelectNodes("//vs:RequiredReferences/vs:Reference", nsmgr).OfType<XmlElement>().Select(r => new ReferenceInfo(r));
+			var references = doc.SelectSingleNode("//vs:RequiredReferences", nsmgr) as XmlElement;
+			Quiet = string.Equals(references.GetAttribute("Quiet"), "true", StringComparison.OrdinalIgnoreCase);
+			var requiredReferences = references.SelectNodes("vs:Reference", nsmgr)
+				.OfType<XmlElement>()
+				.Select(r => new ReferenceInfo(r))
+				.Where(r => replacementsDictionary.MatchesCondition(r.Condition));
 			return requiredReferences;
 		}
 
@@ -123,8 +151,32 @@ namespace Eto.Addin.VisualStudio.Wizards
 		{
 		}
 
+		static IVsStatusbar StatusBar;
+
+		internal static void SetStatusMessage(string message)
+		{
+			if (StatusBar == null)
+			{
+				StatusBar = Package.GetGlobalService(typeof(IVsStatusbar)) as IVsStatusbar;
+			}
+
+			StatusBar.SetText(message);
+		}
+
 		public void ProjectFinishedGenerating(EnvDTE.Project project)
 		{
+			if (automationObject != null)
+			{
+				using (var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)automationObject))
+				{
+					var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
+					var installerServices = componentModel.GetService<IVsPackageInstaller>();
+
+					var missingReferences = FindMissingReferences(installerServices, project.DTE).ToList();
+					InstallReferences(installerServices, missingReferences);
+				}
+				automationObject = null;
+			}
 		}
 
 		public void ProjectItemFinishedGenerating(EnvDTE.ProjectItem projectItem)

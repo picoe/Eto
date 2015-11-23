@@ -16,6 +16,7 @@ namespace Eto.WinForms.CustomControls
 	/// Since the default DateTimePicker is rendered completely by the OS, there's no way to change its behaviour or color.
 	/// This is a crude re-implementation in winforms with support for most of the existing functionality.
 	/// </remarks>
+	[DesignerCategory("Code")]
 	public class ExtendedDateTimePicker : swf.DateTimePicker
 	{
 		static readonly sd.Image img = sd.Image.FromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("Eto.WinForms.CustomControls.CalendarPicker.png"));
@@ -425,6 +426,12 @@ namespace Eto.WinForms.CustomControls
 		{
 			base.OnMouseLeave(e);
 			hover = false;
+			Invalidate();
+		}
+
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
 			Invalidate();
 		}
 	}

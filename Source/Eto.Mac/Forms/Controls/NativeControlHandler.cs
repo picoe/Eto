@@ -44,6 +44,11 @@ namespace Eto.Mac.Forms.Controls
 		public NativeControlHandler(NSView nativeControl)
 		{
 			Control = nativeControl;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			AutoSize = false;
 		}
 

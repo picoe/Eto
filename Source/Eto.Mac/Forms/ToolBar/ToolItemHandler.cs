@@ -161,10 +161,17 @@ namespace Eto.Mac.Forms.ToolBar
 
 		public string Identifier { get; set; }
 
-		protected ToolItemHandler()
+
+		protected override TControl CreateControl()
+		{
+			return (TControl)new NSToolbarItem(Identifier);
+		}
+
+		protected virtual MacToolBarItemStyle DefaultStyle { get { return MacToolBarItemStyle.StandardButton; } }
+
+		protected override void Initialize()
 		{
 			this.Identifier = Guid.NewGuid().ToString();
-			Control = (TControl)new NSToolbarItem(Identifier);
 			Control.Target = new ToolBarItemHandlerTarget { Handler = this };
 			Control.Action = selAction;
 			Control.Autovalidates = false;
@@ -175,15 +182,8 @@ namespace Eto.Mac.Forms.ToolBar
 			menuItem.Target = Control.Target;
 			Control.MenuFormRepresentation = menuItem;
 			Control.Enabled = true;
-		}
-
-		protected virtual MacToolBarItemStyle DefaultStyle { get { return MacToolBarItemStyle.StandardButton; } }
-
-		protected override void Initialize()
-		{
-			base.Initialize();
 			this.ToolBarItemStyle = DefaultStyle;
-
+			base.Initialize();
 		}
 
 		[Obsolete("Use ToolBarItemStyle and Tint properties instead")]

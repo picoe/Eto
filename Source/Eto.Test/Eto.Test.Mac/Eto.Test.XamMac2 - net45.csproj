@@ -54,11 +54,11 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\portable-net45+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.3.0.0\lib\portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -80,13 +80,13 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json - pcl.csproj">
-      <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>
-      <Name>Eto.Serialization.Json - pcl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto.Mac\Eto.XamMac2 - net45.csproj">
       <Project>{856E8C70-2702-11E4-8C21-0800200C9A66}</Project>
       <Name>Eto.XamMac2 - net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj">
+      <Project>{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}</Project>
+      <Name>Eto.Serialization.Json - net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="../../Shared/Build.targets" />

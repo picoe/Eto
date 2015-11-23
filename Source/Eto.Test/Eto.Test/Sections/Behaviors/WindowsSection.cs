@@ -20,6 +20,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox showInTaskBarCheckBox;
 		CheckBox topMostCheckBox;
 		CheckBox setOwnerCheckBox;
+		CheckBox visibleCheckBox;
 
 		static readonly object CancelCloseKey = new object();
 		public bool CancelClose
@@ -33,7 +34,7 @@ namespace Eto.Test.Sections.Behaviors
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), CreateCancelClose(), null);
-			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), null);
+			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
@@ -181,6 +182,21 @@ namespace Eto.Test.Sections.Behaviors
 					child.Topmost = topMostCheckBox.Checked ?? false;
 			};
 			return topMostCheckBox;
+		}
+
+		Control VisibleCheckbox()
+		{
+			visibleCheckBox = new CheckBox
+			{
+				Text = "Visible",
+				Checked = true
+			};
+			visibleCheckBox.CheckedChanged += (sender, e) =>
+			{
+				if (child != null)
+					child.Visible = visibleCheckBox.Checked ?? false;
+			};
+			return visibleCheckBox;
 		}
 
 		Control CreateCancelClose()
@@ -353,6 +369,7 @@ namespace Eto.Test.Sections.Behaviors
 				child.Owner = ParentWindow;
 			bringToFrontButton.Enabled = true;
 			show();
+			visibleCheckBox.Checked = child.Visible;
 			// show that the child is now referenced
 			Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count());
 		}
@@ -383,6 +400,7 @@ namespace Eto.Test.Sections.Behaviors
 			if (CancelClose)
 			{
 				e.Cancel = true;
+				//child.Visible = false;
 				Log.Write(child, "Cancelled Close");
 			}
 		}

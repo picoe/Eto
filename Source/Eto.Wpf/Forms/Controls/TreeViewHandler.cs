@@ -71,7 +71,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			public TreeViewHandler Handler
 			{
-				get { return this.GetParent<EtoTreeView>().Handler; }
+				get { return this.GetVisualParent<EtoTreeView>().Handler; }
 			}
 
 			public EtoTreeViewItem()
@@ -440,7 +440,7 @@ namespace Eto.Wpf.Forms.Controls
 			var item = Control.InputHitTest(point.ToWpf()) as sw.DependencyObject;
 			if (item != null)
 			{
-				var tvi = item.GetParent<swc.TreeViewItem>();
+				var tvi = item.GetVisualParent<swc.TreeViewItem>();
 				if (tvi != null)
 				{
 					return tvi.DataContext as ITreeItem;

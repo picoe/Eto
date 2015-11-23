@@ -39,7 +39,7 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms
 {
-	public class MyWindow : NSWindow, IMacControl
+	public class EtoWindow : NSWindow, IMacControl
 	{
 		CGRect oldFrame;
 		bool zoom;
@@ -48,7 +48,7 @@ namespace Eto.Mac.Forms
 
 		public IMacWindow Handler { get { return (IMacWindow)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
-		public MyWindow(CGRect rect, NSWindowStyle style, NSBackingStore store, bool flag)
+		public EtoWindow(CGRect rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
 		{
 		}
@@ -418,9 +418,9 @@ namespace Eto.Mac.Forms
 			});
 		}
 
-		protected void ConfigureWindow()
+		protected virtual void ConfigureWindow()
 		{
-			var myWindow = Control as MyWindow;
+			var myWindow = Control as EtoWindow;
 			if (myWindow != null)
 				myWindow.Handler = this;
 			Control.ContentView = new NSView();
@@ -638,11 +638,12 @@ namespace Eto.Mac.Forms
 			get { return Control.IsVisible; }
 			set
 			{
-				if (value && !Control.IsVisible)
-					Control.MakeKeyAndOrderFront(NSApplication.SharedApplication);
-				if (!value && Control.IsVisible)
-					Control.PerformClose(NSApplication.SharedApplication);
-				// huh?
+				if (Visible != value)
+				{
+					Control.IsVisible = value;
+					if (Widget.Loaded && value)
+						Callback.OnShown(Widget, EventArgs.Empty);
+				}
 			}
 		}
 
@@ -682,7 +683,7 @@ namespace Eto.Mac.Forms
 
 					Control.SetFrameOrigin(point);
 				}
-				var etoWindow = Control as MyWindow;
+				var etoWindow = Control as EtoWindow;
 				if (etoWindow != null)
 					etoWindow.DisableCenterParent = true;
 			}

@@ -72,7 +72,6 @@ namespace Eto.Forms
 			Text = command.ToolBarText;
 			ToolTip = command.ToolTip;
 			Image = command.Image;
-			Order = -1;
 			Command = command;
 		}
 

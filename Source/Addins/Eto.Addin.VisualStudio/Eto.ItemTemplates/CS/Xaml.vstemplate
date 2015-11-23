@@ -18,7 +18,7 @@
 			</Reference>
 		</References>
 		<ProjectItem TargetFileName="$fileinputname$.xeto" ReplaceParameters="true" CustomTool="" ItemType="EmbeddedResource">Xaml.xeto</ProjectItem>
-		<ProjectItem TargetFileName="$fileinputname$.xeto\$fileinputname$.xeto.cs" ReplaceParameters="true">Xaml.xeto.cs</ProjectItem>
+		<ProjectItem TargetFileName="$fileinputname$.xeto\$fileinputname$.xeto.cs" ReplaceParameters="true">jxeto.cs</ProjectItem>
 	</TemplateContent>
 	<WizardExtension>
 		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
@@ -35,7 +35,8 @@
 	<WizardData>
 		<RequiredReferences>
 			<Reference id="Eto.Forms" version="2.2.0-alpha" assembly="Eto" extension="Eto.Addin.VisualStudio" />
-			<Reference id="Eto.Serialization.Xaml" version="2.2.0-alpha" extension="Eto.Addin.VisualStudio" />
+      <Reference id="Portable.Xaml" version="0.4.0" />
+      <Reference id="Eto.Serialization.Xaml" version="2.2.0-alpha" extension="Eto.Addin.VisualStudio" />
 		</RequiredReferences>
 		<Replacements>
 			<ReplacementGroup>
@@ -44,8 +45,9 @@
 	<Label Text="Some Content" />]]>
 				</Replacement>
 				<Replacement name="$Methods$"></Replacement>
-				<Replacement name="$Attributes$"></Replacement>
-			</ReplacementGroup>
+        <Replacement name="$Attributes$"></Replacement>
+				<Replacement name="$SerializationType$">Xaml</Replacement>
+      </ReplacementGroup>
 		</Replacements>
 		<Options title="Select new file options">
 			<Option name="Select the base class for your new panel/window">

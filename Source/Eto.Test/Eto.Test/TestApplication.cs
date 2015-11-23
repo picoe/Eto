@@ -36,16 +36,18 @@ namespace Eto.Test
 
 			base.OnInitialized(e);
 
-			/*
-			int count = 100000;
-			var start = DateTime.Now;
+			/**
+			Debug.WriteLine("Starting test...");
+			const int count = 1000;
+			var sw = new Stopwatch();
+			sw.Start();
 			for (int i = 0; i < count; i++)
 			{
-				new Button();
+				new Sections.Serialization.Xaml.Test();
 			}
-			var end = DateTime.Now;
-			Debug.WriteLine("Time: {0}", end - start);
-			*/
+			sw.Stop();
+			Debug.WriteLine("Time: {0}", sw.Elapsed);
+			/**/
 
 			// show the main form
 			MainForm.Show();

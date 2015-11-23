@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Portable.Xaml">
-      <HintPath>..\packages\Portable.Xaml.0.4.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
+      <HintPath>..\packages\Portable.Xaml.0.5.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

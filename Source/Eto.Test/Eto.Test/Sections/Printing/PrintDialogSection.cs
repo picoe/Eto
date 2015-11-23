@@ -26,6 +26,7 @@ namespace Eto.Test.Sections.Printing
 			layout.AddSeparateRow(null, ShowPrintDialog(), null);
 			layout.AddSeparateRow(null, PrintFromGraphicsWithDialog(), null);
 			layout.AddSeparateRow(null, PrintFromGraphics(), null);
+			layout.Add(null);
 			layout.EndBeginVertical();
 			layout.Add(PrintDialogOptions());
 			layout.Add(null);

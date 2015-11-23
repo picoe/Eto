@@ -44,7 +44,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		class EtoScrollView : NSScrollView, IMacControl
+		public class EtoScrollView : NSScrollView, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -60,9 +60,22 @@ namespace Eto.Mac.Forms.Controls
 				if (cursor != null)
 					AddCursorRect(new CGRect(CGPoint.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
+
+			public EtoScrollView(ScrollableHandler handler)
+			{
+				BackgroundColor = NSColor.Control;
+				BorderType = NSBorderType.BezelBorder;
+				DrawsBackground = false;
+				HasVerticalScroller = true;
+				HasHorizontalScroller = true;
+				AutohidesScrollers = true;
+				// only draw dirty regions, instead of entire scroll area
+				ContentView.CopiesOnScroll = true;
+				DocumentView = new EtoDocumentView { Handler = handler };
+			}
 		}
 
-		class FlippedView : NSView
+		public class EtoDocumentView : NSView
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -84,29 +97,18 @@ namespace Eto.Mac.Forms.Controls
 				Handler.SetPosition(Handler.scrollPosition, true);
 			}
 			#endif
+
 		}
 
-		public ScrollableHandler()
+		protected override NSScrollView CreateControl()
 		{
-			Enabled = true;
-			Control = new EtoScrollView
-			{
-				Handler = this, 
-				BackgroundColor = NSColor.Control,
-				BorderType = NSBorderType.BezelBorder,
-				DrawsBackground = false,
-				HasVerticalScroller = true,
-				HasHorizontalScroller = true,
-				AutohidesScrollers = true,
-				DocumentView = new FlippedView { Handler = this }
-			};
-
-			// only draw dirty regions, instead of entire scroll area
-			Control.ContentView.CopiesOnScroll = true;
+			return new EtoScrollView(this);
 		}
 
 		protected override void Initialize()
 		{
+			Enabled = true;
+
 			base.Initialize();
 			if (!ContentControl.IsFlipped)
 				// need to keep the scroll position as it scrolls instead of calculating

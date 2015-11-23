@@ -15,6 +15,8 @@ namespace Eto.Addin.VisualStudio
 		public static IOleServiceProvider ServiceProvider = (IOleServiceProvider)Package.GetGlobalService(typeof(IOleServiceProvider));
 		static ServiceProvider vsServiceProvider;
 
+		public static ServiceProvider VsServiceProvider {  get { return vsServiceProvider; } }
+
 		public static T GetComponentService<T>()
 			where T : class
 		{

@@ -239,7 +239,7 @@ namespace Eto.GtkSharp.Forms
 			get { return Control.HasFocus; }
 		}
 
-		public bool Visible
+		public virtual bool Visible
 		{
 			get { return Control.Visible; }
 			set

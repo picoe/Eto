@@ -16,17 +16,61 @@ namespace Eto.Designer.Completion
 		public string Namespace { get; set; }
 	}
 
+	public enum CompletionMode
+	{
+		None,
+		Class,
+		Property,
+		Value
+	}
+
+	public class CompletionPathNode
+	{
+		public List<CompletionNamespace> Namespaces { get; set; }
+		List<string> attributes;
+		public List<string> Attributes { get { return attributes ?? (attributes = new List<string>()); } }
+		public string LocalName { get; set; }
+		public string Prefix { get; set; }
+		public CompletionMode Mode { get; set; }
+
+		public string Name
+		{
+			get {
+				return (Prefix ?? "") + LocalName;
+			}
+		}
+
+		public CompletionPathNode(string prefix, string localName, CompletionMode mode)
+		{
+			if (!string.IsNullOrEmpty(prefix) && prefix.EndsWith(":"))
+				prefix = prefix.TrimEnd(':');
+			Prefix = prefix;
+			LocalName = localName;
+			Mode = mode;
+		}
+	}
+
 	public abstract class Completion
 	{
 		public string Prefix { get; set; }
 
-		public abstract IEnumerable<CompletionItem> GetClasses(IEnumerable<string> path);
+		public virtual Func<Type, bool> GetFilter(IEnumerable<string> path)
+		{
+			return null;
+		}
+
+		public abstract IEnumerable<CompletionItem> GetClasses(IEnumerable<string> path, Func<Type, bool> filter);
 
 		public abstract IEnumerable<CompletionItem> GetProperties(string objectName, IEnumerable<string> path);
 
 		public virtual IEnumerable<CompletionItem> GetPropertyValues(string objectName, string propertyName, IEnumerable<string> path)
 		{
 			yield break;
+		}
+
+		public string PrefixWithColon
+		{
+			get { return string.IsNullOrEmpty(Prefix) ? string.Empty : Prefix + ":"; }
 		}
 
 		public virtual bool HandlesPrefix(string prefix)
@@ -36,6 +80,35 @@ namespace Eto.Designer.Completion
 
 		public const string EtoFormsNamespace = "http://schema.picoe.ca/eto.forms";
 		public const string XamlNamespace2006 = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+		public static IEnumerable<CompletionItem> GetCompletionItems(IEnumerable<CompletionNamespace> namespaces, CompletionMode mode, IEnumerable<string> path, CompletionPathNode context)
+		{
+			if (mode == CompletionMode.None)
+				return Enumerable.Empty<CompletionItem>();
+			var completions = GetCompletions(namespaces);
+			IEnumerable<CompletionItem> items;
+			if (mode == CompletionMode.Property && context != null)
+			{
+				var contextName = context.Name;
+				if (contextName.EndsWith("."))
+				{
+					// if it contains a dot it is a property element. only show completions for the current namespace.
+					contextName = contextName.TrimEnd('.');
+					completions = completions.Where(r => r.Prefix == context.Prefix).ToList();
+				}
+				items = completions
+					.SelectMany(r => r.GetProperties(contextName, path))
+					.Where(r => !context.Attributes.Contains(r.Name));
+			}
+			else if (mode == CompletionMode.Value && context != null && context.Mode == CompletionMode.Property)
+				items = completions.SelectMany(r => r.GetPropertyValues(path.Last(), context.LocalName, path));
+			else
+			{
+				var filter = completions.Select(r => r.GetFilter(path)).FirstOrDefault(r => r != null);
+				items = completions.SelectMany(r => r.GetClasses(path, filter));
+			}
+			return items;
+		}
 
 		public static IEnumerable<Completion> GetCompletions(IEnumerable<CompletionNamespace> namespaces)
 		{
@@ -57,10 +130,6 @@ namespace Eto.Designer.Completion
 					yield return new XamlCompletion { Prefix = ns.Prefix };
 				}
 			}
-		}
-		public static IEnumerable<Completion> GetCompletions(IEnumerable<CompletionNamespace> namespaces, string prefix)
-		{
-			return GetCompletions(namespaces).Where(r => r.HandlesPrefix(prefix));
 		}
 	}
 }

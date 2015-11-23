@@ -3,10 +3,11 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using Eto.Drawing;
 using UIKit;
+using Eto.Shared.Drawing;
 
 namespace Eto.iOS.Drawing
 {
-	public class IndexedBitmapDataHandler : BitmapData
+	public class IndexedBitmapDataHandler : BaseBitmapData
 	{
 		public IndexedBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(image, data, scanWidth, bitsPerPixel, controlObject)

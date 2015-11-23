@@ -27,11 +27,13 @@
     <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="../Shared/Common.targets" />
   <ItemGroup>
@@ -61,6 +63,7 @@
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="Xceed.Wpf.Toolkit">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +92,7 @@
     <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="WpfConversions.cs" />
     <Compile Include="CustomControls\EditableTextBlock.cs" />
     <Compile Include="CustomControls\FontDialog\fontchooser.xaml.cs">
@@ -235,6 +239,9 @@
       <Link>Forms\HwndFormHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll">

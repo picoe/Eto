@@ -89,13 +89,13 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public TableLayoutHandler()
+		protected override NSView CreateControl()
 		{
-#if OSX
-			Control = new MacEventView { Handler = this };
-#elif IOS
-			Control = new NSView();
-#endif
+			#if OSX
+			return new MacEventView();
+			#elif IOS
+			return new NSView();
+			#endif
 		}
 
 		protected override void Initialize()

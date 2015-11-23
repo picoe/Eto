@@ -128,7 +128,7 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public void LayoutParent(bool updateSize = true)
+		public virtual void LayoutParent(bool updateSize = true)
 		{
 			if (NeedsQueue(() => LayoutParent(updateSize)))
 				return;

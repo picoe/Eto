@@ -43,7 +43,7 @@ namespace Eto.WinForms.Forms.Menu
 			set
 			{
 				var key = value.ToSWF();
-				if (SWF.ToolStripManager.IsValidShortcut(key))
+				if (!value.HasFlag(Keys.Application) && SWF.ToolStripManager.IsValidShortcut(key))
 				{
 					Control.ShortcutKeys = key;
 					Widget.Properties.Set(CustomShortcutKey, default(Keys));

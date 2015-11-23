@@ -35,12 +35,17 @@ namespace Eto.Mac.Forms.Menu
 			}
 		}
 
-		public ButtonMenuItemHandler()
+		protected override NSMenuItem CreateControl()
 		{
-			Control = new NSMenuItem();
+			return new NSMenuItem();
+		}
+
+		protected override void Initialize()
+		{
 			Enabled = true;
 			Control.Target = new MenuActionHandler{ Handler = this };
 			Control.Action = MenuActionHandler.selActivate;
+			base.Initialize();
 		}
 
 		public override void Activate()

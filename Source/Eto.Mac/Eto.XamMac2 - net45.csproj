@@ -222,6 +222,10 @@
     <Compile Include="..\Shared\MutableCellEventArgs.cs">
       <Link>Forms\Cells\MutableCellEventArgs.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
+    <Compile Include="Forms\NativeFormHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

@@ -12,7 +12,7 @@ namespace Eto.Designer.Completion
 
 	class GeneralCompletion : Completion
 	{
-		public override IEnumerable<CompletionItem> GetClasses(IEnumerable<string> path)
+		public override IEnumerable<CompletionItem> GetClasses(IEnumerable<string> path, Func<Type, bool> filter)
 		{
 			yield break;
 		}

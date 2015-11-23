@@ -23,7 +23,7 @@ namespace Eto.Addin.VisualStudio.Editor
 	[Guid(Constants.EtoPreviewEditorFactory_string)]
 	public sealed class EditorFactory : IVsEditorFactory, IDisposable
 	{
-		EtoPreviewPackage editorPackage;
+		EtoAddinPackage editorPackage;
 		ServiceProvider vsServiceProvider;
 
 		static EditorFactory()
@@ -31,7 +31,7 @@ namespace Eto.Addin.VisualStudio.Editor
 			EtoInitializer.Initialize();
 		}
 
-		public EditorFactory(EtoPreviewPackage package)
+		public EditorFactory(EtoAddinPackage package)
 		{
 			this.editorPackage = package;
 		}

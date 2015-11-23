@@ -35,14 +35,14 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms
 {
-	public class DialogHandler : MacWindow<MyWindow, Dialog, Dialog.ICallback>, Dialog.IHandler
+	public class DialogHandler : MacWindow<EtoWindow, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
 		Button button;
 		ModalEventArgs session;
 
 		protected override bool DisposeControl { get { return false; } }
 
-		class DialogWindow : MyWindow
+		class EtoDialogWindow : EtoWindow
 		{
 			public new DialogHandler Handler
 			{
@@ -50,7 +50,7 @@ namespace Eto.Mac.Forms
 				set { base.Handler = value; }
 			}
 
-			public DialogWindow()
+			public EtoDialogWindow()
 				: base(new CGRect(0, 0, 200, 200), NSWindowStyle.Closable | NSWindowStyle.Titled, NSBackingStore.Buffered, false)
 			{
 			}
@@ -92,12 +92,16 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public DialogHandler()
+		protected override EtoWindow CreateControl()
 		{
-			var dlg = new DialogWindow();
-			dlg.Handler = this;
-			Control = dlg;
+			return new EtoDialogWindow();
+		}
+
+		protected override void Initialize()
+		{
 			ConfigureWindow();
+
+			base.Initialize();
 		}
 
 		public virtual void ShowModal()

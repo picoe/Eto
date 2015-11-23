@@ -17,15 +17,19 @@ namespace ${Namespace}
 			AbortButton = new Button { Text = "C&ancel" };
 			AbortButton.Click += (sender, e) => Close();
 
-			var buttons = new TableLayout { Rows = { new TableRow(null, DefaultButton, AbortButton) }, Spacing = new Size(5, 5) };
-
-			Content = new TableLayout
+			var buttons = new StackLayout
 			{
-				Padding = new Padding(10),
-				Rows = 
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items = { DefaultButton, AbortButton }
+			};
+
+			Content = new StackLayout
+			{
+				Items =
 				{
 					new Label { Text = "Some content" },
-					buttons
+					new StackLayoutItem(buttons, HorizontalAlignment.Right)
 				}
 			};
 		}

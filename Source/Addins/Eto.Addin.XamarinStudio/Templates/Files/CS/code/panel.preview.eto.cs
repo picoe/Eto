@@ -9,7 +9,13 @@ namespace ${Namespace}
 	{	
 		void InitializeComponent()
 		{
-			Content = new Label { Text = "Some Content" };
+			Content = new StackLayout
+			{
+				Items =
+				{
+					new Label { Text = "Some Content" }
+				}
+			};
 		}
 	}
 }

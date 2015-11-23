@@ -8,6 +8,7 @@ using System.ComponentModel;
 
 namespace Eto.WinForms.Forms.Controls
 {
+	[DesignerCategory("Code")]
 	public class EtoTextBox : swf.TextBox
 	{
 		string watermarkText;

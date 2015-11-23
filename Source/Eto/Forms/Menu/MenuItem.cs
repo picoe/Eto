@@ -210,6 +210,17 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Performs the click handler for this item.
+		/// </summary>
+		/// <remarks>
+		/// This performs the click by calling <see cref="OnClick"/> which triggers the <see cref="Click"/> event.
+		/// </remarks>
+		public virtual void PerformClick()
+		{
+			OnClick(EventArgs.Empty);
+		}
+
+		/// <summary>
 		/// Callback interface for the <see cref="MenuItem"/>
 		/// </summary>
 		public new interface ICallback : Menu.ICallback

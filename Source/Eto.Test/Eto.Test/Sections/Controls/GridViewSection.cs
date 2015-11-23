@@ -92,6 +92,7 @@ namespace Eto.Test.Sections.Controls
 						Items =
 						{
 							null,
+							AddItemButton(filtered),
 							CreateScrollToRow(grid),
 							CreateBeginEditButton(grid),
 							null
@@ -351,6 +352,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Button { Text = "Begin Edit Row:1, Column:2" };
 			control.Click += (sender, e) => grid.BeginEdit(1, 2);
+			return control;
+		}
+
+		Button AddItemButton(SelectableFilterCollection<MyGridItem> filtered)
+		{
+			var control = new Button { Text = "Add Item" };
+			control.Click += (sender, e) => filtered.Add(new MyGridItem(new Random(), filtered.Count + 1));
 			return control;
 		}
 

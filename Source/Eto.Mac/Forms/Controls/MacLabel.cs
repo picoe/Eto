@@ -88,9 +88,20 @@ namespace Eto.Mac.Forms.Controls
 			get { return WeakHandler.Target; }
 			set { WeakHandler = new WeakReference(value); } 
 		}
+
+		public EtoLabel()
+		{
+			Cell = new EtoLabelFieldCell();
+			DrawsBackground = false;
+			Bordered = false;
+			Bezeled = false;
+			Editable = false;
+			Selectable = false;
+			Alignment = NSTextAlignment.Left;
+		}
 	}
 
-	public class MacLabel<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
+	public abstract class MacLabel<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
 		where TControl: NSTextField
 		where TWidget: Control
 		where TCallback: Control.ICallback
@@ -143,25 +154,15 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void Initialize()
 		{
-			base.Initialize();
-			Control = CreateLabel();
 			if (supportsSingleLine)
 				Control.Cell.UsesSingleLineMode = false;
+
+			base.Initialize();
 		}
 
-		protected virtual TControl CreateLabel()
+		protected override TControl CreateControl()
 		{
-			return new EtoLabel
-			{ 
-				Handler = this,
-				Cell = new EtoLabelFieldCell(),
-				DrawsBackground = false,
-				Bordered = false,
-				Bezeled = false,
-				Editable = false,
-				Selectable = false,
-				Alignment = NSTextAlignment.Left,
-			} as TControl;
+			return new EtoLabel() as TControl;
 		}
 
 		static readonly object TextColorKey = new object();

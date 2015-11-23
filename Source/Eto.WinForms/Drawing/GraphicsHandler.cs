@@ -328,13 +328,16 @@ namespace Eto.WinForms.Drawing
 			var sdFont = FontHandler.GetControl(font);
 			if (UseCompatibleTextRendering)
 			{
-				sd.CharacterRange[] ranges = { new sd.CharacterRange(0, text.Length) };
-				DefaultStringFormat.SetMeasurableCharacterRanges(ranges);
+				lock (DefaultStringFormat)
+				{
+					sd.CharacterRange[] ranges = { new sd.CharacterRange(0, text.Length) };
+					DefaultStringFormat.SetMeasurableCharacterRanges(ranges);
 
-				var regions = Control.MeasureCharacterRanges(text, sdFont, sd.RectangleF.Empty, DefaultStringFormat);
-				var rect = regions[0].GetBounds(Control);
+					var regions = Control.MeasureCharacterRanges(text, sdFont, sd.RectangleF.Empty, DefaultStringFormat);
+					var rect = regions[0].GetBounds(Control);
 
-				return rect.Size.ToEto();
+					return rect.Size.ToEto();
+				}
 			}
 
 			var size = swf.TextRenderer.MeasureText(Control, text, sdFont, sd.Size.Empty, DefaultTextFormat);

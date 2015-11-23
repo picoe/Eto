@@ -5,22 +5,34 @@ using swi = System.Windows.Input;
 using swc = System.Windows.Controls;
 using Eto.Wpf.Forms;
 using Eto.Forms;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.Wpf
 {
 	static class WpfExtensions
 	{
-		public static T GetParent<T>(this System.Windows.DependencyObject control)
-			where T : System.Windows.DependencyObject
+		public static T GetVisualParent<T>(this sw.DependencyObject control)
+			where T : class
 		{
-			var tmp = System.Windows.Media.VisualTreeHelper.GetParent(control);
-			while (tmp != null)
+			while (control != null)
 			{
-				tmp = System.Windows.Media.VisualTreeHelper.GetParent(tmp);
-				var ttmp = tmp as T;
-				if (ttmp != null) return ttmp;
+				control = swm.VisualTreeHelper.GetParent(control);
+				var tmp = control as T;
+				if (tmp != null)
+					return tmp;
 			}
 			return null;
+		}
+
+		public static IEnumerable<sw.DependencyObject> GetParents(this sw.FrameworkElement control)
+		{
+			while (control != null)
+			{
+				yield return control;
+
+				control = control.Parent as sw.FrameworkElement;
+			}
 		}
 
 		public static T FindChild<T>(this sw.DependencyObject parent, string childName = null)
@@ -69,7 +81,7 @@ namespace Eto.Wpf
 
 		public static sw.Window GetParentWindow(this sw.FrameworkElement element)
 		{
-			var window = element.GetParent<sw.Window>();
+			var window = element.GetVisualParent<sw.Window>();
 			if (window == null)
 			{
 				var app = sw.Application.Current;
@@ -137,5 +149,44 @@ namespace Eto.Wpf
 		{
 			return new sw.Size(Math.Max(0, size1.Width - size2.Width), Math.Max(0, size1.Height - size2.Height));
 		}
+
+		public static void AddKeyBindings(this swi.InputBindingCollection bindings, swc.ItemCollection items)
+		{
+			foreach (var item in items.OfType<sw.UIElement>())
+			{
+				bindings.AddKeyBindings(item);
+			}
+		}
+
+		public static void AddKeyBindings(this swi.InputBindingCollection bindings, sw.UIElement item)
+		{
+			if (item == null)
+				return;
+			bindings.AddRange(item.InputBindings);
+			var itemsControl = item as swc.ItemsControl;
+			if (itemsControl != null && itemsControl.HasItems)
+				AddKeyBindings(bindings, itemsControl.Items);
+		}
+
+		public static void RemoveKeyBindings(this swi.InputBindingCollection bindings, sw.UIElement item)
+		{
+			if (item == null)
+				return;
+			foreach (var binding in item.InputBindings.OfType<swi.InputBinding>())
+				bindings.Remove(binding);
+
+			var itemsControl = item as swc.ItemsControl;
+			if (itemsControl != null && itemsControl.HasItems)
+				RemoveKeyBindings(bindings, itemsControl.Items);
+		}
+
+		public static void RemoveKeyBindings(this swi.InputBindingCollection bindings, swc.ItemCollection items)
+		{
+			foreach (var item in items.OfType<sw.UIElement>())
+			{
+				bindings.RemoveKeyBindings(item);
+			}
+		}
+
 	}
 }

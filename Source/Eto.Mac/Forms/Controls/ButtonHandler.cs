@@ -69,7 +69,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class EtoButton : NSButton, IMacControl
+		public class EtoButton : NSButton, IMacControl
 		{
 			bool setBezel = true;
 
@@ -103,6 +103,15 @@ namespace Eto.Mac.Forms.Controls
 				if (setBezel)
 					Handler.SetBezel();
 			}
+
+			public EtoButton()
+			{
+				Cell = new EtoButtonCell();
+				Title = string.Empty;
+				BezelStyle = NSBezelStyle.Rounded;
+				ImagePosition = NSCellImagePosition.ImageLeft;
+				SetButtonType(NSButtonType.MomentaryPushIn);
+			}
 		}
 
 		static ButtonHandler()
@@ -113,18 +122,16 @@ namespace Eto.Mac.Forms.Controls
 			originalSize = b.Frame.Size.ToEtoSize();
 		}
 
-		public ButtonHandler()
+		protected override void Initialize()
 		{
-			Control = new EtoButton
-			{ 
-				Handler = this,
-				Cell = new EtoButtonCell(),
-				Title = string.Empty,
-				BezelStyle = NSBezelStyle.Rounded,
-				ImagePosition = NSCellImagePosition.ImageLeft
-			};
-			Control.SetButtonType(NSButtonType.MomentaryPushIn);
+			base.Initialize();
+
 			Control.Activated += HandleActivated;
+		}
+
+		protected override NSButton CreateControl()
+		{
+			return new EtoButton();
 		}
 
 		public override void OnLoadComplete(EventArgs e)

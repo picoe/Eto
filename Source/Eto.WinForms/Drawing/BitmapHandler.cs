@@ -6,6 +6,7 @@ using Eto.Drawing;
 using sd = System.Drawing;
 using sdi = System.Drawing.Imaging;
 using ImageManipulation;
+using Eto.Shared.Drawing;
 
 namespace Eto.WinForms.Drawing
 {
@@ -36,7 +37,7 @@ namespace Eto.WinForms.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapDataHandler : BitmapData
+	public class BitmapDataHandler : BaseBitmapData
 	{
 		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(image, data, scanWidth, bitsPerPixel, controlObject)

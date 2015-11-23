@@ -799,24 +799,16 @@ namespace Eto.Forms
 				{
 					bool matchesFilter = filter == null || filter(item);
 					bool directInsert = sort == null && matchesFilter;
-					if (index > 0)
-					{
-						var beforeItem = filtered[index - 1];
-						var itemsIndex = items.IndexOf(beforeItem);
-						items.Insert(itemsIndex, item);
-						if (externalList != null)
-							externalList.Insert(itemsIndex, item);
-						if (directInsert)
-							filtered.Insert(index, item);
-					}
-					else
-					{
-						items.Insert(0, item);
-						if (externalList != null)
-							externalList.Insert(0, item);
-						if (directInsert)
-							filtered.Insert(0, item);
-					}
+
+					// insert item in the backing list before the item at the specified index.
+					var beforeItem = filtered[index];
+					var itemsIndex = items.IndexOf(beforeItem);
+					items.Insert(itemsIndex, item);
+					if (externalList != null)
+						externalList.Insert(itemsIndex, item);
+					if (directInsert)
+						filtered.Insert(index, item);
+					
 					if (!directInsert)
 						Rebuild();
 					if (matchesFilter)
@@ -970,14 +962,15 @@ namespace Eto.Forms
 		{
 			return Update(() =>
 			{
+				var index = IndexOf(item);
 				if (items.Remove(item))
 				{
-					var index = IndexOf(item);
 					if (filtered != null)
 						filtered.RemoveAt(index);
 					if (externalList != null)
 						externalList.Remove(item);
-					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+					if (index >= 0)
+						OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
 					return true;
 				}
 				return false;

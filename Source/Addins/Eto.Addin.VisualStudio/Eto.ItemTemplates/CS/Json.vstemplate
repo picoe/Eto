@@ -18,7 +18,7 @@
       </Reference>
     </References>
     <ProjectItem TargetFileName="$fileinputname$.jeto" ReplaceParameters="true" CustomTool="" ItemType="EmbeddedResource">Json.jeto</ProjectItem>
-    <ProjectItem TargetFileName="$fileinputname$.jeto\$fileinputname$.jeto.cs" ReplaceParameters="true">Json.jeto.cs</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.jeto\$fileinputname$.jeto.cs" ReplaceParameters="true">jxeto.cs</ProjectItem>
   </TemplateContent>
   <WizardExtension>
     <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
@@ -35,7 +35,7 @@
   <WizardData>
     <RequiredReferences>
       <Reference id="Eto.Forms" version="2.2.0-alpha" assembly="Eto" extension="Eto.Addin.VisualStudio" />
-      <Reference id="Newtonsoft.Json" version="6.0.6" />
+      <Reference id="Newtonsoft.Json" version="7.0.1" />
       <Reference id="Eto.Serialization.Json" version="2.2.0-alpha" extension="Eto.Addin.VisualStudio" />
     </RequiredReferences>
     <Replacements>
@@ -46,6 +46,7 @@
 		</Replacement>
         <Replacement name="$Methods$"></Replacement>
         <Replacement name="$Initialization$"></Replacement>
+        <Replacement name="$SerializationType$">Json</Replacement>
       </ReplacementGroup>
     </Replacements>
     <Options title="Select new file options">

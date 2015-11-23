@@ -50,6 +50,16 @@ namespace Eto.Mac.Forms.Controls
 				get { return (SearchBoxHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public EtoTextField()
+			{
+				Bezeled = true;
+				Editable = true;
+				Selectable = true;
+				Cell.Scrollable = true;
+				Cell.Wraps = false;
+				Cell.UsesSingleLineMode = true;
+			}
 		}
 
 		public override bool HasFocus
@@ -62,22 +72,20 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public SearchBoxHandler()
+		protected override NSSearchField CreateControl()
 		{
-			Control = new EtoTextField
-			{
-				Handler = this,
-				Bezeled = true,
-				Editable = true,
-				Selectable = true,
-				Formatter = new EtoFormatter { Handler = this }
-			};
+			return new EtoTextField();
+		}
 
-			Control.Cell.Scrollable = true;
-			Control.Cell.Wraps = false;
-			Control.Cell.UsesSingleLineMode = true;
+		protected override void Initialize()
+		{
+			var control = Control;
+
+			control.Formatter = new EtoFormatter { Handler = this };
 
 			MaxLength = -1;
+
+			base.Initialize();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

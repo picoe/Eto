@@ -82,9 +82,17 @@ namespace Eto.Mac.Forms.Controls
 
 				base.MouseDown(theEvent);
 			}
+
+			public EtoTableView(GridViewHandler handler)
+			{
+				FocusRingType = NSFocusRingType.None;
+				DataSource = new EtoTableViewDataSource { Handler = handler };
+				Delegate = new EtoTableDelegate { Handler = handler };
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
+			}
 		}
 
-		class EtoTableViewDataSource : NSTableViewDataSource
+		public class EtoTableViewDataSource : NSTableViewDataSource
 		{
 			WeakReference handler;
 
@@ -115,7 +123,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class EtoTableDelegate : NSTableViewDelegate
+		public class EtoTableDelegate : NSTableViewDelegate
 		{
 			WeakReference handler;
 
@@ -237,16 +245,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public GridViewHandler()
+		protected override NSTableView CreateControl()
 		{
-			Control = new EtoTableView
-			{
-				Handler = this,
-				FocusRingType = NSFocusRingType.None,
-				DataSource = new EtoTableViewDataSource { Handler = this },
-				Delegate = new EtoTableDelegate { Handler = this },
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
-			};
+			return new EtoTableView(this);
 		}
 
 		public IEnumerable<object> SelectedItems

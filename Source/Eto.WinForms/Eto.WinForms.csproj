@@ -75,9 +75,7 @@
       <Link>Conversions.cs</Link>
     </Compile>
     <Compile Include="BubbleEventFilter.cs" />
-    <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="CustomControls\ExtendedDateTimePicker.cs" />
     <Compile Include="CustomControls\TreeController.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
@@ -259,9 +257,7 @@
     <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarHandler.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -320,6 +316,9 @@
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

@@ -4,10 +4,11 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
+using Eto.Shared.Drawing;
 
 namespace Eto.GtkSharp.Drawing
 {
-	public class IndexedBitmapDataHandler : BitmapData
+	public class IndexedBitmapDataHandler : BaseBitmapData
 	{
 		public IndexedBitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(image, data, scanWidth, bitsPerPixel, controlObject)

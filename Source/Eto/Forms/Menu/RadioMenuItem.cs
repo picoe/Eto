@@ -87,6 +87,19 @@ namespace Eto.Forms
 			Properties.TriggerEvent(CheckedChangedEvent, this, e);
 		}
 
+		/// <summary>
+		/// Performs the click handler for this item which sets the check state to true.
+		/// </summary>
+		/// <remarks>
+		/// This performs the click by calling <see cref="MenuItem.OnClick"/> which triggers the <see cref="MenuItem.Click"/> event.
+		/// The <see cref="Checked"/> state will also be set to true.
+		/// </remarks>
+		public override void PerformClick()
+		{
+			Checked = true;
+			base.PerformClick();
+		}
+
 		static readonly Callback callback = new Callback();
 
 		/// <summary>

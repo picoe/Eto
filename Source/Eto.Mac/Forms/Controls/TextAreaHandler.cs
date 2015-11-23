@@ -97,6 +97,22 @@ namespace Eto.Mac.Forms.Controls
 		{
 			// ignore color changes
 		}
+
+		public EtoTextView(ITextAreaHandler handler)
+		{
+			Delegate = new EtoTextAreaDelegate { Handler = handler };
+			AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+			HorizontallyResizable = true;
+			VerticallyResizable = true;
+			Editable = true;
+			RichText = false;
+			AllowsDocumentBackgroundColorChange = false;
+			Selectable = true;
+			AllowsUndo = true;
+			MinSize = CGSize.Empty;
+			MaxSize = new CGSize(float.MaxValue, float.MaxValue);
+			TextContainer.WidthTracksTextView = true;
+		}
 	}
 
 	public class TextAreaHandler<TControl, TCallback> : MacView<NSTextView, TControl, TCallback>, TextArea.IHandler, ITextAreaHandler
@@ -137,25 +153,13 @@ namespace Eto.Mac.Forms.Controls
 			get { return Scroll; }
 		}
 
-		public TextAreaHandler()
+		protected override NSTextView CreateControl()
 		{
-			Control = new EtoTextView
-			{
-				Handler = this,
-				Delegate = new EtoTextAreaDelegate { Handler = this },
-				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
-				HorizontallyResizable = true,
-				VerticallyResizable = true,
-				Editable = true,
-				RichText = false,
-				AllowsDocumentBackgroundColorChange = false,
-				Selectable = true,
-				AllowsUndo = true,
-				MinSize = CGSize.Empty,
-				MaxSize = new CGSize(float.MaxValue, float.MaxValue)
-			};
-			Control.TextContainer.WidthTracksTextView = true;
+			return new EtoTextView(this);
+		}
 
+		protected override void Initialize()
+		{
 			Scroll = new EtoScrollView
 			{
 				Handler = this,
@@ -166,6 +170,7 @@ namespace Eto.Mac.Forms.Controls
 				BorderType = NSBorderType.BezelBorder,
 				DocumentView = Control
 			};
+			base.Initialize();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
@@ -324,7 +329,7 @@ namespace Eto.Mac.Forms.Controls
 					var range = Control.SelectedRange;
 					Control.Replace(range, value);
 					range.Length = (nnint)value.Length;
-					Control.SelectedRange = range;
+					Control.SetSelectedRange(range);
 				}
 			}
 		}
@@ -332,7 +337,7 @@ namespace Eto.Mac.Forms.Controls
 		public Range<int> Selection
 		{
 			get { return Control.SelectedRange.ToEto(); }
-			set { Control.SelectedRange = value.ToNS(); }
+			set { Control.SetSelectedRange(value.ToNS()); }
 		}
 
 		public void SelectAll()
@@ -343,7 +348,7 @@ namespace Eto.Mac.Forms.Controls
 		public int CaretIndex
 		{
 			get { return (int)Control.SelectedRange.Location; }
-			set { Control.SelectedRange = new NSRange(value, 0); }
+			set { Control.SetSelectedRange(new NSRange(value, 0)); }
 		}
 
 		static readonly object AcceptsTab_Key = new object();
@@ -372,12 +377,18 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		static readonly IntPtr selGetString = Selector.GetHandle("string");
+
 		public void Append(string text, bool scrollToCursor)
 		{
-			var range = new NSRange(Control.Value.Length, 0);
+			// get NSString object so we don't have to marshal the entire string to get its length
+			var stringValuePtr = Messaging.IntPtr_objc_msgSend(Control.Handle, selGetString);
+			var str = Runtime.GetNSObject(stringValuePtr) as NSString;
+
+			var range = new NSRange(str != null ? str.Length : 0, 0);
 			Control.Replace(range, text);
-			range = new NSRange(Control.Value.Length, 0);
-			Control.SelectedRange = range;
+			range.Location += (nnint)text.Length;
+			Control.SetSelectedRange(range);
 			if (scrollToCursor)
 				Control.ScrollRangeToVisible(range);
 		}
@@ -404,6 +415,17 @@ namespace Eto.Mac.Forms.Controls
 		TextArea ITextAreaHandler.Widget
 		{
 			get { return Widget; }
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			if (Wrap)
+			{
+				// set initial width of content to the size of the control
+				Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
+			}
+			
 		}
 	}
 }

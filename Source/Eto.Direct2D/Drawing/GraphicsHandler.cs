@@ -83,12 +83,44 @@ namespace Eto.Direct2D.Drawing
 			CreateWicTarget(); // this is executed in winforms if not created from a drawable, and always in Xaml.
 		}
 
+		static readonly object SourceImage_Key = new object();
+
+		Bitmap SourceImage
+		{
+			get { return Widget.Properties.Get<Bitmap>(SourceImage_Key); }
+			set { Widget.Properties.Set(SourceImage_Key, value); }
+		}
+
+		void CopyToSourceImage()
+		{
+			if (SourceImage != null && image != null)
+			{
+				// copy back to original image when format is incompatible with D2D
+				using (var bd = image.Lock())
+				using (var bdSource = SourceImage.Lock())
+				{
+					var size = image.Size;
+					for (int y = 0; y < size.Height; y++)
+						for (int x = 0; x < size.Width; x++)
+							bdSource.SetPixel(x, y, bd.GetPixel(x, y));
+				}
+			}
+		}
+
 		private void CreateWicTarget()
 		{
 			if (image != null)
 			{
-				var renderProp = CreateRenderProperties();
 				var imageHandler = image.Handler as BitmapHandler;
+				if (imageHandler.Control.PixelFormat == PixelFormat.Format24bppRgb.ToWic())
+				{
+					// image is 24-bit but d2d only supports 32-bit, so make a copy
+					SourceImage = image;
+					image = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppRgba);
+					imageHandler = image.Handler as BitmapHandler;
+				}
+
+				var renderProp = CreateRenderProperties();
 				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.Unknown, sd.AlphaMode.Unknown);
 				Control = new sd.WicRenderTarget(SDFactory.D2D1Factory, imageHandler.Control, renderProp);
 			}
@@ -272,6 +304,10 @@ namespace Eto.Direct2D.Drawing
 			this.image = image;
 			CreateWicTarget();
 			BeginDrawing();
+			if (SourceImage != null)
+			{
+				DrawImage(SourceImage, 0, 0);
+			}
 		}
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
@@ -292,7 +328,7 @@ namespace Eto.Direct2D.Drawing
 			}
 		}
 
-		static sw.TextLayout GetTextLayout(Font font, string text)
+		public static sw.TextLayout GetTextLayout(Font font, string text)
 		{
 			var fontHandler = (FontHandler)font.Handler;
 			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
@@ -306,7 +342,8 @@ namespace Eto.Direct2D.Drawing
 		public void Flush()
 		{
 			Control.Flush();
-		}
+			CopyToSourceImage();
+        }
 
 		static readonly object PixelOffsetMode_Key = new object();
 
@@ -653,7 +690,16 @@ namespace Eto.Direct2D.Drawing
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
+			{
 				EndDrawing();
+				if (SourceImage != null && image != null)
+				{
+					CopyToSourceImage();
+					SourceImage = null;
+					image.Dispose();
+					image = null;
+				}
+			}
 			base.Dispose(disposing);
 		}
 	}

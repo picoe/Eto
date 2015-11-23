@@ -254,6 +254,11 @@ namespace Eto.Forms
 		public static string ToShortcutString(this Keys key, string separator = "+")
 		{
 			var sb = new StringBuilder();
+			if (key.HasFlag(Keys.Application))
+				AppendSeparator(sb, separator, 
+					EtoEnvironment.Platform.IsMac ? "\x2318" : 
+					EtoEnvironment.Platform.IsWindows ? "Win" :
+					"App");
 			if (key.HasFlag(Keys.Control))
 				AppendSeparator(sb, separator, "Ctrl");
 			if (key.HasFlag(Keys.Shift))

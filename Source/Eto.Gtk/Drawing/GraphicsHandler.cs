@@ -134,18 +134,14 @@ namespace Eto.GtkSharp.Drawing
 					unsafe
 					{
 						var srcrow = (byte*)surface.DataPtr;
-						var destrow = (byte*)bd.Data;
 						for (int y = 0; y < image.Size.Height; y++)
 						{
 							var src = (int*)srcrow;
-							var dest = (int*)destrow;
 							for (int x = 0; x < image.Size.Width; x++)
 							{
-								*dest = bd.TranslateArgbToData(*src);
-								dest++;
+								bd.SetPixel(x, y, Color.FromArgb(*src));
 								src++;
 							}
-							destrow += bd.ScanWidth;
 							srcrow += surface.Stride;
 						}
 					}

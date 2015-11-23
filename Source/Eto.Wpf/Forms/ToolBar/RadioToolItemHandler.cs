@@ -26,7 +26,7 @@ namespace Eto.Wpf.Forms.ToolBar
 			Control.Content = panel;
 
 			Control.Checked += delegate {
-				var toolbar = Control.GetParent<swc.ToolBar>();
+				var toolbar = Control.GetVisualParent<swc.ToolBar>();
 				if (toolbar != null)
 				{
 					var toolbarHandler = toolbar.Tag as ToolBarHandler;

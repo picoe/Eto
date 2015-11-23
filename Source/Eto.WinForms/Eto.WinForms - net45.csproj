@@ -80,9 +80,7 @@
     <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="WinConversions.cs" />
-    <Compile Include="CustomControls\ExtendedDateTimePicker.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="CustomControls\ExtendedDateTimePicker.cs" />
     <Compile Include="CustomControls\TreeController.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
@@ -231,12 +229,8 @@
     <Compile Include="Forms\Controls\TabPageHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\TextAreaHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Controls\TextBoxHandler.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
+    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -320,6 +314,9 @@
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

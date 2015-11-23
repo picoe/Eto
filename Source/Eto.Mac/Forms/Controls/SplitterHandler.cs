@@ -33,11 +33,29 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class SplitterHandler : MacView<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler
+	public class SplitterHandler : MacContainer<NSSplitView, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
+
+		public override void LayoutParent(bool updateSize = true)
+		{
+			UpdatePosition();
+			base.LayoutParent(updateSize);
+		}
+
 		double relative = double.NaN;
 
-		//TODO: RelativePosition - following is just stub, see WinForm/WPF/GTK or ThemedSplitter
+		double GetRelativePosition()
+		{
+			var pos = Position;
+			if (fixedPanel == SplitterFixedPanel.Panel1)
+				return pos;
+			var size = Orientation == Orientation.Horizontal ? Control.Bounds.Width : Control.Bounds.Height;
+			size -= SplitterWidth;
+			if (fixedPanel == SplitterFixedPanel.Panel2)
+				return size - pos;
+			return pos / (double)size;
+		}
+
 		public double RelativePosition
 		{
 			get
@@ -45,14 +63,7 @@ namespace Eto.Mac.Forms.Controls
 				if (!Widget.Loaded)
 					return relative;
 				
-				var pos = Position;
-				if (fixedPanel == SplitterFixedPanel.Panel1)
-					return pos;
-				var size = Orientation == Orientation.Horizontal ? Control.Bounds.Width : Control.Bounds.Height;
-				size -= SplitterWidth;
-				if (fixedPanel == SplitterFixedPanel.Panel2)
-					return size - pos;
-				return pos / (double)size;
+				return GetRelativePosition();
 			}
 			set
 			{
@@ -60,7 +71,7 @@ namespace Eto.Mac.Forms.Controls
 				if (Widget.Loaded)
 				{
 					SetRelative();
-					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+					UpdatePosition();
 				}
 			}
 		}
@@ -87,7 +98,12 @@ namespace Eto.Mac.Forms.Controls
 		public int SplitterWidth
 		{
 			get { return (int)Math.Round(Control.DividerThickness); }
-			set { }
+			set {
+				if (value <= 2)
+					Control.DividerStyle = NSSplitViewDividerStyle.Thin;
+				else
+					Control.DividerStyle = NSSplitViewDividerStyle.Thick;
+			}
 		}
 
 
@@ -96,12 +112,15 @@ namespace Eto.Mac.Forms.Controls
 		int? position;
 		SplitterFixedPanel fixedPanel;
 		bool initialPositionSet;
+		static readonly object WasLoaded_Key = new object();
 
-		public bool RecurseToChildren { get { return true; } }
+		bool WasLoaded
+		{ 
+			get { return Widget.Properties.Get<bool>(WasLoaded_Key); } 
+			set { Widget.Properties.Set(WasLoaded_Key, value); }
+		}
 
 		public override NSView ContainerControl { get { return Control; } }
-
-		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
 		public override void AttachEvent(string id)
 		{
@@ -120,9 +139,26 @@ namespace Eto.Mac.Forms.Controls
 		{
 			var splitView = handler.Control;
 			var dividerThickness = splitView.DividerThickness;
+			var newFrame = splitView.Frame;
+
+			if (handler.panel1 == null || !handler.panel1.Visible)
+			{
+				splitView.Subviews[0].SetFrameSize(SizeF.Empty.ToNS());
+				splitView.Subviews[1].Frame = newFrame;
+				return;
+			}
+
+			if (handler.panel2 == null || !handler.panel2.Visible)
+			{
+				splitView.Subviews[0].Frame = newFrame;
+				splitView.Subviews[1].SetFrameSize(SizeF.Empty.ToNS());
+				return;
+			}
+			if (handler.initialPositionSet)
+				handler.SetRelative();
+
 			var panel1Rect = splitView.Subviews[0].Frame;
 			var panel2Rect = splitView.Subviews[1].Frame;
-			var newFrame = splitView.Frame;
 				
 			if (oldSize.Height <= 0 && oldSize.Width <= 0)
 				oldSize = newFrame.Size;
@@ -196,7 +232,7 @@ namespace Eto.Mac.Forms.Controls
 			splitView.Subviews[1].Frame = panel2Rect;
 		}
 
-		class SVDelegate : NSSplitViewDelegate
+		public class EtoSplitViewDelegate : NSSplitViewDelegate
 		{
 			WeakReference handler;
 
@@ -214,16 +250,24 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DidResizeSubviews(NSNotification notification)
 			{
-				var subview = Handler.Control.Subviews[0];
-				if (subview != null && Handler.position != null && Handler.initialPositionSet && Handler.Widget.Loaded && Handler.Widget.ParentWindow != null && Handler.Widget.ParentWindow.Loaded)
+				var h = Handler;
+				var subview = h.Control.Subviews[0];
+				if (subview != null && h.position != null && h.initialPositionSet && h.Widget.Loaded && h.Widget.ParentWindow != null && h.Widget.ParentWindow.Loaded)
 				{
-					Handler.position = Handler.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
-					Handler.Callback.OnPositionChanged(Handler.Widget, EventArgs.Empty);
+					if (h.panel1 == null || !h.panel1.Visible || h.panel2 == null || !h.panel2.Visible)
+					{
+						// remember relative position if either panel is not visible
+						if (double.IsNaN(h.relative))
+							h.relative = h.RelativePosition;
+						return;
+					}
+					h.position = h.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
+					h.Callback.OnPositionChanged(h.Widget, EventArgs.Empty);
 				}
 			}
 		}
 		// stupid hack for OSX 10.5 so that mouse down/drag/up events fire in children properly..
-		class EtoSplitView : NSSplitView, IMacControl
+		public class EtoSplitView : NSSplitView, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
@@ -231,6 +275,15 @@ namespace Eto.Mac.Forms.Controls
 			{ 
 				get { return (SplitterHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
+			}
+
+			public EtoSplitView(SplitterHandler handler)
+			{
+				DividerStyle = NSSplitViewDividerStyle.Thin;
+				IsVertical = true;
+				AddSubview(new NSView { AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
+				AddSubview(new NSView { AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
+				Delegate = new EtoSplitViewDelegate { Handler = handler };
 			}
 
 			public override void MouseDown(NSEvent theEvent)
@@ -258,15 +311,16 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public SplitterHandler()
+
+		protected override NSSplitView CreateControl()
+		{
+			return new EtoSplitView(this);
+		}
+
+		protected override void Initialize()
 		{
 			Enabled = true;
-			Control = new EtoSplitView { Handler = this };
-			Control.DividerStyle = NSSplitViewDividerStyle.Thin;
-			Control.AddSubview(new NSView { AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
-			Control.AddSubview(new NSView { AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
-			Control.IsVertical = true;
-			Control.Delegate = new SVDelegate { Handler = this };
+			base.Initialize();
 		}
 
 		public int Position
@@ -277,7 +331,7 @@ namespace Eto.Mac.Forms.Controls
 				position = value;
 				relative = double.NaN;
 				if (Widget.Loaded)
-					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+					UpdatePosition();
 			}
 		}
 
@@ -291,7 +345,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Control.IsVertical = value == Orientation.Horizontal;
 				if (Widget.Loaded)
-					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+					UpdatePosition();
 			}
 		}
 
@@ -304,7 +358,15 @@ namespace Eto.Mac.Forms.Controls
 			{
 				fixedPanel = value;
 				if (Widget.Loaded)
-					Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+				{
+					if (double.IsNaN(relative))
+						relative = RelativePosition;
+					UpdatePosition();
+				}
+				else if (WasLoaded)
+				{
+					relative = GetRelativePosition();
+				}
 			}
 		}
 
@@ -378,14 +440,19 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
+			WasLoaded = false;
 			SetInitialSplitPosition();
-			Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+			UpdatePosition();
 			initialPositionSet = true;
 		}
 
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
+			WasLoaded = true;
+			// remember relative position if we're shown again at a different size
+			if (double.IsNaN(relative))
+				relative = GetRelativePosition();
 			initialPositionSet = false;
 		}
 
@@ -472,6 +539,11 @@ namespace Eto.Mac.Forms.Controls
 				size.Width = Math.Max(size1.Width, size2.Width);
 			}
 			return size;
+		}
+
+		void UpdatePosition()
+		{
+			Control.ResizeSubviewsWithOldSize(CGSize.Empty);
 		}
 	}
 }

@@ -3,6 +3,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using Eto.Drawing;
+
+
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;
@@ -39,6 +42,14 @@ namespace Eto.Serialization.Xaml.Extensions
 
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
+			var contextProvider = serviceProvider.GetService(typeof(IXamlSchemaContextProvider)) as IXamlSchemaContextProvider;
+			if (contextProvider != null)
+			{
+				var context = contextProvider.SchemaContext as EtoXamlSchemaContext;
+				if (context != null && context.DesignMode)
+					return new Bitmap(24, 24, PixelFormat.Format32bppRgba);
+			}
+
 			Assembly assembly;
 			NamespaceInfo resource;
 			if (!string.IsNullOrEmpty(AssemblyName))

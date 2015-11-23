@@ -175,7 +175,7 @@ namespace Eto.WinForms.Forms
 			get { return swf.DockStyle.Fill; }
 		}
 
-		public bool SetMinimumSize(bool updateParent = false, bool useCache = false)
+		public  bool SetMinimumSize(bool updateParent = false, bool useCache = false)
 		{
 			if (!Widget.Loaded)
 				return false;
@@ -207,7 +207,7 @@ namespace Eto.WinForms.Forms
 			if (ContainerControl.MinimumSize != sdsize)
 			{
 				ContainerControl.MinimumSize = sdsize;
-				//Debug.Print(string.Format("Min Size: {0}, Type:{1}", sdsize, Widget));
+				//System.Diagnostics.Debug.Print(string.Format("Min Size: {0}, Type:{1}", sdsize, Widget));
 				return true;
 			}
 			return false;
@@ -472,9 +472,9 @@ namespace Eto.WinForms.Forms
 			get { return Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
 		}
 
-		public bool Visible
+		public virtual bool Visible
 		{
-			get { return ContainerControl.Visible; }
+			get { return ContainerControl.IsHandleCreated ? ContainerControl.Visible : Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
 			set
 			{
 				if (ContainerControl.Visible != value)

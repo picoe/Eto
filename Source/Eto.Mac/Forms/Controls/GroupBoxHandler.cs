@@ -49,14 +49,23 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public EtoBox()
+			{
+				Title = string.Empty;
+				ContentView = new NSView();
+			}
 		}
 
-		public GroupBoxHandler()
+		protected override NSBox CreateControl()
 		{
-			Control = new EtoBox { Handler = this };
-			Control.Title = string.Empty;
-			Control.ContentView = new NSView();
+			return new EtoBox();
+		}
+
+		protected override void Initialize()
+		{
 			Enabled = true;
+			base.Initialize();
 		}
 
 		public override NSView ContainerControl

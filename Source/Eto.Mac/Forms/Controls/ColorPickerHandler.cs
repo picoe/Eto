@@ -47,9 +47,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public ColorPickerHandler()
+		protected override NSColorWell CreateControl()
 		{
-			Control = new EtoColorWell { WeakHandler = new WeakReference(this) };
+			return new EtoColorWell();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

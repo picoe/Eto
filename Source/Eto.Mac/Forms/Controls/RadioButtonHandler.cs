@@ -70,13 +70,23 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public EtoRadioButton()
+			{
+				Title = string.Empty;
+				SetButtonType(NSButtonType.Radio);
+			}
 		}
 
-		public RadioButtonHandler()
+		protected override NSButton CreateControl()
 		{
-			Control = new EtoRadioButton { Handler = this, Title = string.Empty };
-			Control.SetButtonType(NSButtonType.Radio);
+			return new EtoRadioButton();
+		}
+
+		protected override void Initialize()
+		{
 			Control.Activated += HandleActivated;
+			base.Initialize();
 		}
 
 		static void HandleActivated(object sender, EventArgs e)

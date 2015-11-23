@@ -40,8 +40,9 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Configuration" />
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\net40\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.0.0\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -191,6 +192,8 @@
     <Compile Include="Sections\Controls\ExpanderSection.cs" />
     <Compile Include="Sections\Controls\PropertyCellSection.cs" />
     <Compile Include="Sections\Drawing\SystemColorSection.cs" />
+    <Compile Include="UnitTests\Forms\XamlTests.cs" />
+    <Compile Include="UnitTests\Forms\ToolItemCollectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TemplateWizard;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -42,14 +43,22 @@ namespace Eto.Addin.VisualStudio.Wizards
 
 		public void RunFinished()
 		{
-			Directory.Delete(defaultDestinationFolder, true);
-			foreach (var definition in definitions)
+			try
 			{
-				AddProject(definition.Path, definition.Name);
+				Directory.Delete(defaultDestinationFolder, true);
+				foreach (var definition in definitions)
+				{
+					AddProject(definition.Path, definition.Name);
+				}
+				var startupProject = definitions.FirstOrDefault(r => r.Startup);
+				if (startupProject != null)
+					dte.Solution.Properties.Item("StartupProject").Value = startupProject.Name;
 			}
-			var startupProject = definitions.FirstOrDefault(r => r.Startup);
-			if (startupProject != null)
-				dte.Solution.Properties.Item("StartupProject").Value = startupProject.Name;
+			catch (Exception ex)
+			{
+				Debug.WriteLine("Error adding projects\n{0}", ex);
+				throw;
+			}
 		}
 
 		public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)

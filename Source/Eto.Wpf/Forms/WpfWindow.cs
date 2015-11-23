@@ -19,7 +19,12 @@ namespace Eto.Wpf.Forms
 		void SetOwnerFor(sw.Window child);
 	}
 
-	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow
+	public interface IWpfValidateBinding
+	{
+		void Validate();
+	}
+
+	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
 		where TControl : sw.Window
 		where TWidget : Window
 		where TCallback : Window.ICallback
@@ -71,6 +76,14 @@ namespace Eto.Wpf.Forms
 				Control.SizeToContent = sw.SizeToContent.Manual;
 				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 			};
+			Control.PreviewKeyDown += (sender, e) =>
+			{
+				// need to call validate on the input bindings before trying to execute them
+				foreach (var binding in Control.InputBindings.Cast<swi.InputBinding>().Select(r => r.Command).OfType<IWpfValidateBinding>())
+				{
+					binding.Validate();
+				}
+			};
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
 		}
@@ -115,6 +128,9 @@ namespace Eto.Wpf.Forms
 							app.Callback.OnTerminating(app.Widget, args);
 						}
 						e.Cancel = args.Cancel;
+						IsApplicationClosing = !args.Cancel 
+							&& sw.Application.Current.MainWindow == Control
+							&& sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose;
 					};
 					break;
 				case Window.WindowStateChangedEvent:
@@ -134,6 +150,8 @@ namespace Eto.Wpf.Forms
 					break;
 			}
 		}
+
+		static bool IsApplicationClosing { get; set; }
 
 		public override void OnLoad(EventArgs e)
 		{
@@ -171,7 +189,11 @@ namespace Eto.Wpf.Forms
 
 		public void Close()
 		{
-			Control.Close();
+			if (!IsApplicationClosing)
+				Control.Close();
+			else
+				Visible = false;
+
 		}
 
 		void CopyKeyBindings(swc.ItemCollection items)
@@ -194,8 +216,7 @@ namespace Eto.Wpf.Forms
 				{
 					var handler = (MenuBarHandler)menu.Handler;
 					menuHolder.Content = handler.Control;
-					Control.InputBindings.Clear();
-					CopyKeyBindings(handler.Control.Items);
+					Control.InputBindings.AddKeyBindings(handler.Control.Items);
 				}
 				else
 				{
@@ -503,6 +524,11 @@ namespace Eto.Wpf.Forms
 		public Screen Screen
 		{
 			get { return new Screen(new ScreenHandler(Control)); }
+		}
+
+		public swi.InputBindingCollection InputBindings
+		{
+			get { return Control.InputBindings; }
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)

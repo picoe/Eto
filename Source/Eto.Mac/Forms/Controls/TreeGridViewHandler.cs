@@ -45,7 +45,7 @@ namespace Eto.Mac.Forms.Controls
 		readonly Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem> ();
 		readonly Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
 
-		class EtoTreeItem : NSObject
+		public class EtoTreeItem : NSObject
 		{
 			Dictionary<int, EtoTreeItem> items;
 			
@@ -87,7 +87,7 @@ namespace Eto.Mac.Forms.Controls
 			return false;
 		}
 
-		class EtoOutlineDelegate : NSOutlineViewDelegate
+		public class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
 			WeakReference handler;
 			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
@@ -182,7 +182,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 			
-		class EtoDataSource : NSOutlineViewDataSource
+		public class EtoDataSource : NSOutlineViewDataSource
 		{
 			WeakReference handler;
 			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
@@ -266,6 +266,18 @@ namespace Eto.Mac.Forms.Controls
 
 				base.MouseDown(theEvent);
 			}
+
+			public EtoOutlineView(TreeGridViewHandler handler)
+			{
+				Delegate = new EtoOutlineDelegate { Handler = handler };
+				DataSource = new EtoDataSource { Handler = handler };
+				//HeaderView = null,
+				//AutoresizesOutlineColumn = true,
+				//AllowsColumnResizing = false,
+				AllowsColumnReordering = false;
+				FocusRingType = NSFocusRingType.None;
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
+			}
 		}
 		
 		public override object EventObject {
@@ -293,21 +305,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public TreeGridViewHandler()
+		protected override NSOutlineView CreateControl()
 		{
-			Control = new EtoOutlineView
-			{
-				Handler = this,
-				Delegate = new EtoOutlineDelegate { Handler = this },
-				DataSource = new EtoDataSource { Handler = this },
-				//HeaderView = null,
-				//AutoresizesOutlineColumn = true,
-				//AllowsColumnResizing = false,
-				AllowsColumnReordering = false,
-				FocusRingType = NSFocusRingType.None,
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
-			};
-
+			return new EtoOutlineView(this);
 		}
 
 		public ITreeGridStore<ITreeGridItem> DataStore {

@@ -28,11 +28,17 @@ namespace Eto.Mac.Forms.Menu
 
 		string applicationMenuName = "Application";
 
-		public MenuBarHandler()
+		protected override NSMenu CreateControl()
 		{
-			Control = new NSMenu();
+			return new NSMenu();
+		}
+
+		protected override void Initialize()
+		{
 			Control.AutoEnablesItems = false;
 			Control.ShowsStateColumn = true;
+
+			base.Initialize();
 		}
 
 		public void AddMenu(int index, MenuItem item)

@@ -23,21 +23,30 @@ namespace Eto.Wpf.Forms.Menu
 
 		protected override void OnClick()
 		{
+			UncheckGroup();
+			Checked = true;
+			base.OnClick();
+		}
+
+		void UncheckGroup()
+		{
 			if (group != null)
 			{
 				var checkedItem = group.FirstOrDefault(r => r.Checked && r != Widget);
 				if (checkedItem != null)
 					checkedItem.Checked = false;
 			}
-			Checked = true;
-			base.OnClick();
 		}
-
 
 		public bool Checked
 		{
 			get { return Control.IsChecked; }
-			set { Control.IsChecked = value; }
+			set
+			{
+				if (value)
+					UncheckGroup();
+				Control.IsChecked = value;
+			}
 		}
 
 		public void Create(RadioMenuItem controller)

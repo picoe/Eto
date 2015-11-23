@@ -74,6 +74,7 @@ namespace Eto.Mac.Forms.Cells
 
 			public EtoCell()
 			{
+				Enabled = true;
 			}
 
 			public EtoCell(IntPtr handle) : base(handle)
@@ -112,11 +113,6 @@ namespace Eto.Mac.Forms.Cells
 					#pragma warning restore 618
 				}
 			}
-		}
-
-		public DrawableCellHandler()
-		{
-			Control = new EtoCell { Handler = this, Enabled = true };
 		}
 
 		public override Color GetBackgroundColor(NSView view)
