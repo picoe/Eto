@@ -11,7 +11,6 @@ namespace Eto.Forms
 	/// </summary>
 	[Flags]
 	[TypeConverter(typeof(KeysConverter))]
-	[DebuggerDisplay("{ToString()}")] // fix VS 2013 debug display (VS 2015 is fine).
 	public enum Keys
 	{
 		/// <summary>No key</summary>
