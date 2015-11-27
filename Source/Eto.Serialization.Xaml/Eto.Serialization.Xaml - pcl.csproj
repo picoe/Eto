@@ -52,6 +52,7 @@
     <Compile Include="Extensions\ResourceExtension.cs" />
     <Compile Include="Extensions\OnExtension.cs" />
     <Compile Include="EtoNameScope.cs" />
+    <Compile Include="Extensions\FontExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

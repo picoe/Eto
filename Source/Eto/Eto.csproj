@@ -407,6 +407,7 @@
     <Compile Include="Forms\Menu\MenuItemConverter.cs" />
     <Compile Include="Forms\KeysConverter.cs" />
     <Compile Include="Forms\ToolBar\ToolItemConverter.cs" />
+    <Compile Include="Drawing\FontConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
