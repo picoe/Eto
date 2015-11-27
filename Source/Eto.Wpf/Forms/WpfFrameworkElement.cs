@@ -368,8 +368,11 @@ namespace Eto.Wpf.Forms
 					Control.KeyUp += (sender, e) =>
 					{
 						var args = e.ToEto(KeyEventType.KeyUp);
-						Callback.OnKeyUp(Widget, args);
-						e.Handled = args.Handled;
+						if (args.Key != Keys.None)
+						{
+							Callback.OnKeyUp(Widget, args);
+							e.Handled = args.Handled;
+						}
 					};
 					break;
 				case Eto.Forms.Control.ShownEvent:
@@ -415,8 +418,11 @@ namespace Eto.Wpf.Forms
 		void HandleKeyDown(object sender, swi.KeyEventArgs e)
 		{
 			var args = e.ToEto(KeyEventType.KeyDown);
-			Callback.OnKeyDown(Widget, args);
-			e.Handled = args.Handled;
+			if (args.Key != Keys.None)
+			{
+				Callback.OnKeyDown(Widget, args);
+				e.Handled = args.Handled;
+			}
 		}
 
 		void HandleMouseMove(object sender, swi.MouseEventArgs e)
