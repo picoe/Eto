@@ -114,6 +114,18 @@ namespace Eto.Forms
 		{
 			return new TableCell(new Label { Text = labelText });
 		}
+
+		/// <summary>
+		/// Converts an <see cref="Image"/> to a TableCell with an <see cref="ImageView"/> control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add images to your layout through code, without having to create <see cref="ImageView"/> instances manually.
+		/// </remarks>
+		/// <param name="image">Image to convert to a TableCell with an ImageView control.</param>
+		public static implicit operator TableCell(Image image)
+		{
+			return new TableCell(new ImageView { Image = image });
+		}
 	}
 
 	class TableCellCollection : Collection<TableCell>, IList

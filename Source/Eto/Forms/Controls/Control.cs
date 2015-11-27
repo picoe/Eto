@@ -986,6 +986,18 @@ namespace Eto.Forms
 			return new Label { Text = labelText };
 		}
 
+		/// <summary>
+		/// Converts an <see cref="Image"/> to a control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add images to your layout through code, without having to create <see cref="ImageView"/> instances manually.
+		/// </remarks>
+		/// <param name="image">Image to convert to an ImageView control.</param>
+		public static implicit operator Control(Image image)
+		{
+			return new ImageView { Image = image };
+		}
+
 		#region Callback
 
 		static readonly object callback = new Callback();

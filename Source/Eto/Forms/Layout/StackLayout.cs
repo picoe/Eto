@@ -148,6 +148,18 @@ namespace Eto.Forms
 		{
 			return new StackLayoutItem { Control = new Label { Text = labelText } };
 		}
+
+		/// <summary>
+		/// Converts an <see cref="Image"/> to a StackLayoutItem with an <see cref="ImageView"/> control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add images to your layout through code, without having to create <see cref="ImageView"/> instances manually.
+		/// </remarks>
+		/// <param name="image">Image to convert to a StackLayoutItem with a ImageView control.</param>
+		public static implicit operator StackLayoutItem(Image image)
+		{
+			return new StackLayoutItem { Control = new ImageView { Image = image } };
+		}
 	}
 
 	/// <summary>
