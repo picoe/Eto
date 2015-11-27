@@ -65,12 +65,14 @@ namespace Eto.GtkSharp.Forms.Cells
 
 			public CustomCellHandler Handler { get { return (CustomCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
+			#if GTK2
 			public Renderer()
 			{
 				this.EditingStarted += (o, args) => editingRow = row;
 				this.EditingCanceled += (o, args) => editingRow = -1;
 				//this.Edited += (o, args) => editingRow = -1;
 			}
+			#endif
 
 			int row;
 
@@ -103,9 +105,9 @@ namespace Eto.GtkSharp.Forms.Cells
 				return ed;
 			}
 
-			int editingRow = -1;
 
 			#if GTK2
+			int editingRow = -1;
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
