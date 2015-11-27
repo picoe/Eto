@@ -40,7 +40,7 @@
       <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Portable.Xaml">
-      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Portable.Xaml.0.4.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Portable.Xaml.0.6.1\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
