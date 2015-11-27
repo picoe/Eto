@@ -58,6 +58,22 @@ namespace Eto.Addin.XamarinStudio.Editor
 
 		public override bool KeyPress(Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
+			if (CompletionWindowManager.IsVisible)
+			{
+				// do some things to minimize keystrokes with code completion
+				if (keyChar == '=')
+				{
+					// we're in an attribute completion, so automatically add the quote and show completions (if available)
+					var ret = base.KeyPress(key, keyChar, modifier);
+					return ret || base.KeyPress((Gdk.Key)0, '"', Gdk.ModifierType.None);
+				}
+				if (keyChar == '"')
+				{
+					// finish completion with double quote
+					base.KeyPress(Gdk.Key.Return, '\0', Gdk.ModifierType.None);
+					return base.KeyPress(key, keyChar, modifier);
+				}
+			}
 			if (keyChar == '.')
 			{
 				var result = base.KeyPress(key, keyChar, modifier);
