@@ -39,7 +39,7 @@
     </ProjectReferences>
 	<Replacements>
 	  <ReplacementGroup>
-		<Replacement name="$EtoPlatform$">Eto.Platforms.Gtk2</Replacement>
+		<Replacement name="$EtoPlatform$">Platforms.Gtk2</Replacement>
 	  </ReplacementGroup>
 	</Replacements>
   </WizardData>

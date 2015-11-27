@@ -39,7 +39,7 @@
     </ProjectReferences>
 	<Replacements>
 	  <ReplacementGroup>
-		<Replacement name="$EtoPlatform$">Eto.Platforms.Wpf</Replacement>
+		<Replacement name="$EtoPlatform$">Platforms.Wpf</Replacement>
 	  </ReplacementGroup>
 	</Replacements>
   </WizardData>

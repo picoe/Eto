@@ -44,7 +44,7 @@
 			<Files>
 				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
+						<Replacement name="EtoPlatform" value="Platform.Detect" />
 					</Replacements>
 				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
@@ -68,7 +68,7 @@
 			<Files>
 				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
+						<Replacement name="EtoPlatform" value="Platforms.WinForms" />
 					</Replacements>
 				</EnhancedFile>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
@@ -91,7 +91,7 @@
 			<Files>
 				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
+						<Replacement name="EtoPlatform" value="Platforms.Wpf" />
 					</Replacements>
 				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
@@ -111,7 +111,7 @@
 			<Files>
 				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
+						<Replacement name="EtoPlatform" value="Platforms.Gtk2" />
 					</Replacements>
 				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
@@ -131,7 +131,7 @@
 			<Files>
 				<EnhancedFile name="Program.vb" AddStandardHeader="True" src="Program.vb">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
+						<Replacement name="EtoPlatform" value="Platforms.Gtk3" />
 					</Replacements>
 				</EnhancedFile>
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
@@ -151,6 +151,7 @@
 			</References>
 			<Files>
 				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
+using Eto;
 using Eto.Forms;
 
 namespace ${Namespace}
@@ -160,7 +161,7 @@ namespace ${Namespace}
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			new Application(Eto.Platforms.Mac).Run(new MainForm());
+			new Application(Platforms.Mac).Run(new MainForm());
 		}
 	}
 }
@@ -186,6 +187,7 @@ namespace ${Namespace}
 			<Files>
 				<Directory name="Resources"/>
 				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
+using Eto;
 using Eto.Forms;
 
 namespace ${Namespace}
@@ -195,7 +197,7 @@ namespace ${Namespace}
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			new Application(Eto.Platforms.XamMac2).Run(new ${SolutionName}.MainForm());
+			new Application(Platforms.XamMac2).Run(new ${SolutionName}.MainForm());
 		}
 	}
 }
@@ -221,6 +223,7 @@ namespace ${Namespace}
 			<Files>
 				<Directory name="Resources"/>
 				<File name="Program.cs" AddStandardHeader="True"><![CDATA[using System;
+using Eto;
 using Eto.Forms;
 
 namespace ${Namespace}
@@ -230,7 +233,7 @@ namespace ${Namespace}
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			new Application(Eto.Platforms.XamMac2).Run(new ${SolutionName}.MainForm());
+			new Application(Platforms.XamMac2).Run(new ${SolutionName}.MainForm());
 		}
 	}
 }

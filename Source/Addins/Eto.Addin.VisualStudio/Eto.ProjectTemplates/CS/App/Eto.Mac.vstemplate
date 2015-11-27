@@ -40,7 +40,7 @@
     </ProjectReferences>
 	<Replacements>
 	  <ReplacementGroup>
-		<Replacement name="$EtoPlatform$">Eto.Platforms.Mac</Replacement>
+		<Replacement name="$EtoPlatform$">Platforms.Mac</Replacement>
 	  </ReplacementGroup>
 	</Replacements>
   </WizardData>

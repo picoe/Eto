@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="ProjectGroup" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Eto.Forms App</Name>
+    <Description>A new Eto.Forms cross-platform application in VB.NET.</Description>
+    <Icon>VB\App\App.ico</Icon>
+    <ProjectType>VisualBasic</ProjectType>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <SortOrder>20</SortOrder>
+    <TemplateID>63FB1619-6CAA-4916-A8BE-79FEC1FBA03B</TemplateID>
+    <DefaultName>EtoApp</DefaultName>
+    <CreateNewFolder>true</CreateNewFolder>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem>VB\AssemblyInfo.vb</ProjectItem>
+    <ProjectItem>VB\Library\Eto.vstemplate</ProjectItem>
+    <ProjectItem>VB\Library\Library.vbproj</ProjectItem>
+    <ProjectItem>VB\Library\Eto-sal.projitems</ProjectItem>
+    <ProjectItem>VB\Library\Eto-sal.vstemplate</ProjectItem>
+    <ProjectItem>VB\Library\Eto-sal.shproj</ProjectItem>
+    <ProjectItem>VB\Library\MainForm.vb</ProjectItem>
+    <ProjectItem>VB\Library\MainForm.jxeto.vb</ProjectItem>
+    <ProjectItem>VB\App\Program.vb</ProjectItem>
+    <ProjectItem>VB\App\App.config</ProjectItem>
+    <ProjectItem>VB\App\Eto.Gtk2.vstemplate</ProjectItem>
+    <ProjectItem>VB\App\Eto.Gtk3.vstemplate</ProjectItem>
+    <ProjectItem>VB\App\Eto.Wpf.vstemplate</ProjectItem>
+    <ProjectItem>VB\App\Eto.WinForms.vstemplate</ProjectItem>
+    <ProjectItem>VB\App\Eto.Mac.vstemplate</ProjectItem>
+    <ProjectItem>VB\App\Eto.Desktop.vstemplate</ProjectItem>
+    <ProjectItem>VB\App\Eto.Desktop.vbproj</ProjectItem>
+    <ProjectItem>Shared\MainForm.xeto</ProjectItem>
+    <ProjectItem>Shared\MainForm.jeto</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ProjectWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.RootWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.MultiProjectWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <SupportedParameters>SupportsCombined,SupportsPCL,SupportsSAL,SupportsXeto,SupportsJeto</SupportedParameters>
+    <Projects>
+      <Project name="$safeprojectname$" condition="!UseSAL">VB\Library\Eto.vstemplate</Project>
+      <Project name="$safeprojectname$" condition="UseSAL">VB\Library\Eto-sal.vstemplate</Project>
+      <Project name="$safeprojectname$.Desktop" condition="Combined" startup="true">VB\App\Eto.Desktop.vstemplate</Project>
+      <Project name="$safeprojectname$.Gtk2" condition="!Combined">VB\App\Eto.Gtk2.vstemplate</Project>
+      <Project name="$safeprojectname$.Gtk3" condition="!Combined">VB\App\Eto.Gtk3.vstemplate</Project>
+      <Project name="$safeprojectname$.Wpf" condition="!Combined" startup="true">VB\App\Eto.Wpf.vstemplate</Project>
+      <Project name="$safeprojectname$.WinForms" condition="!Combined">VB\App\Eto.WinForms.vstemplate</Project>
+      <Project name="$safeprojectname$.Mac" condition="!Combined">VB\App\Eto.Mac.vstemplate</Project>
+    </Projects>
+  </WizardData>
+</VSTemplate>

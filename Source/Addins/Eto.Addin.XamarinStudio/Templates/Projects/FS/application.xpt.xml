@@ -34,7 +34,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platform.Detect" />
+						<Replacement name="EtoPlatform" value="Platform.Detect" />
 					</Replacements>
 				</EnhancedFile>
 			</Files>
@@ -61,7 +61,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk2" />
+						<Replacement name="EtoPlatform" value="Platforms.Gtk2" />
 					</Replacements>
 				</EnhancedFile>
 			</Files>
@@ -124,7 +124,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.Gtk3" />
+						<Replacement name="EtoPlatform" value="Platforms.Gtk3" />
 					</Replacements>
 				</EnhancedFile>
 			</Files>
@@ -150,7 +150,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.WinForms" />
+						<Replacement name="EtoPlatform" value="Platforms.WinForms" />
 					</Replacements>
 				</EnhancedFile>
 			</Files>
@@ -176,7 +176,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.Wpf" />
+						<Replacement name="EtoPlatform" value="Platforms.Wpf" />
 					</Replacements>
 				</EnhancedFile>
 			</Files>
@@ -201,7 +201,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.Mac" />
+						<Replacement name="EtoPlatform" value="Platforms.Mac" />
 					</Replacements>
 				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />
@@ -228,7 +228,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
+						<Replacement name="EtoPlatform" value="Platforms.XamMac2" />
 					</Replacements>
 				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />
@@ -254,7 +254,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<EnhancedFile name="Program.fs" AddStandardHeader="True" src="Program.fs" FormatCode="False">
 					<Replacements>
-						<Replacement name="EtoPlatform" value="Eto.Platforms.XamMac2" />
+						<Replacement name="EtoPlatform" value="Platforms.XamMac2" />
 					</Replacements>
 				</EnhancedFile>
 				<File name="Info.plist" src="../Shared/Info.plist" />

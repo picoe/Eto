@@ -1,24 +1,28 @@
-<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
-    <Name>Eto</Name>
-    <Description></Description>
+    <Name>Eto.Forms Library</Name>
+    <Description>A library project to build Eto.Forms UI and logic in VB.NET.</Description>
+    <Icon>VB\Library\Library.ico</Icon>
     <ProjectType>VisualBasic</ProjectType>
-    <ProjectSubType>
-    </ProjectSubType>
-    <SortOrder>1000</SortOrder>
-    <Icon></Icon>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <SortOrder>100</SortOrder>
+    <TemplateID>4BDB77D8-A4EF-4656-9A73-4E41E2C9AC12</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>EtoLibrary</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
   </TemplateData>
   <TemplateContent>
-    <Project TargetFileName="Eto.vbproj" File="Library.vbproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.vb">MainForm.vb</ProjectItem>
-      <Folder Name=".." TargetFolderName="My Project">
+    <Project TargetFileName="$safeprojectname$.vbproj" File="VB\Library\Library.vbproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.vb">VB\Library\MyPanel.vb</ProjectItem>
+      <Folder Name="VB" TargetFolderName="My Project">
         <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.vb">AssemblyInfo.vb</ProjectItem>
       </Folder>
     </Project>
   </TemplateContent>
   <WizardExtension>
     <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
-    <FullClassName>Eto.Addin.VisualStudio.Wizards.ChildWizard</FullClassName>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ProjectWizard</FullClassName>
   </WizardExtension>
   <WizardExtension>
     <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
@@ -32,13 +36,14 @@
     <packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
       <package id="Eto.Forms" version="2.2.0-alpha" />
     </packages>
+    <SupportedParameters>SupportsPCL,IsLibrary</SupportedParameters>
     <Replacements>
       <ReplacementGroup>
         <Replacement name="$ProjectProps$" />
         <Replacement name="$ProjectReferences$" />
         <Replacement name="$ProjectFiles$">
           <![CDATA[
-    <Compile Include="MainForm.vb" />
+    <Compile Include="MyPanel.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />]]>
         </Replacement>
         <Replacement name="$ProjectImports$" />

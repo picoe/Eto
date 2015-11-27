@@ -8,7 +8,7 @@
 	<Form.Menu>
 		<MenuBar>
 			<ButtonMenuItem Text="F&amp;ile">
-				<Command x:Name="clickCommand" MenuText="Click Me!" ToolBarText="Click Me!" Executed="HandleClickMe" />
+				<ButtonMenuItem Text="Click Me!" Executed="HandleClickMe" />
 			</ButtonMenuItem>
 			<MenuBar.ApplicationItems>
 				<ButtonMenuItem Text="Preferences.." Shortcut="{On Control+O, Mac=Application+Comma}" />
@@ -20,7 +20,7 @@
 	</Form.Menu>
 	<Form.ToolBar>
 		<ToolBar>
-			<x:Reference Name="clickCommand"/>
+			<ButtonToolItem Text="Click Me!" Executed="HandleClickMe" />
 		</ToolBar>
 	</Form.ToolBar>
 	<StackLayout>
