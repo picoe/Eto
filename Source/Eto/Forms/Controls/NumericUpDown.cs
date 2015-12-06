@@ -116,7 +116,7 @@ namespace Eto.Forms
 		/// numeric.DecimalPlaces = 2;
 		/// numeric.MaximumDecimalPlaces = 4;
 		/// 
-		/// numeric.Value = 123;         // control will display "123"
+		/// numeric.Value = 123;         // control will display "123.00"
 		/// numeric.Value = 123.45;      // control will display "123.45"
 		/// numeric.Value = 123.4567;    // control will display "123.4567"
 		/// numeric.Value = 123.4567890; // control will display "123.4568"
