@@ -28,6 +28,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void ResetWidth()
 			{
 				wrapWidth = -1;
+				HeightRequest = -1;
 			}
 
 			#if GTK2
@@ -52,8 +53,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (orientation == Gtk.Orientation.Horizontal)
 					minimum_size = natural_size;
 			}
-
-#endif
+			#endif
 
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
@@ -80,12 +80,8 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			eventBox = new Gtk.EventBox();
 			//eventBox.VisibleWindow = false;
-			Control = new EtoLabel
-			{
-				SingleLineMode = false,
-				LineWrap = true,
-				LineWrapMode = Pango.WrapMode.Word
-			};
+			Control = new EtoLabel();
+			Wrap = WrapMode.Word;
 			Control.SetAlignment(0, 0);
 			eventBox.Child = Control;
 		}
@@ -96,9 +92,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (!Control.LineWrap)
 					return WrapMode.None;
-				if (Control.LineWrapMode == Pango.WrapMode.Word)
-					return WrapMode.Word;
-				return WrapMode.Character;
+				if (Control.LineWrapMode == Pango.WrapMode.Char)
+					return WrapMode.Character;
+				return WrapMode.Word;
 			}
 			set
 			{
@@ -112,12 +108,14 @@ namespace Eto.GtkSharp.Forms.Controls
 						break;
 					case WrapMode.Word:
 						Control.Wrap = true;
-						Control.LineWrapMode = Pango.WrapMode.Word;
+						Control.Layout.Wrap = Pango.WrapMode.WordChar;
+						Control.LineWrapMode = Pango.WrapMode.WordChar;
 						Control.LineWrap = true;
 						Control.SingleLineMode = false;
 						break;
 					case WrapMode.Character:
 						Control.Wrap = true;
+						Control.Layout.Wrap = Pango.WrapMode.Char;
 						Control.LineWrapMode = Pango.WrapMode.Char;
 						Control.LineWrap = true;
 						Control.SingleLineMode = false;

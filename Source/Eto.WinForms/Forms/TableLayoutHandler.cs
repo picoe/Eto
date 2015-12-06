@@ -16,34 +16,53 @@ namespace Eto.WinForms.Forms
 		bool[] rowScale;
 		int lastRowScale;
 
-		protected override bool SetMinimumSize(Size size)
+		public class EtoTableLayoutPanel : swf.TableLayoutPanel
 		{
-			if (columnScale == null || rowScale == null || !Widget.Loaded)
-				return base.SetMinimumSize(size);
-			// ensure that our width doesn't get smaller than the non-scaled child controls
-			// to make it so the child controls are left-justified when the container
-			// is smaller than all the children
-			var widths = Control.GetColumnWidths();
-			var heights = Control.GetRowHeights();
-			var curSize = Size.Empty;
-			for (int i = 0; i < columnScale.Length; i++)
+			public TableLayoutHandler Handler { get; set; }
+
+			sd.Size GetMinSize()
 			{
-				if (!columnScale[i] && i != lastColumnScale)
-					curSize.Width += widths[i];
+				var columnScale = Handler.columnScale;
+				var lastColumnScale = Handler.lastColumnScale;
+				var rowScale = Handler.rowScale;
+				var lastRowScale = Handler.lastRowScale;
+				if (columnScale == null || rowScale == null || !Handler.Widget.Loaded || !IsHandleCreated)
+					return sd.Size.Empty;
+				// ensure that our width doesn't get smaller than the non-scaled child controls
+				// to make it so the child controls are left-justified when the container
+				// is smaller than all the children
+				var widths = GetColumnWidths();
+				var heights = GetRowHeights();
+				var curSize = sd.Size.Empty;
+				for (int i = 0; i < widths.Length; i++)
+				{
+					if (!columnScale[i] && i != lastColumnScale)
+						curSize.Width += widths[i];
+				}
+				for (int i = 0; i < heights.Length; i++)
+				{
+					if (!rowScale[i] && i != lastRowScale)
+						curSize.Height += heights[i];
+				}
+				return curSize;
 			}
-			for (int i = 0; i < rowScale.Length; i++)
+
+			protected override void SetBoundsCore(int x, int y, int width, int height, swf.BoundsSpecified specified)
 			{
-				if (!rowScale[i] && i != lastRowScale)
-					curSize.Height += heights[i];
+				// ensure that the controls are left-aligned when the space available is smaller than the minimum size 
+				// of this control
+				var curSize = GetMinSize();
+				width = Math.Max(curSize.Width, width);
+				height = Math.Max(curSize.Height, height);
+				base.SetBoundsCore(x, y, width, height, specified);
 			}
-			size = Size.Max(size, curSize);
-			return base.SetMinimumSize(size);
 		}
 
 		public TableLayoutHandler()
 		{
-			Control = new swf.TableLayoutPanel
+			Control = new EtoTableLayoutPanel
 			{
+				Handler = this,
 				Margin = swf.Padding.Empty,
 				Dock = swf.DockStyle.Fill,
 				Size = sd.Size.Empty,
@@ -51,7 +70,6 @@ namespace Eto.WinForms.Forms
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};
-            Control.SuspendLayout();
 		}
 
 		public void Update()
@@ -169,7 +187,6 @@ namespace Eto.WinForms.Forms
 
 		public override void OnLoad(EventArgs e)
 		{
-            Control.ResumeLayout();
             SetMinimumSize(useCache: true); // when created during pre-load, we need this to ensure the scale is set on the children properly
 			base.OnLoad(e);
 		}

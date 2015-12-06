@@ -52,9 +52,9 @@ namespace Eto.WinForms.Forms.Controls
 
 		public static Size DefaultMinimumSize = new Size(100, 60);
 
-		public override Size? DefaultSize
+		public override Size? GetDefaultSize(Size availableSize)
 		{
-			get { return DefaultMinimumSize; }
+			return DefaultMinimumSize;
 		}
 
 		public override swf.Control ContainerControl

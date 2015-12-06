@@ -67,7 +67,7 @@ namespace Eto.WinForms.Forms.Controls
 						minSize.Height = Math.Max(0, clientSize.Height);
 
 					// set minimum size for the content if we want to extend to the size of the scrollable width/height
-					contentControl.ParentMinimumSize = minSize - Handler.Padding.Size;
+					contentControl.ParentMinimumSize = Eto.Drawing.Size.Max(Eto.Drawing.Size.Empty, minSize - Handler.Padding.Size);
 				}
 				base.OnLayout(levent);
 			}
@@ -104,13 +104,6 @@ namespace Eto.WinForms.Forms.Controls
 		public override swf.Control ContainerContentControl
 		{
 			get { return content; }
-		}
-
-		public override void SetScale(bool xscale, bool yscale)
-		{
-			base.SetScale(xscale, yscale);
-			if (Content != null)
-				Content.SetScale(!ExpandContentWidth, !ExpandContentHeight);
 		}
 
 		protected override void SetContentScale(bool xscale, bool yscale)

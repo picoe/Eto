@@ -55,20 +55,20 @@ namespace Eto.Wpf.Forms
 					if (childControl != null)
 					{
 						var preferredSize = childControl.GetPreferredSize(WpfConversions.PositiveInfinitySize);
-						var margin = childControl.ContainerControl.Margin;
-						widths[x] = Math.Max(widths[x], preferredSize.Width + margin.Horizontal());
-						maxHeight = Math.Max(maxHeight, preferredSize.Height + margin.Vertical());
+						widths[x] = Math.Max(widths[x], preferredSize.Width);
+						maxHeight = Math.Max(maxHeight, preferredSize.Height);
 					}
 				}
 				height += maxHeight;
 			}
 
-			var size = new sw.Size(widths.Sum() + border.Padding.Horizontal(), height + border.Padding.Vertical());
+			var size = new sw.Size(widths.Sum(), height).Add(border.Padding.Size());
+			//System.Diagnostics.Debug.WriteLine("Size: {0}, actual: {1}", size, ContainerControl.GetSize());
 			if (!double.IsNaN(PreferredSize.Width))
 				size.Width = Math.Max(size.Width, PreferredSize.Width);
 			if (!double.IsNaN(PreferredSize.Height))
 				size.Height = Math.Max(size.Height, PreferredSize.Height);
-			return size;
+			return size.Add(ContainerControl.Margin.Size());
 		}
 
 		public void CreateControl(int cols, int rows)
@@ -130,6 +130,19 @@ namespace Eto.Wpf.Forms
 		public override void UpdatePreferredSize()
 		{
 			base.UpdatePreferredSize();
+			for (int y = 0; y < Control.RowDefinitions.Count; y++)
+			{
+				for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
+				{
+					var child = controls[x, y];
+					var childControl = child.GetWpfFrameworkElement();
+					if (childControl != null)
+					{
+						childControl.ParentMinimumSize = sw.Size.Empty;
+					}
+				}
+			}
+			Control.UpdateLayout();
 			SetChildrenSizes();
 		}
 
@@ -239,10 +252,10 @@ namespace Eto.Wpf.Forms
 		void SetMargins(sw.FrameworkElement c, int x, int y)
 		{
 			var margin = new sw.Thickness();
-			if (x > 0) margin.Left = spacing.Width / 2;
-			if (x < Control.ColumnDefinitions.Count - 1) margin.Right = spacing.Width / 2;
-			if (y > 0) margin.Top = spacing.Height / 2;
-			if (y < Control.RowDefinitions.Count - 1) margin.Bottom = spacing.Height / 2;
+			if (x > 0) margin.Left = spacing.Width / 2.0;
+			if (x < Control.ColumnDefinitions.Count - 1) margin.Right = spacing.Width / 2.0;
+			if (y > 0) margin.Top = spacing.Height / 2.0;
+			if (y < Control.RowDefinitions.Count - 1) margin.Bottom = spacing.Height / 2.0;
 			c.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
 			c.VerticalAlignment = sw.VerticalAlignment.Stretch;
 			c.Margin = margin;

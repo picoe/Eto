@@ -66,11 +66,12 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				var content = (swc.Border)scroller.Content;
 				var viewportSize = new sw.Size(info.ViewportWidth, info.ViewportHeight);
-				var prefSize = Content.GetPreferredSize(WpfConversions.PositiveInfinitySize);
+				var prefSize = Content.GetPreferredSize(new sw.Size(content.ActualWidth, content.ActualHeight));
 
-				// hack for when a scrollable is in a group box it expands vertically
+				// hack for when a scrollable is in a group box it expands vertically indefinitely
+				// -2 since when you resize the scrollable it grows slowly
 				if (Widget.FindParent<GroupBox>() != null)
-					viewportSize.Height = Math.Max(0, viewportSize.Height - 1);
+					viewportSize.Height = Math.Max(0, viewportSize.Height - 2);
 
 				if (ExpandContentWidth)
 					content.Width = Math.Max(0, Math.Max(prefSize.Width, viewportSize.Width));
@@ -96,6 +97,11 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control.InvalidateMeasure();
 			UpdateSizes();
+		}
+
+		protected override void SetContentScale(bool xscale, bool yscale)
+		{
+			base.SetContentScale(ExpandContentWidth, ExpandContentHeight);
 		}
 
 		public Point ScrollPosition

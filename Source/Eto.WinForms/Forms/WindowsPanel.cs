@@ -18,7 +18,7 @@ namespace Eto.WinForms.Forms
 			get { return Control; }
 		}
 
-		protected virtual Size ContentPadding { get { return Size.Empty; } }
+		protected virtual Size ContentPadding { get { return Padding.Size; } }
 
 		public override Size ParentMinimumSize
 		{
@@ -44,7 +44,8 @@ namespace Eto.WinForms.Forms
 			var handler = content.GetWindowsHandler();
 			if (handler != null)
 			{
-				var desiredContentSize = handler.GetPreferredSize(availableSize);
+				var contentPadding = ContentPadding;
+				var desiredContentSize = handler.GetPreferredSize(Size.Max(Size.Empty, availableSize - contentPadding)) + contentPadding;
 				//if (!handler.XScale)
 				{
 					if (desiredSize.Width > 0)
@@ -61,17 +62,7 @@ namespace Eto.WinForms.Forms
 						desiredSize.Height = desiredContentSize.Height;
 				}
 			}
-			return desiredSize + Padding.Size;
-		}
-
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			var contentHandler = content.GetWindowsHandler();
-			if (contentHandler != null)
-			{
-				contentHandler.SetFilledContent();
-			}
+			return desiredSize;
 		}
 
 		public override void SetScale(bool xscale, bool yscale)

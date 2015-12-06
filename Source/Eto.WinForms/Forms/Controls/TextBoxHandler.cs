@@ -204,12 +204,6 @@ namespace Eto.WinForms.Forms.Controls
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 
-		public override void SetFilledContent()
-		{
-			base.SetFilledContent();
-			Control.AutoSize = false;
-		}
-
 		public int CaretIndex
 		{
 			get { return Control.SelectionStart; }
@@ -228,6 +222,19 @@ namespace Eto.WinForms.Forms.Controls
 				Control.SelectionStart = value.Start;
 				Control.SelectionLength = value.Length();
 			}
+		}
+
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			base.SetScale(xscale, yscale);
+			SetAutoSize();
+		}
+
+		protected override void SetAutoSize()
+		{
+			base.SetAutoSize();
+			if (XScale && YScale)
+				Control.AutoSize = true;
 		}
 	}
 }

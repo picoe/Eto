@@ -37,8 +37,6 @@ namespace Eto.WinForms.Forms
 		void BeforeAddControl(bool top = true);
 
 		bool ShouldBubbleEvent(swf.Message msg);
-
-		void SetFilledContent();
 	}
 
 	public static class WindowsControlExtensions
@@ -57,10 +55,10 @@ namespace Eto.WinForms.Forms
 
 		}
 
-		public static Size GetPreferredSize(this Control control)
+		public static Size GetPreferredSize(this Control control, Size? availableSize = null)
 		{
 			var handler = control.GetWindowsHandler();
-			return handler != null ? handler.GetPreferredSize(Size.Empty) : Size.Empty;
+			return handler != null ? handler.GetPreferredSize(availableSize ?? Size.Empty) : Size.Empty;
 		}
 
 		public static swf.Control GetContainerControl(this Control control)
@@ -103,7 +101,7 @@ namespace Eto.WinForms.Forms
 
 		public bool YScale { get; set; }
 
-		public virtual Size? DefaultSize { get { return null; } }
+		public virtual Size? GetDefaultSize(Size availableSize) { return null; }// Control.GetPreferredSize(availableSize.ToSD()).ToEto(); }
 
 		protected void ClearCachedDefaultSize()
 		{
@@ -116,9 +114,9 @@ namespace Eto.WinForms.Forms
 			var size = UserDesiredSize;
 			Size? defSize;
 			if (useCache)
-				defSize = cachedDefaultSize ?? DefaultSize;
+				defSize = cachedDefaultSize ?? GetDefaultSize(availableSize);
 			else
-				defSize = DefaultSize;
+				defSize = GetDefaultSize(availableSize);
 			if (defSize != null)
 			{
 				if (size.Width == -1) size.Width = defSize.Value.Width;
@@ -132,10 +130,16 @@ namespace Eto.WinForms.Forms
 
 		public Size UserDesiredSize
 		{
-			get
-			{
-				return Widget.Properties.Get<Size?>(DesiredSizeKey) ?? new Size(-1, -1);
-			}
+			get { return Widget.Properties.Get<Size?>(DesiredSizeKey) ?? new Size(-1, -1); }
+			set { Widget.Properties.Set(DesiredSizeKey, value); }
+		}
+
+		static readonly object DesiredClientSizeKey = new object();
+
+		public Size UserDesiredClientSize
+		{
+			get { return Widget.Properties.Get<Size?>(DesiredClientSizeKey) ?? new Size(-1, -1); }
+			set { Widget.Properties.Set(DesiredClientSizeKey, value); }
 		}
 
 		public virtual Size ParentMinimumSize
@@ -175,7 +179,7 @@ namespace Eto.WinForms.Forms
 			get { return swf.DockStyle.Fill; }
 		}
 
-		public  bool SetMinimumSize(bool updateParent = false, bool useCache = false)
+		public virtual bool SetMinimumSize(bool updateParent = false, bool useCache = false)
 		{
 			if (!Widget.Loaded)
 				return false;
@@ -364,11 +368,15 @@ namespace Eto.WinForms.Forms
 
 		public virtual Size Size
 		{
-			get { return ContainerControl.Size.ToEto(); }
+			get {
+				if (!Widget.Loaded)
+					return UserDesiredSize;
+				return ContainerControl.Size.ToEto();
+			}
 			set
 			{
 				Widget.Properties[DesiredSizeKey] = value;
-				ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
+				SetAutoSize();
 				var minset = SetMinimumSize();
 				ContainerControl.Size = value.ToSD();
 				if (minset && ContainerControl.IsHandleCreated)
@@ -380,12 +388,25 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		protected virtual void SetAutoSize()
+		{
+			ContainerControl.AutoSize = 
+				(UserDesiredSize.Width == -1 || UserDesiredSize.Height == -1)
+				&& (UserDesiredClientSize.Width == -1 || UserDesiredClientSize.Height == -1);
+		}
+
 		public virtual Size ClientSize
 		{
-			get { return Control.ClientSize.ToEto(); }
+			get
+			{
+				if (!Widget.Loaded)
+					return UserDesiredClientSize;
+				return Control.ClientSize.ToEto();
+			}
 			set
 			{
-				Control.AutoSize = value.Width == -1 || value.Height == -1;
+				UserDesiredClientSize = value;
+				SetAutoSize();
 				Control.ClientSize = value.ToSD();
 			}
 		}
@@ -477,7 +498,7 @@ namespace Eto.WinForms.Forms
 			get { return ContainerControl.IsHandleCreated ? ContainerControl.Visible : Widget.Properties.Get<bool?>(InternalVisibleKey) ?? true; }
 			set
 			{
-				if (ContainerControl.Visible != value)
+				if (Visible != value)
 				{
 					Widget.Properties[InternalVisibleKey] = value;
 					ContainerControl.Visible = value;
@@ -656,10 +677,6 @@ namespace Eto.WinForms.Forms
 		{
 			get { return Control.ForeColor.ToEto(); }
 			set { Control.ForeColor = value.ToSD(); }
-		}
-
-		public virtual void SetFilledContent()
-		{
 		}
 	}
 }

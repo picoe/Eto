@@ -9,6 +9,7 @@ using sd2 = System.Drawing.Drawing2D;
 using swf = System.Windows.Forms;
 using sdi = System.Drawing.Imaging;
 using Eto.WinForms.Forms.Printing;
+using Eto.WinForms.Forms;
 
 namespace Eto.WinForms
 {
@@ -772,6 +773,13 @@ namespace Eto.WinForms
 				default:
 					throw new NotSupportedException();
 			}
+		}
+
+		public static Screen ToEto(this swf.Screen screen)
+		{
+			if (screen == null)
+				return null;
+			return new Screen(new ScreenHandler(screen));
 		}
 	}
 }

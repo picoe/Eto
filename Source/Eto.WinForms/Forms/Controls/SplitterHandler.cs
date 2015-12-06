@@ -17,17 +17,14 @@ namespace Eto.WinForms.Forms.Controls
 		public bool RecurseToChildren { get { return true; } }
 
 
-		public override Size? DefaultSize
+		public override Size? GetDefaultSize(Size availableSize)
 		{
-			get
+			var size = base.GetDefaultSize(availableSize);
+			if (size == null && Control.AutoSize)
 			{
-				var size = base.DefaultSize;
-				if (size == null && Control.AutoSize)
-				{
-					size = GetPreferredSize().ToEto();
-				}
-				return size;
+				size = GetPreferredSize().ToEto();
 			}
+			return size;
 		}
 
 		public class EtoSplitContainer : swf.SplitContainer
