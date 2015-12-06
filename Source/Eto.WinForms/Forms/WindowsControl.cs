@@ -194,7 +194,7 @@ namespace Eto.WinForms.Forms
 			var ret = SetMinimumSize(size);
 			if (updateParent && Widget.Loaded)
 			{
-				var parent = Widget.Parent.GetWindowsHandler();
+				var parent = Widget.VisualParent.GetWindowsHandler();
 				if (parent != null)
 					parent.SetMinimumSize(updateParent);
 			}
@@ -373,7 +373,7 @@ namespace Eto.WinForms.Forms
 				ContainerControl.Size = value.ToSD();
 				if (minset && ContainerControl.IsHandleCreated)
 				{
-					var parent = Widget.Parent.GetWindowsHandler();
+					var parent = Widget.VisualParent.GetWindowsHandler();
 					if (parent != null)
 						parent.SetMinimumSize();
 				}

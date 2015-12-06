@@ -159,7 +159,7 @@ namespace Eto.GtkSharp.Forms
 					return cachedBackgroundColor.Value;
 				if (IsTransparentControl)
 				{
-					var parent = Widget.Parent.GetGtkControlHandler();
+					var parent = Widget.VisualParent.GetGtkControlHandler();
 					col = parent != null ? parent.SelectedBackgroundColor : DefaultBackgroundColor;
 				}
 				else

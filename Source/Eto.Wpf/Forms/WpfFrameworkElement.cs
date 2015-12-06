@@ -510,9 +510,9 @@ namespace Eto.Wpf.Forms
 
 		public virtual void SetParent(Container parent)
 		{
-			if (parent == null && Widget.Parent != null)
+			if (parent == null && Widget.VisualParent != null)
 			{
-				var currentParent = Widget.Parent.Handler as IWpfContainer;
+				var currentParent = Widget.VisualParent.Handler as IWpfContainer;
 				if (currentParent != null)
 					currentParent.Remove(ContainerControl);
 			}
@@ -541,9 +541,9 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				if (Widget.Parent == null)
+				if (Widget.VisualParent == null)
 					return Point.Empty;
-				return Control.TranslatePoint(new sw.Point(0, 0), Widget.Parent.GetContainerControl()).ToEtoPoint();
+				return Control.TranslatePoint(new sw.Point(0, 0), Widget.VisualParent.GetContainerControl()).ToEtoPoint();
 			}
 		}
 	}

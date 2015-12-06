@@ -11,7 +11,7 @@ namespace Eto.Wpf.Forms
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			var size = new sw.Size();
-			foreach (var control in Widget.Controls)
+			foreach (var control in Widget.VisualControls)
 			{
 				var container = control.GetContainerControl();
 				var preferredSize = control.GetPreferredSize(constraint);

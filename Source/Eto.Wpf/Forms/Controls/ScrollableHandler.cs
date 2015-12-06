@@ -228,7 +228,7 @@ namespace Eto.Wpf.Forms.Controls
 		public override void Invalidate()
 		{
 			base.Invalidate();
-			foreach (var control in Widget.Children)
+			foreach (var control in Widget.VisualChildren)
 			{
 				control.Invalidate();
 			}
@@ -237,7 +237,7 @@ namespace Eto.Wpf.Forms.Controls
 		public override void Invalidate(Rectangle rect)
 		{
 			base.Invalidate(rect);
-			foreach (var control in Widget.Children)
+			foreach (var control in Widget.VisualChildren)
 			{
 				control.Invalidate(rect);
 			}

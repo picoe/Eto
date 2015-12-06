@@ -64,9 +64,9 @@ namespace Eto.WinRT
 
 		public static void RemoveFromParent(this Control control)
 		{
-			if (control.Parent == null)
+			if (control.VisualParent == null)
 				return;
-			var parent = control.Parent.Handler as IWpfContainer;
+			var parent = control.VisualParent.Handler as IWpfContainer;
 			if (parent != null)
 				parent.Remove(control.GetContainerControl());
 		}

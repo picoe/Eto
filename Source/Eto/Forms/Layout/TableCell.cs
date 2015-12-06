@@ -44,10 +44,10 @@ namespace Eto.Forms
 			{
 				if (control != value)
 				{
-					if (value != null && value.Parent != null)
-						value.Parent.Remove(value);
-					if (control != null && control.Parent != null)
-						control.Parent.Remove(control);
+					if (value != null && value.VisualParent != null)
+						value.VisualParent.Remove(value);
+					if (control != null && control.VisualParent != null)
+						control.VisualParent.Remove(control);
 					control = value;
 				}
 			}

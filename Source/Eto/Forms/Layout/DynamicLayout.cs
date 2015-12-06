@@ -81,7 +81,7 @@ namespace Eto.Forms
 	[ContentProperty("Rows")]
 	public class DynamicLayout : Panel
 	{
-		readonly DynamicTable topTable = new DynamicTable();
+		readonly DynamicTable topTable;
 		DynamicTable currentItem;
 		bool? yscale;
 
@@ -92,7 +92,6 @@ namespace Eto.Forms
 		public Collection<DynamicRow> Rows
 		{
 			get { return topTable.Rows; }
-			set { topTable.Rows = value; }
 		}
 
 		/// <summary>
@@ -144,6 +143,17 @@ namespace Eto.Forms
 		/// <value>The contained controls.</value>
 		public override IEnumerable<Control> Controls
 		{
+			get { return topTable.Controls; }
+		}
+
+		/// <summary>
+		/// Gets an enumeration of controls that are in the visual tree.
+		/// </summary>
+		/// <remarks>This is used to specify which controls are contained by this instance that are part of the visual tree.
+		/// This should include all controls including non-logical Eto controls used for layout.</remarks>
+		/// <value>The visual controls.</value>
+		public override IEnumerable<Control> VisualControls
+		{
 			get
 			{
 				if (topTable.Table != null)
@@ -180,6 +190,8 @@ namespace Eto.Forms
 		/// </summary>
 		public DynamicLayout()
 		{
+			topTable = new DynamicTable();
+			topTable.layout = this;
 			currentItem = topTable;
 		}
 
@@ -197,9 +209,10 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="rows">Rows to populate the layout.</param>
 		public DynamicLayout(IEnumerable<DynamicRow> rows)
-			: this()
 		{
-			Rows = new Collection<DynamicRow>(rows.ToList());
+			topTable = new DynamicTable(rows);
+			topTable.layout = this;
+			currentItem = topTable;
 		}
 
 		/// <summary>
@@ -219,7 +232,6 @@ namespace Eto.Forms
 		{
 			var newItem = new DynamicTable
 			{ 
-				Parent = currentItem ?? topTable, 
 				Padding = padding, 
 				Spacing = spacing,
 				XScale = xscale,
@@ -529,6 +541,16 @@ namespace Eto.Forms
 		{
 			topTable.Rows.Clear();
 			IsCreated = false;
+		}
+
+		internal void AddChild(Control child)
+		{
+			SetLogicalParent(child);
+		}
+
+		internal void RemoveChild(Control child)
+		{
+			RemoveLogicalParent(child);
 		}
 	}
 }

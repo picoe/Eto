@@ -36,7 +36,7 @@ namespace Eto.WinForms
 				while (control != null)
 				{
 					yield return control;
-					control = control.Parent;
+					control = control.VisualParent;
 				}
 			}
 		}
@@ -47,11 +47,11 @@ namespace Eto.WinForms
 			{
 				if (Control != null)
 				{
-					var control = Control.Parent;
+					var control = Control.VisualParent;
 					while (control != null)
 					{
 						yield return control;
-						control = control.Parent;
+						control = control.VisualParent;
 					}
 				}
 			}
