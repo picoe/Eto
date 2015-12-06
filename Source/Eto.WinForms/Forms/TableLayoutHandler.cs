@@ -33,6 +33,8 @@ namespace Eto.WinForms.Forms
 				// is smaller than all the children
 				var widths = GetColumnWidths();
 				var heights = GetRowHeights();
+                if (widths.Length != columnScale.Length || heights.Length != rowScale.Length)
+                    return sd.Size.Empty;
 				var curSize = sd.Size.Empty;
 				for (int i = 0; i < widths.Length; i++)
 				{
