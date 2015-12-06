@@ -35,7 +35,7 @@
   <WizardData>
     <RequiredReferences>
       <Reference id="Eto.Forms" version="2.2.0-alpha" assembly="Eto" extension="Eto.Addin.VisualStudio" />
-      <Reference id="Newtonsoft.Json" version="6.0.6" />
+      <Reference id="Newtonsoft.Json" version="7.0.1" />
       <Reference id="Eto.Serialization.Json" version="2.2.0-alpha" extension="Eto.Addin.VisualStudio" />
     </RequiredReferences>
     <Replacements>
