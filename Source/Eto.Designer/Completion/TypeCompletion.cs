@@ -156,6 +156,25 @@ namespace Eto.Designer.Completion
 			return null;
 		}
 
+		public override bool? HasContent(string objectName, IEnumerable<string> path)
+		{
+			var prefix = PrefixWithColon;
+			if (prefix != null)
+			{
+				if (!objectName.StartsWith(prefix))
+					return false;
+				objectName = objectName.Substring(prefix.Length);
+			}
+
+			var fullName = Namespace + "." + objectName;
+			var type = Assembly.GetType(fullName, false);
+			if (type != null)
+			{
+				return type.GetTypeInfo().GetCustomAttribute<Eto.ContentPropertyAttribute>() != null;
+			}
+			return base.HasContent(objectName, path);
+		}
+
 		public override IEnumerable<CompletionItem> GetProperties(string objectName, IEnumerable<string> path)
 		{
 			var prefix = PrefixWithColon;
@@ -213,12 +232,13 @@ namespace Eto.Designer.Completion
 				var prop = type.GetRuntimeProperty(propertyName);
 				if (prop != null)
 				{
-					if (prop.PropertyType == typeof(bool))
+					var propertyType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+					if (propertyType == typeof(bool))
 					{
 						yield return new CompletionItem { Type = CompletionType.Literal, Name = "True" };
 						yield return new CompletionItem { Type = CompletionType.Literal, Name = "False" };
 					}
-					else if (prop.PropertyType == typeof(Color))
+					else if (propertyType == typeof(Color))
 					{
 						foreach (var col in typeof(Colors).GetProperties(BindingFlags.Static | BindingFlags.Public).Where(r => r.PropertyType == typeof(Color)))
 						{
@@ -227,9 +247,9 @@ namespace Eto.Designer.Completion
 						yield return new CompletionItem { Type = CompletionType.Literal, Name = "#FFFFFF" };
 						yield return new CompletionItem { Type = CompletionType.Literal, Name = "#FFFFFFFF" };
 					}
-					else if (prop.PropertyType.IsEnum)
+					else if (propertyType.IsEnum)
 					{
-						foreach (var name in Enum.GetNames(prop.PropertyType))
+						foreach (var name in Enum.GetNames(propertyType))
 						{
 							yield return new CompletionItem
 							{ 
