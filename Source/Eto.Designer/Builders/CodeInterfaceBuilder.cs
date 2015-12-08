@@ -22,7 +22,7 @@ namespace Eto.Designer.Builders
 
 
 		public string InitializeAssembly { get; set; }
-		protected string BaseDir { get; private set; }
+		protected string BaseDir { get; set; }
 
 		protected CodeInterfaceBuilder(string baseDir = null)
 		{
@@ -34,7 +34,7 @@ namespace Eto.Designer.Builders
 			Dispose(false);
 		}
 
-		private void RemoveOutput()
+		void RemoveOutput()
 		{
 			if (!string.IsNullOrEmpty(output) && File.Exists(output))
 			{

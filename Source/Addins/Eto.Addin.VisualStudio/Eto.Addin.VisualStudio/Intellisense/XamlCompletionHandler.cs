@@ -73,7 +73,9 @@ namespace Eto.Addin.VisualStudio.Intellisense
 					|| ch == '.'
 					|| ch == '=')
 				{
-					if (session.SelectedCompletionSet.SelectionStatus.IsSelected)
+                    var selectionStatus = session.SelectedCompletionSet.SelectionStatus;
+
+                    if (selectionStatus.IsSelected)
 					{
 						Action complete = () =>
 						{
@@ -82,8 +84,11 @@ namespace Eto.Addin.VisualStudio.Intellisense
 							session.Commit();
 							if (endChar == '"' || endChar == '\'')
 								session.TextView.Caret.MoveToNextCaretPosition();
-							if (ch == '.')
-								TriggerCompletion();
+                            if (ch == '.'
+                                || (cmd == ReturnCmd && selectionStatus.Completion.InsertionText.EndsWith("."))) // property element
+                            {
+                                TriggerCompletion();
+                            }
                         };
 						if (cmd == ReturnCmd || cmd == TabCmd || ch == '.')
 						{

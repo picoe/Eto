@@ -3,7 +3,7 @@
 	<TemplateData>
 		<Name>Eto.Forms Library</Name>
 		<Description>A library project to build Eto.Forms UI and logic in F#.</Description>
-		<Icon>Library.ico</Icon>
+		<Icon>FS\Library\Library.ico</Icon>
 		<ProjectType>FSharp</ProjectType>
 		<RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
     <MaxFrameworkVersion>4.5</MaxFrameworkVersion>
@@ -14,9 +14,9 @@
 		<ProvideDefaultName>true</ProvideDefaultName>
 	</TemplateData>
 	<TemplateContent>
-		<Project TargetFileName="$safeprojectname$.fsproj" File="Library.fsproj" ReplaceParameters="true">
-			<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.fs">AssemblyInfo.fs</ProjectItem>
-			<ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.fs">MyPanel.fs</ProjectItem>
+		<Project TargetFileName="$safeprojectname$.fsproj" File="FS\Library\Library.fsproj" ReplaceParameters="true">
+			<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.fs">FS\AssemblyInfo.fs</ProjectItem>
+			<ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.fs">FS\Library\MyPanel.fs</ProjectItem>
 		</Project>
 	</TemplateContent>
 	<WizardExtension>

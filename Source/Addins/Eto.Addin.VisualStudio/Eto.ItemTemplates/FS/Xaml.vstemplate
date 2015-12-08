@@ -79,10 +79,10 @@
 					<Replacement name="$Methods$">
 						<![CDATA[
 
-    protected this.DefaultButton_Click(sender: object, e: EventArgs) =
+    member this.DefaultButton_Click(sender: object, e: EventArgs) =
         Close()
 
-    protected this.AbortButton_Click(sender: object, e: EventArgs) =
+    member this.AbortButton_Click(sender: object, e: EventArgs) =
         Close()]]>
 					</Replacement>
 					<Replacement name="$Attributes$"> Title="My Dialog"</Replacement>
