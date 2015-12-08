@@ -120,7 +120,7 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
-		internal static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext(new [] { typeof(XamlReader).GetTypeInfo().Assembly });
+		internal static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext();
 
 		/// <summary>
 		/// Gets or sets a value indicating that the reader is used in design mode

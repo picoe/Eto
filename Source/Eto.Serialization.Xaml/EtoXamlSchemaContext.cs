@@ -20,12 +20,25 @@ namespace Eto.Serialization.Xaml
 
 		public bool DesignMode { get; set; }
 
-		public EtoXamlSchemaContext(IEnumerable<Assembly> assemblies)
-			: base(assemblies)
-		{
-		}
-
 		static readonly Assembly EtoAssembly = typeof(Platform).GetTypeInfo().Assembly;
+
+		protected override XamlType GetXamlType(string xamlNamespace, string name, params XamlType[] typeArguments)
+		{
+			XamlType type = null;
+			try
+			{
+				return base.GetXamlType(xamlNamespace, name, typeArguments);
+			}
+			catch (Exception ex)
+			{
+				if (DesignMode && type == null && name.IndexOf('.') == -1)
+				{
+					// in designer mode, fail gracefully
+					return new EtoDesignerType(typeof(DesignerUserControl), this) { TypeName = name, Namespace = xamlNamespace };
+				}
+				throw;
+			}
+		}
 
 		public override XamlType GetXamlType(Type type)
 		{

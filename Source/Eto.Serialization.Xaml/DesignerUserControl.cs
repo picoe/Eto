@@ -3,19 +3,33 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using Eto.Drawing;
+using Eto.Forms;
 
 namespace Eto.Serialization.Xaml
 {
-	class DesignerUserControl : Eto.Forms.Panel
+	class DesignerUserControl : Panel
 	{
+		readonly Label label;
+		public string Text
+		{
+			get { return label.Text; }
+			set { label.Text = value; }
+		}
+
+		public string Tooltip
+		{
+			get { return label.ToolTip; }
+			set { label.ToolTip = value; }
+		}
+
 		public DesignerUserControl()
 		{
-			BackgroundColor = Eto.Drawing.Colors.White;
+			BackgroundColor = Colors.White;
 			Padding = new Padding(20);
-			Content = new Eto.Forms.Label
+			Content = label = new Label
 			{
-				VerticalAlignment = Eto.Forms.VerticalAlignment.Center,
-				TextAlignment = Eto.Forms.TextAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
+				TextAlignment = TextAlignment.Center,
 				Font = SystemFonts.Default(8),
 				Text = "[User Control]"
 			};

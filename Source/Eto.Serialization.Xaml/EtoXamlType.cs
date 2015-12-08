@@ -84,6 +84,47 @@ namespace Eto.Serialization.Xaml
 	}
 #endif
 
+	class EtoDesignerType : EtoXamlType
+	{
+		public string TypeName { get; set; }
+
+		public string Namespace { get; set; }
+
+		public EtoDesignerType(Type underlyingType, XamlSchemaContext schemaContext)
+			: base(underlyingType, schemaContext)
+		{
+		}
+
+		class DesignerInvoker : XamlTypeInvoker
+		{
+			public EtoDesignerType Type { get; private set; }
+
+			public DesignerInvoker(EtoDesignerType type)
+				: base(type)
+			{
+				Type = type;
+			}
+
+			public override object CreateInstance(object[] arguments)
+			{
+				var instance = base.CreateInstance(arguments);
+				var ctl = instance as DesignerUserControl;
+				if (ctl != null)
+				{
+					ctl.Text = "[" + Type.TypeName + "]";
+					ctl.ToolTip = Type.Namespace;
+				}
+				
+				return instance;
+			}
+		}
+
+		protected override XamlTypeInvoker LookupInvoker()
+		{
+			return new DesignerInvoker(this);
+		}
+	}
+
 	class EtoXamlType : XamlType
 	{
 		public EtoXamlType(Type underlyingType, XamlSchemaContext schemaContext)
