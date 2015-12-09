@@ -294,10 +294,9 @@ namespace Eto.Mac.Forms.Controls
 					var attr = new NSMutableDictionary();
 					Widget.Properties.Get<Font>(FontKey).Apply(attr);
 					attr.Add(NSStringAttributeKey.ParagraphStyle, paragraphStyle);
-					var col = Widget.Properties.Get<Color?>(TextColorKey);
+					var col = CurrentColor;	
 					if (col != null)
-						attr.Add(NSStringAttributeKey.ForegroundColor, col.Value.ToNSUI());
-					//attr.Add(NSStringAttributeKey.ForegroundColor, CurrentColor);
+						attr.Add(NSStringAttributeKey.ForegroundColor, col);
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{
@@ -312,7 +311,12 @@ namespace Eto.Mac.Forms.Controls
 
 		protected virtual NSColor CurrentColor
 		{
-			get { return TextColor.ToNSUI(); }
+			get { 
+				var col = Widget.Properties.Get<Color?>(TextColorKey);
+				if (col != null)
+					return col.Value.ToNSUI();
+				return null; 
+			}
 		}
 
 		public override void OnLoad(EventArgs e)
