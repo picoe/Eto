@@ -102,19 +102,20 @@ namespace Eto.WinForms.Forms
 					{
 						var control = views[x, y].GetContainerControl();
 						if (control != null)
-							control.Margin = GetPadding(x, y);
+							control.Margin = GetMargin(x, y);
 					}
 				}
 			}
 		}
 
-		swf.Padding GetPadding(int x, int y)
+		swf.Padding GetMargin(int x, int y)
 		{
-			return new swf.Padding(
-				x == 0 ? 0 : spacing.Width / 2,
-				y == 0 ? 0 : spacing.Height / 2,
-				x == views.GetLength(0) - 1 ? 0 : (spacing.Width + 1) / 2,
-				y == views.GetLength(1) - 1 ? 0 : (spacing.Height + 1) / 2);
+			var margin = new swf.Padding();
+			if (x > 0) margin.Left = (int)Math.Floor(spacing.Width / 2.0);
+			if (x < columnScale.Length - 1) margin.Right = (int)Math.Ceiling(spacing.Width / 2.0);
+			if (y > 0) margin.Top = (int)Math.Floor(spacing.Height / 2.0);
+			if (y < rowScale.Length - 1) margin.Bottom = (int)Math.Ceiling(spacing.Height / 2.0);
+			return margin;
 		}
 
 		public Padding Padding
@@ -156,9 +157,9 @@ namespace Eto.WinForms.Forms
 			
 			var old = views[x, y];
 			if (old != null)
-			{
 				old.GetContainerControl().Parent = null;
-			}
+			else
+				RemoveEmptyCell(x, y);
 			views[x, y] = child;
 			if (child != null)
 			{
@@ -166,12 +167,14 @@ namespace Eto.WinForms.Forms
 				var childControl = childHandler.ContainerControl;
 				childControl.Parent = null;
 				childControl.Dock = childHandler.DockStyle;
-				childControl.Margin = GetPadding(x, y);
+				childControl.Margin = GetMargin(x, y);
 				SetScale(child, x, y);
 				childHandler.BeforeAddControl(Widget.Loaded);
 
 				Control.Controls.Add(childControl, x, y);
 			}
+			else
+				SetEmptyCell(x, y);
 			if (Widget.Loaded)
 				ResumeLayout();
 		}
@@ -180,8 +183,15 @@ namespace Eto.WinForms.Forms
 		{
 			if (Widget.Loaded)
 				SuspendLayout();
+			var old = views[x, y];
+			if (old != null)
+				old.GetContainerControl().Parent = null;
+			else
+				RemoveEmptyCell(x, y);
+
 			swf.Control childControl = child.GetContainerControl();
 			Control.SetCellPosition(childControl, new swf.TableLayoutPanelCellPosition(x, y));
+			views[x, y] = child;
 			SetScale(child, x, y);
 			if (Widget.Loaded)
 				ResumeLayout();
@@ -191,6 +201,54 @@ namespace Eto.WinForms.Forms
 		{
             SetMinimumSize(useCache: true); // when created during pre-load, we need this to ensure the scale is set on the children properly
 			base.OnLoad(e);
+			FillEmptyCells();
+		}
+
+		class EmptyCell : swf.Control
+		{
+		}
+
+		swf.Control CreateEmptyCell(int x, int y)
+		{
+			var c = new EmptyCell();
+			c.Margin = GetMargin(x, y);
+			return c;
+		}
+
+		void RemoveEmptyCell(int x, int y)
+		{
+			if (x == 0 || y == 0)
+			{
+				var ctl = Control.GetControlFromPosition(x, y);
+				if (ctl is EmptyCell)
+				{
+					Control.Controls.Remove(ctl);
+				}
+			}
+		}
+
+		void SetEmptyCell(int x, int y)
+		{
+			if (x == 0 || y == 0)
+			{
+				Control.Controls.Add(CreateEmptyCell(x, y), x, y);
+			}
+		}
+
+		void FillEmptyCells()
+		{
+			for (int x = 1; x < views.GetLength(0); x++)
+			{
+				var ctl = Control.GetControlFromPosition(x, 0);
+				if (ctl == null)
+					Control.Controls.Add(CreateEmptyCell(x, 0), x, 0);
+			}
+			for (int y = 0; y < views.GetLength(1); y++)
+			{
+				var ctl = Control.GetControlFromPosition(0, y);
+				if (ctl == null)
+					Control.Controls.Add(CreateEmptyCell(0, y), 0, y);
+			}
 		}
 
 		public void Remove(Control child)
@@ -198,12 +256,9 @@ namespace Eto.WinForms.Forms
 			swf.Control childControl = child.GetContainerControl();
 			if (childControl.Parent == Control)
 			{
+				var pos = Control.GetCellPosition(childControl);
+				views[pos.Column, pos.Row] = null;
 				childControl.Parent = null;
-				for (int y = 0; y < views.GetLength(0); y++)
-					for (int x = 0; x < views.GetLength(1); x++)
-					{
-						if (object.ReferenceEquals(views[y, x], child)) views[y, x] = null;
-					}
 			}
 		}
 
