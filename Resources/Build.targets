@@ -49,13 +49,13 @@
 		<Message Text="New Informational Version: $(AssemblyInformationalVersion)" />
 		
 		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
-			WarnOnNoUpdate="false"
-            Pattern='AssemblyInformationalVersion(\\s*)[(]&quot;.*&quot;[)]'
+			WarnOnNoUpdate="true"
+            Pattern='AssemblyInformationalVersion(\\s*)[(]&quot;.*?&quot;[)]'
             Replacement='AssemblyInformationalVersion$1(&quot;$(AssemblyInformationalVersion)&quot;)' />
             
 		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
-			WarnOnNoUpdate="false"
-            Pattern='AssemblyVersion(\\s*)[(]&quot;.*&quot;[)]'
+			WarnOnNoUpdate="true"
+            Pattern='AssemblyVersion(\\s*)[(]&quot;.*?&quot;[)]'
             Replacement='AssemblyVersion$1(&quot;$(AssemblyVersion)&quot;)' />
         
         <ItemGroup>

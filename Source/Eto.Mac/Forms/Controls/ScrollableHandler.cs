@@ -202,7 +202,8 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return SizeF.Min(availableSize, base.GetNaturalSize(availableSize) + GetBorderSize());
+			var border = Padding.Size + GetBorderSize();
+			return SizeF.Min(availableSize, base.GetNaturalSize(availableSize - border) + border);
 		}
 
 		protected override CGRect GetContentBounds()

@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Eto.Drawing;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -148,6 +150,18 @@ namespace Eto.Forms
 		{
 			return new StackLayoutItem { Control = new Label { Text = labelText } };
 		}
+
+		/// <summary>
+		/// Converts an <see cref="Image"/> to a StackLayoutItem with an <see cref="ImageView"/> control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add images to your layout through code, without having to create <see cref="ImageView"/> instances manually.
+		/// </remarks>
+		/// <param name="image">Image to convert to a StackLayoutItem with a ImageView control.</param>
+		public static implicit operator StackLayoutItem(Image image)
+		{
+			return new StackLayoutItem { Control = new ImageView { Image = image } };
+		}
 	}
 
 	/// <summary>
@@ -280,24 +294,39 @@ namespace Eto.Forms
 			protected override void InsertItem(int index, StackLayoutItem item)
 			{
 				base.InsertItem(index, item);
+				if (item != null)
+					Parent.SetLogicalParent(item.Control);
 				Parent.CreateIfNeeded(true);
 			}
 
 			protected override void RemoveItem(int index)
 			{
+				var item = this[index];
+				if (item != null)
+					Parent.RemoveLogicalParent(item.Control);
 				base.RemoveItem(index);
 				Parent.CreateIfNeeded(true);
 			}
 
 			protected override void ClearItems()
 			{
+				foreach (var item in this)
+				{
+					if (item != null)
+						Parent.RemoveLogicalParent(item.Control);
+				}
 				base.ClearItems();
 				Parent.CreateIfNeeded(true);
 			}
 
 			protected override void SetItem(int index, StackLayoutItem item)
 			{
+				var last = this[index];
+				if (last != null)
+					Parent.RemoveLogicalParent(last.Control);
 				base.SetItem(index, item);
+				if (item != null)
+					Parent.SetLogicalParent(item.Control);
 				Parent.CreateIfNeeded(true);
 			}
 
@@ -320,6 +349,35 @@ namespace Eto.Forms
 		/// </summary>
 		/// <value>The item collection.</value>
 		public Collection<StackLayoutItem> Items { get { return items; } }
+
+		/// <summary>
+		/// Gets the controls for the layout
+		/// </summary>
+		/// <remarks>
+		/// This will return the list of controls in the stack layout when not created, and when it is,
+		/// it will return the embedded TableLayout.
+		/// </remarks>
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
+				return Items.Where(r => r != null).Select(r => r.Control);
+			}
+		}
+
+		/// <summary>
+		/// Gets an enumeration of controls that are in the visual tree.
+		/// </summary>
+		/// <remarks>This is used to specify which controls are contained by this instance that are part of the visual tree.
+		/// This should include all controls including non-logical Eto controls used for layout.</remarks>
+		/// <value>The visual controls.</value>
+		public override IEnumerable<Control> VisualControls
+		{
+			get
+			{
+				return base.Controls;
+			}
+		}
 
 		bool isCreated;
 		int suspended;
@@ -414,7 +472,11 @@ namespace Eto.Forms
 		void CreateIfNeeded(bool force = false)
 		{
 			if (suspended > 0 || !Loaded)
+			{
+				if (force)
+					isCreated = false;
 				return;
+			}
 			if (!isCreated || force)
 				Create();
 		}

@@ -40,7 +40,6 @@ namespace Eto.Addin.XamarinStudio.Editor
 			var currentPath = GetCurrentPath();
 			var path = GetPath(currentPath);
 			var namespaces = GetNamespaces(currentPath);
-			var prefix = currentPath.OfType<XElement>().Select(r => r.Name.Prefix).LastOrDefault();
 			var completions = Completion.GetCompletions(namespaces).ToList();
 			var filter = completions.Select(r => r.GetFilter(path)).FirstOrDefault(r => r != null);
 			foreach (var completion in completions)
@@ -58,6 +57,73 @@ namespace Eto.Addin.XamarinStudio.Editor
 
 		public override bool KeyPress(Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
+			var buffer = EditableBuffer;
+			if (CompletionWindowManager.IsVisible)
+			{
+				// do some things to minimize keystrokes with code completion
+				if (keyChar == '=')
+				{
+					// we're in an attribute completion, so automatically add the quote and show completions (if available)
+					var ret = base.KeyPress(key, keyChar, modifier);
+					if (!ret)
+					{
+						base.KeyPress((Gdk.Key)0, '"', Gdk.ModifierType.None);
+						buffer.InsertText(buffer.CursorPosition, "\"");
+						buffer.CursorPosition--;
+					}
+					return ret;
+				}
+				if (key == Gdk.Key.Return 
+					&& modifier == Gdk.ModifierType.None
+					&& isParameterValueCompletion)
+				{
+					// finish completion
+					base.KeyPress(key, keyChar, modifier);
+					// if double quote already exists, skip it!
+					if (buffer.GetCharAt(buffer.CursorPosition) == '"')
+					{
+						buffer.CursorPosition++;
+						return false;
+					}
+					// no double quote yet, so add it
+					return base.KeyPress((Gdk.Key)0, '"', Gdk.ModifierType.None);
+				}
+				if (keyChar == '"' || keyChar == '\'')
+				{
+					// finish completion with double quote
+					base.KeyPress(Gdk.Key.Return, '\0', Gdk.ModifierType.None);
+					// if double quote already exists, skip it!
+					if (buffer.GetCharAt(buffer.CursorPosition) == keyChar)
+					{
+						buffer.CursorPosition++;
+						return false;
+					}
+					return base.KeyPress(key, keyChar, modifier);
+				}
+			}
+			if (keyChar == '>')
+			{
+				// finish completion first
+				if (CompletionWindowManager.IsVisible)
+					base.KeyPress(Gdk.Key.Return, '\0', Gdk.ModifierType.None);
+
+				// add self-closing tag if there is no content for the control
+				if (!HasContentAtCurrentElement())
+				{
+					base.KeyPress((Gdk.Key)0, '/', Gdk.ModifierType.None);
+					//buffer.InsertText(buffer.CursorPosition++, "/");
+					return base.KeyPress(key, keyChar, modifier);
+				}
+			}
+			if (keyChar == '"' || keyChar == '\'')
+			{
+				// if double quote already exists, skip it!
+				if (buffer.GetCharAt(buffer.CursorPosition) == keyChar)
+				{
+					buffer.CursorPosition++;
+					return false;
+				}
+			}
 			if (keyChar == '.')
 			{
 				var result = base.KeyPress(key, keyChar, modifier);
@@ -123,6 +189,20 @@ namespace Eto.Addin.XamarinStudio.Editor
 			return GetAttributeCompletions(attributedOb, existingAtts, XmlCompletionData.DataType.XmlAttribute, false);
 		}
 
+		bool HasContentAtCurrentElement()
+		{
+			var currentPath = GetCurrentPath();
+			var path = GetPath(currentPath);
+			var namespaces = GetNamespaces(currentPath);
+			var attributedOb = currentPath.OfType<XElement>().LastOrDefault();
+			if (attributedOb == null)
+				return true;
+				
+			var objectName = attributedOb.Name.FullName;
+			return Completion.GetCompletions(namespaces).All(r => r.HasContent(objectName, path) != false);
+		}
+		
+
 		CompletionDataList GetAttributeCompletions(IAttributedXObject attributedOb, Dictionary<string, string> existingAtts, XmlCompletionData.DataType type, bool elementNamespacesOnly)
 		{
 			var list = base.GetAttributeCompletions(attributedOb, existingAtts) ?? new CompletionDataList();
@@ -144,8 +224,17 @@ namespace Eto.Addin.XamarinStudio.Editor
 			return list;
 		}
 
+		bool isParameterValueCompletion;
+
+		protected override ICompletionDataList HandleCodeCompletion(CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
+		{
+			isParameterValueCompletion = false;
+			return base.HandleCodeCompletion(completionContext, forced, ref triggerWordLength);
+		}
+
 		protected override CompletionDataList GetAttributeValueCompletions(IAttributedXObject attributedOb, XAttribute att)
 		{
+			isParameterValueCompletion = true;
 			var list = base.GetAttributeValueCompletions(attributedOb, att) ?? new CompletionDataList();
 
 			var currentPath = GetCurrentPath();

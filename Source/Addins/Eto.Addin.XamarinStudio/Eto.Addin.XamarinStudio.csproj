@@ -89,7 +89,7 @@
   </ItemGroup>
   <Import Project="$(ProjectDir)\..\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\..\.nuget\NuGet.targets')" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
-  <Import Project="packages\MonoDevelop.Addins.0.2.3\build\net40\MonoDevelop.Addins.targets" Condition="Exists('packages\MonoDevelop.Addins.0.2.3\build\net40\MonoDevelop.Addins.targets')" />
+  <Import Project="packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets" Condition="Exists('packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets')" />
   <ItemGroup>
     <AddinFile Include="Templates\Projects\VB\MainForm.vb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -341,8 +341,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <AddinReference Include="MonoDevelop.Xml" />
-    <AddinReference Include="MonoDevelop.DesignerSupport" />
-    <AddinReference Include="MonoDevelop.PackageManagement" />
+    <AddinReference Include="MonoDevelop.Xml">
+      <Version>5.9</Version>
+    </AddinReference>
+    <AddinReference Include="MonoDevelop.DesignerSupport">
+      <Version>5.9</Version>
+    </AddinReference>
+    <AddinReference Include="MonoDevelop.PackageManagement">
+      <Version>5.9</Version>
+    </AddinReference>
   </ItemGroup>
 </Project>

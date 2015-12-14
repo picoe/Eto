@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="ProjectGroup" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Eto.Forms App</Name>
+    <Description>A new Eto.Forms cross-platform application in F#.</Description>
+    <Icon>FS\App\App.ico</Icon>
+    <ProjectType>FSharp</ProjectType>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <MaxFrameworkVersion>4.5</MaxFrameworkVersion>
+    <SortOrder>20</SortOrder>
+    <TemplateID>BD5681E1-B115-4370-98F2-1E414562C600</TemplateID>
+    <DefaultName>EtoApp</DefaultName>
+    <CreateNewFolder>true</CreateNewFolder>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem>FS\AssemblyInfo.fs</ProjectItem>
+    <ProjectItem>FS\Library\Eto.vstemplate</ProjectItem>
+    <ProjectItem>FS\Library\Library.fsproj</ProjectItem>
+    <ProjectItem>FS\Library\MainForm.fs</ProjectItem>
+    <ProjectItem>FS\Library\MainForm.jxeto.fs</ProjectItem>
+    <ProjectItem>FS\App\Program.fs</ProjectItem>
+    <ProjectItem>FS\App\Eto.Gtk2.vstemplate</ProjectItem>
+    <ProjectItem>FS\App\Eto.Gtk3.vstemplate</ProjectItem>
+    <ProjectItem>FS\App\Eto.Wpf.vstemplate</ProjectItem>
+    <ProjectItem>FS\App\Eto.WinForms.vstemplate</ProjectItem>
+    <ProjectItem>FS\App\Eto.Mac.vstemplate</ProjectItem>
+    <ProjectItem>FS\App\Eto.Desktop.vstemplate</ProjectItem>
+    <ProjectItem>FS\App\Eto.Desktop.fsproj</ProjectItem>
+    <ProjectItem>Shared\MainForm.xeto</ProjectItem>
+    <ProjectItem>Shared\MainForm.jeto</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ProjectWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.RootWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.MultiProjectWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <SupportedParameters>SupportsCombined,SupportsPCL,SupportsXeto,SupportsJeto</SupportedParameters>
+    <Projects>
+      <Project name="$safeprojectname$">FS\Library\Eto.vstemplate</Project>
+      <Project name="$safeprojectname$.Desktop" condition="Combined" startup="true">FS\App\Eto.Desktop.vstemplate</Project>
+      <Project name="$safeprojectname$.Gtk2" condition="!Combined">FS\App\Eto.Gtk2.vstemplate</Project>
+      <Project name="$safeprojectname$.Gtk3" condition="!Combined">FS\App\Eto.Gtk3.vstemplate</Project>
+      <Project name="$safeprojectname$.Wpf" condition="!Combined" startup="true">FS\App\Eto.Wpf.vstemplate</Project>
+      <Project name="$safeprojectname$.WinForms" condition="!Combined">FS\App\Eto.WinForms.vstemplate</Project>
+      <Project name="$safeprojectname$.Mac" condition="!Combined">FS\App\Eto.Mac.vstemplate</Project>
+    </Projects>
+  </WizardData>
+</VSTemplate>

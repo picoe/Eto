@@ -111,7 +111,7 @@ namespace Eto.Mac.Forms
 		{
 			//Console.WriteLine("Layout all children: {0}\n {1}", this.GetType().Name, new StackTrace());
 			LayoutChildren();
-			foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
+			foreach (var child in Widget.VisualControls.Select (r => r.GetMacContainer()).Where(r => r != null))
 			{
 				child.LayoutAllChildren();
 			}
@@ -120,7 +120,7 @@ namespace Eto.Mac.Forms
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			var parent = Widget.Parent.GetMacContainer();
+			var parent = Widget.VisualParent.GetMacContainer();
 			if (parent == null || parent.InitialLayout)
 			{
 				InitialLayout = true;
@@ -132,7 +132,7 @@ namespace Eto.Mac.Forms
 		{
 			if (NeedsQueue(() => LayoutParent(updateSize)))
 				return;
-			var container = Widget.Parent.GetMacContainer();
+			var container = Widget.VisualParent.GetMacContainer();
 			if (container != null)
 			{
 				// traverse up the tree to update everything we own
@@ -152,7 +152,7 @@ namespace Eto.Mac.Forms
 		public override void Invalidate()
 		{
 			base.Invalidate();
-			foreach (var child in Widget.Controls)
+			foreach (var child in Widget.VisualControls)
 			{
 				child.Invalidate();
 			}
@@ -162,7 +162,7 @@ namespace Eto.Mac.Forms
 		{
 			base.Invalidate(rect);
 			var screenRect = Widget.RectangleToScreen(rect);
-			foreach (var child in Widget.Controls)
+			foreach (var child in Widget.VisualControls)
 			{
 				child.Invalidate(Rectangle.Round(child.RectangleFromScreen(screenRect)));
 			}

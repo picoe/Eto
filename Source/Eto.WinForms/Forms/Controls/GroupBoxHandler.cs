@@ -2,16 +2,25 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
+using System;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class GroupBoxHandler : WindowsPanel<swf.GroupBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
+	public class GroupBoxHandler : WindowsPanel<GroupBoxHandler.EtoGroupBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
 		readonly swf.Panel content;
 
+		public class EtoGroupBox : swf.GroupBox
+		{
+			public sd.Size GetBorderSize()
+			{
+				return SizeFromClientSize(sd.Size.Empty);
+			}
+		}
+
 		public GroupBoxHandler()
 		{
-			Control = new swf.GroupBox
+			Control = new EtoGroupBox
 			{
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
@@ -27,10 +36,9 @@ namespace Eto.WinForms.Forms.Controls
 			Control.Controls.Add(content);
 		}
 
-
 		protected override Size ContentPadding
 		{
-			get { return Size.Max(Size.Empty, Control.Size.ToEto() - Control.DisplayRectangle.Size.ToEto()); }
+			get { return Control.GetBorderSize().ToEto() + base.ContentPadding; }
 		}
 
 		public override swf.Control ContainerContentControl

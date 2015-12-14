@@ -35,7 +35,7 @@
   <WizardData>
     <RequiredReferences>
       <Reference id="Eto.Forms" version="2.2.0-alpha" assembly="Eto" extension="Eto.Addin.VisualStudio" />
-      <Reference id="Newtonsoft.Json" version="6.0.6" />
+      <Reference id="Newtonsoft.Json" version="7.0.1" />
       <Reference id="Eto.Serialization.Json" version="2.2.0-alpha" extension="Eto.Addin.VisualStudio" />
     </RequiredReferences>
     <Replacements>
@@ -71,16 +71,14 @@
           <Replacement name="$BaseClassName$">GroupBox</Replacement>
           <Replacement name="$Initialization$">
             <![CDATA[
-"Text": "My group box",
-]]>
+	"Text": "My group box",]]>
           </Replacement>
         </Value>
         <Value name="Form" description="A modeless form window">
           <Replacement name="$BaseClassName$">Form</Replacement>
           <Replacement name="$Initialization$">
             <![CDATA[
-"Title": "My Form",
-]]>
+	"Title": "My Form",]]>
           </Replacement>
         </Value>
         <Value name="Dialog" description="A modal dialog window">
@@ -88,10 +86,10 @@
           <Replacement name="$Methods$">
             <![CDATA[
 
-    protected this.DefaultButton_Click(sender: object, e: EventArgs) =
+    member this.DefaultButton_Click(sender: object, e: EventArgs) =
         Close()
 
-    protected this.AbortButton_Click(sender: object, e: EventArgs) =
+    member this.AbortButton_Click(sender: object, e: EventArgs) =
         Close()]]>
           </Replacement>
           <Replacement name="$Content$">

@@ -46,10 +46,11 @@
 		</ComplexCondition>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-		<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other">
-			<Category id="app" name="App" />
-			<Category id="library" name="Library" />
-		</Category>
+		<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other"/>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat">
+		<Category id="app" name="App" insertbefore="library" />
+		<Category id="library" name="Library" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
 		<Class id="Eto.Addin.XamarinStudio.ProjectWizard" class="Eto.Addin.XamarinStudio.ProjectWizard" />

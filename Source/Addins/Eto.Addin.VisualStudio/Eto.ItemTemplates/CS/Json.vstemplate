@@ -74,16 +74,14 @@ protected override void OnPaint(PaintEventArgs e)
           <Replacement name="$BaseClassName$">GroupBox</Replacement>
           <Replacement name="$Initialization$">
             <![CDATA[
-"Text": "My group box",
-]]>
+	"Text": "My group box",]]>
           </Replacement>
         </Value>
         <Value name="Form" description="A modeless form window">
           <Replacement name="$BaseClassName$">Form</Replacement>
           <Replacement name="$Initialization$">
             <![CDATA[
-"Title": "My Form",
-]]>
+	"Title": "My Form",]]>
           </Replacement>
         </Value>
         <Value name="Dialog" description="A modal dialog window">

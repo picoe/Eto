@@ -139,8 +139,16 @@ namespace Eto.Wpf.Forms
 			{
 				preferredSize = value.ToWpf();
 				SetSize();
+                UpdatePreferredSize();
 			}
 		}
+
+        public virtual void UpdatePreferredSize()
+        {
+            var parent = Widget.VisualParent.GetWpfContainer();
+            if (parent != null)
+                parent.UpdatePreferredSize();
+        }
 
 		public virtual void SetScale(bool xscale, bool yscale)
 		{
@@ -188,16 +196,18 @@ namespace Eto.Wpf.Forms
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			var size = preferredSize;
-			if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
+            var margin = ContainerControl.Margin.Size();
+
+            if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
 			{
-				ContainerControl.Measure(constraint);
-				var desired = ContainerControl.DesiredSize;
-				if (double.IsNaN(size.Width))
-					size.Width = Math.Max(desired.Width, DefaultSize.Width);
-				if (double.IsNaN(size.Height))
-					size.Height = Math.Max(desired.Height, DefaultSize.Height);
-			}
-			return size;
+                ContainerControl.Measure(constraint);
+                var desired = ContainerControl.DesiredSize.Subtract(margin);
+                desired = desired.Max(DefaultSize.ToWpf().ZeroIfNan());
+                size = size.IfNaN(desired);
+            }
+            size = size.Max(ContainerControl.GetMinSize());
+            size = size.Add(margin);
+            return size;
 		}
 
 		public virtual bool Enabled
@@ -271,8 +281,9 @@ namespace Eto.Wpf.Forms
 			set
 			{
 				Control.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
-			}
-		}
+                UpdatePreferredSize();
+            }
+        }
 
 		public override void AttachEvent(string id)
 		{
@@ -368,8 +379,11 @@ namespace Eto.Wpf.Forms
 					Control.KeyUp += (sender, e) =>
 					{
 						var args = e.ToEto(KeyEventType.KeyUp);
-						Callback.OnKeyUp(Widget, args);
-						e.Handled = args.Handled;
+						if (args.Key != Keys.None)
+						{
+							Callback.OnKeyUp(Widget, args);
+							e.Handled = args.Handled;
+						}
 					};
 					break;
 				case Eto.Forms.Control.ShownEvent:
@@ -415,8 +429,11 @@ namespace Eto.Wpf.Forms
 		void HandleKeyDown(object sender, swi.KeyEventArgs e)
 		{
 			var args = e.ToEto(KeyEventType.KeyDown);
-			Callback.OnKeyDown(Widget, args);
-			e.Handled = args.Handled;
+			if (args.Key != Keys.None)
+			{
+				Callback.OnKeyDown(Widget, args);
+				e.Handled = args.Handled;
+			}
 		}
 
 		void HandleMouseMove(object sender, swi.MouseEventArgs e)
@@ -504,9 +521,9 @@ namespace Eto.Wpf.Forms
 
 		public virtual void SetParent(Container parent)
 		{
-			if (parent == null && Widget.Parent != null)
+			if (parent == null && Widget.VisualParent != null)
 			{
-				var currentParent = Widget.Parent.Handler as IWpfContainer;
+				var currentParent = Widget.VisualParent.Handler as IWpfContainer;
 				if (currentParent != null)
 					currentParent.Remove(ContainerControl);
 			}
@@ -535,9 +552,9 @@ namespace Eto.Wpf.Forms
 		{
 			get
 			{
-				if (Widget.Parent == null)
+				if (Widget.VisualParent == null)
 					return Point.Empty;
-				return Control.TranslatePoint(new sw.Point(0, 0), Widget.Parent.GetContainerControl()).ToEtoPoint();
+				return Control.TranslatePoint(new sw.Point(0, 0), Widget.VisualParent.GetContainerControl()).ToEtoPoint();
 			}
 		}
 	}

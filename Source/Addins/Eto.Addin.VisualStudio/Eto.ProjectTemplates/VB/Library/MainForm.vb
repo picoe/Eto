@@ -5,11 +5,11 @@ Imports Eto.Drawing
 ''' <summary>
 ''' Your application's main form
 ''' </summary>
-Public Class MainForm
-  Inherits Form
+Public $if$ ($Preview$ == true)Partial$endif$ Class MainForm$if$ ($Preview$ == true)$else$
+    Inherits Form$endif$
 
   Public Sub New()
-	Title = "My Eto Form"
+	$if$ ($Preview$ == true)InitializeComponent()$else$Title = "My Eto Form"
 	ClientSize = New Size(400, 350)
 
 	' scrollable region as the main content
@@ -71,7 +71,7 @@ Public Class MainForm
 
 	' create toolbar			
 	ToolBar = New ToolBar()
-	ToolBar.Items.Add(clickMe)
+    ToolBar.Items.Add(clickMe)$endif$
   End Sub
 
   Sub QuitClicked(ByVal sender As Object, ByVal e As EventArgs)

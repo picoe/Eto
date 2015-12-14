@@ -5,7 +5,11 @@
 	Title="My Eto Form"
 	ClientSize="400, 350"
 	>
-	<Form.Menu>
+  <StackLayout>
+    <Label>Some Content</Label>
+  </StackLayout>
+
+  <Form.Menu>
 		<MenuBar>
 			<ButtonMenuItem Text="F&amp;ile">
 				<Command x:Name="clickCommand" MenuText="Click Me!" ToolBarText="Click Me!" Executed="HandleClickMe" />
@@ -23,7 +27,4 @@
 			<x:Reference Name="clickCommand"/>
 		</ToolBar>
 	</Form.ToolBar>
-	<StackLayout>
-		<Label>Some Content</Label>
-	</StackLayout>
 </Form>

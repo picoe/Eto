@@ -120,29 +120,19 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		#if !XAMMAC2
-		static readonly Selector selAlignmentRectInsets = new Selector("alignmentRectInsets");
-		#endif
-
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
-				#if XAMMAC2 // TODO: Fix when Xamarin.Mac2 NSEdgeInsets is fixed to use nfloat instead of float
-				var insets = new Size(4, 2);
-				#else
-				var insets = Control.RespondsToSelector(selAlignmentRectInsets) ? Control.AlignmentRectInsets.ToEtoSize() : new Size(4, 2);
-				#endif
 				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSize.ToNS())).ToEto();
-
-				NaturalSize = Size.Round(size + insets);
+				NaturalSize = Size.Ceiling(size);
 				availableSizeCached = availableSize;
 			}
 
 			return NaturalSize.Value;
 		}
 
-		public MacLabel()
+		protected MacLabel()
 		{
 			Enabled = true;
 			paragraphStyle = new NSMutableParagraphStyle();
@@ -213,6 +203,7 @@ namespace Eto.Mac.Forms.Controls
 						throw new NotSupportedException();
 				}
 				SetAttributes();
+				LayoutIfNeeded();
 			}
 		}
 
@@ -303,10 +294,9 @@ namespace Eto.Mac.Forms.Controls
 					var attr = new NSMutableDictionary();
 					Widget.Properties.Get<Font>(FontKey).Apply(attr);
 					attr.Add(NSStringAttributeKey.ParagraphStyle, paragraphStyle);
-					var col = Widget.Properties.Get<Color?>(TextColorKey);
+					var col = CurrentColor;	
 					if (col != null)
-						attr.Add(NSStringAttributeKey.ForegroundColor, col.Value.ToNSUI());
-					//attr.Add(NSStringAttributeKey.ForegroundColor, CurrentColor);
+						attr.Add(NSStringAttributeKey.ForegroundColor, col);
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{
@@ -321,7 +311,12 @@ namespace Eto.Mac.Forms.Controls
 
 		protected virtual NSColor CurrentColor
 		{
-			get { return TextColor.ToNSUI(); }
+			get { 
+				var col = Widget.Properties.Get<Color?>(TextColorKey);
+				if (col != null)
+					return col.Value.ToNSUI();
+				return null; 
+			}
 		}
 
 		public override void OnLoad(EventArgs e)

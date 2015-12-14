@@ -13,7 +13,7 @@ namespace Eto.Forms
 
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
-			return typeof(Control).IsAssignableFrom(sourceType);
+			return typeof(Control).IsAssignableFrom(sourceType) || typeof(TableRow).IsAssignableFrom(sourceType);
 		}
 
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
@@ -23,7 +23,15 @@ namespace Eto.Forms
 
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
-			return new TableCell { Control = value as Control };
+			var control = value as Control;
+			if (control != null)
+				return new TableCell { Control = control };
+
+			var row = value as TableRow;
+			if (row != null)
+				return new TableCell(row);
+
+			return null;
 		}
 	}
 }

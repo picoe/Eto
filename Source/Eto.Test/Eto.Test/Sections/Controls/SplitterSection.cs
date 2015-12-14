@@ -349,7 +349,7 @@ namespace Eto.Test.Sections.Controls
 				var area = new TextArea();
 				area.SizeChanged += (s, e) =>
 				{
-					var size = area.Parent.Size;
+					var size = area.VisualParent.Size;
 					if (split.Orientation == Orientation.Horizontal)
 						size.Width -= split.SplitterWidth;
 					else

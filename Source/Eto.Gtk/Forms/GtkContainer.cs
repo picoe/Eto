@@ -21,7 +21,7 @@ namespace Eto.GtkSharp.Forms
 		public override void SetBackgroundColor()
 		{
 			base.SetBackgroundColor();
-			foreach (var child in Widget.Controls.Select(r => r.GetGtkControlHandler()).Where(r => r != null))
+			foreach (var child in Widget.VisualControls.Select(r => r.GetGtkControlHandler()).Where(r => r != null))
 			{
 				child.SetBackgroundColor();
 			}

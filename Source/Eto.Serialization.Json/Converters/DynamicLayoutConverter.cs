@@ -41,7 +41,7 @@ namespace Eto.Serialization.Json.Converters
 				{
 					var dynamicRow = new DynamicRow();
 					instance = dynamicRow;
-					serializer.Populate(container.CreateReader(), dynamicRow.Items);
+					serializer.Populate(container.CreateReader(), dynamicRow);
 				}
 				else if (objectType == typeof(DynamicItem))
 				{
@@ -84,7 +84,7 @@ namespace Eto.Serialization.Json.Converters
 			if (objectType == typeof(DynamicRow) && instance.GetType() != typeof(DynamicRow))
 			{
 				var row = new DynamicRow();
-				row.Items.Add(instance as DynamicItem);
+				row.Add(instance as DynamicItem);
 				return row;
 			}
 

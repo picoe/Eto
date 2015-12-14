@@ -102,8 +102,17 @@ namespace Eto.Addin.VisualStudio.Editor
 			if (!preview.SetBuilder(fileName))
 				throw new InvalidOperationException(string.Format("Could not find builder for file {0}", fileName));
 
-			host.Child = preview.ToNative(true);
-		}
+            var scale = Screen.PrimaryScreen.RealDPI / Screen.PrimaryScreen.DPI;
+            if (scale > 1)
+            {
+                // handle high dpi
+                preview.ToNative().LayoutTransform = new System.Windows.Media.ScaleTransform(scale, scale);
+                editorControl.ToNative().LayoutTransform = new System.Windows.Media.ScaleTransform(1/scale, 1 / scale);
+            }
+
+            host.Child = preview.ToNative(true);
+
+        }
 
 		protected override bool PreProcessMessage(ref System.Windows.Forms.Message m)
 		{
@@ -242,7 +251,7 @@ namespace Eto.Addin.VisualStudio.Editor
 				var wpfElement = wpfViewHost?.HostControl;
 				if (wpfElement != null)
 				{
-					editorControl.Content = wpfElement.ToEto();
+                    editorControl.Content = wpfElement.ToEto();
 					return;
 				}
 			}

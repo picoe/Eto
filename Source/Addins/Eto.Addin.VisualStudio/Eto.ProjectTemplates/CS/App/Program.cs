@@ -1,4 +1,5 @@
 ﻿using System;
+using Eto;
 using Eto.Forms;
 
 namespace $safeprojectname$

@@ -41,17 +41,10 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public virtual void UpdatePreferredSize()
-		{
-			var parent = Widget.Parent.GetWpfContainer();
-			if (parent != null)
-				parent.UpdatePreferredSize();
-		}
-
 		public override void Invalidate()
 		{
 			base.Invalidate();
-			foreach (var control in Widget.Children)
+			foreach (var control in Widget.VisualChildren)
 			{
 				control.Invalidate();
 			}
@@ -60,7 +53,7 @@ namespace Eto.Wpf.Forms
 		public override void Invalidate(Rectangle rect)
 		{
 			base.Invalidate(rect);
-			foreach (var control in Widget.Children)
+			foreach (var control in Widget.VisualChildren)
 			{
 				control.Invalidate(rect);
 			}

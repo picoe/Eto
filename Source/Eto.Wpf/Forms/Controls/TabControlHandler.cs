@@ -33,14 +33,13 @@ namespace Eto.Wpf.Forms.Controls
 					var tabSize = tabContent.DesiredSize;
 					if (tab == selected)
 						selectedSize = tabSize;
-					size.Width = Math.Max(tabSize.Width, size.Width);
-					size.Height = Math.Max(tabSize.Height, size.Height);
+                    size = size.Max(tabSize);
 				}
 				var baseSize = base.MeasureOverride(constraint);
 				// calculate size of the border around the content based on selected tab's content size
-				var borderSize = new sw.Size(baseSize.Width - selectedSize.Width, baseSize.Height - selectedSize.Height);
-				// return max height with border
-				return new sw.Size(size.Width + borderSize.Width, size.Height + borderSize.Height);
+				var borderSize = baseSize.Subtract(selectedSize);
+                // return max height with border
+                return size.Add(borderSize);
 			}
 		}
 

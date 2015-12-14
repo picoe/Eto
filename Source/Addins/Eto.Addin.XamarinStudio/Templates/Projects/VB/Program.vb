@@ -1,4 +1,5 @@
-﻿Imports Eto.Forms
+﻿Imports Eto
+Imports Eto.Forms
 
 Public Class Program
 	<STAThread>

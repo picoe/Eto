@@ -118,8 +118,8 @@ namespace Eto.Mac.Forms
 		static readonly object AutoSize_Key = new object();
 		public virtual bool AutoSize
 		{
-			get { return Widget.Properties.Get<bool?>(AutoSize_Key) ?? true; }
-			protected set { Widget.Properties[AutoSize_Key] = value; }
+			get { return Widget.Properties.Get<bool>(AutoSize_Key, true); }
+			protected set { Widget.Properties.Set(AutoSize_Key, value, true); }
 		}
 
 		protected virtual Size DefaultMinimumSize
@@ -196,7 +196,7 @@ namespace Eto.Mac.Forms
 				var newSize = GetPreferredSize(SizeF.MaxValue);
 				if (newSize != oldSize || force)
 				{
-					var container = Widget.Parent.GetMacContainer();
+					var container = Widget.VisualParent.GetMacContainer();
 					if (container != null)
 						container.LayoutParent();
 					return true;
@@ -227,7 +227,7 @@ namespace Eto.Mac.Forms
 		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
 			var size = GetNaturalSize(availableSize);
-			if (!AutoSize && PreferredSize != null)
+			if (PreferredSize != null)
 			{
 				var preferredSize = PreferredSize.Value;
 				if (preferredSize.Width >= 0)

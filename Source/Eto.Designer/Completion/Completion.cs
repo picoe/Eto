@@ -68,6 +68,14 @@ namespace Eto.Designer.Completion
 			yield break;
 		}
 
+		/// <summary>
+		/// Determine whether the specified objectName has content, or null if not known by this completion handler.
+		/// </summary>
+		public virtual bool? HasContent(string objectName, IEnumerable<string> path)
+		{
+			return null;
+		}
+
 		public string PrefixWithColon
 		{
 			get { return string.IsNullOrEmpty(Prefix) ? string.Empty : Prefix + ":"; }

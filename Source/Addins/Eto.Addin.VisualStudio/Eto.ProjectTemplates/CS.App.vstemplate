@@ -28,8 +28,8 @@
     <ProjectItem>CS\Library\Eto.vstemplate</ProjectItem>
     <ProjectItem>CS\Library\Library.csproj</ProjectItem>
     <ProjectItem>CS\Library\MainForm.cs</ProjectItem>
+    <ProjectItem>CS\Library\MainForm.eto.cs</ProjectItem>
     <ProjectItem>CS\Library\MainForm.jxeto.cs</ProjectItem>
-    <ProjectItem>CS\Library\MainForm.preview.cs</ProjectItem>
     <ProjectItem>Shared\MainForm.xeto</ProjectItem>
     <ProjectItem>Shared\MainForm.jeto</ProjectItem>
     <ProjectItem>CS\AssemblyInfo.cs</ProjectItem>
@@ -47,7 +47,7 @@
     <FullClassName>Eto.Addin.VisualStudio.Wizards.MultiProjectWizard</FullClassName>
   </WizardExtension>
   <WizardData>
-    <SupportedParameters>SupportsCombined,SupportsPCL,SupportsSAL,SupportsXeto,SupportsJeto</SupportedParameters>
+    <SupportedParameters>SupportsCombined,SupportsPCL,SupportsSAL,SupportsXeto,SupportsJeto,SupportsCodePreview</SupportedParameters>
     <Projects>
       <Project name="$safeprojectname$" condition="!UseSAL">CS\Library\Eto.vstemplate</Project>
       <Project name="$safeprojectname$" condition="UseSAL">CS\Library\Eto-sal.vstemplate</Project>

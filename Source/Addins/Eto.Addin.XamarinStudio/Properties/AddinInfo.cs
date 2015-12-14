@@ -5,7 +5,7 @@ using Mono.Addins.Description;
 [assembly:Addin(
 	"XamarinStudio", 
 	Namespace = "Eto.Addin",
-	Version = "2.1.0.4"
+	Version = "2.2.0.0"
 )]
 
 [assembly:AddinName("Eto.Forms project templates")]

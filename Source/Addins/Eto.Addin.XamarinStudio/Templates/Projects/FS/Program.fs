@@ -2,6 +2,7 @@
 module Program =
 
     open System
+    open Eto
     open ${BaseProjectName}
 
     [<EntryPoint>]

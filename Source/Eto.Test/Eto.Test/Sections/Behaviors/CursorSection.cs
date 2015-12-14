@@ -21,7 +21,7 @@ namespace Eto.Test.Sections.Behaviors
 			{
 				var label = new Label
 				{ 
-					Size = new Size(80, 50), 
+					Size = new Size(100, 50), 
 					Text = type.ToString(),
 					VerticalAlignment = VerticalAlignment.Center,
 					TextAlignment = TextAlignment.Center,

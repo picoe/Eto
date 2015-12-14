@@ -46,7 +46,7 @@ namespace Eto.Forms
 
 		static void UpdateContainers(Container container)
 		{
-			foreach (var c in container.Controls.OfType<Layout>())
+			foreach (var c in container.VisualControls.OfType<Layout>())
 			{
 				c.Update();
 			}

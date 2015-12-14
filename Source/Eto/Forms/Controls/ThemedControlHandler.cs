@@ -202,7 +202,7 @@ namespace Eto.Forms
 		/// <param name="parent">New parent for the control, or null if the parent was removed</param>
 		public virtual void SetParent(Container parent)
 		{
-			Control.Parent = parent;
+			Control.VisualParent = parent;
 		}
 
 		/// <summary>

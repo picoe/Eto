@@ -660,6 +660,32 @@ namespace Eto.Forms
 		/// <value>The parent control, or null if there is no parent</value>
 		public new Container Parent
 		{
+			get { return LogicalParent ?? base.Parent as Container; }
+		}
+
+		static readonly object LogicalParent_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the logical parent, which excludes any visual structure of custom containers.
+		/// </summary>
+		/// <value>The logical parent.</value>
+		internal Container LogicalParent
+		{
+			get { return Properties.Get<Container>(LogicalParent_Key); }
+			set { Properties.Set(LogicalParent_Key, value); }
+		}
+
+		/// <summary>
+		/// Gets the visual container of this control, if any.
+		/// </summary>
+		/// <remarks>
+		/// Some containers may use other Eto controls to layout its children, such as the <see cref="StackLayout"/>.
+		/// This will return the parent control that visually contains this control as opposed to <see cref="Parent"/>
+		/// which will return the logical parent.
+		/// </remarks>
+		/// <value>The visual parent of this control.</value>
+		public Container VisualParent
+		{
 			get { return base.Parent as Container; }
 			internal set
 			{
@@ -706,8 +732,8 @@ namespace Eto.Forms
 		/// </remarks>
 		public void Detach()
 		{
-			if (Parent != null)
-				Parent.Remove(this);
+			if (VisualParent != null)
+				VisualParent.Remove(this);
 		}
 
 		/// <summary>
@@ -722,7 +748,7 @@ namespace Eto.Forms
 		/// </remarks>
 		public void AttachNative()
 		{
-			if (Parent != null)
+			if (VisualParent != null)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "You can only attach a parentless control"));
 
 			using (Platform.Context)
@@ -984,6 +1010,18 @@ namespace Eto.Forms
 		public static implicit operator Control(string labelText)
 		{
 			return new Label { Text = labelText };
+		}
+
+		/// <summary>
+		/// Converts an <see cref="Image"/> to a control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add images to your layout through code, without having to create <see cref="ImageView"/> instances manually.
+		/// </remarks>
+		/// <param name="image">Image to convert to an ImageView control.</param>
+		public static implicit operator Control(Image image)
+		{
+			return new ImageView { Image = image };
 		}
 
 		#region Callback

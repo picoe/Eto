@@ -20,7 +20,6 @@ namespace Eto.Serialization.Json.Converters
 
 		public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
-			TypeConverter converter;
 			if (reader.ValueType == null)
 			{
 				var obj = JObject.Load(reader);
@@ -47,27 +46,31 @@ namespace Eto.Serialization.Json.Converters
 			}
 			if (objectType == reader.ValueType)
 				return reader.Value;
-			if (converters.TryGetValue(objectType, out converter))
+			var converter = GetConverter(objectType, reader.ValueType);
+			if (converter != null)
 			{
-				if (converter.CanConvertFrom(reader.ValueType))
-					return converter.ConvertFrom(reader.Value);
-				else
-					return reader.Value;
+				return converter.ConvertFrom(reader.Value);
 			}
-			return existingValue;
+			return reader.Value;
+		}
+
+		TypeConverter GetConverter(Type objectType, Type destinationType)
+		{
+			TypeConverter converter;
+			if (converters.TryGetValue(objectType, out converter))
+				return converter;
+			converter = TypeDescriptor.GetConverter(objectType);
+			if (converter != null && converter.CanConvertFrom(destinationType))
+			{
+				converters.Add(objectType, converter);
+				return converter;
+			}
+			return null;
 		}
 
 		public override bool CanConvert(Type objectType)
 		{
-			if (converters.ContainsKey(objectType))
-				return true;
-			var converter = TypeDescriptor.GetConverter(objectType);
-			if (converter != null && converter.CanConvertFrom(typeof(string)))
-			{
-				converters.Add(objectType, converter);
-				return true;
-			}
-			return false;
+			return GetConverter(objectType, typeof(string)) != null;
 		}
 	}
 }

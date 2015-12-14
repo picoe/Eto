@@ -63,7 +63,7 @@ namespace Eto.Mac.Forms
 		int lastyscale;
 		Size spacing;
 		Padding padding;
-		CGSize oldFrameSize;
+		SizeF oldFrameSize;
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -127,134 +127,140 @@ namespace Eto.Mac.Forms
 		{
 			if (views == null)
 				return SizeF.Empty;
-			var heights = new float[views.GetLength(0)];
-			var widths = new float[views.GetLength(1)];
-			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
-			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
-			var requiredx = totalxpadding;
-			var requiredy = totalypadding;
+			float[] widths, heights;
+			return Calculate(availableSize, out widths, out heights, false);
+		}
 
+		SizeF Calculate(SizeF availableSize, out float[] widths, out float[] heights, bool final)
+		{
+			heights = new float[yscaling.Length];
+			widths = new float[xscaling.Length];
+			var totalpadding = Padding.Size + Spacing * new Size(widths.Length - 1, heights.Length - 1);
+			var required = (SizeF)totalpadding;
+			var numscaled = new Size();
+
+			// calculate all non-scaled controls
 			for (int y = 0; y < heights.Length; y++)
 			{
-				heights[y] = 0;
-			}
-			for (int x = 0; x < widths.Length; x++)
-			{
-				widths[x] = 0;
-			}
+				var yscaled = y == lastyscale || yscaling[y];
+				if (yscaled)
+					numscaled.Height++;
 
-			for (int y = 0; y < heights.Length; y++)
 				for (int x = 0; x < widths.Length; x++)
-				{	
+				{
+					var xscaled = x == lastxscale || xscaling[x];
+					if (y == 0 && xscaled)
+						numscaled.Width++;
+
+					if (xscaled && yscaled)
+						continue;
+
 					var view = views[y, x];
 					if (view != null && view.Visible)
 					{
 						var size = view.GetPreferredSize(Size.MaxValue);
-						if (size.Width > widths[x])
+						if (!xscaled && size.Width > widths[x])
 						{
-							requiredx += size.Width - widths[x];
+							required.Width += size.Width - widths[x];
 							widths[x] = size.Width;
 						}
-						if (size.Height > heights[y])
+						if (!yscaled && size.Height > heights[y])
 						{
-							requiredy += size.Height - heights[y];
+							required.Height += size.Height - heights[y];
 							heights[y] = size.Height;
 						}
 					}
 				}
-			return new SizeF(requiredx, requiredy);
+			}
+
+			var remaining = SizeF.Max((availableSize - required) / (SizeF)numscaled, SizeF.Empty);
+			//Console.WriteLine($"available: {availableSize}, remaining: {remaining}, required: {required} numscaled: {numscaled}, size: {widths.Length}x{heights.Length}");
+
+			// now, calculate any scaled control(s) now that we have the remaining space available
+			var availableControlSize = new SizeF();
+			for (int y = 0; y < heights.Length; y++)
+			{
+				var yscaled = y == lastyscale || yscaling[y];
+
+				availableControlSize.Height = yscaled ? remaining.Height : int.MaxValue;
+
+				for (int x = 0; x < widths.Length; x++)
+				{	
+					var xscaled = x == lastxscale || xscaling[x];
+
+					if (!xscaled && !yscaled)
+						continue;
+
+					availableControlSize.Width = xscaled ? remaining.Width : int.MaxValue;
+
+					var view = views[y, x];
+					if (view != null && view.Visible)
+					{
+						var size = view.GetPreferredSize(availableControlSize);
+						if (size.Width > widths[x])
+						{
+							if (!final || !xscaled)
+								required.Width += size.Width - widths[x];
+							widths[x] = size.Width;
+						}
+						if (size.Height > heights[y])
+						{
+							if (!final || !yscaled)
+								required.Height += size.Height - heights[y];
+							heights[y] = size.Height;
+						}
+					}
+				}
+			}
+
+
+			if (final)
+			{
+				// we are laying out for display, so scaled columns are forced to share remaining size
+				remaining = SizeF.Max((availableSize - required) / (SizeF)numscaled, SizeF.Empty);
+				for (int y = 0; y < heights.Length; y++)
+				{
+					var yscaled = y == lastyscale || yscaling[y];
+					if (!yscaled)
+						continue;
+
+					heights[y] = remaining.Height;
+
+				}
+				for (int x = 0; x < widths.Length; x++)
+				{	
+					var xscaled = x == lastxscale || xscaling[x];
+
+					if (!xscaled)
+						continue;
+
+					widths[x] = remaining.Width;
+				}
+				return availableSize;
+			}
+
+			return required;
 		}
 
 		public override void LayoutChildren()
 		{
 			if (!Widget.Loaded || views == null || NeedsQueue())
 				return;
-			var heights = new float[views.GetLength(0)];
-			var widths = new float[views.GetLength(1)];
-			var controlFrame = ContentControl.Frame;
-			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
-			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
-			var totalx = (float)controlFrame.Width - totalxpadding;
-			var totaly = (float)controlFrame.Height - totalypadding;
-			var requiredx = totalxpadding;
-			var requiredy = totalypadding;
-			var numx = 0;
-			var numy = 0;
 
-			for (int y = 0; y < heights.Length; y++)
-			{
-				heights[y] = 0;
-				if (yscaling[y] || lastyscale == y)
-					numy++;
-			}
-			for (int x = 0; x < widths.Length; x++)
-			{
-				widths[x] = 0;
-				if (xscaling[x] || lastxscale == x)
-					numx++;
-			}
+			var controlSize = ContentControl.Frame.Size.ToEto();
 
-			var availableSize = Size.Max(Size.Empty, Control.Frame.Size.ToEtoSize() - new Size((int)requiredx, (int)requiredy));
-			for (int y = 0; y < heights.Length; y++)
-				for (int x = 0; x < widths.Length; x++)
-				{
-					var view = views[y, x];
-					if (view != null && view.Visible)
-					{
-						var size = view.GetPreferredSize(availableSize);
-						if (!xscaling[x] && lastxscale != x && widths[x] < size.Width)
-						{
-							requiredx += size.Width - widths[x];
-							widths[x] = size.Width;
-						}
-						if (!yscaling[y] && lastyscale != y && heights[y] < size.Height)
-						{
-							requiredy += size.Height - heights[y];
-							heights[y] = size.Height;
-						}
-					}
-				}
-			if (controlFrame.Width < requiredx)
-			{
-				totalx = requiredx - totalxpadding;
-			}
-			if (controlFrame.Height < requiredy)
-			{
-				totaly = requiredy - totalypadding;
-			}
+			float[] widths, heights;
+			Calculate(controlSize, out widths, out heights, true);
 
-			for (int y = 0; y < heights.Length; y++)
-				if (!yscaling[y] && lastyscale != y)
-					totaly -= heights[y];
-			for (int x = 0; x < widths.Length; x++)
-				if (!xscaling[x] && lastxscale != x)
-					totalx -= widths[x];
-
-			var chunkx = (numx > 0) ? (float)Math.Truncate(Math.Max(totalx, 0) / numx) : totalx;
-			var chunky = (numy > 0) ? (float)Math.Truncate(Math.Max(totaly, 0) / numy) : totaly;
-
-#if OSX
+			#if OSX
 			bool flipped = Control.IsFlipped;
-#elif IOS
+			#elif IOS
 			bool flipped = !Control.Layer.GeometryFlipped;
-#endif
-			float starty = Padding.Top;
-			for (int x = 0; x < widths.Length; x++)
-			{
-				if (xscaling[x] || lastxscale == x)
-				{
-					widths[x] = Math.Min(chunkx, totalx);
-					totalx -= chunkx;
-				}
-			}
+			#endif
 
+			float starty = Padding.Top;
 			for (int y = 0; y < heights.Length; y++)
 			{
-				if (yscaling[y] || lastyscale == y)
-				{
-					heights[y] = Math.Min(chunky, totaly);
-					totaly -= chunky;
-				}
 				float startx = Padding.Left;
 				for (int x = 0; x < widths.Length; x++)
 				{
@@ -267,11 +273,11 @@ namespace Eto.Mac.Forms
 						frame.Width = widths[x];
 						frame.Height = heights[y];
 						frame.X = Math.Max(0, startx);
-						frame.Y = flipped ? starty : controlFrame.Height - starty - frame.Height;
+						frame.Y = flipped ? starty : controlSize.Height - starty - frame.Height;
 						if (frame != oldframe)
 							nsview.Frame = frame;
 						else if (oldframe.Right > oldFrameSize.Width || oldframe.Bottom > oldFrameSize.Height
-						         || frame.Right > oldFrameSize.Width || frame.Bottom > oldFrameSize.Height)
+							|| frame.Right > oldFrameSize.Width || frame.Bottom > oldFrameSize.Height)
 							nsview.SetNeedsDisplay();
 						//Console.WriteLine("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 					}
@@ -279,7 +285,7 @@ namespace Eto.Mac.Forms
 				}
 				starty += heights[y] + Spacing.Height;
 			}
-			oldFrameSize = controlFrame.Size;
+			oldFrameSize = controlSize;
 		}
 
 		public void Add(Control child, int x, int y)

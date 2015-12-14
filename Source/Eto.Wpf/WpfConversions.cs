@@ -76,17 +76,20 @@ namespace Eto.Wpf
 
 		public static sw.Rect ToWpf(this Rectangle value)
 		{
+            value.Normalize();
 			return new sw.Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static sw.Int32Rect ToWpfInt32(this Rectangle value)
 		{
-			return new sw.Int32Rect(value.X, value.Y, value.Width, value.Height);
+            value.Normalize();
+            return new sw.Int32Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static sw.Rect ToWpf(this RectangleF value)
 		{
-			return new sw.Rect(value.X, value.Y, value.Width, value.Height);
+            value.Normalize();
+            return new sw.Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static SizeF ToEto(this sw.Size value)
@@ -281,14 +284,19 @@ namespace Eto.Wpf
 			}
 		}
 
-		public static Size GetSize(this sw.FrameworkElement element)
-		{
-			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
-				return new Size((int)element.ActualWidth, (int)element.ActualHeight);
-			return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
-		}
+        public static Size GetSize(this sw.FrameworkElement element)
+        {
+            if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
+                return new Size((int)element.ActualWidth, (int)element.ActualHeight);
+            return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
+        }
 
-		public static void SetSize(this sw.FrameworkElement element, Size size)
+        public static sw.Size GetMinSize(this sw.FrameworkElement element)
+        {
+            return new sw.Size(element.MinWidth, element.MinHeight);
+        }
+
+        public static void SetSize(this sw.FrameworkElement element, Size size)
 		{
 			element.Width = size.Width == -1 ? double.NaN : size.Width;
 			element.Height = size.Height == -1 ? double.NaN : size.Height;

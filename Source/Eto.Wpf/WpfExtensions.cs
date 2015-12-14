@@ -92,9 +92,9 @@ namespace Eto.Wpf
 
 		public static void RemoveFromParent(this Control control)
 		{
-			if (control.Parent == null)
+			if (control.VisualParent == null)
 				return;
-			var parent = control.Parent.Handler as IWpfContainer;
+			var parent = control.VisualParent.Handler as IWpfContainer;
 			if (parent != null)
 				parent.Remove(control.GetContainerControl());
 		}
@@ -140,7 +140,61 @@ namespace Eto.Wpf
 			return new sw.Size(thickness.Horizontal(), thickness.Vertical());
 		}
 
-		public static sw.Size Add(this sw.Size size1, sw.Size size2)
+        public static sw.Size Max(this sw.Size size1, sw.Size size2)
+        {
+            return new sw.Size(Math.Max(size1.Width, size2.Width), Math.Max(size1.Height, size2.Height));
+        }
+
+        public static sw.Size Min(this sw.Size size1, sw.Size size2)
+        {
+            return new sw.Size(Math.Min(size1.Width, size2.Width), Math.Min(size1.Height, size2.Height));
+        }
+
+        public static sw.Size Ceiling(this sw.Size size)
+        {
+            return new sw.Size(Math.Ceiling(size.Width), Math.Ceiling(size.Height));
+        }
+
+        public static sw.Size Floor(this sw.Size size)
+        {
+            return new sw.Size(Math.Floor(size.Width), Math.Floor(size.Height));
+        }
+
+        public static sw.Rect NormalizedRect(double x, double y, double width, double height)
+        {
+            if (width < 0)
+            {
+                x += width;
+                width = -width + 1;
+            }
+            if (height < 0)
+            {
+                x += height;
+                height = -height + 1;
+            }
+            return new sw.Rect(x, y, width, height);
+        }
+
+        public static sw.Size IfNaN(this sw.Size size1, sw.Size size2)
+        {
+            if (double.IsNaN(size1.Width))
+                size1.Width = size2.Width;
+
+            if (double.IsNaN(size1.Height))
+                size1.Height = size2.Height;
+            return size1;
+        }
+
+        public static sw.Size ZeroIfNan(this sw.Size size)
+        {
+            if (double.IsNaN(size.Width))
+                size.Width = 0;
+            if (double.IsNaN(size.Height))
+                size.Height = 0;
+            return size;
+        }
+
+        public static sw.Size Add(this sw.Size size1, sw.Size size2)
 		{
 			return new sw.Size(size1.Width + size2.Width, size1.Height + size2.Height);
 		}

@@ -42,7 +42,7 @@
     </ProjectReferences>
 	<Replacements>
 	  <ReplacementGroup>
-		<Replacement name="$EtoPlatform$">Eto.Platform.Detect</Replacement>
+		<Replacement name="$EtoPlatform$">Platform.Detect</Replacement>
 	  </ReplacementGroup>
 	</Replacements>
   </WizardData>

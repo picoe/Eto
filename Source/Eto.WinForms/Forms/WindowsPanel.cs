@@ -18,7 +18,7 @@ namespace Eto.WinForms.Forms
 			get { return Control; }
 		}
 
-		protected virtual Size ContentPadding { get { return Size.Empty; } }
+		protected virtual Size ContentPadding { get { return Padding.Size; } }
 
 		public override Size ParentMinimumSize
 		{
@@ -39,13 +39,15 @@ namespace Eto.WinForms.Forms
 
 		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
+            var userSize = UserDesiredSize;
 			var desiredSize = base.GetPreferredSize(availableSize, useCache);
 
 			var handler = content.GetWindowsHandler();
-			if (handler != null)
+			if (handler != null && (userSize.Width == -1 || userSize.Height == -1))
 			{
-				var desiredContentSize = handler.GetPreferredSize(availableSize);
-				//if (!handler.XScale)
+				var contentPadding = ContentPadding;
+				var desiredContentSize = handler.GetPreferredSize(Size.Max(Size.Empty, availableSize - contentPadding)) + contentPadding;
+                if (userSize.Width == -1)
 				{
 					if (desiredSize.Width > 0)
 						desiredSize.Width = Math.Max(desiredSize.Width, desiredContentSize.Width);
@@ -53,31 +55,21 @@ namespace Eto.WinForms.Forms
 						desiredSize.Width = desiredContentSize.Width;
 				}
 
-				//if (!handler.YScale)
-				{
-					if (desiredSize.Height > 0)
+                if (userSize.Height == -1)
+                {
+                    if (desiredSize.Height > 0)
 						desiredSize.Height = Math.Max(desiredSize.Height, desiredContentSize.Height);
 					else
 						desiredSize.Height = desiredContentSize.Height;
 				}
 			}
-			return desiredSize + Padding.Size;
-		}
-
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			var contentHandler = content.GetWindowsHandler();
-			if (contentHandler != null)
-			{
-				contentHandler.SetFilledContent();
-			}
+			return desiredSize;
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
-			SetContentScale(xscale, yscale);
+			SetContentScale(xscale || UserDesiredSize.Width >= 0, yscale || UserDesiredSize.Height >= 0);
 		}
 
 		protected virtual void SetContentScale(bool xscale, bool yscale)

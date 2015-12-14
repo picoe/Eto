@@ -44,8 +44,9 @@ public static class Extensions
 	public static string FixParameter(string value)
 	{
 		if (IsMono)
-			return value.Replace("//", "\\");
-		return value;
+			return value.Replace("//", @"\");
+		else
+			return value.Replace(@"\\", @"\");
 	}
 }]]></Text></Utilities>
 			<Utilities Include="GetAssemblyInfo"><Text><![CDATA[
@@ -78,7 +79,7 @@ public class GetAssemblyInfo : Task
 		{
 			AssemblyFileName = Path.GetFullPath(AssemblyFileName);
 
-			Log.LogMessage("Getting assembly info...");
+			Log.LogMessage("Getting assembly info...", null);
 			AssemblyInformationalVersion = FileVersionInfo.GetVersionInfo(AssemblyFileName).ProductVersion;
 
 			var assembly = Assembly.LoadFrom(AssemblyFileName);
@@ -138,7 +139,7 @@ public class FileUpdate : Task
 				if (!regex.IsMatch(text))
 				{
 					if (WarnOnNoUpdate)
-						Log.LogWarning(string.Format("File '{0}' not updated", fileName));
+						Log.LogWarning("File '{0}' not updated. Pattern: '{1}'", fileName, Pattern);
 					continue;
 				}
 				else
@@ -218,7 +219,7 @@ public class IncrementVersion : Task
 				infoString.Append (suffix);
 			else if (string.IsNullOrEmpty(suffix))
 			{
-				Log.LogError("Version is not a prerelease but RemovePrerelease was specified");
+				Log.LogError("Version is not a prerelease but RemovePrerelease was specified", null);
 				return false;
 			}
 		
@@ -260,7 +261,7 @@ public class FileExtract : Task
 				return true;
 			}
 			
-			Log.LogError(string.Format("Could not extract from '{0}'", fileName));
+			Log.LogError("Could not extract from '{0}'", fileName);
 		}
 		catch (Exception ex)
 		{

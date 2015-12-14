@@ -1,18 +1,36 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+using CoreImage;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -29,6 +47,16 @@ namespace Eto.Mac.Forms.Controls
 			{ 
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
+			}
+
+			public override void SetFrameSize(CGSize newSize)
+			{
+				if (((SliderHandler)Handler).Orientation == Orientation.Horizontal && newSize.Width < newSize.Height)
+				{
+					// prevent slider from flipping to vertical orientation when resized
+					newSize.Height = newSize.Width;
+				}
+				base.SetFrameSize(newSize);
 			}
 		}
 

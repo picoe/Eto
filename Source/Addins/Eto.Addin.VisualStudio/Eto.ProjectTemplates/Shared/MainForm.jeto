@@ -1,5 +1,12 @@
 ﻿{
 	"$type": "Form",
+	"ClientSize": "400,350",
+	"Content": {
+		"$type": "StackLayout",
+		"Items": [
+			"Some Content"
+		]
+	},
 	"Menu": {
 		"Items": [
 			{ 
@@ -19,13 +26,6 @@
 	"ToolBar": {
 		"Items": [
 			{ "$type": "ButtonToolItem", "Text": "Click Me", "Click": "HandleClickMe" }
-		]
-	},
-	"ClientSize": "200,200",
-	"Content": {
-		"$type": "StackLayout",
-		"Items": [
-			"Some Content"
 		]
 	}
 }

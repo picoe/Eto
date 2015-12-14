@@ -41,38 +41,45 @@ namespace Eto.WinForms.Forms.Controls
 				return AutoScrollPosition;
 			}
 
-			System.Drawing.Size lastClientSize;
+			sd.Size lastClientSize;
 
 			protected override void OnLayout(swf.LayoutEventArgs levent)
 			{
-				lastClientSize = ClientSize;
+				UpdateScrollSize();
+				base.OnLayout(levent);
+			}
+
+			void UpdateScrollSize()
+			{
+				var clientSize = lastClientSize = ClientSize;
 
 				var contentControl = Handler.Content.GetWindowsHandler();
 				if (contentControl != null)
 				{
-					var minSize = new Size();
-
-					var clientSize = lastClientSize;
+					Handler.content.SuspendLayout();
+					Handler.content.MinimumSize = sd.Size.Empty;
+					contentControl.ParentMinimumSize = Eto.Drawing.Size.Empty;
+					var preferred = contentControl.GetPreferredSize(Eto.Drawing.Size.Empty);
 					if (Handler.finalLayoutPass)
 					{
-						var preferred = contentControl.GetPreferredSize(Eto.Drawing.Size.Empty);
-						if (Handler.ExpandContentWidth && preferred.Height > ClientSize.Height)
+						if (Handler.ExpandContentWidth && preferred.Height > lastClientSize.Height)
 							clientSize.Width -= swf.SystemInformation.VerticalScrollBarWidth;
-						if (Handler.ExpandContentHeight && preferred.Width > ClientSize.Width)
+						if (Handler.ExpandContentHeight && preferred.Width > lastClientSize.Width)
 							clientSize.Height -= swf.SystemInformation.HorizontalScrollBarHeight;
 					}
-					if (Handler.ExpandContentWidth)
-						minSize.Width = Math.Max(0, clientSize.Width);
-					if (Handler.ExpandContentHeight)
-						minSize.Height = Math.Max(0, clientSize.Height);
+					var minSize = new Size
+					{
+						Width = Handler.ExpandContentWidth ? Math.Max(0, clientSize.Width) : 0,
+						Height = Handler.ExpandContentHeight ? Math.Max(0, clientSize.Height) : 0
+					};
 
 					// set minimum size for the content if we want to extend to the size of the scrollable width/height
-					contentControl.ParentMinimumSize = minSize - Handler.Padding.Size;
+					contentControl.ParentMinimumSize = Eto.Drawing.Size.Max(Eto.Drawing.Size.Empty, minSize - Handler.Padding.Size);
+					Handler.content.ResumeLayout();
 				}
-				base.OnLayout(levent);
 			}
 
-			protected override void OnClientSizeChanged(EventArgs e)
+            protected override void OnClientSizeChanged(EventArgs e)
 			{
 				base.OnClientSizeChanged(e);
 				// when scrollbar is shown/hidden, need to perform layout
@@ -84,20 +91,14 @@ namespace Eto.WinForms.Forms.Controls
     
 		public override Padding Padding
 		{
-			get
-			{
-				return Control.Padding.ToEto();
-			}
-			set
-			{
-				Control.Padding = value.ToSWF();
-			}
+			get { return Control.Padding.ToEto(); }
+			set { Control.Padding = value.ToSWF(); }
 		}
 
 		protected override void ResumeControl(bool performLayout = true)
 		{
 			finalLayoutPass = true;
-			base.ResumeControl(performLayout);
+			base.ResumeControl(true); // always perform layout for Scrollable
 			finalLayoutPass = false;
 		}
 
@@ -106,16 +107,9 @@ namespace Eto.WinForms.Forms.Controls
 			get { return content; }
 		}
 
-		public override void SetScale(bool xscale, bool yscale)
-		{
-			base.SetScale(xscale, yscale);
-			if (Content != null)
-				Content.SetScale(!ExpandContentWidth, !ExpandContentHeight);
-		}
-
 		protected override void SetContentScale(bool xscale, bool yscale)
 		{
-			base.SetContentScale(!ExpandContentWidth, !ExpandContentHeight);
+            base.SetContentScale(false, false);
 		}
 
 		public override Size GetPreferredSize(Size availableSize, bool useCache)
@@ -163,8 +157,30 @@ namespace Eto.WinForms.Forms.Controls
 					default:
 						throw new NotSupportedException();
 				}
-			}
+                UpdateScrollSizes();
+
+            }
 		}
+
+        class EtoContentPanel : swf.Panel
+        {
+            public override sd.Size GetPreferredSize(sd.Size proposedSize)
+            {
+                if (HasChildren)
+                {
+                    return Controls[0].GetPreferredSize(proposedSize);
+                }
+                return base.GetPreferredSize(proposedSize);
+            }
+
+            protected override void OnSizeChanged(EventArgs e)
+            {
+                if (HasChildren)
+                {
+                    Controls[0].Size = Size;
+                }
+            }
+        }
 
 		public ScrollableHandler()
 		{
@@ -183,7 +199,7 @@ namespace Eto.WinForms.Forms.Controls
 			Control.HorizontalScroll.SmallChange = 5;
 			Control.HorizontalScroll.LargeChange = 10;
 
-			content = new swf.Panel
+			content = new EtoContentPanel
 			{
 				Size = sd.Size.Empty,
 				AutoSize = true,
@@ -192,13 +208,32 @@ namespace Eto.WinForms.Forms.Controls
 			Control.Controls.Add(content);
 		}
 
+		public override void ResumeLayout()
+		{
+			base.ResumeLayout();
+			// HACK: Update scroll sizes twice here in case scrollbars are shown/hidden when resumed.
+			// e.g. BrushSection
+			UpdateScrollSizes();
+			UpdateScrollSizes();
+		}
+
+		protected override bool SetMinimumSize(Size size)
+		{
+			var result = base.SetMinimumSize(size);
+			// HACK: schedule re-jig at next run loop when min size changes so it updates
+			// if scrollbars are shown/hidden during this cycle.
+			if (result && Widget.Loaded)
+				Application.Instance.AsyncInvoke(UpdateScrollSizes);
+			return result;
+		}
+
 		protected override void SetContent(swf.Control contentControl)
 		{
 			content.Controls.Clear();
 			content.Controls.Add(contentControl);
 		}
 
-		public override void AttachEvent(string id)
+        public override void AttachEvent(string id)
 		{
 			switch (id)
 			{

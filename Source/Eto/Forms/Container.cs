@@ -29,10 +29,29 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets an enumeration of controls that are directly contained by this container
+		/// Gets an enumeration of logical controls that are directly contained by this container
 		/// </summary>
+		/// <remarks>
+		/// These controls are directly contained by the container, but do not include controls that are used to form
+		/// the visual appearance, if any.  Controls like the <see cref="StackLayout"/>, <see cref="DynamicLayout"/> or a 
+		/// customized container using the <see cref="ThemedContainerHandler{TControl,TWidget,TCallback}"/> should not 
+		/// include any intermediate controls.
+		/// </remarks>
 		/// <value>The contained controls.</value>
 		public abstract IEnumerable<Control> Controls { get; }
+
+		/// <summary>
+		/// Gets an enumeration of controls that are in the visual tree.
+		/// </summary>
+		/// <remarks>
+		/// This is used to specify which controls are contained by this instance that are part of the visual tree.
+		/// This should include all controls including non-logical Eto controls used for layout. 
+		/// </remarks>
+		/// <value>The visual controls.</value>
+		public virtual IEnumerable<Control> VisualControls
+		{
+			get { return Controls; }
+		}
 
 		/// <summary>
 		/// Gets an enumeration of all contained child controls, including controls within child containers
@@ -56,6 +75,27 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets an enumeration of all contained child controls in the visual tree, including controls within child containers.
+		/// </summary>
+		/// <value>The visual children.</value>
+		public IEnumerable<Control> VisualChildren
+		{
+			get
+			{
+				foreach (var control in VisualControls)
+				{
+					yield return control;
+					var container = control as Container;
+					if (container != null)
+					{
+						foreach (var child in container.VisualChildren)
+							yield return child;
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
 		/// </summary>
 		/// <remarks>
@@ -70,7 +110,7 @@ namespace Eto.Forms
 
 			if (Handler.RecurseToChildren)
 			{
-				foreach (var control in Controls)
+				foreach (var control in VisualControls)
 				{
 					control.TriggerDataContextChanged(e);
 				}
@@ -87,7 +127,7 @@ namespace Eto.Forms
 
 			if (Handler.RecurseToChildren)
 			{
-				foreach (Control control in Controls)
+				foreach (Control control in VisualControls)
 				{
 					control.TriggerPreLoad(e);
 				}
@@ -102,7 +142,7 @@ namespace Eto.Forms
 		{
 			if (Handler.RecurseToChildren)
 			{
-				foreach (Control control in Controls)
+				foreach (Control control in VisualControls)
 				{
 					control.TriggerLoad(e);
 				}
@@ -121,7 +161,7 @@ namespace Eto.Forms
 
 			if (Handler.RecurseToChildren)
 			{
-				foreach (Control control in Controls)
+				foreach (Control control in VisualControls)
 				{
 					control.TriggerLoadComplete(e);
 				}
@@ -136,7 +176,7 @@ namespace Eto.Forms
 		{
 			if (Handler != null && Handler.RecurseToChildren)
 			{
-				foreach (Control control in Controls)
+				foreach (Control control in VisualControls)
 				{
 					control.TriggerUnLoad(e);
 				}
@@ -169,7 +209,7 @@ namespace Eto.Forms
 			base.Unbind();
 			if (Handler.RecurseToChildren)
 			{
-				foreach (var control in Controls)
+				foreach (var control in VisualControls)
 				{
 					control.Unbind();
 				}
@@ -184,7 +224,7 @@ namespace Eto.Forms
 			base.UpdateBindings(mode);
 			if (Handler.RecurseToChildren)
 			{
-				foreach (var control in Controls)
+				foreach (var control in VisualControls)
 				{
 					control.UpdateBindings(mode);
 				}
@@ -206,7 +246,7 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void RemoveAll()
 		{
-			Remove(Controls.ToArray());
+			Remove(VisualControls.ToArray());
 		}
 
 		/// <summary>
@@ -224,19 +264,61 @@ namespace Eto.Forms
 		/// <param name="child">Child to remove from this container</param>
 		protected void RemoveParent(Control child)
 		{
-			if (child != null && !ReferenceEquals(child.Parent, null))
+			if (child != null && !ReferenceEquals(child.VisualParent, null))
 			{
 #if DEBUG
-				if (!ReferenceEquals(child.Parent, this))
+				if (!ReferenceEquals(child.VisualParent, this))
 					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a child of this container. Ensure you only remove children that you own."));
 #endif
 				if (child.Loaded)
 				{
 					child.TriggerUnLoad(EventArgs.Empty);
 				}
-				child.Parent = null;
+				child.VisualParent = null;
+				if (child.LogicalParent == this)
+					child.LogicalParent = null;
 				child.TriggerDataContextChanged(EventArgs.Empty);
 			}
+		}
+
+		/// <summary>
+		/// Sets the logical (non-visual) parent of the specified child control.
+		/// </summary>
+		/// <remarks>
+		/// This is used by layout containers that may use other Eto controls to layout its children that shouldn't be 
+		/// necessary for users to be concerned about.
+		/// 
+		/// For example, the <see cref="StackLayout"/> uses a TableLayout internally (for now), but the TableLayout
+		/// should not be part of the logical tree of controls.
+		/// 
+		/// If this is not set, then the logical parent of a child is the same as the visual parent.
+		/// </remarks>
+		/// <param name="child">Child to set the logical parent to this container.</param>
+		protected void SetLogicalParent(Control child)
+		{
+			if (child == null)
+				return;
+			child.LogicalParent = this;
+		}
+
+		/// <summary>
+		/// Removes the child control from the logical parent of this container.
+		/// </summary>
+		/// <remarks>
+		/// This should be used from containers that use other Eto controls to layout its children but should not be part
+		/// of the logical heirarchy.
+		/// </remarks>
+		/// <seealso cref="SetLogicalParent"/>
+		/// <param name="child">Child to remove from this container as the logical parent.</param>
+		protected void RemoveLogicalParent(Control child)
+		{
+			if (child == null)
+				return;
+			if (!ReferenceEquals(child.LogicalParent, this))
+			{
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a logical child of this container. Ensure you only remove children that you own."));
+			}
+			child.LogicalParent = null;
 		}
 
 		/// <summary>
@@ -251,30 +333,32 @@ namespace Eto.Forms
 		/// <param name="child">Child to set the parent</param>
 		/// <param name="assign">Method to assign the child to the handler</param>
 		/// <param name="previousChild">Previous child that the new child is replacing.</param>
-		protected void SetParent(Control child, Action assign, Control previousChild = null)
+		protected void SetParent(Control child, Action assign = null, Control previousChild = null)
 		{
 			bool triggerPrevious = false;
-			if (previousChild != null && !ReferenceEquals(previousChild.Parent, null) && (!ReferenceEquals(previousChild, child) || !ReferenceEquals(child.Parent, this)))
+			if (previousChild != null && !ReferenceEquals(previousChild.VisualParent, null) && (!ReferenceEquals(previousChild, child) || !ReferenceEquals(child.VisualParent, this)))
 			{
 #if DEBUG
-				if (!ReferenceEquals(previousChild.Parent, this))
+				if (!ReferenceEquals(previousChild.VisualParent, this))
 					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a child of this container. Ensure you only remove children that you own."));
 #endif
 				if (previousChild.Loaded)
 				{
 					previousChild.TriggerUnLoad(EventArgs.Empty);
 				}
-				previousChild.Parent = null;
+				previousChild.VisualParent = null;
 				triggerPrevious = true;
 			}
-			if (child != null && !ReferenceEquals(child.Parent, this))
+			if (child != null && !ReferenceEquals(child.VisualParent, this))
 			{
 				// Detach so parent can remove from controls collection if necessary.
 				// prevents UnLoad from being called more than once when containers think a control is still a child
 				// no-op if there is no parent (handled in detach)
 				child.Detach();
 
-				child.Parent = this;
+				if (child.LogicalParent == null)
+					child.LogicalParent = this;
+				child.VisualParent = this;
 				if (Loaded && !child.Loaded)
 				{
 					using (child.Platform.Context)
@@ -282,7 +366,8 @@ namespace Eto.Forms
 						child.TriggerPreLoad(EventArgs.Empty);
 						child.TriggerLoad(EventArgs.Empty);
 						child.TriggerDataContextChanged(EventArgs.Empty);
-						assign();
+						if (assign != null)
+							assign();
 						child.TriggerLoadComplete(EventArgs.Empty);
 					}
 					if (triggerPrevious)
@@ -290,7 +375,8 @@ namespace Eto.Forms
 					return;
 				}
 			}
-			assign();
+			if (assign != null)
+				assign();
 			if (triggerPrevious)
 				previousChild.TriggerDataContextChanged(EventArgs.Empty);
 		}

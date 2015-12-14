@@ -189,6 +189,9 @@
     <Compile Include="Sections\Controls\PropertyCellSection.cs" />
     <Compile Include="UnitTests\Forms\XamlTests.cs" />
     <Compile Include="UnitTests\Forms\ToolItemCollectionTests.cs" />
+    <Compile Include="UnitTests\Forms\Layout\StackLayoutTests.cs" />
+    <Compile Include="UnitTests\Forms\Layout\DynamicLayoutTests.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />

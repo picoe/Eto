@@ -10,7 +10,9 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class LabelHandler : WpfControl<swc.Label, Label, Label.ICallback>, Label.IHandler
 	{
-		readonly swc.AccessText text;
+		readonly swc.AccessText accessText;
+		sw.Size? previousRenderSize;
+		string text;
 
 		public class EtoLabel : swc.Label
 		{
@@ -31,18 +33,34 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
 		{
-			text.TextDecorations = decorations;
+			accessText.TextDecorations = decorations;
 		}
 
 		public LabelHandler ()
 		{
-			text = new swc.AccessText();
+			accessText = new swc.AccessText();
 			Control = new EtoLabel
 			{
 				Padding = new sw.Thickness(0),
-				Content = text
+				Content = accessText
 			};
 			Control.Target = Control;
+			Control.SizeChanged += Control_SizeChanged;
+		}
+
+		void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
+		{
+			if (previousRenderSize == Control.RenderSize)
+				return;
+			// update parents only when the render size has changed
+			previousRenderSize = Control.RenderSize;
+            if (Wrap != WrapMode.None)
+                UpdatePreferredSize();
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			TextAlignment = TextAlignment.Left;
 			VerticalAlignment = VerticalAlignment.Top;
 			Wrap = WrapMode.Word;
@@ -68,7 +86,7 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				Control.HorizontalContentAlignment = value.ToWpf();
-				text.TextAlignment = value.ToWpfTextAlignment();
+				accessText.TextAlignment = value.ToWpfTextAlignment();
 			}
 		}
 
@@ -82,45 +100,75 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				switch (text.TextWrapping) {
+				switch (accessText.TextWrapping) {
 					case sw.TextWrapping.NoWrap:
 						return WrapMode.None;
 					case sw.TextWrapping.Wrap:
-						return WrapMode.Word;
-					case sw.TextWrapping.WrapWithOverflow:
 						return WrapMode.Character;
+					case sw.TextWrapping.WrapWithOverflow:
+						return WrapMode.Word;
 					default:
 						throw new NotSupportedException ();
 				}
 			}
 			set
 			{
-				switch (value) {
-					case WrapMode.Word:
-						text.TextWrapping = sw.TextWrapping.Wrap;
-						break;
-					case WrapMode.Character:
-						text.TextWrapping = sw.TextWrapping.WrapWithOverflow;
-						break;
-					case WrapMode.None:
-						text.TextWrapping = sw.TextWrapping.NoWrap;
-						break;
-					default:
-						throw new NotSupportedException ();
+				if (value != Wrap)
+				{
+					switch (value)
+					{
+						case WrapMode.Word:
+							accessText.TextWrapping = sw.TextWrapping.WrapWithOverflow;
+							break;
+						case WrapMode.Character:
+							accessText.TextWrapping = sw.TextWrapping.Wrap;
+							break;
+						case WrapMode.None:
+							accessText.TextWrapping = sw.TextWrapping.NoWrap;
+							break;
+						default:
+							throw new NotSupportedException();
+					}
+					SetText();
+                    UpdatePreferredSize();
 				}
 			}
 		}
 
+        public override void UpdatePreferredSize()
+        {
+            ParentMinimumSize = WpfConversions.ZeroSize;
+            SetSize();
+            base.UpdatePreferredSize();
+        }
+
 		public override Color TextColor
 		{
-			get { return text.Foreground.ToEtoColor(); }
-			set { text.Foreground = value.ToWpfBrush(text.Foreground); }
+			get { return accessText.Foreground.ToEtoColor(); }
+			set { accessText.Foreground = value.ToWpfBrush(accessText.Foreground); }
 		}
 
 		public string Text
 		{
-			get { return text.Text.ToEtoMnemonic(); }
-			set { text.Text = value.ToPlatformMnemonic(); }
+			get { return text; }
+			set
+			{
+				text = value;
+				SetText();
+			}
+		}
+
+		void SetText()
+		{
+			var newText = text;
+			if (Wrap == WrapMode.Character && text != null)
+			{
+				// wpf will always word wrap, so we replace spaces with nbsp
+				// so that it is forced to wrap at the character level
+				newText = newText.Replace(' ', (char)0xa0); // no break space
+			}
+
+			accessText.Text = newText.ToPlatformMnemonic();
 		}
 	}
 }

@@ -114,7 +114,7 @@ namespace Eto.Wpf.Drawing
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			SetOffset(false);
-			Control.DrawRectangle(null, pen.ToWpf(true), new sw.Rect(x, y, width, height));
+			Control.DrawRectangle(null, pen.ToWpf(true), WpfExtensions.NormalizedRect(x, y, width, height));
 		}
 
 
@@ -129,7 +129,7 @@ namespace Eto.Wpf.Drawing
 		{
 			SetOffset(true);
 			var wpfBrush = brush.ToWpf(true);
-			Control.DrawRectangle(wpfBrush, null, new sw.Rect(x, y, width, height));
+			Control.DrawRectangle(wpfBrush, null, WpfExtensions.NormalizedRect(x, y, width, height));
 		}
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
@@ -192,7 +192,7 @@ namespace Eto.Wpf.Drawing
 				DrawEllipse(pen, x, y, width, height);
 			else
 			{
-				var arc = CreateArcDrawing(new sw.Rect(x, y, width, height), startAngle, sweepAngle, false);
+				var arc = CreateArcDrawing(WpfExtensions.NormalizedRect(x, y, width, height), startAngle, sweepAngle, false);
 				Control.DrawGeometry(null, pen.ToWpf(true), arc);
 			}
 		}
@@ -204,7 +204,7 @@ namespace Eto.Wpf.Drawing
 				FillEllipse(brush, x, y, width, height);
 			else
 			{
-				var arc = CreateArcDrawing(new sw.Rect(x, y, width, height), startAngle, sweepAngle, true);
+				var arc = CreateArcDrawing(WpfExtensions.NormalizedRect(x, y, width, height), startAngle, sweepAngle, true);
 				Control.DrawGeometry(brush.ToWpf(true), null, arc);
 			}
 		}
@@ -241,7 +241,7 @@ namespace Eto.Wpf.Drawing
                     new swm.ScaleTransform(width / src.Width * 96 / src.DpiX, height / src.Height * 96 / src.DpiY, 0, 0)
                     );
             }
-            Control.DrawImage(src, new sw.Rect(x, y, width, height));
+            Control.DrawImage(src, WpfExtensions.NormalizedRect(x, y, width, height));
 		}
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)

@@ -79,47 +79,44 @@
     <None Include="PY\App\App.vstemplate">
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </None>
-    <None Include="FS\App\Eto\Library.fsproj">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="FS\Library\Library.fsproj">
       <SubType>Designer</SubType>
     </None>
     <None Include="FS\Library\Library.ico" />
-    <VSTemplate Include="FS\Library\Library.vstemplate">
+    <VSTemplate Include="FS.Library.vstemplate">
       <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
     <None Include="CS\Library\Library.csproj">
       <SubType>Designer</SubType>
     </None>
-    <None Include="FS\App\Eto\Eto.vstemplate" />
-    <Content Include="FS\Library\AssemblyInfo.fs" />
+    <None Include="FS\Library\Eto.vstemplate" />
+    <Content Include="FS\AssemblyInfo.fs" />
+    <None Include="FS\Library\MainForm.jxeto.fs" />
     <Content Include="MultiOutput.tt" />
     <Content Include="PY\App\Eto.pyproj">
       <SubType>Designer</SubType>
     </Content>
     <None Include="FS\App\App.ico" />
-    <VSTemplate Include="FS\App\App.vstemplate">
+    <VSTemplate Include="FS.App.vstemplate">
       <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
-    <None Include="FS\App\Platform\Eto.Desktop.fsproj" />
+    <None Include="FS\App\Eto.Desktop.fsproj" />
     <None Include="PY\App\App.ico" />
     <None Include="PY\App\MainForm.py" />
     <None Include="PY\App\Program.py" />
-    <Content Include="FS\App\Platform\Eto.Desktop.vstemplate" />
-    <Content Include="FS\App\Platform\Eto.Gtk2.vstemplate" />
-    <Content Include="FS\App\Platform\Eto.Gtk3.vstemplate" />
-    <Content Include="FS\App\Platform\Eto.Mac.vstemplate" />
-    <Content Include="FS\App\Platform\Eto.WinForms.vstemplate" />
-    <Content Include="FS\App\Platform\Eto.Wpf.vstemplate" />
-    <Content Include="VB\App\Eto\Library.vbproj" />
-    <Content Include="VB\App\Platform\App.config" />
-    <Content Include="VB\App\Platform\Eto.Desktop.vbproj" />
-    <Content Include="VB\App\Platform\Program.vb" />
-    <Content Include="VB\App\Eto\Eto-sal.projitems" />
-    <Content Include="VB\App\Eto\Eto-sal.shproj" />
+    <Content Include="FS\App\Eto.Desktop.vstemplate" />
+    <Content Include="FS\App\Eto.Gtk2.vstemplate" />
+    <Content Include="FS\App\Eto.Gtk3.vstemplate" />
+    <Content Include="FS\App\Eto.Mac.vstemplate" />
+    <Content Include="FS\App\Eto.WinForms.vstemplate" />
+    <Content Include="FS\App\Eto.Wpf.vstemplate" />
+    <Content Include="VB\App\App.config" />
+    <Content Include="VB\App\Eto.Desktop.vbproj" />
+    <Content Include="VB\App\Program.vb" />
+    <Content Include="VB\Library\Eto-sal.projitems" />
+    <Content Include="VB\Library\Eto-sal.shproj" />
     <None Include="CS\Library\Eto-sal.projitems" />
     <None Include="CS\Library\Eto-sal.shproj" />
     <None Include="CS\Library\MainForm.cs" />
@@ -151,27 +148,26 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="VB\App\App.ico" />
-    <VSTemplate Include="VB\App\App.vstemplate">
+    <VSTemplate Include="VB.App.vstemplate">
       <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
-    <Content Include="VB\Library\AssemblyInfo.vb" />
-    <Content Include="VB\App\Eto\Eto.vstemplate" />
-    <Content Include="VB\App\Eto\Eto-sal.vstemplate">
+    <Content Include="VB\Library\Eto.vstemplate" />
+    <Content Include="VB\Library\Eto-sal.vstemplate">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="VB\App\Platform\Eto.Desktop.vstemplate" />
-    <Content Include="VB\App\Platform\Eto.Gtk2.vstemplate" />
-    <Content Include="VB\App\Platform\Eto.Gtk3.vstemplate" />
+    <Content Include="VB\App\Eto.Desktop.vstemplate" />
+    <Content Include="VB\App\Eto.Gtk2.vstemplate" />
+    <Content Include="VB\App\Eto.Gtk3.vstemplate" />
     <Content Include="VB\Library\Library.vbproj" />
     <None Include="VB\Library\Library.ico" />
-    <VSTemplate Include="VB\Library\Library.vstemplate">
+    <VSTemplate Include="VB.Library.vstemplate">
       <SubType>Designer</SubType>
       <OutputSubPath>Eto.Forms</OutputSubPath>
     </VSTemplate>
-    <Content Include="VB\App\Platform\Eto.Mac.vstemplate" />
-    <Content Include="VB\App\Platform\Eto.WinForms.vstemplate" />
-    <Content Include="VB\App\Platform\Eto.Wpf.vstemplate" />
+    <Content Include="VB\App\Eto.Mac.vstemplate" />
+    <Content Include="VB\App\Eto.WinForms.vstemplate" />
+    <Content Include="VB\App\Eto.Wpf.vstemplate" />
     <Content Include="CS\App\Eto.Gtk2.vstemplate" />
     <Content Include="CS\App\Eto.Gtk3.vstemplate" />
     <VSTemplate Include="CS.Library.vstemplate">
@@ -200,17 +196,18 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="VB\Library\MainForm.eto.vb" />
+    <Content Include="VB\Library\MainForm.jxeto.vb" />
     <None Include="CS\Library\MyPanel.cs" />
-    <Content Include="VB\App\AssemblyInfo.vb" />
-    <Content Include="VB\App\Eto\MainForm.vb" />
+    <Content Include="VB\AssemblyInfo.vb" />
+    <Content Include="VB\Library\MainForm.vb" />
     <Content Include="VB\Library\MyPanel.vb" />
     <Content Include="CS\App\Program.cs" />
-    <Content Include="FS\App\AssemblyInfo.fs" />
-    <Content Include="FS\App\Eto\MainForm.fs" />
-    <Content Include="FS\App\Platform\Program.fs" />
+    <Content Include="FS\Library\MainForm.fs" />
+    <Content Include="FS\App\Program.fs" />
     <Content Include="FS\Library\MyPanel.fs" />
     <None Include="CS\Library\MainForm.jxeto.cs" />
-    <None Include="CS\Library\MainForm.preview.cs" />
+    <None Include="CS\Library\MainForm.eto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

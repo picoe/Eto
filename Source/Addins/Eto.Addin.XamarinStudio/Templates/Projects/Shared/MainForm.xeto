@@ -5,10 +5,14 @@
 	Title="My Eto Form"
 	ClientSize="400, 350"
 	>
+	<StackLayout>
+		<Label>Some Content</Label>
+	</StackLayout>
+
 	<Form.Menu>
 		<MenuBar>
 			<ButtonMenuItem Text="F&amp;ile">
-				<Command x:Name="clickCommand" MenuText="Click Me!" ToolBarText="Click Me!" Executed="HandleClickMe" />
+				<ButtonMenuItem Text="Click Me!" Click="HandleClickMe" />
 			</ButtonMenuItem>
 			<MenuBar.ApplicationItems>
 				<ButtonMenuItem Text="Preferences.." Shortcut="{On Control+O, Mac=Application+Comma}" />
@@ -20,10 +24,7 @@
 	</Form.Menu>
 	<Form.ToolBar>
 		<ToolBar>
-			<x:Reference Name="clickCommand"/>
+			<ButtonToolItem Text="Click Me!" Click="HandleClickMe" />
 		</ToolBar>
 	</Form.ToolBar>
-	<StackLayout>
-		<Label>Some Content</Label>
-	</StackLayout>
 </Form>

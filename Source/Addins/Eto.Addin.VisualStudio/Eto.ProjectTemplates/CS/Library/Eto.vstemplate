@@ -11,7 +11,7 @@
   <TemplateContent>
     <Project TargetFileName="Eto.csproj" File="Library.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.cs">MainForm.cs</ProjectItem>
-      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.eto.cs">MainForm.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.eto.cs">MainForm.eto.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainForm.xeto.cs">MainForm.jxeto.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainForm.jeto.cs">MainForm.jxeto.cs</ProjectItem>
       <Folder Name="..\..\Shared" TargetFolderName=".">
@@ -44,7 +44,7 @@
       <package id="Eto.Forms" version="2.2.0-alpha" />
     </packages>
     <RequiredReferences Quiet="true">
-      <Reference id="Portable.Xaml" version="0.4.0" condition="UseXeto" />
+      <Reference id="Portable.Xaml" version="0.6.1" condition="UseXeto" />
       <Reference id="Eto.Serialization.Xaml" version="2.2.0-alpha" assembly="Eto.Serialization.Xaml" extension="Eto.Addin.VisualStudio" condition="UseXeto" />
       <Reference id="Newtonsoft.Json" version="7.0.1" condition="UseJeto" />
       <Reference id="Eto.Serialization.Json" version="2.2.0-alpha" assembly="Eto.Serialization.Json" extension="Eto.Addin.VisualStudio" condition="UseJeto" />
@@ -55,8 +55,7 @@
         <Replacement name="$ProjectReferences$" />
         <Replacement name="$ProjectFiles$">
           <![CDATA[
-    <Compile Include="MainForm.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />]]>
+    <Compile Include="MainForm.cs" />]]>
         </Replacement>
         <Replacement name="$ProjectImports$" />
       </ReplacementGroup>
@@ -67,8 +66,7 @@
     <EmbeddedResource Include="MainForm.xeto" />
     <Compile Include="MainForm.xeto.cs">
       <DependentUpon>MainForm.xeto</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />]]>
+    </Compile>]]>
         </Replacement>
       </ReplacementGroup>
       <ReplacementGroup condition="UseJeto">
@@ -78,8 +76,17 @@
     <EmbeddedResource Include="MainForm.jeto" />
     <Compile Include="MainForm.jeto.cs">
       <DependentUpon>MainForm.jeto</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />]]>
+    </Compile>]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseCodePreview">
+        <Replacement name="$Preview$">true</Replacement>
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <Compile Include="MainForm.cs" />
+    <Compile Include="MainForm.eto.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>]]>
         </Replacement>
       </ReplacementGroup>
       <ReplacementGroup condition="UseNET">

@@ -40,36 +40,117 @@ namespace Eto.Wpf.Forms
 			set { border.Background = value.ToWpfBrush(Control.Background); }
 		}
 
-		public override sw.Size GetPreferredSize(sw.Size constraint)
-		{
-			if (columnScale == null || rowScale == null)
-				return base.GetPreferredSize(constraint);
-			var widths = new double[columnScale.Length];
-			double height = 0;
-			for (int y = 0; y < rowScale.Length; y++)
-			{
-				double maxHeight = 0;
-				for (int x = 0; x < widths.Length; x++)
-				{
-					var childControl = controls[x, y].GetWpfFrameworkElement();
-					if (childControl != null)
-					{
-						var preferredSize = childControl.GetPreferredSize(WpfConversions.PositiveInfinitySize);
-						var margin = childControl.ContainerControl.Margin;
-						widths[x] = Math.Max(widths[x], preferredSize.Width + margin.Horizontal());
-						maxHeight = Math.Max(maxHeight, preferredSize.Height + margin.Vertical());
-					}
-				}
-				height += maxHeight;
-			}
+        bool IsColumnScaled(int column)
+        {
+            return columnScale[column] || column == lastColumnScale;
+        }
 
-			var size = new sw.Size(widths.Sum() + border.Padding.Horizontal(), height + border.Padding.Vertical());
-			if (!double.IsNaN(PreferredSize.Width))
-				size.Width = Math.Max(size.Width, PreferredSize.Width);
-			if (!double.IsNaN(PreferredSize.Height))
-				size.Height = Math.Max(size.Height, PreferredSize.Height);
-			return size;
-		}
+        bool IsRowScaled(int row)
+        {
+            return rowScale[row] || row == lastRowScale;
+        }
+
+        public override sw.Size GetPreferredSize(sw.Size constraint)
+        {
+            if (columnScale == null || columnScale.Length == 0 || rowScale == null || rowScale.Length == 0)
+                return ContainerControl.GetMinSize().Add(ContainerControl.Margin.Size());
+
+            var margin = ContainerControl.Margin.Size();
+            var size = PreferredSize;
+            if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
+            {
+                var padding = border.Padding.Size();
+                var widths = new double[columnScale.Length];
+                var heights = new double[rowScale.Length];
+                var scaledCells = new Size();
+                var childConstraint = constraint.Subtract(padding);
+                childConstraint = childConstraint.Subtract(margin);
+
+                // check non-scaled rows/columns first with preferred size
+                for (int y = 0; y < rowScale.Length; y++)
+                {
+                    var cellConstraint = childConstraint;
+                    var hasRowScale = IsRowScaled(y);
+                    if (hasRowScale)
+                        scaledCells.Height++;
+                    else
+                        cellConstraint.Height = double.PositiveInfinity;
+                    for (int x = 0; x < widths.Length; x++)
+                    {
+                        var hasColScale = IsColumnScaled(x);
+                        if (hasColScale && y == 0)
+                            scaledCells.Width++;
+                        if (!hasColScale)
+                            cellConstraint.Width = double.PositiveInfinity;
+                        if (!hasColScale || !hasRowScale)
+                        {
+                            var control = controls[x, y];
+                            var childControl = control.GetWpfFrameworkElement();
+                            if (childControl != null && control.Visible)
+                            {
+                                var preferredSize = childControl.GetPreferredSize(cellConstraint);
+                                if (!hasColScale)
+                                    widths[x] = Math.Max(widths[x], preferredSize.Width);
+                                if (!hasRowScale)
+                                    heights[y] = Math.Max(heights[y], preferredSize.Height);
+                            }
+                            else
+                            {
+                                var cellMargins = GetMargins(x, y);
+                                widths[x] = Math.Max(widths[x], cellMargins.Horizontal());
+                                heights[y] = Math.Max(heights[y], cellMargins.Vertical());
+                            }
+                        }
+                    }
+                }
+
+                // find remaning size for each cell
+                childConstraint = childConstraint.Subtract(new sw.Size(widths.Sum(), heights.Sum()));
+                childConstraint.Width /= scaledCells.Width;
+                childConstraint.Height /= scaledCells.Height;
+
+                // check scaled rows/columns based on remaining size
+                for (int y = 0; y < rowScale.Length; y++)
+                {
+                    var cellConstraint = childConstraint;
+                    var hasRowScale = IsRowScaled(y);
+                    if (!hasRowScale)
+                        cellConstraint.Height = double.PositiveInfinity;
+                    for (int x = 0; x < widths.Length; x++)
+                    {
+                        var hasColScale = IsColumnScaled(x);
+                        if (!hasColScale)
+                            cellConstraint.Width = double.PositiveInfinity;
+                        if (hasColScale || hasRowScale)
+                        {
+                            var control = controls[x, y];
+                            var childControl = control.GetWpfFrameworkElement();
+                            if (childControl != null && control.Visible)
+                            {
+                                var preferredSize = childControl.GetPreferredSize(cellConstraint);
+                                widths[x] = Math.Max(widths[x], preferredSize.Width);
+                                heights[y] = Math.Max(heights[y], preferredSize.Height);
+                            }
+                            else
+                            {
+                                var cellMargins = GetMargins(x, y);
+                                widths[x] = Math.Max(widths[x], cellMargins.Horizontal());
+                                heights[y] = Math.Max(heights[y], cellMargins.Vertical());
+                            }
+                        }
+                    }
+                }
+                var preferredContentSize = new sw.Size(widths.Sum(), heights.Sum());
+                preferredContentSize = preferredContentSize.Add(padding);
+
+                size = size.IfNaN(preferredContentSize);
+            }
+
+            size = size.Max(ContainerControl.GetMinSize());
+            size = size.Add(margin);
+            //System.Diagnostics.Debug.WriteLine("Size: {0}, actual: {1}", size, ContainerControl.GetSize());
+            return size;
+        }
 
 		public void CreateControl(int cols, int rows)
 		{
@@ -130,6 +211,20 @@ namespace Eto.Wpf.Forms
 		public override void UpdatePreferredSize()
 		{
 			base.UpdatePreferredSize();
+			for (int y = 0; y < Control.RowDefinitions.Count; y++)
+			{
+				for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
+				{
+					var child = controls[x, y];
+					var childControl = child.GetWpfFrameworkElement();
+					if (childControl != null)
+					{
+						childControl.ParentMinimumSize = sw.Size.Empty;
+					}
+				}
+			}
+            if (Widget.Loaded)
+			    Control.UpdateLayout();
 			SetChildrenSizes();
 		}
 
@@ -236,16 +331,21 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		void SetMargins(sw.FrameworkElement c, int x, int y)
+        sw.Thickness GetMargins(int x, int y)
+        {
+            var margin = new sw.Thickness();
+            if (x > 0) margin.Left = Math.Floor(spacing.Width / 2.0);
+            if (x < Control.ColumnDefinitions.Count - 1) margin.Right = Math.Ceiling(spacing.Width / 2.0);
+            if (y > 0) margin.Top = Math.Floor(spacing.Height / 2.0);
+            if (y < Control.RowDefinitions.Count - 1) margin.Bottom = Math.Ceiling(spacing.Height / 2.0);
+            return margin;
+        }
+
+        void SetMargins(sw.FrameworkElement c, int x, int y)
 		{
-			var margin = new sw.Thickness();
-			if (x > 0) margin.Left = spacing.Width / 2;
-			if (x < Control.ColumnDefinitions.Count - 1) margin.Right = spacing.Width / 2;
-			if (y > 0) margin.Top = spacing.Height / 2;
-			if (y < Control.RowDefinitions.Count - 1) margin.Bottom = spacing.Height / 2;
 			c.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
 			c.VerticalAlignment = sw.VerticalAlignment.Stretch;
-			c.Margin = margin;
+			c.Margin = GetMargins(x, y);
 		}
 
 		public Padding Padding

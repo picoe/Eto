@@ -52,6 +52,7 @@
     <Compile Include="Extensions\ResourceExtension.cs" />
     <Compile Include="Extensions\OnExtension.cs" />
     <Compile Include="EtoNameScope.cs" />
+    <Compile Include="Extensions\FontExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -79,7 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Portable.Xaml">
-      <HintPath>..\packages\Portable.Xaml.0.5.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
+      <HintPath>..\packages\Portable.Xaml.0.6.1\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

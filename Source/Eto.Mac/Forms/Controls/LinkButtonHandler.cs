@@ -104,7 +104,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override NSColor CurrentColor
 		{
-			get { return Enabled ? TextColor.ToNSUI() : DisabledTextColor.ToNSUI(); }
+			get { return Enabled ? base.CurrentColor : DisabledTextColor.ToNSUI(); }
 		}
 
 		protected override EtoLinkLabel CreateControl()
@@ -170,7 +170,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value != DisabledTextColor)
 				{
 					Widget.Properties[DisabledTextColorKey] = value;
-
+					SetAttributes();
 				}
 			}
 		}

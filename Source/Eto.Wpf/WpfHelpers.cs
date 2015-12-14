@@ -26,8 +26,13 @@ namespace Eto.Forms
 		{
 			if (control == null)
 				return null;
-			if (attach && !control.Loaded)
-				control.AttachNative();
+            if (attach && !control.Loaded)
+            {
+                control.AttachNative();
+                var handler = control.GetWpfFrameworkElement();
+                if (handler != null)
+                    handler.SetScale(false, false);
+            }
 			return control.GetContainerControl();
 		}
 

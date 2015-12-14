@@ -39,7 +39,7 @@
     </ProjectReferences>
 	<Replacements>
 	  <ReplacementGroup>
-		<Replacement name="$EtoPlatform$">Eto.Platforms.WinForms</Replacement>
+		<Replacement name="$EtoPlatform$">Platforms.WinForms</Replacement>
 	  </ReplacementGroup>
 	</Replacements>
   </WizardData>

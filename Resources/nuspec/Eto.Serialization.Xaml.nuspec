@@ -19,14 +19,10 @@ https://github.com/picoe/Eto/wiki
     	</description>
 		<copyright>$copyright$</copyright>
 		<tags>cross platform gui ui framework desktop xaml eto.forms</tags>
-		<frameworkAssemblies>
-			<frameworkAssembly assemblyName="System.Xaml" targetFramework="net40" />
-			<frameworkAssembly assemblyName="System.Xaml" targetFramework="net45" />
-		</frameworkAssemblies>
 		<dependencies>
 			<group>
 				<dependency id="Eto.Forms" version="[$version$]" />
-				<dependency id="Portable.Xaml" version="0.4.0" />
+				<dependency id="Portable.Xaml" version="0.6.1" />
 			</group>
 		</dependencies>
 	</metadata>

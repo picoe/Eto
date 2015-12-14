@@ -29,7 +29,8 @@ namespace Eto.WinForms.Forms
 		swf.Panel toolbarHolder;
 		readonly swf.ToolTip tooltips = new swf.ToolTip();
 		bool resizable;
-		bool clientSizeSet;
+		bool clientWidthSet;
+		bool clientHeightSet;
 
 		public override swf.Control ContainerContentControl
 		{
@@ -63,7 +64,8 @@ namespace Eto.WinForms.Forms
 				{
 					content.MinimumSize = content.MaximumSize = value.ToSD();
 				}
-				clientSizeSet = value.Width != -1 || value.Height != -1;
+				clientWidthSet = value.Width != -1;
+				clientHeightSet = value.Height != -1;
 			}
 		}
 
@@ -110,8 +112,16 @@ namespace Eto.WinForms.Forms
 			Control.Load += (sender, e) =>
 			{
 				// ensure we auto size to the content
-				if (!clientSizeSet && Control.AutoSize && contentSize != null)
-					ContainerContentControl.MinimumSize = contentSize.Value.ToSD(); // Content.GetPreferredSize().ToSD();
+				if ((!clientWidthSet || !clientHeightSet) /*&& Control.AutoSize*/ && contentSize != null)
+				{
+					var sz = contentSize.Value.ToSD(); // Content.GetPreferredSize().ToSD();
+					var min = new sd.Size();
+					if (!clientWidthSet)
+						 min.Width = sz.Width;
+					if (!clientHeightSet)
+						min.Height = sz.Height;
+					ContainerContentControl.MinimumSize = min;
+				}
 				Control.MinimumSize = Control.Size;
 				Control.AutoSize = false;
 				Control.MinimumSize = MinimumSize.ToSD();
@@ -126,11 +136,33 @@ namespace Eto.WinForms.Forms
 			HandleEvent(Window.ClosingEvent);
 		}
 
+		public override Size Size
+		{
+			get
+			{
+				return base.Size;
+			}
+			set
+			{
+				base.Size = value;
+				clientWidthSet = value.Width != -1;
+				clientHeightSet = value.Height != -1;
+			}
+		}
+
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			if (!clientSizeSet && Control.AutoSize)
-				contentSize = Content.GetPreferredSize();
+
+			if ((!clientWidthSet || !clientHeightSet))// && Control.AutoSize)
+			{
+				var availableSize = ClientSize;
+				if (!clientWidthSet)
+					availableSize.Width = 0;
+				if (!clientHeightSet)
+					availableSize.Height = 0;
+				contentSize = Content.GetPreferredSize(availableSize);
+			}
 		}
 		Size? contentSize;
 
@@ -430,7 +462,7 @@ namespace Eto.WinForms.Forms
 
 		public Screen Screen
 		{
-			get { return new Screen(new ScreenHandler(swf.Screen.FromControl(Control))); }
+			get { return swf.Screen.FromControl(Control).ToEto(); }
 		}
 
 		public override bool Visible

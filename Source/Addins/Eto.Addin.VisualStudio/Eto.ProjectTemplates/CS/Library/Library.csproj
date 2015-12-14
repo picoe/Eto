@@ -28,6 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>$ProjectReferences$
-  <ItemGroup>$ProjectFiles$
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />$ProjectFiles$
   </ItemGroup>$ProjectImports$
 </Project>

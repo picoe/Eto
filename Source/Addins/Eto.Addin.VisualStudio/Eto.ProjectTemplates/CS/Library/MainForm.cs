@@ -4,18 +4,14 @@ using Eto.Drawing;
 
 namespace $safeprojectname$
 {
-	/// <summary>
-	/// Your application's main form
-	/// </summary>
-	public class MainForm : Form
-	{
-		public MainForm()
+    public $if$ ($Preview$ == true)partial class MainForm$else$class MainForm : Form$endif$
+    {
+        public MainForm()
 		{
-			Title = "My Eto Form";
+            $if$ ($Preview$ == true)InitializeComponent();$else$Title = "My Eto Form";
 			ClientSize = new Size(400, 350);
 
-			// scrollable region as the main content
-			Content = new Scrollable
+            Content = new Scrollable
 			{
 				// table with three rows
 				Content = new TableLayout(
@@ -56,7 +52,7 @@ namespace $safeprojectname$
 			};
 
 			// create toolbar			
-			ToolBar = new ToolBar { Items = { clickMe } };
+			ToolBar = new ToolBar { Items = { clickMe } };$endif$
 		}
-	}
+    }
 }

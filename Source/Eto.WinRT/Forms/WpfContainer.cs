@@ -50,7 +50,7 @@ namespace Eto.WinRT.Forms
 
 		public virtual void UpdatePreferredSize()
 		{
-			var parent = Widget.Parent.GetWpfContainer();
+			var parent = Widget.VisualParent.GetWpfContainer();
 			if (parent != null)
 				parent.UpdatePreferredSize();
 		}
