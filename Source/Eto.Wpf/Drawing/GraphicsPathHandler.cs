@@ -84,7 +84,7 @@ namespace Eto.Wpf.Drawing
 
 		public void AddRectangle (float x, float y, float width, float height)
 		{
-			Control.AddGeometry (new swm.RectangleGeometry (new sw.Rect (x, y, width, height)));
+            Control.AddGeometry(new swm.RectangleGeometry(WpfExtensions.NormalizedRect(x, y, width, height)));
 			figure = null;
 		}
 
@@ -186,7 +186,7 @@ namespace Eto.Wpf.Drawing
 
 		public void AddEllipse (float x, float y, float width, float height)
 		{
-			Control.AddGeometry (new swm.EllipseGeometry (new sw.Rect (x, y, width, height)));
+            Control.AddGeometry(new swm.EllipseGeometry(WpfExtensions.NormalizedRect(x, y, width, height)));
 			figure = null;
 		}
 
