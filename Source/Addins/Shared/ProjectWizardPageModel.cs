@@ -22,6 +22,9 @@ namespace Eto.Addin.Shared
 			UseSAL = false;
 			Combined = true;
 			UseCode = true;
+            UseCodePreview = false;
+            UseXeto = false;
+            UseJeto = false;
 		}
 
 		public string AppName

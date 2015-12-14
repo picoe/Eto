@@ -196,6 +196,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="VB\Library\MainForm.eto.vb" />
     <Content Include="VB\Library\MainForm.jxeto.vb" />
     <None Include="CS\Library\MyPanel.cs" />
     <Content Include="VB\AssemblyInfo.vb" />
@@ -206,7 +207,7 @@
     <Content Include="FS\App\Program.fs" />
     <Content Include="FS\Library\MyPanel.fs" />
     <None Include="CS\Library\MainForm.jxeto.cs" />
-    <None Include="CS\Library\MainForm.preview.cs" />
+    <None Include="CS\Library\MainForm.eto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

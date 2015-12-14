@@ -13,7 +13,7 @@
     <Project TargetFileName="Eto.shproj" File="Eto-sal.shproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.projitems">Eto-sal.projitems</ProjectItem>
       <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.cs">MainForm.cs</ProjectItem>
-      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.eto.cs">MainForm.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.eto.cs">MainForm.eto.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.xeto.cs">MainForm.jxeto.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.xeto.cs">MainForm.jxeto.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.xeto">MainForm.xeto</ProjectItem>
@@ -52,6 +52,16 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MainForm.jeto" />
     <Compile Include="$(MSBuildThisFileDirectory)MainForm.jeto.cs">
       <DependentUpon>$(MSBuildThisFileDirectory)MainForm.jeto</DependentUpon>
+    </Compile>]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseCodePreview">
+        <Replacement name="$Preview$">true</Replacement>
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <Compile Include="MainForm.cs" />
+    <Compile Include="MainForm.eto.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>]]>
         </Replacement>
       </ReplacementGroup>

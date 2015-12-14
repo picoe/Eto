@@ -43,8 +43,7 @@
 				<Replacement name="$ProjectReferences$" />
 				<Replacement name="$ProjectFiles$">
 					<![CDATA[
-    <Compile Include="MyPanel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />]]>
+    <Compile Include="MyPanel.cs" />]]>
 				</Replacement>
 				<Replacement name="$ProjectImports$" />
 			</ReplacementGroup>
