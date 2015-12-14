@@ -43,7 +43,7 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					ClearSize();
 					lastWidth = Width;
-					BeginInvoke(new Action(() => Handler.SizeChanged()));
+					BeginInvoke(new Action(Handler.SizeChanged));
 				}
 			}
 
@@ -319,13 +319,6 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			base.SetScale(xscale, yscale);
 			SetAutoSize();
-		}
-
-		protected override void SetAutoSize()
-		{
-			base.SetAutoSize();
-			if (XScale && YScale)
-				Control.AutoSize = true;
 		}
 
 		void SizeChanged()

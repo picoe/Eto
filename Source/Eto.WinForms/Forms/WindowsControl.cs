@@ -112,18 +112,20 @@ namespace Eto.WinForms.Forms
 		public virtual Size GetPreferredSize(Size availableSize, bool useCache = false)
 		{
 			var size = UserDesiredSize;
-			Size? defSize;
-			if (useCache)
-				defSize = cachedDefaultSize ?? GetDefaultSize(availableSize);
-			else
-				defSize = GetDefaultSize(availableSize);
-			if (defSize != null)
-			{
-				if (size.Width == -1) size.Width = defSize.Value.Width;
-				if (size.Height == -1) size.Height = defSize.Value.Height;
-			}
-
-			return Size.Max(parentMinimumSize, size);
+            if (size.Width == -1 || size.Height == -1)
+            {
+                Size? defSize;
+                if (useCache)
+                    defSize = cachedDefaultSize ?? GetDefaultSize(availableSize);
+                else
+                    defSize = GetDefaultSize(availableSize);
+                if (defSize != null)
+                {
+                    if (size.Width == -1) size.Width = defSize.Value.Width;
+                    if (size.Height == -1) size.Height = defSize.Value.Height;
+                }
+            }
+            return Size.Max(parentMinimumSize, size);
 		}
 
 		static readonly object DesiredSizeKey = new object();
@@ -375,8 +377,10 @@ namespace Eto.WinForms.Forms
 			}
 			set
 			{
-				Widget.Properties[DesiredSizeKey] = value;
+                UserDesiredSize = value;
 				SetAutoSize();
+                if (Widget.Loaded)
+                    SetScale();
 				var minset = SetMinimumSize();
 				ContainerControl.Size = value.ToSD();
 				if (minset && ContainerControl.IsHandleCreated)
