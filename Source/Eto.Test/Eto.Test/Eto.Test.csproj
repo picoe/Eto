@@ -196,6 +196,7 @@
     <Compile Include="UnitTests\Forms\ToolItemCollectionTests.cs" />
     <Compile Include="UnitTests\Forms\Layout\DynamicLayoutTests.cs" />
     <Compile Include="UnitTests\Forms\Layout\StackLayoutTests.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
