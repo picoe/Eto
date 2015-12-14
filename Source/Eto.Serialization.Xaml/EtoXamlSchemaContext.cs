@@ -29,7 +29,7 @@ namespace Eto.Serialization.Xaml
 			{
 				return base.GetXamlType(xamlNamespace, name, typeArguments);
 			}
-			catch (Exception ex)
+			catch
 			{
 				if (DesignMode && type == null && name.IndexOf('.') == -1)
 				{
