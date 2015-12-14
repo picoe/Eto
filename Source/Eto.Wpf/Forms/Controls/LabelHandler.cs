@@ -54,8 +54,8 @@ namespace Eto.Wpf.Forms.Controls
 				return;
 			// update parents only when the render size has changed
 			previousRenderSize = Control.RenderSize;
-			if (Wrap != WrapMode.None)
-				UpdateParentPreferredSize();
+            if (Wrap != WrapMode.None)
+                UpdatePreferredSize();
 		}
 
 		protected override void Initialize()
@@ -130,21 +130,17 @@ namespace Eto.Wpf.Forms.Controls
 							throw new NotSupportedException();
 					}
 					SetText();
-					UpdateParentPreferredSize();
+                    UpdatePreferredSize();
 				}
 			}
 		}
 
-		public void UpdateParentPreferredSize()
-		{
-			var container = Widget.VisualParent.GetWpfContainer();
-			if (container != null)
-			{
-				ParentMinimumSize = WpfConversions.ZeroSize;
-				SetSize();
-				container.UpdatePreferredSize();
-			}
-		}
+        public override void UpdatePreferredSize()
+        {
+            ParentMinimumSize = WpfConversions.ZeroSize;
+            SetSize();
+            base.UpdatePreferredSize();
+        }
 
 		public override Color TextColor
 		{

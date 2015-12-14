@@ -41,13 +41,6 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public virtual void UpdatePreferredSize()
-		{
-			var parent = Widget.VisualParent.GetWpfContainer();
-			if (parent != null)
-				parent.UpdatePreferredSize();
-		}
-
 		public override void Invalidate()
 		{
 			base.Invalidate();

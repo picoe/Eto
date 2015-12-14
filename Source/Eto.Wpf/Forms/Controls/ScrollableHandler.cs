@@ -144,7 +144,7 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					case BorderType.Bezel:
 						Control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
-						Control.BorderThickness = new sw.Thickness(1.0);
+						Control.BorderThickness = new sw.Thickness(1);
 						break;
 					case BorderType.Line:
 						Control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
@@ -152,7 +152,8 @@ namespace Eto.Wpf.Forms.Controls
 						break;
 					case BorderType.None:
 						Control.BorderBrush = null;
-						break;
+                        Control.BorderThickness = new sw.Thickness(0);
+                        break;
 					default:
 						throw new NotSupportedException();
 				}

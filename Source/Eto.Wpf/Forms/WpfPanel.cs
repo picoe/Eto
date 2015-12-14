@@ -55,25 +55,25 @@ namespace Eto.Wpf.Forms
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			var size = PreferredSize;
-			if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
-			{
-				sw.Size baseSize;
-				if (UseContentSize)
+            var margin = ContainerControl.Margin.Size();
+            if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
+            {
+                sw.Size baseSize;
+                if (UseContentSize)
 				{
-					var padding = border.Padding.Size().Add(ContainerControl.Margin.Size());
-					var contentSize = constraint.Subtract(padding);
-					var preferredSize = content.GetPreferredSize(contentSize);
-					baseSize = new sw.Size(Math.Max(0, preferredSize.Width + padding.Width), Math.Max(0, preferredSize.Height + padding.Height));
+                    var padding = border.Padding.Size();
+                    var childConstraint = constraint.Subtract(padding).Subtract(margin);
+					baseSize = content.GetPreferredSize(childConstraint);
+                    baseSize = baseSize.Add(padding); // we add margin back at end
 				}
-				else
-					baseSize = base.GetPreferredSize(constraint);
+                else
+                    baseSize = base.GetPreferredSize(constraint).Subtract(margin);
 
-				if (double.IsNaN(size.Width))
-					size.Width = baseSize.Width;
-				if (double.IsNaN(size.Height))
-					size.Height = baseSize.Height;
-			}
-			return new sw.Size(Math.Max(0, size.Width), Math.Max(0, size.Height));
+                size = size.IfNaN(baseSize);
+            }
+            size = size.Max(ContainerControl.GetMinSize());
+            size = size.Add(margin);
+            return size;
 		}
 
 		ContextMenu contextMenu;

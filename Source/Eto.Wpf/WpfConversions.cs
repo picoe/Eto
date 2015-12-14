@@ -291,6 +291,11 @@ namespace Eto.Wpf
             return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
         }
 
+        public static sw.Size GetMinSize(this sw.FrameworkElement element)
+        {
+            return new sw.Size(element.MinWidth, element.MinHeight);
+        }
+
         public static void SetSize(this sw.FrameworkElement element, Size size)
 		{
 			element.Width = size.Width == -1 ? double.NaN : size.Width;

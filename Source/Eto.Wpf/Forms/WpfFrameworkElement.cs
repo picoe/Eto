@@ -139,8 +139,16 @@ namespace Eto.Wpf.Forms
 			{
 				preferredSize = value.ToWpf();
 				SetSize();
+                UpdatePreferredSize();
 			}
 		}
+
+        public virtual void UpdatePreferredSize()
+        {
+            var parent = Widget.VisualParent.GetWpfContainer();
+            if (parent != null)
+                parent.UpdatePreferredSize();
+        }
 
 		public virtual void SetScale(bool xscale, bool yscale)
 		{
@@ -188,16 +196,18 @@ namespace Eto.Wpf.Forms
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			var size = preferredSize;
-			if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
+            var margin = ContainerControl.Margin.Size();
+
+            if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
 			{
-				ContainerControl.Measure(constraint);
-				var desired = ContainerControl.DesiredSize;
-				if (double.IsNaN(size.Width))
-					size.Width = Math.Max(desired.Width, DefaultSize.Width);
-				if (double.IsNaN(size.Height))
-					size.Height = Math.Max(desired.Height, DefaultSize.Height);
-			}
-			return size;
+                ContainerControl.Measure(constraint);
+                var desired = ContainerControl.DesiredSize.Subtract(margin);
+                desired = desired.Max(DefaultSize.ToWpf().ZeroIfNan());
+                size = size.IfNaN(desired);
+            }
+            size = size.Max(ContainerControl.GetMinSize());
+            size = size.Add(margin);
+            return size;
 		}
 
 		public virtual bool Enabled
@@ -271,8 +281,9 @@ namespace Eto.Wpf.Forms
 			set
 			{
 				Control.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
-			}
-		}
+                UpdatePreferredSize();
+            }
+        }
 
 		public override void AttachEvent(string id)
 		{
