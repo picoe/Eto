@@ -150,16 +150,16 @@ namespace Eto.Test
 
 		protected override void OnInitialized(EventArgs e)
 		{
-			Eto.Style.Add<TableLayout2>(null, c => c.LoadComplete += (sender, ee) =>
+			/*Eto.Style.Add<TableLayout2>(null, c => c.LoadComplete += (sender, ee) =>
 			{
 				if (!c.Columns.Any(r => r.Width.IsStar))
 					c.Columns[c.Columns.Count - 1].Width = TableLength.Star(1);
 				if (!c.Rows.Any(r => r.Height.IsStar))
 					c.Rows[c.Rows.Count - 1].Height = TableLength.Star(1);
-			});
+			});*/
 
-			MainForm = new MainForm(TestSections.Get(TestAssemblies));
-			//MainForm = new TestForm();
+			//MainForm = new MainForm(TestSections.Get(TestAssemblies));
+			MainForm = new TestForm();
 			//MainForm = new Form{ Content = new Sections.Layouts.TableLayoutSection.ScalingSection() };//.Show();
 
 			base.OnInitialized(e);

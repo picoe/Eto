@@ -63,7 +63,7 @@ namespace Eto.Wpf.Forms
 				{
                     var padding = border.Padding.Size();
                     var childConstraint = constraint.Subtract(padding).Subtract(margin);
-					baseSize = content.GetPreferredSize(childConstraint);
+					baseSize = content.GetPreferredSize(childConstraint.ToEto()).ToWpf();
                     baseSize = baseSize.Add(padding); // we add margin back at end
 				}
                 else

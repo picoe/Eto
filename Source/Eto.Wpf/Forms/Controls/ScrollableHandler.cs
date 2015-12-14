@@ -66,7 +66,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				var content = (swc.Border)scroller.Content;
 				var viewportSize = new sw.Size(info.ViewportWidth, info.ViewportHeight);
-				var prefSize = Content.GetPreferredSize(new sw.Size(content.ActualWidth, content.ActualHeight));
+				var prefSize = Content.GetPreferredSize(new SizeF((float)content.ActualWidth, (float)content.ActualHeight));
 
 				// hack for when a scrollable is in a group box it expands vertically indefinitely
 				// -2 since when you resize the scrollable it grows slowly

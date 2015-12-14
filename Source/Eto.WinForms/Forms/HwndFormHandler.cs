@@ -448,6 +448,11 @@ namespace Eto.WinForms.Forms
 			throw new NotImplementedException();
 		}
 
+		public Size GetPreferredSize(Size availableSize)
+		{
+			throw new NotImplementedException();
+		}
+
 		public string ToolTip
 		{
 			get

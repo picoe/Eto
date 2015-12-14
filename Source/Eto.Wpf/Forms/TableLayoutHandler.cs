@@ -88,7 +88,7 @@ namespace Eto.Wpf.Forms
                             var childControl = control.GetWpfFrameworkElement();
                             if (childControl != null && control.Visible)
                             {
-                                var preferredSize = childControl.GetPreferredSize(cellConstraint);
+                                var preferredSize = control.GetPreferredSize(cellConstraint.ToEto());
                                 if (!hasColScale)
                                     widths[x] = Math.Max(widths[x], preferredSize.Width);
                                 if (!hasRowScale)
@@ -127,7 +127,7 @@ namespace Eto.Wpf.Forms
                             var childControl = control.GetWpfFrameworkElement();
                             if (childControl != null && control.Visible)
                             {
-                                var preferredSize = childControl.GetPreferredSize(cellConstraint);
+                                var preferredSize = control.GetPreferredSize(cellConstraint.ToEto());
                                 widths[x] = Math.Max(widths[x], preferredSize.Width);
                                 heights[y] = Math.Max(heights[y], preferredSize.Height);
                             }

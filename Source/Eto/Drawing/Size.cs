@@ -44,7 +44,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Size struct with truncated width and height values of the specified <paramref name="size"/></returns>
 		public static Size Truncate (SizeF size)
 		{
-			return new Size ((int)size.Width, (int)size.Height);
+			return new Size ((int)Math.Truncate(size.Width), (int)Math.Truncate(size.Height));
 		}
 		
 		/// <summary>
