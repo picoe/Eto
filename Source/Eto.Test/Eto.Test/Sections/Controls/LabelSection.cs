@@ -136,6 +136,9 @@ namespace Eto.Test.Sections.Controls
 			var wrapDropDown = new EnumDropDown<WrapMode>();
 			wrapDropDown.SelectedValueBinding.Bind(label, l => l.Wrap);
 
+			var textAlignmentDropDown = new EnumDropDown<TextAlignment>();
+			textAlignmentDropDown.SelectedValueBinding.Bind(label, l => l.TextAlignment);
+
 			Func<Control> spacer = () => new Panel { BackgroundColor = Colors.DarkGray, Size = new Size(10, 10) };
 
 			return new StackLayout
@@ -147,7 +150,7 @@ namespace Eto.Test.Sections.Controls
 					{
 						Orientation = Orientation.Horizontal,
 						Spacing = 5,
-						Items = { "Wrap:", wrapDropDown }
+						Items = { "Wrap:", wrapDropDown, "TextAlignment:", textAlignmentDropDown }
 					}, HorizontalAlignment.Center),
 					spacer(),
 					new TableLayout(
