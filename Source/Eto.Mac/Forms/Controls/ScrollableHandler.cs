@@ -175,6 +175,7 @@ namespace Eto.Mac.Forms.Controls
 					default:
 						throw new NotSupportedException();
 				}
+				LayoutIfNeeded();
 			}
 		}
 
