@@ -323,7 +323,7 @@ namespace Eto.Wpf.Drawing
 					newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
 					handler.SetBitmap(newbmp);
 				}
-				newbmp.Render(visual);
+				newbmp.RenderWithCollect(visual);
 				return true;
 			}
 			return false;
@@ -567,7 +567,7 @@ namespace Eto.Wpf.Drawing
 				// bitmap
 				Control.Close();
 				var newbmp = new swmi.RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, 96, 96, swm.PixelFormats.Pbgra32);
-				newbmp.Render(visual);
+				newbmp.RenderWithCollect(visual);
 
 				swm.Geometry maskgeometry;
 				if (clipPath != null)

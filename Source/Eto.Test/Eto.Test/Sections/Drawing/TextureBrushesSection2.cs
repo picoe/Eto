@@ -59,11 +59,6 @@ namespace Eto.Test.Sections.Drawing
 				bitmapGraphics.Dispose();
 				bitmapGraphics = null;
 				e.Graphics.DrawImage(bitmap, new RectangleF(renderSize), e.ClipRectangle);
-				if (Platform.IsWpf)
-				{
-					// wpf runs out of resources fast here, so we garbage collect
-					GC.Collect();
-				}
 			}
 			else
 			{
