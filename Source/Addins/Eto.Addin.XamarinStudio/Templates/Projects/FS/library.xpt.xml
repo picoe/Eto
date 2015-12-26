@@ -8,6 +8,7 @@
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in F#.</_Description>
     	<GroupId>eto-project-library</GroupId>
     	<SupportedParameters>AppName,IsLibrary,SupportsCodePreview,SupportsXeto,SupportsJeto</SupportedParameters>
+		<Image id="eto-project" />
 	</TemplateConfiguration>
 
 	<Combine name="${ProjectName}" directory=".">

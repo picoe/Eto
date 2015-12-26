@@ -8,6 +8,7 @@
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in VB.NET.</_Description>
     	<GroupId>eto-project-library</GroupId>
     	<SupportedParameters>AppName,IsLibrary</SupportedParameters>
+		<Image id="eto-project" />
 	</TemplateConfiguration>
 
 	<Actions>

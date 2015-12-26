@@ -26,19 +26,12 @@ namespace Eto.Addin.VisualStudio.Wizards
 					var selected = option.Selected;
 					if (selected != null)
 					{
-						foreach (var replacement in selected.Replacements)
-						{
-							if (replacementsDictionary.MatchesCondition(replacement.Condition))
-							{
-								replacementsDictionary[replacement.Name] = replacement.Content;
-							}
-						}
+						selected.Replacements.SetMatchedItems(replacementsDictionary);
 					}
 				}
 			}
 			else
 				throw new WizardBackoutException();
-			
 		}
 	}
 }

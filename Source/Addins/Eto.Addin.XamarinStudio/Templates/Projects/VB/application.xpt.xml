@@ -8,6 +8,7 @@
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in VB.NET]]></_Description>
 		<GroupId>eto-project-application</GroupId>
 		<SupportedParameters>AppName,SupportsCombined</SupportedParameters>
+		<Image id="eto-project" />
 	</TemplateConfiguration>
 
 	<Actions>

@@ -8,6 +8,7 @@
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in C#]]></_Description>
 		<GroupId>eto-project-application</GroupId>
 		<SupportedParameters>AppName,SupportsCombined,SupportsPCL,SupportsSAL,SupportsXeto,SupportsCodePreview,SupportsJeto</SupportedParameters>
+		<Image id="eto-project" />
 	</TemplateConfiguration>
 
 	<Actions>

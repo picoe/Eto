@@ -14,8 +14,8 @@ namespace Eto.Addin.VisualStudio.Wizards
 	{
 		public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
 		{
-			replacementsDictionary["$targetframeworkversion$"] = RootWizard.Globals["$targetframeworkversion$"];
-            foreach (var replacement in RootWizard.Globals)
+			replacementsDictionary["$targetframeworkversion$"] = MultiProjectWizard.Globals["$targetframeworkversion$"];
+            foreach (var replacement in MultiProjectWizard.Globals)
 				replacementsDictionary["$root." + replacement.Key.TrimStart('$')] = replacement.Value;
 		}
 

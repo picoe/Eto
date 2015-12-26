@@ -13,7 +13,7 @@ namespace Eto.Addin.Shared
 
 		public string Description { get; set; }
 
-		public List<ReplacementItem> Replacements { get; } = new List<ReplacementItem>();
+		public List<ReplacementGroup> Replacements { get; } = new List<ReplacementGroup>();
 
 		public static IEnumerable<OptionValue> LoadXml(XElement element)
 		{
@@ -30,7 +30,7 @@ namespace Eto.Addin.Shared
 		{
 			Name = (string)element.Attribute("name");
 			Description = (string)element.Attribute("description");
-			Replacements.AddRange(ReplacementItem.LoadXml(element));
+			Replacements.AddRange(ReplacementGroup.LoadXml(element));
 		}
 	}
 

@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using System.Windows.Media;
 
 namespace Eto.Addin.VisualStudio.Editor
 {
@@ -43,7 +44,6 @@ namespace Eto.Addin.VisualStudio.Editor
 		EtoAddinPackage package;
 		PreviewEditorView preview;
 		Panel editorControl;
-		ElementHost host = new ElementHost();
 		uint dataEventsCookie;
 		uint linesEventsCookie;
 
@@ -53,9 +53,9 @@ namespace Eto.Addin.VisualStudio.Editor
 			if (textManager != null)
 			{
 				if (subscribe)
-					textManager.RegisterIndependentView((IVsWindowPane)this, textBuffer);
+					textManager.RegisterIndependentView(this, textBuffer);
 				else
-					textManager.UnregisterIndependentView((IVsWindowPane)this, textBuffer);
+					textManager.UnregisterIndependentView(this, textBuffer);
 			}
 
 			var dataEvents = GetConnectionPoint<IVsTextBufferDataEvents>();
@@ -102,16 +102,7 @@ namespace Eto.Addin.VisualStudio.Editor
 			if (!preview.SetBuilder(fileName))
 				throw new InvalidOperationException(string.Format("Could not find builder for file {0}", fileName));
 
-            var scale = Screen.PrimaryScreen.RealDPI / Screen.PrimaryScreen.DPI;
-            if (scale > 1)
-            {
-                // handle high dpi
-                preview.ToNative().LayoutTransform = new System.Windows.Media.ScaleTransform(scale, scale);
-                editorControl.ToNative().LayoutTransform = new System.Windows.Media.ScaleTransform(1/scale, 1 / scale);
-            }
-
-            host.Child = preview.ToNative(true);
-
+			Content = preview.ToNative(true);
         }
 
 		protected override bool PreProcessMessage(ref System.Windows.Forms.Message m)
@@ -268,8 +259,6 @@ namespace Eto.Addin.VisualStudio.Editor
 			return cp;
 		}
 
-		public override System.Windows.Forms.IWin32Window Window { get { return host; } }
-
 		#endregion
 
 
@@ -296,12 +285,6 @@ namespace Eto.Addin.VisualStudio.Editor
 					{
 						editorControl.Dispose();
 						editorControl = null;
-					}
-
-					if (host != null)
-					{
-						host.Dispose();
-						host = null;
 					}
 
 					GC.SuppressFinalize(this);

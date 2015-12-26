@@ -27,7 +27,6 @@
 		<FileTemplate id="eto.cs.code.panel" file="Templates/Files/CS/code/panel.code.xft.xml" />
 		<FileTemplate id="eto.cs.xeto.panel" file="Templates/Files/CS/xeto/panel.xft.xml" />
 		<FileTemplate id="eto.cs.jeto.panel" file="Templates/Files/CS/jeto/panel.xft.xml" />
-
 		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
 			<FileTemplate id="eto.vb.code.panel" file="Templates/Files/VB/code/panel.xft.xml" />
 			<!-- mono's VB compiler doesn't support embedded resources for some reason
@@ -51,7 +50,7 @@
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
 		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat">
-			<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other"/>
+			<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other" />
 		</Condition>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat">
@@ -99,5 +98,8 @@
 		<MimeType id="application/x-jeto" _description="Eto Json document" isText="true" baseType="application/json">
 			<File pattern="*.jeto" />
 		</MimeType>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="eto-project" resource="Eto.Addin.XamarinStudio.Images.project.png" />
 	</Extension>
 </ExtensionModel>

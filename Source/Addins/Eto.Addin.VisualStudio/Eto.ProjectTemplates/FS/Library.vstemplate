@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
-<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
 	<TemplateData>
-		<Name>Eto.Forms Library</Name>
-		<Description>A library project to build Eto.Forms UI and logic in F#.</Description>
-		<Icon>FS.Library.ico</Icon>
+		<Name>Eto</Name>
+		<Description></Description>
 		<ProjectType>FSharp</ProjectType>
-		<RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
-    <!--MaxFrameworkVersion>4.5</MaxFrameworkVersion-->
-		<SortOrder>100</SortOrder>
-		<TemplateID>187e19a3-8db1-4f37-9aa7-6cf1a3f5c985</TemplateID>
-		<CreateNewFolder>true</CreateNewFolder>
-		<DefaultName>EtoLibrary</DefaultName>
-		<ProvideDefaultName>true</ProvideDefaultName>
+		<ProjectSubType>
+		</ProjectSubType>
+		<SortOrder>1000</SortOrder>
+		<Icon></Icon>
 	</TemplateData>
 	<TemplateContent>
-		<Project TargetFileName="$safeprojectname$.fsproj" File="FS\Library.fsproj" ReplaceParameters="true">
-      <Folder Name="FS" TargetFolderName="">
-        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.fs">AssemblyInfo.fs</ProjectItem>
-        <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.fs">MyPanel.fs</ProjectItem>
+		<Project TargetFileName="Library.fsproj" File="Library.fsproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.eto.fs">MainForm.eto.fs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.fs">MainForm.fs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="MainForm.xeto.fs">MainForm.jxeto.fs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="MainForm.jeto.fs">MainForm.jxeto.fs</ProjectItem>
+      <Folder Name="..\Shared" TargetFolderName="">
+        <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.jeto">MainForm.jeto</ProjectItem>
+        <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.xeto">MainForm.xeto</ProjectItem>
       </Folder>
+			<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.fs">AssemblyInfo.fs</ProjectItem>
 		</Project>
 	</TemplateContent>
 	<WizardExtension>
 		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
-		<FullClassName>Eto.Addin.VisualStudio.Wizards.ProjectWizard</FullClassName>
+		<FullClassName>Eto.Addin.VisualStudio.Wizards.ChildWizard</FullClassName>
 	</WizardExtension>
 	<WizardExtension>
 		<Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
@@ -33,20 +33,57 @@
 		<Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
 		<FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
 	</WizardExtension>
-	<WizardData>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.CheckRequiredReferences</FullClassName>
+  </WizardExtension>
+  <WizardData>
 		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
 			<package id="Eto.Forms" version="2.2.0-alpha" />
 		</packages>
-		<SupportedParameters>SupportsPCL,IsLibrary</SupportedParameters>
-		<Replacements>
+    <RequiredReferences Quiet="true">
+      <Reference id="Portable.Xaml" version="0.6.1" condition="UseXeto" />
+      <Reference id="Eto.Serialization.Xaml" version="2.2.0-alpha" assembly="Eto.Serialization.Xaml" extension="Eto.Addin.VisualStudio" condition="UseXeto" />
+      <Reference id="Newtonsoft.Json" version="7.0.1" condition="UseJeto" />
+      <Reference id="Eto.Serialization.Json" version="2.2.0-alpha" assembly="Eto.Serialization.Json" extension="Eto.Addin.VisualStudio" condition="UseJeto" />
+    </RequiredReferences>
+    <Replacements>
 			<ReplacementGroup>
 				<Replacement name="$ProjectFiles$">
 					<![CDATA[
-    <Compile Include="MyPanel.fs" />
+    <Compile Include="MainForm.fs" />
     <Compile Include="AssemblyInfo.fs" />]]>
 				</Replacement>
 			</ReplacementGroup>
-			<ReplacementGroup condition="UseNET">
+      <ReplacementGroup condition="UseXeto">
+        <Replacement name="$ext$">xeto</Replacement>
+        <Replacement name="$SerializationType$">Xaml</Replacement>
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <EmbeddedResource Include="MainForm.xeto" />
+    <Compile Include="MainForm.xeto.fs" />
+    <Compile Include="AssemblyInfo.fs" />]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseJeto">
+        <Replacement name="$ext$">jeto</Replacement>
+        <Replacement name="$SerializationType$">Json</Replacement>
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <EmbeddedResource Include="MainForm.jeto" />
+    <Compile Include="MainForm.jeto.fs" />
+    <Compile Include="AssemblyInfo.fs" />]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseCodePreview">
+        <Replacement name="$Preview$">true</Replacement>
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <Compile Include="MainForm.eto.fs" />
+    <Compile Include="MainForm.fs" />]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseNET">
 				<Replacement name="$ProjectProps$">
 					<![CDATA[
 		<TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>]]>
@@ -82,6 +119,7 @@
 				</Replacement>
 			</ReplacementGroup>
 			<ReplacementGroup condition="UsePCL">
+        <Replacement name="$targetframeworkversion$">4.5</Replacement>
 				<Replacement name="$ProjectProps$">
 					<![CDATA[
 		<TargetFrameworkProfile>Profile259</TargetFrameworkProfile>

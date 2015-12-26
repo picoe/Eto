@@ -57,6 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
+    <EmbeddedResource Include="Images\project.png" />
+    <EmbeddedResource Include="Images\project%402x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

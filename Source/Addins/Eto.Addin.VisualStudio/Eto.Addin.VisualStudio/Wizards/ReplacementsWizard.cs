@@ -36,17 +36,7 @@ namespace Eto.Addin.VisualStudio.Wizards
 			var ns = Helpers.WizardNamespace;
 
 			var replacementGroups = ReplacementGroup.LoadXml(doc.Root.Elements(ns + "Replacements").FirstOrDefault());
-			foreach (var replacementGroup in replacementGroups)
-			{
-				if (replacementsDictionary.MatchesCondition(replacementGroup.Condition))
-				{
-					foreach (var replacement in replacementGroup.Replacements)
-					{
-						if (replacementsDictionary.MatchesCondition(replacement.Condition))
-							replacementsDictionary[replacement.Name] = replacement.Content;
-					}
-				}
-			}
+			replacementGroups.SetMatchedItems(replacementsDictionary);
 
 			var references = new List<ProjectReference>();
 			foreach (var element in doc.Root.Elements(ns + "ProjectReferences").Elements(ns + "ProjectReference"))

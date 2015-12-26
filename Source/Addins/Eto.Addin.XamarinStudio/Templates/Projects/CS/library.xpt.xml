@@ -8,6 +8,7 @@
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in C#.</_Description>
 		<GroupId>eto-project-library</GroupId>
     	<SupportedParameters>AppName,SupportsPCL,IsLibrary,SupportsCodePreview,SupportsXeto,SupportsJeto</SupportedParameters>
+		<Image id="eto-project" />
 	</TemplateConfiguration>
 
 	<Actions>
