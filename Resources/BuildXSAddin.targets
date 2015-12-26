@@ -11,14 +11,14 @@
 		<Exec Command="mozroots --import --sync" Condition="'$(Platform)' == 'Linux'" />
 	</Target>
 	
-    <Target Name="Build" DependsOnTargets="PreBuild;BuildUtilities;UpdateAssemblyInfo">
+    <Target Name="Build" DependsOnTargets="PreBuild;BuildUtilities;UpdateVersion">
     	<!-- this builds the Xamarin Studio addin specifically for addins.monodevelop.com -->
 
 		<PropertyGroup>
 			<BuildOutputDir>$(BaseDir)\BuildOutput</BuildOutputDir>
     		<AllPackagesConfig>$(MSBuildThisFileDirectory)\packages.config</AllPackagesConfig>
     		<NugetOutputDir>$(BuildOutputDir)\Nuget\$(Configuration)</NugetOutputDir>
-			<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj</XamarinStudioAddinProject>
+			<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj</XamarinStudioAddinProject>
 		</PropertyGroup>
 
     	<Exec Command="xbuild /t:'RestorePackages' /p:'PackagesDir=$(MSBuildThisFileDirectory);PackagesConfig=$(AllPackagesConfig)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows'"/>
