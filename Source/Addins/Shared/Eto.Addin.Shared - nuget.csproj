@@ -53,5 +53,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="..\..\Shared\Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

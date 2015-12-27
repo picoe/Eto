@@ -353,5 +353,5 @@
       <Version>5.9</Version>
     </AddinReference>
   </ItemGroup>
-  <Import Project="..\..\Shared\Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

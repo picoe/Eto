@@ -53,5 +53,5 @@
       <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\Shared\Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

@@ -97,5 +97,5 @@
   <ItemGroup>
     <Folder Include="Completion\" />
   </ItemGroup>
-  <Import Project="..\Shared\Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>
