@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}</ProjectGuid>
+    <ProjectGuid>{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Addin.Shared</RootNamespace>
     <AssemblyName>Eto.Addin.Shared</AssemblyName>
