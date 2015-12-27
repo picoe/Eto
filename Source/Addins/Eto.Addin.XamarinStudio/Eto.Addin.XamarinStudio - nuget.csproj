@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -352,4 +353,5 @@
       <Version>5.9</Version>
     </AddinReference>
   </ItemGroup>
+  <Import Project="..\..\Shared\Build.targets" />
 </Project>

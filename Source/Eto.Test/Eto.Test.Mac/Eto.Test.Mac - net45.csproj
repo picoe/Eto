@@ -46,7 +46,7 @@
     <UseSGen>False</UseSGen>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -90,5 +90,5 @@
       <Name>Eto.Serialization.Json - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

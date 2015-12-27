@@ -54,7 +54,7 @@
     <LinkMode>SdkOnly</LinkMode>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <PropertyGroup>
     <CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
   </PropertyGroup>
@@ -104,5 +104,5 @@
   <ItemGroup>
     <Content Include="TestIcon.icns" />
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

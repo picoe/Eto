@@ -51,7 +51,7 @@
     <UseRefCounting>false</UseRefCounting>
     <LinkMode>SdkOnly</LinkMode>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
   <ItemGroup>
     <Reference Include="System" />
@@ -92,5 +92,5 @@
       <Name>Eto.Serialization.Json - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>
