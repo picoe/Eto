@@ -352,4 +352,10 @@
     </AddinReference>
   </ItemGroup>
   <Import Project="..\..\Shared\Common.targets" />
+  <ItemGroup>
+    <Content Include="packages\Eto.Forms.2.1.0\lib\net45\Eto.xml">
+      <Link>Eto.xml</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
