@@ -9,7 +9,7 @@
     <RootNamespace>Eto.Addin.XamarinStudio</RootNamespace>
     <AssemblyName>Eto.Addin.XamarinStudio</AssemblyName>
     <UseMSBuildEngine>True</UseMSBuildEngine>
-    <NugetDir>..\..</NugetDir>
+    <RestorePackages>true</RestorePackages>
     <PackagesDir>.</PackagesDir>
     <UseAddinTargets Condition="'$(UseAddinTargets)' == ''">true</UseAddinTargets>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -97,8 +97,6 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="$(ProjectDir)\..\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <Import Project="packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets" Condition="Exists('packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets')" />
   <ItemGroup>
     <AddinFile Include="Templates\Projects\VB\MainForm.vb">

@@ -18,7 +18,7 @@
 			<BuildOutputDir>$(BaseDir)\BuildOutput</BuildOutputDir>
     		<AllPackagesConfig>$(MSBuildThisFileDirectory)\packages.config</AllPackagesConfig>
     		<NugetOutputDir>$(BuildOutputDir)\Nuget\$(Configuration)</NugetOutputDir>
-			<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.sln</XamarinStudioAddinProject>
+			<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj</XamarinStudioAddinProject>
 		</PropertyGroup>
 
     	<Exec Command='nuget restore -PackagesDirectory "$(MSBuildThisFileDirectory)\packages" -ConfigFile $(AllPackagesConfig)' />
@@ -30,11 +30,13 @@
     	<MakeDir Directories="$(NugetOutputDir)" />
 		<Copy SourceFiles="%(SourceNupkg.Identity)" DestinationFiles="$(NugetOutputDir)\%(Filename)%(Extension)" />
 		
-    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=XSRelease" />
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)"/>
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)"/>
     </Target>
 	<Target Name="Clean">
 		<!-- clean output from previous builds -->
 		<Exec Command="rm -rf $(BaseDir)\BuildOutput" />
 		<Exec Command="rm -rf $(MSBuildThisFileDirectory)\packages\Eto.*" />
+		<Exec Command="rm -rf $(SourceDir)\Addins\Eto.Addin.XamarinStudio\packages" />
 	</Target>
 </Project>

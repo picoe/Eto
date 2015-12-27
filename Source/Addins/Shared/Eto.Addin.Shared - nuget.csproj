@@ -8,6 +8,8 @@
     <RootNamespace>Eto.Addin.Shared</RootNamespace>
     <AssemblyName>Eto.Addin.Shared</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RestorePackages>true</RestorePackages>
+    <PackagesDir>..\Eto.Addin.XamarinStudio</PackagesDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

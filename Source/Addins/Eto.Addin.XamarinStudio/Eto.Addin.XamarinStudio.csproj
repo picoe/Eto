@@ -9,7 +9,7 @@
     <RootNamespace>Eto.Addin.XamarinStudio</RootNamespace>
     <AssemblyName>Eto.Addin.XamarinStudio</AssemblyName>
     <UseMSBuildEngine>True</UseMSBuildEngine>
-    <NugetDir>..\..</NugetDir>
+    <RestorePackages>true</RestorePackages>
     <PackagesDir>.</PackagesDir>
     <UseAddinTargets Condition="'$(UseAddinTargets)' == ''">true</UseAddinTargets>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>

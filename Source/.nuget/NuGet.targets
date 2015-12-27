@@ -15,7 +15,6 @@
         <!-- Download NuGet.exe if it does not already exist -->
         <DownloadNuGetExe Condition=" '$(DownloadNuGetExe)' == '' ">false</DownloadNuGetExe>
         <PackagesDir Condition="$(PackagesDir) == '' Or $(PackagesDir) == '*Undefined*'">$(ProjectDir)..</PackagesDir>
-        <NugetDir Condition="$(NugetDir) == '' Or $(NugetDir) == '*Undefined*'">$(PackagesDir)</NugetDir>
         <NugetBuildOptions Condition="$(NugetBuildOptions) == ''"></NugetBuildOptions>
         <UtilitiesBasePath Condition="$(UtilitiesBasePath) == ''">$(MSBuildThisFileDirectory)\..\..\BuildOutput\obj</UtilitiesBasePath>
     </PropertyGroup>
@@ -33,14 +32,14 @@
 
     <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
         <!-- Windows specific commands -->
-        <NuGetToolsPath>$([System.IO.Path]::Combine("$(NugetDir)", ".nuget"))</NuGetToolsPath>
+        <NuGetToolsPath>$(MSBuildThisFileDirectory)</NuGetToolsPath>
         <PackagesConfig>$([System.IO.Path]::Combine("$(ProjectDir)", "packages.config"))</PackagesConfig>
         <PaddedSolutionDir>"$(PackagesDir) "</PaddedSolutionDir>
     </PropertyGroup>
     
     <PropertyGroup Condition=" '$(OS)' != 'Windows_NT'">
         <!-- We need to launch nuget.exe with the mono command if we're not on windows -->
-        <NuGetToolsPath>$(NugetDir)/.nuget</NuGetToolsPath>
+        <NuGetToolsPath>$(MSBuildThisFileDirectory)</NuGetToolsPath>
         <PackagesConfig>packages.config</PackagesConfig>
         <PaddedSolutionDir>"$(PackagesDir)"</PaddedSolutionDir>
         <MonoExe Condition="$(MonoExe) == '' and Exists('/usr/bin/mono')">/usr/bin/mono</MonoExe>

@@ -62,6 +62,7 @@
         	<VSTemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
         	<XSTemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
         	<XSProjFile Include="$(XamarinStudioAddinProject)" />
+        	<XSProjFile Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj" />
         	<AllPackagesFile Include="$(MSBuildThisFileDirectory)\packages.config" />
         	
         	<!-- Using ItemGroup with text to prevent messing up backslashes in xbuild -->
