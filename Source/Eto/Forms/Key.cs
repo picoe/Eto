@@ -187,8 +187,19 @@ namespace Eto.Forms
 		/// <summary> /// The context menu Key /// </summary>
 		ContextMenu = 0x0063,
 
-		/// <summary>The Shift Key Modifier</summary>
-		Shift = 0x1000,
+        /// <summary>The Multiply '*' Key</summary>
+		Multiply = 0x0064,
+        /// <summary>The Add '+' Key</summary>
+		Add = 0x0065,
+
+        /// <summary>The Pipe '|' Key</summary>
+		Pipe = 0x0066,
+
+        /// <summary>The Question '?' Key</summary>
+		Question = 0x0067,
+
+        /// <summary>The Shift Key Modifier</summary>
+        Shift = 0x1000,
 		/// <summary>The Alt Key Modifier</summary>
 		Alt = 0x2000,
 		/// <summary>The Control Key Modifier</summary>
