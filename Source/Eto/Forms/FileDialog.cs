@@ -105,8 +105,15 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the available filters for the user.
+		/// Gets the collection of available file filters the user can select from.
 		/// </summary>
+		/// <remarks>
+		/// Add entries to this collection to set the filters the user can select when the file dialog is shown.
+		/// 
+		/// Some platforms may either disable (OS X) or hide (GTK/WinForms/WPF) files that do not match the currently selected filter.
+		/// </remarks>
+		/// <seealso cref="CurrentFilterIndex"/>
+		/// <seealso cref="CurrentFilter"/>
 		/// <value>The filters the user can select.</value>
 		public Collection<FileDialogFilter> Filters
 		{
@@ -114,9 +121,11 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the index of the current filter in the <see cref="Filters"/> enumeration
+		/// Gets or sets the index of the current filter in the <see cref="Filters"/> collection
 		/// </summary>
-		/// <value>The index of the current filter.</value>
+		/// <seealso cref="Filters"/>
+		/// <seealso cref="CurrentFilter"/>
+		/// <value>The index of the current filter, or -1 if none is selected.</value>
 		public int CurrentFilterIndex
 		{
 			get { return Handler.CurrentFilterIndex; }
@@ -124,11 +133,13 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets the currently selected filter from <see cref="Filters"/>
+		/// Gets or sets the currently selected filter from the <see cref="Filters"/> collection.
 		/// </summary>
 		/// <remarks>
-		/// This should always match an entry in the <see cref="Filters"/> enumeration.
+		/// This should always match an instance of a filter in the <see cref="Filters"/> collection, otherwise
+		/// the current filter will be set to null.
 		/// </remarks>
+		/// <seealso cref="Filters"/>
 		/// <value>The current filter.</value>
 		public FileDialogFilter CurrentFilter
 		{
@@ -221,7 +232,7 @@ namespace Eto.Forms
 			string FileName { get; set; }
 
 			/// <summary>
-			/// Gets or sets the index of the current filter in the <see cref="Filters"/> enumeration
+			/// Gets or sets the index of the current filter in the <see cref="Filters"/> collection
 			/// </summary>
 			/// <value>The index of the current filter.</value>
 			int CurrentFilterIndex { get; set; }
