@@ -4,7 +4,7 @@
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 		<BuildVersion>2.1.0</BuildVersion>
 	</PropertyGroup>
-	<Import Project="Build.targets" />
+	<Import Project="Build.proj" />
 	
 	<Target Name="PreBuild">
 		<!-- need this to download packages from nuget through https -->
