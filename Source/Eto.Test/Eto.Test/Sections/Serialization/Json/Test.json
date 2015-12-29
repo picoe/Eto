@@ -4,21 +4,16 @@
 		$type: "TabControl",
 		Pages: [
 			{
-				Text: "Table Layout & Controls",
+				Text: "Table Layout",
 				Content: {
 					$type: "TableLayout",
 					Padding: "10",
 					Spacing: "5, 5",
 					Rows: [
-						[ { $type: "Label", Text: "Text Box" }, { $type: "TextBox", TextChanged: "HandleTextChanged", KeyDown: "HandleKeyDown" } ],
-						[ { $type: "Label", Text: "Text Area" }, { $type: "TextArea", $name: "MyTextArea" } ],
+						[ "Text Box", { $type: "TextBox", TextChanged: "HandleTextChanged", KeyDown: "HandleKeyDown" } ],
+						[ "Text Area", { $type: "TextArea", $name: "MyTextArea" } ],
 						[ { }, { $type: "CheckBox", $name: "MyCheckBox", Text: "Check Box" } ],
-						[ { $type: "Label", Text: "Combo Box" }, { $type: "ComboBox", Items: [
-								{ $type: "ListItem", Text: "Item 1" },
-								{ $type: "ListItem", Text: "Item 2" },
-								{ $type: "ListItem", Text: "Item 3" },
-								{ $type: "ListItem", Text: "Item 4" }
-							] } ],
+						[ "Drop Down", { $type: "DropDown", Items: [ "Item 1", "Item 2", "Item 3", "Item 4" ] } ],
 						[ { $type: "Label", Text: "Image", VerticalAlignment: "Center" }, 
 							[ /* TableLayout */
 								[ /* TableRow */
@@ -27,10 +22,36 @@
 								]
 							]
 						],
-						[ { $type: "Label", Text: "Button" },
+						[ "Button",
 							[ [ { $type: "Button", Text: "Bind to Click event in code behind", Click: "HandleButtonClick" }, null ] ]
 						],
 						null
+					]
+				}
+			},
+			{
+				Text: "Stack Layout",
+				Content: {
+					$type: "StackLayout",
+					Items: [
+						"Some Text",
+						{ $type: "Button", Text: "Click Me!" },
+						{
+							HorizontalAlignment: "Stretch",
+							Expand: true,
+							Control: { $type: "TextArea" }
+						},
+						{
+							HorizontalAlignment: "Right",
+							Control: {
+								$type: "StackLayout",
+								Orientation: "Horizontal",
+								Items: [
+									{ $type: "Button", Text: "OK" },
+									{ $type: "Button", Text: "C&ancel" }
+								]
+							}
+						}
 					]
 				}
 			},

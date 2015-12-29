@@ -27,6 +27,14 @@ namespace Eto.Wpf.Forms.Controls
 			Mode = DateTimePickerMode.Date;
 		}
 
+		static sw.Thickness DefaultBorderThickness = new mwc.DateTimePicker().BorderThickness;
+
+		public bool ShowBorder
+		{
+			get { return !dtp.BorderThickness.ToEto().IsZero; }
+			set { dtp.BorderThickness = value ? DefaultBorderThickness : new sw.Thickness(0); }
+		}
+
 		void CreateDateTimeUpDown()
 		{
 			if (dtud == null)

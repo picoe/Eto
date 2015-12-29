@@ -297,5 +297,10 @@ namespace Eto.Android.Forms.Controls
 			get;
 			set;
 		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

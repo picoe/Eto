@@ -38,9 +38,9 @@ namespace Eto.Mac.Forms
 	public class OpenFileDialogHandler : MacFileDialog<NSOpenPanel, OpenFileDialog>, OpenFileDialog.IHandler
 	{
 
-		public OpenFileDialogHandler()
+		protected override NSOpenPanel CreateControl()
 		{
-			Control = NSOpenPanel.OpenPanel;
+			return NSOpenPanel.OpenPanel;
 		}
 
 		protected override bool DisposeControl { get { return false; } }

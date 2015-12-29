@@ -20,9 +20,9 @@ namespace Eto.Mac.Forms.Printing
 	{
 		PrintSettings settings;
 
-		public PrintDialogHandler()
+		protected override NSPrintPanel CreateControl()
 		{
-			Control = new NSPrintPanel();
+			return new NSPrintPanel();
 		}
 
 		class SheetHelper : NSObject

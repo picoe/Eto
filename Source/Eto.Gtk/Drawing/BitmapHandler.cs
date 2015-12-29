@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Eto.Drawing;
 using System.Collections.Generic;
+using Eto.Shared.Drawing;
 
 namespace Eto.GtkSharp.Drawing
 {
@@ -10,7 +11,7 @@ namespace Eto.GtkSharp.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapDataHandler : BitmapData
+	public class BitmapDataHandler : BaseBitmapData
 	{
 		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(image, data, scanWidth, bitsPerPixel, controlObject)
@@ -43,6 +44,14 @@ namespace Eto.GtkSharp.Drawing
 		{
 		}
 
+#if GTK2
+		public BitmapHandler(Gdk.Image image)
+		{
+			Create(image.Width, image.Height, image.BitsPerPixel == 32 ? PixelFormat.Format32bppRgb : PixelFormat.Format24bppRgb);
+			Control.GetFromImage(image, image.Colormap ?? Gdk.Colormap.System, 0, 0, 0, 0, image.Width, image.Height);
+		}
+#endif
+
 		public BitmapHandler(Gdk.Pixbuf pixbuf)
 		{
 			this.Control = pixbuf;
@@ -73,6 +82,7 @@ namespace Eto.GtkSharp.Drawing
 					break;
 				case PixelFormat.Format24bppRgb:
 					Control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, width, height);
+					Control.Fill(0);
 					break;
 			/*case PixelFormat.Format16bppRgb555:
 						control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);

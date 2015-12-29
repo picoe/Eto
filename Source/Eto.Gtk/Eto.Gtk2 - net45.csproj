@@ -33,7 +33,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -255,6 +255,11 @@
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -274,13 +279,11 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

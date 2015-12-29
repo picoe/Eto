@@ -20,11 +20,11 @@ namespace Eto.Addin.XamarinStudio
 			{
 				if (name == "AppName")
 				{
-					Wizard.Parameters["ProjectName"] = value;
+					source.SetParameter("ProjectName", value);
 					Validate();
 				}
 			};
-			this.model = new ProjectWizardPageModel(source);
+			this.model = new ProjectWizardPageModel(source, null);
 			Validate();
 		}
 

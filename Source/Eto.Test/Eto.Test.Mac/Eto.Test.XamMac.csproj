@@ -54,7 +54,7 @@
     <LinkMode>SdkOnly</LinkMode>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <PropertyGroup>
     <CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
   </PropertyGroup>
@@ -67,7 +67,7 @@
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\net40\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.0.0\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -104,5 +104,5 @@
   <ItemGroup>
     <Content Include="TestIcon.icns" />
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

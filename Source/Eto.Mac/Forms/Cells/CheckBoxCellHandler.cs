@@ -1,6 +1,8 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Mac.Forms.Controls;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -32,80 +34,8 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Cells
 {
-	public class CheckBoxCellHandler : CellHandler<NSButtonCell, CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
+	public class CheckBoxCellHandler : CellHandler<CheckBoxCell, CheckBoxCell.ICallback>, CheckBoxCell.IHandler
 	{
-		public class EtoCell : NSButtonCell, IMacControl
-		{
-			public WeakReference WeakHandler { get; set; }
-
-			public object Handler
-			{ 
-				get { return WeakHandler.Target; }
-				set { WeakHandler = new WeakReference(value); } 
-			}
-
-			public EtoCell()
-			{
-			}
-
-			public EtoCell(IntPtr handle) : base(handle)
-			{
-			}
-
-			[Export("copyWithZone:")]
-			NSObject CopyWithZone(IntPtr zone)
-			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr(SuperHandle, MacCommon.CopyWithZoneHandle, zone);
-				return new EtoCell(ptr) { Handler = Handler };
-			}
-		}
-
-		public CheckBoxCellHandler()
-		{
-			Control = new EtoCell { Handler = this };
-			Control.Title = string.Empty;
-			Control.SetButtonType(NSButtonType.Switch);
-		}
-
-		bool editable = true;
-
-		public override bool Editable
-		{
-			get { return editable; }
-			set
-			{ 
-				editable = value;
-				Control.Enabled = value;
-			}
-		}
-
-		public override void EnabledChanged(bool value)
-		{
-			base.EnabledChanged(value);
-			if (value)
-				Control.Enabled = editable;
-		}
-
-		public override void SetBackgroundColor(NSCell cell, Color color)
-		{
-			var c = (EtoCell)cell;
-			c.BackgroundColor = color.ToNSUI();
-		}
-
-		public override Color GetBackgroundColor(NSCell cell)
-		{
-			var c = (EtoCell)cell;
-			return c.BackgroundColor.ToEto();
-		}
-
-		public override void SetForegroundColor(NSCell cell, Color color)
-		{
-		}
-
-		public override Color GetForegroundColor(NSCell cell)
-		{
-			return Colors.Transparent;
-		}
 
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
@@ -145,9 +75,74 @@ namespace Eto.Mac.Forms.Cells
 			return new NSNumber((int)NSCellStateValue.Off);
 		}
 
-		public override nfloat GetPreferredSize(object value, CGSize cellSize, NSCell cell)
+		public class EtoButton : NSButton
 		{
-			return 25;
+			public event EventHandler Focussed;
+
+			public EtoButton()
+			{
+			}
+			public EtoButton(IntPtr handle)
+				: base(handle)
+			{
+			}
+
+			public override void LockFocus()
+			{
+				base.LockFocus();
+				if (Focussed != null)
+					Focussed(this, EventArgs.Empty);
+			}
+		}
+
+		public override Color GetBackgroundColor(NSView view)
+		{
+			return ((CellView)view).Cell.BackgroundColor.ToEto();
+		}
+
+		public override void SetBackgroundColor(NSView view, Color color)
+		{
+			var field = ((CellView)view).Cell;
+			field.BackgroundColor = color.ToNSUI();
+		}
+
+		class CellView : NSButton
+		{
+			[Export("item")]
+			public NSObject Item { get; set; }
+			public CellView() { }
+			public CellView(IntPtr handle) : base(handle) { }
+		}
+
+		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
+		{
+			var view = tableView.MakeView(tableColumn.Identifier, tableView) as CellView;
+			if (view == null)
+			{
+				view = new CellView { Title = string.Empty };
+				view.Identifier = tableColumn.Identifier;
+				view.SetButtonType(NSButtonType.Switch);
+				view.Bind("enabled", tableColumn, "editable", null);
+
+				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
+				view.Activated += (sender, e) =>
+				{
+					var control = (CellView)sender;
+					var r = (int)control.Tag;
+					var item = getItem(control.Item, r);
+					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, col, item);
+					ColumnHandler.DataViewHandler.Callback.OnCellEditing(ColumnHandler.DataViewHandler.Widget, ee);
+					SetObjectValue(item, control.ObjectValue);
+					control.ObjectValue = GetObjectValue(item);
+
+					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
+				};
+			}
+			view.Tag = row;
+			view.Item = obj;
+			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			ColumnHandler.DataViewHandler.OnCellFormatting(args);
+			return view;
 		}
 	}
 }

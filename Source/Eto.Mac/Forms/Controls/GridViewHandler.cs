@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Eto.Drawing;
 using System.Collections;
 using System.Linq;
+using Eto.Mac.Forms.Cells;
 
 #if XAMMAC2
 using AppKit;
@@ -81,9 +82,17 @@ namespace Eto.Mac.Forms.Controls
 
 				base.MouseDown(theEvent);
 			}
+
+			public EtoTableView(GridViewHandler handler)
+			{
+				FocusRingType = NSFocusRingType.None;
+				DataSource = new EtoTableViewDataSource { Handler = handler };
+				Delegate = new EtoTableDelegate { Handler = handler };
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
+			}
 		}
 
-		class EtoTableViewDataSource : NSTableViewDataSource
+		public class EtoTableViewDataSource : NSTableViewDataSource
 		{
 			WeakReference handler;
 
@@ -114,7 +123,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		class EtoTableDelegate : NSTableViewDelegate
+		public class EtoTableDelegate : NSTableViewDelegate
 		{
 			WeakReference handler;
 
@@ -129,25 +138,38 @@ namespace Eto.Mac.Forms.Controls
 				return true;
 			}
 
+			NSIndexSet previouslySelected;
 			public override void SelectionDidChange(NSNotification notification)
 			{
 				if (Handler.SuppressSelectionChanged == 0)
 				{
 					Handler.Callback.OnSelectionChanged(Handler.Widget, EventArgs.Empty);
+					var columns = NSIndexSet.FromNSRange(new NSRange(0, Handler.Control.TableColumns().Length));
+					if (previouslySelected != null)
+						Handler.Control.ReloadData(previouslySelected, columns);
+					var selected = Handler.Control.SelectedRows;
+					Handler.Control.ReloadData(selected, columns);
+					previouslySelected = selected;
 				}
+			}
+
+			public override nfloat GetSizeToFitColumnWidth(NSTableView tableView, nint column)
+			{
+				var colHandler = Handler.GetColumn(tableView.TableColumns()[column]);
+				if (colHandler != null)
+				{
+					// turn on autosizing for this column again
+					Application.Instance.AsyncInvoke(() => colHandler.AutoSize = true);
+					return colHandler.GetPreferredWidth();
+				}
+				return 20;
 			}
 
 			public override void DidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn)
 			{
 				var colHandler = Handler.GetColumn(tableColumn);
-				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(colHandler.Widget));
-			}
-
-			public override void WillDisplayCell(NSTableView tableView, NSObject cell, NSTableColumn tableColumn, nint row)
-			{
-				var colHandler = Handler.GetColumn(tableColumn);
-				var item = Handler.GetItem((int)row);
-				Handler.OnCellFormatting(colHandler.Widget, item, (int)row, cell as NSCell);
+				if (colHandler.Sortable)
+					Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs(colHandler.Widget));
 			}
 
 			public override void ColumnDidResize(NSNotification notification)
@@ -162,6 +184,21 @@ namespace Eto.Mac.Forms.Controls
 						colHandler.AutoSize = false;
 					}
 				}
+			}
+
+			public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, nint row)
+			{
+				var colHandler = Handler.GetColumn(tableColumn);
+				if (colHandler != null)
+				{
+					var cellHandler = colHandler.DataCellHandler;
+					if (cellHandler != null)
+					{
+						return cellHandler.GetViewForItem(tableView, tableColumn, (int)row, null, (obj, r) => Handler.GetItem(r));
+					}
+				}
+
+				return tableView.MakeView(tableColumn.Identifier, this);
 			}
 		}
 
@@ -208,16 +245,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public GridViewHandler()
+		protected override NSTableView CreateControl()
 		{
-			Control = new EtoTableView
-			{
-				Handler = this,
-				FocusRingType = NSFocusRingType.None,
-				DataSource = new EtoTableViewDataSource { Handler = this },
-				Delegate = new EtoTableDelegate { Handler = this },
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
-			};
+			return new EtoTableView(this);
 		}
 
 		public IEnumerable<object> SelectedItems
@@ -333,7 +363,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public override object GetItem(int row)
 		{
-			return collection.ElementAt(row);
+			return collection.ElementAt((int)row);
+		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			Control.ReloadData(NSIndexSet.FromArray(rows.Select(r => (nuint)r).ToArray()), NSIndexSet.FromNSRange(new NSRange(0, Control.TableColumns().Length)));
 		}
 	}
 }

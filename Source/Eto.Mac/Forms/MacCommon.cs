@@ -25,6 +25,7 @@ namespace Eto.Mac.Forms
 		{
 			if (obj != null)
 			{
+				#if MONOMAC
 				var count = obj.RetainCount;
 				var handle = obj.Handle;
 
@@ -32,6 +33,9 @@ namespace Eto.Mac.Forms
 				// HACK: release handle since Dispose() won't do it properly yet
 				if (handle != IntPtr.Zero && ApplicationHandler.Instance != null && count > 2)
 					Messaging.void_objc_msgSend(handle, ReleaseHandle);
+				#else
+				obj.Dispose();
+				#endif
 			}
 		}
 	}

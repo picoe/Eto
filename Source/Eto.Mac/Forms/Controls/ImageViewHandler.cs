@@ -49,11 +49,16 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public EtoImageView()
+			{
+				ImageScaling = NSImageScale.ProportionallyUpOrDown;
+			}
 		}
 
-		public ImageViewHandler()
+		protected override NSImageView CreateControl()
 		{
-			Control = new EtoImageView { Handler = this, ImageScaling = NSImageScale.ProportionallyUpOrDown };
+			return new EtoImageView();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

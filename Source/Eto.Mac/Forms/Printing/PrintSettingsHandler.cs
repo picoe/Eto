@@ -21,16 +21,29 @@ namespace Eto.Mac.Forms.Printing
 		int lastSelectedPage;
 		int firstSelectedPage;
 
+		public PrintSettingsHandler()
+		{
+		}
+
 		public PrintSettingsHandler(NSPrintInfo info)
 		{
 			Control = info;
 		}
 
-		public PrintSettingsHandler()
+		protected override void Initialize()
 		{
-			Control = new NSPrintInfo();
-			MaximumPageRange = new Range<int>(1, 1);
-			SelectedPageRange = new Range<int>(1, 1);
+			if (!HasControl)
+			{
+				MaximumPageRange = new Range<int>(1, 1);
+				SelectedPageRange = new Range<int>(1, 1);
+			}
+
+			base.Initialize();
+		}
+
+		protected override NSPrintInfo CreateControl()
+		{
+			return new NSPrintInfo();
 		}
 
 		public int Copies

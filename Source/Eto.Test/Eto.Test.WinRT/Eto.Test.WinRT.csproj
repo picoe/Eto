@@ -16,7 +16,7 @@
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Eto.Test.WinRT_TemporaryKey.pfx</PackageCertificateKeyFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\</SolutionDir>
-    <SolutionDir Condition="$(PackagesDir) == '' Or $(PackagesDir) == '*Undefined*'">..\..</SolutionDir>
+    <PackagesDir Condition="$(PackagesDir) == '' Or $(PackagesDir) == '*Undefined*'">..\..</PackagesDir>
     <RestorePackages>true</RestorePackages>
     <PackageCertificateThumbprint>946C7F085F7B34262D819BEC344DBC7BCF5758DA</PackageCertificateThumbprint>
   </PropertyGroup>
@@ -105,7 +105,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <ProjectReference Include="..\..\Eto.WinRT\Eto.WinRT.csproj">
@@ -174,17 +174,15 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.0.5610.33197, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\portable-net45+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.0.5797.27550, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.0.0\lib\dotnet\nunit.framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <Import Project="$(PackagesDir)\.nuget\NuGet.targets" Condition="Exists('$(PackagesDir)\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -192,5 +190,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

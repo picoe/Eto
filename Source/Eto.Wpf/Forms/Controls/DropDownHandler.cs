@@ -28,8 +28,11 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			base.OnApplyTemplate();
 
-			selected = SelectedIndex;
-			SelectedIndex = -1;
+			if (!IsLoaded)
+			{
+				selected = SelectedIndex;
+				SelectedIndex = -1;
+			}
 		}
 
 		public swc.ScrollViewer ContentHost

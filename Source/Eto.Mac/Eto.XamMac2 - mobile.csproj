@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\BuildOutput\mobile\Debug\</OutputPath>
-    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;XAMMAC2</DefineConstants>
+    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>OSX;DESKTOP;XAMMAC;XAMMAC2</DefineConstants>
+    <DefineConstants>OSX;DESKTOP;XAMMAC;XAMMAC2;UNIFIED</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>false</CreatePackage>
@@ -45,7 +45,7 @@
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -219,6 +219,15 @@
       <Link>Drawing\GradientHelper.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="..\Shared\MutableCellEventArgs.cs">
+      <Link>Forms\Cells\MutableCellEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
+    <Compile Include="Forms\NativeFormHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>
@@ -232,8 +241,6 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - pcl.csproj">
@@ -241,5 +248,5 @@
       <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

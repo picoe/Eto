@@ -111,7 +111,6 @@ namespace Eto.Mac
 
 		public static NSColor NSColorFromCGColor(CGColor cgColor)
 		{
-			NSApplication.EnsureUIThread();
 			return Messaging.GetNSObject<NSColor>(Messaging.IntPtr_objc_msgSend_IntPtr(NSColorClassPtr, selColorWithCGColor, cgColor.Handle));
 		}
 		#endif

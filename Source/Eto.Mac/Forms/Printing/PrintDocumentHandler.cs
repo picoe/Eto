@@ -94,9 +94,15 @@ namespace Eto.Mac.Forms.Printing
 			}
 		}
 
-		public PrintDocumentHandler()
+		protected override PrintView CreateControl()
 		{
-			Control = new PrintView { Handler = this };
+			return new PrintView();
+		}
+
+		protected override void Initialize()
+		{
+			Control.Handler = this;
+			base.Initialize();
 		}
 
 		public void Print()

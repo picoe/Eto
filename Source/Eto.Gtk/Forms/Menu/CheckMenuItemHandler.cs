@@ -41,7 +41,8 @@ namespace Eto.GtkSharp.Forms.Menu
 			public void HandleActivated(object sender, EventArgs e)
 			{
 				var handler = Handler;
-				handler.Callback.OnClick(handler.Widget, e);
+				if (handler.SuppressClick == 0)
+					handler.Callback.OnClick(handler.Widget, e);
 			}
 
 			public void HandleToggled(object sender, EventArgs e)
@@ -99,10 +100,23 @@ namespace Eto.GtkSharp.Forms.Menu
 			return Shortcut;
 		}
 
+		static readonly object SuppressClick_Key = new object();
+
+		int SuppressClick
+		{
+			get { return Widget.Properties.Get<int>(SuppressClick_Key); }
+			set { Widget.Properties.Set(SuppressClick_Key, value); }
+		}
+
 		public bool Checked
 		{
 			get { return Control.Active; }
-			set { Control.Active = value; }
+			set
+			{
+				SuppressClick++;
+				Control.Active = value;
+				SuppressClick--;
+			}
 		}
 
 		public bool Enabled

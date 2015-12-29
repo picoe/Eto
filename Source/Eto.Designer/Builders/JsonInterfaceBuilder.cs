@@ -11,7 +11,7 @@ namespace Eto.Designer.Builders
 {
 	public class JsonInterfaceBuilder : IInterfaceBuilder
 	{
-		public void Create(string text, Action<Forms.Control> controlCreated, Action<string> error)
+		public void Create(string text, Action<Forms.Control> controlCreated, Action<Exception> error)
 		{
 			try
 			{
@@ -25,7 +25,7 @@ namespace Eto.Designer.Builders
 			}
 			catch (Exception ex)
 			{
-				error(ex.ToString());
+				error(ex);
 			}
 		}
 	}

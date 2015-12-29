@@ -144,10 +144,15 @@ namespace Eto.WinForms.Forms.Controls
 				case TreeView.LabelEditedEvent:
 					Control.AfterLabelEdit += (s, e) =>
 					{
-						var args = new TreeViewItemEditEventArgs(e.Node.Tag as ITreeItem, e.Label);
-						Callback.OnLabelEdited(Widget, args);
+						var item = e.Node.Tag as ITreeItem;
+						if (item == null)
+							return;
+						// when e.Label is null the user cancelled, so set as the same value.
+						var newValue = e.Label != null ? e.Label : item.Text;
+						var args = new TreeViewItemEditEventArgs(item, newValue);
+                        Callback.OnLabelEdited(Widget, args);
 						if (!args.Cancel)
-							args.Item.Text = e.Label;
+							args.Item.Text = newValue;
 						e.CancelEdit = args.Cancel;
 					};
 					break;
@@ -232,6 +237,7 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				key = Guid.NewGuid().ToString();
 				Control.ImageList.AddImage(image, key);
+				images.Add(image, key);
 			}
 			return key;
 		}

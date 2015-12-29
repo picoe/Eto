@@ -5,22 +5,34 @@ using swi = System.Windows.Input;
 using swc = System.Windows.Controls;
 using Eto.Wpf.Forms;
 using Eto.Forms;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.Wpf
 {
 	static class WpfExtensions
 	{
-		public static T GetParent<T>(this System.Windows.DependencyObject control)
-			where T : System.Windows.DependencyObject
+		public static T GetVisualParent<T>(this sw.DependencyObject control)
+			where T : class
 		{
-			var tmp = System.Windows.Media.VisualTreeHelper.GetParent(control);
-			while (tmp != null)
+			while (control != null)
 			{
-				tmp = System.Windows.Media.VisualTreeHelper.GetParent(tmp);
-				var ttmp = tmp as T;
-				if (ttmp != null) return ttmp;
+				control = swm.VisualTreeHelper.GetParent(control);
+				var tmp = control as T;
+				if (tmp != null)
+					return tmp;
 			}
 			return null;
+		}
+
+		public static IEnumerable<sw.DependencyObject> GetParents(this sw.FrameworkElement control)
+		{
+			while (control != null)
+			{
+				yield return control;
+
+				control = control.Parent as sw.FrameworkElement;
+			}
 		}
 
 		public static T FindChild<T>(this sw.DependencyObject parent, string childName = null)
@@ -69,7 +81,7 @@ namespace Eto.Wpf
 
 		public static sw.Window GetParentWindow(this sw.FrameworkElement element)
 		{
-			var window = element.GetParent<sw.Window>();
+			var window = element.GetVisualParent<sw.Window>();
 			if (window == null)
 			{
 				var app = sw.Application.Current;
@@ -80,9 +92,9 @@ namespace Eto.Wpf
 
 		public static void RemoveFromParent(this Control control)
 		{
-			if (control.Parent == null)
+			if (control.VisualParent == null)
 				return;
-			var parent = control.Parent.Handler as IWpfContainer;
+			var parent = control.VisualParent.Handler as IWpfContainer;
 			if (parent != null)
 				parent.Remove(control.GetContainerControl());
 		}
@@ -128,7 +140,61 @@ namespace Eto.Wpf
 			return new sw.Size(thickness.Horizontal(), thickness.Vertical());
 		}
 
-		public static sw.Size Add(this sw.Size size1, sw.Size size2)
+        public static sw.Size Max(this sw.Size size1, sw.Size size2)
+        {
+            return new sw.Size(Math.Max(size1.Width, size2.Width), Math.Max(size1.Height, size2.Height));
+        }
+
+        public static sw.Size Min(this sw.Size size1, sw.Size size2)
+        {
+            return new sw.Size(Math.Min(size1.Width, size2.Width), Math.Min(size1.Height, size2.Height));
+        }
+
+        public static sw.Size Ceiling(this sw.Size size)
+        {
+            return new sw.Size(Math.Ceiling(size.Width), Math.Ceiling(size.Height));
+        }
+
+        public static sw.Size Floor(this sw.Size size)
+        {
+            return new sw.Size(Math.Floor(size.Width), Math.Floor(size.Height));
+        }
+
+        public static sw.Rect NormalizedRect(double x, double y, double width, double height)
+        {
+            if (width < 0)
+            {
+                x += width;
+                width = -width + 1;
+            }
+            if (height < 0)
+            {
+                x += height;
+                height = -height + 1;
+            }
+            return new sw.Rect(x, y, width, height);
+        }
+
+        public static sw.Size IfNaN(this sw.Size size1, sw.Size size2)
+        {
+            if (double.IsNaN(size1.Width))
+                size1.Width = size2.Width;
+
+            if (double.IsNaN(size1.Height))
+                size1.Height = size2.Height;
+            return size1;
+        }
+
+        public static sw.Size ZeroIfNan(this sw.Size size)
+        {
+            if (double.IsNaN(size.Width))
+                size.Width = 0;
+            if (double.IsNaN(size.Height))
+                size.Height = 0;
+            return size;
+        }
+
+        public static sw.Size Add(this sw.Size size1, sw.Size size2)
 		{
 			return new sw.Size(size1.Width + size2.Width, size1.Height + size2.Height);
 		}
@@ -136,6 +202,53 @@ namespace Eto.Wpf
 		public static sw.Size Subtract(this sw.Size size1, sw.Size size2)
 		{
 			return new sw.Size(Math.Max(0, size1.Width - size2.Width), Math.Max(0, size1.Height - size2.Height));
+		}
+
+		public static void AddKeyBindings(this swi.InputBindingCollection bindings, swc.ItemCollection items)
+		{
+			foreach (var item in items.OfType<sw.UIElement>())
+			{
+				bindings.AddKeyBindings(item);
+			}
+		}
+
+		public static void AddKeyBindings(this swi.InputBindingCollection bindings, sw.UIElement item)
+		{
+			if (item == null)
+				return;
+			bindings.AddRange(item.InputBindings);
+			var itemsControl = item as swc.ItemsControl;
+			if (itemsControl != null && itemsControl.HasItems)
+				AddKeyBindings(bindings, itemsControl.Items);
+		}
+
+		public static void RemoveKeyBindings(this swi.InputBindingCollection bindings, sw.UIElement item)
+		{
+			if (item == null)
+				return;
+			foreach (var binding in item.InputBindings.OfType<swi.InputBinding>())
+				bindings.Remove(binding);
+
+			var itemsControl = item as swc.ItemsControl;
+			if (itemsControl != null && itemsControl.HasItems)
+				RemoveKeyBindings(bindings, itemsControl.Items);
+		}
+
+		public static void RemoveKeyBindings(this swi.InputBindingCollection bindings, swc.ItemCollection items)
+		{
+			foreach (var item in items.OfType<sw.UIElement>())
+			{
+				bindings.RemoveKeyBindings(item);
+			}
+		}
+
+		public static void RenderWithCollect(this swm.Imaging.RenderTargetBitmap bitmap, swm.Visual visual)
+		{
+			bitmap.Render(visual);
+			// fix memory leak with RenderTargetBitmap.  See http://stackoverflow.com/questions/14786490/wpf-memory-leak-using-rendertargetbitmap
+			// Reproducible with the 
+			// GC.Collect alone seems to fix the issue.  Adding GC.WaitForPendingFinalizers may impact performance.
+			GC.Collect();
 		}
 	}
 }

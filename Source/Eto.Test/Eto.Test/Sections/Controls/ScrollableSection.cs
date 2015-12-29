@@ -8,76 +8,97 @@ namespace Eto.Test.Sections.Controls
 	{
 		public ScrollableSection()
 		{
-			var layout = new TableLayout(4, 2);
-			layout.Spacing = new Size(5, 5);
-			layout.Padding = new Padding(10);
+			var scrollable = CreateScrollable();
 
-			layout.SetColumnScale(1);
-			layout.SetColumnScale(3);
-			layout.SetRowScale(0);
-			layout.SetRowScale(1);
+			var borderType = new EnumDropDown<BorderType>();
+			borderType.SelectedValueBinding.Bind(scrollable, r => r.Border);
 
-			layout.Add(new Label { Text = "Default" }, 0, 0);
-			layout.Add(DefaultScrollable(), 1, 0);
+			var expandWidth = new CheckBox { Text = "Width" };
+			expandWidth.CheckedBinding.Bind(scrollable, r => r.ExpandContentWidth);
 
-			layout.Add(new Label { Text = "No Border" }, 2, 0);
-			layout.Add(NoBorderScrollable(), 3, 0);
+			var expandHeight = new CheckBox { Text = "Height" };
+			expandHeight.CheckedBinding.Bind(scrollable, r => r.ExpandContentHeight);
 
-			layout.Add(new Label { Text = "Bezeled" }, 0, 1);
-			layout.Add(BezelScrollable(), 1, 1);
+			var sizeMode = new DropDown
+			{
+				Items = { "Auto", "800x800", "30x30", "1x1" },
+				SelectedIndex = 0
+			};
+			sizeMode.SelectedIndexChanged += (sender, e) => 
+			{
+				switch (sizeMode.SelectedIndex) {
+                    case 0:
+                        scrollable.Content.Size = new Size(-1, -1);
+                        break;
+                    case 1:
+						scrollable.Content.Size = new Size(800, 800);
+						break;
+                    case 2:
+                        scrollable.Content.Size = new Size(30, 30);
+                        break;
+                    case 3:
+                        scrollable.Content.Size = new Size(1, 1);
+                        break;
 
-			layout.Add(new Label { Text = "Line" }, 2, 1);
-			layout.Add(LineScrollable(), 3, 1);
+                }
+            };
 
-			Content = layout;
+			var options = new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				Spacing = 5,
+				Items = { 
+					"Border:",
+					borderType,
+					"Expand:",
+					expandWidth,
+					expandHeight,
+					"Content Size:",
+					sizeMode
+				}
+			};
+
+			Content = new StackLayout
+			{
+				Padding = 10,
+				Spacing = 5,
+				HorizontalContentAlignment = HorizontalAlignment.Stretch,
+				Items =
+				{ 
+					new StackLayoutItem(options, HorizontalAlignment.Center), 
+					new StackLayoutItem(scrollable, true)
+				}
+			};
 		}
 
-		Control DefaultScrollable()
+		Scrollable CreateScrollable()
 		{
 			var scrollable = new Scrollable { Size = new Size(100, 200) };
 			LogEvents(scrollable);
-			var playout = new PixelLayout();
-			playout.Add(new LabelSection { Size = new Size(400, 400) }, 0, 0);
-			scrollable.Content = playout;
-			return scrollable;
-		}
 
-		Control NoBorderScrollable()
-		{
-			var scrollable = new Scrollable { Size = new Size(100, 200), Border = BorderType.None };
-			LogEvents(scrollable);
-			var playout = new PixelLayout();
-			playout.Add(new LabelSection { Size = new Size(400, 400) }, 0, 0);
-			scrollable.Content = playout;
-			return scrollable;
-		}
+			var desc = new Label
+			{ 
+				Text = "Content",
+				BackgroundColor = Colors.Green,
+				Size = new Size(400, 400),
+				TextAlignment = TextAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center
+			};
 
-		Control BezelScrollable()
-		{
-			var scrollable = new Scrollable { Size = new Size(100, 200), Border = BorderType.Bezel };
-			LogEvents(scrollable);
-			var playout = new PixelLayout();
-			playout.Add(new LabelSection { Size = new Size(400, 400) }, 0, 0);
-			scrollable.Content = playout;
-			return scrollable;
-		}
+			var content = new Panel
+			{
+				BackgroundColor = Colors.Red, // should not see red
+				Content = desc
+			};
 
-		Control LineScrollable()
-		{
-			var scrollable = new Scrollable { Size = new Size(100, 200), Border = BorderType.Line };
-			LogEvents(scrollable);
-			var playout = new PixelLayout();
-			playout.Add(new LabelSection { Size = new Size(400, 400) }, 0, 0);
-			scrollable.Content = playout;
+			scrollable.Content = content;
 			return scrollable;
 		}
 
 		void LogEvents(Scrollable control)
 		{
-			control.Scroll += delegate(object sender, ScrollEventArgs e)
-			{
-				Log.Write(control, "Scroll, ScrollPosition: {0}", e.ScrollPosition);
-			};
+			control.Scroll += (sender, e) => Log.Write(control, "Scroll, ScrollPosition: {0}", e.ScrollPosition);
 		}
 	}
 }

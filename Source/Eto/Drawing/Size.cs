@@ -78,6 +78,22 @@ namespace Eto.Drawing
 		{
 			return new Size (Math.Abs (size.Width), Math.Abs (size.Height));
 		}
+
+		/// <summary>
+		/// Converts a floating point <paramref name="size"/> to an integral size by rounding the width and height to the 
+		/// next integral value.
+		/// </summary>
+		/// <remarks>
+		/// This is useful to get a size struct that includes the floating point values completely.  As opposed to the 
+		/// <see cref="Round"/>, which will round down to the nearest integral number.
+		/// 
+		/// For example, a Width or Height of 2.1 or 2.6 would be translated to 3.
+		/// </remarks>
+		/// <param name="size">Size.</param>
+		public static Size Ceiling (SizeF size)
+		{
+			return new Size((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height)); 
+		}
 		
 		/// <summary>
 		/// Size with width and height with a maximum int value

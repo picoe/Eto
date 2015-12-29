@@ -19,7 +19,7 @@ namespace Eto.WinForms.Forms
 		bool? ResumeMode
 		{
 			get { return Widget.Properties.Get<bool?>(resumeModeKey); }
-			set { Widget.Properties[resumeModeKey] = value; }
+			set { Widget.Properties.Set(resumeModeKey, value); }
 		}
 
 		protected override void Initialize()
@@ -28,17 +28,16 @@ namespace Eto.WinForms.Forms
 			SuspendControl();
 			ResumeMode = true;
 		}
-
+		
 		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoad(e);
 			var resumeMode = ResumeMode;
 			if (resumeMode != null)
 			{
 				// resume (and perform) layout if needed before we're shown
 				ResumeControl(resumeMode.Value);
-				ResumeMode = null;
 			}
+			base.OnLoad(e);
 		}
 
 		public override void OnUnLoad(EventArgs e)
@@ -53,58 +52,63 @@ namespace Eto.WinForms.Forms
 
 		protected virtual void SuspendControl()
 		{
+#if DEBUG
+			if (ResumeMode != null)
+				throw new InvalidOperationException("Suspending control when we shouldn't be");
+#endif
 			Control.SuspendLayout();
 		}
 
 		protected virtual void ResumeControl(bool performLayout = true)
 		{
+#if DEBUG
+			if (ResumeMode == null)
+				throw new InvalidOperationException("Resuming control when we shouldn't be");
+#endif
+			ResumeMode = null;
 			Control.ResumeLayout(performLayout);
 		}
 
 		public override void BeforeAddControl(bool top = true)
 		{
-			foreach (var h in Widget.Controls.Select(r => r.GetWindowsHandler()).Where(r => r != null))
+			foreach (var h in Widget.VisualControls.Select(r => r.GetWindowsHandler()).Where(r => r != null))
 			{
-				h.BeforeAddControl(false);
+				h.BeforeAddControl(Widget.Loaded);
 			}
 			if (ResumeMode != null)
 			{
-				// if we're the top level control being added, resume on load
-				if (top && !Widget.Loaded)
+				// if we're not the top level control being added, defer when we get loaded
+				if (!top && !Widget.Loaded)
 				{
 					ResumeMode = top;
 					return;
 				}
 				// resume all non-top level controls
 				ResumeControl(top);
-				ResumeMode = null;
 			}
 			base.BeforeAddControl(top);
 		}
 
 		public bool RecurseToChildren { get { return true; } }
 
-		public override Size? DefaultSize
+		public override Size? GetDefaultSize(Size availableSize)
 		{
-			get
+			var container = ContainerControl;
+			var min = container.MinimumSize;
+			if (min != sd.Size.Empty)
 			{
-				var container = ContainerControl;
-				var min = container.MinimumSize;
-				if (min != sd.Size.Empty)
-				{
-					var parent = container.Parent;
-					if (parent != null)
-						parent.SuspendLayout();
-					container.MinimumSize = sd.Size.Empty;
-					var size = container.GetPreferredSize(Size.MaxValue.ToSD()).ToEto();
-					container.MinimumSize = min;
-					if (parent != null)
-						parent.ResumeLayout(false);
-					return size;
-				}
-				else
-					return ContainerControl.GetPreferredSize(Size.MaxValue.ToSD()).ToEto();
+				var parent = container.Parent;
+				if (parent != null)
+					parent.SuspendLayout();
+				container.MinimumSize = sd.Size.Empty;
+				var size = container.GetPreferredSize(availableSize.ToSD()).ToEto();
+				container.MinimumSize = min;
+				if (parent != null)
+					parent.ResumeLayout(false);
+				return size;
 			}
+			else
+				return ContainerControl.GetPreferredSize(availableSize.ToSD()).ToEto();
 		}
 
 		static readonly object enableRedrawDuringSuspendKey = new object();

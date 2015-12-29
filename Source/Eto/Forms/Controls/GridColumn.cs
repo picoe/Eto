@@ -14,6 +14,7 @@ namespace Eto.Forms
 	/// Grid column definition for a <see cref="Grid"/>
 	/// </summary>
 	[Handler(typeof(GridColumn.IHandler))]
+	[ContentProperty("DataCell")]
 	public class GridColumn : Widget
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }

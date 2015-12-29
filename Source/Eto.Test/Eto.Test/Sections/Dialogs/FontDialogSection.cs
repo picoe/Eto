@@ -25,7 +25,7 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlignment = VerticalAlignment.Center }, PickFontFamily(), null);
 
 			layout.AddSeparateRow(null, FontList(), FontStyles(), FontSizes(), null);
-			layout.AddSeparateRow(null, new Label { Text = "Style:" }, BoldFont(), ItalicFont(), UnderlineFont(), StrikeoutFont(), null);
+			layout.AddSeparateRow(null, "Style:", BoldFont(), ItalicFont(), UnderlineFont(), StrikeoutFont(), null);
 
 			var tabs = new TabControl();
 			tabs.Pages.Add(new TabPage { Text = "Preview", Content = Preview() });
@@ -87,6 +87,13 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			var control = new Label { TextColor = Colors.Orange };
 			control.TextBinding.BindDataContext<Font>(r => r.LineHeight.ToString());
+			return control;
+		}
+
+		Control MeasureString()
+		{
+			var control = new Label();
+			control.TextBinding.BindDataContext<Font>(r => r.MeasureString(preview.Text).ToString());
 			return control;
 		}
 
@@ -279,15 +286,16 @@ namespace Eto.Test.Sections.Dialogs
 			layout.BeginHorizontal();
 			layout.BeginVertical();
 			layout.Add(null);
-			layout.AddRow(new Label { Text = "Descent" }, Descender());
-			layout.AddRow(new Label { Text = "Ascent" }, Ascender());
-			layout.AddRow(new Label { Text = "Leading" }, Leading());
+			layout.AddRow("Descent", Descender());
+			layout.AddRow("Ascent", Ascender());
+			layout.AddRow("Leading", Leading());
+			layout.AddRow("MeasureString", MeasureString());
 			layout.Add(null);
 			layout.EndBeginVertical();
 			layout.Add(null);
-			layout.AddRow(new Label { Text = "BaseLine" }, BaseLine());
-			layout.AddRow(new Label { Text = "XHeight" }, XHeight());
-			layout.AddRow(new Label { Text = "LineHeight" }, LineHeight());
+			layout.AddRow("BaseLine", BaseLine());
+			layout.AddRow("XHeight", XHeight());
+			layout.AddRow("LineHeight", LineHeight());
 			layout.Add(null);
 			layout.EndBeginVertical();
 			layout.Add(null);

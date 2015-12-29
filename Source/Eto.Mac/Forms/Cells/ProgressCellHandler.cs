@@ -2,6 +2,7 @@
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Mac.Drawing;
+using Eto.Mac.Forms.Controls;
 
 
 #if XAMMAC2
@@ -35,40 +36,8 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Cells
 {
-	public class ProgressCellHandler : CellHandler<ProgressCellHandler.EtoCell, ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
+	public class ProgressCellHandler : CellHandler<ProgressCell, ProgressCell.ICallback>, ProgressCell.IHandler
 	{
-		public ProgressCellHandler()
-		{
-			Control = new EtoCell { Handler = this, Enabled = true, LevelIndicatorStyle = NSLevelIndicatorStyle.ContinuousCapacity, MinValue = 0, MaxValue = 1 };
-		}
-
-		public override bool Editable
-		{
-			get { return base.Editable; }
-			set { Control.Editable = value; }
-		}
-
-		public override void SetBackgroundColor(NSCell cell, Color color)
-		{
-			var c = (EtoCell)cell;
-			c.BackgroundColor = color;
-		}
-
-		public override Color GetBackgroundColor(NSCell cell)
-		{
-			return ((EtoCell)cell).BackgroundColor;
-		}
-
-		public override void SetForegroundColor(NSCell cell, Color color)
-		{
-			((EtoCell)cell).ForegroundColor = color;
-		}
-
-		public override Color GetForegroundColor(NSCell cell)
-		{
-			return ((EtoCell)cell).ForegroundColor;
-		}
-
 		public override NSObject GetObjectValue(object dataItem)
 		{
 			float? progress = Widget.Binding.GetValue(dataItem);
@@ -91,19 +60,72 @@ namespace Eto.Mac.Forms.Cells
 			}
 		}
 
-		public override nfloat GetPreferredSize(object value, CGSize cellSize, NSCell cell)
+		static NSLevelIndicator field = new NSLevelIndicator { Cell = new EtoCell() };
+
+		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
-			return 30f;
+			var args = new MacCellFormatArgs(ColumnHandler.Widget, dataItem, row, field);
+			ColumnHandler.DataViewHandler.Callback.OnCellFormatting(ColumnHandler.DataViewHandler.Widget, args);
+
+			field.Font = args.Font.ToNS() ?? NSFont.BoldSystemFontOfSize(NSFont.SystemFontSize);
+			field.ObjectValue = value as NSObject;
+			return field.Cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
 		}
 
+		public override Color GetBackgroundColor(NSView view)
+		{
+			return ((EtoCell)((NSLevelIndicator)view).Cell).BackgroundColor.ToEto();
+		}
+
+		public override void SetBackgroundColor(NSView view, Color color)
+		{
+			var field = ((EtoCell)((NSLevelIndicator)view).Cell);
+			field.BackgroundColor = color.ToNSUI();
+			field.DrawsBackground = color.A > 0;
+		}
+
+		public override Color GetForegroundColor(NSView view)
+		{
+			return ((EtoCell)((NSLevelIndicator)view).Cell).TextColor.ToEto();
+		}
+
+		public override void SetForegroundColor(NSView view, Color color)
+		{
+			((EtoCell)((NSLevelIndicator)view).Cell).TextColor = color.ToNSUI();
+		}
+
+		public override Font GetFont(NSView view)
+		{
+			return ((NSLevelIndicator)view).Font.ToEto();
+		}
+
+		public override void SetFont(NSView view, Font font)
+		{
+			((NSLevelIndicator)view).Font = font.ToNS();
+		}
+
+
+		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem)
+		{
+			var view = tableView.MakeView(tableColumn.Identifier, tableView) as NSLevelIndicator;
+			if (view == null)
+			{
+				view = new NSLevelIndicator();
+				view.Identifier = tableColumn.Identifier;
+				view.Cell = new EtoCell { MinValue = 0, MaxValue = 1 };
+				view.Cell.LevelIndicatorStyle = NSLevelIndicatorStyle.ContinuousCapacity;
+			}
+			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
+			ColumnHandler.DataViewHandler.OnCellFormatting(args);
+			return view;
+		}
 
 		// The progress cell
 		public class EtoCell : NSLevelIndicatorCell, IMacControl
 		{
 			public EtoCell()
 			{
-				ForegroundColor = Colors.Black;
-				BackgroundColor = Colors.White;
+				TextColor = NSColor.ControlText;
 			}
 
 			public EtoCell(IntPtr handle) : base(handle)
@@ -118,36 +140,36 @@ namespace Eto.Mac.Forms.Cells
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
-			public Color BackgroundColor { get; set; }
+			[Export("backgroundColor")]
+			public NSColor BackgroundColor { get; set; }
 
-			public Color ForegroundColor { get; set; }
+			[Export("drawsBackground")]
+			public bool DrawsBackground { get; set; }
+
+			[Export("textColor")]
+			public NSColor TextColor { get; set; }
 
 			public override CGSize CellSizeForBounds(CGRect bounds)
 			{
 				return new CGSize(50f, 10f);
 			}
 
-			[Export("copyWithZone:")]
-			NSObject CopyWithZone(IntPtr zone)
-			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr(
-					SuperHandle,
-					MacCommon.CopyWithZoneHandle,
-					zone);
-
-				return new EtoCell(ptr) { Handler = Handler };
-			}
-
 			public override void DrawWithFrame(CGRect cellFrame, NSView inView)
 			{
+				if (DrawsBackground && BackgroundColor != null && BackgroundColor.AlphaComponent > 0)
+				{
+					BackgroundColor.Set();
+					NSGraphics.RectFill(cellFrame);
+				}
+
+				base.DrawWithFrame(cellFrame, inView);
+
 				var progress = FloatValue;
 				if (float.IsNaN((float)progress))
 					return;
 
-				base.DrawWithFrame(cellFrame, inView);
-
 				string progressText = (int)(progress * 100f) + "%";
-				var str = new NSMutableAttributedString(progressText, NSDictionary.FromObjectAndKey(ForegroundColor.ToNSUI(), NSStringAttributeKey.ForegroundColor));
+				var str = new NSMutableAttributedString(progressText, NSDictionary.FromObjectAndKey(TextColor, NSStringAttributeKey.ForegroundColor));
 				var range = new NSRange(0, str.Length);
 				if (Font != null)
 				{
@@ -155,7 +177,10 @@ namespace Eto.Mac.Forms.Cells
 				}
 				var size = FontExtensions.MeasureString(str, cellFrame.Size.ToEto());
 				var rect = cellFrame.ToEto();
-				rect.Offset((rect.Size - size) / 2);
+				var offset = (rect.Size - size) / 2;
+				if (!NSGraphicsContext.CurrentContext.IsFlipped)
+					offset.Height = -offset.Height;
+				rect.Offset(offset);
 
 				str.DrawString(rect.ToNS());
 			}

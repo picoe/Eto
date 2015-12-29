@@ -26,5 +26,36 @@ namespace Eto.Forms
 		/// <value><c>true</c> to trim the child menu items; otherwise, <c>false</c>.</value>
 		bool Trim { get; }
 	}
+
+	/// <summary>
+	/// Extensions for the <see cref="ISubmenu"/> interface.
+	/// </summary>
+	public static class SubmenuExtensions
+	{
+		/// <summary>
+		/// Gets an enumeration of all children of the specified submenu.
+		/// </summary>
+		/// <remarks>
+		/// This traverses all items of the submenu, and any children of those items if they implement <see cref="ISubmenu"/>
+		/// as well.
+		/// </remarks>
+		/// <param name="submenu">Submenu to get all child menu items for.</param>
+		/// <returns>Enumeration of all child menu items of the specified submenu.</returns>
+		public static IEnumerable<MenuItem> GetChildren(this ISubmenu submenu)
+		{
+			foreach (var item in submenu.Items)
+			{
+				yield return item;
+				var childmenu = item as ISubmenu;
+				if (childmenu != null)
+				{
+					foreach (var child in childmenu.GetChildren())
+					{
+						yield return child;
+					}
+				}
+			}
+		}
+	}
 }
 

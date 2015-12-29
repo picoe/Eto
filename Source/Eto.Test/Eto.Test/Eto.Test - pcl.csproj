@@ -38,8 +38,8 @@
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <Import Project="..\..\Shared\Common.props" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="../../Shared/Common.targets" />
   <ItemGroup>
     <Compile Include="..\..\Eto\Helper.cs">
       <Link>Helper.cs</Link>
@@ -185,16 +185,23 @@
     <Compile Include="Sections\Drawing\PixelOffsetTransforms.cs" />
     <Compile Include="Sections\Drawing\ClipTransformSection.cs" />
     <Compile Include="Sections\Behaviors\CursorSection.cs" />
+    <Compile Include="Sections\Drawing\SystemColorSection.cs" />
+    <Compile Include="Sections\Controls\PropertyCellSection.cs" />
+    <Compile Include="UnitTests\Forms\XamlTests.cs" />
+    <Compile Include="UnitTests\Forms\ToolItemCollectionTests.cs" />
+    <Compile Include="UnitTests\Forms\Layout\StackLayoutTests.cs" />
+    <Compile Include="UnitTests\Forms\Layout\DynamicLayoutTests.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
-    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Textures.gif" />
+    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestImage.png" />
@@ -211,7 +218,6 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
@@ -219,7 +225,6 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
@@ -233,12 +238,12 @@
     <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj">
       <Project>{12603B32-65B9-4DB7-82FC-C52E18537D6C}</Project>
       <Name>Eto.Serialization.Xaml - pcl</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\portable-net45+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.0.0\lib\portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

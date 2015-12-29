@@ -18,12 +18,18 @@ namespace Eto.Mac.Forms
 {
 	public class SelectFolderDialogHandler : WidgetHandler<NSOpenPanel, SelectFolderDialog>, SelectFolderDialog.IHandler
 	{
-		public SelectFolderDialogHandler ()
+		protected override NSOpenPanel CreateControl()
 		{
-			Control = new NSOpenPanel();
+			return new NSOpenPanel();
+		}
+
+		protected override void Initialize()
+		{
 			Control.CanChooseDirectories = true;
 			Control.CanChooseFiles = false;
 			Control.CanCreateDirectories = true;
+
+			base.Initialize();
 		}
 		
 		public DialogResult ShowDialog (Window parent)

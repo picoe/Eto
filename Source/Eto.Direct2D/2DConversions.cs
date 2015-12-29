@@ -377,13 +377,7 @@ namespace Eto.Direct2D
 		{
 			using (var converter = new s.WIC.FormatConverter(SDFactory.WicImagingFactory))
 			{
-				converter.Initialize(
-					bmp,
-					pixelFormat ?? s.WIC.PixelFormat.Format32bppPBGRA,
-					s.WIC.BitmapDitherType.None,
-					null,
-					0f,
-					s.WIC.BitmapPaletteType.Custom);
+				converter.Initialize(bmp, pixelFormat ?? s.WIC.PixelFormat.Format32bppPBGRA);
 
 				return new s.WIC.Bitmap(SDFactory.WicImagingFactory, converter, s.WIC.BitmapCreateCacheOption.CacheOnLoad);
 			}

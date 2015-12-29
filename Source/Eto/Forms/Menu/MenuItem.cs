@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -42,6 +43,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[TypeConverter(typeof(MenuItemConverter))]
 	public abstract class MenuItem : Menu, ICommandItem
 	{
 		/// <summary>
@@ -68,8 +70,21 @@ namespace Eto.Forms
 		public ICommand Command
 		{
 			get { return Properties.GetCommand(Command_Key); }
-			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter); }
 		}
+
+		static readonly object CommandParameter_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the parameter to pass to the <see cref="Command"/> when executing or determining its CanExecute state.
+		/// </summary>
+		/// <value>The command parameter.</value>
+		public object CommandParameter
+		{
+			get { return Properties.Get<object>(CommandParameter_Key); }
+			set { Properties.Set(CommandParameter_Key, value, () => Properties.UpdateCommandCanExecute(Command_Key)); }
+		}
+
 
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -192,6 +207,17 @@ namespace Eto.Forms
 		{
 			get { return Handler.Shortcut; }
 			set { Handler.Shortcut = value; }
+		}
+
+		/// <summary>
+		/// Performs the click handler for this item.
+		/// </summary>
+		/// <remarks>
+		/// This performs the click by calling <see cref="OnClick"/> which triggers the <see cref="Click"/> event.
+		/// </remarks>
+		public virtual void PerformClick()
+		{
+			OnClick(EventArgs.Empty);
 		}
 
 		/// <summary>

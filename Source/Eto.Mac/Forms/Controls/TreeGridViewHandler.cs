@@ -2,6 +2,9 @@ using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Mac.Forms.Cells;
+
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -42,7 +45,7 @@ namespace Eto.Mac.Forms.Controls
 		readonly Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem> ();
 		readonly Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
 
-		class EtoTreeItem : NSObject
+		public class EtoTreeItem : NSObject
 		{
 			Dictionary<int, EtoTreeItem> items;
 			
@@ -84,7 +87,7 @@ namespace Eto.Mac.Forms.Controls
 			return false;
 		}
 
-		class EtoOutlineDelegate : NSOutlineViewDelegate
+		public class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
 			WeakReference handler;
 			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
@@ -164,17 +167,22 @@ namespace Eto.Mac.Forms.Controls
 				Handler.Callback.OnColumnHeaderClick(Handler.Widget, new GridColumnEventArgs (column.Widget));
 			}
 
-			public override void WillDisplayCell (NSOutlineView outlineView, NSObject cell, NSTableColumn tableColumn, NSObject item)
+			public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
-				var colHandler = Handler.GetColumn (tableColumn);
-				var myitem = item as EtoTreeItem;
-				if (myitem != null) {
-					Handler.OnCellFormatting(colHandler.Widget, myitem.Item, -1, cell as NSCell);
+				var colHandler = Handler.GetColumn(tableColumn);
+				if (colHandler != null && colHandler.DataCell != null)
+				{
+					var cellHandler = colHandler.DataCell.Handler as ICellHandler;
+					if (cellHandler != null)
+					{
+						return cellHandler.GetViewForItem(outlineView, tableColumn, -1, item, (obj, row) => obj != null ? ((EtoTreeItem)obj).Item : null);
+					}
 				}
+				return outlineView.MakeView(tableColumn.Identifier, this);
 			}
 		}
 			
-		class EtoDataSource : NSOutlineViewDataSource
+		public class EtoDataSource : NSOutlineViewDataSource
 		{
 			WeakReference handler;
 			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
@@ -247,8 +255,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var point = ConvertPointFromView(theEvent.LocationInWindow, null);
 
-				int rowIndex;
-				if ((rowIndex = (int)GetRow(point)) >= 0)
+				int rowIndex = (int)GetRow(point);
+				if (rowIndex >= 0)
 				{
 					int columnIndex = (int)GetColumn(point);
 					var item = (Handler as TreeGridViewHandler).GetItem(rowIndex);
@@ -257,6 +265,18 @@ namespace Eto.Mac.Forms.Controls
 				}
 
 				base.MouseDown(theEvent);
+			}
+
+			public EtoOutlineView(TreeGridViewHandler handler)
+			{
+				Delegate = new EtoOutlineDelegate { Handler = handler };
+				DataSource = new EtoDataSource { Handler = handler };
+				//HeaderView = null,
+				//AutoresizesOutlineColumn = true,
+				//AllowsColumnResizing = false,
+				AllowsColumnReordering = false;
+				FocusRingType = NSFocusRingType.None;
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None;
 			}
 		}
 		
@@ -285,21 +305,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public TreeGridViewHandler()
+		protected override NSOutlineView CreateControl()
 		{
-			Control = new EtoOutlineView
-			{
-				Handler = this,
-				Delegate = new EtoOutlineDelegate { Handler = this },
-				DataSource = new EtoDataSource { Handler = this },
-				//HeaderView = null,
-				//AutoresizesOutlineColumn = true,
-				//AllowsColumnResizing = false,
-				AllowsColumnReordering = false,
-				FocusRingType = NSFocusRingType.None,
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
-			};
-
+			return new EtoOutlineView(this);
 		}
 
 		public ITreeGridStore<ITreeGridItem> DataStore {

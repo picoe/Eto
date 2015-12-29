@@ -27,13 +27,15 @@
     <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="ColorPicker">
       <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
@@ -61,6 +63,7 @@
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="Xceed.Wpf.Toolkit">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -86,7 +89,10 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="WpfConversions.cs" />
     <Compile Include="CustomControls\EditableTextBlock.cs" />
     <Compile Include="CustomControls\FontDialog\fontchooser.xaml.cs">
@@ -233,6 +239,9 @@
       <Link>Forms\HwndFormHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll">
@@ -307,8 +316,6 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
@@ -318,5 +325,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

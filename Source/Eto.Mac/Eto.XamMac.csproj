@@ -44,7 +44,7 @@
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <PropertyGroup>
     <CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
   </PropertyGroup>
@@ -217,6 +217,15 @@
       <Link>Drawing\GradientHelper.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="..\Shared\MutableCellEventArgs.cs">
+      <Link>Forms\Cells\MutableCellEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
+    <Compile Include="Forms\NativeFormHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -236,7 +245,5 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

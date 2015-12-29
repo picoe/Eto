@@ -113,7 +113,7 @@ namespace Eto.Wpf.Forms.Controls
 						{
 							var columnIndex = Control.CurrentColumn == null ? -1 : Control.CurrentColumn.DisplayIndex;
 							var item = Control.SelectedItem;
-							var column = Widget.Columns[columnIndex];
+							var column = columnIndex == -1 || columnIndex >= Widget.Columns.Count ? null : Widget.Columns[columnIndex];
 							Callback.OnCellDoubleClick(Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
 						}
 					};
@@ -154,6 +154,11 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 			Columns = new ColumnCollection { Handler = this };
 			Columns.Register(Widget.Columns);
+
+			// prevent DataGrid from burying these keys and propegate up to window.
+			// from: http://gonetdotnet.blogspot.ca/2014/04/solved-how-to-disable-default-keyboard.html
+			Control.InputBindings.Add(new swi.KeyBinding(swi.ApplicationCommands.NotACommand, swi.Key.C, swi.ModifierKeys.Control));
+			Control.InputBindings.Add(new swi.KeyBinding(swi.ApplicationCommands.NotACommand, swi.Key.Delete, swi.ModifierKeys.None));
 		}
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
@@ -477,6 +482,11 @@ namespace Eto.Wpf.Forms.Controls
 						break;
 				}
 			}
+		}
+
+		public void ReloadData(IEnumerable<int> rows)
+		{
+			Control.Items.Refresh();
 		}
 	}
 }

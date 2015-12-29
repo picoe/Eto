@@ -15,6 +15,14 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override bool PreventUserResize { get { return true; } }
 
+		static sw.Thickness DefaultBorderThickness = new mwc.DateTimePicker().BorderThickness;
+
+		public override bool ShowBorder
+		{
+			get { return !Control.BorderThickness.ToEto().IsZero; }
+			set { Control.BorderThickness = value ? DefaultBorderThickness : new sw.Thickness(0); }
+		}
+
 		public TextBoxHandler ()
 		{
 			Control = new mwc.WatermarkTextBox();
@@ -29,7 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
-			return base.GetPreferredSize(WpfConversions.ZeroSize);
+			return base.GetPreferredSize(new sw.Size(0, double.PositiveInfinity));
 		}
 
 		public override bool UseMousePreview { get { return true; } }

@@ -42,7 +42,16 @@ namespace Eto.Mac.Forms.Controls
 			public override void DrawRect(CGRect dirtyRect)
 			{
 				if (Handler.curValue != null)
-					base.DrawRect(dirtyRect);
+				{
+					if (Cell.BackgroundStyle == NSBackgroundStyle.Dark && Cell.TextColor == NSColor.ControlText)
+					{
+						Cell.TextColor = NSColor.AlternateSelectedControlText;
+						base.DrawRect(dirtyRect);
+						Cell.TextColor = NSColor.ControlText;
+					}
+					else
+						base.DrawRect(dirtyRect);
+				}
 				else
 				{
 					// paint with no elements visible
@@ -60,24 +69,26 @@ namespace Eto.Mac.Forms.Controls
 				get { return (DateTimePickerHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public EtoDatePicker()
+			{
+				TimeZone = NSTimeZone.LocalTimeZone;
+				Calendar = NSCalendar.CurrentCalendar;
+				DateValue = DateTime.Now.ToNS();
+			}
 		}
 
-		public DateTimePickerHandler()
+		protected override NSDatePicker CreateControl()
 		{
-			Control = new EtoDatePicker
-			{
-				Handler = this,
-				TimeZone = NSTimeZone.LocalTimeZone,
-				Calendar = NSCalendar.CurrentCalendar,
-				DateValue = DateTime.Now.ToNS()
-			};
-			this.Mode = DateTimePickerMode.Date;
-			// apple+backspace clears the value
-			Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
+			return new EtoDatePicker();
 		}
 
 		protected override void Initialize()
 		{
+			this.Mode = DateTimePickerMode.Date;
+			// apple+backspace clears the value
+			Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
+
 			base.Initialize();
 			Widget.KeyDown += HandleKeyDown;
 			// when clicking, set the value if it is null
@@ -194,13 +205,24 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (color != null)
 			{
-				Control.Cell.BackgroundColor = color.Value.ToNSUI();
-				Control.Cell.DrawsBackground = true;
+				Control.BackgroundColor = color.Value.ToNSUI();
+				Control.DrawsBackground = color.Value.A > 0;
 			}
 			else
 			{
-				Control.Cell.BackgroundColor = NSColor.ControlBackground;
-				Control.Cell.DrawsBackground = true;
+				Control.BackgroundColor = NSColor.ControlBackground;
+				Control.DrawsBackground = true;
+			}
+		}
+
+		public bool ShowBorder
+		{
+			get { return Control.Bordered; }
+			set
+			{ 
+				Control.Bordered = value; 
+
+				Control.DatePickerStyle = value ? NSDatePickerStyle.TextFieldAndStepper : NSDatePickerStyle.TextField;
 			}
 		}
 	}

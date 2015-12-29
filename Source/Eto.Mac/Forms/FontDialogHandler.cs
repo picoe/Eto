@@ -70,10 +70,12 @@ namespace Eto.Mac.Forms
 			get { return NSFontManager.SharedFontManager; }
 		}
 
-		public FontDialogHandler()
+		protected override NSFontPanel CreateControl()
 		{
-			Control = NSFontPanel.SharedFontPanel;
+			return NSFontPanel.SharedFontPanel;
 		}
+
+		protected override bool DisposeControl { get { return false; } }
 
 		public override void AttachEvent(string id)
 		{

@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -61,5 +62,11 @@ namespace Eto.Forms
 		{
 			return new DynamicControl { Control = control };
 		}
+
+		internal abstract IEnumerable<Control> Controls { get; }
+
+		internal abstract void SetParent(DynamicTable table);
+
+		internal abstract void SetLayout(DynamicLayout layout);
 	}
 }

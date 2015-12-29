@@ -1,5 +1,7 @@
 using System;
 using Eto.Forms;
+using System.Diagnostics;
+using Eto.Serialization.Json;
 
 namespace Eto.Test.Sections.Serialization.Json
 {
@@ -11,7 +13,13 @@ namespace Eto.Test.Sections.Serialization.Json
 
 		public Test()
 		{
-			Eto.Serialization.Json.JsonReader.Load(this);
+			var sw = new Stopwatch();
+			sw.Start();
+
+			JsonReader.Load(this);
+
+			sw.Stop();
+			Log.Write(this, "loaded in {0} seconds", sw.Elapsed.TotalSeconds);
 
 			MyCheckBox.Checked = true;
 			MyTextArea.Text = "This form was created via json!";

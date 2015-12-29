@@ -52,7 +52,7 @@ namespace Eto.Mac.Forms.Controls
 		readonly Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem>();
 		bool selectionChanging;
 		bool raiseExpandEvents = true;
-		readonly NSTableColumn column;
+		NSTableColumn column;
 
 		public NSScrollView Scroll { get; private set; }
 
@@ -276,6 +276,15 @@ namespace Eto.Mac.Forms.Controls
 				} else
 					base.DrawBackground (clipRect);
 			}
+
+			public EtoOutlineView()
+			{
+				HeaderView = null;
+				AutoresizesOutlineColumn = true;
+				AllowsColumnResizing = false;
+				FocusRingType = NSFocusRingType.None;
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.FirstColumnOnly;
+			}
 		}
 
 		public override NSView ContainerControl
@@ -283,19 +292,16 @@ namespace Eto.Mac.Forms.Controls
 			get { return Scroll; }
 		}
 
-		public TreeViewHandler()
+		protected override NSOutlineView CreateControl()
 		{
-			Control = new EtoOutlineView
-			{ 
-				Handler = this,
-				Delegate = new EtoOutlineDelegate{ Handler = this },
-				DataSource = new EtoDataSource{ Handler = this },
-				HeaderView = null,
-				AutoresizesOutlineColumn = true,
-				AllowsColumnResizing = false,
-				FocusRingType = NSFocusRingType.None,
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.FirstColumnOnly
-			};
+			return new EtoOutlineView();
+		}
+
+		protected override void Initialize()
+		{
+			Control.Delegate = new EtoOutlineDelegate{ Handler = this };
+			Control.DataSource = new EtoDataSource{ Handler = this };
+
 			column = new NSTableColumn
 			{
 				DataCell = new MacImageListItemCell { 
@@ -304,11 +310,11 @@ namespace Eto.Mac.Forms.Controls
 				},
 				Editable = false
 			};
-			
-			
+
+
 			Control.AddColumn(column);
 			Control.OutlineTableColumn = column;
-			
+
 			Scroll = new EtoScrollView
 			{
 				Handler = this,
@@ -318,6 +324,8 @@ namespace Eto.Mac.Forms.Controls
 				BorderType = NSBorderType.BezelBorder,
 				DocumentView = Control
 			};
+
+			base.Initialize();
 		}
 
 		public override void AttachEvent(string id)

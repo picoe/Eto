@@ -1,4 +1,6 @@
-﻿using Eto.Forms;
+﻿using Eto.Addin.VisualStudio.Editor;
+using Eto.Designer;
+using Eto.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;

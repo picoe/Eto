@@ -202,11 +202,20 @@ namespace Eto
 	public abstract class WidgetHandler<TControl, TWidget> : WidgetHandler<TWidget>, IControlObjectSource
 		where TWidget: Widget
 	{
+		TControl control;
+
 		/// <summary>
-		/// Initializes a new instance of the WidgetHandler class
+		/// Creates the control if not already set.
 		/// </summary>
-		protected WidgetHandler()
+		/// <remarks>
+		/// Override this to create the control instance for the handler.
+		/// This makes it easy to extend existing handler implementations with different control implementations.
+		/// Some platforms (e.g. Mac) require subclasses to implement/override functionality.
+		/// </remarks>
+		/// <returns>The control.</returns>
+		protected virtual TControl CreateControl()
 		{
+			return default(TControl);
 		}
 
 		/// <summary>
@@ -217,7 +226,17 @@ namespace Eto
 		/// <summary>
 		/// Gets or sets the platform-specific control object
 		/// </summary>
-		public TControl Control { get; protected set; }
+		public TControl Control
+		{
+			get { return !ReferenceEquals(control, default(TControl)) ? control : (control = CreateControl()); }
+			set { control = value; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this instance has a <see cref="Control"/> instance.
+		/// </summary>
+		/// <value><c>true</c> if this instance has a control; otherwise, <c>false</c>.</value>
+		public bool HasControl { get { return !ReferenceEquals(control, default(TControl)); } }
 
 		/// <summary>
 		/// Gets the platform-specific control object
@@ -234,12 +253,12 @@ namespace Eto
 			if (disposing && DisposeControl)
 			{
 				//Console.WriteLine ("{0}: 1. Disposing control {1}, {2}", this.WidgetID, this.Control.GetType (), this.GetType ());
-				var control = Control as IDisposable;
-				if (control != null)
-					control.Dispose();
+				var disposable = control as IDisposable;
+				if (disposable != null)
+					disposable.Dispose();
 			}
 			//Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
-			Control = default(TControl);
+			control = default(TControl);
 			base.Dispose(disposing);
 		}
 

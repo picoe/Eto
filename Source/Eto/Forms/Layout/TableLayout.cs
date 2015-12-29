@@ -411,7 +411,7 @@ namespace Eto.Forms
 		public override void EndInit()
 		{
 			base.EndInit();
-			OnDeserialized(Parent != null); // mono calls EndInit BEFORE setting to parent
+			OnDeserialized(VisualParent != null); // mono calls EndInit BEFORE setting to parent
 		}
 
 		/// <summary>

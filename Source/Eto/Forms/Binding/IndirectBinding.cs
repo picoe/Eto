@@ -162,6 +162,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Casts this binding value to another (compatible) type, or returns the default if the types do not match.
+		/// </summary>
+		/// <typeparam name="TValue">The type to cast the values of this binding to.</typeparam>
+		public IndirectBinding<TValue> OfType<TValue>(TValue defaultConvertedValue = default(TValue), T defaultValue = default(T))
+		{
+			return new DelegateBinding<object, TValue>(
+				m =>
+				{
+					var val = GetValue(m);
+				return val is TValue ? (TValue)(object)val : defaultConvertedValue;
+				},
+				(m, val) => SetValue(m, val is T ? (T)(object)val : defaultValue),
+				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
+				removeChangeEvent: RemoveValueChangedHandler
+			);
+		}
+
+		/// <summary>
 		/// Converts this binding to return a nullable boolean binding
 		/// </summary>
 		/// <remarks>
@@ -280,5 +298,53 @@ namespace Eto.Forms
 				removeChangeEvent: RemoveValueChangedHandler
 			);
 		}
+
+		/// <summary>
+		/// Uses System.Convert.ChangeType to change the value of the binding to the specified type.
+		/// </summary>
+		/// <remarks>
+		/// This has additional logic to deal with nullable types so they can be converted properly as well.
+		/// </remarks>
+		/// <param name="invalidGetValue">Delegate to get a value when it cannot be converted to the specified <typeparamref name="TType"/>. When null, an exception will be thrown when the value cannot be converted.</param>
+		/// <param name="invalidSetValue">Delegate to set a value when it cannot be converted from the specified <typeparamref name="TType"/>. When null, an exception will be thrown when the value cannot be converted.</param>
+		/// <typeparam name="TType">Type to convert the value to</typeparam>
+		/// <returns>A binding of the new type that is a converted version of this binding</returns>
+		public IndirectBinding<TType> ToType<TType>(Func<T, TType> invalidGetValue = null, Func<TType, T> invalidSetValue = null)
+		{
+			return new DelegateBinding<object, TType>(
+				o =>
+				{
+					var val = GetValue(o);
+					try
+					{
+						var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+						return (TType)System.Convert.ChangeType(val, type);
+					}
+					catch
+					{
+						if (invalidGetValue == null)
+							throw;
+						return invalidGetValue(val);
+					}
+				},
+				(o, val) =>
+				{
+					try
+					{
+						var type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+						SetValue(o, (T)System.Convert.ChangeType(val, type));
+					}
+					catch
+					{
+						if (invalidSetValue == null)
+							throw;
+						SetValue(o, invalidSetValue(val));
+					}
+				},
+				addChangeEvent: (o, eh) => AddValueChangedHandler(o, eh),
+				removeChangeEvent: (o, eh) => RemoveValueChangedHandler(o, eh)
+			);
+		}
+
 	}
 }

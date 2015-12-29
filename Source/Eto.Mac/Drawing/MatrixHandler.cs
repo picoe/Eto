@@ -153,7 +153,7 @@ namespace Eto.iOS.Drawing
 		
 		public PointF TransformPoint (Point p)
 		{
-			#if __UNIFIED__
+			#if UNIFIED
 			return control.TransformPoint(p.ToNS()).ToEto();
 			#else
 			return control.TransformPoint(p.ToSDPointF()).ToEto();
@@ -162,7 +162,7 @@ namespace Eto.iOS.Drawing
 		
 		public PointF TransformPoint (PointF p)
 		{
-			#if __UNIFIED__
+			#if UNIFIED
 			return control.TransformPoint(p.ToNS()).ToEto();
 			#else
 			return control.TransformPoint(p.ToSD()).ToEto();

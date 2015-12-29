@@ -90,7 +90,7 @@ namespace Eto.Mac.Forms.Controls
 		#endregion
 	}
 
-	public class MacImageListItemCell : NSTextFieldCell
+	public class MacImageListItemCell : EtoLabelFieldCell
 	{
 		public const int ImagePadding = 2;
 		NSShadow textShadow;
@@ -104,6 +104,8 @@ namespace Eto.Mac.Forms.Controls
 		public MacImageListItemCell()
 		{
 		}
+
+		public NSImageInterpolation ImageInterpolation { get; set; }
 
 		public NSColor GroupColor
 		{
@@ -204,9 +206,11 @@ namespace Eto.Mac.Forms.Controls
 						var newHeight = (nfloat)Math.Min(imageSize.Height, frame.Height);
 						var newWidth = (nfloat)(imageSize.Width * newHeight / imageSize.Height);
 
+						var context = NSGraphicsContext.CurrentContext;
+						var g = context.GraphicsPort;
+
 						if (DrawsBackground && !Highlighted)
 						{
-							var g = NSGraphicsContext.CurrentContext.GraphicsPort;
 							g.SetFillColor(BackgroundColor.CGColor);
 							g.FillRect(new CGRect(frame.X, frame.Y, newWidth + ImagePadding, frame.Height));
 						}
@@ -214,7 +218,9 @@ namespace Eto.Mac.Forms.Controls
 						var imageRect = new CGRect(frame.X, frame.Y, newWidth, newHeight);
 						imageRect.Y += (frame.Height - newHeight) / 2;
 
-						nfloat alpha = Enabled ? 1 : (nfloat)0.5;
+						const float alpha = 1; //Enabled ? 1 : (nfloat)0.5;
+
+						context.ImageInterpolation = ImageInterpolation;
 
 						if (data.Image.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
 							// 10.6+

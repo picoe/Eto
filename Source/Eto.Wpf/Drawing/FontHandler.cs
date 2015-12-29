@@ -5,6 +5,7 @@ using swm = System.Windows.Media;
 using sw = System.Windows;
 using sd = System.Drawing;
 using swd = System.Windows.Documents;
+using System.Globalization;
 
 namespace Eto.Wpf.Drawing
 {
@@ -345,6 +346,16 @@ namespace Eto.Wpf.Drawing
 					sdfont = null;
 				}
 			}
+		}
+
+		static swm.SolidColorBrush measureBrush;
+
+		public SizeF MeasureString(string text)
+		{
+			if (measureBrush == null)
+				measureBrush = new swm.SolidColorBrush(swm.Colors.White);
+			var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, WpfTypeface, PixelSize, measureBrush);
+			return new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 		}
 	}
 }

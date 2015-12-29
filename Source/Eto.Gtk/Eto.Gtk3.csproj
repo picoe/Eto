@@ -46,7 +46,7 @@
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -276,6 +276,11 @@
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -284,7 +289,7 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

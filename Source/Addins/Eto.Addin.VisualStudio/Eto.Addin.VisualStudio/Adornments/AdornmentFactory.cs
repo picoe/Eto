@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using Eto.Addin.VisualStudio.Util;
+using System.Linq;
 
 namespace Eto.Addin.VisualStudio.Adornments
 {
@@ -28,6 +30,23 @@ namespace Eto.Addin.VisualStudio.Adornments
 		/// <param name="textView">The <see cref="IWpfTextView"/> upon which the adornment should be placed</param>
 		public void TextViewCreated(IWpfTextView textView)
 		{
+			// only CSharp files
+			if (textView.TextBuffer.ContentType.TypeName != "CSharp")
+				return;
+
+			// if it's part of a project, it must be referencing Eto.dll.
+			var project = textView.GetContainingProject();
+			if (project != null)
+			{
+				var vsproject = project.Object as VSLangProj.VSProject;
+				if (vsproject != null)
+				{
+					var references = vsproject.References.OfType<VSLangProj.Reference>().ToList();
+					if (!references.Any(r => r.Name == "Eto"))
+						return;
+                }
+			}
+
 			new ColorAdornment(textView);
 		}
 	}

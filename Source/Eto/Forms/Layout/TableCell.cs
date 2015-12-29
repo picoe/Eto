@@ -44,10 +44,10 @@ namespace Eto.Forms
 			{
 				if (control != value)
 				{
-					if (value != null && value.Parent != null)
-						value.Parent.Remove(value);
-					if (control != null && control.Parent != null)
-						control.Parent.Remove(control);
+					if (value != null && value.VisualParent != null)
+						value.VisualParent.Remove(value);
+					if (control != null && control.VisualParent != null)
+						control.VisualParent.Remove(control);
 					control = value;
 				}
 			}
@@ -113,6 +113,18 @@ namespace Eto.Forms
 		public static implicit operator TableCell(string labelText)
 		{
 			return new TableCell(new Label { Text = labelText });
+		}
+
+		/// <summary>
+		/// Converts an <see cref="Image"/> to a TableCell with an <see cref="ImageView"/> control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add images to your layout through code, without having to create <see cref="ImageView"/> instances manually.
+		/// </remarks>
+		/// <param name="image">Image to convert to a TableCell with an ImageView control.</param>
+		public static implicit operator TableCell(Image image)
+		{
+			return new TableCell(new ImageView { Image = image });
 		}
 	}
 

@@ -116,7 +116,7 @@ namespace Eto.Wpf.Forms
 
 						var bmp = new swm.Imaging.RenderTargetBitmap((int)size.Width, (int)size.Height, m.M22 * 96, m.M22 * 96, swm.PixelFormats.Default);
 						ctl.Arrange(new sw.Rect(size));
-						bmp.Render(ctl);
+						bmp.RenderWithCollect(ctl);
 						mainWindow.TaskbarItemInfo.Overlay = bmp;
 					}
 					else

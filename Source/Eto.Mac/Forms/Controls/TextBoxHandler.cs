@@ -20,7 +20,7 @@ namespace Eto.Mac.Forms.Controls
 {
 	public interface ITextBoxWithMaxLength
 	{
-		int MaxLength { get; set; }
+		int MaxLength { get; }
 	}
 
 	public class EtoFormatter : NSFormatter
@@ -62,7 +62,7 @@ namespace Eto.Mac.Forms.Controls
 		}
 	}
 
-	public class EtoTextField : NSTextField, IMacControl
+	public class EtoTextField : NSTextField, IMacControl, ITextBoxWithMaxLength
 	{
 		public WeakReference WeakHandler { get; set; }
 
@@ -71,25 +71,32 @@ namespace Eto.Mac.Forms.Controls
 			get { return (TextBoxHandler)WeakHandler.Target; }
 			set { WeakHandler = new WeakReference(value); } 
 		}
+
+		public int MaxLength { get { return Handler.MaxLength; } }
+
+		public EtoTextField()
+		{
+			Bezeled = true;
+			Editable = true;
+			Selectable = true;
+			Formatter = new EtoFormatter { Handler = this };
+			Cell.Scrollable = true;
+			Cell.Wraps = false;
+			Cell.UsesSingleLineMode = true;
+		}
 	}
 
 	public class TextBoxHandler : MacText<EtoTextField, TextBox, TextBox.ICallback>, TextBox.IHandler, ITextBoxWithMaxLength
 	{
-		public TextBoxHandler()
+		protected override void Initialize()
 		{
-			Control = new EtoTextField
-			{
-				Handler = this,
-				Bezeled = true,
-				Editable = true,
-				Selectable = true,
-				Formatter = new EtoFormatter { Handler = this }
-			};
-			Control.Cell.Scrollable = true;
-			Control.Cell.Wraps = false;
-			Control.Cell.UsesSingleLineMode = true;
-
 			MaxLength = -1;
+			base.Initialize();
+		}
+
+		protected override EtoTextField CreateControl()
+		{
+			return new EtoTextField();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

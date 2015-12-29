@@ -78,6 +78,24 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets a binding to the <see cref="Value"/> property.
+		/// </summary>
+		/// <value>The value binding.</value>
+		public BindableBinding<DateTimePicker, DateTime?> ValueBinding
+		{
+			get
+			{
+				return new BindableBinding<DateTimePicker,DateTime?>(
+					this,
+					r => r.Value,
+					(r,val) => r.Value = val,
+					(r, ev) => r.ValueChanged += ev,
+					(r, ev) => r.ValueChanged -= ev
+				);
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the mode of the date/time picker.
 		/// </summary>
 		/// <value>The picker mode.</value>
@@ -99,6 +117,22 @@ namespace Eto.Forms
 		{
 			get { return Handler.TextColor; }
 			set { Handler.TextColor = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show the control's border.
+		/// </summary>
+		/// <remarks>
+		/// This is a hint to omit the border of the control and show it as plainly as possible.
+		/// 
+		/// Typically used when you want to show the control within a cell of the <see cref="GridView"/>.
+		/// </remarks>
+		/// <value><c>true</c> to show the control border; otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
+		public bool ShowBorder
+		{
+			get { return Handler.ShowBorder; }
+			set { Handler.ShowBorder = value; }
 		}
 
 		static readonly object callback = new Callback();
@@ -172,6 +206,17 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The color of the text.</value>
 			Color TextColor { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether to show the control's border.
+			/// </summary>
+			/// <remarks>
+			/// This is a hint to omit the border of the control and show it as plainly as possible.
+			/// 
+			/// Typically used when you want to show the control within a cell of the <see cref="GridView"/>.
+			/// </remarks>
+			/// <value><c>true</c> to show the control border; otherwise, <c>false</c>.</value>
+			bool ShowBorder { get; set; }
 		}
 
 		#endregion

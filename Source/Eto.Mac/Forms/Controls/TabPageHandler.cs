@@ -33,21 +33,19 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class TabPageHandler : MacPanel<NSView, TabPage, TabPage.ICallback>, TabPage.IHandler
+	public class TabPageHandler : MacPanel<NSTabViewItem, TabPage, TabPage.ICallback>, TabPage.IHandler
 	{
 		const int ICON_PADDING = 2;
 		Image image;
 		static readonly IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
-		public override NSView ContainerControl { get { return Control; } }
+		public override NSView ContainerControl { get { return Control.View; } }
 
-		public NSTabViewItem TabViewItem { get; private set; }
-
-		class MyTabViewItem : NSTabViewItem
+		public class EtoTabViewItem : NSTabViewItem, IMacControl
 		{
-			WeakReference handler;
+			public WeakReference WeakHandler { get; set; }
 
-			public TabPageHandler Handler { get { return (TabPageHandler)handler.Target; } set { handler = new WeakReference(value); } }
+			public TabPageHandler Handler { get { return (TabPageHandler)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
 			public override void DrawLabel(bool shouldTruncateLabel, CGRect labelRect)
 			{
@@ -80,24 +78,29 @@ namespace Eto.Mac.Forms.Controls
 				}
 				return size;
 			}
+
+			public EtoTabViewItem(IMacViewHandler handler)
+			{
+				Identifier = new NSString(Guid.NewGuid().ToString());
+				View = new MacEventView { Handler = handler };
+			}
 		}
 
-		public TabPageHandler()
+		protected override NSTabViewItem CreateControl()
 		{
-			TabViewItem = new MyTabViewItem
-			{
-				Handler = this,
-				Identifier = new NSString(Guid.NewGuid().ToString()),
-				View = new MacEventView { Handler = this }
-			};
-			Control = TabViewItem.View;
+			return new EtoTabViewItem(this);
+		}
+
+		protected override void Initialize()
+		{
 			Enabled = true;
+			base.Initialize();
 		}
 
 		public string Text
 		{
-			get { return TabViewItem.Label; }
-			set { TabViewItem.Label = value; }
+			get { return Control.Label; }
+			set { Control.Label = value; }
 		}
 
 		public Image Image
@@ -114,7 +117,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContentControl
 		{
-			get { return TabViewItem.View; }
+			get { return Control.View; }
 		}
 
 		public override bool Enabled { get; set; }

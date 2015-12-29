@@ -11,7 +11,6 @@ namespace Eto.GtkSharp.Forms.Menu
 		string text;
 		Keys shortcut;
 		Gtk.AccelLabel label;
-		Gtk.Label accelLabel;
 		bool enabled = true;
 		bool isChecked;
 
@@ -20,9 +19,6 @@ namespace Eto.GtkSharp.Forms.Menu
 			label = new Gtk.AccelLabel(string.Empty);
 			label.Xalign = 0;
 			label.UseUnderline = true;
-			accelLabel = new Gtk.Label();
-			accelLabel.Xalign = 1;
-			accelLabel.Visible = false;
 		}
 
 		public void Create(RadioMenuItem controller)
@@ -41,10 +37,8 @@ namespace Eto.GtkSharp.Forms.Menu
 			}
 
 			Control.Sensitive = enabled;
-			var hbox = new Gtk.HBox(false, 4);
-			hbox.Add(label);
-			hbox.Add(accelLabel);
-			Control.Add(hbox);
+			Control.Active = isChecked;
+            Control.Add(label);
 			Control.Activated += Connector.HandleActivated;
 			Control.ShowAll();
 
@@ -65,8 +59,9 @@ namespace Eto.GtkSharp.Forms.Menu
 			public void HandleActivated(object sender, EventArgs e)
 			{
 				var handler = Handler;
-				if (handler.Checked)
-					handler.Callback.OnClick(handler.Widget, e);
+				if (handler.SuppressClick > 0 || !handler.Control.Active)
+					return;
+				handler.Callback.OnClick(handler.Widget, e);
 			}
 
 			public void HandleToggled(object sender, EventArgs e)
@@ -111,8 +106,6 @@ namespace Eto.GtkSharp.Forms.Menu
 			set
 			{
 				shortcut = value;
-				accelLabel.Text = value.ToShortcutString();
-				accelLabel.Visible = accelLabel.Text.Length > 0;
 				SetAccelerator();
 			}
 		}
@@ -120,6 +113,14 @@ namespace Eto.GtkSharp.Forms.Menu
 		protected override Keys GetShortcut()
 		{
 			return Shortcut;
+		}
+
+		static readonly object SuppressClick_Key = new object();
+
+		int SuppressClick
+		{
+			get { return Widget.Properties.Get<int>(SuppressClick_Key); }
+			set { Widget.Properties.Set(SuppressClick_Key, value); }
 		}
 
 		public bool Checked
@@ -130,8 +131,10 @@ namespace Eto.GtkSharp.Forms.Menu
 				isChecked = value;
 				if (Control != null)
 				{
-					Control.Active = value;
-				}
+					SuppressClick++;
+                    Control.Active = value;
+					SuppressClick--;
+                }
 			}
 		}
 

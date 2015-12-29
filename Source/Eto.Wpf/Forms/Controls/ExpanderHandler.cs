@@ -14,6 +14,14 @@ namespace Eto.Wpf.Forms.Controls
 			Control = new swc.Expander();
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+
+			// update scrollables, etc with new size
+			Widget.ExpandedChanged += (sender, e) => Application.Instance.AsyncInvoke(UpdatePreferredSize);
+		}
+
 		static DependencyPropertyDescriptor dpdIsExpanded = DependencyPropertyDescriptor.FromProperty(swc.Expander.IsExpandedProperty, typeof(swc.Expander));
 
 		public bool Expanded
@@ -31,6 +39,11 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				Widget.Properties.Set(Header_Key, value, () => Control.Header = value.ToNative());
 			}
+		}
+
+		protected override bool UseContentSize
+		{
+			get { return false; }
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)

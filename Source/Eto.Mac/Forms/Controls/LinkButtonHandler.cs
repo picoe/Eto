@@ -78,6 +78,11 @@ namespace Eto.Mac.Forms.Controls
 
 				base.DrawRect(dirtyRect);
 			}
+
+			public EtoLinkLabel()
+			{
+				FocusRingType = NSFocusRingType.Exterior;
+			}
 		}
 
 		protected override void Initialize()
@@ -99,23 +104,12 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override NSColor CurrentColor
 		{
-			get { return Enabled ? TextColor.ToNSUI() : DisabledTextColor.ToNSUI(); }
+			get { return Enabled ? base.CurrentColor : DisabledTextColor.ToNSUI(); }
 		}
 
-		protected override EtoLinkLabel CreateLabel()
+		protected override EtoLinkLabel CreateControl()
 		{
-			return new EtoLinkLabel
-			{ 
-				Handler = this,
-				Cell = new EtoLabelFieldCell(),
-				DrawsBackground = false,
-				FocusRingType = NSFocusRingType.Exterior,
-				Bordered = false,
-				Bezeled = false,
-				Editable = false,
-				Selectable = false,
-				Alignment = NSTextAlignment.Left,
-			};
+			return new EtoLinkLabel();
 		}
 
 		public override Font Font
@@ -176,7 +170,7 @@ namespace Eto.Mac.Forms.Controls
 				if (value != DisabledTextColor)
 				{
 					Widget.Properties[DisabledTextColorKey] = value;
-
+					SetAttributes();
 				}
 			}
 		}

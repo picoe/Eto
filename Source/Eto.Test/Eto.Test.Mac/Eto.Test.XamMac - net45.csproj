@@ -47,7 +47,7 @@
     <LinkMode>SdkOnly</LinkMode>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <PropertyGroup>
     <CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
   </PropertyGroup>
@@ -57,10 +57,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="XamMac" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.2\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\portable-net45+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.0.0\lib\portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -92,10 +92,6 @@
       <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>
       <Name>Eto.Serialization.Json - pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
-      <Project>{231FB3B0-CB71-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Serialization.Xaml - net45</Name>
-    </ProjectReference>
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

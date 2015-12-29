@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk3 - net45", "Eto.Gtk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac - net45", "Eto.Mac\Eto.XamMac - net45.csproj", "{BF405A10-C9EB-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - net45", "Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj", "{231FB3B0-CB71-11E3-9C1A-0800200C9A66}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{E121B009-AB4B-4585-B3FB-D70E3DF8D3CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - pcl", "Eto.Test\Eto.Test\Eto.Test - pcl.csproj", "{EB9C0A22-6644-46E4-948C-F7C95E1F8CE1}"
@@ -90,18 +88,6 @@ Global
 		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Mac.Build.0 = Release|Any CPU
 		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Windows.ActiveCfg = Release|Any CPU
 		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Release|Windows.Build.0 = Release|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Linux.Build.0 = Debug|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Mac.ActiveCfg = Debug|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Mac.Build.0 = Debug|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Windows.ActiveCfg = Debug|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Debug|Windows.Build.0 = Debug|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Linux.ActiveCfg = Release|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Linux.Build.0 = Release|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Mac.ActiveCfg = Release|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Mac.Build.0 = Release|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Windows.ActiveCfg = Release|Any CPU
-		{231FB3B0-CB71-11E3-9C1A-0800200C9A66}.Release|Windows.Build.0 = Release|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Mac.ActiveCfg = Debug|Any CPU
 		{330EF9FD-5947-4AC9-9796-950C7633695F}.Debug|Windows.ActiveCfg = Debug|Any CPU

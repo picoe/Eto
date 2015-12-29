@@ -4,20 +4,27 @@ using Eto.Drawing;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Eto.Addin.Shared
 {
-	public class ProjectWizardPageModel : INotifyPropertyChanged
+	public class ProjectWizardPageModel : OptionsPageModel,  INotifyPropertyChanged
 	{
 		public IParameterSource Source { get; private set; }
 
-		public ProjectWizardPageModel(IParameterSource source)
+		public ProjectWizardPageModel(IParameterSource source, XElement optionsElement)
+			: base(optionsElement)
 		{
 			Source = source;
 			UsePCL = SupportsPCL;
 			UseNET = !SupportsPCL;
 			UseSAL = false;
 			Combined = true;
+			UseCode = true;
+            UseCodePreview = false;
+            UseXeto = false;
+            UseJeto = false;
 		}
 
 		public string AppName
@@ -38,13 +45,21 @@ namespace Eto.Addin.Shared
 
 		public bool SupportsProjectType { get { return SupportsPCL || SupportsSAL; } }
 
+		public bool SupportsXeto { get { return Source.IsSupportedParameter("SupportsXeto"); } }
+
+		public bool SupportsJeto { get { return Source.IsSupportedParameter("SupportsJeto"); } }
+
+		public bool SupportsCodePreview { get { return Source.IsSupportedParameter("SupportsCodePreview"); } }
+
+		public bool SupportsPanelType { get { return SupportsXeto || SupportsJeto || SupportsCodePreview; } }
+
 		public bool Combined
 		{
 			get { return Source.GetParameter("Combined").ToBool(); }
 			set
 			{
 				Source.SetParameter("Combined", value.ToString());
-				OnPropertyChanged(nameof(Combined));
+				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
 			}
 		}
@@ -55,6 +70,7 @@ namespace Eto.Addin.Shared
 			set
 			{
 				Source.SetParameter("UsePCL", value.ToString());
+				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
 			}
 		}
@@ -65,7 +81,9 @@ namespace Eto.Addin.Shared
 			set
 			{
 				Source.SetParameter("UseSAL", value.ToString());
+				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
 			}
 		}
 
@@ -75,14 +93,61 @@ namespace Eto.Addin.Shared
 			set
 			{
 				Source.SetParameter("UseNET", value.ToString());
-				OnPropertyChanged(nameof(UseNET));
+				OnPropertyChanged();
 				OnPropertyChanged(nameof(Information));
 			}
 		}
 
-		public string Title
+		public bool UseCode
+		{
+			get { return Source.GetParameter("UseCode").ToBool(); }
+			set
+			{
+				Source.SetParameter("UseCode", value.ToString());
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(Information));
+			}
+		}
+
+		public bool UseXeto
+		{
+			get { return Source.GetParameter("UseXeto").ToBool(); }
+			set
+			{
+				Source.SetParameter("UseXeto", value.ToString());
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
+			}
+		}
+
+		public bool UseJeto
+		{
+			get { return Source.GetParameter("UseJeto").ToBool(); }
+			set
+			{
+				Source.SetParameter("UseJeto", value.ToString());
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(Information));
+				UpdateCommon();
+			}
+		}
+
+		public bool UseCodePreview
+		{
+			get { return Source.GetParameter("UseCodePreview").ToBool(); }
+			set
+			{
+				Source.SetParameter("UseCodePreview", value.ToString());
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(Information));
+			}
+		}
+
+		public override string Title
 		{
 			get { return string.Format("Eto.Forms {0} Properties", IsLibrary ? "Library" : "Application"); }
+			set { base.Title = value; }
 		}
 
 		public bool RequiresInput
@@ -117,6 +182,22 @@ namespace Eto.Addin.Shared
 			new CombinedInfo { Text = "A separate .exe assembly for each platform." },
 		};
 
+		struct FormatInfo
+		{
+			public string Text;
+			public bool UseXeto;
+			public bool UseJeto;
+			public bool UseCode;
+			public bool UseCodePreview;
+		}
+
+		static FormatInfo[] formatInformation = {
+			new FormatInfo { UseXeto = true, Text = "Use xaml (.xeto) to define the layout of your form, with code behind for logic and event handlers" },
+			new FormatInfo { UseJeto = true, Text = "Use json (.jeto) to define the layout of your form, with code behind for logic and event handlers" },
+			new FormatInfo { UseCode = true, Text = "Write your form entirely in a single source file (no preview)" },
+			new FormatInfo { UseCodePreview = true, Text = "Define your view layout in a partial class with form preview, with logic and event handlers in a separate file." },
+		};
+
 		public string Information
 		{
 			get
@@ -134,16 +215,30 @@ namespace Eto.Addin.Shared
 							   select i.Text;
 				var typeText = typeInfo.FirstOrDefault();
 
-				return string.Join("\n\n", combinedText, typeText);
+				var formatInfo = from i in formatInformation
+						where i.UseCode == UseCode
+					&& i.UseCodePreview == UseCodePreview
+					&& i.UseXeto == UseXeto
+					&& i.UseJeto == UseJeto
+					select i.Text;
+				var formatText = formatInfo.FirstOrDefault();
+
+				return string.Join("\n\n", combinedText, typeText, formatText);
 			}
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected void OnPropertyChanged(string propertyName)
+		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			if (PropertyChanged != null)
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		void UpdateCommon()
+		{
+			Source.SetParameter("UseSharedXeto", (UseSAL && UseXeto).ToString());
+			Source.SetParameter("UseSharedJeto", (UseSAL && UseJeto).ToString());
 		}
 	}
 

@@ -1,5 +1,6 @@
 using Eto.Forms;
 using Eto.Drawing;
+using System;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -15,8 +16,8 @@ namespace Eto.Test.Sections.Controls
 			{
 				// Log.Write (control, "Formatting Row: {1}, Column: {2}, Item: {0}", e.Item, e.Row, control.Columns.IndexOf (e.Column));
 				e.Font = font;
-				e.BackgroundColor = Colors.Blue;
-				e.ForegroundColor = Colors.Lime;
+				e.BackgroundColor = e.Row % 2 == 0 ? Colors.Blue : Colors.LightBlue;
+				e.ForegroundColor = e.Row % 2 == 0 ? Colors.Lime : Colors.Yellow;
 			};
 		}
 

@@ -103,6 +103,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Converts an <see cref="Image"/> to a TableRow with a <see cref="ImageView"/> control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add images to your layout through code, without having to create <see cref="ImageView"/> instances manually.
+		/// </remarks>
+		/// <param name="image">Image to convert to a TableRow with an ImageView control.</param>
+		public static implicit operator TableRow(Image image)
+		{
+			return new TableRow(new ImageView { Image = image });
+		}
+
+		/// <summary>
 		/// Implicitly converts a TableRow to a control
 		/// </summary>
 		/// <remarks>

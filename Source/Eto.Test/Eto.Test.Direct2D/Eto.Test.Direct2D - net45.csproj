@@ -34,7 +34,7 @@
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -73,10 +73,6 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
-      <Project>{231FB3B0-CB71-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Serialization.Xaml - net45</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -86,5 +82,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

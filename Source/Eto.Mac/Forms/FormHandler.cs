@@ -42,6 +42,10 @@ namespace Eto.Mac.Forms
 		#pragma warning restore 414
 		protected override bool DisposeControl { get { return false; } }
 
+		public FormHandler()
+		{
+		}
+
 		public FormHandler(NSWindow window)
 		{
 			Control = window;
@@ -53,12 +57,18 @@ namespace Eto.Mac.Forms
 			Control = controller.Window;
 		}
 
-		public FormHandler()
+		protected override NSWindow CreateControl()
 		{
-			Control = new MyWindow(new CGRect(0, 0, 200, 200), 
-			                       NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Titled, 
-			                       NSBackingStore.Buffered, false);
+			return new EtoWindow(new CGRect(0, 0, 200, 200), 
+				NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Titled, 
+				NSBackingStore.Buffered, false);
+		}
+
+		protected override void Initialize()
+		{
 			ConfigureWindow();
+
+			base.Initialize();
 		}
 
 		public override void SetOwner(Window owner)

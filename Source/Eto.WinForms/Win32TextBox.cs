@@ -123,12 +123,11 @@ namespace Eto.WinForms
 								{
 									int start = control.SelectionStart;
 									int lineFromCharIndex = control.GetLineFromCharIndex(start);
-									ITextRange textRange = textDocument.Range(textLength - 1, textLength - 1);
-									textRange.ScrollIntoView(0);
+									var textRange = textDocument.Range(start, start + control.SelectionLength);
+									textRange.ScrollIntoView(0); // scroll to start of selection
 									int num3 = (int)Win32.SendMessage(control.Handle, (Win32.WM)206, IntPtr.Zero, IntPtr.Zero);
 									if (num3 > lineFromCharIndex)
 									{
-										textRange = textDocument.Range(start, start + control.SelectionLength);
 										textRange.ScrollIntoView(32);
 									}
 									flag = true;

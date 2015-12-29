@@ -43,9 +43,9 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public override Size? DefaultSize
+		public override Size? GetDefaultSize(Size availableSize)
 		{
-			get { return MinimumSize; }
+			return MinimumSize;
 		}
 
 		public ButtonHandler()

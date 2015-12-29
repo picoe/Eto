@@ -61,6 +61,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				content.Width = value.Width;
 				content.Height = value.Height;
+                UpdatePreferredSize();
 			}
 		}
 

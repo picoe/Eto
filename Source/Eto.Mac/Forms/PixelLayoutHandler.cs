@@ -44,9 +44,9 @@ namespace Eto.Mac.Forms
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		public PixelLayoutHandler()
+		protected override NSView CreateControl()
 		{
-			Control = new MacEventView { Handler = this };
+			return new MacEventView();
 		}
 
 		public CGRect GetPosition(Control control)

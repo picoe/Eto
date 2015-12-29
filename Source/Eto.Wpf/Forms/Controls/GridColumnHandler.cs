@@ -131,8 +131,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void CellEdited(ICellHandler cell, sw.FrameworkElement element)
 		{
-			var dataCell = element.GetParent<swc.DataGridCell>();
-			var dataRow = element.GetParent<swc.DataGridRow>();
+			var dataCell = element.GetVisualParent<swc.DataGridCell>();
+			var dataRow = element.GetVisualParent<swc.DataGridRow>();
 			var row = dataRow.GetIndex();
 			var dataItem = element.DataContext;
 			GridHandler.CellEdited(row, dataCell.Column, dataItem);

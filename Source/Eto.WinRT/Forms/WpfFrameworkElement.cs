@@ -553,10 +553,10 @@ namespace Eto.WinRT.Forms
 		{
 			get
 			{
-				if (Widget.Parent == null)
+				if (Widget.VisualParent == null)
 					return Point.Empty;
 #if TODO_XAML
-				return Control.TranslatePoint(new wf.Point(0, 0), Widget.Parent.GetContainerControl()).ToEtoPoint();
+				return Control.TranslatePoint(new wf.Point(0, 0), Widget.VisualParent.GetContainerControl()).ToEtoPoint();
 #else
 				return Point.Empty;
 				throw new NotImplementedException();

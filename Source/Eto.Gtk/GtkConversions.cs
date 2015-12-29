@@ -12,7 +12,8 @@ namespace Eto.GtkSharp
 		Normal,
 		Active,
 		Prelight,
-		Insensitive
+		Insensitive,
+		Selected
 	}
 
 	public static class GtkConversions
@@ -528,11 +529,11 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public static DrawableCellStates ToEto(this Gtk.CellRendererState value)
+		public static CellStates ToEto(this Gtk.CellRendererState value)
 		{
 			if (value.HasFlag(Gtk.CellRendererState.Selected))
-				return DrawableCellStates.Selected;
-			return DrawableCellStates.None;
+				return CellStates.Selected;
+			return CellStates.None;
 		}
 
 		public static TextAlignment ToEto(this Gtk.Justification justification)

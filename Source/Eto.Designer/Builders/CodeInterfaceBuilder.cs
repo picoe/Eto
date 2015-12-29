@@ -16,14 +16,13 @@ namespace Eto.Designer.Builders
 {
 	public abstract class CodeInterfaceBuilder : IInterfaceBuilder, IDisposable
 	{
-		readonly object generate_lock = new object();
 		AppDomain newDomain;
 		string output;
 		const string assemblyName = "Generated";
 
 
 		public string InitializeAssembly { get; set; }
-		protected string BaseDir { get; private set; }
+		protected string BaseDir { get; set; }
 
 		protected CodeInterfaceBuilder(string baseDir = null)
 		{
@@ -35,7 +34,7 @@ namespace Eto.Designer.Builders
 			Dispose(false);
 		}
 
-		private void RemoveOutput()
+		void RemoveOutput()
 		{
 			if (!string.IsNullOrEmpty(output) && File.Exists(output))
 			{
@@ -76,7 +75,7 @@ namespace Eto.Designer.Builders
 			return asm.GetTypes().FirstOrDefault(t => typeof(Control).IsAssignableFrom(t));
 		}
 
-		public void Create(string text, Action<Control> controlCreated, Action<string> error)
+		public void Create(string text, Action<Control> controlCreated, Action<Exception> error)
 		{
 			UnloadDomain();
 			RemoveOutput();
@@ -101,9 +100,11 @@ namespace Eto.Designer.Builders
 								Control control = null;
 								if (useAppDomain)
 								{
-									// doesn't work without for some reason
+#pragma warning disable 618
+									// doesn't work without for some reason, and there's no non-obsolete alternative.
 									if (!AppDomain.CurrentDomain.ShadowCopyFiles)
 										AppDomain.CurrentDomain.SetShadowCopyFiles();
+#pragma warning restore 618
 
 									var setup = new AppDomainSetup
 									{
@@ -138,46 +139,59 @@ namespace Eto.Designer.Builders
 								if (control != null)
 									controlCreated(control);
 								else
-									error("Could not find control. Make sure you have a single class derived from Control.");
+									error(new FormatException("Could not find control. Make sure you have a single class derived from Control."));
 							}
 							catch (Exception ex)
 							{
-								error(string.Format("Error creating control: {0}", ex));
+								error(ex);
 							}
 						});
 					}
 					else
 					{
-						var errorText = string.Join("\n", result.Errors.Select(r => r.ToString()));
-						Application.Instance.Invoke(() => error(string.Format("Compile error:\n{0}", errorText)));
+						var errorText = string.Join("\n", result.Errors.Select(r => r.ErrorText));
+						Application.Instance.Invoke(() => error(new FormatException(string.Format("Compile error: {0}", errorText))));
 					}
 				}
 				catch (Exception ex)
 				{
-					Application.Instance.Invoke(() => error(string.Format("Compile error: {0}", ex)));
+					Application.Instance.Invoke(() => error(ex));
 				}
 			});
 		}
 
 		protected abstract CodeDomProvider CreateCodeProvider();
 
+		const string ReferenceAssembliesFolder = @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5";
+
+		string GetReferenceAssembliesPath(string basePath)
+		{
+			if (string.IsNullOrEmpty(basePath))
+				return null;
+			var path = Path.Combine(basePath, ReferenceAssembliesFolder);
+			return Directory.Exists(path) ? path : null;
+		}
+
 		protected virtual void SetParameters(CompilerParameters parameters)
 		{
-			const string ReferenceAssembliesFolder = @"Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5";
-
 			string referenceDir = null;
 			if (EtoEnvironment.Platform.IsWindows)
 			{
-				referenceDir = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles(x86)"), ReferenceAssembliesFolder);
-				if (!Directory.Exists(referenceDir))
-					referenceDir = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles"), ReferenceAssembliesFolder);
+				referenceDir = GetReferenceAssembliesPath(Environment.GetEnvironmentVariable("ProgramFiles(x86)"));
+				if (referenceDir == null)
+					referenceDir = GetReferenceAssembliesPath(Environment.GetEnvironmentVariable("ProgramFiles"));
 			}
 			else if (EtoEnvironment.Platform.IsMac)
 				referenceDir = @"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5";
 
+			if (string.IsNullOrEmpty(referenceDir))
+				throw new InvalidOperationException("Cannot find reference assemblies folder");
+
+			if (EtoEnvironment.Platform.IsMono)
+				parameters.ReferencedAssemblies.Add(Path.Combine(referenceDir, "mscorlib.dll"));
+
 			parameters.ReferencedAssemblies.AddRange(new[]
 			{ 
-				//Path.Combine(referenceDir, "mscorlib.dll"),
 				Path.Combine(referenceDir, "System.dll"),
 				Path.Combine(referenceDir, "System.Core.dll"),
 				typeof(Control).Assembly.Location
@@ -213,6 +227,19 @@ namespace Eto.Designer.Builders
 				GenerateExecutable = false,
 				OutputAssembly = inMemory ? null : output
 			};
+
+			if (EtoEnvironment.Platform.IsMac)
+			{
+				// hack for OS X el capitan. mcs moved from /usr/bin to /usr/local/bin and is not on the path when XS is running
+				// this should be removed when mono/XS is fixed.
+				var path = Environment.GetEnvironmentVariable("PATH");
+				var paths = path.Split(':');
+				if (!paths.Contains("/usr/local/bin", StringComparer.Ordinal))
+				{
+					path += ":/usr/local/bin";
+					Environment.SetEnvironmentVariable("PATH", path);
+				}
+			}
 
 			SetParameters(parameters);
 

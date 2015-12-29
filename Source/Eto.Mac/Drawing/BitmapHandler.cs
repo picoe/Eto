@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Mac.Forms;
+using Eto.Shared.Drawing;
 
 #if XAMMAC2
 using AppKit;
@@ -43,7 +44,7 @@ namespace Eto.Mac.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapDataHandler : BitmapData
+	public class BitmapDataHandler : BaseBitmapData
 	{
 		public BitmapDataHandler(Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(bitmap, data, scanWidth, bitsPerPixel, controlObject)
@@ -274,7 +275,7 @@ namespace Eto.Mac.Drawing
 			{
 				var rect = new CGRect(CGPoint.Empty, Control.Size);
 				var image = new NSImage();
-				#if __UNIFIED__
+				#if UNIFIED
 				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToNS());
 				#else
 				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToSDRectangleF());

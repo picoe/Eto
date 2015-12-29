@@ -24,24 +24,25 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\net40\Debug</OutputPath>
-    <DefineConstants>DEBUG;DESKTOP;XAML</DefineConstants>
+    <DefineConstants>DEBUG;DESKTOP;XAML;NET40</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\net40\Release</OutputPath>
-    <DefineConstants>DESKTOP;XAML</DefineConstants>
+    <DefineConstants>DESKTOP;XAML;NET40</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Configuration" />
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0-beta-2\lib\net40\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.0.0\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -188,6 +189,14 @@
       <Link>Helper.cs</Link>
     </Compile>
     <Compile Include="Sections\Behaviors\CursorSection.cs" />
+    <Compile Include="Sections\Controls\ExpanderSection.cs" />
+    <Compile Include="Sections\Controls\PropertyCellSection.cs" />
+    <Compile Include="Sections\Drawing\SystemColorSection.cs" />
+    <Compile Include="UnitTests\Forms\XamlTests.cs" />
+    <Compile Include="UnitTests\Forms\ToolItemCollectionTests.cs" />
+    <Compile Include="UnitTests\Forms\Layout\DynamicLayoutTests.cs" />
+    <Compile Include="UnitTests\Forms\Layout\StackLayoutTests.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
@@ -241,6 +250,5 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

@@ -32,11 +32,16 @@ namespace Eto.Mac.Forms
 
 		protected override bool DisposeControl { get { return false; } }
 
-		public SaveFileDialogHandler()
+		protected override NSSavePanel CreateControl()
 		{
-			Control = NSSavePanel.SavePanel;
+			return NSSavePanel.SavePanel;
+		}
+
+		protected override void Initialize()
+		{
 			Control.AllowsOtherFileTypes = true;
 			Control.CanSelectHiddenExtension = true;
+			base.Initialize();
 		}
 	}
 }

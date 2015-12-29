@@ -1,29 +1,35 @@
 using Eto.Forms;
 using System.Collections.Generic;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
+using System.Linq;
 
 namespace Eto.Wpf.Forms.Menu
 {
-	public class MenuBarHandler : WidgetHandler<System.Windows.Controls.Menu, MenuBar>, MenuBar.IHandler
+	public class MenuBarHandler : MenuHandler<swc.Menu, MenuBar, MenuBar.ICallback>, MenuBar.IHandler
 	{
-		public MenuBarHandler ()
+		public MenuBarHandler()
 		{
-			Control = new swc.Menu ();
+			Control = new swc.Menu();
 		}
 
-		public void AddMenu (int index, MenuItem item)
+		public void AddMenu(int index, MenuItem item)
 		{
 			Control.Items.Insert(index, item.ControlObject);
+			AddKeyBindings(item.ControlObject as sw.FrameworkElement);
 		}
 
-		public void RemoveMenu (MenuItem item)
+		public void RemoveMenu(MenuItem item)
 		{
+			RemoveKeyBindings(item.ControlObject as sw.FrameworkElement);
 			Control.Items.Remove(item.ControlObject);
 		}
 
-		public void Clear ()
+		public void Clear()
 		{
-			Control.Items.Clear ();
+			foreach (var item in Control.Items.OfType<sw.FrameworkElement>())
+				RemoveKeyBindings(item);
+			Control.Items.Clear();
 		}
 
 		MenuItem quitItem;

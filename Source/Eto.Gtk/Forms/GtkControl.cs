@@ -159,7 +159,7 @@ namespace Eto.GtkSharp.Forms
 					return cachedBackgroundColor.Value;
 				if (IsTransparentControl)
 				{
-					var parent = Widget.Parent.GetGtkControlHandler();
+					var parent = Widget.VisualParent.GetGtkControlHandler();
 					col = parent != null ? parent.SelectedBackgroundColor : DefaultBackgroundColor;
 				}
 				else
@@ -239,7 +239,7 @@ namespace Eto.GtkSharp.Forms
 			get { return Control.HasFocus; }
 		}
 
-		public bool Visible
+		public virtual bool Visible
 		{
 			get { return Control.Visible; }
 			set
@@ -638,5 +638,26 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return Control.Allocation.Location.ToEto(); }
 		}
+
+		static uint? DefaultBorderWidth;
+
+		public virtual bool ShowBorder
+		{
+			get
+			{
+				var container = Control as Gtk.Container;
+				return container != null && container.BorderWidth > 0;
+			}
+			set
+			{
+				var container = Control as Gtk.Container;
+				if (container == null)
+					return;
+				if (DefaultBorderWidth == null)
+					DefaultBorderWidth = container.BorderWidth;
+				container.BorderWidth = value ? DefaultBorderWidth.Value : 0;
+			}
+		}
+
 	}
 }

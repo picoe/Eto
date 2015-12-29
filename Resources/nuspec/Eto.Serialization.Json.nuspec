@@ -22,7 +22,7 @@ https://github.com/picoe/Eto/wiki
 		<dependencies>
 			<group>
 				<dependency id="Eto.Forms" version="[$version$]" />
-				<dependency id="Newtonsoft.Json" version="6.0.6" />
+				<dependency id="Newtonsoft.Json" version="7.0.1" />
 			</group>
 		</dependencies>
 	</metadata>

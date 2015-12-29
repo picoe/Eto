@@ -99,10 +99,12 @@ namespace Eto.Mac.Forms
 			return true;
 		}
 
-		public ApplicationHandler()
+		protected override NSApplication CreateControl()
 		{
-			Control = NSApplication.SharedApplication;
+			return NSApplication.SharedApplication;
 		}
+
+		protected override bool DisposeControl { get { return false; } }
 
 		static void restart_WillTerminate(object sender, EventArgs e)
 		{

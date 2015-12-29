@@ -4,6 +4,7 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Collections.Specialized;
 
 namespace Eto.Test.UnitTests.Forms
 {
@@ -133,6 +134,82 @@ namespace Eto.Test.UnitTests.Forms
 			model.Remove(model.First(r => r.Id == 60));
 			Assert.IsFalse(filtered.Any(r => r.Id == 60), "Removing Item #60 should no longer show up in the filtered collection");
 			Assert.IsFalse(model.Any(r => r.Id == 60), "Removing Item #60 should no longer be in the model");
+		}
+
+		[Test]
+		public void AddItemShouldTriggerCorrectChange()
+		{
+			var model = GridViewUtils.CreateModel();
+			var filtered = new FilterCollection<DataItem>(model);
+			filtered.Sort = GridViewUtils.SortEvenItemsBeforeOdd;
+
+			int newIndex = -1;
+			filtered.CollectionChanged += (sender, e) =>
+			{
+				Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action, "Action should be add");
+				newIndex = e.NewStartingIndex;
+			};
+			var item = new DataItem(1000);
+			filtered.Add(item);
+
+			var index = filtered.IndexOf(item);
+			Assert.AreEqual(filtered[index].Id, item.Id, "Index reported does not have correct item");
+			Assert.AreEqual(index, newIndex, "Triggered event should have correct index");
+			Assert.AreEqual(model.Count - 1, model.IndexOf(item), "Item should be added to the end of the model");
+		}
+
+		[Test]
+		public void InsertItemShouldTriggerCorrectChange()
+		{
+			var model = GridViewUtils.CreateModel();
+			var filtered = new FilterCollection<DataItem>(model);
+			filtered.Sort = GridViewUtils.SortEvenItemsBeforeOdd;
+
+			int newIndex = -1;
+			filtered.CollectionChanged += (sender, e) =>
+			{
+				Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action, "Action should be add");
+				newIndex = e.NewStartingIndex;
+			};
+			var item = new DataItem(1000);
+			const int insertIndex = 50;
+			filtered.Insert(insertIndex, item);
+
+			var index = filtered.IndexOf(item);
+			Assert.AreEqual(filtered[index].Id, item.Id, "Index reported does not have correct item");
+			Assert.AreEqual(index, newIndex, "Triggered event should have correct index");
+			Assert.AreEqual(insertIndex, index, "Index of item should be the inserted index");
+		}
+
+		[Test]
+		public void InsertItemShouldBeInSameOrderInModel()
+		{
+			var model = GridViewUtils.CreateModel();
+			var filtered = new FilterCollection<DataItem>(model);
+			filtered.Filter = GridViewUtils.KeepOddItemsFilter;
+
+			const int filterInsertIndex = 10;
+
+			var item = new DataItem(1000);
+			filtered.Insert(filterInsertIndex, item);
+			Assert.AreEqual(filtered[filterInsertIndex].Id, 21, "#1 Item should NOT be inserted at the specified index, since it is an even number");
+			Assert.AreEqual(filtered.IndexOf(item), -1, "#2 Item should NOT be in the filtered list");
+			Assert.AreEqual(model.IndexOf(filtered[filterInsertIndex]) - 1, model.IndexOf(item), "#3 Item should be inserted right before item at filter location");
+
+
+			item = new DataItem(1001);
+			filtered.Insert(filterInsertIndex, item);
+			Assert.AreEqual(filtered[filterInsertIndex].Id, 1001, "#4 Item with odd number should be inserted at the specified index");
+			Assert.AreEqual(filtered.IndexOf(item), filterInsertIndex, "#5 Item should be in the filtered list at the insert location");
+			Assert.AreEqual(model.IndexOf(filtered[filterInsertIndex + 1]) - 1, model.IndexOf(item), "#6 Item should be inserted right before item at filter location");
+
+			// refresh the list
+			filtered.Refresh();
+
+			// re-test inserted item, it should be at the same index.
+			Assert.AreEqual(filtered[filterInsertIndex].Id, 1001, "#7 Item with odd number should be inserted at the specified index");
+			Assert.AreEqual(filtered.IndexOf(item), filterInsertIndex, "#8 Item should be in the filtered list at the insert location");
+			Assert.AreEqual(model.IndexOf(filtered[filterInsertIndex + 1]) - 1, model.IndexOf(item), "#9 Item should be inserted right before item at filter location");
 		}
 	}
 }

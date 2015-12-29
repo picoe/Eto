@@ -44,7 +44,11 @@ namespace Eto.Direct2D.Drawing
 
 		protected virtual sd.Bitmap CreateDrawableBitmap(sd.RenderTarget target)
 		{
-			return sd.Bitmap.FromWicBitmap(target, Control);
+			if (Control.PixelFormat == PixelFormat.Format24bppRgb.ToWic())
+			{
+				return sd.Bitmap.FromWicBitmap(target, Control.ToBitmap(PixelFormat.Format32bppRgb.ToWic()));
+			}
+            return sd.Bitmap.FromWicBitmap(target, Control);
 		}
 
 		void Initialize(s.WIC.BitmapDecoder decoder)
@@ -116,7 +120,7 @@ namespace Eto.Direct2D.Drawing
 				stream.Flush();
 				encoder.Initialize(stream);
 				using (var frameEncoder = new s.WIC.BitmapFrameEncode(encoder))
-				{
+				{	
 					frameEncoder.Initialize();
 					frameEncoder.SetSize(Control.Size.Width, Control.Size.Height);
 					frameEncoder.WriteSource(Control);
@@ -214,7 +218,7 @@ namespace Eto.Direct2D.Drawing
 				var src = Frames.Aggregate((x, y) => Math.Abs(x.Size.Width - size.Value) < Math.Abs(y.Size.Width - size.Value) ? x : y);
 				if (src != null)
 				{
-					return src.ToBitmap().ToSD();
+					return src.ToBitmap(Control.PixelFormat).ToSD();
 				}
 			}
 			return sdimage ?? (sdimage = Control.ToSD());

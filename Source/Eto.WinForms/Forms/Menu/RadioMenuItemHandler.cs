@@ -20,14 +20,19 @@ namespace Eto.WinForms.Forms.Menu
 
 		void control_Click(object sender, EventArgs e)
 		{
+			UncheckGroup();
+			Checked = true;
+			Callback.OnClick(Widget, e);
+		}
+
+		void UncheckGroup()
+		{
 			if (group != null)
 			{
 				var checkedItem = group.FirstOrDefault(r => r.Checked && r != Widget);
 				if (checkedItem != null)
 					checkedItem.Checked = false;
 			}
-			Checked = true;
-			Callback.OnClick(Widget, e);
 		}
 
 		public void Create(RadioMenuItem controller)
@@ -48,7 +53,12 @@ namespace Eto.WinForms.Forms.Menu
 		public bool Checked
 		{
 			get { return Control.Checked; }
-			set { Control.Checked = value; }
+			set
+			{
+				if (value)
+					UncheckGroup();
+                Control.Checked = value;
+			}
 		}
 
 		public override void AttachEvent(string id)

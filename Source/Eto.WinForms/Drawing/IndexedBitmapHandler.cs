@@ -4,11 +4,12 @@ using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
+using Eto.Shared.Drawing;
 
 namespace Eto.WinForms.Drawing
 {
 
-	public class IndexedBitmapDataHandler : BitmapData
+	public class IndexedBitmapDataHandler : BaseBitmapData
 	{
 		public IndexedBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base (image, data, scanWidth, bitsPerPixel, controlObject)

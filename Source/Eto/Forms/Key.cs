@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Eto.Forms
 {
@@ -8,6 +10,7 @@ namespace Eto.Forms
 	/// Enumeration of values that correspond to physical keys on a keyboard
 	/// </summary>
 	[Flags]
+	[TypeConverter(typeof(KeysConverter))]
 	public enum Keys
 	{
 		/// <summary>No key</summary>
@@ -252,6 +255,11 @@ namespace Eto.Forms
 		public static string ToShortcutString(this Keys key, string separator = "+")
 		{
 			var sb = new StringBuilder();
+			if (key.HasFlag(Keys.Application))
+				AppendSeparator(sb, separator, 
+					EtoEnvironment.Platform.IsMac ? "\x2318" : 
+					EtoEnvironment.Platform.IsWindows ? "Win" :
+					"App");
 			if (key.HasFlag(Keys.Control))
 				AppendSeparator(sb, separator, "Ctrl");
 			if (key.HasFlag(Keys.Shift))

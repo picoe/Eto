@@ -1,8 +1,17 @@
 using System;
 using System.IO;
 using System.Reflection;
-#if !PCL
+using System.Linq;
+using System.Collections.Generic;
+using System.Xml;
+
+
+#if PORTABLE
+using Portable.Xaml;
+using Portable.Xaml.Markup;
+#else
 using System.Xaml;
+using System.Windows.Markup;
 #endif
 
 namespace Eto.Serialization.Xaml
@@ -12,9 +21,17 @@ namespace Eto.Serialization.Xaml
 	/// </summary>
 	public static class XamlReader
 	{
+		/// <summary>
+		/// Xaml Namespace for Eto.Forms elements
+		/// </summary>
+		public static readonly string EtoFormsNamespace = EtoXamlSchemaContext.EtoFormsNamespace;
+
 		static Stream GetStream(Type type)
 		{
-			return GetStream(type, type.FullName + ".xeto") ?? GetStream(type, type.FullName + ".xaml");
+			return
+				GetStream(type, type.FullName + ".xeto")
+				?? GetStream(type, type.FullName + ".xaml")
+				?? GetStream(type, type.Name + ".xeto"); // for f# projects
 		}
 
 		static Stream GetStream(Type type, string resourceName)
@@ -38,11 +55,11 @@ namespace Eto.Serialization.Xaml
 		/// <typeparam name="T">Type of object to load from xaml</typeparam>
 		/// <returns>A new instance of the specified type with the contents loaded from xaml</returns>
 		public static T Load<T>()
-			where T : Widget, new()
+			where T : new()
 		{
 			using (var stream = GetStream(typeof(T)))
 			{
-				return Load<T>(stream, null);
+				return Load<T>(stream, default(T));
 			}
 		}
 
@@ -57,9 +74,9 @@ namespace Eto.Serialization.Xaml
 		/// <param name="stream">Xaml content to load (e.g. from resources)</param>
 		/// <returns>A new instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(Stream stream)
-			where T : Widget, new()
+			where T : new()
 		{
-			return Load<T>(stream, null);
+			return Load<T>(stream, default(T));
 		}
 
 		/// <summary>
@@ -75,7 +92,6 @@ namespace Eto.Serialization.Xaml
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static void Load<T>(T instance)
-			where T : Widget
 		{
 			using (var stream = GetStream(typeof(T)))
 			{
@@ -97,7 +113,6 @@ namespace Eto.Serialization.Xaml
 		/// <param name="resourceName">Fully qualified name of the embedded resource to load.</param>
 		/// <returns>An existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static void Load<T>(T instance, string resourceName)
-			where T : Widget
 		{
 			using (var stream = GetStream(typeof(T), resourceName))
 			{
@@ -105,9 +120,7 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
-#if !PCL
-		static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext(new [] { typeof(XamlReader).Assembly });
-#endif
+		internal static readonly EtoXamlSchemaContext context = new EtoXamlSchemaContext();
 
 		/// <summary>
 		/// Gets or sets a value indicating that the reader is used in design mode
@@ -117,12 +130,8 @@ namespace Eto.Serialization.Xaml
 		/// </remarks>
 		public static bool DesignMode
 		{
-#if !PCL
 			get { return context.DesignMode; }
 			set { context.DesignMode = value; }
-#else
-			get; set;
-#endif
 		}
 
 		/// <summary>
@@ -133,39 +142,44 @@ namespace Eto.Serialization.Xaml
 		/// <param name="instance">Instance to use as the starting object, or null to create a new instance</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(Stream stream, T instance)
-			where T : Widget
 		{
-#if PCL
-			throw new NotImplementedException("You must reference the Eto.Serlialization.Xaml package from your net45 project that references your PCL library");
-#else
-			var reader = new XamlXmlReader(stream, context);
+			return Load<T>(new XamlXmlReader(stream, context), instance);
+		}
+
+		/// <summary>
+		/// Loads the specified type from the specified text <paramref name="reader"/>.
+		/// </summary>
+		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
+		/// <param name="reader">Reader to read the Xaml content</param>
+		/// <param name="instance">Instance to use as the starting object, or null to create a new instance</param>
+		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
+		public static T Load<T>(TextReader reader, T instance)
+		{
+			return Load<T>(new XamlXmlReader(reader, context), instance);
+		}
+
+		/// <summary>
+		/// Loads the specified type from the specified XML <paramref name="reader"/>.
+		/// </summary>
+		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
+		/// <param name="reader">XmlReader to read the Xaml content</param>
+		/// <param name="instance">Instance to use as the starting object, or null to create a new instance</param>
+		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
+		public static T Load<T>(XmlReader reader, T instance)
+		{
+			return Load<T>(new XamlXmlReader(reader, context), instance);
+		}
+
+		static T Load<T>(XamlXmlReader reader, T instance)
+		{
 			var writerSettings = new XamlObjectWriterSettings();
-			writerSettings.AfterPropertiesHandler += delegate(object sender, XamlObjectEventArgs e)
-			{
-				if (writerSettings.RootObjectInstance != null)
-				{
-					var instanceType = writerSettings.RootObjectInstance.GetType();
-					var obj = e.Instance as Widget;
-					if (obj != null && !string.IsNullOrEmpty(obj.ID))
-					{
-						var property = instanceType.GetProperty(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-						if (property != null)
-							property.SetValue(writerSettings.RootObjectInstance, obj, null);
-						else
-						{
-							var field = instanceType.GetField(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-							if (field != null)
-								field.SetValue(writerSettings.RootObjectInstance, obj);
-						}
-					}
-				}
-			};
+			writerSettings.ExternalNameScope = new EtoNameScope { Instance = instance };
+			writerSettings.RegisterNamesOnExternalNamescope = true;
 			writerSettings.RootObjectInstance = instance;
 			var writer = new XamlObjectWriter(context, writerSettings);
-			
+
 			XamlServices.Transform(reader, writer);
-			return writer.Result as T;
-#endif
+			return (T)writer.Result;
 		}
 	}
 }

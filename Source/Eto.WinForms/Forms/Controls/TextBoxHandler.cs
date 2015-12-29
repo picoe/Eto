@@ -8,6 +8,7 @@ using System.ComponentModel;
 
 namespace Eto.WinForms.Forms.Controls
 {
+	[DesignerCategory("Code")]
 	public class EtoTextBox : swf.TextBox
 	{
 		string watermarkText;
@@ -64,6 +65,12 @@ namespace Eto.WinForms.Forms.Controls
 		public TextBoxHandler()
 		{
 			Control = new EtoTextBox();
+		}
+
+		public bool ShowBorder
+		{
+			get { return Control.BorderStyle != swf.BorderStyle.None; }
+			set { Control.BorderStyle = value ? swf.BorderStyle.Fixed3D : swf.BorderStyle.None; }
 		}
 
 		static Func<char, bool> testIsNonWord = ch => char.IsWhiteSpace(ch) || char.IsPunctuation(ch);
@@ -197,12 +204,6 @@ namespace Eto.WinForms.Forms.Controls
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
 
-		public override void SetFilledContent()
-		{
-			base.SetFilledContent();
-			Control.AutoSize = false;
-		}
-
 		public int CaretIndex
 		{
 			get { return Control.SelectionStart; }
@@ -221,6 +222,19 @@ namespace Eto.WinForms.Forms.Controls
 				Control.SelectionStart = value.Start;
 				Control.SelectionLength = value.Length();
 			}
+		}
+
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			base.SetScale(xscale, yscale);
+			SetAutoSize();
+		}
+
+		protected override void SetAutoSize()
+		{
+			base.SetAutoSize();
+			if (XScale && YScale)
+				Control.AutoSize = true;
 		}
 	}
 }

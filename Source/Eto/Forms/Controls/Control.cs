@@ -18,6 +18,7 @@ namespace Eto.Forms
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
 	#endif
+	[TypeConverter(typeof(ControlConverter))]
 	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
@@ -659,6 +660,32 @@ namespace Eto.Forms
 		/// <value>The parent control, or null if there is no parent</value>
 		public new Container Parent
 		{
+			get { return LogicalParent ?? base.Parent as Container; }
+		}
+
+		static readonly object LogicalParent_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the logical parent, which excludes any visual structure of custom containers.
+		/// </summary>
+		/// <value>The logical parent.</value>
+		internal Container LogicalParent
+		{
+			get { return Properties.Get<Container>(LogicalParent_Key); }
+			set { Properties.Set(LogicalParent_Key, value); }
+		}
+
+		/// <summary>
+		/// Gets the visual container of this control, if any.
+		/// </summary>
+		/// <remarks>
+		/// Some containers may use other Eto controls to layout its children, such as the <see cref="StackLayout"/>.
+		/// This will return the parent control that visually contains this control as opposed to <see cref="Parent"/>
+		/// which will return the logical parent.
+		/// </remarks>
+		/// <value>The visual parent of this control.</value>
+		public Container VisualParent
+		{
 			get { return base.Parent as Container; }
 			internal set
 			{
@@ -670,32 +697,10 @@ namespace Eto.Forms
 		/// <summary>
 		/// Finds a control in the parent hierarchy with the specified type and <see cref="Widget.ID"/> if specified
 		/// </summary>
-		/// <returns>The parent if found, or null if not found</returns>
-		/// <param name="id">Identifier of the parent control to find, or null to ignore</param>
-		/// <typeparam name="T">The type of control to find</typeparam>
-		public T FindParent<T>(string id = null)
-			where T : Container
-		{
-			var control = Parent;
-			while (control != null)
-			{
-				var ctl = control as T;
-				if (ctl != null && (string.IsNullOrEmpty(id) || control.ID == id))
-				{
-					return ctl;
-				}
-				control = control.Parent;
-			}
-			return default(T);
-		}
-
-		/// <summary>
-		/// Finds a control in the parent hierarchy with the specified type and <see cref="Widget.ID"/> if specified
-		/// </summary>
 		/// <returns>The parent if found, or null if not found.</returns>
 		/// <param name="type">The type of control to find.</param>
 		/// <param name="id">Identifier of the parent control to find, or null to find by type only.</param>
-		public Container FindParent(Type type, string id = null)
+		public new Container FindParent(Type type, string id = null)
 		{
 			var control = Parent;
 			while (control != null)
@@ -714,7 +719,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <returns>The parent if found, or null if not found.</returns>
 		/// <param name="id">Identifier of the parent control to find.</param>
-		public Container FindParent(string id)
+		public new Container FindParent(string id)
 		{
 			return FindParent(null, id);
 		}
@@ -727,8 +732,8 @@ namespace Eto.Forms
 		/// </remarks>
 		public void Detach()
 		{
-			if (Parent != null)
-				Parent.Remove(this);
+			if (VisualParent != null)
+				VisualParent.Remove(this);
 		}
 
 		/// <summary>
@@ -743,7 +748,7 @@ namespace Eto.Forms
 		/// </remarks>
 		public void AttachNative()
 		{
-			if (Parent != null)
+			if (VisualParent != null)
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "You can only attach a parentless control"));
 
 			using (Platform.Context)
@@ -1005,6 +1010,18 @@ namespace Eto.Forms
 		public static implicit operator Control(string labelText)
 		{
 			return new Label { Text = labelText };
+		}
+
+		/// <summary>
+		/// Converts an <see cref="Image"/> to a control implicitly.
+		/// </summary>
+		/// <remarks>
+		/// This provides an easy way to add images to your layout through code, without having to create <see cref="ImageView"/> instances manually.
+		/// </remarks>
+		/// <param name="image">Image to convert to an ImageView control.</param>
+		public static implicit operator Control(Image image)
+		{
+			return new ImageView { Image = image };
 		}
 
 		#region Callback

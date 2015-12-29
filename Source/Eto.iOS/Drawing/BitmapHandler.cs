@@ -6,10 +6,11 @@ using SD = System.Drawing;
 using UIKit;
 using Foundation;
 using CoreGraphics;
+using Eto.Shared.Drawing;
 
 namespace Eto.iOS.Drawing
 {
-	public class BitmapDataHandler : BitmapData
+	public class BitmapDataHandler : BaseBitmapData
 	{
 		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(image, data, scanWidth, bitsPerPixel, controlObject)

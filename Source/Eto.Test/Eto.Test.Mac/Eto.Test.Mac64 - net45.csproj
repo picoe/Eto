@@ -45,7 +45,7 @@
     <UseSGen>False</UseSGen>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -54,6 +54,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="MonoMac">
       <HintPath>..\..\..\Libraries\MonoMac64\MonoMac.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.3.0.0\lib\portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -84,10 +87,6 @@
       <Project>{3F8178EF-0710-43F7-92E2-130B9BE2212D}</Project>
       <Name>Eto.Serialization.Json - pcl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - net45.csproj">
-      <Project>{231FB3B0-CB71-11E3-9C1A-0800200C9A66}</Project>
-      <Name>Eto.Serialization.Xaml - net45</Name>
-    </ProjectReference>
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

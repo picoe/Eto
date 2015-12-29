@@ -45,15 +45,16 @@ namespace Eto.Mac
 			return NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
 		}
 
-		public static Color ToEto(this NSColor color)
+		public static Color ToEto(this NSColor color, bool calibrated = true)
 		{
 			if (color == null)
 				return Colors.Black;
-			var converted = color.UsingColorSpace(NSColorSpace.CalibratedRGB);
+			var colorspace = calibrated ? NSColorSpace.CalibratedRGB : NSColorSpace.DeviceRGB;
+			var converted = color.UsingColorSpace(colorspace);
 			if (converted == null)
 			{
 				// Convert named (e.g. system) colors to RGB using its CGColor
-				converted = color.CGColor.ToNS().UsingColorSpace(NSColorSpace.CalibratedRGB);
+				converted = color.CGColor.ToNS().UsingColorSpace(colorspace);
 				if (converted == null)
 					throw new ArgumentOutOfRangeException("color", "Color cannot be converted to an RGB colorspace");
 			}
@@ -429,6 +430,13 @@ namespace Eto.Mac
 				default:
 					throw new NotSupportedException();
 			}
+		}
+		
+		public static NSFont ToNS(this Font font)
+		{
+			if (font == null)
+				return null;
+			return ((FontHandler)font.Handler).Control;
 		}
 	}
 }

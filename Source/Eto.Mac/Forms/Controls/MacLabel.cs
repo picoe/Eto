@@ -49,14 +49,24 @@ namespace Eto.Mac.Forms.Controls
 
 	public class EtoLabelFieldCell : NSTextFieldCell
 	{
-		public VerticalAlignment VerticalAlign { get; set; }
+		public EtoLabelFieldCell()
+		{
+		}
+
+		public EtoLabelFieldCell(IntPtr handle)
+			: base(handle)
+		{
+		}
+
+		[Export("verticalAlignment")]
+		public VerticalAlignment VerticalAlignment { get; set; }
 
 		public override CGRect DrawingRectForBounds(CGRect theRect)
 		{
 			var rect = base.DrawingRectForBounds(theRect);
 			var titleSize = CellSizeForBounds(theRect);
 
-			switch (VerticalAlign)
+			switch (VerticalAlignment)
 			{
 				case VerticalAlignment.Center:
 					rect.Y = (nfloat)Math.Round(theRect.Y + (theRect.Height - titleSize.Height) / 2.0F);
@@ -78,9 +88,20 @@ namespace Eto.Mac.Forms.Controls
 			get { return WeakHandler.Target; }
 			set { WeakHandler = new WeakReference(value); } 
 		}
+
+		public EtoLabel()
+		{
+			Cell = new EtoLabelFieldCell();
+			DrawsBackground = false;
+			Bordered = false;
+			Bezeled = false;
+			Editable = false;
+			Selectable = false;
+			Alignment = NSTextAlignment.Left;
+		}
 	}
 
-	public class MacLabel<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
+	public abstract class MacLabel<TControl, TWidget, TCallback> : MacView<TControl, TWidget, TCallback>
 		where TControl: NSTextField
 		where TWidget: Control
 		where TCallback: Control.ICallback
@@ -99,29 +120,19 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		#if !XAMMAC2
-		static readonly Selector selAlignmentRectInsets = new Selector("alignmentRectInsets");
-		#endif
-
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
-				#if XAMMAC2 // TODO: Fix when Xamarin.Mac2 NSEdgeInsets is fixed to use nfloat instead of float
-				var insets = new Size(4, 2);
-				#else
-				var insets = Control.RespondsToSelector(selAlignmentRectInsets) ? Control.AlignmentRectInsets.ToEtoSize() : new Size(4, 2);
-				#endif
 				var size = Control.Cell.CellSizeForBounds(new CGRect(CGPoint.Empty, availableSize.ToNS())).ToEto();
-
-				NaturalSize = Size.Round(size + insets);
+				NaturalSize = Size.Ceiling(size);
 				availableSizeCached = availableSize;
 			}
 
 			return NaturalSize.Value;
 		}
 
-		public MacLabel()
+		protected MacLabel()
 		{
 			Enabled = true;
 			paragraphStyle = new NSMutableParagraphStyle();
@@ -133,25 +144,15 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override void Initialize()
 		{
-			base.Initialize();
-			Control = CreateLabel();
 			if (supportsSingleLine)
 				Control.Cell.UsesSingleLineMode = false;
+
+			base.Initialize();
 		}
 
-		protected virtual TControl CreateLabel()
+		protected override TControl CreateControl()
 		{
-			return new EtoLabel
-			{ 
-				Handler = this,
-				Cell = new EtoLabelFieldCell(),
-				DrawsBackground = false,
-				Bordered = false,
-				Bezeled = false,
-				Editable = false,
-				Selectable = false,
-				Alignment = NSTextAlignment.Left,
-			} as TControl;
+			return new EtoLabel() as TControl;
 		}
 
 		static readonly object TextColorKey = new object();
@@ -202,6 +203,7 @@ namespace Eto.Mac.Forms.Controls
 						throw new NotSupportedException();
 				}
 				SetAttributes();
+				LayoutIfNeeded();
 			}
 		}
 
@@ -273,8 +275,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public VerticalAlignment VerticalAlignment
 		{
-			get { return ((EtoLabelFieldCell)Control.Cell).VerticalAlign; }
-			set { ((EtoLabelFieldCell)Control.Cell).VerticalAlign = value; }
+			get { return ((EtoLabelFieldCell)Control.Cell).VerticalAlignment; }
+			set { ((EtoLabelFieldCell)Control.Cell).VerticalAlignment = value; }
 		}
 
 		protected virtual void SetAttributes()
@@ -292,7 +294,9 @@ namespace Eto.Mac.Forms.Controls
 					var attr = new NSMutableDictionary();
 					Widget.Properties.Get<Font>(FontKey).Apply(attr);
 					attr.Add(NSStringAttributeKey.ParagraphStyle, paragraphStyle);
-					attr.Add(NSStringAttributeKey.ForegroundColor, CurrentColor);
+					var col = CurrentColor;	
+					if (col != null)
+						attr.Add(NSStringAttributeKey.ForegroundColor, col);
 					str.SetAttributes(attr, range);
 					if (underlineIndex >= 0)
 					{
@@ -307,7 +311,12 @@ namespace Eto.Mac.Forms.Controls
 
 		protected virtual NSColor CurrentColor
 		{
-			get { return TextColor.ToNSUI(); }
+			get { 
+				var col = Widget.Properties.Get<Color?>(TextColorKey);
+				if (col != null)
+					return col.Value.ToNSUI();
+				return null; 
+			}
 		}
 
 		public override void OnLoad(EventArgs e)

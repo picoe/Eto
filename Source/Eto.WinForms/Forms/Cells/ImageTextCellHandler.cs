@@ -53,6 +53,12 @@ namespace Eto.WinForms.Forms.Cells
 				var img = val[0] as sd.Image;
 				if (img != null)
 				{
+					if (paintParts.HasFlag(swf.DataGridViewPaintParts.Background))
+						using (var b = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor))
+						{
+							graphics.FillRectangle(b, new sd.Rectangle(cellBounds.X, cellBounds.Y, IconSize + IconPadding * 2, cellBounds.Height));
+						}
+					
 					var container = graphics.BeginContainer();
 					graphics.SetClip(cellBounds);
 					if (paintParts.HasFlag(swf.DataGridViewPaintParts.Background))

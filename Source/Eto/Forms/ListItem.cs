@@ -80,6 +80,18 @@ namespace Eto.Forms
 		{
 			return Text;
 		}
+
+		/// <summary>>
+		/// Converts a string to a list item implicitly
+		/// </summary>
+		/// <remarks>
+		/// This is so you can initialize an array of ListItem objects by using string constant values.
+		/// </remarks>
+		/// <param name="text">Text to create the list item with</param>
+		public static implicit operator ListItem(string text)
+		{
+			return new ListItem { Text = text };
+		}
 	}
 
 	/// <summary>

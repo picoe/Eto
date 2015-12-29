@@ -24,7 +24,7 @@ namespace Eto.Forms
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			var dynamicRow = new DynamicRow();
-			dynamicRow.Items.Add(new DynamicControl { Control = value as Control });
+			dynamicRow.Add(new DynamicControl { Control = value as Control });
 			return dynamicRow;
 		}
 	}

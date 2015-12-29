@@ -78,6 +78,12 @@ namespace Eto.iOS.Forms.Controls
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }
 		}
+
+		public bool ShowBorder
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 	}
 }
 

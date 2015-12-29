@@ -1,12 +1,14 @@
 using System;
 using Eto.Drawing;
 using System.Windows.Input;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
 	/// <summary>
 	/// Base tool item class for a <see cref="ToolBar"/>.
 	/// </summary>
+	[TypeConverter(typeof(ToolItemConverter))]
 	public abstract class ToolItem : Tool, ICommandItem
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
@@ -24,7 +26,19 @@ namespace Eto.Forms
 		public ICommand Command
 		{
 			get { return Properties.GetCommand(Command_Key); }
-			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r); }
+			set { Properties.SetCommand(Command_Key, value, e => Enabled = e, r => Click += r, r => Click -= r, () => CommandParameter); }
+		}
+
+		static readonly object CommandParameter_Key = new object();
+
+		/// <summary>
+		/// Gets or sets the parameter to pass to the <see cref="Command"/> when executing or determining its CanExecute state.
+		/// </summary>
+		/// <value>The command parameter.</value>
+		public object CommandParameter
+		{
+			get { return Properties.Get<object>(CommandParameter_Key); }
+			set { Properties.Set(CommandParameter_Key, value, () => Properties.UpdateCommandCanExecute(Command_Key)); }
 		}
 
 		/// <summary>
@@ -58,7 +72,6 @@ namespace Eto.Forms
 			Text = command.ToolBarText;
 			ToolTip = command.ToolTip;
 			Image = command.Image;
-			Order = -1;
 			Command = command;
 		}
 

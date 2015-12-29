@@ -208,12 +208,42 @@ namespace Eto.iOS.Drawing
 			set { Control.InterpolationQuality = value.ToCG(); }
 		}
 
+		static readonly object SourceImage_Key = new object();
+		static readonly object DrawingImage_Key = new object();
+
+		/// <summary>
+		/// Source image we are drawing to. Do not dispose as we don't own it.
+		/// </summary>
+		Bitmap SourceImage
+		{
+			get { return Widget.Properties.Get<Bitmap>(SourceImage_Key); }
+			set { Widget.Properties.Set(SourceImage_Key, value); }
+		}
+
+		/// <summary>
+		/// Image we're drawing to, when the source image is not compatible. Disposed with Graphics object.
+		/// </summary>
+		Bitmap DrawingImage
+		{
+			get { return Widget.Properties.Get<Bitmap>(DrawingImage_Key); }
+			set { Widget.Properties.Set(DrawingImage_Key, value); }
+		}
+
 		public void CreateFromImage(Bitmap image)
 		{
 			var handler = image.Handler as BitmapHandler;
+			SourceImage = image;
 #if OSX
 			var rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+			if (rep.BitsPerPixel != 32)
+			{
+				// CoreGraphics only supports drawing to 32bpp, create a new 32-bpp image and copy back when disposed or flushed.
+				DrawingImage = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppRgb);
+				handler = DrawingImage.Handler as BitmapHandler;
+				rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
+			}
 			graphicsContext = NSGraphicsContext.FromBitmap(rep);
+
 			graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
 			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
@@ -227,6 +257,11 @@ namespace Eto.iOS.Drawing
 			height = image.Size.Height;
 			SetDefaults();
 			InitializeContext(true);
+			if (DrawingImage != null && SourceImage != null)
+			{
+				// draw source image onto context, when source is incompatible for CoreGraphics drawing.
+				DrawImage(SourceImage, 0, 0);
+			}
 		}
 
 		public void Reset()
@@ -241,6 +276,7 @@ namespace Eto.iOS.Drawing
 		{
 #if OSX
 			graphicsContext.FlushGraphics();
+			CopyToOriginalImage();
 #endif
 		}
 
@@ -534,9 +570,32 @@ namespace Eto.iOS.Drawing
 				Reset();
 				if (disposeContext && graphicsContext != null)
 					graphicsContext.Dispose();
+				CopyToOriginalImage();
+				if (DrawingImage != null)
+				{
+					DrawingImage.Dispose();
+					DrawingImage = null;
+				}
 			}
 			base.Dispose(disposing);
 		}
+
+		void CopyToOriginalImage()
+		{
+			if (SourceImage != null && DrawingImage != null)
+			{
+				// copy back to original image when format is incompatible with CoreGraphics
+				using (var bdNew = DrawingImage.Lock())
+				using (var bdOrig = SourceImage.Lock())
+				{
+					var size = DrawingImage.Size;
+					for (int y = 0; y < size.Height; y++)
+						for (int x = 0; x < size.Width; x++)
+							bdOrig.SetPixel(x, y, bdNew.GetPixel(x, y));
+				}
+			}
+		}
+
 		#endif
 		public void TranslateTransform(float offsetX, float offsetY)
 		{

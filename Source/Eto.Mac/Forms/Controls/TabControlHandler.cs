@@ -40,10 +40,15 @@ namespace Eto.Mac.Forms.Controls
 		// CWEN: should have some form of implementation here
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
-		public TabControlHandler()
+		protected override NSTabView CreateControl()
+		{
+			return new EtoTabView();
+		}
+
+		protected override void Initialize()
 		{
 			Enabled = true;
-			Control = new EtoTabView { Handler = this };
+			base.Initialize();
 		}
 
 		public override void OnLoadComplete(EventArgs e)
@@ -63,7 +68,7 @@ namespace Eto.Mac.Forms.Controls
 		static bool HandleShouldSelectTabViewItem(NSTabView tabView, NSTabViewItem item)
 		{
 			var handler = ((EtoTabView)tabView).WeakHandler.Target as TabControlHandler;
-			var tab = handler.Widget.Pages.FirstOrDefault(r => ((TabPageHandler)r.Handler).TabViewItem == item);
+			var tab = handler.Widget.Pages.FirstOrDefault(r => ((TabPageHandler)r.Handler).Control == item);
 			return tab == null || tab.Enabled;
 		}
 
@@ -88,9 +93,9 @@ namespace Eto.Mac.Forms.Controls
 		public void InsertTab(int index, TabPage page)
 		{
 			if (index == -1)
-				Control.Add(((TabPageHandler)page.Handler).TabViewItem);
+				Control.Add(((TabPageHandler)page.Handler).Control);
 			else
-				Control.Insert(((TabPageHandler)page.Handler).TabViewItem, index);
+				Control.Insert(((TabPageHandler)page.Handler).Control, index);
 		}
 
 		public void ClearTabs()
@@ -105,7 +110,7 @@ namespace Eto.Mac.Forms.Controls
 			try
 			{
 				var isSelected = SelectedIndex == index;
-				Control.Remove(((TabPageHandler)page.Handler).TabViewItem);
+				Control.Remove(((TabPageHandler)page.Handler).Control);
 				if (isSelected && Control.Items.Length > 0)
 					SelectedIndex = Math.Min(index, Control.Items.Length - 1);
 				if (Widget.Loaded)

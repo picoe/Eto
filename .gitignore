@@ -11,3 +11,4 @@ UpgradeLog*.htm
 Source/Components
 AppPackages
 packages/
+.vs/

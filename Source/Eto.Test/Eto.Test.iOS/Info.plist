@@ -24,8 +24,6 @@
 	</array>
 	<key>CFBundleDisplayName</key>
 	<string>EtoTest</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.eto.test</string>
 	<key>CFBundleVersion</key>
 	<string></string>
 	<key>NSMainNibFile</key>
@@ -38,5 +36,7 @@
 		<string>Default@2x.png</string>
 		<string>Default-568h@2x.png</string>
 	</array>
+	<key>CFBundleIdentifier</key>
+	<string>ca.picoe.EtoTest</string>
 </dict>
 </plist>

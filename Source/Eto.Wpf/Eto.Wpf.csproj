@@ -25,13 +25,15 @@
     <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\net40\Release\</OutputPath>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="ColorPicker">
       <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
@@ -123,6 +125,7 @@
     <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
+    <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
@@ -171,6 +174,7 @@
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
     <Compile Include="Forms\EnableThemingInScope.cs" />
     <Compile Include="Forms\KeyboardHandler.cs" />
+    <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
@@ -234,6 +238,10 @@
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
+    <Compile Include="Drawing\SystemColorsHandler.cs" />
+    <Compile Include="..\Shared\BaseBitmapData.cs">
+      <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
@@ -322,7 +330,5 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

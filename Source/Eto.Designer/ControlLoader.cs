@@ -20,7 +20,9 @@ namespace Eto.Designer
 	/// </summary>
 	public class ControlLoader : MarshalByRefObject
 	{
+		#pragma warning disable 414 // we keep a reference so it doesn't get GC'd
 		static object controlHolder;
+		#pragma warning restore 414
 
 		public object Execute(string platformType, string testAssembly, string initializeAssembly = null)
 		{

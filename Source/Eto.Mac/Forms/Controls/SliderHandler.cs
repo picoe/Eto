@@ -1,18 +1,36 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+using CoreImage;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
+#if Mac64
+using CGSize = MonoMac.Foundation.NSSize;
+using CGRect = MonoMac.Foundation.NSRect;
+using CGPoint = MonoMac.Foundation.NSPoint;
+using nfloat = System.Double;
+using nint = System.Int64;
+using nuint = System.UInt64;
+#else
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
+#endif
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -30,14 +48,29 @@ namespace Eto.Mac.Forms.Controls
 				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
+
+			public override void SetFrameSize(CGSize newSize)
+			{
+				if (((SliderHandler)Handler).Orientation == Orientation.Horizontal && newSize.Width < newSize.Height)
+				{
+					// prevent slider from flipping to vertical orientation when resized
+					newSize.Height = newSize.Width;
+				}
+				base.SetFrameSize(newSize);
+			}
 		}
 
-		public SliderHandler()
+		protected override NSSlider CreateControl()
 		{
-			Control = new EtoSlider { Handler = this };
+			return new EtoSlider();
+		}
+
+		protected override void Initialize()
+		{
 			Control.Activated += HandleActivated;
 			MinValue = 0;
 			MaxValue = 100;
+			base.Initialize();
 		}
 
 		static void HandleActivated(object sender, EventArgs e)
@@ -45,21 +78,13 @@ namespace Eto.Mac.Forms.Controls
 			var handler = GetHandler(sender) as SliderHandler;
 			if (handler != null)
 			{
+				handler.TriggerMouseCallback();
+
 				var newval = (int)Math.Round(handler.Control.DoubleValue);
 				if (newval != handler.Control.IntValue)
 					handler.Control.IntValue = newval;
 
 				handler.Callback.OnValueChanged(handler.Widget, EventArgs.Empty);
-
-				var ev = NSApplication.SharedApplication.CurrentEvent;
-				if (ev != null)
-				{
-					// trigger mouse events when value is changed as they are buried by the slider
-					if (ev.Type == NSEventType.LeftMouseUp || ev.Type == NSEventType.RightMouseUp)
-						handler.Callback.OnMouseUp(handler.Widget, MacConversions.GetMouseEvent(handler.Control, ev, false));
-					else if (ev.Type == NSEventType.LeftMouseDragged || ev.Type == NSEventType.RightMouseDragged)
-						handler.Callback.OnMouseMove(handler.Widget, MacConversions.GetMouseEvent(handler.Control, ev, false));
-				}
 			}
 		}
 

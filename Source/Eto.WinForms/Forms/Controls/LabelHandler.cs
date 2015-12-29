@@ -4,6 +4,8 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -14,14 +16,35 @@ namespace Eto.WinForms.Forms.Controls
 			WrapMode wrapMode;
 			TextAlignment horizontalAlign;
 			sd.SizeF? measuredSize;
-			sd.Size proposedSizeCache;
+			int proposedSizeCache;
 			sd.SizeF? measuredSizeMax;
 			VerticalAlignment verticalAlign;
-			swf.TextFormatFlags textFormat = swf.TextFormatFlags.Default;
+			swf.TextFormatFlags textFormat;
 
-			void ClearSize()
+			struct Position
+			{
+				public sd.Size Size;
+				public string Text;
+			}
+			List<Position> positions;
+			sd.Size? positionSize;
+
+			public void ClearSize()
 			{
 				measuredSize = measuredSizeMax = null;
+				positions = null;
+			}
+
+			int lastWidth;
+			protected override void OnSizeChanged(EventArgs e)
+			{
+				base.OnSizeChanged(e);
+				if (lastWidth != Width && IsHandleCreated)
+				{
+					ClearSize();
+					lastWidth = Width;
+					BeginInvoke(new Action(Handler.SizeChanged));
+				}
 			}
 
 			public override sd.Font Font
@@ -51,7 +74,6 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					wrapMode = value;
 					SetStringFormat();
-					ClearSize();
 				}
 			}
 
@@ -62,7 +84,6 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					horizontalAlign = value;
 					SetStringFormat();
-					ClearSize();
 				}
 			}
 
@@ -73,9 +94,10 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					verticalAlign = value;
 					SetStringFormat();
-					ClearSize();
 				}
 			}
+
+			public LabelHandler Handler { get; set; }
 
 			public EtoLabel()
 			{
@@ -84,10 +106,13 @@ namespace Eto.WinForms.Forms.Controls
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var bordersAndPadding = Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
+				var bordersAndPadding = Padding.Size;
 				if (proposedSize.Width <= 1)
 					proposedSize.Width = int.MaxValue;
+				else if (Width > 1)
+					proposedSize.Width = Width;
 
+				sd.SizeF size;
 				if (proposedSize.Width == int.MaxValue)
 				{
 					if (measuredSizeMax == null && string.IsNullOrEmpty(Text))
@@ -97,25 +122,69 @@ namespace Eto.WinForms.Forms.Controls
 					}
 					else if (measuredSizeMax == null)
 					{
-						proposedSize -= bordersAndPadding;
-						proposedSize.Height = Math.Max(0, proposedSize.Height);
+						proposedSize.Height = Math.Max(0, proposedSize.Height - bordersAndPadding.Height);
 						measuredSizeMax = swf.TextRenderer.MeasureText(Text, Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
 					}
-					measuredSize = measuredSizeMax;
+					size = measuredSizeMax.Value;
 				}
-				else if (measuredSize == null || proposedSizeCache != proposedSize)
+				else if (measuredSize == null || proposedSizeCache != proposedSize.Width)
 				{
-					proposedSizeCache = proposedSize;
+					/*
+					if (measuredSize != null)
+						Debug.WriteLine("Miss! {0} != {1}, {2}", proposedSizeCache, proposedSize.Width, Text);
+					else
+						Debug.WriteLine(string.Format("Calc! {0}", Text));*/
+					proposedSizeCache = proposedSize.Width;
 					proposedSize -= bordersAndPadding;
 					proposedSize.Height = Math.Max(0, proposedSize.Height);
-					measuredSize = swf.TextRenderer.MeasureText(Text, Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
+					if (wrapMode == WrapMode.Character)
+						size = CalculatePositions(proposedSize, true);
+					else
+						size = swf.TextRenderer.MeasureText(Text, Font, new sd.Size(proposedSize.Width, int.MaxValue), textFormat);
+					measuredSize = size;
 				}
-				var size = measuredSize.Value;
-				if (size.Width < MinimumSize.Width)
-					size.Width = MinimumSize.Width;
-				if (size.Height < MinimumSize.Height)
-					size.Height = MinimumSize.Height;
+				else
+					size = measuredSize.Value;
+
+				size += bordersAndPadding;
+				size.Width = Math.Max(MinimumSize.Width, size.Width);
+				size.Height = Math.Max(MinimumSize.Height, size.Height);
 				return sd.Size.Ceiling(size);
+			}
+
+			sd.SizeF CalculatePositions(sd.Size proposedSize, bool force)
+			{
+				if (!force && (positions != null && positionSize == proposedSize))
+					return sd.SizeF.Empty;
+
+				positionSize = proposedSize;
+				var size = sd.SizeF.Empty;
+				sd.Size lineSize = sd.Size.Empty;
+				var text = Text;
+				positions = new List<Position>();
+				while (text.Length > 0)
+				{
+					var lineText = string.Empty;
+					for (int len = 0; len <= text.Length; len++)
+					{
+						var t = text.Substring(0, len);
+						var ls = swf.TextRenderer.MeasureText(t, Font, proposedSize, textFormat);
+						if (ls.Width < proposedSize.Width)
+						{
+							lineText = t;
+							lineSize = ls;
+						}
+						else
+							break;
+					}
+					if (lineText.Length == 0)
+						break;
+					positions.Add(new Position { Size = lineSize, Text = lineText });
+					size.Height += lineSize.Height;
+					size.Width = Math.Max(lineSize.Width, size.Width);
+					text = text.Substring(lineText.Length);
+				}
+				return size;
 			}
 
 			void SetStringFormat()
@@ -157,12 +226,24 @@ namespace Eto.WinForms.Forms.Controls
 						textFormat |= swf.TextFormatFlags.VerticalCenter;
 						break;
 				}
-
+				ClearSize();
 			}
 
-			protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+			protected override void OnPaint(swf.PaintEventArgs e)
 			{
 				var rect = new sd.Rectangle(0, 0, Bounds.Width, Bounds.Height);
+				if (wrapMode == WrapMode.Character)
+				{
+					CalculatePositions(rect.Size, false);
+					foreach (var position in positions)
+					{
+						var r = rect;
+						r.Height = position.Size.Height;
+						swf.TextRenderer.DrawText(e.Graphics, position.Text, Font, r, ForeColor, BackColor, textFormat);
+						rect.Y += r.Height;
+					}
+					return;
+				}
 				swf.TextRenderer.DrawText(e.Graphics, Text, Font, rect, ForeColor, BackColor, textFormat);
 			}
 		}
@@ -171,8 +252,21 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			Control = new EtoLabel
 			{
+				Handler = this,
 				AutoSize = true
 			};
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			SuspendLayout();
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			ResumeLayout();
 		}
 
 		public override Color TextColor
@@ -191,9 +285,6 @@ namespace Eto.WinForms.Forms.Controls
 					Control.TextAlignment = value;
 					Control.Invalidate();
 				}
-				/*if (Control.Dock != SWF.DockStyle.None) {
-					Control.Dock = DockStyle;
-				}*/
 			}
 		}
 
@@ -205,6 +296,7 @@ namespace Eto.WinForms.Forms.Controls
 				if (value != Control.Wrap)
 				{
 					Control.Wrap = value;
+					SetMinimumSize(true);
 					Control.Invalidate();
 				}
 			}
@@ -223,10 +315,16 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public override void SetFilledContent()
+		public override void SetScale(bool xscale, bool yscale)
 		{
-			base.SetFilledContent();
-			Control.AutoSize = false;
+			base.SetScale(xscale, yscale);
+			SetAutoSize();
+		}
+
+		void SizeChanged()
+		{
+			if (Widget != null && Widget.Loaded)
+				SetMinimumSize(true);
 		}
 	}
 }

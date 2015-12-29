@@ -2,13 +2,20 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+#if PORTABLE
+using Portable.Xaml;
+using Portable.Xaml.Markup;
+#else
+using System.Xaml;
 using System.Windows.Markup;
+#endif
 
 namespace Eto.Serialization.Xaml.Extensions
 {
 	[MarkupExtensionReturnType(typeof(object))]
 	public class FileExtension : MarkupExtension
 	{
+		[ConstructorArgument("fileName")]
 		public string FileName { get; set; }
 
 		public FileExtension()
@@ -25,7 +32,7 @@ namespace Eto.Serialization.Xaml.Extensions
 			var fileName = FileName;
 			if (!Path.IsPathRooted(fileName))
 				fileName = Path.Combine(EtoEnvironment.GetFolderPath(EtoSpecialFolder.ApplicationResources), fileName);
-			return File.OpenRead(fileName);
+			return null;//*PCL File.OpenRead(fileName);
 		}
 
 		public override object ProvideValue(IServiceProvider serviceProvider)
@@ -36,7 +43,7 @@ namespace Eto.Serialization.Xaml.Extensions
 				if (provideValue != null)
 				{
 					var propertyInfo = provideValue.TargetProperty as PropertyInfo;
-					if (propertyInfo != null && !propertyInfo.PropertyType.IsAssignableFrom(typeof(Stream)))
+					if (propertyInfo != null && !propertyInfo.PropertyType.GetTypeInfo().IsAssignableFrom(typeof(Stream).GetTypeInfo()))
 					{
 						var converter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
 						if (converter != null)

@@ -39,7 +39,7 @@ using nuint = System.UInt32;
 
 namespace Eto.Mac.Forms
 {
-	public class MyWindow : NSWindow, IMacControl
+	public class EtoWindow : NSWindow, IMacControl
 	{
 		CGRect oldFrame;
 		bool zoom;
@@ -48,7 +48,7 @@ namespace Eto.Mac.Forms
 
 		public IMacWindow Handler { get { return (IMacWindow)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
-		public MyWindow(CGRect rect, NSWindowStyle style, NSBackingStore store, bool flag)
+		public EtoWindow(CGRect rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
 		{
 		}
@@ -160,15 +160,24 @@ namespace Eto.Mac.Forms
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
+			SizeF naturalSize = new SizeF(200, 200);
 			if (Content != null && Content.Visible)
 			{
 				var contentControl = Content.GetMacControl();
 				if (contentControl != null)
 				{
-					return contentControl.GetPreferredSize(availableSize) + Padding.Size;
+					naturalSize = contentControl.GetPreferredSize(availableSize - Padding.Size) + Padding.Size;
 				}
 			}
-			return new Size(200, 200);
+			if (PreferredClientSize != null)
+			{
+				if (PreferredClientSize.Value.Width >= 0)
+					naturalSize.Width = PreferredClientSize.Value.Width;
+				if (PreferredClientSize.Value.Height >= 0)
+					naturalSize.Height = PreferredClientSize.Value.Height;
+			}
+
+			return naturalSize;
 		}
 
 		public override Size MinimumSize
@@ -196,15 +205,6 @@ namespace Eto.Mac.Forms
 		public NSMenu MenuBar
 		{
 			get { return menuBar == null ? null : menuBar.ControlObject as NSMenu; }
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
-			Control.DidBecomeKey += HandleDidBecomeKey;
-			Control.DidResignKey += HandleDidResignKey;
-			Control.ShouldZoom = HandleShouldZoom;
-			Control.WillMiniaturize += HandleWillMiniaturize;
 		}
 
 		IntPtr oldMenu;
@@ -316,6 +316,9 @@ namespace Eto.Mac.Forms
 
 		public override void AttachEvent(string id)
 		{
+			// when attaching to a native control, we can't handle any events as it'll override its delegate.
+			if (!(Control is IMacControl))
+				return;
 			switch (id)
 			{
 				case Window.ClosedEvent:
@@ -424,9 +427,9 @@ namespace Eto.Mac.Forms
 			});
 		}
 
-		protected void ConfigureWindow()
+		protected virtual void ConfigureWindow()
 		{
-			var myWindow = Control as MyWindow;
+			var myWindow = Control as EtoWindow;
 			if (myWindow != null)
 				myWindow.Handler = this;
 			Control.ContentView = new NSView();
@@ -436,8 +439,11 @@ namespace Eto.Mac.Forms
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
 			Control.AutorecalculatesKeyViewLoop = true;
-			//Control.Delegate = new MacWindowDelegate{ Handler = this };
 			Control.WillReturnFieldEditor = HandleWillReturnFieldEditor;
+			Control.DidBecomeKey += HandleDidBecomeKey;
+			Control.DidResignKey += HandleDidResignKey;
+			Control.ShouldZoom = HandleShouldZoom;
+			Control.WillMiniaturize += HandleWillMiniaturize;
 		}
 
 		static NSObject HandleWillReturnFieldEditor(NSWindow sender, NSObject client)
@@ -539,6 +545,8 @@ namespace Eto.Mac.Forms
 		{
 			get
 			{
+				if (!Widget.Loaded)
+					return PreferredSize ?? new Size(-1, -1);
 				return Control.Frame.Size.ToEtoSize();
 			}
 			set
@@ -547,8 +555,18 @@ namespace Eto.Mac.Forms
 				var newFrame = oldFrame.SetSize(value);
 				newFrame.Y = (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldFrame.Height));
 				Control.SetFrame(newFrame, true);
-				AutoSize = false;
+				PreferredSize = value;
+				SetAutoSize();
 			}
+		}
+
+		void SetAutoSize()
+		{
+			AutoSize = true;
+			if (PreferredSize != null)
+				AutoSize &= PreferredSize.Value.Width == -1 || PreferredSize.Value.Height == -1;
+			if (PreferredClientSize != null)
+				AutoSize &= PreferredClientSize.Value.Width == -1 || PreferredClientSize.Value.Height == -1;
 		}
 
 		public MenuBar Menu
@@ -618,6 +636,13 @@ namespace Eto.Mac.Forms
 
 		public string Id { get; set; }
 
+		static readonly object PreferredClientSize_Key = new object();
+		public Size? PreferredClientSize
+		{
+			get { return Widget.Properties.Get<Size?>(PreferredClientSize_Key); }
+			set { Widget.Properties[PreferredClientSize_Key] = value; }
+		}
+
 		public override Size ClientSize
 		{
 			get { return Control.ContentView.Frame.Size.ToEtoSize(); }
@@ -627,7 +652,21 @@ namespace Eto.Mac.Forms
 				var oldSize = Control.ContentView.Frame;
 				Control.SetFrameOrigin(new CGPoint(oldFrame.X, (nfloat)Math.Max(0, oldFrame.Y - (value.Height - oldSize.Height))));
 				Control.SetContentSize(value.ToNS());
-				AutoSize = false;
+				if (!Widget.Loaded)
+				{
+					PreferredClientSize = value;
+					if (PreferredSize != null)
+					{
+						if (value.Width != -1 && value.Height != -1)
+							PreferredSize = null;
+						else if (value.Width != -1)
+							PreferredSize = new Size(-1, PreferredSize.Value.Height);
+						else if (value.Height != -1)
+							PreferredSize = new Size(PreferredSize.Value.Width, -1);
+
+					}
+				}
+				SetAutoSize();
 			}
 		}
 
@@ -641,11 +680,12 @@ namespace Eto.Mac.Forms
 			get { return Control.IsVisible; }
 			set
 			{
-				if (value && !Control.IsVisible)
-					Control.MakeKeyAndOrderFront(NSApplication.SharedApplication);
-				if (!value && Control.IsVisible)
-					Control.PerformClose(NSApplication.SharedApplication);
-				// huh?
+				if (Visible != value)
+				{
+					Control.IsVisible = value;
+					if (Widget.Loaded && value)
+						Callback.OnShown(Widget, EventArgs.Empty);
+				}
 			}
 		}
 
@@ -685,7 +725,7 @@ namespace Eto.Mac.Forms
 
 					Control.SetFrameOrigin(point);
 				}
-				var etoWindow = Control as MyWindow;
+				var etoWindow = Control as EtoWindow;
 				if (etoWindow != null)
 					etoWindow.DisableCenterParent = true;
 			}
@@ -750,16 +790,33 @@ namespace Eto.Mac.Forms
 
 		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoad(e);
 			if (AutoSize)
 			{
-				var size = GetPreferredSize(Size.MaxValue);
+				AutoSize = false;
+				var availableSize = Size.MaxValue;
+				if (PreferredSize != null)
+				{
+					var borderSize = GetBorderSize();
+					if (PreferredSize.Value.Width != -1)
+						availableSize.Width = PreferredSize.Value.Width - borderSize.Width;
+					if (PreferredSize.Value.Height != -1)
+						availableSize.Height = PreferredSize.Value.Height - borderSize.Height;
+				}
+				var size = GetPreferredSize(availableSize);
 				SetContentSize(size.ToNS());
 				setInitialSize = true;
 
 			}
 			PositionWindow();
+			base.OnLoad(e);
 		}
+
+		Size GetBorderSize()
+		{
+			return Control.FrameRectFor(CGRect.Empty).Size.ToEtoSize();
+		}
+
+
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);

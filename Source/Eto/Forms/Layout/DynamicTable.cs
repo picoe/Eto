@@ -10,11 +10,9 @@ namespace Eto.Forms
 	/// <summary>
 	/// Represents a row for a <see cref="DynamicTable"/>
 	/// </summary>
-	[ContentProperty("Items"), TypeConverter(typeof(DynamicRowConverter))]
-	public class DynamicRow
+	[TypeConverter(typeof(DynamicRowConverter))]
+	public class DynamicRow : Collection<DynamicItem>
 	{
-		Collection<DynamicItem> items;
-
 		/// <summary>
 		/// Gets the table this row is contained in
 		/// </summary>
@@ -25,10 +23,10 @@ namespace Eto.Forms
 		/// Gets or sets the items on this row.
 		/// </summary>
 		/// <value>The items contained in this row</value>
-		public Collection<DynamicItem> Items
+		[Obsolete("The DynamicRow is now its own collection, so add directly")]
+		public new Collection<DynamicItem> Items
 		{ 
-			get { return items ?? (items = new Collection<DynamicItem>()); }
-			set { items = value; }
+			get { return this; }
 		}
 
 		/// <summary>
@@ -52,8 +50,8 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="items">Items to initialize the row</param>
 		public DynamicRow(IEnumerable<DynamicItem> items)
+			: base(items.ToList())
 		{
-			this.items = new Collection<DynamicItem>(items.ToList());
 		}
 
 		/// <summary>
@@ -83,7 +81,7 @@ namespace Eto.Forms
 		public void Add(params DynamicItem[] items)
 		{
 			foreach (var item in items)
-				Items.Add(item);
+				base.Add(item);
 		}
 
 		/// <summary>
@@ -93,7 +91,7 @@ namespace Eto.Forms
 		public void Add(IEnumerable<DynamicItem> items)
 		{
 			foreach (var item in items)
-				Items.Add(item);
+				base.Add(item);
 		}
 
 		/// <summary>
@@ -109,7 +107,7 @@ namespace Eto.Forms
 			var controlItems = controls.Select(r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
 			foreach (var control in controlItems)
 			{
-				Items.Add(control);
+				base.Add(control);
 			}
 		}
 
@@ -120,8 +118,79 @@ namespace Eto.Forms
 		public static implicit operator DynamicRow(Control control)
 		{
 			var dynamicRow = new DynamicRow();
-			dynamicRow.Items.Add(new DynamicControl { Control = control });
+			dynamicRow.Add(new DynamicControl { Control = control });
 			return dynamicRow;
+		}
+
+		internal void SetParent(DynamicTable table)
+		{
+			Table = table;
+			foreach (var item in this)
+			{
+				if (item != null)
+					item.SetParent(table);
+			}
+		}
+
+		internal void SetLayout(DynamicLayout layout)
+		{
+			foreach (var item in this)
+			{
+				if (item != null)
+					item.SetLayout(layout);
+			}
+		}
+
+		/// <summary>
+		/// Handles when an item is inserted into the collection
+		/// </summary>
+		/// <param name="index">Index for the inserted item</param>
+		/// <param name="item">Item to insert</param>
+		protected override void InsertItem(int index, DynamicItem item)
+		{
+			base.InsertItem(index, item);
+			if (item != null)
+				item.SetParent(Table);
+		}
+
+		/// <summary>
+		/// Handles when an item is removed from the collection
+		/// </summary>
+		/// <param name="index">Index of the item to remove.</param>
+		protected override void RemoveItem(int index)
+		{
+			var item = this[index];
+			base.RemoveItem(index);
+			if (item != null)
+				item.SetParent(null);
+		}
+
+		/// <summary>
+		/// Handles when the collection is cleared.
+		/// </summary>
+		protected override void ClearItems()
+		{
+			foreach (var item in this)
+			{
+				if (item != null)
+					item.SetParent(null);
+			}
+			base.ClearItems();
+		}
+
+		/// <summary>
+		/// Handles when an item is changed
+		/// </summary>
+		/// <param name="index">Index of the item to change.</param>
+		/// <param name="item">Item to change the item at the specified index to.</param>
+		protected override void SetItem(int index, DynamicItem item)
+		{
+			var old = this[index];
+			if (old != null)
+				old.SetParent(null);
+			base.SetItem(index, item);
+			if (item != null)
+				item.SetParent(Table);
 		}
 	}
 
@@ -135,18 +204,71 @@ namespace Eto.Forms
 	[ContentProperty("Rows")]
 	public class DynamicTable : DynamicItem, ISupportInitialize
 	{
-		Collection<DynamicRow> rows;
+		internal DynamicLayout layout;
 		bool visible = true;
+		readonly DynamicRowCollection rows;
+
+		class DynamicRowCollection : Collection<DynamicRow>
+		{
+			readonly DynamicTable parent;
+
+			public DynamicRowCollection(DynamicTable parent)
+			{
+				this.parent = parent;
+			}
+
+			public DynamicRowCollection(DynamicTable parent, IList<DynamicRow> rows)
+				: base(rows)
+			{
+				this.parent = parent;
+				foreach (var item in this)
+				{
+					if (item != null)
+						item.SetParent(parent);
+				}
+			}
+
+			protected override void InsertItem(int index, DynamicRow item)
+			{
+				base.InsertItem(index, item);
+				if (item != null)
+					item.SetParent(parent);
+			}
+
+			protected override void ClearItems()
+			{
+				foreach (var item in this)
+				{
+					if (item != null)
+						item.SetParent(null);
+				}
+				base.ClearItems();
+			}
+
+			protected override void RemoveItem(int index)
+			{
+				var item = this[index];
+				base.RemoveItem(index);
+				if (item != null)
+					item.SetParent(null);
+			}
+
+			protected override void SetItem(int index, DynamicRow item)
+			{
+				var old = this[index];
+				if (old != null)
+					old.SetParent(null);
+				base.SetItem(index, item);
+				if (item != null)
+					item.SetParent(parent);
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the collection of rows in the table
 		/// </summary>
 		/// <value>The rows in the table.</value>
-		public Collection<DynamicRow> Rows
-		{ 
-			get { return rows ?? (rows = new Collection<DynamicRow>()); }
-			set { rows = value; }
-		}
+		public Collection<DynamicRow> Rows { get { return rows; } }
 
 		/// <summary>
 		/// Gets the table layout this item represents
@@ -158,7 +280,7 @@ namespace Eto.Forms
 		/// Gets or sets the parent table
 		/// </summary>
 		/// <value>The parent.</value>
-		public DynamicTable Parent { get; set; }
+		public DynamicTable Parent { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the padding around the table cells
@@ -195,6 +317,7 @@ namespace Eto.Forms
 		/// </summary>
 		public DynamicTable()
 		{
+			rows = new DynamicRowCollection(this);
 		}
 
 		/// <summary>
@@ -212,7 +335,7 @@ namespace Eto.Forms
 		/// <param name="rows">Rows.</param>
 		public DynamicTable(IEnumerable<DynamicRow> rows)
 		{
-			Rows = new Collection<DynamicRow>(rows.ToList());
+			this.rows = new DynamicRowCollection(this, rows.ToList());
 		}
 
 		/// <summary>
@@ -222,7 +345,7 @@ namespace Eto.Forms
 		public void Add(DynamicItem item)
 		{
 			if (CurrentRow != null)
-				CurrentRow.Items.Add(item);
+				CurrentRow.Add(item);
 			else
 				AddRow(item);
 		}
@@ -234,8 +357,7 @@ namespace Eto.Forms
 		public void AddRow(DynamicItem item)
 		{
 			var row = new DynamicRow();
-			row.Table = this;
-			row.Items.Add(item);
+			row.Add(item);
 			Rows.Add(row);
 		}
 
@@ -257,7 +379,7 @@ namespace Eto.Forms
 		{
 			if (Rows.Count == 0)
 				return null;
-			int cols = Rows.Where(r => r != null).Max(r => r.Items.Count);
+			int cols = Rows.Where(r => r != null).Max(r => r.Count);
 
 			Table = new TableLayout(cols, Rows.Count);
 			var tableLayout = Table;
@@ -270,13 +392,13 @@ namespace Eto.Forms
 				tableLayout.Spacing = spacing.Value;
 
 			var scalingRow = new DynamicRow();
-			scalingRow.Items.Add(new DynamicControl { YScale = true });
+			scalingRow.Add(new DynamicControl { YScale = true });
 			for (int cy = 0; cy < Rows.Count; cy++)
 			{
 				var row = Rows[cy] ?? scalingRow;
-				for (int cx = 0; cx < row.Items.Count; cx++)
+				for (int cx = 0; cx < row.Count; cx++)
 				{
-					var item = row.Items[cx] ?? new DynamicControl { XScale = true };
+					var item = row[cx] ?? new DynamicControl { XScale = true };
 					item.Create(layout, tableLayout, cx, cy);
 				}
 			}
@@ -289,10 +411,43 @@ namespace Eto.Forms
 
 		void ISupportInitialize.EndInit()
 		{
-			foreach (var row in Rows)
+		}
+
+		internal override IEnumerable<Control> Controls
+		{
+			get
 			{
-				row.Table = this;
+				foreach (var row in Rows)
+				{
+					if (row == null)
+						continue;
+						
+					foreach (var item in row)
+					{
+						if (item == null)
+							continue;
+						
+						foreach (var control in item.Controls)
+							yield return control;
+					}
+				}
 			}
+		}
+
+		internal override void SetParent(DynamicTable table)
+		{
+			Parent = table;
+			SetLayout(table != null ? table.layout : null);
+		}
+
+		internal override void SetLayout(DynamicLayout layout)
+		{
+			foreach (var row in rows)
+			{
+				if (row != null)
+					row.SetLayout(layout);
+			}
+			this.layout = layout;
 		}
 	}
 }

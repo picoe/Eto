@@ -7,7 +7,7 @@ using Eto.WinForms.CustomControls;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class DateTimePickerHandler : WindowsControl<swf.DateTimePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
+	public class DateTimePickerHandler : WindowsControl<ExtendedDateTimePicker, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 	{
 		public DateTimePickerHandler()
 		{
@@ -19,6 +19,12 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				Callback.OnValueChanged(Widget, EventArgs.Empty);
 			};
+		}
+
+		public bool ShowBorder
+		{
+			get { return Control.ShowBorder; }
+			set { Control.ShowBorder = value; }
 		}
 
 		public DateTimePickerMode Mode

@@ -161,5 +161,17 @@ namespace Eto.Android.Forms
 				throw new NotImplementedException();
 			}
 		}
+
+		public bool ShowBorder
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

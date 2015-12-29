@@ -37,7 +37,7 @@ namespace Eto.Wpf.Forms.Cells
 				{
 					var control = sender as swc.TextBlock;
 					control.Text = Handler.GetValue(control.DataContext);
-					Handler.FormatCell(control, cell, dataItem);
+					Handler.FormatCell(control, cell, control.DataContext);
 				};
 				return Handler.SetupCell(element);
 			}
@@ -50,7 +50,7 @@ namespace Eto.Wpf.Forms.Cells
 				{
 					var control = sender as swc.TextBox;
 					control.Text = Handler.GetValue(control.DataContext);
-					Handler.FormatCell(control, cell, dataItem);
+					Handler.FormatCell(control, cell, control.DataContext);
 				};
 				return Handler.SetupCell(element);
 			}

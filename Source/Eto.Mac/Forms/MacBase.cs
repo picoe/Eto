@@ -149,13 +149,23 @@ namespace Eto.Mac.Forms
 
 	public interface IMacControl
 	{
-		WeakReference WeakHandler { get; }
+		WeakReference WeakHandler { get; set; }
 	}
 
-	public class MacBase<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>
+	public abstract class MacBase<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>
 		where TControl: class
 		where TWidget: Widget
 	{
+		protected override void Initialize()
+		{
+			base.Initialize();
+
+			var control = Control as IMacControl;
+			if (control != null)
+				control.WeakHandler = new WeakReference(this);
+		}
+
+
 		List<ObserverHelper> observers;
 
 		public static object GetHandler(object control)
