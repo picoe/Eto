@@ -184,7 +184,7 @@
     	<Exec Command="xbuild /t:'BuildPackage' /p:'ProjectPath=nuspec/%(StandalonePackage.RelativeDir);ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(PackageOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows'"/>
     	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\%(StandalonePackage.RelativeDir)\;ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(PackageOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="$(MSBuildProjectFile)" Condition="$(Platform) == 'Windows'"/>
     </Target>
-    <Target Name="BuildAddins" DependsOnTargets="Package">
+    <Target Name="BuildAddins">
     	<!-- addins -->
     	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
     	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
@@ -196,6 +196,7 @@
     	<Exec Command="$(mdtool) setup pack $(BaseDir)/BuildOutput/Addins/$(Configuration)/XamarinStudio/Eto.Addin.XamarinStudio.dll -d:$(BaseDir)/BuildOutput/Addins/$(Configuration)" Condition="$(Platform) != 'Windows'"/>
 
 		<!-- Visual Studio Addin -->
+    	<Exec Command="$(NuGetCommand) restore $(VisualStudioAddinProject)" Condition="$(Platform) == 'Windows'" />
     	<MSBuild Projects="$(VisualStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     </Target>
     <Target Name="Publish">
