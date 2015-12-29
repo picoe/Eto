@@ -46,13 +46,13 @@
       <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Portable.Xaml.0.6.1\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="Eto">
-      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Forms.2.1.0\lib\net45\Eto.dll</HintPath>
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Forms.2.2.0\lib\net45\Eto.dll</HintPath>
     </Reference>
     <Reference Include="Eto.Serialization.Json">
-      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Serialization.Json.2.1.0\lib\net45\Eto.Serialization.Json.dll</HintPath>
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Serialization.Json.2.2.0\lib\net45\Eto.Serialization.Json.dll</HintPath>
     </Reference>
     <Reference Include="Eto.Serialization.Xaml">
-      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Serialization.Xaml.2.1.0\lib\net45\Eto.Serialization.Xaml.dll</HintPath>
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Serialization.Xaml.2.2.0\lib\net45\Eto.Serialization.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

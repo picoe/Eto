@@ -35,7 +35,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="Eto">
-      <HintPath>..\Eto.Addin.XamarinStudio\packages\Eto.Forms.2.1.0\lib\net45\Eto.dll</HintPath>
+      <HintPath>..\Eto.Addin.XamarinStudio\packages\Eto.Forms.2.2.0\lib\net45\Eto.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
