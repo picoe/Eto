@@ -100,10 +100,10 @@
       <Link>LICENSE</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Logo With Name Below%40200w.png">
+    <Content Include="PreviewImage.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Logo%4032w.png">
+    <Content Include="Icon.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="app.config" />
