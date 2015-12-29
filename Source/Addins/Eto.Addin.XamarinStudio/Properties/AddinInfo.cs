@@ -5,7 +5,7 @@ using Mono.Addins.Description;
 [assembly:Addin(
 	"XamarinStudio", 
 	Namespace = "Eto.Addin",
-	Version = "2.2.0.1"
+	Version = "2.2.0.2"
 )]
 
 [assembly:AddinName("Eto.Forms Support Addin")]
