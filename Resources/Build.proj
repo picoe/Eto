@@ -59,37 +59,50 @@
             Replacement='AssemblyVersion$1(&quot;$(AssemblyVersion)&quot;)' />
         
         <ItemGroup>
-        	<VSTemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
-        	<XSTemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
-        	<XSProjFile Include="$(XamarinStudioAddinProject)" />
-        	<XSProjFile Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj" />
-        	<AllPackagesFile Include="$(MSBuildThisFileDirectory)\packages.config" />
-        	
-        	<!-- Using ItemGroup with text to prevent messing up backslashes in xbuild -->
-        	<NupkgReg Include="1"><Text><![CDATA[(?<=Eto.[\w\.]+?)(\.\d+)*([-]\w+\d*)?\.nupkg]]></Text></NupkgReg>
-        	<VSTemplateReg Include="1"><Text><![CDATA[(?<=id\s*[=]\s*"Eto\.[\w\.]+"\s+)version\s*=\s*"[^"]+"]]></Text></VSTemplateReg>
-        	<XSTemplateReg Include="1"><Text><![CDATA[(?<=Id\s*[=]\s*"Eto\.[\w\.]+"\s+)Version\s*=\s*"[^"]+"]]></Text></XSTemplateReg>
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
+        	<ProjFiles Include="$(XamarinStudioAddinProject)" />
+        	<ProjFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj" />
+        	<TemplateFiles Include="$(MSBuildThisFileDirectory)\packages.config" />
         </ItemGroup>
         
-		<FileUpdate Files="@(XSProjFile)"
+		<FileUpdate Files="@(ProjFiles)"
 			WarnOnNoUpdate="true"
-            Pattern="@(NupkgReg->'%(Text)')"
+            Pattern="(?&lt;=Eto.[\\w\\.]+?)(\\.\\d+)*([-]\\w+\\d*)?\\.nupkg"
             Replacement='.$(AssemblyInformationalVersion).nupkg' />
             
-		<FileUpdate Files="@(VSTemplateFiles)"
+		<FileUpdate Files="@(TemplateFiles)"
 			WarnOnNoUpdate="false"
-            Pattern="@(VSTemplateReg->'%(Text)')"
+            Pattern="(?&lt;=id\\s*[=]\\s*&quot;Eto\\.[\\w\\.]+&quot;\\s+)version\\s*=\\s*&quot;[^&quot;]+&quot;"
             Replacement='version=&quot;$(AssemblyInformationalVersion)&quot;' />
+	</Target>
+	
+	<Target Name="UpdateReference" DependsOnTargets="BuildUtilities">
 
-		<FileUpdate Files="@(XSTemplateFiles)"
+		<Error Condition="$(ReferenceName) == '' or $(ReferenceVersion) == ''" Text="Must Specify ReferenceName and ReferenceVersion properties" />
+	
+		<PropertyGroup>
+			<ReferenceName>$(ReferenceName.Replace('.', '\\.'))</ReferenceName>
+		</PropertyGroup>
+	
+        <ItemGroup>
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
+        	<TemplateFiles Include="$(SourceDir)\**\packages.config" />
+        	<TemplateFiles Include="$(MSBuildThisFileDirectory)\nuspec\**\*.nuspec" />
+
+        	<ProjFiles Include="$(SourceDir)\**\*.csproj" />
+        </ItemGroup>
+        
+		<FileUpdate Files="@(ProjFiles)"
 			WarnOnNoUpdate="false"
-            Pattern="@(XSTemplateReg->'%(Text)')"
-            Replacement='Version=&quot;$(AssemblyInformationalVersion)&quot;' />
-
-		<FileUpdate Files="@(AllPackagesFile)"
-			WarnOnNoUpdate="true"
-            Pattern="@(VSTemplateReg->'%(Text)')"
-            Replacement='version=&quot;$(AssemblyInformationalVersion)&quot;' />
+            Pattern="(?&lt;=$(ReferenceName))(\\.\\d+)+"
+            Replacement='.$(ReferenceVersion)' />
+            
+		<FileUpdate Files="@(TemplateFiles)"
+			WarnOnNoUpdate="false"
+            Pattern="(?&lt;=id\\s*[=]\\s*&quot;$(ReferenceName)&quot;\\s+)version\\s*=\\s*&quot;[^&quot;]+&quot;"
+            Replacement='version=&quot;$(ReferenceVersion)&quot;' />
 	</Target>
 
 	<Target Name="BuildHelpShfb" DependsOnTargets="Build">
