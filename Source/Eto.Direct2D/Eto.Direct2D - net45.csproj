@@ -59,6 +59,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="2DConversions.cs" />
+    <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="Drawing\ImageHandler.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />

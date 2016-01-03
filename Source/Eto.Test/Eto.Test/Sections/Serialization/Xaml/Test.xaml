@@ -29,10 +29,10 @@
 					<TableLayout>
 						<TableRow>
 							<TableCell ScaleWidth="True">
-								<ImageView Image="{Resource Eto.Test.TestImage.png}" />
+								<ImageView Image="{Resource Eto.Test.Images.TestImage.png}" />
 							</TableCell>
 							<TableCell ScaleWidth="True">
-								<ImageView Image="{Resource Eto.Test.TestIcon.ico, Eto.Test}" />
+								<ImageView Image="{Resource Eto.Test.Images.TestIcon.ico, Eto.Test}" />
 							</TableCell>
 						</TableRow>
 					</TableLayout>

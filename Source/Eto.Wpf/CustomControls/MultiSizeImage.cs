@@ -155,17 +155,21 @@ namespace Eto.Wpf.CustomControls
 			}
 			return new Size(widthFactor, heightFactor);
 		}
+		Size GetSize(ImageSource src)
+		{
+			var bs = src as BitmapSource;
+			if (bs != null)
+				return new Size(bs.PixelWidth, bs.PixelHeight);
+			else
+				return new Size(Source.Width, Source.Height);
+		}
 
 		Size MeasureArrangeHelper(Size inputSize)
 		{
 			if (Source == null)
 				return new Size(0, 0);
 			var first = _availableFrames.LastOrDefault();
-			var size = new Size(Source.Width, Source.Height);
-			if (first == null)
-				return size;
-
-			size = new Size(first.Width, first.Height);
+			var size = GetSize(first ?? Source);
 
 			Size scale = ComputeScaleFactor(inputSize, size, Stretch, StretchDirection);
 			if (UseSmallestSpace)

@@ -35,7 +35,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			table.Attach(label, 1, 2, 1, 2, Gtk.AttachOptions.Expand, Gtk.AttachOptions.Expand, 0, 0);
 			gtkimage = new Gtk.Image();
 			gtkimage.NoShowAll = true;
-			Control.Add(table);
+			Control.Child = table;
 		}
 
 		protected override void Initialize()
@@ -81,6 +81,7 @@ namespace Eto.GtkSharp.Forms.Controls
 							var c = (Gtk.Button)o;
 							c.SetSizeRequest(size.Width, size.Height);
 						}
+						handler.SetImage();
 					}
 				}
 			}
@@ -123,12 +124,32 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Widget.Properties.Set(Image_Key, value, () =>
 				{
-					value.SetGtkImage(gtkimage);
+					Image.SetGtkImage(gtkimage);
 					if (value == null)
 						gtkimage.Hide();
 					else
 						gtkimage.Show();
 				});
+			}
+		}
+
+		Size? lastImageSize;
+		void SetImage()
+		{
+			var icon = Image as Icon;
+			if (icon != null)
+			{
+				var size = table.Allocation.Size.ToEto();
+				var iconSize = icon.Size;
+				var maxScale = Math.Min((double)size.Width / iconSize.Width, (double)size.Height/ iconSize.Height);
+				size = new Size((int)Math.Ceiling(iconSize.Width * maxScale), (int)Math.Ceiling(iconSize.Height * maxScale));
+				if (lastImageSize != size)
+				{
+					var frame = icon.GetFrame(1, size); // get frame that matches the size best
+					var iconHandler = (Drawing.BitmapHandler)frame.Bitmap.Handler;
+					gtkimage.Pixbuf = iconHandler.GetPixbuf(size, shrink: true);
+					lastImageSize = size;
+				}
 			}
 		}
 

@@ -124,10 +124,24 @@ namespace Eto.Direct2D
 			}
 		}
 
-		public static sd.Bitmap ToDx(this Image image, sd.RenderTarget target)
+		public static sd.Bitmap ToDx(this Image image, sd.RenderTarget target, Size? fittingSize = null)
 		{
+			if (fittingSize != null)
+			{
+				var icon = image as Icon;
+				if (icon != null)
+				{
+					return icon.GetFrame(1f, fittingSize).Bitmap.ToDx(target);
+				}
+			}
 			var handler = (ID2DBitmapHandler)image.Handler;
 			return target != null ? handler.GetBitmap(target) : null;
+		}
+
+		public static s.WIC.Bitmap ToWic(this Image image)
+		{
+			var handler = (ID2DBitmapHandler)image.Handler;
+			return handler?.Control;
 		}
 
 		public static FontStyle ToEtoStyle(this sw.Font font)

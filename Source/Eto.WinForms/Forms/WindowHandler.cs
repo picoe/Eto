@@ -478,5 +478,13 @@ namespace Eto.WinForms.Forms
 				}
 			}
 		}
+
+		public float LogicalPixelSize
+		{
+			get
+			{
+				return 1f;
+			}
+		}
 	}
 }

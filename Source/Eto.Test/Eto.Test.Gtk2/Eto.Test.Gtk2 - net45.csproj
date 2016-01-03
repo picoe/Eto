@@ -7,7 +7,7 @@
     <ProjectGuid>{CC33FE70-CA54-11E3-9C1A-0800200C9A66}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Eto.Test.Gtk2</RootNamespace>
-    <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
+    <ApplicationIcon>..\Eto.Test\Images\TestIcon.ico</ApplicationIcon>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.Gtk2</AssemblyName>
   </PropertyGroup>

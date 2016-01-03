@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Eto.Test.Gtk2</RootNamespace>
     <AssemblyName>Eto.Test.Gtk2</AssemblyName>
-    <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
+    <ApplicationIcon>..\Eto.Test\Images\TestIcon.ico</ApplicationIcon>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>

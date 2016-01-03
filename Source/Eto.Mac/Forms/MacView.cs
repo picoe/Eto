@@ -192,7 +192,7 @@ namespace Eto.Mac.Forms
 			if (Widget.Loaded)
 			{
 				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize();
-				var newSize = GetPreferredSize(SizeF.MaxValue);
+				var newSize = GetPreferredSize(Size.MaxValue);
 				if (newSize != oldSize || force)
 				{
 					var container = Widget.VisualParent.GetMacContainer();

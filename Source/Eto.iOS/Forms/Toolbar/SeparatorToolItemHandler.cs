@@ -56,5 +56,17 @@ namespace Eto.iOS.Forms.Toolbar
 			get { return false; }
 			set { throw new NotSupportedException(); }
 		}
+
+		public void OnLoad(EventArgs e)
+		{
+		}
+
+		public void OnPreLoad(EventArgs e)
+		{
+		}
+
+		public void OnUnLoad(EventArgs e)
+		{
+		}
 	}
 }

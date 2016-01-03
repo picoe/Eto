@@ -83,6 +83,7 @@
     </Compile>
     <Compile Include="Platform.cs" />
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
+    <Compile Include="Drawing\IconFrameHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">

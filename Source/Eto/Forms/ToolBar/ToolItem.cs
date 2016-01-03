@@ -130,7 +130,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Handler interface for the <see cref="ToolItem"/>.
 		/// </summary>
-		public new interface IHandler : Widget.IHandler
+		public new interface IHandler : Tool.IHandler
 		{
 			/// <summary>
 			/// Gets or sets the image for the tool item.

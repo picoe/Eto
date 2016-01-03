@@ -303,6 +303,9 @@ namespace Eto.GtkSharp.Forms
 				case Window.LocationChangedEvent:
 					Control.ConfigureEvent += Connector.HandleConfigureEvent;
 					break;
+				case Window.LogicalPixelSizeChangedEvent:
+					// not supported on GTK, yet.
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -659,5 +662,12 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		public float LogicalPixelSize
+		{
+			get
+			{
+				return 1f;
+			}
+		}
 	}
 }

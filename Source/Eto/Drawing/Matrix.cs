@@ -502,6 +502,20 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Transforms the size with the current matrix.
+		/// </summary>
+		/// <remarks>
+		/// This will get the transformed size
+		/// </remarks>
+		/// <param name="matrix"></param>
+		/// <param name="size"></param>
+		/// <returns></returns>
+		public static SizeF TransformSize(this IMatrix matrix, SizeF size)
+		{
+			return TransformRectangle(matrix, new RectangleF(size)).Size;
+		}
+
+		/// <summary>
 		/// Creates an inverted copy of the specified matrix.
 		/// </summary>
 		/// <param name="matrix">Matrix to invert.</param>

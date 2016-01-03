@@ -6,6 +6,9 @@ using Eto.Drawing;
 using Eto.Wpf.Forms;
 using System.IO;
 using Eto.Shared.Drawing;
+using System.Linq;
+using System.Collections.Generic;
+using Eto.Forms;
 
 namespace Eto.Wpf.Drawing
 {
@@ -37,13 +40,13 @@ namespace Eto.Wpf.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, Bitmap.IHandler, IWpfImage
+	public class BitmapHandler : WidgetHandler<swmi.BitmapSource, Bitmap>, Bitmap.IHandler, IWpfImage
 	{
 		public BitmapHandler()
 		{
 		}
 
-		public BitmapHandler(swm.Imaging.BitmapSource source)
+		public BitmapHandler(swmi.BitmapSource source)
 		{
 			this.Control = source;
 		}
@@ -86,7 +89,7 @@ namespace Eto.Wpf.Drawing
 			}
 			ApplicationHandler.InvokeIfNecessary(() =>
 			{
-				var bf = new swm.Imaging.WriteableBitmap(width, height, 96, 96, format, null);
+				var bf = new swmi.WriteableBitmap(width, height, 96, 96, format, null);
 				Control = bf;
 			});
 
@@ -101,7 +104,7 @@ namespace Eto.Wpf.Drawing
 		{
 			ApplicationHandler.InvokeIfNecessary(() =>
 			{
-				var source = image.ToWpf();
+				var source = image.ToWpfScale(1, new Size(width, height));
 				// use drawing group to allow for better quality scaling
 				var group = new swm.DrawingGroup();
 				swm.RenderOptions.SetBitmapScalingMode(group, interpolation.ToWpf());
@@ -111,13 +114,13 @@ namespace Eto.Wpf.Drawing
 				using (var drawingContext = drawingVisual.RenderOpen())
 					drawingContext.DrawDrawing(group);
 
-				var resizedImage = new swm.Imaging.RenderTargetBitmap(width, height, source.DpiX, source.DpiY, swm.PixelFormats.Default);
+				var resizedImage = new swmi.RenderTargetBitmap(width, height, source.DpiX, source.DpiY, swm.PixelFormats.Default);
 				resizedImage.RenderWithCollect(drawingVisual);
 				Control = resizedImage;
 			});
 		}
 
-		public void SetBitmap(swm.Imaging.BitmapSource bitmap)
+		public void SetBitmap(swmi.BitmapSource bitmap)
 		{
 			Control = bitmap;
 		}
@@ -150,19 +153,14 @@ namespace Eto.Wpf.Drawing
 		{
 			return ApplicationHandler.InvokeIfNecessary(() =>
 			{
-				var wb = Control as swm.Imaging.WriteableBitmap;
-				if (wb != null)
+				var wb = Control as swmi.WriteableBitmap;
+				if (wb == null)
 				{
-					wb.Lock();
-					return new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, Control);
+					wb = new swmi.WriteableBitmap(Control);
+					SetBitmap(wb);
 				}
-				else
-				{
-					wb = new swm.Imaging.WriteableBitmap(Control);
-					wb.Lock();
-					Control = wb;
-					return new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, wb);
-				}
+				wb.Lock();
+				return new BitmapDataHandler(Widget, wb.BackBuffer, Stride, Control.Format.BitsPerPixel, wb);
 			});
 		}
 
@@ -170,7 +168,7 @@ namespace Eto.Wpf.Drawing
 		{
 			ApplicationHandler.InvokeIfNecessary(() =>
 			{
-				var wb = Control as swm.Imaging.WriteableBitmap;
+				var wb = Control as swmi.WriteableBitmap;
 				if (wb != null)
 				{
 
@@ -192,23 +190,23 @@ namespace Eto.Wpf.Drawing
 		{
 			ApplicationHandler.InvokeIfNecessary(() =>
 			{
-				swm.Imaging.BitmapEncoder encoder;
+				swmi.BitmapEncoder encoder;
 				switch (format)
 				{
 					case ImageFormat.Png:
-						encoder = new swm.Imaging.PngBitmapEncoder();
+						encoder = new swmi.PngBitmapEncoder();
 						break;
 					case ImageFormat.Gif:
-						encoder = new swm.Imaging.GifBitmapEncoder();
+						encoder = new swmi.GifBitmapEncoder();
 						break;
 					case ImageFormat.Bitmap:
-						encoder = new swm.Imaging.BmpBitmapEncoder();
+						encoder = new swmi.BmpBitmapEncoder();
 						break;
 					case ImageFormat.Jpeg:
-						encoder = new swm.Imaging.JpegBitmapEncoder();
+						encoder = new swmi.JpegBitmapEncoder();
 						break;
 					case ImageFormat.Tiff:
-						encoder = new swm.Imaging.TiffBitmapEncoder();
+						encoder = new swmi.TiffBitmapEncoder();
 						break;
 					default:
 						throw new NotSupportedException();

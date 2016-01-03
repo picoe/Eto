@@ -135,11 +135,18 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		protected override bool NeedsPixelSizeNotifications {  get { return true; } }
+
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 
 			RegisterScrollable();
+		}
+
+		protected override void OnLogicalPixelSizeChanged()
+		{
+			Invalidate();
 		}
 
 		public override void OnUnLoad(EventArgs e)

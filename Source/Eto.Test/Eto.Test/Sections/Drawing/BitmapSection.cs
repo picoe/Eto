@@ -24,11 +24,18 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
+		public bool ScaleImage { get; set; }
+
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
 			if (Image != null)
-				e.Graphics.DrawImage(Image, PointF.Empty);
+			{
+				if (ScaleImage)
+					e.Graphics.DrawImage(Image, 0, 0, ClientSize.Width, ClientSize.Height);
+				else
+					e.Graphics.DrawImage(Image, new PointF((ClientSize - Image.Size) / 2));
+			}
 		}
 	}
 
@@ -51,10 +58,10 @@ namespace Eto.Test.Sections.Drawing
 				null
 			);
 
-			layout.AddRow(
+			/*layout.AddRow(
 				"Clone", Cloning(),
 				"Clone rectangle", TableLayout.AutoSized(CloneRectangle(), centered: true),
-				null);
+				null);*/
 
 			layout.AddRow(
 				"Draw to a rect", TableLayout.AutoSized(DrawImageToRect(), centered: true)
@@ -105,35 +112,38 @@ namespace Eto.Test.Sections.Drawing
 
 		Control CreateCustom24()
 		{
-			var image = new Bitmap(100, 100, PixelFormat.Format24bppRgb);
+			var size = new Size(100, 100) * (int)Screen.PrimaryScreen.LogicalPixelSize;
+			var image = new Bitmap(size, PixelFormat.Format24bppRgb);
 
 			DrawTest(image);
 
-			return new DrawableImageView { Image = image };
+			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, image) };
 		}
 
 		Control CreateCustom32()
 		{
-			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
+			var size = new Size(100, 100) * (int)Screen.PrimaryScreen.LogicalPixelSize;
+			var image = new Bitmap(size, PixelFormat.Format32bppRgb);
 
 			DrawTest(image);
 
-			return new DrawableImageView { Image = image };
+			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, image) };
 		}
 
 		Control CreateCustom32Alpha()
 		{
-			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
+			var size = new Size(100, 100) * (int)Screen.PrimaryScreen.LogicalPixelSize;
+			var image = new Bitmap(size, PixelFormat.Format32bppRgba);
 
 			DrawTest(image);
-			return new DrawableImageView { Image = image };
+			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, image) };
 		}
 
 		Control Cloning()
 		{
 			var image = TestIcons.TestImage;
 			image = image.Clone();
-			return new DrawableImageView { Image = image };
+			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, image) };
 		}
 
 		IEnumerable<Rectangle> GetTiles(Image image)
@@ -158,30 +168,34 @@ namespace Eto.Test.Sections.Drawing
 						g.DrawImage(clone, tile.X, tile.Y);
 				}
 			}
-			return new DrawableImageView { Image = bitmap };
+			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, bitmap) };
 		}
 
 		Control DrawImageToRect()
 		{
 			var image64 = TestIcons.Textures;
 
-			var bitmap = new Bitmap(new Size(105, 105), PixelFormat.Format32bppRgba);
+			var size = new Size(105, 105) * (int)Screen.PrimaryScreen.LogicalPixelSize;
+			var bitmap = new Bitmap(size, PixelFormat.Format32bppRgba);
 			using (var g = new Graphics(bitmap))
 			{
+				g.PixelOffsetMode = PixelOffsetMode.Half;
+				g.ScaleTransform(Screen.PrimaryScreen.LogicalPixelSize, Screen.PrimaryScreen.LogicalPixelSize);
+
 				// Draw the "5" portion of the texture at a smaller size at the origin.
 				g.DrawImage(image64, new RectangleF(80, 80, 80, 80), new RectangleF(0, 0, 32, 32));
 				// draw two rulers to indicate how big the green image should be
 				g.SaveTransform();
-				g.MultiplyTransform(Matrix.Create(1, 0, 0, 1, 0, 70));
+				g.MultiplyTransform(Matrix.Create(1, 0, 0, 1, 0.5f, 70.5f));
 				DrawRuler(32, g, Colors.Blue);
 				g.RestoreTransform();
 
 				g.SaveTransform();
-				g.MultiplyTransform(Matrix.Create(0, 1, 1, 0, 70, 0));
+				g.MultiplyTransform(Matrix.Create(0, 1, 1, 0, 70.5f, 0.5f));
 				DrawRuler(32, g, Colors.Blue);
 				g.RestoreTransform();
 			}
-			return new DrawableImageView { Image = bitmap };
+			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, bitmap) };
 		}
 
 		/// <summary>

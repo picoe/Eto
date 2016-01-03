@@ -158,7 +158,7 @@ namespace Eto.Mac.Forms.ToolBar
 			}
 		}
 
-		public string Identifier { get; set; }
+		public virtual string Identifier { get; set; }
 
 
 		protected override TControl CreateControl()
@@ -244,7 +244,7 @@ namespace Eto.Mac.Forms.ToolBar
 			set { Control.Enabled = value; }
 		}
 
-		public virtual bool Selectable { get; set; }
+		public virtual bool Selectable { get; }
 
 		public void OnClick()
 		{
@@ -264,6 +264,18 @@ namespace Eto.Mac.Forms.ToolBar
 				Control.Target = null;
 				Control.Action = m.Selector;
 			}
+		}
+
+		public virtual void OnLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnPreLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnUnLoad(EventArgs e)
+		{
 		}
 	}
 }

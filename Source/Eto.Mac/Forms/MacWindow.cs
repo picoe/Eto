@@ -943,5 +943,10 @@ namespace Eto.Mac.Forms
 		public virtual void SetOwner(Window owner)
 		{
 		}
+
+		public float LogicalPixelSize
+		{
+			get { return Screen?.LogicalPixelSize ?? 1f; }
+		}
 	}
 }

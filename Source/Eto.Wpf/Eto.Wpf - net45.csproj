@@ -79,6 +79,9 @@
     <Compile Include="..\Eto.WinForms\Win32.cs">
       <Link>Win32.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.WinForms\Win32.dpi.cs">
+      <Link>Win32.dpi.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
     </Compile>
@@ -88,11 +91,13 @@
     <Compile Include="..\Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
+    <Compile Include="Forms\PerMonitorDpiHelper.cs" />
     <Compile Include="WpfConversions.cs" />
     <Compile Include="CustomControls\EditableTextBlock.cs" />
     <Compile Include="CustomControls\FontDialog\fontchooser.xaml.cs">
