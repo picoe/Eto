@@ -34,6 +34,7 @@
     <UseSGen>true</UseSGen>
     <XamMacArch>x86_64</XamMacArch>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\mobile\Release\test</OutputPath>
@@ -50,6 +51,7 @@
     <DefineConstants>XAMMAC2</DefineConstants>
     <UseRefCounting>false</UseRefCounting>
     <LinkMode>SdkOnly</LinkMode>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <Import Project="..\..\Shared\Common.props" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />

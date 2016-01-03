@@ -32,6 +32,7 @@
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <UseSGen>true</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\net45\Release\test</OutputPath>
@@ -46,6 +47,7 @@
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
     <LinkMode>SdkOnly</LinkMode>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <Import Project="..\..\Shared\Common.props" />
   <PropertyGroup>
