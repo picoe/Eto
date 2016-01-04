@@ -127,7 +127,6 @@
     	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
     	
 		<!-- build XamMac separately if it hasn't been built on mac -->
-    	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="$(IncludeXamMac) == 'true' and !Exists('$(BuildOutputNet40Dir)\Eto.XamMac.dll')" />
     	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac - net45.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="$(IncludeXamMac) == 'true' and !Exists('$(BuildOutputNet45Dir)\Eto.XamMac.dll')" />
 	
 	</Target>
