@@ -76,12 +76,12 @@ namespace Eto.Mac.Forms.Controls
 				splitter.SetFrameOrigin(new CGPoint(newSize.Width - splitter.Frame.Width, offset));
 			}
 
-			public EtoNumericUpDownView()
+			public EtoNumericUpDownView(NumericUpDownHandler handler)
 			{
 				AutoresizesSubviews = false;
 				TextField = new EtoTextField
 				{
-					WeakHandler = new WeakReference(this),
+					WeakHandler = new WeakReference(handler),
 					Bezeled = true,
 					Editable = true,
 					Formatter = DefaultFormatter
@@ -123,7 +123,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override EtoNumericUpDownView CreateControl()
 		{
-			return new EtoNumericUpDownView();
+			return new EtoNumericUpDownView(this);
 		}
 
 		static void HandleStepperActivated(object sender, EventArgs e)
