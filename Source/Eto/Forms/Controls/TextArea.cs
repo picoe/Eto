@@ -5,6 +5,42 @@ using System.ComponentModel;
 namespace Eto.Forms
 {
 	/// <summary>
+	/// Text replacement options when entering text
+	/// </summary>
+	[Flags]
+	public enum TextReplacements
+	{
+		/// <summary>
+		/// Do not perform any automatic replacements based on user input
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Perform text replacements, such as shortcuts
+		/// </summary>
+		Text = 1 << 0,
+		/// <summary>
+		/// Perform replacements of straight quotes to 'curly' quotes
+		/// </summary>
+		Quote = 1 << 1,
+		/// <summary>
+		/// Perform replacements of dashes '-' to em dash '—'.
+		/// </summary>
+		/// <remarks>
+		/// Note that some platforms may do this automatically with a single dash, some may require the user to enter 
+		/// double dashes.
+		/// </remarks>
+		Dash = 1 << 2,
+		/// <summary>
+		/// Perform automatic spelling correction
+		/// </summary>
+		Spelling = 1 << 3,
+		/// <summary>
+		/// All replacements enabled.
+		/// </summary>
+		All = Text | Quote | Dash | Spelling
+	}
+
+	/// <summary>
 	/// Control for multi-line text
 	/// </summary>
 	/// <remarks>
@@ -221,6 +257,34 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a hint value indicating whether this <see cref="Eto.Forms.TextArea"/> will automatically correct text.
+		/// </summary>
+		/// <remarks>
+		/// On some platforms, autocorrection or text replacements such as quotes, etc may be default.
+		/// Set this to <see cref="TextReplacements.None"/> to disable any text replacement.
+		/// 
+		/// Note this is only supported on OS X currently, all other platforms will be ignored.
+		/// </remarks>
+		/// <value>Type of replacements to enable when entering text..</value>
+		public TextReplacements TextReplacements
+		{
+			get { return Handler.TextReplacements; }
+			set { Handler.TextReplacements = value; }
+		}
+
+		/// <summary>
+		/// Gets the text replacements that this control supports on the current platform.
+		/// </summary>
+		/// <remarks>
+		/// You can use this to determine which flags in the <see cref="TextReplacements"/> will take effect.
+		/// </remarks>
+		/// <value>The supported text replacements.</value>
+		public TextReplacements SupportedTextReplacements
+		{
+			get { return Handler.SupportedTextReplacements; }
+		}
+
+		/// <summary>
 		/// Append the specified text to the control and optionally scrolls to make the inserted text visible.
 		/// </summary>
 		/// <remarks>
@@ -363,6 +427,27 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value><c>true</c> if the TextArea accepts the return key; otherwise, <c>false</c>.</value>
 			bool AcceptsReturn { get; set; }
+
+			/// <summary>
+			/// Gets or sets a hint value indicating whether this <see cref="Eto.Forms.TextArea"/> will automatically correct text.
+			/// </summary>
+			/// <remarks>
+			/// On some platforms, autocorrection or text replacements such as quotes, etc may be default.
+			/// Set this to <see cref="TextReplacements.None"/> to disable any text replacement.
+			/// 
+			/// Note this is only a hint and not all (or any) of the replacements may apply on some platforms.
+			/// </remarks>
+			/// <value>Type of replacements to enable when entering text..</value>
+			TextReplacements TextReplacements { get; set; }
+
+			/// <summary>
+			/// Gets the text replacements that this control supports on the current platform.
+			/// </summary>
+			/// <remarks>
+			/// You can use this to determine which flags in the <see cref="TextReplacements"/> will take effect.
+			/// </remarks>
+			/// <value>The supported text replacements.</value>
+			TextReplacements SupportedTextReplacements { get; }
 
 			/// <summary>
 			/// Gets or sets the horizontal alignment of the text.

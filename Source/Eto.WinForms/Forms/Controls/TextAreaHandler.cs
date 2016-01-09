@@ -219,5 +219,16 @@ namespace Eto.WinForms.Forms.Controls
 		}
 
 		public bool SpellCheckIsSupported { get { return false; } }
+
+		public TextReplacements TextReplacements
+		{
+			get { return TextReplacements.None; }
+			set { }
+		}
+
+		public TextReplacements SupportedTextReplacements
+		{
+			get { return TextReplacements.None; }
+		}
 	}
 }

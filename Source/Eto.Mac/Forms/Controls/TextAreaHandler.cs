@@ -425,7 +425,34 @@ namespace Eto.Mac.Forms.Controls
 				// set initial width of content to the size of the control
 				Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
 			}
-			
+		}
+
+		public TextReplacements TextReplacements
+		{
+			get { 
+				var replacements = TextReplacements.None;
+				if (Control.AutomaticTextReplacementEnabled)
+					replacements |= TextReplacements.Text;
+				if (Control.AutomaticQuoteSubstitutionEnabled)
+					replacements |= TextReplacements.Quote;
+				if (Control.AutomaticDashSubstitutionEnabled)
+					replacements |= TextReplacements.Dash;
+				if (Control.AutomaticSpellingCorrectionEnabled)
+					replacements |= TextReplacements.Spelling;
+				return replacements;
+			}
+			set
+			{ 
+				Control.AutomaticTextReplacementEnabled = value.HasFlag(TextReplacements.Text);
+				Control.AutomaticQuoteSubstitutionEnabled = value.HasFlag(TextReplacements.Quote);
+				Control.AutomaticDashSubstitutionEnabled = value.HasFlag(TextReplacements.Dash);
+				Control.AutomaticSpellingCorrectionEnabled = value.HasFlag(TextReplacements.Spelling);
+			}
+		}
+
+		public TextReplacements SupportedTextReplacements
+		{
+			get { return TextReplacements.Quote | TextReplacements.Text | TextReplacements.Dash | TextReplacements.Spelling; }
 		}
 	}
 }
