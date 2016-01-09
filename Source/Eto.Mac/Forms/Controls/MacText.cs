@@ -28,6 +28,8 @@ namespace Eto.Mac.Forms.Controls
 	public interface IMacText
 	{
 		TextControl.ICallback Callback { get; }
+
+		Range<int>? LastSelection { get; set; }
 	}
 
 	public abstract class MacText<TControl, TWidget, TCallback> : MacControl<TControl, TWidget, TCallback>, TextControl.IHandler, IMacText
@@ -35,6 +37,11 @@ namespace Eto.Mac.Forms.Controls
 		where TWidget: TextControl
 		where TCallback: TextControl.ICallback
 	{
+
+		public Range<int>? LastSelection { get; set; }
+
+		public Range<int>? InitialSelection { get; set; }
+
 		public override Color BackgroundColor
 		{
 			get { return Control.BackgroundColor.ToEto(); }
@@ -98,8 +105,48 @@ namespace Eto.Mac.Forms.Controls
 
 		public Range<int> Selection
 		{
-			get { return Control.CurrentEditor.SelectedRange.ToEto(); }
-			set { Control.CurrentEditor.SelectedRange = value.ToNS(); }
+			get
+			{ 
+				var editor = Control.CurrentEditor;
+				if (editor == null)
+					return InitialSelection ?? LastSelection ?? new Range<int>(0, -1);
+				return editor.SelectedRange.ToEto(); 
+			}
+			set
+			{
+				
+				var editor = Control.CurrentEditor;
+				if (editor == null)
+					InitialSelection = value;
+				else
+				{
+					InitialSelection = null;
+					editor.SelectedRange = value.ToNS();
+				}
+			}
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Widget.GotFocus += Widget_GotFocus;
+			SetCustomFieldEditor();
+		}
+
+		void Widget_GotFocus(object sender, EventArgs e)
+		{
+			// set the selected range when the control gets focus
+			var editor = Control.CurrentEditor;
+			if (InitialSelection != null && editor != null)
+			{
+				editor.SelectedRange = InitialSelection.Value.ToNS();
+				InitialSelection = null;
+			}
+		}
+
+		public void SelectAll()
+		{
+			Control.SelectText(Control);
 		}
 
 		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");

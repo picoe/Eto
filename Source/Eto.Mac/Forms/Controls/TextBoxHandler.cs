@@ -84,6 +84,13 @@ namespace Eto.Mac.Forms.Controls
 			Cell.Wraps = false;
 			Cell.UsesSingleLineMode = true;
 		}
+
+		[Export("textViewDidChangeSelection:")]
+		public void TextViewDidChangeSelection(NSNotification notification)
+		{
+			var textView = (NSTextView)notification.Object;
+			Handler.LastSelection = textView.SelectedRange.ToEto();
+		}
 	}
 
 	public class TextBoxHandler : MacText<EtoTextField, TextBox, TextBox.ICallback>, TextBox.IHandler, ITextBoxWithMaxLength
@@ -163,11 +170,6 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
 			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
-		}
-
-		public void SelectAll()
-		{
-			Control.SelectText(Control);
 		}
 	}
 }
