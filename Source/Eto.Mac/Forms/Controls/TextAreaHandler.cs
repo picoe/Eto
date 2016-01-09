@@ -141,6 +141,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			if (!AcceptsReturn && e.KeyData == Keys.Enter)
 			{
+				e.Handled = true;
 				return;
 			}
 			base.OnKeyDown(e);
@@ -245,7 +246,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				Control.Value = value ?? string.Empty;
-				Control.DisplayIfNeeded();
+				Control.NeedsDisplay = true;
 			}
 		}
 
