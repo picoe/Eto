@@ -105,13 +105,6 @@ namespace Eto.WinForms.Forms.Controls
 				Wrap = WrapMode.Word;
 			}
 
-			struct Position
-			{
-				public sd.Size Size;
-				public string Text;
-			}
-			List<Position> positions;
-
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var bordersAndPadding = Padding.Size;

@@ -69,9 +69,9 @@ namespace Eto.WinForms.Forms.Controls
 			Control.Margin = swf.Padding.Empty;
 		}
 
-		public override Size? DefaultSize
+		public override Size? GetDefaultSize(Size availableSize)
 		{
-			get { return new Size(100, -1); }
+			return new Size(100, -1);
 		}
 
 		public bool ShowBorder

@@ -693,9 +693,9 @@ namespace Eto.WinForms.Forms
 
 			Size? defSize;
 			if (true)
-				defSize = cachedDefaultSize ?? DefaultSize;
+				defSize = cachedDefaultSize ?? GetDefaultSize(availableSize);
 			else
-				defSize = DefaultSize;
+				defSize = GetDefaultSize(availableSize);
 			if (defSize != null)
 			{
 				var controlSize = Control.GetPreferredSize(availableSize.ToSD());

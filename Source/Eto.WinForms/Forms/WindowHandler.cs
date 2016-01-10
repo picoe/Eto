@@ -114,10 +114,10 @@ namespace Eto.WinForms.Forms
 				// ensure we auto size to the content
 				if ((!clientWidthSet || !clientHeightSet) /*&& Control.AutoSize*/ && contentSize != null)
 				{
-					var sz = contentSize.Value.ToSD(); // Content.GetPreferredSize().ToSD();
+					var sz = Size.Truncate(contentSize.Value).ToSD(); // Content.GetPreferredSize().ToSD();
 					var min = new sd.Size();
 					if (!clientWidthSet)
-						 min.Width = sz.Width;
+						min.Width = sz.Width;
 					if (!clientHeightSet)
 						min.Height = sz.Height;
 					ContainerContentControl.MinimumSize = min;
@@ -164,7 +164,7 @@ namespace Eto.WinForms.Forms
 				contentSize = Content.GetPreferredSize(availableSize);
 			}
 		}
-		Size? contentSize;
+		SizeF? contentSize;
 
 		protected override void SetContent(swf.Control contentControl)
 		{
