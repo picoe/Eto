@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Configuration Condition="$(Configuration) == ''">Release</Configuration>
+        <BaseDir Condition="$(BaseDir) == ''">..</BaseDir>
+        <SourceDir Condition="$(SourceDir) == ''">$(BaseDir)\Source</SourceDir>
+        <NugetDir Condition="$(NugetDir) == ''">$(SourceDir)</NugetDir>
+        <BuildOutputDir Condition="$(BuildOutoutDir) == ''">$(BaseDir)\BuildOutput</BuildOutputDir>
+		<BuildOutputNet40Dir Condition="$(BuildOutputNet40Dir) == ''">$(BuildOutputDir)\net40\$(Configuration)</BuildOutputNet40Dir>
+		<BuildOutputPCLDir Condition="$(BuildOutputPCLDir) == ''">$(BuildOutputDir)\pcl\$(Configuration)</BuildOutputPCLDir>
+		<BuildOutputNet45Dir Condition="$(BuildOutputNet45Dir) == ''">$(BuildOutputDir)\net45\$(Configuration)</BuildOutputNet45Dir>
+		<BuildOutputMobileDir Condition="$(BuildOutputMobileDir) == ''">$(BuildOutputDir)\mobile\$(Configuration)</BuildOutputMobileDir>
+		<PackageTargets Condition="$(PackageTargets) == ''">Build</PackageTargets>
+        <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(BuildOutputDir)\Nuget\$(Configuration.Trim('\\'))</PackageOutputDir>
+        <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and !Exists('/Library/Frameworks')">Linux</Platform>
+        <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</Platform>
+        <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
+		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
+		<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj</XamarinStudioAddinProject>
+		<VisualStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudio\Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
+		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Linux'">"mdtool"</mdtool>
+		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
+		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
+		<IncludeXamMac Condition="$(IncludeXamMac) == '' and (Exists('/Library/Frameworks/Xamarin.Mac.framework') or Exists('$(BuildOutputNet45Dir)/XamMac.dll'))">true</IncludeXamMac>
+		<IncludeXamiOS Condition="$(IncludeXamiOS) == '' and $(Platform) == 'Mac' and Exists('/Library/Frameworks/Xamarin.iOS.framework')">true</IncludeXamiOS>
+		<UtilitiesBasePath>$(BuildOutputDir)\obj</UtilitiesBasePath>
+	</PropertyGroup>
+	<Import Project="Utilities.targets" Condition="$(UtilitiesImported) == ''" />
+	<Import Project="$(NugetDir)\.nuget\NuGet.targets" Condition="Exists('$(NugetDir)\.nuget\NuGet.targets')" />
+	
+	<Target Name="UpdateVersion" Condition="$(BuildVersion) != ''" DependsOnTargets="_GetVersion">
+
+		<Message Text="Set Version: $(BuildVersion)" Condition="$(BuildVersion) != ''" />
+
+		<PropertyGroup>
+			<BuildIncrement Condition="$(BuildVersion) == '' and $(BuildIncrement) == ''">0.1.0.0</BuildIncrement>
+			<BuildVersion Condition="$(BuildVersion) == ''">$(CurrentVersion)</BuildVersion>
+		</PropertyGroup>
+		
+		<Message Text="Current Version: $(CurrentVersion)" Condition="$(CurrentVersion) != ''" />
+		<Message Text="Incrementing by: $(BuildIncrement)" Condition="$(BuildIncrement) != ''" />
+
+		<IncrementVersion Version="$(BuildVersion)" Increment="$(BuildIncrement)">
+			<Output TaskParameter="AssemblyVersion" PropertyName="AssemblyVersion" />
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
+		</IncrementVersion>
+		
+		<Message Text="New Version: $(AssemblyVersion)" />
+		<Message Text="New Informational Version: $(AssemblyInformationalVersion)" />
+		
+		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
+			WarnOnNoUpdate="true"
+            Pattern='AssemblyInformationalVersion(\\s*)[(]&quot;.*?&quot;[)]'
+            Replacement='AssemblyInformationalVersion$1(&quot;$(AssemblyInformationalVersion)&quot;)' />
+            
+		<FileUpdate Files="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
+			WarnOnNoUpdate="true"
+            Pattern='AssemblyVersion(\\s*)[(]&quot;.*?&quot;[)]'
+            Replacement='AssemblyVersion$1(&quot;$(AssemblyVersion)&quot;)' />
+        
+        <ItemGroup>
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
+        	<ProjFiles Include="$(XamarinStudioAddinProject)" />
+        	<ProjFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj" />
+        	<TemplateFiles Include="$(MSBuildThisFileDirectory)\packages.config" />
+        </ItemGroup>
+        
+		<FileUpdate Files="@(ProjFiles)"
+			WarnOnNoUpdate="true"
+            Pattern="(?&lt;=Eto.[\\w\\.]+?)(\\.\\d+)*([-]\\w+\\d*)?\\.nupkg"
+            Replacement='.$(AssemblyInformationalVersion).nupkg' />
+            
+		<FileUpdate Files="@(TemplateFiles)"
+			WarnOnNoUpdate="false"
+            Pattern="(?&lt;=id\\s*[=]\\s*&quot;Eto\\.[\\w\\.]+&quot;\\s+)version\\s*=\\s*&quot;[^&quot;]+&quot;"
+            Replacement='version=&quot;$(AssemblyInformationalVersion)&quot;' />
+	</Target>
+	
+	<Target Name="UpdateReference" DependsOnTargets="BuildUtilities">
+
+		<Error Condition="$(ReferenceName) == '' or $(ReferenceVersion) == ''" Text="Must Specify ReferenceName and ReferenceVersion properties" />
+	
+		<PropertyGroup>
+			<ReferenceName>$(ReferenceName.Replace('.', '\\.'))</ReferenceName>
+		</PropertyGroup>
+	
+        <ItemGroup>
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
+        	<TemplateFiles Include="$(SourceDir)\**\packages.config" />
+        	<TemplateFiles Include="$(MSBuildThisFileDirectory)\nuspec\**\*.nuspec" />
+
+        	<ProjFiles Include="$(SourceDir)\**\*.csproj" />
+        </ItemGroup>
+        
+		<FileUpdate Files="@(ProjFiles)"
+			WarnOnNoUpdate="false"
+            Pattern="(?&lt;=$(ReferenceName))(\\.\\d+)+"
+            Replacement='.$(ReferenceVersion)' />
+            
+		<FileUpdate Files="@(TemplateFiles)"
+			WarnOnNoUpdate="false"
+            Pattern="(?&lt;=id\\s*[=]\\s*&quot;$(ReferenceName)&quot;\\s+)version\\s*=\\s*&quot;[^&quot;]+&quot;"
+            Replacement='version=&quot;$(ReferenceVersion)&quot;' />
+	</Target>
+
+	<Target Name="BuildHelpShfb" DependsOnTargets="Build">
+		<PropertyGroup>
+        	<SHFBVersion>2014.11.22</SHFBVersion>
+			<SHFBPath>$(MSBuildThisFileDirectory)\packages\EWSoftware.SHFB.$(SHFBVersion)\tools</SHFBPath>
+		    <SHFBLib>$([MSBUILD]::Unescape($(SHFBPath)\MSBuild.Community.Tasks.dll))</SHFBLib>
+			<SHFBROOT Condition=" '$(SHFBROOT)' == '' ">$(SHFBPath)</SHFBROOT>
+		</PropertyGroup>
+  		<Exec Command="$(NuGetCommand) install EWSoftware.SHFB -OutputDirectory packages" Condition="! Exists('$(SHFBPath)')" />
+
+    	<MSBuild Projects="$(MSBuildThisFileDirectory)\help\Help.shfbproj" Properties="Configuration=$(Configuration)" />
+	</Target>
+	
+	<Target Name="Build" DependsOnTargets="UpdateVersion">
+    	<!-- using exec since xbuild messes up properties when using msbuild task -->
+    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net40.sln'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration);Platform=$(Platform)' '$(SourceDir)\Eto - net45.sln'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'$(PackageTargets)' /p:'Configuration=$(Configuration)' '$(SourceDir)\Eto.iOS\Eto.iOS.csproj'" Condition="$(IncludeXamiOS) == 'true'"/>
+    	
+    	<MSBuild Projects="$(SourceDir)\Eto - net40.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
+    	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
+    	
+		<!-- build XamMac separately if it hasn't been built on mac -->
+    	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac - net45.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="$(IncludeXamMac) == 'true' and !Exists('$(BuildOutputNet45Dir)\Eto.XamMac.dll')" />
+	
+	</Target>
+	
+	
+    <Target Name="Package" DependsOnTargets="Build">
+		<!-- Nuget has problems with files that have no extension -->
+		<Copy SourceFiles="$(BuildOutputNet40Dir)\LICENSE" DestinationFiles="$(BuildOutputNet40Dir)\LICENSE.txt" />
+
+    	<ItemGroup>
+			<Package Include="Eto">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.Gtk">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Gtk2.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.Gtk3">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Gtk3.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.Mac">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Mac.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.Mac64">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Mac64.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.XamMac">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.XamMac.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.XamMac2">
+				<Assembly>$(BuildOutputMobileDir)\Eto.XamMac2.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.Windows">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.WinForms.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.Direct2D">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Direct2D.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.Wpf" Condition="$(Platform) == 'Windows'">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Wpf.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.WinRT" Condition="$(Platform) == 'Windows'">
+				<Assembly>$(BuildOutputPCLDir)\Eto.WinRT.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Platform.iOS" Condition="$(Platform) == 'Mac'">
+				<Assembly>$(BuildOutputPCLDir)\Eto.iOS.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Serialization.Json">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Serialization.Json.dll</Assembly>
+			</Package>
+			<Package Include="Eto.Serialization.Xaml">
+				<Assembly>$(BuildOutputPCLDir)\Eto.Serialization.Xaml.dll</Assembly>
+			</Package>
+		</ItemGroup>
+		
+    	<Exec Command="xbuild /t:'BuildPackage' /p:'ProjectPath=$(BaseDir);ProjectFile=nuspec/%(Package.Identity).nuspec;TargetDir=$(PackageOutputDir);NuspecInfoAssembly=%(Assembly)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows' and Exists('%(Assembly)')"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=$(BaseDir);ProjectFile=nuspec/%(Package.Identity).nuspec;NuspecInfoAssembly=%(Assembly);TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)" Condition="$(Platform) == 'Windows' and Exists('%(Assembly)')"/>
+
+		<GetAssemblyInfo AssemblyFileName="$(BuildOutputNet40Dir)\Eto.dll">
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
+		</GetAssemblyInfo>
+		
+		<ItemGroup>
+			<StandalonePackage Include="Eto.Platform.MacAppTemplate\Eto.Platform.Mac.Template"/>
+			<StandalonePackage Include="Eto.Forms.Sample\Eto.Forms.Sample"/>
+		</ItemGroup>
+		
+    	<Exec Command="xbuild /t:'BuildPackage' /p:'ProjectPath=nuspec/%(StandalonePackage.RelativeDir);ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(PackageOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)' '$(MSBuildProjectFile)'" Condition="$(Platform) != 'Windows'"/>
+    	<MSBuild Targets="BuildPackage" Properties="ProjectPath=nuspec\%(StandalonePackage.RelativeDir)\;ProjectFile=nuspec/%(StandalonePackage.Identity).nuspec;TargetDir=$(PackageOutputDir);NugetBuildOptions=-Version $(AssemblyVersion)" Projects="$(MSBuildProjectFile)" Condition="$(Platform) == 'Windows'"/>
+    </Target>
+    <Target Name="BuildAddins">
+    	<!-- addins -->
+    	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<!--
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    	-->
+
+    	<Exec Command="$(mdtool) setup pack $(BaseDir)/BuildOutput/Addins/$(Configuration)/XamarinStudio/Eto.Addin.XamarinStudio.dll -d:$(BaseDir)/BuildOutput/Addins/$(Configuration)" Condition="$(Platform) != 'Windows'"/>
+
+		<!-- Visual Studio Addin -->
+    	<Exec Command="$(NuGetCommand) restore $(VisualStudioAddinProject)" Condition="$(Platform) == 'Windows'" />
+    	<MSBuild Projects="$(VisualStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
+    </Target>
+    <Target Name="Publish">
+		<GetAssemblyInfo AssemblyFileName="$(BuildOutputNet40Dir)\Eto.dll">
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyVersion" />
+		</GetAssemblyInfo>
+
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Gtk3.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<!--MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac64.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/-->
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Windows.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Direct2D.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Wpf.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac2.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<!--MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.WinRT.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/-->
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Serialization.Json.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Serialization.Xaml.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Mac.Template.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Forms.Sample.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.iOS.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    </Target>
+    
+	<Target Name="Clean">
+		<RemoveDir Directories="$(BuildOutputDir)"/>
+		<RemoveDir Directories="$(SourceDir)\packages"/>
+		<RemoveDir Directories="$(BaseDir)\Samples\packages"/>
+		<RemoveDir Directories="$(SourceDir)\Addins\Eto.Addin.VisualStudio\Eto.Addin.VisualStudio\packages"/>
+	</Target>
+	
+	<Target Name="_GetVersion" DependsOnTargets="BuildUtilities">
+		<FileExtract File="$(SourceDir)\Shared\GlobalAssemblyInfo.cs"
+			Pattern='(?&lt;=AssemblyInformationalVersion(\\s*)[(]&quot;).*(?=&quot;[)])'
+			Condition="$(BuildVersion) == ''">
+			<Output TaskParameter="Output" PropertyName="CurrentVersion" />
+		</FileExtract>
+	</Target>
+	
+	<Target Name="MakeRelease" DependsOnTargets="Clean;BuildUtilities;_GetVersion">
+		<Exec Command='git diff --quiet HEAD' IgnoreExitCode="true">
+			<Output TaskParameter="ExitCode" PropertyName="HasChanges" />
+		</Exec>
+		<Error Text="The current working copy is dirty. Commit or stash your changes" Condition="$(HasChanges) != '0'" />
+
+		<IncrementVersion Version="$(CurrentVersion)" RemovePrerelease="true">
+			<Output TaskParameter="AssemblyVersion" PropertyName="AssemblyVersion" />
+			<Output TaskParameter="AssemblyInformationalVersion" PropertyName="AssemblyInformationalVersion" />
+		</IncrementVersion>
+		
+	    <MSBuild Projects="$(MSBuildProjectFile)" Targets="UpdateVersion" Properties="BuildVersion=$(AssemblyInformationalVersion)" />
+		<PropertyGroup>
+			<Branch>release\$(AssemblyInformationalVersion)</Branch>
+			<NewVersion>$(AssemblyInformationalVersion)</NewVersion>
+			<NewDevelopVersion>$(AssemblyInformationalVersion)-alpha</NewDevelopVersion>
+		</PropertyGroup>
+		<!-- Would be nice to use git flow here, but not usually installed -->
+		<Exec Command='git checkout develop' />
+		<Exec Command='git checkout -b "$(Branch)"' />
+		<Exec Command='git add -u' />
+		<Exec Command='git commit -m "Updating to $(NewVersion)"' />
+		
+		<!-- update develop -->
+		<Exec Command='git checkout develop' />
+		<Exec Command='git merge --no-ff "$(Branch)"' />
+		
+		<!-- update master -->
+		<Exec Command='git checkout master' />
+		<Exec Command='git merge --no-ff "$(Branch)"' IgnoreExitCode="true">
+			<Output TaskParameter="ExitCode" PropertyName="MergeError" />
+		</Exec>
+		<Warning Text="Merge errors, using develop version.  Check merge result in master." Condition="$(MergeError) != '0'" />
+		<Exec Command='git reset --hard' Condition="$(MergeError) != '0'" />
+		 <!-- dangerous! using develop if any conflicts. -->
+		<Exec Command='git merge --no-ff --strategy-option theirs "$(Branch)"' Condition="$(MergeError) != '0'" />
+
+		<!-- tag version and delete release branch -->
+		<Exec Command='git tag "$(NewVersion)"' />
+		<Exec Command='git branch -d "$(Branch)"' />
+
+		<!-- update develop version -->
+		<Exec Command='git checkout develop' />
+		<MSBuild Projects="$(MSBuildProjectFile)" Targets="UpdateVersion" Properties="BuildVersion=$(NewDevelopVersion);BuildIncrement=0.1.0.0" />
+		<Exec Command='git add -u' />
+		<Exec Command='git commit -m "Updating to $(AssemblyInformationalVersion)"' />
+		
+		<!-- checkout master and build packages -->
+		<Exec Command='git checkout master' />
+		<CallTarget Targets="Package" />
+	</Target>
+		
+</Project>

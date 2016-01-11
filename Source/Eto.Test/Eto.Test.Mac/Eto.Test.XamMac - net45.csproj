@@ -21,7 +21,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\net45\Debug\test</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>SDCOMPAT;DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <EnableCodeSigning>False</EnableCodeSigning>
@@ -32,6 +32,7 @@
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <UseSGen>true</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\net45\Release\test</OutputPath>
@@ -46,8 +47,10 @@
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
     <LinkMode>SdkOnly</LinkMode>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
+    <DefineConstants>SDCOMPAT</DefineConstants>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <PropertyGroup>
     <CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
   </PropertyGroup>
@@ -93,5 +96,5 @@
       <Name>Eto.Serialization.Json - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

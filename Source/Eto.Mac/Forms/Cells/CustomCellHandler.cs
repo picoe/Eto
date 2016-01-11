@@ -11,26 +11,27 @@ using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
+using CoreImage;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
+using MonoMac.CoreImage;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -48,6 +49,7 @@ namespace Eto.Mac.Forms.Cells
 		}
 
 		Dictionary<string, Control> widthCells = new Dictionary<string, Eto.Forms.Control>();
+
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
 			var args = new CellEventArgs(row, dataItem, CellStates.None);

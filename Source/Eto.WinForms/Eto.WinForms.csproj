@@ -32,7 +32,7 @@
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\Libraries\SHDocVw\Interop.SHDocVw.dll</HintPath>
@@ -357,7 +357,5 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

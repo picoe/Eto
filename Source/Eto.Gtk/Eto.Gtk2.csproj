@@ -32,7 +32,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -258,7 +258,7 @@
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
@@ -277,6 +277,4 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
 </Project>

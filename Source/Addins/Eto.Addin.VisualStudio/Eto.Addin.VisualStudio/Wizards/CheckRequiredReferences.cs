@@ -124,7 +124,7 @@ namespace Eto.Addin.VisualStudio.Wizards
 			var references = vsproject.References.OfType<VSLangProj.Reference>().ToList();
 			foreach (var requiredRef in requiredReferences)
 			{
-				if (!references.Any(r => r.Name == requiredRef.Assembly))
+				if (string.IsNullOrEmpty(requiredRef.Assembly) || !references.Any(r => r.Name == requiredRef.Assembly))
 				{
 					yield return new MissingReference { Project = proj, Reference = requiredRef };
 				}

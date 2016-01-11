@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms Library</_Name>
@@ -8,6 +8,7 @@
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in C#.</_Description>
 		<GroupId>eto-project-library</GroupId>
     	<SupportedParameters>AppName,SupportsPCL,IsLibrary,SupportsCodePreview,SupportsXeto,SupportsJeto</SupportedParameters>
+		<Image id="eto-project" />
 	</TemplateConfiguration>
 
 	<Actions>
@@ -26,7 +27,7 @@
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -40,7 +41,7 @@
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 

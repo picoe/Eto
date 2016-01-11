@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8965A6F0-7E31-4BC0-9175-AC9518EC1895}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Eto.Designer</RootNamespace>
+    <AssemblyName>Eto.Designer</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <RestorePackages>true</RestorePackages>
+    <PackagesDir>..\Addins\Eto.Addin.XamarinStudio</PackagesDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\BuildOutput\net45\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="..\Shared\Common.props" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
+    <Reference Include="FSharp.Compiler.CodeDom">
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\FSharp.Compiler.CodeDom.0.9.3.0\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Xaml">
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Portable.Xaml.0.7.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="Eto">
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Forms.2.2.0\lib\net45\Eto.dll</HintPath>
+    </Reference>
+    <Reference Include="Eto.Serialization.Json">
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Serialization.Json.2.2.0\lib\net45\Eto.Serialization.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Eto.Serialization.Xaml">
+      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Eto.Serialization.Xaml.2.2.0\lib\net45\Eto.Serialization.Xaml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyResolver.cs" />
+    <Compile Include="BuilderInfo.cs" />
+    <Compile Include="Builders\CodeInterfaceBuilder.cs" />
+    <Compile Include="Builders\FSharpInterfaceBuilder.cs" />
+    <Compile Include="Builders\CSharpInterfaceBuilder.cs" />
+    <Compile Include="Builders\JsonInterfaceBuilder.cs" />
+    <Compile Include="Builders\VbInterfaceBuilder.cs" />
+    <Compile Include="Builders\XamlInterfaceBuilder.cs" />
+    <Compile Include="BuilderType.cs" />
+    <Compile Include="ControlLoader.cs" />
+    <Compile Include="EtoAdapter.cs" />
+    <Compile Include="IInterfaceBuilder.cs" />
+    <Compile Include="PlatformInitializer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PreviewEditorView.cs" />
+    <Compile Include="Completion\Completion.cs" />
+    <Compile Include="Completion\CompletionType.cs" />
+    <Compile Include="Completion\CompletionItem.cs" />
+    <Compile Include="Completion\XmlComments.cs" />
+    <Compile Include="Completion\TypeCompletion.cs" />
+    <Compile Include="Completion\XamlCompletion.cs" />
+    <Compile Include="Completion\GeneralCompletion.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Folder Include="Completion\" />
+  </ItemGroup>
+  <Import Project="..\Shared\Common.targets" />
+</Project>

@@ -135,5 +135,16 @@ namespace Eto.iOS.Forms.Controls
 		}
 
 		public bool SpellCheckIsSupported { get { return true; } }
+
+		public TextReplacements TextReplacements
+		{
+			get { return TextReplacements.None; }
+			set { }
+		}
+
+		public TextReplacements SupportedTextReplacements
+		{
+			get { return TextReplacements.None; }
+		}
 	}
 }

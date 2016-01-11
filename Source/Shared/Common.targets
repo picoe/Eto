@@ -1,11 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildThisFileDirectory)\..\.nuget\NuGet.targets" Condition="Exists('$(MSBuildThisFileDirectory)\..\.nuget\NuGet.targets')" />
 	<PropertyGroup>
-		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\..\BuildOutput\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-		<XamarinMacPath>\Library\Frameworks\Xamarin.Mac.framework\Versions\Current</XamarinMacPath>
-		<XamarinMacLibPath>$(XamarinMacPath)/lib/mono</XamarinMacLibPath>
-		<!-- Prevent VS2015 from copying files from the GAC to the output folder -->
-		<DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
+		<BuildDependsOn>
+            _SetAssemblySearchPaths;
+            $(BuildDependsOn);
+        </BuildDependsOn>
 	</PropertyGroup>
+	<Target Name="_SetAssemblySearchPaths" Condition="$(CustomAssemblySearchPaths) != ''">
+		<CreateProperty
+			Value="$(CustomAssemblySearchPaths);$(AssemblySearchPaths)">
+			<Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
+		</CreateProperty>
+	</Target>
 	<Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
 </Project>

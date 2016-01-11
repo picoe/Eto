@@ -3,7 +3,7 @@
 	<TemplateData>
 		<Name>Eto.Forms Library</Name>
 		<Description>A library project to build Eto.Forms UI and logic in C#.</Description>
-		<Icon>CS\Library\Library.ico</Icon>
+		<Icon>CS.Library.ico</Icon>
 		<ProjectType>CSharp</ProjectType>
 		<RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
 		<SortOrder>1000</SortOrder>
@@ -13,9 +13,11 @@
 		<ProvideDefaultName>true</ProvideDefaultName>
 	</TemplateData>
 	<TemplateContent>
-		<Project TargetFileName="$safeprojectname$.csproj" File="CS\Library\Library.csproj" ReplaceParameters="true">
-			<ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.cs">CS\Library\MyPanel.cs</ProjectItem>
-			<Folder Name="CS" TargetFolderName="Properties">
+		<Project TargetFileName="$safeprojectname$.csproj" File="CS\Library.csproj" ReplaceParameters="true">
+      <Folder Name="CS" TargetFolderName="">
+        <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.cs">MyPanel.cs</ProjectItem>
+      </Folder>
+      <Folder Name="CS" TargetFolderName="Properties">
 				<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
 			</Folder>
 		</Project>
@@ -34,7 +36,7 @@
 	</WizardExtension>
 	<WizardData>
 		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-			<package id="Eto.Forms" version="2.2.0-alpha" />
+			<package id="Eto.Forms" version="2.3.0-alpha" />
 		</packages>
 		<SupportedParameters>SupportsPCL,IsLibrary</SupportedParameters>
 		<Replacements>

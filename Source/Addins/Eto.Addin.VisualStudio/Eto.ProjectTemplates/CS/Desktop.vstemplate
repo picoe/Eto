@@ -1,0 +1,67 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>Eto.Desktop</Name>
+    <Description></Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <Icon></Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="Desktop.csproj" File="Desktop.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="Program.cs">Program.cs</ProjectItem>
+      <Folder Name="." TargetFolderName="Properties">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+      </Folder>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ChildWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.CheckRequiredReferences</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
+      <package id="Eto.Forms" version="2.3.0-alpha" />
+    </packages>
+    <RequiredReferences Quiet="true">
+      <Reference id="Eto.Platform.Gtk" version="2.3.0-alpha" assembly="Eto.Gtk2" extension="Eto.Addin.VisualStudio" condition="UseGtk2" />
+      <Reference id="Eto.Platform.Gtk3" version="2.3.0-alpha" assembly="Eto.Gtk3" extension="Eto.Addin.VisualStudio" condition="UseGtk3" />
+      <Reference id="Eto.Platform.Windows" version="2.3.0-alpha" assembly="Eto.WinForms" extension="Eto.Addin.VisualStudio" condition="UseWinForms" />
+      <Reference id="Eto.Platform.Wpf" version="2.3.0-alpha" assembly="Eto.Wpf" extension="Eto.Addin.VisualStudio" condition="UseWpf" />
+      <Reference id="Eto.Platform.Mac" version="2.3.0-alpha" assembly="Eto.Mac" extension="Eto.Addin.VisualStudio" condition="UseMac" />
+      <Reference id="Eto.Platform.Mac.Template" version="2.3.0-alpha" extension="Eto.Addin.VisualStudio" condition="UseMac" />
+
+      <Reference id="Portable.Xaml" version="0.7.0" condition="UseSharedXeto" />
+      <Reference id="Eto.Serialization.Xaml" version="2.3.0-alpha" assembly="Eto.Serialization.Xaml" extension="Eto.Addin.VisualStudio" condition="UseSharedXeto" />
+      <Reference id="Newtonsoft.Json" version="7.0.1" condition="UseSharedJeto" />
+      <Reference id="Eto.Serialization.Json" version="2.3.0-alpha" assembly="Eto.Serialization.Json" extension="Eto.Addin.VisualStudio" condition="UseSharedJeto" />
+    </RequiredReferences>
+    <ProjectReferences>
+      <ProjectReference guid="$root.guid1$" name="$root.safeprojectname$">..\$root.safeprojectname$\$root.safeprojectname$</ProjectReference>
+    </ProjectReferences>
+    <Replacements>
+      <ReplacementGroup>
+        <Replacement name="$EtoPlatform$" condition="Combined">Platform.Detect</Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="!Combined">
+        <Replacement name="$EtoPlatform$" condition="UseGtk2">Platforms.Gtk2</Replacement>
+        <Replacement name="$EtoPlatform$" condition="UseGtk3">Platforms.Gtk3</Replacement>
+        <Replacement name="$EtoPlatform$" condition="UseWinForms">Platforms.WinForms</Replacement>
+        <Replacement name="$EtoPlatform$" condition="UseWpf">Platforms.Wpf</Replacement>
+        <Replacement name="$EtoPlatform$" condition="UseMac">Platforms.Mac</Replacement>
+      </ReplacementGroup>
+    </Replacements>
+  </WizardData>
+</VSTemplate>

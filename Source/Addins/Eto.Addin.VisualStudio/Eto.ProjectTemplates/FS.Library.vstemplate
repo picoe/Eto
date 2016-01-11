@@ -3,10 +3,10 @@
 	<TemplateData>
 		<Name>Eto.Forms Library</Name>
 		<Description>A library project to build Eto.Forms UI and logic in F#.</Description>
-		<Icon>FS\Library\Library.ico</Icon>
+		<Icon>FS.Library.ico</Icon>
 		<ProjectType>FSharp</ProjectType>
 		<RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
-    <MaxFrameworkVersion>4.5</MaxFrameworkVersion>
+    <!--MaxFrameworkVersion>4.5</MaxFrameworkVersion-->
 		<SortOrder>100</SortOrder>
 		<TemplateID>187e19a3-8db1-4f37-9aa7-6cf1a3f5c985</TemplateID>
 		<CreateNewFolder>true</CreateNewFolder>
@@ -14,9 +14,11 @@
 		<ProvideDefaultName>true</ProvideDefaultName>
 	</TemplateData>
 	<TemplateContent>
-		<Project TargetFileName="$safeprojectname$.fsproj" File="FS\Library\Library.fsproj" ReplaceParameters="true">
-			<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.fs">FS\AssemblyInfo.fs</ProjectItem>
-			<ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.fs">FS\Library\MyPanel.fs</ProjectItem>
+		<Project TargetFileName="$safeprojectname$.fsproj" File="FS\Library.fsproj" ReplaceParameters="true">
+      <Folder Name="FS" TargetFolderName="">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.fs">AssemblyInfo.fs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.fs">MyPanel.fs</ProjectItem>
+      </Folder>
 		</Project>
 	</TemplateContent>
 	<WizardExtension>
@@ -33,7 +35,7 @@
 	</WizardExtension>
 	<WizardData>
 		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-			<package id="Eto.Forms" version="2.2.0-alpha" />
+			<package id="Eto.Forms" version="2.3.0-alpha" />
 		</packages>
 		<SupportedParameters>SupportsPCL,IsLibrary</SupportedParameters>
 		<Replacements>

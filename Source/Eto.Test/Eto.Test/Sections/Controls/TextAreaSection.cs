@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -26,6 +27,7 @@ namespace Eto.Test.Sections.Controls
 					TextAreaOptions(text),
 					TextAreaOptions2(text),
 					TextAreaOptions3(text),
+					TextAreaOptions4(text),
 					text
 				}
 			};
@@ -71,6 +73,21 @@ namespace Eto.Test.Sections.Controls
 			};
 		}
 
+		public static Control TextAreaOptions4(TextArea text)
+		{
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Spacing = 5,
+				Items =
+				{
+					null,
+					TextReplacementsDropDown(text),
+					null
+				}
+				};
+		}
+
 		static Control WrapCheckBox(TextArea text)
 		{
 			var control = new CheckBox { Text = "Wrap" };
@@ -109,6 +126,40 @@ namespace Eto.Test.Sections.Controls
 				Spacing = new Size(5, 5),
 				Rows = { new TableRow(new Label { Text = "Alignment", VerticalAlignment = VerticalAlignment.Center }, control) }
 			};
+		}
+
+		static Control TextReplacementsDropDown(TextArea text)
+		{
+			var control = new Button { Text = "TextReplacements" };
+			control.Click += (sender, e) => {
+				var replacements = text.TextReplacements;
+				var supported = text.SupportedTextReplacements;
+				var contextMenu = new ContextMenu();
+				foreach (var val in Enum.GetValues(typeof(TextReplacements)).OfType<TextReplacements>())
+				{
+					if (val == TextReplacements.All || val == TextReplacements.None)
+					{
+						var item = new ButtonMenuItem { Text = val.ToString() };
+						item.Click += (sender2, e2) => text.TextReplacements = val;
+						contextMenu.Items.Add(item);
+						continue;
+					}
+					if (!supported.HasFlag(val))
+						continue;
+					var checkItem = new CheckMenuItem { Text = val.ToString(), Checked = replacements.HasFlag(val) };
+					checkItem.CheckedChanged += (sender2, e2) => {
+						var rep = text.TextReplacements;
+						if (checkItem.Checked)
+							rep |= val;
+						else
+							rep &= ~val;
+						text.TextReplacements = rep;
+					};
+					contextMenu.Items.Add(checkItem);
+				}
+				contextMenu.Show(control);
+			};
+			return control;
 		}
 
 		static Control ShowSelectedText(TextArea text)

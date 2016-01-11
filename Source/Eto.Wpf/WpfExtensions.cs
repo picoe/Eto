@@ -242,5 +242,13 @@ namespace Eto.Wpf
 			}
 		}
 
+		public static void RenderWithCollect(this swm.Imaging.RenderTargetBitmap bitmap, swm.Visual visual)
+		{
+			bitmap.Render(visual);
+			// fix memory leak with RenderTargetBitmap.  See http://stackoverflow.com/questions/14786490/wpf-memory-leak-using-rendertargetbitmap
+			// Reproducible with the 
+			// GC.Collect alone seems to fix the issue.  Adding GC.WaitForPendingFinalizers may impact performance.
+			GC.Collect();
+		}
 	}
 }

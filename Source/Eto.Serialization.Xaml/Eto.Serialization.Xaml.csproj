@@ -28,12 +28,12 @@
     <ConsolePause>false</ConsolePause>
     <DefineConstants>NET40;PORTABLE</DefineConstants>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Portable.Xaml">
-      <HintPath>..\packages\Portable.Xaml.0.6.1\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
+      <HintPath>..\packages\Portable.Xaml.0.7.0\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +73,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

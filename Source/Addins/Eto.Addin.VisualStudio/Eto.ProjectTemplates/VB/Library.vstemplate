@@ -1,0 +1,127 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>Eto</Name>
+    <Description></Description>
+    <ProjectType>VisualBasic</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <Icon></Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="Library.vbproj" File="Library.vbproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.vb">MainForm.vb</ProjectItem>
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.eto.vb">MainForm.eto.vb</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="MainForm.xeto.vb">MainForm.jxeto.vb</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="MainForm.jeto.vb">MainForm.jxeto.vb</ProjectItem>
+      <Folder Name="..\Shared" TargetFolderName="">
+        <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.jeto">MainForm.jeto</ProjectItem>
+        <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MainForm.xeto">MainForm.xeto</ProjectItem>
+      </Folder>
+      <Folder Name="." TargetFolderName="My Project">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.vb">AssemblyInfo.vb</ProjectItem>
+      </Folder>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ChildWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.ReplacementsWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Eto.Addin.VisualStudio, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <FullClassName>Eto.Addin.VisualStudio.Wizards.CheckRequiredReferences</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
+      <package id="Eto.Forms" version="2.3.0-alpha" />
+    </packages>
+    <RequiredReferences Quiet="true">
+      <Reference id="Portable.Xaml" version="0.7.0" condition="UseXeto" />
+      <Reference id="Eto.Serialization.Xaml" version="2.3.0-alpha" assembly="Eto.Serialization.Xaml" extension="Eto.Addin.VisualStudio" condition="UseXeto" />
+      <Reference id="Newtonsoft.Json" version="7.0.1" condition="UseJeto" />
+      <Reference id="Eto.Serialization.Json" version="2.3.0-alpha" assembly="Eto.Serialization.Json" extension="Eto.Addin.VisualStudio" condition="UseJeto" />
+    </RequiredReferences>
+    <Replacements>
+      <ReplacementGroup>
+        <Replacement name="$ProjectProps$" />
+        <Replacement name="$ProjectReferences$" />
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <Compile Include="MainForm.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />]]>
+        </Replacement>
+        <Replacement name="$ProjectImports$" />
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseXeto">
+        <Replacement name="$SerializationType$">Xaml</Replacement>
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <EmbeddedResource Include="MainForm.xeto" />
+    <Compile Include="MainForm.xeto.vb">
+      <DependentUpon>MainForm.xeto</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseJeto">
+        <Replacement name="$SerializationType$">Json</Replacement>
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <EmbeddedResource Include="MainForm.jeto" />
+    <Compile Include="MainForm.jeto.vb">
+      <DependentUpon>MainForm.jeto</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseCodePreview">
+        <Replacement name="$Preview$">true</Replacement>
+        <Replacement name="$ProjectFiles$">
+          <![CDATA[
+    <Compile Include="MainForm.vb" />
+    <Compile Include="MainForm.eto.vb">
+      <DependentUpon>MainForm.vb</DependentUpon>
+    </Compile>]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UseNET">
+        <Replacement name="$ProjectReferences$">
+          <![CDATA[
+	<ItemGroup>
+		<Reference Include="System" />
+		<Reference Include="System.Data" />
+		<Reference Include="System.Xml" />
+		<Reference Include="System.Core" />
+		<Reference Include="System.Xml.Linq" />
+		<Reference Include="System.Data.DataSetExtensions" />
+		<Reference Include="System.Net.Http" />
+	</ItemGroup>]]>
+        </Replacement>
+        <Replacement name="$ProjectImports$">
+          <![CDATA[
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />]]>
+        </Replacement>
+      </ReplacementGroup>
+      <ReplacementGroup condition="UsePCL">
+        <Replacement name="$targetframeworkversion$">4.5</Replacement>
+        <Replacement name="$ProjectProps$">
+          <![CDATA[
+    <ProjectTypeGuids>{14182A97-F7F0-4C62-8B27-98AA8AE2109A};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>]]>
+        </Replacement>
+        <Replacement name="$ProjectImports$">
+          <![CDATA[
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.VisualBasic.targets" />]]>
+        </Replacement>
+      </ReplacementGroup>
+    </Replacements>
+  </WizardData>
+</VSTemplate>

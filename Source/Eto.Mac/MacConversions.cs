@@ -20,19 +20,18 @@ using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
 using MonoMac.ImageIO;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -230,7 +229,7 @@ namespace Eto.Mac
 				if (rep.PixelsWide > size.Value || rep.PixelsHigh > size.Value)
 				{
 					var max = Math.Max(nsimage.Size.Width, nsimage.Size.Height);
-					var newsize = new CGSize((int)(size.Value * nsimage.Size.Width / max), (int)(size.Value * nsimage.Size.Height / max));
+					var newsize = new CGSize((nint)(size.Value * nsimage.Size.Width / max), (nint)(size.Value * nsimage.Size.Height / max));
 					nsimage = nsimage.Resize(newsize);
 				}
 				else

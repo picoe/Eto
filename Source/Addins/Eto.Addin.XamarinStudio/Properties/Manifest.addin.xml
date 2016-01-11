@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
+	<ConditionType id="ExtensionExists" type="Eto.Addin.XamarinStudio.ExtensionExistsCondition" />
 	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageRepositories">
 		<PackageRepository path="Packages" />
 	</Extension>
@@ -26,7 +27,6 @@
 		<FileTemplate id="eto.cs.code.panel" file="Templates/Files/CS/code/panel.code.xft.xml" />
 		<FileTemplate id="eto.cs.xeto.panel" file="Templates/Files/CS/xeto/panel.xft.xml" />
 		<FileTemplate id="eto.cs.jeto.panel" file="Templates/Files/CS/jeto/panel.xft.xml" />
-
 		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
 			<FileTemplate id="eto.vb.code.panel" file="Templates/Files/VB/code/panel.xft.xml" />
 			<!-- mono's VB compiler doesn't support embedded resources for some reason
@@ -45,15 +45,21 @@
 			<FileTemplate id="eto.fs.jeto.panel" file="Templates/Files/FS/jeto/panel.xft.xml" />
 		</ComplexCondition>
 	</Extension>
-	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-		<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other"/>
-	</Extension>
-	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat">
-		<Category id="app" name="App" insertbefore="library" />
-		<Category id="library" name="Library" />
-	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
 		<Class id="Eto.Addin.XamarinStudio.ProjectWizard" class="Eto.Addin.XamarinStudio.ProjectWizard" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat">
+			<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other" />
+		</Condition>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat">
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/library">
+			<Category id="library" name="Library" />
+		</Condition>
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/app">
+			<Category id="app" name="App" insertbefore="library" />
+		</Condition>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/app">
 		<Category id="eto" name="Eto.Forms" />
@@ -92,5 +98,8 @@
 		<MimeType id="application/x-jeto" _description="Eto Json document" isText="true" baseType="application/json">
 			<File pattern="*.jeto" />
 		</MimeType>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="eto-project" resource="Eto.Addin.XamarinStudio.Images.project.png" />
 	</Extension>
 </ExtensionModel>

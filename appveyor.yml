@@ -11,7 +11,7 @@ build_script:
 - mkdir %BASE%\BuildOutput\net45\Release
 - appveyor DownloadFile %XAMMAC_LOCATION%/XamMac.dll -FileName %BASE%\BuildOutput\net40\Release\XamMac.dll
 - copy %BASE%\BuildOutput\net40\Release\XamMac.dll %BASE%\BuildOutput\net45\Release\XamMac.dll
-- msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% Resources\Build.targets /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
+- msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% Resources\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 test: off
 #test_script:
 #- nunit-console --framework=4.0 --include=TestPlatform BuildOutput/net40/Release/test/Eto.Test.dll

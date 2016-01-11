@@ -40,7 +40,7 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -64,7 +64,6 @@
     <Compile Include="UnitTests\NativeTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -86,7 +85,7 @@
       <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
   <ItemGroup>
     <None Include="app.manifest" />
     <None Include="packages.config" />

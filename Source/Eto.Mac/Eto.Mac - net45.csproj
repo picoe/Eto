@@ -36,7 +36,7 @@
   <PropertyGroup>
     <OutputRoot>..\..\..</OutputRoot>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="MonoMac">
       <HintPath>..\..\Libraries\MonoMac\MonoMac.dll</HintPath>
@@ -158,7 +158,7 @@
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\MacControlExtensions.cs" />
     <Compile Include="Forms\MacBase.cs" />
-    <Compile Include="SDConversions.cs" />
+    <Compile Include="CGConversions.cs" />
     <Compile Include="MacConversions.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
@@ -207,7 +207,6 @@
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\Cells\ProgressCellHandler.cs" />
-    <Compile Include="CGConversions.cs" />
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="..\Shared\GradientHelper.cs">
       <Link>Drawing\GradientHelper.cs</Link>
@@ -242,13 +241,11 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

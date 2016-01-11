@@ -112,7 +112,7 @@ namespace Eto.Wpf.Drawing
 					drawingContext.DrawDrawing(group);
 
 				var resizedImage = new swm.Imaging.RenderTargetBitmap(width, height, source.DpiX, source.DpiY, swm.PixelFormats.Default);
-				resizedImage.Render(drawingVisual);
+				resizedImage.RenderWithCollect(drawingVisual);
 				Control = resizedImage;
 			});
 		}

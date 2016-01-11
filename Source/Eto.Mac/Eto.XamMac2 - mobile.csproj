@@ -27,6 +27,7 @@
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,8 +45,9 @@
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -241,8 +243,6 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - pcl.csproj">
@@ -250,5 +250,5 @@
       <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

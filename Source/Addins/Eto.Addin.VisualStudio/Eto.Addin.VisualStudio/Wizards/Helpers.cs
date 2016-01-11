@@ -1,4 +1,5 @@
-﻿using Eto.Forms;
+﻿using Eto.Addin.Shared;
+using Eto.Forms;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
@@ -76,14 +77,18 @@ namespace Eto.Addin.VisualStudio.Wizards
 		public static string GetParameter(this Dictionary<string, string> replacementsDictionary, string name)
 		{
 			string value;
-			if (replacementsDictionary.TryGetValue(ParametersPrefix + name + "$", out value)
-				|| replacementsDictionary.TryGetValue("$root." + (ParametersPrefix + name).TrimStart('$') + "$", out value))
+			if (
+				replacementsDictionary.TryGetValue("$" + name + "$", out value)
+				|| replacementsDictionary.TryGetValue("$root." + name + "$", out value)
+				|| replacementsDictionary.TryGetValue(ParametersPrefix + name + "$", out value)
+				|| replacementsDictionary.TryGetValue("$root." + (ParametersPrefix + name).TrimStart('$') + "$", out value)
+				)
 				return value;
 			return null;
 		}
 		public static void SetParameter(this Dictionary<string, string> replacementsDictionary, string propertyName, string value)
 		{
-			replacementsDictionary[ParametersPrefix + propertyName + "$"] = value;
+			replacementsDictionary[ParametersPrefix + propertyName.Trim('$') + "$"] = value;
 		}
 
 		public static bool ToBool(this string value, bool defaultValue = false)
@@ -116,5 +121,31 @@ namespace Eto.Addin.VisualStudio.Wizards
 			return true;
 		}
 
+		public static IEnumerable<ReplacementItem> FindMatchedItems(this IEnumerable<ReplacementGroup> groups, Dictionary<string, string> replacementsDictionary)
+		{
+			foreach (var group in groups.Where(r => replacementsDictionary.MatchesCondition(r.Condition)))
+			{
+				foreach (var item in group.Replacements.Where(r => replacementsDictionary.MatchesCondition(r.Condition)))
+				{
+					yield return item;
+				}
+			}
+		}
+
+		public static void SetMatchedItems(this IEnumerable<ReplacementGroup> groups, Dictionary<string, string> replacementsDictionary)
+		{
+			foreach (var replacement in groups.FindMatchedItems(replacementsDictionary))
+			{
+				var content = replacement.Content;
+				if (replacement.ReplaceParameters)
+				{
+					foreach (var replacementItem in replacementsDictionary)
+					{
+						content = content.Replace(replacementItem.Key, replacementItem.Value);
+					}
+				}
+				replacementsDictionary[replacement.Name] = content;
+			}
+		}
 	}
 }

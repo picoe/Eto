@@ -34,7 +34,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,6 +43,9 @@
       <HintPath>..\..\packages\NUnit.3.0.0\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="Portable.Xaml">
+      <HintPath>..\..\packages\Portable.Xaml.0.7.0\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -197,6 +200,7 @@
     <Compile Include="UnitTests\Forms\Layout\DynamicLayoutTests.cs" />
     <Compile Include="UnitTests\Forms\Layout\StackLayoutTests.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
+    <Compile Include="UnitTests\Forms\TestClasses.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
@@ -250,6 +254,5 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

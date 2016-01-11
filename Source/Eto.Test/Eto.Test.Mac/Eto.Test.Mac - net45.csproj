@@ -33,6 +33,7 @@
     <IncludeMonoRuntime>False</IncludeMonoRuntime>
     <UseSGen>False</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\net45\Release\test</OutputPath>
@@ -45,8 +46,9 @@
     <IncludeMonoRuntime>False</IncludeMonoRuntime>
     <UseSGen>False</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
-  <Import Project="../../Shared/Common.targets" />
+  <Import Project="..\..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -90,5 +92,5 @@
       <Name>Eto.Serialization.Json - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../../Shared/Build.targets" />
+  <Import Project="..\..\Shared\Common.targets" />
 </Project>

@@ -36,7 +36,7 @@
   <PropertyGroup>
     <OutputRoot>..\..\..</OutputRoot>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="MonoMac">
       <HintPath>..\..\Libraries\MonoMac64\MonoMac.dll</HintPath>
@@ -175,7 +175,6 @@
     <Compile Include="NSImageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
-    <Compile Include="SDConversions.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="Forms\iosCompatibility.cs" />
@@ -242,13 +241,11 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>

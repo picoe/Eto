@@ -124,6 +124,18 @@ public class FileUpdate : Task
 		WarnOnNoUpdate = true;
 	}
 
+	static Encoding DetectEncoding(string filename)
+	{
+		var bom = new byte[3];
+		using (var file = new FileStream(filename, FileMode.Open, FileAccess.Read))
+		{
+			file.Read(bom, 0, 3);
+		}
+
+		if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) return Encoding.UTF8;
+		return new UTF8Encoding(false);
+	}
+
 	public override bool Execute()
 	{
 		try
@@ -133,8 +145,11 @@ public class FileUpdate : Task
 			foreach (var item in Files)
 			{
 				var fileName = item.ItemSpec;
+				
+				// use the same encoding as the existing file
+				var encoding = DetectEncoding(fileName);
 
-				var text = File.ReadAllText(fileName);
+				var text = File.ReadAllText(fileName, encoding);
 
 				if (!regex.IsMatch(text))
 				{
@@ -147,7 +162,7 @@ public class FileUpdate : Task
 
 				var updatedText = regex.Replace(text, Replacement);
 
-				File.WriteAllText(fileName, updatedText);
+				File.WriteAllText(fileName, updatedText, encoding);
 			}
 		}
 		catch (Exception ex)

@@ -17,6 +17,10 @@ namespace Eto.Addin.Shared
 			if (element == null)
 				yield break;
 			var ns = element.GetDefaultNamespace();
+			if (element.Elements(ns + "Replacement").Any())
+			{ 
+				yield return new ReplacementGroup(element);
+			}
 			foreach (var child in element.Elements(ns + "ReplacementGroup"))
 			{
 				yield return new ReplacementGroup(child);
@@ -38,6 +42,8 @@ namespace Eto.Addin.Shared
 
 		public string Content { get; set; }
 
+		public bool ReplaceParameters { get; set; }
+
 		public static IEnumerable<ReplacementItem> LoadXml(XElement element)
 		{
 			var ns = element.GetDefaultNamespace();
@@ -52,6 +58,10 @@ namespace Eto.Addin.Shared
 			Condition = (string)element.Attribute("condition");
 			Name = (string)element.Attribute("name");
 			Content = element.Value.Replace("\r", "").Replace("\n", Environment.NewLine);
+			var replaceParametersStr = (string)element.Attribute("replaceParameters");
+			bool replaceParameters;
+			if (bool.TryParse(replaceParametersStr, out replaceParameters))
+				ReplaceParameters = replaceParameters;
 		}
 	}
 }

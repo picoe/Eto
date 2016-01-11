@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms App</_Name>
@@ -8,6 +8,7 @@
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in VB.NET]]></_Description>
 		<GroupId>eto-project-application</GroupId>
 		<SupportedParameters>AppName,SupportsCombined</SupportedParameters>
+		<Image id="eto-project" />
 	</TemplateConfiguration>
 
 	<Actions>
@@ -30,7 +31,7 @@
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -50,11 +51,11 @@
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Gtk" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk3" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Windows" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Wpf" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.VBDotNet" if="!Combined">
@@ -74,8 +75,8 @@
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Windows" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Windows" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.VBDotNet" if="!Combined">
@@ -97,8 +98,8 @@
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Wpf" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Wpf" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.VBDotNet" if="!Combined">
@@ -117,8 +118,8 @@
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Gtk" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.VBDotNet" if="!Combined">
@@ -137,8 +138,8 @@
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Gtk3" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk3" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -171,8 +172,8 @@ namespace ${Namespace}
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.Mac" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.Mac" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -207,8 +208,8 @@ namespace ${Namespace}
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.XamMac2" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 
@@ -243,8 +244,8 @@ namespace ${Namespace}
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.2.0-alpha" /> 
-				<Package Id="Eto.Platform.XamMac2" Version="2.2.0-alpha" /> 
+				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Platform.XamMac2" Version="2.3.0-alpha" /> 
 			</Packages>
 		</Project>
 

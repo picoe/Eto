@@ -3,7 +3,7 @@
   <TemplateData>
     <Name>Eto.Forms Library</Name>
     <Description>A library project to build Eto.Forms UI and logic in VB.NET.</Description>
-    <Icon>VB\Library\Library.ico</Icon>
+    <Icon>VB.Library.ico</Icon>
     <ProjectType>VisualBasic</ProjectType>
     <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
     <SortOrder>100</SortOrder>
@@ -13,8 +13,10 @@
     <ProvideDefaultName>true</ProvideDefaultName>
   </TemplateData>
   <TemplateContent>
-    <Project TargetFileName="$safeprojectname$.vbproj" File="VB\Library\Library.vbproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.vb">VB\Library\MyPanel.vb</ProjectItem>
+    <Project TargetFileName="$safeprojectname$.vbproj" File="VB\Library.vbproj" ReplaceParameters="true">
+      <Folder Name="VB" TargetFolderName="">
+        <ProjectItem ReplaceParameters="true" OpenInEditor="true" TargetFileName="MyPanel.vb">MyPanel.vb</ProjectItem>
+      </Folder>
       <Folder Name="VB" TargetFolderName="My Project">
         <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.vb">AssemblyInfo.vb</ProjectItem>
       </Folder>
@@ -34,7 +36,7 @@
   </WizardExtension>
   <WizardData>
     <packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-      <package id="Eto.Forms" version="2.2.0-alpha" />
+      <package id="Eto.Forms" version="2.3.0-alpha" />
     </packages>
     <SupportedParameters>SupportsPCL,IsLibrary</SupportedParameters>
     <Replacements>

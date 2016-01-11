@@ -83,9 +83,9 @@
     <Compile Include="Wizards\MultiProjectWizard.cs" />
     <Compile Include="Wizards\KeepFSharpOrderWizard.cs" />
     <Compile Include="Wizards\OptionsWizard.cs" />
+    <Compile Include="Wizards\SkipFilesWizard.cs" />
     <Compile Include="Wizards\ReplacementsWizard.cs" />
     <Compile Include="Wizards\ProjectWizard.cs" />
-    <Compile Include="Wizards\RootWizard.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\..\..\BuildOutput\Nuget\Release\*.nupkg">
@@ -98,6 +98,12 @@
     </Content>
     <Content Include="..\..\..\..\LICENSE">
       <Link>LICENSE</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PreviewImage.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Icon.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="app.config" />
@@ -185,7 +191,9 @@
     <Reference Include="Microsoft.VisualStudio.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.OLE.Interop">
       <Private>False</Private>
     </Reference>

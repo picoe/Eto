@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\BuildOutput\net45\Debug\</OutputPath>
-    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC</DefineConstants>
+    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;SDCOMPAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -27,6 +27,7 @@
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,7 +37,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>OSX;DESKTOP;XAMMAC</DefineConstants>
+    <DefineConstants>OSX;DESKTOP;XAMMAC;SDCOMPAT</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>false</CreatePackage>
@@ -44,8 +45,9 @@
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
-  <Import Project="../Shared/Common.targets" />
+  <Import Project="..\Shared\Common.props" />
   <PropertyGroup>
     <CustomAssemblySearchPaths>$(XamarinMacLibPath)</CustomAssemblySearchPaths>
   </PropertyGroup>
@@ -166,7 +168,6 @@
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\MacControlExtensions.cs" />
     <Compile Include="Forms\MacBase.cs" />
-    <Compile Include="SDConversions.cs" />
     <Compile Include="CGConversions.cs" />
     <Compile Include="MacConversions.cs" />
     <Compile Include="MacConversions.ns.cs" />
@@ -245,13 +246,11 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets') And '0' == '1'" />
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - pcl.csproj">
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="../Shared/Build.targets" />
+  <Import Project="..\Shared\Common.targets" />
 </Project>
