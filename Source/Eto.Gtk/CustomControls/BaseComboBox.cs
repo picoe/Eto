@@ -3,7 +3,12 @@ using Gtk;
 
 namespace Eto.GtkSharp.CustomControls
 {
-	public class BaseComboBox : EventBox
+	public class BaseComboBox 
+	#if GTK3
+		: EventBox
+	#else
+		: SizableBin
+	#endif
 	{
 		Entry entry;
 		Button popupButton;
@@ -18,6 +23,8 @@ namespace Eto.GtkSharp.CustomControls
 				PopupButton.StyleContext.RemoveClass(cls);
 			entry.StyleContext.RemoveClass("entry");
 			StyleContext.AddClass("entry");
+#else
+			BorderWidth = 1;
 #endif
 		}
 		#if GTK2
