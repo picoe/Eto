@@ -154,6 +154,9 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
+				#if GTK3
+				return backgroundColor;
+				#else
 				Color? col;
 				if (cachedBackgroundColor != null)
 					return cachedBackgroundColor.Value;
@@ -170,6 +173,7 @@ namespace Eto.GtkSharp.Forms
 				}
 				cachedBackgroundColor = col;
 				return col;
+				#endif
 			}
 		}
 
