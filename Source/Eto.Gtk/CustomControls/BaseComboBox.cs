@@ -18,11 +18,6 @@ namespace Eto.GtkSharp.CustomControls
 				PopupButton.StyleContext.RemoveClass(cls);
 			entry.StyleContext.RemoveClass("entry");
 			StyleContext.AddClass("entry");
-			foreach (var cls in entry.StyleContext.ListClasses())
-			{
-				//entry.StyleContext.RemoveClass(cls);
-				//StyleContext.AddClass(cls);
-			}
 #endif
 		}
 		#if GTK2
