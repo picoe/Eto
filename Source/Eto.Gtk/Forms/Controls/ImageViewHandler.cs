@@ -19,6 +19,10 @@ namespace Eto.GtkSharp.Forms.Controls
 				CanDefault = true
 			};
 			Control.Events |= Gdk.EventMask.ExposureMask;
+			#if GTK3
+			// set to transparent by default
+			Control.OverrideBackgroundColor(Gtk.StateFlags.Normal, Colors.Transparent.ToRGBA());
+			#endif
 		}
 
 		protected override void Initialize()
