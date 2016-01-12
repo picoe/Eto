@@ -17,6 +17,7 @@ namespace Eto.Test.Sections.Controls
 			var l = new Label();
 			l.TextBinding.Bind(Binding.Property(tb, c => c.Value).Convert(r => "Value: " + Convert.ToString(r)));
 			Items.Add(new StackLayout { Orientation = Orientation.Horizontal, Spacing = 5, Items = { tb, l } });
+			Items.Add(new NumericMaskedTextBox<double> { Value = 0.000000123 });
 			Items.Add(new MaskedTextBox(new FixedMaskedTextProvider("(999) 000-0000")) { ShowPromptOnFocus = true, PlaceholderText = "(123) 456-7890" });
 			Items.Add(new MaskedTextBox<DateTime>(new FixedMaskedTextProvider<DateTime>("&&/90/0000") { ConvertToValue = DateTime.Parse }));
 			Items.Add(new MaskedTextBox(new FixedMaskedTextProvider(">L0L 0L0")));
