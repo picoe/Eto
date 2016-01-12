@@ -28,9 +28,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void ResetWidth()
 			{
 				wrapWidth = null;
-				#if GTK2
-				HeightRequest = -1;
-				#endif
 			}
 
 			#if GTK2
@@ -69,13 +66,14 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				if (wrapWidth != width)
 				{
-					wrapWidth = width;
 					Layout.Width = (int)(width * Pango.Scale.PangoScale);
 					int pixWidth, pixHeight;
 					Layout.GetPixelSize(out pixWidth, out pixHeight);
 					HeightRequest = pixHeight;
+					wrapWidth = width;
 					#if GTK3
-					Application.Instance.AsyncInvoke(() => Parent.QueueResize());
+					if (Parent != null)
+						Gtk.Application.Invoke((sender, e) => Parent.QueueResize());
 					#endif
 				}
 			}
@@ -173,7 +171,6 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		void SetAlignment()
 		{
-			Control.ResetWidth();
 			float xalignment;
 			float yalignment;
 			switch (horizontalAlign)
