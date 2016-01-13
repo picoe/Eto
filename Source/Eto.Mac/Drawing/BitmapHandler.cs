@@ -294,7 +294,7 @@ namespace Eto.Mac.Drawing
 			{
 				if (rep != null)
 				{
-					rep.SafeDispose();
+					rep.Dispose();
 					rep = null;
 				}
 			}
