@@ -56,7 +56,9 @@ namespace Eto.GtkSharp.Forms
 		Size size;
 		Size asize;
 		bool mouseDownHandled;
+#if GTK2
 		Color? cachedBackgroundColor;
+#endif
 		Color? backgroundColor;
 		public static float ScrollAmount = 2f;
 
@@ -179,7 +181,9 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual void SetBackgroundColor()
 		{
+#if GTK2
 			cachedBackgroundColor = null;
+#endif
 			SetBackgroundColor(SelectedBackgroundColor);
 		}
 

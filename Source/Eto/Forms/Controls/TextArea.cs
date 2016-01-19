@@ -261,7 +261,7 @@ namespace Eto.Forms
 		/// </summary>
 		/// <remarks>
 		/// On some platforms, autocorrection or text replacements such as quotes, etc may be default.
-		/// Set this to <see cref="TextReplacements.None"/> to disable any text replacement.
+		/// Set this to <see cref="Eto.Forms.TextReplacements.None"/> to disable any text replacement.
 		/// 
 		/// Note this is only supported on OS X currently, all other platforms will be ignored.
 		/// </remarks>
@@ -433,7 +433,7 @@ namespace Eto.Forms
 			/// </summary>
 			/// <remarks>
 			/// On some platforms, autocorrection or text replacements such as quotes, etc may be default.
-			/// Set this to <see cref="TextReplacements.None"/> to disable any text replacement.
+			/// Set this to <see cref="Eto.Forms.TextReplacements.None"/> to disable any text replacement.
 			/// 
 			/// Note this is only a hint and not all (or any) of the replacements may apply on some platforms.
 			/// </remarks>
