@@ -133,10 +133,5 @@ namespace Eto.Mac.Forms.Controls
 			get { return Control.Cell.PlaceholderString; }
 			set { Control.Cell.PlaceholderString = value ?? string.Empty; }
 		}
-
-		public void SelectAll()
-		{
-			Control.SelectText(Control);
-		}
 	}
 }

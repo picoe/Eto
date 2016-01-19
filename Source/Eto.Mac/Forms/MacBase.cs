@@ -256,19 +256,6 @@ namespace Eto.Mac.Forms
 				observers = null;
 			}
 
-#if OSX
-			// HACK: Remove when Dispose() actually works!
-			if (disposing && DisposeControl)
-			{
-				var obj = Control as NSObject;
-				if (obj != null)
-				{
-					obj.SafeDispose();
-					Control = null;
-				}
-			}
-#endif
-
 			base.Dispose(disposing);
 		}
 	}

@@ -66,20 +66,5 @@ namespace Eto.Mac.Drawing
 		}
 
 		public abstract void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination);
-
-		protected override void Dispose(bool disposing)
-		{
-			// HACK: Remove when monomac/xammac's Dispose() actually works!
-			if (disposing && DisposeControl)
-			{
-				var obj = Control as NSObject;
-				if (obj != null)
-				{
-					obj.SafeDispose();
-					Control = null;
-				}
-			}
-			base.Dispose(disposing);
-		}
 	}
 }

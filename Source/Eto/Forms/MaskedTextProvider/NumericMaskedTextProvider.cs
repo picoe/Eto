@@ -14,20 +14,22 @@ namespace Eto.Forms
 	public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTextProvider<T>
 	{
 		Func<string, T> parse;
+		Func<T, string> toString;
 
 		class Info
 		{
 			public bool AllowSign;
 			public bool AllowDecimal;
 			public Func<string, object> Parse;
+			public Func<object, string> ToText;
 		}
 
 		// use dictionary instead of reflection for Xamarin.Mac linking
 		Dictionary<Type, Info> numericTypes = new Dictionary<Type, Info>
 		{
 			{ typeof(decimal), new Info { Parse = s => { decimal d; return decimal.TryParse(s, out d) ? (object)d : null; }, AllowSign = true, AllowDecimal = true } },
-			{ typeof(double), new Info { Parse = s => { double d; return double.TryParse(s, out d) ? (object)d : null; }, AllowSign = true, AllowDecimal = true } },
-			{ typeof(float), new Info { Parse = s => { float d; return float.TryParse(s, out d) ? (object)d : null; }, AllowSign = true, AllowDecimal = true } },
+			{ typeof(double), new Info { Parse = s => { double d; return double.TryParse(s, out d) ? (object)d : null; }, ToText = v => ((double)v).ToString("F99").TrimEnd('0', '.'), AllowSign = true, AllowDecimal = true } },
+			{ typeof(float), new Info { Parse = s => { float d; return float.TryParse(s, out d) ? (object)d : null; }, ToText = v => ((float)v).ToString("F99").TrimEnd('0', '.'), AllowSign = true, AllowDecimal = true } },
 			{ typeof(int), new Info { Parse = s => { int d; return int.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
 			{ typeof(uint), new Info { Parse = s => { uint d; return uint.TryParse(s, out d) ? (object)d : null; } } },
 			{ typeof(long), new Info { Parse = s => { long d; return long.TryParse(s, out d) ? (object)d : null; }, AllowSign = true } },
@@ -55,6 +57,10 @@ namespace Eto.Forms
 					var val = info.Parse(text);
 					return val == null ? default(T) : (T)val;
 				};
+				if (info.ToText != null)
+					toString = val => info.ToText(val);
+				else
+					toString = val => val.ToString();
 				Validate = text => info.Parse(text) != null;
 			}
 			else
@@ -76,6 +82,7 @@ namespace Eto.Forms
 					}
 					return default(T);
 				};
+				toString = val => val.ToString();
 
 				Validate = text =>
 				{
@@ -97,7 +104,7 @@ namespace Eto.Forms
 			}
 			set
 			{
-				Text = Convert.ToString(value);
+				Text = toString(value);
 			}
 		}
 	}

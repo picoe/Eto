@@ -23,35 +23,30 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public class EtoLabel : Gtk.Label
 		{
-			int wrapWidth;
+			int? wrapWidth;
 
 			public void ResetWidth()
 			{
-				wrapWidth = -1;
-				HeightRequest = -1;
+				wrapWidth = null;
 			}
 
 			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
-				//base.OnSizeRequested (ref requisition);
 				int width, height;
 				Layout.GetPixelSize(out width, out height);
 				requisition.Width = width;
 				requisition.Height = height;
 			}
 			#else
-			protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
-			{
-				base.OnGetPreferredWidth (out minimum_width, out natural_width);
-				//minimum_width = natural_width; // = 500; //this.Layout.Width;
-			}
 
 			protected override void OnAdjustSizeRequest (Gtk.Orientation orientation, out int minimum_size, out int natural_size)
 			{
 				base.OnAdjustSizeRequest (orientation, out minimum_size, out natural_size);
 				if (orientation == Gtk.Orientation.Horizontal)
-					minimum_size = natural_size;
+				{
+					minimum_size = natural_size;// wrapWidth ?? natural_size;
+				}
 			}
 			#endif
 
@@ -64,7 +59,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			void SetWrapWidth(int width)
 			{
 				if (!IsRealized || SingleLineMode || width == 0)
+				{
+					HeightRequest = -1;
+					wrapWidth = null;
 					return;
+				}
 				if (wrapWidth != width)
 				{
 					Layout.Width = (int)(width * Pango.Scale.PangoScale);
@@ -72,6 +71,10 @@ namespace Eto.GtkSharp.Forms.Controls
 					Layout.GetPixelSize(out pixWidth, out pixHeight);
 					HeightRequest = pixHeight;
 					wrapWidth = width;
+					#if GTK3
+					if (Parent != null)
+						Gtk.Application.Invoke((sender, e) => Parent.QueueResize());
+					#endif
 				}
 			}
 		}
@@ -79,11 +82,12 @@ namespace Eto.GtkSharp.Forms.Controls
 		public LabelHandler()
 		{
 			eventBox = new Gtk.EventBox();
+			eventBox.ResizeMode = Gtk.ResizeMode.Immediate;
 			//eventBox.VisibleWindow = false;
 			Control = new EtoLabel();
-			Wrap = WrapMode.Word;
 			Control.SetAlignment(0, 0);
 			eventBox.Child = Control;
+			Wrap = WrapMode.Word;
 		}
 
 		public WrapMode Wrap
@@ -123,6 +127,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					default:
 						throw new NotSupportedException();
 				}
+				eventBox.QueueResize();
 			}
 		}
 

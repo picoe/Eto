@@ -588,9 +588,28 @@ namespace Eto.iOS.Drawing
 				using (var bdOrig = SourceImage.Lock())
 				{
 					var size = DrawingImage.Size;
-					for (int y = 0; y < size.Height; y++)
-						for (int x = 0; x < size.Width; x++)
-							bdOrig.SetPixel(x, y, bdNew.GetPixel(x, y));
+					if (bdNew.BitsPerPixel == 32 && bdOrig.BitsPerPixel == 24)
+					{
+						unsafe {
+							// assuming rgb is in same order as 32bpp bitmap, should be..
+							var src = (byte*)bdNew.Data;
+							var dest = (byte*)bdOrig.Data;
+							var length = size.Width * size.Height;
+							for (int i = 0; i < length; i++)
+							{
+								*(dest++) = *(src++);
+								*(dest++) = *(src++);
+								*(dest++) = *(src++);
+								src++; // ignore alpha
+							}
+						}
+					}
+					else
+					{
+						for (int y = 0; y < size.Height; y++)
+							for (int x = 0; x < size.Width; x++)
+								bdOrig.SetPixel(x, y, bdNew.GetPixel(x, y));
+					}
 				}
 			}
 		}
