@@ -64,7 +64,7 @@ namespace Eto.Forms
 		/// <param name="parent">Parent control</param>
 		public DialogResult ShowDialog(Control parent)
 		{
-			return ShowDialog(parent.ParentWindow);
+			return ShowDialog(parent != null ? parent.ParentWindow : null);
 		}
 
 		/// <summary>
