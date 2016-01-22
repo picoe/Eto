@@ -622,6 +622,26 @@ namespace Eto.Forms
 			set { Size = new Size(Size.Width, value); }
 		}
 
+		static readonly object EnabledChangedKey = new object();
+
+		/// <summary>
+		/// Occurs when the <see cref="Enabled"/> value is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> EnabledChanged
+		{
+			add { Properties.AddEvent(EnabledChangedKey, value); }
+			remove { Properties.RemoveEvent(EnabledChangedKey, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="EnabledChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnEnabledChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(EnabledChangedKey, this, e);
+		}
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
 		/// </summary>
@@ -635,7 +655,14 @@ namespace Eto.Forms
 		public virtual bool Enabled
 		{
 			get { return Handler.Enabled; }
-			set { Handler.Enabled = value; }
+			set
+			{ 
+				if (value != Enabled)
+				{
+					Handler.Enabled = value;
+					OnEnabledChanged(EventArgs.Empty);
+				}
+			}
 		}
 
 		/// <summary>
