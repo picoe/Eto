@@ -11,6 +11,7 @@ namespace Eto.Wpf.Forms.Controls
 	public class EtoDoubleUpDown : mwc.DoubleUpDown
 	{
 		public new swc.TextBox TextBox { get { return base.TextBox; } }
+		public new mwc.Spinner Spinner { get { return base.Spinner; } }
 	}
 
 	public class NumericUpDownHandler : WpfControl<EtoDoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
@@ -42,6 +43,8 @@ namespace Eto.Wpf.Forms.Controls
 			if (Control.TextBox != null)
 			{
 				Control.TextBox.TextChanged += (sender2, e2) => TriggerValueChanged();
+				if (Control.Spinner != null)
+					Control.Spinner.GotKeyboardFocus += (sender2, e2) => Control.TextBox.Focus();
 				Control.Loaded -= Control_Loaded;
 			}
 		}

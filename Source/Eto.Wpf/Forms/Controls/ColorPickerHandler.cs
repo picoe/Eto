@@ -38,14 +38,7 @@ namespace Eto.Wpf.Forms.Controls
 			switch (id)
 			{
 				case ColorPicker.ColorChangedEvent:
-					Control.SelectedColorChanged += (sender, e) =>
-					{
-						if (dpdIsOpen != null && Control.IsOpen)
-							// drop down is open, only fire the event after it is closed.
-							dpdIsOpen.AddValueChanged(Control, ColorChanged);
-						else
-							Callback.OnColorChanged(Widget, EventArgs.Empty);
-					};
+					Control.SelectedColorChanged += (sender, e) => Callback.OnColorChanged(Widget, EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(id);
@@ -53,15 +46,13 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		void ColorChanged(object sender, EventArgs e)
-		{
-			dpdIsOpen.RemoveValueChanged(Control, ColorChanged);
-			Control.Dispatcher.BeginInvoke(new Action(() => Callback.OnColorChanged(Widget, EventArgs.Empty)));
-		}
-
 		public Eto.Drawing.Color Color
 		{
-			get { return Control.SelectedColor.ToEto(); }
+			get
+			{
+				var col = Control.SelectedColor ?? swm.Colors.Transparent;
+				return col.ToEto();
+			}
 			set { Control.SelectedColor = value.ToWpf(); }
 		}
 	}

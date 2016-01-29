@@ -25,6 +25,14 @@ namespace Eto.Wpf.Forms
 
 		public static bool EnableVisualStyles = true;
 
+		/// <summary>
+		/// Enable custom eto-defined themes for standard or extended wpf toolkit controls.
+		/// </summary>
+		/// <remarks>
+		/// Set this before creating the Eto Application instance.
+		/// </remarks>
+		public static bool EnableCustomThemes = true;
+
 		public static void InvokeIfNecessary(Action action)
 		{
 			if (dispatcher == null || Thread.CurrentThread == dispatcher.Thread)
@@ -62,6 +70,15 @@ namespace Eto.Wpf.Forms
 
 		public bool IsStarted { get; private set; }
 
+		void ApplyThemes()
+		{
+			if (!EnableCustomThemes)
+				return;
+
+			// Support (better) high DPI in the NumericUpDown control by theming the Extended WPF Toolkit's spinner.
+			Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = new Uri("pack://application:,,,/Eto.Wpf;component/themes/wpftoolkit/ButtonSpinner.xaml", UriKind.RelativeOrAbsolute) });
+		}
+
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -74,6 +91,7 @@ namespace Eto.Wpf.Forms
 			dispatcher = sw.Application.Current.Dispatcher ?? Dispatcher.CurrentDispatcher;
 			instance = this;
 			Control.Startup += HandleStartup;
+			ApplyThemes();
 		}
 
 		void HandleStartup(object sender, sw.StartupEventArgs e)
