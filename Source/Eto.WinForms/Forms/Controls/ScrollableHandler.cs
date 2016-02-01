@@ -227,7 +227,7 @@ namespace Eto.WinForms.Forms.Controls
 			return result;
 		}
 
-		protected override void SetContent(swf.Control contentControl)
+		protected override void SetContent(Control control, swf.Control contentControl)
 		{
 			content.Controls.Clear();
 			content.Controls.Add(contentControl);

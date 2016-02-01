@@ -13,6 +13,10 @@ namespace Eto.Direct2D
 			get { return Platforms.Direct2D; }
 		}
 
+		public override PlatformFeatureFlags SupportedFeatures =>
+			base.SupportedFeatures & ~ PlatformFeatureFlags.DrawableWithTransparentContent;
+
+
 		public Platform()
 		{
 			// generator to use for scenarios where direct 2d doesn't work (e.g. printing)

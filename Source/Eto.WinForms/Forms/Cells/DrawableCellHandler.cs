@@ -48,7 +48,7 @@ namespace Eto.WinForms.Forms.Cells
 				if (!object.ReferenceEquals(cachedGraphicsKey, graphics) || cachedGraphics == null)
 				{
 					cachedGraphicsKey = graphics;
-					cachedGraphics = new Graphics(new GraphicsHandler(graphics, shouldDisposeGraphics: false));
+					cachedGraphics = new Graphics(new GraphicsHandler(graphics, dispose: false));
 				}
 				else
 				{

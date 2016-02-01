@@ -21,6 +21,7 @@ namespace Eto.WinForms.Forms.Controls
 		public override Color BackgroundColor {
 			get { return base.BackgroundColor; }
 			set {
+				BackgroundColorSet = true;
 				Control.UseVisualStyleBackColor = false;
 				base.BackgroundColor = value;
 			}

@@ -80,6 +80,25 @@ namespace Eto.Wpf.Forms.Controls
 					}
 				}
 			}
+
+			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				var content = Handler.content;
+				if (content != null)
+				{
+					content.Measure(constraint);
+					return content.DesiredSize;
+				}
+				return base.MeasureOverride(constraint);
+			}
+			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
+			{
+				base.ArrangeOverride(arrangeSize);
+				var content = Handler.content;
+				if (content != null)
+					content.Arrange(new sw.Rect(arrangeSize));
+				return arrangeSize;
+			}
 		}
 
 		class EtoTile : sw.FrameworkElement

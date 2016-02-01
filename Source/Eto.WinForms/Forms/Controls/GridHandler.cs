@@ -122,7 +122,7 @@ namespace Eto.WinForms.Forms.Controls
 		public override Color BackgroundColor
 		{
 			get { return Control.BackgroundColor.ToEto(); }
-			set { Control.BackgroundColor = value.ToSD(); }
+			set { BackgroundColorSet = true; Control.BackgroundColor = value.ToSD(); }
 		}
 
 		public override void OnUnLoad(EventArgs e)

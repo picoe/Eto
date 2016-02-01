@@ -9,23 +9,58 @@ namespace Eto.Test.Sections.Controls
 	{
 		public DrawableSection()
 		{
-			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+			Content = new TableLayout
+			{
+				Padding = new Padding(10),
+				Spacing = new Size(10,10),
+				Rows =
+				{
+					TableLayout.HorizontalScaled(
+						10,
+						new TableLayout(
+							"Default",
+							Default()
+						),
+						new TableLayout(
+							"With Background",
+							WithBackground()
+						)
+					),
 
-			layout.BeginVertical();
-			layout.BeginHorizontal();
-			layout.Add("Default");
-			layout.Add(this.Default(), xscale: true);
-			layout.Add("With Background");
-			layout.Add(this.WithBackground(), xscale: true);
-			layout.EndHorizontal();
-			layout.EndVertical();
-			layout.BeginVertical();
-			// use a separate containing panel to test calculations in those cases
-			layout.AddRow("Large Canvas", new Panel { Content = this.LargeCanvas() });
-			layout.EndVertical();
+					new TableLayout(
+						"Large Canvas",
+						// use a separate containing panel to test calculations in those cases
+						new Panel { Content = LargeCanvas() }
+					),
 
-			layout.Add(null);
-			Content = layout;
+					new TableRow(TableLayout.Horizontal(
+						10,
+						new TableLayout(
+							"Nested",
+							Nested()
+						),
+						new TableLayout(
+							"Transparent",
+							Transparent()
+						),
+						new TableLayout(
+							"Tools",
+							TableLayout.Horizontal(
+								Tools(1), Tools(2), Tools(0)
+							),
+							Tools(3),
+							Tools(0)
+						)
+					)),
+
+					(Platform.SupportedFeatures & PlatformFeatureFlags.DrawableWithTransparentContent) == 0 ?
+					new TableRow(
+						"(Transparent content on drawable not supported on this platform)"
+					) : null,
+
+					null
+				}
+			};
 		}
 
 		Control Default()
@@ -38,7 +73,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				pe.Graphics.DrawLine(Pens.Black, Point.Empty, new Point(control.Size));
 			};
-			LogEvents(control);
+			LogEvents(control, "Default");
 
 			return control;
 		}
@@ -54,7 +89,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				pe.Graphics.DrawLine(Pens.Black, Point.Empty, new Point(control.Size));
 			};
-			LogEvents(control);
+			LogEvents(control, "With Background");
 
 			return control;
 		}
@@ -84,7 +119,7 @@ namespace Eto.Test.Sections.Controls
 				pe.Graphics.DrawImage(image, 100, 10);
 				pe.Graphics.DrawImage(image, 250, 10, 80, 20);
 			};
-			LogEvents(control);
+			LogEvents(control, "Large Canvas");
 
 			var layout = new PixelLayout();
 			layout.Add(control, 25, 25);
@@ -95,11 +130,162 @@ namespace Eto.Test.Sections.Controls
 			};
 		}
 
-		void LogEvents(Drawable control)
+		Control Nested()
+		{
+			var control = new Drawable
+			{
+				BackgroundColor = Colors.Black,
+				Padding = 10,
+				Content = new Drawable
+				{
+					BackgroundColor = Colors.White,
+					Padding = 10,
+					Content = "Black Border"
+				}
+			};
+
+			return control;
+		}
+
+		Control Transparent()
+		{
+			//NOTE: do not try to remove those `Size = new Size(10, 10)`
+			//..... it would really kill the app in WinForms
+			return new Drawable
+			{
+				BackgroundColor = Colors.White,
+				Padding = 10,
+				Content = new TableLayout(
+					true,
+					TableLayout.HorizontalScaled
+					(
+						new Drawable
+						{
+							BackgroundColor = Color.FromArgb(255, 0, 0, 128),
+							Content = new TableLayout(
+								true,
+								null,
+								TableLayout.HorizontalScaled(
+									null,
+									new Panel
+									{
+										BackgroundColor = Color.FromArgb(255, 0, 0),
+										Size = new Size(10, 10)
+									}
+								)
+							)
+						},
+						new Drawable
+						{
+							BackgroundColor = Color.FromArgb(0, 255, 0, 128),
+							Content = new TableLayout(
+								true,
+								null,
+								TableLayout.HorizontalScaled(
+									new Panel
+									{
+										BackgroundColor = Color.FromArgb(0, 255, 0),
+										Size = new Size(10, 10)
+									},
+									null
+								)
+							)
+						}
+					),
+					TableLayout.HorizontalScaled
+					(
+						new Drawable
+						{
+							BackgroundColor = Color.FromArgb(0, 0, 255, 128),
+							Content = new TableLayout(
+								true,
+								TableLayout.HorizontalScaled(
+									null,
+									new Panel
+									{
+										BackgroundColor = Color.FromArgb(0, 0, 255),
+										Size = new Size(10, 10)
+									}
+								),
+								null
+							)
+						},
+						new Drawable
+						{
+							BackgroundColor = Color.FromArgb(0, 0, 0, 128),
+							Content = new TableLayout(
+								true,
+								TableLayout.HorizontalScaled(
+									new Panel
+									{
+										BackgroundColor = Color.FromArgb(0, 0, 0),
+										Size = new Size(10, 10)
+									},
+									null
+								),
+								null
+							),
+						}
+					)
+				)
+			}.With(it => it.Paint += (s,pe) =>
+			{
+				using (var p = new Pen(Colors.Black, 3f))
+				{
+					for(int i = 4, n = Math.Max(it.Width, it.Height); i < n; i += 8)
+					{
+						pe.Graphics.DrawLine(p, i, 0, i + n, n);
+						pe.Graphics.DrawLine(p, 0, i, n, i + n);
+					}
+				}
+			});
+		}
+
+		Control Tools(int n)
+		{
+			var stack = new StackLayout
+			{
+				BackgroundColor = Colors.Transparent,
+				Orientation = Orientation.Horizontal,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				Padding = 4,
+				Spacing = 4,
+			};
+			if (n > 0)
+			{
+				stack.Items.Add("Label:");
+				for (int i = 0; i < n; i++)
+				{
+					stack.Items.Add(new TextBox
+					{
+						Text = "Box" + ( i + 1 )
+					});
+				}
+			}
+			var control = new Drawable
+			{
+				Content = stack
+			};
+			control.Paint += (s, pe) =>
+			{
+				int w = control.Width;
+				int h = control.Height;
+				var c1 = Color.FromGrayscale(0.8f);
+				var c2 = Color.FromGrayscale(0.6f);
+				using (var b = new LinearGradientBrush(
+					c1, c2, new PointF(1, 0), new PointF(1, h)))
+					pe.Graphics.FillRectangle(b, 1, 0, w-2, h);
+				pe.Graphics.DrawLine(c1, 0, 0, 0, h);
+				pe.Graphics.DrawLine(c2, w-1, 0, w-1, h);
+			};
+			return control;
+		}
+
+		void LogEvents(Drawable control, string name)
 		{
 			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
-				Log.Write(control, "Paint, ClipRectangle: {0}", pe.ClipRectangle);
+				Log.Write(name, "Paint, ClipRectangle: {0}", pe.ClipRectangle);
 			};
 		}
 	}

@@ -24,6 +24,9 @@ namespace Eto.WinForms
 
 		public override string ID { get { return "winforms"; } }
 
+		public override PlatformFeatureFlags SupportedFeatures =>
+			PlatformFeatureFlags.DrawableWithTransparentContent;
+
 		static Platform()
 		{
 			EmbeddedAssemblyLoader.Register("Eto.WinForms.CustomControls.Assemblies");

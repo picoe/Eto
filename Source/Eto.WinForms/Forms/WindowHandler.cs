@@ -166,7 +166,7 @@ namespace Eto.WinForms.Forms
 		}
 		Size? contentSize;
 
-		protected override void SetContent(swf.Control contentControl)
+		protected override void SetContent(Control control, swf.Control contentControl)
 		{
 			contentControl.Dock = swf.DockStyle.Fill;
 			ContainerContentControl.Controls.Add(contentControl);
