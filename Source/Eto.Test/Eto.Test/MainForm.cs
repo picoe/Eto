@@ -32,7 +32,15 @@ namespace Eto.Test
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
-			Title = string.Format("Test Application [{0}]", Platform.ID);
+			Title = string.Format("Test Application [{0}, {1} {2}, {3}]",
+				Platform.ID,
+				EtoEnvironment.Is64BitProcess ? "64bit" : "32bit",
+				EtoEnvironment.Platform.IsMono ? "Mono" : ".NET",
+				EtoEnvironment.Platform.IsWindows ? EtoEnvironment.Platform.IsWinRT
+				? "WinRT" : "Windows" : EtoEnvironment.Platform.IsMac
+				? "Mac" : EtoEnvironment.Platform.IsLinux
+				? "Linux" : EtoEnvironment.Platform.IsUnix
+				? "Unix" : "Unknown");
 			Style = "main";
 			MinimumSize = new Size(400, 400);
 			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());

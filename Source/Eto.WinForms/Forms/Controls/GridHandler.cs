@@ -40,6 +40,8 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			public GridHandler<TWidget, TCallback> Handler { get; set; }
 
+			public EtoDataGridView() { DoubleBuffered = true; }
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var size = base.GetPreferredSize(proposedSize);
