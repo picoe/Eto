@@ -93,12 +93,14 @@ namespace Eto.WinForms.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
-		public class EtoPanel<THandler> : swf.Panel
+
+		// used in DrawableHandler
+		public class PanelBase<THandler> : swf.Panel
 			where THandler: WindowsControl<TControl, TWidget, TCallback>
 		{
-			public THandler Handler { get; }
+			public THandler Handler { get; set; }
 
-			public EtoPanel(THandler handler)
+			public PanelBase( THandler handler = null )
 			{
 				Handler = handler;
 				Size = sd.Size.Empty;
@@ -135,6 +137,34 @@ namespace Eto.WinForms.Forms
 				}
 			}
 		}
+
+		// used in Panel+PixelLayout and similar code is in TableLayout
+		public class EtoPanel<THandler> : PanelBase<THandler>
+			where THandler : WindowsControl<TControl, TWidget, TCallback>
+		{
+			public EtoPanel( THandler handler = null )
+				: base( handler )
+			{ }
+
+			// optimization especially for content on drawable
+			protected override void OnBackColorChanged( EventArgs e )
+			{
+				SetStyle
+					( swf.ControlStyles.AllPaintingInWmPaint
+					| swf.ControlStyles.DoubleBuffer
+					, BackColor.A != 255 );
+				base.OnBackColorChanged( e );
+			}
+			protected override void OnParentBackColorChanged( EventArgs e )
+			{
+				SetStyle
+					( swf.ControlStyles.AllPaintingInWmPaint
+					| swf.ControlStyles.DoubleBuffer
+					, BackColor.A != 255 );
+				base.OnParentBackColorChanged( e );
+			}
+		}
+
 
 		Size parentMinimumSize;
 

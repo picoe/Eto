@@ -11,21 +11,23 @@ namespace Eto.WinForms.Forms.Controls
 	{
 		public virtual bool SupportsCreateGraphics { get { return true; } }
 
-		public class EtoDrawable : EtoPanel<DrawableHandler>
+		public class EtoDrawable : PanelBase<DrawableHandler>
 		{
 			bool canFocus;
 
 			public EtoDrawable(DrawableHandler handler)
 				: base(handler)
 			{
-				this.SetStyle(swf.ControlStyles.AllPaintingInWmPaint, true);
-				this.SetStyle(swf.ControlStyles.StandardClick, true);
-				this.SetStyle(swf.ControlStyles.StandardDoubleClick, true);
-				this.SetStyle(swf.ControlStyles.ContainerControl, true);
-				this.SetStyle(swf.ControlStyles.UserPaint, true);
-				this.SetStyle(swf.ControlStyles.DoubleBuffer, true);
-				this.SetStyle(swf.ControlStyles.ResizeRedraw, true);
-				this.SetStyle(swf.ControlStyles.SupportsTransparentBackColor, true);
+				base.SetStyle
+					( swf.ControlStyles.AllPaintingInWmPaint
+					| swf.ControlStyles.StandardClick
+					| swf.ControlStyles.StandardDoubleClick
+					| swf.ControlStyles.ContainerControl
+					| swf.ControlStyles.UserPaint
+					| swf.ControlStyles.DoubleBuffer
+					| swf.ControlStyles.ResizeRedraw
+					| swf.ControlStyles.SupportsTransparentBackColor
+					, true);
 			}
 
 			public new void SetStyle(swf.ControlStyles flag, bool value)
