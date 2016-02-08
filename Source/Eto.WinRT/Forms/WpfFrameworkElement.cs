@@ -563,5 +563,19 @@ namespace Eto.WinRT.Forms
 #endif
 			}
 		}
+
+        public bool AllowDrag
+        {
+            get; set;
+        }
+
+        public bool AllowDrop
+        {
+            get; set;
+        }
+
+        public void DoDragDrop(DragDropData data, DragDropAction allowedAction)
+        {
+        }
 	}
 }

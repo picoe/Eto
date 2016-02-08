@@ -26,6 +26,7 @@
     <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\net40\Release\</OutputPath>
@@ -59,6 +60,10 @@
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\DragDropSources.cs">
+      <Link>DragDropSources.cs</Link>
+    </Compile>
+    <Compile Include="DragDropConversions.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\ExpanderHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />

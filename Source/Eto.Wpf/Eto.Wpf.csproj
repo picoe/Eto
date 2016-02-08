@@ -108,6 +108,7 @@
     </Compile>
     <Compile Include="CustomControls\SelectableTreeView.cs" />
     <Compile Include="CustomControls\TreeGridView\TreeToggleButton.cs" />
+    <Compile Include="DragDropConversions.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
     <Compile Include="Drawing\FontHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />

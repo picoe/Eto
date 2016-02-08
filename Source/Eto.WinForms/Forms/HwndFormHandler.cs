@@ -483,5 +483,36 @@ namespace Eto.WinForms.Forms
 				throw new NotImplementedException();
 			}
 		}
+
+		public bool AllowDrag
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public bool AllowDrop
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public void DoDragDrop(DragDropData data, DragDropAction allowedAction)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -7,6 +7,8 @@ using GLib;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -53,6 +55,8 @@ namespace Eto.GtkSharp.Forms
 		where TWidget: Control
 		where TCallback: Control.ICallback
 	{
+		bool allowDrop = false;
+		bool allowDrag = false;
 		Size size;
 		Size asize;
 		bool mouseDownHandled;
@@ -284,10 +288,14 @@ namespace Eto.GtkSharp.Forms
 				Control.Realized += Connector.HandleControlRealized;
 			else
 				RealizedSetup();
+
+			Control.DragDataReceived += Connector.HandleDragDataReceived;
+			Control.DragDataGet += Connector.HandleDragDataGet;
 		}
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
+			DragDropSources.DeleteControl(Control.Handle);
 		}
 
 		void RealizedSetup()
@@ -360,6 +368,13 @@ namespace Eto.GtkSharp.Forms
 					EventControl.AddEvents((int)Gdk.EventMask.VisibilityNotifyMask);
 					EventControl.VisibilityNotifyEvent += Connector.VisibilityNotifyEvent;
 					break;
+				case Eto.Forms.Control.DragDropEvent:
+					EventControl.DragDrop += Connector.HandleDragDrop;
+					break;
+				case Eto.Forms.Control.DragOverEvent:
+					EventControl.DragMotion += Connector.HandleDragMotion;
+					break;
+
 				default:
 					base.AttachEvent(id);
 					return;
@@ -378,6 +393,9 @@ namespace Eto.GtkSharp.Forms
 		/// </summary>
 		protected class GtkControlConnector : WeakConnector
 		{
+			private bool dragDataForDrop = false;
+			private DragEventArgs dragArgs;
+
 			new GtkControl<TControl, TWidget, TCallback> Handler { get { return (GtkControl<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
@@ -406,6 +424,79 @@ namespace Eto.GtkSharp.Forms
 				}
 
 				Handler.Callback.OnMouseWheel(Handler.Widget, new MouseEventArgs(buttons, modifiers, p, delta));
+			}
+
+			DragEventArgs GetDragData(Gtk.DragDataReceivedArgs args)
+			{
+				var widget = Gtk.Drag.GetSourceWidget(args.Context);
+				var source = widget == null ? null : DragDropSources.GetControl(widget.Handle);
+
+#if GTK2
+				var action = args.Context.Action;
+#else
+				var action = args.Context.SelectedAction;
+#endif
+
+				var uris = new List<Uri>();
+				if (!string.IsNullOrEmpty(args.SelectionData.Uris))
+				{
+					uris.AddRange(Encoding.UTF8.GetString(args.SelectionData.Data).TrimEnd('\0').Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(a => new Uri(a)));
+				}
+
+				var dropData = new DragDropData()
+				{
+					Text = args.SelectionData.Text,
+					Uris = uris
+				};
+
+				return new DragEventArgs(source, dropData, action.ToEtoDropAction());
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleDragDataReceived(object o, Gtk.DragDataReceivedArgs args)
+			{
+				dragArgs = GetDragData(args);
+
+				if (dragDataForDrop == true)
+				{
+					Handler.Callback.OnDragDrop(Handler.Widget, dragArgs);
+				}
+				else
+				{
+					Handler.Callback.OnDragEnter(Handler.Widget, dragArgs);
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleDragDataGet(object o, Gtk.DragDataGetArgs args)
+			{
+				if (!string.IsNullOrEmpty(Handler.DragInfo.Data.Text))
+				{
+					args.SelectionData.Text = Handler.DragInfo.Data.Text;
+				}
+
+				if (Handler.DragInfo.Data.Uris.Count > 0)
+				{
+					args.SelectionData.Set(Gdk.Atom.Intern("text/uri-list", false), 0, Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, Handler.DragInfo.Data.Uris)));
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleDragDrop(object o, Gtk.DragDropArgs args)
+			{
+				dragDataForDrop = true;
+				Gtk.Drag.GetData(Handler.Control, args.Context, Gdk.Atom.Intern("text", true), args.Time);
+				Gtk.Drag.Finish(args.Context, true, true, args.Time);
+				args.RetVal = true;
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleDragMotion(object o, Gtk.DragMotionArgs args)
+			{
+				dragDataForDrop = false;
+				Gtk.Drag.GetData(Handler.Control, args.Context, Gdk.Atom.Intern("text", true), args.Time);  
+				Gdk.Drag.Status(args.Context, dragArgs.Effect.ToPlatformDropAction(), args.Time);
+				args.RetVal = true;
 			}
 
 			[GLib.ConnectBefore]
@@ -667,5 +758,56 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		public bool AllowDrag
+		{
+			get
+			{
+				return allowDrag;
+			}
+
+			set
+			{
+				allowDrag = value;
+			}
+		}
+
+		public bool AllowDrop
+		{
+			get
+			{
+				return allowDrop;
+			}
+
+			set
+			{
+				if (value == true)
+				{
+					var targets = new Gtk.TargetList();
+					targets.AddTextTargets(0);
+					targets.AddUriTargets(1);
+					Gtk.Drag.DestSet(Control, 0, (Gtk.TargetEntry[])targets, 0);
+				}
+				else
+				{
+					Gtk.Drag.DestUnset(Control);
+				}
+
+				allowDrop = value;
+			}
+		}
+
+		public void DoDragDrop(DragDropData data, DragDropAction allowedAction)
+		{
+			var targets = new Gtk.TargetList();
+			targets.AddTextTargets(0);
+			targets.AddUriTargets(1);
+
+			DragInfo = new DragEventArgs(Widget, data, allowedAction);
+
+			DragDropSources.AddControl(Control.Handle, Widget);
+			Gtk.Drag.Begin(Control, targets, allowedAction.ToPlatformDropAction(), 1, new Gdk.Event(IntPtr.Zero));
+		}
+
+		public DragEventArgs DragInfo;
 	}
 }
