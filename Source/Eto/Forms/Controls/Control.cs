@@ -842,6 +842,23 @@ namespace Eto.Forms
 			Handler.Focus();
 		}
 
+
+		static readonly object SuspendCount_Key = new object();
+
+		int SuspendCount
+		{
+			get { return Properties.Get<int>(SuspendCount_Key); }
+			set { Properties.Set(SuspendCount_Key, value); }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the layout of child controls is suspended.
+		/// </summary>
+		/// <seealso cref="SuspendLayout"/>
+		/// <seealso cref="ResumeLayout"/>
+		/// <value><c>true</c> if this instance is suspended; otherwise, <c>false</c>.</value>
+		public bool IsSuspended { get { return SuspendCount > 0; } }
+
 		/// <summary>
 		/// Suspends the layout of child controls
 		/// </summary>
@@ -852,6 +869,7 @@ namespace Eto.Forms
 		/// </remarks>
 		public virtual void SuspendLayout()
 		{
+			SuspendCount++;
 			Handler.SuspendLayout();
 		}
 
@@ -864,6 +882,11 @@ namespace Eto.Forms
 		/// </remarks>
 		public virtual void ResumeLayout()
 		{
+			var count = SuspendCount;
+			if (count == 0)
+				throw new InvalidOperationException("Control is not suspended. You must balance calls to Resume() with Suspend()");
+			SuspendCount = --count;
+
 			Handler.ResumeLayout();
 		}
 

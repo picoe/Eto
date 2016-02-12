@@ -225,15 +225,23 @@ namespace Eto.Mac.Forms
 
 		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
-			var size = GetNaturalSize(availableSize);
+			SizeF size;
 			if (PreferredSize != null)
 			{
 				var preferredSize = PreferredSize.Value;
+				// only get natural size if the size isn't explicitly set.
+				if (preferredSize.Width == -1 || preferredSize.Height == -1)
+					size = GetNaturalSize(availableSize);
+				else
+					size = SizeF.Empty;
+
 				if (preferredSize.Width >= 0)
 					size.Width = preferredSize.Width;
 				if (preferredSize.Height >= 0)
 					size.Height = preferredSize.Height;
 			}
+			else
+				size = GetNaturalSize(availableSize);
 			return SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
 		}
 
@@ -532,12 +540,14 @@ namespace Eto.Mac.Forms
 			EventControl.SetNeedsDisplayInRect(region);
 		}
 
-		public void SuspendLayout()
+		public virtual void SuspendLayout()
 		{
 		}
 
-		public void ResumeLayout()
+		public virtual void ResumeLayout()
 		{
+			if (!Widget.IsSuspended && Widget.Loaded)
+				LayoutIfNeeded();
 		}
 
 

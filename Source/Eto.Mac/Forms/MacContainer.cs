@@ -108,6 +108,8 @@ namespace Eto.Mac.Forms
 
 		public void LayoutAllChildren()
 		{
+			if (Widget.IsSuspended)
+				return;
 			//Console.WriteLine("Layout all children: {0}\n {1}", this.GetType().Name, new StackTrace());
 			LayoutChildren();
 			foreach (var child in Widget.VisualControls.Select (r => r.GetMacContainer()).Where(r => r != null))
@@ -129,7 +131,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void LayoutParent(bool updateSize = true)
 		{
-			if (NeedsQueue(() => LayoutParent(updateSize)))
+			if (Widget.IsSuspended || NeedsQueue(() => LayoutParent(updateSize)))
 				return;
 			var container = Widget.VisualParent.GetMacContainer();
 			if (container != null)
