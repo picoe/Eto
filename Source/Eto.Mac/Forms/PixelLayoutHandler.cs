@@ -41,9 +41,17 @@ namespace Eto.Mac.Forms
 	{
 		public override NSView ContainerControl { get { return Control; } }
 
+		public class FlippedMacEventView : MacEventView 
+		{
+			public override bool IsFlipped
+			{
+				get { return true; }
+			}
+		}
+
 		protected override NSView CreateControl()
 		{
-			return new MacEventView();
+			return new FlippedMacEventView();
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
@@ -60,10 +68,11 @@ namespace Eto.Mac.Forms
 
 		void SetPosition(Control control, PointF point)
 		{
-			var offset = ((IMacViewHandler)control.Handler).PositionOffset;
-			var childView = control.GetContainerView();
-			
-			var preferredSize = control.GetPreferredSize(Control.Frame.Size.ToEtoSize());
+			var macControl = control.GetMacControl();
+			var offset = macControl.PositionOffset;
+			var childView = macControl.ContainerControl;
+			var availableSize = Widget.Loaded ? Size.MaxValue : Control.Frame.Size.ToEtoSize();
+			var preferredSize = macControl.GetPreferredSize(availableSize);
 
 			var origin = new CGPoint(point.X + offset.Width, point.Y + offset.Height);
 			if (!Control.IsFlipped)
@@ -71,18 +80,49 @@ namespace Eto.Mac.Forms
 				origin.Y = Control.Frame.Height - origin.Y - preferredSize.Height;
 			}
 
-			var frame = new CGRect(origin, preferredSize.ToNS());
-			if (frame != childView.Frame)
+			childView.Frame = new CGRect(origin, preferredSize.ToNS());;
+		}
+
+		public override void LayoutChildren()
+		{
+			base.LayoutChildren();
+
+			// set sizes of controls when resizing since available size changes, 
+			// it may change the preferred size of the children.
+			var availableSize = Widget.Loaded ? Size.MaxValue : Control.Frame.Size.ToEtoSize();
+			foreach (var control in Widget.Controls.Select(r => r.GetMacControl()))
 			{
-				childView.Frame = frame;
+				if (control == null)
+					continue;
+
+				var preferredSize = control.GetPreferredSize(availableSize);
+				control.ContainerControl.SetFrameSize(preferredSize.ToNS());
 			}
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			LayoutChildren();
+			Widget.SizeChanged += Widget_SizeChanged;;
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			Widget.SizeChanged -= Widget_SizeChanged;;
+		}
+
+		void Widget_SizeChanged (object sender, EventArgs e)
+		{
+			LayoutChildren();
 		}
 
 		public void Add(Control child, int x, int y)
 		{
 			var location = new Point(x, y);
 			var childView = child.GetContainerView();
-			childView.AutoresizingMask = NSViewResizingMask.MinYMargin;
+			childView.AutoresizingMask = NSViewResizingMask.NotSizable;
 			SetPosition(child, location);
 			Control.AddSubview(childView);
 			if (Widget.Loaded)
