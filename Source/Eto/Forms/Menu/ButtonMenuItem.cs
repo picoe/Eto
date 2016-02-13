@@ -38,6 +38,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class with the specified <paramref name="click"/> handler.
+		/// </summary>
+		/// <remarks>
+		/// This is a convenience constructor to set up the click event.
+		/// </remarks>
+		/// <param name="click">Delegate to handle when the menu item is clicked.</param>
+		public ButtonMenuItem(EventHandler<EventArgs> click)
+		{
+			Click += click;
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.ButtonMenuItem"/> class with the specified command.
 		/// </summary>
 		/// <param name="command">Command to initialize the menu item with.</param>
