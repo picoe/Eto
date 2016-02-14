@@ -26,6 +26,15 @@ namespace Eto.Serialization.Xaml
 		/// </summary>
 		public static readonly string EtoFormsNamespace = EtoXamlSchemaContext.EtoFormsNamespace;
 
+		static Assembly GetAssembly(Type type)
+		{
+			#if PCL
+			return type.GetTypeInfo().Assembly;
+			#else
+			return type.Assembly;
+			#endif
+		}
+
 		static Stream GetStream(Type type)
 		{
 			return
@@ -36,11 +45,7 @@ namespace Eto.Serialization.Xaml
 
 		static Stream GetStream(Type type, string resourceName)
 		{
-#if PCL
-			return type.GetTypeInfo().Assembly.GetManifestResourceStream(resourceName);
-#else
-			return type.Assembly.GetManifestResourceStream(resourceName);
-#endif
+			return GetAssembly(type).GetManifestResourceStream(resourceName);
 		}
 
 		/// <summary>
@@ -155,7 +160,9 @@ namespace Eto.Serialization.Xaml
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(TextReader reader, T instance)
 		{
-			return Load<T>(new XamlXmlReader(reader, context), instance);
+			var readerSettings = new XamlXmlReaderSettings();
+			readerSettings.LocalAssembly = GetAssembly(typeof(T));
+			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 
 		/// <summary>
@@ -167,7 +174,9 @@ namespace Eto.Serialization.Xaml
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(XmlReader reader, T instance)
 		{
-			return Load<T>(new XamlXmlReader(reader, context), instance);
+			var readerSettings = new XamlXmlReaderSettings();
+			readerSettings.LocalAssembly = GetAssembly(typeof(T));
+			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 
 		static T Load<T>(XamlXmlReader reader, T instance)
