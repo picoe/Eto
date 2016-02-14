@@ -22,7 +22,7 @@ https://github.com/picoe/Eto/wiki
 		<dependencies>
 			<group>
 				<dependency id="Eto.Forms" version="[$version$]" />
-				<dependency id="Portable.Xaml" version="0.10.0" />
+				<dependency id="Portable.Xaml" version="0.11.0" />
 			</group>
 		</dependencies>
 	</metadata>
