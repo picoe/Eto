@@ -105,7 +105,7 @@ namespace Eto.WinForms.Forms
 					SetContentScale(XScale, YScale);
 					var childHandler = content.GetWindowsHandler();
 					childHandler.BeforeAddControl(Widget.Loaded);
-					SetContent(childHandler.ContainerControl);
+					SetContent(value, childHandler.ContainerControl);
 				}
 
 				if (Widget.Loaded)
@@ -113,7 +113,7 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		protected virtual void SetContent(swf.Control contentControl)
+		protected virtual void SetContent(Control control, swf.Control contentControl)
 		{
 			contentControl.Dock = swf.DockStyle.Fill;
 			ContainerContentControl.Controls.Add(contentControl);

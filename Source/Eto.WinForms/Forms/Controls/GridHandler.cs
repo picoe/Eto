@@ -40,6 +40,8 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			public GridHandler<TWidget, TCallback> Handler { get; set; }
 
+			public EtoDataGridView() { DoubleBuffered = true; }
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var size = base.GetPreferredSize(proposedSize);
@@ -122,7 +124,7 @@ namespace Eto.WinForms.Forms.Controls
 		public override Color BackgroundColor
 		{
 			get { return Control.BackgroundColor.ToEto(); }
-			set { Control.BackgroundColor = value.ToSD(); }
+			set { BackgroundColorSet = true; Control.BackgroundColor = value.ToSD(); }
 		}
 
 		public override void OnUnLoad(EventArgs e)

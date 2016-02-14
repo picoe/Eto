@@ -10,7 +10,7 @@ using Eto.WinForms.Forms.Menu;
 
 namespace Eto.WinForms.Forms
 {
-	public interface IWindowsControl
+	public interface IWindowsControl: Control.IHandler
 	{
 		bool InternalVisible { get; }
 
@@ -31,6 +31,8 @@ namespace Eto.WinForms.Forms
 		bool XScale { get; }
 
 		bool YScale { get; }
+
+		bool BackgroundColorSet { get; }
 
 		Control.ICallback Callback { get; }
 
@@ -91,6 +93,79 @@ namespace Eto.WinForms.Forms
 		where TWidget : Control
 		where TCallback : Control.ICallback
 	{
+
+		// used in DrawableHandler
+		public class PanelBase<THandler> : swf.Panel
+			where THandler: WindowsControl<TControl, TWidget, TCallback>
+		{
+			public THandler Handler { get; set; }
+
+			public PanelBase( THandler handler = null )
+			{
+				Handler = handler;
+				Size = sd.Size.Empty;
+				MinimumSize = sd.Size.Empty;
+				AutoSize = true;
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink;
+			}
+
+			public override sd.Size GetPreferredSize(sd.Size proposedSize)
+			{
+				var userSize = Handler.UserDesiredSize;
+				var size = userSize.Width >= 0 && userSize.Height >= 0 ? sd.Size.Empty
+					: base.GetPreferredSize(proposedSize);
+				if (userSize.Width >= 0)
+					size.Width = Math.Max(userSize.Width, MinimumSize.Width);
+				if (userSize.Height >= 0)
+					size.Height = Math.Max(userSize.Height, MinimumSize.Height);
+				return size;
+			}
+			// Need to override IsInputKey to capture 
+			// the arrow keys.
+			protected override bool IsInputKey(swf.Keys keyData)
+			{
+				switch (keyData & swf.Keys.KeyCode)
+				{
+					case swf.Keys.Up:
+					case swf.Keys.Down:
+					case swf.Keys.Left:
+					case swf.Keys.Right:
+					case swf.Keys.Back:
+						return true;
+					default:
+						return base.IsInputKey(keyData);
+				}
+			}
+		}
+
+		// used in Panel+PixelLayout and similar code is in TableLayout
+		public class EtoPanel<THandler> : PanelBase<THandler>
+			where THandler : WindowsControl<TControl, TWidget, TCallback>
+		{
+			public EtoPanel( THandler handler = null )
+				: base( handler )
+			{ }
+
+			// optimization especially for content on drawable
+			protected override void OnBackColorChanged( EventArgs e )
+			{
+				SetStyle
+					( swf.ControlStyles.AllPaintingInWmPaint
+					| swf.ControlStyles.DoubleBuffer
+					, BackColor.A != 255 );
+				base.OnBackColorChanged( e );
+			}
+			protected override void OnParentBackColorChanged( EventArgs e )
+			{
+				SetStyle
+					( swf.ControlStyles.AllPaintingInWmPaint
+					| swf.ControlStyles.DoubleBuffer
+					, BackColor.A != 255 );
+				base.OnParentBackColorChanged( e );
+			}
+		}
+
+
 		Size parentMinimumSize;
 
 		public override IntPtr NativeHandle { get { return Control.Handle; } }
@@ -458,7 +533,16 @@ namespace Eto.WinForms.Forms
 		public virtual Color BackgroundColor
 		{
 			get { return Control.BackColor.ToEto(); }
-			set { Control.BackColor = value.ToSD(); }
+			set { backgroundColorSet = true; Control.BackColor = value.ToSD(); }
+		}
+		bool backgroundColorSet;
+		public bool BackgroundColorSet {
+			get { return backgroundColorSet;  }
+			set
+			{
+				if (!( backgroundColorSet = value ))
+					Control.BackColor = sd.Color.Empty;
+			}
 		}
 
 		public virtual void SuspendLayout()

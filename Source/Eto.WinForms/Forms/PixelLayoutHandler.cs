@@ -5,17 +5,17 @@ using Eto.Drawing;
 
 namespace Eto.WinForms.Forms
 {
-	public class PixelLayoutHandler : WindowsContainer<swf.Panel, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler
+	public class PixelLayoutHandler : WindowsContainer<PixelLayoutHandler.Panel, PixelLayout, PixelLayout.ICallback>, PixelLayout.IHandler
 	{
+		public class Panel: EtoPanel<PixelLayoutHandler>
+		{
+			public Panel(PixelLayoutHandler handler)
+				: base(handler)
+			{ }
+		}
 		public PixelLayoutHandler()
 		{
-			Control = new swf.Panel
-			{
-				Size = sd.Size.Empty,
-				MinimumSize = sd.Size.Empty,
-				AutoSize = true,
-				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
-			};
+			Control = new Panel(this);
 		}
 
 		public override void SetScale(bool xscale, bool yscale)

@@ -25,6 +25,9 @@ namespace Eto.Wpf
 
 		public override bool IsWpf { get { return true; } }
 
+		public override PlatformFeatureFlags SupportedFeatures =>
+			PlatformFeatureFlags.DrawableWithTransparentContent;
+
 		static Platform()
 		{
 			EmbeddedAssemblyLoader.Register("Eto.Wpf.CustomControls.Assemblies");
