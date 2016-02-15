@@ -26,15 +26,6 @@ namespace Eto.Serialization.Xaml
 		/// </summary>
 		public static readonly string EtoFormsNamespace = EtoXamlSchemaContext.EtoFormsNamespace;
 
-		static Assembly GetAssembly(Type type)
-		{
-			#if PCL
-			return type.GetTypeInfo().Assembly;
-			#else
-			return type.Assembly;
-			#endif
-		}
-
 		static Stream GetStream(Type type)
 		{
 			return
@@ -45,7 +36,7 @@ namespace Eto.Serialization.Xaml
 
 		static Stream GetStream(Type type, string resourceName)
 		{
-			return GetAssembly(type).GetManifestResourceStream(resourceName);
+			return type.GetAssembly().GetManifestResourceStream(resourceName);
 		}
 
 		/// <summary>
@@ -161,7 +152,7 @@ namespace Eto.Serialization.Xaml
 		public static T Load<T>(TextReader reader, T instance)
 		{
 			var readerSettings = new XamlXmlReaderSettings();
-			readerSettings.LocalAssembly = GetAssembly(typeof(T));
+			readerSettings.LocalAssembly = typeof(T).GetAssembly();
 			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 
@@ -175,7 +166,7 @@ namespace Eto.Serialization.Xaml
 		public static T Load<T>(XmlReader reader, T instance)
 		{
 			var readerSettings = new XamlXmlReaderSettings();
-			readerSettings.LocalAssembly = GetAssembly(typeof(T));
+			readerSettings.LocalAssembly = typeof(T).GetAssembly();
 			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 

@@ -51,6 +51,9 @@
     <Compile Include="Extensions\OnExtension.cs" />
     <Compile Include="EtoNameScope.cs" />
     <Compile Include="Extensions\FontExtension.cs" />
+    <Compile Include="..\Eto\TypeHelper.cs">
+      <Link>TypeHelper.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
