@@ -109,6 +109,72 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Creates a horizontal table layout with the specified cells scaled equally.
+		/// </summary>
+		/// <remarks>
+		/// Since table layouts are by default vertical by defining the rows and the cells for each row,
+		/// it is verbose to create nested tables when you want a horizontal table.  E.g. <code>new TableLayout(new TableRow(...))</code>.
+		/// 
+		/// This method is used to easily create a single row table layout with a horizontal set of cells. E.g.
+		/// <code>TableLayout.HorizontalScaled(...)</code>
+		/// 
+		/// The difference between Horizontal and HorizontalScaled is that this method sets
+		/// ScaleWidth on each cell.
+		/// </remarks>
+		/// <param name="cells">Cells for the row</param>
+		/// <returns>A new single row table layout with the specified cells</returns>
+		public static TableLayout HorizontalScaled(params TableCell[] cells)
+		{
+			foreach (TableCell cell in cells)
+				if(cell != null)
+					cell.ScaleWidth = true;
+			return new TableLayout(new TableRow(cells));
+		}
+
+		/// <summary>
+		/// Creates a horizontal table layout with the specified cells.
+		/// </summary>
+		/// <remarks>
+		/// Since table layouts are by default vertical by defining the rows and the cells for each row,
+		/// it is verbose to create nested tables when you want a horizontal table.  E.g. <code>new TableLayout(new TableRow(...))</code>.
+		/// 
+		/// This method is used to easily create a single row table layout with a horizontal set of cells. E.g.
+		/// <code>TableLayout.Horizontal(...)</code>
+		/// </remarks>
+		/// <param name="spacing">Spacing between cells</param>
+		/// <param name="cells">Cells for the row</param>
+		/// <returns>A new single row table layout with the specified cells</returns>
+		public static TableLayout Horizontal(int spacing, params TableCell[] cells)
+		{
+			return new TableLayout(new TableRow(cells)) { Spacing = new Size(spacing, spacing) };
+		}
+
+		/// <summary>
+		/// Creates a horizontal table layout with the specified cells scaled equally.
+		/// </summary>
+		/// <remarks>
+		/// Since table layouts are by default vertical by defining the rows and the cells for each row,
+		/// it is verbose to create nested tables when you want a horizontal table.  E.g. <code>new TableLayout(new TableRow(...))</code>.
+		/// 
+		/// This method is used to easily create a single row table layout with a horizontal set of cells. E.g.
+		/// <code>TableLayout.HorizontalScaled(...)</code>
+		/// 
+		/// The difference between Horizontal and HorizontalScaled is that this method sets
+		/// ScaleWidth on each cell.
+		/// </remarks>
+		/// <param name="spacing">Spacing between cells</param>
+		/// <param name="cells">Cells for the row</param>
+		/// <returns>A new single row table layout with the specified cells</returns>
+		public static TableLayout HorizontalScaled(int spacing, params TableCell[] cells)
+		{
+			foreach (TableCell cell in cells)
+				if(cell != null)
+					cell.ScaleWidth = true;
+			return new TableLayout(new TableRow(cells)) { Spacing = new Size(spacing, spacing) };
+		}
+
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class.
 		/// </summary>
 		public TableLayout()
@@ -153,6 +219,22 @@ namespace Eto.Forms
 		/// <param name="rows">Rows to populate the table.</param>
 		public TableLayout(IEnumerable<TableRow> rows)
 		{
+			Rows = new TableRowCollection(rows);
+			Create();
+			Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class with the specified rows.
+		/// </summary>
+		/// <param name="yscale">Scale all rows</param>
+		/// <param name="rows">Rows to populate the table.</param>
+		public TableLayout(bool yscale, params TableRow[] rows)
+		{
+			if (yscale)
+				foreach (TableRow row in rows)
+					if(row != null)
+						row.ScaleHeight = true;
 			Rows = new TableRowCollection(rows);
 			Create();
 			Initialize();

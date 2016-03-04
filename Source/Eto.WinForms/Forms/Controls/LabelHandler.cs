@@ -97,10 +97,12 @@ namespace Eto.WinForms.Forms.Controls
 				}
 			}
 
-			public LabelHandler Handler { get; set; }
+			public LabelHandler Handler { get; }
 
-			public EtoLabel()
+			public EtoLabel(LabelHandler handler)
 			{
+				Handler = handler;
+				AutoSize = true;
 				Wrap = WrapMode.Word;
 			}
 
@@ -239,22 +241,18 @@ namespace Eto.WinForms.Forms.Controls
 					{
 						var r = rect;
 						r.Height = position.Size.Height;
-						swf.TextRenderer.DrawText(e.Graphics, position.Text, Font, r, ForeColor, BackColor, textFormat);
+						swf.TextRenderer.DrawText(e.Graphics, position.Text, Font, r, ForeColor, textFormat);
 						rect.Y += r.Height;
 					}
 					return;
 				}
-				swf.TextRenderer.DrawText(e.Graphics, Text, Font, rect, ForeColor, BackColor, textFormat);
+				swf.TextRenderer.DrawText(e.Graphics, Text, Font, rect, ForeColor, textFormat);
 			}
 		}
 
 		public LabelHandler()
 		{
-			Control = new EtoLabel
-			{
-				Handler = this,
-				AutoSize = true
-			};
+			Control = new EtoLabel(this);
 		}
 
 		protected override void Initialize()

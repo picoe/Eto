@@ -62,19 +62,24 @@ namespace Eto.WinForms.Drawing
 
 		bool shouldDisposeGraphics = true;
 
-		public GraphicsHandler(sd.Graphics graphics, bool shouldDisposeGraphics = true)
+		/// <summary>
+		/// Create handler for <see cref="Graphics.IHandler"/>.
+		/// </summary>
+		/// <param name="graphics">Native graphics to use</param>
+		/// <param name="dispose">Pass ownership and dispose native graphics in Dispos></param>
+		public GraphicsHandler(sd.Graphics graphics, bool dispose)
 			: this()
 		{
 			this.Control = graphics;
-			this.shouldDisposeGraphics = shouldDisposeGraphics;
+			this.shouldDisposeGraphics = dispose;
 		}
 
-		protected override void Dispose(bool disposing)
+		protected override bool DisposeControl
 		{
-			if (!shouldDisposeGraphics)
-				Control = null;
-
-			base.Dispose(disposing);
+			get
+			{
+				return shouldDisposeGraphics;
+			}
 		}
 
 		public bool AntiAlias

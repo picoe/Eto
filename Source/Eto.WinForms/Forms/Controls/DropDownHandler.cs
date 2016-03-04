@@ -158,18 +158,6 @@ namespace Eto.WinForms.Forms.Controls
 			};
 		}
 
-		public override Color BackgroundColor
-		{
-			get
-			{
-				return Control.BackColor.ToEto();
-			}
-			set
-			{
-				Control.BackColor = value.ToSD();
-			}
-		}
-
 		public override Size GetPreferredSize(Size availableSize, bool useCache)
 		{
 			if (Control.AutoSize)

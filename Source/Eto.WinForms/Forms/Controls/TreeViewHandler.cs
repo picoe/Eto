@@ -15,12 +15,30 @@ namespace Eto.WinForms.Forms.Controls
 		static readonly string EmptyName = Guid.NewGuid().ToString();
 		bool ignoreExpandCollapseEvents = true;
 
+		// flicker-free with no effort, works since Vista, but won't hurt on XP
+		class OptimizedTreeView : swf.TreeView
+		{
+			public OptimizedTreeView()
+			{
+				HideSelection = false;
+				SetStyle
+					( swf.ControlStyles.OptimizedDoubleBuffer
+					| swf.ControlStyles.AllPaintingInWmPaint
+					, true);
+			}
+
+			const int TVS_EX_DOUBLEBUFFER = 0x0004;
+			protected override void OnHandleCreated(EventArgs e)
+			{
+				base.OnHandleCreated(e);
+				Win32.SendMessage(Handle, Win32.WM.TVM_SETEXTENDEDSTYLE,
+					(IntPtr)TVS_EX_DOUBLEBUFFER, (IntPtr)TVS_EX_DOUBLEBUFFER);
+			}
+		}
+
 		public TreeViewHandler()
 		{
-			this.Control = new swf.TreeView
-			{
-				HideSelection = false
-			};
+			this.Control = new OptimizedTreeView();
 
 			this.Control.BeforeExpand += delegate(object sender, System.Windows.Forms.TreeViewCancelEventArgs e)
 			{

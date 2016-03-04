@@ -13,6 +13,8 @@ namespace Eto.Designer
 		int processingCount;
 		Func<string> getCode;
 
+		static double lastPosition = 0.4;
+
 		public BuilderInfo Builder { get; private set; }
 
 		public Control Editor { get; }
@@ -26,7 +28,7 @@ namespace Eto.Designer
 
 			Orientation = Orientation.Vertical;
 			FixedPanel = SplitterFixedPanel.None;
-			RelativePosition = 0.4;
+			RelativePosition = lastPosition;
 
 			previewPanel = new Panel();
 			errorPanel = new Panel { Padding = new Padding(5), Visible = false, BackgroundColor = new Color(Colors.Red, .4f) };
@@ -63,6 +65,12 @@ namespace Eto.Designer
 					FinishProcessing(null, ex);
                 }
 			}
+		}
+
+		protected override void OnPositionChanged(EventArgs e)
+		{
+			base.OnPositionChanged(e);
+			lastPosition = RelativePosition;
 		}
 
 		void FinishProcessing(Control child, Exception error)

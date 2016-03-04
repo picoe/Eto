@@ -49,12 +49,13 @@ namespace Eto.WinForms.Forms.Printing
 
 		protected virtual void HandlePrintPage(object sender, sdp.PrintPageEventArgs e)
 		{
-			var graphics = new Graphics(new GraphicsHandler(e.Graphics));
-
-			var args = new PrintPageEventArgs(graphics, e.PageBounds.Size.ToEto(), currentPage);
-			Callback.OnPrintPage(Widget, args);
-			currentPage++;
-			e.HasMorePages = currentPage < PageCount;
+			using (var graphics = e.Graphics.ToEto(false))
+			{
+				var args = new PrintPageEventArgs(graphics, e.PageBounds.Size.ToEto(), currentPage);
+				Callback.OnPrintPage(Widget, args);
+				currentPage++;
+				e.HasMorePages = currentPage < PageCount;
+			}
 		}
 
 		public string Name

@@ -73,7 +73,10 @@ namespace Eto.Test.Sections.Drawing
 
 			drawable.Paint += (sender, pe) => Draw(pe.Graphics);
 
-			layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), null);
+			if (( Platform.SupportedFeatures & PlatformFeatureFlags.DrawableWithTransparentContent ) == 0)
+				layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), null);
+			else
+				layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), WithContent(), null);
 			if (Platform.Supports<NumericUpDown>())
 			{
 				matrixRow = layout.AddSeparateRow(null, new Label { Text = "Rot" }, RotationControl(), new Label { Text = "Sx" }, ScaleXControl(), new Label { Text = "Sy" }, ScaleYControl(), new Label { Text = "Ox" }, OffsetXControl(), new Label { Text = "Oy" }, OffsetYControl(), null);
@@ -309,6 +312,22 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new CheckBox { Text = "Use Background Color" };
 			control.CheckedBinding.Bind(() => UseBackgroundColor, v => UseBackgroundColor = v ?? false);
+			return control;
+		}
+
+		Control WithContent()
+		{
+			var control = new CheckBox() { Text = "With Content" };
+			control.CheckedChanged += (s, e) =>
+			{
+				drawable.Content = ( (CheckBox)s ).Checked == true ?
+				TableLayout.AutoSized(
+					new Label() {
+						Text = "Some text",
+						BackgroundColor = Colors.Transparent },
+					centered: true
+				).With(tl => tl.BackgroundColor = Color.FromArgb(0x40000000)) : null;
+			};
 			return control;
 		}
 

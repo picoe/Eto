@@ -138,6 +138,10 @@ namespace Eto
 
 			// Calculate the quadratic parameters
 			var a = (end.X - start.X) * (end.X - start.X) / rx / rx + (end.Y - start.Y) * (end.Y - start.Y) / ry / ry;
+
+			if (a == 0) // when the start & end are at the same point, there is no line to intersect with.
+				return null;
+
 			var b = 2 * start.X * (end.X - start.X) / rx / rx + 2 * start.Y * (end.Y - start.Y) / ry / ry;
 			float c = start.X * start.X / rx / rx + start.Y * start.Y / ry / ry - 1;
 
