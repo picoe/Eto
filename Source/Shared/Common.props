@@ -7,5 +7,5 @@
 		<!-- Prevent VS2015 from copying files from the GAC to the output folder -->
 		<DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
 	</PropertyGroup>
-	<Import Condition="Exists('../../../Eto.Common.props')" Project="../../../Eto.Common.props" />
+	<Import Condition="Exists('$(MSBuildThisFileDirectory)\..\..\..\Eto.Common.props')" Project="$(MSBuildThisFileDirectory)\..\..\..\Eto.Common.props" />
 </Project>
