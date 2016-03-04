@@ -183,6 +183,14 @@ namespace Eto.Designer.Builders
 			}
 			else if (EtoEnvironment.Platform.IsMac)
 				referenceDir = @"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5";
+			else
+			{
+				// Linux
+				// use an arbitrary type that lives in mscorlib to find the location of
+				// mscorlib. We assume that this path is the directory that contains the othere
+				// reference assemblies as well.
+				referenceDir = Path.GetDirectoryName(typeof(Array).Assembly.Location);
+			}
 
 			if (string.IsNullOrEmpty(referenceDir))
 				throw new InvalidOperationException("Cannot find reference assemblies folder");
