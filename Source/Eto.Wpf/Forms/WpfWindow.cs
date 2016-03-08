@@ -46,6 +46,10 @@ namespace Eto.Wpf.Forms
 			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
 		}
 
+		public swc.DockPanel ContentPanel { get { return content; } }
+
+		public swc.DockPanel MainPanel { get { return main; } }
+
 		protected override void Initialize()
 		{
 			content = new swc.DockPanel();
