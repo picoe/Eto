@@ -194,6 +194,7 @@
     <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
     <Compile Include="UnitTests\Forms\TestClasses.cs" />
     <Compile Include="UnitTests\Forms\Controls\ImageViewTests.cs" />
+    <Compile Include="UnitTests\Forms\WindowTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
