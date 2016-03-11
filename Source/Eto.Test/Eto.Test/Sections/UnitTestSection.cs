@@ -202,7 +202,8 @@ namespace Eto.Test.Sections
 				timer.Elapsed += (sender, e) =>
 				{
 					timer.Stop();
-					PopulateTree(search.Text);
+					var searchText = search.Text;
+					Task.Factory.StartNew(() => PopulateTree(searchText));
 				};
 				search.TextChanged += (sender, e) => {
 					if (timer.Started)
