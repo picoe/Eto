@@ -823,7 +823,10 @@ namespace Eto.Mac.Forms
 			{
 				WindowState = initialState.Value;
 				initialState = null;
+				Callback.OnSizeChanged(Widget, EventArgs.Empty);
 			}
+			else if (setInitialSize)
+				Callback.OnSizeChanged(Widget, EventArgs.Empty);
 		}
 
 		protected virtual void PositionWindow()
