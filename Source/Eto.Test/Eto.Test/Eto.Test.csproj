@@ -203,6 +203,7 @@
     <Compile Include="UnitTests\Forms\TestClasses.cs" />
     <Compile Include="UnitTests\Forms\Controls\ImageViewTests.cs" />
     <Compile Include="UnitTests\Forms\WindowTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ControlEventTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

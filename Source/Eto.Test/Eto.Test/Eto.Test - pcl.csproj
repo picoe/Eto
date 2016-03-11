@@ -195,6 +195,7 @@
     <Compile Include="UnitTests\Forms\TestClasses.cs" />
     <Compile Include="UnitTests\Forms\Controls\ImageViewTests.cs" />
     <Compile Include="UnitTests\Forms\WindowTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ControlEventTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
