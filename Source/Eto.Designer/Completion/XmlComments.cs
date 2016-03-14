@@ -6,13 +6,15 @@ using System.Xml;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Eto.Designer.Completion
 {
 
 	public static class XmlComments
 	{
-		static Dictionary<string, string> lookup;
+		static Dictionary<string, XmlElement> lookup;
+		static Dictionary<string, string> lookupTranslated;
 		public static bool EncodeHtml = true;
 
 		static string GetNiceName(Type type)
@@ -32,7 +34,8 @@ namespace Eto.Designer.Completion
 		{
 			if (lookup != null)
 				return true;
-			lookup = new Dictionary<string, string>();
+			lookup = new Dictionary<string, XmlElement>();
+			lookupTranslated = new Dictionary<string, string>();
 			var dllPath = typeof(Eto.Widget).Assembly.Location;
 			var xmlPath = Path.Combine(Path.GetDirectoryName(dllPath), Path.GetFileNameWithoutExtension(dllPath) + ".xml");
 			if (!File.Exists(xmlPath))
@@ -41,40 +44,9 @@ namespace Eto.Designer.Completion
 			doc.Load(xmlPath);
 			foreach (var node in doc.DocumentElement.SelectNodes("members/member").OfType<XmlElement>())
 			{
-				try
-				{
-					var nodeName = node.GetAttribute("name");
-					var typeName = nodeName.Substring(nodeName.IndexOf(':') + 1);
-					string description;
-					if (nodeName.StartsWith("P:") || nodeName.StartsWith("E:"))
-					{
-						var lastDot = typeName.LastIndexOf('.');
-						var propName = typeName.Substring(lastDot + 1);
-						typeName = typeName.Substring(0, lastDot);
-						var type = typeof(Eto.Widget).Assembly.GetType(typeName);
-						if (nodeName.StartsWith("E:"))
-						{
-							var evt = type?.GetEvents().FirstOrDefault(r => r.Name == propName);
-							description = GetDescription(GetNiceName(evt?.EventHandlerType), node);
-						}
-						else if (nodeName.StartsWith("P:"))
-						{
-							var property = type?.GetProperties().FirstOrDefault(r => r.Name == propName);
-							description = GetDescription(property != null ? string.Format("{0} : {1}", property.Name, GetNiceName(property.PropertyType)) : null, node);
-						}
-						else
-							description = GetDescription(null, node);
-					}
-					else
-					{
-						description = GetDescription(null, node);
-					}
-					lookup[nodeName] = description;
-				}
-				catch (Exception ex)
-				{
-					Debug.WriteLine(ex);
-				}
+				var nodeName = node.GetAttribute("name");
+				if (!string.IsNullOrEmpty(nodeName))
+					lookup[nodeName] = node;
 			}
 			return true;
 		}
@@ -107,12 +79,44 @@ namespace Eto.Designer.Completion
 			return GetSummary(path);
 		}
 
-		static string GetSummary(string path)
+		static string GetSummary(string nodeName)
 		{
 			EnsureDoc();
-			string result;
-			if (lookup.TryGetValue(path, out result))
-				return result;
+			string description;
+			if (lookupTranslated.TryGetValue(nodeName, out description))
+				return description;
+
+			XmlElement node;
+			if (lookup.TryGetValue(nodeName, out node))
+			{
+				var typeName = nodeName.Substring(nodeName.IndexOf(':') + 1);
+				if (nodeName.StartsWith("P:") || nodeName.StartsWith("E:"))
+				{
+					var lastDot = typeName.LastIndexOf('.');
+					var propName = typeName.Substring(lastDot + 1);
+					typeName = typeName.Substring(0, lastDot);
+					var type = typeof(Eto.Widget).Assembly.GetType(typeName);
+					if (nodeName.StartsWith("E:"))
+					{
+						var evt = type?.GetEvents().FirstOrDefault(r => r.Name == propName);
+						description = GetDescription(GetNiceName(evt?.EventHandlerType), node);
+					}
+					else if (nodeName.StartsWith("P:"))
+					{
+						var property = type?.GetProperties().FirstOrDefault(r => r.Name == propName);
+						description = GetDescription(property != null ? string.Format("{0} : {1}", property.Name, GetNiceName(property.PropertyType)) : null, node);
+					}
+					else
+						description = GetDescription(null, node);
+				}
+				else
+				{
+					description = GetDescription(null, node);
+				}
+				lookup.Remove(nodeName);
+				lookupTranslated[nodeName] = description;
+				return description;
+			}
 			return null;
 		}
 
@@ -121,27 +125,50 @@ namespace Eto.Designer.Completion
 			var sb = new StringBuilder();
 			if (name != null)
 			{
+				name = EncodeHtml ? System.Net.WebUtility.HtmlEncode(name) : name;
 				sb.AppendLine(name);
 				sb.AppendLine();
 			}
 
 			sb.AppendLine("Summary");
 			GetDescription(node, sb);
-			return EncodeHtml ? System.Net.WebUtility.HtmlEncode(sb.ToString()) : sb.ToString();
+			return sb.ToString();
+		}
+
+		static Regex regReferences;
+		static Regex regPrefix = new Regex(@"^\w\:(Eto.Forms.)?", RegexOptions.Compiled);
+
+		static string TranslateCref(string name)
+		{
+			if (EncodeHtml)
+			{
+				if (regReferences == null)
+					regReferences = new Regex(@"&lt;\w+\s+\w+\s*=\s*((&quot;(?<c>.*?)&quot;)|('(?<c>.*?)'))\s*/&gt;", RegexOptions.Compiled);
+				name = System.Net.WebUtility.HtmlEncode(name);
+				return regReferences.Replace(name, m => "<i>" + regPrefix.Replace(m.Groups["c"].Value, "") + "</i>");
+
+			}
+			else
+			{
+				if (regReferences == null)
+					regReferences = new Regex(@"<\w+\s+\w+\s*=\s*((""(?<c>.*?)"")|('(?<c>.*?)'))\s*/>", RegexOptions.Compiled);
+				return regReferences.Replace(name, m => regPrefix.Replace(m.Groups["c"].Value, ""));
+
+			}
 		}
 
 		static void GetDescription(XmlNode node, StringBuilder sb)
 		{
 			if (node == null)
 				return;
-			var summary = node.SelectSingleNode("summary")?.InnerText.Trim();
-			var details = node.SelectSingleNode("remarks")?.InnerText.Trim();
-			sb.Append(summary);
+			var summary = node.SelectSingleNode("summary")?.InnerXml.Trim();
+			var details = node.SelectSingleNode("remarks")?.InnerXml.Trim();
+			sb.Append(TranslateCref(summary));
 			if (!string.IsNullOrEmpty(details))
 			{
 				sb.AppendLine();
 				sb.AppendLine();
-				var reader = new StringReader(details);
+				var reader = new StringReader(TranslateCref(details));
 				string line;
 				var newline = true;
 				while ((line = reader.ReadLine()) != null)

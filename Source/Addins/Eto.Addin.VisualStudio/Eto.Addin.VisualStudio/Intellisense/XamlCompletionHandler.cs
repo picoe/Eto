@@ -79,6 +79,8 @@ namespace Eto.Addin.VisualStudio.Intellisense
 					{
 						Action complete = () =>
 						{
+							if (session.SelectedCompletionSet == null)
+								return;
 							var endPoint = session.SelectedCompletionSet.ApplicableTo.GetEndPoint(session.TextView.TextSnapshot);
 							var endChar = endPoint.GetChar();
 							session.Commit();

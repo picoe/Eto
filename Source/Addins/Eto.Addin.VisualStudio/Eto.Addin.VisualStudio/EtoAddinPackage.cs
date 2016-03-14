@@ -27,8 +27,10 @@ namespace Eto.Addin.VisualStudio
 	[ProvideEditorExtension(typeof(EditorFactory), ".fs", 0x100, NameResourceID = 106)]
 	[ProvideEditorExtension(typeof(EditorFactory), ".jeto", 0x1000, NameResourceID = 106)]
 	[ProvideEditorExtension(typeof(EditorFactory), ".xeto", 0x1000, NameResourceID = 106)]
-	[ProvideEditorFactory(typeof(EditorFactory), 106)]
-	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Any_string)]
+	[ProvideEditorFactory(typeof(EditorFactory), 106, 
+		CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview, 
+		TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
+	//[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Any_string)]
 	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Code_string)]
 	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.TextView_string)]
 	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Designer_string)]
