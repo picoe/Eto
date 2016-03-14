@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace Eto.Test.UnitTests.Forms.Layout
 {
-	[TestFixture, Category(TestUtils.TestPlatformCategory)]
+	[TestFixture, Category(TestBase.TestPlatformCategory)]
 	public class TableLayoutTests
 	{
 		[Test]
 		public void ConstructorWithRowsShouldHaveCorrectSize()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var layout = new TableLayout(
 					            new TableRow(
@@ -31,7 +31,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		[Test]
 		public void AddRowsShouldSetChildren()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var rows = new [] {
 					new TableRow(new Label(), new TextBox()),

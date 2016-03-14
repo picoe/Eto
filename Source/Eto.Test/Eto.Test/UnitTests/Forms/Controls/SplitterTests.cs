@@ -7,7 +7,7 @@ using System.Collections;
 namespace Eto.Test.UnitTests.Forms.Controls
 {
 	[TestFixture, Category("ui")]
-	public class SplitterTests
+	public class SplitterTests : TestBase
 	{
 		// currently not working on Gtk due to deferred size allocation
 		bool ReplayTests { get { return !Platform.Instance.IsGtk; } }
@@ -26,7 +26,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		public void PositionShouldNotChange(Orientation orient, SplitterFixedPanel fix)
 		{
 			bool replay = false;
-			TestUtils.Shown(
+			Shown(
 				form => new Splitter()
 				{
 					Size = new Size(300, 300),
@@ -55,7 +55,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			bool replay = false;
 			double pos = fix == SplitterFixedPanel.None ? (1 / 3.0) : 50;
-			TestUtils.Shown(
+			Shown(
 				form => new Splitter()
 				{
 					Size = new Size(300, 300),
@@ -85,7 +85,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			bool replay = false;
 			var sz = new Size(50, 50);
-			TestUtils.Shown(
+			Shown(
 				form => new Splitter
 				{
 					Orientation = orient,
@@ -145,7 +145,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test, TestCaseSource("SplitterCases")]
 		public void NoPositionShouldAutoSizeComplexTest1(Orientation orient, SplitterFixedPanel fix)
 		{
-			TestUtils.Shown(
+			Shown(
 				form =>
 				{
 					// +====test 1====+ 
@@ -194,7 +194,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test, TestCaseSource("SplitterCases")]
 		public void NoPositionShouldAutoSizeComplexTest2(Orientation orient, SplitterFixedPanel fix)
 		{
-			TestUtils.Shown(
+			Shown(
 				form =>
 				{
 					// +====test 2====+
@@ -247,7 +247,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		public void PositionShouldTrackInitialResize(Orientation orient, SplitterFixedPanel fix)
 		{
 			bool replay = false;
-			TestUtils.Shown(
+			Shown(
 				form =>
 				{
 					var it = new Splitter()
@@ -276,6 +276,82 @@ namespace Eto.Test.UnitTests.Forms.Controls
 						replay = !replay;
 				},
 				replay: ReplayTests);
+		}
+
+		[Test, ManualTest]
+		public void SplitterShouldRegisterChangeNotifications()
+		{
+			bool success = false;
+			string message = "#1";
+			Form(form =>
+			{
+				var posLabel = new Label();
+				var label = new Label
+				{ 
+					Text = "Drag the splitter right",
+					TextAlignment = TextAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center 
+				};
+				int stage = 0;
+				var splitter = new Splitter
+				{
+					Panel1 = new Panel { BackgroundColor = SystemColors.ControlBackground, Size = new Size(100, 100) },
+					Panel2 = new Panel { BackgroundColor = SystemColors.ControlBackground }
+				};
+				int? startingPosition = null;
+				form.Shown += (sender, e) =>
+				{
+					startingPosition = splitter.Position;
+					posLabel.Text = startingPosition?.ToString();
+					if (startingPosition == 0)
+					{
+						message = "#2 - Initial splitter position not set properly before Shown event";
+						form.Close();
+					}
+				};
+				splitter.PositionChanged += (sender, e) =>
+				{
+					posLabel.Text = splitter.Position.ToString();
+					if (success || startingPosition == null)
+						return;
+
+					switch (stage)
+					{
+						case 0:
+							if (splitter.Position > startingPosition.Value)
+							{
+								label.Text = "Now, slide to the left";
+								startingPosition = splitter.Position;
+								stage++;
+							}
+							break;
+						case 1:
+							if (splitter.Position < startingPosition.Value)
+							{
+								success = true;
+								form.Close();
+							}
+							break;
+					}
+				};
+
+				form.Size = new Size(300, 300);
+				form.Content = new StackLayout
+				{
+					HorizontalContentAlignment = HorizontalAlignment.Stretch,
+					Items =
+					{
+						new StackLayout
+						{
+							Orientation = Orientation.Horizontal,
+							Padding = 10,
+							Items = { new StackLayoutItem(label, true), posLabel }
+						},
+						new StackLayoutItem(splitter, true)
+					}
+				};
+			}, -1);
+			Assert.IsTrue(success, message);
 		}
 	}
 }

@@ -151,7 +151,6 @@
     <Compile Include="UnitTests\Handlers\Drawing\TestGraphicsHandler.cs" />
     <Compile Include="UnitTests\Handlers\Drawing\TestMatrixHandler.cs" />
     <Compile Include="MainForm.cs" />
-    <Compile Include="UnitTests\TestUtils.cs" />
     <Compile Include="UnitTests\Handlers\TestPlatform.cs" />
     <Compile Include="Sections\Controls\ColorPickerSection.cs" />
     <Compile Include="UnitTests\Forms\FilterCollectionTests.cs" />
@@ -198,6 +197,7 @@
     <Compile Include="TestIcons.cs" />
     <Compile Include="Sections\Drawing\IconFrameSection.cs" />
     <Compile Include="UnitTests\Drawing\IconTests.cs" />
+    <Compile Include="UnitTests\TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">

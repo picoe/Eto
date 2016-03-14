@@ -14,7 +14,7 @@ namespace Eto.Test.UnitTests.Drawing
 		public BitmapTests()
 		{
 			// initialize test generator if running through IDE or nunit-gui
-			TestUtils.Initialize();
+			TestBase.Initialize();
 		}
 
 		[Test]

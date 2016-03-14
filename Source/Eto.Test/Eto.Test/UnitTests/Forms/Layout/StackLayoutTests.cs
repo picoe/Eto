@@ -10,7 +10,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		[Test]
 		public void AddingItemShouldSetChildrenAndParent()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var stackLayout = new StackLayout();
 
@@ -36,7 +36,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		[Test]
 		public void RemoveItemsIndividuallyShouldClearParent()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var stackLayout = new StackLayout();
 

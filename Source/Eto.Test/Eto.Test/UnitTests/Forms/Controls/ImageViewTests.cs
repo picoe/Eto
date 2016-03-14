@@ -11,7 +11,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void NoImageShouldNotCrash()
 		{
-			TestUtils.Form(form =>
+			TestBase.Form(form =>
 			{
 				form.Content = new ImageView();
 				form.Shown += (sender, e) => Application.Instance.AsyncInvoke(form.Close);
@@ -21,7 +21,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void NullImageShouldNotCrash()
 		{
-			TestUtils.Form(form =>
+			TestBase.Form(form =>
 			{
 				form.Content = new ImageView { Image = null };
 				form.Shown += (sender, e) => Application.Instance.AsyncInvoke(form.Close);
@@ -31,7 +31,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void ImageShouldNotCrash()
 		{
-			TestUtils.Form(form =>
+			TestBase.Form(form =>
 			{
 				form.Content = new ImageView { Image = TestIcons.TestImage };
 				form.Shown += (sender, e) => Application.Instance.AsyncInvoke(form.Close);

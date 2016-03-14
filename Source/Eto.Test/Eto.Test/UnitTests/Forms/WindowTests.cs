@@ -15,7 +15,7 @@ namespace Eto.Test.UnitTests.Forms
 		[Test]
 		public void WindowShouldReportInitialSize()
 		{
-			TestUtils.Form(form =>
+			TestBase.Form(form =>
 			{
 				Size? size = null;
 				form.Content = new Panel { Size = new Size(300, 300) };

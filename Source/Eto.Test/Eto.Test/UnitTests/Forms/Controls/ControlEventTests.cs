@@ -13,7 +13,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		static IEnumerable<Control> GetControls()
 		{
 			var controls = new List<Control>();
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var controlTypes = typeof(Control)
 					.GetTypeInfo().Assembly.ExportedTypes
@@ -44,7 +44,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCaseSource("GetControls")]
 		public void ControlEventsShouldBeHandled(Control control)
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				try
 				{

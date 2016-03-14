@@ -9,7 +9,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void InitialValuesShouldBeCorrect()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var comboBox = new ComboBox();
 				Assert.IsFalse(comboBox.AutoComplete, "AutoComplete should be false");
@@ -21,7 +21,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void TextNotMatchingItemsShouldNotHaveSelectedItem()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				int selectedIndexChanged = 0;
 				var comboBox = new ComboBox { Items = { "Item 1", "Item 2", "Item 3" } };

@@ -15,7 +15,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TestFixture, Category(TestUtils.TestPlatformCategory)]
+	[TestFixture, Category(TestBase.TestPlatformCategory)]
 	public class GridViewSelectTests
 	{
 		GridView grid;
@@ -27,7 +27,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				grid = new GridView();
 				// Some platforms need at least one column for selection to work
@@ -42,7 +42,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void SelectFirstRowShouldSelectFirstRow()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				grid.SelectRow(0);
 				Assert.AreEqual(model[0], grid.SelectedItem);
@@ -53,7 +53,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void SelectAllShouldSelectAllRows()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				grid.AllowMultipleSelection = true;
 				grid.SelectAll();
@@ -64,7 +64,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void InsertItemShouldNotChangeSelection()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				grid.SelectRow(0);
 				var selectedItem = grid.SelectedItem;
@@ -76,7 +76,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void UnselectAllShouldUnselectAllRows()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				grid.AllowMultipleSelection = true;
 				var initialCount = model.Count;
@@ -102,7 +102,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void DeleteSelectedItemsShouldRemoveSelectedItems()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				grid.AllowMultipleSelection = true;
 

@@ -17,7 +17,7 @@ namespace Eto.Test.UnitTests.Forms
 		[Test]
 		public void NullableSizeAndPaddingShouldDeserialize()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				string xaml = string.Format("<DynamicTable Padding='10' Spacing='5, 5' xmlns='{0}' />", XamlReader.EtoFormsNamespace);
 
@@ -36,7 +36,7 @@ namespace Eto.Test.UnitTests.Forms
 		[Test]
 		public void IdOrNameShouldWorkWithSubclass()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				string xaml = string.Format(
 					@"<StackLayout xmlns='{0}' xmlns:x='{1}' xmlns:c='clr-namespace:Eto.Test.UnitTests.Forms;assembly=Eto.Test'>
@@ -67,7 +67,7 @@ namespace Eto.Test.UnitTests.Forms
 		[Test]
 		public void LocalAssemblyShouldBeDefault()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				string xaml = string.Format(
 				@"<StackLayout xmlns='{0}' xmlns:x='{1}' xmlns:c='clr-namespace:Eto.Test.UnitTests.Forms'>
