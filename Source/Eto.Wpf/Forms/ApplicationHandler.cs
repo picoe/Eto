@@ -94,6 +94,19 @@ namespace Eto.Wpf.Forms
 			ApplyThemes();
 		}
 
+		void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+		{
+			var unhandledExceptionArgs = new UnhandledExceptionEventArgs(e.Exception, true);
+			Callback.OnUnhandledException(Widget, unhandledExceptionArgs);
+			e.Handled = true;
+		}
+
+		void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+		{
+			var unhandledExceptionArgs = new UnhandledExceptionEventArgs(e.ExceptionObject, e.IsTerminating);
+			Callback.OnUnhandledException(Widget, unhandledExceptionArgs);
+		}
+
 		void HandleStartup(object sender, sw.StartupEventArgs e)
 		{
 			IsActive = true;
@@ -231,6 +244,10 @@ namespace Eto.Wpf.Forms
 			{
 				case Application.TerminatingEvent:
 					// handled by WpfWindow
+					break;
+				case Application.UnhandledExceptionEvent:
+					AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
+					sw.Application.Current.DispatcherUnhandledException += OnDispatcherUnhandledException;
 					break;
 				default:
 					base.AttachEvent(id);

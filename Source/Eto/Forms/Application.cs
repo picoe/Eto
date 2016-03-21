@@ -83,6 +83,29 @@ namespace Eto.Forms
 			Properties.TriggerEvent(TerminatingEvent, this, e);
 		}
 
+		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="UnhandledException"/> event
+		/// </summary>
+		public const string UnhandledExceptionEvent = "Application.UnhandledException";
+
+		/// <summary>
+		/// Occurs when an unhandled exception occcurs.
+		/// </summary>
+		public event EventHandler<UnhandledExceptionEventArgs> UnhandledException
+		{
+			add { Properties.AddHandlerEvent(UnhandledExceptionEvent, value); }
+			remove { Properties.RemoveEvent(UnhandledExceptionEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the unhandled exception event.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		protected virtual void OnUnhandledException(UnhandledExceptionEventArgs e)
+		{
+			Properties.TriggerEvent(UnhandledExceptionEvent, this, e);
+		}
+
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		Form mainForm;
@@ -382,6 +405,11 @@ namespace Eto.Forms
 			/// Raises the terminating event.
 			/// </summary>
 			void OnTerminating(Application widget, CancelEventArgs e);
+
+			/// <summary>
+			/// Raises the unhandled exception event.
+			/// </summary>
+			void OnUnhandledException(Application widget, UnhandledExceptionEventArgs e);
 		}
 
 		/// <summary>
@@ -402,6 +430,14 @@ namespace Eto.Forms
 			public void OnTerminating(Application widget, CancelEventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnTerminating(e));
+			}
+
+			/// <summary>
+			/// Raises the unhandled exception event.
+			/// </summary>
+			public void OnUnhandledException(Application widget, UnhandledExceptionEventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnUnhandledException(e));
 			}
 		}
 
