@@ -27,6 +27,18 @@ namespace Eto.WinForms.Forms
 			swf.Application.SetCompatibleTextRenderingDefault(false);
 		}
 
+		void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+		{
+			var unhandledExceptionArgs = new UnhandledExceptionEventArgs(e.ExceptionObject, e.IsTerminating);
+			Callback.OnUnhandledException(Widget, unhandledExceptionArgs);
+		}
+
+		void OnUnhandledThreadException(object sender, ThreadExceptionEventArgs e)
+		{
+			var unhandledExceptionArgs = new UnhandledExceptionEventArgs(e.Exception, true);
+			Callback.OnUnhandledException(Widget, unhandledExceptionArgs);
+		}
+
 		public void RunIteration()
 		{
 			swf.Application.DoEvents();
@@ -182,6 +194,8 @@ namespace Eto.WinForms.Forms
 		{
 			quitting = true;
 			swf.Application.Exit();
+			swf.Application.ThreadException -= OnUnhandledThreadException;
+			AppDomain.CurrentDomain.UnhandledException -= OnCurrentDomainUnhandledException;
 		}
 
 		public bool QuitIsSupported { get { return true; } }
@@ -198,6 +212,10 @@ namespace Eto.WinForms.Forms
 			{
 				case Application.TerminatingEvent:
 					// handled by WindowHandler
+					break;
+				case Application.UnhandledExceptionEvent:
+					swf.Application.ThreadException += OnUnhandledThreadException;
+					AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
 					break;
 				default:
 					base.AttachEvent(id);
