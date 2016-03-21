@@ -2,6 +2,7 @@ using SWF = System.Windows.Forms;
 using SD = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
+using System;
 
 namespace Eto.WinForms.Forms.ToolBar
 {
@@ -54,6 +55,18 @@ namespace Eto.WinForms.Forms.ToolBar
 		public abstract bool Enabled { get; set; }
 
 		public void CreateFromCommand(Command command)
+		{
+		}
+
+		public virtual void OnLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnPreLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnUnLoad(EventArgs e)
 		{
 		}
 	}

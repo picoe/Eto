@@ -19,5 +19,17 @@ namespace Eto.Wpf.Forms.ToolBar
 		public virtual void CreateFromCommand(Command command)
 		{
 		}
+
+		public virtual void OnLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnPreLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnUnLoad(EventArgs e)
+		{
+		}
 	}
 }

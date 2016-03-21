@@ -327,6 +327,8 @@
     <Compile Include="Forms\ToolBar\ToolItemConverter.cs" />
     <Compile Include="Forms\KeysConverter.cs" />
     <Compile Include="Drawing\FontConverter.cs" />
+    <Compile Include="UnhandledExceptionEventHandler.cs" />
+    <Compile Include="Drawing\IconFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

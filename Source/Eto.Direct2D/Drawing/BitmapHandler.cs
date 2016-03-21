@@ -40,6 +40,15 @@ namespace Eto.Direct2D.Drawing
 
 	public class BitmapHandler : ImageHandler<Bitmap>, Bitmap.IHandler
     {
+		public BitmapHandler()
+		{
+		}
+
+		public BitmapHandler(sw.Bitmap control)
+		{
+			Control = control;
+		}
+
         public BitmapData Lock()
         {
 			var data = Control.Lock(sw.BitmapLockFlags.Write);

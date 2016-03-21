@@ -3,6 +3,8 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.Mac.Drawing;
 using Eto.Mac.Forms.Printing;
+using System.Linq;
+
 #if XAMMAC2
 using AppKit;
 using Foundation;
@@ -208,10 +210,7 @@ namespace Eto.Mac
 
 		public static CGImage ToCG(this Image image)
 		{
-			using (var imageSource = CGImageSource.FromData(image.ToNS().AsTiff()))
-			{
-				return imageSource.CreateImage(0, null);
-			}
+			return image.ToNS().CGImage;
 		}
 
 		public static NSImage ToNS(this Image image, int? size = null)
@@ -223,20 +222,29 @@ namespace Eto.Mac
 				return null;
 			var nsimage = source.GetImage();
 
+
 			if (size != null)
 			{
-				var rep = nsimage.BestRepresentation(new CGRect(0, 0, size.Value, size.Value), null, null);
-				if (rep.PixelsWide > size.Value || rep.PixelsHigh > size.Value)
+				var mainScale = Screen.PrimaryScreen.RealScale;
+				var scales = new [] { 1f, 2f }; // generate both retina and non-retina representations
+				var sz = (float)Math.Ceiling(size.Value / mainScale);
+				var rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
+				sz = size.Value;
+				var imgsize = image.Size;
+				var max = Math.Max(imgsize.Width, imgsize.Height);
+				var newimagesize = new CGSize((nint)(sz * imgsize.Width / max), (nint)(sz * imgsize.Height / max));
+
+				var newimage = new NSImage(newimagesize);
+				foreach (var scale in scales)
 				{
-					var max = Math.Max(nsimage.Size.Width, nsimage.Size.Height);
-					var newsize = new CGSize((nint)(size.Value * nsimage.Size.Width / max), (nint)(size.Value * nsimage.Size.Height / max));
-					nsimage = nsimage.Resize(newsize);
+					sz = (float)Math.Ceiling(size.Value * scale / mainScale);
+					rep = nsimage.BestRepresentation(new CGRect(0, 0, sz, sz), null, null);
+					max = (int)Math.Max(rep.PixelsWide, rep.PixelsHigh);
+					sz = (float)Math.Ceiling(size.Value * scale);
+					var newsize = new CGSize((nint)(sz * rep.PixelsWide / max), (nint)(sz * rep.PixelsHigh / max));
+					newimage.AddRepresentation(rep.Resize(newsize, imageSize: newimagesize));
 				}
-				else
-				{
-					nsimage = new NSImage();
-					nsimage.AddRepresentation(rep);
-				}
+				nsimage = newimage;
 			}
 			return nsimage;
 		}

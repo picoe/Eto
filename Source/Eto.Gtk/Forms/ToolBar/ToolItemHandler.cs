@@ -47,5 +47,17 @@ namespace Eto.GtkSharp.Forms.ToolBar
 		public void CreateFromCommand(Command command)
 		{
 		}
+
+		public void OnLoad(System.EventArgs e)
+		{
+		}
+
+		public void OnPreLoad(System.EventArgs e)
+		{
+		}
+
+		public void OnUnLoad(System.EventArgs e)
+		{
+		}
 	}
 }

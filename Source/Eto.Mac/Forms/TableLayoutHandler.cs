@@ -271,8 +271,8 @@ namespace Eto.Mac.Forms
 						var oldframe = frame;
 						frame.Width = widths[x];
 						frame.Height = heights[y];
-						frame.X = Math.Max(0, startx);
-						frame.Y = flipped ? starty : controlSize.Height - starty - frame.Height;
+						frame.X = (nfloat)Math.Round(Math.Max(0, startx));
+						frame.Y = (nfloat)Math.Round(flipped ? starty : controlSize.Height - starty - frame.Height);
 						if (frame != oldframe)
 							nsview.Frame = frame;
 						else if (oldframe.Right > oldFrameSize.Width || oldframe.Bottom > oldFrameSize.Height

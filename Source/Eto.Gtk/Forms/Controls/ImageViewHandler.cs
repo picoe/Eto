@@ -58,6 +58,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				var h = Handler;
 				var handler = new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false);
 #endif
+				if (h.image == null)
+					return;
 				using (var graphics = new Graphics(handler))
 				{
 

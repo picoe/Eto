@@ -8,22 +8,28 @@ namespace Eto.Test
 	{
 		public static Icon TestIcon
 		{
-			get { return Icon.FromResource("Eto.Test.TestIcon.ico"); }
+			get { return Icon.FromResource("Eto.Test.Images.TestIcon.ico"); }
 		}
 
 		public static Bitmap TestImage
 		{
-			get { return Bitmap.FromResource("Eto.Test.TestImage.png"); }
+			get { return Bitmap.FromResource("Eto.Test.Images.TestImage.png"); }
 		}
 
 		public static Bitmap Textures
 		{
-			get { return Bitmap.FromResource("Eto.Test.Textures.png"); }
+			get { return Bitmap.FromResource("Eto.Test.Images.Textures.png"); }
 		}
 
 		public static Bitmap TexturesIndexed
 		{
-			get { return Bitmap.FromResource("Eto.Test.Textures.gif"); }
+			get { return Bitmap.FromResource("Eto.Test.Images.Textures.gif"); }
 		}
+
+		public static Image Logo
+		{
+			get { return Icon.FromResource("Eto.Test.Images.Logo.png"); }
+		}
+	
 	}
 }

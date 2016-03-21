@@ -25,6 +25,12 @@ namespace Eto.GtkSharp.Forms
 				SynchronizationContext.SetSynchronizationContext(new GtkSynchronizationContext());
 		}
 
+		void OnUnhandledException(GLib.UnhandledExceptionArgs e)
+		{
+			var unhandledExceptionArgs = new UnhandledExceptionEventArgs(e.ExceptionObject, e.IsTerminating);
+			Callback.OnUnhandledException(Widget, unhandledExceptionArgs);
+		}
+
 		public static int MainThreadID { get; set; }
 
 		public void RunIteration()
@@ -34,6 +40,7 @@ namespace Eto.GtkSharp.Forms
 
 		public void Restart()
 		{
+			GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 			Gtk.Application.Quit();
 
 			// TODO: restart!
@@ -156,7 +163,10 @@ namespace Eto.GtkSharp.Forms
 			switch (id)
 			{
 				case Application.TerminatingEvent:
-				// called automatically
+					// called automatically
+					break;
+				case Application.UnhandledExceptionEvent:
+					GLib.ExceptionManager.UnhandledException += OnUnhandledException;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -174,7 +184,10 @@ namespace Eto.GtkSharp.Forms
 				Callback.OnTerminating(Widget, args);
 
 			if (!args.Cancel)
+			{
+				GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 				Gtk.Application.Quit();
+			}
 		}
 
 		public bool QuitIsSupported { get { return true; } }

@@ -30,7 +30,7 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.ToolBar
 {
-	public class SeparatorToolItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarBaseItemHandler
+	public class SeparatorToolItemHandler : ToolItemHandler<NSToolbarItem, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarBaseItemHandler
 	{
 		public static string DividerIdentifier = "divider";
 
@@ -39,7 +39,7 @@ namespace Eto.Mac.Forms.ToolBar
 			Type = SeparatorToolItemType.Divider;
 		}
 
-		public virtual string Identifier
+		public override string Identifier
 		{
 			get
 			{ 
@@ -56,11 +56,7 @@ namespace Eto.Mac.Forms.ToolBar
 				}
 				
 			}
-		}
-
-		public bool Selectable
-		{
-			get { return false; }
+			set { }
 		}
 
 		SeparatorToolItemType type;
@@ -81,38 +77,6 @@ namespace Eto.Mac.Forms.ToolBar
 				else
 					Control = null;
 			}
-		}
-
-		public void ControlAdded(ToolBarHandler toolbar)
-		{
-		}
-
-		public void CreateFromCommand(Command command)
-		{
-		}
-
-		public string Text
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public string ToolTip
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public Eto.Drawing.Image Image
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public bool Enabled
-		{
-			get { return false; }
-			set { throw new NotSupportedException(); }
 		}
 	}
 }

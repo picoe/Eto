@@ -16,7 +16,7 @@ namespace Eto.Test.Dialogs
 
 			layout.AddCentered(new ImageView
 			{
-				Image = Icon.FromResource ("Eto.Test.TestIcon.ico", GetType())
+				Image = TestIcons.TestIcon
 			}, padding: null, xscale: true, yscale: true);
 			
 			layout.Add(new Label

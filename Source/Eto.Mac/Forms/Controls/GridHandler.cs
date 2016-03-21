@@ -54,11 +54,11 @@ namespace Eto.Mac.Forms.Controls
 		bool AutoSizeColumns();
 	}
 
-	class EtoGridScrollView : NSScrollView
+	class EtoGridScrollView : NSScrollView, IMacControl
 	{
-		WeakReference handler;
+		public IGridHandler Handler { get { return (IGridHandler)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
-		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
+		public WeakReference WeakHandler { get; set; }
 
 		bool autoSized;
 

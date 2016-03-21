@@ -201,6 +201,9 @@
     <Compile Include="UnitTests\Forms\Layout\StackLayoutTests.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
     <Compile Include="UnitTests\Forms\TestClasses.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ImageViewTests.cs" />
+    <Compile Include="UnitTests\Forms\WindowTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ControlEventTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
@@ -217,26 +220,24 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TestIcon.ico" />
     <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="TestImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Textures.png" />
+    <EmbeddedResource Include="Images\Logo.png" />
+    <EmbeddedResource Include="Images\Logo%400.5x.png" />
+    <EmbeddedResource Include="Images\Logo%402x.png" />
+    <EmbeddedResource Include="Images\Logo%403x.png" />
+    <EmbeddedResource Include="Images\TestIcon.ico" />
+    <EmbeddedResource Include="Images\TestImage.png" />
+    <EmbeddedResource Include="Images\Textures.gif" />
+    <EmbeddedResource Include="Images\Textures.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Textures.gif" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

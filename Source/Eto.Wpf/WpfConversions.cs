@@ -302,6 +302,17 @@ namespace Eto.Wpf
 			element.Height = size.Height == -1 ? double.NaN : size.Height;
 		}
 
+		public static void SetMaxSize(this sw.FrameworkElement element, Size size)
+		{
+			element.MaxWidth = size.Width == -1 ? double.NaN : size.Width;
+			element.MaxHeight = size.Height == -1 ? double.NaN : size.Height;
+		}
+
+		public static Size GetMaxSize(this sw.FrameworkElement element)
+		{
+			return new Size((int)(double.IsNaN(element.MaxWidth) ? 0 : element.MaxWidth), (int)(double.IsNaN(element.MaxHeight) ? 0 : element.MaxHeight));
+		}
+
 		public static void SetSize(this sw.FrameworkElement element, sw.Size size)
 		{
 			element.Width = size.Width;
@@ -346,6 +357,33 @@ namespace Eto.Wpf
 			if (imageHandler != null)
 				return imageHandler.GetImageClosestToSize(size);
 			return image.ControlObject as swmi.BitmapSource;
+		}
+
+		public static swmi.BitmapSource ToWpf(this IconFrame image, int? size = null)
+		{
+			return ((Bitmap)image?.ControlObject).ToWpf();
+		}
+
+		public static swmi.BitmapSource ToWpfScale(this Image image, float scale, Size? fittingSize = null)
+		{
+			var icon = image as Icon;
+			if (icon != null)
+				return icon.GetFrame(scale, fittingSize).ToWpf();
+			else
+				return image.ToWpf();
+		}
+
+		public static swc.Image ToWpfImage(this Image image, float scale, Size? fittingSize = null)
+		{
+			var source = image.ToWpfScale(scale, fittingSize);
+			if (source == null)
+				return null;
+			var swcImage = new swc.Image { Source = source };
+			if (fittingSize != null)
+			{
+				swcImage.SetMaxSize(fittingSize.Value);
+			}
+			return swcImage;
 		}
 
 		public static swc.Image ToWpfImage(this Image image, int? size = null)

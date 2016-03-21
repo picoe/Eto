@@ -227,6 +227,7 @@
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
     <Compile Include="Forms\NativeFormHandler.cs" />
+    <Compile Include="Drawing\IconFrameHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

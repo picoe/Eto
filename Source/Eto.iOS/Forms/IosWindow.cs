@@ -203,6 +203,14 @@ namespace Eto.iOS.Forms
 		public virtual void SetOwner(Window owner)
 		{
 		}
+
+		public float LogicalPixelSize
+		{
+			get
+			{
+				return (float)UIScreen.MainScreen.NativeScale;
+			}
+		}
 	}
 }
 

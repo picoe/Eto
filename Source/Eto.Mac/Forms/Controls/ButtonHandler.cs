@@ -66,6 +66,11 @@ namespace Eto.Mac.Forms.Controls
 				else
 					base.DrawBezelWithFrame(frame, controlView);
 			}
+
+			public EtoButtonCell()
+			{
+				ImageScale = NSImageScale.ProportionallyDown;//.ProportionallyUpOrDown;
+			}
 		}
 
 		public class EtoButton : NSButton, IMacControl
@@ -84,7 +89,6 @@ namespace Eto.Mac.Forms.Controls
 			{
 				setBezel = false;
 				base.SizeToFit();
-
 				if (Handler.AutoSize)
 				{
 					var size = Frame.Size;
@@ -100,7 +104,10 @@ namespace Eto.Mac.Forms.Controls
 			{
 				base.SetFrameSize(newSize);
 				if (setBezel)
+				{
+					setBezel = false;
 					Handler.SetBezel();
+				}
 			}
 
 			public EtoButton()
@@ -202,6 +209,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			return base.GetNaturalSize(availableSize);
+		}
+
 		/// <summary>
 		/// Gets the bezel style of the button based on its size and image position
 		/// </summary>
@@ -230,14 +242,19 @@ namespace Eto.Mac.Forms.Controls
 			return NSBezelStyle.Rounded;
 		}
 
+		bool blah;
 		void SetBezel()
 		{
 			var bezel = Control.BezelStyle;
 			var requiredBezel = GetBezelStyle();
 			if (bezel != requiredBezel)
 			{
+				if (blah)
+					return;
+				blah = true;
 				Control.BezelStyle = requiredBezel;
 				LayoutIfNeeded();
+				blah = false;
 			}
 		}
 

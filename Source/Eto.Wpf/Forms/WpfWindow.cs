@@ -40,11 +40,16 @@ namespace Eto.Wpf.Forms
 		bool resizable = true;
 		bool maximizable = true;
 		bool minimizable = true;
+		PerMonitorDpiHelper dpiHelper;
 
 		public override IntPtr NativeHandle
 		{
 			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
 		}
+
+		public swc.DockPanel ContentPanel { get { return content; } }
+
+		public swc.DockPanel MainPanel { get { return main; } }
 
 		protected override void Initialize()
 		{
@@ -86,6 +91,16 @@ namespace Eto.Wpf.Forms
 			};
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+			SetupPerMonitorDpi();
+		}
+
+		void SetupPerMonitorDpi()
+		{
+			if (Win32.PerMonitorDpiSupported)
+			{
+				dpiHelper = new PerMonitorDpiHelper(Control);
+				Widget.LogicalPixelSizeChanged += (sender, e) => SetMinimumSize();
+			}
 		}
 
 		protected override void SetContentScale(bool xscale, bool yscale)
@@ -145,6 +160,10 @@ namespace Eto.Wpf.Forms
 				case Window.LocationChangedEvent:
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
 					break;
+				case Window.LogicalPixelSizeChangedEvent:
+					if (dpiHelper != null)
+						dpiHelper.ScaleChanged += (sender, e) => Callback.OnLogicalPixelSizeChanged(Widget, EventArgs.Empty);
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
@@ -173,8 +192,13 @@ namespace Eto.Wpf.Forms
 			// don't set the minimum size of a window, just the preferred size
 			ContainerControl.Width = PreferredSize.Width;
 			ContainerControl.Height = PreferredSize.Height;
-			ContainerControl.MinWidth = MinimumSize.Width;
-			ContainerControl.MinHeight = MinimumSize.Height;
+			SetMinimumSize();
+		}
+
+		void SetMinimumSize()
+		{
+			ContainerControl.MinWidth = MinimumSize.Width * WpfScale;
+			ContainerControl.MinHeight = MinimumSize.Height * WpfScale;
 		}
 
 		public Eto.Forms.ToolBar ToolBar
@@ -552,6 +576,16 @@ namespace Eto.Wpf.Forms
 			var wpfWindow = owner.Handler as IWpfWindow;
 			if (wpfWindow != null)
 				wpfWindow.SetOwnerFor(Control);
+		}
+
+		public double WpfScale
+		{
+			get { return dpiHelper?.WpfScale ?? 1f; }
+		}
+
+		public float LogicalPixelSize
+		{
+			get { return (float)(dpiHelper?.Scale ?? 1f); }
 		}
 	}
 }

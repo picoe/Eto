@@ -17,8 +17,8 @@
 						[ { $type: "Label", Text: "Image", VerticalAlignment: "Center" }, 
 							[ /* TableLayout */
 								[ /* TableRow */
-									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.TestImage.png, Eto.Test" } },
-									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.TestIcon.ico, Eto.Test" } }
+									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.Images.TestImage.png, Eto.Test" } },
+									{ ScaleWidth: true, Control: { $type: "ImageView", Image: "resource:Eto.Test.Images.TestIcon.ico, Eto.Test" } }
 								]
 							]
 						],

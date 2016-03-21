@@ -106,6 +106,18 @@ namespace Eto.iOS.Forms.Toolbar
 		{
 			get { return button; }
 		}
+
+		public virtual void OnLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnPreLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnUnLoad(EventArgs e)
+		{
+		}
 	}
 	
 }

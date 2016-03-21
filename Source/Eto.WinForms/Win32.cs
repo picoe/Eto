@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace Eto
 {
-	static class Win32
+	static partial class Win32
 	{
 		// Analysis disable InconsistentNaming
 
@@ -128,7 +128,9 @@ namespace Eto
 			TVM_SETEXTENDEDSTYLE = TV_FIRST + 44,
 
 			ECM_FIRST = 0x1500,
-			EM_SETCUEBANNER = ECM_FIRST + 1
+			EM_SETCUEBANNER = ECM_FIRST + 1,
+
+			DPICHANGED = 0x02E0
 		}
 
 		public static ushort LOWORD(IntPtr word)
@@ -250,6 +252,30 @@ namespace Eto
 				}
 			} while (ret);
 			return msg;
+		}
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		static extern IntPtr LoadLibrary(string library);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		static extern bool FreeLibrary(IntPtr moduleHandle);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Ansi, BestFitMapping = false, SetLastError = true, ExactSpelling = true)]
+		static extern IntPtr GetProcAddress(IntPtr moduleHandle, string method);
+
+		public static bool MethodExists(string module, string method)
+		{
+			var moduleHandle = LoadLibrary(module);
+			if (moduleHandle == IntPtr.Zero)
+				return false;
+			try
+			{
+				return GetProcAddress(moduleHandle, method) != IntPtr.Zero;
+			}
+			finally
+			{
+				FreeLibrary(moduleHandle);
+			}
 		}
 	}
 }

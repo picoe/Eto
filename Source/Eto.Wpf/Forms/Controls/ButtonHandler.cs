@@ -6,6 +6,7 @@ using sw = Windows.UI.Xaml;
 using swc = Windows.UI.Xaml.Controls;
 
 using WpfLabel = Windows.UI.Xaml.Controls.TextBlock;
+using EtoImage = Windows.UI.Xaml.Controls.Image;
 
 namespace Eto.WinRT.Forms.Controls
 #else
@@ -28,6 +29,30 @@ namespace Eto.Wpf.Forms.Controls
 		readonly swc.Image swcimage;
 		readonly WpfLabel label;
 
+#if WPF
+		public class EtoImage : swc.Image
+		{
+			public ButtonHandler Handler { get; set; }
+
+			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				var size = base.MeasureOverride(constraint);
+				var img = Handler.Image;
+				if (img != null)
+				{
+					var imgSize = img.Size;
+					if (double.IsInfinity(constraint.Height) && double.IsInfinity(constraint.Width))
+						size = img.Size.ToWpf();
+					/*
+						size.Height = imgSize.Height;
+					if (double.IsInfinity(constraint.Width))
+						size.Width = imgSize.Width;*/
+				}
+				return size;
+			}
+		}
+#endif
+
 		public static Size DefaultMinimumSize = new Size(80, 23);
 
 		protected override Size DefaultSize { get { return MinimumSize; } }
@@ -45,7 +70,11 @@ namespace Eto.Wpf.Forms.Controls
 			};
 			swc.Grid.SetColumn(label, 1);
 			swc.Grid.SetRow(label, 1);
-			swcimage = new swc.Image();
+#if WINRT
+			swcimage = new EtoImage();
+#else
+			swcimage = new EtoImage { Handler = this };
+#endif
 			var grid = new swc.Grid();
 			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
 			grid.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Star) });
@@ -92,10 +121,33 @@ namespace Eto.Wpf.Forms.Controls
 #endif
 		static readonly object Image_Key = new object();
 
+#if WINRT
+		void SetImage()
+		{
+			swcimage.Source = Image.ToWpf();
+		}
+#else
+		protected override bool NeedsPixelSizeNotifications { get { return true; } }
+
+		protected override void OnLogicalPixelSizeChanged()
+		{
+			base.OnLogicalPixelSizeChanged();
+			SetImage();
+		}
+
+		void SetImage()
+		{
+			swcimage.Source = Image.ToWpfScale(ParentScale);
+		}
+#endif
+
 		public Image Image
 		{
 			get { return Widget.Properties.Get<Image>(Image_Key); }
-			set { Widget.Properties.Set(Image_Key, value, () => swcimage.Source = value.ToWpf()); }
+			set
+			{
+				Widget.Properties.Set(Image_Key, value, SetImage);
+			}
 		}
 
 		void SetImagePosition()

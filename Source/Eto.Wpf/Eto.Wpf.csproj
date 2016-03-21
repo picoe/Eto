@@ -82,6 +82,9 @@
     <Compile Include="..\Eto.WinForms\Win32.cs">
       <Link>Win32.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.WinForms\Win32.dpi.cs">
+      <Link>Win32.dpi.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
     </Compile>
@@ -113,6 +116,7 @@
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
+    <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
@@ -175,6 +179,7 @@
     <Compile Include="Forms\EnableThemingInScope.cs" />
     <Compile Include="Forms\KeyboardHandler.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
+    <Compile Include="Forms\PerMonitorDpiHelper.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />

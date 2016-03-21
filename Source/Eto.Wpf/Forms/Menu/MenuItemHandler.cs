@@ -34,7 +34,7 @@ namespace Eto.Wpf.Forms.Menu
 			set
 			{
 				image = value;
-				Control.Icon = image.ToWpfImage(16);
+				Control.Icon = image.ToWpfImage(Screen.PrimaryScreen.LogicalPixelSize, new Size(16, 16));
 			}
 		}
 

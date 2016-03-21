@@ -319,6 +319,8 @@
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
+    <Compile Include="Win32.dpi.cs" />
+    <Compile Include="Drawing\IconFrameHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

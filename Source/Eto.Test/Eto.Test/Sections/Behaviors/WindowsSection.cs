@@ -369,7 +369,7 @@ namespace Eto.Test.Sections.Behaviors
 				child.Owner = ParentWindow;
 			bringToFrontButton.Enabled = true;
 			show();
-			visibleCheckBox.Checked = child.Visible;
+			visibleCheckBox.Checked = child?.Visible == true; // child will be null after it is shown
 			// show that the child is now referenced
 			Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count());
 		}

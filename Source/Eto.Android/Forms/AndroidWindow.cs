@@ -183,5 +183,13 @@ namespace Eto.Android.Forms
 		public void SetOwner(Window owner)
 		{
 		}
+
+		public float LogicalPixelSize
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

@@ -512,11 +512,47 @@ namespace Eto.Wpf.Forms
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
+			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
+			{
+				var parent = Widget.ParentWindow;
+				if (parent != null)
+				{
+					parent.LogicalPixelSizeChanged += Parent_PixelSizeChanged;
+					OnLogicalPixelSizeChanged();
+				}
+			}
 		}
+
+		protected float ParentScale
+		{
+			get { return Widget.ParentWindow?.LogicalPixelSize ?? Screen.PrimaryScreen.LogicalPixelSize; }
+		}
+
+		void Parent_PixelSizeChanged(object sender, EventArgs e)
+		{
+			OnLogicalPixelSizeChanged();
+		}
+
+		protected virtual bool NeedsPixelSizeNotifications
+		{
+			get { return false; }
+		}
+
+		protected virtual void OnLogicalPixelSizeChanged()
+		{
+		}
+
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
 			SetScale(false, false);
+
+			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
+			{
+				var parent = Widget.ParentWindow;
+				if (parent != null)
+					parent.LogicalPixelSizeChanged -= Parent_PixelSizeChanged;
+			}
 		}
 
 		public virtual void SetParent(Container parent)

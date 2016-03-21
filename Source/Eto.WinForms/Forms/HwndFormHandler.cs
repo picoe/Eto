@@ -82,17 +82,19 @@ namespace Eto.WinForms.Forms
 			throw new NotImplementedException();
 		}
 
-		public float Scale
+		public float LogicalPixelSize
 		{
 			get
 			{
+				if (Win32.PerMonitorDpiSupported)
+					return Win32.GetWindowDpi(Control) / 96.0f;
 				var screen = System.Windows.Forms.Screen.FromHandle(Control);
 				if (screen == null)
-					return 1f;
+					return 1;
 				using (var form = new System.Windows.Forms.Form { Bounds = screen.Bounds })
 				using (var graphics = form.CreateGraphics())
 				{
-					return graphics.DpiY / 96f;
+					return graphics.DpiY / 96.0f;
 				}
 			}
 		}
@@ -104,7 +106,7 @@ namespace Eto.WinForms.Forms
 				Win32.RECT rect;
 				Win32.GetWindowRect(Control, out rect);
 				var location = new PointF(rect.left, rect.top);
-				return Point.Round(location / Scale);
+				return Point.Round(location / (float)LogicalPixelSize);
 			}
 			set
 			{
@@ -336,7 +338,7 @@ namespace Eto.WinForms.Forms
 				Win32.RECT rect;
 				Win32.GetWindowRect(Control, out rect);
 				var size = new SizeF(rect.right - rect.left, rect.bottom - rect.top);
-				return Size.Round(size / Scale);
+				return Size.Round(size / (float)LogicalPixelSize);
 			}
 			set
 			{

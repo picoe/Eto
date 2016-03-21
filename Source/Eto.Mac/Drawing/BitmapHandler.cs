@@ -5,6 +5,8 @@ using System.Linq;
 using Eto.Drawing;
 using Eto.Mac.Forms;
 using Eto.Shared.Drawing;
+using System.Collections.Generic;
+using Eto.Forms;
 
 #if XAMMAC2
 using AppKit;
@@ -81,7 +83,7 @@ namespace Eto.Mac.Drawing
 	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, Bitmap.IHandler
 	{
 		NSImageRep rep;
-		NSBitmapImageRep bmprep;
+		protected NSBitmapImageRep bmprep;
 		bool alpha = true;
 
 		public BitmapHandler()
@@ -183,15 +185,6 @@ namespace Eto.Mac.Drawing
 			return Control;
 		}
 
-		public BitmapData Lock()
-		{
-			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control);
-		}
-
-		public void Unlock(BitmapData bitmapData)
-		{
-		}
-
 		public void Save(string fileName, ImageFormat format)
 		{
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
@@ -282,8 +275,9 @@ namespace Eto.Mac.Drawing
 
 		public Color GetPixel(int x, int y)
 		{
+			EnsureRep();
 			if (bmprep == null)
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep?.GetType()));
 
 			return bmprep.ColorAt(x, y).ToEto();
 		}
@@ -299,6 +293,38 @@ namespace Eto.Mac.Drawing
 				}
 			}
 			base.Dispose(disposing);
+		}
+
+		public BitmapData Lock()
+		{
+			EnsureRep();
+			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control);
+		}
+
+		public void Unlock(BitmapData bitmapData)
+		{
+		}
+
+
+		protected void EnsureRep()
+		{
+			if (rep == null)
+				rep = Control.BestRepresentationForDevice(null);
+			if (bmprep == null)
+			{
+				var lazyRep = rep as IconFrameHandler.LazyImageRep;
+				if (lazyRep != null)
+					bmprep = lazyRep.Rep;
+				else
+				{
+					bmprep = rep as NSBitmapImageRep;
+					if (bmprep == null)
+					{
+						rep = Control.BestRepresentationForDevice(null);
+						bmprep = rep as NSBitmapImageRep;
+					}
+				}
+			}				
 		}
 	}
 }
