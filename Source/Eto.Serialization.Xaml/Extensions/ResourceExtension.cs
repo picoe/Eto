@@ -55,6 +55,9 @@ namespace Eto.Serialization.Xaml.Extensions
 					{
 						if (typeof(Bitmap).IsAssignableFrom(propertyInfo.PropertyType))
 							return new Bitmap(24, 24, PixelFormat.Format32bppRgba);
+						
+						if (typeof(Icon).IsAssignableFrom(propertyInfo.PropertyType))
+							return new Icon(1, new Bitmap(24, 24, PixelFormat.Format32bppRgba));
 
 						// return its current value if not a known type to handle
 						return propertyInfo.GetValue(provideValue.TargetObject, null);
