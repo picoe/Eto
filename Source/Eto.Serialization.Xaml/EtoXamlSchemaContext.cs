@@ -34,7 +34,7 @@ namespace Eto.Serialization.Xaml
 				if (DesignMode && type == null && name.IndexOf('.') == -1)
 				{
 					// in designer mode, fail gracefully
-					return new EtoDesignerType(typeof(DesignerUserControl), this) { TypeName = name, Namespace = xamlNamespace };
+					return new EtoDesignerType(typeof(DesignerMarkupExtension), this) { TypeName = name, Namespace = xamlNamespace };
 				}
 				throw;
 			}
