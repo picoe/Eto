@@ -4,6 +4,22 @@ using System.IO;
 
 namespace Eto.Drawing
 {
+	class IconConverter : ImageConverter
+	{
+		protected override bool IsIcon(string fileName)
+		{
+			return true;
+		}
+	}
+
+	class BitmapConverter : ImageConverter
+	{
+		protected override bool IsIcon(string fileName)
+		{
+			return false;
+		}
+	}
+
 	/// <summary>
 	/// Converter to convert a string to an <see cref="Image"/>
 	/// </summary>
@@ -21,7 +37,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public const string FilePrefix = "file:";
 
-		static bool IsIcon (string fileName)
+		protected virtual bool IsIcon (string fileName)
 		{
 			return fileName.EndsWith (".ico", StringComparison.OrdinalIgnoreCase);
 		}
@@ -53,7 +69,7 @@ namespace Eto.Drawing
 			return stream == null ? null : new Bitmap(stream);
 		}
 
-		static Image LoadImage (NamespaceInfo ns)
+		Image LoadImage (NamespaceInfo ns)
 		{
 			var isIcon = IsIcon(ns.Namespace);
 			if (isIcon)
@@ -61,7 +77,7 @@ namespace Eto.Drawing
 			return Bitmap.FromResource(ns.Namespace, ns.Assembly);
 		}
 
-		static Image LoadImage (string resourceName)
+		Image LoadImage (string resourceName)
 		{
 			if (resourceName.StartsWith (ResourcePrefix, StringComparison.OrdinalIgnoreCase)) {
 				resourceName = resourceName.Substring (ResourcePrefix.Length);
