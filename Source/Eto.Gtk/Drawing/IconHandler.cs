@@ -30,16 +30,8 @@ namespace Eto.GtkSharp.Drawing
 
 		public void Create(string fileName)
 		{
-			using (var fs = File.OpenRead(fileName))
-			using (var ms = new MemoryStream())
-			{
-				fs.CopyTo(ms);
-				ms.Position = 0;
-				Pixbuf = new Gdk.Pixbuf(ms);
-				Control = new Gtk.IconSet(Pixbuf);
-				ms.Position = 0;
-				CreateFrames(ms);
-			}
+			Pixbuf = new Gdk.Pixbuf(fileName);
+			Control = new Gtk.IconSet(Pixbuf);
 		}
 
 		const int sICONDIR = 6;            // sizeof(ICONDIR) 
