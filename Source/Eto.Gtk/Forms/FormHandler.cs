@@ -13,11 +13,11 @@ namespace Eto.GtkSharp.Forms
 		{
 			Control = new Gtk.Window(Gtk.WindowType.Toplevel);
 #if GTK2
+			Control.SetPosition(Gtk.WindowPosition.Center);
 			Control.AllowGrow = true;
 #else
 			Control.Resizable = true;
 #endif
-			Control.SetPosition(Gtk.WindowPosition.Center);
 
 			var vbox = new Gtk.VBox();
 			vbox.PackStart(WindowActionControl, false, true, 0);
