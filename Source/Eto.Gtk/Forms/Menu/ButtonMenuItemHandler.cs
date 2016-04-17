@@ -28,6 +28,7 @@ namespace Eto.GtkSharp.Forms.Menu
 			base.Initialize();
 			Control.Activated += Connector.HandleActivated;
 			Control.Selected += Connector.HandleSelected;
+            Control.ButtonReleaseEvent += Connector.HandleButtonReleased;
 		}
 
 		protected new ButtonMenuItemConnector Connector { get { return (ButtonMenuItemConnector)base.Connector; } }
@@ -53,14 +54,29 @@ namespace Eto.GtkSharp.Forms.Menu
 			{
 				var handler = Handler;
 				var menu = handler.Control.Parent as Gtk.MenuBar;
+
+				// if there's no submenu, trigger the click and deactivate the menu to make it act 'normally'.
+				// this does not work in ubuntu's unity menu
 				if (menu != null && handler.Control.Submenu == null)
 				{
-					// if there's no submenu, trigger the click and deactivate the menu to make it act 'normally'.
-					// this does not work in ubuntu's unity menu
 					handler.Callback.OnClick(handler.Widget, e);
 					Gtk.Application.Invoke(delegate { menu.Deactivate(); });
 				}
 			}
+
+            // This even is needed because submenus of context menus never get focus
+            // unless the parrent menuitem is clicked
+            public void HandleButtonReleased(object sender, EventArgs e)
+            {
+                var handler = Handler;
+                var menu = handler.Control.Parent as Gtk.Menu;
+
+                if (menu != null)
+                {
+                    handler.Callback.OnClick(handler.Widget, e);
+                    Gtk.Application.Invoke(delegate { menu.Deactivate(); });
+                }
+            }
 		}
 
 		public bool Enabled
@@ -135,10 +151,7 @@ namespace Eto.GtkSharp.Forms.Menu
 
 		public void Clear()
 		{
-			foreach (Gtk.Widget w in Control.Children)
-			{
-				Control.Remove(w);
-			}
+			Control.Submenu = null;
 		}
 	}
 }
