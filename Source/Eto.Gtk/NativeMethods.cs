@@ -33,6 +33,19 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
+
+#if GTK3
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void gtk_color_chooser_get_rgba(IntPtr chooser, out Gdk.RGBA color);
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
+
+#endif
 		}
 
 		static class NativeMethodsLinux
@@ -55,6 +68,19 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
+
+#if GTK3
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void gtk_color_chooser_get_rgba(IntPtr chooser, out Gdk.RGBA color);
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
+
+#endif
         }
 
 		static class NativeMethodsMac
@@ -77,6 +103,19 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
+
+#if GTK3
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void gtk_color_chooser_get_rgba(IntPtr chooser, out Gdk.RGBA color);
+
+            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
+
+#endif
         }
 
 #pragma warning disable 0649
@@ -89,7 +128,23 @@ namespace Eto.GtkSharp
 
 			public static readonly ClipboardWaitForTargetsDelegate gtk_clipboard_wait_for_targets;
 
-			public static readonly Action<IntPtr, IntPtr> gtk_entry_set_placeholder_text;
+            public static readonly Action<IntPtr, IntPtr> gtk_entry_set_placeholder_text;
+
+#if GTK3
+
+            public delegate IntPtr ColorChooserNew(string title, IntPtr parent);
+
+            public static readonly ColorChooserNew gtk_color_chooser_dialog_new;
+
+            public delegate void ColorChooserGet(IntPtr chooser, out Gdk.RGBA color);
+
+            public static readonly ColorChooserGet gtk_color_chooser_get_rgba;
+
+            public delegate void ColorChooserSet(IntPtr chooser, double[] color);
+
+            public static readonly ColorChooserSet gtk_color_chooser_set_rgba;
+
+#endif
 		}
 
 #pragma warning restore 0649
@@ -131,6 +186,27 @@ namespace Eto.GtkSharp
 			Impl.gtk_entry_set_placeholder_text(entry.Handle, textPtr);
 			Marshaller.Free(textPtr);
 		}
+
+#if GTK3
+
+        public static IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parrent)
+        {
+            return Impl.gtk_color_chooser_dialog_new(title, parrent);
+        }
+
+        public static Gdk.RGBA gtk_color_chooser_get_rgba(IntPtr chooser)
+        {
+            Gdk.RGBA ret;
+            Impl.gtk_color_chooser_get_rgba(chooser, out ret);
+            return ret;
+        }
+
+        public static void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color)
+        {
+            Impl.gtk_color_chooser_set_rgba(chooser, color);
+        }
+
+#endif
 
 		public static bool ClipboardWaitForTargets(IntPtr cp, out Gdk.Atom[] atoms)
 		{
