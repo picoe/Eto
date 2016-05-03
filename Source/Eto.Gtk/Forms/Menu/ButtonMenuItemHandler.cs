@@ -11,6 +11,7 @@ namespace Eto.GtkSharp.Forms.Menu
 		Keys shortcut;
 		Image image;
 		readonly Gtk.AccelLabel label;
+		bool isSubMenu;
 
 		public ButtonMenuItemHandler()
 		{
@@ -44,39 +45,35 @@ namespace Eto.GtkSharp.Forms.Menu
 
 			public void HandleActivated(object sender, EventArgs e)
 			{
-				var handler = Handler;
-				if (handler.Control.Submenu != null)
-					handler.ValidateItems();
-				handler.Callback.OnClick(handler.Widget, e);
+				if (Handler.Control.Submenu != null)
+					Handler.ValidateItems();
+
+				HandleClick (sender, e, false);
 			}
 
 			public void HandleSelected(object sender, EventArgs e)
 			{
-				var handler = Handler;
-				var menu = handler.Control.Parent as Gtk.MenuBar;
+				var menu = Handler.Control.Parent as Gtk.MenuBar;
 
 				// if there's no submenu, trigger the click and deactivate the menu to make it act 'normally'.
 				// this does not work in ubuntu's unity menu
-				if (menu != null && handler.Control.Submenu == null)
-				{
-					handler.Callback.OnClick(handler.Widget, e);
-					Gtk.Application.Invoke(delegate { menu.Deactivate(); });
-				}
+				if (menu != null && Handler.Control.Submenu == null)
+					menu.Deactivate();
 			}
 
             // This even is needed because submenus of context menus never get focus
             // unless the parrent menuitem is clicked
             public void HandleButtonReleased(object sender, EventArgs e)
             {
-                var handler = Handler;
-                var menu = handler.Control.Parent as Gtk.Menu;
-
-                if (menu != null)
-                {
-                    handler.Callback.OnClick(handler.Widget, e);
-                    Gtk.Application.Invoke(delegate { menu.Deactivate(); });
-                }
+				(Handler.Control.Parent as Gtk.Menu)?.Deactivate ();
+				HandleClick (sender, e, true);
             }
+
+			private void HandleClick (object sender, EventArgs e, bool result)
+			{
+				if (Handler.isSubMenu == result)
+					Handler.Callback.OnClick (Handler.Widget, e);
+			}
 		}
 
 		public bool Enabled
@@ -136,6 +133,9 @@ namespace Eto.GtkSharp.Forms.Menu
 			if (Control.Submenu == null) Control.Submenu = new Gtk.Menu();
 			((Gtk.Menu)Control.Submenu).Insert((Gtk.Widget)item.ControlObject, index);
 			SetChildAccelGroup(item);
+
+			if (item is ButtonMenuItem)
+				((item as ButtonMenuItem).Handler as ButtonMenuItemHandler).isSubMenu = true;
 		}
 
 		public void RemoveMenu(MenuItem item)
@@ -147,6 +147,9 @@ namespace Eto.GtkSharp.Forms.Menu
 			{
 				Control.Submenu = null;
 			}
+
+			if (item is ButtonMenuItem)
+				((item as ButtonMenuItem).Handler as ButtonMenuItemHandler).isSubMenu = false;
 		}
 
 		public void Clear()
