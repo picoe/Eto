@@ -37,6 +37,11 @@ namespace Eto.Drawing
 		/// </summary>
 		public const string FilePrefix = "file:";
 
+		/// <summary>
+		/// Determines whether the specified fileName is an icon (ends with .ico)
+		/// </summary>
+		/// <returns><c>true</c> if the fileName is an icon; otherwise, <c>false</c>.</returns>
+		/// <param name="fileName">File name.</param>
 		protected virtual bool IsIcon (string fileName)
 		{
 			return fileName.EndsWith (".ico", StringComparison.OrdinalIgnoreCase);
