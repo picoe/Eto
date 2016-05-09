@@ -37,6 +37,24 @@ namespace Eto
 			SHOWWINDOW = 0x0040,
 		}
 
+		public enum SW
+		{
+			HIDE = 0,
+			SHOWNORMAL = 1,
+			SHOWMINIMIZED = 2,
+			SHOWMAXIMIZED = 3,
+			MAXIMIZE = 3,
+			SHOWNOACTIVATE = 4,
+			SHOW = 5,
+			MINIMIZE = 6,
+			SHOWMINNOACTIVE = 7,
+			SHOWNA = 8,
+			RESTORE = 9,
+			SHOWDEFAULT = 10,
+			FORCEMINIMIZE = 11
+		}
+
+
 		public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
 		public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
 		public static readonly IntPtr HWND_TOP = new IntPtr(0);
@@ -210,7 +228,8 @@ namespace Eto
 		}
 
 		[DllImport("user32.dll")]
-		static extern int ShowWindow(IntPtr hWnd, uint msg);
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool ShowWindow(IntPtr hWnd, SW nCmdShow);
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]

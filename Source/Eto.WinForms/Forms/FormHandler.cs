@@ -53,6 +53,17 @@ namespace Eto.WinForms.Forms
 					return createParams;
 				}
 			}
+
+			protected override void SetVisibleCore(bool value)
+			{
+				base.SetVisibleCore(value);
+			}
+
+			protected override void OnActivated(EventArgs e)
+			{
+				int h = (int)Handle;
+				base.OnActivated(e);
+			}
 		}
 
 		public FormHandler(swf.Form form)
@@ -88,9 +99,9 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				base.ShowInTaskbar = value;
-				var myForm = Control as EtoForm;
-				if (myForm != null)
-					myForm.HideFromAltTab = !value;
+				var etoForm = Control as EtoForm;
+				if (etoForm != null)
+					etoForm.HideFromAltTab = !value;
 			}
 		}
 
@@ -105,6 +116,17 @@ namespace Eto.WinForms.Forms
 		{
 			get { return Control.KeyPreview; }
 			set { Control.KeyPreview = value; }
+		}
+
+		public bool ShowActivated
+		{
+			get { return (Control as EtoForm)?.ShouldShowWithoutActivation != true; }
+			set
+			{
+				var etoForm = Control as EtoForm;
+				if (etoForm != null)
+					etoForm.ShouldShowWithoutActivation = !value;
+			}
 		}
 	}
 }
