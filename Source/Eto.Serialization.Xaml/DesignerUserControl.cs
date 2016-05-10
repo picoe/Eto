@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
+using Portable.Xaml.Markup;
+using Portable.Xaml;
 
 namespace Eto.Serialization.Xaml
 {
@@ -16,7 +18,7 @@ namespace Eto.Serialization.Xaml
 			set { label.Text = value; }
 		}
 
-		public string Tooltip
+		public string ToolTip
 		{
 			get { return label.ToolTip; }
 			set { label.ToolTip = value; }
@@ -35,5 +37,46 @@ namespace Eto.Serialization.Xaml
 			};
 		}
 	}
-	
+
+	class DesignerMarkupExtension : MarkupExtension
+	{
+		public string Text { get; set; }
+		public string ToolTip { get; set; }
+
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			var xscp = serviceProvider.GetService(typeof(IXamlSchemaContextProvider)) as IXamlSchemaContextProvider;
+			if (xscp == null)
+				return null;
+
+			var sc = xscp.SchemaContext;
+
+			var provideValue = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
+
+			var propertyInfo = provideValue?.TargetProperty as PropertyInfo;
+			if (propertyInfo != null)
+			{
+				if (typeof(Control).IsAssignableFrom(propertyInfo.PropertyType))
+					return new DesignerUserControl { Text = Text, ToolTip = ToolTip };
+				return propertyInfo.GetValue(provideValue.TargetObject, null);
+			}
+
+			var targetObject = provideValue.TargetObject;
+
+			if (targetObject != null)
+			{
+				var coltype = sc.GetXamlType(targetObject.GetType());
+				if (coltype != null)
+				{
+					var ct = sc.GetXamlType(typeof(Control));
+					if (ct.CanAssignTo(coltype.ItemType) || coltype.ItemType.TypeConverter?.ConverterInstance.CanConvertFrom(ct.UnderlyingType) == true)
+					{
+						return new DesignerUserControl { Text = Text, ToolTip = ToolTip };
+					}
+				}
+			}
+
+			return null;
+		}
+	}
 }

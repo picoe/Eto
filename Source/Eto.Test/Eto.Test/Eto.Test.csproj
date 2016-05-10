@@ -141,7 +141,6 @@
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestCalendarHandler.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestGridColumnHandler.cs" />
-    <Compile Include="UnitTests\TestUtils.cs" />
     <Compile Include="UnitTests\Handlers\TestPlatform.cs" />
     <Compile Include="UnitTests\Drawing\ColorTests.cs" />
     <Compile Include="UnitTests\Forms\Layout\TableLayoutTests.cs" />
@@ -204,6 +203,7 @@
     <Compile Include="UnitTests\Forms\Controls\ImageViewTests.cs" />
     <Compile Include="UnitTests\Forms\WindowTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\ControlEventTests.cs" />
+    <Compile Include="UnitTests\TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">

@@ -48,6 +48,11 @@ namespace Eto.Mac.Forms
 
 		public bool AllowClosingMainForm { get; set; }
 
+		public ApplicationHandler()
+		{
+			Control = NSApplication.SharedApplication;
+		}
+
 		public static ApplicationHandler Instance
 		{
 			get { return Application.Instance == null ? null : Application.Instance.Handler as ApplicationHandler; }

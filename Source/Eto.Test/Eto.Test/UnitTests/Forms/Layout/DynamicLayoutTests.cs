@@ -11,7 +11,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		[Test]
 		public void AddingItemShouldSetChildrenAndParent()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var layout = new DynamicLayout();
 
@@ -35,7 +35,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		[Test]
 		public void AddingItemMultipleLevelsDeepShouldSetChildrenAndParent()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var layout = new DynamicLayout();
 
@@ -74,7 +74,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		[Test]
 		public void RemoveItemsIndividuallyShouldClearParent()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var layout = new DynamicLayout();
 

@@ -78,6 +78,8 @@ namespace Eto.iOS.Forms
 		{
 			Control.MakeKeyAndVisible();
 		}
+
+		public bool ShowActivated { get; set; }
 	}
 }
 

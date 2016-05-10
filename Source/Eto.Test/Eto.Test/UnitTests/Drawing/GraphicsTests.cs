@@ -14,7 +14,7 @@ namespace Eto.Test.UnitTests.Drawing
 		[Test]
 		public void DefaultValuesShouldBeCorrect()
 		{
-			TestUtils.Paint((drawable, e) =>
+			TestBase.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
 

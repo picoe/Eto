@@ -4,13 +4,13 @@ using Eto.Forms;
 
 namespace Eto.Test.UnitTests.Forms.Controls
 {
-	[TestFixture, Category(TestUtils.TestPlatformCategory)]
+	[TestFixture, Category(TestBase.TestPlatformCategory)]
 	public class CalendarTests
 	{
 		[Test]
 		public void InitialValuesShouldBeCorrect()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var calendar = new Calendar();
 				Assert.AreEqual(CalendarMode.Single, calendar.Mode, "Calendar should default to single mode");
@@ -24,7 +24,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void SelectedDateShouldTriggerChange()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var calendar = new Calendar();
 				var dateCount = 0;
@@ -61,7 +61,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void SelectedRangeShouldTriggerChange()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var calendar = new Calendar { Mode = CalendarMode.Range };
 				var dateCount = 0;
@@ -112,7 +112,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void MinDateShouldChangeSelectedDate()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var calendar = new Calendar();
 				var dateCount = 0;
@@ -133,7 +133,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void MaxDateShouldChangeSelectedDate()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var calendar = new Calendar();
 				var dateCount = 0;
@@ -154,7 +154,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void ModeShouldUpdateDateWhenChangingFromRangeToSingle()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var initialRange = new Range<DateTime>(DateTime.Today, DateTime.Today.AddDays(10));
 				var calendar = new Calendar { Mode = CalendarMode.Range, SelectedRange = initialRange };

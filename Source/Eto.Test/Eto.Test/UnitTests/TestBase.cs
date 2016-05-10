@@ -15,16 +15,35 @@ using System.IO;
 namespace Eto.Test.UnitTests
 {
 	/// <summary>
+	/// Manual test category
+	/// </summary>
+	public class ManualTestAttribute : CategoryAttribute
+	{
+		public ManualTestAttribute()
+			: base(TestBase.ManualTestCategory)
+		{
+		}
+	}
+
+	/// <summary>
 	/// Unit test utilities
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public static class TestUtils
+	public class TestBase
 	{
 		/// <summary>
 		/// Category to exclude when using the Test platform, and only run when on a "real" platform.
 		/// </summary>
 		public const string TestPlatformCategory = "TestPlatform";
+
+		/// <summary>
+		/// Category for tests that require user input to perform the test
+		/// </summary>
+		/// <remarks>
+		/// This is useful to test behaviour of controls when actually in use, not just programmatically.
+		/// </remarks>
+		public const string ManualTestCategory = "ManualTest";
 
 		/// <summary>
 		/// Default timeout for form operations
@@ -135,6 +154,7 @@ namespace Eto.Test.UnitTests
 				application.AsyncInvoke(run);
 			else
 				run();
+			
 			if (!ev.WaitOne(timeout))
 			{
 				Assert.Fail("Test did not complete in time");

@@ -167,9 +167,7 @@ namespace Eto.Mac.Forms.Controls
 				var openDlg = new OpenFileDialog();
 				if (openDlg.ShowDialog(Handler.Widget.ParentWindow) == DialogResult.Ok)
 				{
-					var resultListenerObj = resultListener as wk.WebOpenPanelResultListener;
-					if (resultListenerObj != null)
-						resultListenerObj.ChooseFilenames(openDlg.Filenames.ToArray());
+					wk.WebOpenPanelResultListener_Extensions.ChooseFilenames(resultListener, openDlg.Filenames.ToArray());
 				}
 			}
 			#else

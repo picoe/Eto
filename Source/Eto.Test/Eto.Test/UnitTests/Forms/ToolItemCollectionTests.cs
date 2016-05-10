@@ -10,7 +10,7 @@ namespace Eto.Test.UnitTests.Forms
 		[Test]
 		public void MixedCommandsAndToolItemsShouldBeInCorrectOrder()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var toolbar = new ToolBar();
 				for (int i = 0; i < 15; i++)

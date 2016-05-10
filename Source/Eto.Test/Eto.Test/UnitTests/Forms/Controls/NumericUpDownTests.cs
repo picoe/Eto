@@ -14,7 +14,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void DefaultValuesShouldBeCorrect()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 				int valueChanged = 0;
@@ -31,7 +31,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void MinMaxShouldRetainValue()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 				int valueChanged = 0;
@@ -59,7 +59,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void ValueShouldBeLimitedToMinMax()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 				int valueChanged = 0;
@@ -104,7 +104,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(100, 32.767, 32.77, 2)]
 		public void FractionalMaxValueShouldSetValueCorrectly(double value, double maxValue, double newValue, int decimalPlaces)
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 				int valueChanged = 0;
@@ -126,7 +126,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(10, 32.167, 32, 0)]
 		public void FractionalMinValueShouldSetValueCorrectly(double value, double minValue, double newValue, int decimalPlaces)
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 				int valueChanged = 0;
@@ -146,7 +146,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(10.126, 10.13, 2)]
 		public void ValueShouldBeRoundedToDecimalPlaces(double value, double newValue, int decimalPlaces)
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 				int valueChanged = 0;
@@ -165,7 +165,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(10.126, 10.13, 2)]
 		public void ValueShouldBeRoundedToDecimalPlacesWhenSetAfter(double value, double newValue, int decimalPlaces)
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 				int valueChanged = 0;
@@ -195,7 +195,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCase(12.345678912345, 12.345678912345, 3, 15)]
 		public void MaximumDecimalPlacesShouldAllowMorePreciseNumbers(double value, double newValue, int decimalPlaces, int maxDecimalPlaces)
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 				int valueChanged = 0;
@@ -217,7 +217,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[Test]
 		public void MaximumDecimalPlacesShouldUpdateWhenDecimalPlacesIsChanged()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				var numeric = new NumericUpDown();
 

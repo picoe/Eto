@@ -49,7 +49,7 @@ namespace Eto.Test.UnitTests.Drawing
 		[Test]
 		public void DefaultPropertyValuesShouldBeCorrect()
 		{
-			TestUtils.Invoke(() =>
+			TestBase.Invoke(() =>
 			{
 				foreach (var test in GetTests())
 				{

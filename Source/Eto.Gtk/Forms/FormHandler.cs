@@ -22,12 +22,22 @@ namespace Eto.GtkSharp.Forms
 			var vbox = new Gtk.VBox();
 			vbox.PackStart(WindowActionControl, false, true, 0);
 			vbox.PackStart(WindowContentControl, true, true, 0);
-			Control.Add(vbox);
+			Control.Child = vbox;
 		}
 
 		public void Show()
 		{
-			Control.ShowAll();
+			Control.Child.ShowAll();
+			if (ShowActivated)
+				Control.Show();
+			else
+			{
+				Control.AcceptFocus = false;
+				Control.Show();
+				Control.AcceptFocus = true;
+			}
 		}
+
+		public bool ShowActivated { get; set; } = true;
 	}
 }

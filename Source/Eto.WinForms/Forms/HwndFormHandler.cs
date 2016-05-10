@@ -485,5 +485,18 @@ namespace Eto.WinForms.Forms
 				throw new NotImplementedException();
 			}
 		}
+
+		public bool ShowActivated
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

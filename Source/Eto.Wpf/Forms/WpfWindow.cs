@@ -79,7 +79,8 @@ namespace Eto.Wpf.Forms
 				}
 				// stop form from auto-sizing after it is shown
 				Control.SizeToContent = sw.SizeToContent.Manual;
-				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+				if (Control.ShowActivated)
+					Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 			};
 			Control.PreviewKeyDown += (sender, e) =>
 			{

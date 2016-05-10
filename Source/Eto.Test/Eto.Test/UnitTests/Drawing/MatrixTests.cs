@@ -17,13 +17,13 @@ namespace Eto.Test.UnitTests.Drawing
 	/// </summary>	
 	/// <copyright>(c) 2014 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	[TestFixture, Category(TestUtils.TestPlatformCategory)]
+	[TestFixture, Category(TestBase.TestPlatformCategory)]
 	public class MatrixTests
 	{
 		public MatrixTests()
 		{
 			// initialize test generator if running through IDE or nunit-gui
-			TestUtils.Initialize();
+			TestBase.Initialize();
 		}
 
 		public static bool Equals(IMatrix m, float xx, float yx, float xy, float yy, float x0, float y0)

@@ -19,6 +19,8 @@ namespace Eto.Android.Forms
 			// TODO: create activity if it doesn't exist
 			Activity.SetContentView(ContainerControl);
 		}
+
+		public bool ShowActivated { get; set; }
 	}
 }
 

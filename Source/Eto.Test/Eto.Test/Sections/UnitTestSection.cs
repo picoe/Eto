@@ -169,18 +169,24 @@ namespace Eto.Test.Sections
 		TreeView tree;
 		Button startButton;
 		CheckBox useTestPlatform;
+		CheckBox includeManualTests;
 		SearchBox search;
 
 		public UnitTestSection()
 		{
 			startButton = new Button { Text = "Start Tests", Size = new Size(200, 80) };
 			useTestPlatform = new CheckBox { Text = "Use Test Platform" };
+			includeManualTests = new CheckBox { Text = "Manual Tests", Checked = true };
 			var buttons = new StackLayout
 			{
 				Padding = new Padding(10),
 				Spacing = 5,
 				HorizontalContentAlignment = HorizontalAlignment.Center,
-				Items = { startButton, useTestPlatform }
+				Items =
+				{
+					startButton,
+					TableLayout.Horizontal(useTestPlatform, includeManualTests)
+				}
 			};
 
 			if (Platform.Supports<TreeView>())
@@ -297,6 +303,7 @@ namespace Eto.Test.Sections
 			var keywords = search.Text;
 			Log.Write(null, "Starting tests...");
 			var testPlatform = useTestPlatform.Checked == true ? new TestPlatform() : Platform;
+			var runManualTests = includeManualTests.Checked == true;
 			try
 			{
 				await Task.Run(() =>
@@ -320,10 +327,12 @@ namespace Eto.Test.Sections
 								filter = filter ?? new CategoryFilter();
 								filter.Application = Application.Instance;
 								filter.ExecutingAssembly = assembly;
+								if (!runManualTests)
+									filter.ExcludeCategories.Add(UnitTests.TestBase.ManualTestCategory);
 								if (testPlatform is TestPlatform)
-									filter.IncludeCategories.Add(UnitTests.TestUtils.TestPlatformCategory);
+									filter.IncludeCategories.Add(UnitTests.TestBase.TestPlatformCategory);
 								else
-									filter.IncludeCategories.RemoveAll(r => r == UnitTests.TestUtils.TestPlatformCategory);
+									filter.IncludeCategories.RemoveAll(r => r == UnitTests.TestBase.TestPlatformCategory);
 								filter.Keyword = keywords;
 								using (testPlatform.Context)
 								{

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms
 {
-	[TestFixture, Category(TestUtils.TestPlatformCategory)]
+	[TestFixture, Category(TestBase.TestPlatformCategory)]
 	public class RangeTests
 	{
 		[TestCase(100, 200, 300, 400, false)]

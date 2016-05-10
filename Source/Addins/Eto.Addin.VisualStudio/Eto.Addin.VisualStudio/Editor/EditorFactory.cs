@@ -98,7 +98,7 @@ namespace Eto.Addin.VisualStudio.Editor
 			// we support only a single physical view
 			if (
 				rguidLogicalView == VSConstants.LOGVIEWID.Primary_guid
-				//|| rguidLogicalView == VSConstants.LOGVIEWID.Code_guid
+				|| rguidLogicalView == VSConstants.LOGVIEWID.Code_guid
 				|| rguidLogicalView == VSConstants.LOGVIEWID.TextView_guid
 				|| rguidLogicalView == VSConstants.LOGVIEWID.Designer_guid
 			)

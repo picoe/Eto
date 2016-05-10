@@ -56,6 +56,22 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Loaded += (sender, e) => SetInitialPosition();
 		}
 
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Splitter.PositionChangedEvent:
+					var heightDescriptor = DependencyPropertyDescriptor.FromProperty(swc.RowDefinition.HeightProperty, typeof(swc.ItemsControl));
+					heightDescriptor.AddValueChanged(Control.RowDefinitions[0], (sender, e) => Callback.OnPositionChanged(Widget, EventArgs.Empty));
+					var widthDescriptor = DependencyPropertyDescriptor.FromProperty(swc.ColumnDefinition.WidthProperty, typeof(swc.ItemsControl));
+					widthDescriptor.AddValueChanged(Control.ColumnDefinitions[0], (sender, e) => Callback.OnPositionChanged(Widget, EventArgs.Empty));
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
 		void SetInitialPosition()
 		{
 			// controls should be stretched to fit panels
