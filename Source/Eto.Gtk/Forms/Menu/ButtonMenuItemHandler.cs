@@ -65,14 +65,17 @@ namespace Eto.GtkSharp.Forms.Menu
             // unless the parrent menuitem is clicked
             public void HandleButtonReleased(object sender, EventArgs e)
             {
-				(Handler.Control.Parent as Gtk.Menu)?.Deactivate ();
 				HandleClick (sender, e, true);
             }
 
 			private void HandleClick (object sender, EventArgs e, bool result)
 			{
-				if (Handler.isSubMenu == result)
+				if (Handler.isSubMenu == result) {
+					if (result)
+						(Handler.Control.Parent as Gtk.Menu)?.Deactivate ();
+					
 					Handler.Callback.OnClick (Handler.Widget, e);
+				}
 			}
 		}
 
