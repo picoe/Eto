@@ -29,10 +29,13 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected CollectionHandler collection;
 		protected Gtk.ListStore listStore;
 		protected Gtk.CellRendererText text;
+		protected Gtk.EventBox container;
 
 		protected override void Initialize()
 		{
 			Create();
+			container = new Gtk.EventBox();
+			container.Child = Control;
 			base.Initialize();
 		}
 
@@ -65,6 +68,16 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Control.Active; }
 			set { Control.Active = value; }
+		}
+
+		public override Gtk.Widget ContainerControl
+		{
+			get { return container; }
+		}
+
+		public override Gtk.Widget EventControl
+		{
+			get { return container; }
 		}
 
 		public override Font Font
