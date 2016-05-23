@@ -137,16 +137,16 @@ namespace Eto.GtkSharp.Forms.Controls
 					// pass back the response to ExecuteScript()
 					handler.scriptReturnValue = Uri.UnescapeDataString(args.Request.Uri.Substring(EtoReturnPrefix.Length).Replace('+', ' '));
 					handler.returnResetEvent.Set();
-					args.PolicyDecision.Ignore();
+					args.Policy.Ignore();
 				}
 				else
 				{
 					var e = new WebViewLoadingEventArgs(new Uri(args.Request.Uri), false);
 					handler.Callback.OnDocumentLoading(handler.Widget, e);
 					if (e.Cancel)
-						args.PolicyDecision.Ignore();
+						args.Policy.Ignore();
 					else
-						args.PolicyDecision.Use();
+						args.Policy.Use();
 				}
 			}
 #endif
@@ -159,7 +159,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				#if GTK2
 				var decision = args.Decision;
 				#else
-				var decision = args.PolicyDecision;
+				var decision = args.Policy;
 				#endif
 				if (decision != null)
 				{

@@ -2,7 +2,6 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
-using GLib;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -178,7 +177,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.ExposeEvent += Connector.HandleExposeEvent;
 #else
 				placeholderText = value;
-				NativeMethods.gtk_entry_set_placeholder_text(Control, value);
+				Control.PlaceholderText = value;
 #endif
 			}
 		}

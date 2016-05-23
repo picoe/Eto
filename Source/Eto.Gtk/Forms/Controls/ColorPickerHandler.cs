@@ -40,11 +40,19 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+#if GTK2
 		public Eto.Drawing.Color Color
 		{
 			get { return Control.Color.ToEto(); }
 			set { Control.Color = value.ToGdk(); }
 		}
+#else
+		public Eto.Drawing.Color Color
+		{
+			get { return Control.Rgba.ToEto(); }
+			set { Control.Rgba = value.ToRGBA(); }
+		}
+#endif
 	}
 }
 
