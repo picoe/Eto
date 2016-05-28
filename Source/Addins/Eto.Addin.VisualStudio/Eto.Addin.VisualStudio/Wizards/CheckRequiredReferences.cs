@@ -102,7 +102,7 @@ namespace Eto.Addin.VisualStudio.Wizards
 					}
 					else
 					{
-						installerServices.InstallPackage("https://packages.nuget.org", missingRef.Project, reference.Package, reference.Version, false);
+						installerServices.InstallPackage(string.Empty, missingRef.Project, reference.Package, reference.Version, false);
 					}
 				}
 			}
