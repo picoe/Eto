@@ -102,11 +102,6 @@ namespace Eto.WinForms.Forms
 					swf.Application.DoEvents();
 
 				SetOptions();
-				// creates sync context
-				using (var ctl = new swf.Control())
-				{
-				}
-				context = SynchronizationContext.Current;
 
 				Callback.OnInitialized(Widget, EventArgs.Empty);
 
@@ -126,8 +121,14 @@ namespace Eto.WinForms.Forms
 
 		static readonly object SuppressKeyPressKey = new object();
 
-		static void SetOptions()
+		void SetOptions()
 		{
+			// creates sync context
+			using (var ctl = new swf.Control())
+			{
+			}
+			context = SynchronizationContext.Current;
+
 			if (EtoEnvironment.Platform.IsWindows && EnableScrollingUnderMouse)
 				swf.Application.AddMessageFilter(new ScrollMessageFilter());
 
