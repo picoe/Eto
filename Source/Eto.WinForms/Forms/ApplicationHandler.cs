@@ -24,7 +24,15 @@ namespace Eto.WinForms.Forms
 		{
 			mainThread = Thread.CurrentThread;
 			swf.Application.EnableVisualStyles();
-			swf.Application.SetCompatibleTextRenderingDefault(false);
+			try
+			{
+				swf.Application.SetCompatibleTextRenderingDefault(false);
+			}
+			catch
+			{
+				// ignoring error, as it requires to be called before any IWin32Window is created
+				// When integrating with other native apps, this may not be possible.
+			}
 		}
 
 		void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)
