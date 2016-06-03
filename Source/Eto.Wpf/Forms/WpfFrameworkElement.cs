@@ -440,7 +440,7 @@ namespace Eto.Wpf.Forms
 		{
 			var args = e.ToEto(Control);
 			Callback.OnMouseMove(Widget, args);
-			e.Handled = args.Handled || isMouseCaptured;
+			e.Handled = args.Handled;
 		}
 
 		void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
@@ -448,10 +448,9 @@ namespace Eto.Wpf.Forms
 			var args = e.ToEto(Control, swi.MouseButtonState.Released);
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
-			if (Control.IsMouseCaptured && isMouseCaptured)
+			if (Control.IsMouseCaptured)
 			{
 				Control.ReleaseMouseCapture();
-				isMouseCaptured = false;
 			}
 		}
 
@@ -464,7 +463,6 @@ namespace Eto.Wpf.Forms
 
 		void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			isMouseCaptured = false;
 			var args = e.ToEto(Control);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Callback.OnMouseDoubleClick(Widget, args);
@@ -482,8 +480,6 @@ namespace Eto.Wpf.Forms
 					|| e.Handled
 				))
 			{
-				e.Handled = true;
-				isMouseCaptured = true;
 				Control.CaptureMouse();
 			}
 		}
