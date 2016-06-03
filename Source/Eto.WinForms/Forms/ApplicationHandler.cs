@@ -24,7 +24,15 @@ namespace Eto.WinForms.Forms
 		{
 			mainThread = Thread.CurrentThread;
 			swf.Application.EnableVisualStyles();
-			swf.Application.SetCompatibleTextRenderingDefault(false);
+			try
+			{
+				swf.Application.SetCompatibleTextRenderingDefault(false);
+			}
+			catch
+			{
+				// ignoring error, as it requires to be called before any IWin32Window is created
+				// When integrating with other native apps, this may not be possible.
+			}
 		}
 
 		void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs e)
@@ -94,11 +102,6 @@ namespace Eto.WinForms.Forms
 					swf.Application.DoEvents();
 
 				SetOptions();
-				// creates sync context
-				using (var ctl = new swf.Control())
-				{
-				}
-				context = SynchronizationContext.Current;
 
 				Callback.OnInitialized(Widget, EventArgs.Empty);
 
@@ -118,8 +121,14 @@ namespace Eto.WinForms.Forms
 
 		static readonly object SuppressKeyPressKey = new object();
 
-		static void SetOptions()
+		void SetOptions()
 		{
+			// creates sync context
+			using (var ctl = new swf.Control())
+			{
+			}
+			context = SynchronizationContext.Current;
+
 			if (EtoEnvironment.Platform.IsWindows && EnableScrollingUnderMouse)
 				swf.Application.AddMessageFilter(new ScrollMessageFilter());
 
@@ -194,8 +203,11 @@ namespace Eto.WinForms.Forms
 		{
 			quitting = true;
 			swf.Application.Exit();
-			swf.Application.ThreadException -= OnUnhandledThreadException;
-			AppDomain.CurrentDomain.UnhandledException -= OnCurrentDomainUnhandledException;
+			if (IsEventHandled(Application.UnhandledExceptionEvent))
+			{
+				swf.Application.ThreadException -= OnUnhandledThreadException;
+				AppDomain.CurrentDomain.UnhandledException -= OnCurrentDomainUnhandledException;
+			}
 		}
 
 		public bool QuitIsSupported { get { return true; } }

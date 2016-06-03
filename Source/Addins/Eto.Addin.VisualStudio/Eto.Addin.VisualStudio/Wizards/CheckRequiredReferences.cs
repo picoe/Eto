@@ -102,7 +102,9 @@ namespace Eto.Addin.VisualStudio.Wizards
 					}
 					else
 					{
-						installerServices.InstallPackage("https://packages.nuget.org", missingRef.Project, reference.Package, reference.Version, false);
+						// "All" specifies to use configured package sources.
+						// http://blog.nuget.org/20120926/invoking-nuget-services-from-inside-visual-studio.html#comment-686825894
+						installerServices.InstallPackage("All", missingRef.Project, reference.Package, reference.Version, false);
 					}
 				}
 			}
