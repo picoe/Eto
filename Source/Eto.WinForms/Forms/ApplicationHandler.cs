@@ -203,8 +203,11 @@ namespace Eto.WinForms.Forms
 		{
 			quitting = true;
 			swf.Application.Exit();
-			swf.Application.ThreadException -= OnUnhandledThreadException;
-			AppDomain.CurrentDomain.UnhandledException -= OnCurrentDomainUnhandledException;
+			if (IsEventHandled(Application.UnhandledExceptionEvent))
+			{
+				swf.Application.ThreadException -= OnUnhandledThreadException;
+				AppDomain.CurrentDomain.UnhandledException -= OnCurrentDomainUnhandledException;
+			}
 		}
 
 		public bool QuitIsSupported { get { return true; } }
