@@ -448,9 +448,10 @@ namespace Eto.Wpf.Forms
 			var args = e.ToEto(Control, swi.MouseButtonState.Released);
 			Callback.OnMouseUp(Widget, args);
 			e.Handled = args.Handled;
-			if (Control.IsMouseCaptured)
+			if (isMouseCaptured && Control.IsMouseCaptured)
 			{
 				Control.ReleaseMouseCapture();
+				isMouseCaptured = false;
 			}
 		}
 
@@ -472,7 +473,7 @@ namespace Eto.Wpf.Forms
 				Callback.OnMouseDown(Widget, args);
 			}
 			e.Handled = args.Handled || !WpfFrameworkElementHelper.ShouldCaptureMouse;
-			if (WpfFrameworkElementHelper.ShouldCaptureMouse 
+			if (WpfFrameworkElementHelper.ShouldCaptureMouse
 				&& (
 					// capture mouse automatically so mouse moves outside control are captured until released
 					// but only if the control that was clicked is this control
@@ -480,7 +481,12 @@ namespace Eto.Wpf.Forms
 					|| e.Handled
 				))
 			{
+				isMouseCaptured = true;
 				Control.CaptureMouse();
+			}
+			else
+			{
+				isMouseCaptured = false;
 			}
 		}
 
