@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Documents;
@@ -14,8 +13,6 @@ using Eto.Wpf.Drawing;
 using System.Globalization;
 using System.Collections;
 using System.IO;
-using System.ComponentModel;
-using System.Windows.Forms;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -128,7 +125,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		void SaveAttribute(sw.DependencyProperty property, object value)
+		void SetSelectionAttribute(sw.DependencyProperty property, object value)
 		{
 			selectionAttributes = selectionAttributes ?? new Dictionary<sw.DependencyProperty, object>();
 			if (value == null)
@@ -142,14 +139,18 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Selection.ApplyPropertyValue(property, value);
 		}
 
-		void SaveDecorationAttribute(sw.TextDecorationCollection setDecorations, bool value)
+		void SetSelectionDecorationAttribute(sw.TextDecorationCollection setDecorations, bool value)
 		{
 			selectionAttributes = selectionAttributes ?? new Dictionary<sw.DependencyProperty, object>();
 			object decorationsObj;
 			sw.TextDecorationCollection decorations;
 			if (!selectionAttributes.TryGetValue(swd.Inline.TextDecorationsProperty, out decorationsObj))
 			{
-				decorations = new sw.TextDecorationCollection();
+				decorations = Control.Selection.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
+				if (decorations == null)
+					decorations = new sw.TextDecorationCollection();
+				else
+					decorations = new sw.TextDecorationCollection(decorations);
 				selectionAttributes[swd.Inline.TextDecorationsProperty] = decorations;
 			}
 			else decorations = (sw.TextDecorationCollection)decorationsObj;
@@ -190,13 +191,12 @@ namespace Eto.Wpf.Forms.Controls
 			get { return new Font(new FontHandler(Control.Selection, Control)); }
 			set
 			{
-				//Control.Selection.SetEtoFont(value);
 				var handler = ((FontHandler)value?.Handler);
-				SaveAttribute(swd.TextElement.FontFamilyProperty, handler?.WpfFamily);
-				SaveAttribute(swd.TextElement.FontStyleProperty, handler?.WpfFontStyle);
-				SaveAttribute(swd.TextElement.FontWeightProperty, handler?.WpfFontWeight);
-				SaveAttribute(swd.TextElement.FontSizeProperty, handler?.PixelSize);
-				SaveAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorations);
+				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, handler?.WpfFamily);
+				SetSelectionAttribute(swd.TextElement.FontStyleProperty, handler?.WpfFontStyle);
+				SetSelectionAttribute(swd.TextElement.FontWeightProperty, handler?.WpfFontWeight);
+				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.PixelSize);
+				SetSelectionAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorations);
 			}
 		}
 
@@ -205,8 +205,7 @@ namespace Eto.Wpf.Forms.Controls
 			get { return new FontFamily(new FontFamilyHandler(Control.Selection, Control)); }
 			set
 			{
-				//Control.Selection.SetEtoFamily(value);
-				SaveAttribute(swd.TextElement.FontFamilyProperty, ((FontFamilyHandler)value?.Handler)?.Control);
+				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, ((FontFamilyHandler)value?.Handler)?.Control);
 			}
 		}
 
@@ -219,8 +218,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				//Control.Selection.ApplyPropertyValue(swd.TextElement.ForegroundProperty, value.ToWpfBrush());
-				SaveAttribute(swd.TextElement.ForegroundProperty, value.ToWpfBrush());
+				SetSelectionAttribute(swd.TextElement.ForegroundProperty, value.ToWpfBrush());
 			}
 		}
 
@@ -233,8 +231,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				//Control.Selection.ApplyPropertyValue(swd.TextElement.BackgroundProperty, value.ToWpfBrush());
-				SaveAttribute(swd.TextElement.BackgroundProperty, value.ToWpfBrush());
+				SetSelectionAttribute(swd.TextElement.BackgroundProperty, value.ToWpfBrush());
 			}
 		}
 
@@ -283,8 +280,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				//Control.Selection.ApplyPropertyValue(swd.TextElement.FontWeightProperty, value ? sw.FontWeights.Bold : sw.FontWeights.Normal);
-				SaveAttribute(swd.TextElement.FontWeightProperty, value ? sw.FontWeights.Bold : sw.FontWeights.Normal);
+				SetSelectionAttribute(swd.TextElement.FontWeightProperty, value ? sw.FontWeights.Bold : sw.FontWeights.Normal);
 			}
 		}
 
@@ -303,8 +299,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				//Control.Selection.ApplyPropertyValue(swd.TextElement.FontStyleProperty, value ? sw.FontStyles.Italic : sw.FontStyles.Normal);
-				SaveAttribute(swd.TextElement.FontStyleProperty, value ? sw.FontStyles.Italic : sw.FontStyles.Normal);
+				SetSelectionAttribute(swd.TextElement.FontStyleProperty, value ? sw.FontStyles.Italic : sw.FontStyles.Normal);
 			}
 		}
 
@@ -374,7 +369,7 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				if (Selection.Length() == 0)
-					SaveDecorationAttribute(sw.TextDecorations.Underline, value);
+					SetSelectionDecorationAttribute(sw.TextDecorations.Underline, value);
 				else
 					SetDecorations(Control.Selection, sw.TextDecorations.Underline, value);
 			}
@@ -389,7 +384,7 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				if (Selection.Length() == 0)
-					SaveDecorationAttribute(sw.TextDecorations.Strikethrough, value);
+					SetSelectionDecorationAttribute(sw.TextDecorations.Strikethrough, value);
 				else
 					SetDecorations(Control.Selection, sw.TextDecorations.Strikethrough, value);
 			}
