@@ -30,6 +30,13 @@ namespace Eto.Wpf.Forms.Controls
 			Control.CommandBindings.Add(new swi.CommandBinding(swd.EditingCommands.ToggleUnderline, (sender, e) => SelectionUnderline = !SelectionUnderline));
 		}
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			lastSelection = Selection;
+			HandleEvent(RichTextArea.SelectionChangedEvent);
+		}
+
 		swd.TextRange ContentRange
 		{
 			get { return new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd); }
@@ -92,7 +99,7 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 		Dictionary<sw.DependencyProperty, object> selectionAttributes;
-		Range<int>? lastSelection;
+		Range<int> lastSelection;
 		public override void AttachEvent(string id)
 		{
 			switch (id)
@@ -304,10 +311,14 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 
-		bool HasDecorations(swd.TextRange range, sw.TextDecorationCollection decorations)
+		bool HasDecorations(swd.TextRange range, sw.TextDecorationCollection decorations, bool useRealPropertyValue = true)
 		{
 			swd.TextRange realRange;
-            var existingDecorations = range.GetRealPropertyValue(swd.Inline.TextDecorationsProperty, out realRange) as sw.TextDecorationCollection;
+			sw.TextDecorationCollection existingDecorations;
+			if (useRealPropertyValue)
+				existingDecorations = range.GetRealPropertyValue(swd.Inline.TextDecorationsProperty, out realRange) as sw.TextDecorationCollection;
+			else
+				existingDecorations = range.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
 			return existingDecorations != null && decorations.All(r => existingDecorations.Contains(r));
 		}
 
@@ -364,7 +375,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				return HasDecorations(Control.Selection, sw.TextDecorations.Underline);
+				return HasDecorations(Control.Selection, sw.TextDecorations.Underline, Selection.Length() > 0);
 			}
 			set
 			{
@@ -379,7 +390,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				return HasDecorations(Control.Selection, sw.TextDecorations.Strikethrough);
+				return HasDecorations(Control.Selection, sw.TextDecorations.Strikethrough, Selection.Length() > 0);
 			}
 			set
 			{
