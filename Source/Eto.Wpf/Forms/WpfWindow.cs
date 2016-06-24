@@ -92,12 +92,11 @@ namespace Eto.Wpf.Forms
 			};
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
-			SetupPerMonitorDpi();
 		}
 
 		void SetupPerMonitorDpi()
 		{
-			if (Win32.PerMonitorDpiSupported)
+			if (dpiHelper == null && Win32.PerMonitorDpiSupported)
 			{
 				dpiHelper = new PerMonitorDpiHelper(Control);
 				Widget.LogicalPixelSizeChanged += (sender, e) => SetMinimumSize();
@@ -177,6 +176,7 @@ namespace Eto.Wpf.Forms
 		{
 			base.OnLoad(e);
 			SetScale(false, false);
+			SetupPerMonitorDpi();
 		}
 
 		protected virtual void UpdateClientSize(Size size)
