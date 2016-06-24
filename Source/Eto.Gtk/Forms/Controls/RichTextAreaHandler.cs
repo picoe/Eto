@@ -212,7 +212,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			ApplyTag(ForegroundTagName, color.ToArgb().ToString(), range, tag =>
 			{
+#if GTK3
+				tag.ForegroundRgba = color.ToRGBA();
+#else
 				tag.ForegroundGdk = color.ToGdk();
+#endif
 				tag.ForegroundSet = true;
 			});
 		}
@@ -221,7 +225,11 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			ApplyTag(BackgroundTagName, color.ToArgb().ToString(), range, tag =>
 			{
+#if GTK3
+				tag.BackgroundRgba = color.ToRGBA();
+#else
 				tag.BackgroundGdk = color.ToGdk();
+#endif
 				tag.BackgroundSet = true;
 			});
 		}
@@ -360,14 +368,22 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (tag == null)
 					tag = insertTags.LastOrDefault(r => r.ForegroundSet);
 				if (tag != null)
+#if GTK3
+					return tag.ForegroundRgba.ToEto ();
+#else
 					return tag.ForegroundGdk.ToEto();
+#endif
 				return Colors.Black; // todo
 			}
 			set
 			{
 				ApplySelectionTag(ForegroundTagName, value.ToArgb().ToString(), tag =>
 				{
+#if GTK3
+					tag.ForegroundRgba = value.ToRGBA();
+#else
 					tag.ForegroundGdk = value.ToGdk();
+#endif
 					tag.ForegroundSet = true;
 				});
 			}
@@ -381,14 +397,22 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (tag == null)
 					tag = insertTags.LastOrDefault(r => r.BackgroundSet);
 				if (tag != null)
+#if GTK3
+					return tag.BackgroundRgba.ToEto();
+#else
 					return tag.BackgroundGdk.ToEto();
+#endif
 				return Colors.Transparent; // todo
 			}
 			set
 			{
 				ApplySelectionTag(BackgroundTagName, value.ToArgb().ToString(), tag =>
 				{
+#if GTK3
+					tag.BackgroundRgba = value.ToRGBA();
+#else
 					tag.BackgroundGdk = value.ToGdk();
+#endif
 					tag.BackgroundSet = true;
 				});
 			}

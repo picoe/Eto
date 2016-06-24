@@ -8,33 +8,30 @@ namespace Eto.GtkSharp.Forms
 		public ColorDialogHandler ()
 		{
 #if GTK3
-            if (Gtk.Global.MinorVersion >= 4)
-                Control = new Gtk.Dialog(NativeMethods.gtk_color_chooser_dialog_new("Choose Color", IntPtr.Zero));
-            else
+			Control = new Gtk.ColorChooserDialog("Choose Color", null);
+#else
+            Control = new Gtk.ColorSelectionDialog(string.Empty);
 #endif
-                Control = new Gtk.ColorSelectionDialog(string.Empty);
-			
+
 		}
 
 		public Eto.Drawing.Color Color {
 			get
             {
 #if GTK3
-                if (Gtk.Global.MinorVersion >= 4)
-                    return NativeMethods.gtk_color_chooser_get_rgba(Control.Handle).ToEto();
-                else
-#endif 
-                    return (Control as Gtk.ColorSelectionDialog).ColorSelection.CurrentColor.ToEto ();
-            }
+				return (Control as Gtk.ColorChooserDialog).Rgba.ToEto();
+#else
+				return (Control as Gtk.ColorSelectionDialog).ColorSelection.CurrentColor.ToEto ();
+#endif
+			}
 			set
             {
 #if GTK3
-                if (Gtk.Global.MinorVersion >= 4)
-                    NativeMethods.gtk_color_chooser_set_rgba(Control.Handle, new double[] { value.R, value.G, value.B, value.A });
-                else
+				(Control as Gtk.ColorChooserDialog).Rgba = value.ToRGBA();
+#else
+                (Control as Gtk.ColorSelectionDialog).ColorSelection.CurrentColor = value.ToGdk ();
 #endif
-                    (Control as Gtk.ColorSelectionDialog).ColorSelection.CurrentColor = value.ToGdk ();
-            }
+			}
 		}
 
 		public DialogResult ShowDialog (Window parent)
