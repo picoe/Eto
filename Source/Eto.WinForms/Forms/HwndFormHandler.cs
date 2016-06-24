@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using sd = System.Drawing;
+using swf = System.Windows.Forms;
 
 #if WPF
 using swi = System.Windows.Interop;
 
 namespace Eto.Wpf.Forms
 #elif WINFORMS
-using swf = System.Windows.Forms;
 
 namespace Eto.WinForms.Forms
 #endif
