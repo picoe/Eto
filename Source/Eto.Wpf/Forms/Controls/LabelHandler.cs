@@ -50,6 +50,16 @@ namespace Eto.Wpf.Forms.Controls
 
 		void Control_SizeChanged(object sender, sw.SizeChangedEventArgs e)
 		{
+			if (previousRenderSize == null)
+			{
+				// don't update preferred sizes when called the first time.
+				// when there's many labels this causes a major slowdown
+				// the initial size should already have been taken care of by 
+				// the initial layout pass.
+				previousRenderSize = Control.RenderSize;
+				return;
+			}
+
 			if (previousRenderSize == Control.RenderSize)
 				return;
 			// update parents only when the render size has changed

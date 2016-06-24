@@ -11,10 +11,16 @@ namespace Eto
 	static partial class Win32
 	{
 		static Lazy<bool> perMonitorDpiSupported = new Lazy<bool>(() => MethodExists("shcore.dll", "SetProcessDpiAwareness"));
+		static Lazy<bool> monitorDpiSupported = new Lazy<bool>(() => MethodExists("shcore.dll", "GetDpiForMonitor"));
 
 		public static bool PerMonitorDpiSupported
 		{
 			get { return perMonitorDpiSupported.Value; }
+		}
+
+		public static bool MonitorDpiSupported
+		{
+			get { return monitorDpiSupported.Value; }
 		}
 
 		public enum PROCESS_DPI_AWARENESS : uint
@@ -53,6 +59,29 @@ namespace Eto
 
 			return dpiX;
 		}
+
+		public static uint GetDpi(this System.Windows.Forms.Screen screen)
+		{
+			if (!MonitorDpiSupported)
+			{
+				// fallback to slow method if we can't get the dpi from the system
+				using (var form = new System.Windows.Forms.Form { Bounds = screen.Bounds })
+				using (var graphics = form.CreateGraphics())
+				{
+					return (uint)graphics.DpiY;
+				}
+			}
+
+			var pnt = new System.Drawing.Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1);
+			var mon = MonitorFromPoint(pnt, MONITOR.DEFAULTTONEAREST);
+			uint dpiX, dpiY;
+			GetDpiForMonitor(mon, MDT.EFFECTIVE_DPI, out dpiX, out dpiY);
+			return dpiX;
+		}
+
+		[DllImport("User32.dll")]
+		public static extern IntPtr MonitorFromPoint(System.Drawing.Point pt, MONITOR dwFlags);
+
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr MonitorFromWindow(IntPtr hwnd, MONITOR flags);

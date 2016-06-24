@@ -74,7 +74,7 @@ namespace Eto.Wpf.Forms
 				AddHook();
 			else
 				this.window.Loaded += (o, e) => AddHook();
-			this.window.Closing += (o, e) => RemoveHook();
+			this.window.Closed += (o, e) => RemoveHook();
 		}
 
 		void Window_SourceInitialized(object sender, EventArgs e)
@@ -98,7 +98,7 @@ namespace Eto.Wpf.Forms
 		void RemoveHook()
 		{
 			window.SourceInitialized -= Window_SourceInitialized;
-			HwndSource.RemoveHook(HwndHook);
+			HwndSource?.RemoveHook(HwndHook);
 		}
 
 		IntPtr HwndHook(IntPtr hwnd, int message, IntPtr wparam, IntPtr lparam, ref bool handled)

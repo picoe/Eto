@@ -66,5 +66,33 @@ namespace Eto.Wpf.Forms
 			Control.Children.Remove(child);
 			UpdatePreferredSize();
 		}
+
+		int suspended;
+		public override void SuspendLayout()
+		{
+			suspended++;
+			base.SuspendLayout();
+		}
+
+		public override void ResumeLayout()
+		{
+			if (suspended > 0)
+			{
+				suspended--;
+				UpdatePreferredSize();
+			}
+			base.ResumeLayout();
+		}
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			UpdatePreferredSize();
+		}
+
+		public override void UpdatePreferredSize()
+		{
+			if (suspended == 0 && Widget.Loaded)
+				base.UpdatePreferredSize();
+		}
 	}
 }

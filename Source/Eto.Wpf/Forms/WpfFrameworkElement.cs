@@ -242,12 +242,12 @@ namespace Eto.Wpf.Forms
 			Control.InvalidateVisual();
 		}
 
-		public void SuspendLayout()
+		public virtual void SuspendLayout()
 		{
 
 		}
 
-		public void ResumeLayout()
+		public virtual void ResumeLayout()
 		{
 		}
 
