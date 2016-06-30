@@ -45,6 +45,11 @@ namespace Eto.iOS.Drawing
 
 		public string Name { get; private set; }
 
+		public string LocalizedName
+		{
+			get { return Name; }
+		}
+
 		public IEnumerable<FontTypeface> Typefaces
 		{
 			get { return UIFont.FontNamesForFamilyName(MacName).Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r))); }
