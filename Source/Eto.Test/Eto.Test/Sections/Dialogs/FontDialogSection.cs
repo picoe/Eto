@@ -167,7 +167,15 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			fontList = new ListBox { Size = new Size(300, 180) };
 			var lookup = Fonts.AvailableFontFamilies.ToDictionary(r => r.Name);
-			fontList.Items.AddRange(lookup.Values.OrderBy(r => r.Name).Select(r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
+			Func<FontFamily, string> getName = (FontFamily ff) =>
+			{
+				var name = ff.Name;
+				if (ff.LocalizedName != name)
+					name += $" ({ff.LocalizedName})";
+				return name;
+			};
+
+			fontList.Items.AddRange(lookup.Values.OrderBy(r => r.Name).Select(r => new ListItem { Text = getName(r), Key = r.Name }).OfType<IListItem>());
 			fontList.SelectedIndexChanged += (sender, e) =>
 			{
 				if (updating || fontList.SelectedKey == null)

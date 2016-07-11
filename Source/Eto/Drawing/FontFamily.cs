@@ -23,7 +23,23 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets the name of this font family
 		/// </summary>
+		/// <remarks>
+		/// This is a non-localized version of the name, suitable for internal use.
+		/// </remarks>
+		/// <seealso cref="LocalizedName"/>
 		public string Name { get { return Handler.Name; } }
+
+		/// <summary>
+		/// Gets the localized name of the font for the current UI language
+		/// </summary>
+		/// <remarks>
+		/// This will return a name suitable to display to the user in their own language, if the font provides a specific name for their UI language.
+		/// 
+		/// For platforms that do not support localized font names, or for fonts that do not have a specific name for the current language, the
+		/// value of <see cref="Name"/> will be returned.
+		/// </remarks>
+		/// <value>The localized name of this font.</value>
+		public string LocalizedName { get { return Handler.LocalizedName; } }
 
 		/// <summary>
 		/// Gets an enumeration of the one or more supported typefaces for this font family
@@ -161,6 +177,18 @@ namespace Eto.Drawing
 			/// This should be the same as what is used to create new instances of a font family using the <see cref="Create"/> method
 			/// </remarks>
 			string Name { get; }
+
+			/// <summary>
+			/// Gets the localized name of the font for the current UI language
+			/// </summary>
+			/// <remarks>
+			/// This will return a name suitable to display to the user in their own language, if the font provides a specific name for their UI language.
+			/// 
+			/// For platforms that do not support localized font names, or for fonts that do not have a specific name for the current language, the
+			/// value of <see cref="Name"/> will be returned.
+			/// </remarks>
+			/// <value>The localized name of this font.</value>
+			string LocalizedName { get; }
 
 			/// <summary>
 			/// Gets an enumeration of the typefaces supported by this font family

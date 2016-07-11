@@ -40,7 +40,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Configuration" />
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0\lib\net40\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.4.1\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Portable.Xaml">

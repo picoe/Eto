@@ -34,6 +34,10 @@ namespace Eto.Test.Sections
 			}
 		}
 
+		public void TestOutput(TestOutput output)
+		{
+		}
+
 		public void TestStarted(ITest test)
 		{
 			if (!test.HasChildren)
@@ -252,7 +256,7 @@ namespace Eto.Test.Sections
 
 			public int AssertCount { get { return Results.Sum(r => r.AssertCount); } }
 
-			public IList<ITestResult> Children { get { return Results.SelectMany(r => r.Children).ToList(); } }
+			public IEnumerable<ITestResult> Children { get { return Results.SelectMany(r => r.Children); } }
 
 			public double Duration { get { return Results.Sum(r => r.Duration); } }
 

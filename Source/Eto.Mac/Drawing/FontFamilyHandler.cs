@@ -24,6 +24,23 @@ namespace Eto.Mac.Drawing
 
 		public string Name { get; set; }
 
+		static IntPtr sel_LocalizedNameForFamilyFace = Selector.GetHandle("localizedNameForFamily:face:");
+
+		public string LocalizedName
+		{
+			get
+			{
+				// faceName cannot be null.  Use this when it is fixed in xammac/monomac:
+				// return NSFontManager.SharedFontManager.LocalizedNameForFamily(MacName, null);
+
+				var familyPtr = NSString.CreateNative(MacName);
+				var facePtr = IntPtr.Zero;
+				var result = NSString.FromHandle(Messaging.IntPtr_objc_msgSend_IntPtr_IntPtr(NSFontManager.SharedFontManager.Handle, sel_LocalizedNameForFamilyFace, familyPtr, facePtr));
+				NSString.ReleaseNative(familyPtr);
+				return result;
+			}
+		}
+
 		public NSFontTraitMask TraitMask { get; set; }
 
 		public IEnumerable<FontTypeface> Typefaces

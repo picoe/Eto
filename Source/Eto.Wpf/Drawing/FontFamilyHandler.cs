@@ -5,6 +5,7 @@ using swm = System.Windows.Media;
 using sw = System.Windows;
 using swd = System.Windows.Documents;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Eto.Wpf.Drawing
 {
@@ -53,6 +54,18 @@ namespace Eto.Wpf.Drawing
 		}
 
 		public string Name { get; set; }
+
+		public string LocalizedName
+		{
+			get
+			{
+				var lang = sw.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.Name);
+				string name;
+				if (!Control.FamilyNames.TryGetValue(lang, out name))
+					name = Name;
+				return name;
+			}
+		}
 
 		public IEnumerable<FontTypeface> Typefaces
 		{
