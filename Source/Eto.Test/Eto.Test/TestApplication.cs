@@ -12,13 +12,12 @@ namespace Eto.Test
 	public class TestForm : Form
 	{
 		SizeF min;
-		public TestForm()
+		public TestForm ()
 		{
 			const string text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
 			/**/
-			var myTable = new TableLayout2
-			{
+			var myTable = new TableLayout2 {
 				//Padding = new Padding(20),
 				//Spacing = new Size(5, 5),
 				Rows =
@@ -34,9 +33,8 @@ namespace Eto.Test
 					new TableColumn { Width = TableLength.Auto },
 				}
 			};
-			for (int i = 0; i < 0; i++)
-			{
-				myTable.Rows.Add(new TableRow2 { Height = TableLength.Auto, Cells = { new TextBox(), "Hello!", "There!" } });
+			for (int i = 0; i < 0; i++) {
+				myTable.Rows.Add (new TableRow2 { Height = TableLength.Auto, Cells = { new TextBox (), "Hello!", "There!" } });
 			}
 			Content = myTable;
 			/**
@@ -57,7 +55,7 @@ namespace Eto.Test
 			Content = myTable;
 			/**/
 
-			#if blah
+#if blah
 			var button = new Button { Text = "Click Me!" };
 			button.Click += (sender, e) => button.Text = "Click me this is a longer title!";
 			var content = new FlowLayout
@@ -78,7 +76,7 @@ namespace Eto.Test
 				}
 			};*/
 			Content = content; //new Scrollable { Content = content };
-			#endif
+#endif
 
 			/*
 			//Menu = new MenuBar();
@@ -100,28 +98,28 @@ namespace Eto.Test
 
 		}
 
-		protected override void OnLoadComplete(EventArgs e)
+		protected override void OnLoadComplete (EventArgs e)
 		{
-			base.OnLoadComplete(e);
+			base.OnLoadComplete (e);
 
-			var size = Content.GetPreferredSize(new SizeF(400, 600));
+			var size = Content.GetPreferredSize (new SizeF (400, 600));
 			var diff = Size - ClientSize;
 			//MinimumSize = Size.Round(size + diff);
-			Debug.WriteLine("Preferred Size: {0}", size);
-			ClientSize = Size.Round(size);
+			Debug.WriteLine ("Preferred Size: {0}", size);
+			ClientSize = Size.Round (size);
 		}
 
-		protected override void OnSizeChanged(EventArgs e)
+		protected override void OnSizeChanged (EventArgs e)
 		{
-			base.OnSizeChanged(e);
+			base.OnSizeChanged (e);
 			var diff = Size - ClientSize;
 			//MinimumSize = Size.Round(Content.GetPreferredSize(ClientSize) + diff);
-			Debug.WriteLine("Size: {0}, ClientSize: {1}", Size, ClientSize);
+			Debug.WriteLine ("Size: {0}, ClientSize: {1}", Size, ClientSize);
 		}
 
-		protected override void OnShown(EventArgs e)
+		protected override void OnShown (EventArgs e)
 		{
-			base.OnShown(e);
+			base.OnShown (e);
 			/*var size = Content.GetPreferredSize(new Size(200, int.MaxValue));
 			Debug.WriteLine("Preferred Size: {0}", size);*/
 		}
@@ -129,10 +127,10 @@ namespace Eto.Test
 
 	public class TestApplication : Application
 	{
-		public static IEnumerable<Assembly> DefaultTestAssemblies()
+		public static IEnumerable<Assembly> DefaultTestAssemblies ()
 		{
 #if PCL
-			yield return typeof(TestApplication).GetTypeInfo().Assembly;
+			yield return typeof (TestApplication).GetTypeInfo ().Assembly;
 #else
 			yield return typeof(TestApplication).Assembly;
 #endif
@@ -140,15 +138,15 @@ namespace Eto.Test
 
 		public List<Assembly> TestAssemblies { get; private set; }
 
-		public TestApplication(Platform platform)
-			: base(platform)
+		public TestApplication (Platform platform)
+			: base (platform)
 		{
-			TestAssemblies = DefaultTestAssemblies().ToList();
+			TestAssemblies = DefaultTestAssemblies ().ToList ();
 			this.Name = "Test Application";
 			this.Style = "application";
 		}
 
-		protected override void OnInitialized(EventArgs e)
+		protected override void OnInitialized (EventArgs e)
 		{
 			/*Eto.Style.Add<TableLayout2>(null, c => c.LoadComplete += (sender, ee) =>
 			{
@@ -158,11 +156,11 @@ namespace Eto.Test
 					c.Rows[c.Rows.Count - 1].Height = TableLength.Star(1);
 			});*/
 
-			//MainForm = new MainForm(TestSections.Get(TestAssemblies));
-			MainForm = new TestForm();
-			//MainForm = new Form{ Content = new Sections.Layouts.TableLayoutSection.ScalingSection() };//.Show();
+			MainForm = new MainForm(TestSections.Get(TestAssemblies));
+			//MainForm = new TestForm();
+			//MainForm = new Form { Content = new Sections.Layouts.TableLayoutSection.ScalingSection () };//.Show();
 
-			base.OnInitialized(e);
+			base.OnInitialized (e);
 
 			/**
 			Debug.WriteLine("Starting test...");
@@ -178,15 +176,15 @@ namespace Eto.Test
 			/**/
 
 			// show the main form
-			MainForm.Show();
+			MainForm.Show ();
 		}
 
-		protected override void OnTerminating(CancelEventArgs e)
+		protected override void OnTerminating (CancelEventArgs e)
 		{
-			base.OnTerminating(e);
-			Log.Write(this, "Terminating");
+			base.OnTerminating (e);
+			Log.Write (this, "Terminating");
 
-			var result = MessageBox.Show(MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
+			var result = MessageBox.Show (MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
 			if (result == DialogResult.No)
 				e.Cancel = true;
 		}
