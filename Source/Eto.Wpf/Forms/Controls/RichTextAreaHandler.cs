@@ -64,14 +64,14 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				if (value != wrap)
 				{
-					wrap = value;
-					if (wrap)
+					if (!wrap)
 					{
 						Control.TextChanged -= Control_TextChangedSetPageWidth;
 						Control.SizeChanged -= Control_TextChangedSetPageWidth;
 						Control.Document.PageWidth = double.NaN;
 					}
-					else
+					wrap = value;
+					if (!wrap)
 					{
 						Control.TextChanged += Control_TextChangedSetPageWidth;
 						Control.SizeChanged += Control_TextChangedSetPageWidth;
@@ -83,13 +83,17 @@ namespace Eto.Wpf.Forms.Controls
 
 		void Control_TextChangedSetPageWidth(object sender, EventArgs e)
 		{
-			Control.Dispatcher.BeginInvoke(new Action(() => SetPageWidthToContent()));
+			Control.Dispatcher.BeginInvoke(new Action(SetPageWidthToContent));
 		}
 
 		void SetPageWidthToContent()
 		{
-			var width = Control.Document.GetFormattedText().WidthIncludingTrailingWhitespace + 20;
-			Control.Document.PageWidth = Math.Max(width, Control.ViewportWidth);
+			// this can be invoked after Wrap property is actually set since we are using the dispatcher
+			if (!wrap)
+			{
+				var width = Control.Document.GetFormattedText().WidthIncludingTrailingWhitespace + 20;
+				Control.Document.PageWidth = Math.Max(width, Control.ViewportWidth);
+			}
 		}
 
 		public override string SelectedText
