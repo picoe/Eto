@@ -109,7 +109,7 @@ namespace Eto.Mac.Forms
 			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Attached))
+			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Control.ParentWindow != null)
 				MacModal.RunSheet(Widget, Control, out session);
 			else
 			{
@@ -155,6 +155,12 @@ namespace Eto.Mac.Forms
 				session.Stop();
 			else
 				base.Close();
+		}
+
+		public override void SetOwner (Window owner)
+		{
+			base.SetOwner (owner);
+			Control.ParentWindow = owner.ToNative ();
 		}
 		
 	}

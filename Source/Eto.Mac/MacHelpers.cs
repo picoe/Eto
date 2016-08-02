@@ -95,6 +95,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the native NSWindow from a Window
+		/// </summary>
+		/// <returns>The native NSWindow that represents the Eto Window.</returns>
+		/// <param name="window">Eto window object to get the native window handle from.</param>
+		public static NSWindow ToNative(this Window window)
+		{
+			return window.ControlObject as NSWindow;
+		}
+
+		/// <summary>
 		/// Gets the field editor required for the specified control.
 		/// </summary>
 		/// <remarks>
