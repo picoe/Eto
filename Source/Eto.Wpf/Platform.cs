@@ -19,7 +19,7 @@ namespace Eto.Wpf
 {
 	public class Platform : Eto.Platform
 	{
-		public override string ID { get { return "wpf"; } }
+		public override string ID => "Wpf";
 
 		public override bool IsDesktop { get { return true; } }
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+	<metadata>
+		<id>Eto.Wpf.CefSharp</id>
+		<version>$version$</version>
+		<title>$title$</title>
+		<authors>$author$</authors>
+		<owners>$author$</owners>
+		<licenseUrl>https://github.com/picoe/Eto/raw/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/picoe/Eto</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>$description$</summary>
+		<description>
+This is a CefSharp implementation for Eto's WebView control on the WPF platform.
+		</description>
+		<copyright>$copyright$</copyright>
+		<tags>cross platform gui ui framework desktop wpf cef cefsharp eto.forms</tags>
+		<dependencies>
+			<group>
+				<dependency id="Eto.Platform.Wpf" version="[$version$]" />
+				<dependency id="CefSharp.Wpf" version="53.0.1" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="BuildOutput/net45/$configuration$/Eto.Wpf.CefSharp.dll" target="lib\net45" />
+		<file src="BuildOutput/net45/$configuration$/LICENSE.txt" target="LICENSE.txt" />
+	    <file src="Resources/nuspec/Eto.Wpf.CefSharp/README.txt" target="" /> 
+	</files>
+</package>

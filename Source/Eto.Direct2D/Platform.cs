@@ -8,10 +8,7 @@ namespace Eto.Direct2D
 {
 	public class Platform : Eto.WinForms.Platform
 	{
-		public override string ID
-		{
-			get { return Platforms.Direct2D; }
-		}
+		public override string ID => "Direct2D";
 
 		public override PlatformFeatureFlags SupportedFeatures =>
 			base.SupportedFeatures & ~ PlatformFeatureFlags.DrawableWithTransparentContent;

@@ -49,9 +49,9 @@ namespace Eto.GtkSharp
 		}
 
 		#if GTK2
-		public override string ID { get { return "gtk2"; } }
+		public override string ID => "Gtk2";
 		#else
-		public override string ID { get { return "gtk3"; } }
+		public override string ID => "Gtk3";
 		#endif
 		public Platform()
 		{

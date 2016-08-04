@@ -42,11 +42,13 @@ namespace Eto.Mac
 
 		public override bool IsMac { get { return true; } }
 
-		#if XAMMAC
-		public override string ID { get { return "xammac"; } }
-		#else
-		public override string ID { get { return "mac"; } }
-		#endif
+#if XAMMAC2
+		public override string ID => "XamMac2";
+#elif XAMMAC
+		public override string ID => "XamMac";
+#else
+		public override string ID => "Mac";
+#endif
 
 		public override PlatformFeatureFlags SupportedFeatures =>
 			PlatformFeatureFlags.DrawableWithTransparentContent;

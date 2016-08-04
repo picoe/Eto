@@ -164,6 +164,9 @@
 			<Package Include="Eto.Platform.Wpf" Condition="$(Platform) == 'Windows'">
 				<Assembly>$(BuildOutputNet45Dir)\Eto.Wpf.dll</Assembly>
 			</Package>
+			<Package Include="Eto.Wpf.CefSharp\Eto.Wpf.CefSharp" Condition="$(Platform) == 'Windows'">
+				<Assembly>$(BuildOutputNet45Dir)\Eto.Wpf.CefSharp.dll</Assembly>
+			</Package>
 			<Package Include="Eto.Platform.WinRT" Condition="$(Platform) == 'Windows'">
 				<Assembly>$(BuildOutputPCLDir)\Eto.WinRT.dll</Assembly>
 			</Package>
@@ -222,6 +225,7 @@
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Windows.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Direct2D.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.Wpf.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
+    	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Wpf.CefSharp.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
     	<MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.XamMac2.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/>
     	<!--MSBuild Targets="PublishPackage" Properties="NupkgName=Eto.Platform.WinRT.$(AssemblyVersion).nupkg;TargetDir=$(PackageOutputDir)" Projects="$(MSBuildProjectFile)"/-->
