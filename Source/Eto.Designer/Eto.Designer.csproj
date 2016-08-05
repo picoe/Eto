@@ -35,7 +35,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Portable.Xaml, Version=0.13.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Addins\Eto.Addin.VisualStudio\packages\Portable.Xaml.0.13.0\lib\dotnet\Portable.Xaml.dll</HintPath>
+      <HintPath>..\Addins\Eto.Addin.VisualStudio\packages\Portable.Xaml.0.14.0\lib\dotnet\Portable.Xaml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
