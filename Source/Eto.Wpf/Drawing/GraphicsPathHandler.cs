@@ -173,7 +173,7 @@ namespace Eto.Wpf.Drawing
 
 		public RectangleF Bounds
 		{
-			get { return Control.Bounds.ToEto (); }
+			get { return Control.Bounds.ToEtoF (); }
 		}
 
 		public void Transform (IMatrix matrix)
