@@ -7,21 +7,9 @@ namespace Eto.GtkSharp.Forms
 {
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog, Dialog.ICallback>, Dialog.IHandler
 	{
-		public class MyDialog : Gtk.Dialog
-		{
-			#if GTK3
-			protected override void OnAdjustSizeAllocation(Gtk.Orientation orientation, out int minimum_size, out int natural_size, out int allocated_pos, out int allocated_size)
-			{
-				base.OnAdjustSizeAllocation(orientation, out minimum_size, out natural_size, out allocated_pos, out allocated_size);
-				if (orientation == Gtk.Orientation.Horizontal)
-					allocated_size = natural_size;
-			}
-			#endif
-		}
-
 		public DialogHandler()
 		{
-			Control = new MyDialog();
+			Control = new Gtk.Dialog();
 #if GTK2
 			Control.AllowGrow = false;
 			Control.HasSeparator = false;
