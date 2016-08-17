@@ -74,12 +74,12 @@ namespace Eto.Wpf.Forms.Controls
 					viewportSize.Height = Math.Max(0, viewportSize.Height - 2);
 
 				if (ExpandContentWidth)
-					content.Width = Math.Max(0, Math.Max(prefSize.Width, viewportSize.Width));
+					content.Width = Math.Max(0, Math.Max(prefSize.Width, viewportSize.Width - 1));
 				else
 					content.Width = prefSize.Width;
 
 				if (ExpandContentHeight)
-					content.Height = Math.Max(0, Math.Max(prefSize.Height, viewportSize.Height));
+					content.Height = Math.Max(0, Math.Max(prefSize.Height, viewportSize.Height - 1));
 				else
 					content.Height = prefSize.Height;
 
