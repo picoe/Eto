@@ -61,10 +61,10 @@ namespace Eto.Wpf.Forms
                 sw.Size baseSize;
                 if (UseContentSize)
 				{
-                    var padding = border.Padding.Size();
+                    var padding = GetContentPadding(constraint);
                     var childConstraint = constraint.Subtract(padding).Subtract(margin);
 					baseSize = content.GetPreferredSize(childConstraint);
-                    baseSize = baseSize.Add(padding); // we add margin back at end
+                    baseSize = baseSize.Add(padding); // we add padding back at end
 				}
                 else
                     baseSize = base.GetPreferredSize(constraint).Subtract(margin);
@@ -74,6 +74,11 @@ namespace Eto.Wpf.Forms
             size = size.Max(ContainerControl.GetMinSize());
             size = size.Add(margin);
             return size;
+		}
+
+		protected virtual sw.Size GetContentPadding(sw.Size constraint)
+		{
+			return border.Padding.Size();
 		}
 
 		ContextMenu contextMenu;
