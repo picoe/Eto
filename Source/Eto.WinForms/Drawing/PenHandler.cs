@@ -12,84 +12,91 @@ namespace Eto.WinForms.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PenHandler : Pen.IHandler
 	{
-		public object Create (Color color, float thickness)
+		public class EtoPen
 		{
-			var pen = new sd.Pen (color.ToSD (), thickness);
-			pen.StartCap = pen.EndCap = PenLineCap.Square.ToSD ();
+			public sd.Pen Pen { get; set; }
+			public Brush Brush { get; set; }
+		}
+
+		public object Create(Brush brush, float thickness)
+		{
+			var pen = new sd.Pen(brush.ToSD(Rectangle.Empty), thickness);
+			pen.StartCap = pen.EndCap = PenLineCap.Square.ToSD();
 			pen.DashCap = sd2.DashCap.Flat;
 			pen.MiterLimit = 10f;
-			return pen;
+			return new EtoPen { Pen = pen, Brush = brush };
 		}
 
-		public Color GetColor (Pen widget)
+		public Brush GetBrush(Pen widget)
 		{
-			return widget.ToSD ().Color.ToEto ();
+			return ((EtoPen)widget.ControlObject).Brush;
 		}
 
-		public void SetColor (Pen widget, Color color)
+		public void SetColor(Pen widget, Color color)
 		{
-			widget.ToSD ().Color = color.ToSD ();
+			GetPen(widget).Color = color.ToSD();
 		}
 
-		public float GetThickness (Pen widget)
+		public float GetThickness(Pen widget)
 		{
-			return widget.ToSD ().Width;
+			return GetPen(widget).Width;
 		}
 
-		public void SetThickness (Pen widget, float thickness)
+		public void SetThickness(Pen widget, float thickness)
 		{
-			widget.ToSD ().Width = thickness;
+			GetPen(widget).Width = thickness;
 		}
 
-		public PenLineJoin GetLineJoin (Pen widget)
+		public PenLineJoin GetLineJoin(Pen widget)
 		{
-			return widget.ToSD ().LineJoin.ToEto ();
+			return GetPen(widget).LineJoin.ToEto();
 		}
 
-		public void SetLineJoin (Pen widget, PenLineJoin lineJoin)
+		public void SetLineJoin(Pen widget, PenLineJoin lineJoin)
 		{
-			widget.ToSD ().LineJoin = lineJoin.ToSD ();
+			GetPen(widget).LineJoin = lineJoin.ToSD();
 		}
 
-		public PenLineCap GetLineCap (Pen widget)
+		public PenLineCap GetLineCap(Pen widget)
 		{
-			return widget.ToSD ().StartCap.ToEto ();
+			return GetPen(widget).StartCap.ToEto();
 		}
 
-		public void SetLineCap (Pen widget, PenLineCap lineCap)
+		public void SetLineCap(Pen widget, PenLineCap lineCap)
 		{
-			var pen = widget.ToSD ();
+			var pen = GetPen(widget);
 			// get dash style before changing cap
 			var dashStyle = widget.DashStyle;
-			pen.StartCap = pen.EndCap = lineCap.ToSD ();
+			pen.StartCap = pen.EndCap = lineCap.ToSD();
 			pen.DashCap = lineCap == PenLineCap.Round ? sd2.DashCap.Round : sd2.DashCap.Flat;
-			SetDashStyle (widget, dashStyle);
+			SetDashStyle(widget, dashStyle);
 		}
 
-		public float GetMiterLimit (Pen widget)
+		public float GetMiterLimit(Pen widget)
 		{
-			return widget.ToSD ().MiterLimit;
+			return GetPen(widget).MiterLimit;
 		}
 
-		public void SetMiterLimit (Pen widget, float miterLimit)
+		public void SetMiterLimit(Pen widget, float miterLimit)
 		{
-			widget.ToSD ().MiterLimit = miterLimit;
+			GetPen(widget).MiterLimit = miterLimit;
 		}
 
-		public DashStyle GetDashStyle (Pen widget)
+		public DashStyle GetDashStyle(Pen widget)
 		{
-			var pen = widget.ToSD ();
+			var pen = GetPen(widget);
 			if (pen.DashStyle == sd2.DashStyle.Solid)
 				return DashStyles.Solid;
-			else {
+			else
+			{
 				var offset = pen.StartCap == sd2.LineCap.Square ? pen.DashOffset - 0.5f : pen.DashOffset;
-				return new DashStyle (offset, pen.DashPattern);
+				return new DashStyle(offset, pen.DashPattern);
 			}
 		}
 
-		public void SetDashStyle (Pen widget, DashStyle dashStyle)
+		public void SetDashStyle(Pen widget, DashStyle dashStyle)
 		{
-			var pen = widget.ToSD ();
+			var pen = GetPen(widget);
 
 			pen.DashOffset = 0;
 			if (dashStyle == null || dashStyle.IsSolid)
@@ -110,6 +117,19 @@ namespace Eto.WinForms.Drawing
 			{
 				pen.DashOffset += 0.5f;
 			}
+		}
+
+		public sd.Pen GetPen(Pen pen, RectangleF bounds)
+		{
+			var etoPen = (EtoPen)pen.ControlObject;
+			bounds.Inflate(etoPen.Pen.Width, etoPen.Pen.Width);
+			etoPen.Pen.Brush = etoPen.Brush.ToSD(bounds); // extend brush to bounds if needed
+			return etoPen.Pen;
+		}
+
+		sd.Pen GetPen(Pen pen)
+		{
+			return ((EtoPen)pen.ControlObject).Pen;
 		}
 	}
 }

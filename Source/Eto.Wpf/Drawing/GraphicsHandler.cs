@@ -5,6 +5,8 @@ using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
 using System.Globalization;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Wpf.Drawing
 {
@@ -129,6 +131,25 @@ namespace Eto.Wpf.Drawing
 			SetOffset(false);
 			var wpfPen = pen.ToWpf(true);
 			Control.DrawLine(wpfPen, new sw.Point(startx, starty), new sw.Point(endx, endy));
+		}
+
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			using (var path = new GraphicsPath())
+			{
+				path.AddLines(points);
+				DrawPath(pen, path);
+			}
+		}
+
+		public void DrawPolygon(Pen pen, IEnumerable<PointF> points)
+		{
+			using (var path = new GraphicsPath())
+			{
+				path.AddLines(points);
+				path.CloseFigure();
+				DrawPath(pen, path);
+			}
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)

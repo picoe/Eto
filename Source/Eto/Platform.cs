@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
+using Eto.Drawing;
 
 namespace Eto
 {
@@ -606,6 +607,27 @@ namespace Eto
 				return instance.Value != this ? new PlatformContext(this) : null;
 			}
 		}
+
+		Func<Matrix.IHandler> createMatrix;
+		internal Func<Matrix.IHandler> CreateMatrix => createMatrix ?? (createMatrix = Find<Matrix.IHandler>());
+
+		Func<GraphicsPath.IHandler> createGraphicsPath;
+		internal Func<GraphicsPath.IHandler> CreateGraphicsPath => createGraphicsPath ?? (createGraphicsPath = Find<GraphicsPath.IHandler>());
+
+		Pen.IHandler penHandler;
+		internal Pen.IHandler PenHandler => penHandler ?? (penHandler = CreateShared<Pen.IHandler>());
+
+		LinearGradientBrush.IHandler linearGradientBrushHandler;
+		internal LinearGradientBrush.IHandler LinearGradientBrushHandler => linearGradientBrushHandler ?? (linearGradientBrushHandler = CreateShared<LinearGradientBrush.IHandler>());
+
+		RadialGradientBrush.IHandler radialGradientBrushHandler;
+		internal RadialGradientBrush.IHandler RadialGradientBrushHandler => radialGradientBrushHandler ?? (radialGradientBrushHandler = CreateShared<RadialGradientBrush.IHandler>());
+
+		SolidBrush.IHandler solidBrushHandler;
+		internal SolidBrush.IHandler SolidBrushHandler => solidBrushHandler ?? (solidBrushHandler = CreateShared<SolidBrush.IHandler>());
+
+		TextureBrush.IHandler textureBrushHandler;
+		internal TextureBrush.IHandler TextureBrushHandler => textureBrushHandler ?? (textureBrushHandler = CreateShared<TextureBrush.IHandler>());
 
 		/// <summary>
 		/// Invoke the specified action within the context of this platform

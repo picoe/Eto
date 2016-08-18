@@ -12,64 +12,89 @@ namespace Eto.GtkSharp.Drawing
 		class TextureBrushObject
 		{
 			public Cairo.Matrix Transform { get; set; }
-			public Gdk.Pixbuf Pixbuf { get; set; }
-			public float Opacity { get; set; }
-
-			public TextureBrushObject ()
+			public Cairo.Matrix InverseTransform { get; set; }
+			public Image Image { get; set; }
+			Bitmap opacityImage;
+			float opacity = 1f;
+			public float Opacity
 			{
-				Opacity = 1.0f;
+				get { return opacity; }
+				set
+				{
+					opacity = value;
+					opacityImage = null;
+				}
 			}
 
-			public void Apply (GraphicsHandler graphics)
+			public void Apply(GraphicsHandler graphics)
 			{
-				if (!object.ReferenceEquals (Transform, null))
-					graphics.Control.Transform (Transform);
-				
-				Gdk.CairoHelper.SetSourcePixbuf (graphics.Control, Pixbuf, 0, 0);
+				if (!ReferenceEquals(Transform, null))
+					graphics.Control.Transform(Transform);
+
+				if (opacityImage == null)
+				{
+					opacityImage = new Bitmap(Image.Size, PixelFormat.Format32bppRgba);
+					using (var g = new Graphics(opacityImage))
+					{
+						g.DrawImage(Image, 0, 0);
+					}
+					using (var bd = opacityImage.Lock())
+					{
+						for (int x = 0; x < opacityImage.Width; x++)
+							for (int y = 0; y < opacityImage.Height; y++)
+							{
+								var c = bd.GetPixel(x, y);
+								bd.SetPixel(x, y, new Color(c, c.A * Opacity));
+							}
+					}
+				}
+				var img = opacityImage ?? Image;
+				Gdk.CairoHelper.SetSourcePixbuf(graphics.Control, img.ToGdk(), 0, 0);
+
 				var pattern = graphics.Control.GetSource();
 				var surfacePattern = pattern as Cairo.SurfacePattern;
 				if (surfacePattern != null)
-					surfacePattern.Extend = Cairo.Extend.Repeat;
-				if (Opacity < 1.0f)
 				{
-					graphics.Control.Clip();
-					graphics.Control.PaintWithAlpha(Opacity);
+					surfacePattern.Extend = Cairo.Extend.Repeat;
 				}
-				else
-					graphics.Control.Fill();
+				if (!ReferenceEquals(InverseTransform, null))
+					graphics.Control.Transform(InverseTransform);
+
 				pattern.Dispose();
 			}
 		}
 
-		public IMatrix GetTransform (TextureBrush widget)
+		public IMatrix GetTransform(TextureBrush widget)
 		{
-			return ((TextureBrushObject)widget.ControlObject).Transform.ToEto ();
+			return ((TextureBrushObject)widget.ControlObject).Transform.ToEto();
 		}
 
-		public void SetTransform (TextureBrush widget, IMatrix transform)
+		public void SetTransform(TextureBrush widget, IMatrix transform)
 		{
-			((TextureBrushObject)widget.ControlObject).Transform = transform.ToCairo ();
+			((TextureBrushObject)widget.ControlObject).Transform = transform.ToCairo();
+			((TextureBrushObject)widget.ControlObject).InverseTransform = transform.Inverse().ToCairo();
 		}
 
-		public object Create (Image image, float opacity)
+		public object Create(Image image, float opacity)
 		{
-			return new TextureBrushObject {
-				Pixbuf = image.ToGdk (),
+			return new TextureBrushObject
+			{
+				Image = image,
 				Opacity = opacity
 			};
 		}
 
-		public override void Apply (object control, GraphicsHandler graphics)
+		public override void Apply(object control, GraphicsHandler graphics)
 		{
-			((TextureBrushObject)control).Apply (graphics);
+			((TextureBrushObject)control).Apply(graphics);
 		}
 
-		public float GetOpacity (TextureBrush widget)
+		public float GetOpacity(TextureBrush widget)
 		{
 			return ((TextureBrushObject)widget.ControlObject).Opacity;
 		}
 
-		public void SetOpacity (TextureBrush widget, float opacity)
+		public void SetOpacity(TextureBrush widget, float opacity)
 		{
 			((TextureBrushObject)widget.ControlObject).Opacity = opacity;
 		}
