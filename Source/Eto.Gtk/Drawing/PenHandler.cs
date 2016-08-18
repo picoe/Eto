@@ -17,8 +17,6 @@ namespace Eto.GtkSharp.Drawing
 			double cairooffset;
 			DashStyle dashStyle;
 
-			public Cairo.Color Color { get; set; }
-
 			public float Thickness
 			{
 				get { return thickness; }
@@ -27,6 +25,8 @@ namespace Eto.GtkSharp.Drawing
 					SetDashStyle ();
 				}
 			}
+
+			public Brush Brush { get; set; }
 
 			public Cairo.LineJoin LineJoin { get; set; }
 
@@ -76,35 +76,29 @@ namespace Eto.GtkSharp.Drawing
 
 			public void Apply (GraphicsHandler graphics)
 			{
-				graphics.Control.SetSourceColor(Color);
 				graphics.Control.LineWidth = Thickness;
 				graphics.Control.LineCap = LineCap;
 				graphics.Control.LineJoin = LineJoin;
 				if (cairodashes != null)
 					graphics.Control.SetDash (cairodashes, cairooffset);
 				graphics.Control.MiterLimit = MiterLimit;
-				graphics.Control.Stroke ();
+				Brush.Apply(graphics);
 			}
 		}
 
-		public object Create (Color color, float thickness)
+		public object Create (Brush brush, float thickness)
 		{
 			return new PenObject {
-				Color = color.ToCairo (),
+				Brush = brush,
 				Thickness = thickness,
 				MiterLimit = 10f,
 				LineCap = PenLineCap.Square.ToCairo ()
 			};
 		}
 
-		public Color GetColor (Pen widget)
+		public Brush GetBrush (Pen widget)
 		{
-			return ((PenObject)widget.ControlObject).Color.ToEto ();
-		}
-
-		public void SetColor (Pen widget, Color color)
-		{
-			((PenObject)widget.ControlObject).Color = color.ToCairo ();
+			return ((PenObject)widget.ControlObject).Brush;
 		}
 
 		public float GetThickness (Pen widget)

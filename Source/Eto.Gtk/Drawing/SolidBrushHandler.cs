@@ -12,7 +12,6 @@ namespace Eto.GtkSharp.Drawing
 		public override void Apply(object control, GraphicsHandler graphics)
 		{
 			graphics.Control.SetSourceColor((Cairo.Color)control);
-			graphics.Control.Fill();
 		}
 
 		public Color GetColor(SolidBrush widget)

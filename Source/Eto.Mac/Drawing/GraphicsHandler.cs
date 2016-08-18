@@ -190,8 +190,8 @@ namespace Eto.iOS.Drawing
 
 		public bool AntiAlias
 		{
-			get { return Widget.Properties.Get<bool>(AntiAlias_Key, true); }
-			set { Widget.Properties.Set(AntiAlias_Key, value, () => Control.SetShouldAntialias(value)); }
+			get { return Widget.Properties.Get(AntiAlias_Key, true); }
+			set { Widget.Properties.Set(AntiAlias_Key, value, () => Control.SetShouldAntialias(value), true); }
 		}
 
 		static readonly object PointsPerPixel_Key = new object();
@@ -383,11 +383,30 @@ namespace Eto.iOS.Drawing
 			SetOffset(false);
 			StartDrawing();
 			pen.Apply(this);
-			Control.StrokeLineSegments(new []
-			{
-				new CGPoint(startx, starty),
-				new CGPoint(endx, endy)
-			});
+			Control.MoveTo(startx, starty);
+			Control.AddLineToPoint(endx, endy);
+			pen.Finish(this);
+			EndDrawing();
+		}
+
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			SetOffset(false);
+			StartDrawing();
+			pen.Apply(this);
+			Control.AddLines(points.Select(r => r.ToNS()).ToArray());
+			pen.Finish(this);
+			EndDrawing();
+		}
+
+		public void DrawPolygon(Pen pen, IEnumerable<PointF> points)
+		{
+			SetOffset(false);
+			StartDrawing();
+			pen.Apply(this);
+			Control.AddLines(points.Select(r => r.ToNS()).ToArray());
+			Control.ClosePath();
+			pen.Finish(this);
 			EndDrawing();
 		}
 
@@ -397,7 +416,8 @@ namespace Eto.iOS.Drawing
 			StartDrawing();
 			var rect = new CGRect(x, y, width, height);
 			pen.Apply(this);
-			Control.StrokeRect(rect);
+			Control.AddRect(rect);
+			pen.Finish(this);
 			EndDrawing();
 		}
 
@@ -407,8 +427,7 @@ namespace Eto.iOS.Drawing
 			StartDrawing();
 			var rect = new CGRect(x, y, width, height);
 			Control.AddRect(rect);
-			Control.Clip();
-			brush.Draw(this, rect.ToEto());
+			brush.Draw(this, false, FillMode.Winding);
 			EndDrawing();
 		}
 
@@ -418,7 +437,8 @@ namespace Eto.iOS.Drawing
 			StartDrawing();
 			var rect = new CGRect(x, y, width, height);
 			pen.Apply(this);
-			Control.StrokeEllipseInRect(rect);
+			Control.AddEllipseInRect(rect);
+			pen.Finish(this);
 			EndDrawing();
 		}
 
@@ -426,21 +446,15 @@ namespace Eto.iOS.Drawing
 		{
 			SetOffset(true);
 			StartDrawing();
-			/*	if (width == 1 || height == 1)
-			{
-				DrawLine(color, x, y, x+width-1, y+height-1);
-				return;
-			}*/
 			var rect = new CGRect(x, y, width, height);
 			Control.AddEllipseInRect(rect);
-			Control.Clip();
-			brush.Draw(this, rect.ToEto());
+			brush.Draw(this, false, FillMode.Winding);
 			EndDrawing();
 		}
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			SetOffset(false);
+			SetOffset(true);
 			StartDrawing();
 
 			var rect = new CGRect(x, y, width, height);
@@ -448,9 +462,11 @@ namespace Eto.iOS.Drawing
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
+			Control.SaveState(); // save so the drawing of the pen isn't affected by the transform
 			Control.ConcatCTM(new CGAffineTransform(1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
 			Control.AddArc(centerX, centerY, rect.Width / 2, CGConversions.DegreesToRadians(startAngle), CGConversions.DegreesToRadians(startAngle + sweepAngle), sweepAngle < 0);
-			Control.StrokePath();
+			Control.RestoreState();
+			pen.Finish(this);
 			EndDrawing();
 		}
 
@@ -460,7 +476,7 @@ namespace Eto.iOS.Drawing
 			StartDrawing();
 
 			var rect = new CGRect(x, y, width, height);
-			Control.SaveState();
+			Control.SaveState(); // save so the drawing of the brush isn't affected by the transform
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
@@ -470,8 +486,7 @@ namespace Eto.iOS.Drawing
 			Control.AddLineToPoint(centerX, centerY);
 			Control.ClosePath();
 			Control.RestoreState();
-			Control.Clip();
-			brush.Draw(this, rect.ToEto());
+			brush.Draw(this, false, FillMode.Winding);
 			EndDrawing();
 		}
 
@@ -483,7 +498,13 @@ namespace Eto.iOS.Drawing
 			Control.BeginPath();
 			Control.AddPath(path.ToCG());
 			Control.ClosePath();
-			switch (path.FillMode)
+			brush.Draw(this, false, FillMode.Winding);
+			EndDrawing();
+		}
+
+		internal void Clip(FillMode mode)
+		{
+			switch (mode)
 			{
 				case FillMode.Alternate:
 					Control.EOClip();
@@ -494,8 +515,21 @@ namespace Eto.iOS.Drawing
 				default:
 					throw new NotSupportedException();
 			}
-			brush.Draw(this, path.Bounds);
-			EndDrawing();
+		}
+
+		internal void Fill(FillMode mode)
+		{
+			switch (mode)
+			{
+				case FillMode.Alternate:
+					Control.EOFillPath();
+					break;
+				case FillMode.Winding:
+					Control.FillPath();
+					break;
+				default:
+					throw new NotSupportedException();
+			}
 		}
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
@@ -506,8 +540,9 @@ namespace Eto.iOS.Drawing
 			pen.Apply(this);
 			Control.BeginPath();
 			Control.AddPath(path.ToCG());
-			Control.StrokePath();
-			
+			//Control.StrokePath();
+			pen.Finish(this);
+
 			EndDrawing();
 		}
 

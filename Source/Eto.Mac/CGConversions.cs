@@ -186,9 +186,15 @@ namespace Eto.iOS
 			((PenHandler)pen.Handler).Apply(pen, graphics);
 		}
 
-		public static void Draw(this Brush brush, GraphicsHandler graphics, RectangleF rect)
+		public static void Finish(this Pen pen, GraphicsHandler graphics)
 		{
-			((BrushHandler)brush.Handler).Draw(brush.ControlObject, graphics, rect);
+			((PenHandler)pen.Handler).Finish(pen, graphics);
+		}
+
+
+		public static void Draw(this Brush brush, GraphicsHandler graphics, bool stroke, FillMode fillMode)
+		{
+			((BrushHandler)brush.Handler).Draw(brush.ControlObject, graphics, stroke, fillMode);
 		}
 
 		public static GraphicsPathHandler ToHandler(this IGraphicsPath path)

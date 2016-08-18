@@ -63,6 +63,15 @@ namespace Eto.Forms
 			return new DynamicControl { Control = control };
 		}
 
+		/// <summary>
+		/// Converts a string to a DynamicItem with a Label implicitly
+		/// </summary>
+		/// <param name="label">Label string to convert to a DynamicItem.</param>
+		public static implicit operator DynamicItem(string label)
+		{
+			return new DynamicControl { Control = new Label { Text = label } };
+		}
+
 		internal abstract IEnumerable<Control> Controls { get; }
 
 		internal abstract void SetParent(DynamicTable table);

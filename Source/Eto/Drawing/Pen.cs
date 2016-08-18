@@ -27,6 +27,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a delegate that can be used to create instances of the Pen with low overhead
 		/// </summary>
+		[Obsolete("Since 2.4, use new Pen() instead.")]
 		public static Func<Color, float, Pen> Instantiator
 		{
 			get
@@ -34,7 +35,7 @@ namespace Eto.Drawing
 				var sharedHandler = Platform.Instance.CreateShared<IHandler>();
 				return (color, thickness) =>
 				{
-					var control = sharedHandler.Create(color, thickness);
+					var control = sharedHandler.Create(new SolidBrush(color), thickness);
 					return new Pen(sharedHandler, control);
 				};
 			}
@@ -52,19 +53,44 @@ namespace Eto.Drawing
 		/// <param name="color">Color for the new pen</param>
 		/// <param name="thickness">Thickness of the new pen</param>
 		public Pen(Color color, float thickness = 1f)
+			: this(new SolidBrush(color), thickness)
 		{
-			handler = Platform.Instance.CreateShared<IHandler>();
-			ControlObject = handler.Create(color, thickness);
+		}
+
+		/// <summary>
+		/// Creates a new pen with the specified <paramref name="brush"/> and <paramref name="thickness"/>
+		/// </summary>
+		/// <param name="brush">Brush to stroke the pen with.</param>
+		/// <param name="thickness">Thickness of the new pen</param>
+		public Pen(Brush brush, float thickness = 1f)
+		{
+			handler = Platform.Instance.PenHandler;
+			ControlObject = handler.Create(brush, thickness);
 		}
 
 		/// <summary>
 		/// Gets or sets the color of the pen
 		/// </summary>
 		/// <value>The color of the pen</value>
+		[Obsolete("Since 2.3, Use Brush property instead")]
 		public Color Color
 		{
-			get { return handler.GetColor (this); }
-			set { handler.SetColor (this, value); }
+			get { return (Brush as SolidBrush)?.Color ?? Colors.Transparent; }
+			set
+			{
+				var brush = Brush as SolidBrush;
+				if (brush != null)
+					brush.Color = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets the brush associated with the pen.
+		/// </summary>
+		/// <value>The brush the pen will use to stroke the path.</value>
+		public Brush Brush
+		{
+			get { return handler.GetBrush(this); }
 		}
 
 		/// <summary>
@@ -151,25 +177,18 @@ namespace Eto.Drawing
 		public interface IHandler
 		{
 			/// <summary>
-			/// Creates a new pen with the specified <paramref name="color"/> and <paramref name="thickness"/>
+			/// Creates a new pen with the specified <paramref name="brush"/> and <paramref name="thickness"/>
 			/// </summary>
-			/// <param name="color">Color for the new pen</param>
+			/// <param name="brush">Brush for the new pen</param>
 			/// <param name="thickness">Thickness of the new pen</param>
 			/// <returns>ControlObject for the pen</returns>
-			object Create (Color color, float thickness);
+			object Create(Brush brush, float thickness);
 
 			/// <summary>
-			/// Gets the color of the pen
+			/// Gets the brush of the pen
 			/// </summary>
-			/// <param name="widget">Pen to get the color</param>
-			Color GetColor (Pen widget);
-
-			/// <summary>
-			/// Sets the color of the pen
-			/// </summary>
-			/// <param name="widget">Pen to set the color</param>
-			/// <param name="color">Color of the pen</param>
-			void SetColor (Pen widget, Color color);
+			/// <param name="widget">Pen to get the brush</param>
+			Brush GetBrush (Pen widget);
 
 			/// <summary>
 			/// Gets or sets the thickness (width) of the pen

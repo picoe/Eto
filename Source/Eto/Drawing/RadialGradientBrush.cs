@@ -26,11 +26,12 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Use this to instantiate many objects of this type
 		/// </remarks>
+		[Obsolete("Since 2.4: Use new RadialGradientBrush() instead")]
 		public static Func<Color, Color, PointF, PointF, SizeF, RadialGradientBrush> Instantiator
 		{
 			get
 			{
-				var handler = Platform.Instance.CreateShared<IHandler>();
+				var handler = Platform.Instance.RadialGradientBrushHandler;
 				return (startColor, endColor, center, gradientOrigin, radius) =>
 				{
 					var control = handler.Create(startColor, endColor, center, gradientOrigin, radius);
@@ -55,7 +56,7 @@ namespace Eto.Drawing
 		/// <param name="radius">Radius of the ellipse.</param>
 		public RadialGradientBrush(Color startColor, Color endColor, PointF center, PointF gradientOrigin, SizeF radius)
 		{
-			handler = Platform.Instance.CreateShared<IHandler>();
+			handler = Platform.Instance.RadialGradientBrushHandler;
 			ControlObject = handler.Create(startColor, endColor, center, gradientOrigin, radius);
 		}
 

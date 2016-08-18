@@ -421,7 +421,7 @@ namespace Eto.GtkSharp
 
 		public static IMatrix ToEto(this Cairo.Matrix matrix)
 		{
-			return new MatrixHandler(matrix);
+			return new MatrixHandler(matrix ?? new Cairo.Matrix());
 		}
 
 		public static Gdk.Pixbuf ToGdk(this Image image)
