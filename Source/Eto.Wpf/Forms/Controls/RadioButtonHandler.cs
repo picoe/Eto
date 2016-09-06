@@ -26,6 +26,7 @@ namespace Eto.Wpf.Forms.Controls
 			else
 				Control.GroupName = Guid.NewGuid().ToString();
 
+			Control.UseLayoutRounding = false; // otherwise radio appears offset on certain DPI levels
 			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			border = new swc.Border { Child = Control };
