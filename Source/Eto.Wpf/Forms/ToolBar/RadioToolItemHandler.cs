@@ -87,7 +87,11 @@ namespace Eto.Wpf.Forms.ToolBar
 		public override bool Enabled
 		{
 			get { return Control.IsEnabled; }
-			set { Control.IsEnabled = value; }
+			set
+			{
+				Control.IsEnabled = value;
+				Control.Opacity = value ? 1 : 0.5;
+			}
 		}
 	}
 }
