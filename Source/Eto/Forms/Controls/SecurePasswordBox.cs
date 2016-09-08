@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Security;
-using Anotar.Catel;
-using Eto.Forms;
 
 namespace Eto.Forms
 {
