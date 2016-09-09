@@ -68,6 +68,7 @@
     <Compile Include="Forms\Controls\SearchBox.cs">
       <SubType>Eto.Forms</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\SecurePasswordBox.cs" />
     <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
     <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
