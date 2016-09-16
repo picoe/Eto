@@ -138,30 +138,58 @@ namespace Eto.Forms
 		{
 			return new TableCell(new TableLayout(row));
 		}
+
+		internal void SetLayout(TableLayout layout)
+		{
+			((TableCellCollection)Cells).SetLayout(layout);
+		}
 	}
 
 	class TableRowCollection : Collection<TableRow>, IList
 	{
-		public TableRowCollection()
+		TableLayout layout;
+		public TableRowCollection(TableLayout layout)
 		{
+			this.layout = layout;
 		}
 
-		public TableRowCollection(IEnumerable<TableRow> list)
+		public TableRowCollection(TableLayout layout, IEnumerable<TableRow> list)
 			: base(list.Select(r => r ?? new TableRow { ScaleHeight = true }).ToList())
 		{
+			this.layout = layout;
+			foreach (var item in this)
+				item?.SetLayout(layout);
+		}
+
+		protected override void RemoveItem(int index)
+		{
+			var item = this[index];
+			item?.SetLayout(null);
+			base.RemoveItem(index);
+		}
+
+		protected override void ClearItems()
+		{
+			foreach (var item in this)
+				item?.SetLayout(null);
+			base.ClearItems();
 		}
 
 		protected override void InsertItem(int index, TableRow item)
 		{
 			if (item == null)
 				item = new TableRow { ScaleHeight = true };
+			item?.SetLayout(layout);
 			base.InsertItem(index, item);
 		}
 
 		protected override void SetItem(int index, TableRow item)
 		{
+			var old = this[index];
+			old?.SetLayout(null);
 			if (item == null)
 				item = new TableRow { ScaleHeight = true };
+			item?.SetLayout(layout);
 			base.SetItem(index, item);
 		}
 

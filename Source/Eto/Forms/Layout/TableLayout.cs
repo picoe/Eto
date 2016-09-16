@@ -40,7 +40,7 @@ namespace Eto.Forms
 		/// <value>The rows.</value>
 		public Collection<TableRow> Rows
 		{
-			get { return Properties.Create<TableRowCollection>(rowsKey); }
+			get { return Properties.Create(rowsKey, () => new TableRowCollection(this)); }
 			private set { Properties[rowsKey] = value; }
 		}
 
@@ -208,7 +208,7 @@ namespace Eto.Forms
 		/// <param name="rows">Rows to populate the table.</param>
 		public TableLayout(params TableRow[] rows)
 		{
-			Rows = new TableRowCollection(rows);
+			Rows = new TableRowCollection(this, rows);
 			Create();
 			Initialize();
 		}
@@ -219,7 +219,7 @@ namespace Eto.Forms
 		/// <param name="rows">Rows to populate the table.</param>
 		public TableLayout(IEnumerable<TableRow> rows)
 		{
-			Rows = new TableRowCollection(rows);
+			Rows = new TableRowCollection(this, rows);
 			Create();
 			Initialize();
 		}
@@ -235,28 +235,9 @@ namespace Eto.Forms
 				foreach (TableRow row in rows)
 					if(row != null)
 						row.ScaleHeight = true;
-			Rows = new TableRowCollection(rows);
+			Rows = new TableRowCollection(this, rows);
 			Create();
 			Initialize();
-		}
-
-		static readonly object DataContextChangedKey = new object();
-
-		/// <summary>
-		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
-		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if (created)
-				base.OnDataContextChanged(e);
-			else
-				Properties[DataContextChangedKey] = true;
 		}
 
 		void Create()
@@ -285,11 +266,6 @@ namespace Eto.Forms
 				}
 			}
 			created = true;
-			if (Properties.Get<bool>(DataContextChangedKey))
-			{
-				OnDataContextChanged(EventArgs.Empty);
-				Properties[DataContextChangedKey] = null;
-			}
 		}
 
 		void SetCellSize(Size value, bool createRows)
@@ -303,7 +279,7 @@ namespace Eto.Forms
 				if (createRows)
 				{
 					var rows = Enumerable.Range(0, value.Height).Select(r => new TableRow(Enumerable.Range(0, value.Width).Select(c => new TableCell())));
-					Rows = new TableRowCollection(rows);
+					Rows = new TableRowCollection(this, rows);
 					created = true;
 				}
 			}
@@ -597,5 +573,17 @@ namespace Eto.Forms
 		{
 			return new TableLayout(rows);
 		}
-	}
+
+		internal void SetParent(Control control)
+		{
+			if (control?.LogicalParent == null)
+				SetLogicalParent(control);
+		}
+
+		internal void RemoveParent(Control control)
+		{
+			if (ReferenceEquals(control?.LogicalParent, this))
+				RemoveLogicalParent(control);
+		}
+}
 }

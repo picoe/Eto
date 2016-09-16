@@ -100,7 +100,7 @@ namespace Eto.Forms.ThemedControls
 		/// <summary>
 		/// Gets or sets the content of the header
 		/// </summary>
-		public Control Header
+		public virtual Control Header
 		{
 			get { return header.Content; }
 			set { header.Content = value; }
@@ -109,7 +109,7 @@ namespace Eto.Forms.ThemedControls
 		/// <summary>
 		/// Gets or sets the content of the control when expanded.
 		/// </summary>
-		public Control Content
+		public virtual Control Content
 		{
 			get { return content.Content; }
 			set { content.Content = value; }

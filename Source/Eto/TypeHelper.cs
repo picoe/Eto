@@ -104,7 +104,11 @@ namespace Eto
 		{
 			return type.GetTypeInfo().DeclaredConstructors.FirstOrDefault(r => r.GetParameters().Select(p => p.ParameterType).SequenceEqual(args));
 		}
-#else 
+#else
+		public static Type GetTypeInfo(this Type type)
+		{
+			return type;
+		}
 
 		public static T GetCustomAttribute<T>(this Type type, bool inherit)
 			where T: Attribute

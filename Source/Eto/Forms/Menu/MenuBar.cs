@@ -258,7 +258,7 @@ namespace Eto.Forms
 		{
 			base.OnDataContextChanged(e);
 			foreach (var item in Items)
-				item.TriggerDataContextChanged(e);
+				item.TriggerDataContextChanged();
 		}
 
 

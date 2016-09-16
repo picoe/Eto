@@ -521,12 +521,8 @@ namespace Eto.Forms
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
-			var tb = ToolBar;
-			if (tb != null)
-				tb.TriggerDataContextChanged(e);
-			var menu = Menu;
-			if (menu != null)
-				menu.TriggerDataContextChanged(e);
+			ToolBar?.TriggerDataContextChanged();
+			Menu?.TriggerDataContextChanged();
 		}
 
 		/// <summary>

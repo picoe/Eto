@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="UnitTests\TransformStackTest.cs" />
+    <Compile Include="UnitTests\DataContextTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
