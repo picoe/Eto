@@ -67,13 +67,13 @@ namespace Eto.Test.UnitTests
 				try
 				{
 					// use config file to specify which generator to use for testing
-					#if PCL
+#if PCL
 					var doc = System.Xml.Linq.XDocument.Load("Eto.Test.dll.config");
 					var setting = doc != null ? doc.Root.Element("appSettings").Elements("add").FirstOrDefault(r => r.Attribute("key").Value == "generator") : null;
 					var generatorTypeName = setting != null ? setting.Attribute("value").Value : null;
-					#else
+#else
 					var generatorTypeName = System.Configuration.ConfigurationManager.AppSettings["generator"];
-					#endif
+#endif
 					if (!string.IsNullOrEmpty(generatorTypeName))
 						platform = Platform.Get(generatorTypeName);
 				}
@@ -154,7 +154,7 @@ namespace Eto.Test.UnitTests
 				application.AsyncInvoke(run);
 			else
 				run();
-			
+
 			if (!ev.WaitOne(timeout))
 			{
 				Assert.Fail("Test did not complete in time");
@@ -216,6 +216,22 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
+		public static void Shown(Action<Form> init, Action test, bool replay = false, int timeout = DefaultTimeout)
+		{
+			Shown(form =>
+				{
+					init(form);
+					return null;
+				},
+				(Control c) =>
+				{
+					test();
+				},
+				replay,
+				timeout
+			);
+		}
+
 		/// <summary>
 		/// Test operations on a form once it is shown
 		/// </summary>
@@ -240,7 +256,7 @@ namespace Eto.Test.UnitTests
 						{
 							form.Content = null;
 							control = init(form);
-							if (control != null && form.Content == null)
+							if (control != null && form.Content == null && control != form)
 								form.Content = control;
 							if (application == null)
 								test(control);
@@ -276,7 +292,7 @@ namespace Eto.Test.UnitTests
 						}
 					}
 				};
-				if (control != null && form.Content == null)
+				if (control != null && form.Content == null && control != form)
 					form.Content = control;
 			}, timeout);
 			if (exception != null)

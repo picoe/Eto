@@ -163,7 +163,7 @@ namespace Eto.Forms
 		{
 			return new BindableBinding<T, TNewValue>(
 				DataItem,
-				Binding.Delegate<T, TNewValue>(
+				Delegate<T, TNewValue>(
 					c => toValue != null ? toValue(DataValue) : default(TNewValue),
 					(c,v) => { if (fromValue != null) DataValue = fromValue(v); },
 					addChangeEvent: (c, ev) => DataValueChanged += ev,
@@ -180,7 +180,7 @@ namespace Eto.Forms
 		{
 			return new BindableBinding<T, TNewValue>(
 				DataItem,
-				Binding.Delegate<T, TNewValue>(
+				Delegate<T, TNewValue>(
 					c => (TNewValue)(object)DataValue,
 					(c, v) => DataValue = (TValue)(object)v,
 					addChangeEvent: (c, ev) => DataValueChanged += ev,

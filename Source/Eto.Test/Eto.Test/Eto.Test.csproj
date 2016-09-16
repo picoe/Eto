@@ -204,6 +204,7 @@
     <Compile Include="UnitTests\Forms\WindowTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\ControlEventTests.cs" />
     <Compile Include="UnitTests\TestBase.cs" />
+    <Compile Include="UnitTests\Forms\DataContextTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
@@ -247,7 +248,9 @@
           <TextStylePolicy inheritsSet="null" scope="application/xaml+xml" />
           <XmlFormattingPolicy inheritsSet="null" scope="application/xaml+xml" />
           <TextStylePolicy inheritsSet="null" scope="application/xml" />
-          <XmlFormattingPolicy inheritsSet="Mono" inheritsScope="application/xml" scope="application/xml" />
+          <XmlFormattingPolicy inheritsSet="Mono" inheritsScope="application/xml" scope="application/xml">
+            <DefaultFormat OmitXmlDeclaration="False" NewLineChars="&#xA;" IndentContent="True" ContentIndentString="&#x9;" AttributesInNewLine="False" MaxAttributesPerLine="10" AttributesIndentString="&#x9;" WrapAttributes="False" AlignAttributes="False" AlignAttributeValues="False" QuoteChar="&quot;" SpacesBeforeAssignment="0" SpacesAfterAssignment="0" EmptyLinesBeforeStart="0" EmptyLinesAfterStart="0" EmptyLinesBeforeEnd="0" EmptyLinesAfterEnd="0" />
+          </XmlFormattingPolicy>
           <TextStylePolicy inheritsSet="null" scope="application/json" />
           <TextStylePolicy inheritsSet="null" scope="application/config+xml" />
           <XmlFormattingPolicy inheritsSet="null" scope="application/config+xml" />

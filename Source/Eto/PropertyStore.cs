@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Eto.Forms;
+using System.Reflection;
 
 namespace Eto
 {
@@ -36,6 +37,14 @@ namespace Eto
 		public PropertyStore(object parent)
 		{
 			this.Parent = parent;
+		}
+
+		bool IsEqual<T>(T existing, T value)
+		{
+			if (typeof(T).GetTypeInfo().IsClass)
+				return ReferenceEquals(existing, value);
+			else
+				return Equals(existing, value);
 		}
 
 		/// <summary>
@@ -241,7 +250,7 @@ namespace Eto
 		/// <typeparam name="T">The type of the property to set.</typeparam>
 		public void Set<T>(object key, T value, T defaultValue = default(T))
 		{
-			if (Equals(value, defaultValue))
+			if (IsEqual(value, defaultValue))
 				Remove(key);
 			else
 				this[key] = value;
@@ -283,7 +292,7 @@ namespace Eto
 		#endif
 		{
 			var existing = Get<T>(key);
-			if (!Equals(existing, value))
+			if (!IsEqual(existing, value))
 			{
 				Set<T>(key, value, defaultValue);
 				if (propertyChanged != null)
@@ -330,7 +339,7 @@ namespace Eto
 		public bool Set<T>(object key, T value, Action propertyChanged, T defaultValue = default(T))
 		{
 			var existing = Get<T>(key);
-			if (!Equals(existing, value))
+			if (!IsEqual(existing, value))
 			{
 				Set<T>(key, value, defaultValue);
 				propertyChanged();
