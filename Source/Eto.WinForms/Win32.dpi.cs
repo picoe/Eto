@@ -91,5 +91,8 @@ namespace Eto
 
 		[DllImport("shcore.dll")]
 		public static extern uint SetProcessDpiAwareness(PROCESS_DPI_AWARENESS awareness);
+
+		[DllImport("shcore.dll")]
+		public static extern uint GetProcessDpiAwareness(IntPtr handle, out PROCESS_DPI_AWARENESS awareness);
 	}
 }
