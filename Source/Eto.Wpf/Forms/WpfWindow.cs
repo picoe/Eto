@@ -169,7 +169,7 @@ namespace Eto.Wpf.Forms
 					if (PerMonitorDpiHelper.BuiltInPerMonitorSupported && dpiChangedEvent != null) // .NET 4.6.2 support!
 					{
 						var method = typeof(WpfWindow<TControl, TWidget, TCallback>).GetMethod(nameof(HandleLogicalPixelSizeChanged), BindingFlags.Instance | BindingFlags.NonPublic);
-						dpiChangedEvent.AddEventHandler(Control, method.CreateDelegate(dpiChangedEvent.EventHandlerType, this));
+						dpiChangedEvent.AddEventHandler(Control, Delegate.CreateDelegate(dpiChangedEvent.EventHandlerType, this, method));
 						break;
 					}
 					SetupPerMonitorDpi();
