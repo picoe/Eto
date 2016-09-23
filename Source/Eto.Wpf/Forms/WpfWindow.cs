@@ -9,6 +9,7 @@ using swi = System.Windows.Input;
 using Eto.Wpf.CustomControls;
 using Eto.Wpf.Forms.Menu;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace Eto.Wpf.Forms
 {
@@ -46,6 +47,8 @@ namespace Eto.Wpf.Forms
 		{
 			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
 		}
+
+		public static bool EnablePerMonitorDpiSupport { get; set; } = true;
 
 		public swc.DockPanel ContentPanel { get { return content; } }
 
@@ -96,7 +99,7 @@ namespace Eto.Wpf.Forms
 
 		void SetupPerMonitorDpi()
 		{
-			if (dpiHelper == null && Win32.PerMonitorDpiSupported)
+			if (EnablePerMonitorDpiSupport && dpiHelper == null && Win32.PerMonitorDpiSupported && !PerMonitorDpiHelper.BuiltInPerMonitorSupported)
 			{
 				dpiHelper = new PerMonitorDpiHelper(Control);
 				Widget.LogicalPixelSizeChanged += (sender, e) => SetMinimumSize();
@@ -107,6 +110,8 @@ namespace Eto.Wpf.Forms
 		{
 			base.SetContentScale(true, true);
 		}
+
+		static EventInfo dpiChangedEvent = typeof(sw.Window).GetEvent("DpiChanged");
 
 		public override void AttachEvent(string id)
 		{
@@ -161,6 +166,13 @@ namespace Eto.Wpf.Forms
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
 					break;
 				case Window.LogicalPixelSizeChangedEvent:
+					if (PerMonitorDpiHelper.BuiltInPerMonitorSupported && dpiChangedEvent != null) // .NET 4.6.2 support!
+					{
+						var method = typeof(WpfWindow<TControl, TWidget, TCallback>).GetMethod(nameof(HandleLogicalPixelSizeChanged), BindingFlags.Instance | BindingFlags.NonPublic);
+						dpiChangedEvent.AddEventHandler(Control, Delegate.CreateDelegate(dpiChangedEvent.EventHandlerType, this, method));
+						break;
+					}
+					SetupPerMonitorDpi();
 					if (dpiHelper != null)
 						dpiHelper.ScaleChanged += (sender, e) => Callback.OnLogicalPixelSizeChanged(Widget, EventArgs.Empty);
 					break;
@@ -168,6 +180,11 @@ namespace Eto.Wpf.Forms
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void HandleLogicalPixelSizeChanged(object sender, EventArgs e)
+		{
+			Callback.OnLogicalPixelSizeChanged(Widget, EventArgs.Empty);
 		}
 
 		static bool IsApplicationClosing { get; set; }
@@ -586,7 +603,7 @@ namespace Eto.Wpf.Forms
 
 		public float LogicalPixelSize
 		{
-			get { return (float)(dpiHelper?.Scale ?? 1f); }
+			get { return (float)(dpiHelper?.Scale ?? (sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformToDevice.M11 ?? 1.0)); }
 		}
 	}
 }

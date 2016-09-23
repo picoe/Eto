@@ -359,7 +359,11 @@ namespace Eto.Wpf.Forms.Controls
 		public override void Invalidate()
 		{
 			if (!Control.IsLoaded)
+			{
+				if (Widget.Loaded)
+					Application.Instance.AsyncInvoke(Invalidate);
 				return;
+			}
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
@@ -382,7 +386,11 @@ namespace Eto.Wpf.Forms.Controls
 		public override void Invalidate(Rectangle rect)
 		{
 			if (!Control.IsLoaded)
+			{
+				if (Widget.Loaded)
+					Application.Instance.AsyncInvoke(() => Invalidate(rect));
 				return;
+			}
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)

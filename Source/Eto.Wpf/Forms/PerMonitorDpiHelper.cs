@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +25,33 @@ namespace Eto.Wpf.Forms
 			ScaleChanged?.Invoke(this, e);
 		}
 
+		static Lazy<bool> builtInPerMonitorSupported = new Lazy<bool>(() =>
+		{
+			Win32.PROCESS_DPI_AWARENESS awareness;
+			if (!Win32.PerMonitorDpiSupported)
+				return false;
+			if (Win32.GetProcessDpiAwareness(IntPtr.Zero, out awareness) != 0)
+				return false;
+			if (awareness != Win32.PROCESS_DPI_AWARENESS.PER_MONITOR_DPI_AWARE)
+				return false;
+			if (typeof(Window).GetEvent("DpiChanged") == null) // .NET 4.6.2
+				return false;
+
+			// now check if it was disabled specifically (more .NET 4.6 apis)
+			var contextType = typeof(object).Assembly.GetType("System.AppContext");
+			if (contextType == null)
+				return false;
+			var method = contextType.GetMethod("TryGetSwitch", BindingFlags.Static | BindingFlags.Public, null, new [] { typeof(string), typeof(bool).MakeByRefType() }, null);
+			if (method == null)
+				return false;
+			var args = new object[] { "Switch.System.Windows.DoNotScaleForDpiChanges", null };
+			method.Invoke(null, args);
+			var doNotScaleForDpiChanges = (bool)args[1];
+			return !doNotScaleForDpiChanges;
+		});
+
+		public static bool BuiltInPerMonitorSupported => builtInPerMonitorSupported.Value;
+
 		public double Scale { get; private set; } = 1;
 
 		public double WpfScale
@@ -40,23 +69,23 @@ namespace Eto.Wpf.Forms
 
 		void SetScale(uint dpi)
 		{
-
 			var scale = dpi / 96.0;
 			if (Scale == scale)
 				return;
 			Scale = scale;
 
 			// set the scale for the window content
-			var content = window.Content as Visual;
+			var content = VisualTreeHelper.GetChild(window, 0);
 			if (content != null)
 			{
 				var wpfScale = WpfScale;
+				var val = content.GetValue(FrameworkElement.LayoutTransformProperty);
 				content.SetValue(FrameworkElement.LayoutTransformProperty, new ScaleTransform(wpfScale, wpfScale));
 			}
 			OnScaleChanged(EventArgs.Empty);
 		}
 
-		static bool setProcessDpi;
+		static bool? dpiEventEnabled;
 
 		public PerMonitorDpiHelper(Window window)
 		{
@@ -64,17 +93,28 @@ namespace Eto.Wpf.Forms
 			if (!Win32.PerMonitorDpiSupported)
 				return;
 
-			if (!setProcessDpi)
+			if (dpiEventEnabled == null)
 			{
-				Win32.SetProcessDpiAwareness(Win32.PROCESS_DPI_AWARENESS.PER_MONITOR_DPI_AWARE);
-				setProcessDpi = true;
+				dpiEventEnabled = false;
+				Win32.PROCESS_DPI_AWARENESS awareness;
+				var ret = Win32.GetProcessDpiAwareness(IntPtr.Zero, out awareness);
+				if (ret == 0 && awareness != Win32.PROCESS_DPI_AWARENESS.PER_MONITOR_DPI_AWARE)
+				{
+					//dpiEventEnabled |= awareness == Win32.PROCESS_DPI_AWARENESS.SYSTEM_DPI_AWARE;
+
+					ret = Win32.SetProcessDpiAwareness(Win32.PROCESS_DPI_AWARENESS.PER_MONITOR_DPI_AWARE);
+					dpiEventEnabled |= ret == 0;
+				}
 			}
 
-			if (this.window.IsLoaded)
-				AddHook();
-			else
-				this.window.Loaded += (o, e) => AddHook();
-			this.window.Closed += (o, e) => RemoveHook();
+			if (dpiEventEnabled.Value)
+			{
+				if (this.window.IsLoaded)
+					AddHook();
+				else
+					this.window.Loaded += (o, e) => AddHook();
+				this.window.Closed += (o, e) => RemoveHook();
+			}
 		}
 
 		void Window_SourceInitialized(object sender, EventArgs e)
