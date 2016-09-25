@@ -73,9 +73,8 @@ namespace Eto.GtkSharp.Forms.Menu
 				if (Handler.isSubMenu == result) {
 					if (result)
 						(Handler.Control.Parent as Gtk.Menu)?.Deactivate ();
-					
-					Handler.Callback.OnClick (Handler.Widget, e);
 				}
+				Handler.Callback.OnClick (Handler.Widget, e);
 			}
 		}
 
