@@ -6,10 +6,11 @@ namespace Eto.GtkSharp.Drawing
 	public class SystemColorsHandler : SystemColors.IHandler
 	{
 		readonly Gtk.TextView entry = new Gtk.TextView();
+		readonly Gtk.Entry textEntry = new Gtk.Entry();
 
 		public Color ControlText
 		{
-			get { return entry.GetTextColor(GtkStateFlags.Normal); }
+			get { return textEntry.GetTextColor(GtkStateFlags.Normal); }
 		}
 
 		public Color HighlightText
