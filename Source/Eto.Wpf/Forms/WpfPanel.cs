@@ -17,7 +17,7 @@ namespace Eto.Wpf.Forms
 		readonly swc.Border border;
 		Size? clientSize;
 
-		protected virtual bool UseContentSize { get { return true; } }
+		protected virtual bool UseContentSize => false;
 
 		public override Size ClientSize
 		{
@@ -126,6 +126,7 @@ namespace Eto.Wpf.Forms
 				}
 				else
 					border.Child = null;
+				Control.InvalidateMeasure();
 				UpdatePreferredSize();
 			}
 		}
