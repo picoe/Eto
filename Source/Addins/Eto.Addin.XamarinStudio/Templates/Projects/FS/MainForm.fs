@@ -11,13 +11,11 @@ type MainForm$if$($UseCodePreview$==True)Base$endif$ () as this =
         base.ClientSize <- new Size(400, 350)
 
         // table with three rows
-        let table = new TableLayout(null, 
-                                    // row with three columns
-                                    new TableRow(null, new TableCell(new Label(Text = "Hello World!")), null), 
-                                    null)
+        let layout = new StackLayout()
+        layout.Items.Add(new StackLayoutItem(new Label(Text = "Hello World!")))
+        // Add more controls here
 
-        // scrollable region as the main content
-        base.Content <- new Scrollable(Content = table)
+        base.Content <- layout;
 
         // create a few commands that can be used for the menu and toolbar
         let clickMe = new Command(MenuText = "Click Me!", ToolBarText = "Click Me!")

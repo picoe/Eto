@@ -11,7 +11,7 @@ namespace Eto.Designer.Builders
 {
 	public class JsonInterfaceBuilder : IInterfaceBuilder
 	{
-		public void Create(string text, Action<Forms.Control> controlCreated, Action<Exception> error)
+		public void Create(string text, string mainAssembly, IEnumerable<string> references, Action<Forms.Control> controlCreated, Action<Exception> error)
 		{
 			try
 			{

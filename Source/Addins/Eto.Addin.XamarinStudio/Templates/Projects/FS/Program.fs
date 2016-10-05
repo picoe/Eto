@@ -2,12 +2,11 @@
 module Program =
 
     open System
-    open Eto
     open ${BaseProjectName}
 
     [<EntryPoint>]
     [<STAThread>]
     let Main(args) = 
-        let app = new Eto.Forms.Application(${EtoPlatform})
+        let app = new Eto.Forms.Application(Eto.${EtoPlatform})
         app.Run(new MainForm())
         0

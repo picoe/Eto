@@ -119,9 +119,12 @@ public class FileUpdate : Task
 	
 	public bool WarnOnNoUpdate { get; set; }
 	
+	public bool IgnoreCase { get; set; }
+	
 	public FileUpdate()
 	{
 		WarnOnNoUpdate = true;
+		IgnoreCase = true;
 	}
 
 	static Encoding DetectEncoding(string filename)
@@ -140,7 +143,12 @@ public class FileUpdate : Task
 	{
 		try
 		{
-			var regex = new Regex(Extensions.FixParameter(Pattern), RegexOptions.None);
+			var pattern = Extensions.FixParameter(Pattern);
+			RegexOptions options = RegexOptions.None;
+			if (IgnoreCase)
+				options |= RegexOptions.IgnoreCase;
+			
+			var regex = new Regex(pattern, options);
 
 			foreach (var item in Files)
 			{
@@ -154,7 +162,7 @@ public class FileUpdate : Task
 				if (!regex.IsMatch(text))
 				{
 					if (WarnOnNoUpdate)
-						Log.LogWarning("File '{0}' not updated. Pattern: '{1}'", fileName, Pattern);
+						Log.LogWarning("File '{0}' not updated. Pattern: '{1}'", fileName, pattern);
 					continue;
 				}
 				else

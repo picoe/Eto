@@ -17,6 +17,12 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Editor;
 using Eto.Addin.VisualStudio.Wizards;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using System.IO;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
+using System.Xml;
 
 namespace Eto.Addin.VisualStudio.Editor
 {
@@ -94,6 +100,7 @@ namespace Eto.Addin.VisualStudio.Editor
 		public int MapLogicalView(ref Guid rguidLogicalView, out string pbstrPhysicalView)
 		{
 			pbstrPhysicalView = null;    // initialize out parameter
+
 
 			// we support only a single physical view
 			if (
@@ -177,8 +184,13 @@ namespace Eto.Addin.VisualStudio.Editor
 				return VSConstants.E_INVALIDARG;
 			}
 
+			object prjItemObject;
+			var projectItemId = VSConstants.VSITEMID_ROOT;
+			pvHier.GetProperty(projectItemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);
+			var proj = prjItemObject as EnvDTE.Project;
+
 			// Get or open text buffer
-			var textBuffer = GetTextBuffer(punkDocDataExisting, pszMkDocument);
+			var textBuffer = GetTextBuffer(punkDocDataExisting, pszMkDocument, ToVsProject(proj));
 			
 			if (textBuffer == null)
 				return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
@@ -193,14 +205,84 @@ namespace Eto.Addin.VisualStudio.Editor
 				ppunkDocData = Marshal.GetIUnknownForObject(textBuffer);
 			}
 
+
+			var outputFile = GetAssemblyPath(proj);
+			var references = GetReferences(proj).ToList();
+			//var outputDir = Path.GetDirectoryName(outputFile);
+
 			// Create the Document (editor)
-			var editor = new EtoPreviewPane(editorPackage, pszMkDocument, textBuffer);
+			var editor = new EtoPreviewPane(editorPackage, pszMkDocument, textBuffer, outputFile, references);
 			ppunkDocView = Marshal.GetIUnknownForObject(editor);
 			//pbstrEditorCaption = " [Preview]";
 			return VSConstants.S_OK;
 		}
 
-		IVsTextLines GetTextBuffer(System.IntPtr punkDocDataExisting, string fileName)
+
+		public static IVsHierarchy ToHierarchy(EnvDTE.Project project)
+		{
+			if (project == null) throw new ArgumentNullException("project"); string projectGuid = null;
+			// DTE does not expose the project GUID that exists at in the msbuild project file.        // Cannot use MSBuild object model because it uses a static instance of the Engine,         // and using the Project will cause it to be unloaded from the engine when the         // GC collects the variable that we declare.       
+			using (var projectReader = XmlReader.Create(project.FileName))
+			{
+				projectReader.MoveToContent();
+				object nodeName = projectReader.NameTable.Add("ProjectGuid");
+				while (projectReader.Read())
+				{
+					if (Equals(projectReader.LocalName, nodeName))
+					{
+						projectGuid = (String)projectReader.ReadElementContentAsString(); break;
+					}
+				}
+			}
+			Debug.Assert(!string.IsNullOrEmpty(projectGuid));
+			var serviceProvider = new ServiceProvider(project.DTE as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+			return VsShellUtilities.GetHierarchy(serviceProvider, new Guid(projectGuid));
+		}
+
+		public static IVsProject ToVsProject(EnvDTE.Project project)
+		{
+			if (project == null) throw new ArgumentNullException("project");
+			IVsProject vsProject = ToHierarchy(project) as IVsProject;
+			if (vsProject == null)
+			{
+				throw new ArgumentException("Project is not a VS project.");
+			}
+			return vsProject;
+		}
+
+		public static IEnumerable<string> GetReferences(EnvDTE.Project project)
+		{
+			var vsproject = project.Object as VSLangProj.VSProject;
+			// note: you could also try casting to VsWebSite.VSWebSite
+
+			foreach (VSLangProj.Reference reference in vsproject.References)
+			{
+				if (reference.SourceProject == null)
+				{
+					// skip framework assemblies
+					if (((dynamic)reference).AutoReferenced)
+						continue;
+					// This is an assembly reference
+					yield return reference.Path;
+				}
+				else
+				{
+					// This is a project reference
+					yield return GetAssemblyPath(reference.SourceProject);
+				}
+			}
+		}
+		static string GetAssemblyPath(EnvDTE.Project vsProject)
+		{
+			string fullPath = vsProject.Properties.Item("FullPath").Value.ToString();
+			string outputPath = vsProject.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString();
+			string outputDir = Path.Combine(fullPath, outputPath);
+			string outputFileName = vsProject.Properties.Item("OutputFileName").Value.ToString();
+			string assemblyPath = Path.Combine(outputDir, outputFileName);
+			return assemblyPath;
+		}
+
+		IVsTextLines GetTextBuffer(IntPtr punkDocDataExisting, string fileName, IVsProject project)
 		{
 			IVsTextLines textBuffer = null;
 			if (punkDocDataExisting == IntPtr.Zero)
@@ -208,19 +290,27 @@ namespace Eto.Addin.VisualStudio.Editor
 				// load file using invisible editor
 				var invisibleEditorManager = Services.GetService<SVsInvisibleEditorManager, IVsInvisibleEditorManager>();
 				IVsInvisibleEditor invisibleEditor;
-				invisibleEditorManager.RegisterInvisibleEditor(
+				var result = invisibleEditorManager.RegisterInvisibleEditor(
 					fileName
-					, pProject: null
+					, pProject: project
 					, dwFlags: (uint)_EDITORREGFLAGS.RIEF_ENABLECACHING
 					, pFactory: null
 					, ppEditor: out invisibleEditor);
 				IntPtr docDataPointer;
 				var guidIVsTextLines = typeof(IVsTextLines).GUID;
-				invisibleEditor.GetDocData(
+				result = invisibleEditor.GetDocData(
 					fEnsureWritable: 1
 					, riid: ref guidIVsTextLines
 					, ppDocData: out docDataPointer);
 				var docData = (IVsTextLines)Marshal.GetObjectForIUnknown(docDataPointer);
+
+				/* set site for the doc data?
+				var objWSite = docData as IObjectWithSite;
+				if (objWSite != null)
+				{
+					var oleServiceProvider = (IOleServiceProvider)GetService(typeof(IOleServiceProvider));
+					objWSite.SetSite(oleServiceProvider);
+				}*/
 
 				// assign the right language service for xml/json
 				if (fileName.EndsWith(".xeto", StringComparison.OrdinalIgnoreCase))

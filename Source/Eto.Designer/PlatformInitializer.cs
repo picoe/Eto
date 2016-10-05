@@ -29,7 +29,7 @@ namespace Eto.Designer
 		}
 	}
 
-	[AttributeUsage(AttributeTargets.Assembly, Inherited = false, AllowMultiple = true)]
+	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	public sealed class PlatformInitializerAttribute : Attribute
 	{
 		public Type InitializerType { get; private set; }

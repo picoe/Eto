@@ -27,17 +27,16 @@ namespace Eto.Serialization.Xaml
 			XamlType type = null;
 			try
 			{
-				return base.GetXamlType(xamlNamespace, name, typeArguments);
+				type = base.GetXamlType(xamlNamespace, name, typeArguments);
 			}
 			catch
 			{
-				if (DesignMode && type == null && name.IndexOf('.') == -1)
-				{
-					// in designer mode, fail gracefully
-					return new EtoDesignerType(typeof(DesignerMarkupExtension), this) { TypeName = name, Namespace = xamlNamespace };
-				}
-				throw;
+				if (!DesignMode || type != null)
+					throw;
+				// in designer mode, fail gracefully
+				type = new EtoDesignerType(typeof(DesignerMarkupExtension), this) { TypeName = name, Namespace = xamlNamespace };
 			}
+			return type;
 		}
 
 		public override XamlType GetXamlType(Type type)

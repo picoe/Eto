@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms App</_Name>
-		<Category>crossplat/app/eto</Category>
+		<Category>multiplat/app/eto</Category>
 		<LanguageName>C#</LanguageName>
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in C#]]></_Description>
@@ -33,7 +33,7 @@
 			</Files>
 		</Project>
 
-		<Project name="${ProjectName}" directory="." type="PortableDotNet" if="UsePCL">
+		<Project name="${ProjectName}" directory="." type="C#PortableLibrary" if="UsePCL">
 			<Options Target="Library" TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile259" />
 			<Files>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="Properties/AssemblyInfo.cs" />

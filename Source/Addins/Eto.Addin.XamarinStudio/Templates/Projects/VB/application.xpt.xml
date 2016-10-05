@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms App</_Name>
-		<Category>crossplat/app/eto</Category>
+		<Category>multiplat/app/eto</Category>
 		<LanguageName>VBNet</LanguageName>
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in VB.NET]]></_Description>
@@ -20,7 +20,7 @@
 			<StartupProject>${ProjectName}.Mac</StartupProject>
 		</Options>
 
-		<Project name="${ProjectName}" directory="." type="Eto.VBDotNet">
+		<Project name="${ProjectName}" directory="." type="Eto.VBNet">
 			<Options Target="Library" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic" />
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -35,7 +35,7 @@
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" namespace="${ProjectName}" type="Eto.VBDotNet" if="Combined">
+		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" namespace="${ProjectName}" type="Eto.VBNet" if="Combined">
 			<Options Target="WinExe" TargetFrameworkVersion="v4.0" VBImports="System;System.Collection.Generic;Eto.Forms" />
 			<References>
 				<Reference type="Gac" refto="System" />

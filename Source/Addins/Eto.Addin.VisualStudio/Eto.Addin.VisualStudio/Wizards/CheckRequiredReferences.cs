@@ -84,9 +84,11 @@ namespace Eto.Addin.VisualStudio.Wizards
 
 				if (!Quiet)
 				{
-					var result = MessageBox.Show(Helpers.MainWindow, msg, "Missing packages", MessageBoxButtons.OKCancel, MessageBoxType.Information, MessageBoxDefaultButton.OK);
+					var result = MessageBox.Show(Helpers.MainWindow, msg, "Missing packages", MessageBoxButtons.YesNoCancel, MessageBoxType.Information, MessageBoxDefaultButton.Yes);
 					if (result == DialogResult.Cancel)
 						throw new WizardCancelledException();
+					if (result == DialogResult.No)
+						return;
 				}
 
 				foreach (var missingRef in missingReferences)

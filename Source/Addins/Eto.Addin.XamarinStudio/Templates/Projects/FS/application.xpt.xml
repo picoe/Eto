@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms App</_Name>
-		<Category>crossplat/app/eto</Category>
+		<Category>multiplat/app/eto</Category>
 		<LanguageName>F#</LanguageName>
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in F#]]></_Description>
@@ -22,8 +22,8 @@
 			<StartupProject>${ProjectName}.Mac</StartupProject>
 		</Options>
 
-		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" type="Eto.FSharp" if="Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" if="Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -50,8 +50,8 @@
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.FSharp" if="!Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" if="!Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -87,7 +87,7 @@
 		</Project>
 
 		<Project name="${ProjectName}" directory="." if="UseNET">
-			<Options Target="Library" TargetFrameworkVersion="v4.0" />
+			<Options Target="Library"  />
 			<References>
 				<Reference type="Gac" refto="mscorlib" />
 				<Reference type="Gac" refto="FSharp.Core" />
@@ -113,8 +113,8 @@
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.FSharp" if="!Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" if="!Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -138,8 +138,8 @@
 		</Project>
 
 
-		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.FSharp" if="!Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" if="!Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -162,8 +162,8 @@
 				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.FSharp" if="!Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" if="!Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -190,7 +190,7 @@
 		</Project>
 
 		<Project name="${ProjectName}.Mac" directory="./${ProjectName}.Mac" type="MonoMac">
-			<Options TargetFrameworkVersion="v4.0" />
+			<Options  />
 			<References>
 				<Reference type="Gac" refto="mscorlib" />
 				<Reference type="Gac" refto="FSharp.Core" />
