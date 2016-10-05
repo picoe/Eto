@@ -7,7 +7,7 @@ using FSharp.Compiler.CodeDom;
 
 namespace Eto.Designer.Builders
 {
-	public class FSharpInterfaceBuilder : CodeInterfaceBuilder
+	public class FSharpInterfaceBuilder : CodeDomInterfaceBuilder
 	{
 		protected override CodeDomProvider CreateCodeProvider()
 		{

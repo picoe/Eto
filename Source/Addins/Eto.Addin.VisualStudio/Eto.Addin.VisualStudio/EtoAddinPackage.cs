@@ -30,10 +30,11 @@ namespace Eto.Addin.VisualStudio
 	[ProvideEditorFactory(typeof(EditorFactory), 106, 
 		CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview, 
 		TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-	//[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Any_string)]
+	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Any_string)]
 	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Code_string)]
 	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.TextView_string)]
 	[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Designer_string)]
+
 
 	//[ProvideLanguageExtension(VSConstants.VsLanguageServiceGuid.HtmlLanguageService_string, ".jeto")]
 

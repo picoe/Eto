@@ -6,7 +6,9 @@ using MonoDevelop.Components.Commands;
 using System.Reflection;
 using System.IO;
 using Eto.Designer;
-using Mono.TextEditor;
+//using Mono.TextEditor;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace Eto.Addin.XamarinStudio.Editor
 {
@@ -14,12 +16,12 @@ namespace Eto.Addin.XamarinStudio.Editor
 	{
 		bool exclude;
 
-		public IViewContent CreateContent(MonoDevelop.Core.FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
+		ViewContent IViewDisplayBinding.CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			exclude = true;
-			var defaultViewBinding = DisplayBindingService.GetDefaultViewBinding(fileName, mimeType, ownerProject);
-			var content = defaultViewBinding.CreateContent(fileName, mimeType, ownerProject);
-			var result = new EditorView(content);
+			var defaultViewBinding = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
+			var content = defaultViewBinding.CreateContent (fileName, mimeType, ownerProject);
+			var result = new EditorView (content);
 			exclude = false;
 			return result;
 		}

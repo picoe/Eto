@@ -145,9 +145,12 @@ namespace Eto.Wpf.Forms
 
         public virtual void UpdatePreferredSize()
         {
-            var parent = Widget.VisualParent.GetWpfContainer();
-            if (parent != null)
-                parent.UpdatePreferredSize();
+			if (Widget.Loaded || Widget.VisualParent?.Loaded == true)
+			{
+				var parent = Widget.VisualParent.GetWpfContainer();
+				if (parent != null)
+					parent.UpdatePreferredSize();
+			}
         }
 
 		public virtual void SetScale(bool xscale, bool yscale)

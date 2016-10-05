@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms Library</_Name>
-		<Category>crossplat/library/eto</Category>
+		<Category>multiplat/library/eto</Category>
 		<LanguageName>F#</LanguageName>
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in F#.</_Description>

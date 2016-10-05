@@ -30,6 +30,8 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System.Windows.Media;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using System.Collections.Generic;
 
 namespace Eto.Addin.VisualStudio.Editor
 {
@@ -38,7 +40,8 @@ namespace Eto.Addin.VisualStudio.Editor
 		IVsWindowPane,
 		IVsTextBufferDataEvents,
 		IVsTextLinesEvents,
-		IOleCommandTarget
+		IOleCommandTarget,
+		IVsCodeWindow // support setting breakpoints
 	{
 		IVsTextLines textBuffer;
 		EtoAddinPackage package;
@@ -46,6 +49,11 @@ namespace Eto.Addin.VisualStudio.Editor
 		Panel editorControl;
 		uint dataEventsCookie;
 		uint linesEventsCookie;
+		IVsTextView viewAdapter;
+		IVsCodeWindow codeWindow;
+		IWpfTextViewHost wpfViewHost;
+
+		bool CodeEditorHasFocus => wpfViewHost?.TextView?.VisualElement?.IsKeyboardFocused == true;
 
 		void RegisterIndependentView(bool subscribe)
 		{
@@ -81,8 +89,8 @@ namespace Eto.Addin.VisualStudio.Editor
 					linesEventsCookie = 0;
 				}
 			}
-		}
 
+		}
 
 		#region "Window.Pane Overrides"
 		/// <summary>
@@ -90,7 +98,7 @@ namespace Eto.Addin.VisualStudio.Editor
 		/// our initialization functions.
 		/// </summary>
 		/// <param name="package">Our Package instance.</param>
-		public EtoPreviewPane(EtoAddinPackage package, string fileName, IVsTextLines textBuffer)
+		public EtoPreviewPane(EtoAddinPackage package, string fileName, IVsTextLines textBuffer, string mainAssembly, IEnumerable<string> references)
 			: base(package)
 		{
 			this.package = package;
@@ -98,12 +106,18 @@ namespace Eto.Addin.VisualStudio.Editor
 			FileName = fileName;
 
 			editorControl = new Panel();
-			preview = new PreviewEditorView(editorControl, () => textBuffer?.GetText());
+			preview = new PreviewEditorView(editorControl, mainAssembly, references, () => textBuffer?.GetText());
+			preview.GotFocus += (sender, e) =>
+			{
+				wpfViewHost?.TextView?.VisualElement?.Focus();
+			};
 			if (!preview.SetBuilder(fileName))
 				throw new InvalidOperationException(string.Format("Could not find builder for file {0}", fileName));
 
-			Content = preview.ToNative(true);
-        }
+			var content = preview.ToNative(true);
+			Content = content;
+
+		}
 
 		protected override bool PreProcessMessage(ref System.Windows.Forms.Message m)
 		{
@@ -154,7 +168,7 @@ namespace Eto.Addin.VisualStudio.Editor
 				ViewCode();
 				return VSConstants.S_OK;
 			}
-			if (viewAdapter != null)
+			if (CodeEditorHasFocus && viewAdapter != null)
 			{
 				var cmdTarget = (IOleCommandTarget)viewAdapter;
 				hr = cmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
@@ -177,7 +191,7 @@ namespace Eto.Addin.VisualStudio.Editor
 				}
 			}
 
-			if (viewAdapter != null)
+			if (CodeEditorHasFocus && viewAdapter != null)
 			{
 				var cmdTarget = (IOleCommandTarget)viewAdapter;
 				hr = cmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
@@ -185,7 +199,6 @@ namespace Eto.Addin.VisualStudio.Editor
 			return hr;
 		}
 
-		IVsTextView viewAdapter;
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -216,28 +229,30 @@ namespace Eto.Addin.VisualStudio.Editor
 		{
 			var editorSvc = Services.GetComponentService<IVsEditorAdaptersFactoryService>();
 
-			var codeWindow = editorSvc.CreateVsCodeWindowAdapter(Services.ServiceProvider);
-			codeWindow.SetBuffer(textBuffer);
+			codeWindow = editorSvc.CreateVsCodeWindowAdapter(Services.ServiceProvider);
+			// disable splitter since it will cause a crash
+			var codeWindowEx = (IVsCodeWindowEx)codeWindow;
+			var initView = new INITVIEW[1];
+			ErrorHandler.ThrowOnFailure(codeWindowEx.Initialize(
+				(uint)_codewindowbehaviorflags.CWB_DISABLESPLITTER,
+				VSUSERCONTEXTATTRIBUTEUSAGE.VSUC_Usage_Filter,
+				szNameAuxUserContext: string.Empty,
+				szValueAuxUserContext: string.Empty,
+				InitViewFlags: 0,
+				pInitView: initView));
+			ErrorHandler.ThrowOnFailure(codeWindow.SetBuffer(textBuffer));
 
+			//needed for xeto/jeto files, not implemented for c# etc so we don't worry about the result
 			Guid clsIdView = VSConstants.LOGVIEWID.TextView_guid;
-			codeWindow.SetViewClassID(ref clsIdView);
+			//codeWindow.SetViewClassID(ref clsIdView);
 
-			if (codeWindow.GetPrimaryView(out viewAdapter) == 0)
+			if (ErrorHandler.Succeeded(codeWindow.GetPrimaryView(out viewAdapter)))
 			{
-
-				// disable splitter since it will cause a crash
-				var codeWindowEx = (IVsCodeWindowEx)codeWindow;
-				var initView = new INITVIEW[1];
-				codeWindowEx.Initialize((uint)_codewindowbehaviorflags.CWB_DISABLESPLITTER,
-										 VSUSERCONTEXTATTRIBUTEUSAGE.VSUC_Usage_Filter,
-										 szNameAuxUserContext: string.Empty,
-										 szValueAuxUserContext: string.Empty,
-										 InitViewFlags: 0,
-										 pInitView: initView);
-				
 				// get the view first so host is created 
-				var wpfView = editorSvc.GetWpfTextView(viewAdapter);
-				var wpfViewHost = editorSvc.GetWpfTextViewHost(viewAdapter);
+				//var wpfView = editorSvc.GetWpfTextView(viewAdapter);
+
+				wpfViewHost = editorSvc.GetWpfTextViewHost(viewAdapter);
+				
 
 				var wpfElement = wpfViewHost?.HostControl;
 				if (wpfElement != null)
@@ -273,19 +288,13 @@ namespace Eto.Addin.VisualStudio.Editor
 			{
 				if (disposing)
 				{
-					if (preview != null)
-					{
-						preview.Dispose();
-						preview = null;
-					}
+					preview?.Dispose();
+					preview = null;
 
 					RegisterIndependentView(false);
 
-					if (editorControl != null)
-					{
-						editorControl.Dispose();
-						editorControl = null;
-					}
+					editorControl?.Dispose();
+					editorControl = null;
 
 					GC.SuppressFinalize(this);
 				}
@@ -311,7 +320,7 @@ namespace Eto.Addin.VisualStudio.Editor
 		void ViewCode()
 		{
 			// Open the referenced document using the standard text editor.
-			var codeFile = preview.Builder.GetCodeFile(FileName);
+			var codeFile = preview.GetCodeFile(FileName);
 
 			IVsWindowFrame frame;
 			IVsUIHierarchy hierarchy;
@@ -345,6 +354,76 @@ namespace Eto.Addin.VisualStudio.Editor
 		void IVsTextLinesEvents.OnChangeLineText(TextLineChange[] pTextLineChange, int fLast)
 		{
 			preview.Update();
+		}
+
+		public int SetBuffer(IVsTextLines pBuffer)
+		{
+			return codeWindow.SetBuffer(pBuffer);
+		}
+
+		public int GetBuffer(out IVsTextLines ppBuffer)
+		{
+			return codeWindow.GetBuffer(out ppBuffer);
+		}
+
+		public int GetPrimaryView(out IVsTextView ppView)
+		{
+			return codeWindow.GetPrimaryView(out ppView);
+		}
+
+		public int GetSecondaryView(out IVsTextView ppView)
+		{
+			return codeWindow.GetSecondaryView(out ppView);
+		}
+
+		public int SetViewClassID(ref Guid clsidView)
+		{
+			return codeWindow.SetViewClassID(ref clsidView);
+		}
+
+		public int GetViewClassID(out Guid pclsidView)
+		{
+			return codeWindow.GetViewClassID(out pclsidView);
+		}
+
+		public int SetBaseEditorCaption(string[] pszBaseEditorCaption)
+		{
+			return codeWindow.SetBaseEditorCaption(pszBaseEditorCaption);
+		}
+
+		public int GetEditorCaption(READONLYSTATUS dwReadOnly, out string pbstrEditorCaption)
+		{
+			return codeWindow.GetEditorCaption(dwReadOnly, out pbstrEditorCaption);
+		}
+
+		public int Close()
+		{
+			return codeWindow.Close();
+		}
+
+		public int GetLastActiveView(out IVsTextView ppView)
+		{
+			return codeWindow.GetLastActiveView(out ppView);
+		}
+
+		public override int SaveUIState(out Stream stateStream)
+		{
+			var ret = base.SaveUIState(out stateStream);
+			stateStream = stateStream ?? new MemoryStream();
+			using (var bw = new BinaryWriter(stateStream, Encoding.UTF8, true))
+				bw.Write(preview.RelativePosition);
+			return 0;
+		}
+
+		public override int LoadUIState(Stream stateStream)
+		{
+			var ret = base.LoadUIState(stateStream);
+			if (stateStream != null)
+			{
+				using (var br = new BinaryReader(stateStream, Encoding.UTF8, true))
+					preview.RelativePosition = br.ReadDouble();
+			}
+			return 0;
 		}
 	}
 }

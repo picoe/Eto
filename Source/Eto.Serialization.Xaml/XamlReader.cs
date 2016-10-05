@@ -140,7 +140,8 @@ namespace Eto.Serialization.Xaml
 		public static T Load<T>(Stream stream, T instance)
 		{
 			var readerSettings = new XamlXmlReaderSettings();
-			readerSettings.LocalAssembly = typeof(T).GetAssembly();
+			if (!DesignMode)
+				readerSettings.LocalAssembly = typeof(T).GetAssembly();
 			return Load<T>(new XamlXmlReader(stream, context, readerSettings), instance);
 		}
 
@@ -154,7 +155,8 @@ namespace Eto.Serialization.Xaml
 		public static T Load<T>(TextReader reader, T instance)
 		{
 			var readerSettings = new XamlXmlReaderSettings();
-			readerSettings.LocalAssembly = typeof(T).GetAssembly();
+			if (!DesignMode)
+				readerSettings.LocalAssembly = typeof(T).GetAssembly();
 			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 
@@ -168,7 +170,8 @@ namespace Eto.Serialization.Xaml
 		public static T Load<T>(XmlReader reader, T instance)
 		{
 			var readerSettings = new XamlXmlReaderSettings();
-			readerSettings.LocalAssembly = typeof(T).GetAssembly();
+			if (!DesignMode)
+				readerSettings.LocalAssembly = typeof(T).GetAssembly();
 			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 

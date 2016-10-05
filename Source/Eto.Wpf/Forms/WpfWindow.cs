@@ -102,7 +102,7 @@ namespace Eto.Wpf.Forms
 			if (EnablePerMonitorDpiSupport && dpiHelper == null && Win32.PerMonitorDpiSupported && !PerMonitorDpiHelper.BuiltInPerMonitorSupported)
 			{
 				dpiHelper = new PerMonitorDpiHelper(Control);
-				Widget.LogicalPixelSizeChanged += (sender, e) => SetMinimumSize();
+				dpiHelper.ScaleChanged += (sender, e) => SetMinimumSize();
 			}
 		}
 

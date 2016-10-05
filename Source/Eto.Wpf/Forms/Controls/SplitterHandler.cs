@@ -62,14 +62,27 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				case Splitter.PositionChangedEvent:
 					var heightDescriptor = DependencyPropertyDescriptor.FromProperty(swc.RowDefinition.HeightProperty, typeof(swc.ItemsControl));
-					heightDescriptor.AddValueChanged(Control.RowDefinitions[0], (sender, e) => Callback.OnPositionChanged(Widget, EventArgs.Empty));
+					heightDescriptor.AddValueChanged(Control.RowDefinitions[0], (sender, e) => OnPositionChanged());
 					var widthDescriptor = DependencyPropertyDescriptor.FromProperty(swc.ColumnDefinition.WidthProperty, typeof(swc.ItemsControl));
-					widthDescriptor.AddValueChanged(Control.ColumnDefinitions[0], (sender, e) => Callback.OnPositionChanged(Widget, EventArgs.Empty));
+					widthDescriptor.AddValueChanged(Control.ColumnDefinitions[0], (sender, e) => OnPositionChanged());
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		static object PositionChangedEnabled_Key = new object();
+		int PositionChangedEnabled
+		{
+			get { return Widget.Properties.Get(PositionChangedEnabled_Key, 0); }
+			set { Widget.Properties.Set(PositionChangedEnabled_Key, value, 0); }
+		}
+
+		void OnPositionChanged()
+		{
+			if (PositionChangedEnabled == 0)
+				Callback.OnPositionChanged(Widget, EventArgs.Empty);
 		}
 
 		void SetInitialPosition()
@@ -388,7 +401,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				if (double.IsNaN(relative))
+				if (double.IsNaN(relative) || Widget.Loaded)
 					UpdateRelative();
 				return relative;
 			}
@@ -494,6 +507,7 @@ namespace Eto.Wpf.Forms.Controls
 				return;
 			position = null;
 			relative = newRelative;
+			PositionChangedEnabled++;
 			SetLength(1, sw.GridLength.Auto);
 			if (fixedPanel == SplitterFixedPanel.Panel1)
 			{
@@ -510,6 +524,7 @@ namespace Eto.Wpf.Forms.Controls
 				SetLength(0, new sw.GridLength(Math.Max(0, relative), sw.GridUnitType.Star));
 				SetLength(2, new sw.GridLength(Math.Max(0, 1 - relative), sw.GridUnitType.Star));
 			}
+			PositionChangedEnabled--;
 		}
 
 		public override void SetScale(bool xscale, bool yscale)

@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms Library</_Name>
-		<Category>crossplat/library/eto</Category>
+		<Category>multiplat/library/eto</Category>
 		<LanguageName>C#</LanguageName>
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in C#.</_Description>
@@ -31,7 +31,7 @@
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}" directory="." type="PortableDotNet" if="UsePCL">
+		<Project name="${ProjectName}" directory="." type="C#PortableLibrary" if="UsePCL">
 			<Options Target="Library" TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"/>
 			<Files>
 				<FileTemplateReference TemplateID="eto.cs.code.panel" name="MyPanel.cs" if="UseCode" />

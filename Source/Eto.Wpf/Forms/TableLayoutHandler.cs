@@ -187,6 +187,12 @@ namespace Eto.Wpf.Forms
 			SetMargins();
 		}
 
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			SetChildrenSizes();
+		}
+
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
@@ -223,8 +229,8 @@ namespace Eto.Wpf.Forms
 					}
 				}
 			}
-            if (Widget.Loaded)
-			    Control.UpdateLayout();
+			if (Widget.Loaded)
+				Control.UpdateLayout();
 			SetChildrenSizes();
 		}
 

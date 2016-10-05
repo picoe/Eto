@@ -8,9 +8,9 @@ using MonoDevelop.Projects;
 using System.IO;
 using System.Text;
 using MonoDevelop.Ide.StandardHeader;
-using Mono.TextEditor;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
 
 namespace Eto.Addin.XamarinStudio
 {
@@ -25,7 +25,7 @@ namespace Eto.Addin.XamarinStudio
 
 			IStringTagModel tagModel;
 
-			TagModel GetTagModel (SolutionItem policyParent, Project project, string language, string identifier, string fileName)
+			TagModel GetTagModel (SolutionFolderItem policyParent, Project project, string language, string identifier, string fileName)
 			{
 				var model = new TagModel();
 				var projectModel = ProjectTagModel ?? Outer.ProjectTagModel;
@@ -35,7 +35,7 @@ namespace Eto.Addin.XamarinStudio
 				return model;
 			}
 
-			public override System.IO.Stream CreateFileContent(SolutionItem policyParent, Project project, string language, string fileName, string identifier)
+			public override Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language, string fileName, string identifier)
 			{
 				if (Outer.FormatCode)
 				{
@@ -55,13 +55,14 @@ namespace Eto.Addin.XamarinStudio
 					memoryStream.Write (bytes, 0, bytes.Length);
 				}
 
-				var textDocument = new TextDocument ();
+				var textDocument = TextEditorFactory.CreateNewDocument ();
+				//var textDocument = new TextDocument ();
 				textDocument.Text = text;
 				var textStylePolicy = (policyParent == null) ? PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain") : policyParent.Policies.Get<TextStylePolicy> ("text/plain");
 				string eolMarker = TextStylePolicy.GetEolMarker (textStylePolicy.EolMarker);
 				byte[] eol = Encoding.UTF8.GetBytes (eolMarker);
 				string indent = (!textStylePolicy.TabsToSpaces) ? null : new string (' ', textStylePolicy.TabWidth);
-				foreach (DocumentLine current in textDocument.Lines) {
+				foreach (var current in textDocument.GetLines()) {
 					string line = textDocument.GetTextAt (current.Offset, current.Length);
 					if (indent != null) {
 						line = line.Replace ("	", indent);
@@ -165,7 +166,7 @@ namespace Eto.Addin.XamarinStudio
 			return inner.IsValidName(name, language);
 		}
 
-		public override bool AddToProject(SolutionItem policyParent, Project project, string language, string directory, string name)
+		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name)
 		{
 			var file = inner.AddFileToProject(policyParent, project, language, directory, name);
 			if (file == null)
