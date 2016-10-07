@@ -53,17 +53,6 @@ namespace Eto.WinForms.Forms
 					return createParams;
 				}
 			}
-
-			protected override void SetVisibleCore(bool value)
-			{
-				base.SetVisibleCore(value);
-			}
-
-			protected override void OnActivated(EventArgs e)
-			{
-				int h = (int)Handle;
-				base.OnActivated(e);
-			}
 		}
 
 		public FormHandler(swf.Form form)
