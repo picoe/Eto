@@ -82,8 +82,8 @@
       <HintPath>..\..\Libraries\GtkSharp3\pango-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="webkit-sharp, Version=1.10.0.0, Culture=neutral, PublicKeyToken=9e12f6cf0aa7e2fa">
-      <HintPath>..\..\Libraries\GtkSharp3\webkit-sharp.dll</HintPath>
+    <Reference Include="webkitgtk-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e1f0fd21e79c8b0f">
+      <HintPath>..\..\Libraries\GtkSharp3\webkitgtk-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
