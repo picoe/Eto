@@ -266,6 +266,8 @@ namespace Eto.Test
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
 					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
 				}
+				ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Space });
+				ToolBar.Items.Add(new ButtonToolItem { Text = "Click Me", Image = TestIcons.Logo });
 				if (Platform.Supports<RadioToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
