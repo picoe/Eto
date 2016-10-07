@@ -107,6 +107,36 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				Assert.IsNull(child.Parent);
 			});
 		}
+
+		[Test]
+		public void LogicalParentShouldChangeWhenAddedOrRemovedWhenLoaded()
+		{
+			Shown(form => new StackLayout(), stack =>
+			{
+				var child = new Panel();
+				stack.Items.Add(child);
+				Assert.IsNotNull(child.VisualParent);
+				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items.Clear();
+				Assert.IsNull(child.VisualParent);
+				Assert.IsNull(child.Parent);
+				stack.Items.Add(child);
+				Assert.IsNotNull(child.VisualParent);
+				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items.RemoveAt(0);
+				Assert.IsNull(child.VisualParent);
+				Assert.IsNull(child.Parent);
+				stack.Items.Insert(0, child);
+				Assert.IsNotNull(child.VisualParent);
+				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items[0] = new StackLayoutItem();
+				Assert.IsNull(child.VisualParent);
+				Assert.IsNull(child.Parent);
+			});
+		}
 	}
 }
 

@@ -47,9 +47,9 @@ namespace Eto.Forms
 				{
 					value?.Detach();
 					control?.Detach();
-					layout?.RemoveParent(control);
+					layout?.InternalRemoveLogicalParent(control);
 					control = value;
-					layout?.SetParent(control);
+					layout?.InternalSetLogicalParent(control);
 				}
 			}
 		}
@@ -132,9 +132,9 @@ namespace Eto.Forms
 		{
 			if (!ReferenceEquals(this.layout, layout))
 			{
-				this.layout?.RemoveParent(control);
+				this.layout?.InternalRemoveLogicalParent(control);
 				this.layout = layout;
-				layout?.SetParent(control);
+				layout?.InternalSetLogicalParent(control);
 			}
 		}
 	}
