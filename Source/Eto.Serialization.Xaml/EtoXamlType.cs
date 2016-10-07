@@ -97,12 +97,12 @@ namespace Eto.Serialization.Xaml
 
 		class DesignerInvoker : XamlTypeInvoker
 		{
-			public EtoDesignerType Type { get; private set; }
+			public EtoDesignerType DesignerType { get; private set; }
 
 			public DesignerInvoker(EtoDesignerType type)
 				: base(type)
 			{
-				Type = type;
+				DesignerType = type;
 			}
 
 			public override object CreateInstance(object[] arguments)
@@ -111,8 +111,8 @@ namespace Eto.Serialization.Xaml
 				var ctl = instance as DesignerMarkupExtension;
 				if (ctl != null)
 				{
-					ctl.Text = "[" + Type.TypeName + "]";
-					ctl.ToolTip = Type.Namespace;
+					ctl.Text = "[" + DesignerType.TypeName + "]";
+					ctl.ToolTip = DesignerType.Namespace;
 				}
 				
 				return instance;
