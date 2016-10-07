@@ -153,8 +153,8 @@ namespace Eto.Mac.Forms.Controls
 			var oldSize = oldSizeCache ?? newFrame.Size;
 			oldSizeCache = newFrame.Size;
 
-			//if (oldSize.Height <= 1 && oldSize.Width <= 1)
-			//	oldSize = newFrame.Size;
+			if (oldSize.Height <= 0 && oldSize.Width <= 0)
+				oldSize = newFrame.Size;
 
 			if (panel1?.Visible != true)
 			{
@@ -457,9 +457,9 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		public override void OnLoad(EventArgs e)
+		public override void OnLoadComplete(EventArgs e)
 		{
-			base.OnLoad(e);
+			base.OnLoadComplete(e);
 			WasLoaded = false;
 			SetInitialSplitPosition();
 			UpdatePosition();
