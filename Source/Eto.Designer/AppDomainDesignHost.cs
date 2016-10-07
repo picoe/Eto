@@ -127,7 +127,7 @@ namespace Eto.Designer
 				requiresNewDomain = true;
 				SetupAppDomain(true);
 				ContainerChanged?.Invoke();
-				if (oldDomain != domain)
+				if (!ReferenceEquals(oldDomain, domain))
 					Application.Instance.AsyncInvoke(() => UnloadDomain(oldDomain));
 			}
 		}
@@ -183,9 +183,13 @@ namespace Eto.Designer
 			domain = AppDomain.CreateDomain("eto.designer." + domainCount++, null, setup);
 			try
 			{
-				proxy = domain.CreateInstanceFromAndUnwrap(typeof(AppDomainProxy).Assembly.Location, typeof(AppDomainProxy).FullName) as AppDomainProxy;
-				if (proxy == null)
-					throw new InvalidOperationException("Could not create proxy for domain");
+				using (AssemblyResolver.Register(baseDir))
+				{
+					var proxyObject = domain.CreateInstanceFromAndUnwrap(typeof(AppDomainProxy).Assembly.Location, typeof(AppDomainProxy).FullName) as AppDomainProxy;
+					proxy = proxyObject as AppDomainProxy;
+					if (proxy == null)
+						throw new InvalidOperationException($"Could not create proxy for domain\nApplicationBase: {AppDomain.CurrentDomain.BaseDirectory}\nBaseDir: {baseDir}\nShadowCopyDirs: {shadowCopyDirs}");
+				}
 				proxy.Init(Platform.Instance.GetType().AssemblyQualifiedName, initializeAssembly, MainAssembly, references);
 
 				proxy.ControlCreated = eventSink.ControlCreated;
@@ -202,7 +206,7 @@ namespace Eto.Designer
 				throw new InvalidOperationException($"Could not set up proxy for domain: {ex.GetBaseException().Message}", ex);
 			}
 
-			if (watcher == null)
+			if (watcher == null && !string.IsNullOrEmpty(MainAssembly))
 			{
 				watcher = new FileSystemWatcher(Path.GetDirectoryName(MainAssembly), "*.dll");
 				watcher.Changed += (sender, e) => Application.Instance.AsyncInvoke(() => timer.Start());
