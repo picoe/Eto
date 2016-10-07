@@ -32,7 +32,15 @@ namespace Eto.Test
 
 		public MainForm(IEnumerable<Section> topNodes = null)
 		{
-			Title = string.Format("Test Application [{0}]", Platform.ID);
+			Title = string.Format("Test Application [{0}, {1} {2}, {3}]",
+				Platform.ID,
+				EtoEnvironment.Is64BitProcess ? "64bit" : "32bit",
+				EtoEnvironment.Platform.IsMono ? "Mono" : ".NET",
+				EtoEnvironment.Platform.IsWindows ? EtoEnvironment.Platform.IsWinRT
+				? "WinRT" : "Windows" : EtoEnvironment.Platform.IsMac
+				? "Mac" : EtoEnvironment.Platform.IsLinux
+				? "Linux" : EtoEnvironment.Platform.IsUnix
+				? "Unix" : "Unknown");
 			Style = "main";
 			MinimumSize = new Size(400, 400);
 			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());
@@ -258,12 +266,15 @@ namespace Eto.Test
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
 					ToolBar.Items.Add(new CheckToolItem { Text = "Check", Image = TestIcons.TestImage });
 				}
+				ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Space });
+				ToolBar.Items.Add(new ButtonToolItem { Text = "Click Me", Image = TestIcons.Logo });
 				if (Platform.Supports<RadioToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.FlexibleSpace });
-					ToolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.TestIcon, Checked = true });
+					ToolBar.Items.Add(new RadioToolItem { Text = "Radio1", Image = TestIcons.Logo, Checked = true });
 					ToolBar.Items.Add(new RadioToolItem { Text = "Radio2", Image = TestIcons.TestImage });
-				};
+					ToolBar.Items.Add(new RadioToolItem { Text = "Radio3 (Disabled)", Image = TestIcons.TestImage, Enabled = false });
+				}
 			}
 
 		}

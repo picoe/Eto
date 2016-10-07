@@ -17,8 +17,10 @@ namespace Eto.Addin.VisualStudio.Wizards
 			{
 				var platform = new Eto.Wpf.Platform();
 				// uncomment to use app domains
-				//platform.LoadAssembly(typeof(PlatformInitializer).Assembly);
+				platform.LoadAssembly(typeof(PlatformInitializer).Assembly);
 				new Application(platform).Attach();
+
+				Eto.Designer.Builders.BaseCompiledInterfaceBuilder.InitializeAssembly = typeof(EtoInitializer).Assembly.FullName;
 			}
 		}
 	}

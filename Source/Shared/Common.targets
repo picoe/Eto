@@ -13,5 +13,5 @@
 			<Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
 		</CreateProperty>
 	</Target>
-	<Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+	<Import Condition="Exists('$(MSBuildThisFileDirectory)\..\..\..\Eto.Common.targets')" Project="$(MSBuildThisFileDirectory)..\..\..\Eto.Common.targets" />
 </Project>

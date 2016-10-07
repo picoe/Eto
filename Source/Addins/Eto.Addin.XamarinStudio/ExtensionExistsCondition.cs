@@ -4,7 +4,7 @@ using Mono.Addins;
 namespace Eto.Addin.XamarinStudio
 {
 	/// <summary>
-	/// Condition for the addin to ensure we don't add crossplat, crossplat/app or crossplat/library categories if they
+	/// Condition for the addin to ensure we don't add multiplat, multiplat/app or multiplat/library categories if they
 	/// are already defined.
 	/// </summary>
 	public class ExtensionExistsCondition : ConditionType

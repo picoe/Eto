@@ -160,6 +160,18 @@ namespace Eto.Forms
 		public bool IsPrimary { get { return Handler.IsPrimary; } }
 
 		/// <summary>
+		/// Gets the number of physical pixels per logical pixel of this display.
+		/// </summary>
+		/// <remarks>
+		/// On Retina/HighDPI displays, this will usually return 2.0, but can also be a fraction of pixels.  
+		/// Non-retina will return 1.0.
+		/// 
+		/// This essentially returns the value of <see cref="RealScale"/> divided by <see cref="Scale"/>.
+		/// </remarks>
+		/// <value>The number of physical pixels for each logical pixel.</value>
+		public float LogicalPixelSize { get { return RealScale / Scale; } }
+
+		/// <summary>
 		/// Handler interface for the <see cref="Screen"/>.
 		/// </summary>
 		public new interface IHandler : Widget.IHandler

@@ -5,11 +5,16 @@ using System;
 
 namespace Eto.WinForms.Forms.ToolBar
 {
-	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarItemHandler
+	public class SeparatorToolBarItemHandler : ToolItemHandler<SWF.ToolStripSeparator, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarItemHandler
 	{
 		public SeparatorToolBarItemHandler()
 		{
 			Control = new SWF.ToolStripSeparator();
+		}
+
+		public override void CreateControl(ToolBarHandler handler, int index)
+		{
+			handler.Control.Items.Insert(index, Control);
 		}
 
 		public SeparatorToolItemType Type
@@ -32,37 +37,10 @@ namespace Eto.WinForms.Forms.ToolBar
 			}
 		}
 
-		public void CreateControl(ToolBarHandler handler, int index)
-		{
-			handler.Control.Items.Insert(index, Control);
-		}
-
-		public string Text
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public string ToolTip
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public Eto.Drawing.Image Image
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public bool Enabled
+		public override bool Enabled
 		{
 			get { return false; }
 			set { throw new NotSupportedException(); }
-		}
-
-		public void CreateFromCommand(Command command)
-		{
 		}
 	}
 }

@@ -21,6 +21,11 @@ namespace Eto.Android.Drawing
 			get { return Control.Class.Name; }
 		}
 
+		public string LocalizedName
+		{
+			get { return Name; }
+		}
+
 		public IEnumerable<FontTypeface> Typefaces
 		{
 			get { throw new NotImplementedException(); }

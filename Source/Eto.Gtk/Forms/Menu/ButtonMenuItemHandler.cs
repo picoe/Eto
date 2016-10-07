@@ -27,7 +27,6 @@ namespace Eto.GtkSharp.Forms.Menu
 		{
 			base.Initialize();
 			Control.Activated += Connector.HandleActivated;
-			Control.Selected += Connector.HandleSelected;
 		}
 
 		protected new ButtonMenuItemConnector Connector { get { return (ButtonMenuItemConnector)base.Connector; } }
@@ -43,23 +42,10 @@ namespace Eto.GtkSharp.Forms.Menu
 
 			public void HandleActivated(object sender, EventArgs e)
 			{
-				var handler = Handler;
-				if (handler.Control.Submenu != null)
-					handler.ValidateItems();
-				handler.Callback.OnClick(handler.Widget, e);
-			}
-
-			public void HandleSelected(object sender, EventArgs e)
-			{
-				var handler = Handler;
-				var menu = handler.Control.Parent as Gtk.MenuBar;
-				if (menu != null && handler.Control.Submenu == null)
-				{
-					// if there's no submenu, trigger the click and deactivate the menu to make it act 'normally'.
-					// this does not work in ubuntu's unity menu
-					handler.Callback.OnClick(handler.Widget, e);
-					Gtk.Application.Invoke(delegate { menu.Deactivate(); });
-				}
+				if (Handler.Control.Submenu != null)
+					Handler.ValidateItems();
+				
+				Handler.Callback.OnClick (Handler.Widget, e);
 			}
 		}
 
@@ -135,10 +121,7 @@ namespace Eto.GtkSharp.Forms.Menu
 
 		public void Clear()
 		{
-			foreach (Gtk.Widget w in Control.Children)
-			{
-				Control.Remove(w);
-			}
+			Control.Submenu = null;
 		}
 	}
 }

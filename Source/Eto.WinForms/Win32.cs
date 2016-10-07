@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace Eto
 {
-	static class Win32
+	static partial class Win32
 	{
 		// Analysis disable InconsistentNaming
 
@@ -36,6 +36,24 @@ namespace Eto
 			NOZORDER = 0x0004,
 			SHOWWINDOW = 0x0040,
 		}
+
+		public enum SW
+		{
+			HIDE = 0,
+			SHOWNORMAL = 1,
+			SHOWMINIMIZED = 2,
+			SHOWMAXIMIZED = 3,
+			MAXIMIZE = 3,
+			SHOWNOACTIVATE = 4,
+			SHOW = 5,
+			MINIMIZE = 6,
+			SHOWMINNOACTIVE = 7,
+			SHOWNA = 8,
+			RESTORE = 9,
+			SHOWDEFAULT = 10,
+			FORCEMINIMIZE = 11
+		}
+
 
 		public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
 		public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
@@ -123,8 +141,14 @@ namespace Eto
 
 			ERASEBKGND = 0x14,
 
+			TV_FIRST = 0x1100,
+			TVM_SETBKCOLOR = TV_FIRST + 29,
+			TVM_SETEXTENDEDSTYLE = TV_FIRST + 44,
+
 			ECM_FIRST = 0x1500,
-			EM_SETCUEBANNER = ECM_FIRST + 1
+			EM_SETCUEBANNER = ECM_FIRST + 1,
+
+			DPICHANGED = 0x02E0
 		}
 
 		public static ushort LOWORD(IntPtr word)
@@ -204,7 +228,8 @@ namespace Eto
 		}
 
 		[DllImport("user32.dll")]
-		static extern int ShowWindow(IntPtr hWnd, uint msg);
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool ShowWindow(IntPtr hWnd, SW nCmdShow);
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
@@ -246,6 +271,30 @@ namespace Eto
 				}
 			} while (ret);
 			return msg;
+		}
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		static extern IntPtr LoadLibrary(string library);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		static extern bool FreeLibrary(IntPtr moduleHandle);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Ansi, BestFitMapping = false, SetLastError = true, ExactSpelling = true)]
+		static extern IntPtr GetProcAddress(IntPtr moduleHandle, string method);
+
+		public static bool MethodExists(string module, string method)
+		{
+			var moduleHandle = LoadLibrary(module);
+			if (moduleHandle == IntPtr.Zero)
+				return false;
+			try
+			{
+				return GetProcAddress(moduleHandle, method) != IntPtr.Zero;
+			}
+			finally
+			{
+				FreeLibrary(moduleHandle);
+			}
 		}
 	}
 }

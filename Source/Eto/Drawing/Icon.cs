@@ -2,54 +2,100 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using System.IO;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
+using System.ComponentModel;
 
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Represents an icon which allows for multiple sizes of an image
+	/// Represents an icon which allows for multiple sizes and resolutions of an image
 	/// </summary>
 	/// <remarks>
-	/// The formats supported vary by platform, however all platforms do support loadin windows .ico format.
+	/// The formats supported vary by platform, however all platforms do support loading windows .ico format.
 	/// 
 	/// Using an icon for things like menus, toolbars, etc are preferred so that each platform can use the appropriate
 	/// sized image.
 	/// 
-	/// For HiDPI/Retina displays (e.g. on OS X), this will allow using a higher resolution image automatically.
+	/// For High DPI/Retina displays (e.g. on OS X), this will allow using a higher resolution image automatically.
 	/// </remarks>
-	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2016 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Icon.IHandler))]
+	[TypeConverter(typeof(IconConverter))]
 	public class Icon : Image
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
-		
+
 		/// <summary>
 		/// Initializes a new instance of the Icon class with the specified handler
 		/// </summary>
 		/// <param name="handler">Handler for the icon backend</param>
-		public Icon (IHandler handler)
+		public Icon(IHandler handler)
 			: base(handler)
 		{
 		}
-	
+
 		/// <summary>
 		/// Initializes a new instance of the Icon class with the contents of the specified <paramref name="stream"/>
 		/// </summary>
 		/// <param name="stream">Stream to load the content from</param>
-		public Icon (Stream stream)
+		public Icon(Stream stream)
 		{
-			Handler.Create (stream);
+			Handler.Create(stream);
+			Initialize();
 		}
 
 		/// <summary>
 		/// Intitializes a new instanc of the Icon class with the contents of the specified <paramref name="fileName"/>
 		/// </summary>
 		/// <param name="fileName">Name of the file to loat the content from</param>
-		public Icon (string fileName)
+		public Icon(string fileName)
 		{
-			Handler.Create (fileName);
+			Handler.Create(fileName);
+			Initialize();
 		}
-		
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.Icon"/> class with the specified frames.
+		/// </summary>
+		/// <remarks>
+		/// This is used when you want to create an icon with specific bitmap frames at different scales or sizes.
+		/// </remarks>
+		/// <param name="frames">Frames for the icon.</param>
+		public Icon(IEnumerable<IconFrame> frames)
+		{
+			Handler.Create(frames);
+			Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.Icon"/> class with the specified frames.
+		/// </summary>
+		/// <remarks>
+		/// This is used when you want to create an icon with specific bitmap frames at different scales or sizes.
+		/// </remarks>
+		/// <param name="frames">Frames for the icon.</param>
+		public Icon(params IconFrame[] frames)
+		{
+			Handler.Create(frames);
+			Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.Icon"/> class with the specified bitmap.
+		/// </summary>
+		/// <remarks>
+		/// This is used when you want to create an icon with a single bitmap frame with the specified logical scale.
+		/// </remarks>
+		/// <param name="scale">Logical pixel scale of the specified bitmap.</param>
+		/// <param name="bitmap">Bitmap for the frame.</param>
+		public Icon(float scale, Bitmap bitmap)
+			: this(new IconFrame(scale, bitmap))
+		{
+		}
+
 		/// <summary>
 		/// Loads an icon from an embedded resource of the specified assembly
 		/// </summary>
@@ -63,17 +109,69 @@ namespace Eto.Drawing
 				#if PCL
 				if (TypeHelper.GetCallingAssembly == null)
 					throw new ArgumentNullException("assembly", string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
-				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 				#else
 				assembly = Assembly.GetCallingAssembly();
 				#endif
 			}
-			using (var stream = assembly.GetManifestResourceStream(resourceName)) {
-				if (stream == null)
-					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName));
-				return new Icon (stream);
+
+			if (resourceName.EndsWith(".ico", StringComparison.OrdinalIgnoreCase))
+			{
+				using (var stream = assembly.GetManifestResourceStream(resourceName))
+				{
+					if (stream == null)
+						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName));
+					return new Icon(stream);
+				}
+			}
+
+			return new Icon(GetResources(resourceName, assembly));
+		}
+
+		static IEnumerable<IconFrame> GetResources(string resourceName, Assembly assembly)
+		{
+			var info = assembly.GetManifestResourceInfo(resourceName);
+			if (info != null)
+				yield return IconFrame.FromResource(1f, resourceName, assembly);
+
+			// no extension? don't look for others
+			var extensionIndex = resourceName.LastIndexOf('.');
+			if (extensionIndex < 0)
+				yield break;
+
+			// .ico files already have multiple resolutions
+			var extension = resourceName.Substring(extensionIndex);
+			if (extension.Equals(".ico", StringComparison.OrdinalIgnoreCase))
+				yield break;
+			
+			var resourceWithoutExtension = resourceName.Substring(0, extensionIndex);
+
+			var nameWithAt = resourceWithoutExtension + "@";
+
+			foreach (var entryName in assembly.GetManifestResourceNames()
+				.Where(r => r.StartsWith(nameWithAt, StringComparison.Ordinal))
+				.OrderByDescending(r => r))
+			{
+				// must be same extension, if one is supplied with the resourceName
+				if (extension != null && !entryName.EndsWith(extension))
+					continue;
+
+				// get the scale, if supplied
+				extensionIndex = entryName.LastIndexOf('.');
+				if (extensionIndex < 0)
+					extensionIndex = entryName.Length;
+
+				// parse out scale, e.g. @2x, @0.5x
+				var scaleString = entryName.Substring(nameWithAt.Length, extensionIndex - nameWithAt.Length);
+				float scale;
+				if (!scaleString.EndsWith("x")
+				    || !float.TryParse(scaleString.TrimEnd('x'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out scale))
+					continue;
+
+				yield return IconFrame.FromResource(scale, entryName, assembly);
 			}
 		}
+
 
 		/// <summary>
 		/// Loads an icon from a resource in the same assembly as the specified <paramref name="type"/>
@@ -85,29 +183,134 @@ namespace Eto.Drawing
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			#if PCL
-			return FromResource(resourceName, type.GetTypeInfo().Assembly);
-			#else
-			return FromResource(resourceName, type.Assembly);
-			#endif
+			return FromResource(resourceName, type.GetAssembly());
 		}
+
+		/// <summary>
+		/// Find based on the fitting pixel size
+		/// </summary>
+		IconFrame FindBySize(float scale, Size fittingSize)
+		{
+			// adjust fitting size to scale to get pixel size desired
+			fittingSize = Size.Ceiling((SizeF)fittingSize * scale);
+			var fs = fittingSize.Width * fittingSize.Height;
+			var frame = Frames
+				.Select(r => Tuple.Create(r.PixelSize.Width * r.PixelSize.Height, r))
+				.OrderBy(r => r.Item1)
+				.FirstOrDefault(r => r.Item1 >= fs)?.Item2;
+
+			return frame ?? Frames.OrderBy(r => r.PixelSize.Width * r.PixelSize.Height).Last();
+		}
+
+		/// <summary>
+		/// find based on scale alone, we don't know the final render size
+		/// </summary>
+		IconFrame FindByScale(float scale)
+		{
+			IconFrame selected = null;
+			float scaleDiff = 0;
+			float lastScale = 0;
+			foreach (var frame in Frames.OrderBy(r => r.Scale).ThenByDescending(r => r.Size.Width * r.Size.Height))
+			{
+				var ps = Size.Ceiling((SizeF)Size * scale);
+				var pixelSizeNeeded = ps.Width * ps.Height;
+				var diff = scale - frame.Scale;
+				if (selected == null || (diff < scaleDiff && (diff >= 0 || scaleDiff > 0)))
+				{
+					// found where scale is the next greater or equal to desired scale
+					scaleDiff = diff;
+					lastScale = frame.Scale;
+					selected = frame;
+				}
+				else if (lastScale == frame.Scale)
+				{
+					// multiple resolutions with the same scale, use the one with the best pixel size
+					// (e.g. ico file with multiple resolutions)
+					ps = frame.PixelSize;
+					if (ps.Width * ps.Height >= pixelSizeNeeded)
+					{
+						selected = frame;
+						scaleDiff = diff;
+						lastScale = frame.Scale;
+					}
+					else
+						break;
+				}
+				else
+					break;
+			}
+			if (selected == null)
+			{
+				// get largest
+				selected = Frames.OrderBy(r => r.PixelSize.Width * r.PixelSize.Height).Last();
+			}
+			return selected;
+		}
+
+		/// <summary>
+		/// Gets the frame with the specified scale that can fit into the <paramref name="fittingSize"/> if specified.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to determine which frame should be used to draw to the screen, based on the desired logical pixel
+		/// scale and final drawn size of the icon.
+		/// </remarks>
+		/// <returns>The frame that is the closest match for the specified scale and fitting size.</returns>
+		/// <param name="scale">Logical scale to find for, 1 for normal size, 2 for retina, etc.</param>
+		/// <param name="fittingSize">Fitting size that the icon will be drawn to, if known.</param>
+		public IconFrame GetFrame(float scale, Size? fittingSize = null)
+		{
+			if (fittingSize != null)
+			{
+				// we know the final render size, find the best match based on pixel size vs scale
+				// We always prefer size that matches best with the input scale
+				// e.g. when we need scale 2 at 64x64, it will prefer the frame that is greater in pixel size to 128x128.
+				return FindBySize(scale, fittingSize.Value);
+			}
+			else
+			{
+				return FindByScale(scale);
+			}
+		}
+
+		/// <summary>
+		/// Gets the definition for each frame in this icon.
+		/// </summary>
+		/// <value>The frames of the icon.</value>
+		public IEnumerable<IconFrame> Frames { get { return Handler.Frames; } }
+
 
 		/// <summary>
 		/// Platform handler for the <see cref="Icon"/> class
 		/// </summary>
+		[AutoInitialize(false)]
 		public new interface IHandler : Image.IHandler
 		{
 			/// <summary>
 			/// Called when creating an instance from a stream
 			/// </summary>
 			/// <param name="stream">Stream to load the icon from</param>
-			void Create (Stream stream);
+			void Create(Stream stream);
 
 			/// <summary>
 			/// Called when creating an instance from a file name
 			/// </summary>
 			/// <param name="fileName">File name to load the icon from</param>
-			void Create (string fileName);
+			void Create(string fileName);
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="Eto.Drawing.Icon"/> class with the specified frames.
+			/// </summary>
+			/// <remarks>
+			/// This is used when you want to create an icon with specific bitmap frames at different scales or sizes.
+			/// </remarks>
+			/// <param name="frames">Frames for the icon.</param>
+			void Create(IEnumerable<IconFrame> frames);
+
+			/// <summary>
+			/// Gets the definition for each frame in this icon.
+			/// </summary>
+			/// <value>The frames of the icon.</value>
+			IEnumerable<IconFrame> Frames { get; }
 		}
 	}
 }

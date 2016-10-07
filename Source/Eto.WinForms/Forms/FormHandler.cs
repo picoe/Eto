@@ -88,9 +88,9 @@ namespace Eto.WinForms.Forms
 			set
 			{
 				base.ShowInTaskbar = value;
-				var myForm = Control as EtoForm;
-				if (myForm != null)
-					myForm.HideFromAltTab = !value;
+				var etoForm = Control as EtoForm;
+				if (etoForm != null)
+					etoForm.HideFromAltTab = !value;
 			}
 		}
 
@@ -105,6 +105,17 @@ namespace Eto.WinForms.Forms
 		{
 			get { return Control.KeyPreview; }
 			set { Control.KeyPreview = value; }
+		}
+
+		public bool ShowActivated
+		{
+			get { return (Control as EtoForm)?.ShouldShowWithoutActivation != true; }
+			set
+			{
+				var etoForm = Control as EtoForm;
+				if (etoForm != null)
+					etoForm.ShouldShowWithoutActivation = !value;
+			}
 		}
 	}
 }

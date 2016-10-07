@@ -21,6 +21,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox topMostCheckBox;
 		CheckBox setOwnerCheckBox;
 		CheckBox visibleCheckBox;
+		CheckBox showActivatedCheckBox;
 
 		static readonly object CancelCloseKey = new object();
 		public bool CancelClose
@@ -34,11 +35,12 @@ namespace Eto.Test.Sections.Behaviors
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), CreateCancelClose(), null);
-			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), null);
+			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
 			layout.AddSeparateRow(null, CreateInitialLocationControls(), null);
+			layout.AddSeparateRow(null, CreateSizeControls(), null);
 			layout.AddSeparateRow(null, CreateClientSizeControls(), null);
 			layout.AddSeparateRow(null, CreateMinimumSizeControls(), null);
 			layout.AddSeparateRow(null, CreateChildWindowButton(), null);
@@ -199,6 +201,23 @@ namespace Eto.Test.Sections.Behaviors
 			return visibleCheckBox;
 		}
 
+		Control CreateShowActivatedCheckbox()
+		{
+			showActivatedCheckBox = new CheckBox
+			{
+				Text = "Show Activated",
+				Checked = true
+			};
+			showActivatedCheckBox.CheckedChanged += (sender, e) =>
+			{
+				var form = child as Form;
+				if (form != null)
+					form.ShowActivated = showActivatedCheckBox.Checked ?? false;
+			};
+			return showActivatedCheckBox;
+
+		}
+
 		Control CreateCancelClose()
 		{
 			var cancelCloseCheckBox = new CheckBox { Text = "Cancel Close" };
@@ -232,6 +251,35 @@ namespace Eto.Test.Sections.Behaviors
 					top
 				}
 			};
+		}
+
+		bool setInitialSize;
+		Size initialSize = new Size(300, 300);
+
+		Control CreateSizeControls()
+		{
+			var setClientSize = new CheckBox { Text = "Size" };
+			setClientSize.CheckedBinding.Bind(() => setInitialSize, v => setInitialSize = v ?? false);
+
+			var left = new NumericUpDown();
+			left.Bind(c => c.Enabled, setClientSize, c => c.Checked);
+			left.ValueBinding.Bind(() => initialSize.Width, v => initialSize.Width = (int)v);
+
+			var top = new NumericUpDown();
+			top.Bind(c => c.Enabled, setClientSize, c => c.Checked);
+			top.ValueBinding.Bind(() => initialSize.Height, v => initialSize.Height = (int)v);
+
+			return new StackLayout
+			{
+				Orientation = Orientation.Horizontal,
+				Items =
+				{
+					setClientSize,
+					left,
+					top
+				}
+			};
+
 		}
 
 		bool setInitialClientSize;
@@ -321,6 +369,7 @@ namespace Eto.Test.Sections.Behaviors
 				var form = new Form();
 				child = form;
 				show = form.Show;
+				form.ShowActivated = showActivatedCheckBox.Checked == true;
 			}
 			else
 			{
@@ -363,13 +412,15 @@ namespace Eto.Test.Sections.Behaviors
 				child.Location = initialLocation;
 			if (setInitialClientSize)
 				child.ClientSize = initialClientSize;
+			if (setInitialSize)
+				child.Size = initialSize;
 			if (setInitialMinimumSize)
 				child.MinimumSize = initialMinimumSize;
 			if (setOwnerCheckBox.Checked ?? false)
 				child.Owner = ParentWindow;
 			bringToFrontButton.Enabled = true;
 			show();
-			visibleCheckBox.Checked = child.Visible;
+			//visibleCheckBox.Checked = child?.Visible == true; // child will be null after it is shown
 			// show that the child is now referenced
 			Log.Write(null, "Open Windows: {0}", Application.Instance.Windows.Count());
 		}

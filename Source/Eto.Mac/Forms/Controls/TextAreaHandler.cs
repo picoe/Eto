@@ -9,7 +9,6 @@ using Foundation;
 using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
-using nnint = System.Int32;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -17,22 +16,27 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
-using nnint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
-using nnint = System.Int32;
 #endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+#endif
+#endif
+
+#if XAMMAC
+using nnint = System.Int32;
+#elif Mac64
+using nnint = System.UInt64;
+#else
+using nnint = System.UInt32;
 #endif
 
 namespace Eto.Mac.Forms.Controls
@@ -141,6 +145,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			if (!AcceptsReturn && e.KeyData == Keys.Enter)
 			{
+				e.Handled = true;
 				return;
 			}
 			base.OnKeyDown(e);
@@ -245,7 +250,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				Control.Value = value ?? string.Empty;
-				Control.DisplayIfNeeded();
+				Control.NeedsDisplay = true;
 			}
 		}
 
@@ -425,7 +430,34 @@ namespace Eto.Mac.Forms.Controls
 				// set initial width of content to the size of the control
 				Control.TextContainer.ContainerSize = new CGSize(Scroll.DocumentVisibleRect.Size.Width, float.MaxValue);
 			}
-			
+		}
+
+		public TextReplacements TextReplacements
+		{
+			get { 
+				var replacements = TextReplacements.None;
+				if (Control.AutomaticTextReplacementEnabled)
+					replacements |= TextReplacements.Text;
+				if (Control.AutomaticQuoteSubstitutionEnabled)
+					replacements |= TextReplacements.Quote;
+				if (Control.AutomaticDashSubstitutionEnabled)
+					replacements |= TextReplacements.Dash;
+				if (Control.AutomaticSpellingCorrectionEnabled)
+					replacements |= TextReplacements.Spelling;
+				return replacements;
+			}
+			set
+			{ 
+				Control.AutomaticTextReplacementEnabled = value.HasFlag(TextReplacements.Text);
+				Control.AutomaticQuoteSubstitutionEnabled = value.HasFlag(TextReplacements.Quote);
+				Control.AutomaticDashSubstitutionEnabled = value.HasFlag(TextReplacements.Dash);
+				Control.AutomaticSpellingCorrectionEnabled = value.HasFlag(TextReplacements.Spelling);
+			}
+		}
+
+		public TextReplacements SupportedTextReplacements
+		{
+			get { return TextReplacements.Quote | TextReplacements.Text | TextReplacements.Dash | TextReplacements.Spelling; }
 		}
 	}
 }

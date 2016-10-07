@@ -36,10 +36,9 @@ namespace Eto.Mac.Forms.ToolBar
 			}
 		}
 
-		protected override void Initialize()
+		public override bool Selectable
 		{
-			base.Initialize();
-			Selectable = true;
+			get { return true; }
 		}
 
 		public override void ControlAdded (ToolBarHandler toolbar)

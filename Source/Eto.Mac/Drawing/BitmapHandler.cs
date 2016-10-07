@@ -5,6 +5,8 @@ using System.Linq;
 using Eto.Drawing;
 using Eto.Mac.Forms;
 using Eto.Shared.Drawing;
+using System.Collections.Generic;
+using Eto.Forms;
 
 #if XAMMAC2
 using AppKit;
@@ -21,19 +23,18 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -82,7 +83,7 @@ namespace Eto.Mac.Drawing
 	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, Bitmap.IHandler
 	{
 		NSImageRep rep;
-		NSBitmapImageRep bmprep;
+		protected NSBitmapImageRep bmprep;
 		bool alpha = true;
 
 		public BitmapHandler()
@@ -184,15 +185,6 @@ namespace Eto.Mac.Drawing
 			return Control;
 		}
 
-		public BitmapData Lock()
-		{
-			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control);
-		}
-
-		public void Unlock(BitmapData bitmapData)
-		{
-		}
-
 		public void Save(string fileName, ImageFormat format)
 		{
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
@@ -275,11 +267,7 @@ namespace Eto.Mac.Drawing
 			{
 				var rect = new CGRect(CGPoint.Empty, Control.Size);
 				var image = new NSImage();
-				#if UNIFIED
 				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToNS());
-				#else
-				var cgimage = Control.AsCGImage(ref rect, null, null).WithImageInRect(rectangle.Value.ToSDRectangleF());
-				#endif
 				image.AddRepresentation(new NSBitmapImageRep(cgimage));
 				return new Bitmap(new BitmapHandler(image));
 			}
@@ -287,8 +275,9 @@ namespace Eto.Mac.Drawing
 
 		public Color GetPixel(int x, int y)
 		{
+			EnsureRep();
 			if (bmprep == null)
-				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot get pixel data for this type of bitmap ({0})", rep?.GetType()));
 
 			return bmprep.ColorAt(x, y).ToEto();
 		}
@@ -299,11 +288,43 @@ namespace Eto.Mac.Drawing
 			{
 				if (rep != null)
 				{
-					rep.SafeDispose();
+					rep.Dispose();
 					rep = null;
 				}
 			}
 			base.Dispose(disposing);
+		}
+
+		public BitmapData Lock()
+		{
+			EnsureRep();
+			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, (int)bmprep.BytesPerRow, (int)bmprep.BitsPerPixel, Control);
+		}
+
+		public void Unlock(BitmapData bitmapData)
+		{
+		}
+
+
+		protected void EnsureRep()
+		{
+			if (rep == null)
+				rep = Control.BestRepresentationForDevice(null);
+			if (bmprep == null)
+			{
+				var lazyRep = rep as IconFrameHandler.LazyImageRep;
+				if (lazyRep != null)
+					bmprep = lazyRep.Rep;
+				else
+				{
+					bmprep = rep as NSBitmapImageRep;
+					if (bmprep == null)
+					{
+						rep = Control.BestRepresentationForDevice(null);
+						bmprep = rep as NSBitmapImageRep;
+					}
+				}
+			}				
 		}
 	}
 }

@@ -12,6 +12,7 @@ namespace Eto.GtkSharp.Forms
 			
 			Control.AddButton(Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 			Control.AddButton(Gtk.Stock.Open, Gtk.ResponseType.Ok);
+			Control.DefaultResponse = Gtk.ResponseType.Ok;
 		}
 
 		public bool MultiSelect

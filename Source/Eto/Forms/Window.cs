@@ -163,6 +163,29 @@ namespace Eto.Forms
 			Properties.TriggerEvent(WindowStateChangedEvent, this, e);
 		}
 
+		/// <summary>
+		/// Identifier for handlers when attaching the <see cref="LogicalPixelSizeChanged"/> event.
+		/// </summary>
+		public const string LogicalPixelSizeChangedEvent = "Window.LogicalPixelSizeChanged";
+
+		/// <summary>
+		/// Occurs when the <see cref="LogicalPixelSize"/> of the window is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> LogicalPixelSizeChanged
+		{
+			add { Properties.AddHandlerEvent(LogicalPixelSizeChangedEvent, value); }
+			remove { Properties.RemoveEvent(LogicalPixelSizeChangedEvent, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="LogicalPixelSizeChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnLogicalPixelSizeChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(LogicalPixelSizeChangedEvent, this, e);
+		}
+
 		#endregion
 
 		static Window()
@@ -171,6 +194,7 @@ namespace Eto.Forms
 			EventLookup.Register<Window>(c => c.OnClosing(null), ClosingEvent);
 			EventLookup.Register<Window>(c => c.OnLocationChanged(null), LocationChangedEvent);
 			EventLookup.Register<Window>(c => c.OnWindowStateChanged(null), WindowStateChangedEvent);
+			EventLookup.Register<Window>(c => c.OnLogicalPixelSizeChanged(null), LogicalPixelSizeChangedEvent);
 		}
 
 		/// <summary>
@@ -497,12 +521,26 @@ namespace Eto.Forms
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
-			var tb = ToolBar;
-			if (tb != null)
-				tb.TriggerDataContextChanged(e);
-			var menu = Menu;
-			if (menu != null)
-				menu.TriggerDataContextChanged(e);
+			ToolBar?.TriggerDataContextChanged();
+			Menu?.TriggerDataContextChanged();
+		}
+
+		/// <summary>
+		/// Gets the number of pixels per logical pixel when on a high DPI display.
+		/// </summary>
+		/// <remarks>
+		/// This indicates the number of pixels per logical pixel.  
+		/// All units in Eto.Forms such as control size, drawing operations, etc are in logical pixels.
+		/// When not in high DPI, this will be 1.0; 
+		/// Retina displays in OS X will return 2; and
+		/// in windows this matches the scale set in the monitor settings.
+		/// 
+		/// Use the <see cref="LogicalPixelSizeChanged"/> to detect when the window is moved to 
+		/// a display with a different DPI.
+		/// </remarks>
+		public float LogicalPixelSize
+		{
+			get { return Handler.LogicalPixelSize; }
 		}
 
 		#region Callback
@@ -535,6 +573,10 @@ namespace Eto.Forms
 			/// Raises the window state changed event.
 			/// </summary>
 			void OnWindowStateChanged(Window widget, EventArgs e);
+			/// <summary>
+			/// Raises the logical pixel size changed event.
+			/// </summary>
+			void OnLogicalPixelSizeChanged(Window widget, EventArgs e);
 		}
 
 		/// <summary>
@@ -569,6 +611,13 @@ namespace Eto.Forms
 			public void OnWindowStateChanged(Window widget, EventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnWindowStateChanged(e));
+			}
+			/// <summary>
+			/// Raises the logical pixel size changed event.
+			/// </summary>
+			public void OnLogicalPixelSizeChanged(Window widget, EventArgs e)
+			{
+				widget.Platform.Invoke(() => widget.OnLogicalPixelSizeChanged(e));
 			}
 		}
 
@@ -729,6 +778,21 @@ namespace Eto.Forms
 			/// </summary>
 			/// <param name="owner">Owner of the window</param>
 			void SetOwner(Window owner);
+
+			/// <summary>
+			/// Gets the number of pixels per logical pixel when on a high DPI display.
+			/// </summary>
+			/// <remarks>
+			/// This indicates the number of pixels per logical pixel.  
+			/// All units in Eto.Forms such as control size, drawing operations, etc are in logical pixels.
+			/// When not in high DPI, this will be 1.0; 
+			/// Retina displays in OS X will return 2; and
+			/// in windows this matches the scale set in the monitor settings.
+			/// 
+			/// Use the <see cref="LogicalPixelSizeChanged"/> to detect when the window is moved to 
+			/// a display with a different DPI.
+			/// </remarks>
+			float LogicalPixelSize { get; }
 		}
 
 		#endregion

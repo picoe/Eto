@@ -17,19 +17,18 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -109,6 +108,8 @@ namespace Eto.Mac.Forms
 
 		public void LayoutAllChildren()
 		{
+			if (Widget.IsSuspended)
+				return;
 			//Console.WriteLine("Layout all children: {0}\n {1}", this.GetType().Name, new StackTrace());
 			LayoutChildren();
 			foreach (var child in Widget.VisualControls.Select (r => r.GetMacContainer()).Where(r => r != null))
@@ -130,7 +131,7 @@ namespace Eto.Mac.Forms
 
 		public virtual void LayoutParent(bool updateSize = true)
 		{
-			if (NeedsQueue(() => LayoutParent(updateSize)))
+			if (Widget.IsSuspended || NeedsQueue(() => LayoutParent(updateSize)))
 				return;
 			var container = Widget.VisualParent.GetMacContainer();
 			if (container != null)

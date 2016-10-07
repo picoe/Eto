@@ -32,12 +32,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control CreateImage(ImageInterpolation interpolation)
 		{
-#if PCL
-			var resourceStream = GetType().GetTypeInfo().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
-#else
-			var resourceStream = GetType().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
-#endif
-			var image = new Bitmap(resourceStream);
+			var image = TestIcons.TestImage;
 			var drawable = new Drawable { Size = new Size(250, 160) };
 
 			drawable.Paint += (sender, pe) =>

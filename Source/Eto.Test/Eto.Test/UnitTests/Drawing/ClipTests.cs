@@ -3,14 +3,14 @@ using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Drawing
 {
-	[TestFixture, Category(TestUtils.TestPlatformCategory)]
+	[TestFixture, Category(TestBase.TestPlatformCategory)]
 	public class ClipTests
 	{
 		[Test, Category("ui")]
 		public void ClipBoundsShouldMatchClientSize()
 		{
 			var size = new Size(300, 300);
-			TestUtils.Paint((drawable, e) =>
+			TestBase.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
 				Assert.AreEqual(size, drawable.ClientSize, "Drawable client size should be 300x300");
@@ -21,7 +21,7 @@ namespace Eto.Test.UnitTests.Drawing
 		[Test, Category("ui")]
 		public void ClipRectangleShouldTranslate()
 		{
-			TestUtils.Paint((drawable, e) =>
+			TestBase.Paint((drawable, e) =>
 			{
 				var graphics = e.Graphics;
 				// Clip to the upper-left quadrant

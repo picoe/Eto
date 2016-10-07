@@ -9,6 +9,7 @@ using swi = System.Windows.Input;
 using Eto.Wpf.CustomControls;
 using Eto.Wpf.Forms.Menu;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace Eto.Wpf.Forms
 {
@@ -40,11 +41,18 @@ namespace Eto.Wpf.Forms
 		bool resizable = true;
 		bool maximizable = true;
 		bool minimizable = true;
+		PerMonitorDpiHelper dpiHelper;
 
 		public override IntPtr NativeHandle
 		{
 			get { return new System.Windows.Interop.WindowInteropHelper(Control).EnsureHandle(); }
 		}
+
+		public static bool EnablePerMonitorDpiSupport { get; set; } = true;
+
+		public swc.DockPanel ContentPanel { get { return content; } }
+
+		public swc.DockPanel MainPanel { get { return main; } }
 
 		protected override void Initialize()
 		{
@@ -74,7 +82,8 @@ namespace Eto.Wpf.Forms
 				}
 				// stop form from auto-sizing after it is shown
 				Control.SizeToContent = sw.SizeToContent.Manual;
-				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+				if (Control.ShowActivated)
+					Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 			};
 			Control.PreviewKeyDown += (sender, e) =>
 			{
@@ -88,10 +97,21 @@ namespace Eto.Wpf.Forms
 			HandleEvent(Window.ClosingEvent);
 		}
 
+		void SetupPerMonitorDpi()
+		{
+			if (EnablePerMonitorDpiSupport && dpiHelper == null && Win32.PerMonitorDpiSupported && !PerMonitorDpiHelper.BuiltInPerMonitorSupported)
+			{
+				dpiHelper = new PerMonitorDpiHelper(Control);
+				dpiHelper.ScaleChanged += (sender, e) => SetMinimumSize();
+			}
+		}
+
 		protected override void SetContentScale(bool xscale, bool yscale)
 		{
 			base.SetContentScale(true, true);
 		}
+
+		static EventInfo dpiChangedEvent = typeof(sw.Window).GetEvent("DpiChanged");
 
 		public override void AttachEvent(string id)
 		{
@@ -145,10 +165,26 @@ namespace Eto.Wpf.Forms
 				case Window.LocationChangedEvent:
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
 					break;
+				case Window.LogicalPixelSizeChangedEvent:
+					if (PerMonitorDpiHelper.BuiltInPerMonitorSupported && dpiChangedEvent != null) // .NET 4.6.2 support!
+					{
+						var method = typeof(WpfWindow<TControl, TWidget, TCallback>).GetMethod(nameof(HandleLogicalPixelSizeChanged), BindingFlags.Instance | BindingFlags.NonPublic);
+						dpiChangedEvent.AddEventHandler(Control, Delegate.CreateDelegate(dpiChangedEvent.EventHandlerType, this, method));
+						break;
+					}
+					SetupPerMonitorDpi();
+					if (dpiHelper != null)
+						dpiHelper.ScaleChanged += (sender, e) => Callback.OnLogicalPixelSizeChanged(Widget, EventArgs.Empty);
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void HandleLogicalPixelSizeChanged(object sender, EventArgs e)
+		{
+			Callback.OnLogicalPixelSizeChanged(Widget, EventArgs.Empty);
 		}
 
 		static bool IsApplicationClosing { get; set; }
@@ -157,6 +193,7 @@ namespace Eto.Wpf.Forms
 		{
 			base.OnLoad(e);
 			SetScale(false, false);
+			SetupPerMonitorDpi();
 		}
 
 		protected virtual void UpdateClientSize(Size size)
@@ -173,8 +210,13 @@ namespace Eto.Wpf.Forms
 			// don't set the minimum size of a window, just the preferred size
 			ContainerControl.Width = PreferredSize.Width;
 			ContainerControl.Height = PreferredSize.Height;
-			ContainerControl.MinWidth = MinimumSize.Width;
-			ContainerControl.MinHeight = MinimumSize.Height;
+			SetMinimumSize();
+		}
+
+		void SetMinimumSize()
+		{
+			ContainerControl.MinWidth = MinimumSize.Width * WpfScale;
+			ContainerControl.MinHeight = MinimumSize.Height * WpfScale;
 		}
 
 		public Eto.Forms.ToolBar ToolBar
@@ -552,6 +594,16 @@ namespace Eto.Wpf.Forms
 			var wpfWindow = owner.Handler as IWpfWindow;
 			if (wpfWindow != null)
 				wpfWindow.SetOwnerFor(Control);
+		}
+
+		public double WpfScale
+		{
+			get { return dpiHelper?.WpfScale ?? 1f; }
+		}
+
+		public float LogicalPixelSize
+		{
+			get { return (float)(dpiHelper?.Scale ?? (sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformToDevice.M11 ?? 1.0)); }
 		}
 	}
 }

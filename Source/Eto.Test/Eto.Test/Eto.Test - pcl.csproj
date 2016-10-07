@@ -121,7 +121,6 @@
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
-    <Compile Include="TestIcons.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
     <Compile Include="Sections\Behaviors\ScreenSection.cs" />
@@ -152,7 +151,6 @@
     <Compile Include="UnitTests\Handlers\Drawing\TestGraphicsHandler.cs" />
     <Compile Include="UnitTests\Handlers\Drawing\TestMatrixHandler.cs" />
     <Compile Include="MainForm.cs" />
-    <Compile Include="UnitTests\TestUtils.cs" />
     <Compile Include="UnitTests\Handlers\TestPlatform.cs" />
     <Compile Include="Sections\Controls\ColorPickerSection.cs" />
     <Compile Include="UnitTests\Forms\FilterCollectionTests.cs" />
@@ -192,22 +190,32 @@
     <Compile Include="UnitTests\Forms\Layout\StackLayoutTests.cs" />
     <Compile Include="UnitTests\Forms\Layout\DynamicLayoutTests.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
+    <Compile Include="UnitTests\Forms\TestClasses.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ImageViewTests.cs" />
+    <Compile Include="UnitTests\Forms\WindowTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ControlEventTests.cs" />
+    <Compile Include="TestIcons.cs" />
+    <Compile Include="Sections\Drawing\IconFrameSection.cs" />
+    <Compile Include="UnitTests\Drawing\IconTests.cs" />
+    <Compile Include="UnitTests\TestBase.cs" />
+    <Compile Include="UnitTests\Forms\DataContextTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TestIcon.ico" />
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Textures.gif" />
     <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="TestImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Textures.png" />
+    <EmbeddedResource Include="Images\TestIcon.ico" />
+    <EmbeddedResource Include="Images\TestImage.png" />
+    <EmbeddedResource Include="Images\Textures.gif" />
+    <EmbeddedResource Include="Images\Textures.png" />
+    <EmbeddedResource Include="Images\Logo.png" />
+    <EmbeddedResource Include="Images\Logo%402x.png" />
+    <EmbeddedResource Include="Images\Logo%403x.png" />
+    <EmbeddedResource Include="Images\Logo%400.5x.png" />
+    <EmbeddedResource Include="Images\Logo%401.5x.png" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -242,8 +250,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0\lib\portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.4.1\lib\portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Xaml">
+      <HintPath>..\..\packages\Portable.Xaml.0.14.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="..\..\Shared\Common.targets" />
+  <ItemGroup />
 </Project>

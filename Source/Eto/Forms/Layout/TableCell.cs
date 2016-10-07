@@ -17,6 +17,7 @@ namespace Eto.Forms
 	public class TableCell
 	{
 		Control control;
+		TableLayout layout;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.TableCell"/> will scale its width
@@ -44,11 +45,11 @@ namespace Eto.Forms
 			{
 				if (control != value)
 				{
-					if (value != null && value.VisualParent != null)
-						value.VisualParent.Remove(value);
-					if (control != null && control.VisualParent != null)
-						control.VisualParent.Remove(control);
+					value?.Detach();
+					control?.Detach();
+					layout?.InternalRemoveLogicalParent(control);
 					control = value;
+					layout?.InternalSetLogicalParent(control);
 				}
 			}
 		}
@@ -126,10 +127,22 @@ namespace Eto.Forms
 		{
 			return new TableCell(new ImageView { Image = image });
 		}
+
+		internal void SetLayout(TableLayout layout)
+		{
+			if (!ReferenceEquals(this.layout, layout))
+			{
+				this.layout?.InternalRemoveLogicalParent(control);
+				this.layout = layout;
+				layout?.InternalSetLogicalParent(control);
+			}
+		}
 	}
 
 	class TableCellCollection : Collection<TableCell>, IList
 	{
+		TableLayout layout;
+
 		public TableCellCollection()
 		{
 		}
@@ -139,17 +152,44 @@ namespace Eto.Forms
 		{
 		}
 
+		internal void SetLayout(TableLayout layout)
+		{
+			this.layout = layout;
+			foreach (var cell in this)
+				cell.SetLayout(layout);
+		}
+
+		protected override void RemoveItem(int index)
+		{
+			var item = this[index];
+			item?.SetLayout(null);
+			base.RemoveItem(index);
+		}
+
+		protected override void ClearItems()
+		{
+			foreach (var item in this)
+			{
+				item?.SetLayout(null);
+			}
+			base.ClearItems();
+		}
+
 		protected override void InsertItem(int index, TableCell item)
 		{
 			if (item == null)
 				item = new TableCell { ScaleWidth = true };
+			item.SetLayout(layout);
 			base.InsertItem(index, item);
 		}
 
 		protected override void SetItem(int index, TableCell item)
 		{
+			var old = this[index];
+			old?.SetLayout(null);
 			if (item == null)
 				item = new TableCell { ScaleWidth = true };
+			item.SetLayout(layout);
 			base.SetItem(index, item);
 		}
 

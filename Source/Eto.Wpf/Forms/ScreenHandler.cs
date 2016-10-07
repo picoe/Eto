@@ -41,11 +41,7 @@ namespace Eto.Wpf.Forms
 
 			if (realScale == null)
 			{
-				using (var form = new swf.Form { Bounds = Control.Bounds })
-				using (var graphics = form.CreateGraphics())
-				{
-					realScale = graphics.DpiY / 96f;
-				}
+				realScale = Control.GetDpi() / 96f;
 			}
 			return realScale ?? 1f;
 		}

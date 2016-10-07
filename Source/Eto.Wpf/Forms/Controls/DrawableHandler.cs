@@ -80,6 +80,25 @@ namespace Eto.Wpf.Forms.Controls
 					}
 				}
 			}
+
+			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				var content = Handler.content;
+				if (content != null)
+				{
+					content.Measure(constraint);
+					return content.DesiredSize;
+				}
+				return base.MeasureOverride(constraint);
+			}
+			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
+			{
+				base.ArrangeOverride(arrangeSize);
+				var content = Handler.content;
+				if (content != null)
+					content.Arrange(new sw.Rect(arrangeSize));
+				return arrangeSize;
+			}
 		}
 
 		class EtoTile : sw.FrameworkElement
@@ -116,11 +135,18 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		protected override bool NeedsPixelSizeNotifications {  get { return true; } }
+
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 
 			RegisterScrollable();
+		}
+
+		protected override void OnLogicalPixelSizeChanged()
+		{
+			Invalidate();
 		}
 
 		public override void OnUnLoad(EventArgs e)
@@ -333,7 +359,11 @@ namespace Eto.Wpf.Forms.Controls
 		public override void Invalidate()
 		{
 			if (!Control.IsLoaded)
+			{
+				if (Widget.Loaded)
+					Application.Instance.AsyncInvoke(Invalidate);
 				return;
+			}
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
@@ -356,7 +386,11 @@ namespace Eto.Wpf.Forms.Controls
 		public override void Invalidate(Rectangle rect)
 		{
 			if (!Control.IsLoaded)
+			{
+				if (Widget.Loaded)
+					Application.Instance.AsyncInvoke(() => Invalidate(rect));
 				return;
+			}
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)

@@ -110,6 +110,14 @@ namespace Eto.Test.UnitTests.Handlers
 			set { throw new NotImplementedException(); }
 		}
 
+		public float LogicalPixelSize
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		public void BringToFront()
 		{
 			throw new NotImplementedException();

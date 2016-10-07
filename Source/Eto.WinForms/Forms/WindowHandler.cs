@@ -71,7 +71,7 @@ namespace Eto.WinForms.Forms
 
 		protected override bool SetMinimumSize(Size size)
 		{
-			var sdsize = size.ToSD();
+			var sdsize = Size.Max(size, MinimumSize).ToSD();
 			if (Control.MinimumSize != sdsize)
 			{
 				Control.MinimumSize = sdsize;
@@ -109,31 +109,34 @@ namespace Eto.WinForms.Forms
 			};
 			Control.Controls.Add(menuHolder);
 
-			Control.Load += (sender, e) =>
-			{
-				// ensure we auto size to the content
-				if ((!clientWidthSet || !clientHeightSet) /*&& Control.AutoSize*/ && contentSize != null)
-				{
-					var sz = contentSize.Value.ToSD(); // Content.GetPreferredSize().ToSD();
-					var min = new sd.Size();
-					if (!clientWidthSet)
-						 min.Width = sz.Width;
-					if (!clientHeightSet)
-						min.Height = sz.Height;
-					ContainerContentControl.MinimumSize = min;
-				}
-				Control.MinimumSize = Control.Size;
-				Control.AutoSize = false;
-				Control.MinimumSize = MinimumSize.ToSD();
-				content.MinimumSize = content.MaximumSize = sd.Size.Empty;
-				ContainerContentControl.MinimumSize = sd.Size.Empty;
-			};
+			Control.Load += Control_Load;
 			Control.Size = sd.Size.Empty;
 
 			base.Initialize();
 
 			// Always handle closing because we want to send Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+		}
+
+		void Control_Load(object sender, EventArgs e)
+		{
+			// ensure we auto size to the content
+			if ((!clientWidthSet || !clientHeightSet) /*&& Control.AutoSize*/ && contentSize != null)
+			{
+				var sz = contentSize.Value.ToSD(); // Content.GetPreferredSize().ToSD();
+				var min = new sd.Size();
+				if (!clientWidthSet)
+					min.Width = sz.Width;
+				if (!clientHeightSet)
+					min.Height = sz.Height;
+				ContainerContentControl.MinimumSize = min;
+			}
+			// turn off auto sizing so user can then resize the forms
+			var size = Control.Size;
+			Control.AutoSize = false;
+			Control.Size = size;
+			content.MinimumSize = content.MaximumSize = sd.Size.Empty;
+			ContainerContentControl.MinimumSize = sd.Size.Empty;
 		}
 
 		public override Size Size
@@ -166,7 +169,7 @@ namespace Eto.WinForms.Forms
 		}
 		Size? contentSize;
 
-		protected override void SetContent(swf.Control contentControl)
+		protected override void SetContent(Control control, swf.Control contentControl)
 		{
 			contentControl.Dock = swf.DockStyle.Fill;
 			ContainerContentControl.Controls.Add(contentControl);
@@ -476,6 +479,14 @@ namespace Eto.WinForms.Forms
 					if (Widget.Loaded && value)
 						Callback.OnShown(Widget, EventArgs.Empty);
 				}
+			}
+		}
+
+		public float LogicalPixelSize
+		{
+			get
+			{
+				return 1f;
 			}
 		}
 	}

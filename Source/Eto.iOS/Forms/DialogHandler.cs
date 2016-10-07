@@ -138,6 +138,8 @@ namespace Eto.iOS.Forms
 			base.BringToFront();
 			await ShowModalAsync(false);
 		}
+
+		public bool ShowActivated { get; set; }
 	}
 }
 

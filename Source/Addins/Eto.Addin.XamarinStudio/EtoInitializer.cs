@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Eto.Forms;
 
 namespace Eto.Addin.XamarinStudio
 {
@@ -11,19 +12,22 @@ namespace Eto.Addin.XamarinStudio
 		{
 			if (Platform.Instance == null)
 			{
-				new Eto.Forms.Application(AddinPlatform).Attach();
-			}
-
-			if (EtoEnvironment.Platform.IsMac)
-			{
-				// hack for OS X el capitan. mcs moved from /usr/bin to /usr/local/bin and is not on the path when XS is running
-				// this should be removed when mono/XS is fixed.
-				var path = Environment.GetEnvironmentVariable("PATH");
-				var paths = path.Split(':');
-				if (!paths.Contains("/usr/local/bin", StringComparer.Ordinal))
+				try
 				{
-					path += ":/usr/local/bin";
-					Environment.SetEnvironmentVariable("PATH", path);
+					new Eto.Forms.Application(AddinPlatform).Attach();
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"{ex}");
+				}
+				if (EtoEnvironment.Platform.IsMac)
+				{
+					var plat = Platform.Instance;
+					if (!plat.IsMac)
+					{
+						// use some Mac handlers even when using Gtk platform as base
+						plat.Add<Cursor.IHandler>(() => new Eto.Mac.Forms.CursorHandler());
+					}
 				}
 			}
 		}

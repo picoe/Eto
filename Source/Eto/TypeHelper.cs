@@ -100,7 +100,15 @@ namespace Eto
 			return c != null && type.GetTypeInfo().IsAssignableFrom(c.GetTypeInfo());
 		}
 
-#else 
+		public static ConstructorInfo GetConstructor(this Type type, params Type[] args)
+		{
+			return type.GetTypeInfo().DeclaredConstructors.FirstOrDefault(r => r.GetParameters().Select(p => p.ParameterType).SequenceEqual(args));
+		}
+#else
+		public static Type GetTypeInfo(this Type type)
+		{
+			return type;
+		}
 
 		public static T GetCustomAttribute<T>(this Type type, bool inherit)
 			where T: Attribute

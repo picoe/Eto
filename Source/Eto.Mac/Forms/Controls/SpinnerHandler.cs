@@ -29,13 +29,20 @@ namespace Eto.Mac.Forms.Controls
 			return new SizeF(16, 16);
 		}
 
+		public class EtoProgressIndicator : NSProgressIndicator, IMacControl
+		{
+			public WeakReference WeakHandler { get; set; }
+
+			public EtoProgressIndicator()
+			{
+				Style = NSProgressIndicatorStyle.Spinning;
+				ControlSize = NSControlSize.Regular;
+			}
+		}
+
 		protected override NSProgressIndicator CreateControl()
 		{
-			return new NSProgressIndicator
-			{
-				Style = NSProgressIndicatorStyle.Spinning,
-				ControlSize = NSControlSize.Regular
-			};
+			return new EtoProgressIndicator();
 		}
 
 		public SpinnerHandler()

@@ -17,19 +17,18 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -110,7 +109,7 @@ namespace Eto.Mac.Forms
 			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Attached))
+			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Control.ParentWindow != null)
 				MacModal.RunSheet(Widget, Control, out session);
 			else
 			{
@@ -156,6 +155,12 @@ namespace Eto.Mac.Forms
 				session.Stop();
 			else
 				base.Close();
+		}
+
+		public override void SetOwner (Window owner)
+		{
+			base.SetOwner (owner);
+			Control.ParentWindow = owner.ToNative ();
 		}
 		
 	}

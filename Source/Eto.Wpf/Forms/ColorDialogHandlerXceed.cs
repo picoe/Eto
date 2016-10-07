@@ -12,7 +12,7 @@ namespace Eto.Wpf.Forms
 	{
 		xwt.ColorCanvas canvas;
 
-		public event sw.RoutedPropertyChangedEventHandler<swm.Color> SelectedColorChanged
+		public event sw.RoutedPropertyChangedEventHandler<swm.Color?> SelectedColorChanged
 		{
 			add { canvas.SelectedColorChanged += value; }
 			remove { canvas.SelectedColorChanged -= value; }
@@ -20,7 +20,7 @@ namespace Eto.Wpf.Forms
 
 		public swm.Color Color
 		{
-			get { return canvas.SelectedColor; }
+			get { return canvas.SelectedColor ?? swm.Colors.Transparent; }
 			set { canvas.SelectedColor = value; }
 		}
 

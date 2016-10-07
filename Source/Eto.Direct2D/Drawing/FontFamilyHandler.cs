@@ -6,6 +6,7 @@ using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
+using System.Globalization;
 
 namespace Eto.Direct2D.Drawing
 {
@@ -17,6 +18,17 @@ namespace Eto.Direct2D.Drawing
 	public class FontFamilyHandler : WidgetHandler<sw.FontFamily, FontFamily>, FontFamily.IHandler
     {
 		public string Name { get; private set; }
+
+		public string LocalizedName
+		{
+			get
+			{
+				int index;
+				if (!Control.FamilyNames.FindLocaleName(CultureInfo.CurrentUICulture.Name, out index))
+					Control.FamilyNames.FindLocaleName("en-us", out index);
+				return Control.FamilyNames.GetString(index);
+			}
+		}
 
 		FontTypeface[] typefaces;
 		public IEnumerable<FontTypeface> Typefaces

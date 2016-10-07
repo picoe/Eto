@@ -10,6 +10,8 @@ namespace Eto.GtkSharp.Drawing
 	{
 		public string Name { get; set; }
 
+		public string LocalizedName { get { return Control?.Name ?? Name; } }
+
 		public IEnumerable<FontTypeface> Typefaces
 		{
 			get { return Control.Faces.Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r))); }

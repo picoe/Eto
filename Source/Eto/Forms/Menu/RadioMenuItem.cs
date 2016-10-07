@@ -47,9 +47,9 @@ namespace Eto.Forms
 			: base(command)
 		{
 			Checked = command.Checked;
+			Handler.Create(controller);
 			CheckedChanged += (sender, e) => command.Checked = Checked;
 			command.CheckedChanged += (sender, e) => Checked = command.Checked;
-			Handler.Create(controller);
 			Initialize();
 			Handler.CreateFromCommand(command);
 		}

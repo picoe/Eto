@@ -5,12 +5,12 @@ using NUnit.Framework;
 namespace Eto.Test.UnitTests.Forms.Layout
 {
 	[TestFixture]
-	public class StackLayoutTests
+	public class StackLayoutTests : TestBase
 	{
 		[Test]
 		public void AddingItemShouldSetChildrenAndParent()
 		{
-			TestUtils.Invoke(() =>
+			Invoke(() =>
 			{
 				var stackLayout = new StackLayout();
 
@@ -36,7 +36,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 		[Test]
 		public void RemoveItemsIndividuallyShouldClearParent()
 		{
-			TestUtils.Invoke(() =>
+			Invoke(() =>
 			{
 				var stackLayout = new StackLayout();
 
@@ -57,6 +57,84 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				Assert.IsNull(items[1].Parent, "#4. Item should have parent cleared when replaced with another item in the stack layout");
 
 				Assert.AreEqual(stackLayout, items[2].Parent, "#5. Item should not have changed parent as it is still in the stack layout");
+			});
+		}
+
+		[Test]
+		public void LogicalParentOfChildrenShouldBeStackLayout()
+		{
+			StackLayout stack = null;
+			Panel child = null;
+			Shown(form =>
+			{
+				child = new Panel();
+				stack = new StackLayout
+				{
+					Items = { child }
+				};
+				Assert.AreSame(stack, child.Parent);
+				Assert.IsNull(child.VisualParent);
+				form.Content = stack;
+			}, () =>
+			{
+				Assert.AreSame(stack, child?.Parent);
+				Assert.IsNotNull(child.VisualParent); 
+				// StackLayout uses TableLayout internally to align controls
+				// this will be changed when StackLayout does not depend on TableLayout
+				Assert.AreNotSame(stack, child.VisualParent);
+				Assert.IsInstanceOf<TableLayout>(child.VisualParent); 
+			});
+		}
+
+		[Test]
+		public void LogicalParentShouldChangeWhenAddedOrRemoved()
+		{
+			Invoke(() =>
+			{
+				var child = new Panel();
+				var stack = new StackLayout();
+				stack.Items.Add(child);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items.Clear();
+				Assert.IsNull(child.Parent);
+				stack.Items.Add(child);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items.RemoveAt(0);
+				Assert.IsNull(child.Parent);
+				stack.Items.Insert(0, child);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items[0] = new StackLayoutItem();
+				Assert.IsNull(child.Parent);
+			});
+		}
+
+		[Test]
+		public void LogicalParentShouldChangeWhenAddedOrRemovedWhenLoaded()
+		{
+			Shown(form => new StackLayout(), stack =>
+			{
+				var child = new Panel();
+				stack.Items.Add(child);
+				Assert.IsNotNull(child.VisualParent);
+				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items.Clear();
+				Assert.IsNull(child.VisualParent);
+				Assert.IsNull(child.Parent);
+				stack.Items.Add(child);
+				Assert.IsNotNull(child.VisualParent);
+				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items.RemoveAt(0);
+				Assert.IsNull(child.VisualParent);
+				Assert.IsNull(child.Parent);
+				stack.Items.Insert(0, child);
+				Assert.IsNotNull(child.VisualParent);
+				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
+				Assert.AreSame(stack, child.Parent);
+				stack.Items[0] = new StackLayoutItem();
+				Assert.IsNull(child.VisualParent);
+				Assert.IsNull(child.Parent);
 			});
 		}
 	}

@@ -1,3 +1,4 @@
+using System;
 using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
@@ -24,6 +25,12 @@ namespace Eto.Wpf.Forms
 			else
 				ApplicationHandler.Instance.DelayShownWindows.Add(Control);
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+		}
+
+		public bool ShowActivated
+		{
+			get { return Control.ShowActivated; }
+			set { Control.ShowActivated = value; }
 		}
 	}
 }

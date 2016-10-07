@@ -16,8 +16,8 @@
         <Platform Condition="$(Platform) == '' and '$(OS)' == 'Unix' and Exists('/Library/Frameworks')">Mac</Platform>
         <Platform Condition="$(Platform) == '' and '$(OS)' != 'Unix'">Windows</Platform>
 		<BuildVersion Condition="$(BuildVersion) == ''"></BuildVersion>
-		<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj</XamarinStudioAddinProject>
-		<VisualStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudio\Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
+		<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio.sln</XamarinStudioAddinProject>
+		<VisualStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.VisualStudio.sln</VisualStudioAddinProject>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Linux'">"mdtool"</mdtool>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Mac'">"/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"</mdtool>
 		<mdtool Condition="$(mdtool) == '' and $(Platform) == 'Windows'">"c:\Program Files (x86)\Xamarin Studio\bin\mdtool.exe"</mdtool>
@@ -59,37 +59,50 @@
             Replacement='AssemblyVersion$1(&quot;$(AssemblyVersion)&quot;)' />
         
         <ItemGroup>
-        	<VSTemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
-        	<XSTemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
-        	<XSProjFile Include="$(XamarinStudioAddinProject)" />
-        	<XSProjFile Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj" />
-        	<AllPackagesFile Include="$(MSBuildThisFileDirectory)\packages.config" />
-        	
-        	<!-- Using ItemGroup with text to prevent messing up backslashes in xbuild -->
-        	<NupkgReg Include="1"><Text><![CDATA[(?<=Eto.[\w\.]+?)(\.\d+)*([-]\w+\d*)?\.nupkg]]></Text></NupkgReg>
-        	<VSTemplateReg Include="1"><Text><![CDATA[(?<=id\s*[=]\s*"Eto\.[\w\.]+"\s+)version\s*=\s*"[^"]+"]]></Text></VSTemplateReg>
-        	<XSTemplateReg Include="1"><Text><![CDATA[(?<=Id\s*[=]\s*"Eto\.[\w\.]+"\s+)Version\s*=\s*"[^"]+"]]></Text></XSTemplateReg>
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
+        	<ProjFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj" />
+        	<ProjFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj" />
+        	<TemplateFiles Include="$(MSBuildThisFileDirectory)\packages.config" />
         </ItemGroup>
         
-		<FileUpdate Files="@(XSProjFile)"
+		<FileUpdate Files="@(ProjFiles)"
 			WarnOnNoUpdate="true"
-            Pattern="@(NupkgReg->'%(Text)')"
+            Pattern="(?&lt;=Eto.[\\w\\.]+?)(\\.\\d+)*([-]\\w+\\d*)?\\.nupkg"
             Replacement='.$(AssemblyInformationalVersion).nupkg' />
             
-		<FileUpdate Files="@(VSTemplateFiles)"
+		<FileUpdate Files="@(TemplateFiles)"
 			WarnOnNoUpdate="false"
-            Pattern="@(VSTemplateReg->'%(Text)')"
+            Pattern="(?&lt;=id\\s*[=]\\s*&quot;Eto\\.[\\w\\.]+&quot;\\s+)version\\s*=\\s*&quot;[^&quot;]+&quot;"
             Replacement='version=&quot;$(AssemblyInformationalVersion)&quot;' />
+	</Target>
+	
+	<Target Name="UpdateReference" DependsOnTargets="BuildUtilities">
 
-		<FileUpdate Files="@(XSTemplateFiles)"
+		<Error Condition="$(ReferenceName) == '' or $(ReferenceVersion) == ''" Text="Must Specify ReferenceName and ReferenceVersion properties" />
+	
+		<PropertyGroup>
+			<ReferenceName>$(ReferenceName.Replace('.', '\\.'))</ReferenceName>
+		</PropertyGroup>
+	
+        <ItemGroup>
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.VisualStudio\**\*.vstemplate" />
+        	<TemplateFiles Include="$(SourceDir)\Addins\Eto.Addin.XamarinStudio\**\*.xpt.xml" />
+        	<TemplateFiles Include="$(SourceDir)\**\packages.config" />
+        	<TemplateFiles Include="$(MSBuildThisFileDirectory)\nuspec\**\*.nuspec" />
+
+        	<ProjFiles Include="$(SourceDir)\**\*.csproj" />
+        </ItemGroup>
+        
+		<FileUpdate Files="@(ProjFiles)"
 			WarnOnNoUpdate="false"
-            Pattern="@(XSTemplateReg->'%(Text)')"
-            Replacement='Version=&quot;$(AssemblyInformationalVersion)&quot;' />
-
-		<FileUpdate Files="@(AllPackagesFile)"
-			WarnOnNoUpdate="true"
-            Pattern="@(VSTemplateReg->'%(Text)')"
-            Replacement='version=&quot;$(AssemblyInformationalVersion)&quot;' />
+            Pattern="(?&lt;=$(ReferenceName))(\\.\\d+)+"
+            Replacement='.$(ReferenceVersion)' />
+            
+		<FileUpdate Files="@(TemplateFiles)"
+			WarnOnNoUpdate="false"
+            Pattern="(?&lt;=id\\s*[=]\\s*&quot;$(ReferenceName)&quot;\\s+)version\\s*=\\s*&quot;[^&quot;]+&quot;"
+            Replacement='version=&quot;$(ReferenceVersion)&quot;' />
 	</Target>
 
 	<Target Name="BuildHelpShfb" DependsOnTargets="Build">
@@ -114,7 +127,6 @@
     	<MSBuild Projects="$(SourceDir)\Eto - net45.sln" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition="$(Platform) == 'Windows'"/>
     	
 		<!-- build XamMac separately if it hasn't been built on mac -->
-    	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="$(IncludeXamMac) == 'true' and !Exists('$(BuildOutputNet40Dir)\Eto.XamMac.dll')" />
     	<MSBuild Projects="$(SourceDir)\Eto.Mac\Eto.XamMac - net45.csproj" Targets="$(PackageTargets)" Properties="Configuration=$(Configuration);BuildProjectReferences=false" Condition="$(IncludeXamMac) == 'true' and !Exists('$(BuildOutputNet45Dir)\Eto.XamMac.dll')" />
 	
 	</Target>
@@ -186,8 +198,9 @@
     </Target>
     <Target Name="BuildAddins">
     	<!-- addins -->
-    	<Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
-    	<Exec Command="xbuild /t:'Build' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
+    	<Exec Command="$(NuGetCommand) restore $(XamarinStudioAddinProject)" Condition="$(Platform) != 'Windows'" />
+    	<!--Exec Command="xbuild /t:'RestorePackages' /p:'Configuration=$(Configuration)' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/-->
+    	<Exec Command="xbuild /t:'Build' /p:'Configuration=XSRelease' '$(XamarinStudioAddinProject)'" Condition="$(Platform) != 'Windows'"/>
     	<!--
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
     	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)" Condition="$(Platform) == 'Windows'" />
@@ -226,7 +239,7 @@
 		<RemoveDir Directories="$(BuildOutputDir)"/>
 		<RemoveDir Directories="$(SourceDir)\packages"/>
 		<RemoveDir Directories="$(BaseDir)\Samples\packages"/>
-		<RemoveDir Directories="$(SourceDir)\Addins\Eto.Addin.VisualStudio\Eto.Addin.VisualStudio\packages"/>
+		<RemoveDir Directories="$(SourceDir)\Addins\packages"/>
 	</Target>
 	
 	<Target Name="_GetVersion" DependsOnTargets="BuildUtilities">

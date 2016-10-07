@@ -49,22 +49,22 @@
 		<Class id="Eto.Addin.XamarinStudio.ProjectWizard" class="Eto.Addin.XamarinStudio.ProjectWizard" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat">
-			<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform" insertbefore="other" />
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat">
+			<Category id="multiplat" name="Multiplatform" icon="md-platform-crossplatform" insertbefore="other" />
 		</Condition>
 	</Extension>
-	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat">
-		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/library">
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat">
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat/library">
 			<Category id="library" name="Library" />
 		</Condition>
-		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/app">
+		<Condition id="ExtensionExists" invert="true" path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat/app">
 			<Category id="app" name="App" insertbefore="library" />
 		</Condition>
 	</Extension>
-	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/app">
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat/app">
 		<Category id="eto" name="Eto.Forms" />
 	</Extension>
-	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/crossplat/library">
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/multiplat/library">
 		<Category id="eto" name="Eto.Forms" />
 	</Extension>
 	<Runtime>
@@ -78,10 +78,14 @@
 		<Import assembly="FSharp.Compiler.CodeDom.dll" />
 		<Import file="Eto.xml" />
 	</Runtime>
-	<Extension path="/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id="Eto.VBDotNet" class="Eto.Addin.XamarinStudio.VBDotNetProjectBinding" />
-		<ProjectBinding id="Eto.FSharp" class="Eto.Addin.XamarinStudio.FSharpProjectBinding" />
-	</Extension>
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<!--Doesn't work: Condition id="MSBuildTargetIsAvailable" target="$(MSBuildBinPath)\Microsoft.VisualBasic.targets"-->
+		<Condition id="AssemblyInstalled" name="Microsoft.VisualBasic">
+			<ProjectFlavor guid="" type="Eto.Addin.XamarinStudio.VBDotNetProjectExtension" alias="Eto.VBNet"/>
+		</Condition>
+		<!--ProjectFlavor guid="" type="Eto.Addin.XamarinStudio.FSharpProjectExtension" alias="Eto.FSharp"/-->
+	</Extension>	
+	
 	<Extension path="/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name="EnhancedFile" class="Eto.Addin.XamarinStudio.EnhancedFile" />
 	</Extension>

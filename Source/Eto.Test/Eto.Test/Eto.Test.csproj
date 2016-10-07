@@ -40,9 +40,12 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Configuration" />
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.3.0.0\lib\net40\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.4.1\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="Portable.Xaml">
+      <HintPath>..\..\packages\Portable.Xaml.0.14.0\lib\portable-net40+sl50+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -138,7 +141,6 @@
     <Compile Include="UnitTests\Forms\RangeTests.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestCalendarHandler.cs" />
     <Compile Include="UnitTests\Handlers\Controls\TestGridColumnHandler.cs" />
-    <Compile Include="UnitTests\TestUtils.cs" />
     <Compile Include="UnitTests\Handlers\TestPlatform.cs" />
     <Compile Include="UnitTests\Drawing\ColorTests.cs" />
     <Compile Include="UnitTests\Forms\Layout\TableLayoutTests.cs" />
@@ -197,6 +199,12 @@
     <Compile Include="UnitTests\Forms\Layout\DynamicLayoutTests.cs" />
     <Compile Include="UnitTests\Forms\Layout\StackLayoutTests.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\TablePaddingAndSpacingSection.cs" />
+    <Compile Include="UnitTests\Forms\TestClasses.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ImageViewTests.cs" />
+    <Compile Include="UnitTests\Forms\WindowTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ControlEventTests.cs" />
+    <Compile Include="UnitTests\TestBase.cs" />
+    <Compile Include="UnitTests\Forms\DataContextTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Serialization.Json\Eto.Serialization.Json.csproj">
@@ -213,26 +221,24 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TestIcon.ico" />
     <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="TestImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Textures.png" />
+    <EmbeddedResource Include="Images\Logo.png" />
+    <EmbeddedResource Include="Images\Logo%400.5x.png" />
+    <EmbeddedResource Include="Images\Logo%402x.png" />
+    <EmbeddedResource Include="Images\Logo%403x.png" />
+    <EmbeddedResource Include="Images\TestIcon.ico" />
+    <EmbeddedResource Include="Images\TestImage.png" />
+    <EmbeddedResource Include="Images\Textures.gif" />
+    <EmbeddedResource Include="Images\Textures.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Textures.gif" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -242,7 +248,9 @@
           <TextStylePolicy inheritsSet="null" scope="application/xaml+xml" />
           <XmlFormattingPolicy inheritsSet="null" scope="application/xaml+xml" />
           <TextStylePolicy inheritsSet="null" scope="application/xml" />
-          <XmlFormattingPolicy inheritsSet="Mono" inheritsScope="application/xml" scope="application/xml" />
+          <XmlFormattingPolicy inheritsSet="Mono" inheritsScope="application/xml" scope="application/xml">
+            <DefaultFormat OmitXmlDeclaration="False" NewLineChars="&#xA;" IndentContent="True" ContentIndentString="&#x9;" AttributesInNewLine="False" MaxAttributesPerLine="10" AttributesIndentString="&#x9;" WrapAttributes="False" AlignAttributes="False" AlignAttributeValues="False" QuoteChar="&quot;" SpacesBeforeAssignment="0" SpacesAfterAssignment="0" EmptyLinesBeforeStart="0" EmptyLinesAfterStart="0" EmptyLinesBeforeEnd="0" EmptyLinesAfterEnd="0" />
+          </XmlFormattingPolicy>
           <TextStylePolicy inheritsSet="null" scope="application/json" />
           <TextStylePolicy inheritsSet="null" scope="application/config+xml" />
           <XmlFormattingPolicy inheritsSet="null" scope="application/config+xml" />

@@ -25,6 +25,9 @@ namespace Eto.Wpf
 
 		public override bool IsWpf { get { return true; } }
 
+		public override PlatformFeatureFlags SupportedFeatures =>
+			PlatformFeatureFlags.DrawableWithTransparentContent;
+
 		static Platform()
 		{
 			EmbeddedAssemblyLoader.Register("Eto.Wpf.CustomControls.Assemblies");
@@ -48,6 +51,7 @@ namespace Eto.Wpf
 			p.Add<Graphics.IHandler>(() => new GraphicsHandler());
 			p.Add<GraphicsPath.IHandler>(() => new GraphicsPathHandler());
 			p.Add<Icon.IHandler>(() => new IconHandler());
+			p.Add<IconFrame.IHandler>(() => new IconFrameHandler());
 			p.Add<IndexedBitmap.IHandler>(() => new IndexedBitmapHandler());
 			p.Add<Matrix.IHandler>(() => new MatrixHandler());
 			p.Add<Pen.IHandler>(() => new PenHandler());

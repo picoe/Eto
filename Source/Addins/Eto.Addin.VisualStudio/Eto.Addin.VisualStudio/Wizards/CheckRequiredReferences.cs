@@ -84,9 +84,11 @@ namespace Eto.Addin.VisualStudio.Wizards
 
 				if (!Quiet)
 				{
-					var result = MessageBox.Show(Helpers.MainWindow, msg, "Missing packages", MessageBoxButtons.OKCancel, MessageBoxType.Information, MessageBoxDefaultButton.OK);
+					var result = MessageBox.Show(Helpers.MainWindow, msg, "Missing packages", MessageBoxButtons.YesNoCancel, MessageBoxType.Information, MessageBoxDefaultButton.Yes);
 					if (result == DialogResult.Cancel)
 						throw new WizardCancelledException();
+					if (result == DialogResult.No)
+						return;
 				}
 
 				foreach (var missingRef in missingReferences)
@@ -102,7 +104,9 @@ namespace Eto.Addin.VisualStudio.Wizards
 					}
 					else
 					{
-						installerServices.InstallPackage("https://packages.nuget.org", missingRef.Project, reference.Package, reference.Version, false);
+						// "All" specifies to use configured package sources.
+						// http://blog.nuget.org/20120926/invoking-nuget-services-from-inside-visual-studio.html#comment-686825894
+						installerServices.InstallPackage("All", missingRef.Project, reference.Package, reference.Version, false);
 					}
 				}
 			}

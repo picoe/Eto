@@ -100,6 +100,12 @@ namespace Eto.Wpf.Drawing
 			{
 				return Widget.Properties.Create<double>(DPI_Key, () =>
 				{
+					if (Win32.PerMonitorDpiSupported)
+					{
+						var window = visual.GetVisualParent<sw.Window>();
+						if (window != null)
+							return Win32.GetWindowDpi(new sw.Interop.WindowInteropHelper(window).Handle) / 96.0;
+					}
 					var presentationSource = sw.PresentationSource.FromVisual(visual);
 					if (presentationSource != null && presentationSource.CompositionTarget != null)
 					{
@@ -223,7 +229,6 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawImage(Image image, float x, float y)
 		{
-			SetOffset(true);
 			var size = image.Size;
 			DrawImage(image, x, y, size.Width, size.Height);
 		}
@@ -231,14 +236,16 @@ namespace Eto.Wpf.Drawing
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
 			SetOffset(true);
-			var src = image.ToWpf((int)Math.Max(width, height));
-            if ((ImageInterpolation == ImageInterpolation.High || ImageInterpolation == ImageInterpolation.Default)
-                && (width != src.Width || height != src.Height))
+			var src = image.ToWpfScale((float)DPI, new Size((int)width, (int)height));
+			var size = new SizeF((float)src.PixelWidth, (float)src.PixelHeight) / (float)DPI;
+
+			if ((ImageInterpolation == ImageInterpolation.High || ImageInterpolation == ImageInterpolation.Default)
+                && (width != size.Width || height != size.Height))
             {
                 // better image quality by using transformed bitmap, plus it is actually faster
                 src = new swmi.TransformedBitmap(
                     src,
-                    new swm.ScaleTransform(width / src.Width * 96 / src.DpiX, height / src.Height * 96 / src.DpiY, 0, 0)
+                    new swm.ScaleTransform(width / size.Width * 96 / src.DpiX, height / size.Height * 96 / src.DpiY, 0, 0)
                     );
             }
             Control.DrawImage(src, WpfExtensions.NormalizedRect(x, y, width, height));
@@ -247,7 +254,7 @@ namespace Eto.Wpf.Drawing
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
 			SetOffset(true);
-			var src = image.ToWpf();
+			var src = image.ToWpfScale((float)DPI);
             Control.PushClip(new swm.RectangleGeometry(destination.ToWpf()));
             bool scale = source.Size != destination.Size;
             bool translate = source.X > 0 || source.Y > 0;

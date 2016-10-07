@@ -119,27 +119,50 @@ public class FileUpdate : Task
 	
 	public bool WarnOnNoUpdate { get; set; }
 	
+	public bool IgnoreCase { get; set; }
+	
 	public FileUpdate()
 	{
 		WarnOnNoUpdate = true;
+		IgnoreCase = true;
+	}
+
+	static Encoding DetectEncoding(string filename)
+	{
+		var bom = new byte[3];
+		using (var file = new FileStream(filename, FileMode.Open, FileAccess.Read))
+		{
+			file.Read(bom, 0, 3);
+		}
+
+		if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) return Encoding.UTF8;
+		return new UTF8Encoding(false);
 	}
 
 	public override bool Execute()
 	{
 		try
 		{
-			var regex = new Regex(Extensions.FixParameter(Pattern), RegexOptions.None);
+			var pattern = Extensions.FixParameter(Pattern);
+			RegexOptions options = RegexOptions.None;
+			if (IgnoreCase)
+				options |= RegexOptions.IgnoreCase;
+			
+			var regex = new Regex(pattern, options);
 
 			foreach (var item in Files)
 			{
 				var fileName = item.ItemSpec;
+				
+				// use the same encoding as the existing file
+				var encoding = DetectEncoding(fileName);
 
-				var text = File.ReadAllText(fileName);
+				var text = File.ReadAllText(fileName, encoding);
 
 				if (!regex.IsMatch(text))
 				{
 					if (WarnOnNoUpdate)
-						Log.LogWarning("File '{0}' not updated. Pattern: '{1}'", fileName, Pattern);
+						Log.LogWarning("File '{0}' not updated. Pattern: '{1}'", fileName, pattern);
 					continue;
 				}
 				else
@@ -147,7 +170,7 @@ public class FileUpdate : Task
 
 				var updatedText = regex.Replace(text, Replacement);
 
-				File.WriteAllText(fileName, updatedText);
+				File.WriteAllText(fileName, updatedText, encoding);
 			}
 		}
 		catch (Exception ex)

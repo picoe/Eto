@@ -13,6 +13,10 @@ namespace Eto.Direct2D
 			get { return Platforms.Direct2D; }
 		}
 
+		public override PlatformFeatureFlags SupportedFeatures =>
+			base.SupportedFeatures & ~ PlatformFeatureFlags.DrawableWithTransparentContent;
+
+
 		public Platform()
 		{
 			// generator to use for scenarios where direct 2d doesn't work (e.g. printing)
@@ -40,6 +44,7 @@ namespace Eto.Direct2D
 			p.Add<Graphics.IHandler>(() => new GraphicsHandler());
 			p.Add<GraphicsPath.IHandler>(() => new GraphicsPathHandler());
 			p.Add<Icon.IHandler>(() => new IconHandler());
+			p.Add<IconFrame.IHandler>(() => new IconFrameHandler());
 			p.Add<IndexedBitmap.IHandler>(() => new IndexedBitmapHandler());
 			p.Add<Matrix.IHandler>(() => new MatrixHandler());
 			p.Add<Pen.IHandler>(() => new PenHandler());

@@ -36,11 +36,7 @@ namespace Eto.Serialization.Xaml
 
 		static Stream GetStream(Type type, string resourceName)
 		{
-#if PCL
-			return type.GetTypeInfo().Assembly.GetManifestResourceStream(resourceName);
-#else
-			return type.Assembly.GetManifestResourceStream(resourceName);
-#endif
+			return type.GetAssembly().GetManifestResourceStream(resourceName);
 		}
 
 		/// <summary>
@@ -143,7 +139,10 @@ namespace Eto.Serialization.Xaml
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(Stream stream, T instance)
 		{
-			return Load<T>(new XamlXmlReader(stream, context), instance);
+			var readerSettings = new XamlXmlReaderSettings();
+			if (!DesignMode)
+				readerSettings.LocalAssembly = typeof(T).GetAssembly();
+			return Load<T>(new XamlXmlReader(stream, context, readerSettings), instance);
 		}
 
 		/// <summary>
@@ -155,7 +154,10 @@ namespace Eto.Serialization.Xaml
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(TextReader reader, T instance)
 		{
-			return Load<T>(new XamlXmlReader(reader, context), instance);
+			var readerSettings = new XamlXmlReaderSettings();
+			if (!DesignMode)
+				readerSettings.LocalAssembly = typeof(T).GetAssembly();
+			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 
 		/// <summary>
@@ -167,7 +169,10 @@ namespace Eto.Serialization.Xaml
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(XmlReader reader, T instance)
 		{
-			return Load<T>(new XamlXmlReader(reader, context), instance);
+			var readerSettings = new XamlXmlReaderSettings();
+			if (!DesignMode)
+				readerSettings.LocalAssembly = typeof(T).GetAssembly();
+			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 
 		static T Load<T>(XamlXmlReader reader, T instance)

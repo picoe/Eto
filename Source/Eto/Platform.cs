@@ -77,7 +77,14 @@ namespace Eto
 		/// Specifies that the <see cref="Forms.CustomCell"/> supports creating a Control for each cell.
 		/// If not specified, then the CustomCell will paint its content when not in edit mode.
 		/// </summary>
-		CustomCellSupportsControlView = 1 << 0
+		CustomCellSupportsControlView = 1 << 0,
+
+		/// <summary>
+		/// Specifies that the <see cref="Forms.Drawable"/> supports automatic transparent background for its <c>Content</c>.
+		/// If not specified, then setting the content may not work as intended
+		/// (most often not rendering with transparent background, thus overpainting the drawable).
+		/// </summary>
+		DrawableWithTransparentContent = 1 << 1,
 	}
 
 	/// <summary>
@@ -316,6 +323,8 @@ namespace Eto
 				{
 					if (EtoEnvironment.Is64BitProcess)
 						detected = Platform.Get(Platforms.Mac64, true);
+					if (detected == null)
+						detected = Platform.Get(Platforms.XamMac2, true);
 					if (detected == null)
 						detected = Platform.Get(Platforms.XamMac, true);
 					if (detected == null)

@@ -50,7 +50,7 @@ namespace Eto.Mac.Forms.Menu
 		public string Text
 		{
 			get	{ return Control.Title; }
-			set { Control.SetTitleWithMnemonic(value); }
+			set { Control.SetTitleWithMnemonic(value ?? string.Empty); }
 		}
 
 		public string ToolTip

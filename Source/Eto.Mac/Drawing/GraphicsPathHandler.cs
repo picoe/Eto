@@ -18,19 +18,18 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -119,11 +118,7 @@ namespace Eto.iOS.Drawing
 
 		public void AddRectangle (float x, float y, float width, float height)
 		{
-			#if UNIFIED
-			Control.AddRect(new CGRect(x, y, width, height));
-			#else
-			Control.AddRect(new sd.RectangleF(x, y, width, height));
-			#endif
+			Control.AddRect (new CGRect(x, y, width, height));
 			startFigure = true;
 			isFirstFigure = false;
 		}
@@ -181,11 +176,7 @@ namespace Eto.iOS.Drawing
 			Check(point1);
 			Check(point2);
 			Check(point3);
-			#if UNIFIED
 			Control.AddCurveToPoint(point1.ToNS(), point2.ToNS(), point3.ToNS());
-			#else
-			Control.AddCurveToPoint(point1.ToSD(), point2.ToSD(), point3.ToSD());
-			#endif
 		}
 
 		public void AddPath (IGraphicsPath path, bool connect = false)
@@ -262,7 +253,7 @@ namespace Eto.iOS.Drawing
 			#if XAMMAC || XAMMAC2 || IOS
 			Control.AddEllipseInRect(new CGRect(x, y, width, height));
 			#else
-			Control.AddElipseInRect (new sd.RectangleF (x, y, width, height));
+			Control.AddElipseInRect (new CGRect(x, y, width, height));
 			#endif
 			startFigure = true;
 			isFirstFigure = false;

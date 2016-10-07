@@ -211,10 +211,11 @@ namespace Eto.GtkSharp.Drawing
 			}
 		}
 
-		public Gdk.Pixbuf GetPixbuf(Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear)
+		public Gdk.Pixbuf GetPixbuf(Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear, bool shrink = false)
 		{
 			Gdk.Pixbuf pixbuf = Control;
-			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height)
+			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height
+				|| (shrink && (maxSize.Width < pixbuf.Width || maxSize.Height < pixbuf.Height)))
 			{
 				if (!sizes.TryGetValue(maxSize, out pixbuf))
 				{

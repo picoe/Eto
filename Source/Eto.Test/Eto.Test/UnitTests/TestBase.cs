@@ -15,16 +15,35 @@ using System.IO;
 namespace Eto.Test.UnitTests
 {
 	/// <summary>
+	/// Manual test category
+	/// </summary>
+	public class ManualTestAttribute : CategoryAttribute
+	{
+		public ManualTestAttribute()
+			: base(TestBase.ManualTestCategory)
+		{
+		}
+	}
+
+	/// <summary>
 	/// Unit test utilities
 	/// </summary>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public static class TestUtils
+	public class TestBase
 	{
 		/// <summary>
 		/// Category to exclude when using the Test platform, and only run when on a "real" platform.
 		/// </summary>
 		public const string TestPlatformCategory = "TestPlatform";
+
+		/// <summary>
+		/// Category for tests that require user input to perform the test
+		/// </summary>
+		/// <remarks>
+		/// This is useful to test behaviour of controls when actually in use, not just programmatically.
+		/// </remarks>
+		public const string ManualTestCategory = "ManualTest";
 
 		/// <summary>
 		/// Default timeout for form operations
@@ -48,13 +67,13 @@ namespace Eto.Test.UnitTests
 				try
 				{
 					// use config file to specify which generator to use for testing
-					#if PCL
+#if PCL
 					var doc = System.Xml.Linq.XDocument.Load("Eto.Test.dll.config");
 					var setting = doc != null ? doc.Root.Element("appSettings").Elements("add").FirstOrDefault(r => r.Attribute("key").Value == "generator") : null;
 					var generatorTypeName = setting != null ? setting.Attribute("value").Value : null;
-					#else
+#else
 					var generatorTypeName = System.Configuration.ConfigurationManager.AppSettings["generator"];
-					#endif
+#endif
 					if (!string.IsNullOrEmpty(generatorTypeName))
 						platform = Platform.Get(generatorTypeName);
 				}
@@ -135,6 +154,7 @@ namespace Eto.Test.UnitTests
 				application.AsyncInvoke(run);
 			else
 				run();
+
 			if (!ev.WaitOne(timeout))
 			{
 				Assert.Fail("Test did not complete in time");
@@ -196,6 +216,22 @@ namespace Eto.Test.UnitTests
 			}
 		}
 
+		public static void Shown(Action<Form> init, Action test, bool replay = false, int timeout = DefaultTimeout)
+		{
+			Shown(form =>
+				{
+					init(form);
+					return null;
+				},
+				(Control c) =>
+				{
+					test();
+				},
+				replay,
+				timeout
+			);
+		}
+
 		/// <summary>
 		/// Test operations on a form once it is shown
 		/// </summary>
@@ -220,7 +256,7 @@ namespace Eto.Test.UnitTests
 						{
 							form.Content = null;
 							control = init(form);
-							if (control != null && form.Content == null)
+							if (control != null && form.Content == null && control != form)
 								form.Content = control;
 							if (application == null)
 								test(control);
@@ -256,7 +292,7 @@ namespace Eto.Test.UnitTests
 						}
 					}
 				};
-				if (control != null && form.Content == null)
+				if (control != null && form.Content == null && control != form)
 					form.Content = control;
 			}, timeout);
 			if (exception != null)

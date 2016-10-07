@@ -17,19 +17,18 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -67,6 +66,11 @@ namespace Eto.Mac.Forms.Controls
 				else
 					base.DrawBezelWithFrame(frame, controlView);
 			}
+
+			public EtoButtonCell()
+			{
+				ImageScale = NSImageScale.ProportionallyDown;//.ProportionallyUpOrDown;
+			}
 		}
 
 		public class EtoButton : NSButton, IMacControl
@@ -85,7 +89,6 @@ namespace Eto.Mac.Forms.Controls
 			{
 				setBezel = false;
 				base.SizeToFit();
-
 				if (Handler.AutoSize)
 				{
 					var size = Frame.Size;
@@ -101,7 +104,10 @@ namespace Eto.Mac.Forms.Controls
 			{
 				base.SetFrameSize(newSize);
 				if (setBezel)
+				{
+					setBezel = false;
 					Handler.SetBezel();
+				}
 			}
 
 			public EtoButton()
@@ -203,6 +209,11 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			return base.GetNaturalSize(availableSize);
+		}
+
 		/// <summary>
 		/// Gets the bezel style of the button based on its size and image position
 		/// </summary>
@@ -231,14 +242,19 @@ namespace Eto.Mac.Forms.Controls
 			return NSBezelStyle.Rounded;
 		}
 
+		bool blah;
 		void SetBezel()
 		{
 			var bezel = Control.BezelStyle;
 			var requiredBezel = GetBezelStyle();
 			if (bezel != requiredBezel)
 			{
+				if (blah)
+					return;
+				blah = true;
 				Control.BezelStyle = requiredBezel;
 				LayoutIfNeeded();
+				blah = false;
 			}
 		}
 

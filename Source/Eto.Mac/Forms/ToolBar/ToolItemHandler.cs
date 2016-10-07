@@ -15,19 +15,18 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -159,7 +158,7 @@ namespace Eto.Mac.Forms.ToolBar
 			}
 		}
 
-		public string Identifier { get; set; }
+		public virtual string Identifier { get; set; }
 
 
 		protected override TControl CreateControl()
@@ -245,7 +244,7 @@ namespace Eto.Mac.Forms.ToolBar
 			set { Control.Enabled = value; }
 		}
 
-		public virtual bool Selectable { get; set; }
+		public virtual bool Selectable { get; }
 
 		public void OnClick()
 		{
@@ -265,6 +264,18 @@ namespace Eto.Mac.Forms.ToolBar
 				Control.Target = null;
 				Control.Action = m.Selector;
 			}
+		}
+
+		public virtual void OnLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnPreLoad(EventArgs e)
+		{
+		}
+
+		public virtual void OnUnLoad(EventArgs e)
+		{
 		}
 	}
 }

@@ -482,7 +482,7 @@ namespace Eto.Direct2D.Drawing
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
 			SetOffset(true);
-			var bmp = image.ToDx(Control);
+			var bmp = image.ToDx(Control, Size.Ceiling(CurrentTransform.TransformSize(destination.Size)));
 			Control.DrawBitmap(bmp, destination.ToDx(), 1f, sd.BitmapInterpolationMode.Linear, source.ToDx());
 		}
 
@@ -497,7 +497,7 @@ namespace Eto.Direct2D.Drawing
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
 			SetOffset(true);
-			var bmp = image.ToDx(Control);
+			var bmp = image.ToDx(Control, Size.Ceiling(CurrentTransform.TransformSize(new SizeF(width, height))));
 			Control.DrawBitmap(bmp, new s.RectangleF(x, y, width, height), 1f, ImageInterpolation.ToDx());
 		}
 

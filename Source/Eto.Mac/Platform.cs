@@ -35,17 +35,20 @@ namespace Eto.Mac
 	[Preserve(AllMembers = true)]
 	public class Platform : Eto.Platform
 	{
+		static bool initialized;
+
 		public override bool IsDesktop { get { return true; } }
 
 		public override bool IsMac { get { return true; } }
 
 		#if XAMMAC
 		public override string ID { get { return "xammac"; } }
-
-#else
+		#else
 		public override string ID { get { return "mac"; } }
 		#endif
-		static bool initialized;
+
+		public override PlatformFeatureFlags SupportedFeatures =>
+			PlatformFeatureFlags.DrawableWithTransparentContent;
 
 		public Platform()
 		{
@@ -81,6 +84,7 @@ namespace Eto.Mac
 			p.Add<Graphics.IHandler>(() => new GraphicsHandler());
 			p.Add<GraphicsPath.IHandler>(() => new GraphicsPathHandler());
 			p.Add<Icon.IHandler>(() => new IconHandler());
+			p.Add<IconFrame.IHandler>(() => new IconFrameHandler());
 			p.Add<IndexedBitmap.IHandler>(() => new IndexedBitmapHandler());
 			p.Add<Matrix.IHandler>(() => new MatrixHandler());
 			p.Add<Pen.IHandler>(() => new PenHandler());

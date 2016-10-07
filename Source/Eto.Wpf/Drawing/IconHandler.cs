@@ -8,6 +8,7 @@ using swi = System.Windows.Interop;
 using swm = System.Windows.Media;
 using swmi = System.Windows.Media.Imaging;
 using sd = System.Drawing;
+using System.Linq;
 
 namespace Eto.Wpf.Drawing
 {
@@ -18,7 +19,7 @@ namespace Eto.Wpf.Drawing
 
 	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, Icon.IHandler, IWpfImage
 	{
-		swmi.BitmapSource[] icons;
+		List<IconFrame> frames;
 
 		public IconHandler ()
 		{
@@ -29,6 +30,12 @@ namespace Eto.Wpf.Drawing
 			var rect = new sw.Int32Rect (0, 0, icon.Width, icon.Height);
 			var img = swi.Imaging.CreateBitmapSourceFromHIcon (icon.Handle, rect, swmi.BitmapSizeOptions.FromEmptyOptions ());
 			Control = swmi.BitmapFrame.Create (img);
+			using (var ms = new MemoryStream())
+			{
+				icon.Save(ms);
+				ms.Position = 0;
+				SetFrames(ms);
+			}
 		}
 
 		public IconHandler (swmi.BitmapFrame control)
@@ -58,7 +65,7 @@ namespace Eto.Wpf.Drawing
 			var ms = CreateStream (stream);
 			Control = swmi.BitmapFrame.Create (ms);
 			ms.Position = 0;
-			icons = SplitIcon (Control, ms);
+			SetFrames(ms);
 		}
 
 		public void Create(string fileName)
@@ -68,24 +75,44 @@ namespace Eto.Wpf.Drawing
 				var ms = CreateStream (stream);
 				Control = swmi.BitmapFrame.Create (ms);
 				ms.Position = 0;
-				icons = SplitIcon (Control, ms);
+				SetFrames(ms);
 			}
 		}
 
+		void SetFrames(MemoryStream ms)
+		{
+			var icons = SplitIcon(Control, ms);
+			frames = new List<IconFrame>();
+			foreach (var icon in icons)
+			{
+				frames.Add(IconFrame.FromControlObject(1f, new Bitmap(new BitmapHandler(icon))));
+			}
+		}
+		Size? size;
 		public Size Size
 		{
 			get
 			{
+				if (size != null)
+					return size.Value;
 				var largest = GetLargestIcon ();
-				return new Size ((int)largest.Width, (int)largest.Height);
+				return new Size ((int)largest.Bitmap.Width, (int)largest.Bitmap.Height);
 			}
 		}
 
-		public swmi.BitmapSource GetLargestIcon ()
+		public IEnumerable<IconFrame> Frames
 		{
-			var curicon = icons[0];
-			foreach (var icon in icons) {
-				if (icon.Width > curicon.Width)
+			get
+			{
+				return frames;
+			}
+		}
+
+		public IconFrame GetLargestIcon ()
+		{
+			var curicon = frames[0];
+			foreach (var icon in frames) {
+				if (icon.PixelSize.Width > curicon.PixelSize.Width)
 					curicon = icon;
 			}
 			return curicon;
@@ -94,15 +121,15 @@ namespace Eto.Wpf.Drawing
 		public swmi.BitmapSource GetImageClosestToSize (int? width)
 		{
 			if (width == null)
-				return GetLargestIcon ();
-			var curicon = icons[0];
-			if ((int)curicon.Width == width.Value)
-				return curicon;
-			foreach (var icon in icons) {
-				if (icon.Width > width && icon.Width - width.Value < curicon.Width - width.Value)
+				return GetLargestIcon ().ToWpf();
+			var curicon = frames[0];
+			if ((int)curicon.PixelSize.Width == width.Value)
+				return curicon.ToWpf();
+			foreach (var icon in frames) {
+				if (icon.PixelSize.Width > width && icon.PixelSize.Width - width.Value < curicon.PixelSize.Width - width.Value)
 					curicon = icon;
 			}
-			return GetLargestIcon ();
+			return GetLargestIcon ().ToWpf();
 		}
 
 		const int sICONDIR = 6;            // sizeof(ICONDIR) 
@@ -158,5 +185,12 @@ namespace Eto.Wpf.Drawing
 			return size != null ? GetImageClosestToSize(size.Value) : Control;
 		}
 
+		public void Create(IEnumerable<IconFrame> frames)
+		{
+			this.frames = new List<IconFrame>(frames);
+			var scale = 1;
+			var largest = frames.OrderBy(r => r.PixelSize.Width * r.PixelSize.Height).LastOrDefault(r => r.Scale == scale) ?? GetLargestIcon();
+			size = Size.Ceiling((SizeF)largest.PixelSize / largest.Scale);
+		}
 	}
 }

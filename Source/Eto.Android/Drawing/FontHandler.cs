@@ -155,5 +155,10 @@ namespace Eto.Android.Drawing
 		{
 			get { throw new NotImplementedException(); }
 		}
+
+		public SizeF MeasureString(string text)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

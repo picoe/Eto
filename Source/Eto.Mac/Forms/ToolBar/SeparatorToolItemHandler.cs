@@ -13,25 +13,24 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
 namespace Eto.Mac.Forms.ToolBar
 {
-	public class SeparatorToolItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarBaseItemHandler
+	public class SeparatorToolItemHandler : ToolItemHandler<NSToolbarItem, SeparatorToolItem>, SeparatorToolItem.IHandler, IToolBarBaseItemHandler
 	{
 		public static string DividerIdentifier = "divider";
 
@@ -40,7 +39,7 @@ namespace Eto.Mac.Forms.ToolBar
 			Type = SeparatorToolItemType.Divider;
 		}
 
-		public virtual string Identifier
+		public override string Identifier
 		{
 			get
 			{ 
@@ -57,11 +56,7 @@ namespace Eto.Mac.Forms.ToolBar
 				}
 				
 			}
-		}
-
-		public bool Selectable
-		{
-			get { return false; }
+			set { }
 		}
 
 		SeparatorToolItemType type;
@@ -82,38 +77,6 @@ namespace Eto.Mac.Forms.ToolBar
 				else
 					Control = null;
 			}
-		}
-
-		public void ControlAdded(ToolBarHandler toolbar)
-		{
-		}
-
-		public void CreateFromCommand(Command command)
-		{
-		}
-
-		public string Text
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public string ToolTip
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public Eto.Drawing.Image Image
-		{
-			get { return null; }
-			set { throw new NotSupportedException(); }
-		}
-
-		public bool Enabled
-		{
-			get { return false; }
-			set { throw new NotSupportedException(); }
 		}
 	}
 }

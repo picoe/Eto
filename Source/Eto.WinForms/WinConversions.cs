@@ -401,14 +401,15 @@ namespace Eto.WinForms
 			return buttons;
 		}
 
-		public static Graphics ToEto(this sd.Graphics g)
+		/// <summary>
+		/// Convert native graphics to eto wrapper
+		/// </summary>
+		/// <param name="g">Native graphics</param>
+		/// <param name="dispose">Pass ownership and dispose native graphics in Dispose</param>
+		/// <returns>The wrapper</returns>
+		public static Graphics ToEto(this sd.Graphics g, bool dispose)
 		{
-			return new Graphics(new GraphicsHandler(g));
-		}
-
-		public static PaintEventArgs ToEto(this swf.PaintEventArgs e)
-		{
-			return new PaintEventArgs(ToEto(e.Graphics), e.ClipRectangle.ToEto());
+			return new Graphics(new GraphicsHandler(g, dispose));
 		}
 
 		public static sd2.PixelOffsetMode ToSD(this PixelOffsetMode mode)

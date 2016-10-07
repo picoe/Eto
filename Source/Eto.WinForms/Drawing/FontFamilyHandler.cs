@@ -1,6 +1,7 @@
 using Eto.Drawing;
 using System.Collections.Generic;
 using sd = System.Drawing;
+using System.Globalization;
 
 namespace Eto.WinForms.Drawing
 {
@@ -8,7 +9,10 @@ namespace Eto.WinForms.Drawing
 	{
 		public string Name { get; set; }
 
-		public string SDName { get; set; }
+		public string LocalizedName
+		{
+			get { return Control.Name; }
+		}
 
 		static IEnumerable<sd.FontStyle> Styles
 		{
@@ -40,7 +44,7 @@ namespace Eto.WinForms.Drawing
 		public FontFamilyHandler(sd.FontFamily windowsFamily)
 		{
 			this.Control = windowsFamily;
-			Name = Control.Name;
+			Name = Control.GetName(0);
 		}
 
 		public void Create(string familyName)
@@ -65,7 +69,7 @@ namespace Eto.WinForms.Drawing
 					break;
 				default:
 					Control = new sd.FontFamily(familyName);
-					Name = Control.Name;
+					Name = Control.GetName(0);
 					break;
 			}
 		}

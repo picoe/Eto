@@ -18,19 +18,18 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -272,8 +271,8 @@ namespace Eto.Mac.Forms
 						var oldframe = frame;
 						frame.Width = widths[x];
 						frame.Height = heights[y];
-						frame.X = Math.Max(0, startx);
-						frame.Y = flipped ? starty : controlSize.Height - starty - frame.Height;
+						frame.X = (nfloat)Math.Round(Math.Max(0, startx));
+						frame.Y = (nfloat)Math.Round(flipped ? starty : controlSize.Height - starty - frame.Height);
 						if (frame != oldframe)
 							nsview.Frame = frame;
 						else if (oldframe.Right > oldFrameSize.Width || oldframe.Bottom > oldFrameSize.Height

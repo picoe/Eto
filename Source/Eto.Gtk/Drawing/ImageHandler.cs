@@ -6,7 +6,7 @@ namespace Eto.GtkSharp.Drawing
 	{
 		Gdk.Pixbuf Pixbuf { get; }
 
-		Gdk.Pixbuf GetPixbuf(Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear);
+		Gdk.Pixbuf GetPixbuf(Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear, bool shrink = false);
 	}
 
 	public interface IImageHandler

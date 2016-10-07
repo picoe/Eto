@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Linq;
 using Eto.Drawing;
 
-
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;
@@ -42,12 +41,29 @@ namespace Eto.Serialization.Xaml.Extensions
 
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
+			var provideValue = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
+			var propertyInfo = provideValue?.TargetProperty as PropertyInfo;
+
 			var contextProvider = serviceProvider.GetService(typeof(IXamlSchemaContextProvider)) as IXamlSchemaContextProvider;
 			if (contextProvider != null)
 			{
 				var context = contextProvider.SchemaContext as EtoXamlSchemaContext;
 				if (context != null && context.DesignMode)
-					return new Bitmap(24, 24, PixelFormat.Format32bppRgba);
+				{
+					// TODO: Lookup resource file using ide service so we can actually show the image or use the resource
+					if (propertyInfo != null)
+					{
+						if (typeof(Bitmap).IsAssignableFrom(propertyInfo.PropertyType))
+							return new Bitmap(24, 24, PixelFormat.Format32bppRgba);
+						
+						if (typeof(Icon).IsAssignableFrom(propertyInfo.PropertyType))
+							return new Icon(1, new Bitmap(24, 24, PixelFormat.Format32bppRgba));
+
+						// return its current value if not a known type to handle
+						return propertyInfo.GetValue(provideValue.TargetObject, null);
+					}
+					return null;
+				}
 			}
 
 			Assembly assembly;
@@ -61,7 +77,7 @@ namespace Eto.Serialization.Xaml.Extensions
 			{
 				try
 				{
-				resource = new NamespaceInfo(ResourceName);
+					resource = new NamespaceInfo(ResourceName);
 				}
 				catch (ArgumentException)
 				{
@@ -73,30 +89,21 @@ namespace Eto.Serialization.Xaml.Extensions
 				}
 			}
 
-			var provideValue = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
-			if (provideValue != null)
+			if (propertyInfo != null && !propertyInfo.PropertyType.GetTypeInfo().IsAssignableFrom(typeof(Stream).GetTypeInfo()))
 			{
-				var propertyInfo = provideValue.TargetProperty as PropertyInfo;
-				if (propertyInfo != null && !propertyInfo.PropertyType.GetTypeInfo().IsAssignableFrom(typeof(Stream).GetTypeInfo()))
+				var converter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
+				if (converter != null)
 				{
-					var converter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
-					if (converter != null)
-					{
-						if (converter.CanConvertFrom(typeof(NamespaceInfo)))
-							return converter.ConvertFrom(resource);
-						if (converter.CanConvertFrom(typeof(Stream)))
-							return converter.ConvertFrom(resource.FindResource());
-					}
-					var streamArgs = new [] { typeof(Stream) };
-					#if NET40
-					var constructor = propertyInfo.PropertyType.GetConstructor(streamArgs);
-					#else
-					var constructor = propertyInfo.PropertyType.GetTypeInfo().DeclaredConstructors.FirstOrDefault(r => r.GetParameters().Select(p => p.ParameterType).SequenceEqual(streamArgs));;
-					#endif
-					if (constructor != null)
-					{
-						return constructor.Invoke(new[] { resource.FindResource() });
-					}
+					if (converter.CanConvertFrom(typeof(NamespaceInfo)))
+						return converter.ConvertFrom(resource);
+					if (converter.CanConvertFrom(typeof(Stream)))
+						return converter.ConvertFrom(resource.FindResource());
+				}
+				var streamArgs = new [] { typeof(Stream) };
+				var constructor = propertyInfo.PropertyType.GetConstructor(streamArgs);
+				if (constructor != null)
+				{
+					return constructor.Invoke(new[] { resource.FindResource() });
 				}
 			}
 			Stream stream = null;

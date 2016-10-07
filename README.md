@@ -2,17 +2,12 @@ Eto.Forms
 =========
 ### A cross platform desktop and mobile user interface framework
 
-[![Build status](http://img.shields.io/appveyor/ci/cwensley/eto.svg?style=flat)](https://ci.appveyor.com/project/cwensley/eto/branch/develop)
-
-Links
------
-
-* Join the [forums](http://groups.google.com/group/eto-forms)
-* Chat in [#eto.forms](https://kiwiirc.com/client/irc.gimp.org/eto.forms) on irc.gimp.org
-* Browse the [wiki](https://github.com/picoe/Eto/wiki) for quick start, tutorials, and API
-* Download binaries using NuGet [![NuGet](http://img.shields.io/nuget/v/Eto.Forms.svg?style=flat)](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or Xamarin Studio.
-* For bleeding edge nuget packages, add the MyGet development feed [![MyGet](http://img.shields.io/myget/eto/vpre/Eto.Forms.svg?style=flat)](https://www.myget.org/F/eto/) to your sources list.
-
+[![Build status](https://ci.appveyor.com/api/projects/status/rftjjnd9lq2rxc7h/branch/develop?svg=true)](https://ci.appveyor.com/project/cwensley/eto/branch/develop)
+[![forums](https://img.shields.io/badge/join-the%20forums-yellowgreen.svg)](http://groups.google.com/group/eto-forms)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/picoe/Eto)
+[![wiki](https://img.shields.io/badge/browse-the%20wiki-orange.svg)](http://groups.google.com/group/eto-forms)
+[![NuGet](http://img.shields.io/nuget/v/Eto.Forms.svg?style=flat)](https://www.nuget.org/packages/Eto.Forms.Sample/)
+[![MyGet](http://img.shields.io/myget/eto/vpre/Eto.Forms.svg?style=flat&label=MyGet)](https://www.myget.org/F/eto/)
 
 Description
 -----------
@@ -62,6 +57,7 @@ Applications
 * [JabbR.Desktop](https://github.com/JabbR/JabbR.Desktop) - JabbR client
 * [Notedown](https://github.com/cwensley/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
+* [DotImaging.UI](https://github.com/dajuric/dot-imaging) - Portable UI elements for DotImaging
 
 Assemblies
 ----------

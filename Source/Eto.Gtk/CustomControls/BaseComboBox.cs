@@ -3,7 +3,12 @@ using Gtk;
 
 namespace Eto.GtkSharp.CustomControls
 {
-	public class BaseComboBox : SizableBin
+	public class BaseComboBox 
+	#if GTK3
+		: EventBox
+	#else
+		: SizableBin
+	#endif
 	{
 		Entry entry;
 		Button popupButton;
@@ -16,6 +21,10 @@ namespace Eto.GtkSharp.CustomControls
 			SetSizeRequest(150, 30);
 			foreach (var cls in PopupButton.StyleContext.ListClasses())
 				PopupButton.StyleContext.RemoveClass(cls);
+			entry.StyleContext.RemoveClass("entry");
+			StyleContext.AddClass("entry");
+#else
+			BorderWidth = 1;
 #endif
 		}
 		#if GTK2
@@ -62,7 +71,7 @@ namespace Eto.GtkSharp.CustomControls
 				var arrowSize = 10;
 
 				StyleContext.Save();
-				StyleContext.AddClass("entry");
+				StyleContext.State = Entry.StyleContext.State;
 				StyleContext.RenderBackground(cr, 0, 0, rect.Width, rect.Height);
 
 				ret = base.OnDrawn(cr);
@@ -73,7 +82,7 @@ namespace Eto.GtkSharp.CustomControls
 				cr.Rectangle(arrowPos - 5, 2, 1, rect.Height - 4);
 				cr.Fill();
 
-				Entry.StyleContext.RenderFrame(cr, 0, 0, rect.Width, rect.Height);
+				StyleContext.RenderFrame(cr, 0, 0, rect.Width, rect.Height);
 				StyleContext.Restore();
 
 			}
@@ -147,7 +156,7 @@ namespace Eto.GtkSharp.CustomControls
 			hbox.PackEnd(CreatePopupButton(), false, false, 2);
 			vbox.PackStart(hbox, true, true, (uint)vpadding);
 #else
-			hbox.PackStart(CreateEntry(), true, true, 0);
+			hbox.PackStart(CreateEntry(), true, true, 8);
 			hbox.PackEnd(CreatePopupButton(), false, false, 2);
 			vbox.PackStart(hbox, true, true, 0);
 #endif

@@ -19,19 +19,18 @@ using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
+#endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
@@ -103,6 +102,9 @@ namespace Eto.Mac
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
 		public static extern IntPtr IntPtr_objc_msgSend_IntPtr(IntPtr reciever, IntPtr selector, IntPtr arg1);
+
+		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		public static extern IntPtr IntPtr_objc_msgSend_IntPtr_IntPtr(IntPtr reciever, IntPtr selector, IntPtr arg1, IntPtr arg2);
 	}
 }
 

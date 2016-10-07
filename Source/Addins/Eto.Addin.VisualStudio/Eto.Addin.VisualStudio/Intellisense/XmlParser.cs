@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -26,57 +27,38 @@ namespace Eto.Addin.VisualStudio.Intellisense
 			stream.Position = 0;
 			return stream;
 		}
+		static RegexOptions opts = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase;
+		static Regex valueReg = new Regex(@"(?<=\w+\s*=\s*)(('[^']*)|(""[^""]*))?$", opts);
+		static Regex propertyReg = new Regex(@"([<]\w+\s+)([^<]*)?(?<!/|([/][>])|[>])$", opts);
+		static Regex classReg = new Regex(@"([<]\w*)$", opts);
+
 		public static XmlParseInfo Read(string text)
 		{
 			var nodes = new List<CompletionPathNode>();
-			var info = new XmlParseInfo { Nodes = nodes, Mode = CompletionMode.Class };
+			var info = new XmlParseInfo { Nodes = nodes, Mode = CompletionMode.None };
 
-			// complete the last node and/or attribute so the reader can find it.
-			string supplement = null;
-			bool hadLetter = false;
-			char last = char.MinValue;
-			for (int i = text.Length - 1; i >= 0; i--)
+			// check the last part of the xml to see what type of completion we are in
+			// and complete it so we can parse the property or class name.
+			var m = valueReg.Match(text);
+			if (m.Success)
 			{
-				var ch = text[i];
-				if (ch == '<')
-				{
-					if (i == text.Length - 1)
-						break;
-					if (last == '/') // we're in an ending tag
-						info.Mode = CompletionMode.None;
-					if (supplement != null)
-						text += supplement;
-					text += ">";
-                    break;
-				}
-				if (ch == '>')
-				{
+				info.Mode = CompletionMode.Value;
+				text = text.Substring(0, m.Index) + "''>";
+			}
+			else
+			{
+				m = classReg.Match(text);
+				if (m.Success)
 					info.Mode = CompletionMode.Class;
-                    break;
-				}
-				if (info.Mode == CompletionMode.Class)
+				else
 				{
-					if (ch == '=')
-					{
-						info.Mode = CompletionMode.Value;
-						text = text.Substring(0, i + 1);
-						supplement = "''";
-					}
-					if (ch == '.')
-					{
+					m = propertyReg.Match(text);
+					if (m.Success)
 						info.Mode = CompletionMode.Property;
-					}
-					if (ch == ' ')
-					{
-						info.Mode = CompletionMode.Property;
-						if (hadLetter)
-							supplement = "=''";
-					}
-					if (char.IsLetterOrDigit(ch))
-						hadLetter = true;
 				}
-				last = ch;
-            }
+				text += ">";
+			}
+
 
 			CompletionPathNode current = null;
 			CompletionPathNode attribute = null;

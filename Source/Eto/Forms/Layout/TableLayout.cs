@@ -40,7 +40,7 @@ namespace Eto.Forms
 		/// <value>The rows.</value>
 		public Collection<TableRow> Rows
 		{
-			get { return Properties.Create<TableRowCollection>(rowsKey); }
+			get { return Properties.Create(rowsKey, () => new TableRowCollection(this)); }
 			private set { Properties[rowsKey] = value; }
 		}
 
@@ -109,6 +109,72 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Creates a horizontal table layout with the specified cells scaled equally.
+		/// </summary>
+		/// <remarks>
+		/// Since table layouts are by default vertical by defining the rows and the cells for each row,
+		/// it is verbose to create nested tables when you want a horizontal table.  E.g. <code>new TableLayout(new TableRow(...))</code>.
+		/// 
+		/// This method is used to easily create a single row table layout with a horizontal set of cells. E.g.
+		/// <code>TableLayout.HorizontalScaled(...)</code>
+		/// 
+		/// The difference between Horizontal and HorizontalScaled is that this method sets
+		/// ScaleWidth on each cell.
+		/// </remarks>
+		/// <param name="cells">Cells for the row</param>
+		/// <returns>A new single row table layout with the specified cells</returns>
+		public static TableLayout HorizontalScaled(params TableCell[] cells)
+		{
+			foreach (TableCell cell in cells)
+				if(cell != null)
+					cell.ScaleWidth = true;
+			return new TableLayout(new TableRow(cells));
+		}
+
+		/// <summary>
+		/// Creates a horizontal table layout with the specified cells.
+		/// </summary>
+		/// <remarks>
+		/// Since table layouts are by default vertical by defining the rows and the cells for each row,
+		/// it is verbose to create nested tables when you want a horizontal table.  E.g. <code>new TableLayout(new TableRow(...))</code>.
+		/// 
+		/// This method is used to easily create a single row table layout with a horizontal set of cells. E.g.
+		/// <code>TableLayout.Horizontal(...)</code>
+		/// </remarks>
+		/// <param name="spacing">Spacing between cells</param>
+		/// <param name="cells">Cells for the row</param>
+		/// <returns>A new single row table layout with the specified cells</returns>
+		public static TableLayout Horizontal(int spacing, params TableCell[] cells)
+		{
+			return new TableLayout(new TableRow(cells)) { Spacing = new Size(spacing, spacing) };
+		}
+
+		/// <summary>
+		/// Creates a horizontal table layout with the specified cells scaled equally.
+		/// </summary>
+		/// <remarks>
+		/// Since table layouts are by default vertical by defining the rows and the cells for each row,
+		/// it is verbose to create nested tables when you want a horizontal table.  E.g. <code>new TableLayout(new TableRow(...))</code>.
+		/// 
+		/// This method is used to easily create a single row table layout with a horizontal set of cells. E.g.
+		/// <code>TableLayout.HorizontalScaled(...)</code>
+		/// 
+		/// The difference between Horizontal and HorizontalScaled is that this method sets
+		/// ScaleWidth on each cell.
+		/// </remarks>
+		/// <param name="spacing">Spacing between cells</param>
+		/// <param name="cells">Cells for the row</param>
+		/// <returns>A new single row table layout with the specified cells</returns>
+		public static TableLayout HorizontalScaled(int spacing, params TableCell[] cells)
+		{
+			foreach (TableCell cell in cells)
+				if(cell != null)
+					cell.ScaleWidth = true;
+			return new TableLayout(new TableRow(cells)) { Spacing = new Size(spacing, spacing) };
+		}
+
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class.
 		/// </summary>
 		public TableLayout()
@@ -142,7 +208,7 @@ namespace Eto.Forms
 		/// <param name="rows">Rows to populate the table.</param>
 		public TableLayout(params TableRow[] rows)
 		{
-			Rows = new TableRowCollection(rows);
+			Rows = new TableRowCollection(this, rows);
 			Create();
 			Initialize();
 		}
@@ -153,28 +219,25 @@ namespace Eto.Forms
 		/// <param name="rows">Rows to populate the table.</param>
 		public TableLayout(IEnumerable<TableRow> rows)
 		{
-			Rows = new TableRowCollection(rows);
+			Rows = new TableRowCollection(this, rows);
 			Create();
 			Initialize();
 		}
 
-		static readonly object DataContextChangedKey = new object();
-
 		/// <summary>
-		/// Raises the <see cref="BindableWidget.DataContextChanged"/> event
+		/// Initializes a new instance of the <see cref="Eto.Forms.TableLayout"/> class with the specified rows.
 		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="BindableWidget.DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected override void OnDataContextChanged(EventArgs e)
+		/// <param name="yscale">Scale all rows</param>
+		/// <param name="rows">Rows to populate the table.</param>
+		public TableLayout(bool yscale, params TableRow[] rows)
 		{
-			if (created)
-				base.OnDataContextChanged(e);
-			else
-				Properties[DataContextChangedKey] = true;
+			if (yscale)
+				foreach (TableRow row in rows)
+					if(row != null)
+						row.ScaleHeight = true;
+			Rows = new TableRowCollection(this, rows);
+			Create();
+			Initialize();
 		}
 
 		void Create()
@@ -203,11 +266,6 @@ namespace Eto.Forms
 				}
 			}
 			created = true;
-			if (Properties.Get<bool>(DataContextChangedKey))
-			{
-				OnDataContextChanged(EventArgs.Empty);
-				Properties[DataContextChangedKey] = null;
-			}
 		}
 
 		void SetCellSize(Size value, bool createRows)
@@ -221,7 +279,7 @@ namespace Eto.Forms
 				if (createRows)
 				{
 					var rows = Enumerable.Range(0, value.Height).Select(r => new TableRow(Enumerable.Range(0, value.Width).Select(c => new TableCell())));
-					Rows = new TableRowCollection(rows);
+					Rows = new TableRowCollection(this, rows);
 					created = true;
 				}
 			}
@@ -514,6 +572,18 @@ namespace Eto.Forms
 		public static implicit operator TableLayout(TableRow[] rows)
 		{
 			return new TableLayout(rows);
+		}
+
+		internal void InternalSetLogicalParent(Control control)
+		{
+			if (control?.LogicalParent == null)
+				SetLogicalParent(control);
+		}
+
+		internal void InternalRemoveLogicalParent(Control control)
+		{
+			if (ReferenceEquals(control?.LogicalParent, this))
+				RemoveLogicalParent(control);
 		}
 	}
 }

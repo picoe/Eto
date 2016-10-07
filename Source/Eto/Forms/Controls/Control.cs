@@ -622,6 +622,26 @@ namespace Eto.Forms
 			set { Size = new Size(Size.Width, value); }
 		}
 
+		static readonly object EnabledChangedKey = new object();
+
+		/// <summary>
+		/// Occurs when the <see cref="Enabled"/> value is changed.
+		/// </summary>
+		public event EventHandler<EventArgs> EnabledChanged
+		{
+			add { Properties.AddEvent(EnabledChangedKey, value); }
+			remove { Properties.RemoveEvent(EnabledChangedKey, value); }
+		}
+
+		/// <summary>
+		/// Raises the <see cref="EnabledChanged"/> event.
+		/// </summary>
+		/// <param name="e">Event arguments</param>
+		protected virtual void OnEnabledChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(EnabledChangedKey, this, e);
+		}
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is enabled and accepts user input.
 		/// </summary>
@@ -635,7 +655,14 @@ namespace Eto.Forms
 		public virtual bool Enabled
 		{
 			get { return Handler.Enabled; }
-			set { Handler.Enabled = value; }
+			set
+			{ 
+				if (value != Enabled)
+				{
+					Handler.Enabled = value;
+					OnEnabledChanged(EventArgs.Empty);
+				}
+			}
 		}
 
 		/// <summary>
@@ -660,10 +687,8 @@ namespace Eto.Forms
 		/// <value>The parent control, or null if there is no parent</value>
 		public new Container Parent
 		{
-			get { return LogicalParent ?? base.Parent as Container; }
+			get { return base.Parent as Container; }
 		}
-
-		static readonly object LogicalParent_Key = new object();
 
 		/// <summary>
 		/// Gets or sets the logical parent, which excludes any visual structure of custom containers.
@@ -671,9 +696,11 @@ namespace Eto.Forms
 		/// <value>The logical parent.</value>
 		internal Container LogicalParent
 		{
-			get { return Properties.Get<Container>(LogicalParent_Key); }
-			set { Properties.Set(LogicalParent_Key, value); }
+			get { return base.Parent as Container; }
+			set { base.Parent = value; }
 		}
+
+		static readonly object VisualParent_Key = new object();
 
 		/// <summary>
 		/// Gets the visual container of this control, if any.
@@ -686,10 +713,10 @@ namespace Eto.Forms
 		/// <value>The visual parent of this control.</value>
 		public Container VisualParent
 		{
-			get { return base.Parent as Container; }
+			get { return Properties.Get<Container>(VisualParent_Key); }
 			internal set
 			{
-				base.Parent = value;
+				Properties.Set(VisualParent_Key, value);
 				Handler.SetParent(value);
 			}
 		}
@@ -755,8 +782,7 @@ namespace Eto.Forms
 			{
 				OnPreLoad(EventArgs.Empty);
 				OnLoad(EventArgs.Empty);
-				OnDataContextChanged(EventArgs.Empty);
-				OnLoadComplete(EventArgs.Empty);
+				Application.Instance.AsyncInvoke(() => OnLoadComplete(EventArgs.Empty));
 			}
 		}
 
@@ -815,6 +841,23 @@ namespace Eto.Forms
 			Handler.Focus();
 		}
 
+
+		static readonly object SuspendCount_Key = new object();
+
+		int SuspendCount
+		{
+			get { return Properties.Get<int>(SuspendCount_Key); }
+			set { Properties.Set(SuspendCount_Key, value); }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the layout of child controls is suspended.
+		/// </summary>
+		/// <seealso cref="SuspendLayout"/>
+		/// <seealso cref="ResumeLayout"/>
+		/// <value><c>true</c> if this instance is suspended; otherwise, <c>false</c>.</value>
+		public bool IsSuspended { get { return SuspendCount > 0; } }
+
 		/// <summary>
 		/// Suspends the layout of child controls
 		/// </summary>
@@ -825,6 +868,7 @@ namespace Eto.Forms
 		/// </remarks>
 		public virtual void SuspendLayout()
 		{
+			SuspendCount++;
 			Handler.SuspendLayout();
 		}
 
@@ -837,6 +881,11 @@ namespace Eto.Forms
 		/// </remarks>
 		public virtual void ResumeLayout()
 		{
+			var count = SuspendCount;
+			if (count == 0)
+				throw new InvalidOperationException("Control is not suspended. You must balance calls to Resume() with Suspend()");
+			SuspendCount = --count;
+
 			Handler.ResumeLayout();
 		}
 

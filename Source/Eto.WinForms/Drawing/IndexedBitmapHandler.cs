@@ -91,7 +91,12 @@ namespace Eto.WinForms.Drawing
 		}
 
 
-		public SD.Image GetImageWithSize (int? size)
+		public SD.Image GetImageWithSize(int? size)
+		{
+			return Control;
+		}
+
+		public SD.Image GetImageWithSize(Size? size)
 		{
 			return Control;
 		}

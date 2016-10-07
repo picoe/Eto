@@ -16,6 +16,7 @@ namespace Eto.WinForms.Drawing
 	public interface IWindowsImageSource
 	{
 		sd.Image GetImageWithSize(int? size);
+		sd.Image GetImageWithSize(Size? size);
 	}
 
 	/// <summary>
@@ -178,6 +179,19 @@ namespace Eto.WinForms.Drawing
 			}
 			else
 				Control.Save(stream, format.ToSD());
+		}
+
+		public sd.Image GetImageWithSize(Size? size)
+		{
+			if (size != null)
+			{
+				var sz = size.Value;
+				var imageSize = Size;
+				var minScale = Math.Min((float)sz.Width / imageSize.Width, (float)sz.Height / imageSize.Height);
+				var newsize = Size.Ceiling((SizeF)imageSize * minScale).ToSD();
+				return new sd.Bitmap(Control, newsize);
+			}
+			return Control;
 		}
 
 		public sd.Image GetImageWithSize(int? size)

@@ -54,6 +54,15 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the logical controls, so we don't chain binding events from the visual tree to the logical tree
+		/// </summary>
+		/// <value>The logical controls.</value>
+		IEnumerable<Control> LogicalControls
+		{
+			get { return Controls.Where(r => ReferenceEquals(r.LogicalParent, this)); }
+		}
+
+		/// <summary>
 		/// Gets an enumeration of all contained child controls, including controls within child containers
 		/// </summary>
 		/// <value>The children.</value>
@@ -108,12 +117,9 @@ namespace Eto.Forms
 		{
 			base.OnDataContextChanged(e);
 
-			if (Handler.RecurseToChildren)
+			foreach (var control in LogicalControls)
 			{
-				foreach (var control in VisualControls)
-				{
-					control.TriggerDataContextChanged(e);
-				}
+				control.TriggerDataContextChanged();
 			}
 		}
 
@@ -207,12 +213,9 @@ namespace Eto.Forms
 		public override void Unbind()
 		{
 			base.Unbind();
-			if (Handler.RecurseToChildren)
+			foreach (var control in LogicalControls)
 			{
-				foreach (var control in VisualControls)
-				{
-					control.Unbind();
-				}
+				control.Unbind();
 			}
 		}
 
@@ -222,12 +225,9 @@ namespace Eto.Forms
 		public override void UpdateBindings(BindingUpdateMode mode = BindingUpdateMode.Source)
 		{
 			base.UpdateBindings(mode);
-			if (Handler.RecurseToChildren)
+			foreach (var control in LogicalControls)
 			{
-				foreach (var control in VisualControls)
-				{
-					control.UpdateBindings(mode);
-				}
+				control.UpdateBindings(mode);
 			}
 		}
 
@@ -277,7 +277,6 @@ namespace Eto.Forms
 				child.VisualParent = null;
 				if (child.LogicalParent == this)
 					child.LogicalParent = null;
-				child.TriggerDataContextChanged(EventArgs.Empty);
 			}
 		}
 
@@ -318,6 +317,7 @@ namespace Eto.Forms
 			{
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a logical child of this container. Ensure you only remove children that you own."));
 			}
+			child.Detach();
 			child.LogicalParent = null;
 		}
 
@@ -335,7 +335,6 @@ namespace Eto.Forms
 		/// <param name="previousChild">Previous child that the new child is replacing.</param>
 		protected void SetParent(Control child, Action assign = null, Control previousChild = null)
 		{
-			bool triggerPrevious = false;
 			if (previousChild != null && !ReferenceEquals(previousChild.VisualParent, null) && (!ReferenceEquals(previousChild, child) || !ReferenceEquals(child.VisualParent, this)))
 			{
 #if DEBUG
@@ -347,7 +346,6 @@ namespace Eto.Forms
 					previousChild.TriggerUnLoad(EventArgs.Empty);
 				}
 				previousChild.VisualParent = null;
-				triggerPrevious = true;
 			}
 			if (child != null && !ReferenceEquals(child.VisualParent, this))
 			{
@@ -365,20 +363,13 @@ namespace Eto.Forms
 					{
 						child.TriggerPreLoad(EventArgs.Empty);
 						child.TriggerLoad(EventArgs.Empty);
-						child.TriggerDataContextChanged(EventArgs.Empty);
-						if (assign != null)
-							assign();
+						assign?.Invoke();
 						child.TriggerLoadComplete(EventArgs.Empty);
 					}
-					if (triggerPrevious)
-						previousChild.TriggerDataContextChanged(EventArgs.Empty);
 					return;
 				}
 			}
-			if (assign != null)
-				assign();
-			if (triggerPrevious)
-				previousChild.TriggerDataContextChanged(EventArgs.Empty);
+			assign?.Invoke();
 		}
 
 		/// <summary>

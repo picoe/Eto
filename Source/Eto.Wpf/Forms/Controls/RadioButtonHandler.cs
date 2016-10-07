@@ -26,9 +26,21 @@ namespace Eto.Wpf.Forms.Controls
 			else
 				Control.GroupName = Guid.NewGuid().ToString();
 
+			Control.Loaded += Control_Loaded;
 			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			border = new swc.Border { Child = Control };
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			var border = Control.FindChild<swc.Border>("radioButtonBorder");
+			if (border != null)
+			{
+				// ensure the radio button and dot is always round and in the center regardless of DPI
+				border.UseLayoutRounding = false;
+				border.SnapsToDevicePixels = false;
+			}
 		}
 
 		public override bool UseMousePreview { get { return true; } }

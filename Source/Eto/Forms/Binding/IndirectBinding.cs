@@ -346,5 +346,68 @@ namespace Eto.Forms
 			);
 		}
 
+		/// <summary>
+		/// Specifies that the binding should only respond to change events after a delay.
+		/// </summary>
+		/// <remarks>
+		/// This is useful if the property/delegate that is bound is expensive to retrieve the new value,
+		/// for example to dynamically generate a bitmap based on the state of the model, etc. 
+		/// 
+		/// The <paramref name="reset"/> boolean allows you to ensure that the binding is updated periodically when <c>false</c> (default), 
+		/// or <c>true</c> to wait for the delay period after the last change event.
+		/// </remarks>
+		/// <param name="delay">The delay time span to wait after the value has changed before updating the binding.</param>
+		/// <param name="reset"><c>true</c> to reset the delay every time the event is fired, <c>false</c> to trigger the change at least by the delay interval since the last time it was triggered</param>
+		/// <returns>A binding that will delay the change event</returns>
+		public IndirectBinding<T> AfterDelay(TimeSpan delay, bool reset = false)
+		{
+			return AfterDelay(delay.TotalSeconds, reset);
+		}
+
+		/// <summary>
+		/// Specifies that the binding should only respond to change events after a delay.
+		/// </summary>
+		/// <remarks>
+		/// This is useful if the property/delegate that is bound is expensive to retrieve the new value,
+		/// for example to dynamically generate a bitmap based on the state of the model, etc. 
+		/// 
+		/// The <paramref name="reset"/> boolean allows you to ensure that the binding is updated periodically when <c>false</c> (default), 
+		/// or <c>true</c> to wait for the delay period after the last change event.
+		/// </remarks>
+		/// <param name="delay">The delay, in seconds to wait after the value has changed before updating the binding.</param>
+		/// <param name="reset"><c>true</c> to reset the delay every time the event is fired, <c>false</c> to trigger the change at least by the delay interval since the last time it was triggered</param>
+		/// <returns>A binding that will delay the change event</returns>
+		public IndirectBinding<T> AfterDelay(double delay, bool reset = false)
+		{
+			UITimer timer = null;
+			EventArgs args = null;
+			object sender = null;
+			return new DelegateBinding<object, T>(
+				m => GetValue(m),
+				(m, val) => SetValue(m, val),
+				addChangeEvent: (m, ev) =>
+				{
+					EventHandler<EventArgs> ev2 = (s, e) =>
+					{
+						args = e;
+						sender = s;
+						if (timer == null)
+						{
+							timer = new UITimer { Interval = delay };
+							timer.Elapsed += (s2, e2) =>
+							{
+								timer.Stop();
+								ev(sender, args);
+							};
+						}
+						if (reset || !timer.Started)
+							timer.Start();
+					};
+					AddValueChangedHandler(m, ev2);
+				},
+				removeChangeEvent: RemoveValueChangedHandler
+			);
+		}
+
 	}
 }

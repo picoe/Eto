@@ -414,7 +414,8 @@ namespace Eto.Wpf.Forms.Controls
 		protected void RestoreColumnFocus()
 		{
 			Control.CurrentColumn = null;
-			Control.CurrentCell = new swc.DataGridCellInfo(Control.SelectedItem, CurrentColumn ?? Control.CurrentColumn ?? Control.Columns[0]);
+			if (Control.Columns.Count > 0)
+				Control.CurrentCell = new swc.DataGridCellInfo(Control.SelectedItem, CurrentColumn ?? Control.CurrentColumn ?? Control.Columns[0]);
 			CurrentColumn = null;
 		}
 

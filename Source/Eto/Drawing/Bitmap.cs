@@ -2,6 +2,11 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
+using System.ComponentModel;
 
 namespace Eto.Drawing
 {
@@ -73,6 +78,7 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2012-2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	[Handler(typeof(Bitmap.IHandler))]
+	[TypeConverter(typeof(BitmapConverter))]
 	public class Bitmap : Image
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
@@ -91,11 +97,12 @@ namespace Eto.Drawing
 #if PCL
 				if (TypeHelper.GetCallingAssembly == null)
 					throw new ArgumentNullException("assembly", string.Format(CultureInfo.CurrentCulture, "This platform doesn't support Assembly.GetCallingAssembly(), so you must pass the assembly directly"));
-				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, new object[0]);
+				assembly = (Assembly)TypeHelper.GetCallingAssembly.Invoke(null, null);
 #else
 				assembly = Assembly.GetCallingAssembly();
 #endif
 			}
+
 			using (var stream = assembly.GetManifestResourceStream(resourceName))
 			{
 				if (stream == null)
@@ -114,11 +121,7 @@ namespace Eto.Drawing
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			#if PCL
-			return FromResource(resourceName, type.GetTypeInfo().Assembly);
-			#else
-			return FromResource(resourceName, type.Assembly);
-			#endif
+			return FromResource(resourceName, type.GetAssembly());
 		}
 
 		/// <summary>

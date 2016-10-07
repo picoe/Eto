@@ -27,33 +27,36 @@ namespace Eto.Serialization.Xaml
 			XamlType type = null;
 			try
 			{
-				return base.GetXamlType(xamlNamespace, name, typeArguments);
+				type = base.GetXamlType(xamlNamespace, name, typeArguments);
 			}
 			catch
 			{
-				if (DesignMode && type == null && name.IndexOf('.') == -1)
-				{
-					// in designer mode, fail gracefully
-					return new EtoDesignerType(typeof(DesignerUserControl), this) { TypeName = name, Namespace = xamlNamespace };
-				}
-				throw;
+				if (!DesignMode || type != null)
+					throw;
+				// in designer mode, fail gracefully
+				type = new EtoDesignerType(typeof(DesignerMarkupExtension), this) { TypeName = name, Namespace = xamlNamespace };
 			}
+			return type;
 		}
 
 		public override XamlType GetXamlType(Type type)
 		{
+			XamlType xamlType;
+			if (typeCache.TryGetValue(type, out xamlType))
+				return xamlType;
+
 			var info = type.GetTypeInfo();
 
-			if (info.Assembly == EtoAssembly
+			if (
+				info.IsSubclassOf(typeof(Widget))
+				|| info.Assembly == EtoAssembly // struct
 				|| (
+					// nullable struct
 				    info.IsGenericType
 				    && info.GetGenericTypeDefinition() == typeof(Nullable<>)
-				    && Nullable.GetUnderlyingType(type).GetTypeInfo().Assembly == EtoAssembly
+					&& Nullable.GetUnderlyingType(type).GetTypeInfo().Assembly == EtoAssembly
 				))
 			{
-				XamlType xamlType;
-				if (typeCache.TryGetValue(type, out xamlType))
-					return xamlType;
 				xamlType = new EtoXamlType(type, this);
 				typeCache.Add(type, xamlType);
 				return xamlType;

@@ -17,37 +17,28 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreAnimation;
 using MonoMac.CoreImage;
 #if Mac64
-using CGSize = MonoMac.Foundation.NSSize;
-using CGRect = MonoMac.Foundation.NSRect;
-using CGPoint = MonoMac.Foundation.NSPoint;
 using nfloat = System.Double;
 using nint = System.Int64;
 using nuint = System.UInt64;
 #else
-using CGSize = System.Drawing.SizeF;
-using CGRect = System.Drawing.RectangleF;
-using CGPoint = System.Drawing.PointF;
 using nfloat = System.Single;
 using nint = System.Int32;
 using nuint = System.UInt32;
 #endif
+#if SDCOMPAT
+using CGSize = System.Drawing.SizeF;
+using CGRect = System.Drawing.RectangleF;
+using CGPoint = System.Drawing.PointF;
+#endif
 #endif
 
 #if OSX
-
-#if XAMMAC2
-using nnfloat = System.nfloat;
-#else
-using nnfloat = System.Single;
-#endif
 
 namespace Eto.Mac.Drawing
 #else
 using Eto.Mac;
 using CoreGraphics;
 using ImageIO;
-
-using nnfloat = System.nfloat;
 
 namespace Eto.iOS.Drawing
 #endif
@@ -115,7 +106,7 @@ namespace Eto.iOS.Drawing
 				if (wrap == GradientWrapMode.Pad)
 				{
 					if (Gradient == null)
-						Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new [] { StartColor, EndColor }, new nnfloat[] { (nnfloat)0f, (nnfloat)1f });
+						Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new [] { StartColor, EndColor }, new nfloat[] { (nfloat)0f, (nfloat)1f });
 				}
 				else
 				{
@@ -124,7 +115,7 @@ namespace Eto.iOS.Drawing
 					if (Gradient == null || scale > lastScale)
 					{
 						var stops = GradientHelper.GetGradientStops(StartColor, EndColor, scale, wrap).ToList();
-						Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), stops.Select(r => r.Item2).ToArray(), stops.Select(r => (nnfloat)r.Item1).ToArray());
+						Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), stops.Select(r => r.Item2).ToArray(), stops.Select(r => (nfloat)r.Item1).ToArray());
 						lastScale = scale;
 					}
 				}

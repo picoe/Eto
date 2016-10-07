@@ -62,7 +62,7 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -81,6 +81,9 @@
     </Compile>
     <Compile Include="..\Eto.WinForms\Win32.cs">
       <Link>Win32.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.WinForms\Win32.dpi.cs">
+      <Link>Win32.dpi.cs</Link>
     </Compile>
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
@@ -113,6 +116,7 @@
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
+    <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
@@ -175,6 +179,7 @@
     <Compile Include="Forms\EnableThemingInScope.cs" />
     <Compile Include="Forms\KeyboardHandler.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
+    <Compile Include="Forms\PerMonitorDpiHelper.cs" />
     <Compile Include="Forms\ToolBar\RadioToolItemHandler.cs" />
     <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
@@ -293,6 +298,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="themes\wpftoolkit\ButtonSpinner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -312,7 +321,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.3\lib\net40\Xceed.Wpf.Toolkit.dll">
+    <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.Toolkit.dll">
       <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
     </EmbeddedResource>
   </ItemGroup>

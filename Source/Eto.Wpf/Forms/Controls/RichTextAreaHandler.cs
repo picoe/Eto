@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Documents;
@@ -14,7 +13,6 @@ using Eto.Wpf.Drawing;
 using System.Globalization;
 using System.Collections;
 using System.IO;
-using System.ComponentModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
@@ -30,6 +28,13 @@ namespace Eto.Wpf.Forms.Controls
 			// toggle underline command doesn't actually work properly in the default implementation
 			// e.g. if you select only a portion of underlined text, you will have to toggle underline twice to remove the underline.
 			Control.CommandBindings.Add(new swi.CommandBinding(swd.EditingCommands.ToggleUnderline, (sender, e) => SelectionUnderline = !SelectionUnderline));
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			lastSelection = Selection;
+			HandleEvent(RichTextArea.SelectionChangedEvent);
 		}
 
 		swd.TextRange ContentRange
@@ -59,14 +64,14 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				if (value != wrap)
 				{
-					wrap = value;
-					if (wrap)
+					if (!wrap)
 					{
 						Control.TextChanged -= Control_TextChangedSetPageWidth;
 						Control.SizeChanged -= Control_TextChangedSetPageWidth;
 						Control.Document.PageWidth = double.NaN;
 					}
-					else
+					wrap = value;
+					if (!wrap)
 					{
 						Control.TextChanged += Control_TextChangedSetPageWidth;
 						Control.SizeChanged += Control_TextChangedSetPageWidth;
@@ -78,13 +83,17 @@ namespace Eto.Wpf.Forms.Controls
 
 		void Control_TextChangedSetPageWidth(object sender, EventArgs e)
 		{
-			Control.Dispatcher.BeginInvoke(new Action(() => SetPageWidthToContent()));
+			Control.Dispatcher.BeginInvoke(new Action(SetPageWidthToContent));
 		}
 
 		void SetPageWidthToContent()
 		{
-			var width = Control.Document.GetFormattedText().WidthIncludingTrailingWhitespace + 20;
-			Control.Document.PageWidth = Math.Max(width, Control.ViewportWidth);
+			// this can be invoked after Wrap property is actually set since we are using the dispatcher
+			if (!wrap)
+			{
+				var width = Control.Document.GetFormattedText().WidthIncludingTrailingWhitespace + 20;
+				Control.Document.PageWidth = Math.Max(width, Control.ViewportWidth);
+			}
 		}
 
 		public override string SelectedText
@@ -93,12 +102,33 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.Selection.Text = value ?? string.Empty; }
 		}
 
+		Dictionary<sw.DependencyProperty, object> selectionAttributes;
+		Range<int> lastSelection;
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case RichTextArea.SelectionChangedEvent:
-					Control.Selection.Changed += (sender, e) => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+					Control.Selection.Changed += (sender, e) =>
+					{
+						if (lastSelection != Selection)
+						{
+							selectionAttributes = null;
+							lastSelection = Selection;
+							Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+						}
+						else if (selectionAttributes != null)
+						{
+							// when the selection doesn't actually change, keep the attributes.
+							// e.g. if the control already has focus and the user clicks on it but it
+							// doesn't change the selection, all selected attributes are lost which is unexpected
+							// as the state of the control has not actually changed at all.
+							foreach (var item in selectionAttributes)
+							{
+								Control.Selection.ApplyPropertyValue(item.Key, item.Value);
+							}
+						}
+					};
 					break;
 				default:
 					base.AttachEvent(id);
@@ -106,12 +136,53 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		void SetSelectionAttribute(sw.DependencyProperty property, object value)
+		{
+			selectionAttributes = selectionAttributes ?? new Dictionary<sw.DependencyProperty, object>();
+			if (value == null)
+			{
+				if (selectionAttributes.ContainsKey(property))
+					selectionAttributes.Remove(property);
+			}
+			else
+				selectionAttributes[property] = value;
+
+			Control.Selection.ApplyPropertyValue(property, value);
+		}
+
+		void SetSelectionDecorationAttribute(sw.TextDecorationCollection setDecorations, bool value)
+		{
+			selectionAttributes = selectionAttributes ?? new Dictionary<sw.DependencyProperty, object>();
+			object decorationsObj;
+			sw.TextDecorationCollection decorations;
+			if (!selectionAttributes.TryGetValue(swd.Inline.TextDecorationsProperty, out decorationsObj))
+			{
+				decorations = Control.Selection.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
+				if (decorations == null)
+					decorations = new sw.TextDecorationCollection();
+				else
+					decorations = new sw.TextDecorationCollection(decorations);
+				selectionAttributes[swd.Inline.TextDecorationsProperty] = decorations;
+			}
+			else decorations = (sw.TextDecorationCollection)decorationsObj;
+
+			foreach (var decoration in setDecorations)
+			{
+				if (value)
+					decorations.Add(decoration);
+				else
+					decorations.Remove(decoration);
+			}
+
+			Control.Selection.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, decorations);
+		}
+
 		public override Range<int> Selection
 		{
 			get
 			{
 				var sel = Control.Selection;
-				return new Range<int>(sel.Start.GetTextOffset(), sel.End.GetTextOffset());
+				return new Range<int>(sel.Start.GetTextOffset(), sel.End.GetTextOffset() - 1);
 			}
 			set
 			{
@@ -129,13 +200,24 @@ namespace Eto.Wpf.Forms.Controls
 		public Font SelectionFont
 		{
 			get { return new Font(new FontHandler(Control.Selection, Control)); }
-			set { Control.Selection.SetEtoFont(value); }
+			set
+			{
+				var handler = ((FontHandler)value?.Handler);
+				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, handler?.WpfFamily);
+				SetSelectionAttribute(swd.TextElement.FontStyleProperty, handler?.WpfFontStyle);
+				SetSelectionAttribute(swd.TextElement.FontWeightProperty, handler?.WpfFontWeight);
+				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.PixelSize);
+				SetSelectionAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorations);
+			}
 		}
 
 		public FontFamily SelectionFamily
 		{
 			get { return new FontFamily(new FontFamilyHandler(Control.Selection, Control)); }
-			set { Control.Selection.SetEtoFamily(value); }
+			set
+			{
+				SetSelectionAttribute(swd.TextElement.FontFamilyProperty, ((FontFamilyHandler)value?.Handler)?.Control);
+			}
 		}
 
 		public Color SelectionForeground
@@ -147,7 +229,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				Control.Selection.ApplyPropertyValue(swd.TextElement.ForegroundProperty, value.ToWpfBrush());
+				SetSelectionAttribute(swd.TextElement.ForegroundProperty, value.ToWpfBrush());
 			}
 		}
 
@@ -160,7 +242,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				Control.Selection.ApplyPropertyValue(swd.TextElement.BackgroundProperty, value.ToWpfBrush());
+				SetSelectionAttribute(swd.TextElement.BackgroundProperty, value.ToWpfBrush());
 			}
 		}
 
@@ -209,7 +291,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				Control.Selection.ApplyPropertyValue(swd.TextElement.FontWeightProperty, value ? sw.FontWeights.Bold : sw.FontWeights.Normal);
+				SetSelectionAttribute(swd.TextElement.FontWeightProperty, value ? sw.FontWeights.Bold : sw.FontWeights.Normal);
 			}
 		}
 
@@ -228,15 +310,19 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set
 			{
-				Control.Selection.ApplyPropertyValue(swd.TextElement.FontStyleProperty, value ? sw.FontStyles.Italic : sw.FontStyles.Normal);
+				SetSelectionAttribute(swd.TextElement.FontStyleProperty, value ? sw.FontStyles.Italic : sw.FontStyles.Normal);
 			}
 		}
 
 
-		bool HasDecorations(swd.TextRange range, sw.TextDecorationCollection decorations)
+		bool HasDecorations(swd.TextRange range, sw.TextDecorationCollection decorations, bool useRealPropertyValue = true)
 		{
 			swd.TextRange realRange;
-            var existingDecorations = range.GetRealPropertyValue(swd.Inline.TextDecorationsProperty, out realRange) as sw.TextDecorationCollection;
+			sw.TextDecorationCollection existingDecorations;
+			if (useRealPropertyValue)
+				existingDecorations = range.GetRealPropertyValue(swd.Inline.TextDecorationsProperty, out realRange) as sw.TextDecorationCollection;
+			else
+				existingDecorations = range.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;
 			return existingDecorations != null && decorations.All(r => existingDecorations.Contains(r));
 		}
 
@@ -293,11 +379,14 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				return HasDecorations(Control.Selection, sw.TextDecorations.Underline);
+				return HasDecorations(Control.Selection, sw.TextDecorations.Underline, Selection.Length() > 0);
 			}
 			set
 			{
-				SetDecorations(Control.Selection, sw.TextDecorations.Underline, value);
+				if (Selection.Length() == 0)
+					SetSelectionDecorationAttribute(sw.TextDecorations.Underline, value);
+				else
+					SetDecorations(Control.Selection, sw.TextDecorations.Underline, value);
 			}
 		}
 
@@ -305,11 +394,14 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				return HasDecorations(Control.Selection, sw.TextDecorations.Strikethrough);
+				return HasDecorations(Control.Selection, sw.TextDecorations.Strikethrough, Selection.Length() > 0);
 			}
 			set
 			{
-				SetDecorations(Control.Selection, sw.TextDecorations.Strikethrough, value);
+				if (Selection.Length() == 0)
+					SetSelectionDecorationAttribute(sw.TextDecorations.Strikethrough, value);
+				else
+					SetDecorations(Control.Selection, sw.TextDecorations.Strikethrough, value);
 			}
 		}
 
