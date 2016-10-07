@@ -44,6 +44,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Wpf", "Eto.Test\Et
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk3", "Eto.Test\Eto.Test.Gtk3\Eto.Test.Gtk3.csproj", "{B2148BDC-7D98-419B-B329-FF580FB481DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.NativeGtk", "Eto.Test\Eto.Test.NativeGtk\Eto.Test.NativeGtk.csproj", "{AD69B19C-D18A-48F8-8B22-0210E7703477}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.NativeGtk", "Eto.NativeGtk\Eto.NativeGtk.csproj", "{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Linux = Debug|Linux
@@ -66,6 +70,18 @@ Global
 		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Release|Mac.Build.0 = Release|Any CPU
 		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Release|Windows.ActiveCfg = Release|Any CPU
 		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Release|Windows.Build.0 = Release|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Debug|Linux.Build.0 = Debug|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Debug|Mac.Build.0 = Debug|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Debug|Windows.Build.0 = Debug|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Release|Linux.ActiveCfg = Release|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Release|Linux.Build.0 = Release|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Release|Mac.ActiveCfg = Release|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Release|Mac.Build.0 = Release|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Release|Windows.ActiveCfg = Release|Any CPU
+		{137B6782-CFBB-4CAA-BC0A-D6E84EB71943}.Release|Windows.Build.0 = Release|Any CPU
 		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Debug|Linux.Build.0 = Debug|Any CPU
 		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Debug|Mac.ActiveCfg = Debug|Any CPU
@@ -151,6 +167,18 @@ Global
 		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Release|Mac.Build.0 = Release|Any CPU
 		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Release|Windows.ActiveCfg = Release|Any CPU
 		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Release|Windows.Build.0 = Release|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Debug|Linux.ActiveCfg = Debug|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Debug|Linux.Build.0 = Debug|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Debug|Mac.Build.0 = Debug|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Debug|Windows.Build.0 = Debug|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Linux.ActiveCfg = Release|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Linux.Build.0 = Release|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Mac.ActiveCfg = Release|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Mac.Build.0 = Release|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Windows.ActiveCfg = Release|Any CPU
+		{AD69B19C-D18A-48F8-8B22-0210E7703477}.Release|Windows.Build.0 = Release|Any CPU
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Debug|Linux.ActiveCfg = Debug|Any CPU
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Debug|Linux.Build.0 = Debug|Any CPU
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Debug|Mac.ActiveCfg = Debug|Any CPU
@@ -236,6 +264,7 @@ Global
 		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735} = {D5AF5792-1085-4EC1-8C5D-B5A5FF98C8D8}
 		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A} = {D5AF5792-1085-4EC1-8C5D-B5A5FF98C8D8}
 		{B2148BDC-7D98-419B-B329-FF580FB481DE} = {D5AF5792-1085-4EC1-8C5D-B5A5FF98C8D8}
+		{AD69B19C-D18A-48F8-8B22-0210E7703477} = {D5AF5792-1085-4EC1-8C5D-B5A5FF98C8D8}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
