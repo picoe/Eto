@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
 		<SolutionConfiguration Condition="'$(SolutionConfiguration)' == ''">XSRelease</SolutionConfiguration>
-		<BuildVersion>2.2.0</BuildVersion>
+		<BuildVersion>2.3.0</BuildVersion>
 	</PropertyGroup>
 	<Import Project="Build.proj" />
 	
