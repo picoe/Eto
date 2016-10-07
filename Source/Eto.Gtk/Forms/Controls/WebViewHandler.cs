@@ -190,7 +190,9 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.LoadUri(value.AbsoluteUri);
 				}
 				else
+					#pragma warning disable 612
 					Control.LoadHtmlString(string.Empty, string.Empty);
+					#pragma warning restore 612
 			}
 		}
 
@@ -217,7 +219,9 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public void LoadHtml(string html, Uri baseUri)
 		{
+			#pragma warning disable 612
 			Control.LoadHtmlString(html, baseUri != null ? baseUri.AbsoluteUri : null);
+			#pragma warning restore 612
 		}
 
 		public void Stop()
