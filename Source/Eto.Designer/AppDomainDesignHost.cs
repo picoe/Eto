@@ -255,6 +255,7 @@ namespace Eto.Designer
 			{
 				watcher = new FileSystemWatcher(Path.GetDirectoryName(MainAssembly), "*.dll");
 				watcher.Changed += (sender, e) => Application.Instance.AsyncInvoke(() => timer.Start());
+				watcher.Created += (sender, e) => Application.Instance.AsyncInvoke(() => timer.Start());
 				watcher.EnableRaisingEvents = true;
 			}
 
