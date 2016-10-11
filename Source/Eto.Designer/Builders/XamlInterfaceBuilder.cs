@@ -12,7 +12,7 @@ namespace Eto.Designer.Builders
 {
 	public class XamlInterfaceBuilder : IInterfaceBuilder
 	{
-		public void Create(string text, string mainAssembly, IEnumerable<string> references, Action<Control> controlCreated, Action<Exception> error)
+		public IBuildToken Create(string text, string mainAssembly, IEnumerable<string> references, Action<Control> controlCreated, Action<Exception> error)
 		{
 			var oldDesignMode = XamlReader.DesignMode;
 			XamlReader.DesignMode = true;
@@ -34,6 +34,7 @@ namespace Eto.Designer.Builders
 			{
 				XamlReader.DesignMode = oldDesignMode;
 			}
+			return null;
 		}
 	}
 }
