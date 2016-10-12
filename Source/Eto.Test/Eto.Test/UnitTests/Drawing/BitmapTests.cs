@@ -61,6 +61,96 @@ namespace Eto.Test.UnitTests.Drawing
 			ValidateImages(image, clone, rect);
 		}
 
+		[TestCase(1.0f, 0.0f, 0.0f)]
+		[TestCase(0.0f, 1.0f, 0.0f)]
+		[TestCase(0.0f, 0.0f, 1.0f)]
+		[TestCase(0.0f, 1.0f, 1.0f)]
+		[TestCase(1.0f, 0.0f, 1.0f)]
+		[TestCase(1.0f, 1.0f, 0.0f)]
+		public void TestGetPixelWithLock24bit(float red, float green, float blue)
+		{
+			var colorSet = new Color(red, green, blue);
+
+			var image = new Bitmap(new Size(1, 1), PixelFormat.Format24bppRgb);
+			image.SetPixel(0, 0, colorSet);
+
+			using (var data = image.Lock())
+			{
+				var colorGet = data.GetPixel(0, 0);
+
+				if (colorSet != colorGet)
+				{
+					Assert.Fail("Pixels are not the same (SetPixel: {0}, GetPixel: {1})", colorSet, colorGet);
+				}
+			}
+		}
+
+		[TestCase(1.0f, 0.0f, 0.0f)]
+		[TestCase(0.0f, 1.0f, 0.0f)]
+		[TestCase(0.0f, 0.0f, 1.0f)]
+		[TestCase(0.0f, 1.0f, 1.0f)]
+		[TestCase(1.0f, 0.0f, 1.0f)]
+		[TestCase(1.0f, 1.0f, 0.0f)]
+		public void TestGetPixelWithoutLock24bit(float red, float green, float blue)
+		{
+			var colorSet = new Color(red, green, blue);
+
+			var image = new Bitmap(new Size(1, 1), PixelFormat.Format24bppRgb);
+			image.SetPixel(0, 0, colorSet);
+
+			var colorGet = image.GetPixel(0, 0);
+
+			if (colorSet != colorGet)
+			{
+				Assert.Fail("Pixels are not the same (SetPixel: {0}, GetPixel: {1})", colorSet, colorGet);
+			}
+		}
+
+		[TestCase(1.0f, 0.0f, 0.0f, 1.0f)]
+		[TestCase(0.0f, 1.0f, 0.0f, 0.5f)]
+		[TestCase(0.0f, 0.0f, 1.0f, 0.0f)]
+		[TestCase(0.0f, 1.0f, 1.0f, 1.0f)]
+		[TestCase(1.0f, 0.0f, 1.0f, 0.5f)]
+		[TestCase(1.0f, 1.0f, 0.0f, 0.0f)]
+		public void TestGetPixelWithLock32bit(float red, float green, float blue, float alpha)
+		{
+			var colorSet = new Color(red, green, blue, alpha);
+
+			var image = new Bitmap(new Size(1, 1), PixelFormat.Format32bppRgba);
+			image.SetPixel(0, 0, colorSet);
+
+			using (var data = image.Lock())
+			{
+				var colorGet = data.GetPixel(0, 0);
+
+				if (colorSet != colorGet)
+				{
+					Assert.Fail("Pixels are not the same (SetPixel: {0}, GetPixel: {1})", colorSet, colorGet);
+				}
+			}
+		}
+
+		[TestCase(1.0f, 0.0f, 0.0f, 1.0f)]
+		[TestCase(0.0f, 1.0f, 0.0f, 0.5f)]
+		[TestCase(0.0f, 0.0f, 1.0f, 0.0f)]
+		[TestCase(0.0f, 1.0f, 1.0f, 1.0f)]
+		[TestCase(1.0f, 0.0f, 1.0f, 0.5f)]
+		[TestCase(1.0f, 1.0f, 0.0f, 0.0f)]
+		public void TestGetPixelWithoutLock32bit(float red, float green, float blue, float alpha)
+		{
+			var colorSet = new Color(red, green, blue, alpha);
+
+			var image = new Bitmap(new Size(1, 1), PixelFormat.Format32bppRgba);
+			image.SetPixel(0, 0, colorSet);
+
+			var colorGet = image.GetPixel(0, 0);
+
+			if (colorSet != colorGet)
+			{
+				Assert.Fail("Pixels are not the same (SetPixel: {0}, GetPixel: {1})", colorSet, colorGet);
+			}
+		}
+
 		static void ValidateImages(Bitmap image, Bitmap clone, Rectangle? rect = null)
 		{
 			var testRect = rect ?? new Rectangle(image.Size);
