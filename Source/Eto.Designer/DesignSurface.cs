@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Designer
 {
-	public class DesignHost : Drawable
+	public class DesignSurface : Drawable
 	{
 		public static Size GripPadding = new Size(5, 5);
 		static Size GripSize = new Size(2, 2);
@@ -22,7 +22,7 @@ namespace Eto.Designer
 
 		public bool EnableResizing { get; set; } = true;
 
-		public DesignHost()
+		public DesignSurface()
 		{
 			if (!Platform.Instance.IsGtk) // doesn't work correctly on Gtk2 due to lack of control transparency
 			{

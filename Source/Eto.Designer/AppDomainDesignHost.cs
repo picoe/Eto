@@ -1,9 +1,12 @@
 ﻿using Eto.Forms;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +35,8 @@ namespace Eto.Designer
 		{
 			if (Platform.Instance == null)
 			{
-				resolver = AssemblyResolver.Register(references.Union(new[] { mainAssembly, Path.GetDirectoryName(typeof(AppDomainProxy).Assembly.Location) }));
+				var refs = new[] { Path.GetDirectoryName(typeof(AppDomainProxy).Assembly.Location), mainAssembly };
+				resolver = AssemblyResolver.Register(refs.Union(references));
 
 				var plat = Activator.CreateInstance(Type.GetType(platformType)) as Platform;
 				Platform.Initialize(plat);
@@ -40,12 +44,33 @@ namespace Eto.Designer
 				{
 					plat.LoadAssembly(initializeAssembly);
 				}
-				new Application().Attach();
+				var app = new Application();
+				app.Attach();
+				app.Terminating += App_Terminating;
+
+				app.UnhandledException += App_UnhandledException;
+
+				AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 			}
 
 			designPanel = new DesignPanel();
 			designPanel.MainAssembly = mainAssembly;
 			designPanel.References = references.ToList();
+		}
+
+		void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			// error!
+		}
+
+		void App_Terminating(object sender, CancelEventArgs e)
+		{
+			e.Cancel = true;
+		}
+
+		void CurrentDomain_DomainUnload(object sender, EventArgs e)
+		{
+			EtoAdapter.Unload();
 		}
 
 		Control container;
@@ -75,6 +100,16 @@ namespace Eto.Designer
 		{
 			return designPanel.GetCodeFile(fileName);
 		}
+
+		public void Dispose()
+		{
+			designPanel.Dispose();
+		}
+
+		public override object InitializeLifetimeService()
+		{
+			return null;
+		}
 	}
 
 	class AppDomainEventSink : MarshalByRefObject
@@ -90,8 +125,12 @@ namespace Eto.Designer
 		{
 			Host.Error?.Invoke(ex);
 		}
-	}
 
+		public override object InitializeLifetimeService()
+		{
+			return null;
+		}
+	}
 
 	public class AppDomainDesignHost : IDesignHost, IDisposable
 	{
@@ -142,12 +181,14 @@ namespace Eto.Designer
 
 		IEnumerable<string> GetShadowCopyDirs()
 		{
-			yield return Path.GetDirectoryName(MainAssembly);
+			if (!string.IsNullOrEmpty(MainAssembly))
+				yield return Path.GetDirectoryName(MainAssembly);
 			if (References != null)
 			{
 				foreach (var r in References)
 				{
-					yield return Path.GetDirectoryName(r);
+					if (!string.IsNullOrEmpty(r))
+						yield return Path.GetDirectoryName(r);
 				}
 			}
 		}
@@ -175,11 +216,13 @@ namespace Eto.Designer
 
 				ShadowCopyFiles = "true",
 				ShadowCopyDirectories = shadowCopyDirs,
+				CachePath = Path.Combine(Path.GetDirectoryName(MainAssembly), "Eto.Designer"),
 
 				LoaderOptimization = LoaderOptimization.MultiDomain,
 				//LoaderOptimization = LoaderOptimization.NotSpecified
 			};
 
+			proxy = null;
 			domain = AppDomain.CreateDomain("eto.designer." + domainCount++, null, setup);
 			try
 			{
@@ -191,6 +234,7 @@ namespace Eto.Designer
 						throw new InvalidOperationException($"Could not create proxy for domain\nApplicationBase: {AppDomain.CurrentDomain.BaseDirectory}\nBaseDir: {baseDir}\nShadowCopyDirs: {shadowCopyDirs}");
 				}
 				proxy.Init(Platform.Instance.GetType().AssemblyQualifiedName, initializeAssembly, MainAssembly, references);
+				domain.DomainUnload += Domain_DomainUnload;
 
 				proxy.ControlCreated = eventSink.ControlCreated;
 				proxy.Error = eventSink.Error;
@@ -203,6 +247,7 @@ namespace Eto.Designer
 			{
 				UnloadDomain(domain);
 				domain = null;
+				proxy = null;
 				throw new InvalidOperationException($"Could not set up proxy for domain: {ex.GetBaseException().Message}", ex);
 			}
 
@@ -210,10 +255,16 @@ namespace Eto.Designer
 			{
 				watcher = new FileSystemWatcher(Path.GetDirectoryName(MainAssembly), "*.dll");
 				watcher.Changed += (sender, e) => Application.Instance.AsyncInvoke(() => timer.Start());
+				watcher.Created += (sender, e) => Application.Instance.AsyncInvoke(() => timer.Start());
 				watcher.EnableRaisingEvents = true;
 			}
 
 			return true;
+		}
+
+		static void Domain_DomainUnload(object sender, EventArgs e)
+		{
+			Debug.WriteLine("Unloaded");
 		}
 
 		public Action ContainerChanged { get; set; }
@@ -272,8 +323,10 @@ namespace Eto.Designer
 		{
 			if (disposing)
 			{
+				proxy?.Dispose();
 				UnloadDomain(domain);
 				domain = null;
+				proxy = null;
 			}
 		}
 	}

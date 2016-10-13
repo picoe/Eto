@@ -10,7 +10,7 @@ namespace Eto.Designer
 {
 	public class DesignPanel : Scrollable, IDesignHost
 	{
-		DesignHost designSurface;
+		DesignSurface designSurface;
 		IInterfaceBuilder interfaceBuilder;
 
 		public Action ContainerChanged { get; set; }
@@ -21,7 +21,7 @@ namespace Eto.Designer
 
 		public DesignPanel()
 		{
-			designSurface = new DesignHost();
+			designSurface = new DesignSurface();
 			Border = BorderType.None;
 			BackgroundColor = Colors.White; // TODO: get themed color here?
 			Content = designSurface;
@@ -35,14 +35,17 @@ namespace Eto.Designer
 		public string MainAssembly { get; set; }
 		public IEnumerable<string> References { get; set; }
 
+		IBuildToken token;
+
 		public virtual void Update(string code)
 		{
 			if (interfaceBuilder == null)
 				return;
 
+			token?.Cancel();
 			try
 			{
-				interfaceBuilder.Create(code, MainAssembly, References, ControlCreatedInternal, ErrorInternal);
+				token = interfaceBuilder.Create(code, MainAssembly, References, ControlCreatedInternal, ErrorInternal);
 			}
 			catch (Exception ex)
 			{
@@ -89,6 +92,7 @@ namespace Eto.Designer
 		{
 			contentControl = control;
 			designSurface.Content = GetContent(control);
+			token = null;
 			ControlCreated?.Invoke();
 		}
 
@@ -109,6 +113,15 @@ namespace Eto.Designer
 		public string GetCodeFile(string fileName)
 		{
 			return Builder?.GetCodeFile(fileName);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				token?.Cancel();
+			}
+			base.Dispose(disposing);
 		}
 	}
 }

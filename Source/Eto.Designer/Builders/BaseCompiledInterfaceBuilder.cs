@@ -52,13 +52,28 @@ namespace Eto.Designer.Builders
 			public IEnumerable<string> Errors { get; set; }
 		}
 
-		protected abstract CompileResult Compile(string outputFile, string mainAssembly, IEnumerable<string> references, string code, out Assembly generatedAssembly);
+		protected abstract CompileResult Compile(string outputFile, IEnumerable<string> references, string code, out Assembly generatedAssembly);
 
-		public void Create(string text, string mainAssembly, IEnumerable<string> references, Action<Control> controlCreated, Action<Exception> error)
+		class BuildToken : IBuildToken
+		{
+			public bool IsCancelled { get; set; }
+			public void Cancel()
+			{
+				IsCancelled = true;
+			}
+		}
+		public IBuildToken Create(string text, string mainAssembly, IEnumerable<string> references, Action<Control> controlCreated, Action<Exception> error)
 		{
 			RemoveOutput();
+			var token = new BuildToken();
 
-			references = references?.ToList();
+			var refs = references?.ToList() ?? new List<string>();
+			// ensure we use the built-in version of Eto, not the one used by the project
+			if (!string.IsNullOrEmpty(mainAssembly))
+				refs.Insert(0, mainAssembly);
+			refs.RemoveAll(r => Path.GetFileName(r).ToLowerInvariant() == "eto.dll");
+			refs.Add(typeof(Control).Assembly.Location);
+
 			ThreadPool.QueueUserWorkItem(state =>
 			{
 				try
@@ -66,7 +81,7 @@ namespace Eto.Designer.Builders
 					Assembly generatedAssembly;
 					//output = Path.Combine(Path.GetTempPath(), "EtoDesigner", Path.GetRandomFileName() + ".dll");
 
-					var result = Compile(null, mainAssembly, references, text, out generatedAssembly);
+					var result = Compile(null, refs, text, out generatedAssembly);
 					if (result.Success)
 					{
 						Application.Instance.Invoke(() =>
@@ -76,6 +91,9 @@ namespace Eto.Designer.Builders
 								var type = FindControlType(generatedAssembly);
 								var control = InstantiateControl(type);
 
+								if (token.IsCancelled)
+									return;
+
 								if (control != null)
 									controlCreated(control);
 								else
@@ -83,21 +101,26 @@ namespace Eto.Designer.Builders
 							}
 							catch (Exception ex)
 							{
-								error(ex);
+								if (!token.IsCancelled)
+									error(ex);
 							}
 						});
 					}
 					else
 					{
 						var errorText = string.Join("\n", result.Errors);
-						Application.Instance.Invoke(() => error(new FormatException(string.Format("Compile error: {0}", errorText))));
+
+						if (!token.IsCancelled)
+							Application.Instance.Invoke(() => error(new FormatException(string.Format("Compile error: {0}", errorText))));
 					}
 				}
 				catch (Exception ex)
 				{
-					Application.Instance.Invoke(() => error(ex));
+					if (!token.IsCancelled)
+						Application.Instance.Invoke(() => error(ex));
 				}
 			});
+			return token;
 		}
 
 
@@ -137,11 +160,23 @@ namespace Eto.Designer.Builders
 			return referenceDir;
 		}
 
+		public static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
+		{
+			try
+			{
+				return assembly.GetTypes();
+			}
+			catch (ReflectionTypeLoadException e)
+			{
+				return e.Types.Where(t => t != null);
+			}
+		}
+
 		public static Type FindControlType(Assembly assembly)
 		{
 			if (assembly == null)
 				return null;
-			return assembly.GetTypes().FirstOrDefault(t => typeof(Control).IsAssignableFrom(t));
+			return GetLoadableTypes(assembly).FirstOrDefault(t => typeof(Control).IsAssignableFrom(t));
 		}
 
 

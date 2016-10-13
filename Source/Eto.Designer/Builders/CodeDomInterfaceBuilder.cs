@@ -64,7 +64,7 @@ namespace Eto.Designer.Builders
 			}
 		}
 
-		protected override CompileResult Compile(string outputFile, string mainAssembly, IEnumerable<string> references, string code, out Assembly generatedAssembly)
+		protected override CompileResult Compile(string outputFile, IEnumerable<string> references, string code, out Assembly generatedAssembly)
 		{
 			var inMemory = string.IsNullOrEmpty(outputFile);
 			var parameters = new CompilerParameters
@@ -79,8 +79,6 @@ namespace Eto.Designer.Builders
 
 			SetParameters(parameters);
 
-			if (!string.IsNullOrEmpty(mainAssembly) && File.Exists(mainAssembly))
-				parameters.ReferencedAssemblies.Add(mainAssembly);
 			if (references != null)
 			{
 				foreach (var reference in references)

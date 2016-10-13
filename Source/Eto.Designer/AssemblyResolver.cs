@@ -41,7 +41,7 @@ namespace Eto.Designer
 			foreach (var path in Files)
 			{
 				var filePath = Path.GetFileNameWithoutExtension(path);
-				if (filePath == assemblyName && File.Exists(path))
+				if (string.Equals(filePath, assemblyName, StringComparison.OrdinalIgnoreCase) && File.Exists(path))
 					return Assembly.LoadFrom(path);
 				if (!Directory.Exists(path))
 					continue;
