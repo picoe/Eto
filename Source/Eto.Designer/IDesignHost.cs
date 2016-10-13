@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Designer
 {
-	public interface IDesignHost
+	public interface IDesignHost : IDisposable
 	{
 		Action ControlCreated { get; set; }
 		Action<Exception> Error { get; set; }

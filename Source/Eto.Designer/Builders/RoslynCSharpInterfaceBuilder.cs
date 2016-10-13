@@ -21,7 +21,10 @@ namespace Eto.Designer.Builders
 				assemblyName,
 				syntaxTrees: new[] { syntaxTree },
 				references: references,
-				options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+				options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, 
+					assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default
+					)
+				);
 		}
 	}
 }

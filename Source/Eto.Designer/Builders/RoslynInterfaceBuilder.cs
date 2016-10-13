@@ -38,15 +38,13 @@ namespace Eto.Designer.Builders
 
 		protected abstract SyntaxTree ParseText(string code);
 
-		protected override CompileResult Compile(string outputFile, string mainAssembly, IEnumerable<string> references, string code, out Assembly generatedAssembly)
+		protected override CompileResult Compile(string outputFile, IEnumerable<string> references, string code, out Assembly generatedAssembly)
 		{
 			var syntaxTree = ParseText(code);
 
 			string assemblyName = Path.GetRandomFileName();
 			var refMetadata = GetReferences().Select(r => MetadataReference.CreateFromFile(r)).ToList();
 
-			if (!string.IsNullOrEmpty(mainAssembly) && File.Exists(mainAssembly))
-				refMetadata.Add(MetadataReference.CreateFromFile(mainAssembly));
 			if (references != null)
 			{
 				foreach (var reference in references)

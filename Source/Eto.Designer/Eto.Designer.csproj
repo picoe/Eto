@@ -87,7 +87,7 @@
     <Compile Include="Builders\XamlInterfaceBuilder.cs" />
     <Compile Include="BuilderType.cs" />
     <Compile Include="DesignPanel.cs" />
-    <Compile Include="DesignHost.cs" />
+    <Compile Include="DesignSurface.cs" />
     <Compile Include="EtoAdapter.cs" />
     <Compile Include="IDesignHost.cs" />
     <Compile Include="IInterfaceBuilder.cs" />

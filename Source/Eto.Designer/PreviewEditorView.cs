@@ -96,7 +96,7 @@ namespace Eto.Designer
 			var code = getCode();
 			if (!string.IsNullOrEmpty(code))
 			{
-				designPanel.Update(code);
+				designPanel?.Update(code);
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace Eto.Designer
 		protected override void OnGotFocus(EventArgs e)
 		{
 			base.OnGotFocus(e);
-			designPanel.Invalidate();
+			designPanel?.Invalidate();
 		}
 
 		void FinishProcessing(Exception error)
@@ -179,7 +179,9 @@ namespace Eto.Designer
 		{
 			if (disposing)
 			{
-				(designPanel as IDisposable)?.Dispose();
+				designPanelHolder.Content = null;
+				designPanel.Dispose();
+				designPanel = null;
 			}
 			base.Dispose(disposing);
 		}
