@@ -77,7 +77,10 @@ namespace Eto.Test.UnitTests.Forms
 			Platform.Instance.Add<CustomExpander.IHandler>(() => new CustomExpanderHandler());
 		}
 
-		public class MyViewModel { }
+		public class MyViewModel
+		{
+			public int ID { get; set; }
+		}
 
 		[Test]
 		public void DataContextChangedShouldNotFireWhenNoContext()
@@ -309,6 +312,49 @@ namespace Eto.Test.UnitTests.Forms
 				Assert.IsNotNull(c.DataContext);
 				Assert.AreSame(dataContext, c.DataContext);
 				Assert.AreSame(dataContext, form.DataContext);
+			});
+		}
+
+		/// <summary>
+		/// Test to ensure that the DataContextChanged event doesn't fire for child controls that already have a DataContext
+		/// defined.  See issue #575.
+		/// </summary>
+		[Test]
+		public void DataContextInSubChildShouldNotBeChangedWhenParentIsSet()
+		{
+			Invoke(() =>
+			{
+				int childChanged = 0;
+				int parentChanged = 0;
+				int subChildChanged = 0;
+				var parent = new Panel();
+				parent.DataContextChanged += (sender, e) => parentChanged++;
+				parent.DataContext = new MyViewModel { ID = 1 };
+				Assert.AreEqual(1, parentChanged);
+
+				var subChild = new Panel();
+				subChild.DataContextChanged += (sender, e) => subChildChanged++;
+				subChild.DataContext = new MyViewModel { ID = 2 };
+				Assert.AreEqual(1, subChildChanged);
+
+				var child = new Panel();
+				child.DataContextChanged += (sender, e) => childChanged++;
+				Assert.AreEqual(0, childChanged);
+				child.Content = subChild;
+				Assert.AreEqual(1, subChildChanged);
+				Assert.AreEqual(0, childChanged);
+
+				parent.Content = child;
+				Assert.AreEqual(1, childChanged);
+				Assert.AreEqual(1, subChildChanged);
+				Assert.AreEqual(1, parentChanged);
+
+				Assert.IsInstanceOf<MyViewModel>(parent.DataContext);
+				Assert.AreEqual(1, ((MyViewModel)parent.DataContext).ID);
+				Assert.IsInstanceOf<MyViewModel>(child.DataContext);
+				Assert.AreEqual(1, ((MyViewModel)child.DataContext).ID);
+				Assert.IsInstanceOf<MyViewModel>(subChild.DataContext);
+				Assert.AreEqual(2, ((MyViewModel)subChild.DataContext).ID);
 			});
 		}
 	}
