@@ -312,7 +312,7 @@ namespace Eto.Wpf.Drawing
 
 		public float LineHeight
 		{
-			get { return (float)(Size * WpfFamily.LineSpacing); }
+			get { return SDFont.Height; }
 		}
 
 		public float XHeight
