@@ -139,6 +139,8 @@ namespace Eto.Wpf.Drawing
 
 				if (Control.Format == swm.PixelFormats.Rgb24)
 					return Color.FromArgb(red: pixels[0], green: pixels[1], blue: pixels[2]);
+				if (Control.Format == swm.PixelFormats.Bgr24)
+					return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2]);
 				if (Control.Format == swm.PixelFormats.Bgr32)
 					return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2]);
 				if (Control.Format == swm.PixelFormats.Bgra32)
