@@ -71,6 +71,9 @@
     <Compile Include="..\Eto.Wpf\CustomControls\HttpServer.cs">
       <Link>CustomControls\HttpServer.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Wpf\Win32.dib.cs">
+      <Link>Win32.dib.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Conversions.cs">
       <Link>Conversions.cs</Link>
     </Compile>

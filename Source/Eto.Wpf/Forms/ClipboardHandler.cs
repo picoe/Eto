@@ -3,8 +3,12 @@ using Eto.Forms;
 using Eto.Wpf.Drawing;
 using System;
 using System.ComponentModel;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using sw = System.Windows;
+using swm = System.Windows.Media;
+using swmi = System.Windows.Media.Imaging;
 
 namespace Eto.Wpf.Forms
 {
@@ -78,7 +82,18 @@ namespace Eto.Wpf.Forms
 		public Image Image
 		{
 			get { return sw.Clipboard.ContainsImage() ? new Bitmap(new BitmapHandler(sw.Clipboard.GetImage())) : null; }
-			set { sw.Clipboard.SetImage(value.ToWpf()); }
+			set
+			{
+				var dib = (value as Bitmap).ToDIB();
+				if (dib != null)
+				{
+					// write a DIB here, so we can preserve transparency of the image
+					sw.Clipboard.SetData(sw.DataFormats.Dib, dib);
+					return;
+				}
+
+				sw.Clipboard.SetImage(value.ToWpf());
+			}
 		}
 
 		public void Clear()

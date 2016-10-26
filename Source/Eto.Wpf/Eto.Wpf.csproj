@@ -227,6 +227,7 @@
       <DependentUpon>FontDialogResources.resx</DependentUpon>
     </Compile>
     <Compile Include="PropertyPathHelper.cs" />
+    <Compile Include="Win32.dib.cs" />
     <Compile Include="WpfConversions.cs" />
     <Compile Include="WpfExtensions.cs" />
     <Compile Include="Drawing\TransformStack.cs" />
