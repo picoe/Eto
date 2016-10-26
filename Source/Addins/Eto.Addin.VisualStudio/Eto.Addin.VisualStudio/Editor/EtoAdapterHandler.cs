@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Eto.Wpf.Forms.Controls;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
+using System.Windows.Threading;
 
 [assembly: PlatformInitializerAttribute(typeof(Eto.Addin.VisualStudio.Editor.PlatformInitializer))]
 
@@ -23,7 +24,7 @@ namespace Eto.Addin.VisualStudio.Editor
 	{
 		public NativeControl(FrameworkElement control)
 		{
-			this.Control = control;
+			Control = control;
 		}
 
 		public override Drawing.Color BackgroundColor
@@ -47,22 +48,21 @@ namespace Eto.Addin.VisualStudio.Editor
 	{
 		public object ToContract(Control control)
 		{
-			var view = control.ToNative(true);
-
-			var holder = new swc.ScrollViewer
-			{
-				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Disabled,
-				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Disabled,
-				Content = view
-			};
-
-			return FrameworkElementAdapters.ViewToContractAdapter(holder);
+			var content = DesignPanel.GetContent(control);
+			var view = content.ToNative(true);
+			return FrameworkElementAdapters.ViewToContractAdapter(view);
 		}
 
 		public Control FromContract(object contract)
 		{
 			var view = FrameworkElementAdapters.ContractToViewAdapter((INativeHandleContract)contract);
+			view.Focusable = false; // otherwise editor loses focus when switching back to its tab.. may be a better way around this.
 			return new Control(new NativeControl(view));
+		}
+
+		public void Unload()
+		{
+			Dispatcher.CurrentDispatcher.InvokeShutdown();
 		}
 	}
 }

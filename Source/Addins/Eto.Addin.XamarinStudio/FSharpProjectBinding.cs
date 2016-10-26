@@ -1,10 +1,12 @@
 ﻿using System;
 using MonoDevelop.Projects;
 using System.Linq;
+using MonoDevelop.Projects.Extensions;
 
 namespace Eto.Addin.XamarinStudio
 {
-	public class FSharpProjectBinding : DotNetProjectBinding
+	#if false
+	public class FSharpProjectBinding : DotNetProjectExtension
 	{
 		public override string Name
 		{
@@ -33,5 +35,6 @@ namespace Eto.Addin.XamarinStudio
 			return project;
 		}
 	}
+	#endif
 }
 

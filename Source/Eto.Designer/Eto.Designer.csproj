@@ -11,6 +11,8 @@
     <AssemblyName>Eto.Designer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,34 +33,65 @@
   <Import Project="..\Shared\Common.props" />
   <ItemGroup>
     <Reference Include="FSharp.Compiler.CodeDom, Version=1.0.0.1, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\Addins\Eto.Addin.VisualStudio\packages\FSharp.Compiler.CodeDom.1.0.0.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
+      <HintPath>..\Addins\packages\FSharp.Compiler.CodeDom.1.0.0.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Portable.Xaml, Version=0.13.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Addins\Eto.Addin.VisualStudio\packages\Portable.Xaml.0.14.0\lib\dotnet\Portable.Xaml.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Addins\packages\Microsoft.CodeAnalysis.Common.1.3.2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Addins\packages\Microsoft.CodeAnalysis.CSharp.1.3.2\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Addins\packages\Microsoft.CodeAnalysis.VisualBasic.1.3.2\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\Addins\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Reflection.Metadata, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\Addins\packages\System.Reflection.Metadata.1.2.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Addins\Eto.Addin.XamarinStudio\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\Addins\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Portable.Xaml">
+      <HintPath>..\Addins\packages\Portable.Xaml.0.14.0\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Portable.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Compiler.CodeDom">
+      <HintPath>..\Addins\packages\FSharp.Compiler.CodeDom.1.0.0.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppDomainDesignHost.cs" />
     <Compile Include="AssemblyResolver.cs" />
     <Compile Include="BuilderInfo.cs" />
-    <Compile Include="Builders\CodeInterfaceBuilder.cs" />
+    <Compile Include="Builders\BaseCompiledInterfaceBuilder.cs" />
+    <Compile Include="Builders\RoslynCSharpInterfaceBuilder.cs" />
+    <Compile Include="Builders\RoslynInterfaceBuilder.cs" />
+    <Compile Include="Builders\CodeDomInterfaceBuilder.cs" />
     <Compile Include="Builders\FSharpInterfaceBuilder.cs" />
     <Compile Include="Builders\CSharpInterfaceBuilder.cs" />
     <Compile Include="Builders\JsonInterfaceBuilder.cs" />
+    <Compile Include="Builders\RoslynVbInterfaceBuilder.cs" />
     <Compile Include="Builders\VbInterfaceBuilder.cs" />
     <Compile Include="Builders\XamlInterfaceBuilder.cs" />
     <Compile Include="BuilderType.cs" />
-    <Compile Include="ControlLoader.cs" />
+    <Compile Include="DesignPanel.cs" />
+    <Compile Include="DesignSurface.cs" />
     <Compile Include="EtoAdapter.cs" />
+    <Compile Include="IDesignHost.cs" />
     <Compile Include="IInterfaceBuilder.cs" />
+    <Compile Include="InProcessDesignPanel.cs" />
     <Compile Include="PlatformInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PreviewEditorView.cs" />
@@ -96,6 +129,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup />
+  <ItemGroup>
+    <Analyzer Include="..\Addins\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\Addins\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
   <Import Project="..\Shared\Common.targets" />
 </Project>

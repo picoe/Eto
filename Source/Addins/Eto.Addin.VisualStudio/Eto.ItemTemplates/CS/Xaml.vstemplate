@@ -34,9 +34,9 @@
 	</WizardExtension>
 	<WizardData>
 		<RequiredReferences>
-			<Reference id="Eto.Forms" version="2.3.0-alpha" assembly="Eto" extension="Eto.Addin.VisualStudio" />
+			<Reference id="Eto.Forms" version="2.4.0-alpha" assembly="Eto" extension="Eto.Addin.VisualStudio" />
       <Reference id="Portable.Xaml" version="0.14.0" />
-      <Reference id="Eto.Serialization.Xaml" version="2.3.0-alpha" extension="Eto.Addin.VisualStudio" />
+      <Reference id="Eto.Serialization.Xaml" version="2.4.0-alpha" extension="Eto.Addin.VisualStudio" />
 		</RequiredReferences>
 		<Replacements>
 			<ReplacementGroup>

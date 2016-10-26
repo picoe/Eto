@@ -277,7 +277,6 @@ namespace Eto.Forms
 				child.VisualParent = null;
 				if (child.LogicalParent == this)
 					child.LogicalParent = null;
-				//child.TriggerDataContextChanged(true);
 			}
 		}
 
@@ -318,6 +317,7 @@ namespace Eto.Forms
 			{
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a logical child of this container. Ensure you only remove children that you own."));
 			}
+			child.Detach();
 			child.LogicalParent = null;
 		}
 

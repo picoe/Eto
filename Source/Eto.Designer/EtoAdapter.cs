@@ -19,6 +19,8 @@ namespace Eto.Designer
 		object ToContract(Control control);
 
 		Control FromContract(object contract);
+
+		void Unload();
 	}
 
 	public static class EtoAdapter
@@ -31,6 +33,11 @@ namespace Eto.Designer
 		public static Control ToControl(object contract)
 		{
 			return Platform.Instance.CreateShared<IEtoAdapterHandler>().FromContract(contract);
+		}
+
+		public static void Unload()
+		{
+			Platform.Instance.CreateShared<IEtoAdapterHandler>().Unload();
 		}
 	}
 }

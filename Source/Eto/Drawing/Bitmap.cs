@@ -208,6 +208,32 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Creates a new bitmap with the specified dimensions, format and pixel data
+		/// </summary>
+		/// <param name="width">Width of the bitmap</param>
+		/// <param name="height">Height of the bitmap</param>
+		/// <param name="pixelFormat">Format of each pixel</param>
+		/// <param name="data">Color data enumeration, starting from top-left of the bitmap and width*height length</param>
+		public Bitmap(int width, int height, PixelFormat pixelFormat, IEnumerable<Color> data)
+			: this(width, height, pixelFormat)
+		{
+			using (var bd = Lock())
+				bd.SetPixels(data);
+		}
+
+		/// <summary>
+		/// Creates a new bitmap with the specified dimensions, format, and integer pixel data
+		/// </summary>
+		/// <param name="width">Width of the bitmap</param>
+		/// <param name="height">Height of the bitmap</param>
+		/// <param name="pixelFormat">Format for each pixel</param>
+		/// <param name="data">Colordata enumeration, in ARGB format, starting from top-left of the bitmap and width*height length</param>
+		public Bitmap(int width, int height, PixelFormat pixelFormat, IEnumerable<int> data)
+			: this(width, height, pixelFormat, data.Select(Color.FromArgb))
+		{
+		}
+
+		/// <summary>
 		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
 		/// </summary>
 		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>

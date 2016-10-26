@@ -1,13 +1,12 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.IO;
-using Microsoft.VisualBasic;
 using System.Collections.Generic;
-
+using Microsoft.VisualBasic;
 
 namespace Eto.Designer.Builders
 {
-	public class VbInterfaceBuilder : CodeInterfaceBuilder
+	public class VbInterfaceBuilder : CodeDomInterfaceBuilder
 	{
 		protected override CodeDomProvider CreateCodeProvider()
 		{

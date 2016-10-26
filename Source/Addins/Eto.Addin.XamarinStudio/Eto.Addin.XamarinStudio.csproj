@@ -8,7 +8,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Addin.XamarinStudio</RootNamespace>
     <AssemblyName>Eto.Addin.XamarinStudio</AssemblyName>
-    <UseMSBuildEngine>True</UseMSBuildEngine>
     <RestorePackages>true</RestorePackages>
     <PackagesDir>.</PackagesDir>
     <UseAddinTargets Condition="'$(UseAddinTargets)' == ''">true</UseAddinTargets>
@@ -19,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\BuildOutput\Addins\Debug\XamarinStudio</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;XS6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -37,9 +36,11 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Addins" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\..\..\..\..\..\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\bin\Xamarin.Mac.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -48,7 +49,7 @@
     <Compile Include="ProjectWizard.cs" />
     <Compile Include="ProjectWizardPage.cs" />
     <Compile Include="EtoInitializer.cs" />
-    <Compile Include="VBDotNetProjectBinding.cs" />
+    <Compile Include="VBDotNetProjectExtension.cs" />
     <Compile Include="FSharpProjectBinding.cs" />
     <Compile Include="ParameterSource.cs" />
     <Compile Include="Editor\DisplayBinding.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Editor\EditorView.cs" />
     <Compile Include="EnhancedFile.cs" />
     <Compile Include="ExtensionExistsCondition.cs" />
+    <Compile Include="Editor\GtkEmbed2.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
@@ -81,17 +83,16 @@
     <Folder Include="Templates\Projects\Shared\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.iOS.2.3.0-alpha.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.iOS.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.iOS.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.WinRT.2.3.0-alpha.nupkg</Link>
+    <None Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.WinRT.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.WinRT.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets" Condition="Exists('packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets')" />
   <ItemGroup>
     <AddinFile Include="Templates\Projects\VB\MainForm.vb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -102,56 +103,56 @@
     <AddinFile Include="Templates\Projects\VB\library.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Forms.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Forms.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Forms.Sample.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Forms.Sample.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Forms.Sample.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Direct2D.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Direct2D.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Direct2D.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Gtk.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Gtk.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Gtk3.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Gtk3.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Gtk3.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Mac.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Mac.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Mac.Template.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac.Template.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Mac.Template.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Mac64.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Mac64.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Mac64.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Windows.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Windows.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Windows.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.XamMac.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.XamMac.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.XamMac2.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.XamMac2.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.XamMac2.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Serialization.Json.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Json.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Serialization.Json.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Serialization.Xaml.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Serialization.Xaml.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Serialization.Xaml.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
     <AddinFile Include="Templates\Files\VB\code\dialog.vb">
@@ -319,8 +320,8 @@
     <AddinFile Include="Templates\Projects\VB\Program.vb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
-    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.3.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.3.0-alpha.nupkg')">
-      <Link>Packages\Eto.Platform.Wpf.2.3.0-alpha.nupkg</Link>
+    <AddinFile Include="..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.4.0-alpha.nupkg" Condition="Exists('..\..\..\BuildOutput\Nuget\Release\Eto.Platform.Wpf.2.4.0-alpha.nupkg')">
+      <Link>Packages\Eto.Platform.Wpf.2.4.0-alpha.nupkg</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AddinFile>
   </ItemGroup>
@@ -341,6 +342,10 @@
       <Project>{7FAA1841-0869-474C-9D89-87E1B4BAB190}</Project>
       <Name>Eto.Designer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Mac\Eto.XamMac2 - net45.csproj">
+      <Project>{856E8C70-2702-11E4-8C21-0800200C9A66}</Project>
+      <Name>Eto.XamMac2 - net45</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <AddinReference Include="MonoDevelop.Xml">
@@ -352,6 +357,8 @@
     <AddinReference Include="MonoDevelop.PackageManagement">
       <Version>5.9</Version>
     </AddinReference>
+    <AddinReference Include="MonoDevelop.MacPlatform" />
   </ItemGroup>
   <Import Project="..\..\Shared\Common.targets" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.3.4\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.4\build\net40\MonoDevelop.Addins.targets')" />
 </Project>

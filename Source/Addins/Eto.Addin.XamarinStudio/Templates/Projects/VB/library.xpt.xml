@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms Library</_Name>
-		<Category>crossplat/library/eto</Category>
+		<Category>multiplat/library/eto</Category>
 		<LanguageName>VBNet</LanguageName>
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in VB.NET.</_Description>
@@ -25,11 +25,11 @@
 			</References>
 
 			<Files>
-				<FileTemplateReference TemplateID="eto.file.panel.vb" name="MyPanel.vb" />
+				<FileTemplateReference TemplateID="eto.vb.code.panel" name="MyPanel.vb" />
 				<FileTemplateReference TemplateID="VBAssemblyInfo" name="Properties/AssemblyInfo.vb" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
 			</Packages>
 		</Project>
 

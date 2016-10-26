@@ -6,45 +6,76 @@ using MonoDevelop.Components.Commands;
 using System.Reflection;
 using System.IO;
 using Eto.Designer;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using System.Linq;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using MonoDevelop.Components.Mac;
+using System.Diagnostics;
 
 namespace Eto.Addin.XamarinStudio.Editor
 {
-	public class EditorView : AbstractViewContent
+	public class EditorView : ViewContent
 	{
-		readonly IViewContent content;
+		readonly ViewContent content;
 		Gtk.Widget control;
 		PreviewEditorView preview;
 
-		public EditorView(IViewContent content)
+		public EditorView(ViewContent content)
 		{
-			this.content = content;
-			preview = new PreviewEditorView(content.Control.ToEto(), () => content?.WorkbenchWindow?.Document?.Editor?.Text);
-			content.ContentChanged += content_ContentChanged;
-			content.DirtyChanged += content_DirtyChanged;
-			var commandRouterContainer = new CommandRouterContainer(preview.ToNative(true), content, true);
-			commandRouterContainer.Show();
-			control = commandRouterContainer;
-			IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
+			try {
+				this.content = content;
+				
+				var editorWidget = content.Control.GetNativeWidget<Gtk.Widget> ();
+				editorWidget.ShowAll ();
+				MonoDevelop.Components.Control previewNative;
+				if (Platform.Instance.IsMac)
+				{
+					var editor = new GtkEmbed2(editorWidget);
+					var editorEto = editor.ToEto();
+					preview = new PreviewEditorView(editorEto, null, null, () => content?.WorkbenchWindow?.Document?.Editor?.Text);
+					var nspreview = XamMac2Helpers.ToNative(preview, true);
+					var nsviewContainer = new NSViewContainer2(nspreview);
+					previewNative = nsviewContainer;
+				}
+				else
+				{
+					preview = new PreviewEditorView(editorWidget.ToEto(), null, null, () => content?.WorkbenchWindow?.Document?.Editor?.Text);
+					previewNative = Gtk2Helpers.ToNative(preview, true);
+				}
 
-			base.ContentName = content.ContentName;
+				var commandRouterContainer = new CommandRouterContainer (previewNative, content, true);
+				commandRouterContainer.ShowAll ();
+				control = commandRouterContainer;
+
+				content.DirtyChanged += content_DirtyChanged;
+				IdeApp.Workbench.ActiveDocumentChanged += Workbench_ActiveDocumentChanged;
+				ContentName = content.ContentName;
+
+			} catch (Exception ex) {
+				Debug.WriteLine ($"{ex}");
+			}
 		}
 
-		public override Gtk.Widget Control
+		public override async Task Load (FileOpenInformation fileOpenInformation)
 		{
-			get { return control; }
+			await content.Load (fileOpenInformation);
 		}
 
-		public override void Load(string fileName)
+		protected override void OnContentNameChanged ()
 		{
-			preview.SetBuilder(fileName);
-			content.Load(fileName);
-			base.ContentName = fileName;
+			base.OnContentNameChanged ();
+			content.ContentName = ContentName;
+			preview.SetBuilder (ContentName);
+			preview.Update ();
+		}
+
+		public override MonoDevelop.Components.Control Control {
+			get {
+				return control;
+			}
 		}
 
 		public override bool CanReuseView(string fileName)
@@ -52,15 +83,6 @@ namespace Eto.Addin.XamarinStudio.Editor
 			return content.CanReuseView(fileName);
 		}
 
-		public override string ContentName
-		{
-			get { return content.ContentName; }
-			set
-			{
-				base.ContentName = value;
-				content.ContentName = value; 
-			}
-		}
 
 		public override void DiscardChanges()
 		{
@@ -82,24 +104,21 @@ namespace Eto.Addin.XamarinStudio.Editor
 			get { return content.IsReadOnly; }
 		}
 
-		public override void Save(string fileName)
+
+		public override async Task Save (FileSaveInformation fileSaveInformation)
 		{
-			content.Save(fileName);
+			await content.Save (fileSaveInformation.FileName);
 		}
 
-		public override MonoDevelop.Projects.Project Project
+		protected override void OnSetProject (MonoDevelop.Projects.Project project)
 		{
-			get { return base.Project; }
-			set
-			{
-				base.Project = value;
-				content.Project = value;
-			}
+			base.OnSetProject (project);
+			content.Project = project;
 		}
 
-		protected override void OnWorkbenchWindowChanged(EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged(e);
+			base.OnWorkbenchWindowChanged ();
 			if (content != null)
 				content.WorkbenchWindow = WorkbenchWindow;
 			if (WorkbenchWindow != null)
@@ -139,36 +158,35 @@ namespace Eto.Addin.XamarinStudio.Editor
 
 		void WorkbenchWindow_DocumentChanged(object sender, EventArgs e)
 		{
-			var doc = WorkbenchWindow?.Document?.Editor?.Document;
+			var doc = WorkbenchWindow?.Document;
 			if (doc != null)
 			{
-				doc.LineChanged += (senderr, ee) => preview.Update();
+				doc.Editor.TextChanged += Editor_TextChanged;
 				preview.Update();
 			}
 		}
 
+		void Editor_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
+		{
+			preview.Update ();
+		}
+
 		public override void Dispose()
 		{
-			content.ContentChanged -= content_ContentChanged;
 			content.DirtyChanged -= content_DirtyChanged;
 			IdeApp.Workbench.ActiveDocumentChanged -= Workbench_ActiveDocumentChanged;
 			content.Dispose();
 			base.Dispose();
 		}
 
-		void content_ContentChanged(object s, EventArgs args)
-		{
-			OnContentChanged(args);
-		}
-
 		void content_DirtyChanged(object s, EventArgs args)
 		{
-			OnDirtyChanged(args);
+			OnDirtyChanged ();
 		}
 
-		public override object GetContent(Type type)
+		protected override object OnGetContent (Type type)
 		{
-			return type.IsInstanceOfType(this) ? this : content?.GetContent(type);
+			return type.IsInstanceOfType (this) ? this : content?.GetContent (type);
 		}
 	}
 }

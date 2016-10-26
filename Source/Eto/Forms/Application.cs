@@ -178,7 +178,7 @@ namespace Eto.Forms
 		/// <seealso cref="Platforms"/>
 		/// <param name="platformType">Platform type to initialize this application with</param>
 		public Application(string platformType)
-			: this(Platform.Get(platformType))
+			: this(Platform.Get(platformType, false))
 		{
 		}
 

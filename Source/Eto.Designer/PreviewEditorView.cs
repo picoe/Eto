@@ -1,36 +1,63 @@
 ﻿using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using System.Reflection;
 
 namespace Eto.Designer
 {
 	public class PreviewEditorView : Splitter
 	{
-		Panel previewPanel;
+		IDesignHost designPanel;
 		Panel errorPanel;
-		IInterfaceBuilder interfaceBuilder;
 		UITimer timer;
+		UITimer errorTimer;
 		int processingCount;
 		Func<string> getCode;
+		Control errorContent;
+		Panel designPanelHolder;
 
 		static double lastPosition = 0.4;
-
-		public BuilderInfo Builder { get; private set; }
 
 		public Control Editor { get; }
 
 		public double RefreshTime { get; set; } = 0.5;
 
-		public PreviewEditorView(Control editor, Func<string> getCode)
+		public double ErrorDisplayTime { get; set; } = 2.0;
+
+		public string MainAssemblyPath { get; set; }
+
+		public static bool EnableAppDomains { get; set; } = Platform.Instance.Supports<IEtoAdapterHandler>();
+
+		public PreviewEditorView(Control editor, string mainAssembly, IEnumerable<string> references, Func<string> getCode)
 		{
+			//Size = new Size (200, 200);
 			Editor = editor;
+			MainAssemblyPath = mainAssembly;
 			this.getCode = getCode;
+
+			if (EnableAppDomains)
+				designPanel = new AppDomainDesignHost();
+			else
+				designPanel = new InProcessDesignPanel();
+
+			designPanel.MainAssembly = mainAssembly;
+			designPanel.References = references;
+
+			designPanel.ControlCreated = () => FinishProcessing(null);
+			designPanel.Error = FinishProcessing;
+
+			designPanelHolder = new Panel();
+			designPanelHolder.Content = designPanel.GetContainer();
+
+			designPanel.ContainerChanged = () => designPanelHolder.Content = designPanel.GetContainer();
 
 			Orientation = Orientation.Vertical;
 			FixedPanel = SplitterFixedPanel.None;
 			RelativePosition = lastPosition;
 
-			previewPanel = new Panel();
 			errorPanel = new Panel { Padding = new Padding(5), Visible = false, BackgroundColor = new Color(Colors.Red, .4f) };
 
 			Panel1 = new StackLayout
@@ -38,7 +65,7 @@ namespace Eto.Designer
 				HorizontalContentAlignment = HorizontalAlignment.Stretch,
 				Items =
 				{
-					new StackLayoutItem(previewPanel, expand: true),
+					new StackLayoutItem(designPanelHolder, expand: true),
 					errorPanel
 				}
 			};
@@ -46,24 +73,30 @@ namespace Eto.Designer
 
 			timer = new UITimer { Interval = RefreshTime };
 			timer.Elapsed += Timer_Elapsed;
+
+			errorTimer = new UITimer { Interval = ErrorDisplayTime };
+			errorTimer.Elapsed += ErrorTimer_Elapsed;
+		}
+
+		void ErrorTimer_Elapsed(object sender, EventArgs e)
+		{
+			errorTimer.Stop();
+			if (errorContent != null)
+			{
+				errorPanel.Content = errorContent;
+				errorPanel.Visible = true;
+				errorContent = null;
+			}
 		}
 
 		void Timer_Elapsed(object sender, EventArgs e)
 		{
-			if (interfaceBuilder == null)
-				return;
-			timer.Stop();
+			timer.Stop ();
+			processingCount = 1; // only check for additional changes AFTER this point to restart the timer
 			var code = getCode();
 			if (!string.IsNullOrEmpty(code))
 			{
-				try
-				{
-					interfaceBuilder.Create(code, ctl => FinishProcessing(ctl, null), ex => FinishProcessing(null, ex));
-				}
-				catch (Exception ex)
-				{
-					FinishProcessing(null, ex);
-                }
+				designPanel?.Update(code);
 			}
 		}
 
@@ -73,22 +106,32 @@ namespace Eto.Designer
 			lastPosition = RelativePosition;
 		}
 
-		void FinishProcessing(Control child, Exception error)
+		protected override void OnGotFocus(EventArgs e)
 		{
-			errorPanel.Visible = error != null;
+			base.OnGotFocus(e);
+			designPanel?.Invalidate();
+		}
+
+		void FinishProcessing(Exception error)
+		{
 			if (error != null)
-				errorPanel.Content = new Label { Text = error.Message, ToolTip = error.ToString() };
-			if (child != null)
 			{
-				var window = child as Eto.Forms.Window;
-				if (window != null)
+				error = error.GetBaseException();
+				var errorLabel = new Label { Text = error.Message, ToolTip = error.ToString() };
+				if (errorPanel.Visible)
 				{
-					// swap out window for a panel so we can add it as a child
-					var content = window.Content;
-					window.Content = null;
-					child = new Panel { Content = content, Padding = window.Padding };
+					errorPanel.Content = errorLabel;
 				}
-				previewPanel.Content = child;
+				else
+				{
+					errorContent = errorLabel;
+					errorTimer.Start();
+				}
+			}
+			else
+			{
+				errorPanel.Visible = false;
+				errorContent = null;
 			}
 
 			if (processingCount > 1)
@@ -123,18 +166,25 @@ namespace Eto.Designer
 		/// <param name="fileName"></param>
 		public bool SetBuilder(string fileName)
 		{
-			var builder = BuilderInfo.Find(fileName);
-            SetBuilder(builder);
-			return builder != null;
-		}
-
-		public void SetBuilder(BuilderInfo builder)
-		{
-			Builder = builder;
 			Stop();
-			interfaceBuilder = Builder?.CreateBuilder();
+			return designPanel.SetBuilder(fileName);
 		}
 
+		public string GetCodeFile(string fileName)
+		{
+			return designPanel.GetCodeFile(fileName);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				designPanelHolder.Content = null;
+				designPanel.Dispose();
+				designPanel = null;
+			}
+			base.Dispose(disposing);
+		}
 	}
 }
 

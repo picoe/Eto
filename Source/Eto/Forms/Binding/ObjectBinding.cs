@@ -321,5 +321,13 @@ namespace Eto.Forms
 			return Bind(objectValue, new PropertyBinding<TValue>(memberInfo.Member.Name), mode);
 		}
 
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:Eto.Forms.ObjectBinding`2"/>.
+		/// </summary>
+		/// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:Eto.Forms.ObjectBinding`2"/>.</returns>
+		public override string ToString()
+		{
+			return $"Object: {DataItem}, {InnerBinding}";
+		}
 	}
 }

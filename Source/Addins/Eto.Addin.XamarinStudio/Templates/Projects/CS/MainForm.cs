@@ -13,16 +13,14 @@ namespace ${Namespace}
 		{
 			Title = "My Eto Form";
 			ClientSize = new Size(400, 350);
-			// scrollable region as the main content
-			Content = new Scrollable
+
+			Content = new StackLayout
 			{
-				// table with three rows
-				Content = new TableLayout(
-					null,
-					// row with three columns
-					new TableRow(null, new Label { Text = "Hello World!" }, null),
-					null
-				)
+				Items =
+				{
+					"Hello World!",
+					// Add more controls here
+				}
 			};
 
 			// create a few commands that can be used for the menu and toolbar

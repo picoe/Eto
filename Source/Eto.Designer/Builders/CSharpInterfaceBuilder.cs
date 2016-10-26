@@ -1,13 +1,12 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using Microsoft.CSharp;
 using System.IO;
 using System.Collections.Generic;
-
+using Microsoft.CSharp;
 
 namespace Eto.Designer.Builders
 {
-	public class CSharpInterfaceBuilder : CodeInterfaceBuilder
+	public class CSharpInterfaceBuilder : CodeDomInterfaceBuilder
 	{
 		protected override CodeDomProvider CreateCodeProvider()
 		{

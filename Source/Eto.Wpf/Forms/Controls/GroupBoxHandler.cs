@@ -19,6 +19,8 @@ namespace Eto.Wpf.Forms.Controls
 			Header = new swc.Label { Content = new swc.AccessText() };
 		}
 
+		protected override bool UseContentSize => false;
+
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
 			Control.Content = content;
@@ -33,7 +35,11 @@ namespace Eto.Wpf.Forms.Controls
 		public Font Font
 		{
 			get { return font; }
-			set { font = Header.SetEtoFont(value, r => AccessText.TextDecorations = r); }
+			set
+			{
+				font = Header.SetEtoFont(value, r => AccessText.TextDecorations = r);
+				UpdatePreferredSize();
+			}
 		}
 
 		public string Text
@@ -43,6 +49,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				AccessText.Text = value.ToPlatformMnemonic();
 				Control.Header = string.IsNullOrEmpty(value) ? null : Header;
+				UpdatePreferredSize();
 			}
 		}
 

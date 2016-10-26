@@ -231,5 +231,14 @@ namespace Eto.Forms
 				}
 			}
 		}
+
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:Eto.Forms.PropertyBinding`1"/>.
+		/// </summary>
+		/// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:Eto.Forms.PropertyBinding`1"/>.</returns>
+		public override string ToString()
+		{
+			return $"Property: {Property}";
+		}
 	}
 }

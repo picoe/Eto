@@ -2,7 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-		<BuildVersion>2.2.0</BuildVersion>
+		<SolutionConfiguration Condition="'$(SolutionConfiguration)' == ''">XSRelease</SolutionConfiguration>
+		<BuildVersion>2.3.0</BuildVersion>
 	</PropertyGroup>
 	<Import Project="Build.proj" />
 	
@@ -18,7 +19,7 @@
 			<BuildOutputDir>$(BaseDir)\BuildOutput</BuildOutputDir>
     		<AllPackagesConfig>$(MSBuildThisFileDirectory)\packages.config</AllPackagesConfig>
     		<NugetOutputDir>$(BuildOutputDir)\Nuget\$(Configuration)</NugetOutputDir>
-			<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj</XamarinStudioAddinProject>
+			<XamarinStudioAddinProject>$(SourceDir)\Addins\Eto.Addin.XamarinStudio.sln</XamarinStudioAddinProject>
 		</PropertyGroup>
 
     	<Exec Command='nuget restore -PackagesDirectory "$(MSBuildThisFileDirectory)\packages" -ConfigFile $(AllPackagesConfig)' />
@@ -30,13 +31,14 @@
     	<MakeDir Directories="$(NugetOutputDir)" />
 		<Copy SourceFiles="%(SourceNupkg.Identity)" DestinationFiles="$(NugetOutputDir)\%(Filename)%(Extension)" />
 		
-    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)"/>
-    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(Configuration)"/>
+    	<Exec Command="$(NuGetCommand) restore $(XamarinStudioAddinProject)" />
+    	<!--MSBuild Projects="$(XamarinStudioAddinProject)" Targets="RestorePackages" Properties="Configuration=$(Configuration)"/-->
+    	<MSBuild Projects="$(XamarinStudioAddinProject)" Targets="Build" Properties="Configuration=$(SolutionConfiguration)"/>
     </Target>
 	<Target Name="Clean">
 		<!-- clean output from previous builds -->
 		<Exec Command="rm -rf $(BaseDir)\BuildOutput" />
 		<Exec Command="rm -rf $(MSBuildThisFileDirectory)\packages\Eto.*" />
-		<Exec Command="rm -rf $(SourceDir)\Addins\Eto.Addin.XamarinStudio\packages" />
+		<Exec Command="rm -rf $(SourceDir)\Addins\packages" />
 	</Target>
 </Project>

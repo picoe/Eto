@@ -14,9 +14,14 @@ using Eto.Designer;
 
 namespace Eto.Designer
 {
+	public interface IBuildToken
+	{
+		void Cancel();
+	}
+
 	public interface IInterfaceBuilder
 	{
-		void Create(string text, Action<Control> controlCreated, Action<Exception> error);
+		IBuildToken Create(string text, string mainAssembly, IEnumerable<string> references, Action<Control> controlCreated, Action<Exception> error);
 	}
 	
 }

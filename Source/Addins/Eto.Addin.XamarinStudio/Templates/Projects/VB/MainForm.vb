@@ -12,19 +12,14 @@ Public Class MainForm
 		Title = "My Eto Form"
 		ClientSize = New Size(400, 350)
 
-		' scrollable region as the main content
-		Dim scrollable As New Scrollable()
-		With scrollable
-			Dim helloLabel As New Label()
-			helloLabel.Text = "Hello World!"
+		Dim helloLabel As New Label()
+		helloLabel.Text = "Hello World!"
 
-			' table with three rows and three columns
-			.Content = New TableLayout(
-				Nothing, _
-				New TableRow(Nothing, new TableCell(helloLabel), Nothing), _
-				Nothing)
-		End With
-		Content = scrollable
+		Dim layout As New StackLayout()
+		layout.Items.Add(New StackLayoutItem(helloLabel))
+		' Add more controls here
+
+		Content = layout
 
 		' create a few commands that can be used for the menu and toolbar
 		Dim clickMe As New Command()

@@ -148,7 +148,11 @@ namespace Eto.Direct2D.Drawing
 			{
 				var output = new uint[1];
 				Control.CopyPixels(new s.Rectangle(x, y, 1, 1), output);
-				return new s.Color4(new s.ColorBGRA(output[0]).ToRgba()).ToEto();
+				var eto = new s.Color4(new s.ColorBGRA(output[0]).ToRgba()).ToEto();
+				if (Control.PixelFormat == sw.PixelFormat.Format24bppBGR)
+					return Color.FromRgb(eto.ToArgb());
+				else
+					return eto;
 			}
 			catch (s.SharpDXException ex)
 			{

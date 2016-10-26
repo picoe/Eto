@@ -39,13 +39,13 @@
   </WizardExtension>
   <WizardData>
 		<packages repository="extension" repositoryId="Eto.Addin.VisualStudio">
-			<package id="Eto.Forms" version="2.3.0-alpha" />
+			<package id="Eto.Forms" version="2.4.0-alpha" />
 		</packages>
     <RequiredReferences Quiet="true">
       <Reference id="Portable.Xaml" version="0.14.0" condition="UseXeto" />
-      <Reference id="Eto.Serialization.Xaml" version="2.3.0-alpha" assembly="Eto.Serialization.Xaml" extension="Eto.Addin.VisualStudio" condition="UseXeto" />
+      <Reference id="Eto.Serialization.Xaml" version="2.4.0-alpha" assembly="Eto.Serialization.Xaml" extension="Eto.Addin.VisualStudio" condition="UseXeto" />
       <Reference id="Newtonsoft.Json" version="7.0.1" condition="UseJeto" />
-      <Reference id="Eto.Serialization.Json" version="2.3.0-alpha" assembly="Eto.Serialization.Json" extension="Eto.Addin.VisualStudio" condition="UseJeto" />
+      <Reference id="Eto.Serialization.Json" version="2.4.0-alpha" assembly="Eto.Serialization.Json" extension="Eto.Addin.VisualStudio" condition="UseJeto" />
     </RequiredReferences>
     <Replacements>
 			<ReplacementGroup>

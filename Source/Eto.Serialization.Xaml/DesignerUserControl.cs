@@ -18,7 +18,7 @@ namespace Eto.Serialization.Xaml
 			set { label.Text = value; }
 		}
 
-		public string ToolTip
+		public new string ToolTip
 		{
 			get { return label.ToolTip; }
 			set { label.ToolTip = value; }

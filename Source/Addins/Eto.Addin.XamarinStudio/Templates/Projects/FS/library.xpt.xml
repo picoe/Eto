@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms Library</_Name>
-		<Category>crossplat/library/eto</Category>
+		<Category>multiplat/library/eto</Category>
 		<LanguageName>F#</LanguageName>
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description>A library assembly for shared Eto.Forms UI and application logic in F#.</_Description>
@@ -26,9 +26,9 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="Properties/AssemblyInfo.fs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseJeto" /> 
 				<Package Id="FSharp.Core" />
 			</Packages>
 		</Project>
@@ -44,7 +44,7 @@
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="Properties/AssemblyInfo.fs" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
 				<Package Id="FSharp.Core" />
 			</Packages>
 		</Project>

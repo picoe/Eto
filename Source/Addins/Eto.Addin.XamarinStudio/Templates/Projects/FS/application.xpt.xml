@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Eto.Forms App</_Name>
-		<Category>crossplat/app/eto</Category>
+		<Category>multiplat/app/eto</Category>
 		<LanguageName>F#</LanguageName>
 		<Wizard>Eto.Addin.XamarinStudio.ProjectWizard</Wizard>
 		<_Description><![CDATA[A new Eto.Forms cross-platform application in F#]]></_Description>
@@ -22,8 +22,8 @@
 			<StartupProject>${ProjectName}.Mac</StartupProject>
 		</Options>
 
-		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" type="Eto.FSharp" if="Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.Desktop" directory="./${ProjectName}.Desktop" if="Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -40,18 +40,18 @@
 				</EnhancedFile>
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Gtk" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Gtk3" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Windows" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Wpf" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseSharedXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk3" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Windows" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Wpf" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" type="Eto.FSharp" if="!Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.Gtk2" directory="./${ProjectName}.Gtk2" if="!Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -67,10 +67,10 @@
 				</EnhancedFile>
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Gtk" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseSharedXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -87,7 +87,7 @@
 		</Project>
 
 		<Project name="${ProjectName}" directory="." if="UseNET">
-			<Options Target="Library" TargetFrameworkVersion="v4.0" />
+			<Options Target="Library"  />
 			<References>
 				<Reference type="Gac" refto="mscorlib" />
 				<Reference type="Gac" refto="FSharp.Core" />
@@ -107,14 +107,14 @@
 				<File name="MainForm.fs" AddStandardHeader="True" src="MainForm.preview.fs" if="UseCodePreview" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseJeto" /> 
 			</Packages>
 		</Project>
 
-		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" type="Eto.FSharp" if="!Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.Gtk3" directory="./${ProjectName}.Gtk3" if="!Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -130,16 +130,16 @@
 				</EnhancedFile>
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Gtk3" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseSharedXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Gtk3" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
 
-		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" type="Eto.FSharp" if="!Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.WinForms" directory="./${ProjectName}.WinForms" if="!Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -156,14 +156,14 @@
 				</EnhancedFile>
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Windows" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseSharedXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Windows" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
-		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" type="Eto.FSharp" if="!Combined">
-			<Options Target="WinExe" TargetFrameworkVersion="v4.0" />
+		<Project name="${ProjectName}.Wpf" directory="./${ProjectName}.Wpf" if="!Combined">
+			<Options Target="WinExe"  />
 			<References>
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="System" />
@@ -182,15 +182,15 @@
 				</EnhancedFile>
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Wpf" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseSharedXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Wpf" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
 		<Project name="${ProjectName}.Mac" directory="./${ProjectName}.Mac" type="MonoMac">
-			<Options TargetFrameworkVersion="v4.0" />
+			<Options  />
 			<References>
 				<Reference type="Gac" refto="mscorlib" />
 				<Reference type="Gac" refto="FSharp.Core" />
@@ -208,10 +208,10 @@
 				<File name="Info.plist" src="../Shared/Info.plist" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.Mac" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseSharedXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.Mac" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -235,10 +235,10 @@
 				<File name="Info.plist" src="../Shared/Info.plist" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.XamMac2" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseSharedXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.XamMac2" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 
@@ -261,10 +261,10 @@
 				<File name="Info.plist" src="../Shared/Info.plist" />
 			</Files>
 			<Packages>
-				<Package Id="Eto.Forms" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Platform.XamMac2" Version="2.3.0-alpha" /> 
-				<Package Id="Eto.Serialization.Xaml" Version="2.3.0-alpha" if="UseSharedXeto" /> 
-				<Package Id="Eto.Serialization.Json" Version="2.3.0-alpha" if="UseSharedJeto" /> 
+				<Package Id="Eto.Forms" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Platform.XamMac2" version="2.4.0-alpha" /> 
+				<Package Id="Eto.Serialization.Xaml" version="2.4.0-alpha" if="UseSharedXeto" /> 
+				<Package Id="Eto.Serialization.Json" version="2.4.0-alpha" if="UseSharedJeto" /> 
 			</Packages>
 		</Project>
 

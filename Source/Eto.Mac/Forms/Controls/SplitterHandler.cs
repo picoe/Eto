@@ -86,6 +86,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var size = Orientation == Orientation.Horizontal ? Control.Bounds.Width : Control.Bounds.Height;
 				size -= SplitterWidth;
+				if (size <= 1)
+					return;
 				if (fixedPanel == SplitterFixedPanel.Panel2)
 					position = (int)Math.Round(size - relative);
 				else
@@ -134,48 +136,65 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		static void ResizeSubviews(SplitterHandler handler, CGSize oldSize)
+		CGSize? oldSizeCache;
+		void ResizeSubviews(CGSize oldSize2)
 		{
-			var splitView = handler.Control;
+			var splitView = Control;
 			var dividerThickness = splitView.DividerThickness;
 			var newFrame = splitView.Frame;
 
-			if (handler.panel1 == null || !handler.panel1.Visible)
-			{
-				splitView.Subviews[0].SetFrameSize(SizeF.Empty.ToNS());
-				splitView.Subviews[1].Frame = newFrame;
-				return;
-			}
-
-			if (handler.panel2 == null || !handler.panel2.Visible)
-			{
-				splitView.Subviews[0].Frame = newFrame;
-				splitView.Subviews[1].SetFrameSize(SizeF.Empty.ToNS());
-				return;
-			}
-			if (handler.initialPositionSet)
-				handler.SetRelative();
-
 			var panel1Rect = splitView.Subviews[0].Frame;
 			var panel2Rect = splitView.Subviews[1].Frame;
-				
+
+			bool isSmall = newFrame.Height <= 1 || newFrame.Width <= 1;
+			if (!isSmall && initialPositionSet)
+				SetRelative();
+
+			var oldSize = oldSizeCache ?? newFrame.Size;
+			oldSizeCache = newFrame.Size;
+
 			if (oldSize.Height <= 0 && oldSize.Width <= 0)
 				oldSize = newFrame.Size;
-	
-			if (splitView.IsVertical)
+
+			if (panel1?.Visible != true)
+			{
+				if (splitView.IsVertical)
+				{
+					panel1Rect = new CGRect(0, 0, 0, newFrame.Height);
+					panel2Rect = new CGRect(dividerThickness, 0, newFrame.Width - dividerThickness, newFrame.Height);
+				}
+				else
+				{
+					panel1Rect = new CGRect(0, 0, newFrame.Width, 0);
+					panel2Rect = new CGRect(0, dividerThickness, newFrame.Width, newFrame.Height - dividerThickness);
+				}
+			}
+			else if (panel2?.Visible != true)
+			{
+				if (splitView.IsVertical)
+				{
+					panel1Rect = new CGRect(0, 0, newFrame.Width - dividerThickness, newFrame.Height);
+					panel2Rect = new CGRect(newFrame.Width, 0, 0, newFrame.Height);
+				}
+				else
+				{
+					panel1Rect = new CGRect(0, 0, newFrame.Width, newFrame.Height - dividerThickness);
+					panel2Rect = new CGRect(0, newFrame.Height, newFrame.Width, 0);
+				}
+			}
+			else if (splitView.IsVertical)
 			{
 				panel2Rect.Y = 0;
 				panel2Rect.Height = panel1Rect.Height = newFrame.Height;
 				panel1Rect = new CGRect(CGPoint.Empty, panel1Rect.Size);
-				if (handler.position == null)
+				if (position == null)
 				{
 					panel1Rect.Width = (nfloat)Math.Max(0, newFrame.Width / 2);
 					panel2Rect.Width = (nfloat)Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
 				}
-				else
-				{
-					var pos = handler.position.Value;
-					switch (handler.fixedPanel)
+				else {
+					var pos = position.Value;
+					switch (fixedPanel)
 					{
 						case SplitterFixedPanel.Panel1:
 							panel1Rect.Width = (nfloat)Math.Max(0, Math.Min(newFrame.Width - dividerThickness, pos));
@@ -186,7 +205,7 @@ namespace Eto.Mac.Forms.Controls
 							panel1Rect.Width = (nfloat)Math.Max(0, newFrame.Width - panel2Rect.Width - dividerThickness);
 							break;
 						case SplitterFixedPanel.None:
-							var oldscale = newFrame.Width / oldSize.Width;
+							var oldscale = oldSize.Width > 0 ? newFrame.Width / oldSize.Width : 1;
 							panel1Rect.Width = (nfloat)Math.Round(Math.Max(0, Math.Min(newFrame.Width - dividerThickness, pos * oldscale)));
 							panel2Rect.Width = (nfloat)Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
 							break;
@@ -199,15 +218,14 @@ namespace Eto.Mac.Forms.Controls
 				panel2Rect.X = 0;
 				panel2Rect.Width = panel1Rect.Width = newFrame.Width;
 				panel1Rect = new CGRect(CGPoint.Empty, panel1Rect.Size);
-				if (handler.position == null)
+				if (position == null)
 				{
 					panel1Rect.Height = (nfloat)Math.Max(0, newFrame.Height / 2);
 					panel2Rect.Height = (nfloat)Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
 				}
-				else
-				{
-					var pos = handler.position.Value;
-					switch (handler.fixedPanel)
+				else {
+					var pos = position.Value;
+					switch (fixedPanel)
 					{
 						case SplitterFixedPanel.Panel1:
 							panel1Rect.Height = (nfloat)Math.Max(0, Math.Min(newFrame.Height - dividerThickness, pos));
@@ -218,7 +236,7 @@ namespace Eto.Mac.Forms.Controls
 							panel1Rect.Height = (nfloat)Math.Max(0, newFrame.Height - panel2Rect.Height - dividerThickness);
 							break;
 						case SplitterFixedPanel.None:
-							var oldscale = newFrame.Height / oldSize.Height;
+							var oldscale = oldSize.Height > 0 ? newFrame.Height / oldSize.Height : 1;
 							panel1Rect.Height = (nfloat)Math.Round(Math.Max(0, Math.Min(newFrame.Height - dividerThickness, pos * oldscale)));
 							panel2Rect.Height = (nfloat)Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
 							break;
@@ -239,19 +257,19 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void Resize(NSSplitView splitView, CGSize oldSize)
 			{
-				SplitterHandler.ResizeSubviews(Handler, oldSize);
+				Handler.ResizeSubviews(oldSize);
 			}
 
 			public override nfloat ConstrainSplitPosition(NSSplitView splitView, nfloat proposedPosition, nint subviewDividerIndex)
 			{
 				return Handler.Enabled ? (nfloat)Math.Round(proposedPosition) : Handler.Position;
 			}
-
+			
 			public override void DidResizeSubviews(NSNotification notification)
 			{
 				var h = Handler;
 				var subview = h.Control.Subviews[0];
-				if (subview != null && h.position != null && h.initialPositionSet && h.Widget.Loaded && h.Widget.ParentWindow != null && h.Widget.ParentWindow.Loaded)
+				if (subview != null && h.position != null && h.initialPositionSet && h.Widget.Loaded && h.Control.Window != null) // && h.Widget.ParentWindow != null && h.Widget.ParentWindow.Loaded)
 				{
 					if (h.panel1 == null || !h.panel1.Visible || h.panel2 == null || !h.panel2.Visible)
 					{
@@ -260,6 +278,9 @@ namespace Eto.Mac.Forms.Controls
 							h.relative = h.RelativePosition;
 						return;
 					}
+					var mainFrame = h.Control.Frame;
+					if (mainFrame.Width <= 1 || mainFrame.Height <= 1)
+						return;
 					h.position = h.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
 					h.Callback.OnPositionChanged(h.Widget, EventArgs.Empty);
 				}

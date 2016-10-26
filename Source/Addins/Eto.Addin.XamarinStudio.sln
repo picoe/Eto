@@ -1,30 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.XamarinStudio", "Eto.Addin.XamarinStudio.csproj", "{54A88D77-39C6-49E5-971E-05451209F2A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.XamarinStudio", "Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio.csproj", "{54A88D77-39C6-49E5-971E-05451209F2A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - pcl", "..\..\Eto\Eto - pcl.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - pcl", "..\Eto\Eto - pcl.csproj", "{35EF0A4E-2A1A-492C-8BED-106774EA09F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2 - net45", "..\..\Eto.Gtk\Eto.Gtk2 - net45.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Gtk2 - net45", "..\Eto.Gtk\Eto.Gtk2 - net45.csproj", "{80915A80-CA54-11E3-9C1A-0800200C9A66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared", "..\Shared\Eto.Addin.Shared.csproj", "{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared", "Shared\Eto.Addin.Shared.csproj", "{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer", "..\..\Eto.Designer\Eto.Designer.csproj", "{7FAA1841-0869-474C-9D89-87E1B4BAB190}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer", "..\Eto.Designer\Eto.Designer.csproj", "{7FAA1841-0869-474C-9D89-87E1B4BAB190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - pcl", "..\..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Xaml - pcl", "..\Eto.Serialization.Xaml\Eto.Serialization.Xaml - pcl.csproj", "{12603B32-65B9-4DB7-82FC-C52E18537D6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - net45", "..\..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Serialization.Json - net45", "..\Eto.Serialization.Json\Eto.Serialization.Json - net45.csproj", "{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4E4F6B1-48B2-4D57-8CEB-39796557ECB5}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\addin-project.xml = ..\..\..\addin-project.xml
+		..\..\addin-project.xml = ..\..\addin-project.xml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer - nuget", "..\..\Eto.Designer\Eto.Designer - nuget.csproj", "{8965A6F0-7E31-4BC0-9175-AC9518EC1895}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Designer - nuget", "..\Eto.Designer\Eto.Designer - nuget.csproj", "{8965A6F0-7E31-4BC0-9175-AC9518EC1895}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.XamarinStudio - nuget", "Eto.Addin.XamarinStudio - nuget.csproj", "{01471538-2B65-4A6C-99CC-29FD700522BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.XamarinStudio - nuget", "Eto.Addin.XamarinStudio\Eto.Addin.XamarinStudio - nuget.csproj", "{01471538-2B65-4A6C-99CC-29FD700522BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared - nuget", "..\Shared\Eto.Addin.Shared - nuget.csproj", "{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Addin.Shared - nuget", "Shared\Eto.Addin.Shared - nuget.csproj", "{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2 - net45", "..\Eto.Mac\Eto.XamMac2 - net45.csproj", "{856E8C70-2702-11E4-8C21-0800200C9A66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac - net45", "..\Eto.Mac\Eto.XamMac - net45.csproj", "{BF405A10-C9EB-11E3-9C1A-0800200C9A66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.XamMac2 - mobile", "..\Eto.Mac\Eto.XamMac2 - mobile.csproj", "{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,7 +42,6 @@ Global
 		{01471538-2B65-4A6C-99CC-29FD700522BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{01471538-2B65-4A6C-99CC-29FD700522BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01471538-2B65-4A6C-99CC-29FD700522BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01471538-2B65-4A6C-99CC-29FD700522BF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{01471538-2B65-4A6C-99CC-29FD700522BF}.XSRelease|Any CPU.ActiveCfg = Release|Any CPU
 		{01471538-2B65-4A6C-99CC-29FD700522BF}.XSRelease|Any CPU.Build.0 = Release|Any CPU
 		{12603B32-65B9-4DB7-82FC-C52E18537D6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -67,13 +72,11 @@ Global
 		{8965A6F0-7E31-4BC0-9175-AC9518EC1895}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8965A6F0-7E31-4BC0-9175-AC9518EC1895}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8965A6F0-7E31-4BC0-9175-AC9518EC1895}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8965A6F0-7E31-4BC0-9175-AC9518EC1895}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8965A6F0-7E31-4BC0-9175-AC9518EC1895}.XSRelease|Any CPU.ActiveCfg = Release|Any CPU
 		{8965A6F0-7E31-4BC0-9175-AC9518EC1895}.XSRelease|Any CPU.Build.0 = Release|Any CPU
 		{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}.XSRelease|Any CPU.ActiveCfg = Release|Any CPU
 		{AAEF6FF7-E56E-4969-B882-A56AD2FFBF43}.XSRelease|Any CPU.Build.0 = Release|Any CPU
 		{EE6AD588-50FE-4C4B-BBFE-AB1C2B120DE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -86,6 +89,21 @@ Global
 		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FCEFD5C0-8705-11E4-B4A9-0800200C9A66}.XSRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{856E8C70-2702-11E4-8C21-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{856E8C70-2702-11E4-8C21-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{856E8C70-2702-11E4-8C21-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{856E8C70-2702-11E4-8C21-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{856E8C70-2702-11E4-8C21-0800200C9A66}.XSRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF405A10-C9EB-11E3-9C1A-0800200C9A66}.XSRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD6ED8F0-297C-11E5-A2CB-0800200C9A66}.XSRelease|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
@@ -93,7 +111,10 @@ Global
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.inheritsSet = null
-		$1.scope = text/x-csharp
+		$1.scope = application/x-addin-xpt+xml
+		$1.FileWidth = 120
+		$1.TabsToSpaces = False
+		$1.inheritsScope = text/plain
 		$0.CSharpFormattingPolicy = $2
 		$2.IndentSwitchBody = True
 		$2.IndentBlocksInsideExpressions = True
@@ -122,6 +143,23 @@ Global
 		$2.inheritsSet = Mono
 		$2.inheritsScope = text/x-csharp
 		$2.scope = text/x-csharp
+		$2.IndentSwitchSection = True
+		$2.NewLinesForBracesInProperties = True
+		$2.NewLinesForBracesInAccessors = True
+		$2.NewLinesForBracesInAnonymousMethods = True
+		$2.NewLinesForBracesInControlBlocks = True
+		$2.NewLinesForBracesInAnonymousTypes = True
+		$2.NewLinesForBracesInObjectCollectionArrayInitializers = True
+		$2.NewLinesForBracesInLambdaExpressionBody = True
+		$2.NewLineForElse = True
+		$2.NewLineForCatch = True
+		$2.NewLineForFinally = True
+		$2.NewLineForMembersInObjectInit = True
+		$2.NewLineForMembersInAnonymousTypes = True
+		$2.NewLineForClausesInQuery = True
+		$2.SpacingAfterMethodDeclarationName = False
+		$2.SpaceAfterMethodCallName = False
+		$2.SpaceBeforeOpenSquareBracket = False
 		$0.TextStylePolicy = $3
 		$3.FileWidth = 120
 		$3.TabsToSpaces = False
@@ -133,7 +171,8 @@ Global
 		$4.scope = application/x-addin+xml
 		$0.XmlFormattingPolicy = $5
 		$5.inheritsSet = null
-		$5.scope = application/x-addin+xml
+		$5.scope = application/config+xml
+		$5.inheritsScope = application/xml
 		$0.DotNetNamingPolicy = $6
 		$6.DirectoryNamespaceAssociation = PrefixedHierarchical
 		$6.ResourceNamePolicy = MSBuild
