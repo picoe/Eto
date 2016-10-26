@@ -66,12 +66,12 @@ namespace Eto.WinForms.Forms
 		{
 			set
 			{
-				var sdimage = value.ControlObject as sd.Image;
-				if (sdimage != null)
-				{
-					Control.SetImage(sdimage);
-					Update();
-				}
+				var dib = (value as Bitmap)?.ToDIB();
+				if (dib != null)
+					Control.SetData(swf.DataFormats.Dib, dib);
+				else
+					Control.SetImage(value.ToSD());
+				Update();
 			}
 			get
 			{
