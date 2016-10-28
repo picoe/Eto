@@ -82,7 +82,7 @@ namespace Eto.Wpf.Drawing
 			drawingVisual = new swm.DrawingVisual();
 			visual = drawingVisual;
 			Control = drawingVisual.RenderOpen();
-			Control.DrawImage(image.ControlObject as swm.ImageSource, bounds);
+			Control.DrawImage(image.ToWpf(), bounds);
         }
 
 		protected override void Initialize()
@@ -323,14 +323,13 @@ namespace Eto.Wpf.Drawing
 			{
 				Control.Close();
 				var handler = (BitmapHandler)image.Handler;
-				var bmp = handler.Control;
+				var bmp = image.ToWpf();
 				var newbmp = bmp as swmi.RenderTargetBitmap;
-				if (newbmp == null)
-				{
+				if (newbmp == null || newbmp.IsFrozen)
 					newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
-					handler.SetBitmap(newbmp);
-				}
+
 				newbmp.RenderWithCollect(visual);
+				handler.SetBitmap(newbmp);
 				return true;
 			}
 			return false;
