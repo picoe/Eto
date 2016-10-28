@@ -239,7 +239,7 @@ namespace Eto.Test.UnitTests
 		/// <param name="test">Delegate to execute on the form when shown</param>
 		/// <param name="replay">Replay the init and test again after shown</param>
 		/// <param name="timeout">Timeout to wait for the operation to complete</param>
-		public static void Shown<T>(Func<Form, T> init, Action<T> test, bool replay = false, int timeout = DefaultTimeout)
+		public static void Shown<T>(Func<Form, T> init, Action<T> test = null, bool replay = false, int timeout = DefaultTimeout)
 			where T : Control
 		{
 			var application = Application;
@@ -251,15 +251,18 @@ namespace Eto.Test.UnitTests
 				{
 					try
 					{
-						test(control);
-						if (replay)
+						if (test != null)
 						{
-							form.Content = null;
-							control = init(form);
-							if (control != null && form.Content == null && control != form)
-								form.Content = control;
-							if (application == null)
-								test(control);
+							test(control);
+							if (replay)
+							{
+								form.Content = null;
+								control = init(form);
+								if (control != null && form.Content == null && control != form)
+									form.Content = control;
+								if (application == null)
+									test(control);
+							}
 						}
 					}
 					catch (Exception ex)
