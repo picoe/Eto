@@ -1,4 +1,5 @@
 ﻿using Eto.Drawing;
+using Eto.Forms;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace Eto.Test.UnitTests.Drawing
 {
 	[TestFixture]
-	public class BitmapTests
+	public class BitmapTests : TestBase
 	{
 		public BitmapTests()
 		{
@@ -194,5 +195,94 @@ namespace Eto.Test.UnitTests.Drawing
 						}
 			}
 		}
+
+		[Test]
+		public void BitmapFromBackgroundThreadShouldBeUsable()
+		{
+			// we are running tests in a background thread already, just generate it there.
+			var bmp = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
+			using (var g = new Graphics(bmp))
+			{
+				g.DrawLine(Colors.Blue, 0, 0, 100, 100);
+			}
+
+			// test showing it on a form
+			Shown(f => new ImageView { Image = bmp });
+		}
+
+		[Test]
+		public void BitmapShouldBeEditableFromUIThread()
+		{
+			// we are running tests in a background thread already, just generate it there.
+			var bmp = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
+			// test showing it on a form
+			Shown(
+				f => {
+					using (var g = new Graphics(bmp))
+					{
+						g.DrawLine(Colors.Blue, 0, 0, 100, 100);
+					}
+
+					return new ImageView { Image = bmp };
+				});
+		}
+
+		[Test]
+		public async Task BitmapShouldAllowMultipleThreads()
+		{
+			var bmp = new Bitmap(30, 30, PixelFormat.Format32bppRgba);
+			await Task.Run(() =>
+			{
+				using (var g = new Graphics(bmp))
+				{
+					g.FillRectangle(Colors.Blue, 0, 0, 10, 10);
+				}
+			});
+			await Task.Run(() =>
+			{
+				using (var g = new Graphics(bmp))
+				{
+					g.FillRectangle(Colors.Green, 10, 0, 10, 10);
+				}
+			});
+
+			await Task.Run(() =>
+			{
+				using (var bd = bmp.Lock())
+				{
+					for (int y = 0; y < 10; y++)
+						for (int x = 20; x < 30; x++)
+							bd.SetPixel(x, y, Colors.Red);
+				}
+			});
+
+			// test output in test thread
+			Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0));
+			Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0));
+			Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0));
+
+			using (var bd = bmp.Lock())
+			{
+				Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0));
+				Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0));
+				Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0));
+			}
+			Shown(f => new ImageView { Image = bmp }, 
+				iv => {
+
+				// also test in UI thread
+				Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0));
+				Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0));
+				Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0));
+
+				using (var bd = bmp.Lock())
+				{
+					Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0));
+					Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0));
+					Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0));
+				}
+			});
+		}
+
 	}
 }
