@@ -494,5 +494,18 @@ namespace Eto.WinForms.Forms
 				throw new NotImplementedException();
 			}
 		}
+
+		public bool CanFocus
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

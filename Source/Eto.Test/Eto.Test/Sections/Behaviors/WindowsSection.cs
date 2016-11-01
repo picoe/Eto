@@ -22,6 +22,7 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox setOwnerCheckBox;
 		CheckBox visibleCheckBox;
 		CheckBox showActivatedCheckBox;
+		CheckBox canFocusCheckBox;
 
 		static readonly object CancelCloseKey = new object();
 		public bool CancelClose
@@ -35,7 +36,7 @@ namespace Eto.Test.Sections.Behaviors
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, Resizable(), Minimizable(), Maximizable(), CreateCancelClose(), null);
-			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), null);
+			layout.AddSeparateRow(null, ShowInTaskBar(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControls(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
@@ -169,6 +170,20 @@ namespace Eto.Test.Sections.Behaviors
 					child.ShowInTaskbar = showInTaskBarCheckBox.Checked ?? false;
 			};
 			return showInTaskBarCheckBox;
+		}
+
+		Control CreateCanFocus()
+		{
+			canFocusCheckBox = new CheckBox {
+				Text = "CanFocus",
+				Checked = true
+			};
+			canFocusCheckBox.CheckedChanged += (sender, e) => {
+				var form = child as Form;
+				if (form != null)
+					form.CanFocus = canFocusCheckBox.Checked ?? false;
+			};
+			return canFocusCheckBox;
 		}
 
 		Control TopMost()
@@ -370,6 +385,7 @@ namespace Eto.Test.Sections.Behaviors
 				child = form;
 				show = form.Show;
 				form.ShowActivated = showActivatedCheckBox.Checked == true;
+				form.CanFocus = canFocusCheckBox.Checked == true;
 			}
 			else
 			{

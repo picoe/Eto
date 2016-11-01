@@ -11,13 +11,16 @@ using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.IO;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.ComponentModel;
 
 namespace Eto.Test.UnitTests
 {
 	/// <summary>
 	/// Manual test category
 	/// </summary>
-	public class ManualTestAttribute : CategoryAttribute
+	public class ManualTestAttribute : NUnit.Framework.CategoryAttribute
 	{
 		public ManualTestAttribute()
 			: base(TestBase.ManualTestCategory)
@@ -349,6 +352,63 @@ namespace Eto.Test.UnitTests
 			var tcs = new TaskCompletionSource<TEventArgs>();
 			hookEvent((sender, e) => tcs.SetResult(e));
 			return tcs.Task;
+		}
+
+		public static PropertyTestInfo PropertyTest<T>(Func<T> create, params Expression<Func<T, object>>[] param)
+		{
+			return new PropertyTestInfo
+			{
+				Type = typeof(T),
+				Create = () => create(),
+				Properties = param.Select(r => r.GetMemberInfo().Member.Name).ToList()
+			};
+		}
+
+		public static PropertyTestInfo PropertyTest<T>(params Expression<Func<T, object>>[] param)
+			where T: new()
+		{
+			return new PropertyTestInfo
+			{
+				Type = typeof(T),
+				Create = () => new T(),
+				Properties = param.Select(r => r.GetMemberInfo().Member.Name).ToList()
+			};
+		}
+
+		public static void TestProperties<T>(Func<Form, T> create, params Expression<Func<T, object>>[] properties)
+		{
+			PropertyTestInfo test = null;
+			Shown(form => {
+				var ctl = create(form);
+				test = PropertyTest<T>(() => ctl, properties);
+				test.Run();
+				return ctl as Control;
+			}, ctl => test.Run());
+		}
+
+		public class PropertyTestInfo
+		{
+			public Type Type { get; set; }
+			public Func<object> Create { get; set; }
+			public List<string> Properties { get; set; }
+
+			public void Run()
+			{
+				var obj = Create != null ? Create() : Activator.CreateInstance(Type);
+				foreach (var propertyName in Properties)
+				{
+					var propertyInfo = obj.GetType().GetRuntimeProperty(propertyName);
+					var defValAttr = propertyInfo.GetCustomAttribute<DefaultValueAttribute>();
+					var defaultValue = defValAttr != null ? defValAttr.Value : propertyInfo.PropertyType.GetTypeInfo().IsValueType ? Activator.CreateInstance(propertyInfo.PropertyType) : null;
+					var val = propertyInfo.GetValue(obj);
+					Assert.AreEqual(defaultValue, val, string.Format("Property '{0}' of type '{1}' is expected to be '{2}'", propertyName, Type.Name, defaultValue));
+				}
+			}
+
+			public override string ToString()
+			{
+				return $"{Type}: {string.Join(",", Properties)}";
+			}
 		}
 	}
 }
