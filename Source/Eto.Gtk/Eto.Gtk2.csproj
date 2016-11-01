@@ -23,12 +23,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>..\..\BuildOutput\net40\Debug\</OutputPath>
-    <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
+    <DefineConstants>CAIRO;DEBUG;TRACE;GTK2;NET40</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\net40\Release\</OutputPath>
+    <DefineConstants>CAIRO;TRACE;GTK2;NET40</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>

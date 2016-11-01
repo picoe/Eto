@@ -338,7 +338,7 @@ namespace Eto
 		/// <returns>true if the property was changed, false if not</returns>
 		public bool Set<T>(object key, T value, Action propertyChanged, T defaultValue = default(T))
 		{
-			var existing = Get<T>(key);
+			var existing = Get<T>(key, defaultValue);
 			if (!IsEqual(existing, value))
 			{
 				Set<T>(key, value, defaultValue);

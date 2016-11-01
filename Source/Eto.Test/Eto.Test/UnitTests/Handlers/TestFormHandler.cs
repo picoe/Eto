@@ -21,5 +21,7 @@ namespace Eto.Test.UnitTests.Handlers
 		}
 
 		public bool ShowActivated { get; set; }
+
+		public bool CanFocus { get; set; }
 	}
 }

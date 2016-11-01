@@ -52,6 +52,10 @@ namespace Eto.Mac.Forms
 		{
 		}
 
+		public bool? CanFocus { get; set; } = true;
+
+		public override bool CanBecomeKeyWindow => CanFocus ?? base.CanBecomeKeyWindow;
+
 		public bool DisableCenterParent { get; set; }
 
 		public override void Center()
