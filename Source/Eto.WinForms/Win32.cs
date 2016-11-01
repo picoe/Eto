@@ -105,7 +105,8 @@ namespace Eto
 		[Flags]
 		public enum WS_EX : uint
 		{
-			TOOLWINDOW = 0x80
+			TOOLWINDOW = 0x80,
+			NOACTIVATE = 0x08000000
 		}
 
 		public enum WM
