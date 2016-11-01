@@ -10,6 +10,7 @@ using Eto.Wpf.CustomControls;
 using Eto.Wpf.Forms.Menu;
 using System.ComponentModel;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Eto.Wpf.Forms
 {
@@ -148,7 +149,7 @@ namespace Eto.Wpf.Forms
 							app.Callback.OnTerminating(app.Widget, args);
 						}
 						e.Cancel = args.Cancel;
-						IsApplicationClosing = !args.Cancel 
+						IsApplicationClosing = !args.Cancel
 							&& sw.Application.Current.MainWindow == Control
 							&& sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose;
 					};
@@ -319,6 +320,42 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		internal void SetStyle(Win32.WS_EX style, bool value)
+		{
+			var styleInt = Win32.GetWindowLong(WindowHandle, Win32.GWL.EXSTYLE);
+			if (value)
+				styleInt |= (uint)style;
+			else
+				styleInt &= (uint)~style;
+
+			Win32.SetWindowLong(WindowHandle, Win32.GWL.EXSTYLE, styleInt);
+		}
+
+		internal void SetStyle(Win32.WS style, bool value)
+		{
+			var styleInt = Win32.GetWindowLong(WindowHandle, Win32.GWL.STYLE);
+			if (value)
+				styleInt |= (uint)style;
+			else
+				styleInt &= (uint)~style;
+
+			Win32.SetWindowLong(WindowHandle, Win32.GWL.STYLE, styleInt);
+		}
+
+		sw.Interop.WindowInteropHelper windowInterop;
+		IntPtr WindowHandle
+		{
+			get
+			{
+				if (windowInterop == null)
+				{
+					windowInterop = new sw.Interop.WindowInteropHelper(Control);
+					windowInterop.EnsureHandle();
+				}
+				return windowInterop.Handle;
+			}
+		}
+
 		protected virtual void SetResizeMode()
 		{
 			if (resizable)
@@ -328,20 +365,8 @@ namespace Eto.Wpf.Forms
 			else
 				Control.ResizeMode = sw.ResizeMode.NoResize;
 
-			var hwnd = new sw.Interop.WindowInteropHelper(Control).Handle;
-			if (hwnd != IntPtr.Zero)
-			{
-				var val = Win32.GetWindowLong(hwnd, Win32.GWL.STYLE);
-				if (maximizable)
-					val |= (uint)Win32.WS.MAXIMIZEBOX;
-				else
-					val &= ~(uint)Win32.WS.MAXIMIZEBOX;
-				if (minimizable)
-					val |= (uint)Win32.WS.MINIMIZEBOX;
-				else
-					val &= ~(uint)Win32.WS.MINIMIZEBOX;
-				Win32.SetWindowLong(hwnd, Win32.GWL.STYLE, val);
-			}
+			SetStyle(Win32.WS.MAXIMIZEBOX, maximizable);
+			SetStyle(Win32.WS.MINIMIZEBOX, minimizable);
 		}
 
 		public virtual bool ShowInTaskbar
@@ -542,19 +567,26 @@ namespace Eto.Wpf.Forms
 		{
 			if (Control.WindowState == sw.WindowState.Minimized)
 				Control.WindowState = sw.WindowState.Normal;
-			Control.Activate();
+
+			if (!Control.Focusable)
+			{
+				var hWnd = WindowHandle;
+				if (hWnd != IntPtr.Zero)
+					Win32.SetWindowPos(hWnd, Win32.HWND_TOP, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE);
+			}
+			else
+				Control.Activate();
 		}
 
 		public void SendToBack()
 		{
 			if (Topmost)
 				return;
-			var hWnd = new sw.Interop.WindowInteropHelper(Control).Handle;
+			var hWnd = WindowHandle;
 			if (hWnd != IntPtr.Zero)
-				Win32.SetWindowPos(hWnd, Win32.HWND_BOTTOM, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE);
+				Win32.SetWindowPos(hWnd, Win32.HWND_BOTTOM, 0, 0, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOMOVE | Win32.SWP.NOACTIVATE);
 			var window = sw.Application.Current.Windows.OfType<sw.Window>().FirstOrDefault(r => r != Control);
-			if (window != null)
-				window.Focus();
+			window?.Focus();
 		}
 
 		public override Color BackgroundColor

@@ -21,6 +21,8 @@ namespace Eto.Android.Forms
 		}
 
 		public bool ShowActivated { get; set; }
+
+		public bool CanFocus { get; set; }
 	}
 }
 

@@ -106,5 +106,16 @@ namespace Eto.Mac.Forms
 		}
 
 		public bool ShowActivated { get; set; } = true;
+
+		public bool CanFocus
+		{
+			get { return (Control as EtoWindow)?.CanFocus ?? Control.CanBecomeKeyWindow; }
+			set
+			{
+				var etoWindow = Control as EtoWindow;
+				if (etoWindow != null)
+					etoWindow.CanFocus = value;
+			}
+		}
 	}
 }
