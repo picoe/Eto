@@ -20,7 +20,7 @@
     <DefineConstants>DEBUG;OSX;DESKTOP;MONOMAC;Mac64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ConsolePause>false</ConsolePause>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
@@ -30,6 +30,7 @@
     <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <ConsolePause>false</ConsolePause>
     <DefineConstants>OSX;DESKTOP;MONOMAC;Mac64</DefineConstants>
     <DebugSymbols>true</DebugSymbols>

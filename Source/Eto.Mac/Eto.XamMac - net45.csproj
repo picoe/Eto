@@ -18,7 +18,7 @@
     <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC;SDCOMPAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>True</DebugSymbols>
@@ -39,6 +39,7 @@
     <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>OSX;DESKTOP;XAMMAC;SDCOMPAT</DefineConstants>
