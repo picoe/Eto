@@ -205,7 +205,7 @@ namespace Eto.GtkSharp
 				case MessageBoxButtons.YesNo:
 					return Gtk.ButtonsType.YesNo;
 				case MessageBoxButtons.YesNoCancel:
-					return Gtk.ButtonsType.YesNo;
+					return Gtk.ButtonsType.None;
 			}
 		}
 
