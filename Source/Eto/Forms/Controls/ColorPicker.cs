@@ -46,6 +46,31 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the user can adjust the Alpha component of the Color.
+		/// </summary>
+		/// <remarks>
+		/// This may or may not be supported in all platforms (e.g. WinForms).  
+		/// Use <see cref="SupportsAllowAlpha"/> to determine if the current platform supports this feature.
+		/// </remarks>
+		/// <value><c>true</c> to allow adjustment of alpha; otherwise, <c>false</c>.</value>
+		/// <seealso cref="SupportsAllowAlpha"/>
+		public bool AllowAlpha
+		{
+			get { return Handler.AllowAlpha; }
+			set { Handler.AllowAlpha = value; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating that the current platform supports the <see cref="AllowAlpha"/> property.
+		/// </summary>
+		/// <remarks>
+		/// If not supported, the setting will be ignored.
+		/// </remarks>
+		/// <value><c>true</c> AllowAlpha is supported; otherwise, <c>false</c>.</value>
+		/// <seealso cref="AllowAlpha"/>
+		public bool SupportsAllowAlpha => Handler.SupportsAllowAlpha;
+
+		/// <summary>
 		/// Gets a binding to the <see cref="Value"/> property.
 		/// </summary>
 		/// <value>The value binding.</value>
@@ -107,6 +132,27 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The selected color.</value>
 			Color Color { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the user can adjust the Alpha component of the Color.
+			/// </summary>
+			/// <remarks>
+			/// This may or may not be supported in all platforms (e.g. WinForms).  
+			/// Use <see cref="SupportsAllowAlpha"/> to determine if the current platform supports this feature.
+			/// </remarks>
+			/// <value><c>true</c> to allow adjustment of alpha; otherwise, <c>false</c>.</value>
+			/// <seealso cref="SupportsAllowAlpha"/>
+			bool AllowAlpha { get; set; }
+
+			/// <summary>
+			/// Gets a value indicating that the current platform supports the <see cref="AllowAlpha"/> property.
+			/// </summary>
+			/// <remarks>
+			/// If not supported, the setting will be ignored.
+			/// </remarks>
+			/// <value><c>true</c> AllowAlpha is supported; otherwise, <c>false</c>.</value>
+			/// <seealso cref="AllowAlpha"/>
+			bool SupportsAllowAlpha { get; }
 		}
 	}
 }

@@ -46,7 +46,6 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <Import Project="..\Shared\Common.props" />
@@ -283,6 +282,9 @@
     </Compile>
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\ColorDialogHandlerGtk34.cs">
+      <Link>ColorDialogHandlerGtk34.cs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

@@ -34,15 +34,24 @@ namespace Eto.Mac.Forms
 		[Export("changeColor:")]
 		public void ChangeColor(NSColorPanel panel)
 		{
-			Handler.Color = panel.Color.UsingColorSpace (NSColorSpace.DeviceRGB).ToEto ();
-			Handler.Callback.OnColorChanged(Handler.Widget, EventArgs.Empty);
+			var h = Handler;
+			if (h != null)
+			{
+				h.Color = panel.Color.UsingColorSpace(NSColorSpace.DeviceRGB).ToEto(false);
+				h.Callback.OnColorChanged(h.Widget, EventArgs.Empty);
+			}
+			else
+			{
+				// the ColorDialog was probably GC'd, so unhook gracefully
+				Instance = null;
+			}
 		}
 		
 		public override void WillClose (NSNotification notification)
 		{
-			Handler.Control.SetTarget (null);
-			Handler.Control.SetAction (null);
-			ColorHandler.Instance = null;
+			NSColorPanel.SharedColorPanel.SetTarget (null);
+			NSColorPanel.SharedColorPanel.SetAction (null);
+			Instance = null;
 		}
 		
 		[Export("modalClosed:")]
@@ -70,8 +79,12 @@ namespace Eto.Mac.Forms
 
 		public Color Color { get; set; }
 
+		public bool AllowAlpha { get; set; }
+
+		public bool SupportsAllowAlpha => true;
+
 		#region IDialog implementation
-		
+
 		public DialogResult ShowDialog (Window parent)
 		{
 			//Control = new NSColorPanel();
@@ -92,6 +105,7 @@ namespace Eto.Mac.Forms
 			
 			Control.SetTarget (ColorHandler.Instance);
 			Control.SetAction (new Selector("changeColor:"));
+			Control.ShowsAlpha = AllowAlpha;
 
 			//Control.Continuous = false;
 			bool isModal = false;
