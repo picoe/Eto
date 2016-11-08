@@ -116,11 +116,6 @@ namespace Eto.GtkSharp
 			p.Add<Scrollable.IHandler>(() => new ScrollableHandler());
 			p.Add<SearchBox.IHandler>(() => new SearchBoxHandler());
 			p.Add<Slider.IHandler>(() => new SliderHandler());
-			#if GTK3
-			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
-			#else
-			p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());
-			#endif
 			p.Add<Splitter.IHandler>(() => new SplitterHandler());
 			p.Add<TabControl.IHandler>(() => new TabControlHandler());
 			p.Add<TabPage.IHandler>(() => new TabPageHandler());
@@ -176,6 +171,17 @@ namespace Eto.GtkSharp
 
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
+
+			#if GTK3
+			if (Gtk.Global.MinorVersion >= 4)
+				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandlerGtk34());
+			else
+				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
+			#else
+			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+			p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());
+			#endif
 		}
 	}
 }

@@ -35,10 +35,6 @@
   </PropertyGroup>
   <Import Project="..\Shared\Common.props" />
   <ItemGroup>
-    <Reference Include="ColorPicker">
-      <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="ReachFramework" />
@@ -133,7 +129,6 @@
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandlerXceed.cs" />
     <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Cells\CellHandler.cs" />
@@ -250,9 +245,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
-      <Link>CustomControls\Assemblies\ColorPicker.dll</Link>
-    </None>
     <EmbeddedResource Include="..\..\Libraries\SHDocVw\Interop.SHDocVw.dll">
       <Link>CustomControls\Assemblies\Interop.SHDocVw.dll</Link>
     </EmbeddedResource>
