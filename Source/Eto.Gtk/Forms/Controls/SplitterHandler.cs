@@ -320,14 +320,14 @@ namespace Eto.GtkSharp.Forms.Controls
 				var child2 = old.Child2;
 				old.Remove(child2);
 				old.Remove(child1);
-				Control.Pack1(child1 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
-				Control.Pack2(child2 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
+				Control.Pack1(child1 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, false);
+				Control.Pack2(child2 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, false);
 				old.Destroy();
 			}
 			else
 			{
-				Control.Pack1(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
-				Control.Pack2(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
+				Control.Pack1(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, false);
+				Control.Pack2(EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, false);
 			}
 
 			container.Child = Control;
@@ -460,7 +460,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (Control.Child1 != null)
 					Control.Remove(Control.Child1);
 				var widget = panel1 != null ? panel1.GetContainerWidget() : EmptyContainer();
-				Control.Pack1(widget, fixedPanel != SplitterFixedPanel.Panel1, true);
+				Control.Pack1(widget, fixedPanel != SplitterFixedPanel.Panel1, false);
 				if (setposition)
 					Control.Position = position.Value;
 				widget.ShowAll();
@@ -477,7 +477,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (Control.Child2 != null)
 					Control.Remove(Control.Child2);
 				var widget = panel2 != null ? panel2.GetContainerWidget() : EmptyContainer();
-				Control.Pack2(widget, fixedPanel != SplitterFixedPanel.Panel2, true);
+				Control.Pack2(widget, fixedPanel != SplitterFixedPanel.Panel2, false);
 				if (setposition)
 					Control.Position = position.Value;
 				widget.ShowAll();
