@@ -18,8 +18,6 @@
     <OutputRoot>..\..\..</OutputRoot>
     <LibrariesPath>..\..\Libraries</LibrariesPath>
     <DefineConstants>CAIRO;TRACE;GTK2</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
