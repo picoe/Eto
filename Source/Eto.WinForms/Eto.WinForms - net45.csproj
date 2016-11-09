@@ -26,13 +26,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\net45\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE;WINFORMS</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\net45\Release</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>

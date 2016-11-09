@@ -43,7 +43,7 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			using (Widget.Platform.Context)
 			{
-				var picker = new ColorDialog { Color = Color };
+				var picker = new ColorDialog { Color = Color, AllowAlpha = AllowAlpha };
 				var result = picker.ShowDialog(Widget);
 				if (result == DialogResult.Ok)
 				{
@@ -65,6 +65,10 @@ namespace Eto.WinForms.Forms.Controls
 				}
 			}
 		}
+
+		public bool AllowAlpha { get; set; }
+
+		public bool SupportsAllowAlpha => false;
 
 		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
 		public override bool ShouldBubbleEvent(swf.Message msg)

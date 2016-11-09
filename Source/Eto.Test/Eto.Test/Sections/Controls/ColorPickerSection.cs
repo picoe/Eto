@@ -1,37 +1,55 @@
 using Eto.Forms;
 using Eto.Drawing;
+using System.ComponentModel;
 
 namespace Eto.Test.Sections.Controls
 {
 	[Section("Controls", typeof(ColorPicker))]
-	public class ColorPickerSection : Panel
+	public class ColorPickerSection : Panel, INotifyPropertyChanged
 	{
+		bool allowAlpha;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public bool AllowAlpha
+		{
+			get { return allowAlpha; }
+			set
+			{
+				if (allowAlpha != value)
+				{
+					allowAlpha = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AllowAlpha)));
+				}
+			}
+		}
+
 		public ColorPickerSection()
 		{
-			Content = new TableLayout
+			Content = new StackLayout
 			{
-				Spacing = new Size(5, 5),
-				Padding = new Padding(10),
-				Rows = 
+				Spacing = 5,
+				Padding = 10,
+				Items = 
 				{
-					new TableRow(
-						"Default",
-						Default(),
-						null
-					),
-					new TableRow(
-						"Initial Value",
-						InitialValue(),
-						null
-					),
-					null
+					CreateAllowAlpha(),
+					TableLayout.Horizontal(5, "Default", Default()),
+					TableLayout.Horizontal(5, "Initial Value", InitialValue())
 				}
 			};
+		}
+
+		Control CreateAllowAlpha()
+		{
+			var checkBox = new CheckBox { Text = "AllowAlpha" };
+			checkBox.CheckedBinding.Bind(this, c => c.AllowAlpha);
+			return checkBox;
 		}
 
 		Control Default()
 		{
 			var control = new ColorPicker();
+			control.Bind(c => c.AllowAlpha, this, c => c.AllowAlpha);
 			LogEvents(control);
 			return control;
 		}
@@ -39,6 +57,7 @@ namespace Eto.Test.Sections.Controls
 		Control InitialValue()
 		{
 			var control = new ColorPicker { Value = Colors.Blue };
+			control.Bind(c => c.AllowAlpha, this, c => c.AllowAlpha);
 			LogEvents(control);
 			return control;
 		}

@@ -55,5 +55,13 @@ namespace Eto.Wpf.Forms.Controls
 			}
 			set { Control.SelectedColor = value.ToWpf(); }
 		}
+
+		public bool AllowAlpha
+		{
+			get { return Control.UsingAlphaChannel; }
+			set { Control.UsingAlphaChannel = value; }
+		}
+
+		public bool SupportsAllowAlpha => true;
 	}
 }

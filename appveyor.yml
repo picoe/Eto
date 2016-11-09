@@ -1,6 +1,6 @@
 version: 2.3.0.{build}
 install:
-- curl -fsS -o gtk-sharp.msi %GTKSHARP_LOCATION%/gtk-sharp-2.12.26.msi
+- curl -fsS -o gtk-sharp.msi %GTKSHARP_LOCATION%/gtk-sharp-2.12.38.msi
 - msiexec /i gtk-sharp.msi /qn /norestart
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%

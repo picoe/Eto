@@ -18,19 +18,18 @@
     <OutputRoot>..\..\..</OutputRoot>
     <LibrariesPath>..\..\Libraries</LibrariesPath>
     <DefineConstants>CAIRO;TRACE;GTK2</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>..\..\BuildOutput\net45\Debug\</OutputPath>
     <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
@@ -262,6 +261,7 @@
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
     <Compile Include="Drawing\IconFrameHandler.cs" />
+    <Compile Include="Forms\ColorDialogHandlerGtk34.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

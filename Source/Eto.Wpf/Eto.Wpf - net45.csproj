@@ -25,23 +25,20 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\net45\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\net45\Release\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="..\Shared\Common.props" />
   <ItemGroup>
-    <Reference Include="ColorPicker">
-      <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -137,7 +134,6 @@
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Cells\CellHandler.cs" />
     <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
@@ -238,7 +234,7 @@
       <Link>EmbeddedAssemblyLoader.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\ColorPickerHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandlerXceed.cs" />
+    <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Forms\Controls\CalendarHandler.cs" />
     <Compile Include="Forms\Controls\LinkButtonHandler.cs" />
     <Compile Include="WpfHelpers.cs" />
@@ -253,9 +249,6 @@
   <ItemGroup>
     <EmbeddedResource Include="..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.Toolkit.dll">
       <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
-      <Link>CustomControls\Assemblies\ColorPicker.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\Libraries\SHDocVw\Interop.SHDocVw.dll">
       <Link>CustomControls\Assemblies\Interop.SHDocVw.dll</Link>

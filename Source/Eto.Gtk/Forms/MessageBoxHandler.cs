@@ -28,11 +28,15 @@ namespace Eto.GtkSharp.Forms
 			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
 			if (!string.IsNullOrEmpty(caption))
 				control.Title = caption;
+			// must add buttons manually for this case
 			if (Buttons == MessageBoxButtons.YesNoCancel)
 			{
-				// must add cancel manually
-				var b = (Gtk.Button)control.AddButton(Gtk.Stock.Cancel, (int)Gtk.ResponseType.Cancel);
-				b.UseStock = true;
+				var bn = (Gtk.Button)control.AddButton(Gtk.Stock.No, (int)Gtk.ResponseType.No);
+				bn.UseStock = true;
+				var bc = (Gtk.Button)control.AddButton(Gtk.Stock.Cancel, (int)Gtk.ResponseType.Cancel);
+				bc.UseStock = true;
+				var by = (Gtk.Button)control.AddButton(Gtk.Stock.Yes, (int)Gtk.ResponseType.Yes);
+				by.UseStock = true;
 			}
 			control.DefaultResponse = DefaultButton.ToGtk(Buttons);
 			int ret = control.Run();
