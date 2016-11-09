@@ -32,6 +32,7 @@ namespace Eto.Mac.Forms.Controls
 				var handler = GetHandler(this) as ColorPickerHandler;
 				if (handler != null)
 				{
+					NSColorPanel.SharedColorPanel.ShowsAlpha = handler.AllowAlpha;
 					handler.TriggerMouseCallback();
 				}
 			}
@@ -78,8 +79,28 @@ namespace Eto.Mac.Forms.Controls
 
 		public Color Color
 		{
-			get { return Control.Color.ToEto(); }
+			get { return Control.Color.ToEto(false); }
 			set { Control.Color = value.ToNSUI(); }
 		}
+
+		bool allowAlpha;
+		public bool AllowAlpha
+		{
+			get { return allowAlpha; }
+			set
+			{
+				if (allowAlpha != value)
+				{
+					allowAlpha = value;
+					if (Control.IsActive)
+					{
+						// if it's currently active, set the color panel properties directly
+						NSColorPanel.SharedColorPanel.ShowsAlpha = value;
+					}
+				}
+			}
+		}
+
+		public bool SupportsAllowAlpha => true;
 	}
 }

@@ -130,8 +130,7 @@ namespace Eto.Wpf
 			// Forms
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
-			//p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
-			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandlerXceed());
+			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
 			p.Add<FontDialog.IHandler>(() => new FontDialogHandler());

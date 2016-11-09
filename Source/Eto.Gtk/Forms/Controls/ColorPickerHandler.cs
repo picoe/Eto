@@ -1,5 +1,6 @@
 ﻿using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -42,9 +43,20 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Eto.Drawing.Color Color
 		{
-			get { return Control.Color.ToEto(); }
-			set { Control.Color = value.ToGdk(); }
+			get { return Control.Color.ToEto(Control.Alpha); }
+			set {
+				Control.Color = value.ToGdk();
+				Control.Alpha = (ushort)(value.A * ushort.MaxValue);
+			}
 		}
+
+		public bool AllowAlpha
+		{
+			get { return Control.UseAlpha; }
+			set { Control.UseAlpha = value; }
+		}
+
+		public bool SupportsAllowAlpha => true;
 	}
 }
 

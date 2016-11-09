@@ -42,9 +42,14 @@ namespace Eto.GtkSharp
             [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
             public static extern void gtk_color_chooser_get_rgba(IntPtr chooser, out Gdk.RGBA color);
 
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
 #endif
 		}
 
@@ -80,6 +85,11 @@ namespace Eto.GtkSharp
             [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
             public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
 #endif
         }
 
@@ -115,6 +125,11 @@ namespace Eto.GtkSharp
             [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
             public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
 #endif
         }
 
@@ -144,6 +159,13 @@ namespace Eto.GtkSharp
 
             public static readonly ColorChooserSet gtk_color_chooser_set_rgba;
 
+			public delegate bool ColorChooserGetAlpha(IntPtr chooser);
+
+			public static readonly ColorChooserGetAlpha gtk_color_chooser_get_use_alpha;
+
+			public delegate void ColorChooserSetAlpha(IntPtr chooser, bool use_alpha);
+
+			public static readonly ColorChooserSetAlpha gtk_color_chooser_set_use_alpha;
 #endif
 		}
 
@@ -201,10 +223,20 @@ namespace Eto.GtkSharp
             return ret;
         }
 
-        public static void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color)
-        {
-            Impl.gtk_color_chooser_set_rgba(chooser, color);
-        }
+		public static void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color)
+		{
+			Impl.gtk_color_chooser_set_rgba(chooser, color);
+		}
+
+		public static void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha)
+		{
+			Impl.gtk_color_chooser_set_use_alpha(chooser, use_alpha);
+		}
+
+		public static bool gtk_color_chooser_get_use_alpha(IntPtr chooser)
+		{
+			return Impl.gtk_color_chooser_get_use_alpha(chooser);
+		}
 
 #endif
 

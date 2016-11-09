@@ -92,6 +92,11 @@ namespace Eto.GtkSharp
 			return new Color((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue);
 		}
 
+		public static Color ToEto(this Gdk.Color color, ushort alpha)
+		{
+			return new Color((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue, (float)alpha / ushort.MaxValue);
+		}
+
 		public static Gdk.Size ToGdk(this Size size)
 		{
 			return new Gdk.Size(size.Width, size.Height);
