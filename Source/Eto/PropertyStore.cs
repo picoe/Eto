@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Eto.Forms;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace Eto
 {
@@ -59,6 +60,61 @@ namespace Eto
 			object value;
 			return TryGetValue(key, out value) ? (T)value : defaultValue;
 		}
+
+		public T Get<TControl, T>(DependencyProperty<TControl, T> property)
+		{
+			var w = Parent as Widget;
+			object value;
+			if (w.Handler2.TryGetValue(Parent, property, out value))
+				return (T)value;
+			return (T)Get<object>(property, property.DefaultValue);
+		}
+
+		public void Set<TControl, T>(DependencyProperty<TControl, T> property, T value)
+		{
+			var w = Parent as Widget;
+			Set((object)property, value, property.DefaultValue);
+			if (!w.Handler2.TrySetValue(Parent, property, value))
+			{
+				Debug.WriteLine(@"WARNING: Property {property} could not be set on this platform");
+			}
+		}
+
+		public void AddEvent<TControl, TValue>(DependencyProperty<TControl, TValue> property, Delegate value)
+		{
+			var key = property.EventKey;
+			object existingDelegate;
+			if (TryGetValue(key, out existingDelegate))
+				this[key] = Delegate.Combine((Delegate)existingDelegate, value);
+			else
+			{
+				Add(key, value);
+			}
+		}
+
+		public void RemoveEvent<TControl, TValue>(DependencyProperty<TControl, TValue> property, Delegate value)
+		{
+			var key = property.EventKey;
+			object existingDelegate;
+			if (TryGetValue(key, out existingDelegate))
+			{
+				this[key] = Delegate.Remove((Delegate)existingDelegate, value);
+			}
+		}
+
+		public void AddEvent<TControl, TArgs>(DependencyEvent<TControl, TArgs> evt, Delegate value)
+			where TArgs : EventArgs
+		{
+			object existingDelegate;
+			if (TryGetValue(evt, out existingDelegate))
+				this[evt] = Delegate.Combine((Delegate)existingDelegate, value);
+			else
+			{
+				evt.Attach((TControl)Parent);
+				Add(evt, value);
+			}
+		}
+
 
 		/// <summary>
 		/// Gets a value from the property store with the specified key of a concrete type

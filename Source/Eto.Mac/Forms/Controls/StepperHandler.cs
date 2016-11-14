@@ -32,6 +32,21 @@ using CGPoint = System.Drawing.PointF;
 
 namespace Eto.Mac.Forms.Controls
 {
+	public class MacViewHandler2<TWidget, TControl> : WidgetHandler2<TWidget, TControl>, IMacControlHandler2
+		where TWidget : Control
+		where TControl : NSView, new()
+	{
+		public virtual NSView GetContainerControl(Widget widget)
+		{
+			return GetControl((TWidget)widget);
+		}
+
+		public SizeF GetPreferredSize(Widget widget, SizeF availableSize)
+		{
+			return SizeF.Empty;
+		}
+	}
+
 	public class StepperHandler : MacControl<NSStepper, Stepper, Stepper.ICallback>, Stepper.IHandler
 	{
 		public class EtoStepper : NSStepper, IMacControl
@@ -49,17 +64,9 @@ namespace Eto.Mac.Forms.Controls
 			};
 		}
 
-		static object ValidDirection_Key = new object();
-
-		public StepperValidDirections ValidDirection
-		{
-			get { return Widget.Properties.Get(ValidDirection_Key, StepperValidDirections.Both); }
-			set { Widget.Properties.Set(ValidDirection_Key, value, UpdateState, StepperValidDirections.Both); }
-		}
-
 		void UpdateState()
 		{
-			switch (ValidDirection)
+			switch (Widget.ValidDirection)
 			{
 				case StepperValidDirections.Both:
 					Control.ValueWraps = true;
@@ -94,12 +101,12 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetStepperEnabled()
 		{
-			Control.Enabled = Enabled && ValidDirection != StepperValidDirections.None;
+			Control.Enabled = Enabled && Widget.ValidDirection != StepperValidDirections.None;
 		}
 
 		StepperDirection? GetDirection()
 		{
-			switch (ValidDirection)
+			switch (Widget.ValidDirection)
 			{
 				case StepperValidDirections.Both:
 					var dir = Control.IntValue == 1 ? StepperDirection.Up : StepperDirection.Down;
@@ -123,22 +130,42 @@ namespace Eto.Mac.Forms.Controls
 			return null;
 		}
 
-		public override void AttachEvent(string id)
+		public override void Initialize(Stepper widget)
 		{
-			switch (id)
+			base.Initialize(widget);
+			GetControl(widget).SizeToFit();
+		}
+
+		public override Action<Stepper, object> SetProperty(object property)
+		{
+			if (property == Stepper.ValidDirectionProperty)
+				return SetValidDirection;
+
+			return base.SetProperty(property);
+		}
+
+		static void SetValidDirection(Stepper c, object value)
+		{
+			(c.Handler as StepperHandler)?.UpdateState();
+		}
+
+		public override Action<Stepper> GetEvent(object evt)
+		{
+			if (evt == Stepper.StepEvent)
+				return AttachStepEvent;
+
+			return base.GetEvent(evt);
+		}
+
+		static void AttachStepEvent(Stepper c)
+		{
+			var h = c.Handler as StepperHandler;
+			h.Control.Activated += (sender, e) =>
 			{
-				case Stepper.StepEvent:
-					Control.Activated += (sender, e) =>
-					{
-						var dir = GetDirection();
-						if (dir != null)
-							Callback.OnStep(Widget, new StepperEventArgs(dir.Value));
-					};
-					break;
-				default:
-					base.AttachEvent(id);
-					break;
-			}
+				var dir = h.GetDirection();
+				if (dir != null)
+					Stepper.StepEvent.Raise(c, new StepperEventArgs(dir.Value));
+			};
 		}
 	}
 }

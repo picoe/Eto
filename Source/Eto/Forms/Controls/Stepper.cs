@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Eto.Forms
 {
@@ -68,25 +69,13 @@ namespace Eto.Forms
 		}
 	}
 
-	/// <summary>
-	/// Control that allows you to "step" through values, usually presented by two buttons arranged vertically with up and down arrows.
-	/// </summary>
-	[Handler(typeof(IHandler))]
 	public class Stepper : Control
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		public static DependencyEvent<Stepper, StepperEventArgs> StepEvent = new DependencyEvent<Stepper, StepperEventArgs>((c, e) => c.OnStep(e));
 
-		/// <summary>
-		/// Identifier for the <see cref="Step"/> event.
-		/// </summary>
-		public const string StepEvent = "Stepper.Step";
-
-		/// <summary>
-		/// Event to handle when the user clicks on one of the step buttons, either up or down.
-		/// </summary>
 		public event EventHandler<StepperEventArgs> Step
 		{
-			add { Properties.AddHandlerEvent(StepEvent, value); }
+			add { Properties.AddEvent(StepEvent, value); }
 			remove { Properties.RemoveEvent(StepEvent, value); }
 		}
 
@@ -94,10 +83,10 @@ namespace Eto.Forms
 		/// Triggers the <see cref="Step"/> event.
 		/// </summary>
 		/// <param name="e">Event arguments</param>
-		protected void OnStep(StepperEventArgs e)
-		{
-			Properties.TriggerEvent(StepEvent, this, e);
-		}
+		protected void OnStep(StepperEventArgs e) => Properties.TriggerEvent(StepEvent, this, e);
+
+
+		public static DependencyProperty<Stepper, StepperValidDirections> ValidDirectionProperty = new DependencyProperty<Stepper, StepperValidDirections>(StepperValidDirections.Both);
 
 		/// <summary>
 		/// Gets or sets the valid directions the stepper will allow the user to click.
@@ -110,61 +99,8 @@ namespace Eto.Forms
 		[DefaultValue(StepperValidDirections.Both)] 
 		public StepperValidDirections ValidDirection
 		{
-			get { return Handler.ValidDirection; }
-			set { Handler.ValidDirection = value; }
-		}
-
-		ICallback callback = new Callback();
-
-		/// <summary>
-		/// Gets the callback.
-		/// </summary>
-		/// <returns>The callback.</returns>
-		protected override object GetCallback() => callback;
-
-		/// <summary>
-		/// Callback interface for the Stepper
-		/// </summary>
-		public new interface ICallback : Control.ICallback
-		{
-			/// <summary>
-			/// Triggers the <see cref="Step"/> event.
-			/// </summary>
-			/// <param name="widget">Widget instance to trigger the event</param>
-			/// <param name="e">Event arguments</param>
-			void OnStep(Stepper widget, StepperEventArgs e);
-		}
-
-		/// <summary>
-		/// Callback implementation for the Stepper
-		/// </summary>
-		protected new class Callback : Control.Callback, ICallback
-		{
-			/// <summary>
-			/// Triggers the <see cref="Step"/> event.
-			/// </summary>
-			/// <param name="widget">Widget instance to trigger the event</param>
-			/// <param name="e">Event arguments</param>
-			public void OnStep(Stepper widget, StepperEventArgs e)
-			{
-				widget.Platform.Invoke(() => widget.OnStep(e));
-			}
-		}
-
-		/// <summary>
-		/// Handler interface for the Stepper
-		/// </summary>
-		public new interface IHandler : Control.IHandler
-		{
-			/// <summary>
-			/// Gets or sets the valid directions the stepper will allow the user to click.
-			/// </summary>
-			/// <remarks>
-			/// On some platforms, the up and/or down buttons will not appear disabled, but will not trigger any events when they are 
-			/// not set as a valid direction.
-			/// </remarks>
-			/// <value>The valid directions for the stepper.</value>
-			StepperValidDirections ValidDirection { get; set; }
+			get { return Properties.Get(ValidDirectionProperty); }
+			set { Properties.Set(ValidDirectionProperty, value); }
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Diagnostics;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -27,7 +28,7 @@ namespace Eto
 	/// </example>
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<TWidget> : Widget.IHandler, IDisposable
+	public abstract class WidgetHandler<TWidget> : Widget.IHandler, IDisposable, IHandler2
 		where TWidget: Widget
 	{
 		const string InstanceEventSuffix = ".Instance";
@@ -177,6 +178,97 @@ namespace Eto
 		protected virtual void Dispose(bool disposing)
 		{
 		}
+
+		public virtual void Initialize(TWidget widget)
+		{
+		}
+
+		public virtual Action<TWidget> GetEvent(object evt)
+		{
+			return null;
+		}
+
+		public virtual Func<TWidget, object> GetProperty(object property)
+		{
+			return null;
+		}
+
+		public virtual Action<TWidget, object> SetProperty(object property)
+		{
+			return null;
+		}
+
+		static Dictionary<object, Action<TWidget>> s_events;
+		static Dictionary<object, Action<TWidget>> events => s_events ?? (s_events = new Dictionary<object, Action<TWidget>>());
+		static Dictionary<object, Func<TWidget, object>> s_getprops;
+		static Dictionary<object, Func<TWidget, object>> getprops => s_getprops ?? (s_getprops = new Dictionary<object, Func<TWidget, object>>());
+		static Dictionary<object, Action<TWidget, object>> s_setprops;
+		static Dictionary<object, Action<TWidget, object>> setprops => s_setprops ?? (s_setprops = new Dictionary<object, Action<TWidget, object>>());
+
+
+		void IHandler2.AttachEvent(object widget, object evt) => GetAttachEvent(evt)?.Invoke((TWidget)widget);
+
+		Action<TWidget> GetAttachEvent(object evt)
+		{
+			Action<TWidget> del;
+			if (events.TryGetValue(evt, out del))
+				return del;
+			
+			del = GetEvent(evt);
+			events.Add(evt, del);
+			return del;
+		}
+
+		bool IHandler2.SupportsEvent(object evt) => GetAttachEvent(evt) != null;
+
+		bool IHandler2.SupportsProperty(object prop) => GetSetProperty(prop) != null || GetGetProperty(prop) != null;
+
+		bool IHandler2.TryGetValue(object widget, object prop, out object value)
+		{
+			var getDelegate = GetProperty(prop);
+			if (getDelegate != null)
+			{
+				value = getDelegate((TWidget)widget);
+				return true;
+			}
+			value = null;
+			return false;
+		}
+
+		bool IHandler2.TrySetValue(object widget, object prop, object value)
+		{
+			var setDelegate = SetProperty(prop);
+			if (setDelegate != null)
+			{
+				setDelegate((TWidget)widget, value);
+				return true;
+			}
+			return false;
+		}
+
+		Action<TWidget, object> GetSetProperty(object prop)
+		{
+			Action<TWidget, object> del;
+			if (setprops.TryGetValue(prop, out del))
+				return del;
+
+			del = SetProperty(prop);
+			setprops.Add(prop, del);
+			return del;
+		}
+
+		Func<TWidget, object> GetGetProperty(object prop)
+		{
+			Func<TWidget, object> del;
+			if (getprops.TryGetValue(prop, out del))
+				return del;
+
+			del = GetProperty(prop);
+			getprops.Add(prop, del);
+			return del;
+		}
+
+		void IHandler2.Initialize(object widget) => Initialize((TWidget)widget);
 	}
 
 	/// <summary>

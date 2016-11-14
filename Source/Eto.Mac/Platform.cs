@@ -192,6 +192,8 @@ namespace Eto.Mac
 			// General
 			p.Add<EtoEnvironment.IHandler>(() => new EtoEnvironmentHandler());
 			p.Add<Thread.IHandler>(() => new ThreadHandler());
+
+			p.AddHandler<Stepper>(() => new StepperHandler());
 		}
 
 		public override IDisposable ThreadStart()
