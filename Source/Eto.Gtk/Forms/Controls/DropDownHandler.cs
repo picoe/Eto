@@ -64,6 +64,20 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				if (value.Width == -1)
+					text.Ellipsize = Pango.EllipsizeMode.None;
+				else
+					text.Ellipsize = Pango.EllipsizeMode.End;
+
+				base.Size = value;
+			}
+		}
+
 		public virtual int SelectedIndex
 		{
 			get { return Control.Active; }
