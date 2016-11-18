@@ -124,6 +124,7 @@ namespace Eto.WinForms
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 			
 			// Forms
+			p.Add<AboutDialog.IHandler>(() => new ThemedAboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());

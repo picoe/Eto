@@ -14,6 +14,7 @@ using Eto.Threading;
 using Eto.Mac.Forms.Cells;
 using Eto.Mac.Forms.ToolBar;
 using Eto.Shared.Forms;
+using Eto.Forms.ThemedControls;
 
 #if XAMMAC2
 using AppKit;
@@ -161,6 +162,7 @@ namespace Eto.Mac
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 			
 			// Forms
+			p.Add<AboutDialog.IHandler>(() => new ThemedAboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());

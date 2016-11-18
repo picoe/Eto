@@ -147,6 +147,7 @@ namespace Eto.GtkSharp
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 
 			// Forms
+			p.Add<AboutDialog.IHandler>(() => new AboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
