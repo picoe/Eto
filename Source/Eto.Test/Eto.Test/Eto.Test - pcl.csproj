@@ -199,6 +199,7 @@
     <Compile Include="UnitTests\Drawing\IconTests.cs" />
     <Compile Include="UnitTests\TestBase.cs" />
     <Compile Include="UnitTests\Forms\DataContextTests.cs" />
+    <Compile Include="UnitTests\Forms\Controls\SliderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
