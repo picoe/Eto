@@ -331,6 +331,8 @@
     <Compile Include="Drawing\FontConverter.cs" />
     <Compile Include="UnhandledExceptionEventHandler.cs" />
     <Compile Include="Drawing\IconFrame.cs" />
+    <Compile Include="Forms\AboutDialog.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedAboutHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">
