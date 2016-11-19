@@ -36,27 +36,17 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class SliderHandler : MacControl<NSSlider, Slider, Slider.ICallback>, Slider.IHandler
 	{
-		Orientation orientation;
-
 		public class EtoSlider : NSSlider, IMacControl
 		{
 			public WeakReference WeakHandler { get; set; }
 
-			public object Handler
+			public SliderHandler Handler
 			{ 
-				get { return WeakHandler.Target; }
+				get { return (SliderHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
-			public override void SetFrameSize(CGSize newSize)
-			{
-				if (((SliderHandler)Handler).Orientation == Orientation.Horizontal && newSize.Width < newSize.Height)
-				{
-					// prevent slider from flipping to vertical orientation when resized
-					newSize.Height = newSize.Width;
-				}
-				base.SetFrameSize(newSize);
-			}
+			public override nint IsVertical => Handler.Orientation == Orientation.Vertical ? 1 : 0;
 		}
 
 		protected override NSSlider CreateControl()
@@ -132,35 +122,15 @@ namespace Eto.Mac.Forms.Controls
 			{ 
 				if (Control.TickMarksCount > 1)
 					return (int)((MaxValue - MinValue) / (Control.TickMarksCount - 1));
-				return MaxValue - MinValue;
+				return 0;
 			}
 			set
 			{ 
-				Control.TickMarksCount = ((MaxValue - MinValue) / value) + 1;
+				Control.TickMarksCount = value > 0 ? ((MaxValue - MinValue) / value) + 1 : 0;
 			}
 		}
 
-		public Orientation Orientation
-		{
-			get
-			{
-				return orientation;
-			}
-			set
-			{
-				orientation = value;
-				// wha?!?! no way to do this other than change size or sumthun?
-				var size = Control.Frame.Size;
-				if (value == Orientation.Vertical)
-				{
-					size.Height = size.Width + 1;
-				}
-				else
-					size.Width = size.Height + 1;
-				Control.SetFrameSize(size);
-				LayoutIfNeeded();
-			}
-		}
+		public Orientation Orientation { get; set; }
 	}
 }
 
