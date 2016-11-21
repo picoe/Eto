@@ -111,5 +111,16 @@ namespace Eto.Serialization.Xaml
 
 			return base.GetProperty(propertyInfo);
 		}
+
+		protected override XamlMember GetEvent(EventInfo eventInfo)
+		{
+			if (DesignMode)
+			{
+				// in design mode, ignore wiring up events
+				return new EmptyXamlMember(eventInfo, this);
+			}
+
+			return base.GetEvent(eventInfo);
+		}
 	}
 }

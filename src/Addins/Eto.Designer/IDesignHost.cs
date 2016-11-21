@@ -1,4 +1,4 @@
-﻿using Eto.Forms;
+using Eto.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace Eto.Designer
 	public interface IDesignHost : IDisposable
 	{
 		Action ControlCreated { get; set; }
-		Action<Exception> Error { get; set; }
+		Action<DesignError> Error { get; set; }
 		Action ContainerChanged { get; set; }
 		string MainAssembly { get; set; }
 		IEnumerable<string> References { get; set; }

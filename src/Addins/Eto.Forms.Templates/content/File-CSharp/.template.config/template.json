@@ -36,27 +36,33 @@
 				}
 			]
 		},
-		"Base": {
-			"type": "parameter",
-			"description": "Base class of the UI",
-			"datatype": "choice",
-			"defaultValue": "Panel",
-			"choices": [
-				{
-					"choice": "Panel",
-					"description": "A panel that can be put onto an existing window"
-				},
-				{
-					"choice": "Dialog",
-					"description": "A modal dialog that waits for input"
-				},
-				{
-					"choice": "Form",
-					"description": "A modless form"
-				}
-			],
-			"replaces": "Form"
-		},
+    "Base": {
+      "type": "parameter",
+      "description": "Base class of the UI",
+      "datatype": "choice",
+      "defaultValue": "Panel",
+      "replaces": "Form",
+      "onlyIf": [
+        { "after": " " },
+        { "after": "\"" },
+        { "after": "<" },
+        { "after": "/" }
+      ],
+      "choices": [
+        {
+          "choice": "Panel",
+          "description": "A panel to put onto an existing window or control"
+        },
+        {
+          "choice": "Dialog",
+          "description": "A modal dialog that waits for input"
+        },
+        {
+          "choice": "Form",
+          "description": "A modeless form"
+        }
+      ]
+    },
 		"Namespace": {
 			"description": "Namespace for the generated files",
 			"replaces": "EtoApp",
