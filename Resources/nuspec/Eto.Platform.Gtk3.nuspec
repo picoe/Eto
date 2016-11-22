@@ -29,7 +29,6 @@ On Linux, mono framework 2.10 or higher and gtk-sharp2 are required.
 	</metadata>
 	<files>
 		<file src="BuildOutput/net45/$configuration$/Eto.Gtk3.dll" target="lib\net45" />
-		<file src="BuildOutput/net40/$configuration$/Eto.Gtk3.dll" target="lib\net40" />
-		<file src="BuildOutput/net40/$configuration$/LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/net45/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>
