@@ -333,9 +333,10 @@
     <Compile Include="Drawing\IconFrame.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\LICENSE">
+    <Content Include="..\..\LICENSE">
       <Link>LICENSE</Link>
-    </None>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\Shared\Common.targets" />
   <ProjectExtensions>
