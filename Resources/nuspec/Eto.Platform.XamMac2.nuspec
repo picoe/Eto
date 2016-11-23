@@ -32,6 +32,6 @@ Using Eto.Platform.Mac instead uses the open source MonoMac, which allows you to
 	<files>
 		<file src="BuildOutput/mobile/$configuration$/Eto.XamMac2.dll" target="lib\xamarin.mac2" />
 		<file src="BuildOutput/net45/$configuration$/Eto.XamMac2.dll" target="lib\net45" />
-		<file src="BuildOutput/net40/$configuration$/LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/net45/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>

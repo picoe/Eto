@@ -42,15 +42,21 @@ namespace Eto.GtkSharp.Forms.Controls
 				var scale = Handler.scale;
 				var tick = Handler.tick;
 				var value = (int)scale.Value;
-				var offset = value % tick;
-				if (Handler.SnapToTick && offset != 0)
+				if (tick > 0)
 				{
-					if (offset > tick / 2)
-						scale.Value = value - offset + tick;
-					else
-						scale.Value -= offset;
+					var offset = value % tick;
+					if (Handler.SnapToTick && offset != 0)
+					{
+						// snap to the tick
+						if (offset > tick / 2)
+							scale.Value = value - offset + tick;
+						else
+							scale.Value -= offset;
+						return;
+					}
 				}
-				else if (lastValue == null || lastValue.Value != value)
+
+				if (lastValue == null || lastValue.Value != value)
 				{
 					Handler.Callback.OnValueChanged(Handler.Widget, EventArgs.Empty);
 					lastValue = value;

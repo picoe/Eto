@@ -37,6 +37,6 @@ You do not need to use any of the classes of this assembly (unless customizing t
 		<file src="Libraries/MonoMac64/MonoMac.dll" target="lib\net45" />
 		<file src="Libraries/MonoMac64/MonoMac-License.txt" target="MonoMac-License.txt" />
 		<file src="BuildOutput/net45/$configuration$/Eto.Mac64.dll" target="lib\net45" />
-		<file src="BuildOutput/net40/$configuration$/LICENSE.txt" target="LICENSE.txt" />
+		<file src="BuildOutput/net45/$configuration$/LICENSE.txt" target="LICENSE.txt" />
 	</files>
 </package>
