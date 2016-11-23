@@ -81,7 +81,6 @@
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
     <Compile Include="Sections\Printing\PrintDialogSection.cs" />
     <Compile Include="TestApplication.cs" />
-    <Compile Include="Dialogs\About.cs" />
     <Compile Include="Sections\Controls\ButtonSection.cs" />
     <Compile Include="Sections\Controls\CheckBoxSection.cs" />
     <Compile Include="Sections\Controls\ComboBoxSection.cs" />
@@ -200,6 +199,7 @@
     <Compile Include="UnitTests\TestBase.cs" />
     <Compile Include="UnitTests\Forms\DataContextTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\SliderTests.cs" />
+    <Compile Include="Sections\Dialogs\AboutDialogSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">

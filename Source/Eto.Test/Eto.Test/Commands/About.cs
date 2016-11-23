@@ -1,5 +1,4 @@
 using System;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Commands
@@ -18,9 +17,13 @@ namespace Eto.Test.Commands
 		protected override void OnExecuted(EventArgs e)
 		{
 			base.OnExecuted(e);
-			// show the about dialog
-			var about = new Dialogs.About();
-			about.ShowModal(Application.Instance.MainForm);
+
+			var about = new AboutDialog();
+			about.Logo = TestIcons.TestIcon;
+			about.WebsiteLabel = "Eto Forms Website";
+			about.Website = new Uri("https://github.com/picoe/Eto");
+
+			about.ShowDialog(Application.Instance.MainForm);
 		}
 	}
 }

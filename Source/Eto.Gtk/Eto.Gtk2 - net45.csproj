@@ -262,6 +262,7 @@
     </Compile>
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Forms\ColorDialogHandlerGtk34.cs" />
+    <Compile Include="Forms\AboutDialogHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
