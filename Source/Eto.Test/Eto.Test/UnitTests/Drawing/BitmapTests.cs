@@ -284,5 +284,45 @@ namespace Eto.Test.UnitTests.Drawing
 			});
 		}
 
+		[Test]
+		public void LockShouldThrowIfCalledWhileLocked()
+		{
+			Invoke(() =>
+			{
+				var bmp = new Bitmap(30, 30, PixelFormat.Format32bppRgba);
+
+				using (var bd = bmp.Lock())
+				{
+					Assert.Throws<InvalidOperationException>(() => bmp.Lock());
+				}
+			});
+		}
+
+		[Test]
+		public void LockShouldNowThrowIfCalledSequentially()
+		{
+			Invoke(() =>
+			{
+				var bmp = new Bitmap(30, 30, PixelFormat.Format32bppRgba);
+
+				using (var bd = bmp.Lock())
+				{
+					for (int y = 0; y < 10; y++)
+						for (int x = 0; x < 10; x++)
+							bd.SetPixel(x, y, Colors.Red);
+				}
+			
+				using (var bd = bmp.Lock())
+				{
+					for (int y = 0; y < 10; y++)
+						for (int x = 10; x < 20; x++)
+							bd.SetPixel(x, y, Colors.Blue);
+				}
+
+				// sanity check
+				Assert.AreEqual(Colors.Red, bmp.GetPixel(0, 0));
+				Assert.AreEqual(Colors.Blue, bmp.GetPixel(10, 0));
+			});
+		}
 	}
 }
