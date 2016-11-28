@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
@@ -290,9 +291,11 @@ namespace Eto.GtkSharp
 			return new Gtk.PageRange { Start = range.Start - 1, End = range.End - 1 };
 		}
 
-		public static Range<int> ToEto(this Gtk.PageRange range)
+		public static Range<int> ToEto(this Gtk.PageRange[] ranges)
 		{
-			return new Range<int>(range.Start + 1, range.End);
+			if (ranges == null || ranges.Length == 0)
+				return new Range<int>(1, 0);
+			return new Range<int>(ranges.Min(r => r.Start) + 1, ranges.Max(r => r.End));
 		}
 
 		public static Gtk.PrintPages ToGtk(this PrintSelection value)
