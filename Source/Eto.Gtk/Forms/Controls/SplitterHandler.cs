@@ -87,7 +87,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				it.suppressSplitterMoved++;
 				base.OnSizeAllocated(allocation);
-				it.SetRelative(it.relative);
 				it.suppressSplitterMoved--;
 			}
 		}
@@ -139,7 +138,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				it.suppressSplitterMoved++;
 				base.OnSizeAllocated(allocation);
-				it.SetRelative(it.relative);
 				it.suppressSplitterMoved--;
 			}
 		}
