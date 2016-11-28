@@ -61,13 +61,8 @@ namespace Eto.GtkSharp.Forms.Printing
 
 		public Range<int> SelectedPageRange
 		{
-			get {
-				int num_ranges;
-				return Control.GetPageRanges (out num_ranges).ToEto ();
-			}
-			set {
-				Control.SetPageRanges(value.ToGtkPageRange (), 1);
-			}
+			get { return NativeMethods.gtk_print_settings_get_page_ranges(Control).ToEto(); }
+			set { Control.SetPageRanges(value.ToGtkPageRange (), 1); }
 		}
 
 		public PrintSelection PrintSelection {

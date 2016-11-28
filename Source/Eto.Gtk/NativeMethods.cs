@@ -34,6 +34,8 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_print_settings_get_page_ranges(IntPtr handle, out int num_ranges);
 #if GTK3
 
             [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
@@ -74,6 +76,8 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_print_settings_get_page_ranges(IntPtr handle, out int num_ranges);
 #if GTK3
 
             [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
@@ -114,6 +118,8 @@ namespace Eto.GtkSharp
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
 
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_print_settings_get_page_ranges(IntPtr handle, out int num_ranges);
 #if GTK3
 
             [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
@@ -145,6 +151,9 @@ namespace Eto.GtkSharp
 
             public static readonly Action<IntPtr, IntPtr> gtk_entry_set_placeholder_text;
 
+			public delegate IntPtr PrintSettingsGetPageRanges(IntPtr handle, out int num_ranges);
+
+			public static readonly PrintSettingsGetPageRanges gtk_print_settings_get_page_ranges;
 #if GTK3
 
             public delegate IntPtr ColorChooserNew(string title, IntPtr parent);
@@ -209,6 +218,20 @@ namespace Eto.GtkSharp
 			Marshaller.Free(textPtr);
 		}
 
+		public static Gtk.PageRange[] gtk_print_settings_get_page_ranges(Gtk.PrintSettings settings)
+		{
+			if (Impl.gtk_entry_set_placeholder_text == null)
+				return null;
+			int num_ranges;
+			IntPtr intPtr = Impl.gtk_print_settings_get_page_ranges(settings.Handle, out num_ranges);
+			Gtk.PageRange[] array = new Gtk.PageRange[num_ranges];
+			for (int i = 0; i < num_ranges; i++)
+			{
+				array[i] = Gtk.PageRange.New(intPtr + i * IntPtr.Size);
+			}
+			Marshaller.Free(intPtr);
+			return array;
+		}
 #if GTK3
 
         public static IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parrent)
