@@ -13,15 +13,6 @@ namespace Eto.GtkSharp.Forms.Controls
 				: base(double.MinValue, double.MaxValue, 0)
 			{
 			}
-
-			#if GTK3
-			protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
-			{
-				// gtk calculates size based on min/max value, so give sane defaults
-				natural_width = 120;
-				minimum_width = 0;
-			}
-			#endif
 		}
 
 		public NumericUpDownHandler()
