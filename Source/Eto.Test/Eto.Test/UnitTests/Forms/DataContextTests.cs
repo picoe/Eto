@@ -60,7 +60,7 @@ namespace Eto.Test.UnitTests.Forms
 				Assert.AreEqual(2, contentDataContextChanged);
 				Assert.IsInstanceOf<MyViewModel2>(Control.DataContext);
 				Assert.IsInstanceOf<MyViewModel2>(content.DataContext);
-}
+			}
 
 			public override void OnLoadComplete(EventArgs e)
 			{
@@ -80,6 +80,25 @@ namespace Eto.Test.UnitTests.Forms
 		public class MyViewModel
 		{
 			public int ID { get; set; }
+		}
+
+		public class MyViewModelWithEquals
+		{
+			public int ID { get; set; }
+
+			public override bool Equals(object obj)
+			{
+				var model = obj as MyViewModelWithEquals;
+				if (model == null)
+					return false;
+
+				return ID.Equals(model.ID);
+			}
+
+			public override int GetHashCode()
+			{
+				return ID.GetHashCode();
+			}
 		}
 
 		[Test]
@@ -355,6 +374,27 @@ namespace Eto.Test.UnitTests.Forms
 				Assert.AreEqual(1, ((MyViewModel)child.DataContext).ID);
 				Assert.IsInstanceOf<MyViewModel>(subChild.DataContext);
 				Assert.AreEqual(2, ((MyViewModel)subChild.DataContext).ID);
+			});
+		}
+
+		[Test]
+		public void DataContextWithEqualsShouldSet()
+		{
+			Invoke(() =>
+			{
+				int changed = 0;
+				var panel = new Panel();
+				panel.DataContextChanged += (sender, e) => changed++;
+
+				panel.DataContext = new MyViewModelWithEquals { ID = 10 };
+				Assert.AreEqual(1, changed);
+
+				// should be set again, even though they are equal
+				panel.DataContext = new MyViewModelWithEquals { ID = 10 };
+				Assert.AreEqual(2, changed);
+
+				panel.DataContext = new MyViewModelWithEquals { ID = 20 };
+				Assert.AreEqual(3, changed);
 			});
 		}
 	}
