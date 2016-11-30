@@ -153,7 +153,7 @@ namespace Eto.Wpf.Drawing
 				SetBitmap(wb);
 			}
 			wb.Lock();
-			return new BitmapDataHandler(Widget, wb.BackBuffer, Stride, wb.Format.BitsPerPixel, wb);
+			return new BitmapDataHandler(Widget, wb.BackBuffer, wb.BackBufferStride, wb.Format.BitsPerPixel, wb);
 		}
 
 		public void Unlock(BitmapData bitmapData)
