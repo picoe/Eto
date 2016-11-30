@@ -188,7 +188,7 @@ namespace Eto.Test
 				fileCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
 				var editCommand = new Command { MenuText = "Edit Command", Shortcut = Keys.Shift | Keys.E };
 				editCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
-				var viewCommand = new Command { MenuText = "View Command", Shortcut = Keys.Control | Keys.V };
+				var viewCommand = new Command { MenuText = "View Command", Shortcut = Keys.Control | Keys.Shift | Keys.V };
 				viewCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
 				var windowCommand = new Command { MenuText = "Window Command" };
 				windowCommand.Executed += (sender, e) => Log.Write(sender, "Executed");

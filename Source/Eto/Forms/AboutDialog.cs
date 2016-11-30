@@ -15,9 +15,8 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Eto.Forms.AboutDialog"/> class.
 		/// </summary>
-		public AboutDialog() : this(typeof(Assembly).GetTypeInfo()?.GetDeclaredMethod("GetCallingAssembly")?.Invoke(null, new object[0]) as Assembly)
+		public AboutDialog() : this(TypeHelper.GetCallingAssembly?.Invoke(null, null) as Assembly)
 		{
-			
 		}
 
 		/// <summary>
