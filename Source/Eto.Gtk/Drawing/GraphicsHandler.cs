@@ -130,7 +130,7 @@ namespace Eto.GtkSharp.Drawing
 				{
 
 					surface.Flush();
-					var bd = handler.Lock();
+					using (var bd = handler.Lock())
 					unsafe
 					{
 						var srcrow = (byte*)surface.DataPtr;
@@ -145,7 +145,6 @@ namespace Eto.GtkSharp.Drawing
 							srcrow += surface.Stride;
 						}
 					}
-					handler.Unlock(bd);
 				}
 			}
 #if GTK2

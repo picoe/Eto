@@ -274,6 +274,9 @@ namespace Eto.Drawing
 		/// <returns>A BitmapData object that carries a pointer and functions for manipulating the data directly</returns>
 		public BitmapData Lock()
 		{
+			if (BitmapData.IsImageLocked(this))
+				throw new InvalidOperationException("Image is already locked. Ensure you dispose the BitmapData object explicitly or with a using() block.");
+
 			return Handler.Lock();
 		}
 

@@ -29,10 +29,15 @@ namespace Eto.Drawing
 
 		static object IsLocked_Key = new object();
 
+		internal static bool IsImageLocked(Image image)
+		{
+			return image.Properties.Get<bool>(IsLocked_Key);
+		}
+
 		bool IsLocked
 		{
-			get { return image.Properties.Get<bool>(IsLocked_Key); }
-			set { image.Properties.Set(IsLocked_Key, value); }
+			get { return Image.Properties.Get<bool>(IsLocked_Key); }
+			set { Image.Properties.Set(IsLocked_Key, value); }
 		}
 
 		/// <summary>
