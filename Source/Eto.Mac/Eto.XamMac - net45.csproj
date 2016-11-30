@@ -243,6 +243,7 @@
     <Compile Include="Forms\NativeFormHandler.cs" />
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
+    <Compile Include="CrashReporter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
