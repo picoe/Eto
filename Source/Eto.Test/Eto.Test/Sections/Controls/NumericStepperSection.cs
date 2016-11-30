@@ -3,12 +3,12 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
-	[Section("Controls", typeof(NumericUpDown))]
-	public class NumericUpDownSection : Panel
+	[Section("Controls", typeof(NumericStepper))]
+	public class NumericStepperSection : Panel
 	{
-		public NumericUpDownSection()
+		public NumericStepperSection()
 		{
-			var numeric = new NumericUpDown { Width = 200 };
+			var numeric = new NumericStepper { Width = 200 };
 
 			LogEvents(numeric);
 
@@ -18,7 +18,7 @@ namespace Eto.Test.Sections.Controls
 			var readOnly = new CheckBox { Text = "ReadOnly" };
 			readOnly.CheckedBinding.Bind(numeric, n => n.ReadOnly);
 
-			var minValue = new NumericUpDown { Enabled = false, Value = -1000 };
+			var minValue = new NumericStepper { Enabled = false, Value = -1000 };
 			var minBinding = minValue.ValueBinding.Bind(numeric, n => n.MinValue, DualBindingMode.Manual);
 
 			var chkMinValue = new CheckBox { Text = "MinValue" };
@@ -26,7 +26,7 @@ namespace Eto.Test.Sections.Controls
 			chkMinValue.CheckedBinding.Bind(minValue, m => m.Enabled);
 			chkMinValue.CheckedBinding.Convert(r => r == false ? double.NegativeInfinity : minValue.Value).Bind(numeric, m => m.MinValue);
 
-			var maxValue = new NumericUpDown { Enabled = false, Value = 1000 };
+			var maxValue = new NumericStepper { Enabled = false, Value = 1000 };
 			var maxBinding = maxValue.ValueBinding.Bind(numeric, (n) => n.MaxValue, DualBindingMode.Manual);
 
 			var chkMaxValue = new CheckBox { Text = "MaxValue" };
@@ -34,16 +34,16 @@ namespace Eto.Test.Sections.Controls
 			chkMaxValue.CheckedBinding.Bind(maxValue, m => m.Enabled);
 			chkMaxValue.CheckedBinding.Convert(r => r == false ? double.PositiveInfinity : maxValue.Value).Bind(numeric, m => m.MaxValue);
 
-			var decimalPlaces = new NumericUpDown { MaxValue = 15, MinValue = 0 };
+			var decimalPlaces = new NumericStepper { MaxValue = 15, MinValue = 0 };
 			var decimalBinding = decimalPlaces.ValueBinding.Convert(r => (int)r, r => r).Bind(numeric, n => n.DecimalPlaces);
 
-			var maxDecimalPlaces = new NumericUpDown { MaxValue = 15, MinValue = 0 };
+			var maxDecimalPlaces = new NumericStepper { MaxValue = 15, MinValue = 0 };
 			var maxDecimalBinding = maxDecimalPlaces.ValueBinding.Convert(r => (int)r, r => r).Bind(numeric, n => n.MaximumDecimalPlaces);
 
 			maxDecimalBinding.Changed += (sender, e) => decimalBinding.Update(BindingUpdateMode.Destination);
 			decimalBinding.Changed += (sender, e) => maxDecimalBinding.Update(BindingUpdateMode.Destination);
 
-			var increment = new NumericUpDown { MaximumDecimalPlaces = 15 };
+			var increment = new NumericStepper { MaximumDecimalPlaces = 15 };
 			increment.ValueBinding.Bind(numeric, n => n.Increment);
 
 			var options1 = new StackLayout
@@ -89,7 +89,7 @@ namespace Eto.Test.Sections.Controls
 			};
 		}
 
-		void LogEvents(NumericUpDown control)
+		void LogEvents(NumericStepper control)
 		{
 			control.ValueChanged += delegate
 			{

@@ -139,7 +139,7 @@
     <Compile Include="..\Eto.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
-    <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
+    <Compile Include="Forms\Controls\NumericStepperHandler.cs" />
     <Compile Include="..\Eto.Mac\Drawing\TextureBrushHandler.cs">
       <Link>Drawing\TextureBrushHandler.cs</Link>
     </Compile>

@@ -77,7 +77,7 @@ namespace Eto.Test.Sections.Controls
 			layout.EndBeginVertical();
 			layout.AddRow(ComboBox(), new DateTimePicker { Value = DateTime.Now }, null);
 			layout.EndBeginVertical();
-			layout.AddRow(new NumericUpDown { Value = 50 }, null);
+			layout.AddRow(new NumericStepper { Value = 50 }, null);
 			layout.EndBeginVertical();
 			layout.AddRow(ListBox(), new TextArea { Text = "Text Area", Size = new Size(150, 50) }, null);
 			layout.EndBeginVertical();

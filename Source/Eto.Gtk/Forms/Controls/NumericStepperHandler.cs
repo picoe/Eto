@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class NumericUpDownHandler : GtkControl<Gtk.SpinButton, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	public class NumericStepperHandler : GtkControl<Gtk.SpinButton, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 	{
 		class EtoSpinButton : Gtk.SpinButton
 		{
@@ -15,7 +15,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
-		public NumericUpDownHandler()
+		public NumericStepperHandler()
 		{
 			Control = new EtoSpinButton();
 			Control.WidthRequest = 120;
@@ -39,16 +39,16 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.ValueChanged += Connector.HandleValueChanged;
 		}
 
-		protected new NumericUpDownConnector Connector { get { return (NumericUpDownConnector)base.Connector; } }
+		protected new NumericStepperConnector Connector { get { return (NumericStepperConnector)base.Connector; } }
 
 		protected override WeakConnector CreateConnector()
 		{
-			return new NumericUpDownConnector();
+			return new NumericStepperConnector();
 		}
 
-		protected class NumericUpDownConnector : GtkControlConnector
+		protected class NumericStepperConnector : GtkControlConnector
 		{
-			public new NumericUpDownHandler Handler { get { return (NumericUpDownHandler)base.Handler; } }
+			public new NumericStepperHandler Handler { get { return (NumericStepperHandler)base.Handler; } }
 
 			public void HandleValueChanged(object sender, EventArgs e)
 			{

@@ -150,7 +150,7 @@
     <Compile Include="..\Eto.Gtk\Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\LabelHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\ListBoxHandler.cs" />
-    <Compile Include="..\Eto.Gtk\Forms\Controls\NumericUpDownHandler.cs" />
+    <Compile Include="..\Eto.Gtk\Forms\Controls\NumericStepperHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\PanelHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\ScrollableHandler.cs" />
@@ -273,6 +273,12 @@
     </Compile>
     <Compile Include="..\Eto.Gtk\Forms\AboutDialogHandler.cs">
       <Link>AboutDialogHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\Controls\StepperHandler.cs">
+      <Link>StepperHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\Controls\TextStepperHandler.cs">
+      <Link>TextStepperHandler.cs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

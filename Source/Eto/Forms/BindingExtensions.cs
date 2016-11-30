@@ -15,7 +15,7 @@ namespace Eto.Forms
 		/// Causes the change event of the binding to occur only when the <see cref="Control.LostFocus"/> event is triggered.
 		/// </summary>
 		/// <remarks>
-		/// This is useful for text-based input controls such as the <see cref="NumericUpDown"/> when a partial input can be invalid.
+		/// This is useful for text-based input controls such as the <see cref="NumericStepper"/> when a partial input can be invalid.
 		/// The binding will only be updated when the control has lost the input focus, where by default it will be updated for every
 		/// change while the user is updating the control.
 		/// </remarks>

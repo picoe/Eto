@@ -248,11 +248,11 @@ namespace Eto.Test.Sections.Behaviors
 			var setLocationCheckBox = new CheckBox { Text = "Initial Location" };
 			setLocationCheckBox.CheckedBinding.Bind(() => setInitialLocation, v => setInitialLocation = v ?? false);
 
-			var left = new NumericUpDown();
+			var left = new NumericStepper();
 			left.Bind(c => c.Enabled, setLocationCheckBox, c => c.Checked);
 			left.ValueBinding.Bind(() => initialLocation.X, v => initialLocation.X = (int)v);
 
-			var top = new NumericUpDown();
+			var top = new NumericStepper();
 			top.Bind(c => c.Enabled, setLocationCheckBox, c => c.Checked);
 			top.ValueBinding.Bind(() => initialLocation.Y, v => initialLocation.Y = (int)v);
 
@@ -276,11 +276,11 @@ namespace Eto.Test.Sections.Behaviors
 			var setClientSize = new CheckBox { Text = "Size" };
 			setClientSize.CheckedBinding.Bind(() => setInitialSize, v => setInitialSize = v ?? false);
 
-			var left = new NumericUpDown();
+			var left = new NumericStepper();
 			left.Bind(c => c.Enabled, setClientSize, c => c.Checked);
 			left.ValueBinding.Bind(() => initialSize.Width, v => initialSize.Width = (int)v);
 
-			var top = new NumericUpDown();
+			var top = new NumericStepper();
 			top.Bind(c => c.Enabled, setClientSize, c => c.Checked);
 			top.ValueBinding.Bind(() => initialSize.Height, v => initialSize.Height = (int)v);
 
@@ -305,11 +305,11 @@ namespace Eto.Test.Sections.Behaviors
 			var setClientSize = new CheckBox { Text = "ClientSize" };
 			setClientSize.CheckedBinding.Bind(() => setInitialClientSize, v => setInitialClientSize = v ?? false);
 
-			var left = new NumericUpDown();
+			var left = new NumericStepper();
 			left.Bind(c => c.Enabled, setClientSize, c => c.Checked);
 			left.ValueBinding.Bind(() => initialClientSize.Width, v => initialClientSize.Width = (int)v);
 
-			var top = new NumericUpDown();
+			var top = new NumericStepper();
 			top.Bind(c => c.Enabled, setClientSize, c => c.Checked);
 			top.ValueBinding.Bind(() => initialClientSize.Height, v => initialClientSize.Height = (int)v);
 
@@ -339,7 +339,7 @@ namespace Eto.Test.Sections.Behaviors
 					child.MinimumSize = initialMinimumSize;
 			});
 
-			var width = new NumericUpDown();
+			var width = new NumericStepper();
 			width.Bind(c => c.Enabled, setMinimumSize, c => c.Checked);
 			width.ValueBinding.Bind(() => initialMinimumSize.Width, v =>
 			{
@@ -348,7 +348,7 @@ namespace Eto.Test.Sections.Behaviors
 					child.MinimumSize = initialMinimumSize;
 			});
 
-			var height = new NumericUpDown();
+			var height = new NumericStepper();
 			height.Bind(c => c.Enabled, setMinimumSize, c => c.Checked);
 			height.ValueBinding.Bind(() => initialMinimumSize.Height, v => initialMinimumSize.Height = (int)v);
 

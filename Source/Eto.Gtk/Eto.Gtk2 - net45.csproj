@@ -60,6 +60,7 @@
     <Compile Include="Forms\Controls\NativeControlHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
+    <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Drawing\BitmapHandler.cs">
@@ -123,7 +124,7 @@
     <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
-    <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
+    <Compile Include="Forms\Controls\NumericStepperHandler.cs" />
     <Compile Include="Forms\Controls\PanelHandler.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
@@ -263,6 +264,7 @@
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Forms\ColorDialogHandlerGtk34.cs" />
     <Compile Include="Forms\AboutDialogHandler.cs" />
+    <Compile Include="Forms\Controls\TextStepperHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
