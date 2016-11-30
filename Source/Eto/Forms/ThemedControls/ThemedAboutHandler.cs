@@ -39,6 +39,7 @@ namespace Eto.Forms.ThemedControls
 			layout3.DefaultSpacing = new Size(5, 5);
 
 			labelProgramName = new Label();
+			labelProgramName.Font = SystemFonts.Bold(SystemFonts.Default().Size + 4);
 			labelProgramName.VerticalAlignment = VerticalAlignment.Center;
 			layout3.Add(labelProgramName);
 
