@@ -8,9 +8,9 @@ using System.Text;
 
 namespace Eto.WinRT.Forms.Controls
 {
-	public class NumericUpDownHandler : WpfControl<mwc.NumericUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	public class NumericStepperHandler : WpfControl<mwc.NumericUpDown, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 	{
-		public NumericUpDownHandler()
+		public NumericStepperHandler()
 		{
 			Control = new mwc.NumericUpDown { ValueBarVisibility = mwc.NumericUpDownValueBarVisibility.Visible, ValueFormat = "0" };
 			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);

@@ -43,7 +43,7 @@ using nnint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
-	public class NumericUpDownHandler : MacView<NumericUpDownHandler.EtoNumericUpDownView, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	public class NumericStepperHandler : MacView<NumericStepperHandler.EtoNumericStepperView, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 	{
 		Size? naturalSize;
 
@@ -60,7 +60,7 @@ namespace Eto.Mac.Forms.Controls
 			public WeakReference WeakHandler { get; set; }
 		}
 
-		public class EtoNumericUpDownView : NSView, IMacControl
+		public class EtoNumericStepperView : NSView, IMacControl
 		{
 			public NSTextField TextField { get; private set; }
 			public NSStepper Stepper { get; private set; }
@@ -80,7 +80,7 @@ namespace Eto.Mac.Forms.Controls
 				splitter.SetFrameOrigin(new CGPoint(newSize.Width - splitter.Frame.Width, offset));
 			}
 
-			public EtoNumericUpDownView(NumericUpDownHandler handler)
+			public EtoNumericStepperView(NumericStepperHandler handler)
 			{
 				AutoresizesSubviews = false;
 				TextField = new EtoTextField
@@ -125,14 +125,14 @@ namespace Eto.Mac.Forms.Controls
 			MaximumFractionDigits = 0
 		};
 
-		protected override EtoNumericUpDownView CreateControl()
+		protected override EtoNumericStepperView CreateControl()
 		{
-			return new EtoNumericUpDownView(this);
+			return new EtoNumericStepperView(this);
 		}
 
 		static void HandleStepperActivated(object sender, EventArgs e)
 		{
-			var handler = GetHandler(((NSView)sender).Superview) as NumericUpDownHandler;
+			var handler = GetHandler(((NSView)sender).Superview) as NumericStepperHandler;
 			if (handler != null)
 			{
 				// prevent spinner from accumulating an inprecise value, which would eventually 
@@ -153,7 +153,7 @@ namespace Eto.Mac.Forms.Controls
 
 		static void HandleTextChanged(object sender, EventArgs e)
 		{
-			var handler = GetHandler(((NSView)((NSNotification)sender).Object).Superview) as NumericUpDownHandler;
+			var handler = GetHandler(((NSView)((NSNotification)sender).Object).Superview) as NumericStepperHandler;
 			if (handler != null)
 			{
 				var formatter = (NSNumberFormatter)handler.TextField.Formatter;
@@ -392,7 +392,14 @@ namespace Eto.Mac.Forms.Controls
 
 			TextField.Formatter = formatter;
 			if (Widget.Loaded)
+			{
 				TextField.SetNeedsDisplay();
+				var currentEditor = TextField.CurrentEditor;
+				if (currentEditor != null)
+				{
+					currentEditor.Value = TextField.StringValue;
+				}
+			}
 		}
 
 		public Color TextColor

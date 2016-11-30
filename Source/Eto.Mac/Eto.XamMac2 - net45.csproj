@@ -110,7 +110,7 @@
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
-    <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
+    <Compile Include="Forms\Controls\NumericStepperHandler.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Forms\Controls\SplitterHandler.cs" />
     <Compile Include="Forms\Controls\TabControlHandler.cs" />
@@ -230,6 +230,7 @@
     </Compile>
     <Compile Include="Forms\NativeFormHandler.cs" />
     <Compile Include="Drawing\IconFrameHandler.cs" />
+    <Compile Include="Forms\Controls\StepperHandler.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>

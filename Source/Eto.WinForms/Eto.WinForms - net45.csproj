@@ -84,6 +84,8 @@
     <Compile Include="Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="Drawing\SystemColorsHandler.cs" />
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
+    <Compile Include="Forms\Controls\TextStepperHandler.cs" />
+    <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Win32.dpi.cs" />
     <Compile Include="WinConversions.cs" />
     <Compile Include="CustomControls\ExtendedDateTimePicker.cs" />
@@ -214,7 +216,7 @@
     <Compile Include="Forms\Controls\ListBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\NumericUpDownHandler.cs">
+    <Compile Include="Forms\Controls\NumericStepperHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\PanelHandler.cs">
