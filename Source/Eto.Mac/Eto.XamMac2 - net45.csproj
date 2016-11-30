@@ -231,6 +231,7 @@
     <Compile Include="Forms\NativeFormHandler.cs" />
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
+    <Compile Include="CrashReporter.cs" />
   </ItemGroup>
   <ItemGroup />
   <ProjectExtensions>
