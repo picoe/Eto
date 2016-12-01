@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Threading.Tasks;
 
 namespace Eto.Test
 {
@@ -192,7 +193,13 @@ namespace Eto.Test
 				var windowCommand = new Command { MenuText = "Window Command" };
 				windowCommand.Executed += (sender, e) => Log.Write(sender, "Executed");
 
-				var file = new ButtonMenuItem { Text = "&File", Items = { fileCommand } };
+				var crashCommand = new Command { MenuText = "Test Exception" };
+				crashCommand.Executed += (sender, e) =>
+				{
+					throw new InvalidOperationException("This is the exception message");
+				};
+
+				var file = new ButtonMenuItem { Text = "&File", Items = { fileCommand, crashCommand } };
 				var edit = new ButtonMenuItem { Text = "&Edit", Items = { editCommand } };
                 var view = new ButtonMenuItem { Text = "&View", Items = { viewCommand } };
 				var window = new ButtonMenuItem { Text = "&Window", Order = 1000, Items = { windowCommand } };
