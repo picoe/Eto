@@ -24,7 +24,7 @@ namespace Eto.Forms
 		/// <param name="ignoreCase">True to ignore case for the property, false to be case sensitive. Default is true.</param>
 		public ProgressCell(string property, bool ignoreCase = true)
 		{
-			Binding = new PropertyBinding<float?>(property, ignoreCase);
+			Binding = Eto.Forms.Binding.Property<float?>(property, ignoreCase);
 		}
 
 		/// <summary>
