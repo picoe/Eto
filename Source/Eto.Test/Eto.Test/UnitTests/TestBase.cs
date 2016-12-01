@@ -175,14 +175,20 @@ namespace Eto.Test.UnitTests
 			}, timeout);
 		}
 
+		public static void Form(Action<Form> test, int timeout = DefaultTimeout)
+		{
+			Form<Form>(test, timeout);
+		}
+
 		/// <summary>
 		/// Test operations on a form
 		/// </summary>
 		/// <param name="test">Delegate to execute on the form</param>
 		/// <param name="timeout">Timeout to wait for the operation to complete</param>
-		public static void Form(Action<Form> test, int timeout = DefaultTimeout)
+		public static void Form<T>(Action<T> test, int timeout = DefaultTimeout)
+			where T: Form, new()
 		{
-			Form form = null;
+			T form = null;
 			bool shown = false;
 			try
 			{
@@ -191,7 +197,7 @@ namespace Eto.Test.UnitTests
 					if (!Platform.Instance.Supports<Form>())
 						Assert.Inconclusive("This platform does not support IForm");
 
-					form = new Form();
+					form = new T();
 
 					test(form);
 
