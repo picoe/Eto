@@ -217,6 +217,8 @@ namespace Eto.Forms
 			else
 			{
 				var dataItem = bindingReference;
+				if (dataItem == null)
+					return;
 				var type = dataItem.GetType();
 				var changedEvent = type.GetRuntimeEvent(Property + "Changed");
 				if (changedEvent != null)

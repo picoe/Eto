@@ -3,6 +3,9 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
+using Eto.Forms;
+
+
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Schema;
@@ -37,12 +40,13 @@ namespace Eto.Serialization.Xaml
 			return type.GetCustomAttributes(typeof(T), inherit).OfType<T>().FirstOrDefault();
 		}
 	}
-	#endif 
+	#endif
 
 	#if PORTABLE || NET45
 	class TypeConverterConverter : cm.TypeConverter
 	{
 		readonly EtoTypeConverter etoConverter;
+
 		public TypeConverterConverter(EtoTypeConverter etoConverter)
 		{
 			this.etoConverter = etoConverter;
@@ -82,7 +86,7 @@ namespace Eto.Serialization.Xaml
 			return new TypeConverterConverter(etoConverter);
 		}
 	}
-#endif
+	#endif
 
 	class EtoDesignerType : EtoXamlType
 	{
@@ -176,7 +180,7 @@ namespace Eto.Serialization.Xaml
 
 			if (typeConverter == null)
 				typeConverter = base.LookupTypeConverter();
-            return typeConverter;
+			return typeConverter;
 		}
 
 		#endif
@@ -208,23 +212,50 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
+		class PropertiesXamlMember : XamlMember
+		{
+			public PropertiesXamlMember(PropertyInfo propertyInfo, XamlSchemaContext context)
+				: base(propertyInfo, context)
+			{
+			}
+
+			protected override bool LookupIsAmbient()
+			{
+				return true;
+			}
+		}
+
+
+
 		protected override XamlMember LookupMember(string name, bool skipReadOnlyCheck)
 		{
 			var member = base.LookupMember(name, skipReadOnlyCheck);
+			var context = SchemaContext as EtoXamlSchemaContext;
 			if (member != null && member.IsEvent)
 			{
-				var context = SchemaContext as EtoXamlSchemaContext;
 				if (context != null && context.DesignMode)
 				{
 					// in design mode, ignore wiring up events
 					return new EmptyXamlMember(member.UnderlyingMember as EventInfo, context);
 				}
 			}
+			if (context != null && context.IsResourceMember(member))
+			{
+				return new PropertiesXamlMember(member.UnderlyingMember as PropertyInfo, SchemaContext);
+			}
 			return member;
+		}
+
+		protected override bool LookupIsAmbient()
+		{
+			if (this.UnderlyingType != null && UnderlyingType == typeof(PropertyStore))
+				return true;
+			return base.LookupIsAmbient();
 		}
 
 		bool gotContentProperty;
 		XamlMember contentProperty;
+
 		protected override XamlMember LookupContentProperty()
 		{
 			if (gotContentProperty)
@@ -239,6 +270,7 @@ namespace Eto.Serialization.Xaml
 		}
 
 		XamlMember nameAliasedProperty;
+
 		protected override XamlMember LookupAliasedProperty(XamlDirective directive)
 		{
 			if (directive == XamlLanguage.Name)
@@ -246,12 +278,12 @@ namespace Eto.Serialization.Xaml
 				if (nameAliasedProperty != null)
 					return nameAliasedProperty;
 
-                var nameAttribute = GetCustomAttribute<RuntimeNamePropertyAttribute>();
+				var nameAttribute = GetCustomAttribute<RuntimeNamePropertyAttribute>();
 				if (nameAttribute != null && nameAttribute.Name != null)
 				{
 					nameAliasedProperty = GetMember(nameAttribute.Name);
 					return nameAliasedProperty;
-                }
+				}
 
 			}
 			return base.LookupAliasedProperty(directive);

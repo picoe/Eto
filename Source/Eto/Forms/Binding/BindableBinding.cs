@@ -124,7 +124,7 @@ namespace Eto.Forms
 		/// <param name="mode">Direction of the binding.</param>
 		public DualBinding<TValue> BindDataContext(string propertyName, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			return BindDataContext(new PropertyBinding<TValue>(propertyName), mode);
+			return BindDataContext(Property<TValue>(propertyName), mode);
 		}
 
 		/// <summary>
@@ -142,13 +142,7 @@ namespace Eto.Forms
 		/// <returns>The binding between the data context and this binding</returns>
 		public DualBinding<TValue> BindDataContext<TObject>(Expression<Func<TObject, TValue>> propertyExpression, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			var memberInfo = propertyExpression.GetMemberInfo();
-			if (memberInfo == null)
-			{
-				var getValue = propertyExpression.Compile();
-				return BindDataContext<TObject>(getValue, null, null, null, mode);
-			}
-			return BindDataContext(new PropertyBinding<TValue>(memberInfo.Member.Name), mode);
+			return BindDataContext(Property(propertyExpression), mode);
 		}
 
 		/// <summary>
@@ -186,6 +180,86 @@ namespace Eto.Forms
 					addChangeEvent: (c, ev) => DataValueChanged += ev,
 					removeChangeEvent: (c, ev) => DataValueChanged -= ev
 				)
+			);
+		}
+
+		/// <summary>
+		/// Binds to the specified child <paramref name="property"/> expression.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to bind to properties of child objects of your view model, for example
+		/// <code>model.SomeProperty.ChildProperty</code>.
+		/// 
+		/// This will automatically look up the changed event either by a [Property]Changed event or INotifyPropertyChanged implementation
+		/// for each object in the heirarchy.
+		/// 
+		/// Note that you only really need to use this when you have an existing binding that you cannot change.
+		/// See <see cref="Binding.Property{T,TValue}(Expression{Func{T,TValue}})"/> for an example of how to bind to child property values
+		/// more directly.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { public ChildObject { get; set; } }
+		/// 
+		/// 	var model = new MyModel();
+		/// 	Binding.Property(model, (MyModel m) => m.ChildObject).Child(c => c.SomeChildProperty);
+		/// </code>
+		/// </example>
+		/// <returns>The binding to the child property accessed through the current binding.</returns>
+		/// <param name="property">Property to bind to.</param>
+		/// <typeparam name="TNewValue">The type of the child property value.</typeparam>
+		public BindableBinding<T, TNewValue> Child<TNewValue>(Expression<Func<T, TNewValue>> property)
+		{
+			return Child(Property(property));
+		}
+
+		/// <summary>
+		/// Binds to the specified child <paramref name="binding"/> of this binding.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to bind to child objects of your view model, for example
+		/// <code>model.SomeProperty.ChildProperty</code>.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { public ChildObject { get; set; } }
+		/// 
+		/// 	var model = new MyModel();
+		/// 	Binding.Property(model, (MyModel m) => m.ChildObject).Child(Binding.Property("SomeChildProperty"));
+		/// </code>
+		/// </example>
+		/// <returns>The binding to the child property accessed through the current binding.</returns>
+		/// <param name="binding">Binding to get the child value from this binding.</param>
+		/// <typeparam name="TNewValue">The type of the child property value.</typeparam>
+		public new BindableBinding<T, TNewValue> Child<TNewValue>(IndirectBinding<TNewValue> binding)
+		{
+			object childBindingReference = null;
+			EventHandler<EventArgs> eventHandler = null;
+			EventHandler<EventArgs> valueChanged = (sender, e) =>
+			{
+				binding.RemoveValueChangedHandler(childBindingReference, eventHandler);
+				eventHandler?.Invoke(sender, e);
+				childBindingReference = binding.AddValueChangedHandler(DataValue, eventHandler);
+			};
+			return new BindableBinding<T, TNewValue>(
+				DataItem,
+				c => binding.GetValue(DataValue),
+				(c, v) => binding.SetValue(DataValue, v),
+				addChangeEvent: (c, ev) =>
+				{
+					eventHandler = ev;
+					DataValueChanged += valueChanged;
+					childBindingReference = binding.AddValueChangedHandler(DataValue, ev);
+				},
+				removeChangeEvent: (c, ev) =>
+				{
+					binding.RemoveValueChangedHandler(childBindingReference, ev);
+					DataValueChanged -= valueChanged;
+				}
 			);
 		}
 	}

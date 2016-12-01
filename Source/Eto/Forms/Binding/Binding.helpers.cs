@@ -47,38 +47,145 @@ namespace Eto.Forms
 		/// <typeparam name="TValue">The property value type.</typeparam>
 		public static DirectBinding<TValue> Property<T, TValue>(T model, Expression<Func<T, TValue>> propertyExpression)
 		{
-			var propertyInfo = propertyExpression.GetMemberInfo();
-			if (propertyInfo != null)
-			{
-				return new ObjectBinding<T, TValue>(model, new PropertyBinding<TValue>(propertyInfo.Member.Name));
-			}
-			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Must be a expression to a property"), "propertyExpression");
+			return new ObjectBinding<T, TValue>(model, Property(propertyExpression));
 		}
 
 		/// <summary>
 		/// Creates a new indirect property binding using the specified <paramref name="propertyExpression"/>.
 		/// </summary>
+		/// <remarks>
+		/// This supports single and multiple levels of property accessors in the model.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { 
+		/// 		public ChildObject { get; set; } 
+		/// 		public int IntProperty { get; set; } 
+		/// 	}
+		/// 
+		/// 	// direct property binding
+		/// 	Binding.Property((MyModel m) => m.IntProperty);
+		/// 
+		/// 	// bind to a property of a child object of the view model
+		/// 	Binding.Property((MyModel m) => m.ChildObject.SomeChildProperty);
+		/// </code>
+		/// </example>
 		/// <param name="propertyExpression">Expression of the property to bind to.</param>
 		/// <typeparam name="T">The type of the model.</typeparam>
 		/// <typeparam name="TValue">The property value type.</typeparam>
 		public static IndirectBinding<TValue> Property<T, TValue>(Expression<Func<T, TValue>> propertyExpression)
 		{
-			var propertyInfo = propertyExpression.GetMemberInfo();
-			if (propertyInfo != null)
+			var memberInfo = propertyExpression.GetMemberInfo();
+			if (memberInfo == null)
 			{
-				return new PropertyBinding<TValue>(propertyInfo.Member.Name);
+				// not a direct property expression, use a delegate to get value (but there will not be a way to set the value)
+				var getValue = propertyExpression.Compile();
+				return Delegate(getValue);
 			}
-			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Must be a expression to a property"), "propertyExpression");
+			var parentMember = memberInfo.Expression as MemberExpression;
+			if (parentMember != null)
+			{
+				// go up parent heirarchy to get all the members
+				var props = new List<MemberExpression>();
+				do
+				{
+					props.Add(parentMember);
+					var current = parentMember.Expression;
+
+					if (current.NodeType != ExpressionType.MemberAccess && current.NodeType != ExpressionType.Parameter)
+						return Delegate(propertyExpression.Compile());
+					
+					parentMember = current as MemberExpression;
+				} while (parentMember != null);
+
+				props.Reverse();
+				IndirectBinding<object> prop = null;
+				foreach (var p in props)
+				{
+					var pp = new PropertyBinding<object>(p.Member.Name);
+					prop = prop?.Child(pp) ?? pp;
+				}
+				// support multiple property access, e.g. m => m.Child.Property
+				return prop.Child(new PropertyBinding<TValue>(memberInfo.Member.Name));
+			}
+
+			// not using the parameter of the expression
+			if (memberInfo.Expression.NodeType != ExpressionType.Parameter)
+				return Delegate(propertyExpression.Compile());
+
+			return new PropertyBinding<TValue>(memberInfo.Member.Name);
 		}
 
 		/// <summary>
 		/// Creates a new indirect property binding using the specified <paramref name="propertyName"/>.
 		/// </summary>
+		/// <remarks>
+		/// This supports single and multiple levels of property accessors in the model.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { 
+		/// 		public ChildObject { get; set; } 
+		/// 		public int IntProperty { get; set; } 
+		/// 	}
+		/// 
+		/// 	// direct property binding
+		/// 	Binding.Property("IntProperty");
+		/// 
+		/// 	// bind to a property of a child object of the view model
+		/// 	Binding.Property("ChildObject.SomeChildProperty");
+		/// </code>
+		/// </example>
 		/// <param name="propertyName">Name of the property to bind to.</param>
 		/// <typeparam name="TValue">The type of the property.</typeparam>
 		public static IndirectBinding<TValue> Property<TValue>(string propertyName)
 		{
-			return new PropertyBinding<TValue>(propertyName);
+			return Property<TValue>(propertyName, false);
+		}
+
+		/// <summary>
+		/// Creates a new indirect property binding using the specified <paramref name="propertyName"/>.
+		/// </summary>
+		/// <remarks>
+		/// This supports single and multiple levels of property accessors in the model.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { 
+		/// 		public ChildObject { get; set; } 
+		/// 		public int IntProperty { get; set; } 
+		/// 	}
+		/// 
+		/// 	// direct property binding
+		/// 	Binding.Property("IntProperty");
+		/// 
+		/// 	// bind to a property of a child object of the view model
+		/// 	Binding.Property("ChildObject.SomeChildProperty");
+		/// </code>
+		/// </example>
+		/// <param name="propertyName">Name of the property to bind to.</param>
+		/// <param name="ignoreCase">True to ignore case of the property name, false to match the property name exactly.</param>
+		/// <typeparam name="TValue">The type of the property.</typeparam>
+		public static IndirectBinding<TValue> Property<TValue>(string propertyName, bool ignoreCase)
+		{
+			if (propertyName.IndexOf('.') > 0)
+			{
+				var props = propertyName.Split('.');
+				IndirectBinding<object> prop = null;
+				for (int i = 0; i < props.Length - 1; i++)
+				{
+					var pp = new PropertyBinding<object>(props[i], ignoreCase);
+					prop = prop?.Child(pp) ?? pp;
+				}
+				return prop.Child(new PropertyBinding<TValue>(props[props.Length - 1], ignoreCase));
+			}
+			return new PropertyBinding<TValue>(propertyName, ignoreCase);
 		}
 
 		/// <summary>
