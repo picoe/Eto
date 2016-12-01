@@ -9,11 +9,7 @@ namespace Eto
 	static class EventLookup
 	{
 		static readonly Dictionary<Type, List<EventDeclaration>> registeredEvents = new Dictionary<Type, List<EventDeclaration>>();
-#if PCL
-		static readonly Assembly etoAssembly = typeof(EventLookup).GetTypeInfo().Assembly;
-#else
-		static readonly Assembly etoAssembly = typeof(EventLookup).Assembly;
-#endif
+		static readonly Assembly etoAssembly = typeof(EventLookup).GetAssembly();
 		static readonly Dictionary<Type, string[]> externalEvents = new Dictionary<Type, string[]>();
 
 		struct EventDeclaration
@@ -38,13 +34,10 @@ namespace Eto
 		public static void HookupEvents(Widget widget)
 		{
 			var type = widget.GetType();
-#if PCL
-			if (type.GetTypeInfo().Assembly == etoAssembly)
+
+			if (type.GetAssembly() == etoAssembly)
 				return;
-#else
-			if (type.Assembly == etoAssembly)
-				return;
-#endif
+
 			var handler = widget.Handler as Widget.IHandler;
 			if (handler != null)
 			{
@@ -59,13 +52,9 @@ namespace Eto
 		public static bool IsDefault(Widget widget, string identifier)
 		{
 			var type = widget.GetType();
-#if PCL
-			if (type.GetTypeInfo().Assembly == etoAssembly)
+
+			if (type.GetAssembly() == etoAssembly)
 				return false;
-#else
-			if (type.Assembly == etoAssembly)
-				return false;
-#endif
 			var events = GetEvents(type);
 			return Array.IndexOf(events, identifier) >= 0;
 		}
@@ -75,7 +64,7 @@ namespace Eto
 			string[] events;
 			if (!externalEvents.TryGetValue(type, out events))
 			{
-				events = FindTypeEvents(type).ToArray();
+				events = FindTypeEvents(type).Distinct().ToArray();
 				externalEvents.Add(type, events);
 			}
 			return events;
