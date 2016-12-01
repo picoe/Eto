@@ -84,7 +84,7 @@ namespace Eto.WinForms
 			p.Add<Label.IHandler>(() => new LabelHandler());
 			p.Add<LinkButton.IHandler>(() => new LinkButtonHandler());
 			p.Add<ListBox.IHandler>(() => new ListBoxHandler());
-			p.Add<NumericUpDown.IHandler>(() => new NumericUpDownHandler());
+			p.Add<NumericStepper.IHandler>(() => new NumericStepperHandler());
 			p.Add<Panel.IHandler>(() => new PanelHandler());
 			p.Add<PasswordBox.IHandler>(() => new PasswordBoxHandler());
 			p.Add<ProgressBar.IHandler>(() => new ProgressBarHandler());
@@ -102,7 +102,9 @@ namespace Eto.WinForms
 			p.Add<TreeView.IHandler>(() => new TreeViewHandler());
 			p.Add<WebView.IHandler>(() => new WebViewHandler());
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
-			
+			p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
+			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
+
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
 			p.Add<ContextMenu.IHandler>(() => new ContextMenuHandler());

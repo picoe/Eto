@@ -6,14 +6,26 @@ using GLib;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
-	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class TextBoxHandler : TextBoxHandler<Gtk.Entry, TextBox, TextBox.ICallback>
 	{
-		string placeholderText;
-
 		public TextBoxHandler()
 		{
 			Control = new Gtk.Entry();
-			Control.SetSizeRequest(100, -1);
+			Control.WidthRequest = 100;
+		}
+
+	}
+
+	public class TextBoxHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, TextBox.IHandler
+		where TControl: Gtk.Entry
+		where TWidget: TextBox
+		where TCallback: TextBox.ICallback
+	{
+		string placeholderText;
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			Control.ActivatesDefault = true;
 		}
 
@@ -44,7 +56,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected class TextBoxConnector : GtkControlConnector
 		{
-			public new TextBoxHandler Handler { get { return (TextBoxHandler)base.Handler; } }
+			public new TextBoxHandler<TControl, TWidget, TCallback> Handler { get { return (TextBoxHandler<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleTextChanged(object sender, EventArgs e)
 			{
@@ -60,9 +72,12 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleTextInput(object sender, TextInputEventArgs e)
 			{
-				var tia = new TextChangingEventArgs(e.Text, Handler.Selection);
-				Handler.Callback.OnTextChanging(Handler.Widget, tia);
-				e.Cancel = tia.Cancel;
+				if (!e.Cancel)
+				{
+					var tia = new TextChangingEventArgs(e.Text, Handler.Selection);
+					Handler.Callback.OnTextChanging(Handler.Widget, tia);
+					e.Cancel = tia.Cancel;
+				}
 			}
 
 			[GLib.ConnectBefore]
@@ -95,7 +110,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			#if GTK2
 
-			public void HandleExposeEvent(object o, Gtk.ExposeEventArgs args)
+			public virtual void HandleExposeEvent(object o, Gtk.ExposeEventArgs args)
 			{
 				var control = Handler.Control;
 				if (!string.IsNullOrEmpty(control.Text) || args.Event.Window == control.GdkWindow)
@@ -153,7 +168,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { Control.Text = value ?? string.Empty; }
 		}
 
-		public bool ReadOnly
+		public virtual bool ReadOnly
 		{
 			get { return !Control.IsEditable; }
 			set { Control.IsEditable = !value; }

@@ -90,7 +90,7 @@
     <Compile Include="Sections\Controls\GroupBoxSection.cs" />
     <Compile Include="Sections\Controls\LabelSection.cs" />
     <Compile Include="Sections\Controls\ListBoxSection.cs" />
-    <Compile Include="Sections\Controls\NumericUpDownSection.cs" />
+    <Compile Include="Sections\Controls\NumericStepperSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonSection.cs" />
     <Compile Include="Sections\Controls\ScrollableSection.cs" />
     <Compile Include="Sections\Controls\SliderSection.cs" />
@@ -200,6 +200,8 @@
     <Compile Include="UnitTests\Forms\DataContextTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\SliderTests.cs" />
     <Compile Include="Sections\Dialogs\AboutDialogSection.cs" />
+    <Compile Include="Sections\Controls\StepperSection.cs" />
+    <Compile Include="Sections\Controls\TextStepperSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">

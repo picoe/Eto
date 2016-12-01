@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace Eto.WinForms.Forms.Controls
 {
-	public class NumericUpDownHandler : WindowsControl<swf.NumericUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	public class NumericStepperHandler : WindowsControl<swf.NumericUpDown, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 	{
 		public class EtoNumericUpDown : swf.NumericUpDown
 		{
@@ -25,7 +25,7 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public NumericUpDownHandler()
+		public NumericStepperHandler()
 		{
 			Control = new EtoNumericUpDown
 			{
