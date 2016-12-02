@@ -73,9 +73,9 @@ namespace Eto.Test.Sections.Controls
 			if (textControl != null)
 				foregroundUpdates.Add(c => textControl.TextColor = c);
 
-			var numericUpDown = control as NumericUpDown;
-			if (numericUpDown != null)
-				foregroundUpdates.Add(c => numericUpDown.TextColor = c);
+			var numericStepper = control as NumericStepper;
+			if (numericStepper != null)
+				foregroundUpdates.Add(c => numericStepper.TextColor = c);
 
 			var button = control as Button;
 			if (button != null)

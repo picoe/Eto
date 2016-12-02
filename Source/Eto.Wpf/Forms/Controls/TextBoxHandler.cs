@@ -9,30 +9,56 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
+	public class TextBoxHandler : TextBoxHandler<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
+	{
+		protected override swc.TextBox TextBox => Control;
+
+		public TextBoxHandler()
+		{
+			Control = new mwc.WatermarkTextBox();
+		}
+
+		public override string PlaceholderText
+		{
+			get { return Control.Watermark as string; }
+			set { Control.Watermark = value; }
+		}
+
+	}
+
+	public abstract class TextBoxHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextBox.IHandler
+		where TControl : swc.Control
+		where TWidget : TextBox
+		where TCallback: TextBox.ICallback
 	{
 		protected override Size DefaultSize { get { return new Size(100, -1); } }
 
 		protected override bool PreventUserResize { get { return true; } }
 
+		protected abstract swc.TextBox TextBox { get; }
+
 		static sw.Thickness DefaultBorderThickness = new mwc.DateTimePicker().BorderThickness;
 
 		public override bool ShowBorder
 		{
-			get { return !Control.BorderThickness.ToEto().IsZero; }
-			set { Control.BorderThickness = value ? DefaultBorderThickness : new sw.Thickness(0); }
+			get { return !TextBox.BorderThickness.ToEto().IsZero; }
+			set { TextBox.BorderThickness = value ? DefaultBorderThickness : new sw.Thickness(0); }
 		}
 
 		public TextBoxHandler ()
 		{
-			Control = new mwc.WatermarkTextBox();
-			Control.GotKeyboardFocus += Control_GotKeyboardFocus;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			TextBox.GotKeyboardFocus += Control_GotKeyboardFocus;
 		}
 
 		void Control_GotKeyboardFocus(object sender, sw.Input.KeyboardFocusChangedEventArgs e)
 		{
-			Control.SelectAll();
-			Control.GotKeyboardFocus -= Control_GotKeyboardFocus;
+			TextBox.SelectAll();
+			TextBox.GotKeyboardFocus -= Control_GotKeyboardFocus;
 		}
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
@@ -50,21 +76,21 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			switch (id) {
 				case TextControl.TextChangedEvent:
-					Control.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
+					TextBox.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
 					break;
-				case TextBox.TextChangingEvent:
+				case Eto.Forms.TextBox.TextChangingEvent:
 					var clipboard = new Clipboard();
-					Control.PreviewTextInput += (sender, e) =>
+					TextBox.PreviewTextInput += (sender, e) =>
 					{
 						var tia = new TextChangingEventArgs(e.Text, Selection);
 						Callback.OnTextChanging(Widget, tia);
 						e.Handled = tia.Cancel;
 					};
-					Control.AddHandler(swi.CommandManager.PreviewExecutedEvent, new swi.ExecutedRoutedEventHandler((sender, e) =>
+					TextBox.AddHandler(swi.CommandManager.PreviewExecutedEvent, new swi.ExecutedRoutedEventHandler((sender, e) =>
 					{
 						if (e.Command == swi.ApplicationCommands.Cut || e.Command == swi.ApplicationCommands.Delete)
 						{
-							var text = Control.SelectedText;
+							var text = TextBox.SelectedText;
 							var tia = new TextChangingEventArgs(string.Empty, Selection);
 							Callback.OnTextChanging(Widget, tia);
 							if (tia.Cancel)
@@ -142,50 +168,46 @@ namespace Eto.Wpf.Forms.Controls
 
 		public bool ReadOnly
 		{
-			get { return Control.IsReadOnly; }
-			set { Control.IsReadOnly = value; }
+			get { return TextBox.IsReadOnly; }
+			set { TextBox.IsReadOnly = value; }
 		}
 
 		public int MaxLength
 		{
-			get { return Control.MaxLength; }
-			set { Control.MaxLength = value; }
+			get { return TextBox.MaxLength; }
+			set { TextBox.MaxLength = value; }
 		}
 
 		public string Text
 		{
-			get { return Control.Text; }
+			get { return TextBox.Text; }
 			set {
-				Control.Text = value;
-				Control.SelectAll();
+				TextBox.Text = value;
+				TextBox.SelectAll();
 			}
 		}
 
-		public string PlaceholderText
-		{
-			get { return Control.Watermark as string; }
-			set { Control.Watermark = value; }
-		}
+		public abstract string PlaceholderText { get; set; }
 
 		public int CaretIndex
 		{
-			get { return Control.CaretIndex; }
-			set { Control.CaretIndex = value; }
+			get { return TextBox.CaretIndex; }
+			set { TextBox.CaretIndex = value; }
 		}
 
 		public void SelectAll ()
 		{
-			Control.Focus ();
-			Control.SelectAll ();
+			TextBox.Focus ();
+			TextBox.SelectAll ();
 		}
 
 		public Range<int> Selection
 		{
-			get { return new Range<int>(Control.SelectionStart, Control.SelectionStart + Control.SelectionLength - 1); }
+			get { return new Range<int>(TextBox.SelectionStart, TextBox.SelectionStart + TextBox.SelectionLength - 1); }
 			set
 			{
-				Control.SelectionStart = value.Start;
-				Control.SelectionLength = value.Length();
+				TextBox.SelectionStart = value.Start;
+				TextBox.SelectionLength = value.Length();
 			}
 		}
 	}

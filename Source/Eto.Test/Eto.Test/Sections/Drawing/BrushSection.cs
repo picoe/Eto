@@ -77,7 +77,7 @@ namespace Eto.Test.Sections.Drawing
 				layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), null);
 			else
 				layout.AddSeparateRow(null, BrushControl(), UseBackgroundColorControl(), WithContent(), null);
-			if (Platform.Supports<NumericUpDown>())
+			if (Platform.Supports<NumericStepper>())
 			{
 				matrixRow = layout.AddSeparateRow(null, new Label { Text = "Rot" }, RotationControl(), new Label { Text = "Sx" }, ScaleXControl(), new Label { Text = "Sy" }, ScaleYControl(), new Label { Text = "Ox" }, OffsetXControl(), new Label { Text = "Oy" }, OffsetYControl(), null);
 				matrixRow.Table.Visible = false;
@@ -165,7 +165,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control ScaleXControl()
 		{
-			var control = new NumericUpDown { MinValue = 1, MaxValue = 1000 };
+			var control = new NumericStepper { MinValue = 1, MaxValue = 1000 };
 			control.ValueBinding.Bind(() => ScaleX, v =>
 			{
 				ScaleX = (float)v;
@@ -176,7 +176,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control ScaleYControl()
 		{
-			var control = new NumericUpDown { MinValue = 1, MaxValue = 1000 };
+			var control = new NumericStepper { MinValue = 1, MaxValue = 1000 };
 			control.ValueBinding.Bind(() => ScaleY, v =>
 			{
 				ScaleY = (float)v;
@@ -187,7 +187,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control RotationControl()
 		{
-			var control = new NumericUpDown { MinValue = 0, MaxValue = 360 };
+			var control = new NumericStepper { MinValue = 0, MaxValue = 360 };
 			control.ValueBinding.Bind(() => Rotation, v =>
 			{
 				Rotation = (float)v;
@@ -198,7 +198,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control OffsetXControl()
 		{
-			var control = new NumericUpDown();
+			var control = new NumericStepper();
 			control.ValueBinding.Bind(() => OffsetX, v =>
 			{
 				OffsetX = (float)v;
@@ -209,7 +209,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control OffsetYControl()
 		{
-			var control = new NumericUpDown();
+			var control = new NumericStepper();
 			control.ValueBinding.Bind(() => OffsetY, v =>
 			{
 				OffsetY = (float)v;
@@ -245,7 +245,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control PointControl(Func<PointF> getValue, Action<PointF> setValue)
 		{
-			var xpoint = new NumericUpDown();
+			var xpoint = new NumericStepper();
 			xpoint.ValueBinding.Bind(() => getValue().X, v =>
 			{
 				var p = getValue();
@@ -254,7 +254,7 @@ namespace Eto.Test.Sections.Drawing
 				Refresh();
 			});
 
-			var ypoint = new NumericUpDown();
+			var ypoint = new NumericStepper();
 			ypoint.ValueBinding.Bind(() => getValue().Y, v =>
 			{
 				var p = getValue();
@@ -272,7 +272,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control SizeControl(Func<SizeF> getValue, Action<SizeF> setValue)
 		{
-			var xpoint = new NumericUpDown();
+			var xpoint = new NumericStepper();
 			xpoint.ValueBinding.Bind(() => getValue().Width, v =>
 			{
 				var p = getValue();
@@ -281,7 +281,7 @@ namespace Eto.Test.Sections.Drawing
 				Refresh();
 			});
 
-			var ypoint = new NumericUpDown();
+			var ypoint = new NumericStepper();
 			ypoint.ValueBinding.Bind(() => getValue().Height, v =>
 			{
 				var p = getValue();

@@ -68,7 +68,7 @@ namespace Eto.WinRT
 			//p.Add<ImageView.IHandler>(() => new ImageViewHandler());
 			p.Add<Label.IHandler>(() => new LabelHandler());
 			//p.Add<ListBox.IHandler>(() => new ListBoxHandler());
-			p.Add<NumericUpDown.IHandler>(() => new NumericUpDownHandler());
+			p.Add<NumericStepper.IHandler>(() => new NumericStepperHandler());
 			p.Add<Panel.IHandler>(() => new PanelHandler());
 			p.Add<PasswordBox.IHandler>(() => new PasswordBoxHandler());
 			p.Add<ProgressBar.IHandler>(() => new ProgressBarHandler());

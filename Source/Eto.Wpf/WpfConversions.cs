@@ -9,6 +9,7 @@ using sp = System.Printing;
 using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
 using swd = System.Windows.Documents;
+using xwt = Xceed.Wpf.Toolkit;
 using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf
@@ -757,6 +758,26 @@ namespace Eto.Wpf
 				default:
 					throw new NotSupportedException();
 			}
+		}
+
+		public static StepperValidDirections ToEto(this xwt.ValidSpinDirections direction)
+		{
+			var dir = StepperValidDirections.None;
+			if (direction.HasFlag(xwt.ValidSpinDirections.Increase))
+				dir |= StepperValidDirections.Up;
+			if (direction.HasFlag(xwt.ValidSpinDirections.Decrease))
+				dir |= StepperValidDirections.Down;
+			return dir;
+		}
+
+		public static xwt.ValidSpinDirections ToWpf(this StepperValidDirections direction)
+		{
+			var dir = xwt.ValidSpinDirections.None;
+			if (direction.HasFlag(StepperValidDirections.Up))
+				dir |= xwt.ValidSpinDirections.Increase;
+			if (direction.HasFlag(StepperValidDirections.Down))
+				dir |= xwt.ValidSpinDirections.Decrease;
+			return dir;
 		}
 	}
 }

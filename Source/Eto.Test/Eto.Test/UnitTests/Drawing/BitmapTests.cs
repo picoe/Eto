@@ -284,5 +284,115 @@ namespace Eto.Test.UnitTests.Drawing
 			});
 		}
 
+		[Test]
+		public void LockShouldThrowIfCalledWhileLocked()
+		{
+			Invoke(() =>
+			{
+				var bmp = new Bitmap(30, 30, PixelFormat.Format32bppRgba);
+
+				using (var bd = bmp.Lock())
+				{
+					Assert.Throws<InvalidOperationException>(() => bmp.Lock());
+				}
+			});
+		}
+
+		[Test]
+		public void LockShouldNowThrowIfCalledSequentially()
+		{
+			Invoke(() =>
+			{
+				var bmp = new Bitmap(30, 30, PixelFormat.Format32bppRgba);
+
+				using (var bd = bmp.Lock())
+				{
+					for (int y = 0; y < 10; y++)
+						for (int x = 0; x < 10; x++)
+							bd.SetPixel(x, y, Colors.Red);
+				}
+			
+				using (var bd = bmp.Lock())
+				{
+					for (int y = 0; y < 10; y++)
+						for (int x = 10; x < 20; x++)
+							bd.SetPixel(x, y, Colors.Blue);
+				}
+
+				// sanity check
+				Assert.AreEqual(Colors.Red, bmp.GetPixel(0, 0));
+				Assert.AreEqual(Colors.Blue, bmp.GetPixel(10, 0));
+			});
+		}
+
+		[TestCase(PixelFormat.Format24bppRgb, 265, 16)]
+		[TestCase(PixelFormat.Format32bppRgb, 265, 16)]
+		[TestCase(PixelFormat.Format32bppRgba, 265, 16)]
+		[TestCase(PixelFormat.Format24bppRgb, 256, 16)]
+		[TestCase(PixelFormat.Format32bppRgb, 256, 16)]
+		[TestCase(PixelFormat.Format32bppRgba, 256, 16)]
+		public void LockShouldSetPixelsCorrectly(PixelFormat format, int width, int height)
+		{
+			Invoke(() =>
+			{
+				var bitmap = new Bitmap(width, height, format);
+				// use Lock() to set pixels
+				using (var bd = bitmap.Lock())
+				{
+					for (int i = 0; i < width; ++i)
+					{
+						for (int j = 0; j < height; ++j)
+						{
+							var c = j < height / 2 ? Colors.Red : Colors.Green;
+							bd.SetPixel(i, j, c);
+						}
+					}
+				}
+
+				// use GetPixel() to get the pixel to verify (which is typically not implemented using lock())
+				for (int i = 0; i < width; ++i)
+				{
+					for (int j = 0; j < height; ++j)
+					{
+						var c = j < height / 2 ? Colors.Red : Colors.Green;
+						Assert.AreEqual(c, bitmap.GetPixel(i, j), $"Pixel at {i},{j} is incorrect");
+					}
+				}
+			});
+		}
+
+		[TestCase(PixelFormat.Format24bppRgb, 265, 16)]
+		[TestCase(PixelFormat.Format32bppRgb, 265, 16)]
+		[TestCase(PixelFormat.Format32bppRgba, 265, 16)]
+		[TestCase(PixelFormat.Format24bppRgb, 256, 16)]
+		[TestCase(PixelFormat.Format32bppRgb, 256, 16)]
+		[TestCase(PixelFormat.Format32bppRgba, 256, 16)]
+		public void LockShouldGetPixelsCorrectly(PixelFormat format, int width, int height)
+		{
+			Invoke(() =>
+			{
+				var bitmap = new Bitmap(width, height, format);
+				for (int i = 0; i < width; ++i)
+				{
+					for (int j = 0; j < height; ++j)
+					{
+						var c = j < height / 2 ? Colors.Red : Colors.Green;
+						bitmap.SetPixel(i, j, c);
+					}
+				}
+
+				using (var bd = bitmap.Lock())
+				{
+					for (int i = 0; i < width; ++i)
+					{
+						for (int j = 0; j < height; ++j)
+						{
+							var c = j < height / 2 ? Colors.Red : Colors.Green;
+							Assert.AreEqual(c, bd.GetPixel(i, j), $"Pixel at {i},{j} is incorrect");
+						}
+					}
+				}
+			});
+		}
 	}
 }

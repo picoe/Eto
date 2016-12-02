@@ -14,6 +14,7 @@ using Eto.Threading;
 using Eto.Mac.Forms.Cells;
 using Eto.Mac.Forms.ToolBar;
 using Eto.Shared.Forms;
+using Eto.Forms.ThemedControls;
 
 #if XAMMAC2
 using AppKit;
@@ -121,7 +122,7 @@ namespace Eto.Mac
 			p.Add<Label.IHandler>(() => new LabelHandler());
 			p.Add<LinkButton.IHandler>(() => new LinkButtonHandler());
 			p.Add<ListBox.IHandler>(() => new ListBoxHandler());
-			p.Add<NumericUpDown.IHandler>(() => new NumericUpDownHandler());
+			p.Add<NumericStepper.IHandler>(() => new NumericStepperHandler());
 			p.Add<Panel.IHandler>(() => new PanelHandler());
 			p.Add<PasswordBox.IHandler>(() => new PasswordBoxHandler());
 			p.Add<ProgressBar.IHandler>(() => new ProgressBarHandler());
@@ -139,6 +140,8 @@ namespace Eto.Mac
 			p.Add<TreeView.IHandler>(() => new TreeViewHandler());
 			p.Add<WebView.IHandler>(() => new WebViewHandler());
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
+			p.Add<Stepper.IHandler>(() => new StepperHandler());
+			p.Add<TextStepper.IHandler>(() => new ThemedTextStepperHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
@@ -161,6 +164,7 @@ namespace Eto.Mac
 			p.Add<ToolBar.IHandler>(() => new ToolBarHandler());
 			
 			// Forms
+			p.Add<AboutDialog.IHandler>(() => new ThemedAboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());

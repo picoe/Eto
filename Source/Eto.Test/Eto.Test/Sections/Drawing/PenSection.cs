@@ -29,7 +29,7 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			layout.AddSeparateRow(null, PenJoinControl(), PenCapControl(), DashStyleControl(), null);
-			if (Platform.Supports<NumericUpDown>())
+			if (Platform.Supports<NumericStepper>())
 				layout.AddSeparateRow(null, PenThicknessControl(), null);
 			layout.AddCentered(GetDrawable());
 
@@ -54,7 +54,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control PenThicknessControl()
 		{
-			var control = new NumericUpDown { MinValue = 1, MaxValue = 10 };
+			var control = new NumericStepper { MinValue = 1, MaxValue = 10 };
 			control.Bind(c => c.Value, this, r => r.PenThickness);
 			control.ValueChanged += Refresh;
 

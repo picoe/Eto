@@ -14,7 +14,7 @@ namespace Eto.Wpf.Forms.Controls
 		public new mwc.Spinner Spinner { get { return base.Spinner; } }
 	}
 
-	public class NumericUpDownHandler : WpfControl<EtoDoubleUpDown, NumericUpDown, NumericUpDown.ICallback>, NumericUpDown.IHandler
+	public class NumericStepperHandler : WpfControl<EtoDoubleUpDown, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 	{
 		double lastValue;
 
@@ -22,7 +22,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override bool PreventUserResize { get { return true; } }
 
-		public NumericUpDownHandler()
+		public NumericStepperHandler()
 		{
 			Control = new EtoDoubleUpDown
 			{

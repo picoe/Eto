@@ -26,7 +26,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.EndHorizontal();
 
 			layout.AddRow(null, CheckBoxControl(), RadioButtonControl());
-			layout.AddRow(null, DateTimeControl(), NumericUpDownControl());
+			layout.AddRow(null, DateTimeControl(), NumericStepperControl());
 			layout.AddRow(null, DropDownControl(), ComboBoxControl());
 
 			layout.BeginHorizontal();
@@ -107,9 +107,9 @@ namespace Eto.Test.Sections.Behaviors
 			return control;
 		}
 
-		Control NumericUpDownControl()
+		Control NumericStepperControl()
 		{
-			var control = new NumericUpDown();
+			var control = new NumericStepper();
 			LogEvents(control);
 			return control;
 		}

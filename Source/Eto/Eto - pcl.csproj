@@ -120,7 +120,7 @@
     <Compile Include="Forms\Controls\MouseEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\NumericUpDown.cs" />
+    <Compile Include="Forms\Controls\NumericStepper.cs" />
     <Compile Include="Forms\Controls\Panel.cs" />
     <Compile Include="Forms\Controls\RadioButton.cs" />
     <Compile Include="Forms\Controls\Scrollable.cs" />
@@ -331,6 +331,12 @@
     <Compile Include="Drawing\FontConverter.cs" />
     <Compile Include="UnhandledExceptionEventHandler.cs" />
     <Compile Include="Drawing\IconFrame.cs" />
+    <Compile Include="Forms\AboutDialog.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedAboutHandler.cs" />
+    <Compile Include="Forms\Controls\Stepper.cs" />
+    <Compile Include="Forms\Controls\TextStepper.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedStepperHandler.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedTextStepperHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">

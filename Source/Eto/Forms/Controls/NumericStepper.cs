@@ -5,13 +5,24 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
+	/// Control for the user to enter a numeric value (obsolete, use NumericStepper instead)
+	/// </summary>
+	/// <remarks>
+	/// This usually presents with a <see cref="Stepper"/> to increase/decrease the value, or a specific numeric keyboard.
+	/// </remarks>
+	[Obsolete("Since 2.4: Use NumericStepper instead")]
+	public class NumericUpDown : NumericStepper
+	{
+	}
+
+	/// <summary>
 	/// Control for the user to enter a numeric value
 	/// </summary>
 	/// <remarks>
-	/// This usually presents with a spinner to increase/decrease the value, or a specific numeric keyboard.
+	/// This usually presents with a <see cref="Stepper"/> to increase/decrease the value, or a specific numeric keyboard.
 	/// </remarks>
-	[Handler(typeof(NumericUpDown.IHandler))]
-	public class NumericUpDown : CommonControl
+	[Handler(typeof(NumericStepper.IHandler))]
+	public class NumericStepper : CommonControl
 	{
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
@@ -31,7 +42,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.NumericUpDown"/> is read only.
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.NumericStepper"/> is read only.
 		/// </summary>
 		/// <remarks>
 		/// A read only control can copy the value and focus the control, but cannot edit or change the value.
@@ -101,7 +112,7 @@ namespace Eto.Forms
 		/// Gets or sets the number of digits to display after the decimal.
 		/// </summary>
 		/// <remarks>
-		/// The NumericUpDown control will at least show the number of fraction digits as specified by this value, padded
+		/// The NumericStepper control will at least show the number of fraction digits as specified by this value, padded
 		/// by zeros. 
 		/// The <see cref="MaximumDecimalPlaces"/> specifies the maximum number of fraction digits the control will display
 		/// if the value has a value that can be represented by more digits.
@@ -111,7 +122,7 @@ namespace Eto.Forms
 		/// This shows the effect of the <see cref="DecimalPlaces"/> and <see cref="MaximumDecimalPlaces"/> on the display 
 		/// of the control and its returned value.
 		/// <pre>
-		/// var numeric = new NumericUpDown();
+		/// var numeric = new NumericStepper();
 		/// 
 		/// numeric.DecimalPlaces = 2;
 		/// numeric.MaximumDecimalPlaces = 4;
@@ -161,11 +172,11 @@ namespace Eto.Forms
 		/// Gets the binding for the <see cref="Value"/> property.
 		/// </summary>
 		/// <value>The value binding.</value>
-		public BindableBinding<NumericUpDown, double> ValueBinding
+		public BindableBinding<NumericStepper, double> ValueBinding
 		{
 			get
 			{
-				return new BindableBinding<NumericUpDown, double>(
+				return new BindableBinding<NumericStepper, double>(
 					this, 
 					c => c.Value, 
 					(c, v) => c.Value = v, 
@@ -190,37 +201,37 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Callback interface for the <see cref="NumericUpDown"/>
+		/// Callback interface for the <see cref="NumericStepper"/>
 		/// </summary>
 		public new interface ICallback : CommonControl.ICallback
 		{
 			/// <summary>
 			/// Raises the value changed event.
 			/// </summary>
-			void OnValueChanged(NumericUpDown widget, EventArgs e);
+			void OnValueChanged(NumericStepper widget, EventArgs e);
 		}
 
 		/// <summary>
-		/// Callback implementation for handlers of the <see cref="NumericUpDown"/>
+		/// Callback implementation for handlers of the <see cref="NumericStepper"/>
 		/// </summary>
 		protected new class Callback : CommonControl.Callback, ICallback
 		{
 			/// <summary>
 			/// Raises the value changed event.
 			/// </summary>
-			public void OnValueChanged(NumericUpDown widget, EventArgs e)
+			public void OnValueChanged(NumericStepper widget, EventArgs e)
 			{
 				widget.Platform.Invoke(() => widget.OnValueChanged(e));
 			}
 		}
 
 		/// <summary>
-		/// Handler interface for the <see cref="NumericUpDown"/> control.
+		/// Handler interface for the <see cref="NumericStepper"/> control.
 		/// </summary>
 		public new interface IHandler : CommonControl.IHandler
 		{
 			/// <summary>
-			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.NumericUpDown"/> is read only.
+			/// Gets or sets a value indicating whether this <see cref="Eto.Forms.NumericStepper"/> is read only.
 			/// </summary>
 			/// <remarks>
 			/// A read only control can copy the value and focus the control, but cannot edit or change the value.
@@ -259,7 +270,7 @@ namespace Eto.Forms
 			/// Gets or sets the number of digits to display after the decimal.
 			/// </summary>
 			/// <remarks>
-			/// The NumericUpDown control will at least show the number of fraction digits as specified by this value, padded
+			/// The NumericStepper control will at least show the number of fraction digits as specified by this value, padded
 			/// by zeros. 
 			/// The <see cref="MaximumDecimalPlaces"/> specifies the maximum number of fraction digits the control will display
 			/// if the value has a value that can be represented by more digits.

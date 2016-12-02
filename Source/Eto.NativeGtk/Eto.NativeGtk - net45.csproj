@@ -150,7 +150,7 @@
     <Compile Include="..\Eto.Gtk\Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\LabelHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\ListBoxHandler.cs" />
-    <Compile Include="..\Eto.Gtk\Forms\Controls\NumericUpDownHandler.cs" />
+    <Compile Include="..\Eto.Gtk\Forms\Controls\NumericStepperHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\PanelHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\ScrollableHandler.cs" />
@@ -271,6 +271,15 @@
     <Compile Include="..\Eto.Gtk\Forms\ColorDialogHandlerGtk34.cs">
       <Link>ColorDialogHandlerGtk34.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\AboutDialogHandler.cs">
+      <Link>AboutDialogHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\Controls\StepperHandler.cs">
+      <Link>StepperHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\Controls\TextStepperHandler.cs">
+      <Link>TextStepperHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -294,8 +303,8 @@
       <Properties>
         <Policies>
           <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
-          <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
-          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+          <CSharpFormattingPolicy IndentBlock="True" IndentBraces="False" IndentSwitchSection="False" IndentSwitchCaseSection="True" LabelPositioning="OneLess" NewLinesForBracesInTypes="True" NewLinesForBracesInMethods="True" NewLinesForBracesInProperties="False" NewLinesForBracesInAccessors="False" NewLinesForBracesInAnonymousMethods="False" NewLinesForBracesInControlBlocks="False" NewLinesForBracesInAnonymousTypes="False" NewLinesForBracesInObjectCollectionArrayInitializers="False" NewLinesForBracesInLambdaExpressionBody="False" NewLineForElse="False" NewLineForCatch="False" NewLineForFinally="False" NewLineForMembersInObjectInit="False" NewLineForMembersInAnonymousTypes="False" NewLineForClausesInQuery="False" SpacingAfterMethodDeclarationName="True" SpaceWithinMethodDeclarationParenthesis="False" SpaceBetweenEmptyMethodDeclarationParentheses="False" SpaceAfterMethodCallName="True" SpaceWithinMethodCallParentheses="False" SpaceBetweenEmptyMethodCallParentheses="False" SpaceAfterControlFlowStatementKeyword="True" SpaceWithinExpressionParentheses="False" SpaceWithinCastParentheses="False" SpaceWithinOtherParentheses="False" SpaceAfterCast="False" SpacesIgnoreAroundVariableDeclaration="False" SpaceBeforeOpenSquareBracket="True" SpaceBetweenEmptySquareBrackets="False" SpaceWithinSquareBrackets="False" SpaceAfterColonInBaseTypeDeclaration="True" SpaceAfterComma="True" SpaceAfterDot="False" SpaceAfterSemicolonsInForStatement="True" SpaceBeforeColonInBaseTypeDeclaration="True" SpaceBeforeComma="False" SpaceBeforeDot="False" SpaceBeforeSemicolonsInForStatement="False" SpacingAroundBinaryOperator="Single" WrappingPreserveSingleLine="True" WrappingKeepStatementsOnSingleLine="True" PlaceSystemDirectiveFirst="True" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy TabWidth="4" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>
     </MonoDevelop>
