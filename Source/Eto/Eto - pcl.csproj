@@ -338,6 +338,10 @@
     <Compile Include="Forms\ThemedControls\ThemedStepperHandler.cs" />
     <Compile Include="Forms\ThemedControls\ThemedTextStepperHandler.cs" />
     <Compile Include="Forms\Binding\IValueConverter.cs" />
+    <Compile Include="Forms\Controls\FilePicker.cs" />
+    <Compile Include="FileAction.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedFilePickerHandler.cs" />
+    <Compile Include="Forms\FileFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">

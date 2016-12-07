@@ -104,6 +104,7 @@ namespace Eto.WinForms
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
 			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
+			p.Add<FilePicker.IHandler>(() => new ThemedFilePickerHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());

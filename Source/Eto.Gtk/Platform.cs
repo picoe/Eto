@@ -101,6 +101,7 @@ namespace Eto.GtkSharp
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<Expander.IHandler>(() => new ExpanderHandler());
+			p.Add<FilePicker.IHandler>(() => new FilePickerHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
 			p.Add<GridView.IHandler>(() => new GridViewHandler());
 			p.Add<GroupBox.IHandler>(() => new GroupBoxHandler());
