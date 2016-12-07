@@ -11,77 +11,25 @@ namespace Eto.Forms
 	/// <remarks>
 	/// Each filter defines an option for the user to limit the selection of files in the dialog.
 	/// </remarks>
-	public class FileDialogFilter
+	[Obsolete("Since 2.4: Use FileFilter instead")]
+	public class FileDialogFilter : FileFilter
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.FileDialogFilter"/> class.
+		/// Initializes a new instance of the <see cref="FileFilter"/> class.
 		/// </summary>
-		public FileDialogFilter()
+		public FileDialogFilter() : base()
 		{
+			
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.FileDialogFilter"/> class.
+		/// Initializes a new instance of the <see cref="FileFilter"/> class.
 		/// </summary>
 		/// <param name="name">Name of the filter to display to the user</param>
 		/// <param name="extensions">Extensions of the files to filter by, including the dot for each</param>
-		public FileDialogFilter(string name, params string[] extensions)
+		public FileDialogFilter(string name, params string[] extensions) : base(name, extensions)
 		{
-			this.Name = name;
-			this.Extensions = extensions;
-		}
-
-		/// <summary>
-		/// Gets or sets the name of the filter.
-		/// </summary>
-		/// <value>The name of the filter.</value>
-		public string Name { get; set; }
-
-		/// <summary>
-		/// Gets or sets the extensions to filter the file list
-		/// </summary>
-		/// <remarks>Each extension should include the period. e.g. ".jpeg", ".png", etc.</remarks>
-		/// <value>The extensions.</value>
-		public string[] Extensions { get; set; }
-
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents the current <see cref="Eto.Forms.FileDialogFilter"/>.
-		/// </summary>
-		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Eto.Forms.FileDialogFilter"/>.</returns>
-		public override string ToString()
-		{
-			return Name;
-		}
-
-		/// <summary>
-		/// Serves as a hash function for a <see cref="Eto.Forms.FileDialogFilter"/> object.
-		/// </summary>
-		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
-		public override int GetHashCode()
-		{
-			int hash;
-			hash = Name != null ? Name.GetHashCode() : string.Empty.GetHashCode();
-			if (Extensions != null)
-				hash ^= Extensions.GetHashCode();
-			return hash;
-		}
-
-		/// <summary>
-		/// Converts a string representation of a filter in the form of "[name]|[ext];[ext];[ext]" to a FileDialogFilter.
-		/// </summary>
-		/// <param name="filter">String representation of the file dialog filter</param>
-		/// <returns>A new file dialog filter with the name and extensions specified in the <paramref name="filter"/> argument</returns>
-		public static implicit operator FileDialogFilter(string filter)
-		{
-			var parts = filter.Split('|');
-			if (parts.Length != 2)
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Filter must be in the form of '<name>|<ext>;<ext>;<ext>;"), "filter");
-
-			return new FileDialogFilter
-			{
-				Name = parts[0],
-				Extensions = parts[1].Split(new [] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-			};
+			
 		}
 	}
 
@@ -115,7 +63,7 @@ namespace Eto.Forms
 		/// <seealso cref="CurrentFilterIndex"/>
 		/// <seealso cref="CurrentFilter"/>
 		/// <value>The filters the user can select.</value>
-		public Collection<FileDialogFilter> Filters
+		public Collection<FileFilter> Filters
 		{
 			get { return filters ?? (filters = new FilterCollection { Dialog = this }); }
 		}
@@ -141,7 +89,7 @@ namespace Eto.Forms
 		/// </remarks>
 		/// <seealso cref="Filters"/>
 		/// <value>The current filter.</value>
-		public FileDialogFilter CurrentFilter
+		public FileFilter CurrentFilter
 		{
 			get
 			{
@@ -190,11 +138,11 @@ namespace Eto.Forms
 			set { Handler.Directory = value; }
 		}
 
-		class FilterCollection : Collection<FileDialogFilter>
+		class FilterCollection : Collection<FileFilter>
 		{
 			public FileDialog Dialog { get; set; }
 
-			protected override void InsertItem(int index, FileDialogFilter item)
+			protected override void InsertItem(int index, FileFilter item)
 			{
 				base.InsertItem(index, item);
 				Dialog.Handler.InsertFilter(index, item);
@@ -206,7 +154,7 @@ namespace Eto.Forms
 				Dialog.Handler.RemoveFilter(index);
 			}
 
-			protected override void SetItem(int index, FileDialogFilter item)
+			protected override void SetItem(int index, FileFilter item)
 			{
 				Dialog.Handler.RemoveFilter(index);
 				base.SetItem(index, item);
@@ -261,7 +209,7 @@ namespace Eto.Forms
 			/// </summary>
 			/// <param name="index">Index to insert the filter</param>
 			/// <param name="filter">Filter to insert</param>
-			void InsertFilter(int index, FileDialogFilter filter);
+			void InsertFilter(int index, FileFilter filter);
 
 			/// <summary>
 			/// Removes a filter at the specified index

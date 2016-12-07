@@ -71,7 +71,7 @@ namespace Eto.Wpf.Forms
 			return base.ShowDialog(parent);
 		}
 
-		public void InsertFilter(int index, FileDialogFilter filter)
+		public void InsertFilter(int index, FileFilter filter)
 		{
 		}
 

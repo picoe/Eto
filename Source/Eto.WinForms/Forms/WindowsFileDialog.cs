@@ -30,7 +30,7 @@ namespace Eto.WinForms.Forms
 			set { Control.InitialDirectory = value.AbsoluteUri; }
 		}
 
-		public void InsertFilter(int index, FileDialogFilter filter)
+		public void InsertFilter(int index, FileFilter filter)
 		{
 		}
 
@@ -55,7 +55,7 @@ namespace Eto.WinForms.Forms
 			Control.Filter = string.Join("|", filterValues);
 		}
 
-		public FileDialogFilter CurrentFilter
+		public FileFilter CurrentFilter
 		{
 			get
 			{
