@@ -35,7 +35,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="Eto">
-      <HintPath>..\Eto.Addin.XamarinStudio\packages\Eto.Forms.2.2.0\lib\net45\Eto.dll</HintPath>
+      <HintPath>..\packages\Eto.Forms.2.3.0\lib\net45\Eto.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -51,9 +51,9 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="ReplacementItem.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Shared\Common.targets" />
 </Project>
