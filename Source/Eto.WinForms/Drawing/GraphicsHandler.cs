@@ -5,6 +5,7 @@ using sd = System.Drawing;
 using sdd = System.Drawing.Drawing2D;
 using swf = System.Windows.Forms;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.WinForms.Drawing
 {
@@ -153,13 +154,35 @@ namespace Eto.WinForms.Drawing
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
 			SetOffset(false);
-            Control.DrawLine(pen.ToSD(), startx, starty, endx, endy);
+            Control.DrawLine(pen.ToSD(new RectangleF(startx, starty, endx, endy)), startx, starty, endx, endy);
+		}
+
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			SetOffset(false);
+			var x1 = points.Min(p => p.X);
+			var y1 = points.Min(p => p.Y);
+			var x2 = points.Max(p => p.X);
+			var y2 = points.Max(p => p.Y);
+			var bounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
+			Control.DrawLines(pen.ToSD(bounds), points.Select(p => p.ToSD()).ToArray());
+		}
+
+		public void DrawPolygon(Pen pen, IEnumerable<PointF> points)
+		{
+			SetOffset(false);
+			var x1 = points.Min(p => p.X);
+			var y1 = points.Min(p => p.Y);
+			var x2 = points.Max(p => p.X);
+			var y2 = points.Max(p => p.Y);
+			var bounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
+			Control.DrawPolygon(pen.ToSD(bounds), points.Select(p => p.ToSD()).ToArray());
 		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			SetOffset(false);
-			Control.DrawRectangle(pen.ToSD(), x, y, width, height);
+			Control.DrawRectangle(pen.ToSD(new RectangleF(x, y, width, height)), x, y, width, height);
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
@@ -171,7 +194,7 @@ namespace Eto.WinForms.Drawing
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
 			SetOffset(false);
-			Control.DrawEllipse(pen.ToSD(), x, y, width, height);
+			Control.DrawEllipse(pen.ToSD(new RectangleF(x, y, width, height)), x, y, width, height);
 		}
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
@@ -263,7 +286,8 @@ namespace Eto.WinForms.Drawing
 				endAngle = GetConvertedAngle(endAngle, width / 2, height / 2, false);
 				sweepAngle = endAngle - startAngle;
 			}
-			Control.DrawArc(pen.ToSD(), x, y, width, height, startAngle, sweepAngle);
+			var bounds = new RectangleF(x - width, y - height, width * 2, height * 2);
+			Control.DrawArc(pen.ToSD(bounds), x, y, width, height, startAngle, sweepAngle);
 		}
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
@@ -288,7 +312,7 @@ namespace Eto.WinForms.Drawing
 		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
 			SetOffset(false);
-			Control.DrawPath(pen.ToSD(), path.ToSD());
+			Control.DrawPath(pen.ToSD(path.Bounds), path.ToSD());
 		}
 
 		public void DrawImage(Image image, float x, float y)

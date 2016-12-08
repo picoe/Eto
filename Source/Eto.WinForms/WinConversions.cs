@@ -456,9 +456,9 @@ namespace Eto.WinForms
 				: null;
 		}
 
-		public static sd.Pen ToSD(this Pen pen)
+		public static sd.Pen ToSD(this Pen pen, RectangleF bounds)
 		{
-			return (sd.Pen)pen.ControlObject;
+			return ((PenHandler)pen.Handler).GetPen(pen, bounds);
 		}
 
 		public static sd.Brush ToSD(this Brush brush, RectangleF bounds)

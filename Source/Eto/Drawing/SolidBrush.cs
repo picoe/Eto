@@ -20,11 +20,12 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a delegate to instantiate objects of this type with minimal overhead
 		/// </summary>
+		[Obsolete("Since 2.4: Use new SolidBrush() instead")]
 		public static Func<Color, SolidBrush> Instantiator
 		{
 			get
 			{
-				var sharedHandler = Platform.Instance.CreateShared<IHandler>();
+				var sharedHandler = Platform.Instance.SolidBrushHandler;
 				return color =>
 				{
 					var control = sharedHandler.Create(color);
@@ -45,7 +46,7 @@ namespace Eto.Drawing
 		/// <param name="color">Color for the brush</param>
 		public SolidBrush(Color color)
 		{
-			handler = Platform.Instance.CreateShared <IHandler> ();
+			handler = Platform.Instance.SolidBrushHandler;
 			ControlObject = handler.Create (color);
 		}
 

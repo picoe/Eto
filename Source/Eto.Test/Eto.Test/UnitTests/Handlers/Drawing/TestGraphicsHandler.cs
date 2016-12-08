@@ -57,6 +57,16 @@ namespace Eto.Test.UnitTests.Handlers.Drawing
 			throw new NotImplementedException();
 		}
 
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void DrawPolygon(Pen pen, IEnumerable<PointF> points)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			throw new NotImplementedException();
