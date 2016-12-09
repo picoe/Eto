@@ -141,8 +141,7 @@ namespace Eto.Mac.Forms
 
 		public void Invoke(Action action)
 		{
-			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread)
+			if (NSThread.IsMain)
 				action();
 			else
 			{

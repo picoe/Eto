@@ -92,10 +92,14 @@ namespace Eto.iOS.Drawing
 				Gradient = null;
 			}
 
-			public void Draw(GraphicsHandler graphics, RectangleF rect)
+			public void Draw(GraphicsHandler graphics, bool stroke, FillMode fillMode)
 			{
 				var start = StartPoint;
 				var end = EndPoint;
+				var rect = graphics.Control.GetPathBoundingBox().ToEto();
+				if (stroke)
+					graphics.Control.ReplacePathWithStrokedPath();
+				graphics.Clip(fillMode);
 
 				if (transform != null)
 				{
@@ -122,6 +126,7 @@ namespace Eto.iOS.Drawing
 
 				var context = graphics.Control;
 
+
 				context.DrawLinearGradient(Gradient, start.ToNS(), end.ToNS(), CGGradientDrawingOptions.DrawsAfterEndLocation | CGGradientDrawingOptions.DrawsBeforeStartLocation);
 			}
 		}
@@ -139,7 +144,13 @@ namespace Eto.iOS.Drawing
 
 		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			return null;
+			return new BrushObject
+			{
+				StartColor = startColor.ToCG(),
+				EndColor = endColor.ToCG(),
+				StartPoint = rectangle.TopLeft,
+				EndPoint = rectangle.TopRight // TODO
+			};
 		}
 
 		public IMatrix GetTransform(LinearGradientBrush widget)
@@ -162,9 +173,9 @@ namespace Eto.iOS.Drawing
 			((BrushObject)widget.ControlObject).Wrap = gradientWrap;
 		}
 
-		public override void Draw(object control, GraphicsHandler graphics, RectangleF rect)
+		public override void Draw(object control, GraphicsHandler graphics, bool stroke, FillMode fillMode)
 		{
-			((BrushObject)control).Draw(graphics, rect);
+			((BrushObject)control).Draw(graphics, stroke, fillMode);
 		}
 	}
 }

@@ -167,16 +167,65 @@ namespace Eto.GtkSharp.Drawing
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
 			SetOffset(false);
+			Control.Save();
 			Control.MoveTo(startx, starty);
 			Control.LineTo(endx, endy);
 			pen.Apply(this);
+			Control.Stroke();
+			Control.Restore();
+		}
+
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			SetOffset(false);
+			Control.Save();
+			bool first = true;
+			foreach (var point in points)
+			{
+				if (!first)
+				{
+					Control.LineTo(point.X, point.Y);
+					continue;
+				}
+
+				Control.MoveTo(point.X, point.Y);
+				first = false;
+			}
+			pen.Apply(this);
+			Control.Stroke();
+			Control.Restore();
+		}
+
+		public void DrawPolygon(Pen pen, IEnumerable<PointF> points)
+		{
+			SetOffset(false);
+			Control.Save();
+			bool first = true;
+			foreach (var point in points)
+			{
+				if (!first)
+				{
+					Control.LineTo(point.X, point.Y);
+					continue;
+				}
+
+				Control.MoveTo(point.X, point.Y);
+				first = false;
+			}
+			Control.ClosePath();
+			pen.Apply(this);
+			Control.Stroke();
+			Control.Restore();
 		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			SetOffset(false);
+			Control.Save();
 			Control.Rectangle(x, y, width, height);
 			pen.Apply(this);
+			Control.Stroke();
+			Control.Restore();
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
@@ -185,6 +234,7 @@ namespace Eto.GtkSharp.Drawing
 			Control.Rectangle(x, y, width, height);
 			Control.Save();
 			brush.Apply(this);
+			Control.Fill();
 			Control.Restore();
 		}
 
@@ -200,7 +250,10 @@ namespace Eto.GtkSharp.Drawing
 				Control.Scale(width / height, 1.0);
 			Control.Arc(0, 0, radius, 0, 2 * Math.PI);
 			Control.Restore();
+			Control.Save();
 			pen.Apply(this);
+			Control.Stroke();
+			Control.Restore();
 		}
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
@@ -217,6 +270,7 @@ namespace Eto.GtkSharp.Drawing
 			Control.Restore();
 			Control.Save();
 			brush.Apply(this);
+			Control.Fill();
 			Control.Restore();
 		}
 
@@ -235,7 +289,10 @@ namespace Eto.GtkSharp.Drawing
 			else
 				Control.Arc(0, 0, radius, Conversions.DegreesToRadians(startAngle), Conversions.DegreesToRadians(startAngle + sweepAngle));
 			Control.Restore();
+			Control.Save();
 			pen.Apply(this);
+			Control.Stroke();
+			Control.Restore();
 		}
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
@@ -256,6 +313,7 @@ namespace Eto.GtkSharp.Drawing
 			Control.Restore();
 			Control.Save();
 			brush.Apply(this);
+			Control.Fill();
 			Control.Restore();
 		}
 
@@ -266,6 +324,7 @@ namespace Eto.GtkSharp.Drawing
 			path.Apply(Control);
 			Control.FillRule = path.FillMode.ToCairo();
 			brush.Apply(this);
+			Control.Fill();
 			Control.Restore();
 		}
 
@@ -275,6 +334,7 @@ namespace Eto.GtkSharp.Drawing
 			Control.Save();
 			path.Apply(Control);
 			pen.Apply(this);
+			Control.Stroke();
 			Control.Restore();
 		}
 
@@ -514,6 +574,7 @@ namespace Eto.GtkSharp.Drawing
 			if (brush != null)
 			{
 				brush.Apply(this);
+				Control.Fill();
 				Control.Paint();
 			}
 			Control.Restore();

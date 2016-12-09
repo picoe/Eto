@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Drawing
 {
@@ -477,24 +478,60 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void DrawPolygon(Color color, params PointF[] points)
 		{
-			var path = new GraphicsPath();
-			path.AddLines(points);
-			path.LineTo(points[0]);
 			using (var pen = new Pen(color))
-				DrawPath(pen, path);
+				DrawPolygon(pen, points);
 		}
 
 		/// <summary>
 		/// Draws an outline of a polygon with the specified <paramref name="points"/>
 		/// </summary>
-		/// <param name="pen">Color to draw the polygon lines</param>
+		/// <param name="pen">Pen to draw the polygon lines with</param>
 		/// <param name="points">Points of the polygon</param>
 		public void DrawPolygon(Pen pen, params PointF[] points)
 		{
-			var path = new GraphicsPath();
-			path.AddLines(points);
-			path.LineTo(points[0]);
-			DrawPath(pen, path);
+			Handler.DrawPolygon(pen, points);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide set of lines with the specified <paramref name="points"/>
+		/// </summary>
+		/// <param name="color">Color to draw the lines</param>
+		/// <param name="points">Points for each of the lines</param>
+		public void DrawLines(Color color, params PointF[] points)
+		{
+			using (var pen = new Pen(color))
+				DrawLines(pen, points);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide set of lines with the specified <paramref name="points"/>
+		/// </summary>
+		/// <param name="color">Color to draw the lines</param>
+		/// <param name="points">Points for each of the lines</param>
+		public void DrawLines(Color color, IEnumerable<PointF> points)
+		{
+			using (var pen = new Pen(color))
+				DrawLines(pen, points);
+		}
+
+		/// <summary>
+		/// Draws a set of lines with the specified <paramref name="points"/>
+		/// </summary>
+		/// <param name="pen">Pen to draw the lines with</param>
+		/// <param name="points">Points for each of the lines</param>
+		public void DrawLines(Pen pen, params PointF[] points)
+		{
+			Handler.DrawLines(pen, points);
+		}
+
+		/// <summary>
+		/// Draws a set of lines with the specified <paramref name="points"/>
+		/// </summary>
+		/// <param name="pen">Pen to draw the lines with</param>
+		/// <param name="points">Points for each of the lines</param>
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			Handler.DrawLines(pen, points);
 		}
 
 		/// <summary>
@@ -1030,6 +1067,20 @@ namespace Eto.Drawing
 			void DrawLine(Pen pen, float startx, float starty, float endx, float endy);
 
 			/// <summary>
+			/// Draws a set of lines with the specified <paramref name="points"/>
+			/// </summary>
+			/// <param name="pen">Pen to draw the lines with</param>
+			/// <param name="points">Points for each of the lines</param>
+			void DrawLines(Pen pen, IEnumerable<PointF> points);
+
+			/// <summary>
+			/// Draws an outline of a polygon with the specified <paramref name="points"/>
+			/// </summary>
+			/// <param name="pen">Pen to draw the polygon lines with</param>
+			/// <param name="points">Points of the polygon</param>
+			void DrawPolygon(Pen pen, IEnumerable<PointF> points);
+
+			/// <summary>
 			/// Draws a rectangle outline
 			/// </summary>
 			/// <param name="pen">Pen to draw the rectangle</param>
@@ -1272,8 +1323,9 @@ namespace Eto.Drawing
 			/// </summary>
 			/// <param name="brush">Brush to clear the graphics context</param>
 			void Clear(SolidBrush brush);
-		}
 
+		}
 		#endregion
+
 	}
 }

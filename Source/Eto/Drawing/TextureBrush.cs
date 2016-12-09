@@ -47,11 +47,12 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// This can be used to instantiate texture brushes when creating many brushes to minimize overhead
 		/// </remarks>
+		[Obsolete("Since 2.4: Use new TextureBrush() instead")]
 		public static Func<Image, float, TextureBrush> Instantiator
 		{
 			get
 			{
-				var sharedHandler = Platform.Instance.CreateShared<IHandler>();
+				var sharedHandler = Platform.Instance.TextureBrushHandler;
 				return (image, opacity) => new TextureBrush(sharedHandler, image, opacity);
 			}
 		}
@@ -72,7 +73,7 @@ namespace Eto.Drawing
 		public TextureBrush (Image image, float opacity = 1f)
 		{
 			this.Image = image;
-			handler = Platform.Instance.CreateShared<IHandler> ();
+			handler = Platform.Instance.TextureBrushHandler;
 			ControlObject = handler.Create (image, opacity);
 		}
 

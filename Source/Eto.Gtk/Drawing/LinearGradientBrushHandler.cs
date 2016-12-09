@@ -13,56 +13,59 @@ namespace Eto.GtkSharp.Drawing
 	{
 		class EtoGradient : Cairo.LinearGradient
 		{
-			public EtoGradient (double x0, double y0, double x1, double y1)
-				: base (x0, y0, x1, y1)
+			public EtoGradient(double x0, double y0, double x1, double y1)
+				: base(x0, y0, x1, y1)
 			{
 			}
 
 			public Cairo.Matrix Transform { get; set; }
+			public Cairo.Matrix TransformInverse { get; set; }
 		}
 
-		public object Create (Color startColor, Color endColor, PointF startPoint, PointF endPoint)
+		public object Create(Color startColor, Color endColor, PointF startPoint, PointF endPoint)
 		{
-			var gradient = new EtoGradient (startPoint.X, startPoint.Y, endPoint.X, endPoint.Y);
+			var gradient = new EtoGradient(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y);
 			gradient.Extend = Cairo.Extend.Pad;
-			gradient.AddColorStop (0, startColor.ToCairo ());
-			gradient.AddColorStop (1, endColor.ToCairo ());
+			gradient.AddColorStop(0, startColor.ToCairo());
+			gradient.AddColorStop(1, endColor.ToCairo());
 			return gradient;
 		}
 
-		public object Create (RectangleF rectangle, Color startColor, Color endColor, float angle)
+		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
-			throw new NotImplementedException ();
+			throw new NotImplementedException();
 		}
 
-		public IMatrix GetTransform (LinearGradientBrush widget)
+		public IMatrix GetTransform(LinearGradientBrush widget)
 		{
-			return ((EtoGradient)widget.ControlObject).Transform.ToEto ();
+			return ((EtoGradient)widget.ControlObject).Transform.ToEto() ?? Matrix.Create();
 		}
 
-		public void SetTransform (LinearGradientBrush widget, IMatrix transform)
+		public void SetTransform(LinearGradientBrush widget, IMatrix transform)
 		{
-			((EtoGradient)widget.ControlObject).Transform = transform.ToCairo ();
+			((EtoGradient)widget.ControlObject).Transform = transform.ToCairo();
+			((EtoGradient)widget.ControlObject).TransformInverse = transform.Inverse().ToCairo();
 		}
 
-		public GradientWrapMode GetGradientWrap (LinearGradientBrush widget)
+		public GradientWrapMode GetGradientWrap(LinearGradientBrush widget)
 		{
 			return ((Cairo.LinearGradient)widget.ControlObject).Extend.ToEto();
 		}
 
-		public void SetGradientWrap (LinearGradientBrush widget, GradientWrapMode gradientWrap)
+		public void SetGradientWrap(LinearGradientBrush widget, GradientWrapMode gradientWrap)
 		{
 			var gradient = ((Cairo.LinearGradient)widget.ControlObject);
-			gradient.Extend = gradientWrap.ToCairo ();
+			gradient.Extend = gradientWrap.ToCairo();
 		}
 
-		public override void Apply (object control, GraphicsHandler graphics)
+		public override void Apply(object control, GraphicsHandler graphics)
 		{
 			var gradient = ((EtoGradient)control);
-			if (!object.ReferenceEquals (gradient.Transform, null))
-				graphics.Control.Transform (gradient.Transform);
+			if (!ReferenceEquals(gradient.Transform, null))
+				graphics.Control.Transform(gradient.Transform);
 			graphics.Control.SetSource(gradient);
-			graphics.Control.Fill ();
+			if (!ReferenceEquals(gradient.TransformInverse, null))
+				graphics.Control.Transform(gradient.TransformInverse);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 using Eto.Drawing;
 using System;
 using swm = System.Windows.Media;
+using sw = System.Windows;
 
 namespace Eto.Wpf.Drawing
 {
@@ -11,25 +12,21 @@ namespace Eto.Wpf.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PenHandler : Pen.IHandler
 	{
-		public object Create (Color color, float thickness)
+		static sw.DependencyProperty brushProp = sw.DependencyProperty.Register("brush", typeof(Brush), typeof(swm.Pen));
+
+		public object Create (Brush brush, float thickness)
 		{
-			var brush = new swm.SolidColorBrush (color.ToWpf ());
-			var pen = new swm.Pen (brush, thickness);
+			var pen = new swm.Pen (brush.ToWpf(), thickness);
+			pen.SetValue(brushProp, brush);
 			pen.EndLineCap = pen.StartLineCap = pen.DashCap = swm.PenLineCap.Square;
 			pen.MiterLimit = 10f;
 			return pen;
 		}
 
-		public Color GetColor (Pen widget)
+		public Brush GetBrush (Pen widget)
 		{
-			var brush = (swm.SolidColorBrush)((swm.Pen)widget.ControlObject).Brush;
-			return brush.Color.ToEto ();
-		}
-
-		public void SetColor (Pen widget, Color color)
-		{
-			var brush = (swm.SolidColorBrush)((swm.Pen)widget.ControlObject).Brush;
-			brush.Color = color.ToWpf ();
+			var brush = ((swm.Pen)widget.ControlObject).Brush;
+			return brush.GetValue(brushProp) as Brush;
 		}
 
 		public float GetThickness (Pen widget)

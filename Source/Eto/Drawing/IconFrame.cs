@@ -144,7 +144,7 @@ namespace Eto.Drawing
 
 			return new IconFrame(scale, () =>
 			{
-				Debug.WriteLine($"Loading Resource '{resourceName}'");
+				//Debug.WriteLine($"Loading Resource '{resourceName}'");
 				return assembly.GetManifestResourceStream(resourceName);
 			});
 

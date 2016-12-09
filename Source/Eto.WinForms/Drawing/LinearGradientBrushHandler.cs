@@ -19,6 +19,7 @@ namespace Eto.WinForms.Drawing
 			GradientWrapMode wrapMode;
 			IMatrix transform;
 			float lastStartPos;
+			float lastEndPos;
 
 			public PointF StartPoint { get; set; }
 			public PointF EndPoint { get; set; }
@@ -71,9 +72,10 @@ namespace Eto.WinForms.Drawing
 					// find start/end pos based on entire position
 					var startpos = min.LengthTo(start) / len;
 					var endpos = min.LengthTo(end) / len;
-					if (brush == null || lastStartPos != startpos)
+					if (brush == null || lastStartPos != startpos || lastEndPos > endpos)
 					{
 						lastStartPos = startpos;
+						lastEndPos = endpos;
 						start = min;
 						end = max;
 						var diff = end - start;

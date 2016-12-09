@@ -23,7 +23,7 @@ namespace Eto.Forms
 		/// Gets or sets the items on this row.
 		/// </summary>
 		/// <value>The items contained in this row</value>
-		[Obsolete("The DynamicRow is now its own collection, so add directly")]
+		[Obsolete("Since 2.2: The DynamicRow is now its own collection, so add directly")]
 		public new Collection<DynamicItem> Items
 		{ 
 			get { return this; }
