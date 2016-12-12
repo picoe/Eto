@@ -9,7 +9,6 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable, Scrollable.ICallback>, Scrollable.IHandler
 	{
-		BorderType borderType;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 		readonly EtoScrollViewer scroller;
@@ -75,7 +74,7 @@ namespace Eto.Wpf.Forms.Controls
 			scroller.Loaded += HandleSizeChanged;
 
 			Control.Child = scroller;
-			this.Border = BorderType.Bezel;
+			Control.SetEtoBorderType(BorderType.Bezel);
 		}
 
 		public override void OnLoad(EventArgs e)
@@ -143,30 +142,12 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		static object Border_Key = new object();
+
 		public BorderType Border
 		{
-			get { return borderType; }
-			set
-			{
-				borderType = value;
-				switch (value)
-				{
-					case BorderType.Bezel:
-						Control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
-						Control.BorderThickness = new sw.Thickness(1);
-						break;
-					case BorderType.Line:
-						Control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
-						Control.BorderThickness = new sw.Thickness(1);
-						break;
-					case BorderType.None:
-						Control.BorderBrush = null;
-                        Control.BorderThickness = new sw.Thickness(0);
-                        break;
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
+			set { Widget.Properties.Set(Border_Key, value, () => Control.SetEtoBorderType(value)); }
 		}
 
 		public override Size ClientSize
