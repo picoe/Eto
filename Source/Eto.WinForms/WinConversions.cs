@@ -782,5 +782,35 @@ namespace Eto.WinForms
 				return null;
 			return new Screen(new ScreenHandler(screen));
 		}
+
+		public static BorderType ToEto(this swf.BorderStyle border)
+		{
+			switch (border)
+			{
+				case swf.BorderStyle.FixedSingle:
+					return BorderType.Line;
+				case swf.BorderStyle.None:
+					return BorderType.None;
+				case swf.BorderStyle.Fixed3D:
+					return BorderType.Bezel;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static swf.BorderStyle ToSWF(this BorderType border)
+		{
+			switch (border)
+			{
+				case BorderType.Bezel:
+					return swf.BorderStyle.Fixed3D;
+				case BorderType.Line:
+					return swf.BorderStyle.FixedSingle;
+				case BorderType.None:
+					return swf.BorderStyle.None;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

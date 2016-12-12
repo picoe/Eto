@@ -24,7 +24,6 @@ namespace Eto.Wpf
 
 		public static swm.Color ToWpf(this Color value)
 		{
-
 			return swm.Color.FromArgb((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
 		}
 
@@ -78,20 +77,20 @@ namespace Eto.Wpf
 
 		public static sw.Rect ToWpf(this Rectangle value)
 		{
-            value.Normalize();
+			value.Normalize();
 			return new sw.Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static sw.Int32Rect ToWpfInt32(this Rectangle value)
 		{
-            value.Normalize();
-            return new sw.Int32Rect(value.X, value.Y, value.Width, value.Height);
+			value.Normalize();
+			return new sw.Int32Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static sw.Rect ToWpf(this RectangleF value)
 		{
-            value.Normalize();
-            return new sw.Rect(value.X, value.Y, value.Width, value.Height);
+			value.Normalize();
+			return new sw.Rect(value.X, value.Y, value.Width, value.Height);
 		}
 
 		public static SizeF ToEto(this sw.Size value)
@@ -286,19 +285,19 @@ namespace Eto.Wpf
 			}
 		}
 
-        public static Size GetSize(this sw.FrameworkElement element)
-        {
-            if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
-                return new Size((int)element.ActualWidth, (int)element.ActualHeight);
-            return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
-        }
+		public static Size GetSize(this sw.FrameworkElement element)
+		{
+			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
+				return new Size((int)element.ActualWidth, (int)element.ActualHeight);
+			return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
+		}
 
-        public static sw.Size GetMinSize(this sw.FrameworkElement element)
-        {
-            return new sw.Size(element.MinWidth, element.MinHeight);
-        }
+		public static sw.Size GetMinSize(this sw.FrameworkElement element)
+		{
+			return new sw.Size(element.MinWidth, element.MinHeight);
+		}
 
-        public static void SetSize(this sw.FrameworkElement element, Size size)
+		public static void SetSize(this sw.FrameworkElement element, Size size)
 		{
 			element.Width = size.Width == -1 ? double.NaN : size.Width;
 			element.Height = size.Height == -1 ? double.NaN : size.Height;
@@ -796,6 +795,50 @@ namespace Eto.Wpf
 			if (direction.HasFlag(StepperValidDirections.Down))
 				dir |= xwt.ValidSpinDirections.Decrease;
 			return dir;
+		}
+
+		public static void SetEtoBorderType(this swc.Border control, BorderType value, Func<swm.Brush> getBezelBrush = null)
+		{
+			switch (value)
+			{
+				case BorderType.Bezel:
+					control.BorderBrush = getBezelBrush?.Invoke() ?? sw.SystemColors.ControlDarkBrush;
+					control.BorderThickness = new sw.Thickness(1);
+					break;
+				case BorderType.Line:
+					control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
+					control.BorderThickness = new sw.Thickness(1);
+					break;
+				case BorderType.None:
+					control.BorderBrush = null;
+					control.BorderThickness = new sw.Thickness(0);
+					break;
+				default:
+					throw new NotSupportedException();
+
+			}
+		}
+
+		public static void SetEtoBorderType(this swc.Control control, BorderType value, Func<swm.Brush> getBezelBrush = null)
+		{
+			switch (value)
+			{
+				case BorderType.Bezel:
+					control.BorderBrush = getBezelBrush?.Invoke() ?? sw.SystemColors.ControlDarkBrush;
+					control.BorderThickness = new sw.Thickness(1);
+					break;
+				case BorderType.Line:
+					control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
+					control.BorderThickness = new sw.Thickness(1);
+					break;
+				case BorderType.None:
+					control.BorderBrush = null;
+					control.BorderThickness = new sw.Thickness(0);
+					break;
+				default:
+					throw new NotSupportedException();
+
+			}
 		}
 	}
 }
