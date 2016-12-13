@@ -24,7 +24,7 @@ namespace Eto.Forms
 		/// <param name="property">Name of the property to bind to in the data store.</param>
 		public TextBoxCell(string property)
 		{
-			Binding = new PropertyBinding<string>(property);
+			Binding = Eto.Forms.Binding.Property<string>(property);
 		}
 
 		/// <summary>

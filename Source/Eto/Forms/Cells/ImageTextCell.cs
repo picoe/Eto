@@ -42,8 +42,8 @@ namespace Eto.Forms
 		/// <param name="textProperty">Name of the text property in the data item.</param>
 		public ImageTextCell(string imageProperty, string textProperty)
 		{
-			ImageBinding = new PropertyBinding<Image>(imageProperty);
-			TextBinding = new PropertyBinding<string>(textProperty);
+			ImageBinding = Eto.Forms.Binding.Property<Image>(imageProperty);
+			TextBinding = Eto.Forms.Binding.Property<string>(textProperty);
 		}
 
 		/// <summary>

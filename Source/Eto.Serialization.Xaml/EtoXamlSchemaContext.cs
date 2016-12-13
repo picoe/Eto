@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using Eto.Drawing;
+using Eto.Forms;
+
+
 #if PORTABLE
 using Portable.Xaml;
 using Portable.Xaml.Markup;
@@ -62,6 +65,30 @@ namespace Eto.Serialization.Xaml
 				return xamlType;
 			}
 			return base.GetXamlType(type);
+		}
+		bool isInResourceMember;
+		XamlMember resourceMember;
+
+		internal bool IsResourceMember(XamlMember member)
+		{
+			if (member == null)
+				return false;
+			if (resourceMember == null)
+			{
+				if (isInResourceMember)
+					return false;
+				isInResourceMember = true;
+				try
+				{
+					resourceMember = GetXamlType(typeof(Control)).GetMember("Properties");
+				}
+				finally
+				{
+					isInResourceMember = false;
+				}
+			}
+
+			return member == resourceMember;
 		}
 	}
 }

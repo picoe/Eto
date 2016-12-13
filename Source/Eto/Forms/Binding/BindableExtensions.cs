@@ -42,7 +42,7 @@ namespace Eto.Forms
 		{
 			var binding = new DualBinding<T>(
 				sourceBinding,
-				new BindableBinding<IBindable,T>(bindable, new PropertyBinding<T>(widgetPropertyName)),
+				new BindableBinding<IBindable,T>(bindable, Binding.Property<T>(widgetPropertyName)),
 				mode
 			);
 			bindable.Bindings.Add(binding);
@@ -66,8 +66,8 @@ namespace Eto.Forms
 		/// <returns>A new instance of the DualBinding class that is used to control the binding</returns>
 		public static DualBinding<T> BindDataContext<T>(this IBindable bindable, string controlPropertyName, string dataContextPropertyName, DualBindingMode mode = DualBindingMode.TwoWay, T defaultControlValue = default(T), T defaultContextValue = default(T))
 		{
-			var dataContextBinding = new PropertyBinding<T>(dataContextPropertyName);
-			var controlBinding = new PropertyBinding<T>(controlPropertyName);
+			var dataContextBinding = Binding.Property<T>(dataContextPropertyName);
+			var controlBinding = Binding.Property<T>(controlPropertyName);
 			return BindDataContext(bindable, controlBinding, dataContextBinding, mode, defaultControlValue, defaultContextValue);
 		}
 
@@ -132,11 +132,7 @@ namespace Eto.Forms
 		public static DualBinding<TValue> Bind<TWidget, TSource, TValue>(this TWidget control, Expression<Func<TWidget, TValue>> controlProperty, TSource source, Expression<Func<TSource, TValue>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay)
 			where TWidget : IBindable
 		{
-			var controlExpression = controlProperty.GetMemberInfo();
-			var sourceExpression = sourceProperty.GetMemberInfo();
-			var binding = control.Bind<TValue>(controlExpression.Member.Name, source, sourceExpression.Member.Name, mode);
-
-			return binding;
+			return control.Bind(Binding.Property(controlProperty), source, Binding.Property(sourceProperty), mode);
 		}
 
 		/// <summary>
@@ -153,9 +149,7 @@ namespace Eto.Forms
 		public static DualBinding<TValue> Bind<TWidget, TSource, TValue>(this TWidget control, Expression<Func<TWidget, TValue>> controlProperty, TSource source, IndirectBinding<TValue> sourceBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 			where TWidget : IBindable
 		{
-			var controlExpression = controlProperty.GetMemberInfo();
-			var binding = control.Bind<TValue>(new PropertyBinding<TValue>(controlExpression.Member.Name), source, sourceBinding, mode);
-			return binding;
+			return control.Bind(Binding.Property(controlProperty), source, sourceBinding, mode);
 		}
 
 		/// <summary>
@@ -170,9 +164,7 @@ namespace Eto.Forms
 		public static DualBinding<TValue> Bind<TWidget, TValue>(this TWidget control, Expression<Func<TWidget, TValue>> controlProperty, DirectBinding<TValue> sourceBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 			where TWidget : IBindable
 		{
-			var controlExpression = controlProperty.GetMemberInfo();
-			var binding = control.Bind<TValue>(new PropertyBinding<TValue>(controlExpression.Member.Name), sourceBinding, mode);
-			return binding;
+			return control.Bind(Binding.Property(controlProperty), sourceBinding, mode);
 		}
 
 		/// <summary>
@@ -190,19 +182,10 @@ namespace Eto.Forms
 		public static DualBinding<TValue> BindDataContext<TWidget, TContext, TValue>(this TWidget control, Expression<Func<TWidget, TValue>> controlProperty, Expression<Func<TContext, TValue>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
 			where TWidget : IBindable
 		{
-			var controlExpression = controlProperty.GetMemberInfo();
-			IndirectBinding<TValue> controlBinding;
-			if (controlExpression != null)
-				controlBinding = new PropertyBinding<TValue>(controlExpression.Member.Name);
-			else
-				controlBinding = new DelegateBinding<TWidget, TValue>(controlProperty.Compile());
+			IndirectBinding<TValue> controlBinding = Binding.Property(controlProperty);
 
-			var sourceExpression = sourceProperty.GetMemberInfo();
-			IndirectBinding<TValue> sourceBinding;
-			if (sourceExpression != null)
-				sourceBinding = new PropertyBinding<TValue>(sourceExpression.Member.Name);
-			else
-				sourceBinding = new DelegateBinding<TContext, TValue>(sourceProperty.Compile());
+			IndirectBinding<TValue> sourceBinding = Binding.Property(sourceProperty);
+
 			return control.BindDataContext(controlBinding, sourceBinding, mode, defaultControlValue, defaultContextValue);
 		}
 
@@ -220,9 +203,8 @@ namespace Eto.Forms
 		public static DualBinding<TValue> BindDataContext<TWidget, TValue>(this TWidget control, Expression<Func<TWidget, TValue>> controlProperty, IndirectBinding<TValue> sourceBinding, DualBindingMode mode = DualBindingMode.TwoWay, TValue defaultControlValue = default(TValue), TValue defaultContextValue = default(TValue))
 			where TWidget : IBindable
 		{
-			var controlExpression = controlProperty.GetMemberInfo();
 			return control.BindDataContext<TValue>(
-				new PropertyBinding<TValue>(controlExpression.Member.Name),
+				Binding.Property(controlProperty),
 				sourceBinding,
 				mode,
 				defaultControlValue,
