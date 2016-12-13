@@ -26,7 +26,7 @@ namespace Eto.Forms
 		/// <param name="property">Property to bind to in each data item.</param>
 		public ImageViewCell(string property)
 		{
-			Binding = new PropertyBinding<Image>(property);
+			Binding = Eto.Forms.Binding.Property<Image>(property);
 		}
 
 		/// <summary>

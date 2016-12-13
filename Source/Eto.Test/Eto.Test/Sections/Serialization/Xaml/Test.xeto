@@ -1,11 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Panel x:Class="Eto.Test.Sections.Serialization.Xaml.Test" xmlns="http://schema.picoe.ca/eto.forms" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+<Panel 
+x:Class="Eto.Test.Sections.Serialization.Xaml.Test" 
+xmlns="http://schema.picoe.ca/eto.forms" 
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test" 
+xmlns:l="clr-namespace:Eto.Test.Sections.Serialization.Xaml;assembly=Eto.Test" 
+>
+	<Panel.Properties>
+		<l:MyConverter x:Key="myConverter"/>
+	</Panel.Properties>
 	<TabControl>
 		<TabPage Text="Table Layout">
 			<TableLayout Padding="10" Spacing="5,5">
 				<TableRow>
-					<Label Text="Text Box" />
-					<TextBox TextChanged="HandleTextChanged" Text="{Binding SomeText}" />
+					<Label Text="Text Box with converter" />
+					<TextBox TextChanged="HandleTextChanged" Text="{Binding SomeText, Converter={StaticResource myConverter}}" />
 				</TableRow>
 				<TableRow>
 					<Label>Text Area</Label>
@@ -22,6 +31,11 @@
 						<ListItem Text="Item 2" />
 						<ListItem Text="Item 3" />
 						<ListItem Text="Item 4" />
+					</DropDown>
+				</TableRow>
+				<TableRow>
+					<Label>Drop down with converter</Label>
+					<DropDown x:Name="MyDropDown" ItemTextBinding="{Binding Path=MyText, Converter={StaticResource myConverter} }">
 					</DropDown>
 				</TableRow>
 				<TableRow>

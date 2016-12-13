@@ -15,7 +15,7 @@ namespace Eto.Test.UnitTests.Forms.Binding
 			set
 			{
 				boolProperty = value;
-				OnPropertyChanged("BoolProperty");
+				OnPropertyChanged(nameof(BoolProperty));
 			}
 		}
 
@@ -26,7 +26,7 @@ namespace Eto.Test.UnitTests.Forms.Binding
 			set
 			{
 				intProperty = value;
-				OnPropertyChanged("IntProperty");
+				OnPropertyChanged(nameof(IntProperty));
 			}
 		}
 
@@ -37,7 +37,7 @@ namespace Eto.Test.UnitTests.Forms.Binding
 			set
 			{
 				doubleProperty = value;
-				OnPropertyChanged("DoubleProperty");
+				OnPropertyChanged(nameof(DoubleProperty));
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace Eto.Test.UnitTests.Forms.Binding
 			set
 			{
 				stringProperty = value;
-				OnPropertyChanged("StringProperty");
+				OnPropertyChanged(nameof(StringProperty));
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace Eto.Test.UnitTests.Forms.Binding
 			set
 			{
 				nullableBoolProperty = value;
-				OnPropertyChanged("NullableBoolProperty");
+				OnPropertyChanged(nameof(NullableBoolProperty));
 			}
 		}
 
@@ -72,7 +72,21 @@ namespace Eto.Test.UnitTests.Forms.Binding
 			set
 			{
 				nullableDoubleProperty = value;
-				OnPropertyChanged("NullableDoubleProperty");
+				OnPropertyChanged(nameof(NullableDoubleProperty));
+			}
+		}
+
+		BindObject childBindObject;
+		public BindObject ChildBindObject
+		{
+			get { return childBindObject; }
+			set
+			{
+				if (!ReferenceEquals(childBindObject, value))
+				{
+					childBindObject = value;
+					OnPropertyChanged(nameof(ChildBindObject));
+				}
 			}
 		}
 

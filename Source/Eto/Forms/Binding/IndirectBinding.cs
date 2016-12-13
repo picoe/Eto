@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace Eto.Forms
 {
@@ -148,6 +149,39 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Converts the binding using the specified <paramref name="converter"/> object.
+		/// </summary>
+		/// <returns>A new binding that will be converted using the specified IValueConverter.</returns>
+		/// <param name="converter">Converter object to use when converting to/from the value</param>
+		/// <param name="conveterParameter">Parameter to pass to the converter.</param>
+		/// <param name="culture">Culture to use for conversion, null to use invariant culture.</param>
+		public IndirectBinding<TValue> Convert<TValue>(IValueConverter converter, object conveterParameter = null, CultureInfo culture = null)
+		{
+			culture = culture ?? CultureInfo.InvariantCulture;
+			return Convert(
+				val => (TValue)converter.Convert(val, typeof(TValue), conveterParameter, culture),
+				val => (T)converter.ConvertBack(val, typeof(T), conveterParameter, culture)
+			);
+		}
+
+		/// <summary>
+		/// Converts the binding using the specified <paramref name="converter"/> object.
+		/// </summary>
+		/// <returns>A new binding that will be converted using the specified IValueConverter.</returns>
+		/// <param name="converter">Converter object to use when converting to/from the value</param>
+		/// <param name="propertyType">Type for the converter to convert to</param>
+		/// <param name="conveterParameter">Parameter to pass to the converter.</param>
+		/// <param name="culture">Culture to use for conversion, null to use invariant culture.</param>
+		public IndirectBinding<object> Convert(IValueConverter converter, Type propertyType, object conveterParameter = null, CultureInfo culture = null)
+		{
+			culture = culture ?? CultureInfo.InvariantCulture;
+			return Convert(
+				val => converter.Convert(val, propertyType, conveterParameter, culture),
+				val => (T)converter.ConvertBack(val, typeof(T), conveterParameter, culture)
+			);
+		}
+
+		/// <summary>
 		/// Casts this binding value to another (compatible) type.
 		/// </summary>
 		/// <typeparam name="TValue">The type to cast the values of this binding to.</typeparam>
@@ -158,6 +192,87 @@ namespace Eto.Forms
 				(m, val) => SetValue(m, (T)(object)val),
 				addChangeEvent: (m, ev) => AddValueChangedHandler(m, ev),
 				removeChangeEvent: RemoveValueChangedHandler
+			);
+		}
+
+		/// <summary>
+		/// Binds to the specified child <paramref name="property"/> expression.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to bind to properties of child objects of your view model, for example
+		/// <code>model.SomeProperty.ChildProperty</code>.
+		/// 
+		/// This will automatically look up the changed event either by a [Property]Changed event or INotifyPropertyChanged implementation
+		/// for each object in the heirarchy.
+		/// 
+		/// Note that you only really need to use this when you have an existing binding that you cannot change.
+		/// See <see cref="Binding.Property{T,TValue}(Expression{Func{T,TValue}})"/> for an example of how to bind to child property values
+		/// more directly.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { public ChildObject { get; set; } }
+		/// 
+		/// 	Binding.Property((MyModel m) => m.ChildObject).Child(c => c.SomeChildProperty);
+		/// </code>
+		/// </example>
+		/// <returns>The binding to the child property accessed through the current binding.</returns>
+		/// <param name="property">Property to bind to.</param>
+		/// <typeparam name="TNewValue">The type of the child property value.</typeparam>
+		public IndirectBinding<TNewValue> Child<TNewValue>(Expression<Func<T, TNewValue>> property)
+		{
+			return Child(Property(property));
+		}
+
+		/// <summary>
+		/// Binds to the specified child <paramref name="binding"/> of this binding.
+		/// </summary>
+		/// <remarks>
+		/// This can be used to bind to child objects of your view model, for example
+		/// <code>model.SomeProperty.ChildProperty</code>.
+		/// </remarks>
+		/// <example>
+		/// Use this like so:
+		/// <code>
+		/// 	public class MyChild { public SomeChildProperty { get; set; } }
+		/// 	public class MyModel { public ChildObject { get; set; } }
+		/// 
+		/// 	Binding.Property((MyModel m) => m.ChildObject).Child(Binding.Property("SomeChildProperty"));
+		/// </code>
+		/// </example>
+		/// <returns>The binding to the child property accessed through the current binding.</returns>
+		/// <param name="binding">Binding to get the child value from this binding.</param>
+		/// <typeparam name="TNewValue">The type of the child property value.</typeparam>
+		public IndirectBinding<TNewValue> Child<TNewValue>(IndirectBinding<TNewValue> binding)
+		{
+			object bindingReference = null;
+			object childBindingReference = null;
+			object context = null;
+			EventHandler<EventArgs> eventHandler = null;
+			EventHandler<EventArgs> valueChanged = (sender, e) =>
+			{
+				binding.RemoveValueChangedHandler(childBindingReference, eventHandler);
+				eventHandler?.Invoke(sender, e);
+				childBindingReference = binding.AddValueChangedHandler(GetValue(context), eventHandler);
+			};
+			return new DelegateBinding<object, TNewValue>(
+				c => binding.GetValue(GetValue(context = c)),
+				(c, v) => binding.SetValue(GetValue(context = c), v),
+				addChangeEvent: (c, ev) =>
+				{
+					context = c;
+					eventHandler = ev;
+					bindingReference = AddValueChangedHandler(c, valueChanged);
+
+					childBindingReference = binding.AddValueChangedHandler(GetValue(c), ev);
+				},
+				removeChangeEvent: (c, ev) =>
+				{
+					binding.RemoveValueChangedHandler(childBindingReference, ev);
+					RemoveValueChangedHandler(bindingReference, valueChanged);
+				}
 			);
 		}
 
