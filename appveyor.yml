@@ -7,18 +7,20 @@ build_script:
 - set BUILD_VERSION=000%APPVEYOR_BUILD_NUMBER%
 - set BUILD_VERSION=2.3.0-build%BUILD_VERSION:~-4%
 - echo Downloading XamMac.dll for build..
-- mkdir %BASE%\BuildOutput\net40\Release
 - mkdir %BASE%\BuildOutput\net45\Release
-- curl -fsS -o %BASE%\BuildOutput\net40\Release\XamMac.dll %XAMMAC_LOCATION%/XamMac.dll
-- copy %BASE%\BuildOutput\net40\Release\XamMac.dll %BASE%\BuildOutput\net45\Release\XamMac.dll
+- curl -fsS -o %BASE%\BuildOutput\net45\Release\XamMac.dll %XAMMAC_LOCATION%/XamMac.dll
 - msbuild -t:Package -p:BuildVersion=%BUILD_VERSION% Resources\Build.proj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /consoleloggerparameters:NoSummary
 test: off
 #test_script:
-#- nunit-console --framework=4.0 --include=TestPlatform BuildOutput/net40/Release/test/Eto.Test.dll
 #- nunit-console --framework=4.5 --include=TestPlatform BuildOutput/net45/Release/test/Eto.Test.dll
 artifacts:
 - path: BuildOutput/Nuget/Release/*.nupkg
   name: nuget
+branches:
+  only:
+  - develop
+  - master
+skip_branch_with_pr: true
 deploy:
 - provider: Environment
   name: MyGet
