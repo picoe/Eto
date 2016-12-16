@@ -64,8 +64,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public bool ShowBorder
 		{
-			get { return Control.Bordered; }
-			set { Control.Bordered = value; }
+			get { return Control.Bezeled; }
+			set { Control.Bezeled = value; }
 		}
 
 		TextControl.ICallback IMacText.Callback
@@ -123,6 +123,19 @@ namespace Eto.Mac.Forms.Controls
 					InitialSelection = null;
 					editor.SelectedRange = value.ToNS();
 				}
+			}
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get { return Control.Alignment.ToEto(); }
+			set
+			{
+				// need to set current editor first when the control has focus, otherwise it won't be reflected for some reason after it loses focus.
+				var editor = Control.CurrentEditor;
+				if (editor != null)
+					editor.Alignment = value.ToNS();
+				Control.Alignment = value.ToNS();
 			}
 		}
 

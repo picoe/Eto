@@ -47,7 +47,6 @@ namespace Eto.Mac.Forms.Controls
 				MinValue = 0,
 				MaxValue = 2
 			};
-			Control.SizeToFit();
 		}
 
 		static object ValidDirection_Key = new object();

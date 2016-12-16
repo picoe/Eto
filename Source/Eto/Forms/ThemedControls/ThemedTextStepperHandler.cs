@@ -19,8 +19,33 @@ namespace Eto.Forms.ThemedControls
 		{
 			textBox = new TextBox();
 			stepper = new Stepper();
-			Control = TableLayout.Horizontal(TableLayout.AutoSized(textBox, centered: true), stepper);
+			Control = TableLayout.Horizontal(
+				new TableCell(new TableLayout(null, textBox, null), true),
+				stepper
+			);
 			Control.EndInit();
+
+			textBox.KeyDown += TextBox_KeyDown;
+		}
+
+		void TextBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Up)
+			{
+				if (ValidDirection.HasFlag(StepperValidDirections.Up))
+				{
+					Callback.OnStep(Widget, new StepperEventArgs(StepperDirection.Up));
+					e.Handled = true;
+				}
+			}
+			else if (e.KeyData == Keys.Down)
+			{
+				if (ValidDirection.HasFlag(StepperValidDirections.Down))
+				{
+					Callback.OnStep(Widget, new StepperEventArgs(StepperDirection.Down));
+					e.Handled = true;
+				}
+			}
 		}
 
 		/// <summary>
@@ -161,6 +186,31 @@ namespace Eto.Forms.ThemedControls
 		public void SelectAll()
 		{
 			textBox.SelectAll();
+		}
+
+		/// <summary>
+		/// Gets or sets the alignment of the text in the entry box.
+		/// </summary>
+		/// <value>The text alignment.</value>
+		public TextAlignment TextAlignment
+		{
+			get { return textBox.TextAlignment; }
+			set { textBox.TextAlignment = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is visible to the user.
+		/// </summary>
+		/// <remarks>
+		/// When the visibility of a control is set to false, it will still occupy space in the layout, but not be shown.
+		/// The only exception is for controls like the <see cref="Splitter"/>, which will hide a pane if the visibility
+		/// of one of the panels is changed.
+		/// </remarks>
+		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
+		public bool ShowStepper
+		{
+			get { return stepper.Visible; }
+			set { stepper.Visible = value; }
 		}
 
 		/// <summary>
