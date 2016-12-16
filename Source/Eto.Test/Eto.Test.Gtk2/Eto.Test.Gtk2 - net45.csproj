@@ -10,6 +10,7 @@
     <ApplicationIcon>..\Eto.Test\Images\TestIcon.ico</ApplicationIcon>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.Test.Gtk2</AssemblyName>
+	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
