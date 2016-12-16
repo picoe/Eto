@@ -611,6 +611,23 @@ namespace Eto.Wpf
 			}
 		}
 
+		public static TextAlignment ToEto(this sw.TextAlignment align)
+		{
+			switch (align)
+			{
+				case sw.TextAlignment.Left:
+					return TextAlignment.Left;
+				case sw.TextAlignment.Right:
+					return TextAlignment.Right;
+				case sw.TextAlignment.Center:
+					return TextAlignment.Center;
+				case sw.TextAlignment.Justify:
+					return TextAlignment.Left;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
 		public static sw.TextAlignment ToWpfTextAlignment(this TextAlignment align)
 		{
 			switch (align)

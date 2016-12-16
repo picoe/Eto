@@ -134,6 +134,12 @@ namespace Eto.iOS.Forms.Controls
 			get { return Control.BorderStyle != UITextBorderStyle.None; }
 			set { Control.BorderStyle = value ? UITextBorderStyle.RoundedRect : UITextBorderStyle.None; }
 		}
+
+		public TextAlignment TextAlignment
+		{
+			get { return Control.TextAlignment.ToEto(); }
+			set { Control.TextAlignment = value.ToUI(); }
+		}
 	}
 }
 

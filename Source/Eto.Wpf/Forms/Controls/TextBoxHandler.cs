@@ -37,12 +37,24 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected abstract swc.TextBox TextBox { get; }
 
-		static sw.Thickness DefaultBorderThickness = new mwc.DateTimePicker().BorderThickness;
+		protected virtual swc.Control BorderControl => TextBox;
 
 		public override bool ShowBorder
 		{
-			get { return !TextBox.BorderThickness.ToEto().IsZero; }
-			set { TextBox.BorderThickness = value ? DefaultBorderThickness : new sw.Thickness(0); }
+			get { return BorderControl.ReadLocalValue(swc.Control.BorderThicknessProperty) == sw.DependencyProperty.UnsetValue; }
+			set
+			{
+				if (value)
+					BorderControl.ClearValue(swc.Control.BorderThicknessProperty);
+				else
+					BorderControl.BorderThickness = new sw.Thickness(0);
+			}
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get { return TextBox.TextAlignment.ToEto(); }
+			set { TextBox.TextAlignment = value.ToWpfTextAlignment(); }
 		}
 
 		public TextBoxHandler ()

@@ -20,8 +20,8 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					BorderThickness = new sw.Thickness(0),
 					BorderBrush = null,
-					Padding = new sw.Thickness(0)
-				}
+					Padding = new sw.Thickness(0),
+				},
 			};
 		}
 
@@ -37,9 +37,17 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.ValidSpinDirection = value.ToWpf(); }
 		}
 
+		public bool ShowStepper
+		{
+			get { return Control.ShowButtonSpinner; }
+			set { Control.ShowButtonSpinner = value; }
+		}
+
 		mwc.WatermarkTextBox WatermarkTextBox => (mwc.WatermarkTextBox)Control.Content;
 
 		protected override swc.TextBox TextBox => (swc.TextBox)Control.Content;
+
+		protected override swc.Control BorderControl => Control;
 
 		public override void AttachEvent(string id)
 		{

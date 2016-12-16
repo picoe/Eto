@@ -84,6 +84,12 @@ namespace Eto.iOS.Forms.Controls
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }
 		}
+
+		public TextAlignment TextAlignment
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 	}
 }
 
