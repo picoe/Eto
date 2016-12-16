@@ -11,6 +11,11 @@ namespace Eto.WinForms.Forms.Controls
 	[DesignerCategory("Code")]
 	public class EtoTextBox : swf.TextBox
 	{
+		public EtoTextBox()
+		{
+			MaxLength = 0;
+		}
+
 		public event EventHandler<CancelEventArgs> Copying;
 
 		protected virtual void OnCopying(CancelEventArgs e)
@@ -73,7 +78,21 @@ namespace Eto.WinForms.Forms.Controls
 		public virtual bool ShowBorder
 		{
 			get { return SwfTextBox.BorderStyle != swf.BorderStyle.None; }
-			set { SwfTextBox.BorderStyle = value ? swf.BorderStyle.Fixed3D : swf.BorderStyle.None; }
+			set
+			{
+				SwfTextBox.BorderStyle = value ? swf.BorderStyle.Fixed3D : swf.BorderStyle.None;
+				SetPlaceholderText(); // setting border clears this out for some reason
+			}
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get { return SwfTextBox.TextAlign.ToEto(); }
+			set
+			{
+				SwfTextBox.TextAlign = value.ToSWF();
+				SetPlaceholderText(); // setting text alignment clears this out for some reason
+			}
 		}
 
 		static Func<char, bool> testIsNonWord = ch => char.IsWhiteSpace(ch) || char.IsPunctuation(ch);
@@ -180,7 +199,11 @@ namespace Eto.WinForms.Forms.Controls
 		public virtual bool ReadOnly
 		{
 			get { return SwfTextBox.ReadOnly; }
-			set { SwfTextBox.ReadOnly = value; }
+			set
+			{
+				SwfTextBox.ReadOnly = value;
+				SetPlaceholderText();
+			}
 		}
 
 		public int MaxLength
@@ -196,11 +219,13 @@ namespace Eto.WinForms.Forms.Controls
 			get { return Widget.Properties.Get<string>(PlaceholderText_Key); }
 			set
 			{
-				Widget.Properties.Set(PlaceholderText_Key, value, () =>
-				{
-					Win32.SendMessage(SwfTextBox.Handle, Win32.WM.EM_SETCUEBANNER, IntPtr.Zero, value);
-				});
+				Widget.Properties.Set(PlaceholderText_Key, value, SetPlaceholderText);
 			}
+		}
+		
+		void SetPlaceholderText()
+		{
+			Win32.SendMessage(SwfTextBox.Handle, Win32.WM.EM_SETCUEBANNER, IntPtr.Zero, PlaceholderText);
 		}
 
 		public void SelectAll()

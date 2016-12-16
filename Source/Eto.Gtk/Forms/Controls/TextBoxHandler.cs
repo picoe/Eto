@@ -176,8 +176,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public int MaxLength
 		{
-			get { return Control.MaxLength; }
-			set { Control.MaxLength = value; }
+			get { return Control.MaxLength == -1 ? 0 : Control.MaxLength; }
+			set { Control.MaxLength = value == 0 ? -1 : value; }
 		}
 
 		public string PlaceholderText
@@ -191,6 +191,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				placeholderText = value;
 				if (!string.IsNullOrEmpty(placeholderText))
 					Control.ExposeEvent += Connector.HandleExposeEvent;
+				if (Widget.Loaded)
+					Invalidate();
 #else
 				placeholderText = value;
 				NativeMethods.gtk_entry_set_placeholder_text(Control, value);
@@ -247,6 +249,40 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				Control.SelectRegion(value.Start, value.End + 1);
 			}
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get
+			{
+				return Control.Alignment < 0.5f ? TextAlignment.Left
+						  : Control.Alignment > 0.5f ? TextAlignment.Right
+						  : TextAlignment.Center;
+			}
+			set
+			{
+				switch (value)
+				{
+					case TextAlignment.Left:
+						Control.Alignment = 0;
+						break;
+					case TextAlignment.Center:
+						Control.Alignment = 0.5f;
+						break;
+					case TextAlignment.Right:
+						Control.Alignment = 1;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+
+			}
+		}
+
+		public override bool ShowBorder
+		{
+			get { return Control.HasFrame; }
+			set { Control.HasFrame = value; }
 		}
 	}
 }

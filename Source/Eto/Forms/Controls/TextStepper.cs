@@ -57,6 +57,20 @@ namespace Eto.Forms
 			set { Handler.ValidDirection = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the Stepper will be shown.
+		/// </summary>
+		/// <remarks>
+		/// This is a hint only, some platforms (currently Gtk) may ignore this setting.
+		/// </remarks>
+		/// <value><c>true</c> to show the stepper (default); otherwise, <c>false</c>.</value>
+		[DefaultValue(true)]
+		public bool ShowStepper
+		{
+			get { return Handler.ShowStepper; }
+			set { Handler.ShowStepper = value; }
+		}
+
 		ICallback callback = new Callback();
 
 		/// <summary>
@@ -108,6 +122,15 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The valid directions for the stepper.</value>
 			StepperValidDirections ValidDirection { get; set; }
+
+			/// <summary>
+			/// Gets or sets a value indicating whether the Stepper will be shown.
+			/// </summary>
+			/// <remarks>
+			/// This is a hint only, some platforms (currently Gtk) may ignore this setting.
+			/// </remarks>
+			/// <value><c>true</c> to show the stepper (default); otherwise, <c>false</c>.</value>
+			bool ShowStepper { get; set; }
 		}
 	}
 }
