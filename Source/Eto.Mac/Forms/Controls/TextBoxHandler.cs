@@ -44,7 +44,7 @@ namespace Eto.Mac.Forms.Controls
 		[Export("isPartialStringValid:proposedSelectedRange:originalString:originalSelectedRange:errorDescription:")]
 		public bool IsPartialStringValid(ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
 		{
-			if (Handler.MaxLength >= 0)
+			if (Handler.MaxLength > 0)
 			{
 				int size = (int)value.Length;
 				if (size > Handler.MaxLength)
@@ -69,7 +69,7 @@ namespace Eto.Mac.Forms.Controls
 		IMacText TextHandler => WeakHandler.Target as IMacText;
 		ITextBoxWithMaxLength MaxLengthHandler => WeakHandler.Target as ITextBoxWithMaxLength;
 
-		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? -1; } }
+		public int MaxLength { get { return MaxLengthHandler?.MaxLength ?? 0; } }
 
 		public EtoTextField()
 		{
@@ -104,7 +104,7 @@ namespace Eto.Mac.Forms.Controls
 	{
 		protected override void Initialize()
 		{
-			MaxLength = -1;
+			MaxLength = 0;
 			base.Initialize();
 		}
 

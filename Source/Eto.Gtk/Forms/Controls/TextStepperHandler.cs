@@ -17,7 +17,6 @@ namespace Eto.GtkSharp.Forms.Controls
 		static Gtk.Adjustment DefaultAdjustment = new Gtk.Adjustment(0, 0, 3, 1, 1, 1);
 		#endif
 		int disableNotification;
-		bool readOnly;
 
 		public TextStepperHandler()
 		{
@@ -37,21 +36,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			base.Initialize();
 			Control.Output += Connector.HandleOutput;
 			Control.Input += Connector.HandleInput;
-			Widget.TextChanging += (sender, e) =>
-			{
-				e.Cancel = ReadOnly;
-			};
-			Widget.KeyDown += (sender, e) =>
-			{
-				if (e.KeyData == Keys.Up || e.KeyData == Keys.Down)
-					e.Handled = true;
-			};
+			Widget.TextChanging += (sender, e) => e.Cancel = ReadOnly;
 		}
+
+		static object ReadOnly_Key = new object();
 
 		public override bool ReadOnly
 		{
-			get { return readOnly; }
-			set { readOnly = value; }
+			get { return Widget.Properties.Get(ReadOnly_Key, false); }
+			set { Widget.Properties.Set(ReadOnly_Key, value, false); }
 		}
 
 		static object ValidDirection_Key = new object();
@@ -60,6 +53,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return Widget.Properties.Get(ValidDirection_Key, StepperValidDirections.Both); }
 			set { Widget.Properties.Set(ValidDirection_Key, value, UpdateState, StepperValidDirections.Both); }
+		}
+
+		// not supported at the moment.  
+		// Could possibly swap out with standard Entry but could be very tricky to setup all events, properties, etc.
+		public bool ShowStepper
+		{
+			get { return true; }
+			set { }
 		}
 
 		void UpdateState()

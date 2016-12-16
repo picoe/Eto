@@ -8,72 +8,56 @@ namespace Eto.Test.Sections.Controls
 	{
 		public TextBoxSection()
 		{
-			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
+			var textBox = new TextBox();
+			LogEvents(textBox);
 
-			layout.AddRow(new Label { Text = "Default" }, Default());
-			layout.AddRow(new Label { Text = "Different Size" }, DifferentSize());
-			layout.AddRow(new Label { Text = "Read Only" }, ReadOnly());
-			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
-			layout.AddRow(new Label { Text = "Placeholder" }, Placeholder());
-			layout.AddRow(new Label { Text = "Limit Length" }, LimitLength());
+			var placeholderText = new TextBox();
+			placeholderText.TextBinding.Bind(textBox, c => c.PlaceholderText);
 
-			// growing space at end is blank!
+			var setTextButton = new Button { Text = "Set Text" };
+			setTextButton.Click += (sender, e) => textBox.Text = "Some Text";
+
+			var selectAllButton = new Button { Text = "SelectAll" };
+			selectAllButton.Click += (sender, e) => textBox.SelectAll();
+
+			var enabledCheckBox = new CheckBox { Text = "Enabled" };
+			enabledCheckBox.CheckedBinding.Bind(textBox, c => c.Enabled);
+
+			var readOnlyCheckBox = new CheckBox { Text = "ReadOnly" };
+			readOnlyCheckBox.CheckedBinding.Bind(textBox, c => c.ReadOnly);
+
+			var alignmentDropDown = new EnumDropDown<TextAlignment>();
+			alignmentDropDown.SelectedValueBinding.Bind(textBox, c => c.TextAlignment);
+
+			var showBorderCheckBox = new CheckBox { Text = "ShowBorder" };
+			showBorderCheckBox.CheckedBinding.Bind(textBox, c => c.ShowBorder);
+
+			var maxLengthStepper = new NumericStepper { MinValue = 0 };
+			maxLengthStepper.ValueBinding.Bind(textBox, c => c.MaxLength);
+
+			var layout = new DynamicLayout { Padding = 10, DefaultSpacing = new Size(5, 5) };
+			layout.AddSeparateRow(null, enabledCheckBox, readOnlyCheckBox, showBorderCheckBox, null);
+			layout.AddSeparateRow(null, "TextAlignment", alignmentDropDown, "MaxLength", maxLengthStepper, null);
+			layout.AddSeparateRow(null, "PlaceholderText", placeholderText, null);
+			layout.AddSeparateRow(null, setTextButton, selectAllButton, null);
+			layout.Add(null);
+			layout.AddCentered(textBox);
+			layout.AddCentered(DifferentSize());
 			layout.Add(null);
 
 			Content = layout;
 		}
 
-		Control Default()
-		{
-			var control = new TextBox { Text = "Some Text" };
-			LogEvents(control);
-
-			var selectAll = new Button { Text = "Select All" };
-			selectAll.Click += (sender, e) => control.SelectAll();
-
-			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
-			layout.Add(control);
-			layout.AddSeparateRow(null, selectAll, null);
-			return layout;
-		}
-
 		Control DifferentSize()
 		{
-			var control = new TextBox { Text = "Some Text", Size = new Size(100, 50) };
-			LogEvents(control);
-			return control;
-		}
-
-		Control ReadOnly()
-		{
-			var control = new TextBox { Text = "Read only text", ReadOnly = true };
-			LogEvents(control);
-			return control;
-		}
-
-		Control Disabled()
-		{
-			var control = new TextBox { Text = "Disabled Text", Enabled = false };
-			LogEvents(control);
-			return control;
-		}
-
-		Control LimitLength()
-		{
-			var control = new TextBox { Text = "Limited to 30 characters", MaxLength = 30 };
-			LogEvents(control);
-			return control;
-		}
-
-		Control Placeholder()
-		{
-			var control = new TextBox { PlaceholderText = "Some Placeholder" };
+			var control = new TextBox { Text = "Different Size (300x50)", Size = new Size(300, 50) };
 			LogEvents(control);
 			return control;
 		}
 
 		void LogEvents(TextBox control)
 		{
+			control.TextChanging += (sender, e) => Log.Write(control, $"TextChanging, Range: {e.Range}, Text: {e.Text}");
 			control.TextChanged += (sender, e) => Log.Write(control, "TextChanged, Text: {0}", control.Text);
 			control.TextInput += (sender, e) => Log.Write(control, "TextInput: {0}", e.Text);
 		}
