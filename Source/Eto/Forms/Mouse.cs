@@ -25,12 +25,13 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Gets the current mouse position in screen coordinates
+		/// Gets or sets the current mouse position in screen coordinates
 		/// </summary>
 		/// <returns>The mouse position.</returns>
 		public static PointF Position
 		{
 			get { return Handler.Position; }
+			set { Handler.Position = value; }
 		}
 
 		/// <summary>
@@ -61,7 +62,7 @@ namespace Eto.Forms
 			/// Gets the current mouse position in screen coordinates
 			/// </summary>
 			/// <value>The mouse position.</value>
-			PointF Position { get; }
+			PointF Position { get; set; }
 
 			/// <summary>
 			/// Gets the current state of the mouse buttons
