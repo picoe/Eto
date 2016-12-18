@@ -80,13 +80,13 @@ namespace Eto.Wpf.Forms.Controls
 				if (Widget.FindParent<GroupBox>() != null)
 					viewportSize.Height = Math.Max(0, viewportSize.Height - 2);
 
-				if (ExpandContentWidth)
-					content.Width = Math.Max(0, Math.Max(prefSize.Width, viewportSize.Width));
+				if (ExpandContentWidth && viewportSize.Width > prefSize.Width)
+					content.Width = double.NaN;
 				else
 					content.Width = prefSize.Width;
 
-				if (ExpandContentHeight)
-					content.Height = Math.Max(0, Math.Max(prefSize.Height, viewportSize.Height));
+				if (ExpandContentHeight && viewportSize.Height > prefSize.Height)
+					content.Height = double.NaN;
 				else
 					content.Height = prefSize.Height;
 
@@ -159,8 +159,8 @@ namespace Eto.Wpf.Forms.Controls
 						break;
 					case BorderType.None:
 						Control.BorderBrush = null;
-                        Control.BorderThickness = new sw.Thickness(0);
-                        break;
+						Control.BorderThickness = new sw.Thickness(0);
+						break;
 					default:
 						throw new NotSupportedException();
 				}
@@ -190,8 +190,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
-			content.HorizontalAlignment = sw.HorizontalAlignment.Left;
-			content.VerticalAlignment = sw.VerticalAlignment.Top;
+			content.HorizontalAlignment = expandContentWidth ? sw.HorizontalAlignment.Stretch : sw.HorizontalAlignment.Left;
+			content.VerticalAlignment = expandContentHeight ? sw.VerticalAlignment.Stretch : sw.VerticalAlignment.Top;
 			content.SizeChanged += HandleSizeChanged;
 			scroller.Content = content;
 		}
@@ -221,6 +221,8 @@ namespace Eto.Wpf.Forms.Controls
 				if (expandContentWidth != value)
 				{
 					expandContentWidth = value;
+					var content = (swc.Border)scroller.Content;
+					content.HorizontalAlignment = value ? sw.HorizontalAlignment.Stretch : sw.HorizontalAlignment.Left;
 					UpdateSizes();
 				}
 			}
@@ -234,6 +236,8 @@ namespace Eto.Wpf.Forms.Controls
 				if (expandContentHeight != value)
 				{
 					expandContentHeight = value;
+					var content = (swc.Border)scroller.Content;
+					content.VerticalAlignment = value ? sw.VerticalAlignment.Stretch : sw.VerticalAlignment.Top;
 					UpdateSizes();
 				}
 			}
