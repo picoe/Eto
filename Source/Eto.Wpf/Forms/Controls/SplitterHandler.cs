@@ -87,6 +87,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		void SetInitialPosition()
 		{
+			panel1Visible = panel1?.Visible ?? false;
+			panel2Visible = panel2?.Visible ?? false;
+
 			// controls should be stretched to fit panels
 			SetStretch(panel1);
 			SetStretch(panel2);
@@ -554,9 +557,10 @@ namespace Eto.Wpf.Forms.Controls
 					SetStretch(panel1);
 					if (Widget.Loaded)
 						control.SetScale(true, true);
+
 					pane1.Children.Add(control.ContainerControl);
-					panel1Visible = panel1.Visible;
 					dpdVisibility.AddValueChanged(control.ContainerControl, HandlePanel1IsVisibleChanged);
+					HandlePanelVisibleChanged(ref panel1Visible, panel1);
 				}
 			}
 		}
@@ -581,9 +585,9 @@ namespace Eto.Wpf.Forms.Controls
 					if (Widget.Loaded)
 						control.SetScale(true, true);
 					pane2.Children.Add(control.ContainerControl);
-					panel2Visible = panel2.Visible;
 
 					dpdVisibility.AddValueChanged(control.ContainerControl, HandlePanel2IsVisibleChanged);
+					HandlePanelVisibleChanged(ref panel2Visible, panel2);
 				}
 			}
 		}
@@ -599,7 +603,7 @@ namespace Eto.Wpf.Forms.Controls
 		}
 
 		void HandlePanelVisibleChanged(ref bool isVisible, Control panel)
-		{ 
+		{
 			if ((Control.IsLoaded || WasLoaded) && isVisible != panel.Visible)
 			{
 				isVisible = panel.Visible;
