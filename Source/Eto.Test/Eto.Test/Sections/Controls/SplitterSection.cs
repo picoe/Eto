@@ -457,6 +457,7 @@ namespace Eto.Test.Sections.Controls
 				var form = new Form();
 				using (Context)
 				{
+					var rnd = new Random();
 					var splitter = new Splitter
 					{
 						Orientation = Orientation.Horizontal,
@@ -478,6 +479,44 @@ namespace Eto.Test.Sections.Controls
 					var orientation = new EnumDropDown<Orientation>();
 					orientation.SelectedValueBinding.Bind(splitter, r => r.Orientation);
 
+					int count = 0;
+					var replacePanel1Button = new Button { Text = "Replace Panel1" };
+					replacePanel1Button.Click += (s, ee) =>
+					{
+						bool isVisible = rnd.Next(2) == 1;
+						showPanel1.Unbind();
+						if (isVisible || rnd.Next(2) == 1)
+						{
+							Log.Write(this, $"Replacing Panel1 to a control with Visible = {isVisible}");
+							splitter.Panel1 = new Panel { Padding = 20, BackgroundColor = Colors.Red, Visible = isVisible, Content = new Panel { BackgroundColor = Colors.White, Content = $"Count: {count++}" } };
+						}
+						else
+						{
+							Log.Write(this, "Replacing Panel1 with null");
+							splitter.Panel1 = null;
+						}
+						showPanel1.CheckedBinding.Bind(splitter.Panel1, r => r.Visible);
+					};
+
+					var replacePanel2Button = new Button { Text = "Replace Panel2" };
+					replacePanel2Button.Click += (s, ee) =>
+					{
+						bool isVisible = rnd.Next(2) == 1;
+						showPanel2.Unbind();
+						if (isVisible || rnd.Next(2) == 1)
+						{
+							Log.Write(this, $"Replacing Panel2 to a control with Visible = {isVisible}");
+							splitter.Panel2 = new Panel { Padding = 20, BackgroundColor = Colors.Blue, Visible = isVisible, Content = new Panel { BackgroundColor = Colors.White, Content = $"Count: {count++}" } };
+						}
+						else
+						{
+							Log.Write(this, "Replacing Panel2 with null");
+							splitter.Panel2 = null;
+						}
+						showPanel2.CheckedBinding.Bind(splitter.Panel2, r => r.Visible);
+					};
+
+
 					var splitPanel = new Panel { Content = splitter };
 
 					var showSplitter = new CheckBox { Text = "Show Splitter", Checked = true };
@@ -488,18 +527,16 @@ namespace Eto.Test.Sections.Controls
 							splitPanel.Content = null;
 					};
 
-					var buttons = new StackLayout
-					{
-						Orientation = Orientation.Horizontal,
-						Items = { showSplitter, showPanel1, showPanel2, fixedPanel, orientation }
-					};
+					var buttons1 = TableLayout.Horizontal(null, showSplitter, showPanel1, showPanel2, fixedPanel, orientation, null);
+					var buttons2 = TableLayout.Horizontal(null, replacePanel1Button, replacePanel2Button, null);
 				
 					form.Content = new StackLayout
 					{
 						HorizontalContentAlignment = HorizontalAlignment.Stretch,
 						Items =
 						{
-							buttons,
+							buttons1,
+							buttons2,
 							new StackLayoutItem(splitPanel, true)
 						}
 					};
