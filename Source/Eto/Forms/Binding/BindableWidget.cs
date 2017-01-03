@@ -198,7 +198,7 @@ namespace Eto.Forms
 			if (bindings != null)
 			{
 				bindings.Unbind();
-				Properties[Bindings_Key] = null;
+				Properties.Remove(Bindings_Key);
 			}
 		}
 
