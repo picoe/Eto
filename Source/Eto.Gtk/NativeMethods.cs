@@ -52,6 +52,15 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern string gtk_font_chooser_get_font(IntPtr fontchooser);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
 #endif
 		}
 
@@ -94,6 +103,15 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern string gtk_font_chooser_get_font(IntPtr fontchooser);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
 #endif
         }
 
@@ -136,6 +154,15 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern string gtk_font_chooser_get_font(IntPtr fontchooser);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public static extern void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
 #endif
         }
 
@@ -175,6 +202,18 @@ namespace Eto.GtkSharp
 			public delegate void ColorChooserSetAlpha(IntPtr chooser, bool use_alpha);
 
 			public static readonly ColorChooserSetAlpha gtk_color_chooser_set_use_alpha;
+
+            public delegate IntPtr FontChooserNew(string title, IntPtr parent);
+
+			public static readonly FontChooserNew gtk_font_chooser_dialog_new;
+
+			public delegate string FontChooserGetFont(IntPtr fontchooser);
+
+			public static readonly FontChooserGetFont gtk_font_chooser_get_font;
+
+			public delegate void FontChooserSetFont(IntPtr fontchooser, string fontname);
+
+			public static readonly FontChooserSetFont gtk_font_chooser_set_font;
 #endif
 		}
 
@@ -259,6 +298,21 @@ namespace Eto.GtkSharp
 		public static bool gtk_color_chooser_get_use_alpha(IntPtr chooser)
 		{
 			return Impl.gtk_color_chooser_get_use_alpha(chooser);
+		}
+
+		public static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parrent)
+		{
+			return Impl.gtk_font_chooser_dialog_new(title, parrent);
+		}
+
+		public static string gtk_font_chooser_get_font(IntPtr fontchooser)
+		{
+			return Impl.gtk_font_chooser_get_font(fontchooser);
+		}
+
+		public static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname)
+		{
+			Impl.gtk_font_chooser_set_font(fontchooser, fontname);
 		}
 
 #endif

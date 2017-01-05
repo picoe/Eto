@@ -157,7 +157,6 @@ namespace Eto.GtkSharp
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
-			p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
@@ -182,6 +181,12 @@ namespace Eto.GtkSharp
 				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandlerGtk34());
 			else
 				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+
+			if (Gtk.Global.MinorVersion >= 2)
+				p.Add<FontDialog.IHandler>(() => new FontDialogHandlerGtk32());
+			else
+				p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
+				
 			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
 			#else
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
