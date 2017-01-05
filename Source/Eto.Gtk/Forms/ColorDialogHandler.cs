@@ -1,4 +1,5 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.GtkSharp.Forms
@@ -16,7 +17,7 @@ namespace Eto.GtkSharp.Forms
 			set { Control.ColorSelection.HasOpacityControl = value; }
 		}
 
-		public Eto.Drawing.Color Color
+		public Color Color
 		{
 			get
 			{
@@ -44,9 +45,8 @@ namespace Eto.GtkSharp.Forms
 			Control.Hide();
 
 			if (response == Gtk.ResponseType.Ok)
-			{
 				Callback.OnColorChanged(Widget, EventArgs.Empty);
-			}
+			
 			return response.ToEto();
 		}
 	}
