@@ -342,6 +342,8 @@
     <Compile Include="FileAction.cs" />
     <Compile Include="Forms\ThemedControls\ThemedFilePickerHandler.cs" />
     <Compile Include="Forms\FileFilter.cs" />
+    <Compile Include="Forms\Controls\FontPicker.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedFontPickerHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">
