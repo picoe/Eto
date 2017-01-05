@@ -74,6 +74,7 @@ namespace Eto.WinForms
 			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
+			p.Add<FontPicker.IHandler>(() => new ThemedFontPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<Expander.IHandler>(() => new ThemedExpanderHandler());
