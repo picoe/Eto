@@ -203,6 +203,7 @@
     <Compile Include="Sections\Controls\StepperSection.cs" />
     <Compile Include="Sections\Controls\TextStepperSection.cs" />
     <Compile Include="UnitTests\Forms\Binding\PropertyBindingTests.cs" />
+    <Compile Include="Sections\Controls\FilePickerSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
