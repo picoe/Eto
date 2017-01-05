@@ -274,6 +274,7 @@
     <Compile Include="Forms\Controls\FilePickerHandler.cs" />
     <Compile Include="Forms\FontDialogHandlerGtk32.cs" />
     <Compile Include="Forms\Controls\FontPickerHandler.cs" />
+    <Compile Include="Forms\OpenWithDialogHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

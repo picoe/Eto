@@ -188,6 +188,7 @@ namespace Eto.GtkSharp
 				p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
 				
 			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
+			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			#else
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());
