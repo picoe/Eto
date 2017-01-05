@@ -142,6 +142,7 @@ namespace Eto.Wpf
 			p.Add<Form.IHandler>(() => new FormHandler());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
+			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
 			p.Add<SaveFileDialog.IHandler>(() => new SaveFileDialogHandler());
 			p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
