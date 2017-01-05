@@ -127,7 +127,7 @@ namespace Eto.GtkSharp.Forms
 
 		public void SetData(byte[] value, string type)
 		{
-			AddEntry(type, value, (data, selection) => selection.Set(Gdk.Atom.Intern(type, false), 0, value));
+			AddEntry(type, value, (data, selection) => selection.Set(Gdk.Atom.Intern(type, false), 8, value));
 		}
 
 		public string GetString(string type)
