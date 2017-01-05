@@ -286,6 +286,9 @@
     <Compile Include="..\Eto.Gtk\Forms\FontDialogHandlerGtk32.cs">
       <Link>FontDialogHandlerGtk32.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\Controls\FontPickerHandler.cs">
+      <Link>FontPickerHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

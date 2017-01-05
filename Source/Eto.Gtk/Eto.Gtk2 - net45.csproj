@@ -265,6 +265,7 @@
     <Compile Include="Forms\AboutDialogHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
     <Compile Include="Forms\Controls\FilePickerHandler.cs" />
+    <Compile Include="Forms\Controls\FontPickerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
