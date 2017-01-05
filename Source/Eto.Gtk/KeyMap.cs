@@ -5,13 +5,16 @@ namespace Eto.GtkSharp
 {
 	public static class KeyMap
 	{
-		static readonly Dictionary<Gdk.Key, Keys> keymap = new Dictionary<Gdk.Key, Keys>();
-		static readonly Dictionary<Keys, Gdk.Key> inversekeymap = new Dictionary<Keys, Gdk.Key>();
+		static Dictionary<Gdk.Key, Keys> _map;
+		static Dictionary<Keys, Gdk.Key> _inverseMap;
+
+		static Dictionary<Gdk.Key, Keys> Map => _map ?? (_map = GetMap());
+		static Dictionary<Keys, Gdk.Key> InverseMap => _inverseMap ?? (_inverseMap = GetInverseMap());
 
 		public static Keys ToEto (this Gdk.Key gkey)
 		{
 			Keys key;
-			return keymap.TryGetValue(gkey, out key) ? key : Keys.None;
+			return Map.TryGetValue(gkey, out key) ? key : Keys.None;
 		}
 		
 		public static Keys ToEtoKey (this Gdk.ModifierType modifier)
@@ -27,7 +30,7 @@ namespace Eto.GtkSharp
 		public static Gdk.Key ToGdkKey (this Keys key)
 		{
 			Gdk.Key result;
-			if (inversekeymap.TryGetValue(key & Keys.KeyMask, out result)) return result;
+			if (InverseMap.TryGetValue(key & Keys.KeyMask, out result)) return result;
 			return (Gdk.Key)0;
 		}
 
@@ -40,9 +43,10 @@ namespace Eto.GtkSharp
 			if (key.HasFlag(Keys.Shift)) result |= Gdk.ModifierType.ShiftMask;
 			return result;
 		}
-		
-		static KeyMap()
+
+		static Dictionary<Gdk.Key, Keys> GetMap()
 		{
+			var keymap = new Dictionary<Gdk.Key, Keys>();
 			keymap.Add(Gdk.Key.A, Keys.A);
 			keymap.Add(Gdk.Key.B, Keys.B);
 			keymap.Add(Gdk.Key.C, Keys.C);
@@ -117,11 +121,6 @@ namespace Eto.GtkSharp
 			//keymap.Add(Gdk.Key.dollar, Keys.Dollar);
 			keymap.Add(Gdk.Key.Menu, Keys.ContextMenu);
 
-			foreach (var val in keymap)
-			{
-				inversekeymap.Add(val.Value, val.Key);
-			}
-
 			if (EtoEnvironment.Platform.IsMac)
 			{
 				// os x
@@ -154,9 +153,19 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.x, Keys.X);
 			keymap.Add(Gdk.Key.y, Keys.Y);
 			keymap.Add(Gdk.Key.z, Keys.Z);
-			
+			return keymap;
 		}
 		
+		static Dictionary<Keys, Gdk.Key> GetInverseMap()
+		{
+			var inversekeymap = new Dictionary<Keys, Gdk.Key>();
+			foreach (var val in Map)
+			{
+				if (!inversekeymap.ContainsKey(val.Value))
+					inversekeymap.Add(val.Value, val.Key);
+			}
+			return inversekeymap;
+		}
 	}
 }
 

@@ -6,13 +6,15 @@ namespace Eto.Wpf
 {
 	public static class KeyMap
 	{
-		static readonly Dictionary<swi.Key, Keys> keymap = new Dictionary<swi.Key, Keys>();
-		static readonly Dictionary<Keys, swi.Key> inverse = new Dictionary<Keys, swi.Key>();
+		static Dictionary<swi.Key, Keys> _map;
+		static Dictionary<Keys, swi.Key> _inverseMap;
+		static Dictionary<swi.Key, Keys> Map => _map ?? (_map = GetKeyMap());
+		static Dictionary<Keys, swi.Key> InverseMap => _inverseMap ?? (_inverseMap = GetInverseMap());
 
 		public static Keys ToEto(this swi.Key key)
 		{
 			Keys mapped;
-			return keymap.TryGetValue(key, out mapped) ? mapped : Keys.None;
+			return Map.TryGetValue(key, out mapped) ? mapped : Keys.None;
 		}
 
 		public static Keys ToEto(this swi.ModifierKeys modifier)
@@ -35,7 +37,7 @@ namespace Eto.Wpf
 		public static swi.Key ToWpf(this Keys key)
 		{
 			swi.Key mapped;
-			return inverse.TryGetValue(key, out mapped) ? mapped : swi.Key.None;
+			return InverseMap.TryGetValue(key, out mapped) ? mapped : swi.Key.None;
 		}
 
 		public static swi.Key ToWpfKey(this Keys key)
@@ -55,8 +57,19 @@ namespace Eto.Wpf
 			return val;
 		}
 
-		static KeyMap()
+		static Dictionary<Keys, swi.Key> GetInverseMap()
 		{
+			var inverse = new Dictionary<Keys, swi.Key>();
+			foreach (var entry in GetKeyMap())
+			{
+				inverse.Add(entry.Value, entry.Key);
+			}
+			return inverse;
+		}
+
+		static Dictionary<swi.Key, Keys> GetKeyMap()
+		{
+			var keymap = new Dictionary<swi.Key, Keys>();
 			keymap.Add(swi.Key.A, Keys.A);
 			keymap.Add(swi.Key.B, Keys.B);
 			keymap.Add(swi.Key.C, Keys.C);
@@ -132,11 +145,7 @@ namespace Eto.Wpf
 			keymap.Add(swi.Key.Insert, Keys.Insert);
 			keymap.Add(swi.Key.Tab, Keys.Tab);
 			keymap.Add(swi.Key.Apps, Keys.ContextMenu);
-
-			foreach (var entry in keymap)
-			{
-				inverse.Add(entry.Value, entry.Key);
-			}
+			return keymap;
 		}
 	}
 }
