@@ -6,8 +6,11 @@ namespace Eto.WinForms
 {
 	public static class KeyMap
 	{
-		static readonly Dictionary<swf.Keys, Keys> keymap = new Dictionary<swf.Keys, Keys>();
-		static readonly Dictionary<Keys, swf.Keys> inverse = new Dictionary<Keys, swf.Keys>();
+		static Dictionary<swf.Keys, Keys> _map;
+		static Dictionary<Keys, swf.Keys> _inverseMap;
+
+		static Dictionary<swf.Keys, Keys> Map => _map ?? (_map = GetMap());
+		static Dictionary<Keys, swf.Keys> InverseMap = _inverseMap ?? (_inverseMap = GetInverseMap());
 
         public static Keys ToEto (this swf.Keys keyData)
         {
@@ -34,13 +37,13 @@ namespace Eto.WinForms
 		static Keys Find(swf.Keys key)
 		{
 			Keys mapped;
-			return keymap.TryGetValue(key, out mapped) ? mapped : Keys.None;
+			return Map.TryGetValue(key, out mapped) ? mapped : Keys.None;
 		}
 		
 		public static swf.Keys Find(Keys key)
 		{
 			swf.Keys mapped;
-			return inverse.TryGetValue(key, out mapped) ? mapped : swf.Keys.None;
+			return InverseMap.TryGetValue(key, out mapped) ? mapped : swf.Keys.None;
 		}
 		
 		public static swf.Keys ToSWF (this Keys key)
@@ -63,9 +66,10 @@ namespace Eto.WinForms
 
 			return Find (code) | modifiers;
 		}
-		
-		static KeyMap()
+
+		static Dictionary<swf.Keys, Keys> GetMap()
 		{
+			var keymap = new Dictionary<swf.Keys, Keys>();
 			keymap.Add(swf.Keys.A, Keys.A);
 			keymap.Add(swf.Keys.B, Keys.B);
 			keymap.Add(swf.Keys.C, Keys.C);
@@ -135,17 +139,23 @@ namespace Eto.WinForms
 			keymap.Add(swf.Keys.Divide, Keys.Divide);
 			keymap.Add(swf.Keys.Enter, Keys.Enter);
 			keymap.Add(swf.Keys.Insert, Keys.Insert);
-            keymap.Add(swf.Keys.OemPeriod, Keys.Period);
-            keymap.Add(swf.Keys.Tab, Keys.Tab);
+			keymap.Add(swf.Keys.OemPeriod, Keys.Period);
+			keymap.Add(swf.Keys.Tab, Keys.Tab);
 			keymap.Add(swf.Keys.Apps, Keys.ContextMenu);
 			keymap.Add(swf.Keys.CapsLock, Keys.CapsLock);
 			keymap.Add(swf.Keys.Scroll, Keys.ScrollLock);
 			keymap.Add(swf.Keys.NumLock, Keys.NumberLock);
-			
-			foreach (var entry in keymap)
+			return keymap;
+		}
+
+		static Dictionary<Keys, swf.Keys> GetInverseMap()
+		{
+			var inverse = new Dictionary<Keys, swf.Keys>();
+			foreach (var entry in Map)
 			{
 				inverse[entry.Value] = entry.Key;
 			}
+			return inverse;
 		}
 	}
 }
