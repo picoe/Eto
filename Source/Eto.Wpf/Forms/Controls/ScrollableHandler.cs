@@ -239,24 +239,6 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
-		public override void Invalidate()
-		{
-			base.Invalidate();
-			foreach (var control in Widget.VisualChildren)
-			{
-				control.Invalidate();
-			}
-		}
-
-		public override void Invalidate(Rectangle rect)
-		{
-			base.Invalidate(rect);
-			foreach (var control in Widget.VisualChildren)
-			{
-				control.Invalidate(rect);
-			}
-		}
-
 		public float MaximumZoom { get { return 1f; } set { } }
 
 		public float MinimumZoom { get { return 1f; } set { } }

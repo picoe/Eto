@@ -98,9 +98,9 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
-			base.Invalidate();
+			base.Invalidate(invalidateChildren);
 			if (this.Widget.Loaded)
 			{
 				Control.Refresh();

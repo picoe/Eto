@@ -222,12 +222,12 @@ namespace Eto.WinRT.Forms
 #endif
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(bool invalidateChildren)
 		{
 			InvalidateControlVisual();
 		}
 
-		public virtual void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			InvalidateControlVisual();
 		}

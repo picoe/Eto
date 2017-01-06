@@ -41,21 +41,27 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
-			base.Invalidate();
-			foreach (var control in Widget.VisualChildren)
+			base.Invalidate(invalidateChildren);
+			if (invalidateChildren)
 			{
-				control.Invalidate();
+				foreach (var control in Widget.VisualControls)
+				{
+					control.Invalidate(invalidateChildren);
+				}
 			}
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			base.Invalidate(rect);
-			foreach (var control in Widget.VisualChildren)
+			base.Invalidate(rect, invalidateChildren);
+			if (invalidateChildren)
 			{
-				control.Invalidate(rect);
+				foreach (var control in Widget.VisualControls)
+				{
+					control.Invalidate(rect, invalidateChildren);
+				}
 			}
 		}
 	}

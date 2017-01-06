@@ -92,7 +92,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					backgroundColor = value;
 					backgroundBrush = backgroundColor.A > 0 ? new SolidBrush(backgroundColor) : null;
-					Invalidate();
+					Invalidate(false);
 				}
 			}
 		}
@@ -114,16 +114,16 @@ namespace Eto.Mac.Forms.Controls
 			set { Control.CanFocus = value; }
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
-			if (!NeedsQueue(Invalidate))
-				base.Invalidate();
+			if (!NeedsQueue(() => Invalidate(invalidateChildren)))
+				base.Invalidate(invalidateChildren);
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			if (!NeedsQueue(() => Invalidate(rect)))
-				base.Invalidate(rect);
+			if (!NeedsQueue(() => Invalidate(rect, invalidateChildren)))
+				base.Invalidate(rect, invalidateChildren);
 		}
 
 		void DrawRegion(Rectangle rect)

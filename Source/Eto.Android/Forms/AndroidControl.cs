@@ -26,12 +26,12 @@ namespace Eto.Android.Forms
 	{
 		public abstract av.View ContainerControl { get; }
 
-		public void Invalidate()
+		public void Invalidate(bool invalidateChildren)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void Invalidate(Rectangle rect)
+		public void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			throw new NotImplementedException();
 		}
