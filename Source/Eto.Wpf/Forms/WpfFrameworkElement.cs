@@ -233,12 +233,12 @@ namespace Eto.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(bool invalidateChildren)
 		{
 			Control.InvalidateVisual();
 		}
 
-		public virtual void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			Control.InvalidateVisual();
 		}

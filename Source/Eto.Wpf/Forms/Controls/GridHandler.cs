@@ -381,20 +381,20 @@ namespace Eto.Wpf.Forms.Controls
 			RestoreColumnFocus();
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
 			SaveColumnFocus();
 			Control.Items.Refresh();
 			RestoreColumnFocus();
-			base.Invalidate();
+			base.Invalidate(invalidateChildren);
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			SaveColumnFocus();
 			Control.Items.Refresh();
 			RestoreColumnFocus();
-			base.Invalidate(rect);
+			base.Invalidate(rect, invalidateChildren);
 		}
 
 		public virtual void FormatCell(IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)

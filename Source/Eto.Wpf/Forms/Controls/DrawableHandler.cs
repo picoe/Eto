@@ -146,7 +146,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override void OnLogicalPixelSizeChanged()
 		{
-			Invalidate();
+			Invalidate(false);
 		}
 
 		public override void OnUnLoad(EventArgs e)
@@ -188,7 +188,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			SetMaxTiles();
 			UpdateTiles(true);
-			Invalidate();
+			Invalidate(false);
 			content.Width = e.NewSize.Width;
 			content.Height = e.NewSize.Height;
 		}
@@ -356,12 +356,12 @@ namespace Eto.Wpf.Forms.Controls
 			UpdateTiles();
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
 			if (!Control.IsLoaded)
 			{
 				if (Widget.Loaded)
-					Application.Instance.AsyncInvoke(Invalidate);
+					Application.Instance.AsyncInvoke(() => Invalidate(invalidateChildren));
 				return;
 			}
 			if (tiled)
@@ -379,16 +379,16 @@ namespace Eto.Wpf.Forms.Controls
 					unusedTiles.AddRange(invalidateTiles);
 					invalidateTiles.Clear();
 				}
-				base.Invalidate();
+				base.Invalidate(invalidateChildren);
 			}
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			if (!Control.IsLoaded)
 			{
 				if (Widget.Loaded)
-					Application.Instance.AsyncInvoke(() => Invalidate(rect));
+					Application.Instance.AsyncInvoke(() => Invalidate(rect, invalidateChildren));
 				return;
 			}
 			if (tiled)
@@ -403,7 +403,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				if (((rect.Width * rect.Height) / (Control.ActualWidth * Control.ActualHeight)) > 0.9)
 				{
-					Invalidate();
+					Invalidate(false);
 					return;
 				}
 
@@ -453,12 +453,12 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 			else
-				base.Invalidate(rect);
+				base.Invalidate(rect, invalidateChildren);
 		}
 
 		public void Update(Rectangle rect)
 		{
-			Invalidate(rect);
+			Invalidate(rect, false);
 		}
 
 		public bool CanFocus

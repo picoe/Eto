@@ -149,7 +149,7 @@ namespace Eto.Direct2D.Drawing
 			try
 			{
 				target.Resize(drawable.ClientSize.ToDx());
-				drawable.Invalidate();
+				drawable.Invalidate(false);
 			}
 			catch (Exception ex)
 			{
