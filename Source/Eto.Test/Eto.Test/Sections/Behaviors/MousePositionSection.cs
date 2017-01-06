@@ -1,5 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
+using System;
 
 namespace Eto.Test.Sections.Behaviors
 {
@@ -22,11 +23,26 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow(null, "PointToScreen", PointToScreen(), null);
 			layout.AddSeparateRow(null, "Mouse.Buttons", Buttons(), null);
 			layout.AddSeparateRow(null, "Keyboard.ModifierKeys", Modifiers(), null);
+			layout.AddSeparateRow(null, SetMousePosition(), null);
 			layout.Add(null);
 
 			SetLabels();
 
 			Content = layout;
+		}
+
+		Control SetMousePosition()
+		{
+			var rnd = new Random();
+			var control = new Button { Text = "Set Mouse.Position" };
+			control.Click += (sender, e) =>
+			{
+				var bounds = Screen.DisplayBounds;
+				var position = bounds.TopLeft + new SizeF(rnd.Next((int)bounds.Width), rnd.Next((int)bounds.Height));
+				Log.Write(this, $"Setting Mouse.Position to {position}");
+				Mouse.Position = position;
+			};
+			return control;
 		}
 
 		Control MousePositionLabel()

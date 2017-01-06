@@ -424,7 +424,7 @@ namespace Eto.WinForms.Forms.Controls
 					}
 					if (Widget.Loaded)
 					{
-						Control.Panel1Collapsed = Panel1Visible;
+						VisibleChanged(Panel1Visible);
 						Control.ResumeLayout();
 					}
 				}
@@ -458,7 +458,7 @@ namespace Eto.WinForms.Forms.Controls
 					}
 					if (Widget.Loaded)
 					{
-						Control.Panel2Collapsed = Panel2Visible;
+						VisibleChanged(Panel2Visible);
 						Control.ResumeLayout();
 					}
 				}

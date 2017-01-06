@@ -214,7 +214,7 @@ namespace Eto.Mac.Forms
 			//base.Dispose (disposing);
 		}
 
-		public void InsertFilter(int index, FileDialogFilter filter)
+		public void InsertFilter(int index, FileFilter filter)
 		{
 			fileTypes.InsertItem(filter.Name, index);
 		}

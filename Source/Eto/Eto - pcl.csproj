@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -145,7 +144,6 @@
     <Compile Include="Forms\Controls\WebView.cs" />
     <Compile Include="Forms\Clipboard.cs" />
     <Compile Include="Forms\CommonDialog.cs" />
-    <Compile Include="Forms\ColorDialog.cs" />
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
@@ -252,6 +250,7 @@
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
     <Compile Include="Forms\Controls\Spinner.cs" />
     <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
+    <Compile Include="Forms\ColorDialog.cs" />
     <Compile Include="Forms\Command.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -338,6 +337,13 @@
     <Compile Include="Forms\ThemedControls\ThemedStepperHandler.cs" />
     <Compile Include="Forms\ThemedControls\ThemedTextStepperHandler.cs" />
     <Compile Include="Forms\Binding\IValueConverter.cs" />
+    <Compile Include="Forms\Controls\FilePicker.cs" />
+    <Compile Include="FileAction.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedFilePickerHandler.cs" />
+    <Compile Include="Forms\FileFilter.cs" />
+    <Compile Include="Forms\Controls\FontPicker.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedFontPickerHandler.cs" />
+    <Compile Include="Forms\OpenWithDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">

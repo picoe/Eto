@@ -101,6 +101,8 @@ namespace Eto.GtkSharp
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<Expander.IHandler>(() => new ExpanderHandler());
+			p.Add<FilePicker.IHandler>(() => new FilePickerHandler());
+			p.Add<FontPicker.IHandler>(() => new FontPickerHandler());
 			p.Add<GridColumn.IHandler>(() => new GridColumnHandler());
 			p.Add<GridView.IHandler>(() => new GridViewHandler());
 			p.Add<GroupBox.IHandler>(() => new GroupBoxHandler());
@@ -155,7 +157,6 @@ namespace Eto.GtkSharp
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
-			p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
@@ -180,7 +181,14 @@ namespace Eto.GtkSharp
 				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandlerGtk34());
 			else
 				p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
+
+			if (Gtk.Global.MinorVersion >= 2)
+				p.Add<FontDialog.IHandler>(() => new FontDialogHandlerGtk32());
+			else
+				p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
+				
 			p.Add<Spinner.IHandler>(() => new SpinnerHandler());
+			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			#else
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<Spinner.IHandler>(() => new ThemedSpinnerHandler());

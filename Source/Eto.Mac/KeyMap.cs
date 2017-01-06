@@ -35,13 +35,15 @@ namespace Eto.Mac
 {
 	public static class KeyMap
 	{
-		static readonly Dictionary<ushort, Keys> keymap = new Dictionary<ushort, Keys>();
-		static readonly Dictionary<Keys, string> inverse = new Dictionary<Keys, string>();
+		static Dictionary<ushort, Keys> _map;
+		static Dictionary<Keys, string> _inverseMap;
+		static Dictionary<ushort, Keys> Map => _map ?? (_map = GetMap());
+		static Dictionary<Keys, string> InverseMap = _inverseMap ?? (_inverseMap = GetInverseMap());
 
 		public static Keys MapKey(ushort key)
 		{
 			Keys value;
-			return keymap.TryGetValue(key, out value) ? value : Keys.None;
+			return Map.TryGetValue(key, out value) ? value : Keys.None;
 		}
 
 		enum KeyCharacters
@@ -66,7 +68,7 @@ namespace Eto.Mac
 		public static string KeyEquivalent(Keys key)
 		{
 			string value;
-			return inverse.TryGetValue(key & Keys.KeyMask, out value) ? value : string.Empty;
+			return InverseMap.TryGetValue(key & Keys.KeyMask, out value) ? value : string.Empty;
 		}
 
 		public static NSEventModifierMask KeyEquivalentModifierMask(this Keys key)
@@ -112,8 +114,9 @@ namespace Eto.Mac
 			return key;
 		}
 
-		static KeyMap()
+		static Dictionary<ushort, Keys> GetMap()
 		{
+			var keymap = new Dictionary<ushort, Keys>();
 			keymap.Add(0, Keys.A);
 			keymap.Add(11, Keys.B);
 			keymap.Add(8, Keys.C);
@@ -182,19 +185,23 @@ namespace Eto.Mac
 			keymap.Add(76, Keys.Insert);
 			keymap.Add(51, Keys.Backspace);
 			keymap.Add(117, Keys.Delete);
-			
+
 			keymap.Add(125, Keys.Down);
 			keymap.Add(126, Keys.Up);
 			keymap.Add(123, Keys.Left);
 			keymap.Add(124, Keys.Right);
-			
+
 			keymap.Add(116, Keys.PageUp);
 			keymap.Add(121, Keys.PageDown);
 			keymap.Add(119, Keys.End);
 			keymap.Add(115, Keys.Home);
 			keymap.Add(110, Keys.ContextMenu);
+			return keymap;
+		}
 
-			
+		static Dictionary<Keys, string> GetInverseMap()
+		{
+			var inverse = new Dictionary<Keys, string>();
 			inverse.Add(Keys.A, "a");
 			inverse.Add(Keys.B, "b");
 			inverse.Add(Keys.C, "c");
@@ -264,6 +271,7 @@ namespace Eto.Mac
 			inverse.Add(Keys.F10, ((char)NSKey.F10).ToString());
 			inverse.Add(Keys.F11, ((char)NSKey.F11).ToString());
 			inverse.Add(Keys.F12, ((char)NSKey.F12).ToString());
+			return inverse;
 		}
 	}
 }

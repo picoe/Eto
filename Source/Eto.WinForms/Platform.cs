@@ -74,6 +74,7 @@ namespace Eto.WinForms
 			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
+			p.Add<FontPicker.IHandler>(() => new ThemedFontPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<Expander.IHandler>(() => new ThemedExpanderHandler());
@@ -104,6 +105,7 @@ namespace Eto.WinForms
 			p.Add<RichTextArea.IHandler>(() => new RichTextAreaHandler());
 			p.Add<Stepper.IHandler>(() => new ThemedStepperHandler());
 			p.Add<TextStepper.IHandler>(() => new TextStepperHandler());
+			p.Add<FilePicker.IHandler>(() => new ThemedFilePickerHandler());
 
 			// Forms.Menu
 			p.Add<CheckMenuItem.IHandler>(() => new CheckMenuItemHandler());
@@ -136,6 +138,7 @@ namespace Eto.WinForms
 			p.Add<Form.IHandler>(() => new FormHandler());
 			p.Add<MessageBox.IHandler>(() => new MessageBoxHandler());
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
+			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
 			p.Add<SaveFileDialog.IHandler>(() => new SaveFileDialogHandler());
 			p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());

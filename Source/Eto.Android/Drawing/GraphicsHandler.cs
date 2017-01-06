@@ -212,5 +212,18 @@ namespace Eto.Android.Drawing
 		{
 			throw new NotImplementedException();
 		}
+
+		public void DrawLines(Pen pen, IEnumerable<PointF> points)
+		{
+			Control.DrawLines(points.SelectMany(p => new[] { p.X, p.Y }).ToArray(), pen.ToAndroid());
+		}
+
+		public void DrawPolygon(Pen pen, IEnumerable<PointF> points)
+		{
+			var pts = points.SelectMany(p => new[] { p.X, p.Y });
+			var first = points.First();
+			pts = pts.Union(new[] { first.X, first.Y });
+			Control.DrawLines(pts.ToArray(), pen.ToAndroid());
+		}
 	}
 }

@@ -69,9 +69,10 @@ namespace Eto.Forms
 		/// Queues a repaint of the entire control on the screen
 		/// </summary>
 		/// <remarks>This is only useful when the control is visible.</remarks>
-		public virtual void Invalidate()
+		/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
+		public virtual void Invalidate(bool invalidateChildren)
 		{
-			Control.Invalidate();
+			Control.Invalidate(invalidateChildren);
 		}
 
 		/// <summary>
@@ -81,9 +82,10 @@ namespace Eto.Forms
 		/// This is only useful when the control is visible.
 		/// </remarks>
 		/// <param name="rect">Rectangle to repaint</param>
-		public virtual void Invalidate(Rectangle rect)
+		/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			Control.Invalidate(rect);
+			Control.Invalidate(rect, invalidateChildren);
 		}
 
 		/// <summary>

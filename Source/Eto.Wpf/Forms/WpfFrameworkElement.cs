@@ -233,12 +233,12 @@ namespace Eto.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(bool invalidateChildren)
 		{
 			Control.InvalidateVisual();
 		}
 
-		public virtual void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			Control.InvalidateVisual();
 		}
@@ -278,10 +278,10 @@ namespace Eto.Wpf.Forms
 
 		public bool Visible
 		{
-			get { return Control.Visibility != sw.Visibility.Collapsed; }
+			get { return ContainerControl.Visibility != sw.Visibility.Collapsed; }
 			set
 			{
-				Control.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
+				ContainerControl.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Collapsed;
                 UpdatePreferredSize();
             }
         }

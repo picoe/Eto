@@ -528,12 +528,12 @@ namespace Eto.Mac.Forms
 			CreateTracking();
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(bool invalidateChildren)
 		{
 			ContainerControl.NeedsDisplay = true;
 		}
 
-		public virtual void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			var region = rect.ToNS();
 			region.Y = EventControl.Frame.Height - region.Y - region.Height;

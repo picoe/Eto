@@ -192,7 +192,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (!string.IsNullOrEmpty(placeholderText))
 					Control.ExposeEvent += Connector.HandleExposeEvent;
 				if (Widget.Loaded)
-					Invalidate();
+					Invalidate(false);
 #else
 				placeholderText = value;
 				NativeMethods.gtk_entry_set_placeholder_text(Control, value);

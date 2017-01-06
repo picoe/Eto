@@ -262,9 +262,10 @@
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>
     <Compile Include="Drawing\IconFrameHandler.cs" />
-    <Compile Include="Forms\ColorDialogHandlerGtk34.cs" />
     <Compile Include="Forms\AboutDialogHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
+    <Compile Include="Forms\Controls\FilePickerHandler.cs" />
+    <Compile Include="Forms\Controls\FontPickerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

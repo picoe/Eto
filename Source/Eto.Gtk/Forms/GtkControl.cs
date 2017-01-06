@@ -135,12 +135,12 @@ namespace Eto.GtkSharp.Forms
 			set { Control.Name = value; }
 		}
 
-		public void Invalidate()
+		public void Invalidate(bool invalidateChildren)
 		{
 			Control.QueueDraw();
 		}
 
-		public void Invalidate(Rectangle rect)
+		public void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			Control.QueueDrawArea(rect.X, rect.Y, rect.Width, rect.Height);
 		}
