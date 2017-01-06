@@ -55,21 +55,27 @@ namespace Eto.WinRT.Forms
 				parent.UpdatePreferredSize();
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
-			base.Invalidate();
-			foreach (var control in Widget.Children)
+			base.Invalidate(invalidateChildren);
+			if (invalidateChildren)
 			{
-				control.Invalidate();
+				foreach (var control in Widget.VisualControls)
+				{
+					control.Invalidate(invalidateChildren);
+				}
 			}
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			base.Invalidate(rect);
-			foreach (var control in Widget.Children)
+			base.Invalidate(rect, invalidateChildren);
+			if (invalidateChildren)
 			{
-				control.Invalidate(rect);
+				foreach (var control in Widget.VisualControls)
+				{
+					control.Invalidate(rect, invalidateChildren);
+				}
 			}
 		}
 	}

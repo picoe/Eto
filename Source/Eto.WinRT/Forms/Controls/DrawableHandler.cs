@@ -265,7 +265,7 @@ namespace Eto.WinRT.Forms.Controls
 		{
 			SetMaxTiles();
 			UpdateTiles(true);
-			Invalidate();
+			Invalidate(false);
 		}
 
 		void SetMaxTiles()
@@ -338,7 +338,7 @@ namespace Eto.WinRT.Forms.Controls
 			{
 				Control.Width = Widget.Size.Width;
 				Control.Height = Widget.Size.Height;
-				Invalidate(); 
+				Invalidate(false);
 				return;
 			}
 
@@ -454,7 +454,7 @@ namespace Eto.WinRT.Forms.Controls
 #endif
 		}
 
-		public override void Invalidate()
+		public override void Invalidate(bool invalidateChildren)
 		{
 			if (tiled)
 			{
@@ -474,7 +474,7 @@ namespace Eto.WinRT.Forms.Controls
 			}
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			if (tiled)
 			{
@@ -485,12 +485,12 @@ namespace Eto.WinRT.Forms.Controls
 				}
 			}
 			else
-				base.Invalidate(rect);
+				base.Invalidate(rect, invalidateChildren);
 		}
 
 		public void Update(Rectangle rect)
 		{
-			Invalidate(rect);
+			Invalidate(rect, false);
 		}
 
 		public bool CanFocus

@@ -564,14 +564,38 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Queues a repaint of the entire control on the screen
+		/// Queues a repaint of the entire control on the screen and any of its children.
 		/// </summary>
 		/// <remarks>
 		/// This is only useful when the control is visible.
 		/// </remarks>
 		public void Invalidate()
 		{
-			Handler.Invalidate();
+			Handler.Invalidate(true);
+		}
+
+		/// <summary>
+		/// Queues a repaint of the entire control on the screen
+		/// </summary>
+		/// <remarks>
+		/// This is only useful when the control is visible.
+		/// </remarks>
+		/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
+		public void Invalidate(bool invalidateChildren)
+		{
+			Handler.Invalidate(invalidateChildren);
+		}
+
+		/// <summary>
+		/// Queues a repaint of the specified <paramref name="rect"/> of the control and any children.
+		/// </summary>
+		/// <remarks>
+		/// This is only useful when the control is visible.
+		/// </remarks>
+		/// <param name="rect">Rectangle to repaint</param>
+		public void Invalidate(Rectangle rect)
+		{
+			Handler.Invalidate(rect, true);
 		}
 
 		/// <summary>
@@ -581,9 +605,10 @@ namespace Eto.Forms
 		/// This is only useful when the control is visible.
 		/// </remarks>
 		/// <param name="rect">Rectangle to repaint</param>
-		public void Invalidate(Rectangle rect)
+		/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
+		public void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			Handler.Invalidate(rect);
+			Handler.Invalidate(rect, invalidateChildren);
 		}
 
 		/// <summary>
@@ -1301,7 +1326,8 @@ namespace Eto.Forms
 			/// <remarks>
 			/// This is only useful when the control is visible.
 			/// </remarks>
-			void Invalidate();
+			/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
+			void Invalidate(bool invalidateChildren);
 
 			/// <summary>
 			/// Queues a repaint of the specified <paramref name="rect"/> of the control
@@ -1310,7 +1336,8 @@ namespace Eto.Forms
 			/// This is only useful when the control is visible.
 			/// </remarks>
 			/// <param name="rect">Rectangle to repaint</param>
-			void Invalidate(Rectangle rect);
+			/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
+			void Invalidate(Rectangle rect, bool invalidateChildren);
 
 			/// <summary>
 			/// Suspends the layout of child controls

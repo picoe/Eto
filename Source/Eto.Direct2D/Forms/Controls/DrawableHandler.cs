@@ -23,7 +23,7 @@ namespace Eto.Direct2D.Forms.Controls
 			{
 				backgroundColor = value.A > 0 ? new SolidBrush(value) : null;
 				if (Widget.Loaded)
-					Invalidate();
+					Invalidate(false);
 			}
 		}
 

@@ -26,7 +26,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 		{
 		}
 
-		public override void Invalidate(Rectangle rect)
+		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
 			var graphics = new Graphics(new Drawing.TestGraphicsHandler(Widget));
 			var e = new PaintEventArgs(graphics, rect);
@@ -35,7 +35,7 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 
 		public void Update(Rectangle region)
 		{
-			Invalidate(region);
+			Invalidate(region, false);
 		}
 
 		public bool CanFocus
