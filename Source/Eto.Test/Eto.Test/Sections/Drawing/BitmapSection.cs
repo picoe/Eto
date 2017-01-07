@@ -58,14 +58,19 @@ namespace Eto.Test.Sections.Drawing
 				null
 			);
 
-			/*layout.AddRow(
+			layout.AddRow(
 				"Clone", Cloning(),
 				"Clone rectangle", TableLayout.AutoSized(CloneRectangle(), centered: true),
-				null);*/
+				null);
 
 			layout.AddRow(
 				"Draw to a rect", TableLayout.AutoSized(DrawImageToRect(), centered: true)
 			);
+
+			layout.AddRow(
+				"Scaled", TableLayout.AutoSized(ScaleImage(), centered: true),
+				"Scaled ImageView", TableLayout.AutoSized(ScaleImageView(), centered: true)
+				);
 
 			layout.Add(null);
 
@@ -196,6 +201,20 @@ namespace Eto.Test.Sections.Drawing
 				g.RestoreTransform();
 			}
 			return new DrawableImageView { Image = new Icon(Screen.PrimaryScreen.LogicalPixelSize, bitmap) };
+		}
+
+		Control ScaleImage()
+		{
+			var image = TestIcons.TestImage;
+			image = new Bitmap(image, 32, 32);
+			return new DrawableImageView { Image = image };
+		}
+
+		Control ScaleImageView()
+		{
+			var image = TestIcons.TestImage;
+			image = new Bitmap(image, 32, 32);
+			return new ImageView { Image = image };
 		}
 
 		/// <summary>
