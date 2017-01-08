@@ -161,13 +161,16 @@ namespace Eto.Mac.Forms
 
 		public void SetCurrentItem()
 		{
-			macfilters = new List<string>();
-			var currentFilter = Widget.CurrentFilter;
-			foreach (var filterext in currentFilter.Extensions)
+			macfilters = Widget.CurrentFilter.Extensions?.Select(r => r.TrimStart('*', '.')).ToList();
+
+			if (macfilters == null || macfilters.Count == 0 || macfilters.Contains(""))
 			{
-				macfilters.Add(filterext.TrimStart('*', '.'));
+				macfilters = null;
+				// Xamarin.Mac throws exception when setting to null (ugh)
+				Messaging.void_objc_msgSend_IntPtr(Control.Handle, Selector.GetHandle("setAllowedFileTypes:"), IntPtr.Zero);
 			}
-			Control.AllowedFileTypes = macfilters.Distinct().ToArray();
+			else
+				Control.AllowedFileTypes = macfilters.Distinct().ToArray();
 		}
 
 		public int CurrentFilterIndex

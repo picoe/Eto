@@ -116,6 +116,7 @@ namespace Eto.Test.Sections.Dialogs
 					Filters =
 					{
 						new FileFilter("All Formats", "png", "jpg", "jpeg", "gif", "tiff"),
+						new FileFilter("All Files", "*"),
 						"PNG Files|png",
 						new FileFilter("JPeg Files", "jpg", "jpeg"),
 						new FileFilter("GIF Files", "gif"),
@@ -145,6 +146,7 @@ namespace Eto.Test.Sections.Dialogs
 					Filters =
 					{
 						new FileFilter("Auto Detect", ".png", ".jpg", ".jpeg", ".gif", ".tiff"),
+						new FileFilter("All Files", "*"),
 						"PNG Files|.png",
 						new FileFilter("JPeg Files", ".jpg", ".jpeg"),
 						new FileFilter("GIF Files", ".gif"),
