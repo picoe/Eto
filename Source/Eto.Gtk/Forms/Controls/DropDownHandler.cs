@@ -4,6 +4,8 @@ using Eto.Drawing;
 using Eto.GtkSharp.Drawing;
 using System.Collections;
 using System.Collections.Generic;
+using Gtk;
+using GLib;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
@@ -21,9 +23,9 @@ namespace Eto.GtkSharp.Forms.Controls
 	}
 
 	public abstract class DropDownHandler<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, DropDown.IHandler
-		where TControl: Gtk.ComboBox
-		where TWidget: DropDown
-		where TCallback: DropDown.ICallback
+		where TControl : Gtk.ComboBox
+		where TWidget : DropDown
+		where TCallback : DropDown.ICallback
 	{
 		protected Font font;
 		protected CollectionHandler collection;
@@ -62,6 +64,27 @@ namespace Eto.GtkSharp.Forms.Controls
 					lastIndex = newIndex;
 				}
 			}
+
+#if GTK2
+			internal void HandlePopupShownChanged(object o, NotifyArgs args)
+			{
+				if (Handler.Control.PopupShown)
+					Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+				else
+					Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+			}
+#elif GTK3
+			[GLib.ConnectBefore]
+			public virtual void HandlePoppedUp(object sender, EventArgs e)
+			{
+				Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+			}
+
+			public virtual void HandlePoppedDown(object o, PoppedDownArgs args)
+			{
+				Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+			}
+#endif
 		}
 
 		public override Size Size
@@ -177,6 +200,31 @@ namespace Eto.GtkSharp.Forms.Controls
 				Control.SetBase(value);
 				if (Widget.Loaded)
 					Control.QueueDraw();
+			}
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+#if GTK2
+				case DropDown.DropDownOpeningEvent:
+					Control.AddNotification("popup-shown", Connector.HandlePopupShownChanged);
+					break;
+				case DropDown.DropDownClosedEvent:
+					HandleEvent(DropDown.DropDownOpeningEvent);
+					break;
+#elif GTK3
+				case DropDown.DropDownOpeningEvent:
+					Control.PoppedUp += Connector.HandlePoppedUp;
+					break;
+				case DropDown.DropDownClosedEvent:
+					Control.PoppedDown += Connector.HandlePoppedDown;
+					break;
+#endif
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 	}
