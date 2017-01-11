@@ -110,10 +110,7 @@ namespace Eto.Wpf.Forms.Controls
 		public DropDownHandler()
 		{
 			Control = (TControl)new EtoComboBox();
-			Control.SelectionChanged += delegate
-			{
-				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
-			};
+			Control.SelectionChanged += (sender, e) => Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			CreateTemplate();
 		}
 
@@ -178,6 +175,22 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				VisualTree = new WpfTextBindingBlock(() => Widget.ItemTextBinding, setMargin: false)
 			};
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case DropDown.DropDownOpeningEvent:
+					Control.DropDownOpened += (sender, e) => Callback.OnDropDownOpening(Widget, EventArgs.Empty);
+					break;
+				case DropDown.DropDownClosedEvent:
+					Control.DropDownClosed += (sender, e) => Callback.OnDropDownClosed(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

@@ -126,6 +126,12 @@ namespace Eto.Mac.Forms.Controls
 		{
 			switch (id)
 			{
+				case DropDown.DropDownOpeningEvent:
+					AddObserver(NSComboBox.WillPopUpNotification, HandlePopUp);
+					break;
+				case DropDown.DropDownClosedEvent:
+					AddObserver(NSComboBox.WillDismissNotification, HandleDismiss);
+					break;
 				case ComboBox.TextChangedEvent:
 					// handled automatically
 					break;
@@ -133,6 +139,18 @@ namespace Eto.Mac.Forms.Controls
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		static void HandlePopUp(ObserverActionEventArgs e)
+		{
+			var handler = (ComboBoxHandler)e.Handler;
+			handler.Callback.OnDropDownOpening(handler.Widget, EventArgs.Empty);
+		}
+
+		static void HandleDismiss(ObserverActionEventArgs e)
+		{
+			var handler = (ComboBoxHandler)e.Handler;
+			handler.Callback.OnDropDownClosed(handler.Widget, EventArgs.Empty);
 		}
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)

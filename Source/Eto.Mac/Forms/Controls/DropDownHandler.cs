@@ -39,6 +39,32 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class DropDownHandler : MacControl<NSPopUpButton, DropDown, DropDown.ICallback>, DropDown.IHandler
 	{
+		class MenuDelegate : NSMenuDelegate
+		{
+			WeakReference handler;
+
+			public DropDownHandler Handler
+			{
+				get { return handler?.Target as DropDownHandler; }
+				set { handler = new WeakReference(value); }
+			}
+
+			public override void MenuWillHighlightItem(NSMenu menu, NSMenuItem item)
+			{
+			}
+
+			public override void MenuWillOpen(NSMenu menu)
+			{
+				Handler.Callback.OnDropDownOpening(Handler.Widget, EventArgs.Empty);
+			}
+
+			public override void MenuDidClose(NSMenu menu)
+			{
+				Handler.Callback.OnDropDownClosed(Handler.Widget, EventArgs.Empty);
+			}
+		}
+
+
 		CollectionHandler collection;
 
 		public class EtoPopUpButtonCell : NSPopUpButtonCell
@@ -240,6 +266,26 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get { return Control.Bordered; }
 			set { Control.Bordered = value; }
+		}
+
+		void EnsureDelegate()
+		{
+			if (Control.Menu.Delegate == null)
+				Control.Menu.Delegate = new MenuDelegate { Handler = this };
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case DropDown.DropDownOpeningEvent:
+				case DropDown.DropDownClosedEvent:
+					EnsureDelegate();
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
 		}
 	}
 }

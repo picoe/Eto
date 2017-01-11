@@ -160,6 +160,10 @@ namespace Eto.Test.Sections.Controls
 			control.SelectedIndexChanged += (sender, e) => Log.Write(control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
 
 			control.TextChanged += (sender, e) => Log.Write(control, "TextChanged, Value: {0}", control.Text);
+
+			control.DropDownOpening += (sender, e) => Log.Write(control, "DropDownOpening");
+
+			control.DropDownClosed += (sender, e) => Log.Write(control, "DropDownClosed");
 		}
 	}
 }

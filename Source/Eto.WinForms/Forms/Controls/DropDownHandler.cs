@@ -248,5 +248,21 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			return !intrinsicEvents.Contains((Win32.WM)msg.Msg) && base.ShouldBubbleEvent(msg);
 		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case DropDown.DropDownClosedEvent:
+					Control.DropDownClosed += (sender, e) => Callback.OnDropDownClosed(Widget, EventArgs.Empty);
+					break;
+				case DropDown.DropDownOpeningEvent:
+					Control.DropDown += (sender, e) => Callback.OnDropDownOpening(Widget, EventArgs.Empty);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
 	}
 }

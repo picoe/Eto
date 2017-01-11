@@ -129,10 +129,10 @@ namespace Eto.Test.Sections.Controls
 
 		void LogEvents(DropDown control)
 		{
-			control.SelectedIndexChanged += delegate
-			{
-				Log.Write(control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
-			};
+			control.SelectedIndexChanged += (sender, e) =>  Log.Write(control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
+
+			control.DropDownOpening += (sender, e) => Log.Write(control, "DropDownOpening");
+			control.DropDownClosed += (sender, e) => Log.Write(control, "DropDownClosed");
 		}
 	}
 }
