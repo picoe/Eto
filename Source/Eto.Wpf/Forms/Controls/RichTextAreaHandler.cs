@@ -18,6 +18,8 @@ namespace Eto.Wpf.Forms.Controls
 {
 	public class RichTextAreaHandler : TextAreaHandler<swc.RichTextBox, RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer
 	{
+		LanguageChangedListener _languageChangedListener;
+
 		public RichTextAreaHandler()
 		{
 			// set default margin between paragraphs to match other platforms
@@ -35,6 +37,87 @@ namespace Eto.Wpf.Forms.Controls
 			base.Initialize();
 			lastSelection = Selection;
 			HandleEvent(RichTextArea.SelectionChangedEvent);
+
+			FixLanguageSelectionAttributes();
+		}
+
+		static sw.Markup.XmlLanguage CurrentLanguage => sw.Markup.XmlLanguage.GetLanguage(swi.InputLanguageManager.Current.CurrentInputLanguage.IetfLanguageTag);
+
+		class LanguageChangedListener : IDisposable
+		{
+			WeakReference _handler;
+			RichTextAreaHandler Handler => _handler?.Target as RichTextAreaHandler;
+
+			swi.InputLanguageManager _manager;
+
+			~LanguageChangedListener()
+			{
+				Dispose(false);
+			}
+
+			public void LanguageChanged(object sender, swi.InputLanguageEventArgs e)
+			{
+				var h = Handler;
+				if (h != null)
+					h.Control.Language = CurrentLanguage;
+			}
+
+			public LanguageChangedListener(RichTextAreaHandler handler, swi.InputLanguageManager manager)
+			{
+				_handler = new WeakReference(handler);
+				_manager = manager;
+				_manager.InputLanguageChanged += LanguageChanged;
+				handler.Control.Language = CurrentLanguage;
+			}
+
+			void Dispose(bool disposing)
+			{
+				if (_manager != null && !_manager.Dispatcher.HasShutdownStarted)
+				{
+					// when shutting down, this causes a com exception
+					_manager.InputLanguageChanged -= LanguageChanged;
+					_manager = null;
+				}
+			}
+
+			public void Dispose()
+			{
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
+		}
+
+		void FixLanguageSelectionAttributes()
+		{
+			// BUG in WPF: When entering text from a different language (or direction) than the current selection, 
+			// we lose all selection formatting.
+
+			// By setting the language to match the input language, we don't lose selection formatting when entering text
+
+			// This has a concequence where the spellcheck language will always match the input language, not the language
+			// set for the operating system. Fortunately, this is probably a good thing.
+
+			// only track changes to language when we have focus.
+			Control.GotKeyboardFocus += (sender, e) =>
+			{
+				if (_languageChangedListener == null)
+					_languageChangedListener = new LanguageChangedListener(this, swi.InputLanguageManager.Current);
+			};
+			Control.LostKeyboardFocus += (sender, e) =>
+			{
+				_languageChangedListener?.Dispose();
+				_languageChangedListener = null;
+			};
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				_languageChangedListener?.Dispose();
+				_languageChangedListener = null;
+			}
+			base.Dispose(disposing);
 		}
 
 		swd.TextRange ContentRange
@@ -91,7 +174,9 @@ namespace Eto.Wpf.Forms.Controls
 			// this can be invoked after Wrap property is actually set since we are using the dispatcher
 			if (!wrap)
 			{
-				var width = Control.Document.GetFormattedText().WidthIncludingTrailingWhitespace + 20;
+				var formattedText = Control.Document.GetFormattedText();
+
+				var width = Math.Ceiling(formattedText.WidthIncludingTrailingWhitespace + Control.Document.PagePadding.Horizontal());
 				Control.Document.PageWidth = Math.Max(width, Control.ViewportWidth);
 			}
 		}
@@ -109,7 +194,7 @@ namespace Eto.Wpf.Forms.Controls
 			switch (id)
 			{
 				case RichTextArea.SelectionChangedEvent:
-					Control.Selection.Changed += (sender, e) =>
+					Control.SelectionChanged += (sender, e) =>
 					{
 						if (lastSelection != Selection)
 						{
