@@ -149,7 +149,7 @@ namespace Eto.Wpf.Drawing
 		{
 			var wpfFamily = range.GetPropertyValue(swd.TextElement.FontFamilyProperty) as swm.FontFamily ?? swd.TextElement.GetFontFamily(control);
 			this.Family = new FontFamily(new FontFamilyHandler(wpfFamily));
-			this.Size = PixelsToPoints(range.GetPropertyValue(swd.TextElement.FontSizeProperty) as double? ?? swd.TextElement.GetFontSize(control), control);
+			Size = PixelsToPoints(range.GetPropertyValue(swd.TextElement.FontSizeProperty) as double? ?? swd.TextElement.GetFontSize(control));
 			this.WpfFontStyle = range.GetPropertyValue(swd.TextElement.FontStyleProperty) as sw.FontStyle? ?? swd.TextElement.GetFontStyle(control);
 			this.WpfFontWeight = range.GetPropertyValue(swd.TextElement.FontWeightProperty) as sw.FontWeight? ?? swd.TextElement.GetFontWeight(control);
 			var decorations = range.GetPropertyValue(swd.Inline.TextDecorationsProperty) as sw.TextDecorationCollection;

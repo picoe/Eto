@@ -18,10 +18,14 @@ namespace Eto.Test.Sections.Controls
 		{
 			var richText = new RichTextArea();
 			richText.Size = new Size(-1, 300);
+			//richText.Font = new Font("Arial", 10);
+
+			var buffer = richText.Buffer;
+
+			/**/
 			richText.Text = LoremText;
 
 			var range = new Range<int>(6, 10);
-			var buffer = richText.Buffer;
 			buffer.SetFont(range, Fonts.Cursive(20, FontStyle.Bold, FontDecoration.Underline));
 			buffer.SetForeground(range, Colors.Blue);
 			buffer.SetBackground(range, Colors.Yellow);
@@ -32,6 +36,8 @@ namespace Eto.Test.Sections.Controls
 			buffer.SetStrikethrough(new Range<int>(28, 38), true);
 
 			richText.CaretIndex = LoremText.Length - 1;
+			/**/
+
 
 			richText.SelectionChanged += (sender, e) =>
 			{
