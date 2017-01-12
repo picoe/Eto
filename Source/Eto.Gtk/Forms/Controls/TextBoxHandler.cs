@@ -162,6 +162,16 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 		#endif
 
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				Control.WidthChars = (value.Width == -1) ? -1 : 0;
+				base.Size = value;
+			}
+		}
+
 		public override string Text
 		{
 			get { return Control.Text; }
