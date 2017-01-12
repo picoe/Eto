@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Eto.Forms
@@ -124,6 +125,8 @@ namespace Eto.Forms
 	[Handler(typeof(Dialog.IHandler))]
 	public class Dialog : Window
 	{
+		ButtonCollection positiveButtons, negativeButtons;
+
 		new IHandler Handler { get { return (IHandler)base.Handler; } }
 
 		/// <summary>
@@ -161,6 +164,32 @@ namespace Eto.Forms
 		{
 			get { return Handler.DefaultButton; }
 			set { Handler.DefaultButton = value; }
+		}
+
+		/// <summary>
+		/// Gets the positive buttons list, these buttons are automatically added to the dialog.
+		/// </summary>
+		/// <remarks>
+		/// Depending on the platform these buttons can be added on the left side or the right
+		/// side. The lower the index the closer the button is to the edge.
+		/// </remarks>
+		/// <value>The positive buttons.</value>
+		public Collection<Button> PositiveButtons
+		{
+			get { return positiveButtons ?? (positiveButtons = new ButtonCollection { Dialog = this, Positive = true }); }
+		}
+
+		/// <summary>
+		/// Gets the negative buttons list, these buttons are automatically added to the dialog.
+		/// </summary>
+		/// <remarks>
+		/// Depending on the platform these buttons can be added on the left side or the right
+		/// side. The lower the index the closer the button is to the edge.
+		/// </remarks>
+		/// <value>The negative buttons.</value>
+		public Collection<Button> NegativeButtons
+		{
+			get { return negativeButtons ?? (negativeButtons = new ButtonCollection { Dialog = this }); }
 		}
 
 		/// <summary>
@@ -268,6 +297,51 @@ namespace Eto.Forms
 			/// </remarks>
 			/// <value>The abort button.</value>
 			Button AbortButton { get; set; }
+
+			void InsertDialogButton(bool positive, int index, Button item);
+
+			void RemoveDialogButton(bool positive, int index);
+		}
+
+		class ButtonCollection : Collection<Button>
+		{
+			public bool Positive { get; set; }
+
+			public Dialog Dialog { get; set; }
+
+			protected override void InsertItem(int index, Button item)
+			{
+				Dialog.SetParent(item);
+				Dialog.Handler.InsertDialogButton(Positive, index, item);
+				base.InsertItem(index, item);
+			}
+
+			protected override void RemoveItem(int index)
+			{
+				Dialog.RemoveParent(Items[index]);
+				Dialog.Handler.RemoveDialogButton(Positive, index);
+				base.RemoveItem(index);
+			}
+
+			protected override void SetItem(int index, Button item)
+			{
+				Dialog.RemoveParent(Items[index]);
+				Dialog.Handler.RemoveDialogButton(Positive, index);
+				base.SetItem(index, item);
+				Dialog.SetParent(item);
+				Dialog.Handler.InsertDialogButton(Positive, index, item);
+			}
+
+			protected override void ClearItems()
+			{
+				for (int i = Items.Count - 1; i >= 0; i--)
+				{
+					Dialog.RemoveParent(Items[i]);
+					Dialog.Handler.RemoveDialogButton(Positive, i);
+				}
+
+				base.ClearItems();
+			}
 		}
 	}
 }

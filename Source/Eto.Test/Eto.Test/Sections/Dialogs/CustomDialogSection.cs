@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Dialogs
 {
-	[Section("Dialogs", typeof(Dialog), "Custom Dialog")]
+	[Section("Dialogs", typeof(Dialog))]
 	public class CustomDialogSection : Scrollable
 	{
 		public bool UseAsync { get; set; }
@@ -41,6 +41,7 @@ namespace Eto.Test.Sections.Dialogs
 		Dialog CreateDialog()
 		{
 			var dialog = new Dialog();
+			dialog.Size = new Size(400, 100);
 			dialog.DisplayMode = DisplayMode;
 
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
@@ -48,22 +49,19 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddCentered(new Label { Text = "Content" }, yscale: true);
 
 			dialog.DefaultButton = new Button { Text = "Default Button" };
-			dialog.AbortButton = new Button { Text = "Abort Button" };
-
+			dialog.PositiveButtons.Add(dialog.DefaultButton);
 			dialog.DefaultButton.Click += delegate
 			{
 				MessageBox.Show("Default button clicked");
 			};
 
+			dialog.AbortButton = new Button { Text = "Abort Button" };
+			dialog.NegativeButtons.Add(dialog.AbortButton);
 			dialog.AbortButton.Click += delegate
 			{
 				MessageBox.Show("Abort button clicked");
 				dialog.Close();
 			};
-
-			layout.BeginVertical();
-			layout.AddRow(null, dialog.DefaultButton, dialog.AbortButton);
-			layout.EndVertical();
 
 			dialog.Content = layout;
 
