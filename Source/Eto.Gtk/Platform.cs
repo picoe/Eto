@@ -17,13 +17,21 @@ namespace Eto.GtkSharp
 {
 	static class Helper
 	{
+		public static bool UseHeaderBar;
+
 		public static void Init()
 		{
 			var args = new string[0];
 			if (Gtk.Application.InitCheck(string.Empty, ref args))
-			{
 				Gdk.Threads.Enter();
-			}
+
+#if GTK3
+			var app = new Gtk.Application(null, GLib.ApplicationFlags.None);
+			app.Register(GLib.Cancellable.Current);
+			UseHeaderBar = Gtk.Global.MinorVersion >= 10 && NativeMethods.gtk_application_prefers_app_menu(app.Handle);
+#else
+			UseHeaderBar = false;
+#endif
 		}
 	}
 

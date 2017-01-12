@@ -29,7 +29,13 @@ var gtkmethods = new[]
     "string gtk_font_chooser_get_font(IntPtr fontchooser)",
     "void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname)",
     "IntPtr g_file_new_for_path(string path)",
-    "IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file)"
+    "IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file)",
+    "bool gtk_application_prefers_app_menu(IntPtr application)",
+    "IntPtr gtk_header_bar_new()",
+    "void gtk_window_set_titlebar(IntPtr window, IntPtr widget)",
+    "void gtk_header_bar_pack_start(IntPtr bar, IntPtr child)",
+    "void gtk_header_bar_pack_end(IntPtr bar, IntPtr child)",
+    "void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting)"
 };
 
 var methods = giomethods.Concat(gtkmethods).ToArray();
