@@ -68,10 +68,11 @@ namespace Eto.GtkSharp.Forms
 #endif
 				defaultButton = value;
 
-#if GTK3
 				if (value != null)
 				{
+#if GTK3
 					value.ToNative().StyleContext.AddClass("suggested-action");
+#endif
 					var widget = DefaultButton.GetContainerWidget();
 
 					if (widget != null)
@@ -83,7 +84,6 @@ namespace Eto.GtkSharp.Forms
 #endif
 						Control.Default = widget;
 					}
-#endif
 				}
 			}
 		}
