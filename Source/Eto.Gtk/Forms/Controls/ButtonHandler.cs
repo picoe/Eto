@@ -43,9 +43,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			base.Initialize();
 			Control.Clicked += Connector.HandleClicked;
 			Control.SizeAllocated += Connector.HandleButtonSizeAllocated;
-			#if GTK2
+#if GTK2
 			Control.SizeRequested += Connector.HandleButtonSizeRequested;
-			#endif
+#else
+			Control.WidthRequest = MinimumWidth;
+#endif
+
 			SetImagePosition(false);
 		}
 
