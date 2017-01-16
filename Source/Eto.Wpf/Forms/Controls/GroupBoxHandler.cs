@@ -58,5 +58,26 @@ namespace Eto.Wpf.Forms.Controls
 			get { return AccessText.Foreground.ToEtoColor(); }
 			set { AccessText.Foreground = value.ToWpfBrush(AccessText.Foreground); }
 		}
+
+		protected override sw.Size GetContentPadding(sw.Size constraint)
+		{
+			sw.Size basePadding = base.GetContentPadding(constraint);
+
+			double headerHeight = 2;
+
+			sw.UIElement header = Control.Header as sw.UIElement;
+			if (header != null)
+			{
+				header.Measure(constraint.Subtract(basePadding));
+				// The default template for the GroupBox wraps the header in a border with Padding="3,1,3,0".
+				// Note: There is a slight error in this calculation. The actual header height is less the a pixel smaller than the calculated value.
+				headerHeight = header.DesiredSize.Height + 1;
+			}
+
+			// The default template for the GroupBox is a 4x4 grid with reserved 6 pixels on the left, right and bottom sides.
+			sw.Size contentPadding = new sw.Size(basePadding.Width + 2*6, basePadding.Height + headerHeight + 6);
+
+			return contentPadding;
+		}
 	}
 }
