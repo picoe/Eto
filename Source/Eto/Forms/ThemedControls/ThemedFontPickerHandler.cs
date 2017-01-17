@@ -9,6 +9,7 @@ namespace Eto.Forms.ThemedControls
 	public class ThemedFontPickerHandler : ThemedControlHandler<Button, FontPicker, FontPicker.ICallback>, FontPicker.IHandler
 	{
 		private Font font;
+		private FontDialog dialog;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Eto.Forms.ThemedControls.ThemedFontPickerHandler"/> class.
@@ -42,15 +43,18 @@ namespace Eto.Forms.ThemedControls
 
 		private void Control_Click(object sender, EventArgs e)
 		{
-			var dialog = new FontDialog();
+			dialog = new FontDialog();
 			dialog.Font = font;
+			dialog.FontChanged += Dialog_FontChanged;
 
-			if (dialog.ShowDialog(Widget) == DialogResult.Ok)
-			{
-				font = dialog.Font;
-				Callback.OnValueChanged(Widget, EventArgs.Empty);
-				Refresh();
-			}
+			dialog.ShowDialog(Widget);
+		}
+
+		void Dialog_FontChanged(object sender, EventArgs e)
+		{
+			font = dialog?.Font;
+			Callback.OnValueChanged(Widget, EventArgs.Empty);
+			Refresh();
 		}
 
 		/// <summary>
