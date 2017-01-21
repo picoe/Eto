@@ -182,7 +182,18 @@ namespace Eto.Wpf
             return new sw.Rect(x, y, width, height);
         }
 
-        public static sw.Size IfNaN(this sw.Size size1, sw.Size size2)
+		public static sw.Size IfInfinity(this sw.Size size1, sw.Size size2)
+		{
+			if (double.IsInfinity(size1.Width))
+				size1.Width = size2.Width;
+
+			if (double.IsInfinity(size1.Height))
+				size1.Height = size2.Height;
+			return size1;
+		}
+
+
+		public static sw.Size IfNaN(this sw.Size size1, sw.Size size2)
         {
             if (double.IsNaN(size1.Width))
                 size1.Width = size2.Width;
@@ -201,7 +212,25 @@ namespace Eto.Wpf
             return size;
         }
 
-        public static sw.Size Add(this sw.Size size1, sw.Size size2)
+		public static sw.Size ZeroIfInfinity(this sw.Size size)
+		{
+			if (double.IsInfinity(size.Width))
+				size.Width = 0;
+			if (double.IsInfinity(size.Height))
+				size.Height = 0;
+			return size;
+		}
+
+		public static sw.Size InfinityIfNan(this sw.Size size)
+		{
+			if (double.IsNaN(size.Width))
+				size.Width = double.PositiveInfinity;
+			if (double.IsNaN(size.Height))
+				size.Height = double.PositiveInfinity;
+			return size;
+		}
+
+		public static sw.Size Add(this sw.Size size1, sw.Size size2)
 		{
 			return new sw.Size(size1.Width + size2.Width, size1.Height + size2.Height);
 		}

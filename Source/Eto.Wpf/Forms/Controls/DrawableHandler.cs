@@ -87,10 +87,14 @@ namespace Eto.Wpf.Forms.Controls
 				if (content != null)
 				{
 					content.Measure(constraint);
-					return content.DesiredSize;
+					return Handler.MeasureOverride(constraint, c => {
+						base.MeasureOverride(c);
+						return content.DesiredSize;
+						});
 				}
-				return base.MeasureOverride(constraint);
+				return Handler.MeasureOverride(constraint, base.MeasureOverride);
 			}
+
 			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
 			{
 				base.ArrangeOverride(arrangeSize);
@@ -477,6 +481,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			this.content = content;
 			Control.Children.Add(content);
+			ContainerControl.InvalidateMeasure();
 		}
 
 		public override Color BackgroundColor

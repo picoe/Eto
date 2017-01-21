@@ -16,7 +16,16 @@ using System.IO;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class RichTextAreaHandler : TextAreaHandler<swc.RichTextBox, RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer
+	public class EtoRichTextBox : swc.RichTextBox, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+	public class RichTextAreaHandler : TextAreaHandler<EtoRichTextBox, RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer
 	{
 		LanguageChangedListener _languageChangedListener;
 

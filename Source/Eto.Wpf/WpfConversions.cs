@@ -20,7 +20,8 @@ namespace Eto.Wpf
 
 		public static readonly sw.Size PositiveInfinitySize = new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
 		public static readonly sw.Size ZeroSize = new sw.Size(0, 0);
-		
+		public static readonly sw.Size NaNSize = new sw.Size(double.NaN, double.NaN);
+
 		public static swm.Color ToWpf(this Color value)
 		{
 
@@ -309,9 +310,9 @@ namespace Eto.Wpf
 			element.MaxHeight = size.Height == -1 ? double.NaN : size.Height;
 		}
 
-		public static Size GetMaxSize(this sw.FrameworkElement element)
+		public static sw.Size GetMaxSize(this sw.FrameworkElement element)
 		{
-			return new Size((int)(double.IsNaN(element.MaxWidth) ? 0 : element.MaxWidth), (int)(double.IsNaN(element.MaxHeight) ? 0 : element.MaxHeight));
+			return new sw.Size(element.MaxWidth, element.MaxHeight);
 		}
 
 		public static void SetSize(this sw.FrameworkElement element, sw.Size size)

@@ -1,5 +1,6 @@
 using swc = Windows.UI.Xaml.Controls;
 using sw = Windows.UI.Xaml;
+using wf = Windows.Foundation;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -27,7 +28,7 @@ namespace Eto.WinRT.Forms
 
 		public bool RecurseToChildren { get { return true; } }
 
-		protected override Size DefaultSize { get { return minimumSize; } }
+		protected override wf.Size DefaultSize => minimumSize.ToWpf();
 
 		public abstract void Remove(sw.FrameworkElement child);
 

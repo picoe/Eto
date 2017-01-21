@@ -1,5 +1,6 @@
 using sw = Windows.UI.Xaml;
 using swc = Windows.UI.Xaml.Controls;
+using wf = Windows.Foundation;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -13,7 +14,7 @@ namespace Eto.WinRT.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
-		protected override Size DefaultSize { get { return new Size(-1, 22); } }
+		protected override wf.Size DefaultSize => new wf.Size(double.NaN, 22);
 
 		public ProgressBarHandler()
 		{

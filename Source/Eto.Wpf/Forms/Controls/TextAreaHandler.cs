@@ -6,7 +6,17 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class TextAreaHandler : TextAreaHandler<swc.TextBox, TextArea, TextArea.ICallback>
+	public class EtoTextBox : swc.TextBox, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
+	public class TextAreaHandler : TextAreaHandler<EtoTextBox, TextArea, TextArea.ICallback>
 	{
 		public override string Text
 		{
@@ -71,11 +81,11 @@ namespace Eto.Wpf.Forms.Controls
 	}
 
 	public abstract class TextAreaHandler<TControl, TWidget, TCallback> : WpfControl<TControl, TWidget, TCallback>, TextArea.IHandler
-		where TControl : swc.Primitives.TextBoxBase, new()
+		where TControl : swc.Primitives.TextBoxBase, IEtoWpfControl, new()
 		where TWidget : TextArea
 		where TCallback : TextArea.ICallback
 	{
-		protected override Size DefaultSize { get { return new Size(100, 60); } }
+		protected override sw.Size DefaultSize => new sw.Size(100, 60);
 
 		protected override bool PreventUserResize { get { return true; } }
 
@@ -86,15 +96,16 @@ namespace Eto.Wpf.Forms.Controls
 				AcceptsReturn = true,
 				AcceptsTab = true,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
-				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto
+				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
+				Handler = this
 			};
 			Wrap = true;
 		}
 
-
-		public override sw.Size GetPreferredSize(sw.Size constraint)
+		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
 		{
-			return base.GetPreferredSize(WpfConversions.ZeroSize);
+			var size = base.MeasureOverride(constraint, measure);
+			return size;
 		}
 
 		public override bool UseMousePreview { get { return true; } }

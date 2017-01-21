@@ -7,23 +7,34 @@ using swd = System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoListBox : swc.ListBox, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
 		IEnumerable<object> store;
 		ContextMenu contextMenu;
 
-		public override sw.Size GetPreferredSize(sw.Size constraint)
-		{
-			return base.GetPreferredSize(sw.Size.Empty);
-		}
+		protected override sw.Size DefaultSize => new sw.Size(100, 120);
 
 		public ListBoxHandler()
 		{
-			Control = new swc.ListBox();
-			Control.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
+			Control = new EtoListBox
+			{
+				HorizontalAlignment = sw.HorizontalAlignment.Stretch,
+				Handler = this
+			};
 			//Control.DisplayMemberPath = "Text";
 			var template = new sw.DataTemplate();
 
