@@ -9,13 +9,23 @@ using Eto.Drawing;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoWatermarkTextBox : mwc.WatermarkTextBox, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class TextBoxHandler : TextBoxHandler<mwc.WatermarkTextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		protected override swc.TextBox TextBox => Control;
 
 		public TextBoxHandler()
 		{
-			Control = new mwc.WatermarkTextBox();
+			Control = new EtoWatermarkTextBox { Handler = this };
 		}
 
 		public override string PlaceholderText
@@ -31,7 +41,7 @@ namespace Eto.Wpf.Forms.Controls
 		where TWidget : TextBox
 		where TCallback: TextBox.ICallback
 	{
-		protected override Size DefaultSize { get { return new Size(100, -1); } }
+		protected override sw.Size DefaultSize => new sw.Size(100, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }
 
@@ -71,11 +81,6 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			TextBox.SelectAll();
 			TextBox.GotKeyboardFocus -= Control_GotKeyboardFocus;
-		}
-
-		public override sw.Size GetPreferredSize(sw.Size constraint)
-		{
-			return base.GetPreferredSize(new sw.Size(0, double.PositiveInfinity));
 		}
 
 		public override bool UseMousePreview { get { return true; } }

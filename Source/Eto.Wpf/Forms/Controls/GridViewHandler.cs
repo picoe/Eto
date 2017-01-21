@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<EtoDataGrid, GridView, GridView.ICallback>, GridView.IHandler
+	public class GridViewHandler : GridHandler<GridView, GridView.ICallback>, GridView.IHandler
 	{
 		IEnumerable<object> store;
 

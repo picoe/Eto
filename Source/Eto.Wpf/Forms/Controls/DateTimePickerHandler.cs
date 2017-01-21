@@ -17,13 +17,13 @@ namespace Eto.Wpf.Forms.Controls
 
 		DateTimePickerMode mode;
 
-		protected override Size DefaultSize { get { return new Size(mode == DateTimePickerMode.DateTime ? 180 : 120, -1); } }
+		protected override sw.Size DefaultSize => new sw.Size(mode == DateTimePickerMode.DateTime ? 180 : 120, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }
 
 		public DateTimePickerHandler()
 		{
-			Control = new swc.Border { Focusable = false };
+			Control = new EtoBorder { Handler = this, Focusable = false };
 			Mode = DateTimePickerMode.Date;
 		}
 

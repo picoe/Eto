@@ -2,16 +2,29 @@ using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
 using Eto.Drawing;
+using System;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoProgressBar : swc.ProgressBar, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ??base.MeasureOverride(constraint);
+		}
+	}
+
 	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
-		protected override Size DefaultSize { get { return new Size(-1, 22); } }
+		protected override sw.Size DefaultSize => new sw.Size(double.NaN, 22);
 
 		public ProgressBarHandler()
 		{
-			Control = new swc.ProgressBar {
+			Control = new EtoProgressBar
+			{
+				Handler = this,
 				Minimum = 0,
 				Maximum = 100,
 			};

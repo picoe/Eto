@@ -5,18 +5,28 @@ using Eto.Forms;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoSlider : swc.Slider, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ??base.MeasureOverride(constraint);
+		}
+	}
+
 	public class SliderHandler : WpfControl<swc.Slider, Slider, Slider.ICallback>, Slider.IHandler
 	{
 		public SliderHandler ()
 		{
-			Control = new swc.Slider {
+			Control = new EtoSlider
+			{
+				Handler = this,
 				Minimum = 0,
 				Maximum = 100,
 				TickPlacement = swc.Primitives.TickPlacement.BottomRight
 			};
-			Control.ValueChanged += delegate {
-				Callback.OnValueChanged(Widget, EventArgs.Empty);
-			};
+			Control.ValueChanged += (sender, e) => Callback.OnValueChanged(Widget, EventArgs.Empty);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

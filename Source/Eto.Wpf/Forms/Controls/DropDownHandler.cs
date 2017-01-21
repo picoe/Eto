@@ -15,7 +15,7 @@ namespace Eto.Wpf.Forms.Controls
 	{
 	}
 
-	public class EtoComboBox : swc.ComboBox
+	public class EtoComboBox : swc.ComboBox, IEtoWpfControl
 	{
 		int? selected;
 
@@ -51,6 +51,8 @@ namespace Eto.Wpf.Forms.Controls
 			get { return GetTemplateChild("PART_EditableTextBox") as swc.TextBox; }
 		}
 
+		public IWpfFrameworkElement Handler { get; set; }
+
 		protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
 		{
 			if (selected == null)
@@ -75,7 +77,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
-			var size = base.MeasureOverride(constraint);
+			var size = Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 			var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
 			if (popup == null)
 				return size;
@@ -110,6 +112,7 @@ namespace Eto.Wpf.Forms.Controls
 		public DropDownHandler()
 		{
 			Control = (TControl)new EtoComboBox();
+			Control.Handler = this;
 			Control.SelectionChanged += (sender, e) => Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			CreateTemplate();
 		}

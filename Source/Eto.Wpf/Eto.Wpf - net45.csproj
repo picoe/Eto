@@ -96,6 +96,7 @@
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
+    <Compile Include="Forms\EtoBorder.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="Forms\PerMonitorDpiHelper.cs" />
     <Compile Include="Win32.dib.cs" />

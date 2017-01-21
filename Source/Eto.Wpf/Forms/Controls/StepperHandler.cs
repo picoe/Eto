@@ -44,7 +44,7 @@ namespace Eto.Wpf.Forms.Controls
 			base.SetSize();
 			if (gridContent != null)
 			{
-				gridContent.MinWidth = double.IsNaN(PreferredSize.Width) ? originalWidth : 0;
+				gridContent.MinWidth = double.IsNaN(UserPreferredSize.Width) ? originalWidth : 0;
 			}
 		}
 
