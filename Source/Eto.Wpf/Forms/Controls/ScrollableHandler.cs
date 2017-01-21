@@ -13,6 +13,7 @@ namespace Eto.Wpf.Forms.Controls
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 		readonly EtoScrollViewer scroller;
+		sw.Size preferredContentSize;
 
 		public sw.FrameworkElement ContentControl { get { return scroller; } }
 
@@ -20,9 +21,34 @@ namespace Eto.Wpf.Forms.Controls
 
 		public class EtoScrollViewer : swc.ScrollViewer
 		{
-			public swc.Primitives.IScrollInfo GetScrollInfo()
+			public ScrollableHandler Handler { get; set; }
+
+			public swc.Primitives.IScrollInfo GetScrollInfo() => ScrollInfo;
+
+			protected override sw.Size MeasureOverride(sw.Size constraint)
 			{
-				return ScrollInfo;
+				var content = (sw.FrameworkElement)Content;
+
+				// reset to preferred size to calculate scroll sizes initially based on that
+				var desiredSize = Handler.preferredContentSize;
+				content.Width = desiredSize.Width;
+				content.Height = desiredSize.Height;
+
+				return base.MeasureOverride(constraint);
+			}
+
+			protected override sw.Size ArrangeOverride(sw.Size arrangeSize)
+			{
+				var content = (sw.FrameworkElement)Content;
+
+				// expand to width or height of viewport, now that we know which scrollbars are mandatory
+				var desiredSize = content.DesiredSize;
+				if (Handler.ExpandContentWidth)
+					content.Width = Math.Max(ScrollInfo.ViewportWidth, desiredSize.Width);
+				if (Handler.ExpandContentHeight)
+					content.Height = Math.Max(ScrollInfo.ViewportHeight, desiredSize.Height);
+
+				return base.ArrangeOverride(arrangeSize);
 			}
 		}
 
@@ -41,6 +67,7 @@ namespace Eto.Wpf.Forms.Controls
 			};
 			scroller = new EtoScrollViewer
 			{
+				Handler = this,
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				CanContentScroll = true,
@@ -68,30 +95,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		void UpdateSizes()
 		{
-			var info = scroller.GetScrollInfo();
-			if (info != null)
-			{
-				var content = (swc.Border)scroller.Content;
-				var viewportSize = new sw.Size(info.ViewportWidth, info.ViewportHeight);
-				var prefSize = Content.GetPreferredSize(new sw.Size(double.MaxValue, double.MaxValue));
+			preferredContentSize = Content.GetPreferredSize(new sw.Size(double.MaxValue, double.MaxValue));
 
-				// hack for when a scrollable is in a group box it expands vertically indefinitely
-				// -2 since when you resize the scrollable it grows slowly
-				if (Widget.FindParent<GroupBox>() != null)
-					viewportSize.Height = Math.Max(0, viewportSize.Height - 2);
-
-				if (ExpandContentWidth)
-					content.Width = Math.Max(0, Math.Max(prefSize.Width, viewportSize.Width));
-				else
-					content.Width = prefSize.Width;
-
-				if (ExpandContentHeight)
-					content.Height = Math.Max(0, Math.Max(prefSize.Height, viewportSize.Height));
-				else
-					content.Height = prefSize.Height;
-
-				scroller.InvalidateMeasure();
-			}
+			scroller.InvalidateMeasure();
 		}
 
 		public override void UpdatePreferredSize()
