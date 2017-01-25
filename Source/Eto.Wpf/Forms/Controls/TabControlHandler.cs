@@ -87,6 +87,8 @@ namespace Eto.Wpf.Forms.Controls
 				Control.Items.Add(page.ControlObject);
 			else
 				Control.Items.Insert(index, page.ControlObject);
+			if (Widget.Loaded)
+				page.GetWpfFrameworkElement()?.SetScale(XScale, YScale);
 			if (Control.Items.Count == 1)
 				SelectedIndex = 0;
 		}
