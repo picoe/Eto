@@ -45,6 +45,8 @@ namespace Eto.Wpf.Forms.Controls
 		protected swc.DataGridColumn CurrentColumn { get; set; }
 
 		protected override sw.Size DefaultSize => new sw.Size(100, 100);
+		public override bool UseMousePreview => true;
+		public override bool UseKeyPreview => true;
 
 		protected GridHandler()
 		{
@@ -493,6 +495,14 @@ namespace Eto.Wpf.Forms.Controls
 						break;
 				}
 			}
+		}
+
+		static object Border_Key = new object();
+
+		public BorderType Border
+		{
+			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
+			set { Widget.Properties.Set(Border, value, () => Control.SetEtoBorderType(value)); }
 		}
 
 		public void ReloadData(IEnumerable<int> rows)

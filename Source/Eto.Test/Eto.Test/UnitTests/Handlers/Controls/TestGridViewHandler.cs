@@ -204,6 +204,19 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 
 		public GridLines GridLines { get; set; }
 
+		public BorderType Border
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		public void ReloadData(IEnumerable<int> rows)
 		{
 			throw new NotImplementedException();

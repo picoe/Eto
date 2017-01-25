@@ -634,5 +634,20 @@ namespace Eto.GtkSharp
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Gtk.ShadowType ToGtk(this BorderType border)
+		{
+			switch (border)
+			{
+				case BorderType.Bezel:
+					return Gtk.ShadowType.In;
+				case BorderType.Line:
+					return Gtk.ShadowType.In;
+				case BorderType.None:
+					return Gtk.ShadowType.None;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }

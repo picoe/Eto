@@ -418,6 +418,16 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public BorderType Border
+		{
+			get { return ScrollView.BorderType.ToEto(); }
+			set
+			{
+				ScrollView.BorderType = value.ToNS();
+				LayoutIfNeeded();
+			}
+		}
+
 		public void SelectAll()
 		{
 			Control.SelectAll(Control);
