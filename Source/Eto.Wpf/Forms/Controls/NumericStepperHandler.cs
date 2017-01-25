@@ -8,17 +8,24 @@ using System.Text;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class EtoDoubleUpDown : mwc.DoubleUpDown
+	public class EtoDoubleUpDown : mwc.DoubleUpDown, IEtoWpfControl
 	{
 		public new swc.TextBox TextBox { get { return base.TextBox; } }
 		public new mwc.Spinner Spinner { get { return base.Spinner; } }
+
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
 	}
 
 	public class NumericStepperHandler : WpfControl<EtoDoubleUpDown, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 	{
 		double lastValue;
 
-		protected override Size DefaultSize { get { return new Size(80, -1); } }
+		protected override sw.Size DefaultSize => new sw.Size(80, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }
 
@@ -26,6 +33,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control = new EtoDoubleUpDown
 			{
+				Handler = this,
 				FormatString = "0",
 				Value = 0
 			};

@@ -24,7 +24,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 			Control.Indeterminate += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
-			border = new swc.Border { Child = Control };
+			border = new EtoBorder { Handler = this, Child = Control };
 		}
 
 		public override Eto.Drawing.Color BackgroundColor

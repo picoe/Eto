@@ -209,8 +209,8 @@ namespace Eto.Wpf.Forms
 		protected override void SetSize()
 		{
 			// don't set the minimum size of a window, just the preferred size
-			ContainerControl.Width = PreferredSize.Width;
-			ContainerControl.Height = PreferredSize.Height;
+			ContainerControl.Width = UserPreferredSize.Width;
+			ContainerControl.Height = UserPreferredSize.Height;
 			SetMinimumSize();
 		}
 

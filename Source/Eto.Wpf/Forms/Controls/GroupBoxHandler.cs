@@ -4,9 +4,20 @@ using swd = System.Windows.Data;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
+using System;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoGroupBox : swc.GroupBox, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class GroupBoxHandler : WpfPanel<swc.GroupBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
 		Font font;
@@ -15,11 +26,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		public GroupBoxHandler()
 		{
-			Control = new swc.GroupBox();
+			Control = new EtoGroupBox { Handler = this };
 			Header = new swc.Label { Content = new swc.AccessText() };
 		}
-
-		protected override bool UseContentSize => false;
 
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{

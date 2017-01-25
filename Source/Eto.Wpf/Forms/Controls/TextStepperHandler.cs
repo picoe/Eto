@@ -10,12 +10,23 @@ using Eto.Forms;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoButtonSpinner : mwc.ButtonSpinner, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class TextStepperHandler : TextBoxHandler<mwc.ButtonSpinner, TextStepper, TextStepper.ICallback>, TextStepper.IHandler
 	{
 		public TextStepperHandler()
 		{
-			Control = new mwc.ButtonSpinner
+			Control = new EtoButtonSpinner
 			{
+				Handler = this,
 				Content = new mwc.WatermarkTextBox
 				{
 					BorderThickness = new sw.Thickness(0),

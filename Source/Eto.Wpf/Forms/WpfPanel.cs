@@ -17,8 +17,6 @@ namespace Eto.Wpf.Forms
 		readonly swc.Border border;
 		Size? clientSize;
 
-		protected virtual bool UseContentSize => false;
-
 		public override Size ClientSize
 		{
 			get
@@ -50,30 +48,6 @@ namespace Eto.Wpf.Forms
 			{
 				contentHandler.SetScale(xscale, yscale);
 			}
-		}
-
-		public override sw.Size GetPreferredSize(sw.Size constraint)
-		{
-			var size = PreferredSize;
-            var margin = ContainerControl.Margin.Size();
-            if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
-            {
-                sw.Size baseSize;
-                if (UseContentSize)
-				{
-                    var padding = border.Padding.Size();
-                    var childConstraint = constraint.Subtract(padding).Subtract(margin);
-					baseSize = content.GetPreferredSize(childConstraint);
-                    baseSize = baseSize.Add(padding); // we add margin back at end
-				}
-                else
-                    baseSize = base.GetPreferredSize(constraint).Subtract(margin);
-
-                size = size.IfNaN(baseSize);
-            }
-            size = size.Max(ContainerControl.GetMinSize());
-            size = size.Add(margin);
-            return size;
 		}
 
 		ContextMenu contextMenu;

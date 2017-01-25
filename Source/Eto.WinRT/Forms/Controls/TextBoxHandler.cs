@@ -17,7 +17,7 @@ namespace Eto.WinRT.Forms.Controls
 	public class TextBoxHandler : WpfControl<swc.TextBox, TextBox, TextBox.ICallback>, TextBox.IHandler
 	{
 		bool textChanging;
-		protected override Size DefaultSize { get { return new Size(80, -1); } }
+		protected override wf.Size DefaultSize => new wf.Size(80, double.NaN);
 
 		public TextBoxHandler ()
 		{

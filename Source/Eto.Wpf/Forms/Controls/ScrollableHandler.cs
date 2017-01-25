@@ -13,11 +13,8 @@ namespace Eto.Wpf.Forms.Controls
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 		readonly EtoScrollViewer scroller;
-		sw.Size preferredContentSize;
 
-		public sw.FrameworkElement ContentControl { get { return scroller; } }
-
-		protected override bool UseContentSize { get { return false; } }
+		public sw.FrameworkElement ContentControl => scroller;
 
 		public class EtoScrollViewer : swc.ScrollViewer
 		{
@@ -30,10 +27,8 @@ namespace Eto.Wpf.Forms.Controls
 				var content = (sw.FrameworkElement)Content;
 
 				// reset to preferred size to calculate scroll sizes initially based on that
-				var desiredSize = Handler.preferredContentSize;
-				content.Width = desiredSize.Width;
-				content.Height = desiredSize.Height;
-
+				content.Width = Handler.scrollSize.Width;
+				content.Height = Handler.scrollSize.Height;
 				return base.MeasureOverride(constraint);
 			}
 
@@ -43,10 +38,11 @@ namespace Eto.Wpf.Forms.Controls
 
 				// expand to width or height of viewport, now that we know which scrollbars are mandatory
 				var desiredSize = content.DesiredSize;
+
 				if (Handler.ExpandContentWidth)
-					content.Width = Math.Max(ScrollInfo.ViewportWidth, desiredSize.Width);
+					content.Width = Math.Max(desiredSize.Width, ScrollInfo.ViewportWidth);
 				if (Handler.ExpandContentHeight)
-					content.Height = Math.Max(ScrollInfo.ViewportHeight, desiredSize.Height);
+					content.Height = Math.Max(desiredSize.Height, ScrollInfo.ViewportHeight);
 
 				return base.ArrangeOverride(arrangeSize);
 			}
@@ -60,8 +56,9 @@ namespace Eto.Wpf.Forms.Controls
 
 		public ScrollableHandler()
 		{
-			Control = new swc.Border
+			Control = new EtoBorder
 			{
+				Handler = this,
 				SnapsToDevicePixels = true,
 				Focusable = false,
 			};
@@ -95,8 +92,6 @@ namespace Eto.Wpf.Forms.Controls
 
 		void UpdateSizes()
 		{
-			preferredContentSize = Content.GetPreferredSize(new sw.Size(double.MaxValue, double.MaxValue));
-
 			scroller.InvalidateMeasure();
 		}
 
@@ -110,6 +105,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control.InvalidateMeasure();
 			UpdateSizes();
+			scroller.UpdateLayout();
 		}
 
 		protected override void SetContentScale(bool xscale, bool yscale)
@@ -131,6 +127,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		sw.Size scrollSize = new sw.Size(double.NaN, double.NaN);
 		public Size ScrollSize
 		{
 			get
@@ -141,8 +138,7 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				var content = (swc.Border)Control.Child;
-				content.MinHeight = value.Height;
-				content.MinWidth = value.Width;
+				scrollSize = value.ToWpf();
 				UpdateSizes();
 			}
 		}
