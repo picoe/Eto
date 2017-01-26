@@ -10,8 +10,9 @@ namespace Eto.Wpf.Forms.Controls
 	{
 		public PanelHandler ()
 		{
-			Control = new swc.Border
+			Control = new EtoBorder
 			{
+				Handler = this,
 				Focusable = false,
 				Background = swm.Brushes.Transparent // to get mouse events
 			};

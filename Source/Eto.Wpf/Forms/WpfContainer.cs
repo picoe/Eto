@@ -21,7 +21,7 @@ namespace Eto.Wpf.Forms
 
 		public bool RecurseToChildren { get { return true; } }
 
-		protected override Size DefaultSize { get { return minimumSize; } }
+		protected override sw.Size DefaultSize => minimumSize.ToWpf();
 
 		public abstract void Remove(sw.FrameworkElement child);
 

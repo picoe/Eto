@@ -71,18 +71,34 @@ namespace Eto.CustomControls
 				sections.Clear ();
 			Store = store;
 
-			if (Store != null) {
-				for (int row = 0; row < Store.Count; row++) {
+			ResetSections();
+			ResetCollection ();
+		}
+
+		void ResetSections()
+		{
+			Sections.Clear();
+			if (Store != null)
+			{
+				for (int row = 0; row < Store.Count; row++)
+				{
 					var item = Store[row];
-					if (item.Expanded) {
+					if (item.Expanded)
+					{
 						var children = (ITreeGridStore<ITreeGridItem>)item;
 						var section = new TreeController { StartRow = row, Handler = Handler, parent = this };
-						section.InitializeItems (children);
-						Sections.Add (section);
+						section.InitializeItems(children);
+						Sections.Add(section);
 					}
 				}
 			}
-			ResetCollection ();
+		}
+
+		public void ReloadData()
+		{
+			ClearCache();
+			ResetSections();
+			ResetCollection();
 		}
 
 		void ClearCache ()
@@ -95,12 +111,12 @@ namespace Eto.CustomControls
 		{
 			if (cache.ContainsValue(item))
 			{
-				var found = cache.First(r => object.ReferenceEquals(item, r.Value));
+				var found = cache.First(r => ReferenceEquals(item, r.Value));
 				return found.Key;
 			}
 			for (int i = 0; i < Count; i++)
 			{
-				if (object.ReferenceEquals(this[i], item))
+				if (ReferenceEquals(this[i], item))
 					return i;
 			}
 			return -1;
@@ -257,7 +273,8 @@ namespace Eto.CustomControls
 			ITreeGridStore<ITreeGridItem> children = null;
 			if (sections == null || sections.Count == 0) {
 				children = (ITreeGridStore<ITreeGridItem>)Store [row];
-				var childController = new TreeController { StartRow = row, Store = children, Handler = Handler, parent = this };
+				var childController = new TreeController { StartRow = row, Handler = Handler, parent = this };
+				childController.InitializeItems(children);
 				Sections.Add (childController);
 			}
 			else {
@@ -278,7 +295,8 @@ namespace Eto.CustomControls
 				}
 				if (addTop && row < Store.Count) {
 					children = (ITreeGridStore<ITreeGridItem>)Store [row];
-					var childController = new TreeController { StartRow = row, Store = children, Handler = Handler, parent = this };
+					var childController = new TreeController { StartRow = row, Handler = Handler, parent = this };
+					childController.InitializeItems(children);
 					Sections.Add (childController);
 				}
 			}

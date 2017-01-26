@@ -9,6 +9,16 @@ using System.ComponentModel;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoGrid : swc.Grid, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+
 	public class SplitterHandler : WpfContainer<swc.Grid, Splitter, Splitter.ICallback>, Splitter.IHandler
 	{
 		readonly swc.GridSplitter splitter;
@@ -27,7 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public SplitterHandler()
 		{
-			Control = new swc.Grid();
+			Control = new EtoGrid { Handler = this };
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
@@ -374,7 +384,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (desired)
 			{
-				var size = PreferredSize;
+				var size = UserPreferredSize;
 				var pick = Orientation == Orientation.Horizontal ? size.Width : size.Height;
 				if (pick >= 0)
 					return pick - splitterWidth;

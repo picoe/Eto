@@ -85,7 +85,7 @@ namespace Eto.Test.Sections.Controls
 							null
 						}
 					},
-					new StackLayout 
+					new StackLayout
 					{
 						Orientation = Orientation.Horizontal,
 						Spacing = 5,
@@ -95,6 +95,19 @@ namespace Eto.Test.Sections.Controls
 							AddItemButton(filtered),
 							CreateScrollToRow(grid),
 							CreateBeginEditButton(grid),
+							"Border",
+							CreateBorderType(grid),
+							null
+						}
+					},
+					new StackLayout
+					{
+						Orientation = Orientation.Horizontal,
+						Spacing = 5,
+						Items =
+						{
+							null,
+							ReloadDataButton(grid),
 							null
 						}
 					},
@@ -127,6 +140,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new CheckBox { Text = "ShowHeader" };
 			control.CheckedBinding.Bind(grid, r => r.ShowHeader);
+			return control;
+		}
+
+		Control ReloadDataButton(GridView grid)
+		{
+			var control = new Button { Text = "ReloadData" };
+			control.Click += (sender, e) => grid.ReloadData(grid.SelectedRows);
 			return control;
 		}
 
@@ -186,6 +206,13 @@ namespace Eto.Test.Sections.Controls
 				};
 			};
 			return filterText;
+		}
+
+		Control CreateBorderType(GridView grid)
+		{
+			var borderType = new EnumDropDown<BorderType>();
+			borderType.SelectedValueBinding.Bind(grid, g => g.Border);
+			return borderType;
 		}
 
 		class MyCustomCell : CustomCell

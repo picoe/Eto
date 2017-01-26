@@ -12,7 +12,7 @@ namespace Eto.Wpf.Forms.Controls
 		bool textChanging;
 		string lastText;
 
-		protected override Size DefaultSize { get { return new Size(100, -1); } }
+		protected override sw.Size DefaultSize => new sw.Size(100, double.NaN);
 
 		protected override bool PreventUserResize { get { return true; } }
 

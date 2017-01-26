@@ -68,15 +68,27 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void MouseDown(NSEvent theEvent)
 			{
-				var point = ConvertPointFromView(theEvent.LocationInWindow, null);
-
-				int rowIndex;
-				if ((rowIndex = (int)GetRow(point)) >= 0)
+				var handler = Handler;
+				if (handler != null)
 				{
-					int columnIndex = (int)GetColumn(point);
-					var item = Handler.GetItem(rowIndex);
-					var column = columnIndex == -1 || columnIndex > Handler.Widget.Columns.Count ? null : Handler.Widget.Columns[columnIndex];
-					Handler.Callback.OnCellClick(Handler.Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+					var args = MacConversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
+					if (theEvent.ClickCount >= 2)
+						handler.Callback.OnMouseDoubleClick(handler.Widget, args);
+					else
+						handler.Callback.OnMouseDown(handler.Widget, args);
+					if (args.Handled)
+						return;
+
+					var point = ConvertPointFromView(theEvent.LocationInWindow, null);
+
+					int rowIndex;
+					if ((rowIndex = (int)GetRow(point)) >= 0)
+					{
+						int columnIndex = (int)GetColumn(point);
+						var item = handler.GetItem(rowIndex);
+						var column = columnIndex == -1 || columnIndex > handler.Widget.Columns.Count ? null : handler.Widget.Columns[columnIndex];
+						handler.Callback.OnCellClick(handler.Widget, new GridViewCellEventArgs(column, rowIndex, columnIndex, item));
+					}
 				}
 
 				base.MouseDown(theEvent);

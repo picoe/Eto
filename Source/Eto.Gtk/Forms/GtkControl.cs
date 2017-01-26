@@ -465,8 +465,8 @@ namespace Eto.GtkSharp.Forms
 				{
 					Handler.Callback.OnMouseDoubleClick(Handler.Widget, mouseArgs);
 				}
-				if (!mouseArgs.Handled && Handler.Control.CanFocus && !Handler.Control.HasFocus)
-					Handler.Control.GrabFocus();
+				if (!mouseArgs.Handled && Handler.EventControl.CanFocus && !Handler.EventControl.HasFocus)
+					Handler.EventControl.GrabFocus();
 				args.RetVal = mouseArgs.Handled;
 			}
 

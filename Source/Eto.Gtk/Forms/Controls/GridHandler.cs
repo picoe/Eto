@@ -21,6 +21,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected Dictionary<int, int> ColumnMap { get { return columnMap; } }
 
+		public override Gtk.Widget EventControl => Tree;
+
 		protected GridHandler()
 		{
 			Control = new Gtk.ScrolledWindow
@@ -451,6 +453,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		static readonly object Border_Key = new object();
+		public BorderType Border
+		{
+			get { return Widget.Properties.Get(Border_Key, BorderType.Bezel); }
+			set { Widget.Properties.Set(Border_Key, value, () => Control.ShadowType = value.ToGtk(), BorderType.Bezel); }
+		}
 	}
 }
 

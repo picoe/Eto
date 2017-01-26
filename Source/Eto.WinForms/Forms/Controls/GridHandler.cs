@@ -448,6 +448,12 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		public BorderType Border
+		{
+			get { return Control.BorderStyle.ToEto(); }
+			set { Control.BorderStyle = value.ToSWF(); }
+		}
+
 		public void ReloadData(IEnumerable<int> rows)
 		{
 			Control.Refresh();

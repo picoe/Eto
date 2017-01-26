@@ -18,7 +18,7 @@ namespace Eto.WinRT.Forms.Controls
 	{
 		DateTimePickerMode mode;
 
-		protected override Size DefaultSize { get { return new Size(mode == DateTimePickerMode.DateTime ? 180 : 120, -1); } }
+		protected override wf.Size DefaultSize => new wf.Size(mode == DateTimePickerMode.DateTime ? 180 : 120, double.NaN);
 
 		public override wf.Size GetPreferredSize(wf.Size constraint)
 		{

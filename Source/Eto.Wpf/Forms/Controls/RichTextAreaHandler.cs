@@ -16,7 +16,16 @@ using System.IO;
 
 namespace Eto.Wpf.Forms.Controls
 {
-	public class RichTextAreaHandler : TextAreaHandler<swc.RichTextBox, RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer
+	public class EtoRichTextBox : swc.RichTextBox, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+	}
+	public class RichTextAreaHandler : TextAreaHandler<EtoRichTextBox, RichTextArea, RichTextArea.ICallback>, RichTextArea.IHandler, ITextBuffer
 	{
 		LanguageChangedListener _languageChangedListener;
 
@@ -120,23 +129,12 @@ namespace Eto.Wpf.Forms.Controls
 			base.Dispose(disposing);
 		}
 
-		swd.TextRange ContentRange
-		{
-			get { return new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd); }
-		}
+		swd.TextRange ContentRange => new swd.TextRange(Control.Document.ContentStart, Control.Document.ContentEnd);
 
 		public override string Text
 		{
-			get
-			{
-				var doc = Control.Document;
-				return ContentRange.Text;
-			}
-			set
-			{
-				var doc = Control.Document;
-				ContentRange.Text = value ?? string.Empty;
-			}
+			get { return ContentRange.Text; }
+			set { ContentRange.Text = value ?? string.Empty; }
 		}
 
 		bool wrap = true;
@@ -581,7 +579,6 @@ namespace Eto.Wpf.Forms.Controls
 
 	static class FlowDocumentExtensions
 	{
-		static readonly Type[] runAndParagraphTypes = new Type[] { typeof(swd.Run), typeof(swd.Paragraph) };
 		static IEnumerable<swd.TextElement> GetRunsAndParagraphs(swd.FlowDocument doc)
 		{
 			for (var position = doc.ContentStart;
@@ -590,8 +587,9 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				if (position.GetPointerContext(swd.LogicalDirection.Forward) == swd.TextPointerContext.ElementEnd)
 				{
-					if (runAndParagraphTypes.Any(r => r.IsInstanceOfType(position.Parent)))
-						yield return position.Parent as swd.TextElement;
+					var parent = position.Parent;
+					if (parent is swd.Run || parent is swd.Paragraph || parent is swd.LineBreak)
+						yield return parent as swd.TextElement;
 				}
 			}
 		}
@@ -619,17 +617,21 @@ namespace Eto.Wpf.Forms.Controls
 			if (doc == null)
 				throw new ArgumentNullException("doc");
 
+			
+			var runsAndParagraphs = GetRunsAndParagraphs(doc).ToList();
 			var output = new swm.FormattedText(
-			  GetText(doc),
+			  GetText(runsAndParagraphs),
 			  CultureInfo.CurrentCulture,
 			  doc.FlowDirection,
 			  new swm.Typeface(doc.FontFamily, doc.FontStyle, doc.FontWeight, doc.FontStretch),
 			  doc.FontSize,
-			  doc.Foreground);
+			  doc.Foreground,
+			  null,
+			  swm.TextOptions.GetTextFormattingMode(doc));
 
 			int offset = 0;
 
-			foreach (var el in GetRunsAndParagraphs(doc))
+			foreach (var el in runsAndParagraphs)
 			{
 				var run = el as swd.Run;
 
@@ -646,11 +648,9 @@ namespace Eto.Wpf.Forms.Controls
 					output.SetTextDecorations(run.TextDecorations, offset, count);
 
 					offset += count;
+					continue;
 				}
-				else
-				{
-					offset += Environment.NewLine.Length;
-				}
+				offset += Environment.NewLine.Length;
 			}
 
 			return output;
@@ -668,14 +668,20 @@ namespace Eto.Wpf.Forms.Controls
 			return sb.ToString();
 		}
 
-		public static string GetText(this swd.FlowDocument doc)
+		public static string GetText(this IEnumerable<swd.TextElement> runsAndParagraphs)
 		{
 			var sb = new StringBuilder();
 
-			foreach (var el in GetRunsAndParagraphs(doc))
+			foreach (var el in runsAndParagraphs)
 			{
 				var run = el as swd.Run;
-				sb.Append(run == null ? Environment.NewLine : run.Text);
+				if (run != null)
+				{
+					sb.Append(run.Text);
+					continue;
+				}
+				if (el is swd.Paragraph || el is swd.LineBreak)
+					sb.AppendLine();
 			}
 			return sb.ToString();
 		}

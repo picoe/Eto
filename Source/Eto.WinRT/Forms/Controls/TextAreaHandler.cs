@@ -16,7 +16,7 @@ namespace Eto.WinRT.Forms.Controls
 	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea, TextArea.ICallback>, TextArea.IHandler
 	{
 		int? lastCaretIndex;
-		protected override Size DefaultSize { get { return new Size(100, 60); } }
+		protected override wf.Size DefaultSize => new wf.Size(100, 60);
 
 		public TextAreaHandler()
 		{

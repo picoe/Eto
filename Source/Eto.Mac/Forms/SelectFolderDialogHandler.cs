@@ -43,16 +43,16 @@ namespace Eto.Mac.Forms
 				return Control.Title;
 			}
 			set {
-				Control.Title = value;
+				Control.Title = value ?? string.Empty;
 			}
 		}
 		
 		public string Directory {
 			get {
-				return Control.DirectoryUrl.Path;
+				return Control.Url?.Path ?? Control.DirectoryUrl.Path;
 			}
 			set {
-				Control.DirectoryUrl = new NSUrl(value);
+				Control.DirectoryUrl = NSUrl.FromFilename(value);
 			}
 		}
 		

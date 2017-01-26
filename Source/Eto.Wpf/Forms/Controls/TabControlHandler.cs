@@ -9,40 +9,42 @@ using Eto.Wpf.CustomControls;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	public class EtoTabControl : swc.TabControl, IEtoWpfControl
+	{
+		public IWpfFrameworkElement Handler { get; set; }
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			var desired = Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+			// once loaded, act as normal
+			if (IsLoaded)
+				return desired;
+
+			// not loaded yet, let's calculate size based on all tabs
+			var size = new sw.Size(0, 0);
+			var selectedSize = new sw.Size(0, 0);
+			var selected = SelectedItem as swc.TabItem;
+
+			foreach (var tab in Items.Cast<swc.TabItem>())
+			{
+				var tabContent = tab.Content as sw.FrameworkElement;
+				if (tabContent == null)
+					continue;
+				tabContent.Measure(constraint);
+				var tabSize = tabContent.DesiredSize;
+				if (tab == selected)
+					selectedSize = tabSize;
+				size = size.Max(tabSize);
+			}
+			// calculate size of the border around the content based on selected tab's content size
+			var borderSize = desired.Subtract(selectedSize);
+			// return max height with border
+			return size.Add(borderSize);
+		}
+	}
+
 	public class TabControlHandler : WpfContainer<swc.TabControl, TabControl, TabControl.ICallback>, TabControl.IHandler
 	{
-		class EtoTabControl : swc.TabControl
-		{
-			protected override sw.Size MeasureOverride(sw.Size constraint)
-			{
-				// once loaded, act as normal
-				if (IsLoaded)
-					return base.MeasureOverride(constraint);
-
-				// not loaded yet, let's calculate size based on all tabs
-				var size = new sw.Size(0, 0);
-				var selectedSize = new sw.Size(0, 0);
-				var selected = SelectedItem as swc.TabItem;
-
-				foreach (var tab in Items.Cast<swc.TabItem>())
-				{
-					var tabContent = tab.Content as sw.FrameworkElement;
-					if (tabContent == null)
-						continue;
-					tabContent.Measure(constraint);
-					var tabSize = tabContent.DesiredSize;
-					if (tab == selected)
-						selectedSize = tabSize;
-                    size = size.Max(tabSize);
-				}
-				var baseSize = base.MeasureOverride(constraint);
-				// calculate size of the border around the content based on selected tab's content size
-				var borderSize = baseSize.Subtract(selectedSize);
-                // return max height with border
-                return size.Add(borderSize);
-			}
-		}
-
 		bool disableSelectedIndexChanged;
 		public TabControlHandler()
 		{
@@ -85,6 +87,8 @@ namespace Eto.Wpf.Forms.Controls
 				Control.Items.Add(page.ControlObject);
 			else
 				Control.Items.Insert(index, page.ControlObject);
+			if (Widget.Loaded)
+				page.GetWpfFrameworkElement()?.SetScale(XScale, YScale);
 			if (Control.Items.Count == 1)
 				SelectedIndex = 0;
 		}
