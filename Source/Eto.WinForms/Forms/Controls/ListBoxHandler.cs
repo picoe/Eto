@@ -5,12 +5,15 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.WinForms.Drawing;
+using Eto.Drawing;
 
 namespace Eto.WinForms.Forms.Controls
 {
 	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox, ListBox.ICallback>, ListBox.IHandler
 	{
 		CollectionHandler collection;
+
+		public static int ItemPadding = 2;
 
 		class EtoListBox : swf.ListBox
 		{
@@ -19,10 +22,9 @@ namespace Eto.WinForms.Forms.Controls
 			public EtoListBox(ListBoxHandler handler)
 			{
 				this.handler = handler;
-				DrawMode = swf.DrawMode.OwnerDrawFixed;
+				DrawMode = swf.DrawMode.OwnerDrawVariable;
 				SetStyle(swf.ControlStyles.UserPaint | swf.ControlStyles.OptimizedDoubleBuffer | swf.ControlStyles.EnableNotifyMessage | swf.ControlStyles.ResizeRedraw, true);
 				ResizeRedraw = false;
-				ItemHeight = 18;
 			}
 
 			public override sd.Font Font
@@ -32,6 +34,19 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					base.Font = value;
 					ItemHeight = value.Height;
+				}
+			}
+			
+			protected override void OnMeasureItem(swf.MeasureItemEventArgs e)
+			{
+				base.OnMeasureItem(e);
+				e.ItemHeight = (int)Math.Ceiling(Font.GetHeight(e.Graphics)) + ItemPadding * 2;
+				var item = Items[e.Index];
+				var image = handler.Widget.ItemImageBinding?.GetValue(item);
+				if (image != null)
+				{
+					e.ItemHeight = Math.Max(e.ItemHeight, image.Height + ItemPadding * 2);
+					e.ItemWidth += image.Width + ItemPadding * 2;
 				}
 			}
 
@@ -68,18 +83,20 @@ namespace Eto.WinForms.Forms.Controls
 
 				var bounds = e.Bounds;
 				var item = Items[e.Index];
-				var text = handler.Widget.ItemTextBinding != null ? handler.Widget.ItemTextBinding.GetValue(item) : string.Empty;
-				var image = handler.Widget.ItemImageBinding != null? handler.Widget.ItemImageBinding.GetValue(item) : null;
+				var text = handler.Widget.ItemTextBinding?.GetValue(item) ?? string.Empty;
+				var image = handler.Widget.ItemImageBinding?.GetValue(item).ToSD(new Size(bounds.Width, bounds.Height - ItemPadding * 2));
 				if (image != null)
 				{
-					var img = image.Handler as IWindowsImageSource;
-					if (img != null)
-						e.Graphics.DrawImage(img.GetImageWithSize(bounds.Height), bounds.Left, bounds.Top, bounds.Height, bounds.Height);
-					bounds.X += bounds.Height + 2;
+					// just in case, make image fit in our bounds
+					var imageHeight = bounds.Height - ItemPadding * 2;
+					var imageWidth = imageHeight * image.Width / image.Height;
+					e.Graphics.DrawImage(image, bounds.X + ItemPadding, bounds.Y + ItemPadding, imageWidth, imageHeight);
+					bounds.X += imageWidth + ItemPadding * 2;
 				}
 				var stringSize = swf.TextRenderer.MeasureText(e.Graphics, text, e.Font);
 				bounds.Y += Math.Max(0, (bounds.Height - stringSize.Height) / 2);
-				swf.TextRenderer.DrawText(e.Graphics, text, e.Font, bounds, ForeColor, swf.TextFormatFlags.Left);
+				var foreColor = e.State.HasFlag(swf.DrawItemState.Selected) ? sd.SystemColors.HighlightText : ForeColor;
+				swf.TextRenderer.DrawText(e.Graphics, text, e.Font, bounds, foreColor, swf.TextFormatFlags.Left);
 			}
 		}
 

@@ -426,8 +426,12 @@ namespace Eto.GtkSharp
 
 		public static Gdk.Pixbuf ToGdk(this Image image)
 		{
-			var handler = image.Handler as IGtkPixbuf;
-			return handler != null ? handler.Pixbuf : null;
+			return (image?.Handler as IGtkPixbuf)?.Pixbuf;
+		}
+
+		public static Gdk.Pixbuf ToGdk(this Image image, Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear, bool shrink = false)
+		{
+			return (image?.Handler as IGtkPixbuf)?.GetPixbuf(maxSize, interpolation, shrink);
 		}
 
 		public static void SetCairoSurface(this Image image, Cairo.Context context, float x, float y)

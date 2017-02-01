@@ -93,7 +93,7 @@ namespace Eto.Wpf.Drawing
 
 		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
-			var source = image.ToWpfScale(1, new Size(width, height));
+			var source = image.ToWpf(1, new Size(width, height));
 			// use drawing group to allow for better quality scaling
 			var group = new swm.DrawingGroup();
 			swm.RenderOptions.SetBitmapScalingMode(group, interpolation.ToWpf());
@@ -225,7 +225,7 @@ namespace Eto.Wpf.Drawing
 			frozenControl = Control.GetAsFrozen() as swmi.BitmapSource;
 		}
 
-		public swmi.BitmapSource GetImageClosestToSize(int? width)
+		public swmi.BitmapSource GetImageClosestToSize(float scale, Size? fittingSize)
 		{
 			return FrozenControl;
 		}

@@ -139,7 +139,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		void SetImage()
 		{
-			swcimage.Source = Image.ToWpfScale(ParentScale);
+			swcimage.Source = Image.ToWpf(ParentScale);
 		}
 #endif
 

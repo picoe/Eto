@@ -84,7 +84,7 @@ namespace Eto.Wpf.Drawing
 			drawingVisual = new swm.DrawingVisual();
 			visual = drawingVisual;
 			Control = drawingVisual.RenderOpen();
-			Control.DrawImage(image.ToWpf(), bounds);
+			Control.DrawImage(image.ToWpf(1), bounds);
         }
 
 		protected override void Initialize()
@@ -257,7 +257,7 @@ namespace Eto.Wpf.Drawing
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
 			SetOffset(true);
-			var src = image.ToWpfScale((float)DPI, new Size((int)width, (int)height));
+			var src = image.ToWpf((float)DPI, new Size((int)width, (int)height));
 			var size = new SizeF((float)src.PixelWidth, (float)src.PixelHeight) / (float)DPI;
 
 			if ((ImageInterpolation == ImageInterpolation.High || ImageInterpolation == ImageInterpolation.Default)
@@ -275,7 +275,7 @@ namespace Eto.Wpf.Drawing
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
 			SetOffset(true);
-			var src = image.ToWpfScale((float)DPI);
+			var src = image.ToWpf((float)DPI);
             Control.PushClip(new swm.RectangleGeometry(destination.ToWpf()));
             bool scale = source.Size != destination.Size;
             bool translate = source.X > 0 || source.Y > 0;

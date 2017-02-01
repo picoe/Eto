@@ -183,9 +183,8 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var ctl = ControlView as NSTableView;
 				var imageSize = data.Image.Size;
-				var newHeight = Math.Min(imageSize.Height, ctl != null ? ctl.RowHeight : bounds.Height);
-				var newWidth = imageSize.Width * newHeight / imageSize.Height;
-				size.Width += (nfloat)(newWidth + ImagePadding);
+				size.Height = (nfloat)Math.Max(imageSize.Height, size.Height);
+				size.Width += (nfloat)(imageSize.Width + ImagePadding);
 			}
 			size.Width = (nfloat)Math.Min(size.Width, bounds.Width);
 			return size;

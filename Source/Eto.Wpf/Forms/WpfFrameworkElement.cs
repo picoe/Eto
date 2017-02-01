@@ -531,6 +531,8 @@ namespace Eto.Wpf.Forms
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
 		{
 			SetSize();
+			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
+				OnLogicalPixelSizeChanged();
 		}
 
 		public virtual void OnPreLoad(EventArgs e)
@@ -545,7 +547,6 @@ namespace Eto.Wpf.Forms
 				if (parent != null)
 				{
 					parent.LogicalPixelSizeChanged += Parent_PixelSizeChanged;
-					OnLogicalPixelSizeChanged();
 				}
 			}
 		}
