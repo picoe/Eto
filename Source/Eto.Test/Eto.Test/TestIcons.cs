@@ -26,7 +26,7 @@ namespace Eto.Test
 			get { return Bitmap.FromResource("Eto.Test.Images.Textures.gif"); }
 		}
 
-		public static Image Logo
+		public static Icon Logo
 		{
 			get { return Icon.FromResource("Eto.Test.Images.Logo.png"); }
 		}

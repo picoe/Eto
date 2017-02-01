@@ -37,7 +37,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		void SetSource()
 		{
-			Control.Source = image.ToWpfScale(ParentScale, UserPreferredSize.ToEtoSize());
+			Control.Source = image.ToWpf(ParentScale, UserPreferredSize.ToEtoSize());
 		}
 
 		public Image Image

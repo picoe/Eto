@@ -29,7 +29,7 @@ namespace Eto.Wpf.Forms.Controls
 			Binding = binding;
 			SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Converter = this });
 			if (setMargin)
-				SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(2));
+				SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(2,0, 2, 0));
 		}
 
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -51,10 +51,8 @@ namespace Eto.Wpf.Forms.Controls
 			: base(typeof(swc.Image))
 		{
 			Binding = binding;
-			SetValue(sw.FrameworkElement.MaxHeightProperty, 16.0);
-			SetValue(sw.FrameworkElement.MaxWidthProperty, 16.0);
 			SetValue(swc.Image.StretchDirectionProperty, swc.StretchDirection.DownOnly);
-			SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(0, 2, 2, 2));
+			SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(0, 0, 2, 0));
 			SetBinding(swc.Image.SourceProperty, new sw.Data.Binding { Converter = this });
 		}
 
@@ -63,7 +61,7 @@ namespace Eto.Wpf.Forms.Controls
 			var binding = Binding();
 			if (binding == null)
 				return null;
-			return binding.GetValue(value).ToWpf(16);
+			return binding.GetValue(value).ToWpf();
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
