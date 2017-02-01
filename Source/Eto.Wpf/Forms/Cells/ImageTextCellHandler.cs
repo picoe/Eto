@@ -17,7 +17,7 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				var image = Widget.ImageBinding.GetValue(dataItem) as Image;
 				if (image != null)
-					return ((IWpfImage)image.Handler).GetImageClosestToSize(16);
+					return image.ToWpf();
 			}
 			return null;
 		}

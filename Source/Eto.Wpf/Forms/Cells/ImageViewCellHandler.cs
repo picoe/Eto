@@ -10,14 +10,12 @@ namespace Eto.Wpf.Forms.Cells
 {
 	public class ImageViewCellHandler : CellHandler<ImageViewCellHandler.Column, ImageViewCell, ImageViewCell.ICallback>, ImageViewCell.IHandler
 	{
-		public static int ImageSize = 16;
-
 		object GetValue (object dataItem)
 		{
 			if (Widget.Binding != null) {
 				var image = Widget.Binding.GetValue (dataItem) as Image;
 				if (image != null)
-					return ((IWpfImage)image.Handler).GetImageClosestToSize (ImageSize);
+					return image.ToWpf();
 			}
 			return null;
 		}

@@ -29,7 +29,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			scroll.ShadowType = Gtk.ShadowType.In;
 			Control = new Gtk.TreeView(new Gtk.TreeModelAdapter(model));
 			Size = new Size(80, 80);
-			//tree.FixedHeightMode = true;
+			Control.FixedHeightMode = false;
 			Control.ShowExpanders = false;
 			scroll.Add(Control);
 
@@ -123,19 +123,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			switch (column)
 			{
 				case 0:
-					return new GLib.Value(Widget.ItemTextBinding.GetValue(item));
+					return new GLib.Value(Widget.ItemTextBinding?.GetValue(item) ?? string.Empty);
 				case 1:
-					if (Widget.ItemImageBinding != null)
-					{
-						var img = Widget.ItemImageBinding.GetValue(item);
-						if (img != null)
-						{
-							var imgHandler = img.Handler as IGtkPixbuf;
-							if (imgHandler != null)
-								return new GLib.Value(imgHandler.GetPixbuf(MaxImageSize));
-						}
-					}
-					return new GLib.Value((Gdk.Pixbuf)null);
+					return new GLib.Value(Widget.ItemImageBinding?.GetValue(item).ToGdk());
 				default:
 					throw new InvalidOperationException();
 			}

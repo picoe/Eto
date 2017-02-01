@@ -75,9 +75,9 @@ namespace Eto.Wpf.Forms.Controls
 			selected = null;
 		}
 
-		protected override sw.Size MeasureOverride(sw.Size constraint)
+		sw.Size FindMaxSize(sw.Size constraint)
 		{
-			var size = Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+			var size = base.MeasureOverride(constraint);
 			var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
 			if (popup == null)
 				return size;
@@ -98,6 +98,11 @@ namespace Eto.Wpf.Forms.Controls
 			if (!double.IsNaN(constraint.Width))
 				size.Width = Math.Min(size.Width, constraint.Width);
 			return size;
+		}
+
+		protected override sw.Size MeasureOverride(sw.Size constraint)
+		{
+			return Handler?.MeasureOverride(constraint, FindMaxSize) ?? FindMaxSize(constraint);
 		}
 	}
 
@@ -176,7 +181,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control.ItemTemplate = new sw.DataTemplate
 			{
-				VisualTree = new WpfTextBindingBlock(() => Widget.ItemTextBinding, setMargin: false)
+				VisualTree = new WpfImageTextBindingBlock(() => Widget.ItemTextBinding, () => Widget.ItemImageBinding, false)
 			};
 		}
 

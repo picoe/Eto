@@ -350,53 +350,30 @@ namespace Eto.Wpf
 			return new Bitmap(new BitmapHandler(bitmap));
 		}
 
-		public static swmi.BitmapSource ToWpf(this Image image, int? size = null)
+		public static swmi.BitmapSource ToWpf(this Image image, float? scale = null, Size? fittingSize = null)
 		{
 			if (image == null)
 				return null;
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
-				return imageHandler.GetImageClosestToSize(size);
+				return imageHandler.GetImageClosestToSize(scale ?? Screen.PrimaryScreen.LogicalPixelSize, fittingSize);
 			return image.ControlObject as swmi.BitmapSource;
 		}
 
-		public static swmi.BitmapSource ToWpf(this IconFrame image, int? size = null)
+		public static swmi.BitmapSource ToWpf(this IconFrame image, float? scale = null, Size? fittingSize = null)
 		{
-			return ((Bitmap)image?.ControlObject).ToWpf();
+			return ((Bitmap)image?.ControlObject).ToWpf(scale, fittingSize);
 		}
 
-		public static swmi.BitmapSource ToWpfScale(this Image image, float scale, Size? fittingSize = null)
+		public static swc.Image ToWpfImage(this Image image, float? scale = null, Size? fittingSize = null)
 		{
-			var icon = image as Icon;
-			if (icon != null)
-				return icon.GetFrame(scale, fittingSize).ToWpf();
-			else
-				return image.ToWpf();
-		}
-
-		public static swc.Image ToWpfImage(this Image image, float scale, Size? fittingSize = null)
-		{
-			var source = image.ToWpfScale(scale, fittingSize);
+			var source = image.ToWpf(scale, fittingSize);
 			if (source == null)
 				return null;
 			var swcImage = new swc.Image { Source = source };
 			if (fittingSize != null)
 			{
 				swcImage.SetMaxSize(fittingSize.Value);
-			}
-			return swcImage;
-		}
-
-		public static swc.Image ToWpfImage(this Image image, int? size = null)
-		{
-			var source = image.ToWpf(size);
-			if (source == null)
-				return null;
-			var swcImage = new swc.Image { Source = source };
-			if (size != null)
-			{
-				swcImage.MaxWidth = size.Value;
-				swcImage.MaxHeight = size.Value;
 			}
 			return swcImage;
 		}

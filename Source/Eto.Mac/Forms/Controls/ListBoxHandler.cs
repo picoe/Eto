@@ -107,6 +107,11 @@ namespace Eto.Mac.Forms.Controls
 			{
 				Handler.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 			}
+
+			public override nfloat GetRowHeight(NSTableView tableView, nint row)
+			{
+				return Handler.Control.GetCell(0, row).CellSize.Height;
+			}
 		}
 
 		public class EtoListBoxTableView : NSTableView, IMacControl

@@ -80,7 +80,10 @@ namespace Eto.Test.Sections.Controls
 
 		class VirtualList : IList, IEnumerable<object>
 		{
-			Icon image = TestIcons.TestIcon;
+			Icon image1 = TestIcons.TestIcon.WithSize(32, 32);
+			Icon image2 = TestIcons.Logo.WithSize(16, 16);
+
+			public bool UseVariableImages { get; set; }
 
 			public int Count
 			{
@@ -89,7 +92,15 @@ namespace Eto.Test.Sections.Controls
 
 			public object this[int index]
 			{
-				get { return new ImageListItem { Text = "Item " + index, Image = image }; }
+				get
+				{
+					var item = new ImageListItem { Text = "Item " + index };
+					if (UseVariableImages)
+						item.Image = index % 2 == 0 ? image1 : image2;
+					else
+						item.Image = image1;
+					return item;
+				}
 				set { }
 			}
 
@@ -155,7 +166,22 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control);
 
 			control.DataStore = new VirtualList();
-			return control;
+
+			var useVariableImages = new CheckBox { Text = "Use Variable Image Sizes" };
+			useVariableImages.CheckedChanged += (sender, e) =>
+			{
+				control.DataStore = new VirtualList { UseVariableImages = useVariableImages.Checked ?? false };
+			};
+
+			return new StackLayout
+			{
+				HorizontalContentAlignment = HorizontalAlignment.Stretch,
+				Items =
+				{
+					TableLayout.Horizontal(useVariableImages, null),
+					control
+				}
+			};
 		}
 
 		Control WithContextMenu()
