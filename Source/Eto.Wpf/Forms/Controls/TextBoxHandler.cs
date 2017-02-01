@@ -89,6 +89,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		static Func<char, bool> testIsNonWord = ch => char.IsWhiteSpace(ch) || char.IsPunctuation(ch);
 
+		static Clipboard clipboard;
+
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
@@ -96,7 +98,8 @@ namespace Eto.Wpf.Forms.Controls
 					TextBox.TextChanged += (sender, e) => Callback.OnTextChanged(Widget, EventArgs.Empty);
 					break;
 				case Eto.Forms.TextBox.TextChangingEvent:
-					var clipboard = new Clipboard();
+					if (clipboard == null)
+						clipboard = new Clipboard();
 					TextBox.PreviewTextInput += (sender, e) =>
 					{
 						var tia = new TextChangingEventArgs(e.Text, Selection);
@@ -105,30 +108,33 @@ namespace Eto.Wpf.Forms.Controls
 					};
 					TextBox.AddHandler(swi.CommandManager.PreviewExecutedEvent, new swi.ExecutedRoutedEventHandler((sender, e) =>
 					{
-						if (e.Command == swi.ApplicationCommands.Cut || e.Command == swi.ApplicationCommands.Delete)
+						var command = e.Command as swi.RoutedUICommand;
+						if (command == null)
+							return;
+						if (command == swi.ApplicationCommands.Cut || command == swi.ApplicationCommands.Delete)
 						{
 							var text = TextBox.SelectedText;
 							var tia = new TextChangingEventArgs(string.Empty, Selection);
 							Callback.OnTextChanging(Widget, tia);
 							if (tia.Cancel)
 							{
-								if (e.Command == swi.ApplicationCommands.Cut)
+								if (command == swi.ApplicationCommands.Cut)
 									clipboard.Text = text;
 								e.Handled = true;
 							}
 						}
-						else if (e.Command == swi.ApplicationCommands.Paste)
+						else if (command == swi.ApplicationCommands.Paste)
 						{
 							var text = clipboard.Text;
 							var tia = new TextChangingEventArgs(text, Selection);
 							Callback.OnTextChanging(Widget, tia);
 							e.Handled = tia.Cancel;
 						}
-						else if (e.Command == swd.EditingCommands.Delete || e.Command == swd.EditingCommands.Backspace)
+						else if (command == swd.EditingCommands.Delete || command == swd.EditingCommands.Backspace)
 						{
 							var range = Selection;
 							if (range.Length() == 0)
-								range = new Range<int>(e.Command == swd.EditingCommands.Delete ? range.Start : range.Start - 1);
+								range = new Range<int>(command == swd.EditingCommands.Delete ? range.Start : range.Start - 1);
 							if (range.Start >= 0)
 							{
 								var tia = new TextChangingEventArgs(string.Empty, range);
@@ -136,7 +142,7 @@ namespace Eto.Wpf.Forms.Controls
 								e.Handled = tia.Cancel;
 							}
 						}
-						else if (e.Command == swd.EditingCommands.DeletePreviousWord)
+						else if (command == swd.EditingCommands.DeletePreviousWord)
 						{
 							string text = Text;
 							int end = CaretIndex;
@@ -155,7 +161,7 @@ namespace Eto.Wpf.Forms.Controls
 								e.Handled = tia.Cancel;
 							}
 						}
-						else if (e.Command == swd.EditingCommands.DeleteNextWord)
+						else if (command == swd.EditingCommands.DeleteNextWord)
 						{
 							string text = Text;
 							int start = CaretIndex;
@@ -174,6 +180,14 @@ namespace Eto.Wpf.Forms.Controls
 								Callback.OnTextChanging(Widget, tia);
 								e.Handled = tia.Cancel;
 							}
+						}
+						else if (command.OwnerType == typeof(swd.EditingCommands) && command.Name == "Space")
+						{
+							// space doesn't trigger TextInput (which you'd expect) as it can be interpreted through IME
+							var text = " ";
+							var tia = new TextChangingEventArgs(text, Selection);
+							Callback.OnTextChanging(Widget, tia);
+							e.Handled = tia.Cancel;
 						}
 					}));
 					break;
