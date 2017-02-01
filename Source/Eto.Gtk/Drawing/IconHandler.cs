@@ -176,7 +176,14 @@ namespace Eto.GtkSharp.Drawing
 			{
 				Control.AddSource(new Gtk.IconSource { Pixbuf = frame.Bitmap.ToGdk() });
 			}
-			Pixbuf = this.frames.First(r => r.Scale == 1).Bitmap.ToGdk();
+			Pixbuf = this.frames.FirstOrDefault(r => r.Scale == 1)?.Bitmap.ToGdk();
+			if (Pixbuf == null)
+			{
+				var frame = this.frames.OrderBy(r => r.Scale).Last();
+				Pixbuf = frame.Bitmap.ToGdk();
+
+				Pixbuf = Widget.GetFrame(1).Bitmap.ToGdk().ScaleSimple(frame.Size.Width, frame.Size.Height, Gdk.InterpType.Bilinear);
+			}
 		}
 
 		public IEnumerable<IconFrame> Frames

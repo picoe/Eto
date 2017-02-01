@@ -13,8 +13,11 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		protected override void Create()
 		{
-			listStore = new Gtk.ListStore(typeof(string));
+			listStore = new Gtk.ListStore(typeof(string), typeof(Gdk.Pixbuf));
 			Control = new Gtk.ComboBox(listStore);
+			var imageCell = new Gtk.CellRendererPixbuf();
+			Control.PackStart(imageCell, false);
+			Control.SetAttributes(imageCell, "pixbuf", 1);
 			text = new Gtk.CellRendererText();
 			Control.PackStart(text, false);
 			Control.SetAttributes(text, "text", 0);
@@ -139,15 +142,21 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public override void AddItem(object item)
 			{
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.listStore.AppendValues(binding.GetValue(item));
+				Handler.listStore.AppendValues(GetValues(item));
 				Handler.Control.QueueResize();
+			}
+
+			object[] GetValues(object dataItem)
+			{
+				return new object[] {
+					Handler.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty,
+					(object)Handler.Widget.ItemImageBinding?.GetValue(dataItem).ToGdk() ?? GLib.Value.Empty
+				};
 			}
 
 			public override void InsertItem(int index, object item)
 			{
-				var binding = Handler.Widget.ItemTextBinding;
-				Handler.listStore.InsertWithValues(index, binding.GetValue(item));
+				Handler.listStore.InsertWithValues(index, GetValues(item));
 				Handler.Control.QueueResize();
 			}
 

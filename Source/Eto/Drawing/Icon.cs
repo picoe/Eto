@@ -273,6 +273,44 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Gets a copy of this Icon with frames scaled to draw within the specified fitting size.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you want to draw an Icon at a different size than the default size. 
+		/// Note that the <paramref name="fittingSize"/> specifies the maxiumum drawing size of the Icon, but will not
+		/// change the aspect of each frame's bitmap.  For example, if an existing frame is 128x128, and you specify 16x32,
+		/// then the resulting frame will draw at 16x16.
+		/// </remarks>
+		/// <returns>A new icon that will draw within the fitting size.</returns>
+		/// <param name="fittingSize">The maximum size to draw the Icon.</param>
+		public Icon WithSize(Size fittingSize)
+		{
+			var frames = Frames.Select(frame =>
+			{
+				var scale = Math.Max((float)frame.PixelSize.Width / (float)fittingSize.Width, (float)frame.PixelSize.Height / (float)fittingSize.Height);
+				return new IconFrame(scale, frame.Bitmap);
+			});
+			return new Icon(frames);
+		}
+
+		/// <summary>
+		/// Gets a copy of this Icon with frames scaled to draw within the specified fitting size.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you want to draw an Icon at a different size than the default size. 
+		/// Note that the <paramref name="width"/> and <paramref name="height"/> specifies the maxiumum drawing size of the Icon, but will not
+		/// change the aspect of each frame's bitmap.  For example, if an existing frame is 128x128, and you specify 16x32,
+		/// then the resulting frame will draw at 16x16.
+		/// </remarks>
+		/// <returns>A new icon that will draw within the fitting size.</returns>
+		/// <param name="width">Maxiumum drawing width for the new icon.</param>
+		/// <param name="height">Maxiumum drawing height for the new icon.</param>
+		public Icon WithSize(int width, int height)
+		{
+			return WithSize(new Size(width, height));
+		}
+
+		/// <summary>
 		/// Gets the definition for each frame in this icon.
 		/// </summary>
 		/// <value>The frames of the icon.</value>

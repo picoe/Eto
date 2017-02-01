@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -9,7 +10,26 @@ namespace Eto.Forms
 	[Handler(typeof(DropDown.IHandler))]
 	public class DropDown : ListControl
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler => (IHandler)base.Handler;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Eto.Forms.DropDown"/> class.
+		/// </summary>
+		public DropDown()
+		{
+			ItemImageBinding = new ListItemImageBinding();
+		}
+
+		/// <summary>
+		/// Gets or sets the binding to get the image for each item. 
+		/// </summary>
+		/// <remarks>
+		/// By default this looks for the "Image" property of the item, and also works if you use <see cref="ImageListItem"/>.
+		/// 
+		/// This will be ignored when creating a <see cref="ComboBox"/>, and is only supported with the <see cref="DropDown"/> directly.
+		/// </remarks>
+		/// <value>The binding to get the image for each item.</value>
+		public IIndirectBinding<Image> ItemImageBinding { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to show the control's border.

@@ -107,7 +107,7 @@ namespace Eto.Wpf.Drawing
 			get; private set;
 		}
 
-		public swmi.BitmapSource GetImageClosestToSize (int? width)
+		public swmi.BitmapSource GetImageClosestToSize(float scale, Size? fittingSize)
 		{
 			return Control;
 		}

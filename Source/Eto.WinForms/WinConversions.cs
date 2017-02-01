@@ -323,6 +323,14 @@ namespace Eto.WinForms
 			return h.GetImageWithSize(size);
 		}
 
+		public static sd.Image ToSD(this Image image, Size? size)
+		{
+			if (image == null)
+				return null;
+			var h = (IWindowsImageSource)image.Handler;
+			return h.GetImageWithSize(size);
+		}
+
 		public static sd.Font ToSD(this Font font)
 		{
 			if (font == null)

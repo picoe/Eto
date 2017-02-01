@@ -50,8 +50,21 @@ namespace Eto.Wpf.Forms.Controls
 			set
 			{
 				image = value;
-				headerImage.Source = image != null ? ((IWpfImage)image.Handler).GetImageClosestToSize(16) : null;
+				SetSource();
 			}
+		}
+
+		void SetSource()
+		{
+			headerImage.Source = image.ToWpf(ParentScale);
+		}
+
+		protected override bool NeedsPixelSizeNotifications => true;
+
+		protected override void OnLogicalPixelSizeChanged()
+		{
+			base.OnLogicalPixelSizeChanged();
+			SetSource();
 		}
 
 		public override Size ClientSize
