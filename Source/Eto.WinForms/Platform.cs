@@ -141,7 +141,10 @@ namespace Eto.WinForms
 			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
 			p.Add<SaveFileDialog.IHandler>(() => new SaveFileDialogHandler());
-			p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
+			if (Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialog.IsPlatformSupported)
+				p.Add<SelectFolderDialog.IHandler>(() => new VistaSelectFolderDialogHandler());
+			else
+				p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
 			p.Add<TableLayout.IHandler>(() => new TableLayoutHandler());
 			p.Add<UITimer.IHandler>(() => new UITimerHandler());
 			p.Add<Mouse.IHandler>(() => new MouseHandler());
