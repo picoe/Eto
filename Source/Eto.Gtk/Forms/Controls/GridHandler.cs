@@ -51,7 +51,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.Add(Tree);
 
 			Tree.Events |= Gdk.EventMask.ButtonPressMask;
-			Tree.ButtonPressEvent += Connector.HandleTreeButtonPressEvent;
 
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
@@ -69,8 +68,36 @@ namespace Eto.GtkSharp.Forms.Controls
 			public new GridHandler<TWidget, TCallback> Handler { get { return (GridHandler<TWidget, TCallback>)base.Handler; } }
 
 			[GLib.ConnectBefore]
-			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
+			public override void HandleButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
 			{
+				base.HandleButtonPressEvent(o, args);
+
+				var treeview = o as Gtk.TreeView;
+
+				// Gtk default behaviout for multiselect treeview is that
+				// left and right click act the same, which is problematic
+				// when it comes to user selecting multiple items and than
+				// right clicking to find only one item remains selected
+				// or if ctrl is held the current item gets unselected.
+				if (args.Event.Button == 3 && treeview != null)
+				{
+					Gtk.TreeViewDropPosition pos;
+					Gtk.TreePath path;
+
+					if (treeview.GetDestRowAtPos((int)args.Event.X, (int)args.Event.Y, out path, out pos))
+					{
+						var height = treeview.GetCellArea(path, treeview.Columns[0]).Height;
+
+						if (treeview.GetDestRowAtPos((int)args.Event.X, (int)args.Event.Y + height, out path, out pos))
+						{
+							var paths = treeview.Selection.GetSelectedRows().ToList();
+
+							if (paths.Contains(path))
+								args.RetVal = true;
+						}
+					}
+				}
+
 				var handler = Handler;
 				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
 				{
