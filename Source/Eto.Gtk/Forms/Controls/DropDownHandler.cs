@@ -150,7 +150,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				return new object[] {
 					Handler.Widget.ItemTextBinding?.GetValue(dataItem) ?? string.Empty,
-					(object)Handler.Widget.ItemImageBinding?.GetValue(dataItem).ToGdk() ?? GLib.Value.Empty
+					Handler.Widget.ItemImageBinding?.GetValue(dataItem).ToGdk()
 				};
 			}
 
