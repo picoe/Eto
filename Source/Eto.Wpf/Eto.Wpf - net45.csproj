@@ -39,6 +39,14 @@
   </PropertyGroup>
   <Import Project="..\Shared\Common.props" />
   <ItemGroup>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Windows7APICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Windows7APICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -99,6 +107,7 @@
     <Compile Include="Forms\EtoBorder.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="Forms\PerMonitorDpiHelper.cs" />
+    <Compile Include="Forms\VistaSelectFolderDialogHandler.cs" />
     <Compile Include="Win32.dib.cs" />
     <Compile Include="WpfConversions.cs" />
     <Compile Include="CustomControls\EditableTextBlock.cs" />
@@ -261,6 +270,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FontDialogResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\packages\Windows7APICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll">
+      <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\packages\Windows7APICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll">
+      <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.Shell.dll</Link>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
