@@ -27,6 +27,8 @@ namespace Eto.WinForms.Forms.Controls
 
 		protected override object GetItemAtRow(int row)
 		{
+			if (row >= controller.Count)
+				return null;
 			return controller[row];
 		}
 
@@ -122,6 +124,8 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			get
 			{
+				if (Control.SelectedRows.Count == 0)
+					return null;
 				var index = Control.SelectedRows.OfType<swf.DataGridViewRow>().Select(r => r.Index).FirstOrDefault();
 				return controller[index];
 			}
@@ -346,12 +350,27 @@ namespace Eto.WinForms.Forms.Controls
 
 		public void ReloadData()
 		{
+			var selectedItems = SelectedItems.OfType<ITreeGridItem>().ToList();
+			SupressSelectionChanged++;
 			controller.ReloadData();
+			Control.ClearSelection();
+			bool selectionChanged = false;
+			foreach (var selectedItem in selectedItems)
+			{
+				var row = controller.IndexOf(selectedItem);
+				if (row >= 0)
+					Control.Rows[row].Selected = true;
+				else
+					selectionChanged = true;
+			}
+			if (selectionChanged)
+				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+			SupressSelectionChanged--;
 		}
 
 		public void ReloadItem(ITreeGridItem item)
 		{
-			controller.ReloadData();
+			ReloadData();
 		}
 
 		public ITreeGridItem GetCellAt(PointF location, out int column)
