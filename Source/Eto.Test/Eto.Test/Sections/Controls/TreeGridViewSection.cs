@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -114,15 +115,41 @@ namespace Eto.Test.Sections.Controls
 			var control = new Button { Text = "Remove" };
 			control.Click += (sender, e) =>
 			{
-				var item = grid.SelectedItem as TreeGridItem;
-				if (item != null)
+				if (grid.AllowMultipleSelection)
 				{
-					var parent = item.Parent as TreeGridItem;
-					parent.Children.Remove(item);
-					if (parent.Parent == null)
+					var parents = new List<ITreeGridItem>();
+					bool reloadData = false;
+					foreach (var item in grid.SelectedItems.OfType<ITreeGridItem>().ToList())
+					{
+						var parent = item.Parent as TreeGridItem;
+						parent.Children.Remove(item);
+						if (parent.Parent == null)
+							reloadData = true;
+						if (!parents.Contains(parent))
+							parents.Add(parent);
+					}
+					if (reloadData)
 						grid.ReloadData();
 					else
-						grid.ReloadItem(parent);
+					{
+						foreach (var parent in parents)
+						{
+							grid.ReloadItem(parent);
+						}
+					}
+				}
+				else
+				{
+					var item = grid.SelectedItem as TreeGridItem;
+					if (item != null)
+					{
+						var parent = item.Parent as TreeGridItem;
+						parent.Children.Remove(item);
+						if (parent.Parent == null)
+							grid.ReloadData();
+						else
+							grid.ReloadItem(parent);
+					}
 				}
 			};
 			return control;
