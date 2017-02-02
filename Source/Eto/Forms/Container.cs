@@ -264,7 +264,7 @@ namespace Eto.Forms
 		/// <param name="child">Child to remove from this container</param>
 		protected void RemoveParent(Control child)
 		{
-			if (child != null && !ReferenceEquals(child.VisualParent, null))
+			if (!ReferenceEquals(child, null) && !ReferenceEquals(child.VisualParent, null))
 			{
 #if DEBUG
 				if (!ReferenceEquals(child.VisualParent, this))
@@ -275,7 +275,7 @@ namespace Eto.Forms
 					child.TriggerUnLoad(EventArgs.Empty);
 				}
 				child.VisualParent = null;
-				if (child.LogicalParent == this)
+				if (ReferenceEquals(child.LogicalParent, this))
 					child.LogicalParent = null;
 			}
 		}
@@ -295,7 +295,7 @@ namespace Eto.Forms
 		/// <param name="child">Child to set the logical parent to this container.</param>
 		protected void SetLogicalParent(Control child)
 		{
-			if (child == null)
+			if (ReferenceEquals(child, null))
 				return;
 			child.LogicalParent = this;
 		}
@@ -311,7 +311,7 @@ namespace Eto.Forms
 		/// <param name="child">Child to remove from this container as the logical parent.</param>
 		protected void RemoveLogicalParent(Control child)
 		{
-			if (child == null)
+			if (ReferenceEquals(child, null))
 				return;
 			if (!ReferenceEquals(child.LogicalParent, this))
 			{
@@ -335,19 +335,28 @@ namespace Eto.Forms
 		/// <param name="previousChild">Previous child that the new child is replacing.</param>
 		protected void SetParent(Control child, Action assign = null, Control previousChild = null)
 		{
-			if (previousChild != null && !ReferenceEquals(previousChild.VisualParent, null) && (!ReferenceEquals(previousChild, child) || !ReferenceEquals(child.VisualParent, this)))
+			if (!ReferenceEquals(previousChild, null) && !ReferenceEquals(previousChild, child))
 			{
 #if DEBUG
 				if (!ReferenceEquals(previousChild.VisualParent, this))
-					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a child of this container. Ensure you only remove children that you own."));
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The previous child control is not a child of this container. Ensure you only remove children that you own."));
 #endif
-				if (previousChild.Loaded)
+
+				if (!ReferenceEquals(previousChild.VisualParent, null))
 				{
-					previousChild.TriggerUnLoad(EventArgs.Empty);
+					if (previousChild.Loaded)
+					{
+						previousChild.TriggerUnLoad(EventArgs.Empty);
+					}
+					previousChild.VisualParent = null;
 				}
-				previousChild.VisualParent = null;
+
+				if (ReferenceEquals(previousChild.LogicalParent, this))
+				{
+					previousChild.LogicalParent = null;
+				}
 			}
-			if (child != null && !ReferenceEquals(child.VisualParent, this))
+			if (!ReferenceEquals(child, null) && !ReferenceEquals(child.VisualParent, this))
 			{
 				// Detach so parent can remove from controls collection if necessary.
 				// prevents UnLoad from being called more than once when containers think a control is still a child
