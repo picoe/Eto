@@ -400,6 +400,8 @@ namespace Eto.Mac.Forms.Controls
 					var view = value.GetContainerView();
 					Control.ReplaceSubviewWith(Control.Subviews[0], view ?? new NSView());
 					panel1 = value;
+					if (Widget.Loaded)
+						UpdatePosition();
 				}
 			}
 		}
@@ -414,6 +416,8 @@ namespace Eto.Mac.Forms.Controls
 					var view = value.GetContainerView();
 					Control.ReplaceSubviewWith(Control.Subviews[1], view ?? new NSView());
 					panel2 = value;
+					if (Widget.Loaded)
+						UpdatePosition();
 				}
 			}
 		}
