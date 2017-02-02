@@ -198,6 +198,9 @@ namespace Eto.GtkSharp.Forms.Controls
 					return;
 				var e = new TreeGridViewItemEventArgs(h.GetItem(args.Path) as ITreeGridItem);
 				e.Item.Expanded = true;
+				h.suppressExpandCollapseEvents++;
+				h.collection.ExpandItems(e.Item as ITreeGridStore<ITreeGridItem>, args.Path);
+				h.suppressExpandCollapseEvents--;
 				h.Callback.OnExpanded(h.Widget, e);
 			}
 
@@ -484,21 +487,37 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var tree = Tree;
 			var path = model.GetPathFromItem(item);
-			if (path != null && path.Depth > 0 && !object.ReferenceEquals(item, collection.Collection))
+			if (path != null && path.Depth > 0 && !ReferenceEquals(item, collection.Collection))
 			{
+				suppressExpandCollapseEvents++;
+				var wasExpanded = tree.GetRowExpanded(path);
+
 				Gtk.TreeIter iter;
 				tree.Model.GetIter(out iter, path);
-				tree.Model.EmitRowChanged(path, iter);
-				tree.Model.EmitRowHasChildToggled(path, iter);
-				suppressExpandCollapseEvents++;
-				if (item.Expanded)
+				if (item.Expandable)
 				{
+					tree.Model.EmitRowChanged(path, iter);
+					tree.Model.EmitRowHasChildToggled(path, iter);
 					tree.CollapseRow(path);
-					tree.ExpandRow(path, false);
-					collection.ExpandItems((ITreeGridStore<ITreeGridItem>)item, path);
+					if (item.Expanded)
+					{
+						tree.ExpandRow(path, false);
+						collection.ExpandItems((ITreeGridStore<ITreeGridItem>)item, path);
+					}
+				}
+				else if (wasExpanded)
+				{
+					// it was expanded (and had children), but now it won't be.
+					// Gtk requires that we know at this time how many children we have to remove, but instead let's 
+					// just delete this node and re-add it.
+					// EmitRowHasChildToggled should have done this IMO, but I guess it does not.
+					tree.Model.EmitRowDeleted(path);
+					tree.Model.EmitRowInserted(path, iter);
 				}
 				else
-					tree.CollapseRow(path);
+				{
+					tree.Model.EmitRowChanged(path, iter);
+				}
 				suppressExpandCollapseEvents--;
 			}
 			else

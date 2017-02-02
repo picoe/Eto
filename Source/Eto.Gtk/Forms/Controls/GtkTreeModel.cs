@@ -93,7 +93,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var found = false;
 				for (int i = 0; i < items.Count; i++)
 				{
-					if (object.ReferenceEquals(items[i], item))
+					if (ReferenceEquals(items[i], item))
 					{
 						path.PrependIndex(i);
 						item = parent;
@@ -182,7 +182,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			if (path == null)
 				throw new ArgumentNullException("path");
-			
+
 			var item = GetItemAtPath(path);
 			if (item != null)
 			{
@@ -368,10 +368,12 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 				else
 					indices = new[] { n };
-				
-				var item = store[n];
-				child = GetIterFromItem(item, indices);
-				return true;
+				if (n < store.Count)
+				{
+					var item = store[n];
+					child = GetIterFromItem(item, indices);
+					return true;
+				}
 			}
 
 			child = Gtk.TreeIter.Zero;
