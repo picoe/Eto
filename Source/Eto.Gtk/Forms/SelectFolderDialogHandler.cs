@@ -37,7 +37,7 @@ namespace Eto.GtkSharp.Forms
 
 		public string Directory
 		{
-			get { return Control.CurrentFolder; }
+			get { return Control.Filename ?? Control.CurrentFolder; }
 			set { Control.SetCurrentFolder(value); }
 		}
 	}

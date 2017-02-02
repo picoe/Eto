@@ -37,6 +37,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets the native WPF window of the specified Eto window
+		/// </summary>
+		/// <param name="window">Eto window to get the native control for</param>
+		/// <returns>The native WPF window object.</returns>
+		public static sw.Window ToNative(this Window window)
+		{
+			if (window == null)
+				return null;
+			return (window.Handler as IWpfWindow)?.Control;
+		}
+
+		/// <summary>
 		/// Wraps the specified <paramref name="nativeControl"/> to an Eto control that can be used directly in Eto.Forms code.
 		/// </summary>
 		/// <returns>The eto control wrapper around the native control.</returns>
