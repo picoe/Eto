@@ -103,5 +103,18 @@ namespace Eto.Android.Forms.Controls
 			get { return new Range<int>(Control.SelectionStart, Control.SelectionEnd - 1); }
 			set { Control.SetSelection(value.Start, value.End); }
 		}
+
+		public TextAlignment TextAlignment
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

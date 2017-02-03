@@ -4,6 +4,8 @@ using Eto.Forms;
 using System.Linq;
 using Eto.iOS.Forms.Cells;
 using Foundation;
+using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.iOS.Forms.Controls
 {
@@ -99,6 +101,21 @@ namespace Eto.iOS.Forms.Controls
 			Control.DataSource = new DataSource { Handler = this };
 		}
 
+		public void ReloadData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ReloadItem(ITreeGridItem item)
+		{
+			throw new NotImplementedException();
+		}
+
+		public ITreeGridItem GetCellAt(PointF location, out int column)
+		{
+			throw new NotImplementedException();
+		}
+
 		public ITreeGridStore<ITreeGridItem> DataStore {
 			get { return store.Collection; }
 			set {
@@ -129,6 +146,14 @@ namespace Eto.iOS.Forms.Controls
 				throw new NotImplementedException();
 			}
 			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public IEnumerable<object> SelectedItems
+		{
+			get
 			{
 				throw new NotImplementedException();
 			}

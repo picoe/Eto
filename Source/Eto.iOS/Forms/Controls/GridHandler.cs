@@ -106,6 +106,12 @@ namespace Eto.iOS.Forms.Controls
 			get;
 			set;
 		}
+
+		public BorderType Border
+		{
+			get;
+			set;
+		}
 	}
 
 	public class GridHandlerTableDelegate : UITableViewDelegate
