@@ -8,6 +8,39 @@ namespace Eto.Forms
 	/// <summary>
 	/// Command to relay execution and execute state to delegates
 	/// </summary>
+	public class RelayCommand : RelayCommand<object>
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.RelayCommand"/> class.
+		/// </summary>
+		/// <remarks>
+		/// The <see cref="RelayCommand{T}.CanExecute"/> will always return true.
+		/// </remarks>
+		/// <param name="execute">Delegate to execute the command.</param>
+		public RelayCommand(Action execute)
+			: base((obj) => execute())
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.RelayCommand"/> class.
+		/// </summary>
+		/// <remarks>
+		/// This constructor allows you to specify whether the command can be executed.
+		/// If the state of the <paramref name="canExecute"/> delegate changes, you can call <see cref="RelayCommand{T}.UpdateCanExecute"/>
+		/// to tell the control that is bound to this command to call the delegate again.
+		/// </remarks>
+		/// <param name="execute">Delegate to execute the command.</param>
+		/// <param name="canExecute">Delegate to determine the state of whether the command can be executed.</param>
+		public RelayCommand(Action execute, Func<bool> canExecute)
+			: base((obj) => execute(), (obj) => canExecute())
+		{
+		}
+	}
+
+	/// <summary>
+	/// Command to relay execution and execute state to delegates
+	/// </summary>
 	public class RelayCommand<T> : ICommand
 	{
 		readonly Action<T> execute;
