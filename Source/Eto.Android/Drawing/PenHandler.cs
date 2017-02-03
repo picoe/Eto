@@ -21,28 +21,6 @@ namespace Eto.Android.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PenHandler : Pen.IHandler
 	{
-		public object Create(Color color, float thickness)
-		{
-			var paint = new ag.Paint 
-			{ 
-				Color = color.ToAndroid(), 
-				StrokeWidth = thickness,
-				StrokeCap = ag.Paint.Cap.Square,
-				StrokeMiter = 10f
-			};
-			return paint;
-		}
-
-		public Color GetColor(Pen widget)
-		{
-			return widget.ToAndroid().Color.ToEto();
-		}
-
-		public void SetColor(Pen widget, Color color)
-		{
-			widget.ToAndroid().Color = color.ToAndroid();
-		}
-
 		public float GetThickness(Pen widget)
 		{
 			return widget.ToAndroid().StrokeWidth;
@@ -96,6 +74,33 @@ namespace Eto.Android.Drawing
 				// TODO: create a new ag.DashPathEffect with the appropriate intervals
 				throw new NotImplementedException();
 			}
+		}
+
+		class EtoPaint : ag.Paint
+		{
+			public Brush Brush { get; }
+
+			public EtoPaint(Brush brush)
+				: base(brush.ToAndroid())
+			{
+				Brush = brush;
+			}
+		}
+
+		public object Create(Brush brush, float thickness)
+		{
+			return new EtoPaint(brush)
+			{
+				StrokeWidth = thickness,
+				StrokeCap = ag.Paint.Cap.Square,
+				StrokeMiter = 10f,
+
+			};
+		}
+
+		public Brush GetBrush(Pen widget)
+		{
+			return ((EtoPaint)widget.ControlObject).Brush;
 		}
 	}
 }
