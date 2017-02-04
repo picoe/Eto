@@ -86,5 +86,15 @@ namespace Eto.WinForms.Forms
 			});
 			return tcs.Task;
 		}
-	}
+
+        public void InsertDialogButton(bool positive, int index, Button item)
+        {
+
+        }
+
+        public void RemoveDialogButton(bool positive, int index)
+        {
+
+        }
+    }
 }
