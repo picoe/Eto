@@ -1,11 +1,11 @@
-version: 2.3.0.{build}
+version: 2.4.0.{build}
 install:
 - curl -fsS -o gtk-sharp.msi %GTKSHARP_LOCATION%/gtk-sharp-2.12.38.msi
 - msiexec /i gtk-sharp.msi /qn /norestart
 build_script:
 - set BASE=%APPVEYOR_BUILD_FOLDER%
 - set BUILD_VERSION=000%APPVEYOR_BUILD_NUMBER%
-- set BUILD_VERSION=2.3.0-build%BUILD_VERSION:~-4%
+- set BUILD_VERSION=2.4.0-build%BUILD_VERSION:~-4%
 - echo Downloading XamMac.dll for build..
 - mkdir %BASE%\BuildOutput\net45\Release
 - curl -fsS -o %BASE%\BuildOutput\net45\Release\XamMac.dll %XAMMAC_LOCATION%/XamMac.dll
