@@ -10,6 +10,7 @@ namespace Eto.iOS.Forms.Cells
 	{
 		public override void Configure(object dataItem, NSCell cell)
 		{
+			cell.TextLabel.TextAlignment = TextAlignment.ToUI();
 			if (Widget.TextBinding != null)
 			{
 				var val = Widget.TextBinding.GetValue(dataItem);
@@ -29,5 +30,9 @@ namespace Eto.iOS.Forms.Cells
 
 		// TODO
 		public ImageInterpolation ImageInterpolation { get; set; }
+
+		public TextAlignment TextAlignment { get; set; }
+
+		public VerticalAlignment VerticalAlignment { get; set; }
 	}
 }

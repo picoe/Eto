@@ -38,35 +38,48 @@ namespace Eto.Wpf.Forms.Cells
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				var element = base.GenerateElement(cell, dataItem);
-				element.DataContextChanged += (sender, e) =>
-				{
-					var control = sender as swc.ComboBox;
-					control.SelectedValue = Handler.GetValue(control.DataContext);
-					Handler.FormatCell(control, cell, control.DataContext);
-				};
-				Handler.FormatCell(element, cell, dataItem);
+				var element = (swc.ComboBox)base.GenerateElement(cell, dataItem);
+				Initialize(cell, element, dataItem);
 				return Handler.SetupCell(element);
+			}
+
+			void Initialize(swc.DataGridCell cell, swc.ComboBox control, object dataItem)
+			{
+				if (!IsControlInitialized(control))
+				{
+					control.DataContextChanged += (sender, e) => SetValue(cell, (swc.ComboBox)sender, e.NewValue);
+					SetControlInitialized(control, true);
+				}
+				else
+				{
+					SetValue(cell, control, dataItem);
+				}
+			}
+
+			void SetValue(swc.DataGridCell cell, swc.ComboBox control, object dataItem)
+			{
+				control.SelectedValue = Handler.GetValue(dataItem);
+				Handler.FormatCell(control, cell, dataItem);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				var element = base.GenerateEditingElement(cell, dataItem);
-				element.Name = "control";
-				element.DataContextChanged += (sender, e) =>
+				var element = (swc.ComboBox)base.GenerateEditingElement(cell, dataItem);
+				Initialize(cell, element, dataItem);
+				if (!IsControlEditInitialized(element))
 				{
-					var control = sender as swc.ComboBox;
-					control.SelectedValue = Handler.GetValue(control.DataContext);
-					Handler.FormatCell(control, cell, control.DataContext);
-				};
-				Handler.FormatCell(element, cell, dataItem);
+					element.SelectionChanged += (sender, e) =>
+					{
+						var control = (swc.ComboBox)sender;
+						Handler.SetValue(control.DataContext, control.SelectedValue);
+					};
+					SetControlEditInitialized(element, true);
+				}
 				return Handler.SetupCell(element);
 			}
 
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
 			{
-				var control = editingElement as swc.ComboBox ?? editingElement.FindChild<swc.ComboBox>("control");
-				Handler.SetValue(control.DataContext, control.SelectedValue);
 				Handler.ContainerHandler.CellEdited(Handler, editingElement);
 				return true;
 			}

@@ -11,8 +11,13 @@ namespace Eto.iOS.Forms.Cells
 		{
 		}
 
+		public TextAlignment TextAlignment { get; set; }
+
+		public VerticalAlignment VerticalAlignment { get; set; }
+
 		public override void Configure (object dataItem, NSCell cell)
 		{
+			cell.TextLabel.TextAlignment = TextAlignment.ToUI();
 			if (Widget.Binding != null) {
 				var val = Widget.Binding.GetValue (dataItem);
 				cell.TextLabel.Text = Convert.ToString (val);

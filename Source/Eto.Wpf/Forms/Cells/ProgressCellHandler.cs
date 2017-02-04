@@ -66,89 +66,75 @@ namespace Eto.Wpf.Forms.Cells
 
 			public ProgressCellHandler Handler { get; set; }
 
-			private sw.Style textStyle;
-			private sw.Style TextStyle
-			{
-				get
-				{
-					if (textStyle == null)
-					{
-						var textBlock = new swc.TextBlock();
-						textStyle = new sw.Style(typeof(swc.TextBlock), textBlock.Style);
-						textStyle.Setters.Add(new sw.Setter(swc.TextBlock.ForegroundProperty, (object)sw.SystemColors.ControlTextBrush));
-						textStyle.Seal();
-					}
-					return textStyle;
-				}
-			}
-
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				var element = GenerateProgressBar(cell);
-				element.DataContextChanged += (sender, e) =>
-				{
-					swc.Grid grid = sender as swc.Grid;
-
-					swc.ProgressBar progressBar = null;
-					swc.TextBlock percentageText = null;
-
-					foreach (var child in grid.Children)
-					{
-						// If the progress bar and the percentage text are found, break.
-						if (progressBar != null && percentageText != null)
-							break;
-						else if (child is swc.ProgressBar)
-							progressBar = child as swc.ProgressBar;
-						else if (child is swc.TextBlock)
-							percentageText = child as swc.TextBlock;
-					}
-
-					// Get the value
-					float? value = Handler.GetValue(grid.DataContext);
-
-					// If the value is -1
-					if(!value.HasValue)
-					{
-						// Hide the bar and text
-						progressBar.Visibility = sw.Visibility.Hidden;
-						percentageText.Visibility = sw.Visibility.Hidden;
-					}
-					else
-					{
-						// Hide the bar and text
-						progressBar.Visibility = sw.Visibility.Visible;
-						percentageText.Visibility = sw.Visibility.Visible;
-					}
-
-					// Set the value of the progress bar and make sure that it is above 0.
-					progressBar.Value = value.HasValue ? (double)value : 0;
-					// Set the text on the percentage text text block
-					percentageText.Text = (int)(progressBar.Value * 100f) + "%";
-
-					Handler.FormatCell(grid, cell, dataItem);
-				};
+				var element = GenerateProgressBar(cell, dataItem);
 				return Handler.SetupCell(element);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				return GenerateProgressBar(cell);
+				return GenerateProgressBar(cell, dataItem);
 			}
 
-			private swc.Grid GenerateProgressBar(swc.DataGridCell cell)
+			private swc.Grid GenerateProgressBar(swc.DataGridCell cell, object dataItem)
 			{
-				swc.Grid grid = (cell != null ? cell.Content as swc.Grid : null) ?? new swc.Grid();
+				swc.Grid element = cell?.Content as swc.Grid ?? new swc.Grid();
+				cell.Foreground = sw.SystemColors.ControlTextBrush;
 
 				// Add a progress bar to the grid
-				swc.ProgressBar progressBar = new swc.ProgressBar { Value = 0, Minimum = 0, Maximum = 1 };
-				grid.Children.Add(progressBar);
+				var progressBar = new swc.ProgressBar { Value = 0, Minimum = 0, Maximum = 1 };
+				element.Children.Add(progressBar);
 
 				// Add a text block that shows the progress percentage to the grid
-				swc.TextBlock textBlock = new swc.TextBlock { Text = (int)progressBar.Value + "%", HorizontalAlignment = sw.HorizontalAlignment.Center,
-					VerticalAlignment = sw.VerticalAlignment.Center, Style = TextStyle };
-				grid.Children.Add(textBlock);
+				swc.TextBlock textBlock = new swc.TextBlock
+				{
+					Text = (int)progressBar.Value + "%",
+					HorizontalAlignment = sw.HorizontalAlignment.Center,
+					VerticalAlignment = sw.VerticalAlignment.Center
+				};
+				element.Children.Add(textBlock);
 
-				return grid;
+				SetValue(cell, element, progressBar, textBlock, dataItem);
+
+				element.DataContextChanged += (sender, e) =>
+				{
+					var grid = (swc.Grid)sender;
+
+					var bar = grid.FindChild<swc.ProgressBar>();
+					var text = grid.FindChild<swc.TextBlock>();
+
+					SetValue(cell, grid, bar, text, grid.DataContext);
+				};
+
+				return element;
+			}
+
+			void SetValue(swc.DataGridCell cell, swc.Grid grid, swc.ProgressBar bar, swc.TextBlock text, object dataItem)
+			{
+				// Get the value
+				float? value = Handler.GetValue(dataItem);
+
+				// If the value is -1
+				if (!value.HasValue)
+				{
+					// Hide the bar and text
+					bar.Visibility = sw.Visibility.Hidden;
+					text.Visibility = sw.Visibility.Hidden;
+				}
+				else
+				{
+					// Hide the bar and text
+					bar.Visibility = sw.Visibility.Visible;
+					text.Visibility = sw.Visibility.Visible;
+				}
+
+				// Set the value of the progress bar and make sure that it is above 0.
+				bar.Value = value ?? 0;
+				// Set the text on the percentage text text block
+				text.Text = (int)(bar.Value * 100f) + "%";
+
+				Handler.FormatCell(grid, cell, dataItem);
 			}
 		}
 	}

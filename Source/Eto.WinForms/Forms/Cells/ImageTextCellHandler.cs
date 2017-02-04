@@ -128,6 +128,41 @@ namespace Eto.WinForms.Forms.Cells
 			get { return Control.InterpolationMode.ToEto(); }
 			set { Control.InterpolationMode = value.ToSD(); }
 		}
+
+		TextAlignment _textAlignment;
+		public TextAlignment TextAlignment
+		{
+			get { return _textAlignment; }
+			set
+			{
+				_textAlignment = value;
+				SetAlignment();
+			}
+		}
+
+		VerticalAlignment _verticalAlignment = VerticalAlignment.Center;
+		public VerticalAlignment VerticalAlignment
+		{
+			get { return _verticalAlignment; }
+			set
+			{
+				_verticalAlignment = value;
+				SetAlignment();
+			}
+		}
+
+		void SetAlignment()
+		{
+			if (Column == null)
+				return;
+			Column.DefaultCellStyle.Alignment = WinConversions.ToSWF(TextAlignment, VerticalAlignment);
+		}
+
+		protected override void InitializeColumn()
+		{
+			base.InitializeColumn();
+			SetAlignment();
+		}
 	}
 }
 

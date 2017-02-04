@@ -725,6 +725,94 @@ namespace Eto.WinForms
 			}
 		}
 
+		public static TextAlignment ToEtoTextAlignment(this swf.DataGridViewContentAlignment existing)
+		{
+			switch (existing)
+			{
+				default:
+				case swf.DataGridViewContentAlignment.NotSet:
+				case swf.DataGridViewContentAlignment.TopLeft:
+				case swf.DataGridViewContentAlignment.MiddleLeft:
+				case swf.DataGridViewContentAlignment.BottomLeft:
+					return TextAlignment.Left;
+				case swf.DataGridViewContentAlignment.TopCenter:
+				case swf.DataGridViewContentAlignment.MiddleCenter:
+				case swf.DataGridViewContentAlignment.BottomCenter:
+					return TextAlignment.Center;
+				case swf.DataGridViewContentAlignment.TopRight:
+				case swf.DataGridViewContentAlignment.MiddleRight:
+				case swf.DataGridViewContentAlignment.BottomRight:
+					return TextAlignment.Right;
+			}
+		}
+
+		public static VerticalAlignment ToEtoVerticalAlignment(this swf.DataGridViewContentAlignment existing)
+		{
+			switch (existing)
+			{
+				default:
+				case swf.DataGridViewContentAlignment.NotSet:
+				case swf.DataGridViewContentAlignment.TopLeft:
+				case swf.DataGridViewContentAlignment.MiddleLeft:
+				case swf.DataGridViewContentAlignment.BottomLeft:
+					return VerticalAlignment.Top;
+				case swf.DataGridViewContentAlignment.TopCenter:
+				case swf.DataGridViewContentAlignment.MiddleCenter:
+				case swf.DataGridViewContentAlignment.BottomCenter:
+					return VerticalAlignment.Center;
+				case swf.DataGridViewContentAlignment.TopRight:
+				case swf.DataGridViewContentAlignment.MiddleRight:
+				case swf.DataGridViewContentAlignment.BottomRight:
+					return VerticalAlignment.Bottom;
+			}
+		}
+
+		public static swf.DataGridViewContentAlignment ToSWF(TextAlignment textAlignment, VerticalAlignment verticalAlignment)
+		{
+			switch (verticalAlignment)
+			{
+				case VerticalAlignment.Stretch:
+				case VerticalAlignment.Top:
+					switch (textAlignment)
+					{
+						case TextAlignment.Left:
+							return swf.DataGridViewContentAlignment.TopLeft;
+						case TextAlignment.Center:
+							return swf.DataGridViewContentAlignment.TopCenter;
+						case TextAlignment.Right:
+							return swf.DataGridViewContentAlignment.TopRight;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				case VerticalAlignment.Center:
+					switch (textAlignment)
+					{
+						case TextAlignment.Left:
+							return swf.DataGridViewContentAlignment.MiddleLeft;
+						case TextAlignment.Center:
+							return swf.DataGridViewContentAlignment.MiddleCenter;
+						case TextAlignment.Right:
+							return swf.DataGridViewContentAlignment.MiddleRight;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				case VerticalAlignment.Bottom:
+					switch (textAlignment)
+					{
+						case TextAlignment.Left:
+							return swf.DataGridViewContentAlignment.BottomLeft;
+						case TextAlignment.Center:
+							return swf.DataGridViewContentAlignment.BottomCenter;
+						case TextAlignment.Right:
+							return swf.DataGridViewContentAlignment.BottomRight;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
 		public static TextAlignment ToEto(this swf.HorizontalAlignment align)
 		{
 			switch (align)

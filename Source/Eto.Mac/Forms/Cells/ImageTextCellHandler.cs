@@ -81,18 +81,28 @@ namespace Eto.Mac.Forms.Cells
 			return field.Cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
 		}
 
-		public ImageInterpolation ImageInterpolation { get; set; }
+		ImageInterpolation _imageInterpolation;
+		public ImageInterpolation ImageInterpolation
+		{
+			get { return _imageInterpolation; }
+			set
+			{
+				if (_imageInterpolation != value)
+				{
+					_imageInterpolation = value;
+					ReloadColumnData();
+				}
+			}
+		}
 
 		public override Color GetBackgroundColor(NSView view)
 		{
-			return ((EtoCellTextField)view).BackgroundColor.ToEto();
+			return ((EtoLabelFieldCell)((EtoCellTextField)view).Cell).BetterBackgroundColor.ToEto();
 		}
 
 		public override void SetBackgroundColor(NSView view, Color color)
 		{
-			var field = ((EtoCellTextField)view);
-			field.BackgroundColor = color.ToNSUI();
-			field.DrawsBackground = color.A > 0;
+			((EtoLabelFieldCell)((EtoCellTextField)view).Cell).BetterBackgroundColor = color.ToNSUI();
 		}
 
 		public override Color GetForegroundColor(NSView view)
@@ -115,6 +125,34 @@ namespace Eto.Mac.Forms.Cells
 			((EtoCellTextField)view).Font = font.ToNS();
 		}
 
+		TextAlignment _textAlignment;
+		public TextAlignment TextAlignment
+		{
+			get { return _textAlignment; }
+			set
+			{
+				if (_textAlignment != value)
+				{
+					_textAlignment = value;
+					ReloadColumnData();
+				}
+			}
+		}
+
+		VerticalAlignment _verticalAlignment = VerticalAlignment.Center;
+		public VerticalAlignment VerticalAlignment
+		{
+			get { return _verticalAlignment; }
+			set
+			{
+				if (_verticalAlignment != value)
+				{
+					_verticalAlignment = value;
+					ReloadColumnData();
+				}
+			}
+		}
+
 		class CellView : EtoCellTextField
 		{
 			[Export("item")]
@@ -129,7 +167,12 @@ namespace Eto.Mac.Forms.Cells
 			if (view == null)
 			{
 				view = new CellView();
-				view.Cell = new MacImageListItemCell { VerticalAlignment = VerticalAlignment.Center };
+				view.Cell = new MacImageListItemCell
+				{
+					Wraps = false,
+					Scrollable = true,
+					UsesSingleLineMode = false // true prevents proper vertical alignment 
+				};
 				view.Identifier = tableColumn.Identifier;
 				view.Selectable = false;
 				view.DrawsBackground = false;
@@ -137,9 +180,6 @@ namespace Eto.Mac.Forms.Cells
 				view.Bordered = false;
 				view.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 
-				view.Cell.Wraps = false;
-				view.Cell.Scrollable = true;
-				view.Cell.UsesSingleLineMode = true;
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
 				view.BecameFirstResponder += (sender, e) =>
 				{
@@ -173,9 +213,12 @@ namespace Eto.Mac.Forms.Cells
 				};
 				view.Bind("editable", tableColumn, "editable", null);
 			}
+			var cell = (MacImageListItemCell)view.Cell;
+			cell.ImageInterpolation = ImageInterpolation.ToNS();
+			cell.VerticalAlignment = VerticalAlignment;
+			cell.Alignment = TextAlignment.ToNS();
 			view.Tag = row;
 			view.Item = obj;
-			((MacImageListItemCell)view.Cell).ImageInterpolation = ImageInterpolation.ToNS();
 			var args = new MacCellFormatArgs(ColumnHandler.Widget, getItem(obj, row), row, view);
 			ColumnHandler.DataViewHandler.OnCellFormatting(args);
 			return view;

@@ -72,64 +72,69 @@ namespace Eto.Wpf.Forms.Cells
 				return cachedList;
 			}
 
-			EtoBorder Create(swc.DataGridCell cell)
+			EtoBorder Create(swc.DataGridCell cell, object dataItem)
 			{
-				var control = new EtoBorder { Column = this };
-				control.Args = new WpfCellEventArgs(-1, null, CellStates.None);
-				control.DataContextChanged += (sender, e) =>
+				var control = cell.Content as EtoBorder;
+				if (control == null)
 				{
-					var ctl = sender as EtoBorder;
-					ctl.Args.SetSelected(cell.IsSelected);
-					ctl.Args.SetDataContext(ctl.DataContext);
-					var id = Handler.Callback.OnGetIdentifier(Handler.Widget, ctl.Args);
-					var child = ctl.Control;
-					if (id != ctl.Identifier || child == null)
+					control = new EtoBorder { Column = this };
+					control.Args = new WpfCellEventArgs(-1, null, CellStates.None);
+					control.DataContextChanged += (sender, e) =>
 					{
-						Stack<Control> cache;
-						if (child != null)
+						var ctl = sender as EtoBorder;
+						ctl.Args.SetSelected(cell.IsSelected);
+						ctl.Args.SetDataContext(ctl.DataContext);
+						var id = Handler.Callback.OnGetIdentifier(Handler.Widget, ctl.Args);
+						var child = ctl.Control;
+						if (id != ctl.Identifier || child == null)
 						{
+							Stack<Control> cache;
+							if (child != null)
+							{
 							// store old child into cache
 							cache = GetCached(ctl.Identifier);
-							cache.Push(child);
-						}
+								cache.Push(child);
+							}
 						// get new from cache or create if none created yet
 						cache = GetCached(id);
-						if (cache.Count > 0)
-							child = cache.Pop();
-						else
-							child = Handler.Callback.OnCreateCell(Handler.Widget, ctl.Args);
-						ctl.Control = child;
-						var handler = child.GetWpfFrameworkElement();
-						if (handler != null)
-							handler.SetScale(true, true);
-						ctl.Child = child.ToNative(true);
-					}
-					Handler.Callback.OnConfigureCell(Handler.Widget, ctl.Args, child);
+							if (cache.Count > 0)
+								child = cache.Pop();
+							else
+								child = Handler.Callback.OnCreateCell(Handler.Widget, ctl.Args);
+							ctl.Control = child;
+							var handler = child.GetWpfFrameworkElement();
+							if (handler != null)
+								handler.SetScale(true, true);
+							ctl.Child = child.ToNative(true);
+						}
+						Handler.Callback.OnConfigureCell(Handler.Widget, ctl.Args, child);
 
-					Handler.FormatCell(ctl, cell, ctl.DataContext);
-					ctl.InvalidateVisual();
-				};
-				cell.Selected += (sender, e) =>
-				{
-					control.Args.SetSelected(cell.IsSelected);
-					Handler.Callback.OnConfigureCell(Handler.Widget, control.Args, control.Control);
-				};
-				cell.Unselected += (sender, e) =>
-				{
-					control.Args.SetSelected(cell.IsSelected);
-					Handler.Callback.OnConfigureCell(Handler.Widget, control.Args, control.Control);
-				};
+						Handler.FormatCell(ctl, cell, ctl.DataContext);
+						ctl.InvalidateVisual();
+					};
+					cell.Selected += (sender, e) =>
+					{
+						control.Args.SetSelected(cell.IsSelected);
+						Handler.Callback.OnConfigureCell(Handler.Widget, control.Args, control.Control);
+					};
+					cell.Unselected += (sender, e) =>
+					{
+						control.Args.SetSelected(cell.IsSelected);
+						Handler.Callback.OnConfigureCell(Handler.Widget, control.Args, control.Control);
+					};
+				}
+				control.DataContext = dataItem;
 				return control;
 			}
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell));
+				return Handler.SetupCell(Create(cell, dataItem));
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell));
+				return Handler.SetupCell(Create(cell, dataItem));
 			}
 		}
 

@@ -183,7 +183,7 @@ namespace Eto.Mac.Forms.Controls
 				var newHeight = Math.Min(imageSize.Height, bounds.Height);
 				var newWidth = imageSize.Width * newHeight / imageSize.Height;
 				size.Width += (nfloat)(newWidth + ImagePadding);
-				size.Height = (nfloat)newHeight;
+				size.Height = (nfloat)Math.Max(newHeight, size.Height);
 			}
 			size.Width = (nfloat)Math.Min(size.Width, bounds.Width);
 			return size;

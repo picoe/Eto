@@ -31,6 +31,12 @@ using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
+#if XAMMAC2
+using nnuint = System.nint;
+#else
+using nnuint = System.Int32;
+#endif
+
 namespace Eto.Mac.Forms.Cells
 {
 	public interface ICellHandler
@@ -162,6 +168,17 @@ namespace Eto.Mac.Forms.Cells
 
 		public virtual void SetForegroundColor(NSView view, Color color)
 		{
+		}
+
+		protected virtual void ReloadColumnData()
+		{
+			var handler = ColumnHandler?.DataViewHandler;
+			if (handler?.Loaded == true)
+			{
+				var column = handler.Widget.Columns.IndexOf(ColumnHandler.Widget);
+				var rows = NSIndexSet.FromNSRange(new NSRange(0, (nnuint)handler.Table.RowCount));
+				handler.Table.ReloadData(rows, new NSIndexSet(column));
+			}
 		}
 
 		public abstract NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, int row, NSObject obj, Func<NSObject, int, object> getItem);
