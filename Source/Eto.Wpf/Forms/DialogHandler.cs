@@ -12,6 +12,8 @@ namespace Eto.Wpf.Forms
 	{
 		Button defaultButton;
 		Rectangle? parentWindowBounds;
+        swc.DockPanel dockMain;
+        swc.Grid gridButtons;
 
 		public DialogHandler()
 		{
@@ -21,12 +23,28 @@ namespace Eto.Wpf.Forms
 			Minimizable = false;
 			Maximizable = false;
 			Control.PreviewKeyDown += Control_PreviewKeyDown;
-		}
 
-		public DialogDisplayMode DisplayMode { get; set; }
+            dockMain = new swc.DockPanel();
+
+            gridButtons = new swc.Grid();
+            gridButtons.Margin = new sw.Thickness(8);
+            gridButtons.RowDefinitions.Add(new swc.RowDefinition());
+        }
+
+        public override void SetContainerContent(sw.FrameworkElement content)
+        {
+            this.content.Children.Add(dockMain);
+            swc.DockPanel.SetDock(gridButtons, swc.Dock.Bottom);
+            dockMain.Children.Add(gridButtons);
+            dockMain.Children.Add(content);
+        }
+
+        public DialogDisplayMode DisplayMode { get; set; }
 
 		public void ShowModal()
 		{
+            ReloadButtons();
+
 			if (Widget.Owner != null)
 			{
 				// CenterOwner does not work in certain cases (e.g. with autosizing)
@@ -36,6 +54,8 @@ namespace Eto.Wpf.Forms
 			}
 			Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+
+            ClearButtons();
 		}
 
 		void Control_PreviewKeyDown(object sender, sw.Input.KeyEventArgs e)
@@ -71,7 +91,56 @@ namespace Eto.Wpf.Forms
 			Control.SourceInitialized -= HandleSourceInitialized;
 		}
 
-		public Button DefaultButton
+        private void ClearButtons()
+        {
+            gridButtons.ColumnDefinitions.Clear();
+            gridButtons.Children.Clear();
+        }
+
+        private void ReloadButtons()
+        {
+            gridButtons.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(100, sw.GridUnitType.Star) });
+            
+            var negativeButtons = Widget.NegativeButtons;
+            var positiveButtons = Widget.PositiveButtons;
+
+            for (int i = negativeButtons.Count - 1; i >= 0; i--)
+                AddButton(negativeButtons.Count - i, negativeButtons[i]);
+
+            for (int i = 0;i < positiveButtons.Count;i++)
+                AddButton(negativeButtons.Count + 1 + i, positiveButtons[i]);
+        }
+
+        private void AddButton(int pos, Button button)
+        {
+            var native = button.ToNative();
+            native.Margin = new sw.Thickness(6, 0, 0, 0);
+
+            swc.Grid.SetColumn(native, pos);
+
+            gridButtons.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Auto) });
+            gridButtons.Children.Add(native);
+        }
+
+        public void InsertDialogButton(bool positive, int index, Button item)
+        {
+            if(Widget.Visible)
+            {
+                ClearButtons();
+                ReloadButtons();
+            }
+        }
+
+        public void RemoveDialogButton(bool positive, int index)
+        {
+            if (Widget.Visible)
+            {
+                ClearButtons();
+                ReloadButtons();
+            }
+        }
+
+        public Button DefaultButton
 		{
 			get { return defaultButton; }
 			set

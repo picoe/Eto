@@ -37,7 +37,7 @@ namespace Eto.Wpf.Forms
 		swc.DockPanel main;
 		swc.ContentControl menuHolder;
 		swc.ContentControl toolBarHolder;
-		swc.DockPanel content;
+		protected swc.DockPanel content;
 		Size? initialClientSize;
 		bool resizable = true;
 		bool maximizable = true;
