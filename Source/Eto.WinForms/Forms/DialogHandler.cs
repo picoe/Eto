@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace Eto.WinForms.Forms
 {
-	public class DialogHandler : WindowHandler<swf.Form, Dialog, Dialog.ICallback>, Dialog.IHandler
-	{
-		Button button;
+    public class DialogHandler : WindowHandler<swf.Form, Dialog, Dialog.ICallback>, Dialog.IHandler
+    {
+        Button button;
+        swf.Panel panelContent;
+        swf.TableLayoutPanel panelButtons;
 
-		
-		public DialogHandler()
-		{
-			Control = new swf.Form
+        public DialogHandler()
+        {
+            Control = new swf.Form
 			{
 				StartPosition = swf.FormStartPosition.CenterParent,
 				AutoSize = true,
@@ -24,9 +25,29 @@ namespace Eto.WinForms.Forms
 				MaximizeBox = false,
 				MinimizeBox = false
 			};
-		}
 
-		protected override swf.FormBorderStyle DefaultWindowStyle
+            panelContent = new swf.Panel();
+            panelContent.Dock = swf.DockStyle.Fill;
+
+            panelButtons = new swf.TableLayoutPanel();
+            panelButtons.RowStyles.Add(new swf.RowStyle());
+            panelButtons.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.Percent, 100));
+            panelButtons.Dock = swf.DockStyle.Bottom;
+            panelButtons.Height = 0;
+
+            Control.Controls.Add(panelContent);
+            Control.Controls.Add(panelButtons);
+        }
+
+        public override swf.Control ContainerContentControl
+        {
+            get
+            {
+                return panelContent;
+            }
+        }
+
+        protected override swf.FormBorderStyle DefaultWindowStyle
 		{
 			get { return swf.FormBorderStyle.FixedDialog; }
 		}
@@ -55,9 +76,13 @@ namespace Eto.WinForms.Forms
 		public DialogDisplayMode DisplayMode { get; set; }
 
 		public void ShowModal()
-		{
-			Control.ShowDialog();
+        {
+            ReloadButtons();
+
+            Control.ShowDialog();
 			Control.Owner = null; // without this, the dialog is still active as part of the owner form
+
+            ClearButtons();
         }
 
 		protected override void Initialize()
@@ -87,14 +112,62 @@ namespace Eto.WinForms.Forms
 			return tcs.Task;
 		}
 
+        private void ClearButtons()
+        {
+            while (panelButtons.ColumnStyles.Count > 1)
+                panelButtons.ColumnStyles.RemoveAt(1);
+            panelButtons.Controls.Clear();
+        }
+
+        private void ReloadButtons()
+        {
+            var negativeButtons = Widget.NegativeButtons;
+            var positiveButtons = Widget.PositiveButtons;
+            var height = 0;
+
+            for (int i = negativeButtons.Count - 1; i >= 0; i--)
+            {
+                height = Math.Max(height, negativeButtons[i].Height);
+                AddButton(negativeButtons.Count - i, negativeButtons[i]);
+            }
+
+            for (int i = 0; i < positiveButtons.Count; i++)
+            {
+                height = Math.Max(height, positiveButtons[i].Height);
+                AddButton(negativeButtons.Count + 1 + i, positiveButtons[i]);
+            }
+
+            if (negativeButtons.Count + positiveButtons.Count > 0 && height <= 0)
+                height = Controls.ButtonHandler.DefaultMinimumSize.Height + 12;
+
+            panelButtons.Height = height;
+        }
+
+        private void AddButton(int pos, Button button)
+        {
+            var native = button.ToNative();
+            native.Margin = new swf.Padding(0, 6, 6, 3);
+
+            panelButtons.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.Absolute, button.Width > 0 ? button.Width : Controls.ButtonHandler.DefaultMinimumSize.Width));
+            panelButtons.Controls.Add(native, pos, 0);
+        }
+
         public void InsertDialogButton(bool positive, int index, Button item)
         {
-
+            if (Widget.Visible)
+            {
+                ClearButtons();
+                ReloadButtons();
+            }
         }
 
         public void RemoveDialogButton(bool positive, int index)
         {
-
+            if (Widget.Visible)
+            {
+                ClearButtons();
+                ReloadButtons();
+            }
         }
     }
 }
