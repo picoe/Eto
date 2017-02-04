@@ -71,10 +71,10 @@ namespace Eto.GtkSharp.Forms.Controls
 					Layout.GetPixelSize(out pixWidth, out pixHeight);
 					HeightRequest = pixHeight;
 					wrapWidth = width;
-					#if GTK3
+#if GTK3
 					if (Parent != null)
 						Gtk.Application.Invoke((sender, e) => Parent.QueueResize());
-					#endif
+#endif
 				}
 			}
 		}
@@ -102,33 +102,38 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			set
 			{
-				Control.ResetWidth();
-				switch (value)
-				{
-					case WrapMode.None:
-						Control.Wrap = false;
-						Control.LineWrap = false;
-						Control.SingleLineMode = true;
-						break;
-					case WrapMode.Word:
-						Control.Wrap = true;
-						Control.Layout.Wrap = Pango.WrapMode.WordChar;
-						Control.LineWrapMode = Pango.WrapMode.WordChar;
-						Control.LineWrap = true;
-						Control.SingleLineMode = false;
-						break;
-					case WrapMode.Character:
-						Control.Wrap = true;
-						Control.Layout.Wrap = Pango.WrapMode.Char;
-						Control.LineWrapMode = Pango.WrapMode.Char;
-						Control.LineWrap = true;
-						Control.SingleLineMode = false;
-						break;
-					default:
-						throw new NotSupportedException();
-				}
-				eventBox.QueueResize();
+				SetWrap(value);
 			}
+		}
+
+		void SetWrap(WrapMode mode)
+		{
+			Control.ResetWidth();
+			switch (mode)
+			{
+				case WrapMode.None:
+					Control.Wrap = false;
+					Control.LineWrap = false;
+					Control.SingleLineMode = true;
+					break;
+				case WrapMode.Word:
+					Control.Wrap = true;
+					Control.Layout.Wrap = Pango.WrapMode.WordChar;
+					Control.LineWrapMode = Pango.WrapMode.WordChar;
+					Control.LineWrap = true;
+					Control.SingleLineMode = false;
+					break;
+				case WrapMode.Character:
+					Control.Wrap = true;
+					Control.Layout.Wrap = Pango.WrapMode.Char;
+					Control.LineWrapMode = Pango.WrapMode.Char;
+					Control.LineWrap = true;
+					Control.SingleLineMode = false;
+					break;
+				default:
+					throw new NotSupportedException();
+			}
+			eventBox.QueueResize();
 		}
 
 		public override void AttachEvent(string id)
@@ -171,34 +176,10 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		void SetAlignment()
 		{
-			float xalignment;
-			float yalignment;
-			switch (horizontalAlign)
-			{
-				default:
-					xalignment = 0F;
-					break;
-				case TextAlignment.Center:
-					xalignment = 0.5F;
-					break;
-				case TextAlignment.Right:
-					xalignment = 1F;
-					break;
-			}
-			switch (verticalAlign)
-			{
-				case VerticalAlignment.Center:
-					yalignment = 0.5F;
-					break;
-				default:
-					yalignment = 0F;
-					break;
-				case VerticalAlignment.Bottom:
-					yalignment = 1F;
-					break;
-			}
-			Control.SetAlignment(xalignment, yalignment);
+			Control.ResetWidth();
 			Control.Justify = horizontalAlign.ToGtk();
+			Control.SetAlignment(horizontalAlign.ToAlignment(), verticalAlign.ToAlignment());
+			eventBox.ResizeChildren();
 		}
 
 		public VerticalAlignment VerticalAlignment

@@ -50,6 +50,7 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public EtoLabelFieldCell()
 		{
+			AllowsEditingTextAttributes = true;
 		}
 
 		public EtoLabelFieldCell(IntPtr handle)
@@ -57,24 +58,50 @@ namespace Eto.Mac.Forms.Controls
 		{
 		}
 
+		/// <summary>
+		/// Draws background color manually, using a layer or the base.BackgroundColor does not draw allow us to align the text properly.
+		/// </summary>
+		public NSColor BetterBackgroundColor { get; set; }
+
 		[Export("verticalAlignment")]
 		public VerticalAlignment VerticalAlignment { get; set; }
 
 		public override CGRect DrawingRectForBounds(CGRect theRect)
 		{
 			var rect = base.DrawingRectForBounds(theRect);
-			var titleSize = CellSizeForBounds(theRect);
 
-			switch (VerticalAlignment)
+			if (VerticalAlignment == VerticalAlignment.Top || VerticalAlignment == VerticalAlignment.Stretch)
+				return rect;
+
+			nfloat offset = 0;
+			if (VerticalAlignment == VerticalAlignment.Center)
 			{
-				case VerticalAlignment.Center:
-					rect.Y = (nfloat)Math.Round(theRect.Y + (theRect.Height - titleSize.Height) / 2.0F);
-					break;
-				case VerticalAlignment.Bottom:
-					rect.Y = theRect.Y + (theRect.Height - titleSize.Height);
-					break;
+				//var lineHeight = (nfloat)Font.LineHeight();
+				var lineHeight = AttributedStringValue.BoundingRect(theRect.Size, NSStringDrawingOptions.UsesLineFragmentOrigin).Size.Height;
+				//var lineHeight = CellSizeForBounds(theRect).Height;
+				//lineHeight += Font.Descender;
+				//var lineHeight = Math.Ceiling(Font.Ascender + Font.Leading + 1);
+				//var lineHeight = Font.PointSize;
+				offset = (nfloat)Math.Round((theRect.Height - lineHeight) / 2.0F);
 			}
+			else if (VerticalAlignment == VerticalAlignment.Bottom)
+			{
+				var lineHeight = CellSizeForBounds(theRect).Height;
+				offset = (nfloat)Math.Round(theRect.Height - lineHeight);
+			}
+			rect.Y += offset;
+			rect.Height -= offset;
 			return rect;
+		}
+
+		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
+		{
+			if (BetterBackgroundColor != null)
+			{
+				BetterBackgroundColor.SetFill();
+				NSGraphics.RectFill(cellFrame);
+			}
+			base.DrawWithFrame(cellFrame, inView);
 		}
 	}
 
@@ -167,6 +194,18 @@ namespace Eto.Mac.Forms.Controls
 					SetAttributes();
 				}
 			}
+		}
+
+		protected override void SetBackgroundColor(Color? color)
+		{
+			var cell = Control.Cell as EtoLabelFieldCell;
+			if (cell != null)
+			{
+				cell.BetterBackgroundColor = color?.ToNSUI();
+				Control.SetNeedsDisplay();
+			}
+			else
+				base.SetBackgroundColor(color);
 		}
 
 		public WrapMode Wrap
@@ -275,7 +314,11 @@ namespace Eto.Mac.Forms.Controls
 		public VerticalAlignment VerticalAlignment
 		{
 			get { return ((EtoLabelFieldCell)Control.Cell).VerticalAlignment; }
-			set { ((EtoLabelFieldCell)Control.Cell).VerticalAlignment = value; }
+			set
+			{
+				((EtoLabelFieldCell)Control.Cell).VerticalAlignment = value;
+				Control.SetNeedsDisplay();
+			}
 		}
 
 		protected virtual void SetAttributes()

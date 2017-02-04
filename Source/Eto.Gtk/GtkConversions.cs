@@ -653,5 +653,68 @@ namespace Eto.GtkSharp
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Pango.Alignment ToPango(this TextAlignment alignment)
+		{
+			switch (alignment)
+			{
+				case TextAlignment.Left:
+					return Pango.Alignment.Left;
+				case TextAlignment.Center:
+					return Pango.Alignment.Center;
+				case TextAlignment.Right:
+					return Pango.Alignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static float ToAlignment(this TextAlignment alignment)
+		{
+			switch (alignment)
+			{
+				case TextAlignment.Left:
+					return 0;
+				case TextAlignment.Center:
+					return 0.5f;
+				case TextAlignment.Right:
+					return 1f;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static TextAlignment ToEto(this Pango.Alignment alignment)
+		{
+			switch (alignment)
+			{
+				case Pango.Alignment.Left:
+					return TextAlignment.Left;
+				case Pango.Alignment.Center:
+					return TextAlignment.Center;
+				case Pango.Alignment.Right:
+					return TextAlignment.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static float ToAlignment(this VerticalAlignment alignment)
+		{
+			switch (alignment)
+			{
+				case VerticalAlignment.Stretch:
+				case VerticalAlignment.Top:
+					return 0;
+				case VerticalAlignment.Center:
+					return 0.5f;
+				case VerticalAlignment.Bottom:
+					return 1f;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+
 	}
 }
