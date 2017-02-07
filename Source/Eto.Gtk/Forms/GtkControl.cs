@@ -451,7 +451,7 @@ namespace Eto.GtkSharp.Forms
 			}
 
 			[GLib.ConnectBefore]
-			public void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
+			public virtual void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();

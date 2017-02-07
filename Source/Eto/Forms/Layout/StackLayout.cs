@@ -390,40 +390,37 @@ namespace Eto.Forms
 			items = new StackLayoutItemCollection { Parent = this };
 		}
 
-		void UpdateLabelItem(StackLayoutItem item)
+		VerticalAlignment GetVerticalAlign(StackLayoutItem item)
 		{
-			if (!AlignLabels)
-				return;
+			var align = item.VerticalAlignment ?? VerticalContentAlignment;
 			var label = item.Control as Label;
-			if (label != null)
+			if (!AlignLabels || label == null)
+				return align;
+			label.VerticalAlignment = align;
+			return VerticalAlignment.Stretch;
+		}
+
+		HorizontalAlignment GetHorizontalAlign(StackLayoutItem item)
+		{
+			var align = item.HorizontalAlignment ?? HorizontalContentAlignment;
+			var label = item.Control as Label;
+			if (!AlignLabels || label == null)
+				return align;
+			switch (align)
 			{
-				switch (Orientation)
-				{
-					case Orientation.Horizontal:
-						label.VerticalAlignment = item.VerticalAlignment ?? VerticalContentAlignment;
-						item.VerticalAlignment = VerticalAlignment.Stretch;
-						break;
-					case Orientation.Vertical:
-						switch (item.HorizontalAlignment ?? HorizontalContentAlignment)
-						{
-							case HorizontalAlignment.Left:
-								label.TextAlignment = TextAlignment.Left;
-								break;
-							case HorizontalAlignment.Center:
-								label.TextAlignment = TextAlignment.Center;
-								break;
-							case HorizontalAlignment.Right:
-								label.TextAlignment = TextAlignment.Right;
-								break;
-							default:
-								return;
-						}
-						item.HorizontalAlignment = HorizontalAlignment.Stretch;
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
+				case HorizontalAlignment.Left:
+					label.TextAlignment = TextAlignment.Left;
+					break;
+				case HorizontalAlignment.Center:
+					label.TextAlignment = TextAlignment.Center;
+					break;
+				case HorizontalAlignment.Right:
+					label.TextAlignment = TextAlignment.Right;
+					break;
+				default:
+					return align;
 			}
+			return HorizontalAlignment.Stretch;
 		}
 
 		/// <summary>
@@ -487,7 +484,6 @@ namespace Eto.Forms
 			table.Spacing = new Size(Spacing, Spacing);
 
 			bool filled = false;
-			Action<StackLayoutItem> itemAdding = UpdateLabelItem;
 			var expandItem = new StackLayoutItem { Expand = true };
 			switch (Orientation)
 			{
@@ -496,11 +492,11 @@ namespace Eto.Forms
 					for (int i = 0; i < items.Count; i++)
 					{
 						var item = items[i] ?? expandItem;
-						itemAdding(item);
+						var align = GetVerticalAlign(item);
 						var control = item.Control;
 						filled |= item.Expand;
 						var cell = new TableCell { ScaleWidth = item.Expand };
-						switch (item.VerticalAlignment ?? VerticalContentAlignment)
+						switch (align)
 						{
 							case VerticalAlignment.Top:
 								cell.Control = new TableLayout(control, null);
@@ -527,11 +523,11 @@ namespace Eto.Forms
 					for (int i = 0; i < items.Count; i++)
 					{
 						var item = items[i] ?? expandItem;
-						itemAdding(item);
+						var align = GetHorizontalAlign(item);
 						var control = item.Control;
 						filled |= item.Expand;
 						var vrow = new TableRow { ScaleHeight = item.Expand };
-						switch (item.HorizontalAlignment ?? HorizontalContentAlignment)
+						switch (align)
 						{
 							case HorizontalAlignment.Left:
 								vrow.Cells.Add(TableLayout.Horizontal(control, null));
@@ -561,4 +557,3 @@ namespace Eto.Forms
 		}
 	}
 }
-

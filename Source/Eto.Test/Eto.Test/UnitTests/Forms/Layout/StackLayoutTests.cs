@@ -78,11 +78,11 @@ namespace Eto.Test.UnitTests.Forms.Layout
 			}, () =>
 			{
 				Assert.AreSame(stack, child?.Parent);
-				Assert.IsNotNull(child.VisualParent); 
+				Assert.IsNotNull(child.VisualParent);
 				// StackLayout uses TableLayout internally to align controls
 				// this will be changed when StackLayout does not depend on TableLayout
 				Assert.AreNotSame(stack, child.VisualParent);
-				Assert.IsInstanceOf<TableLayout>(child.VisualParent); 
+				Assert.IsInstanceOf<TableLayout>(child.VisualParent);
 			});
 		}
 
@@ -136,6 +136,41 @@ namespace Eto.Test.UnitTests.Forms.Layout
 				Assert.IsNull(child.VisualParent);
 				Assert.IsNull(child.Parent);
 			});
+		}
+
+		[Test, ManualTest]
+		public void UpdateShouldKeepAlignment()
+		{
+			ManualForm(
+				"Label should stay centered vertically after clicking the button",
+				form =>
+				{
+					StackLayout content = null;
+					Action command = () =>
+					{
+						if (content == null)
+							return;
+						content.Items[1] = new ComboBox { Items = { "Zus", "Wim", "Jet" }, SelectedIndex = 1 };
+					};
+
+					return content = new StackLayout
+					{
+						VerticalContentAlignment = VerticalAlignment.Center,
+						Orientation = Orientation.Horizontal,
+						Height = 100, // so we can exaggerate the issue
+						Items =
+						{
+							"Hello",
+							new ComboBox { Items = { "Aap", "Noot", "Mies" }, SelectedIndex = 1 },
+							"There",
+							new Button
+							{
+								Text = "Click",
+								Command = new RelayCommand(command)
+							}
+						}
+					};
+				});
 		}
 	}
 }
