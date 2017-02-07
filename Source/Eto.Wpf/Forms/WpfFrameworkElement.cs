@@ -152,8 +152,11 @@ namespace Eto.Wpf.Forms
 			get { return parentMinimumSize; }
 			set
 			{
-				parentMinimumSize = value;
-				SetSize();
+				if (parentMinimumSize != value)
+				{
+					parentMinimumSize = value;
+					SetSize();
+				}
 			}
 		}
 
