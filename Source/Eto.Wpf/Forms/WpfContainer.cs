@@ -2,6 +2,7 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
 using Eto.Drawing;
+using System;
 
 namespace Eto.Wpf.Forms
 {
@@ -21,8 +22,6 @@ namespace Eto.Wpf.Forms
 
 		public bool RecurseToChildren { get { return true; } }
 
-		protected override sw.Size DefaultSize => minimumSize.ToWpf();
-
 		public abstract void Remove(sw.FrameworkElement child);
 
 		public virtual Size ClientSize
@@ -39,6 +38,13 @@ namespace Eto.Wpf.Forms
 				minimumSize = value;
 				SetSize();
 			}
+		}
+
+		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
+		{
+			var size = base.MeasureOverride(constraint, measure);
+			size = size.Max(minimumSize.ToWpf());
+			return size;
 		}
 
 		public override void Invalidate(bool invalidateChildren)
