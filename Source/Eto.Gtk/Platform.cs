@@ -99,6 +99,8 @@ namespace Eto.GtkSharp
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
+			p.Add<DocumentControl.IHandler>(() => new DocumentControlHandler());
+			p.Add<DocumentPage.IHandler>(() => new DocumentPageHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<Expander.IHandler>(() => new ExpanderHandler());
 			p.Add<FilePicker.IHandler>(() => new FilePickerHandler());

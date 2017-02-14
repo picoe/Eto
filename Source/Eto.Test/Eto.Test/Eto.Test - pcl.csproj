@@ -207,6 +207,7 @@
     <Compile Include="Sections\Controls\FilePickerSection.cs" />
     <Compile Include="Sections\Controls\FontPickerSection.cs" />
     <Compile Include="Sections\Dialogs\OpenWithDialogSection.cs" />
+    <Compile Include="Sections\Controls\DocumentControlSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
