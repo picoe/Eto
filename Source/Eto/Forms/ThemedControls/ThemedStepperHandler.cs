@@ -135,14 +135,28 @@ namespace Eto.Forms.ThemedControls
 		{
 			switch (id)
 			{
-				case Stepper.StepEvent:
-					upButton.Click += (sender, e) => Callback.OnStep(Widget, new StepperEventArgs(StepperDirection.Up));
-					downButton.Click += (sender, e) => Callback.OnStep(Widget, new StepperEventArgs(StepperDirection.Down));
-					break;
+				/*case Stepper.StepEvent:
+					upButton.Click += (sender, e) => Stepper.StepEvent.Callback(Widget, new StepperEventArgs(StepperDirection.Up));
+					downButton.Click += (sender, e) => Stepper.StepEvent.Callback(Widget, new StepperEventArgs(StepperDirection.Down));
+					break;*/
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		public override Action<Stepper> GetEvent(object evt)
+		{
+			if (evt == Stepper.StepEvent)
+				return StepEventHandler;
+			return base.GetEvent(evt);
+		}
+
+		static void StepEventHandler(Stepper c)
+		{
+			var h = c.Handler as ThemedStepperHandler;
+			h.upButton.Click += (sender, e) => Stepper.StepEvent.Raise(c, new StepperEventArgs(StepperDirection.Up));
+			h.downButton.Click += (sender, e) => Stepper.StepEvent.Raise(c, new StepperEventArgs(StepperDirection.Down));
 		}
 	}
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Globalization;
 using System.Linq.Expressions;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -82,6 +83,8 @@ namespace Eto
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
 		public object Handler { get; internal set; }
+
+		public IHandler2 Handler2 => Handler as IHandler2;
 
 		/// <summary>
 		/// Gets the native platform-specific handle for integration purposes
@@ -261,9 +264,8 @@ namespace Eto
 		/// </remarks>
 		protected void Initialize()
 		{
-			var handler = WidgetHandler;
-			if (handler != null)
-				handler.Initialize();
+			WidgetHandler?.Initialize();
+			Handler2?.Initialize(this);
 			EventLookup.HookupEvents(this);
 			Platform.Instance.TriggerWidgetCreated(new WidgetCreatedEventArgs(this));
 		}

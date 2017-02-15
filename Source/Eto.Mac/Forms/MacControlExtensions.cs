@@ -55,6 +55,9 @@ namespace Eto.Mac.Forms
 			{
 				return mh.GetPreferredSize(availableSize);
 			}
+			var mh2 = control.GetMacControl2();
+			if (mh2 != null)
+				return mh2.GetPreferredSize(control, availableSize);
 			
 			var c = control.ControlObject as NSControl;
 			if (c != null)
@@ -89,6 +92,17 @@ namespace Eto.Mac.Forms
 			return child == null ? null : child.GetMacControl();
 		}
 
+		public static IMacControlHandler2 GetMacControl2(this Control control)
+		{
+			if (control == null)
+				return null;
+			var container = control.Handler as IMacControlHandler2;
+			if (container != null)
+				return container;
+			var child = control.ControlObject as Control;
+			return child == null ? null : child.GetMacControl2();
+		}
+
 		public static NSView GetContainerView(this Widget control)
 		{
 			if (control == null)
@@ -96,6 +110,9 @@ namespace Eto.Mac.Forms
 			var containerHandler = control.Handler as IMacControlHandler;
 			if (containerHandler != null)
 				return containerHandler.ContainerControl;
+			var containerHandler2 = control.Handler as IMacControlHandler2;
+			if (containerHandler2 != null)
+				return containerHandler2.GetContainerControl(control);
 			var childControl = control.ControlObject as Control;
 			if (childControl != null)
 				return childControl.GetContainerView();

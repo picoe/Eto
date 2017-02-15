@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using System.Linq.Expressions;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -10,18 +11,25 @@ namespace Eto
 	{
 		static readonly Dictionary<Type, List<EventDeclaration>> registeredEvents = new Dictionary<Type, List<EventDeclaration>>();
 		static readonly Assembly etoAssembly = typeof(EventLookup).GetAssembly();
-		static readonly Dictionary<Type, string[]> externalEvents = new Dictionary<Type, string[]>();
+		static readonly Dictionary<Type, object[]> externalEvents = new Dictionary<Type, object[]>();
 
 		struct EventDeclaration
 		{
-			public readonly string Identifier;
+			public readonly object Identifier;
 			public readonly MethodInfo Method;
 
-			public EventDeclaration(MethodInfo method, string identifier)
+			public EventDeclaration(MethodInfo method, object identifier)
 			{
 				Method = method;
 				Identifier = identifier;
 			}
+		}
+
+		public static void Register<T, TArgs>(Expression<Action<T, TArgs>> expression, object identifier)
+		{
+			var method = ((MethodCallExpression)expression.Body).Method;
+			var declarations = GetDeclarations(typeof(T));
+			declarations.Add(new EventDeclaration(method, identifier));
 		}
 
 		public static void Register<T>(Expression<Action<T>> expression, string identifier)
@@ -38,14 +46,18 @@ namespace Eto
 			if (type.GetAssembly() == etoAssembly)
 				return;
 
+			var handler2 = widget.Handler as IHandler2;
 			var handler = widget.Handler as Widget.IHandler;
-			if (handler != null)
+
+			var events = GetEvents(type);
+			for (int i = 0; i < events.Length; i++)
 			{
-				var ids = GetEvents(type);
-				for (int i = 0; i < ids.Length; i++)
-				{
-					handler.HandleEvent(ids[i], true);
-				}
+				var evt = events[i];
+				var id = evt as string;
+				if (id != null)
+					handler?.HandleEvent(id, true);
+				else
+					handler2?.AttachEvent(widget, evt);
 			}
 		}
 
@@ -59,9 +71,9 @@ namespace Eto
 			return Array.IndexOf(events, identifier) >= 0;
 		}
 
-		static string[] GetEvents(Type type)
+		static object[] GetEvents(Type type)
 		{
-			string[] events;
+			object[] events;
 			if (!externalEvents.TryGetValue(type, out events))
 			{
 				events = FindTypeEvents(type).Distinct().ToArray();
@@ -70,7 +82,7 @@ namespace Eto
 			return events;
 		}
 
-		static IEnumerable<string> FindTypeEvents(Type type)
+		static IEnumerable<object> FindTypeEvents(Type type)
 		{
 			var externalTypes = new List<Type>();
 			var current = type;

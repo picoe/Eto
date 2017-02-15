@@ -344,6 +344,7 @@
     <Compile Include="Forms\Controls\FontPicker.cs" />
     <Compile Include="Forms\ThemedControls\ThemedFontPickerHandler.cs" />
     <Compile Include="Forms\OpenWithDialog.cs" />
+    <Compile Include="Handler2.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">

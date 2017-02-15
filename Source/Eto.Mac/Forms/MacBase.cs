@@ -23,6 +23,13 @@ using MonoMac.CoreAnimation;
 
 namespace Eto.Mac.Forms
 {
+	public interface IMacControlHandler2
+	{
+		NSView GetContainerControl(Widget widget);
+
+		SizeF GetPreferredSize(Widget widget, SizeF availableSize);
+	}
+
 	public interface IMacControlHandler
 	{
 		NSView ContainerControl { get; }

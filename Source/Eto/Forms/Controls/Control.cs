@@ -21,7 +21,7 @@ namespace Eto.Forms
 	[TypeConverter(typeof(ControlConverter))]
 	public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 	{
-		new IHandler Handler { get { return (IHandler)base.Handler; } }
+		new IHandler Handler { get { return base.Handler as IHandler; } }
 
 		/// <summary>
 		/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown
@@ -437,7 +437,7 @@ namespace Eto.Forms
 		protected virtual void OnPreLoad(EventArgs e)
 		{
 			Properties.TriggerEvent(PreLoadKey, this, e);
-			Handler.OnPreLoad(e);
+			Handler?.OnPreLoad(e);
 		}
 
 		static readonly object LoadKey = new object();
@@ -470,7 +470,7 @@ namespace Eto.Forms
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Control was loaded more than once"));
 #endif
 			Properties.TriggerEvent(LoadKey, this, e);
-			Handler.OnLoad(e);
+			Handler?.OnLoad(e);
 			Loaded = true;
 		}
 
@@ -495,7 +495,7 @@ namespace Eto.Forms
 		protected virtual void OnLoadComplete(EventArgs e)
 		{
 			Properties.TriggerEvent(LoadCompleteKey, this, e);
-			Handler.OnLoadComplete(e);
+			Handler?.OnLoadComplete(e);
 		}
 
 		static readonly object UnLoadKey = new object();
@@ -524,7 +524,7 @@ namespace Eto.Forms
 #endif
 			Loaded = false;
 			Properties.TriggerEvent(UnLoadKey, this, e);
-			Handler.OnUnLoad(e);
+			Handler?.OnUnLoad(e);
 		}
 
 		#endregion
@@ -571,7 +571,7 @@ namespace Eto.Forms
 		/// </remarks>
 		public void Invalidate()
 		{
-			Handler.Invalidate(true);
+			Handler?.Invalidate(true);
 		}
 
 		/// <summary>
@@ -595,7 +595,7 @@ namespace Eto.Forms
 		/// <param name="rect">Rectangle to repaint</param>
 		public void Invalidate(Rectangle rect)
 		{
-			Handler.Invalidate(rect, true);
+			Handler?.Invalidate(rect, true);
 		}
 
 		/// <summary>
@@ -608,7 +608,7 @@ namespace Eto.Forms
 		/// <param name="invalidateChildren"><c>True</c> to invalidate all children, <c>false</c> to only invalidate the container</param>
 		public void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			Handler.Invalidate(rect, invalidateChildren);
+			Handler?.Invalidate(rect, invalidateChildren);
 		}
 
 		/// <summary>
@@ -625,16 +625,18 @@ namespace Eto.Forms
 		/// <value>The current size of the control</value>
 		public virtual Size Size
 		{
-			get { return Handler.Size; }
-			set { Handler.Size = value; }
+			get { return Handler?.Size ?? Properties.Get(SizeProperty); }
+			set { if (Handler != null) Handler.Size = value; else Properties.Set(SizeProperty, value);}
 		}
+
+		public static DependencyProperty<Control, Size> SizeProperty = new DependencyProperty<Control, Size>();
 
 		/// <summary>
 		/// Gets or sets the width of the control size.
 		/// </summary>
 		public virtual int Width
 		{
-			get { return Handler.Size.Width; }
+			get { return Size.Width; }
 			set { Size = new Size(value, Size.Height); }
 		}
 
@@ -643,7 +645,7 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual int Height
 		{
-			get { return Handler.Size.Height; }
+			get { return Size.Height; }
 			set { Size = new Size(Size.Width, value); }
 		}
 
@@ -679,16 +681,21 @@ namespace Eto.Forms
 		[DefaultValue(true)]
 		public virtual bool Enabled
 		{
-			get { return Handler.Enabled; }
+			get { return Handler?.Enabled ?? Properties.Get(EnabledProperty); }
 			set
 			{ 
 				if (value != Enabled)
 				{
-					Handler.Enabled = value;
+					if (Handler != null)
+						Handler.Enabled = value;
+					else
+						Properties.Set(EnabledProperty, value);
 					OnEnabledChanged(EventArgs.Empty);
 				}
 			}
 		}
+
+		public static readonly DependencyProperty<Control, bool> EnabledProperty = new DependencyProperty<Control, bool>();
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Control"/> is visible to the user.
@@ -702,9 +709,11 @@ namespace Eto.Forms
 		[DefaultValue(true)]
 		public virtual bool Visible
 		{
-			get { return Handler.Visible; }
-			set { Handler.Visible = value; }
+			get { return Handler?.Visible ?? Properties.Get(VisibleProperty); }
+			set { if (Handler != null) Handler.Visible = value; else Properties.Set(VisibleProperty, value); }
 		}
+
+		public static readonly DependencyProperty<Control, bool> VisibleProperty = new DependencyProperty<Control, bool>();
 
 		/// <summary>
 		/// Gets the container which this control has been added to, if any
@@ -725,6 +734,7 @@ namespace Eto.Forms
 			set { base.Parent = value; }
 		}
 
+		public static readonly DependencyProperty<Control, Container> VisualParentProperty = new DependencyProperty<Control, Container>();
 		static readonly object VisualParent_Key = new object();
 
 		/// <summary>
@@ -742,7 +752,7 @@ namespace Eto.Forms
 			internal set
 			{
 				Properties.Set(VisualParent_Key, value);
-				Handler.SetParent(value);
+				Handler?.SetParent(value);
 			}
 		}
 
@@ -863,7 +873,7 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void Focus()
 		{
-			Handler.Focus();
+			Handler?.Focus();
 		}
 
 
@@ -894,7 +904,7 @@ namespace Eto.Forms
 		public virtual void SuspendLayout()
 		{
 			SuspendCount++;
-			Handler.SuspendLayout();
+			Handler?.SuspendLayout();
 		}
 
 		/// <summary>
@@ -911,7 +921,7 @@ namespace Eto.Forms
 				throw new InvalidOperationException("Control is not suspended. You must balance calls to Resume() with Suspend()");
 			SuspendCount = --count;
 
-			Handler.ResumeLayout();
+			Handler?.ResumeLayout();
 		}
 
 		/// <summary>
@@ -975,7 +985,7 @@ namespace Eto.Forms
 		/// <seealso cref="SupportedPlatformCommands"/>
 		public void MapPlatformCommand(string systemCommand, Command command)
 		{
-			Handler.MapPlatformCommand(systemCommand, command);
+			Handler?.MapPlatformCommand(systemCommand, command);
 		}
 
 		/// <summary>
@@ -985,7 +995,7 @@ namespace Eto.Forms
 		/// <param name="point">Point in screen space</param>
 		public PointF PointFromScreen(PointF point)
 		{
-			return Handler.PointFromScreen(point);
+			return Handler?.PointFromScreen(point) ?? PointF.Empty;
 		}
 
 		/// <summary>
@@ -995,7 +1005,7 @@ namespace Eto.Forms
 		/// <param name="point">Point in control space</param>
 		public PointF PointToScreen(PointF point)
 		{
-			return Handler.PointToScreen(point);
+			return Handler?.PointToScreen(point) ?? PointF.Empty;
 		}
 
 		/// <summary>

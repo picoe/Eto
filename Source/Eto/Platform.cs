@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using Eto.Drawing;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -429,6 +430,11 @@ namespace Eto
 			Add(typeof(T), instantiator);
 		}
 
+		public void Add<T>(Func<IHandler2> instantiator)
+		{
+			Add(typeof(T), instantiator);
+		}
+
 		/// <summary>
 		/// Add the specified type and instantiator.
 		/// </summary>
@@ -446,20 +452,7 @@ namespace Eto
 		/// Find the delegate to create instances of the specified <paramref name="type"/>
 		/// </summary>
 		/// <param name="type">Type of the handler interface to get the instantiator for (usually derived from <see cref="Widget.IHandler"/> or another type)</param>
-		public Func<object> Find(Type type)
-		{
-			Func<object> activator;
-			if (instantiatorMap.TryGetValue(type, out activator))
-				return activator;
-
-			var handler = type.GetCustomAttribute<HandlerAttribute>(true);
-			if (handler != null && instantiatorMap.TryGetValue(handler.Type, out activator))
-			{
-				instantiatorMap.Add(type, activator);
-				return activator;
-			}
-			return null;
-		}
+		public Func<object> Find(Type type) => FindHandler(type)?.Instantiator;
 
 		/// <summary>
 		/// Finds the delegate to create instances of the specified type
@@ -487,6 +480,14 @@ namespace Eto
 				handlerMap.Add(type, info);
 				return info;
 			}
+
+			if (instantiatorMap.TryGetValue(type, out activator))
+			{
+				info = new HandlerInfo(true, activator);
+				handlerMap.Add(type, info);
+				return info;
+			}
+
 			return null;
 		}
 
