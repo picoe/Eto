@@ -390,6 +390,39 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Gets an Icon representation of this Bitmap scaled to draw within the specified fitting size.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you want to draw the image at a different size than the default size without resizing the image.
+		/// Note that the <paramref name="width"/> and <paramref name="height"/> specifies the maxiumum drawing size of the Icon, but will not
+		/// change the aspect of each frame's bitmap.  For example, if an existing frame is 128x128, and you specify 16x32,
+		/// then the resulting frame will draw at 16x16.
+		/// </remarks>
+		/// <returns>A new icon that will draw within the fitting size.</returns>
+		/// <param name="width">Maxiumum drawing width for the new icon.</param>
+		/// <param name="height">Maxiumum drawing height for the new icon.</param>
+		public Icon WithSize(int width, int height)
+		{
+			return new Icon(1, this).WithSize(width, height);
+		}
+
+		/// <summary>
+		/// Gets an Icon representation of this Bitmap scaled to draw within the specified fitting size.
+		/// </summary>
+		/// <remarks>
+		/// This is useful when you want to draw the image at a different size than the default size without resizing the image.
+		/// Note that the <paramref name="fittingSize"/> specifies the maxiumum drawing size of the Icon, but will not
+		/// change the aspect of each frame's bitmap.  For example, if an existing frame is 128x128, and you specify 16x32,
+		/// then the resulting frame will draw at 16x16.
+		/// </remarks>
+		/// <returns>A new icon that will draw within the fitting size.</returns>
+		/// <param name="fittingSize">The maximum size to draw the Icon.</param>
+		public Icon WithSize(Size fittingSize)
+		{
+			return new Icon(1, this).WithSize(fittingSize);
+		}
+
 		#region Handler
 
 		/// <summary>

@@ -46,7 +46,7 @@ namespace Eto.Wpf.Forms.Cells
 
 			swc.Image Image (swc.DataGridCell cell)
 			{
-				var image = new swc.Image { MaxWidth = 16, MaxHeight = 16, StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
+				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
 				swm.RenderOptions.SetBitmapScalingMode(image, ScalingMode);
 				image.DataContextChanged += (sender, e) =>
 				{

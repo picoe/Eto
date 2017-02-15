@@ -40,6 +40,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		public TextBoxCellHandler()
 		{
 			Control = new Renderer { Handler = this };
+			VerticalAlignment = VerticalAlignment.Center;
 		}
 
 		protected override void Initialize()
@@ -49,6 +50,29 @@ namespace Eto.GtkSharp.Forms.Cells
 		}
 
 		protected new TextBoxCellEventConnector Connector { get { return (TextBoxCellEventConnector)base.Connector; } }
+
+		public TextAlignment TextAlignment
+		{
+			get { return Control.Alignment.ToEto(); }
+			set
+			{
+				Control.Alignment = value.ToPango();
+				Control.Xalign = value.ToAlignment();
+				Column?.Control?.TreeView?.QueueDraw();
+			}
+		}
+
+		VerticalAlignment verticalAlignment = VerticalAlignment.Center;
+		public VerticalAlignment VerticalAlignment
+		{
+			get { return verticalAlignment; }
+			set
+			{
+				verticalAlignment = value;
+				Control.Yalign = value.ToAlignment();
+				Column?.Control?.TreeView?.QueueDraw();
+			}
+		}
 
 		protected override WeakConnector CreateConnector()
 		{
