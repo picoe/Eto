@@ -292,6 +292,12 @@
     <Compile Include="..\Eto.Gtk\Forms\OpenWithDialogHandler.cs">
       <Link>OpenWithDialogHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\Controls\DocumentControlHandler.cs">
+      <Link>DocumentControlHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\Controls\DocumentPageHandler.cs">
+      <Link>DocumentPageHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
