@@ -654,6 +654,11 @@ namespace Eto.Wpf
 			}
 		}
 
+		public static Font GetEtoFont(this swc.Control control)
+		{
+			return new Font(new FontHandler(control));
+		}
+
 		public static Font SetEtoFont(this swc.Control control, Font font, Action<sw.TextDecorationCollection> setDecorations = null)
 		{
 			if (control == null) return font;

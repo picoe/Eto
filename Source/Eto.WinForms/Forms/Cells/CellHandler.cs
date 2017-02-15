@@ -7,6 +7,8 @@ namespace Eto.WinForms.Forms.Cells
 {
 	public interface ICellConfigHandler
 	{
+		swf.DataGridViewColumn Column { get; }
+
 		void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts);
 
 		int GetRowOffset (int rowIndex);
@@ -30,7 +32,22 @@ namespace Eto.WinForms.Forms.Cells
 			get { return Control; }
 		}
 
-		public ICellConfigHandler CellConfig { get; set; }
+		ICellConfigHandler _cellConfig;
+		public ICellConfigHandler CellConfig
+		{
+			get { return _cellConfig; }
+			set
+			{
+				_cellConfig = value;
+				InitializeColumn();
+			}
+		}
+
+		public swf.DataGridViewColumn Column => CellConfig?.Column;
+
+		protected virtual void InitializeColumn()
+		{
+		}
 
 		protected void PositionEditingControl (int row, ref sd.Rectangle cellClip, ref sd.Rectangle cellBounds, int customOffset = 0)
 		{

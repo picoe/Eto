@@ -31,37 +31,56 @@ namespace Eto.Wpf.Forms.Cells
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				var element = base.GenerateElement(cell, dataItem);
-				element.DataContextChanged += (sender, e) =>
-				{
-					var control = sender as swc.CheckBox;
-					control.IsChecked = Handler.GetValue(control.DataContext);
-					Handler.FormatCell(control, cell, control.DataContext);
-				};
+				var element = (swc.CheckBox)base.GenerateElement(cell, dataItem);
+				InitializeElement(element, cell, dataItem);
 				return Handler.SetupCell(element);
+			}
+
+			void InitializeElement(swc.CheckBox element, swc.DataGridCell cell, object dataItem)
+			{
+				if (!IsControlInitialized(element))
+				{
+					element.VerticalAlignment = sw.VerticalAlignment.Center;
+					element.DataContextChanged += (sender, e) =>
+					{
+						var control = sender as swc.CheckBox;
+						control.IsChecked = Handler.GetValue(control.DataContext);
+						Handler.FormatCell(control, cell, control.DataContext);
+					};
+					SetControlInitialized(element, true);
+				}
+				else
+				{
+					element.IsChecked = Handler.GetValue(dataItem);
+					Handler.FormatCell(element, cell, dataItem);
+				}
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				var element = base.GenerateEditingElement(cell, dataItem);
-				element.Name = "control";
-				element.DataContextChanged += (sender, e) =>
+				var element = (swc.CheckBox)base.GenerateEditingElement(cell, dataItem);
+				InitializeElement(element, cell, dataItem);
+				if (!IsControlEditInitialized(element))
 				{
-					var control = sender as swc.CheckBox;
-					control.IsChecked = Handler.GetValue(control.DataContext);
-					Handler.FormatCell(control, cell, control.DataContext);
-				};
+					element.Checked += (sender, e) =>
+					{
+						var control = (swc.CheckBox)sender;
+						Handler.SetValue(control.DataContext, control.IsChecked);
+					};
+					element.Unchecked += (sender, e) =>
+					{
+						var control = (swc.CheckBox)sender;
+						Handler.SetValue(control.DataContext, control.IsChecked);
+					};
+					SetControlEditInitialized(element, true);
+				}
 				return Handler.SetupCell(element);
 			}
-
 			protected override bool CommitCellEdit(sw.FrameworkElement editingElement)
 			{
-				var control = editingElement as swc.CheckBox ?? editingElement.FindChild<swc.CheckBox>("control");
-				Handler.SetValue(control.DataContext, control.IsChecked);
 				Handler.ContainerHandler.CellEdited(Handler, editingElement);
-				return true;
+				return base.CommitCellEdit(editingElement);
 			}
-
 		}
 
 		public CheckBoxCellHandler()

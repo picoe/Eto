@@ -2,6 +2,7 @@ using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
 using Eto.WinForms.Forms.Cells;
+using System;
 
 namespace Eto.WinForms.Forms.Controls
 {
@@ -73,6 +74,8 @@ namespace Eto.WinForms.Forms.Controls
 			get { return Control.Visible; }
 			set { Control.Visible = value; }
 		}
+
+		public swf.DataGridViewColumn Column => Control;
 
 		public void SetCellValue (object dataItem, object value)
 		{

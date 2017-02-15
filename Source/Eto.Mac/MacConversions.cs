@@ -49,7 +49,7 @@ namespace Eto.Mac
 		public static Color ToEto(this NSColor color, bool calibrated = true)
 		{
 			if (color == null)
-				return Colors.Black;
+				return Colors.Transparent;
 			var colorspace = calibrated ? NSColorSpace.CalibratedRGB : NSColorSpace.DeviceRGB;
 			var converted = color.UsingColorSpace(colorspace);
 			if (converted == null)

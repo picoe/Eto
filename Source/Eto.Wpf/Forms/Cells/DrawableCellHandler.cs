@@ -39,37 +39,42 @@ namespace Eto.Wpf.Forms.Cells
 		{
 			public DrawableCellHandler Handler { get; set; }
 
-			EtoCanvas Create(swc.DataGridCell cell)
+			EtoCanvas Create(swc.DataGridCell cell, object dataItem)
 			{
-				var control = new EtoCanvas { Column = this };
-				control.DataContextChanged += (sender, e) =>
+				var control = cell.Content as EtoCanvas;
+				if (control == null)
 				{
-					var ctl = sender as EtoCanvas;
-					ctl.IsSelected = cell.IsSelected;
-					Handler.FormatCell(ctl, cell, ctl.DataContext);
-					ctl.InvalidateVisual();
-				};
-				cell.Selected += (sender, e) =>
-				{
-					control.IsSelected = cell.IsSelected;
-					control.InvalidateVisual();
-				};
-				cell.Unselected += (sender, e) =>
-				{
-					control.IsSelected = cell.IsSelected;
-					control.InvalidateVisual();
-				};
+					control = new EtoCanvas { Column = this };
+					control.DataContextChanged += (sender, e) =>
+					{
+						var ctl = sender as EtoCanvas;
+						ctl.IsSelected = cell.IsSelected;
+						Handler.FormatCell(ctl, cell, ctl.DataContext);
+						ctl.InvalidateVisual();
+					};
+					cell.Selected += (sender, e) =>
+					{
+						control.IsSelected = cell.IsSelected;
+						control.InvalidateVisual();
+					};
+					cell.Unselected += (sender, e) =>
+					{
+						control.IsSelected = cell.IsSelected;
+						control.InvalidateVisual();
+					};
+				}
+				control.DataContext = dataItem;
 				return control;
 			}
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell));
+				return Handler.SetupCell(Create(cell, dataItem));
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell));
+				return Handler.SetupCell(Create(cell, dataItem));
 			}
 		}
 

@@ -139,6 +139,16 @@ namespace Eto.Test.Sections.Controls
 			var textAlignmentDropDown = new EnumDropDown<TextAlignment>();
 			textAlignmentDropDown.SelectedValueBinding.Bind(label, l => l.TextAlignment);
 
+			var verticalAlignmentDropDown = new EnumDropDown<VerticalAlignment>();
+			verticalAlignmentDropDown.SelectedValueBinding.Bind(label, l => l.VerticalAlignment);
+
+			var testVerticalAlignment = new CheckBox { Text = "Test VerticalAlignment" };
+			testVerticalAlignment.CheckedChanged += (sender, e) => label.Height = testVerticalAlignment.Checked == true ? 200 : -1;
+			testVerticalAlignment.CheckedBinding.Bind(verticalAlignmentDropDown, c => c.Enabled, DualBindingMode.OneWayToSource);
+
+			var fontSelector = new FontPicker();
+			fontSelector.Bind(c => c.Value, label, l => l.Font);
+
 			Func<Control> spacer = () => new Panel { BackgroundColor = Colors.DarkGray, Size = new Size(10, 10) };
 
 			return new StackLayout
@@ -146,12 +156,8 @@ namespace Eto.Test.Sections.Controls
 				HorizontalContentAlignment = HorizontalAlignment.Stretch,
 				Items =
 				{
-					new StackLayoutItem(new StackLayout
-					{
-						Orientation = Orientation.Horizontal,
-						Spacing = 5,
-						Items = { "Wrap:", wrapDropDown, "TextAlignment:", textAlignmentDropDown }
-					}, HorizontalAlignment.Center),
+					TableLayout.Horizontal(5, null, "Wrap:", wrapDropDown, "Font:", fontSelector, null),
+					TableLayout.Horizontal(5, null, testVerticalAlignment, verticalAlignmentDropDown, "TextAlignment:", textAlignmentDropDown, null),
 					spacer(),
 					new TableLayout(
 						new TableRow(

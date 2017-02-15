@@ -53,6 +53,7 @@ namespace Eto.Test
 			MainForm.Show();
 		}
 
+		/*
 		protected override void OnTerminating(CancelEventArgs e)
 		{
 			base.OnTerminating(e);
@@ -61,7 +62,7 @@ namespace Eto.Test
 			var result = MessageBox.Show(MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
 			if (result == DialogResult.No)
 				e.Cancel = true;
-		}
+		}*/
 	}
 }
 

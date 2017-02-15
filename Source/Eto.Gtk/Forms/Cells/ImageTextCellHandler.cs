@@ -66,6 +66,30 @@ namespace Eto.GtkSharp.Forms.Cells
 		{
 			imageCell = new ImageRenderer { Handler = this };
 			Control = new Renderer { Handler = this };
+			VerticalAlignment = VerticalAlignment.Center;
+		}
+
+		public TextAlignment TextAlignment
+		{
+			get { return Control.Alignment.ToEto(); }
+			set
+			{
+				Control.Alignment = value.ToPango();
+				Control.Xalign = value.ToAlignment();
+				Column?.Control?.TreeView?.QueueDraw();
+			}
+		}
+
+		VerticalAlignment verticalAlignment = VerticalAlignment.Center;
+		public VerticalAlignment VerticalAlignment
+		{
+			get { return verticalAlignment; }
+			set
+			{
+				verticalAlignment = value;
+				Control.Yalign = value.ToAlignment();
+				Column?.Control?.TreeView?.QueueDraw();
+			}
 		}
 
 		protected override void Initialize()

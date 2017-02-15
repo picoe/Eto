@@ -338,9 +338,7 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				get
 				{
-					if (font == null)
-						font = new Font(new FontHandler(Cell));
-					return font;
+					return font ?? (font = Cell.GetEtoFont());
 				}
 				set
 				{
@@ -353,12 +351,11 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				get
 				{
-					var brush = Cell.Background as swm.SolidColorBrush;
-					return brush != null ? brush.Color.ToEto() : Colors.White;
+					return Cell.Background.ToEtoColor();
 				}
 				set
 				{
-					Cell.Background = new swm.SolidColorBrush(value.ToWpf());
+					Cell.Background = value.ToWpfBrush(Cell.Background);
 				}
 			}
 
@@ -366,12 +363,11 @@ namespace Eto.Wpf.Forms.Controls
 			{
 				get
 				{
-					var brush = Cell.Foreground as swm.SolidColorBrush;
-					return brush != null ? brush.Color.ToEto() : Colors.Black;
+					return Cell.Foreground.ToEtoColor();
 				}
 				set
 				{
-					Cell.Foreground = new swm.SolidColorBrush(value.ToWpf());
+					Cell.Foreground = value.ToWpfBrush(Cell.Foreground);
 				}
 			}
 		}
