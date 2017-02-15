@@ -34,9 +34,18 @@ namespace Eto.GtkSharp.Forms.Controls
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				int width, height;
-				Layout.GetPixelSize(out width, out height);
-				requisition.Width = width;
-				requisition.Height = height;
+				if (wrapWidth != null && wrapWidth > 0) {
+					Layout.Width = (int)(wrapWidth * Pango.Scale.PangoScale);
+					Layout.GetPixelSize(out width, out height);
+					requisition.Width = width;
+					requisition.Height = height;
+				}
+				else {
+					Layout.GetPixelSize(out width, out height);
+
+					requisition.Width = width;
+					requisition.Height = height;
+				}
 			}
 			#else
 
@@ -54,6 +63,25 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				base.OnSizeAllocated(allocation);
 				SetWrapWidth(allocation.Width);
+			}
+
+			protected override void OnRealized()
+			{
+				// the allocation may default to 1, in that case ignore OnRealized
+				if (Allocation.Width > 1 && wrapWidth != Allocation.Width)
+				{
+					Layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);
+					int pixWidth, pixHeight;
+					Layout.GetPixelSize(out pixWidth, out pixHeight);
+					HeightRequest = pixHeight;
+					wrapWidth = Allocation.Width;
+#if GTK3
+					if (Parent != null)
+						Gtk.Application.Invoke((sender, e) => Parent.QueueResize());
+#endif
+				}
+
+				base.OnRealized();
 			}
 
 			void SetWrapWidth(int width)
