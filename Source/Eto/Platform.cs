@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Eto.Drawing;
 
@@ -169,7 +171,7 @@ namespace Eto
 		#endregion
 
 		/// <summary>
-		/// Gets the ID of this platform
+		/// Gets the ID of this platform, usually the same as the platform part of the assembly name.  E.g. Mac, Gtk2, Wpf, etc.
 		/// </summary>
 		/// <remarks>
 		/// The platform ID can be used to determine which platform is currently in use.  The platform
@@ -270,6 +272,72 @@ namespace Eto
 			return Find(type) != null;
 		}
 
+		static IEnumerable<Assembly> GetReferencedAssemblies()
+		{
+			var asm = typeof(Assembly).GetTypeInfo();
+			var entryAssembly = asm.GetDeclaredMethod("GetEntryAssembly")
+				?.Invoke(null, null) as Assembly;
+			if (entryAssembly != null)
+			{
+				var location = asm.GetDeclaredProperty("Location")
+					?.GetValue(entryAssembly) as string;
+
+				location = Type.GetType("System.IO.Path")
+					?.GetTypeInfo().GetDeclaredMethod("GetDirectoryName")
+					?.Invoke(null, new object[] { location }) as string;
+
+				var files = Type.GetType("System.IO.Directory")
+					?.GetTypeInfo().GetDeclaredMethods("GetFiles")
+					?.FirstOrDefault(r => r.GetParameters().Length == 2)
+					?.Invoke(null, new[] { location, "*.dll" }) as IEnumerable<string>;
+				if (files != null)
+				{
+					var getFileName = Type.GetType("System.IO.Path")
+						?.GetTypeInfo().GetDeclaredMethod("GetFileName");
+					foreach (var file in files.Select(r => getFileName.Invoke(null, new[] { r }) as string))
+					{
+						yield return Assembly.Load(new AssemblyName(file));
+					}
+				}
+
+				/*
+				var referencedAssemblies = asm.GetDeclaredMethod("GetReferencedAssemblies")?.Invoke(entryAssembly, null);
+				return referencedAssemblies as IEnumerable<Assembly> ?? Enumerable.Empty<Assembly>();
+				*/
+			}
+		}
+
+		/// <summary>
+		/// Loads the extensions specified by the assembly attribute <see cref="PlatformExtensionAttribute"/>.
+		/// </summary>
+		/// <remarks>
+		/// This is useful for 3rd party assemblies not included with Eto.
+		/// </remarks>
+		/// <param name="assemblyName">Name of the assembly to load the extensions for.</param>
+		public void LoadAssembly(string assemblyName)
+		{
+			LoadAssembly(Assembly.Load(new AssemblyName(assemblyName)));
+		}
+
+		/// <summary>
+		/// Loads the extensions specified by the assembly attribute <see cref="PlatformExtensionAttribute"/>.
+		/// </summary>
+		/// <remarks>
+		/// This is useful for 3rd party assemblies not included with Eto.
+		/// </remarks>
+		/// <param name="assembly">Assembly to load the extensions for.</param>
+		public void LoadAssembly(Assembly assembly)
+		{
+			foreach (var extensionInfo in assembly.GetCustomAttributes<PlatformExtensionAttribute>())
+			{
+				if (!string.IsNullOrEmpty(extensionInfo.PlatformID) && extensionInfo.PlatformID != ID)
+					continue;
+				var extension = Activator.CreateInstance(extensionInfo.ExtensionType) as IPlatformExtension;
+				extension?.Initialize(this);
+				properties.Add(extension, null);
+			}
+		}
+
 		/// <summary>
 		/// Gets the supported features of the platform.
 		/// </summary>
@@ -365,6 +433,15 @@ namespace Eto
 			if (globalInstance == null)
 				globalInstance = platform;
 			instance.Value = platform;
+			platform.Initialize();
+		}
+
+		void Initialize()
+		{
+			/*foreach (var assembly in GetReferencedAssemblies())
+			{
+				LoadAssembly(assembly);
+			}*/
 		}
 
 		/// <summary>

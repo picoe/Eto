@@ -21,7 +21,7 @@ namespace Eto.WinRT
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class Platform : Eto.Platform
 	{
-		public override string ID { get { return "winrt"; } }
+		public override string ID => "WinRT";
 
 		//static readonly EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register("Eto.WinRT.CustomControls.Assemblies");
 
