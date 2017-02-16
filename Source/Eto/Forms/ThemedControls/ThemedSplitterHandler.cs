@@ -279,5 +279,31 @@ namespace Eto.Forms.ThemedControls
 		{
 			get { return splitter; }
 		}
-	}
+
+        public int Panel1MinimumSize
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int Panel2MinimumSize
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
 }
