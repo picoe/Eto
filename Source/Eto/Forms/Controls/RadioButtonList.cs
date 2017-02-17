@@ -21,7 +21,7 @@ namespace Eto.Forms
 		readonly List<RadioButton> buttons = new List<RadioButton>();
 		RadioButton controller;
 		RadioButton selectedButton;
-		Size spacing = new Size(5, 5);
+		Size spacing = new Size(0, 0);
 		bool settingChecked;
 
 		/// <summary>
