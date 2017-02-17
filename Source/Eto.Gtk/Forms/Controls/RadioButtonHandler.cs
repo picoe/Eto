@@ -31,7 +31,8 @@ namespace Eto.GtkSharp.Forms.Controls
 				inactive.Active = true;
 			}
 			label = new Gtk.AccelLabel("");
-			Control.Add(label); //control.AddMnemonicLabel(label);
+			// don't add the label to the control unless Text is non-empty
+			//Control.Add(label); //control.AddMnemonicLabel(label);
 			Control.Toggled += Connector.HandleCheckedChanged;
 			box = new Gtk.EventBox();
 			box.Child = Control;
@@ -57,7 +58,15 @@ namespace Eto.GtkSharp.Forms.Controls
 		public override string Text
 		{
 			get { return label.Text.ToEtoMnemonic(); }
-			set { label.TextWithMnemonic = value.ToPlatformMnemonic(); }
+			set {
+				if (value == null || value == string.Empty) {
+					Control.Remove(label);
+				}
+				else {
+					Control.Add(label);
+				}
+
+				label.TextWithMnemonic = value.ToPlatformMnemonic(); }
 		}
 
 		public bool Checked
