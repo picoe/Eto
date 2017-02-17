@@ -3,9 +3,15 @@ using System;
 
 namespace Eto.GtkSharp
 {
-	public static class Gtk3Compatibility
+#if GTK2
+	public struct RGBA
 	{
 
+	}
+#endif
+
+	public static class Gtk3Compatibility
+	{
 #if GTK2
 		public static void SetSourceColor(this Cairo.Context context, Cairo.Color color)
 		{

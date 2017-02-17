@@ -246,7 +246,6 @@
     <Compile Include="..\Eto.Gtk\Forms\GtkControl.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\RichTextAreaHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\KeyboardHandler.cs" />
-    <Compile Include="..\Eto.Gtk\NativeMethods.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Cells\ProgressCellHandler.cs" />
     <Compile Include="..\Eto.Gtk\Drawing\RadialGradientBrushHandler.cs" />
     <Compile Include="..\Eto.Gtk\Forms\Controls\ExpanderHandler.cs" />
@@ -298,6 +297,10 @@
     <Compile Include="..\Eto.Gtk\Forms\Controls\DocumentPageHandler.cs">
       <Link>DocumentPageHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Gtk\NativeMethods.cs">
+      <Link>GtkNativeMethods.cs</Link>
+      <DependentUpon>NativeMethods.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -314,6 +317,12 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Eto.Gtk\NativeMethods.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NativeMethods.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="..\Shared\Common.targets" />
   <ProjectExtensions>
