@@ -8,6 +8,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		Gtk.EventBox box;
 		Gtk.AccelLabel label;
+		bool labelAdded;
 
 		protected override Gtk.Widget FontControl
 		{
@@ -59,11 +60,13 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return label.Text.ToEtoMnemonic(); }
 			set {
-				if (value == null || value == string.Empty) {
-					Control.Remove(label);
+				if (value != null && value != string.Empty && !labelAdded) {
+					Control.Add(label);
+					labelAdded = true;
 				}
 				else {
-					Control.Add(label);
+					Control.Remove(label);
+					labelAdded = false;
 				}
 
 				label.TextWithMnemonic = value.ToPlatformMnemonic(); }
