@@ -86,7 +86,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				var tia = new TextChangingEventArgs(Clipboard.Text, Handler.Selection);
 				Handler.Callback.OnTextChanging(Handler.Widget, tia);
 				if (tia.Cancel)
-					NativeMethods.StopEmissionByName(Handler.Control, "paste-clipboard");
+					NativeMethods.g_signal_stop_emission_by_name(Handler.Control.Handle, "paste-clipboard");
 			}
 
 			bool deleting;
@@ -102,7 +102,7 @@ namespace Eto.GtkSharp.Forms.Controls
 						var tia = new TextChangingEventArgs(string.Empty, new Range<int>(args.StartPos, Math.Min(args.EndPos - 1, Handler.Control.Text.Length - 1)));
 						Handler.Callback.OnTextChanging(Handler.Widget, tia);
 						if (tia.Cancel)
-							NativeMethods.StopEmissionByName(Handler.Control, "delete-text");
+							NativeMethods.g_signal_stop_emission_by_name(Handler.Control.Handle, "delete-text");
 					}
 					deleting = false;
 				}
@@ -205,7 +205,8 @@ namespace Eto.GtkSharp.Forms.Controls
 					Invalidate(false);
 #else
 				placeholderText = value;
-				NativeMethods.gtk_entry_set_placeholder_text(Control, value);
+
+				NativeMethods.gtk_entry_set_placeholder_text(Control.Handle, value);
 #endif
 			}
 		}
