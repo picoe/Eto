@@ -8,7 +8,6 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		Gtk.EventBox box;
 		Gtk.AccelLabel label;
-		bool labelAdded;
 
 		protected override Gtk.Widget FontControl
 		{
@@ -33,7 +32,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			label = new Gtk.AccelLabel("");
 			// don't add the label to the control unless Text is non-empty
-			//Control.Add(label); //control.AddMnemonicLabel(label);
+			//Control.Add(label);
 			Control.Toggled += Connector.HandleCheckedChanged;
 			box = new Gtk.EventBox();
 			box.Child = Control;
@@ -60,16 +59,17 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			get { return label.Text.ToEtoMnemonic(); }
 			set {
-				if (value != null && value != string.Empty && !labelAdded) {
-					Control.Add(label);
-					labelAdded = true;
-				}
-				else {
-					Control.Remove(label);
-					labelAdded = false;
-				}
+				label.TextWithMnemonic = value.ToPlatformMnemonic();
 
-				label.TextWithMnemonic = value.ToPlatformMnemonic(); }
+				// add label if Text present, remove label if no Text
+				// don't need to track added or removed, Gtk tracks
+				// for us.
+				if (value != null && value != string.Empty) {
+					Control.Add(label);
+				} else {
+					Control.Remove(label);
+				}
+			}
 		}
 
 		public bool Checked
