@@ -451,7 +451,7 @@ namespace Eto.GtkSharp.Forms
 			}
 
 			[GLib.ConnectBefore]
-			public virtual void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
+			public void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
 			{
 				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 				Keys modifiers = args.Event.State.ToEtoKey();
@@ -467,6 +467,8 @@ namespace Eto.GtkSharp.Forms
 				}
 				if (!mouseArgs.Handled && Handler.EventControl.CanFocus && !Handler.EventControl.HasFocus)
 					Handler.EventControl.GrabFocus();
+				if (args.RetVal != null && (bool)args.RetVal == true)
+					return;
 				args.RetVal = mouseArgs.Handled;
 			}
 
