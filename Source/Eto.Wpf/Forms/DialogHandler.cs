@@ -27,8 +27,9 @@ namespace Eto.Wpf.Forms
             dockMain = new swc.DockPanel();
 
             gridButtons = new swc.Grid();
-            gridButtons.Margin = new sw.Thickness(8);
             gridButtons.RowDefinitions.Add(new swc.RowDefinition());
+            gridButtons.Visibility = System.Windows.Visibility.Hidden;
+            gridButtons.Margin = new sw.Thickness();
         }
 
         public override void SetContainerContent(sw.FrameworkElement content)
@@ -103,12 +104,16 @@ namespace Eto.Wpf.Forms
             
             var negativeButtons = Widget.NegativeButtons;
             var positiveButtons = Widget.PositiveButtons;
+            var hasButtons = negativeButtons.Count + positiveButtons.Count > 0;
 
             for (int i = positiveButtons.Count - 1; i >= 0; i--)
                 AddButton(positiveButtons.Count - i, positiveButtons[i]);
 
             for (int i = 0;i < negativeButtons.Count;i++)
                 AddButton(positiveButtons.Count + 1 + i, negativeButtons[i]);
+            
+            gridButtons.Visibility = hasButtons ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+            gridButtons.Margin = new sw.Thickness(hasButtons ? 8 : 0);
         }
 
         private void AddButton(int pos, Button button)

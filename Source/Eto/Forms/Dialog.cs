@@ -298,8 +298,19 @@ namespace Eto.Forms
 			/// <value>The abort button.</value>
 			Button AbortButton { get; set; }
 
+            /// <summary>
+            /// Adds a positive or negative button to the specified position.
+            /// </summary>
+            /// <param name="positive">Positive or negative button.</param>
+            /// <param name="index">Position to add it to,</param>
+            /// <param name="item">The button itself.</param>
 			void InsertDialogButton(bool positive, int index, Button item);
 
+            /// <summary>
+            /// Removes a positive or negative button from the specified position.
+            /// </summary>
+            /// <param name="positive">Positive or negative button.</param>
+            /// <param name="index">Current position of the button.</param>
 			void RemoveDialogButton(bool positive, int index);
 		}
 
