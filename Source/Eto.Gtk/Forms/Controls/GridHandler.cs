@@ -51,6 +51,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.Add(Tree);
 
 			Tree.Events |= Gdk.EventMask.ButtonPressMask;
+			Tree.ButtonPressEvent += Connector.HandleButtonPress;
 
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
@@ -68,10 +69,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			public new GridHandler<TWidget, TCallback> Handler { get { return (GridHandler<TWidget, TCallback>)base.Handler; } }
 
 			[GLib.ConnectBefore]
-			public override void HandleButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
+			public void HandleButtonPress(object o, Gtk.ButtonPressEventArgs args)
 			{
-				base.HandleButtonPressEvent(o, args);
-
 				var treeview = o as Gtk.TreeView;
 
 				// Gtk default behaviout for multiselect treeview is that
@@ -86,7 +85,9 @@ namespace Eto.GtkSharp.Forms.Controls
 
 					if (treeview.GetDestRowAtPos((int)args.Event.X, (int)args.Event.Y, out path, out pos))
 					{
-						var height = treeview.GetCellArea(path, treeview.Columns[0]).Height;
+						var height = 0;
+						if (treeview.HeadersVisible && treeview.Columns.Length > 0)
+							height = treeview.GetCellArea(path, treeview.Columns[0]).Height;
 
 						if (treeview.GetDestRowAtPos((int)args.Event.X, (int)args.Event.Y + height, out path, out pos))
 						{
