@@ -104,11 +104,11 @@ namespace Eto.Wpf.Forms
             var negativeButtons = Widget.NegativeButtons;
             var positiveButtons = Widget.PositiveButtons;
 
-            for (int i = negativeButtons.Count - 1; i >= 0; i--)
-                AddButton(negativeButtons.Count - i, negativeButtons[i]);
+            for (int i = positiveButtons.Count - 1; i >= 0; i--)
+                AddButton(positiveButtons.Count - i, positiveButtons[i]);
 
-            for (int i = 0;i < positiveButtons.Count;i++)
-                AddButton(negativeButtons.Count + 1 + i, positiveButtons[i]);
+            for (int i = 0;i < negativeButtons.Count;i++)
+                AddButton(positiveButtons.Count + 1 + i, negativeButtons[i]);
         }
 
         private void AddButton(int pos, Button button)

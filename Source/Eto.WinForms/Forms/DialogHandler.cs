@@ -125,16 +125,16 @@ namespace Eto.WinForms.Forms
             var positiveButtons = Widget.PositiveButtons;
             var height = 0;
 
-            for (int i = negativeButtons.Count - 1; i >= 0; i--)
-            {
-                height = Math.Max(height, negativeButtons[i].Height);
-                AddButton(negativeButtons.Count - i, negativeButtons[i]);
-            }
-
-            for (int i = 0; i < positiveButtons.Count; i++)
+            for (int i = positiveButtons.Count - 1; i >= 0; i--)
             {
                 height = Math.Max(height, positiveButtons[i].Height);
-                AddButton(negativeButtons.Count + 1 + i, positiveButtons[i]);
+                AddButton(positiveButtons.Count - i, positiveButtons[i]);
+            }
+
+            for (int i = 0; i < negativeButtons.Count; i++)
+            {
+                height = Math.Max(height, negativeButtons[i].Height);
+                AddButton(positiveButtons.Count + 1 + i, negativeButtons[i]);
             }
 
             if (negativeButtons.Count + positiveButtons.Count > 0 && height <= 0)
