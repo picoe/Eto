@@ -20,7 +20,13 @@ namespace Eto.GtkSharp.Forms
 
 		public Color Color
 		{
-			get { return NativeMethods.gtk_color_chooser_get_rgba(Control.Handle).ToEto(); }
+			get
+			{
+				Gdk.RGBA rgba;
+				NativeMethods.gtk_color_chooser_get_rgba(Control.Handle, out rgba);
+
+				return rgba.ToEto();
+			}
 			set { NativeMethods.gtk_color_chooser_set_rgba(Control.Handle, new double[] { value.R, value.G, value.B, value.A }); }
 		}
 
