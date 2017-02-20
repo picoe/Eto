@@ -359,7 +359,7 @@ namespace Eto.Wpf.Forms
 		protected virtual void SetResizeMode()
 		{
 			if (resizable)
-				Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
+				Control.ResizeMode = sw.ResizeMode.CanResize;
 			else if (minimizable)
 				Control.ResizeMode = sw.ResizeMode.CanMinimize;
 			else
