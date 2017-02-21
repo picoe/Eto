@@ -244,6 +244,7 @@
     <Compile Include="Drawing\IconFrameHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="CrashReporter.cs" />
+    <Compile Include="Forms\OpenWithDialogHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
