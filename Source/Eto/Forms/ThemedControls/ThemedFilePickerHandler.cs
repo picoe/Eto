@@ -24,13 +24,13 @@ namespace Eto.Forms.ThemedControls
 			Control.Spacing = 4;
 
 			entryPath = new TextBox();
-			Control.Items.Add(new StackLayoutItem(entryPath, true));
+			Control.Items.Add(new StackLayoutItem(entryPath, VerticalAlignment.Center, true));
 
 			buttonBrowse = new Button();
 			buttonBrowse.Text = "Browse...";
 			buttonBrowse.Width = -1;
 			buttonBrowse.Click += ButtonBrowse_Click;
-			Control.Items.Add(new StackLayoutItem(buttonBrowse, false));
+			Control.Items.Add(new StackLayoutItem(buttonBrowse, VerticalAlignment.Center, false));
 		}
 
 		/// <summary>
