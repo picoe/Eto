@@ -1,8 +1,15 @@
-﻿namespace Tutorial1
-
+﻿open System
 open Eto.Forms
+open Eto.Drawing
 
-[<EntryPoint>]
+type MyForm() as this =
+    inherit Form()
+    do
+        this.ClientSize <- Size(600, 400)
+        this.Title <- "Hello, Eto.Forms"
+        this.Content <- new Label(Text = "Some content", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center)
+
+[<EntryPoint;STAThread>]
 let main argv = 
-    printfn "%A" argv
-    0 // return an integer exit code
+    (new Application()).Run(new MyForm())
+    0
