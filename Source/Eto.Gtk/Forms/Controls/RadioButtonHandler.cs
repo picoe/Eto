@@ -31,11 +31,27 @@ namespace Eto.GtkSharp.Forms.Controls
 				inactive.Active = true;
 			}
 			label = new Gtk.AccelLabel("");
-			// don't add the label to the control unless Text is non-empty
-			//Control.Add(label);
+			Control.Add(label);
+			Control.Realized += Control_Realized;
+
 			Control.Toggled += Connector.HandleCheckedChanged;
 			box = new Gtk.EventBox();
 			box.Child = Control;
+		}
+
+		void UpdateLabel()
+		{
+			// if Text present show label, otherwise hide it.
+			if (label.Text != null && label.Text != string.Empty){
+				label.Visible = true;
+			} else {
+				label.Visible = false;
+			}
+		}
+
+		void Control_Realized (object sender, EventArgs e)
+		{
+			UpdateLabel ();
 		}
 
 		protected new RadioButtonConnector Connector { get { return (RadioButtonConnector)base.Connector; } }
@@ -60,15 +76,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return label.Text.ToEtoMnemonic(); }
 			set {
 				label.TextWithMnemonic = value.ToPlatformMnemonic();
-
-				// add label if Text present, remove label if no Text
-				// don't need to track added or removed, Gtk tracks
-				// for us.
-				if (value != null && value != string.Empty) {
-					Control.Add(label);
-				} else {
-					Control.Remove(label);
-				}
+				UpdateLabel ();
 			}
 		}
 
