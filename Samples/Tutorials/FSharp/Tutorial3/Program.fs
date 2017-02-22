@@ -19,27 +19,27 @@ type MyForm() as this =
         // You can layout your controls declaratively using rows and columns as below, or add to the TableLayout.Rows and TableRow.Cell directly.
         let layout = 
             new TableLayout(
-                Spacing = new Size(5, 5) // space between each cell
-                , Padding = new Padding(10, 10, 10, 10)
+                Spacing = Size(5, 5) // space between each cell
+                , Padding = Padding(10)
             )
 
         [
-            new TableRow(
-                new TableCell(new Label(Text = "First Column"), true)
-                , new TableCell(new Label(Text = "Second Column"), true)
-                , new TableCell(new Label(Text = "Third Column"))
+            TableRow(
+                TableCell(new Label(Text = "First Column"), true)
+                , TableCell(new Label(Text = "Second Column"), true)
+                , TableCell(new Label(Text = "Third Column"))
         
             )
-            ; new TableRow(
-                TableCell.op_Implicit (new TextBox(Text = "Some text"))
-                , TableCell.op_Implicit dropdown
-                , TableCell.op_Implicit (new CheckBox(Text = "A checkbox"))
+            ; TableRow(
+                TableCell(new TextBox(Text = "Some text"))
+                , TableCell dropdown
+                , TableCell(new CheckBox(Text = "A checkbox"))
         
             ) 
         
             // by default, the last row & column will get scaled. This adds a row at the end to take the extra space of the form.
             // otherwise, the above row will get scaled and stretch the TextBox/ComboBox/CheckBox to fill the remaining height.
-            ; new TableRow(ScaleHeight = true)
+            ; TableRow(ScaleHeight = true)
         ] |> List.iter layout.Rows.Add
 
         this.Content <- layout
