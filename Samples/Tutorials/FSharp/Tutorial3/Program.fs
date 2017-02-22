@@ -30,16 +30,15 @@ type MyForm() as this =
                 , TableCell(new Label(Text = "Third Column"))
         
             )
-            ; TableRow(
+            TableRow(
                 TableCell(new TextBox(Text = "Some text"))
                 , TableCell dropdown
                 , TableCell(new CheckBox(Text = "A checkbox"))
         
             ) 
-        
             // by default, the last row & column will get scaled. This adds a row at the end to take the extra space of the form.
             // otherwise, the above row will get scaled and stretch the TextBox/ComboBox/CheckBox to fill the remaining height.
-            ; TableRow(ScaleHeight = true)
+            TableRow(ScaleHeight = true)
         ] |> List.iter layout.Rows.Add
 
         this.Content <- layout
