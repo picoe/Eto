@@ -61,13 +61,17 @@ namespace Eto.GtkSharp.Forms
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		Point? currentLocation;
-		Size? initialSize;
+		Size minimumSize;
 		WindowState state;
 		WindowStyle style;
 		bool topmost;
+		bool setclientsize;
+		bool resizable;
 
 		protected GtkWindow()
 		{
+			resizable = true;
+
 			vbox = new Gtk.VBox();
 			actionvbox = new Gtk.VBox();
 
@@ -97,10 +101,11 @@ namespace Eto.GtkSharp.Forms
 
 		public override Size MinimumSize
 		{
-			get { return base.MinimumSize; }
+			get { return minimumSize; }
 			set
 			{
-				base.MinimumSize = value;
+				minimumSize = value;
+				SetMinMax(null);
 			}
 		}
 
@@ -121,16 +126,47 @@ namespace Eto.GtkSharp.Forms
 
 		public bool Resizable
 		{
-			get { return Control.Resizable; }
+			get { return resizable; }
 			set
 			{
-				Control.Resizable = value; 
-				#if GTK2
-				Control.AllowGrow = value;
-				#else
-				Control.HasResizeGrip = value;
-				#endif
+				resizable = value;
+				SetMinMax(null);
 			}
+		}
+
+		private void SetMinMax(Size? size)
+		{
+			var minWidth = minimumSize.Width;
+			var minHeight = minimumSize.Height;
+			var maxWidth = 9999999;
+			var maxHeight = 9999999;
+
+			if (!resizable)
+			{
+				if (size != null)
+				{
+					minWidth = maxWidth = size.Value.Width;
+					minHeight = maxHeight = size.Value.Height;
+				}
+				else if (Control.IsRealized)
+				{
+					minWidth = maxWidth = Control.Allocation.Width;
+					minHeight = maxHeight = Control.Allocation.Height;
+				}
+				else
+				{
+					minWidth = maxWidth = Control.DefaultWidth;
+					minHeight = maxHeight = Control.DefaultHeight;
+				}
+			}
+
+			Control.SetGeometryHints(Control, new Gdk.Geometry()
+			{
+				MinWidth = minWidth,
+				MinHeight = minHeight,
+				MaxWidth = maxWidth,
+				MaxHeight = maxHeight
+			}, Gdk.WindowHints.MinSize | Gdk.WindowHints.MaxSize);
 		}
 
 		public bool Minimizable { get; set; }
@@ -185,60 +221,22 @@ namespace Eto.GtkSharp.Forms
 			get
 			{
 				var window = Control.GetWindow();
-				return window != null ? window.FrameExtents.Size.ToEto() : initialSize ?? Control.DefaultSize.ToEto();
+				return window != null ? window.FrameExtents.Size.ToEto() : Control.DefaultSize.ToEto();
 			}
 			set
 			{
 				var window = Control.GetWindow();
 				if (window != null)
 				{
-					var diff = window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
-					Control.Resize(value.Width - diff.Width, value.Height - diff.Height);
+					Control.Resize(value.Width, value.Height);
 				}
 				else
 				{
-					Control.Resize(value.Width, value.Height);
-					initialSize = value;
+					setclientsize = false;
+					Control.SetDefaultSize(value.Width, value.Height);
 				}
+				SetMinMax(value);
 			}
-		}
-
-		void HandleControlRealized(object sender, EventArgs e)
-		{
-			var allocation = Control.Allocation.Size;
-			var minSize = MinimumSize;
-
-			if (initialSize != null)
-			{
-				var gdkWindow = Control.GetWindow();
-				var frameExtents = gdkWindow.FrameExtents.Size.ToEto();
-				// HACK: get twice to get 'real' size? Ubuntu 14.04 returns inflated size the first call.
-				frameExtents = gdkWindow.FrameExtents.Size.ToEto();
-
-				var diff = frameExtents - Control.Allocation.Size.ToEto();
-				allocation.Width = initialSize.Value.Width - diff.Width;
-				allocation.Height = initialSize.Value.Height - diff.Height;
-				initialSize = null;
-			}
-
-			if (Resizable)
-			{
-				Control.Resize(allocation.Width, allocation.Height);
-			}
-			else
-			{
-				// when not resizable, Control.Resize doesn't work
-				minSize.Width = Math.Max(minSize.Width, allocation.Width);
-				minSize.Height = Math.Max(minSize.Height, allocation.Height);
-			}
-
-			// set initial minimum size
-			Control.SetSizeRequest(minSize.Width, minSize.Height);
-
-			containerBox.SetSizeRequest(-1, -1);
-
-			// only do this the first time
-			Control.Realized -= HandleControlRealized;
 		}
 
 		public override Size ClientSize
@@ -251,14 +249,25 @@ namespace Eto.GtkSharp.Forms
 			{
 				if (Control.IsRealized)
 				{
-					var diff = vbox.Allocation.Size.ToEto() - containerBox.Allocation.Size.ToEto();
+					var window = Control.GetWindow();
+					var diff = window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
 					Control.Resize(value.Width + diff.Width, value.Height + diff.Height);
+					SetMinMax(value + diff);
 				}
 				else
 				{
-					containerBox.SetSizeRequest(value.Width, value.Height);
+					setclientsize = true;
+					Control.SetDefaultSize(value.Width, value.Height);
+					SetMinMax(value);
 				}
 			}
+		}
+
+		private void Control_Realized(object sender, EventArgs e)
+		{
+			Control.Realized -= Control_Realized;
+			if (setclientsize)
+				ClientSize = Size;
 		}
 
 		protected override void Initialize()
@@ -270,10 +279,7 @@ namespace Eto.GtkSharp.Forms
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent); // for RestoreBounds
 			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
 			Control.SetSizeRequest(-1, -1);
-			Control.Realized += HandleControlRealized;
-			#if GTK2
-			Control.AllowShrink = false;
-			#endif
+			Control.Realized += Control_Realized;
 		}
 
 		public override void AttachEvent(string id)
