@@ -124,6 +124,15 @@ namespace Eto.GtkSharp.Forms
 			get { return Control.Resizable; }
 			set
 			{
+				if (value)
+				{
+					Control.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
+				}
+				else
+				{
+					Control.SetSizeRequest(ClientSize.Width, ClientSize.Height);
+				}
+
 				Control.Resizable = value; 
 				#if GTK2
 				Control.AllowGrow = value;
@@ -180,6 +189,18 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		protected void Resize(int width, int height)
+		{
+			if (Control.Resizable)
+			{
+				Control.Resize(width, height);
+			}
+			else
+			{
+				Control.SetSizeRequest(width, height);
+			}
+		}
+
 		public override Size Size
 		{
 			get
@@ -193,11 +214,11 @@ namespace Eto.GtkSharp.Forms
 				if (window != null)
 				{
 					var diff = window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
-					Control.Resize(value.Width - diff.Width, value.Height - diff.Height);
+					Resize(value.Width - diff.Width, value.Height - diff.Height);
 				}
 				else
 				{
-					Control.Resize(value.Width, value.Height);
+					Resize(value.Width, value.Height);
 					initialSize = value;
 				}
 			}
