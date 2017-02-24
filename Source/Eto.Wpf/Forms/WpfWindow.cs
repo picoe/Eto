@@ -43,6 +43,7 @@ namespace Eto.Wpf.Forms
 		bool maximizable = true;
 		bool minimizable = true;
 		PerMonitorDpiHelper dpiHelper;
+		Point? initialLocation;
 
 		public override IntPtr NativeHandle
 		{
@@ -100,10 +101,12 @@ namespace Eto.Wpf.Forms
 
 		void SetupPerMonitorDpi()
 		{
-			if (EnablePerMonitorDpiSupport && dpiHelper == null && Win32.PerMonitorDpiSupported && !PerMonitorDpiHelper.BuiltInPerMonitorSupported)
+			if (EnablePerMonitorDpiSupport && dpiHelper == null && Win32.PerMonitorDpiSupported)
 			{
 				dpiHelper = new PerMonitorDpiHelper(Control);
-				dpiHelper.ScaleChanged += (sender, e) => SetMinimumSize();
+
+				if (!PerMonitorDpiHelper.BuiltInPerMonitorSupported)
+					dpiHelper.ScaleChanged += (sender, e) => SetMinimumSize();
 			}
 		}
 
@@ -425,7 +428,24 @@ namespace Eto.Wpf.Forms
 
 		public override Size Size
 		{
-			get { return base.Size; }
+			get
+			{
+				var handle = WindowHandle;
+				if (handle != IntPtr.Zero)
+				{
+					// WPF doesn't always report the correct size when maximized
+					Win32.RECT rect;
+					if (Win32.GetWindowRect(handle, out rect))
+					{
+						var scale = DpiScale;
+						return new Size(
+							(int)Math.Round(rect.width * scale),
+							(int)Math.Round(rect.height * scale)
+							);
+					}
+				}
+				return base.Size;
+			}
 			set
 			{
 				Control.SizeToContent = sw.SizeToContent.Manual;
@@ -452,23 +472,78 @@ namespace Eto.Wpf.Forms
 			set { Widget.Properties.Set(LocationSet_Key, value); }
 		}
 
+		System.Windows.Forms.Screen SwfScreen
+		{
+			get
+			{
+				var handle = WindowHandle;
+				if (handle == IntPtr.Zero)
+					return System.Windows.Forms.Screen.PrimaryScreen;
+				return System.Windows.Forms.Screen.FromHandle(handle);
+			}
+		}
+
+		double DpiScale => sw.PresentationSource.FromVisual(Control)?.CompositionTarget.TransformFromDevice.M22 ?? Screen.PrimaryScreen.LogicalPixelSize;
+
 		public new Point Location
 		{
 			get
 			{
+				if (initialLocation != null)
+					return initialLocation.Value;
+				var handle = WindowHandle;
+				if (handle != IntPtr.Zero)
+				{
+					// Left/Top doesn't always report correct location when maximized, so use Win32 when we can.
+					Win32.RECT rect;
+					if (Win32.GetWindowRect(handle, out rect))
+						return Point.Round(new Point(rect.left, rect.top).ScreenToLogical(SwfScreen));
+				}
+				// in WPF, left/top of a window is transformed by the (current) screen dpi, which makes absolutely no sense.
 				var left = Control.Left;
 				var top = Control.Top;
 				if (double.IsNaN(left) || double.IsNaN(top))
 					return Point.Empty;
-				return new Point((int)left, (int)top);
+				// convert to screen co-ordinates
+				var scale = DpiScale;
+				var position = new Point((int)(left / scale), (int)(top / scale));
+				// now, convert to "proper" logical co-ordinates, taking all screens into account
+				return Point.Round(position.ScreenToLogical(SwfScreen));
 			}
 			set
 			{
-				Control.Left = value.X;
-				Control.Top = value.Y;
-				if (!Control.IsLoaded)
-					LocationSet = true;
+				if (WindowHandle == IntPtr.Zero)
+				{
+					// set location when the source is initialized and we have a Win32 handle to move about
+					// using Left/Top doesn't work (properly) in a per-monitor dpi environment.
+					initialLocation = value;
+					if (!LocationSet)
+					{
+						LocationSet = true;
+						Control.SourceInitialized += Control_SourceInitialized;
+					}
+				}
+				else
+				{
+					SetLocation(value);
+				}
 			}
+		}
+
+		void Control_SourceInitialized(object sender, EventArgs e)
+		{
+			LocationSet = false;
+			SetLocation(initialLocation.Value);
+			initialLocation = null;
+			Control.SourceInitialized -= Control_SourceInitialized;
+		}
+
+		void SetLocation(PointF location)
+		{
+			var handle = WindowHandle;
+			var loc = location.LogicalToScreen();
+
+			Win32.SetWindowPos(WindowHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE);
 		}
 
 		public WindowState WindowState
@@ -597,7 +672,7 @@ namespace Eto.Wpf.Forms
 
 		public Screen Screen
 		{
-			get { return new Screen(new ScreenHandler(Control)); }
+			get { return new Screen(new ScreenHandler(Control, SwfScreen)); }
 		}
 
 		public swi.InputBindingCollection InputBindings

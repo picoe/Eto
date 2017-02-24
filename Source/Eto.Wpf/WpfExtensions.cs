@@ -3,6 +3,8 @@ using sw = System.Windows;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
 using swc = System.Windows.Controls;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 using Eto.Wpf.Forms;
 using Eto.Forms;
 using System.Linq;
