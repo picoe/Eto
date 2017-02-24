@@ -607,12 +607,18 @@ namespace Eto.Wpf.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			return Control.IsLoaded ? Control.PointFromScreen(point.ToWpf()).ToEto() : point;
+			if (!Control.IsLoaded)
+				return point;
+
+			point = point.LogicalToScreen();
+			return Control.PointFromScreen(point.ToWpf()).ToEto();
 		}
 
 		public PointF PointToScreen(PointF point)
 		{
-			return Control.IsLoaded ? Control.PointToScreen(point.ToWpf()).ToEto() : point;
+			if (!Control.IsLoaded)
+				return point;
+			return Control.PointToScreen(point.ToWpf()).ToEtoPoint().ScreenToLogical();
 		}
 
 		public Point Location

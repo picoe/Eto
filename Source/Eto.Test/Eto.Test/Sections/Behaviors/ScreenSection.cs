@@ -11,26 +11,31 @@ namespace Eto.Test.Sections.Behaviors
 		readonly RectangleF displayBounds = Screen.DisplayBounds;
 		readonly Screen[] screens;
 		Window parentWindow;
+		Label windowPositionLabel;
 
 		public ScreenSection()
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
 			screens = Screen.Screens.ToArray();
-			layout.AddSeparateRow(null, new Label { Text = string.Format("Display Bounds: {0}", displayBounds) }, null);
+
+			layout.BeginCentered();
+			layout.Add($"Display Bounds: {displayBounds}");
 			layout.BeginVertical(Padding.Empty);
 			var num = 0;
 			foreach (var screen in screens)
 			{
-				layout.AddRow(null, new Label { Text = string.Format("Screen {0}, BitsPerPixel: {1}, IsPrimary: {2}", num++, screen.BitsPerPixel, screen.IsPrimary) }, null);
-				layout.AddRow(null, new Label { Text = string.Format("Bounds: {0}", screen.Bounds) }, null);
-				layout.AddRow(null, new Label { Text = string.Format("Working Area: {0}", screen.WorkingArea) }, null);
-				layout.AddRow(null, new Label { Text = string.Format("DPI: {0}, Scale: {1}", screen.DPI, screen.Scale) }, null);
-
-				if (Math.Abs(screen.RealDPI - screen.DPI) > 0.1f)
-					layout.AddRow(null, new Label { Text = string.Format("Real DPI: {0}, Real Scale: {1}", screen.RealDPI, screen.RealScale) }, null);
+				layout.Add($"Screen {num++}, BitsPerPixel: {screen.BitsPerPixel}, IsPrimary: {screen.IsPrimary}");
+				layout.BeginVertical(new Padding(10, 0));
+				layout.Add($"Bounds: {screen.Bounds}");
+				layout.Add($"WorkingArea: {screen.WorkingArea}");
+				layout.Add($"DPI: {screen.DPI}, Scale: {screen.Scale}, LogicalPixelSize: {screen.LogicalPixelSize}");
+				layout.EndVertical();
 			}
 			layout.EndVertical();
+			layout.Add(windowPositionLabel = new Label());
+			layout.EndCentered();
+
 			layout.Add(ScreenLayout());
 
 			Content = layout;
@@ -51,6 +56,13 @@ namespace Eto.Test.Sections.Behaviors
 
 		void HandleLocationChanged(object sender, EventArgs e)
 		{
+			windowPositionLabel.Text = $"Window Bounds: {parentWindow.Bounds}";
+			Invalidate();
+		}
+
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
 			Invalidate();
 		}
 
@@ -63,7 +75,8 @@ namespace Eto.Test.Sections.Behaviors
 				var scale = Math.Min(scaleSize.Width, scaleSize.Height);
 				var offset = (drawable.Size - (displayBounds.Size * scale)) / 2;
 				offset.Height -= displayBounds.Y * scale;
-                offset = Size.Round(offset);
+				offset.Width -= displayBounds.X * scale;
+				offset = Size.Round(offset);
 				foreach (var screen in screens)
 				{
 					var screenBounds = (screen.Bounds * scale) + offset;
@@ -81,6 +94,11 @@ namespace Eto.Test.Sections.Behaviors
                 windowBounds.Size -= 1;
                 pe.Graphics.FillRectangle(new Color(Colors.LightSkyBlue, 0.8f), windowBounds);
                 pe.Graphics.DrawRectangle(Colors.White, windowBounds);
+
+				var mousePosition = Mouse.Position * scale + offset;
+				var mouseRect = new RectangleF(mousePosition, SizeF.Empty);
+				mouseRect.Inflate(2, 2);
+				pe.Graphics.FillEllipse(Colors.Red, mouseRect);
 			};
 			return drawable;
 		}
