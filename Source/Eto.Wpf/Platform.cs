@@ -155,6 +155,7 @@ namespace Eto.Wpf
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
+			p.Add<TrayIndicator.IHandler>(() => new TrayIndicatorHandler());
 			
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
