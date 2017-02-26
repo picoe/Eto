@@ -171,6 +171,10 @@ namespace Eto.GtkSharp
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
+			if (EtoEnvironment.Platform.IsLinux)
+				p.Add<TrayIndicator.IHandler>(() => new LinuxTrayIndicatorHandler());
+            else
+                p.Add<TrayIndicator.IHandler>(() => new OtherTrayIndicatorHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
