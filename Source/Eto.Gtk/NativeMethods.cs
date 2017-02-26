@@ -1,6 +1,7 @@
 ﻿﻿
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using GLib;
 using Gdk;
 
@@ -24,9 +25,73 @@ namespace Eto.GtkSharp
 			const string ext = "-0.dll";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
+			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_new();
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_load_uri(IntPtr web_view, string uri);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_uri(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_load_html(IntPtr web_view, string content, string base_uri);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_title(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_reload(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_stop_loading(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_web_view_can_go_back(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_go_back(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_web_view_can_go_forward(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_go_forward(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_run_javascript(IntPtr web_view, string script, IntPtr cancellable, Delegate callback, IntPtr user_data);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_run_javascript_finish(IntPtr web_view, IntPtr result, IntPtr error);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_global_context(IntPtr js_result);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_value(IntPtr js_result);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr JSValueToStringCopy(IntPtr context, IntPtr value, IntPtr idk);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static int JSStringGetMaximumUTF8CStringSize(IntPtr js_str_value);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void JSStringGetUTF8CString(IntPtr js_str_value, IntPtr str_value, int str_length);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void JSStringRelease(IntPtr js_str_value);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_navigation_policy_decision_get_request(IntPtr decision);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_uri_request_get_uri(IntPtr request);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
@@ -56,7 +121,7 @@ namespace Eto.GtkSharp
 			public extern static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public extern static string gtk_font_chooser_get_font(IntPtr fontchooser);
+			public extern static IntPtr gtk_font_chooser_get_font(IntPtr fontchooser);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
@@ -96,9 +161,73 @@ namespace Eto.GtkSharp
 			const string ext = ".so.0";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
+			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_new();
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_load_uri(IntPtr web_view, string uri);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_uri(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_load_html(IntPtr web_view, string content, string base_uri);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_title(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_reload(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_stop_loading(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_web_view_can_go_back(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_go_back(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_web_view_can_go_forward(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_go_forward(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_run_javascript(IntPtr web_view, string script, IntPtr cancellable, Delegate callback, IntPtr user_data);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_run_javascript_finish(IntPtr web_view, IntPtr result, IntPtr error);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_global_context(IntPtr js_result);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_value(IntPtr js_result);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr JSValueToStringCopy(IntPtr context, IntPtr value, IntPtr idk);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static int JSStringGetMaximumUTF8CStringSize(IntPtr js_str_value);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void JSStringGetUTF8CString(IntPtr js_str_value, IntPtr str_value, int str_length);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void JSStringRelease(IntPtr js_str_value);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_navigation_policy_decision_get_request(IntPtr decision);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_uri_request_get_uri(IntPtr request);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
@@ -128,7 +257,7 @@ namespace Eto.GtkSharp
 			public extern static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public extern static string gtk_font_chooser_get_font(IntPtr fontchooser);
+			public extern static IntPtr gtk_font_chooser_get_font(IntPtr fontchooser);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
@@ -168,9 +297,73 @@ namespace Eto.GtkSharp
 			const string ext = ".dylib";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
+			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_new();
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_load_uri(IntPtr web_view, string uri);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_uri(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_load_html(IntPtr web_view, string content, string base_uri);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_get_title(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_reload(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_stop_loading(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_web_view_can_go_back(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_go_back(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool webkit_web_view_can_go_forward(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_go_forward(IntPtr web_view);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void webkit_web_view_run_javascript(IntPtr web_view, string script, IntPtr cancellable, Delegate callback, IntPtr user_data);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_web_view_run_javascript_finish(IntPtr web_view, IntPtr result, IntPtr error);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_global_context(IntPtr js_result);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_javascript_result_get_value(IntPtr js_result);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr JSValueToStringCopy(IntPtr context, IntPtr value, IntPtr idk);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static int JSStringGetMaximumUTF8CStringSize(IntPtr js_str_value);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void JSStringGetUTF8CString(IntPtr js_str_value, IntPtr str_value, int str_length);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void JSStringRelease(IntPtr js_str_value);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_navigation_policy_decision_get_request(IntPtr decision);
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr webkit_uri_request_get_uri(IntPtr request);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
@@ -200,7 +393,7 @@ namespace Eto.GtkSharp
 			public extern static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public extern static string gtk_font_chooser_get_font(IntPtr fontchooser);
+			public extern static IntPtr gtk_font_chooser_get_font(IntPtr fontchooser);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
@@ -228,6 +421,20 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
+		}
+
+		public static string GetString(IntPtr handle)
+		{
+			if (handle == IntPtr.Zero)
+				return "";
+
+			int len = 0;
+			while (Marshal.ReadByte(handle, len) != 0)
+				len++;
+
+			var bytes = new byte[len];
+			Marshal.Copy(handle, bytes, 0, bytes.Length);
+			return Encoding.UTF8.GetString(bytes);
 		}
 
 		public static void g_signal_stop_emission_by_name(IntPtr instance, string name)
@@ -333,11 +540,11 @@ namespace Eto.GtkSharp
 		public static string gtk_font_chooser_get_font(IntPtr fontchooser)
 		{
 			if (EtoEnvironment.Platform.IsLinux)
-				return NMLinux.gtk_font_chooser_get_font(fontchooser);
+				return GetString(NMLinux.gtk_font_chooser_get_font(fontchooser));
 			else if (EtoEnvironment.Platform.IsMac)
-				return NMMac.gtk_font_chooser_get_font(fontchooser);
+				return GetString(NMMac.gtk_font_chooser_get_font(fontchooser));
 			else
-				return NMWindows.gtk_font_chooser_get_font(fontchooser);
+				return GetString(NMWindows.gtk_font_chooser_get_font(fontchooser));
 		}
 
 		public static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname)
@@ -428,6 +635,216 @@ namespace Eto.GtkSharp
 				NMMac.gtk_header_bar_set_show_close_button(bar, setting);
 			else
 				NMWindows.gtk_header_bar_set_show_close_button(bar, setting);
+		}
+
+		public static IntPtr webkit_web_view_new()
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_web_view_new();
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_web_view_new();
+			else
+				return NMWindows.webkit_web_view_new();
+		}
+
+		public static void webkit_web_view_load_uri(IntPtr web_view, string uri)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.webkit_web_view_load_uri(web_view, uri);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.webkit_web_view_load_uri(web_view, uri);
+			else
+				NMWindows.webkit_web_view_load_uri(web_view, uri);
+		}
+
+		public static string webkit_web_view_get_uri(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return GetString(NMLinux.webkit_web_view_get_uri(web_view));
+			else if (EtoEnvironment.Platform.IsMac)
+				return GetString(NMMac.webkit_web_view_get_uri(web_view));
+			else
+				return GetString(NMWindows.webkit_web_view_get_uri(web_view));
+		}
+
+		public static void webkit_web_view_load_html(IntPtr web_view, string content, string base_uri)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.webkit_web_view_load_html(web_view, content, base_uri);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.webkit_web_view_load_html(web_view, content, base_uri);
+			else
+				NMWindows.webkit_web_view_load_html(web_view, content, base_uri);
+		}
+
+		public static string webkit_web_view_get_title(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return GetString(NMLinux.webkit_web_view_get_title(web_view));
+			else if (EtoEnvironment.Platform.IsMac)
+				return GetString(NMMac.webkit_web_view_get_title(web_view));
+			else
+				return GetString(NMWindows.webkit_web_view_get_title(web_view));
+		}
+
+		public static void webkit_web_view_reload(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.webkit_web_view_reload(web_view);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.webkit_web_view_reload(web_view);
+			else
+				NMWindows.webkit_web_view_reload(web_view);
+		}
+
+		public static void webkit_web_view_stop_loading(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.webkit_web_view_stop_loading(web_view);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.webkit_web_view_stop_loading(web_view);
+			else
+				NMWindows.webkit_web_view_stop_loading(web_view);
+		}
+
+		public static bool webkit_web_view_can_go_back(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_web_view_can_go_back(web_view);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_web_view_can_go_back(web_view);
+			else
+				return NMWindows.webkit_web_view_can_go_back(web_view);
+		}
+
+		public static void webkit_web_view_go_back(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.webkit_web_view_go_back(web_view);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.webkit_web_view_go_back(web_view);
+			else
+				NMWindows.webkit_web_view_go_back(web_view);
+		}
+
+		public static bool webkit_web_view_can_go_forward(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_web_view_can_go_forward(web_view);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_web_view_can_go_forward(web_view);
+			else
+				return NMWindows.webkit_web_view_can_go_forward(web_view);
+		}
+
+		public static void webkit_web_view_go_forward(IntPtr web_view)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.webkit_web_view_go_forward(web_view);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.webkit_web_view_go_forward(web_view);
+			else
+				NMWindows.webkit_web_view_go_forward(web_view);
+		}
+
+		public static void webkit_web_view_run_javascript(IntPtr web_view, string script, IntPtr cancellable, Delegate callback, IntPtr user_data)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.webkit_web_view_run_javascript(web_view, script, cancellable, callback, user_data);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.webkit_web_view_run_javascript(web_view, script, cancellable, callback, user_data);
+			else
+				NMWindows.webkit_web_view_run_javascript(web_view, script, cancellable, callback, user_data);
+		}
+
+		public static IntPtr webkit_web_view_run_javascript_finish(IntPtr web_view, IntPtr result, IntPtr error)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_web_view_run_javascript_finish(web_view, result, error);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_web_view_run_javascript_finish(web_view, result, error);
+			else
+				return NMWindows.webkit_web_view_run_javascript_finish(web_view, result, error);
+		}
+
+		public static IntPtr webkit_javascript_result_get_global_context(IntPtr js_result)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_javascript_result_get_global_context(js_result);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_javascript_result_get_global_context(js_result);
+			else
+				return NMWindows.webkit_javascript_result_get_global_context(js_result);
+		}
+
+		public static IntPtr webkit_javascript_result_get_value(IntPtr js_result)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_javascript_result_get_value(js_result);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_javascript_result_get_value(js_result);
+			else
+				return NMWindows.webkit_javascript_result_get_value(js_result);
+		}
+
+		public static IntPtr JSValueToStringCopy(IntPtr context, IntPtr value, IntPtr idk)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.JSValueToStringCopy(context, value, idk);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.JSValueToStringCopy(context, value, idk);
+			else
+				return NMWindows.JSValueToStringCopy(context, value, idk);
+		}
+
+		public static int JSStringGetMaximumUTF8CStringSize(IntPtr js_str_value)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.JSStringGetMaximumUTF8CStringSize(js_str_value);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.JSStringGetMaximumUTF8CStringSize(js_str_value);
+			else
+				return NMWindows.JSStringGetMaximumUTF8CStringSize(js_str_value);
+		}
+
+		public static void JSStringGetUTF8CString(IntPtr js_str_value, IntPtr str_value, int str_length)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.JSStringGetUTF8CString(js_str_value, str_value, str_length);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.JSStringGetUTF8CString(js_str_value, str_value, str_length);
+			else
+				NMWindows.JSStringGetUTF8CString(js_str_value, str_value, str_length);
+		}
+
+		public static void JSStringRelease(IntPtr js_str_value)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.JSStringRelease(js_str_value);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.JSStringRelease(js_str_value);
+			else
+				NMWindows.JSStringRelease(js_str_value);
+		}
+
+		public static IntPtr webkit_navigation_policy_decision_get_request(IntPtr decision)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.webkit_navigation_policy_decision_get_request(decision);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.webkit_navigation_policy_decision_get_request(decision);
+			else
+				return NMWindows.webkit_navigation_policy_decision_get_request(decision);
+		}
+
+		public static string webkit_uri_request_get_uri(IntPtr request)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return GetString(NMLinux.webkit_uri_request_get_uri(request));
+			else if (EtoEnvironment.Platform.IsMac)
+				return GetString(NMMac.webkit_uri_request_get_uri(request));
+			else
+				return GetString(NMWindows.webkit_uri_request_get_uri(request));
 		}
 	}
 }

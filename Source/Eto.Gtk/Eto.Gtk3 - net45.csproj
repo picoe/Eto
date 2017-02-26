@@ -66,10 +66,6 @@
       <HintPath>..\..\Libraries\GtkSharp3\pango-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="webkitgtk-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e1f0fd21e79c8b0f">
-      <HintPath>..\..\Libraries\GtkSharp3\webkitgtk-sharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\Conversions.cs">
@@ -231,8 +227,6 @@
     <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\Controls\WebViewHandler.cs" />
-    <Compile Include="EtoWebView.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
     <Compile Include="Forms\GtkPanel.cs" />
@@ -282,6 +276,7 @@
     <Compile Include="Forms\LinuxTrayIndicatorHandler.cs" />
     <Compile Include="Forms\OtherTrayIndicatorHandler.cs" />
     <Compile Include="Forms\LinuxNotificationHandler.cs" />
+    <Compile Include="Forms\Controls\WebKit2WebViewHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
