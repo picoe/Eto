@@ -10,10 +10,11 @@ namespace Eto.Test
 {
 	public class MainForm : Form
 	{
+		internal static TrayIndicator tray;
+
 		TextArea eventLog;
 		Panel contentContainer;
 		Navigation navigation;
-		TrayIndicator tray;
 
 		public TextArea EventLog
 		{

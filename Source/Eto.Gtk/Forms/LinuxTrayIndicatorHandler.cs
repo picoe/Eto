@@ -70,6 +70,7 @@ namespace Eto.GtkSharp.Forms
 			}
 
 			app_indicator_set_icon(Control.Handle, path);
+			ApplicationHandler.TempFiles.Add(path);
 		}
 
 		public void SetMenu(ContextMenu menu)

@@ -175,6 +175,8 @@ namespace Eto.GtkSharp
 				p.Add<TrayIndicator.IHandler>(() => new LinuxTrayIndicatorHandler());
             else
                 p.Add<TrayIndicator.IHandler>(() => new OtherTrayIndicatorHandler());
+			if (EtoEnvironment.Platform.IsLinux)
+				p.Add<Notification.IHandler>(() => new LinuxNotificationHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());
