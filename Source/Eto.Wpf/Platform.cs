@@ -156,6 +156,7 @@ namespace Eto.Wpf
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
 			p.Add<TrayIndicator.IHandler>(() => new TrayIndicatorHandler());
+			p.Add<Notification.IHandler>(() => new NotificationHandler());
 			
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

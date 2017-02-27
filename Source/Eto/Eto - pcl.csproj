@@ -347,6 +347,7 @@
     <Compile Include="Forms\Controls\DocumentControl.cs" />
     <Compile Include="Forms\Controls\DocumentPage.cs" />
     <Compile Include="Forms\TrayIndicator.cs" />
+    <Compile Include="Forms\Notification.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">

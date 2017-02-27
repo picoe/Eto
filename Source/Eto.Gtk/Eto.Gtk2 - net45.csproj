@@ -96,6 +96,7 @@
     <Compile Include="Forms\GtkFileDialog.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\LinuxNotificationHandler.cs" />
     <Compile Include="Forms\MessageBoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>

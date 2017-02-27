@@ -65,7 +65,6 @@ namespace Eto.GtkSharp.Forms
 		WindowState state;
 		WindowStyle style;
 		bool topmost;
-		bool setclientsize;
 		bool resizable;
 		Size? clientSize;
 

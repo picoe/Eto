@@ -7,6 +7,8 @@ using Eto.GtkSharp.Drawing;
 using Eto.Drawing;
 using System.Collections.Generic;
 using Eto.GtkSharp.Forms;
+using System.IO;
+using System.Reflection;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -16,6 +18,8 @@ namespace Eto.GtkSharp.Forms
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
 #endif
 	{
+		internal static List<string> TempFiles = new List<string>(); 
+
 		bool attached;
 		Gtk.StatusIcon statusIcon;
 		readonly List<ManualResetEvent> invokeResetEvents = new List<ManualResetEvent>();
@@ -154,6 +158,8 @@ namespace Eto.GtkSharp.Forms
 			//if (!Platform.IsWindows) Gdk.Threads.Init(); // do this in windows, and it stalls!  ugh
 			MainThreadID = Thread.CurrentThread.ManagedThreadId;
 
+			if (EtoEnvironment.Platform.IsLinux)
+				LinuxNotificationHandler.notify_init(Assembly.GetExecutingAssembly().FullName);
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
@@ -168,6 +174,11 @@ namespace Eto.GtkSharp.Forms
 
 				Gdk.Threads.Leave();
 			}
+
+			if (EtoEnvironment.Platform.IsLinux)
+				LinuxNotificationHandler.notify_uninit();
+			foreach (var file in TempFiles)
+				File.Delete(file);
 		}
 
 		public override void AttachEvent(string id)
