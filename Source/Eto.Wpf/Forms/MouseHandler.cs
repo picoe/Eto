@@ -17,8 +17,8 @@ namespace Eto.Wpf.Forms
 
 		public PointF Position
 		{
-			get { return swf.Control.MousePosition.ToEto(); }
-			set { swf.Cursor.Position = Point.Round(value).ToSD(); }
+			get { return swf.Control.MousePosition.ScreenToLogical(); }
+			set { swf.Cursor.Position = Point.Round(value.LogicalToScreen()).ToSD(); }
 		}
 
 		public MouseButtons Buttons
