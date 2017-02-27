@@ -231,15 +231,19 @@ namespace Eto.GtkSharp.Forms
 				var window = Control.GetWindow();
 				if (window != null)
 				{
+					// since resizing control, need to remove decorations from size calc
 					var diff = window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
-					Control.Resize(value.Width - diff.Width, value.Height - diff.Height);
+					var newValue = value - diff;
+
+					Control.Resize(newValue.Width, newValue.Height);
+					SetMinMax(newValue);
 				}
 				else
 				{
-					clientSize = null;
 					Control.SetDefaultSize(value.Width, value.Height);
+					SetMinMax(value);
 				}
-				SetMinMax(value);
+
 			}
 		}
 
@@ -253,13 +257,11 @@ namespace Eto.GtkSharp.Forms
 			{
 				if (Control.IsRealized)
 				{
-					var diff = vbox.Allocation.Size.ToEto() - containerBox.Allocation.Size.ToEto();
-					Control.Resize(value.Width + diff.Width, value.Height + diff.Height);
-					SetMinMax(value + diff);
+					Control.Resize(value.Width, value.Height);
+					SetMinMax(value);
 				}
 				else
 				{
-					clientSize = value;
 					Control.SetDefaultSize(value.Width, value.Height);
 					SetMinMax(value);
 				}
