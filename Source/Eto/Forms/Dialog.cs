@@ -311,7 +311,8 @@ namespace Eto.Forms
             /// </summary>
             /// <param name="positive">Positive or negative button.</param>
             /// <param name="index">Current position of the button.</param>
-			void RemoveDialogButton(bool positive, int index);
+			/// <param name="item">The button that is being removed.</param>
+			void RemoveDialogButton(bool positive, int index, Button item);
 		}
 
 		class ButtonCollection : Collection<Button>
@@ -322,33 +323,34 @@ namespace Eto.Forms
 
 			protected override void InsertItem(int index, Button item)
 			{
-				Dialog.SetParent(item);
-				Dialog.Handler.InsertDialogButton(Positive, index, item);
 				base.InsertItem(index, item);
+				Dialog.SetParent(item, () => Dialog.Handler.InsertDialogButton(Positive, index, item));
 			}
 
 			protected override void RemoveItem(int index)
 			{
-				Dialog.RemoveParent(Items[index]);
-				Dialog.Handler.RemoveDialogButton(Positive, index);
+				var item = Items[index];
+				Dialog.RemoveParent(item);
+				Dialog.Handler.RemoveDialogButton(Positive, index, item);
 				base.RemoveItem(index);
 			}
 
 			protected override void SetItem(int index, Button item)
 			{
-				Dialog.RemoveParent(Items[index]);
-				Dialog.Handler.RemoveDialogButton(Positive, index);
+				var oldItem = Items[index];
+				Dialog.RemoveParent(oldItem);
+				Dialog.Handler.RemoveDialogButton(Positive, index, oldItem);
 				base.SetItem(index, item);
-				Dialog.SetParent(item);
-				Dialog.Handler.InsertDialogButton(Positive, index, item);
+				Dialog.SetParent(item, () => Dialog.Handler.InsertDialogButton(Positive, index, item));
 			}
 
 			protected override void ClearItems()
 			{
 				for (int i = Items.Count - 1; i >= 0; i--)
 				{
-					Dialog.RemoveParent(Items[i]);
-					Dialog.Handler.RemoveDialogButton(Positive, i);
+					var item = Items[i];
+					Dialog.RemoveParent(item);
+					Dialog.Handler.RemoveDialogButton(Positive, i, item);
 				}
 
 				base.ClearItems();

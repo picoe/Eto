@@ -3,6 +3,7 @@ using swf = System.Windows.Forms;
 using Eto.Forms;
 using System;
 using System.Threading.Tasks;
+using Eto.Drawing;
 
 namespace Eto.WinForms.Forms
 {
@@ -26,28 +27,28 @@ namespace Eto.WinForms.Forms
 				MinimizeBox = false
 			};
 
-            panelContent = new swf.Panel();
-            panelContent.Dock = swf.DockStyle.Fill;
+			panelContent = new swf.Panel
+			{
+				Dock = swf.DockStyle.Fill,
+				AutoSize = true,
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
+			};
 
-            panelButtons = new swf.TableLayoutPanel();
-            panelButtons.RowStyles.Add(new swf.RowStyle());
-            panelButtons.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.Percent, 100));
-            panelButtons.Dock = swf.DockStyle.Bottom;
-            panelButtons.Height = 0;
+			panelButtons = new swf.TableLayoutPanel
+			{
+				Dock = swf.DockStyle.Bottom,
+				Height = 0
+			};
+			panelButtons.RowStyles.Add(new swf.RowStyle(swf.SizeType.AutoSize));
+			panelButtons.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.Percent, 100));
 
-            Control.Controls.Add(panelContent);
-            Control.Controls.Add(panelButtons);
-        }
+			Control.Controls.Add(panelContent);
+			Control.Controls.Add(panelButtons);
+		}
 
-        public override swf.Control ContainerContentControl
-        {
-            get
-            {
-                return panelContent;
-            }
-        }
+		public override swf.Control ContainerContentControl => panelContent;
 
-        protected override swf.FormBorderStyle DefaultWindowStyle
+		protected override swf.FormBorderStyle DefaultWindowStyle
 		{
 			get { return swf.FormBorderStyle.FixedDialog; }
 		}
@@ -88,6 +89,7 @@ namespace Eto.WinForms.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
+
 			Widget.KeyDown += Widget_KeyDown;
 		}
 
@@ -161,7 +163,7 @@ namespace Eto.WinForms.Forms
             }
         }
 
-        public void RemoveDialogButton(bool positive, int index)
+        public void RemoveDialogButton(bool positive, int index, Button item)
         {
             if (Widget.Visible)
             {

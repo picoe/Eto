@@ -92,10 +92,10 @@ namespace Eto.GtkSharp.Forms
 
 		public void ShowModal()
 		{
+			ReloadButtons();
+
 			Control.Modal = true;
 			Control.ShowAll();
-
-			ReloadButtons();
 
 			do
 			{
@@ -168,7 +168,7 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		public void RemoveDialogButton(bool positive, int index)
+		public void RemoveDialogButton(bool positive, int index, Button item)
 		{
 			if (Widget.Visible)
 			{
