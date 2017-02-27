@@ -222,16 +222,11 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				var window = Control.GetWindow();
-				if (window != null)
-				{
-					var diff = window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
-					Control.Resize(value.Width - diff.Width, value.Height - diff.Height);
-				}
-				else
+				if (window == null)
 				{
 					clientSize = null;
-					Control.SetDefaultSize(value.Width, value.Height);
 				}
+				Control.Resize(value.Width, value.Height);
 				SetMinMax(value);
 			}
 		}
@@ -246,7 +241,8 @@ namespace Eto.GtkSharp.Forms
 			{
 				if (Control.IsRealized)
 				{
-					var diff = vbox.Allocation.Size.ToEto() - containerBox.Allocation.Size.ToEto();
+					var window = Control.GetWindow();
+					var diff = window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
 					Control.Resize(value.Width + diff.Width, value.Height + diff.Height);
 					SetMinMax(value + diff);
 				}
