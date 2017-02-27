@@ -17,13 +17,13 @@ namespace Eto.GtkSharp
 {
 	static class Helper
 	{
+		public static bool UseHeaderBar;
+
 		public static void Init()
 		{
 			var args = new string[0];
 			if (Gtk.Application.InitCheck(string.Empty, ref args))
-			{
 				Gdk.Threads.Enter();
-			}
 		}
 	}
 

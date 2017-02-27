@@ -66,6 +66,24 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_application_prefers_app_menu(IntPtr application);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_header_bar_new();
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_window_set_titlebar(IntPtr window, IntPtr widget);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_start(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_end(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
 		}
 
 		static class NMLinux
@@ -120,6 +138,24 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_application_prefers_app_menu(IntPtr application);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_header_bar_new();
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_window_set_titlebar(IntPtr window, IntPtr widget);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_start(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_end(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
 		}
 
 		static class NMMac
@@ -174,6 +210,24 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_application_prefers_app_menu(IntPtr application);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_header_bar_new();
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_window_set_titlebar(IntPtr window, IntPtr widget);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_start(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_end(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
 		}
 
 		public static void g_signal_stop_emission_by_name(IntPtr instance, string name)
@@ -314,6 +368,66 @@ namespace Eto.GtkSharp
 				return NMMac.gtk_app_chooser_dialog_new(parrent, flags, file);
 			else
 				return NMWindows.gtk_app_chooser_dialog_new(parrent, flags, file);
+		}
+
+		public static bool gtk_application_prefers_app_menu(IntPtr application)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_application_prefers_app_menu(application);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_application_prefers_app_menu(application);
+			else
+				return NMWindows.gtk_application_prefers_app_menu(application);
+		}
+
+		public static IntPtr gtk_header_bar_new()
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_header_bar_new();
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_header_bar_new();
+			else
+				return NMWindows.gtk_header_bar_new();
+		}
+
+		public static void gtk_window_set_titlebar(IntPtr window, IntPtr widget)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_window_set_titlebar(window, widget);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_window_set_titlebar(window, widget);
+			else
+				NMWindows.gtk_window_set_titlebar(window, widget);
+		}
+
+		public static void gtk_header_bar_pack_start(IntPtr bar, IntPtr child)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_header_bar_pack_start(bar, child);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_header_bar_pack_start(bar, child);
+			else
+				NMWindows.gtk_header_bar_pack_start(bar, child);
+		}
+
+		public static void gtk_header_bar_pack_end(IntPtr bar, IntPtr child)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_header_bar_pack_end(bar, child);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_header_bar_pack_end(bar, child);
+			else
+				NMWindows.gtk_header_bar_pack_end(bar, child);
+		}
+
+		public static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_header_bar_set_show_close_button(bar, setting);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_header_bar_set_show_close_button(bar, setting);
+			else
+				NMWindows.gtk_header_bar_set_show_close_button(bar, setting);
 		}
 	}
 }
