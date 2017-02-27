@@ -50,8 +50,8 @@ namespace Eto.Wpf.Forms
 			{
 				// CenterOwner does not work in certain cases (e.g. with autosizing)
 				Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
-				Control.SourceInitialized += HandleSourceInitialized;
 				parentWindowBounds = Widget.Owner.Bounds;
+				Control.Loaded += HandleLoaded;
 			}
 			Control.ShowDialog();
 			WpfFrameworkElementHelper.ShouldCaptureMouse = false;
@@ -79,20 +79,20 @@ namespace Eto.Wpf.Forms
 			return tcs.Task;
 		}
 
-		void HandleSourceInitialized(object sender, EventArgs e)
+		void HandleLoaded(object sender, EventArgs e)
 		{
 			if (parentWindowBounds != null && !LocationSet)
 			{
 				var bounds = parentWindowBounds.Value;
-				Control.Left = bounds.Left + (bounds.Width - Control.ActualWidth) / 2;
-				Control.Top = bounds.Top + (bounds.Height - Control.ActualHeight) / 2;
+
+				Location = bounds.Location + (bounds.Size - Control.GetSize()) / 2;
 				parentWindowBounds = null;
 			}
 			LocationSet = false;
-			Control.SourceInitialized -= HandleSourceInitialized;
+			Control.Loaded -= HandleLoaded;
 		}
 
-        private void ClearButtons()
+		private void ClearButtons()
         {
             gridButtons.ColumnDefinitions.Clear();
             gridButtons.Children.Clear();
@@ -136,7 +136,7 @@ namespace Eto.Wpf.Forms
             }
         }
 
-        public void RemoveDialogButton(bool positive, int index)
+        public void RemoveDialogButton(bool positive, int index, Button item)
         {
             if (Widget.Visible)
             {

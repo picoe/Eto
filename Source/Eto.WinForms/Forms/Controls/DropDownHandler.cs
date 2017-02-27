@@ -18,7 +18,7 @@ namespace Eto.WinForms.Forms.Controls
 		public object Value { get; set; }
 		public Image Image => DropDown.ItemImageBinding?.GetValue(Value);
 
-		public override string ToString() => DropDown.ItemTextBinding?.GetValue(Value);
+		public override string ToString() => DropDown.ItemTextBinding?.GetValue(Value) ?? string.Empty;
 
 		public EtoComboBoxItem(DropDown dropDown, object value)
 		{

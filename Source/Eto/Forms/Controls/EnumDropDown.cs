@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Eto.Forms
 {
@@ -36,7 +37,6 @@ namespace Eto.Forms
 	/// </summary>
 	/// <typeparam name="T">Enumeration type to fill the values with</typeparam>
 	public class EnumDropDown<T> : DropDown
-		where T : struct
 	{
 		class EnumValue : IListItem
 		{
@@ -62,13 +62,26 @@ namespace Eto.Forms
 
 		#endregion
 
+		Type EnumType => Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
 		/// <summary>
 		/// Gets or sets the currently selected enumeration value
 		/// </summary>
 		public new T SelectedValue
 		{
-			get { return (T)Enum.ToObject(typeof(T), Convert.ToInt32(SelectedKey, CultureInfo.InvariantCulture)); }
-			set { SelectedKey = Convert.ToString(Convert.ToInt32(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture); }
+			get
+			{
+				if (string.IsNullOrEmpty(SelectedKey))
+					return default(T);
+				return (T)Enum.ToObject(EnumType, Convert.ToInt32(SelectedKey, CultureInfo.InvariantCulture));
+			}
+			set
+			{
+				if (value == null)
+					SelectedKey = null;
+				else
+					SelectedKey = Convert.ToString(Convert.ToInt32(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+			}
 		}
 
 		/// <summary>
@@ -93,11 +106,13 @@ namespace Eto.Forms
 		/// <returns>The default data store.</returns>
 		protected override IEnumerable<object> CreateDefaultDataStore()
 		{
-			var type = typeof(T);
+			var type = EnumType;
 			if (!type.IsEnum())
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "T must be an enumeration"));
 
 			var items = new ListItemCollection();
+			if (typeof(T) != type)
+				items.Add(new EnumValue { Key = null, Text = null });
 			var values = Enum.GetValues(type);
 			var names = Enum.GetNames(type);
 			for (int i = 0; i < names.Length; i++)

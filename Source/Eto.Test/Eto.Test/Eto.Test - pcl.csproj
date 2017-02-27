@@ -110,7 +110,7 @@
     <Compile Include="Sections\Controls\ProgressBarSection.cs" />
     <Compile Include="Sections\Controls\KitchenSinkSection.cs" />
     <Compile Include="Sections\Controls\GridCellFormattingSection.cs" />
-    <Compile Include="Sections\Dialogs\CustomDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\DialogSection.cs" />
     <Compile Include="Sections\Drawing\InterpolationSection.cs" />
     <Compile Include="Sections\Serialization\Xaml\Test.cs" />
     <Compile Include="Sections\Serialization\Json\Test.cs" />
