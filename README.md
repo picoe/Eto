@@ -42,6 +42,28 @@ public class MyForm : Form
 }
 ```
 
+or in a F# script:
+
+```fsharp
+#load ".paket/load/eto.platform.windows.fsx"
+// see https://fsprojects.github.io/Paket/paket-generate-load-scripts.html
+
+open Eto.Drawing
+open Eto.Forms
+
+type MyForm() as this =
+    inherit Form()
+    do
+        this.Title      <- "My Cross-Platform App"
+        this.ClientSize <- Size (200, 200)
+        this.Content    <- new Label(Text = "Hello F# World!")
+
+Eto.Platform.Initialize(Eto.Platforms.WinForms)
+let app = new Application()
+let form = new MyForm()
+form.Show()
+```
+
 Getting Started
 ---------------
 
