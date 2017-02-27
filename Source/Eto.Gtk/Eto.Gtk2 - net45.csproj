@@ -102,6 +102,7 @@
     <Compile Include="Forms\OpenFileDialog.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\OtherTrayIndicatorHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -270,6 +271,7 @@
     <Compile Include="NativeMethods.cs">
       <DependentUpon>NativeMethods.tt</DependentUpon>
     </Compile>
+    <Compile Include="Forms\LinuxTrayIndicatorHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

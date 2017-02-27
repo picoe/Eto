@@ -279,6 +279,8 @@
     <Compile Include="NativeMethods.cs">
       <DependentUpon>NativeMethods.tt</DependentUpon>
     </Compile>
+    <Compile Include="Forms\LinuxTrayIndicatorHandler.cs" />
+    <Compile Include="Forms\OtherTrayIndicatorHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

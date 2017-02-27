@@ -301,6 +301,12 @@
       <Link>GtkNativeMethods.cs</Link>
       <DependentUpon>NativeMethods.tt</DependentUpon>
     </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\LinuxTrayIndicatorHandler.cs">
+      <Link>LinuxTrayIndicatorHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\OtherTrayIndicatorHandler.cs">
+      <Link>Forms\OtherTrayIndicatorHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
