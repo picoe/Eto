@@ -27,6 +27,32 @@ namespace Eto.Android.Forms.Cells
 
 	public class TextBoxCellHandler : CellHandler<TextBoxCell>, TextBoxCell.IHandler
 	{
+		public TextAlignment TextAlignment
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public VerticalAlignment VerticalAlignment
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		public override av.View CreateView(av.View view, object item)
 		{
 			var tv = view as aw.TextView ?? new aw.TextView(aa.Application.Context);
