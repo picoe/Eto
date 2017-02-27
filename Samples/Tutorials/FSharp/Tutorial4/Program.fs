@@ -34,9 +34,9 @@ type MyForm() as this =
 
         [
             TableRow(new Label(Text = "DataContext Binding") |> TableCell, this.DataContextBinding() |> TableCell)
-            ; TableRow(new Label(Text = "Object Binding") |> TableCell, this.ObjectBinding() |> TableCell)
-            ; TableRow(new Label(Text = "Direct Binding") |> TableCell, this.DirectBinding() |> TableCell)
-            ; TableRow(ScaleHeight = true)
+            TableRow(new Label(Text = "Object Binding") |> TableCell, this.ObjectBinding() |> TableCell)
+            TableRow(new Label(Text = "Direct Binding") |> TableCell, this.DirectBinding() |> TableCell)
+            TableRow(ScaleHeight = true)
         ] |> List.iter layout.Rows.Add
 
         this.Content <- layout

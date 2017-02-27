@@ -13,3 +13,4 @@ type MyForm() as this =
 let main argv = 
     (new Application()).Run(new MyForm())
     0
+
