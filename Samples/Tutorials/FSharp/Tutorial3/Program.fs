@@ -1,7 +1,7 @@
 ﻿open System
 open Eto.Forms
 open Eto.Drawing
-let inline implicit arg = ( ^a : (static member op_Implicit : ^b -> ^a) arg)
+
 type MyForm() as this =
     inherit Form()
     
@@ -56,8 +56,7 @@ type MyForm() as this =
         //  2. When scaling the height of a row, it applies to the entire row.
         //  3. Scaling a row/column makes it share all remaining space with other scaled rows/columns.
         //  4. If a row/column is not scaled, it will be the size of the largest control in that row/column.
-        //  5. A Control can be implicitly converted to a TableCell or TableRow to make the layout more concise.
-
+        
         this.Menu <- new MenuBar(QuitItem = (new Command((fun sender e -> Application.Instance.Quit()), MenuText = "Quit", Shortcut = (Application.Instance.CommonModifier ||| Keys.Q))).CreateMenuItem())
 
 [<EntryPoint;STAThread>]
