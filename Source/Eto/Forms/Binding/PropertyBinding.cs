@@ -110,7 +110,16 @@ namespace Eto.Forms
 				if (val != null && !propertyType.IsInstanceOfType(val))
 				{
 					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-					val = System.Convert.ChangeType(val, propertyType, CultureInfo.InvariantCulture);
+					if(val is IConvertible)
+					{
+						// Use the IConvertible interface if possible
+						val = System.Convert.ChangeType(val, propertyType, CultureInfo.InvariantCulture);
+					}
+					else
+					{
+						// Else use the TypeConverter API
+						val = TypeDescriptor.GetConverter(val.GetType()).ConvertTo(null, CultureInfo.InvariantCulture, val, propertyType);
+					}
 				}
 				return (T)val;
 			}
@@ -140,7 +149,16 @@ namespace Eto.Forms
 					#if PCL
 					propertyType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 					#endif
-					val = System.Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
+					if(value is IConvertible)
+					{
+						// Use the IConvertible interface if possible
+						val = System.Convert.ChangeType(value, propertyType, CultureInfo.InvariantCulture);
+					}
+					else
+					{
+						// Else use the TypeConverter API
+						val = TypeDescriptor.GetConverter(value.GetType()).ConvertTo(null, CultureInfo.InvariantCulture, val, propertyType);
+					}
 				}
 				descriptor.SetValue(dataItem, val);
 			}
