@@ -78,25 +78,39 @@ namespace Eto.Drawing
 			float max = Math.Max(color.R, Math.Max(color.G, color.B));
 			float min = Math.Min(color.R, Math.Min(color.G, color.B));
 
-			float h = 0f;
-			if (Math.Abs(max - color.R) < Color.Epsilon && color.G >= color.B)
+			float delta = max - min;
+			float h;
+			float s;
+			if (delta <= float.Epsilon)
 			{
-				h = 60 * (color.G - color.B) / (max - min);
+				h = 0f;
+				s = 0f;
 			}
-			else if (Math.Abs(max - color.R) < Color.Epsilon && color.G < color.B)
+			else
 			{
-				h = 60 * (color.G - color.B) / (max - min) + 360;
-			}
-			else if (Math.Abs(max - color.G) < Color.Epsilon)
-			{
-				h = 60 * (color.B - color.R) / (max - min) + 120;
-			}
-			else if (Math.Abs(max - color.B) < Color.Epsilon)
-			{
-				h = 60 * (color.R - color.G) / (max - min) + 240;
-			}
+				if (Math.Abs(max - color.R) < Color.Epsilon && color.G >= color.B)
+				{
+					h = 60 * (color.G - color.B) / delta;
+				}
+				else if (Math.Abs(max - color.R) < Color.Epsilon && color.G < color.B)
+				{
+					h = 60 * (color.G - color.B) / delta + 360;
+				}
+				else if (Math.Abs(max - color.G) < Color.Epsilon)
+				{
+					h = 60 * (color.B - color.R) / delta + 120;
+				}
+				else if (Math.Abs(max - color.B) < Color.Epsilon)
+				{
+					h = 60 * (color.R - color.G) / delta + 240;
+				}
+				else
+				{
+					h = 0f;
+				}
 
-			float s = (Math.Abs(max) < Color.Epsilon) ? 0f : (1.0f - (min / max));
+				s = (Math.Abs(max) < Color.Epsilon) ? 0f : (1.0f - (min / max));
+			}
 			
 			this.H = h;
 			this.S = s;
