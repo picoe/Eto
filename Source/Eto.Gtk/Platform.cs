@@ -17,13 +17,13 @@ namespace Eto.GtkSharp
 {
 	static class Helper
 	{
+		public static bool UseHeaderBar;
+
 		public static void Init()
 		{
 			var args = new string[0];
 			if (Gtk.Application.InitCheck(string.Empty, ref args))
-			{
 				Gdk.Threads.Enter();
-			}
 		}
 	}
 
@@ -99,6 +99,8 @@ namespace Eto.GtkSharp
 			p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
 			p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
+			p.Add<DocumentControl.IHandler>(() => new DocumentControlHandler());
+			p.Add<DocumentPage.IHandler>(() => new DocumentPageHandler());
 			p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			p.Add<Expander.IHandler>(() => new ExpanderHandler());
 			p.Add<FilePicker.IHandler>(() => new FilePickerHandler());
@@ -169,6 +171,10 @@ namespace Eto.GtkSharp
 			p.Add<Screen.IScreensHandler>(() => new ScreensHandler());
 			p.Add<Keyboard.IHandler>(() => new KeyboardHandler());
 			p.Add<FixedMaskedTextProvider.IHandler>(() => new FixedMaskedTextProviderHandler());
+			if (EtoEnvironment.Platform.IsLinux)
+				p.Add<TrayIndicator.IHandler>(() => new LinuxTrayIndicatorHandler());
+            else
+                p.Add<TrayIndicator.IHandler>(() => new OtherTrayIndicatorHandler());
 
 			// IO
 			p.Add<SystemIcons.IHandler>(() => new SystemIconsHandler());

@@ -254,7 +254,6 @@
     <Compile Include="Forms\GtkControl.cs" />
     <Compile Include="Forms\Controls\RichTextAreaHandler.cs" />
     <Compile Include="Forms\KeyboardHandler.cs" />
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="..\Shared\FixedMaskedTextProviderHandler.cs">
       <Link>Forms\FixedMaskedTextProviderHandler.cs</Link>
     </Compile>
@@ -275,6 +274,13 @@
     <Compile Include="Forms\FontDialogHandlerGtk32.cs" />
     <Compile Include="Forms\Controls\FontPickerHandler.cs" />
     <Compile Include="Forms\OpenWithDialogHandler.cs" />
+    <Compile Include="Forms\Controls\DocumentControlHandler.cs" />
+    <Compile Include="Forms\Controls\DocumentPageHandler.cs" />
+    <Compile Include="NativeMethods.cs">
+      <DependentUpon>NativeMethods.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LinuxTrayIndicatorHandler.cs" />
+    <Compile Include="Forms\OtherTrayIndicatorHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -291,6 +297,12 @@
       <Project>{35EF0A4E-2A1A-492C-8BED-106774EA09F2}</Project>
       <Name>Eto - pcl</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NativeMethods.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NativeMethods.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="..\Shared\Common.targets" />
   <ProjectExtensions>

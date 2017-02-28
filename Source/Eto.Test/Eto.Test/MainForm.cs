@@ -13,6 +13,7 @@ namespace Eto.Test
 		TextArea eventLog;
 		Panel contentContainer;
 		Navigation navigation;
+		TrayIndicator tray;
 
 		public TextArea EventLog
 		{
@@ -284,6 +285,21 @@ namespace Eto.Test
 				}
 			}
 
+			if (Platform.Supports<TrayIndicator>())
+			{
+				tray = new TrayIndicator();
+				tray.Icon = TestIcons.TestIcon;
+				tray.Title = "Eto Test App";
+
+				var menu = new ContextMenu();
+				menu.Items.Add(about);
+				menu.Items.Add(quit);
+				tray.SetMenu(menu);
+
+                tray.Activated += (o, e) => MessageBox.Show("Hello World!!!");
+
+				tray.Show();
+			}
 		}
 
 		protected override void OnWindowStateChanged(EventArgs e)
@@ -294,8 +310,12 @@ namespace Eto.Test
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
+			if (Platform.Supports<TrayIndicator>())
+				tray.Hide();
+
 			base.OnClosing(e);
 			Log.Write(this, "Closing");
+
 			/*
 			 * Note that on OS X, windows usually close, but the application will keep running.  It is
 			 * usually better to handle the Application.OnTerminating event instead.

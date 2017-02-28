@@ -15,8 +15,10 @@ namespace Eto
 			public int top;
 			public int right;
 			public int bottom;
+			public int width => right - left;
+			public int height => bottom - top;
 		}
-        
+
 		[Flags]
 		public enum SWP : uint
 		{
@@ -149,7 +151,8 @@ namespace Eto
 			ECM_FIRST = 0x1500,
 			EM_SETCUEBANNER = ECM_FIRST + 1,
 
-			DPICHANGED = 0x02E0
+			DPICHANGED = 0x02E0,
+			NCCREATE = 0x0081
 		}
 
 		public static ushort LOWORD(IntPtr word)

@@ -1,387 +1,433 @@
-﻿using System;
+﻿﻿
+using System;
 using System.Runtime.InteropServices;
 using GLib;
-using System.Reflection;
+using Gdk;
 
 namespace Eto.GtkSharp
 {
 	static class NativeMethods
 	{
-		#if GTK2
+#if GTK2
 		const string ver = "2.0";
-		#elif GTK3
+#elif GTK3
 		const string ver = "3";
-		#endif
+#endif
 
-		static class NativeMethodsWindows
+		static class NMWindows
 		{
-			#if GTK2
+#if GTK2
 			const string plat = "win32-";
-			#elif GTK3
+#elif GTK3
 			const string plat = "";
-			#endif
-
+#endif
 			const string ext = "-0.dll";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void g_signal_stop_emission_by_name(IntPtr instance, IntPtr name);
+			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
+			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, string text);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gtk_print_settings_get_page_ranges(IntPtr handle, out int num_ranges);
-#if GTK3
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_color_chooser_get_rgba(IntPtr chooser, out Gdk.RGBA color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
+			public extern static IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
+			public extern static void gtk_color_chooser_get_rgba(IntPtr chooser, out RGBA color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
+			public extern static void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
+			public extern static void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern string gtk_font_chooser_get_font(IntPtr fontchooser);
+			public extern static bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
+			public extern static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr g_file_new_for_path(string path);
+			public extern static string gtk_font_chooser_get_font(IntPtr fontchooser);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
-#endif
+			public extern static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr g_file_new_for_path(string path);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_application_prefers_app_menu(IntPtr application);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_header_bar_new();
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_window_set_titlebar(IntPtr window, IntPtr widget);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_start(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_end(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
 		}
 
-		static class NativeMethodsLinux
+		static class NMLinux
 		{
-			#if GTK2
+#if GTK2
 			const string plat = "x11-";
-			#elif GTK3
+#elif GTK3
 			const string plat = "";
-			#endif
-
+#endif
 			const string ext = ".so.0";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void g_signal_stop_emission_by_name(IntPtr instance, IntPtr name);
+			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
+			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, string text);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gtk_print_settings_get_page_ranges(IntPtr handle, out int num_ranges);
-#if GTK3
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_color_chooser_get_rgba(IntPtr chooser, out Gdk.RGBA color);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
+			public extern static IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
+			public extern static void gtk_color_chooser_get_rgba(IntPtr chooser, out RGBA color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
+			public extern static void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern string gtk_font_chooser_get_font(IntPtr fontchooser);
+			public extern static void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
+			public extern static bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr g_file_new_for_path(string path);
+			public extern static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
-#endif
-        }
+			public extern static string gtk_font_chooser_get_font(IntPtr fontchooser);
 
-		static class NativeMethodsMac
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr g_file_new_for_path(string path);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_application_prefers_app_menu(IntPtr application);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_header_bar_new();
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_window_set_titlebar(IntPtr window, IntPtr widget);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_start(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_end(IntPtr bar, IntPtr child);
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
+		}
+
+		static class NMMac
 		{
-			#if GTK2
+#if GTK2
 			const string plat = "quartz-";
-			#elif GTK3
+#elif GTK3
 			const string plat = "";
-			#endif
-
+#endif
 			const string ext = ".dylib";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void g_signal_stop_emission_by_name(IntPtr instance, IntPtr name);
+			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, IntPtr text);
+			public extern static void gtk_entry_set_placeholder_text(IntPtr entry, string text);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr gtk_print_settings_get_page_ranges(IntPtr handle, out int num_ranges);
-#if GTK3
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_color_chooser_get_rgba(IntPtr chooser, out Gdk.RGBA color);
-
-            [DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-            public static extern void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
+			public extern static IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
+			public extern static void gtk_color_chooser_get_rgba(IntPtr chooser, out RGBA color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
+			public extern static void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern string gtk_font_chooser_get_font(IntPtr fontchooser);
+			public extern static void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
+			public extern static bool gtk_color_chooser_get_use_alpha(IntPtr chooser);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr g_file_new_for_path(string path);
+			public extern static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent);
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
-			public static extern IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
-#endif
-        }
+			public extern static string gtk_font_chooser_get_font(IntPtr fontchooser);
 
-#pragma warning disable 0649
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname);
 
-		static class Impl
-		{
-			public static readonly Action<IntPtr, IntPtr> g_signal_stop_emission_by_name;
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr g_file_new_for_path(string path);
 
-			public delegate bool ClipboardWaitForTargetsDelegate(IntPtr cp, out IntPtr atoms, out int number);
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file);
 
-			public static readonly ClipboardWaitForTargetsDelegate gtk_clipboard_wait_for_targets;
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gtk_application_prefers_app_menu(IntPtr application);
 
-            public static readonly Action<IntPtr, IntPtr> gtk_entry_set_placeholder_text;
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr gtk_header_bar_new();
 
-			public delegate IntPtr PrintSettingsGetPageRanges(IntPtr handle, out int num_ranges);
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_window_set_titlebar(IntPtr window, IntPtr widget);
 
-			public static readonly PrintSettingsGetPageRanges gtk_print_settings_get_page_ranges;
-#if GTK3
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_start(IntPtr bar, IntPtr child);
 
-            public delegate IntPtr ColorChooserNew(string title, IntPtr parent);
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_pack_end(IntPtr bar, IntPtr child);
 
-            public static readonly ColorChooserNew gtk_color_chooser_dialog_new;
-
-            public delegate void ColorChooserGet(IntPtr chooser, out Gdk.RGBA color);
-
-            public static readonly ColorChooserGet gtk_color_chooser_get_rgba;
-
-            public delegate void ColorChooserSet(IntPtr chooser, double[] color);
-
-            public static readonly ColorChooserSet gtk_color_chooser_set_rgba;
-
-			public delegate bool ColorChooserGetAlpha(IntPtr chooser);
-
-			public static readonly ColorChooserGetAlpha gtk_color_chooser_get_use_alpha;
-
-			public delegate void ColorChooserSetAlpha(IntPtr chooser, bool use_alpha);
-
-			public static readonly ColorChooserSetAlpha gtk_color_chooser_set_use_alpha;
-
-            public delegate IntPtr FontChooserNew(string title, IntPtr parent);
-
-			public static readonly FontChooserNew gtk_font_chooser_dialog_new;
-
-			public delegate string FontChooserGetFont(IntPtr fontchooser);
-
-			public static readonly FontChooserGetFont gtk_font_chooser_get_font;
-
-			public delegate void FontChooserSetFont(IntPtr fontchooser, string fontname);
-
-			public static readonly FontChooserSetFont gtk_font_chooser_set_font;
-
-			public delegate IntPtr FileNewForPath(string path);
-
-			public static readonly FileNewForPath g_file_new_for_path;
-
-			public delegate IntPtr AppChooserDialogNew(IntPtr parrent, int flags, IntPtr file);
-
-			public static readonly AppChooserDialogNew gtk_app_chooser_dialog_new;
-#endif
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
 		}
 
-#pragma warning restore 0649
-
-		static NativeMethods()
+		public static void g_signal_stop_emission_by_name(IntPtr instance, string name)
 		{
-			var fields = typeof(Impl).GetFields();
-			Type platformType;
 			if (EtoEnvironment.Platform.IsLinux)
-				platformType = typeof(NativeMethodsLinux);
+				NMLinux.g_signal_stop_emission_by_name(instance, name);
 			else if (EtoEnvironment.Platform.IsMac)
-				platformType = typeof(NativeMethodsMac);
+				NMMac.g_signal_stop_emission_by_name(instance, name);
 			else
-				platformType = typeof(NativeMethodsWindows);
-			
-			// instead of requiring an accompanying .config file.
-			foreach (var field in fields)
-			{
-				var method = platformType.GetMethod(field.Name);
-				if (method != null)
-					field.SetValue(null, Delegate.CreateDelegate(field.FieldType, method));
-			}
+				NMWindows.g_signal_stop_emission_by_name(instance, name);
 		}
 
-		public static void StopEmissionByName(GLib.Object o, string signal)
+		public static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number)
 		{
-			if (Impl.g_signal_stop_emission_by_name == null)
-				return;
-			IntPtr intPtr = Marshaller.StringToPtrGStrdup(signal);
-			Impl.g_signal_stop_emission_by_name(o.Handle, intPtr);
-			Marshaller.Free(intPtr);
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_clipboard_wait_for_targets(cp, out atoms, out number);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_clipboard_wait_for_targets(cp, out atoms, out number);
+			else
+				return NMWindows.gtk_clipboard_wait_for_targets(cp, out atoms, out number);
 		}
 
-		public static void gtk_entry_set_placeholder_text(Gtk.Entry entry, string text)
+		public static void gtk_entry_set_placeholder_text(IntPtr entry, string text)
 		{
-			if (Impl.gtk_entry_set_placeholder_text == null)
-				return;
-			IntPtr textPtr = Marshaller.StringToPtrGStrdup(text);
-			Impl.gtk_entry_set_placeholder_text(entry.Handle, textPtr);
-			Marshaller.Free(textPtr);
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_entry_set_placeholder_text(entry, text);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_entry_set_placeholder_text(entry, text);
+			else
+				NMWindows.gtk_entry_set_placeholder_text(entry, text);
 		}
 
-		public static Gtk.PageRange[] gtk_print_settings_get_page_ranges(Gtk.PrintSettings settings)
+		public static IntPtr gtk_print_settings_get_page_ranges(IntPtr handle, out int num_ranges)
 		{
-			if (Impl.gtk_entry_set_placeholder_text == null)
-				return null;
-			int num_ranges;
-			IntPtr intPtr = Impl.gtk_print_settings_get_page_ranges(settings.Handle, out num_ranges);
-			Gtk.PageRange[] array = new Gtk.PageRange[num_ranges];
-			for (int i = 0; i < num_ranges; i++)
-			{
-				array[i] = Gtk.PageRange.New(intPtr + i * IntPtr.Size);
-			}
-			Marshaller.Free(intPtr);
-			return array;
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_print_settings_get_page_ranges(handle, out num_ranges);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_print_settings_get_page_ranges(handle, out num_ranges);
+			else
+				return NMWindows.gtk_print_settings_get_page_ranges(handle, out num_ranges);
 		}
-#if GTK3
 
-        public static IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parrent)
-        {
-            return Impl.gtk_color_chooser_dialog_new(title, parrent);
-        }
+		public static IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_color_chooser_dialog_new(title, parent);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_color_chooser_dialog_new(title, parent);
+			else
+				return NMWindows.gtk_color_chooser_dialog_new(title, parent);
+		}
 
-        public static Gdk.RGBA gtk_color_chooser_get_rgba(IntPtr chooser)
-        {
-            Gdk.RGBA ret;
-            Impl.gtk_color_chooser_get_rgba(chooser, out ret);
-            return ret;
-        }
+		public static void gtk_color_chooser_get_rgba(IntPtr chooser, out RGBA color)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_color_chooser_get_rgba(chooser, out color);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_color_chooser_get_rgba(chooser, out color);
+			else
+				NMWindows.gtk_color_chooser_get_rgba(chooser, out color);
+		}
 
 		public static void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color)
 		{
-			Impl.gtk_color_chooser_set_rgba(chooser, color);
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_color_chooser_set_rgba(chooser, color);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_color_chooser_set_rgba(chooser, color);
+			else
+				NMWindows.gtk_color_chooser_set_rgba(chooser, color);
 		}
 
 		public static void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha)
 		{
-			Impl.gtk_color_chooser_set_use_alpha(chooser, use_alpha);
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_color_chooser_set_use_alpha(chooser, use_alpha);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_color_chooser_set_use_alpha(chooser, use_alpha);
+			else
+				NMWindows.gtk_color_chooser_set_use_alpha(chooser, use_alpha);
 		}
 
 		public static bool gtk_color_chooser_get_use_alpha(IntPtr chooser)
 		{
-			return Impl.gtk_color_chooser_get_use_alpha(chooser);
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_color_chooser_get_use_alpha(chooser);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_color_chooser_get_use_alpha(chooser);
+			else
+				return NMWindows.gtk_color_chooser_get_use_alpha(chooser);
 		}
 
-		public static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parrent)
+		public static IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent)
 		{
-			return Impl.gtk_font_chooser_dialog_new(title, parrent);
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_font_chooser_dialog_new(title, parent);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_font_chooser_dialog_new(title, parent);
+			else
+				return NMWindows.gtk_font_chooser_dialog_new(title, parent);
 		}
 
 		public static string gtk_font_chooser_get_font(IntPtr fontchooser)
 		{
-			return Impl.gtk_font_chooser_get_font(fontchooser);
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_font_chooser_get_font(fontchooser);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_font_chooser_get_font(fontchooser);
+			else
+				return NMWindows.gtk_font_chooser_get_font(fontchooser);
 		}
 
 		public static void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname)
 		{
-			Impl.gtk_font_chooser_set_font(fontchooser, fontname);
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_font_chooser_set_font(fontchooser, fontname);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_font_chooser_set_font(fontchooser, fontname);
+			else
+				NMWindows.gtk_font_chooser_set_font(fontchooser, fontname);
 		}
 
 		public static IntPtr g_file_new_for_path(string path)
 		{
-			return Impl.g_file_new_for_path(path);
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.g_file_new_for_path(path);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.g_file_new_for_path(path);
+			else
+				return NMWindows.g_file_new_for_path(path);
 		}
 
 		public static IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file)
 		{
-			return Impl.gtk_app_chooser_dialog_new(parrent, flags, file);
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_app_chooser_dialog_new(parrent, flags, file);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_app_chooser_dialog_new(parrent, flags, file);
+			else
+				return NMWindows.gtk_app_chooser_dialog_new(parrent, flags, file);
 		}
 
-#endif
-
-		public static bool ClipboardWaitForTargets(IntPtr cp, out Gdk.Atom[] atoms)
+		public static bool gtk_application_prefers_app_menu(IntPtr application)
 		{
-			if (Impl.gtk_clipboard_wait_for_targets == null)
-			{
-				atoms = null;
-				return false;
-			}
-			IntPtr atomPtrs;
-			int count;
-			var success = Impl.gtk_clipboard_wait_for_targets(cp, out atomPtrs, out count);
-			if (!success || count <= 0)
-			{
-				atoms = null;
-				return false;
-			}
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_application_prefers_app_menu(application);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_application_prefers_app_menu(application);
+			else
+				return NMWindows.gtk_application_prefers_app_menu(application);
+		}
 
-			atoms = new Gdk.Atom[count];
-			unsafe
-			{
-				byte* p = (byte*)atomPtrs.ToPointer();
-				for (int i = 0; i < count; i++)
-				{
-					atoms[i] = new Gdk.Atom(new IntPtr(*p));
-					p += IntPtr.Size;
-				}
-			}
-			return true;
+		public static IntPtr gtk_header_bar_new()
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gtk_header_bar_new();
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gtk_header_bar_new();
+			else
+				return NMWindows.gtk_header_bar_new();
+		}
+
+		public static void gtk_window_set_titlebar(IntPtr window, IntPtr widget)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_window_set_titlebar(window, widget);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_window_set_titlebar(window, widget);
+			else
+				NMWindows.gtk_window_set_titlebar(window, widget);
+		}
+
+		public static void gtk_header_bar_pack_start(IntPtr bar, IntPtr child)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_header_bar_pack_start(bar, child);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_header_bar_pack_start(bar, child);
+			else
+				NMWindows.gtk_header_bar_pack_start(bar, child);
+		}
+
+		public static void gtk_header_bar_pack_end(IntPtr bar, IntPtr child)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_header_bar_pack_end(bar, child);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_header_bar_pack_end(bar, child);
+			else
+				NMWindows.gtk_header_bar_pack_end(bar, child);
+		}
+
+		public static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.gtk_header_bar_set_show_close_button(bar, setting);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.gtk_header_bar_set_show_close_button(bar, setting);
+			else
+				NMWindows.gtk_header_bar_set_show_close_button(bar, setting);
 		}
 	}
-
 }
-

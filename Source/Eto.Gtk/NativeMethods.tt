@@ -1,0 +1,143 @@
+﻿﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+<#
+
+var pclass = new[] { "NMWindows", "NMLinux", "NMMac" };
+var plat = new[] { "win32-", "x11-", "quartz-" };
+var ext = new[] { "-0.dll", ".so.0", ".dylib" };
+
+var giomethods = new[]
+{
+	"void g_signal_stop_emission_by_name(IntPtr instance, string name)"
+};
+
+var gtkmethods = new[]
+{
+    "bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number)",
+    "void gtk_entry_set_placeholder_text(IntPtr entry, string text)",
+    "IntPtr gtk_print_settings_get_page_ranges(IntPtr handle, out int num_ranges)",
+    "IntPtr gtk_color_chooser_dialog_new(string title, IntPtr parent)",
+    "void gtk_color_chooser_get_rgba(IntPtr chooser, out RGBA color)",
+    "void gtk_color_chooser_set_rgba(IntPtr chooser, double[] color)",
+    "void gtk_color_chooser_set_use_alpha(IntPtr chooser, bool use_alpha)",
+    "bool gtk_color_chooser_get_use_alpha(IntPtr chooser)",
+    "IntPtr gtk_font_chooser_dialog_new(string title, IntPtr parent)",
+    "string gtk_font_chooser_get_font(IntPtr fontchooser)",
+    "void gtk_font_chooser_set_font(IntPtr fontchooser, string fontname)",
+    "IntPtr g_file_new_for_path(string path)",
+    "IntPtr gtk_app_chooser_dialog_new(IntPtr parrent, int flags, IntPtr file)",
+    "bool gtk_application_prefers_app_menu(IntPtr application)",
+    "IntPtr gtk_header_bar_new()",
+    "void gtk_window_set_titlebar(IntPtr window, IntPtr widget)",
+    "void gtk_header_bar_pack_start(IntPtr bar, IntPtr child)",
+    "void gtk_header_bar_pack_end(IntPtr bar, IntPtr child)",
+    "void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting)"
+};
+
+var methods = giomethods.Concat(gtkmethods).ToArray();
+
+#>
+using System;
+using System.Runtime.InteropServices;
+using GLib;
+using Gdk;
+
+namespace Eto.GtkSharp
+{
+	static class NativeMethods
+	{
+#if GTK2
+		const string ver = "2.0";
+#elif GTK3
+		const string ver = "3";
+#endif
+<#
+	for (int i = 0; i < pclass.Length; i++)
+	{
+#>
+
+		static class <#= pclass[i] #>
+		{
+#if GTK2
+			const string plat = "<#= plat[i] #>";
+#elif GTK3
+			const string plat = "";
+#endif
+			const string ext = "<#= ext[i] #>";
+			const string libgobject = "libgobject-" + ver + ext;
+			const string libgtk = "libgtk-" + plat + ver + ext;
+<#
+		foreach (var method in giomethods)
+		{
+#>
+
+			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
+			public extern static <#= method #>;
+<#
+		}
+#>
+<#
+		foreach (var method in gtkmethods)
+		{
+#>
+
+			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static <#= method #>;
+<#
+		}
+#>
+		}
+<#
+	}
+
+	foreach (var method in methods)
+	{
+#>
+
+		public static <#= method #>
+		{
+<#
+			var main = method.Split(new char[] { '(', ')' });
+            var meth = main[0].Split(' ');
+            var ret = "";
+
+            if (main[1] != "")
+            {
+                var args = main[1].Split(',');
+
+                foreach (var arg in args)
+                {
+                    var split = arg.Trim(' ').Split(' ');
+
+                    if (split.Length == 2)
+                        ret += ", " + split[1];
+                    else
+                        ret += ", " + split[0] + " " + split[2];
+                }
+
+                ret = ret.Substring(2);
+            }
+
+            ret = meth[1] + "(" + ret + ")" + main[2];
+
+            var hasret = "";
+
+            if (meth[0] != "void")
+            	hasret = "return ";
+#>
+			if (EtoEnvironment.Platform.IsLinux)
+				<#= hasret #><#= pclass[1]#>.<#= ret #>;
+			else if (EtoEnvironment.Platform.IsMac)
+				<#= hasret #><#= pclass[2]#>.<#= ret #>;
+			else
+				<#= hasret #><#= pclass[0]#>.<#= ret #>;
+		}
+<#
+	}
+#>
+	}
+}

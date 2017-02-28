@@ -31,10 +31,27 @@ namespace Eto.GtkSharp.Forms.Controls
 				inactive.Active = true;
 			}
 			label = new Gtk.AccelLabel("");
-			Control.Add(label); //control.AddMnemonicLabel(label);
+			Control.Add(label);
+			Control.Realized += Control_Realized;
+
 			Control.Toggled += Connector.HandleCheckedChanged;
 			box = new Gtk.EventBox();
 			box.Child = Control;
+		}
+
+		void UpdateLabel()
+		{
+			// if Text present show label, otherwise hide it.
+			if (label.Text != null && label.Text != string.Empty){
+				label.Visible = true;
+			} else {
+				label.Visible = false;
+			}
+		}
+
+		void Control_Realized (object sender, EventArgs e)
+		{
+			UpdateLabel ();
 		}
 
 		protected new RadioButtonConnector Connector { get { return (RadioButtonConnector)base.Connector; } }
@@ -57,7 +74,10 @@ namespace Eto.GtkSharp.Forms.Controls
 		public override string Text
 		{
 			get { return label.Text.ToEtoMnemonic(); }
-			set { label.TextWithMnemonic = value.ToPlatformMnemonic(); }
+			set {
+				label.TextWithMnemonic = value.ToPlatformMnemonic();
+				UpdateLabel ();
+			}
 		}
 
 		public bool Checked

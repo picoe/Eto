@@ -5,6 +5,7 @@ using sd = System.Drawing;
 using swm = System.Windows.Media;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Wpf.Forms
 {
@@ -13,9 +14,9 @@ namespace Eto.Wpf.Forms
 		float? realScale;
 		sw.Window window;
 
-		public ScreenHandler(sw.Window window)
+		public ScreenHandler(sw.Window window, swf.Screen screen)
 		{
-			Control = GetCurrentScreen(window);
+			Control = screen;
 			this.window = window;
 		}
 
@@ -46,45 +47,16 @@ namespace Eto.Wpf.Forms
 			return realScale ?? 1f;
 		}
 
-		static swf.Screen GetCurrentScreen(sw.Window window)
-		{
-			var centerPoint = new sd.Point((int)(window.Left + window.ActualWidth / 2), (int)(window.Top + window.ActualHeight / 2));
-			foreach (var s in swf.Screen.AllScreens)
-			{
-				if (s.Bounds.Contains(centerPoint))
-					return s;
-			}
-			return swf.Screen.PrimaryScreen;
-		}
+		public float RealScale => GetRealScale() * Scale;
 
-		public float RealScale
-		{
-			get { return GetRealScale() * Scale; }
-		}
+		public float Scale => 96f / 72f;
 
-		public float Scale
-		{
-			get { return 96f / 72f; }
-		}
+		public RectangleF Bounds => Control.Bounds.ScreenToLogical();
 
-		public RectangleF Bounds
-		{
-			get { return (RectangleF)Control.Bounds.ToEto() / GetRealScale(); }
-		}
+		public RectangleF WorkingArea => Control.WorkingArea.ScreenToLogical();
 
-		public RectangleF WorkingArea
-		{
-			get { return (RectangleF)Control.WorkingArea.ToEto() / GetRealScale(); }
-		}
+		public int BitsPerPixel => Control.BitsPerPixel;
 
-		public int BitsPerPixel
-		{
-			get { return Control.BitsPerPixel; }
-		}
-
-		public bool IsPrimary
-		{
-			get { return Control.Primary; }
-		}
+		public bool IsPrimary => Control.Primary;
 	}
 }

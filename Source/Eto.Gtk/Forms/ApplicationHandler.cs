@@ -10,7 +10,11 @@ using Eto.GtkSharp.Forms;
 
 namespace Eto.GtkSharp.Forms
 {
+#if GTK3
+	public class ApplicationHandler : WidgetHandler<Gtk.Application, Application, Application.ICallback>, Application.IHandler
+#else
 	public class ApplicationHandler : WidgetHandler<object, Application, Application.ICallback>, Application.IHandler
+#endif
 	{
 		bool attached;
 		Gtk.StatusIcon statusIcon;
@@ -23,6 +27,14 @@ namespace Eto.GtkSharp.Forms
 
 			if (SynchronizationContext.Current == null)
 				SynchronizationContext.SetSynchronizationContext(new GtkSynchronizationContext());
+
+#if GTK3
+			Control = new Gtk.Application(null, GLib.ApplicationFlags.None);
+			Control.Register(GLib.Cancellable.Current);
+			Helper.UseHeaderBar = Gtk.Global.MinorVersion >= 10 && NativeMethods.gtk_application_prefers_app_menu(Control.Handle);
+#else
+			Helper.UseHeaderBar = false;
+#endif
 		}
 
 		void OnUnhandledException(GLib.UnhandledExceptionArgs e)
