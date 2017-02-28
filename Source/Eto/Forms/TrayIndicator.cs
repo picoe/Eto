@@ -119,7 +119,7 @@ namespace Eto.Forms
         /// <summary>
         /// Event identifier for handlers when attaching the <see cref="Activated"/> event.
         /// </summary>
-        public const string ActivatedEvent = "Tray.Activated";
+        public const string ActivatedEvent = "TrayIndicator.Activated";
         
         /// <summary>
         /// Event to handle when the user left click the <see cref="TrayIndicator"/>.

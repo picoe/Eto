@@ -106,6 +106,7 @@
     <Compile Include="Forms\Controls\StepperHandler.cs" />
     <Compile Include="Forms\EtoBorder.cs" />
     <Compile Include="Forms\Menu\MenuHandler.cs" />
+    <Compile Include="Forms\NotificationHandler.cs" />
     <Compile Include="Forms\PerMonitorDpiHelper.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="Forms\VistaSelectFolderDialogHandler.cs" />
