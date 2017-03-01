@@ -65,7 +65,6 @@ namespace Eto.GtkSharp.Forms
 		WindowState state;
 		WindowStyle style;
 		bool topmost;
-		bool setclientsize;
 		bool resizable;
 		Size? clientSize;
 
@@ -233,7 +232,6 @@ namespace Eto.GtkSharp.Forms
 				}
 				else
 				{
-					setclientsize = false;
 					Control.SetDefaultSize(value.Width, value.Height);
 					SetMinMax(value);
 				}
@@ -256,7 +254,6 @@ namespace Eto.GtkSharp.Forms
 				}
 				else
 				{
-					setclientsize = true;
 					Control.SetDefaultSize(value.Width, value.Height);
 					SetMinMax(value);
 				}
