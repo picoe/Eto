@@ -402,9 +402,7 @@ namespace Eto.Forms
 		/// <param name="controls">Controls.</param>
 		public DynamicRow AddSeparateRow(params Control[] controls)
 		{
-			var row = AddSeparateRow(padding: null);
-			row.Add(controls);
-			return row;
+			return AddSeparateRow(padding: null, controls: controls);
 		}
 
 		/// <summary>
@@ -436,6 +434,58 @@ namespace Eto.Forms
 				row.Add(controls);
 			EndVertical();
 			return row;
+		}
+
+		/// <summary>
+		/// Adds a separate vertical column of items in a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// This performs the same as the following, but in a single line:
+		/// <code>
+		/// 	layout.BeginVertical();
+		/// 	layout.Add(control1);
+		/// 	layout.Add(control2);
+		/// 	...
+		/// 	layout.EndVertical();
+		/// </code>
+		/// </remarks>
+		/// <returns>The table added to contain the items</returns>
+		/// <param name="controls">Controls to add initially</param>
+		public DynamicTable AddSeparateColumn(params Control[] controls)
+		{
+			return AddSeparateColumn(padding: null, controls: controls);
+		}
+
+		/// <summary>
+		/// Adds a separate vertical column of items in a new vertical section
+		/// </summary>
+		/// <remarks>
+		/// This performs the same as the following, but in a single line:
+		/// <code>
+		/// 	layout.BeginVertical(padding, spacing, xscale, yscale);
+		/// 	layout.Add(control1);
+		/// 	layout.Add(control2);
+		/// 	...
+		/// 	layout.EndVertical();
+		/// </code>
+		/// </remarks>
+		/// <returns>The table added to contain the items</returns>
+		/// <param name="padding">Padding for the vertical section</param>
+		/// <param name="spacing">Spacing between each cell in the column</param>
+		/// <param name="xscale">Xscale for the vertical section</param>
+		/// <param name="yscale">Yscale for the vertical section</param>
+		/// <param name="controls">Controls to add initially</param>
+		public DynamicTable AddSeparateColumn(Padding? padding = null, int? spacing = null, bool? xscale = null, bool? yscale = null, IEnumerable<Control> controls = null)
+		{
+			var spacingSize = spacing != null ? (Size?)new Size(0, spacing.Value) : null;
+			var table = BeginVertical(padding, spacingSize, xscale, yscale);
+			if (controls != null)
+			{
+				foreach (var control in controls)
+					Add(control);
+			}
+			EndVertical();
+			return table;
 		}
 
 		/// <summary>

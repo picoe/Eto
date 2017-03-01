@@ -58,14 +58,17 @@ namespace Eto.Mac.Forms
 
 		public bool DisableCenterParent { get; set; }
 
+		public NSWindow OwnerWindow { get; set; }
+
 		public override void Center()
 		{
 			if (DisableCenterParent)
 				return;
 			// implement centering to parent if there is a parent window for this one..
-			if (ParentWindow != null)
+			var window = OwnerWindow ?? ParentWindow;
+			if (window != null)
 			{
-				var parentFrame = ParentWindow.Frame;
+				var parentFrame = window.Frame;
 				var frame = Frame;
 				var location = new CGPoint((parentFrame.Width - frame.Width) / 2 + parentFrame.X, (parentFrame.Height - frame.Height) / 2 + parentFrame.Y);
 				SetFrameOrigin(location);
