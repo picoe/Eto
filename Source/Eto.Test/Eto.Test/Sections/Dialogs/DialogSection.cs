@@ -9,6 +9,9 @@ namespace Eto.Test.Sections.Dialogs
 		public bool UseAsync { get; set; }
 		public bool AddButtons { get; set; }
 		public bool SetResizable { get; set; }
+		public bool SetMinimizable { get; set; }
+		public bool SetMaximizable { get; set; }
+		public bool SetOwner { get; set; } = true;
 		public WindowState? DialogWindowState { get; set; }
 		public DialogDisplayMode? DisplayMode { get; set; }
 
@@ -16,7 +19,8 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			var layout = new DynamicLayout { Spacing = new Size(20, 20), DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddSeparateRow(null, UseAsyncCheckBox(), AddButtonsCheckBox(), ResizableCheckBox(), null);
+			layout.AddSeparateRow(null, UseAsyncCheckBox(), AddButtonsCheckBox(), SetOwnerCheckBox(), null);
+			layout.AddSeparateRow(null, ResizableCheckBox(), MinimizableCheckBox(), MaximizableCheckBox(), null);
 			layout.AddSeparateRow(null, "DisplayMode", DisplayModeDropDown(), "WindowState", WindowStateDropDown(), null);
 			layout.BeginVertical();
 			layout.AddRow(null, SimpleDialogButton(), null);
@@ -26,6 +30,13 @@ namespace Eto.Test.Sections.Dialogs
 			layout.Add(null);
 
 			Content = layout;
+		}
+
+		Control SetOwnerCheckBox()
+		{
+			var control = new CheckBox { Text = "Set owner" };
+			control.CheckedBinding.Bind(this, c => c.SetOwner);
+			return control;
 		}
 
 		Control UseAsyncCheckBox()
@@ -51,7 +62,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control AddButtonsCheckBox()
 		{
-			var control = new CheckBox { Text = "Add positive && negative buttons" };
+			var control = new CheckBox { Text = "Add buttons" };
 			control.CheckedBinding.Bind(this, c => c.AddButtons);
 			return control;
 		}
@@ -63,25 +74,39 @@ namespace Eto.Test.Sections.Dialogs
 			return control;
 		}
 
-
-		Dialog CreateDialog()
+		Control MinimizableCheckBox()
 		{
-			var dialog = new Dialog();
-			if (DisplayMode != null)
-				dialog.DisplayMode = DisplayMode.Value;
+			var control = new CheckBox { Text = "Minimizable" };
+			control.CheckedBinding.Bind(this, c => c.SetMinimizable);
+			return control;
+		}
 
-			if (DialogWindowState != null)
-				dialog.WindowState = DialogWindowState.Value;
+		Control MaximizableCheckBox()
+		{
+			var control = new CheckBox { Text = "Maximizable" };
+			control.CheckedBinding.Bind(this, c => c.SetMaximizable);
+			return control;
+		}
 
+		void SetOptions(Dialog dialog)
+		{
+			if (SetMinimizable)
+				dialog.Minimizable = true;
+			if (SetMaximizable)
+				dialog.Maximizable = true;
 			if (SetResizable)
 				dialog.Resizable = true;
-
-			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Size = new Size(400, 100) };
-
-			layout.AddCentered(new Label { Text = "Content" }, yscale: true);
-
+			if (DisplayMode != null)
+				dialog.DisplayMode = DisplayMode.Value;
+			if (DialogWindowState != null)
+				dialog.WindowState = DialogWindowState.Value;
+			
 			if (AddButtons)
 			{
+				var openChildButton = new Button { Text = "Open child Dialog" };
+				openChildButton.Click += (sender, e) => CreateDialog().ShowModal(dialog);
+				dialog.PositiveButtons.Add(openChildButton);
+
 				dialog.DefaultButton = new Button { Text = "Default Button" };
 				dialog.PositiveButtons.Add(dialog.DefaultButton);
 				dialog.DefaultButton.Click += delegate
@@ -98,6 +123,29 @@ namespace Eto.Test.Sections.Dialogs
 				};
 			}
 
+			if (DisplayMode == DialogDisplayMode.Attached)
+			{
+				var closeDialogButton = new Button { Text = "Close" };
+				closeDialogButton.Click += (sender, e) => dialog.Close();
+				dialog.NegativeButtons.Add(closeDialogButton);
+			}
+		}
+
+		Dialog CreateDialog()
+		{
+			var dialog = new Dialog { Title = "Simple Dialog" };
+			SetOptions(dialog);
+
+			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5) };
+
+			layout.Add(new Label
+			{
+				Text = "Content",
+				Size = new Size(100, 100),
+				VerticalAlignment = VerticalAlignment.Center,
+				TextAlignment = TextAlignment.Center
+			});
+
 			dialog.Content = layout;
 
 			return dialog;
@@ -109,7 +157,6 @@ namespace Eto.Test.Sections.Dialogs
 			control.Click += delegate
 			{
 				var dialog = CreateDialog();
-				dialog.Title = "Simple Dialog";
 				Show(dialog, this);
 
 			};
@@ -118,22 +165,15 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control KitchenSink()
 		{
-			var control = new Button { Text = "Kitchen Sink && Maximized" };
+			var control = new Button { Text = "Kitchen Sink" };
 			control.Click += delegate
 			{
-				var dialog = new Dialog();
-				if (DisplayMode != null)
-					dialog.DisplayMode = DisplayMode.Value;
-				if (Platform.IsDesktop)
+				var dialog = new Dialog
 				{
-					dialog.Minimizable = true;
-					dialog.Resizable = true;
-					dialog.Maximizable = true;
-					dialog.WindowState = WindowState.Maximized;
-				}
-
-				dialog.Title = "Kitchen Sink Dialog";
-				dialog.Content = new Controls.KitchenSinkSection();
+					Title = "Kitchen Sink Dialog",
+					Content = new Controls.KitchenSinkSection()
+				};
+				SetOptions(dialog);
 				Show(dialog, this);
 			};
 
@@ -145,7 +185,7 @@ namespace Eto.Test.Sections.Dialogs
 			if (UseAsync)
 			{
 				Log.Write(null, "Showing dialog async...");
-				var dialogTask = dialog.ShowModalAsync(parent);
+				var dialogTask = SetOwner ? dialog.ShowModalAsync(parent) : dialog.ShowModalAsync();
 				Log.Write(null, "Waiting for dialog to close...");
 				await dialogTask;
 				Log.Write(null, "Dialog closed");
@@ -153,7 +193,10 @@ namespace Eto.Test.Sections.Dialogs
 			else
 			{
 				Log.Write(null, "Showing dialog (blocking)...");
-				dialog.ShowModal(parent);
+				if (SetOwner)
+					dialog.ShowModal(parent);
+				else
+					dialog.ShowModal();
 				Log.Write(null, "Dialog closed");
 			}
 		}
