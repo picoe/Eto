@@ -345,10 +345,7 @@ namespace Eto.Wpf.Drawing
 				Control.Close();
 				var handler = (BitmapHandler)image.Handler;
 				var bmp = image.ToWpf();
-				var newbmp = bmp as swmi.RenderTargetBitmap;
-				if (newbmp == null || newbmp.IsFrozen)
-					newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
-
+				var newbmp = new swmi.RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
 				newbmp.RenderWithCollect(visual);
 				handler.SetBitmap(newbmp);
 				return true;
@@ -609,10 +606,9 @@ namespace Eto.Wpf.Drawing
 				maskgeometry = swm.Geometry.Combine(boundsgeometry, maskgeometry, swm.GeometryCombineMode.Exclude, null);
 				var dr = new swm.GeometryDrawing(swm.Brushes.Black, null, maskgeometry);
 				var db = new swm.DrawingBrush(dr);
-				//db.Transform = new swm.TranslateTransform (0.5, 0.5);
 
+				visual = drawingVisual = new swm.DrawingVisual();
 				Control = drawingVisual.RenderOpen();
-				Control.PushGuidelineSet(new swm.GuidelineSet(new [] { bounds.Left, bounds.Right }, new [] { bounds.Top, bounds.Bottom }));
 				Control.PushOpacityMask(db);
 				Control.DrawImage(newbmp, bounds);
 				Control.Pop();
