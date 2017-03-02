@@ -9,7 +9,7 @@ namespace Eto.GtkSharp.Forms
 {
     public class LinuxNotificationHandler : WidgetHandler<GLib.Object, Notification, Notification.ICallback>, Notification.IHandler
     {
-		private const string libnotify = "libnotify.so";
+		private const string libnotify = "libnotify.so.4";
 
 		[DllImport(libnotify, CallingConvention = CallingConvention.Cdecl)]
 		public extern static bool notify_init(string app_name);
