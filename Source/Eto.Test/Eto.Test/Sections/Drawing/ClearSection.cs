@@ -1,5 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
+using System;
 using System.ComponentModel;
 
 namespace Eto.Test.Sections.Drawing
@@ -96,13 +97,17 @@ namespace Eto.Test.Sections.Drawing
 					graphics.Clear(new SolidBrush(new Color(Colors.Red, 0.5f)));
 				else
 					graphics.Clear();
-				graphics.FillEllipse(Brushes.Blue, 25, 25, 150, 150);
+				var rnd = new Random();
+				graphics.FillEllipse(Brushes.Blue, rnd.Next(50), rnd.Next(50), 150, 150);
 			}
 		}
 
+		Bitmap image;
+
 		Image CreateImage()
 		{
-			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba);
+			if (image == null)
+				image = new Bitmap(200, 200, PixelFormat.Format32bppRgba);
 			using (var graphics = new Graphics(image))
 			{
 				DrawSample(graphics);
