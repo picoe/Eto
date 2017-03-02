@@ -10,30 +10,35 @@ namespace Eto.Wpf.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class RadialGradientBrushHandler : RadialGradientBrush.IHandler
 	{
+		static swm.RadialGradientBrush Get(RadialGradientBrush widget) => ((FrozenBrushWrapper)widget.ControlObject).Brush as swm.RadialGradientBrush;
+
+		static void SetFrozen(RadialGradientBrush widget) => ((FrozenBrushWrapper)widget.ControlObject).SetFrozen();
 
 		public IMatrix GetTransform(RadialGradientBrush widget)
 		{
-			return ((swm.RadialGradientBrush)widget.ControlObject).Transform.ToEtoMatrix();
+			return Get(widget).Transform.ToEtoMatrix();
 		}
 
 		public void SetTransform(RadialGradientBrush widget, IMatrix transform)
 		{
-			((swm.RadialGradientBrush)widget.ControlObject).Transform = transform.ToWpfTransform();
+			Get(widget).Transform = transform.ToWpfTransform();
+			SetFrozen(widget);
 		}
 
 		public GradientWrapMode GetGradientWrap(RadialGradientBrush widget)
 		{
-			return ((swm.RadialGradientBrush)widget.ControlObject).SpreadMethod.ToEto();
+			return Get(widget).SpreadMethod.ToEto();
 		}
 
 		public void SetGradientWrap(RadialGradientBrush widget, GradientWrapMode gradientWrap)
 		{
-			((swm.RadialGradientBrush)widget.ControlObject).SpreadMethod = gradientWrap.ToWpf ();
+			Get(widget).SpreadMethod = gradientWrap.ToWpf();
+			SetFrozen(widget);
 		}
 
 		public object Create(Color startColor, Color endColor, PointF center, PointF gradientOrigin, SizeF radius)
 		{
-			return new swm.RadialGradientBrush(startColor.ToWpf(), endColor.ToWpf())
+			return new FrozenBrushWrapper(new swm.RadialGradientBrush(startColor.ToWpf(), endColor.ToWpf())
 			{
 				Center = center.ToWpf(),
 				GradientOrigin = gradientOrigin.ToWpf(),
@@ -41,7 +46,7 @@ namespace Eto.Wpf.Drawing
 				RadiusY = radius.Height,
 				MappingMode = swm.BrushMappingMode.Absolute,
 				SpreadMethod = swm.GradientSpreadMethod.Pad
-			};
+			});
 		}
 	}
 }
