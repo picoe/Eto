@@ -7,6 +7,7 @@ using Eto.GtkSharp.Forms.Menu;
 
 namespace Eto.GtkSharp.Forms.Controls
 {
+	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
 	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView, TreeView.ICallback>, TreeView.IHandler, IGtkListModelHandler<ITreeItem, ITreeStore>
 	{
 		GtkTreeModel<ITreeItem, ITreeStore> model;
