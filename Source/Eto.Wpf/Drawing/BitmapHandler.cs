@@ -210,15 +210,7 @@ namespace Eto.Wpf.Drawing
 
 		bool RequiresFrozen => Control.Dispatcher?.CheckAccess() != true;
 		swmi.BitmapSource frozenControl;
-		swmi.BitmapSource FrozenControl
-		{
-			get
-			{
-				if (!RequiresFrozen)
-					return Control;
-				return frozenControl ?? Control;
-			}
-		}
+		swmi.BitmapSource FrozenControl => frozenControl ?? Control;
 
 		void SetFrozen()
 		{

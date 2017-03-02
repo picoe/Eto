@@ -446,12 +446,9 @@ namespace Eto.Wpf
 			}
 		}
 
-		public static swm.Brush ToWpf(this Brush brush, bool clone = false)
+		public static swm.Brush ToWpf(this Brush brush)
 		{
-			var b = (swm.Brush)brush.ControlObject;
-			if (clone)
-				b = b.Clone();
-			return b;
+			return ((FrozenBrushWrapper)brush.ControlObject).FrozenBrush;
 		}
 
 		public static swm.Matrix ToWpf(this IMatrix matrix)
