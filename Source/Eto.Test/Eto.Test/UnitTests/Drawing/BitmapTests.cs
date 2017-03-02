@@ -257,29 +257,29 @@ namespace Eto.Test.UnitTests.Drawing
 			});
 
 			// test output in test thread
-			Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0));
-			Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0));
-			Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0));
+			Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0), "#1");
+			Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0), "#2");
+			Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0), "#3");
 
 			using (var bd = bmp.Lock())
 			{
-				Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0));
-				Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0));
-				Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0));
+				Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0), "#4");
+				Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#5");
+				Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#6");
 			}
 			Shown(f => new ImageView { Image = bmp }, 
 				iv => {
 
 				// also test in UI thread
-				Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0));
-				Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0));
-				Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0));
+				Assert.AreEqual(Colors.Blue, bmp.GetPixel(0, 0), "#7");
+				Assert.AreEqual(Colors.Green, bmp.GetPixel(10, 0), "#8");
+				Assert.AreEqual(Colors.Red, bmp.GetPixel(20, 0), "#9");
 
 				using (var bd = bmp.Lock())
 				{
-					Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0));
-					Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0));
-					Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0));
+					Assert.AreEqual(Colors.Blue, bd.GetPixel(0, 0), "#10");
+					Assert.AreEqual(Colors.Green, bd.GetPixel(10, 0), "#11");
+					Assert.AreEqual(Colors.Red, bd.GetPixel(20, 0), "#12");
 				}
 			});
 		}

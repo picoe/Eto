@@ -19,7 +19,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control AntialiasOn()
 		{
-			var control = new Drawable { Size = new Size(300, 100), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size(400, 100), BackgroundColor = Colors.Black };
 
 			var path = CreatePath();
 			control.Paint += (sender, e) =>
@@ -35,9 +35,15 @@ namespace Eto.Test.Sections.Drawing
 				e.Graphics.DrawPath(Pens.White, path);
 				e.Graphics.DrawLine(Pens.White, 0, 20, 100, 100);
 
-				e.Graphics.TranslateTransform(100, 0);
 				e.Graphics.AntiAlias = true;
+				e.Graphics.TranslateTransform(100, 0);
 				e.Graphics.DrawText(SystemFonts.Default(), Brushes.White, 0, 0, "Antialias ON");
+				e.Graphics.DrawPath(Pens.White, path);
+				e.Graphics.DrawLine(Pens.White, 0, 20, 100, 100);
+
+				e.Graphics.AntiAlias = false;
+				e.Graphics.TranslateTransform(100, 0);
+				e.Graphics.DrawText(SystemFonts.Default(), Brushes.White, 0, 0, "Antialias OFF");
 				e.Graphics.DrawPath(Pens.White, path);
 				e.Graphics.DrawLine(Pens.White, 0, 20, 100, 100);
 			};
