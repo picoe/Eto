@@ -811,6 +811,21 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Detaches the control when it is used in a native application, when you want to reuse the control.
+		/// </summary>
+		/// <remarks>
+		/// This should only be called after <see cref="AttachNative"/> has been called, which is usually done by calling
+		/// to <c>ToNative(true)</c>.
+		/// </remarks>
+		public void DetachNative()
+		{
+			using (Platform.Context)
+			{
+				OnUnLoad(EventArgs.Empty);
+			}
+		}
+
 		internal void TriggerPreLoad(EventArgs e)
 		{
 			using (Platform.Context)

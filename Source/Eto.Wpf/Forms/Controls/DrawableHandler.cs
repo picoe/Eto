@@ -150,7 +150,8 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override void OnLogicalPixelSizeChanged()
 		{
-			Invalidate(false);
+			if (Control.IsLoaded)
+				Invalidate(false);
 		}
 
 		public override void OnUnLoad(EventArgs e)
@@ -362,12 +363,6 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override void Invalidate(bool invalidateChildren)
 		{
-			if (!Control.IsLoaded)
-			{
-				if (Widget.Loaded)
-					Application.Instance.AsyncInvoke(() => Invalidate(invalidateChildren));
-				return;
-			}
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
@@ -389,12 +384,6 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override void Invalidate(Rectangle rect, bool invalidateChildren)
 		{
-			if (!Control.IsLoaded)
-			{
-				if (Widget.Loaded)
-					Application.Instance.AsyncInvoke(() => Invalidate(rect, invalidateChildren));
-				return;
-			}
 			if (tiled)
 			{
 				foreach (var tile in visibleTiles.Values)
