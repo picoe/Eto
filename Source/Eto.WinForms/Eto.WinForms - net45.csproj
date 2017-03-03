@@ -89,6 +89,7 @@
     <Compile Include="Forms\Cells\CustomCellHandler.cs" />
     <Compile Include="Forms\Controls\TextStepperHandler.cs" />
     <Compile Include="Forms\Controls\StepperHandler.cs" />
+    <Compile Include="Forms\NotificationHandler.cs" />
     <Compile Include="Forms\TrayIndicatorHandler.cs" />
     <Compile Include="Win32.dpi.cs" />
     <Compile Include="WinConversions.cs" />

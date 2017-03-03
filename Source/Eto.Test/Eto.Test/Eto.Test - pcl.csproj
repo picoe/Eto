@@ -129,8 +129,10 @@
     <Compile Include="Sections\Controls\SplitterSection.cs" />
     <Compile Include="Sections\Controls\SpinnerSection.cs" />
     <Compile Include="Sections\Drawing\DrawLoopSection.cs" />
+    <Compile Include="UnitTests\Drawing\BrushTests.cs" />
     <Compile Include="UnitTests\Drawing\ClipTests.cs" />
     <Compile Include="UnitTests\Drawing\DefaultValueTests.cs" />
+    <Compile Include="UnitTests\Drawing\FontTests.cs" />
     <Compile Include="UnitTests\Drawing\GraphicsTests.cs" />
     <Compile Include="UnitTests\Drawing\MatrixTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\ComboBoxTests.cs" />
@@ -208,6 +210,7 @@
     <Compile Include="Sections\Controls\FontPickerSection.cs" />
     <Compile Include="Sections\Dialogs\OpenWithDialogSection.cs" />
     <Compile Include="Sections\Controls\DocumentControlSection.cs" />
+    <Compile Include="Sections\Behaviors\NotificationSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">

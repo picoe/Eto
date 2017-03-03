@@ -147,8 +147,8 @@ namespace Eto.Mac.Forms
 			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Control.ParentWindow != null)
-				MacModal.RunSheet(Widget, Control, out session);
+			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Widget.Owner != null)
+				MacModal.RunSheet(Widget, Control, Widget.Owner.ToNative(), out session);
 			else
 			{
 				Control.MakeKeyWindow();
@@ -163,9 +163,9 @@ namespace Eto.Mac.Forms
 			Callback.OnShown(Widget, EventArgs.Empty);
 
 			Widget.Closed += HandleClosed;
-			if (DisplayMode.HasFlag(DialogDisplayMode.Attached))
+			if (DisplayMode.HasFlag(DialogDisplayMode.Attached) && Widget.Owner != null)
 			{
-				MacModal.BeginSheet(Widget, Control, out session, () => tcs.SetResult(true));
+				MacModal.BeginSheet(Widget, Control, Widget.Owner.ToNative(), out session, () => tcs.SetResult(true));
 			}
 			else
 			{
@@ -195,10 +195,10 @@ namespace Eto.Mac.Forms
 				base.Close();
 		}
 
-		public override void SetOwner (Window owner)
+		public override void SetOwner(Window owner)
 		{
-			base.SetOwner (owner);
-			Control.ParentWindow = owner.ToNative ();
+			base.SetOwner(owner);
+			Control.OwnerWindow = owner.ToNative();
 		}
 
 		public void InsertDialogButton(bool positive, int index, Button item)

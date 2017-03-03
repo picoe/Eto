@@ -290,7 +290,7 @@ namespace Eto.Wpf.Forms.Controls
 				SetSelectionAttribute(swd.TextElement.FontStyleProperty, handler?.WpfFontStyle);
 				SetSelectionAttribute(swd.TextElement.FontWeightProperty, handler?.WpfFontWeight);
 				SetSelectionAttribute(swd.TextElement.FontSizeProperty, handler?.PixelSize);
-				SetSelectionAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorations);
+				SetSelectionAttribute(swd.Inline.TextDecorationsProperty, handler?.WpfTextDecorationsFrozen);
 			}
 		}
 

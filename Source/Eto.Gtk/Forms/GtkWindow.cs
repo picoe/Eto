@@ -18,6 +18,8 @@ namespace Eto.GtkSharp.Forms
 
 	public class GtkShrinkableVBox : Gtk.VBox
 	{
+		public bool Resizable;
+
 		public GtkShrinkableVBox()
 		{
 		}
@@ -32,13 +34,17 @@ namespace Eto.GtkSharp.Forms
 		protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
 		{
 			base.OnGetPreferredWidth(out minimum_width, out natural_width);
-			minimum_width = 0;
+
+			if (Resizable)
+				minimum_width = 0;
 		}
 
 		protected override void OnGetPreferredHeight(out int minimum_height, out int natural_height)
 		{
 			base.OnGetPreferredHeight(out minimum_height, out natural_height);
-			minimum_height = 0;
+
+			if (Resizable)
+				minimum_height = 0;
 		}
 #endif
 	}
@@ -53,7 +59,7 @@ namespace Eto.GtkSharp.Forms
 		readonly Gtk.VBox actionvbox;
 		readonly Gtk.Box topToolbarBox;
 		Gtk.Box menuBox;
-		Gtk.Box containerBox;
+		GtkShrinkableVBox containerBox;
 		readonly Gtk.Box bottomToolbarBox;
 		MenuBar menuBar;
 		Icon icon;
@@ -65,7 +71,6 @@ namespace Eto.GtkSharp.Forms
 		WindowState state;
 		WindowStyle style;
 		bool topmost;
-		bool setclientsize;
 		bool resizable;
 		Size? clientSize;
 
@@ -80,6 +85,7 @@ namespace Eto.GtkSharp.Forms
 			topToolbarBox = new Gtk.VBox();
 
 			containerBox = new GtkShrinkableVBox();
+			containerBox.Resizable = true;
 			containerBox.Visible = true;
 
 			bottomToolbarBox = new Gtk.VBox();
@@ -130,6 +136,7 @@ namespace Eto.GtkSharp.Forms
 			get { return resizable; }
 			set
 			{
+				containerBox.Resizable = value;
 				resizable = value;
 				SetMinMax(null);
 			}

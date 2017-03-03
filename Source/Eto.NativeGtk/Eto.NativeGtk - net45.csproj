@@ -307,6 +307,9 @@
     <Compile Include="..\Eto.Gtk\Forms\OtherTrayIndicatorHandler.cs">
       <Link>Forms\OtherTrayIndicatorHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Gtk\Forms\LinuxNotificationHandler.cs">
+      <Link>LinuxNotificationHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

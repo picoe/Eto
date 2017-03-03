@@ -11,16 +11,9 @@ namespace Eto.GtkSharp.Forms
 
 		public DialogHandler()
 		{
-			Control = new Gtk.Dialog();
-#if GTK2
-			Control.AllowGrow = false;
-			Control.HasSeparator = false;
-			Control.DestroyWithParent = true;
-#else
-			Control.Resizable = false;
-			Control.HasResizeGrip = false;
-#endif
+			Control = new Gtk.Dialog("", null, Gtk.DialogFlags.DestroyWithParent);
 			Control.KeyPressEvent += Control_KeyPressEvent;
+
 			Resizable = false;
 		}
 

@@ -60,12 +60,12 @@ namespace Eto.Mac.Forms.Controls
 		public override void OnSizeChanged(EventArgs e)
 		{
 			base.OnSizeChanged(e);
-			var size = Math.Max(Size.Width, Size.Height);
+			var size = Math.Min(Size.Width, Size.Height);
 			if (size <= 8)
 				Control.ControlSize = NSControlSize.Mini;
 			else if (size <= 20)
 				Control.ControlSize = NSControlSize.Small;
-			else if (size <= 30)
+			else //if (size <= 30)
 				Control.ControlSize = NSControlSize.Regular;
 			Control.SizeToFit();
 			Control.CenterInParent();
