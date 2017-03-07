@@ -118,23 +118,21 @@ namespace Eto
 				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
 			#endif
 		}
-
-		/// <summary>
-		/// Called to initialize this widget after it has been constructed
-		/// </summary>
-		/// <remarks>
-		/// Override this to initialize any of the platform objects.  This is called
-		/// in the widget constructor, after all of the widget's constructor code has been called.
-		/// </remarks>
-		protected virtual void Initialize()
-		{
-			Style.OnStyleWidgetDefaults(this);
-		}
-
+        
 		void Widget.IHandler.Initialize()
 		{
 			Initialize();
-		}
+        }
+
+        /// <summary>
+        /// Call this once the control is loaded, so the default style
+        /// can be set. On WPF the visual tree is only available on some
+        /// comtrols (ie. combobox) after control load
+        /// </summary>
+        protected void SetDefaultStyleOnControlLoaded()
+        {
+            Style.OnStyleWidgetDefaults(this.Widget);
+        }
 
 		/// <summary>
 		/// Gets or sets the widget instance
