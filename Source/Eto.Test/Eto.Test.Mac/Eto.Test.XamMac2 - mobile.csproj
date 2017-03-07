@@ -11,6 +11,7 @@
     <AssemblyName>Eto.Test.XamMac2</AssemblyName>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <BaseIntermediateOutputPath>..\..\..\BuildOutput\obj\Eto.Test.XamMac2 - mobile</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
