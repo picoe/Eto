@@ -361,7 +361,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				return Items.Where(r => r != null).Select(r => r.Control);
+				return Items.Where(r => r?.Control != null).Select(r => r.Control);
 			}
 		}
 

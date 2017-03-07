@@ -95,6 +95,7 @@ namespace Eto.Forms
 	/// </remarks>
 	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
+	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
 	[Handler(typeof(TreeView.IHandler))]
 	public class TreeView : Control
 	{

@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
 	public class TreeViewHandler : WpfControl<TreeViewHandler.EtoTreeView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
 		ContextMenu contextMenu;

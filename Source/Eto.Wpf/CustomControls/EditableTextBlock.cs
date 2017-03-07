@@ -7,6 +7,7 @@ using System;
 
 namespace Eto.Wpf.CustomControls
 {
+#pragma warning disable CS0618 // Type or member is obsolete
 	public class EditableTextBlock : UserControl
 	{
 		string oldText;
@@ -158,4 +159,5 @@ namespace Eto.Wpf.CustomControls
 			}
 		}
 	}
+#pragma warning restore CS0618 // Type or member is obsolete
 }

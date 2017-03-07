@@ -45,6 +45,7 @@ using nnint = System.UInt32;
 
 namespace Eto.Mac.Forms.Controls
 {
+	[Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
 	public class TreeViewHandler : MacControl<NSOutlineView, TreeView, TreeView.ICallback>, TreeView.IHandler
 	{
 		ITreeStore top;
