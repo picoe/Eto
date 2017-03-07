@@ -12,11 +12,33 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
-			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ??base.MeasureOverride(constraint);
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
+		}
+
+		bool _isIndeterminate;
+		public new bool IsIndeterminate
+		{
+			get { return _isIndeterminate; }
+			set
+			{
+				if (_isIndeterminate != value)
+				{
+					if (IsLoaded)
+						base.IsIndeterminate = value;
+					_isIndeterminate = value;
+				}
+			}
+		}
+
+		public EtoProgressBar()
+		{
+			// WPF will keep posting to the message loop after a dialog is closed with IsIndeterminate = true
+			Loaded += (sender, e) => base.IsIndeterminate = IsIndeterminate;
+			Unloaded += (sender, e) => base.IsIndeterminate = false;
 		}
 	}
 
-	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
+	public class ProgressBarHandler : WpfControl<EtoProgressBar, ProgressBar, ProgressBar.ICallback>, ProgressBar.IHandler
 	{
 		protected override sw.Size DefaultSize => new sw.Size(double.NaN, 22);
 
