@@ -532,9 +532,8 @@ namespace Eto.Wpf.Forms
 		}
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)
-        {
-            SetDefaultStyleOnControlLoaded();
-            SetSize();
+		{
+			SetSize();
 			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
 				OnLogicalPixelSizeChanged();
 		}
