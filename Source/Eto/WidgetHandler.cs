@@ -118,19 +118,8 @@ namespace Eto
 				throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
 			#endif
 		}
-
-        /// <summary>
-        /// Called to initialize this widget after it has been constructed
-        /// </summary>
-        /// <remarks>
-        /// Override this to initialize any of the platform objects.  This is called
-        /// in the widget constructor, after all of the widget's constructor code has been called.
-        /// </remarks>
-        protected virtual void Initialize()
-        {
-        }
-
-        void Widget.IHandler.Initialize()
+        
+		void Widget.IHandler.Initialize()
 		{
 			Initialize();
         }
