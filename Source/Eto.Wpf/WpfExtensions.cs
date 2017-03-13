@@ -27,6 +27,19 @@ namespace Eto.Wpf
 			return null;
 		}
 
+		public static T GetParent<T>(this sw.FrameworkElement control)
+			where T : class
+		{
+			while (control != null)
+			{
+				var tmp = control.Parent as T;
+				if (tmp != null)
+					return tmp;
+				control = control.Parent as sw.FrameworkElement;
+			}
+			return null;
+		}
+
 		public static IEnumerable<sw.DependencyObject> GetParents(this sw.FrameworkElement control)
 		{
 			while (control != null)

@@ -47,13 +47,10 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				if (!IsControlInitialized(control))
 				{
-					control.DataContextChanged += (sender, e) => SetValue(cell, (swc.ComboBox)sender, e.NewValue);
+					control.DataContextChanged += (sender, e) => SetValue(control.GetParent<swc.DataGridCell>(), (swc.ComboBox)sender, e.NewValue);
 					SetControlInitialized(control, true);
 				}
-				else
-				{
-					SetValue(cell, control, dataItem);
-				}
+				SetValue(cell, control, dataItem);
 			}
 
 			void SetValue(swc.DataGridCell cell, swc.ComboBox control, object dataItem)
