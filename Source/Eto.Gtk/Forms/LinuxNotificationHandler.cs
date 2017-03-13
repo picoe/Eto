@@ -19,6 +19,9 @@ namespace Eto.GtkSharp.Forms
 		protected extern static void notify_uninit();
 
 		[DllImport(libnotify, CallingConvention = CallingConvention.Cdecl)]
+		protected extern static IntPtr notify_get_server_caps();
+
+		[DllImport(libnotify, CallingConvention = CallingConvention.Cdecl)]
 		protected extern static IntPtr notify_notification_new(string summary, string body, string icon);
 
 		[DllImport(libnotify, CallingConvention = CallingConvention.Cdecl)]
@@ -34,12 +37,24 @@ namespace Eto.GtkSharp.Forms
 		protected extern static void notify_notification_clear_actions(IntPtr notification);
 
 		private static bool init;
+		private static bool allowactions;
 
 		public static void Init()
 		{
 			try
 			{
 				notify_init(Assembly.GetExecutingAssembly().FullName);
+
+				var list = new GLib.List(notify_get_server_caps(), typeof(string));
+				foreach (var item in list)
+				{
+					if (item.ToString() == "actions")
+					{
+						allowactions = true;
+						break;
+					}
+				}
+
 				init = true;
 			}
 			catch
@@ -74,8 +89,11 @@ namespace Eto.GtkSharp.Forms
 				
 			Control = GLib.Object.GetObject(notify_notification_new("", "", ""));
 
-			// Undocumented AFAIK: If action is "default" it will not create a button.
-			notify_notification_add_action(Control.Handle, "default", "default", (Action)Activated, IntPtr.Zero, IntPtr.Zero);
+			if (allowactions)
+			{
+				// Undocumented AFAIK: If action is "default" it will not create a button.
+				notify_notification_add_action(Control.Handle, "default", "default", (Action)Activated, IntPtr.Zero, IntPtr.Zero);
+			}
 
 			// Empty string will show the default icon, while an incorrect one will show no icon
 			iconPath = "???";
