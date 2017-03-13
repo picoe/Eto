@@ -280,6 +280,10 @@ namespace Eto.Forms.ThemedControls
 			get { return splitter; }
 		}
 
+		/// <summary>
+		/// Gets or sets the minimal size of the first panel.
+		/// </summary>
+		/// <value>The minimal size of the first panel.</value>
         public int Panel1MinimumSize
         {
             get
@@ -293,6 +297,10 @@ namespace Eto.Forms.ThemedControls
             }
         }
 
+		/// <summary>
+		/// Gets or sets the minimal size of the second panel.
+		/// </summary>
+		/// <value>The minimal size of the second panel.</value>
         public int Panel2MinimumSize
         {
             get
