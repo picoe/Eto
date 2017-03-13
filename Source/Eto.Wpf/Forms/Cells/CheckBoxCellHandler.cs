@@ -28,6 +28,7 @@ namespace Eto.Wpf.Forms.Cells
 		class Column : swc.DataGridCheckBoxColumn
 		{
 			public CheckBoxCellHandler Handler { get; set; }
+			bool enableEvents;
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
@@ -44,7 +45,9 @@ namespace Eto.Wpf.Forms.Cells
 					element.DataContextChanged += (sender, e) =>
 					{
 						var control = sender as swc.CheckBox;
+						enableEvents = false;
 						control.IsChecked = Handler.GetValue(control.DataContext);
+						enableEvents = true;
 						Handler.FormatCell(control, cell, control.DataContext);
 					};
 					SetControlInitialized(element, true);
@@ -64,11 +67,15 @@ namespace Eto.Wpf.Forms.Cells
 				{
 					element.Checked += (sender, e) =>
 					{
+						if (!enableEvents)
+							return;
 						var control = (swc.CheckBox)sender;
 						Handler.SetValue(control.DataContext, control.IsChecked);
 					};
 					element.Unchecked += (sender, e) =>
 					{
+						if (!enableEvents)
+							return;
 						var control = (swc.CheckBox)sender;
 						Handler.SetValue(control.DataContext, control.IsChecked);
 					};

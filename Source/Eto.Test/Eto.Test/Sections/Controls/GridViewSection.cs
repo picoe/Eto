@@ -493,19 +493,23 @@ namespace Eto.Test.Sections.Controls
 			{
 				// initialize to random values
 				this.Row = row;
-				var val = rand.Next(3);
+				var val = row % 3;
 				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
-				val = rand.Next(3);
+				val = row % 2;
 				Image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
 
 				text = string.Format("Col 1 Row {0}", row);
 
-				Color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
+				Color = Color.FromElementId(row);
 
-				dropDownKey = "Item " + Convert.ToString(rand.Next(4) + 1);
+				val = row % 5;
+				if (val < 4)
+					dropDownKey = "Item " + Convert.ToString(val + 1);
 
-				progress = rand.Next() % 10 != 0 ? (float?)rand.NextDouble() : null;
+				val = row % 12;
+				if (val <= 10)
+					progress = (float)Math.Round(val / 10f, 1);
 			}
 
 			public override string ToString()
