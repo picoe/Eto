@@ -72,7 +72,7 @@ namespace Eto.Wpf.Forms.Cells
 				return cachedList;
 			}
 
-			EtoBorder Create(swc.DataGridCell cell, object dataItem)
+			EtoBorder Create(swc.DataGridCell cell)
 			{
 				var control = cell.Content as EtoBorder;
 				if (control == null)
@@ -133,18 +133,17 @@ namespace Eto.Wpf.Forms.Cells
 						Handler.Callback.OnConfigureCell(Handler.Widget, control.Args, control.Control);
 					};
 				}
-				control.DataContext = dataItem;
 				return control;
 			}
 
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell, dataItem));
+				return Handler.SetupCell(Create(cell));
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
-				return Handler.SetupCell(Create(cell, dataItem));
+				return Handler.SetupCell(Create(cell));
 			}
 		}
 
