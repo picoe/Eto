@@ -8,6 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Mac</RootNamespace>
     <AssemblyName>Eto.XamMac2</AssemblyName>
+    <BaseIntermediateOutputPath>..\..\BuildOutput\obj\Eto.XamMac2 - net45</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>

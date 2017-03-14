@@ -10,6 +10,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AssemblyName>Eto.XamMac</AssemblyName>
     <UseMSBuildEngine>True</UseMSBuildEngine>
+    <BaseIntermediateOutputPath>..\..\BuildOutput\obj\Eto.XamMac - net45</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
