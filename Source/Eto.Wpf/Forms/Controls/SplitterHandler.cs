@@ -30,18 +30,23 @@ namespace Eto.Wpf.Forms.Controls
 		int splitterWidth = 5;
 		double relative = double.NaN;
 		readonly sw.Style style;
-		bool panel1Visible;
-		Control panel1;
-		bool panel2Visible;
-		Control panel2;
+        swc.ColumnDefinition xcolumn;
+        swc.RowDefinition ycolumn;
+		bool panel1Visible, panel2Visible;
+        int panel1MinimumSize, panel2MinimumSize;
+        Control panel1, panel2;
 
 		public SplitterHandler()
 		{
 			Control = new EtoGrid { Handler = this };
+
+            xcolumn = new swc.ColumnDefinition();
+            Control.ColumnDefinitions.Add(xcolumn);
+			Control.ColumnDefinitions.Add(new swc.ColumnDefinition() { Width = sw.GridLength.Auto });
 			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
-			Control.ColumnDefinitions.Add(new swc.ColumnDefinition { Width = sw.GridLength.Auto });
-			Control.ColumnDefinitions.Add(new swc.ColumnDefinition());
-			Control.RowDefinitions.Add(new swc.RowDefinition());
+
+            ycolumn = new swc.RowDefinition();
+			Control.RowDefinitions.Add(ycolumn);
 			Control.RowDefinitions.Add(new swc.RowDefinition { Height = sw.GridLength.Auto });
 			Control.RowDefinitions.Add(new swc.RowDefinition());
 
@@ -64,6 +69,7 @@ namespace Eto.Wpf.Forms.Controls
 
 			UpdateOrientation();
 			Control.Loaded += (sender, e) => SetInitialPosition();
+            Control.SizeChanged += (sender, e) => ResetMinMax();
 		}
 
 		public override void AttachEvent(string id)
@@ -655,7 +661,38 @@ namespace Eto.Wpf.Forms.Controls
 			set { Widget.Properties.Set(WasLoaded_Key, value); }
 		}
 
-		public override void OnLoad(EventArgs e)
+        private void ResetMinMax()
+        {
+            xcolumn.MinWidth = panel1MinimumSize;
+            if (Widget.Width > 0)
+                xcolumn.MaxWidth = Math.Max(Widget.Width - panel2MinimumSize, 0);
+
+            ycolumn.MinHeight = Panel1MinimumSize;
+            if (Widget.Height > 0)
+                ycolumn.MaxHeight = Math.Max(Widget.Height - panel2MinimumSize, 0);
+        }
+
+        public int Panel1MinimumSize
+        {
+            get { return panel1MinimumSize; }
+            set
+            {
+                panel1MinimumSize = value;
+                ResetMinMax();
+            }
+        }
+
+        public int Panel2MinimumSize
+        {
+            get { return panel2MinimumSize; }
+            set
+            {
+                panel2MinimumSize = value;
+                ResetMinMax();
+            }
+        }
+
+        public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
 			WasLoaded = false;
