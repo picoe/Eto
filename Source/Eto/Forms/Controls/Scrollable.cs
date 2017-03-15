@@ -231,7 +231,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnScroll(Scrollable widget, ScrollEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnScroll(e));
+				using (widget.Platform.Context)
+					widget.OnScroll(e);
 			}
 		}
 

@@ -181,21 +181,24 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnPrinting(PrintDocument widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnPrinting(e));
+				using (widget.Platform.Context)
+					widget.OnPrinting(e);
 			}
 			/// <summary>
 			/// Raises the printed event.
 			/// </summary>
 			public void OnPrinted(PrintDocument widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnPrinted(e));
+				using (widget.Platform.Context)
+					widget.OnPrinted(e);
 			}
 			/// <summary>
 			/// Raises the print page event.
 			/// </summary>
 			public void OnPrintPage(PrintDocument widget, PrintPageEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnPrintPage(e));
+				using (widget.Platform.Context)
+					widget.OnPrintPage(e);
 			}
 		}
 

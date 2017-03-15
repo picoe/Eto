@@ -228,7 +228,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnFilePathChanged(FilePicker widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnFilePathChanged(e));
+				using (widget.Platform.Context)
+					widget.OnFilePathChanged(e);
 			}
 		}
 	}

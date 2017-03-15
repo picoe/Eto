@@ -132,7 +132,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnCheckedChanged(RadioMenuItem widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnCheckedChanged(e));
+				using (widget.Platform.Context)
+					widget.OnCheckedChanged(e);
 			}
 		}
 

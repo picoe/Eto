@@ -429,7 +429,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnSelectedIndexChanged(ListControl widget, EventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnSelectedIndexChanged(e));
+				using (widget.Platform.Context)
+					widget.OnSelectedIndexChanged(e);
 			}
 		}
 

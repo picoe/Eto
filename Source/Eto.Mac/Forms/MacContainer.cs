@@ -90,18 +90,15 @@ namespace Eto.Mac.Forms
 			LayoutChildren();	
 		}
 
-		public bool NeedsQueue(Action update = null)
-		{
-			#if OSX
-			if (ApplicationHandler.QueueResizing)
-			{
-				ApplicationHandler.Instance.AsyncInvoke(update ?? Update);
-				return true;
-			}
-			#endif
-			return false;
-		}
+#if OSX
+		public bool NeedsQueue => ApplicationHandler.QueueResizing;
 
+		public void Queue(Action update = null) => ApplicationHandler.Instance.AsyncInvoke(update ?? Update);
+		#else
+		public bool NeedsQueue => false;
+
+		public void Queue(Action update = null) { }
+		#endif
 		public virtual void SetContentSize(CGSize contentSize)
 		{
 		}
@@ -135,8 +132,13 @@ namespace Eto.Mac.Forms
 
 		public virtual void LayoutParent(bool updateSize = true)
 		{
-			if (Widget.IsSuspended || NeedsQueue(() => LayoutParent(updateSize)))
+			if (Widget.IsSuspended)
 				return;
+			if (NeedsQueue)
+			{
+				Queue(() => LayoutParent(updateSize));
+				return;
+			}
 			var container = Widget.VisualParent.GetMacContainer();
 			if (container != null)
 			{

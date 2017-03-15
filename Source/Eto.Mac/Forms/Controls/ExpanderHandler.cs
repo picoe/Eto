@@ -33,10 +33,6 @@ using CGPoint = System.Drawing.PointF;
 #endif
 #endif
 
-#if XAMMAC2
-using NSAction = System.Action;
-#endif
-
 namespace Eto.Mac.Forms.Controls
 {
 	public class ExpanderHandler : MacPanel<NSView, Expander, Expander.ICallback>, Expander.IHandler
@@ -131,12 +127,12 @@ namespace Eto.Mac.Forms.Controls
 				{
 					ctx.Duration = AnimationDuration;
 					((NSView)content.Animator).Frame = frame;
-				}, new NSAction(() =>
+				}, () =>
 				{
 					content.Hidden = !Expanded;
 					Callback.OnExpandedChanged(Widget, EventArgs.Empty);
 					LayoutIfNeeded();
-				})
+				}
 				);
 			}
 			else

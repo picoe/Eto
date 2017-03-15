@@ -147,7 +147,8 @@ namespace Eto.Forms
 			/// <param name="e">Event arguments</param>
 			public void OnStep(Stepper widget, StepperEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnStep(e));
+				using (widget.Platform.Context)
+					widget.OnStep(e);
 			}
 		}
 

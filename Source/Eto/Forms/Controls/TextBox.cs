@@ -318,7 +318,8 @@ namespace Eto.Forms
 			/// </summary>
 			public void OnTextChanging(TextBox widget, TextChangingEventArgs e)
 			{
-				widget.Platform.Invoke(() => widget.OnTextChanging(e));
+				using (widget.Platform.Context)
+					widget.OnTextChanging(e);
 			}
 		}
 

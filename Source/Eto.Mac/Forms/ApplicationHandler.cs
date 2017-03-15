@@ -145,13 +145,21 @@ namespace Eto.Mac.Forms
 				action();
 			else
 			{
-				Control.InvokeOnMainThread(() => action());
+#if XAMMAC1
+				Control.InvokeOnMainThread(new NSAction(action));
+#else
+				Control.InvokeOnMainThread(action);
+#endif
 			}
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-			Control.BeginInvokeOnMainThread(() => action());
+#if XAMMAC1
+			Control.BeginInvokeOnMainThread(new NSAction(action));
+#else
+			Control.BeginInvokeOnMainThread(action);
+#endif
 		}
 
 		public void Restart()
