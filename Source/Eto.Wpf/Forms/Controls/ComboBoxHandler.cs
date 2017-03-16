@@ -104,18 +104,19 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		protected override swc.Border BorderControl => Control.FindChild<swc.Border>("Border");
+
+		protected swc.Border DropDownButton => Control.FindChild<swc.Border>("templateRoot");
+
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var contentHost = Control.ContentHost;
-				return (contentHost != null ? contentHost.Background : sw.SystemColors.WindowBrush).ToEtoColor();
-			}
+			get { return base.BackgroundColor; }
 			set
 			{
-				var contentHost = Control.ContentHost;
-				if (contentHost != null)
-					contentHost.Background = value.ToWpfBrush(contentHost.Background);
+				base.BackgroundColor = value;
+				var tb = DropDownButton;
+				if (tb != null)
+					tb.Background = value.ToWpfBrush(tb.Background);
 			}
 		}
 
