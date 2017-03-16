@@ -1,33 +1,10 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
-using System.Globalization;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.Reflection;
 
 
 namespace Eto.Forms
 {
-	/// <summary>
-	/// Mode for insertion of text when the user types into a control.
-	/// </summary>
-	public enum InsertKeyMode
-	{
-		/// <summary>
-		/// Always insert, shifting any characters to the right of the caret position when inserting or deleting text.
-		/// </summary>
-		Insert,
-		/// <summary>
-		/// Always overwrite and do not shift characters when inserting or deleting text.
-		/// </summary>
-		Overwrite,
-		/// <summary>
-		/// Allow the user to toggle the insert mode (fn+Return on OS X or insert key on other keyboards)
-		/// </summary>
-		Toggle
-	}
-
 	/// <summary>
 	/// Masked text box with a variable length numeric mask.
 	/// </summary>
@@ -35,16 +12,13 @@ namespace Eto.Forms
 	/// This provides a text box that limits the user input to only allow numeric values.
 	/// </remarks>
 	/// <typeparam name="T">Numeric type such as int, decimal, double, etc.</typeparam>
-	public class NumericMaskedTextBox<T> : MaskedTextBox<T>
+	public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	{
 		/// <summary>
 		/// Gets the numeric provider.
 		/// </summary>
 		/// <value>The masked text provider.</value>
-		public new NumericMaskedTextProvider<T> Provider
-		{
-			get { return (NumericMaskedTextProvider<T>)base.Provider; }
-		}
+		public new NumericMaskedTextProvider<T> Provider => (NumericMaskedTextProvider<T>)base.Provider;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the mask can accept a sign.
@@ -54,9 +28,9 @@ namespace Eto.Forms
 		/// </remarks>
 		/// <value><c>true</c> to allow sign character; otherwise, <c>false</c>.</value>
 		public bool AllowSign
-		{ 
+		{
 			get { return Provider.AllowSign; }
-			set { Provider.AllowSign = value; } 
+			set { Provider.AllowSign = value; }
 		}
 
 		/// <summary>
@@ -74,9 +48,9 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.NumericMaskedTextBox{T}"/> class.
+		/// Initializes a new instance of the <see cref="Forms.NumericMaskedTextStepper{T}"/> class.
 		/// </summary>
-		public NumericMaskedTextBox()
+		public NumericMaskedTextStepper()
 			: base(new NumericMaskedTextProvider<T>())
 		{
 		}
@@ -90,7 +64,7 @@ namespace Eto.Forms
 	/// 
 	/// The <see cref="Provider"/> specified for the control is responsible for converting the value.
 	/// </remarks>
-	public class MaskedTextBox<T> : MaskedTextBox
+	public class MaskedTextStepper<T> : MaskedTextStepper
 	{
 		/// <summary>
 		/// Event to handle when the <see cref="Value"/> property changes
@@ -112,17 +86,17 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MaskedTextBox{T}"/> class.
+		/// Initializes a new instance of the <see cref="Forms.MaskedTextStepper{T}"/> class.
 		/// </summary>
-		public MaskedTextBox()
+		public MaskedTextStepper()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MaskedTextBox{T}"/> class with the specified masked text provider.
+		/// Initializes a new instance of the <see cref="Forms.MaskedTextStepper{T}"/> class with the specified masked text provider.
 		/// </summary>
 		/// <param name="provider">Masked text provider to format the mask.</param>
-		public MaskedTextBox(IMaskedTextProvider<T> provider)
+		public MaskedTextStepper(IMaskedTextProvider<T> provider)
 			: base(provider)
 		{
 		}
@@ -146,11 +120,11 @@ namespace Eto.Forms
 		/// Gets a binding for the <see cref="Value"/> property.
 		/// </summary>
 		/// <value>The value binding.</value>
-		public BindableBinding<MaskedTextBox<T>, T> ValueBinding
+		public BindableBinding<MaskedTextStepper<T>, T> ValueBinding
 		{
 			get
 			{
-				return new BindableBinding<MaskedTextBox<T>, T>(
+				return new BindableBinding<MaskedTextStepper<T>, T>(
 					this,
 					c => c.Value,
 					(c, v) => c.Value = v,
@@ -169,7 +143,7 @@ namespace Eto.Forms
 	/// The mask can implement any format it wishes, including both fixed or variable length masks.
 	/// </remarks>
 	[ContentProperty("Provider")]
-	public class MaskedTextBox : TextBox
+	public class MaskedTextStepper : TextStepper
 	{
 		IMaskedTextProvider provider;
 		static readonly object InsertKeyModeKey = new object();
@@ -186,7 +160,7 @@ namespace Eto.Forms
 			get
 			{
 				// cache whether the platform supports the insert key for Keyboard.IsKeyLocked
-				return Platform.Instance.GetSharedProperty<bool>(SupportsInsertKey, () => Keyboard.SupportedLockKeys.Contains(Keys.Insert));
+				return Platform.Instance.GetSharedProperty(SupportsInsertKey, () => Keyboard.SupportedLockKeys.Contains(Keys.Insert));
 			}
 		}
 
@@ -195,7 +169,7 @@ namespace Eto.Forms
 		/// </summary>
 		static bool ManualOverwriteMode
 		{
-			get { return Platform.Instance.GetSharedProperty<bool>(OverwriteModeKey, () => false); }
+			get { return Platform.Instance.GetSharedProperty(OverwriteModeKey, () => false); }
 			set { Platform.Instance.SetSharedProperty(OverwriteModeKey, value); }
 		}
 
@@ -241,7 +215,7 @@ namespace Eto.Forms
 				if (InsertMode == InsertKeyMode.Overwrite)
 					return true;
 				var overwrite = SupportsInsert ? Keyboard.IsKeyLocked(Keys.Insert) : ManualOverwriteMode;
-				return InsertMode == InsertKeyMode.Toggle && overwrite; 
+				return InsertMode == InsertKeyMode.Toggle && overwrite;
 			}
 		}
 
@@ -253,10 +227,10 @@ namespace Eto.Forms
 		{
 			get { return Properties.Get<bool>(ShowPromptOnFocusKey); }
 			set
-			{ 
+			{
 				if (ShowPromptOnFocus != value)
 				{
-					Properties[ShowPromptOnFocusKey] = value; 
+					Properties[ShowPromptOnFocusKey] = value;
 					UpdateText();
 				}
 			}
@@ -272,19 +246,19 @@ namespace Eto.Forms
 		{
 			get { return Properties.Get<bool?>(ShowPlaceholderWhenEmptyKey) ?? true; }
 			set
-			{ 
+			{
 				if (ShowPlaceholderWhenEmpty != value)
 				{
-					Properties[ShowPlaceholderWhenEmptyKey] = value; 
+					Properties[ShowPlaceholderWhenEmptyKey] = value;
 					UpdateText();
 				}
 			}
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MaskedTextBox"/> class.
+		/// Initializes a new instance of the <see cref="MaskedTextStepper"/> class.
 		/// </summary>
-		public MaskedTextBox()
+		public MaskedTextStepper()
 		{
 			HandleEvent(TextChangingEvent);
 			HandleEvent(KeyDownEvent);
@@ -293,10 +267,10 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Eto.Forms.MaskedTextBox"/> class with the specified masked text provider.
+		/// Initializes a new instance of the <see cref="MaskedTextStepper"/> class with the specified masked text provider.
 		/// </summary>
 		/// <param name="provider">Masked text provider to specify the format of the mask.</param>
-		public MaskedTextBox(IMaskedTextProvider provider)
+		public MaskedTextStepper(IMaskedTextProvider provider)
 			: this()
 		{
 			if (provider == null)
@@ -476,10 +450,7 @@ namespace Eto.Forms
 		/// Gets a value indicating whether the mask is completed.
 		/// </summary>
 		/// <value><c>true</c> if mask completed; otherwise, <c>false</c>.</value>
-		public bool MaskCompleted
-		{
-			get { return provider != null && provider.MaskCompleted; }
-		}
+		public bool MaskCompleted => provider?.MaskCompleted == true;
 	}
 }
 
