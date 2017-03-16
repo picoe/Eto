@@ -348,6 +348,7 @@
     <Compile Include="Forms\Controls\DocumentPage.cs" />
     <Compile Include="Forms\TrayIndicator.cs" />
     <Compile Include="Forms\Notification.cs" />
+    <Compile Include="Forms\Controls\MaskedTextStepper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LICENSE">

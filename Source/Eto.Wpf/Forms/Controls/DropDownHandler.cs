@@ -143,16 +143,17 @@ namespace Eto.Wpf.Forms.Controls
 			set { Control.SelectedIndex = value; }
 		}
 
+		protected virtual swc.Border BorderControl => Control.FindChild<swc.Border>();
+
 		public override Color BackgroundColor
 		{
 			get
 			{
-				var border = Control.FindChild<swc.Border>();
-				return border != null ? border.Background.ToEtoColor() : base.BackgroundColor;
+				return BorderControl?.Background.ToEtoColor() ?? base.BackgroundColor;
 			}
 			set
 			{
-				var border = Control.FindChild<swc.Border>();
+				var border = BorderControl;
 				if (border != null)
 				{
 					border.Background = value.ToWpfBrush(border.Background);

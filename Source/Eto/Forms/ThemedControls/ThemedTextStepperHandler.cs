@@ -214,6 +214,26 @@ namespace Eto.Forms.ThemedControls
 		}
 
 		/// <summary>
+		/// Gets the control used to attach keyboard and text input events
+		/// </summary>
+		/// <value>The keyboard control.</value>
+		protected override Control KeyboardControl => textBox;
+
+		/// <summary>
+		/// Gets or sets the color for the background of the control
+		/// </summary>
+		/// <remarks>
+		/// Note that on some platforms (e.g. Mac), setting the background color of a control can change the performance
+		/// characteristics of the control and its children, since it must enable layers to do so.
+		/// </remarks>
+		/// <value>The color of the background.</value>
+		public override Color BackgroundColor
+		{
+			get { return textBox.BackgroundColor; }
+			set { textBox.BackgroundColor = value; }
+		}
+
+		/// <summary>
 		/// Attaches the specified event to the platform-specific control
 		/// </summary>
 		/// <remarks>Implementors should override this method to handle any events that the widget
