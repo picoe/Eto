@@ -64,7 +64,11 @@ namespace Eto.Wpf.Forms.Controls
 		public TextAlignment TextAlignment
 		{
 			get { return TextBox.TextAlignment.ToEto(); }
-			set { TextBox.TextAlignment = value.ToWpfTextAlignment(); }
+			set
+			{
+				TextBox.TextAlignment = value.ToWpfTextAlignment();
+				TextBox.HorizontalContentAlignment = value.ToWpf();
+			}
 		}
 
 		public TextBoxHandler ()
