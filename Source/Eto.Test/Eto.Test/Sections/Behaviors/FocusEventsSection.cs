@@ -11,11 +11,11 @@ namespace Eto.Test.Sections.Behaviors
 
 			control.GotFocus += delegate
 			{
-				Log.Write(control, "GotFocus");
+				Log.Write(control, $"GotFocus, HasFocus: {control.HasFocus}");
 			};
 			control.LostFocus += delegate
 			{
-				Log.Write(control, "LostFocus");
+				Log.Write(control, $"LostFocus, HasFocus: {control.HasFocus}");
 			};
 		}
 	}

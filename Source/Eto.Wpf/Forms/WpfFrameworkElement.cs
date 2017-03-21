@@ -300,7 +300,7 @@ namespace Eto.Wpf.Forms
 
 		public virtual bool HasFocus
 		{
-			get { return Control.IsKeyboardFocused; }
+			get { return Control.IsKeyboardFocusWithin; }
 		}
 
 		public bool Visible
@@ -424,10 +424,16 @@ namespace Eto.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotKeyboardFocus += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
+					Control.IsKeyboardFocusWithinChanged += (sender, e) =>
+					{
+						if (HasFocus)
+							Callback.OnGotFocus(Widget, EventArgs.Empty);
+						else
+							Callback.OnLostFocus(Widget, EventArgs.Empty);
+					};
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostKeyboardFocus += (sender, e) => Callback.OnLostFocus(Widget, EventArgs.Empty);
+					HandleEvent(Eto.Forms.Control.GotFocusEvent);
 					break;
 				default:
 					base.AttachEvent(id);

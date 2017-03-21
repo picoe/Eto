@@ -28,6 +28,8 @@ namespace Eto.Wpf.Forms.Controls
 			Control = new EtoButtonSpinner
 			{
 				Handler = this,
+				IsTabStop = false,
+				Focusable = false,
 				Content = new mwc.WatermarkTextBox
 				{
 					BorderThickness = new sw.Thickness(0),
