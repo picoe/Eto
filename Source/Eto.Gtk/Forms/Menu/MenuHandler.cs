@@ -58,8 +58,14 @@ namespace Eto.GtkSharp.Forms.Menu
 			if (AccelGroup != null && shortcut != Keys.None)
 			{
 				var widget = (Gtk.Widget)Widget.ControlObject;
-				var key = new Gtk.AccelKey(shortcut.ToGdkKey(), shortcut.ToGdkModifier(), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
-				widget.AddAccelerator("activate", AccelGroup, key);
+
+				widget.AddAccelerator(
+					"activate",
+					AccelGroup,
+					(uint)shortcut.ToGdkKey(),
+					shortcut.ToGdkModifier(),
+					Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked
+				);
 			}
 		}
 
