@@ -13,6 +13,8 @@ namespace Eto.GtkSharp.Forms.Menu
 			Control.ShowAll();
 		}
 
+		internal event EventHandler Changed;
+
 		protected override void Initialize()
 		{
 			Control.KeyPressEvent += Connector.HandleKeyPressEvent;
@@ -85,11 +87,13 @@ namespace Eto.GtkSharp.Forms.Menu
 		{
 			Control.Insert((Gtk.Widget)item.ControlObject, index);
 			SetChildAccelGroup(item);
+			Changed?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void RemoveMenu(MenuItem item)
 		{
 			Control.Remove((Gtk.Widget)item.ControlObject);
+			Changed?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void Clear()
@@ -98,6 +102,7 @@ namespace Eto.GtkSharp.Forms.Menu
 			{
 				Control.Remove(w);
 			}
+			Changed?.Invoke(this, EventArgs.Empty);
 		}
 
 		protected override Keys GetShortcut()

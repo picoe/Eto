@@ -1,12 +1,16 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using System;
-using Swc = System.Windows.Controls;
-using Swf = System.Windows.Forms;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 
+#if WPF
 namespace Eto.Wpf.Forms
+#elif WINFORMS
+namespace Eto.WinForms.Forms
+#endif
 {
-	public class NotificationHandler : WidgetHandler<Swc.Control, Notification, Notification.ICallback>, Notification.IHandler
+	public class NotificationHandler : WidgetHandler<swf.Control, Notification, Notification.ICallback>, Notification.IHandler
 	{
 		public string Message { get; set; }
 
@@ -17,46 +21,67 @@ namespace Eto.Wpf.Forms
 
 		public string Title { get; set; }
 
-		EventHandler activated;
+		public string UserData { get; set; }
 
-		public void SetIcon(Icon icon)
+		public Image ContentImage { get; set; }
+
+		static TrayIndicator s_sharedIndicator;
+
+		TrayIndicator GetSharedIndicator()
 		{
-
+			if (s_sharedIndicator == null)
+			{
+				s_sharedIndicator = new TrayIndicator
+				{
+					Image = Application.Instance?.MainForm?.Icon ?? sd.SystemIcons.Application.ToEto()
+				};
+			}
+			s_sharedIndicator.Show();
+			return s_sharedIndicator;
 		}
+
+		static readonly object NotificationHandler_Key = new object();
 
 		public void Show(TrayIndicator indicator = null)
 		{
-			if (indicator != null)
+			indicator = indicator ?? GetSharedIndicator();
+			var notifyIcon = TrayIndicatorHandler.GetControl(indicator);
+
+			var currentNotification = indicator.Properties.Get<NotificationHandler>(NotificationHandler_Key);
+			if (currentNotification != null)
 			{
-				var tray = indicator.ControlObject as Swf.NotifyIcon;
-				tray.ShowBalloonTip(3000, Title, Message, Swf.ToolTipIcon.None);
-				tray.BalloonTipClicked += Tray_BalloonTipClicked;
+				currentNotification.Unhook(notifyIcon);
+				indicator.Properties.Remove(NotificationHandler_Key);
 			}
-			else
-			{
-				// TODO: Check for Windows 10 and implement the nightmarish Notification API
-			}
+
+			notifyIcon.ShowBalloonTip(3000, Title, Message, swf.ToolTipIcon.Error);
+			notifyIcon.BalloonTipClicked += Tray_BalloonTipClicked;
+			notifyIcon.BalloonTipClosed += Tray_BalloonTipClosed;
+			indicator.Properties.Set(NotificationHandler_Key, this);
 		}
 
-		private void Tray_BalloonTipClicked(object sender, EventArgs e)
+		void Unhook(swf.NotifyIcon notifyIcon)
 		{
-			var tray = sender as Swf.NotifyIcon;
-			tray.BalloonTipClicked -= Tray_BalloonTipClicked;
-
-			activated?.Invoke(this, EventArgs.Empty);
+			if (notifyIcon == null)
+				return;
+			notifyIcon.BalloonTipClicked -= Tray_BalloonTipClicked;
+			notifyIcon.BalloonTipClosed -= Tray_BalloonTipClosed;
+			notifyIcon = null;
 		}
 
-		public override void AttachEvent(string id)
+		void Tray_BalloonTipClosed(object sender, EventArgs e)
 		{
-			switch (id)
-			{
-				case Notification.ActivatedEvent:
-					activated += (sender, e) => Callback.OnActivated(Widget, EventArgs.Empty);
-					break;
-				default:
-					base.AttachEvent(id);
-					break;
-			}
+			Unhook(sender as swf.NotifyIcon);
+			s_sharedIndicator?.Hide();
+		}
+
+		void Tray_BalloonTipClicked(object sender, EventArgs e)
+		{
+			Unhook(sender as swf.NotifyIcon);
+			s_sharedIndicator?.Hide();
+
+			var app = ApplicationHandler.Instance;
+			app?.Callback.OnNotificationActivated(app.Widget, new NotificationEventArgs(ID, UserData));
 		}
 	}
 }

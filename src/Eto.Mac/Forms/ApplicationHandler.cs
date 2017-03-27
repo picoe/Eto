@@ -12,6 +12,7 @@ using CoreGraphics;
 using ObjCRuntime;
 using CoreAnimation;
 using CoreImage;
+using System.Runtime.CompilerServices;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -225,11 +226,38 @@ namespace Eto.Mac.Forms
 			switch (id)
 			{
 				case Application.TerminatingEvent:
-				// handled by app delegate
+					// handled by app delegate
+					break;
+				case Application.NotificationActivatedEvent:
+					NSUserNotificationCenter.DefaultUserNotificationCenter.DidActivateNotification += (sender, e) => DidActivateNotification(e.Notification);
+					NSApplication.Notifications.ObserveDidFinishLaunching(DidFinishLaunching);
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
+			}
+		}
+
+		static readonly NSString s_NSApplicationLaunchUserNotificationKey = Dlfcn.GetStringConstant(Messaging.AppKitHandle, "NSApplicationLaunchUserNotificationKey");
+
+		static void DidFinishLaunching(object sender, NSApplicationDidFinishLaunchingEventArgs e)
+		{
+			NSObject userNotificationObject;
+			if (e.Notification.UserInfo.TryGetValue(s_NSApplicationLaunchUserNotificationKey, out userNotificationObject))
+			{
+				DidActivateNotification(userNotificationObject as NSUserNotification);
+			}
+		}
+
+		internal static void DidActivateNotification(NSUserNotification notification)
+		{
+			NSObject idString, dataString;
+			if (notification.UserInfo.TryGetValue(NotificationHandler.Info_Id, out idString))
+			{
+				notification.UserInfo.TryGetValue(NotificationHandler.Info_Data, out dataString);
+				var app = ApplicationHandler.Instance;
+				app.Callback.OnNotificationActivated(app.Widget, new NotificationEventArgs((NSString)idString, dataString as NSString));
+				NSUserNotificationCenter.DefaultUserNotificationCenter.RemoveDeliveredNotification(notification);
 			}
 		}
 

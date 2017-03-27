@@ -10,8 +10,6 @@ namespace Eto.Test
 {
 	public class MainForm : Form
 	{
-		internal static TrayIndicator tray;
-
 		TextArea eventLog;
 		Panel contentContainer;
 		Navigation navigation;
@@ -78,25 +76,29 @@ namespace Eto.Test
 			};
 			SectionList.SelectedItemChanged += (sender, e) =>
 			{
+				Control content = null;
+				var item = SectionList.SelectedItem;
+
 				try
 				{
-					var item = SectionList.SelectedItem;
-					Control content = item != null ? item.CreateContent() : null;
-
-					if (navigation != null)
-					{
-						if (content != null)
-							navigation.Push(content, item != null ? item.Text : null);
-					}
-					else
-					{
-						contentContainer.Content = content;
-					}
+					content = item?.CreateContent();
 				}
 				catch (Exception ex)
 				{
 					Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
 					contentContainer.Content = null;
+				}
+				finally
+				{
+					if (navigation != null)
+					{
+						if (content != null)
+							navigation.Push(content, item?.Text);
+					}
+					else
+					{
+						contentContainer.Content = content;
+					}
 				}
 
 #if DEBUG
@@ -231,15 +233,14 @@ namespace Eto.Test
 					for (int i = 0; i < 5; i++)
 					{
 						var radio = new RadioMenuItem(controller) { Text = "Radio Menu Item " + (i + 1) };
-						radio.Click += (sender, e) => Log.Write(radio, "Click, {0}, Checked: {1}", radio.Text, radio.Checked);
-						radio.CheckedChanged += (sender, e) => Log.Write(radio, "CheckedChanged, {0}: {1}", radio.Text, radio.Checked);
-						edit.Items.Add(radio);
-
 						if (controller == null)
 						{
 							radio.Checked = true; // check the first item initially
 							controller = radio;
 						}
+						radio.Click += (sender, e) => Log.Write(radio, "Click, {0}, Checked: {1}", radio.Text, radio.Checked);
+						radio.CheckedChanged += (sender, e) => Log.Write(radio, "CheckedChanged, {0}: {1}", radio.Text, radio.Checked);
+						edit.Items.Add(radio);
 					}
 
 				}
@@ -287,22 +288,6 @@ namespace Eto.Test
 					ToolBar.Items.Add(new RadioToolItem { Text = "Radio3 (Disabled)", Image = TestIcons.TestImage, Enabled = false });
 				}
 			}
-
-			if (Platform.Supports<TrayIndicator>())
-			{
-				tray = new TrayIndicator();
-				tray.Icon = TestIcons.TestIcon;
-				tray.Title = "Eto Test App";
-
-				var menu = new ContextMenu();
-				menu.Items.Add(about);
-				menu.Items.Add(quit);
-				tray.SetMenu(menu);
-
-                tray.Activated += (o, e) => MessageBox.Show("Hello World!!!");
-
-				tray.Show();
-			}
 		}
 
 		protected override void OnWindowStateChanged(EventArgs e)
@@ -313,9 +298,6 @@ namespace Eto.Test
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
-			if (Platform.Supports<TrayIndicator>())
-				tray.Hide();
-
 			base.OnClosing(e);
 			Log.Write(this, "Closing");
 

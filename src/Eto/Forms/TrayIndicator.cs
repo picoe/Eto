@@ -9,9 +9,6 @@ namespace Eto.Forms
     [Handler(typeof(TrayIndicator.IHandler))]
     public class TrayIndicator : Widget
     {
-        private Icon icon;
-        private Menu menu;
-
         new IHandler Handler { get { return (IHandler)base.Handler; } }
 
         static readonly object callback = new Callback();
@@ -26,15 +23,22 @@ namespace Eto.Forms
         /// Gets or sets the icon for the <see cref="TrayIndicator"/>.
         /// </summary>
         /// <value>The icon of the <see cref="TrayIndicator"/>.</value>
+		[Obsolete("Since 2.4. Use Image instead")]
         public Icon Icon
         {
-            get { return icon; }
-            set
-            {
-                icon = value;
-                Handler.SetIcon(value);
-            }
+            get { return Image as Icon; }
+			set { Image = value; }
         }
+
+		/// <summary>
+		/// Gets or sets the image to display in the tray
+		/// </summary>
+		/// <value>The image to display in the tray.</value>
+		public Image Image
+		{
+			get { return Handler.Image; }
+			set { Handler.Image = value; }
+		}
 
         /// <summary>
         /// Gets or sets the title/tooltip for the <see cref="TrayIndicator"/>.
@@ -46,7 +50,7 @@ namespace Eto.Forms
             set { Handler.Title = value; }
         }
 
-        /// <summary>
+		/// <summary>
         /// Gets or sets a value indicating whether this <see cref="TrayIndicator"/> is visible.
         /// </summary>
         /// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
@@ -67,18 +71,28 @@ namespace Eto.Forms
             Visible = false;
         }
 
-        /// <summary>
-        /// Sets the indicator menu.
-        /// </summary>
-        /// <remarks>
-        /// Make sure to call this method every time you make changes to the context menu.
-        /// </remarks>
-        /// <param name="menu">The indicator menu.</param>
-        public void SetMenu(ContextMenu menu)
+		/// <summary>
+		/// Sets the indicator menu.
+		/// </summary>
+		/// <remarks>
+		/// Make sure to call this method every time you make changes to the context menu.
+		/// </remarks>
+		/// <param name="menu">The indicator menu.</param>
+		[Obsolete("Since 2.4. Use Menu instead")]
+		public void SetMenu(ContextMenu menu)
         {
-            this.menu = menu;
-            Handler.SetMenu(menu);
+			Menu = menu;
         }
+
+		/// <summary>
+		/// Gets or sets the menu shown when the user clicks on the tray icon.
+		/// </summary>
+		/// <value>The context menu.</value>
+		public ContextMenu Menu
+		{
+			get { return Handler.Menu; }
+			set { Handler.Menu = value; }
+		}
 
         /// <summary>
         /// Show this instance of <see cref="TrayIndicator"/>.
@@ -105,17 +119,17 @@ namespace Eto.Forms
             /// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
             bool Visible { get; set; }
 
-            /// <summary>
-            /// Sets the icon for the <see cref="TrayIndicator"/>.
-            /// </summary>
-            /// <param name="icon">The icon of the <see cref="TrayIndicator"/>.</param>
-            void SetIcon(Icon icon);
+			/// <summary>
+			/// Gets or sets the image to display in the tray
+			/// </summary>
+			/// <value>The image to display in the tray.</value>
+			Image Image { get; set; }
 
-            /// <summary>
-            /// Sets the indicator menu.
-            /// </summary>
-            /// <param name="menu">The indicator menu.</param>
-            void SetMenu(ContextMenu menu);
+			/// <summary>
+			/// Gets or sets the menu shown when the user clicks on the tray icon.
+			/// </summary>
+			/// <value>The context menu.</value>
+			ContextMenu Menu { get; set; }
         }
 
         /// <summary>

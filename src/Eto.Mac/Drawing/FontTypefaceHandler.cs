@@ -29,21 +29,15 @@ namespace Eto.Mac.Drawing
 
 		public NSFontTraitMask Traits { get; private set; }
 		// remove when implemented in monomac
-		static readonly IntPtr AppKit_libraryHandler;
 		static NSString _NSFontFamilyAttribute;
 		static NSString _NSFontFaceAttribute;
-
-		static FontTypefaceHandler()
-		{
-			AppKit_libraryHandler = Dlfcn.dlopen("/System/Library/Frameworks/AppKit.framework/AppKit", 0);
-		}
 
 		public static NSString NSFontFamilyAttribute
 		{
 			get
 			{
 				if (_NSFontFamilyAttribute == null)
-					_NSFontFamilyAttribute = Dlfcn.GetStringConstant(AppKit_libraryHandler, "NSFontFamilyAttribute");
+					_NSFontFamilyAttribute = Dlfcn.GetStringConstant(Messaging.AppKitHandle, "NSFontFamilyAttribute");
 				return _NSFontFamilyAttribute;
 			}
 		}
@@ -53,7 +47,7 @@ namespace Eto.Mac.Drawing
 			get
 			{
 				if (_NSFontFaceAttribute == null)
-					_NSFontFaceAttribute = Dlfcn.GetStringConstant(AppKit_libraryHandler, "NSFontFaceAttribute");
+					_NSFontFaceAttribute = Dlfcn.GetStringConstant(Messaging.AppKitHandle, "NSFontFaceAttribute");
 				return _NSFontFaceAttribute;
 			}
 		}

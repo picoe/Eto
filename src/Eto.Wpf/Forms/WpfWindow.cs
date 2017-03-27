@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
@@ -11,6 +11,7 @@ using Eto.Wpf.Forms.Menu;
 using System.ComponentModel;
 using System.Reflection;
 using System.Collections.Generic;
+using Eto.Wpf.Drawing;
 
 namespace Eto.Wpf.Forms
 {
@@ -273,7 +274,7 @@ namespace Eto.Wpf.Forms
 
 		public Icon Icon
 		{
-			get { return icon; }
+			get { return icon ?? (icon = Control.Icon.ToEtoIcon()); }
 			set
 			{
 				icon = value;

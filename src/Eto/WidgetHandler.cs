@@ -281,6 +281,8 @@ namespace Eto
 		/// <returns>The platform-specific control used for the specified widget</returns>
 		public static TControl GetControl(TWidget widget)
 		{
+			if (ReferenceEquals(widget, null))
+				return default(TControl);
 			var handler = (WidgetHandler<TControl, TWidget>)widget.Handler;
 			return handler.Control;
 		}

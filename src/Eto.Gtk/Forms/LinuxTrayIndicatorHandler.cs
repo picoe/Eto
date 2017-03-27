@@ -1,16 +1,20 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
+using Eto.GtkSharp.Forms.Menu;
 
 namespace Eto.GtkSharp.Forms
 {
 	public class LinuxTrayIndicatorHandler : WidgetHandler<GLib.Object, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
 	{
 		const string libappindicator = "libappindicator3.so.1";
+		Image image;
+		string imagePath;
+		ContextMenu menu;
 
 		[DllImport(libappindicator, CallingConvention = CallingConvention.Cdecl)]
 		public extern static IntPtr app_indicator_new(string id, string icon_name, int category);
@@ -36,7 +40,7 @@ namespace Eto.GtkSharp.Forms
 		[DllImport(libappindicator, CallingConvention = CallingConvention.Cdecl)]
 		public extern static void app_indicator_dispose(IntPtr gobject);
 
-		private static uint Id = 0;
+		static uint Id = 0;
 
 		public string Title
 		{
@@ -54,31 +58,68 @@ namespace Eto.GtkSharp.Forms
 		{
 			Control = GLib.Object.GetObject(app_indicator_new(Assembly.GetExecutingAssembly().FullName + Id, "", 0));
 			app_indicator_set_menu(Control.Handle, (new Gtk.Menu()).Handle);
-			app_indicator_set_status(Control.Handle, 0);
 
 			Id++;
 		}
 
-		public void SetIcon(Icon icon)
+		void RemoveTempImage()
 		{
-			var path = Path.GetTempFileName();
-
-			if (icon != null)
+			if (!string.IsNullOrEmpty(imagePath))
 			{
-				var handler = icon.Handler as IconHandler;
-				handler?.Pixbuf?.Save(path, "png");
+				ApplicationHandler.TempFiles.Remove(imagePath);
+				File.Delete(imagePath);
+				imagePath = null;
 			}
-
-			app_indicator_set_icon(Control.Handle, path);
-			ApplicationHandler.TempFiles.Add(path);
 		}
 
-		public void SetMenu(ContextMenu menu)
+		public Image Image
 		{
-			if (menu == null)
-				app_indicator_set_menu(Control.Handle, (new Gtk.Menu()).Handle);
-			else
-				app_indicator_set_menu(Control.Handle, (menu.ControlObject as Gtk.Menu).Handle);
+			get { return image; }
+			set
+			{
+				RemoveTempImage();
+				imagePath = Path.GetTempFileName();
+
+				image = value;
+				image.ToGdk()?.Save(imagePath, "png");
+
+				app_indicator_set_icon(Control.Handle, imagePath);
+				ApplicationHandler.TempFiles.Add(imagePath);
+			}
+		}
+
+		public ContextMenu Menu
+		{
+			get { return menu; }
+			set
+			{
+				if (menu != null)
+				{
+					var handler = menu.Handler as ContextMenuHandler;
+					if (handler != null)
+					{
+						handler.Changed -= ContextMenu_Changed;
+					}
+				}
+				menu = value;
+				if (menu == null)
+					app_indicator_set_menu(Control.Handle, (new Gtk.Menu()).Handle);
+				else
+				{
+					app_indicator_set_menu(Control.Handle, menu.ToGtk().Handle);
+					var handler = menu.Handler as ContextMenuHandler;
+					if (handler != null)
+					{
+						// need to re-set the when it has changed.. I guess.
+						handler.Changed += ContextMenu_Changed;
+					}
+				}
+			}
+		}
+
+		void ContextMenu_Changed(object sender, EventArgs e)
+		{
+			app_indicator_set_menu(Control.Handle, menu.ToGtk().Handle);
 		}
 
 		public override void AttachEvent(string id)
@@ -92,6 +133,18 @@ namespace Eto.GtkSharp.Forms
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (Control != null)
+			{
+				Visible = false;
+				Control.Dispose();
+				Control = null;
+			}
+			RemoveTempImage();
+			base.Dispose(disposing);
 		}
 	}
 }

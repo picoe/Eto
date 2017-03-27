@@ -7,6 +7,9 @@ namespace Eto.GtkSharp.Forms
 {
 	public class OtherTrayIndicatorHandler : WidgetHandler<Gtk.StatusIcon, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
 	{
+		Image image;
+		string tooltip;
+
 		public string Title
 		{
 			get { return tooltip; }
@@ -18,7 +21,7 @@ namespace Eto.GtkSharp.Forms
 				Control.Tooltip = tooltip = value;
 #endif
 			}
-        }
+		}
 
         public bool Visible
         {
@@ -26,35 +29,24 @@ namespace Eto.GtkSharp.Forms
             set { Control.Visible = value; }
         }
 
-        private string tooltip;
-        private Gtk.Menu menu;
-
         public OtherTrayIndicatorHandler()
         {
             Control = new Gtk.StatusIcon();
+			Control.Visible = false;
             Control.PopupMenu += Control_PopupMenu;
-
-            tooltip = "";
         }
 
-        public void SetIcon(Icon icon)
-        {
-            Gdk.Pixbuf pixbuf = null;
+		public Image Image
+		{
+			get { return image; }
+			set { Control.Pixbuf = (image = value).ToGdk(); }
+		}
 
-            if (icon != null)
-                pixbuf = (icon.Handler as IconHandler)?.Pixbuf;
-
-            Control.Pixbuf = pixbuf;
-        }
-
-        public void SetMenu(ContextMenu menu)
-        {
-            this.menu = menu?.ControlObject as Gtk.Menu;
-        }
+		public ContextMenu Menu { get; set; }
 
         private void Control_PopupMenu(object o, Gtk.PopupMenuArgs args)
         {
-            menu?.Popup(null, null, null, (uint)args.Args[0], (uint)args.Args[1]);
+			Menu.ToGtk()?.Popup(null, null, null, (uint)args.Args[0], (uint)args.Args[1]);
         }
 
         public override void AttachEvent(string id)

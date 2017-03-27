@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 using Eto.Forms;
 
@@ -7,63 +7,71 @@ namespace Eto.Test.Sections.Behaviors
 	[Section("Behaviors", typeof(Notification))]
     public class NotificationSection : Panel
     {
-		TextBox entryTitle, entryMessage;
-		Button buttonShowNot;
+		static int count;
 
-        public NotificationSection()
-        {
-			var layout = new DynamicLayout();
-			layout.DefaultSpacing = new Size(15, 6);
-			layout.DefaultPadding = new Padding(10);
-			layout.BeginVertical();
+		public bool IncludeImage { get; set; }
 
-			layout.BeginHorizontal();
-			layout.Add(null, false, false);
-			layout.Add(null, true, true);
-			layout.EndHorizontal();
-
-			layout.BeginHorizontal();
-			layout.Add(new Label { Text = "Title:", VerticalAlignment = VerticalAlignment.Center }, false, false);
-			entryTitle = new TextBox();
-			entryTitle.Text = "Hello World";
-			layout.Add(entryTitle, true, false);
-			layout.EndHorizontal();
-
-			layout.BeginHorizontal();
-			layout.Add(new Label { Text = "Message:", VerticalAlignment = VerticalAlignment.Center }, false, false);
-			entryMessage = new TextBox();
-			entryMessage.Text = "This is just a sample notification message.";
-			layout.Add(entryMessage, true, false);
-			layout.EndHorizontal();
-
-			layout.BeginHorizontal();
-			layout.Add(null, false, false);
-			buttonShowNot = new Button();
-			buttonShowNot.Text = "Show Notification";
-			layout.Add(buttonShowNot, true, false);
-			layout.EndHorizontal();
-
-			layout.BeginHorizontal();
-			layout.Add(null, false, false);
-			layout.Add(null, true, true);
-			layout.EndHorizontal();
-
-			Content = layout;
-
-			buttonShowNot.Click += ButtonShowNot_Click;
-        }
-
-		private void ButtonShowNot_Click(object sender, EventArgs e)
+		public NotificationSection()
 		{
-			var notification = new Notification();
-			notification.Title = entryTitle.Text;
-			notification.Message = entryMessage.Text;
-			notification.Icon = TestIcons.TestIcon;
-			notification.Activated += delegate {
-				Log.Write(notification, "Default Action Activated");
+			var entryId = new TextBox();
+			entryId.TextBinding.BindDataContext((Notification n) => n.ID);
+
+			var entryTitle = new TextBox();
+			entryTitle.TextBinding.BindDataContext((Notification n) => n.Title);
+
+			var entryMessage = new TextBox();
+			entryMessage.TextBinding.BindDataContext((Notification n) => n.Message);
+
+			var entryUserData = new TextArea();
+			entryUserData.TextBinding.BindDataContext((Notification n) => n.UserData);
+
+			var showNotificationButton = new Button();
+			showNotificationButton.Text = "Show Notification";
+			showNotificationButton.Click += ShowNotificationButton_Click;
+
+			var includeImageCheck = new CheckBox { Text = "Include Image", Checked = true };
+			includeImageCheck.CheckedBinding.Bind(this, t => t.IncludeImage);
+
+			Content = new TableLayout
+			{
+				Spacing = new Size(5, 5),
+				Padding = 10,
+				Rows = {
+					null,
+					new TableRow(new Label { Text = "ID:", VerticalAlignment = VerticalAlignment.Center }, entryId),
+					new TableRow(new Label { Text = "Title:", VerticalAlignment = VerticalAlignment.Center }, entryTitle),
+					new TableRow(new Label { Text = "Message:", VerticalAlignment = VerticalAlignment.Center }, entryMessage),
+					new TableRow(new Label { Text = "UserData:", VerticalAlignment = VerticalAlignment.Center }, entryUserData),
+					new TableRow(new TableCell(), includeImageCheck),
+					new TableRow(new TableCell(), TableLayout.AutoSized(showNotificationButton)),
+					null
+				}
 			};
 
-			notification.Show(MainForm.tray);
+			CreateNotification();
+        }
+
+		void CreateNotification()
+		{
+			count++;
+			DataContext = new Notification
+			{
+				ID = "my_identifier_" + count, // optional, but can be useful
+				Title = "Hello World " + count,
+				Message = "This is just a sample notification message."
+			};
+		}
+
+		void ShowNotificationButton_Click(object sender, EventArgs e)
+		{
+			var notification = DataContext as Notification;
+
+			if (IncludeImage)
+				notification.ContentImage = TestIcons.TestIcon;
+
+			notification.Show();
+
+			CreateNotification();
 		}
 	}
 }

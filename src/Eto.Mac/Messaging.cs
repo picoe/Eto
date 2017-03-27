@@ -42,6 +42,8 @@ namespace Eto.Mac
 {
 	public static class Messaging
 	{
+		public static readonly IntPtr AppKitHandle = Dlfcn.dlopen("/System/Library/Frameworks/AppKit.framework/AppKit", 0);
+
 		public static T GetNSObject<T>(IntPtr ptr)
 			where T: NSObject
 		{

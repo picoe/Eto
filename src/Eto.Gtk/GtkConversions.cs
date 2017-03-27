@@ -5,6 +5,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.GtkSharp.Drawing;
 using Eto.GtkSharp.Forms;
+using Eto.GtkSharp.Forms.Menu;
 
 namespace Eto.GtkSharp
 {
@@ -724,6 +725,8 @@ namespace Eto.GtkSharp
 					throw new NotSupportedException();
 			}
 		}
+
+		public static Gtk.Menu ToGtk(this ContextMenu menu) => ContextMenuHandler.GetControl(menu);
 
 		public static Gdk.DragAction ToGdk(this DragEffects dragAction)
 		{

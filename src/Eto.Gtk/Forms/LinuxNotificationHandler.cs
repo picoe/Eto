@@ -70,6 +70,8 @@ namespace Eto.GtkSharp.Forms
 				notify_uninit();
 		}
 
+		Image _contentImage;
+
 		public string Title { get; set; }
 
 		public bool RequiresTrayIndicator
@@ -79,8 +81,10 @@ namespace Eto.GtkSharp.Forms
 
 		public string Message { get; set; }
 
-		EventHandler activated;
+		public string UserData { get; set; }
+
 		string iconPath;
+		GCHandle handle;
 
         public LinuxNotificationHandler()
         {
@@ -91,28 +95,47 @@ namespace Eto.GtkSharp.Forms
 
 			if (allowactions)
 			{
+				handle = GCHandle.Alloc(this);
 				// Undocumented AFAIK: If action is "default" it will not create a button.
-				notify_notification_add_action(Control.Handle, "default", "default", (Action)Activated, IntPtr.Zero, IntPtr.Zero);
+				notify_notification_add_action(Control.Handle, "default", "default", (Action<IntPtr, string, IntPtr>)Activated, GCHandle.ToIntPtr(handle), IntPtr.Zero);
 			}
 
-			// Empty string will show the default icon, while an incorrect one will show no icon
-			iconPath = "???";
         }
 
-		private void Activated()
+		private static void Activated(IntPtr notification, string action, IntPtr user_data)
 		{
-			activated?.Invoke(this, EventArgs.Empty);
+			var handler = GCHandle.FromIntPtr(user_data).Target as LinuxNotificationHandler;
+			if (handler != null)
+			{
+				var app = ApplicationHandler.Instance;
+				app?.Callback.OnNotificationActivated(app.Widget, new NotificationEventArgs(handler.ID, handler.UserData));
+			}
 		}
 
-		public void SetIcon(Icon icon)
+		public Image ContentImage
 		{
-			if (!init)
-				return;
-			
-			iconPath = Path.GetTempFileName();
-			if (icon != null)
-				(icon.Handler as IconHandler)?.Pixbuf?.Save(iconPath, "png");
-			ApplicationHandler.TempFiles.Add(iconPath);
+			get { return _contentImage; }
+			set
+			{
+				_contentImage = value;
+				var pb = _contentImage.ToGdk();
+				if (pb != null)
+				{
+					if (iconPath == null)
+					{
+						iconPath = Path.GetTempFileName();
+						ApplicationHandler.TempFiles.Add(iconPath);
+					}
+					pb.Save(iconPath, "png");
+				}
+				else if (iconPath != null)
+				{
+					if (File.Exists(iconPath))
+						File.Delete(iconPath);
+					ApplicationHandler.TempFiles.Remove(iconPath);
+					iconPath = null;
+				}
+			}
 		}
 
 		public void Show(TrayIndicator indicator = null)
@@ -120,21 +143,9 @@ namespace Eto.GtkSharp.Forms
 			if (!init)
 				return;
 			
-			notify_notification_update(Control.Handle, Title, Message, iconPath);
+			// Empty string will show the default icon, while an incorrect one will show no icon
+			notify_notification_update(Control.Handle, Title, Message, iconPath ?? "???");
 			notify_notification_show(Control.Handle, IntPtr.Zero);
-		}
-
-		public override void AttachEvent(string id)
-		{
-			switch (id)
-			{
-				case Notification.ActivatedEvent:
-					activated += (sender, e) => Callback.OnActivated(Widget, EventArgs.Empty);
-					break;
-				default:
-					base.AttachEvent(id);
-					break;
-			}
 		}
 	}
 }

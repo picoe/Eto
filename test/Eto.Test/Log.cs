@@ -7,6 +7,8 @@ namespace Eto.Test
 {
 	public static class Log
 	{
+		static StringBuilder s_deferredLog;
+
 		public static void Write(object sender, string message, params object[] args)
 		{
 			var sb = new StringBuilder();
@@ -21,19 +23,35 @@ namespace Eto.Test
 
 			if (Platform.Instance.IsDesktop)
 			{
-				var form = Application.Instance != null ? Application.Instance.MainForm as MainForm : null;
-				if (form == null)
+				var form = Application.Instance?.MainForm as MainForm;
+				var eventLog = form?.EventLog;
+				if (eventLog != null)
+				{
+					eventLog.Append(sb.ToString(), true);
 					return;
-			
-				var eventLog = form.EventLog;
-				if (eventLog == null)
-					return;
-				eventLog.Append(sb.ToString(), true);
+				}
+
+				if (Application.Instance != null)
+				{
+					if (s_deferredLog == null)
+					{
+						// so we can show log events before the main form is shown
+						Application.Instance.Initialized += (s2, e) =>
+						{
+							var eventLog2 = (Application.Instance.MainForm as MainForm)?.EventLog;
+							if (eventLog2 != null)
+							{
+								eventLog2.Append(s_deferredLog.ToString(), true);
+								s_deferredLog.Clear();
+							}
+						};
+						s_deferredLog = new StringBuilder();
+					}
+					s_deferredLog.Append(sb.ToString());
+				}
 			}
-			else
-			{
-				Debug.WriteLine(sb.ToString());
-			}
+
+			Debug.WriteLine(sb.ToString());
 		}
 	}
 }

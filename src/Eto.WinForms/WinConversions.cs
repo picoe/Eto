@@ -182,6 +182,11 @@ namespace Eto.WinForms
 			return h.GetImageWithSize(size);
 		}
 
+		public static Icon ToEto(this sd.Icon icon)
+		{
+			return new Icon(new IconHandler(icon));
+		}
+
 		public static sd.Image ToSD(this Image image, Size? size)
 		{
 			if (image == null)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Eto.Forms;
 using System.Diagnostics;
@@ -250,6 +250,9 @@ namespace Eto.Wpf.Forms
 				case Application.UnhandledExceptionEvent:
 					AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
 					sw.Application.Current.DispatcherUnhandledException += OnDispatcherUnhandledException;
+					break;
+				case Application.NotificationActivatedEvent:
+					// handled by NotificationHandler
 					break;
 				default:
 					base.AttachEvent(id);
