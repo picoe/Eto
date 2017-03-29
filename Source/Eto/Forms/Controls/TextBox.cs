@@ -4,6 +4,24 @@ using System.ComponentModel;
 namespace Eto.Forms
 {
 	/// <summary>
+	/// Enumeration of the modes for auto selecting text.
+	/// </summary>
+	public enum AutoSelectMode
+	{
+		/// <summary>
+		/// Selects the text when the control recieves focus, unless the user
+		/// clicks at a point in the text with the I beam cursor.
+		/// </summary>
+		OnFocus,
+
+		/// <summary>
+		/// The text is never automatically selected.  When the text of the control is set
+		/// to a different value, the cursor usually will be at the end of the text input.
+		/// </summary>
+		Never
+	}
+
+	/// <summary>
 	/// Single line text box control
 	/// </summary>
 	/// <seealso cref="TextArea"/>
@@ -179,6 +197,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Gets or sets the auto selection mode.
+		/// </summary>
+		/// <value>The auto selection mode.</value>
+		public AutoSelectMode AutoSelectMode
+		{
+			get { return Handler.AutoSelectMode; }
+			set { Handler.AutoSelectMode = value; }
+		}
+
+		/// <summary>
 		/// Handler interface for the <see cref="TextBox"/>.
 		/// </summary>
 		public new interface IHandler : TextControl.IHandler
@@ -252,6 +280,12 @@ namespace Eto.Forms
 			/// </summary>
 			/// <value>The text alignment.</value>
 			TextAlignment TextAlignment { get; set; }
+
+			/// <summary>
+			/// Gets or sets the auto selection mode.
+			/// </summary>
+			/// <value>The auto selection mode.</value>
+			AutoSelectMode AutoSelectMode { get; set; }
 		}
 
 		#region Callback

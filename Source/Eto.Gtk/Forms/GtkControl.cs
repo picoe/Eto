@@ -545,7 +545,7 @@ namespace Eto.GtkSharp.Forms
 				}
 			}
 
-			public void FocusInEvent(object o, Gtk.FocusInEventArgs args)
+			public virtual void FocusInEvent(object o, Gtk.FocusInEventArgs args)
 			{
 				var handler = Handler;
 				if (handler == null)
@@ -553,7 +553,7 @@ namespace Eto.GtkSharp.Forms
 				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
 			}
 
-			public void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
+			public virtual void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
 			{
 				// Handler can be null here after window is closed
 				var handler = Handler;

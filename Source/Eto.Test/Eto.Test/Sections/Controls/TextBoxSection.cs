@@ -35,10 +35,13 @@ namespace Eto.Test.Sections.Controls
 			var maxLengthStepper = new NumericStepper { MinValue = 0 };
 			maxLengthStepper.ValueBinding.Bind(textBox, c => c.MaxLength);
 
+			var selectionMode = new EnumDropDown<AutoSelectMode>();
+			selectionMode.SelectedValueBinding.Bind(textBox, c => c.AutoSelectMode);
+
 			var layout = new DynamicLayout { Padding = 10, DefaultSpacing = new Size(5, 5) };
 			layout.AddSeparateRow(null, enabledCheckBox, readOnlyCheckBox, showBorderCheckBox, null);
-			layout.AddSeparateRow(null, "TextAlignment", alignmentDropDown, "MaxLength", maxLengthStepper, null);
-			layout.AddSeparateRow(null, "PlaceholderText", placeholderText, null);
+			layout.AddSeparateRow(null, "TextAlignment", alignmentDropDown, "SelectionMode", selectionMode, null);
+			layout.AddSeparateRow(null, "MaxLength", maxLengthStepper, "PlaceholderText", placeholderText, null);
 			layout.AddSeparateRow(null, setTextButton, selectAllButton, null);
 			layout.Add(null);
 			layout.AddCentered(textBox);

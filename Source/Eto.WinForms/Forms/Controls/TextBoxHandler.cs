@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
@@ -230,7 +230,6 @@ namespace Eto.WinForms.Forms.Controls
 
 		public void SelectAll()
 		{
-			Control.Focus();
 			SwfTextBox.SelectAll();
 		}
 
@@ -275,5 +274,30 @@ namespace Eto.WinForms.Forms.Controls
 			if (XScale && YScale)
 				Control.AutoSize = true;
 		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Widget.GotFocus += Widget_GotFocus;
+		}
+
+		void Widget_GotFocus(object sender, EventArgs e)
+		{
+			if (AutoSelectMode == AutoSelectMode.OnFocus)
+				SelectAll();
+		}
+
+		public override string Text
+		{
+			get { return base.Text; }
+			set
+			{
+				base.Text = value;
+				if (AutoSelectMode == AutoSelectMode.Never)
+					Selection = new Range<int>(value.Length, value.Length - 1);
+			}
+		}
+
+		public AutoSelectMode AutoSelectMode { get; set; }
 	}
 }

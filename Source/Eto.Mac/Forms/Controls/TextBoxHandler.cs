@@ -88,7 +88,7 @@ namespace Eto.Mac.Forms.Controls
 			if (TextHandler != null)
 			{
 				var textView = (NSTextView)notification.Object;
-				TextHandler.LastSelection = textView.SelectedRange.ToEto();
+				TextHandler.SetLastSelection(textView.SelectedRange.ToEto());
 			}
 		}
 	}
