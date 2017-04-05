@@ -6,9 +6,9 @@ using Eto.GtkSharp.Forms.Controls;
 namespace Eto.GtkSharp.Forms
 {
 	public abstract class GtkContainer<TControl, TWidget, TCallback> : GtkControl<TControl, TWidget, TCallback>, Container.IHandler
-		where TControl: Gtk.Widget
-		where TWidget: Container
-		where TCallback: Container.ICallback
+		where TControl : Gtk.Widget
+		where TWidget : Container
+		where TCallback : Container.ICallback
 	{
 		public bool RecurseToChildren { get { return true; } }
 
@@ -18,6 +18,7 @@ namespace Eto.GtkSharp.Forms
 			set { Size = value; }
 		}
 
+#if GTK2
 		public override void SetBackgroundColor()
 		{
 			base.SetBackgroundColor();
@@ -26,5 +27,6 @@ namespace Eto.GtkSharp.Forms
 				child.SetBackgroundColor();
 			}
 		}
+#endif
 	}
 }
