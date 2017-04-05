@@ -31,6 +31,8 @@ namespace Eto.Test.Sections
 				{
 					Application.AsyncInvoke(() => Log.Write(null, "Failed: {0}\n{1}", result.Message, result.StackTrace));
 				}
+				if (result.InconclusiveCount > 0)
+					Application.AsyncInvoke(() => Log.Write(null, "Inconclusive: {0}\n{1}", result.Message, result.StackTrace));
 			}
 		}
 
