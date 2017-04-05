@@ -212,6 +212,7 @@
     <Compile Include="Sections\Controls\DocumentControlSection.cs" />
     <Compile Include="Sections\Behaviors\NotificationSection.cs" />
     <Compile Include="Sections\Controls\MaskedTextStepperSection.cs" />
+    <Compile Include="UnitTests\Forms\Controls\TextBoxTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">

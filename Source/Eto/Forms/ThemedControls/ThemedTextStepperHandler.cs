@@ -234,6 +234,16 @@ namespace Eto.Forms.ThemedControls
 		}
 
 		/// <summary>
+		/// Gets or sets the auto selection mode.
+		/// </summary>
+		/// <value>The auto selection mode.</value>
+		public AutoSelectMode AutoSelectMode
+		{
+			get { return textBox.AutoSelectMode; }
+			set { textBox.AutoSelectMode = value; }
+		}
+
+		/// <summary>
 		/// Attaches the specified event to the platform-specific control
 		/// </summary>
 		/// <remarks>Implementors should override this method to handle any events that the widget

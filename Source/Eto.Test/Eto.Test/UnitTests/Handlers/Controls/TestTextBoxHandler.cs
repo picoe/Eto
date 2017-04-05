@@ -125,6 +125,19 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 				throw new NotImplementedException();
 			}
 		}
+
+		public AutoSelectMode AutoSelectMode
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
 
