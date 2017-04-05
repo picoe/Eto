@@ -246,47 +246,39 @@ namespace Eto.Test.UnitTests
 			Exception exception = null;
 			Form(form =>
 			{
-				try
+				var c = init(form);
+
+				var failButton = new Button { Text = "Fail" };
+				failButton.Click += (sender, e) =>
 				{
-					var c = init(form);
-
-					var failButton = new Button { Text = "Fail" };
-					failButton.Click += (sender, e) =>
+					try
 					{
-						try
-						{
-							Assert.Fail(description);
-						}
-						catch (Exception ex)
-						{
-							exception = ex;
-						}
-						finally
-						{
-							form.Close();
-						}
-					};
-
-					var passButton = new Button { Text = "Pass" };
-					passButton.Click += (sender, e) => form.Close();
-
-					form.Content = new StackLayout
+						Assert.Fail(description);
+					}
+					catch (Exception ex)
 					{
-						Padding = 10,
-						Spacing = 10,
-						Items =
+						exception = ex;
+					}
+					finally
+					{
+						form.Close();
+					}
+				};
+
+				var passButton = new Button { Text = "Pass" };
+				passButton.Click += (sender, e) => form.Close();
+
+				form.Content = new StackLayout
+				{
+					Padding = 10,
+					Spacing = 10,
+					Items =
 					{
 						new StackLayoutItem(c, HorizontalAlignment.Stretch, true),
 						description,
 						new StackLayoutItem(TableLayout.Horizontal(2, failButton, passButton), HorizontalAlignment.Center)
 					}
-					};
-				}
-				catch (Exception ex)
-				{
-					exception = ex;
-				}
-
+				};
 			}, timeout: -1);
 
 			if (exception != null)

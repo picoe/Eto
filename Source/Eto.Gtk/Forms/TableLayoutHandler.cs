@@ -26,7 +26,7 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return Control != null ? new Size((int)Control.ColumnSpacing, (int)Control.RowSpacing) : spacing ?? Size.Empty; }
 			set
-			{ 
+			{
 				if (Control == null)
 					spacing = value;
 				else
@@ -121,7 +121,7 @@ namespace Eto.GtkSharp.Forms
 
 		void AttachColumn(int column)
 		{
-			for (int y = 0; y < controls.GetLength (0); y++)
+			for (int y = 0; y < controls.GetLength(0); y++)
 			{
 				Attach(controls[y, column], column, y);
 			}
@@ -129,7 +129,7 @@ namespace Eto.GtkSharp.Forms
 
 		void AttachRow(int row)
 		{
-			for (int x = 0; x < controls.GetLength (1); x++)
+			for (int x = 0; x < controls.GetLength(1); x++)
 			{
 				Attach(controls[row, x], x, row);
 			}
@@ -159,6 +159,13 @@ namespace Eto.GtkSharp.Forms
 				var widget = child.GetContainerWidget();
 				if (widget.Parent != null)
 					((Gtk.Container)widget.Parent).Remove(widget);
+#if GTK3
+				// fix an odd problem in GTK 3.20 where a drop down would set vertical scaling of a row
+				// even though it is not set to do so (Tested on Ubuntu 16.10)
+				// TODO: we should probably create a new TableLayoutHandler using Gtk.Grid instead
+				widget.Vexpand = false;
+				widget.Hexpand = false;
+#endif
 				Control.Attach(widget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions(x), GetRowOptions(y), 0, 0);
 				widget.ShowAll();
 				return true;
@@ -182,7 +189,7 @@ namespace Eto.GtkSharp.Forms
 			{
 				for (int x = 0; x<controls.GetLength(1); x++)
 				{
-					if (object.ReferenceEquals(controls[y, x], child))
+					if (ReferenceEquals(controls[y, x], child))
 					{
 						controls[y, x] = null;
 						var widget = child.GetContainerWidget();

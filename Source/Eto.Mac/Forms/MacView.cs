@@ -379,9 +379,10 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				handler.ShouldHaveFocus = true;
+				var result = Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 				handler.Callback.OnGotFocus(handler.Widget, EventArgs.Empty);
 				handler.ShouldHaveFocus = null;
-				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
+				return result;
 			}
 			return false;
 		}
@@ -393,9 +394,10 @@ namespace Eto.Mac.Forms
 			if (handler != null)
 			{
 				handler.ShouldHaveFocus = false;
+				var result = Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
 				handler.Callback.OnLostFocus(handler.Widget, EventArgs.Empty);
 				handler.ShouldHaveFocus = null;
-				return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
+				return result;
 			}
 			return false;
 		}
