@@ -77,12 +77,18 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 			}
 #else
+			[GLib.ConnectBefore]
 			public void HandleDrawn(object o, Gtk.DrawnArgs args)
 			{
 				var h = Handler;
+				var size = h.Size;
+				args.Cr.Rectangle(new Cairo.Rectangle(0, 0, size.Width, size.Height));
+				args.Cr.Clip();
 				using (var graphics = new Graphics(new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false)))
 				{
-					h.Callback.OnPaint(h.Widget, new PaintEventArgs (graphics, new Rectangle(h.Size)));
+					if (h.SelectedBackgroundColor != null)
+						graphics.Clear(h.SelectedBackgroundColor.Value);
+					h.Callback.OnPaint(h.Widget, new PaintEventArgs(graphics, new Rectangle(size)));
 				}
 			}
 #endif
@@ -105,5 +111,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			this.content.Add(content);
 		}
+
+#if GTK3
+		protected override void SetBackgroundColor(Color? color)
+		{
+			// we handle this ourselves
+			//base.SetBackgroundColor(color);
+			Invalidate(false);
+		}
+#endif
 	}
 }
