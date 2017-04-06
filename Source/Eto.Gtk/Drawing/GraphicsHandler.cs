@@ -1,6 +1,8 @@
 using System;
 using Eto.Drawing;
 using System.Collections.Generic;
+using GLib;
+using System.Runtime.InteropServices;
 
 namespace Eto.GtkSharp.Drawing
 {
@@ -16,7 +18,7 @@ namespace Eto.GtkSharp.Drawing
 		Stack<Cairo.Matrix> transforms;
 		bool disposeControl = true;
 		bool isOffset;
-		#if GTK2
+#if GTK2
 		readonly Gdk.Drawable drawable;
 
 		public GraphicsHandler(Gtk.Widget widget, Gdk.Drawable drawable, bool dispose = true)
@@ -72,7 +74,15 @@ namespace Eto.GtkSharp.Drawing
 		public bool AntiAlias
 		{
 			get { return Control.Antialias != Cairo.Antialias.None; }
-			set { Control.Antialias = value ? Cairo.Antialias.Default : Cairo.Antialias.None; }
+			set
+			{
+				if (AntiAlias != value)
+				{
+					ReverseAll();
+					Control.Antialias = value ? Cairo.Antialias.Default : Cairo.Antialias.None;
+					ApplyAll();
+				}
+			}
 		}
 
 		static readonly object ImageInterpolation_Key = new object();
@@ -100,15 +110,23 @@ namespace Eto.GtkSharp.Drawing
 			this.image = image;
 			var handler = (BitmapHandler)image.Handler;
 
-			var format = handler.Alpha ? Cairo.Format.Argb32 : Cairo.Format.Rgb24;
-			surface = new Cairo.ImageSurface(format, image.Size.Width, image.Size.Height);
-			Control = new Cairo.Context(surface);
-			Control.Save();
-			Control.Rectangle(0, 0, image.Size.Width, image.Size.Height);
-			Gdk.CairoHelper.SetSourcePixbuf(Control, handler.Control, 0, 0);
-			Control.Operator = Cairo.Operator.Source;
-			Control.Fill();
-			Control.Restore();
+			surface = handler.Surface;
+			if (surface == null)
+			{
+				var format = handler.Alpha ? Cairo.Format.Argb32 : Cairo.Format.Rgb24;
+				surface = new Cairo.ImageSurface(format, image.Size.Width, image.Size.Height);
+				Control = new Cairo.Context(surface);
+				Control.Save();
+				Control.Rectangle(0, 0, image.Size.Width, image.Size.Height);
+				Gdk.CairoHelper.SetSourcePixbuf(Control, handler.Control, 0, 0);
+				Control.Operator = Cairo.Operator.Source;
+				Control.Fill();
+				Control.Restore();
+			}
+			else
+			{
+				Control = new Cairo.Context(surface);
+			}
 		}
 
 		protected override void Initialize()
@@ -120,48 +138,37 @@ namespace Eto.GtkSharp.Drawing
 			ApplyAll();
 		}
 
-		public void Flush()
-		{
-			if (image != null)
-			{
-				var handler = (BitmapHandler)image.Handler;
-				Gdk.Pixbuf pb = handler.GetPixbuf(Size.MaxValue);
-				if (pb != null)
-				{
+		public void Flush() => Flush(true);
 
-					surface.Flush();
-					using (var bd = handler.Lock())
-					unsafe
-					{
-						var srcrow = (byte*)surface.DataPtr;
-						for (int y = 0; y < image.Size.Height; y++)
-						{
-							var src = (int*)srcrow;
-							for (int x = 0; x < image.Size.Width; x++)
-							{
-								bd.SetPixel(x, y, Color.FromArgb(*src));
-								src++;
-							}
-							srcrow += surface.Stride;
-						}
-					}
-				}
-			}
+		void Flush(bool recreate)
+		{
 #if GTK2
 			if (Control != null)
 			{
 				// Analysis disable once RedundantCast - backward compatibility
 				((IDisposable)Control).Dispose();
-				if (surface != null)
+				if (recreate)
 				{
-					Control = new Cairo.Context(surface);
-				}
-				else if (drawable != null)
-				{
-					Control = Gdk.CairoHelper.Create(drawable);
+					if (surface != null)
+					{
+						Control = new Cairo.Context(surface);
+					}
+					else if (drawable != null)
+					{
+						Control = Gdk.CairoHelper.Create(drawable);
+					}
 				}
 			}
 #endif
+			if (image != null)
+			{
+				var handler = (BitmapHandler)image.Handler;
+
+				surface.Flush();
+				handler.Surface = surface;
+				if (!recreate)
+					surface = null;
+			}
 		}
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
@@ -363,6 +370,8 @@ namespace Eto.GtkSharp.Drawing
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
+			var oldAA = AntiAlias;
+			AntiAlias = true;
 			SetOffset(true);
 			using (var layout = CreateLayout())
 			{
@@ -375,6 +384,7 @@ namespace Eto.GtkSharp.Drawing
 				Control.Fill();
 				Control.Restore();
 			}
+			AntiAlias = oldAA;
 		}
 
 		public SizeF MeasureString(Font font, string text)
@@ -395,7 +405,7 @@ namespace Eto.GtkSharp.Drawing
 				ReverseAll();
 			if (image != null)
 			{
-				Flush();
+				Flush(false);
 				image = null;
 			}
 			if (surface != null)
@@ -522,17 +532,35 @@ namespace Eto.GtkSharp.Drawing
 			ApplyTransform();
 		}
 
+		public static bool GetClipRectangle(Cairo.Context cr, ref Gdk.Rectangle rect)
+		{
+			IntPtr intPtr = Marshaller.StructureToPtrAlloc(rect);
+			bool flag = NativeMethods.gdk_cairo_get_clip_rectangle((cr != null) ? cr.Handle : IntPtr.Zero, intPtr);
+			bool result = flag;
+			rect = (Gdk.Rectangle)Marshal.PtrToStructure(intPtr, typeof(Gdk.Rectangle));
+			Marshal.FreeHGlobal(intPtr);
+			return result;
+		}
+
 		public RectangleF ClipBounds
 		{
 			get
-			{ 
-				var bounds = clipBounds ?? (widget != null ? (RectangleF)widget.Allocation.ToEto() : RectangleF.Empty);
+			{
+				var bounds = clipBounds;
+				if (bounds == null)
+				{
+					var rect = new Gdk.Rectangle();
+					if (GetClipRectangle(Control, ref rect))
+						bounds = rect.ToEto();
+					else
+						bounds = widget?.Allocation.ToEto() ?? RectangleF.Empty;
+				}
 				var matrix = Control.Matrix;
 				if (matrix.IsIdentity())
-					return bounds;
+					return bounds.Value;
 				var etoMatrix = matrix.ToEto();
 				etoMatrix.Invert();
-				return etoMatrix.TransformRectangle(bounds);
+				return etoMatrix.TransformRectangle(bounds.Value);
 			}
 		}
 

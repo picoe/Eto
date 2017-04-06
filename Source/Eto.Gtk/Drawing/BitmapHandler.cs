@@ -38,6 +38,8 @@ namespace Eto.GtkSharp.Drawing
 	{
 		readonly Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 
+		public Cairo.ImageSurface Surface { get; set; }
+
 		public bool Alpha { get; set; }
 
 		public BitmapHandler()
@@ -105,6 +107,12 @@ namespace Eto.GtkSharp.Drawing
 
 		public BitmapData Lock()
 		{
+			EnsureData();
+			return InnerLock();
+		}
+
+		BitmapData InnerLock()
+		{
 			return new BitmapDataHandler(Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null);
 		}
 
@@ -115,6 +123,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public void Save(string fileName, ImageFormat format)
 		{
+			EnsureData();
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
 			{
 				Save(stream, format);
@@ -123,6 +132,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public void Save(Stream stream, ImageFormat format)
 		{
+			EnsureData();
 			string fileName = Guid.NewGuid().ToString();
 			Control.Save(fileName, format.ToGdk());
 			Stream fileStream = File.OpenRead(fileName);
@@ -145,6 +155,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public override void SetImage(Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
+			EnsureData();
 			if (iconSize != null)
 				imageView.SetFromIconSet(new Gtk.IconSet(Control), iconSize.Value);
 			else
@@ -164,8 +175,22 @@ namespace Eto.GtkSharp.Drawing
 				scaley = (double)destination.Height / (double)source.Height;
 				context.Scale(scalex, scaley);
 			}
-			Gdk.CairoHelper.SetSourcePixbuf(context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
-			var pattern = (Cairo.SurfacePattern)context.GetSource();
+			Cairo.SurfacePattern pattern;
+			if (Surface != null)
+			{
+				// we got a surface (by drawing on the bitmap using Graphics), so use that directly.
+				pattern = new Cairo.SurfacePattern(Surface);
+				var m = new Cairo.Matrix();
+				m.InitTranslate(source.Left - (destination.Left / scalex), source.Top - (destination.Top / scaley));
+				pattern.Matrix = m;
+				context.SetSource(pattern);
+			}
+			else
+			{
+				Gdk.CairoHelper.SetSourcePixbuf(context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
+				pattern = (Cairo.SurfacePattern)context.GetSource();
+			}
+
 			pattern.Filter = graphics.ImageInterpolation.ToCairo();
 			context.Fill();
 			context.Restore();
@@ -207,12 +232,14 @@ namespace Eto.GtkSharp.Drawing
 		{
 			get
 			{
+				EnsureData();
 				return Control;
 			}
 		}
 
 		public Gdk.Pixbuf GetPixbuf(Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear, bool shrink = false)
 		{
+			EnsureData();
 			Gdk.Pixbuf pixbuf = Control;
 			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height
 				|| (shrink && (maxSize.Width < pixbuf.Width || maxSize.Height < pixbuf.Height)))
@@ -229,6 +256,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
+			EnsureData();
 			if (rectangle == null)
 				return new Bitmap(new BitmapHandler(Control.Copy()));
 			else
@@ -267,6 +295,84 @@ namespace Eto.GtkSharp.Drawing
 					throw new NotSupportedException();
 				}
 			}
+		}
+
+		void EnsureData()
+		{
+			if (Surface == null)
+				return;
+			using (var bd = InnerLock())
+				unsafe
+				{
+					var size = Size;
+					var srcrow = (byte*)Surface.DataPtr;
+					if (bd.BytesPerPixel == 4)
+					{
+						var destrow = (byte*)bd.Data;
+						for (int y = 0; y < size.Height; y++)
+						{
+							var src = (int*)srcrow;
+							var dest = (int*)destrow;
+							for (int x = 0; x < size.Width; x++)
+							{
+								*dest = bd.TranslateArgbToData(*src);
+								src++;
+								dest++;
+							}
+							srcrow += Surface.Stride;
+							destrow += bd.ScanWidth;
+						}
+					}
+					else if (bd.BytesPerPixel == 3)
+					{
+						var destrow = (byte*)bd.Data;
+						for (int y = 0; y < size.Height; y++)
+						{
+							var src = (int*)srcrow;
+							var dest = (byte*)destrow;
+							for (int x = 0; x < size.Width; x++)
+							{
+								var data = bd.TranslateArgbToData(*src);
+								*(dest++) = (byte)data;
+								data >>= 8;
+								*(dest++) = (byte)data;
+								data >>= 8;
+								*(dest++) = (byte)data;
+								src++;
+							}
+							srcrow += Surface.Stride;
+							destrow += bd.ScanWidth;
+						}
+					}
+					else
+					{
+						for (int y = 0; y < size.Height; y++)
+						{
+							var src = (int*)srcrow;
+							for (int x = 0; x < size.Width; x++)
+							{
+								bd.SetPixel(x, y, Color.FromArgb(*src));
+								src++;
+							}
+							srcrow += Surface.Stride;
+						}
+					}
+				}
+			((IDisposable)Surface).Dispose();
+			Surface = null;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (Surface != null)
+				{
+					((IDisposable)Surface).Dispose();
+					Surface = null;
+				}
+			}
+			base.Dispose(disposing);
 		}
 	}
 }
