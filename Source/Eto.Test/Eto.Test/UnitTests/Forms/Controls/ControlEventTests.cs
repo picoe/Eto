@@ -20,7 +20,7 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					.Where(r =>
 					{
 						var ti = r.GetTypeInfo();
-						return r.FullName.StartsWith("Eto.Forms")
+						return r.FullName.StartsWith("Eto.Forms", StringComparison.Ordinal)
 							&& typeof(Control).GetTypeInfo().IsAssignableFrom(ti)
 							&& !ti.IsAbstract
 							&& !ti.IsGenericType

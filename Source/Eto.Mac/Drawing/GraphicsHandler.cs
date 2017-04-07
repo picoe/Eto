@@ -191,7 +191,14 @@ namespace Eto.iOS.Drawing
 		public bool AntiAlias
 		{
 			get { return Widget.Properties.Get(AntiAlias_Key, true); }
-			set { Widget.Properties.Set(AntiAlias_Key, value, () => Control.SetShouldAntialias(value), true); }
+			set { Widget.Properties.Set(AntiAlias_Key, value, SetAntiAlias, true); }
+		}
+
+		void SetAntiAlias()
+		{
+			RewindAll();
+			Control.SetShouldAntialias(AntiAlias);
+			ApplyAll();
 		}
 
 		static readonly object PointsPerPixel_Key = new object();

@@ -2,6 +2,7 @@
 using Eto.Drawing;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Eto.Forms
 {
@@ -18,6 +19,40 @@ namespace Eto.Forms
 		/// Plain Text only
 		/// </summary>
 		PlainText
+	}
+
+	/// <summary>
+	/// Extensions for <see cref="ITextBuffer"/>
+	/// </summary>
+	public static class TextBufferExtensions
+	{
+		/// <summary>
+		/// Gets the content of the specified buffer as an RTF formatted string. Note that some platforms don't support RTF (e.g. Gtk).
+		/// </summary>
+		/// <returns>The content of the buffer in RTF format.</returns>
+		/// <param name="buffer">Buffer to get the content from.</param>
+		public static string GetRtf(this ITextBuffer buffer)
+		{
+			using (var stream = new MemoryStream())
+			{
+				buffer.Save(stream, RichTextAreaFormat.Rtf);
+				var bytes = stream.ToArray();
+				return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+			}
+		}
+
+		/// <summary>
+		/// Sets the content of the buffer to the specified <paramref name="rtf"/> string. Note that some platforms don't support RTF (e.g. Gtk).
+		/// </summary>
+		/// <param name="buffer">Buffer to set the content for</param>
+		/// <param name="rtf">RTF formatted string to set the buffer</param>
+		public static void SetRtf(this ITextBuffer buffer, string rtf)
+		{
+			using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(rtf)))
+			{
+				buffer.Load(stream, RichTextAreaFormat.Rtf);
+			}
+		}
 	}
 
 	/// <summary>
@@ -218,6 +253,16 @@ namespace Eto.Forms
 		public ITextBuffer Buffer
 		{
 			get { return Handler.Buffer; }
+		}
+
+		/// <summary>
+		/// Gets or sets the content as a RTF (Rich Text Format) string. Note that some platforms don't support RTF (e.g. Gtk).
+		/// </summary>
+		/// <value>The RTF string.</value>
+		public string Rtf
+		{
+			get { return Buffer.GetRtf(); }
+			set { Buffer.SetRtf(value); }
 		}
 
 		/// <summary>
