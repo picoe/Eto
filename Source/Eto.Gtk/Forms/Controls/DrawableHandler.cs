@@ -81,14 +81,20 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleDrawn(object o, Gtk.DrawnArgs args)
 			{
 				var h = Handler;
-				var size = h.Size;
-				args.Cr.Rectangle(new Cairo.Rectangle(0, 0, size.Width, size.Height));
+
+				var allocation = h.Control.Allocation.Size;
+				args.Cr.Rectangle(new Cairo.Rectangle(0, 0, allocation.Width, allocation.Height));
 				args.Cr.Clip();
+				Gdk.Rectangle rect = new Gdk.Rectangle();
+				if (!GraphicsHandler.GetClipRectangle(args.Cr, ref rect))
+					rect = new Gdk.Rectangle(Gdk.Point.Zero, allocation);
+
 				using (var graphics = new Graphics(new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false)))
 				{
 					if (h.SelectedBackgroundColor != null)
 						graphics.Clear(h.SelectedBackgroundColor.Value);
-					h.Callback.OnPaint(h.Widget, new PaintEventArgs(graphics, new Rectangle(size)));
+					
+					h.Callback.OnPaint(h.Widget, new PaintEventArgs (graphics, rect.ToEto()));
 				}
 			}
 #endif
