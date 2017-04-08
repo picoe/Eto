@@ -625,7 +625,8 @@ namespace Eto.Mac.Forms.Controls
 
 		void UpdatePosition()
 		{
-			Control.ResizeSubviewsWithOldSize(CGSize.Empty);
+			if (!Control.InLiveResize)
+				Control.ResizeSubviewsWithOldSize(CGSize.Empty);
 		}
 	}
 }
