@@ -214,6 +214,8 @@
     <Compile Include="Sections\Controls\MaskedTextStepperSection.cs" />
     <Compile Include="UnitTests\Forms\Controls\TextBoxTests.cs" />
     <Compile Include="UnitTests\Forms\Controls\RichTextAreaTests.cs" />
+    <Compile Include="Sections\Behaviors\TabIndexSection.cs" />
+    <Compile Include="UnitTests\Forms\Controls\ControlTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json">

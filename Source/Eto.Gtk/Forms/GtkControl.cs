@@ -669,5 +669,14 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
+		static readonly object TabIndex_Key = new object();
+
+		public int TabIndex
+		{
+			get { return Widget.Properties.Get<int>(TabIndex_Key, int.MaxValue); }
+			set { Widget.Properties.Set(TabIndex_Key, value, int.MaxValue); }
+		}
+
+		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 	}
 }

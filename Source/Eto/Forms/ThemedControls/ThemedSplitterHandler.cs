@@ -24,9 +24,9 @@ namespace Eto.Forms.ThemedControls
 		/// </summary>
 		protected override void Initialize()
 		{
-			base.Initialize();
 			UpdateLayout();
 			splitter.MouseMove += SplitterMouseMove;
+			base.Initialize();
 		}
 
 		void SplitterMouseMove(object sender, MouseEventArgs e)

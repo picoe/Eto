@@ -13,8 +13,8 @@ namespace Eto.Direct2D
 			get { return Platforms.Direct2D; }
 		}
 
-		public override PlatformFeatureFlags SupportedFeatures =>
-			base.SupportedFeatures & ~ PlatformFeatureFlags.DrawableWithTransparentContent;
+		public override PlatformFeatures SupportedFeatures =>
+			base.SupportedFeatures & ~ PlatformFeatures.DrawableWithTransparentContent;
 
 
 		public Platform()

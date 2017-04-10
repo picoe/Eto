@@ -67,7 +67,7 @@ namespace Eto
 	/// Flags to specify which global features are supported for a platform
 	/// </summary>
 	[Flags]
-	public enum PlatformFeatureFlags
+	public enum PlatformFeatures
 	{
 		/// <summary>
 		/// No extra features supported.
@@ -86,6 +86,15 @@ namespace Eto
 		/// (most often not rendering with transparent background, thus overpainting the drawable).
 		/// </summary>
 		DrawableWithTransparentContent = 1 << 1,
+
+		/// <summary>
+		/// Specifies the <see cref="Forms.Control.TabIndex"/> is based on the logical tree, not the visual tree.
+		/// Both GTK and WinForms do not support creating a custom tab focus and is based on the direct containers.
+		/// 
+		/// For example, setting a TabIndex for controls in DynamicLayout and StackLayout might not behave as expected on platforms
+		/// that do not support this.
+		/// </summary>
+		TabIndexWithCustomContainers = 1 << 2
 	}
 
 	/// <summary>
@@ -274,9 +283,9 @@ namespace Eto
 		/// Gets the supported features of the platform.
 		/// </summary>
 		/// <value>The supported features.</value>
-		public virtual PlatformFeatureFlags SupportedFeatures
+		public virtual PlatformFeatures SupportedFeatures
 		{
-			get { return PlatformFeatureFlags.None; }
+			get { return PlatformFeatures.None; }
 		}
 
 		/// <summary>

@@ -97,7 +97,10 @@ namespace Eto.Mac.Forms
 			}
 			get
 			{
+				var oldFail = Class.ThrowOnInitFailure;
+				Class.ThrowOnInitFailure = false;
 				var image = new NSImage(Control);
+				Class.ThrowOnInitFailure = oldFail;
 				if (image.Handle == IntPtr.Zero)
 					return null;
 				return new Bitmap(new BitmapHandler(image));
