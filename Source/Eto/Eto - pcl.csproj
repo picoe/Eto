@@ -353,7 +353,7 @@
   <ItemGroup>
     <Content Include="..\..\LICENSE">
       <Link>LICENSE</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="..\Shared\Common.targets" />
