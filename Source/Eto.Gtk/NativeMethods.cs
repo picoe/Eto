@@ -25,6 +25,7 @@ namespace Eto.GtkSharp
 			const string ext = "-0.dll";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
+			const string libgdk = "libgdk-" + plat + ver + ext;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
@@ -149,6 +150,9 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
 
 		static class NMLinux
@@ -161,6 +165,7 @@ namespace Eto.GtkSharp
 			const string ext = ".so.0";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
+			const string libgdk = "libgdk-" + plat + ver + ext;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
@@ -285,6 +290,9 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
 
 		static class NMMac
@@ -297,6 +305,7 @@ namespace Eto.GtkSharp
 			const string ext = ".dylib";
 			const string libgobject = "libgobject-" + ver + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
+			const string libgdk = "libgdk-" + plat + ver + ext;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
@@ -421,6 +430,9 @@ namespace Eto.GtkSharp
 
 			[DllImport(libgtk, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void gtk_header_bar_set_show_close_button(IntPtr bar, bool setting);
+
+			[DllImport(libgdk, CallingConvention = CallingConvention.Cdecl)]
+			public extern static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect);
 		}
 
 		public static string GetString(IntPtr handle)
@@ -845,6 +857,16 @@ namespace Eto.GtkSharp
 				return GetString(NMMac.webkit_uri_request_get_uri(request));
 			else
 				return GetString(NMWindows.webkit_uri_request_get_uri(request));
+		}
+
+		public static bool gdk_cairo_get_clip_rectangle(IntPtr context, IntPtr rect)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.gdk_cairo_get_clip_rectangle(context, rect);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.gdk_cairo_get_clip_rectangle(context, rect);
+			else
+				return NMWindows.gdk_cairo_get_clip_rectangle(context, rect);
 		}
 	}
 }
