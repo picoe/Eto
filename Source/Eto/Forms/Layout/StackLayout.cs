@@ -480,7 +480,7 @@ namespace Eto.Forms
 
 		void Create()
 		{
-			var table = new TableLayout();
+			var table = new TableLayout { IsVisualControl = true };
 			table.Spacing = new Size(Spacing, Spacing);
 
 			bool filled = false;

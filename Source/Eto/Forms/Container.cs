@@ -41,25 +41,12 @@ namespace Eto.Forms
 		public abstract IEnumerable<Control> Controls { get; }
 
 		/// <summary>
-		/// Gets an enumeration of controls that are in the visual tree.
-		/// </summary>
-		/// <remarks>
-		/// This is used to specify which controls are contained by this instance that are part of the visual tree.
-		/// This should include all controls including non-logical Eto controls used for layout. 
-		/// </remarks>
-		/// <value>The visual controls.</value>
-		public virtual IEnumerable<Control> VisualControls
-		{
-			get { return Controls; }
-		}
-
-		/// <summary>
 		/// Gets the logical controls, so we don't chain binding events from the visual tree to the logical tree
 		/// </summary>
 		/// <value>The logical controls.</value>
 		IEnumerable<Control> LogicalControls
 		{
-			get { return Controls.Where(r => ReferenceEquals(r.LogicalParent, this)); }
+			get { return Controls.Where(r => ReferenceEquals(r.InternalLogicalParent, this)); }
 		}
 
 		/// <summary>
@@ -275,8 +262,8 @@ namespace Eto.Forms
 					child.TriggerUnLoad(EventArgs.Empty);
 				}
 				child.VisualParent = null;
-				if (ReferenceEquals(child.LogicalParent, this))
-					child.LogicalParent = null;
+				if (ReferenceEquals(child.InternalLogicalParent, this))
+					child.InternalLogicalParent = null;
 			}
 		}
 
@@ -297,7 +284,7 @@ namespace Eto.Forms
 		{
 			if (ReferenceEquals(child, null))
 				return;
-			child.LogicalParent = this;
+			child.InternalLogicalParent = this;
 		}
 
 		/// <summary>
@@ -313,12 +300,12 @@ namespace Eto.Forms
 		{
 			if (ReferenceEquals(child, null))
 				return;
-			if (!ReferenceEquals(child.LogicalParent, this))
+			if (!ReferenceEquals(child.InternalLogicalParent, this))
 			{
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The child control is not a logical child of this container. Ensure you only remove children that you own."));
 			}
 			child.Detach();
-			child.LogicalParent = null;
+			child.InternalLogicalParent = null;
 		}
 
 		/// <summary>
@@ -351,9 +338,9 @@ namespace Eto.Forms
 					previousChild.VisualParent = null;
 				}
 
-				if (ReferenceEquals(previousChild.LogicalParent, this))
+				if (ReferenceEquals(previousChild.InternalLogicalParent, this))
 				{
-					previousChild.LogicalParent = null;
+					previousChild.InternalLogicalParent = null;
 				}
 			}
 			if (!ReferenceEquals(child, null) && !ReferenceEquals(child.VisualParent, this))
@@ -363,8 +350,8 @@ namespace Eto.Forms
 				// no-op if there is no parent (handled in detach)
 				child.Detach();
 
-				if (child.LogicalParent == null)
-					child.LogicalParent = this;
+				if (child.InternalLogicalParent == null)
+					child.InternalLogicalParent = this;
 				child.VisualParent = this;
 				if (Loaded && !child.Loaded)
 				{

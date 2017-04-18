@@ -92,9 +92,17 @@ namespace Eto.Mac.Forms
 			}
 			Handler.Callback.OnWindowStateChanged(Handler.Widget, EventArgs.Empty);
 		}
+
+		public override void RecalculateKeyViewLoop()
+		{
+			base.RecalculateKeyViewLoop();
+
+			NSView last = null;
+			Handler?.RecalculateKeyViewLoop(ref last);
+		}
 	}
 
-	public interface IMacWindow
+	public interface IMacWindow : IMacContainer
 	{
 		Rectangle? RestoreBounds { get; set; }
 
@@ -103,8 +111,6 @@ namespace Eto.Mac.Forms
 		NSMenu MenuBar { get; }
 
 		NSObject FieldEditorObject { get; set; }
-
-		Size MinimumSize { get; }
 
 		bool CloseWindow(Action<CancelEventArgs> closing = null);
 

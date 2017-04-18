@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Mac.Forms.Controls;
 using System.Collections.Generic;
 using Eto.Mac.Forms.Printing;
+using System.Linq;
 
 #if XAMMAC2
 using AppKit;
@@ -113,6 +114,8 @@ namespace Eto.Mac.Forms
 		public virtual NSView EventControl { get { return ContainerControl; } }
 
 		public virtual NSView FocusControl { get { return EventControl; } }
+
+		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 		static readonly object AutoSize_Key = new object();
 		public virtual bool AutoSize
@@ -855,6 +858,14 @@ namespace Eto.Mac.Forms
 			get { return systemActionSelectors.Keys; }
 		}
 
+		static readonly object TabIndex_Key = new object();
+
+		public int TabIndex
+		{
+			get { return Widget.Properties.Get<int>(TabIndex_Key, int.MaxValue); }
+			set { Widget.Properties.Set(TabIndex_Key, value, int.MaxValue); }
+		}
+
 		public void MapPlatformCommand(string systemAction, Command command)
 		{
 			InnerMapPlatformCommand(systemAction, command, null);
@@ -872,6 +883,21 @@ namespace Eto.Mac.Forms
 				}
 				AddMethod(sel, new Action<IntPtr, IntPtr, IntPtr>(TriggerSystemAction), "v@:@", control);
 				systemActions[sel] = command;
+			}
+		}
+
+		public virtual void RecalculateKeyViewLoop(ref NSView last)
+		{
+			foreach (var child in Widget.VisualControls.OrderBy(c => c.TabIndex))
+			{
+				var handler = child.GetMacControl();
+				if (handler != null)
+				{
+					handler.RecalculateKeyViewLoop(ref last);
+					if (last != null)
+						last.NextKeyView = handler.FocusControl;
+					last = handler.FocusControl;
+				}
 			}
 		}
 	}

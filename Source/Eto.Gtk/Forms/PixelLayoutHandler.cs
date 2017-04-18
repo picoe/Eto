@@ -29,7 +29,7 @@ namespace Eto.GtkSharp.Forms
 			if (ctl.CurrentLocation.X != x || ctl.CurrentLocation.Y != y)
 			{
 				Control.Move(ctl.ContainerControl, x, y);
-				
+
 				ctl.CurrentLocation = new Point(x, y);
 			}
 		}
@@ -42,6 +42,12 @@ namespace Eto.GtkSharp.Forms
 		public void Update()
 		{
 			Control.ResizeChildren();
+		}
+
+		public override void OnLoadComplete(System.EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			SetFocusChain();
 		}
 	}
 }

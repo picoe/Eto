@@ -766,5 +766,13 @@ namespace Eto.WinForms.Forms
 			get { return Control.ForeColor.ToEto(); }
 			set { Control.ForeColor = value.ToSD(); }
 		}
+
+		public virtual int TabIndex
+		{
+			get { return Control.TabIndex; }
+			set { Control.TabIndex = value; }
+		}
+
+		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 	}
 }

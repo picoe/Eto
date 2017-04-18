@@ -204,7 +204,7 @@ namespace Eto.Forms
 		/// <value><c>true</c> if supports control view; otherwise, <c>false</c>.</value>
 		public static bool SupportsControlView
 		{
-			get { return Platform.Instance.SupportedFeatures.HasFlag(PlatformFeatureFlags.CustomCellSupportsControlView); }
+			get { return Platform.Instance.SupportedFeatures.HasFlag(PlatformFeatures.CustomCellSupportsControlView); }
 		}
 
 		/// <summary>

@@ -22,6 +22,19 @@ namespace Eto.Forms
 		where TCallback : Control.ICallback
 	{
 		/// <summary>
+		/// Called to initialize this widget after it has been constructed
+		/// </summary>
+		/// <remarks>
+		/// Override this to initialize any of the platform objects.  This is called
+		/// in the widget constructor, after all of the widget's constructor code has been called.
+		/// </remarks>
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.IsVisualControl = true;
+		}
+
+		/// <summary>
 		/// Gets or sets the color for the background of the control
 		/// </summary>
 		/// <remarks>Note that on some platforms (e.g. Mac), setting the background color of a control can change the performance
@@ -32,6 +45,16 @@ namespace Eto.Forms
 			get { return Control.BackgroundColor; }
 			set { Control.BackgroundColor = value; }
 		}
+
+		/// <summary>
+		/// Gets an enumeration of controls that are in the visual tree.
+		/// </summary>
+		/// <remarks>
+		/// This is used to specify which controls are contained by this instance that are part of the visual tree.
+		/// This should include all controls including non-logical Eto controls used for layout. 
+		/// </remarks>
+		/// <value>The visual controls.</value>
+		public virtual IEnumerable<Control> VisualControls => new[] { Control };
 
 		/// <summary>
 		/// Gets a value indicating whether <see cref="Control.PreLoad"/>/<see cref="Control.Load"/>/<see cref="Control.LoadComplete"/>/<see cref="Control.UnLoad"/>
@@ -303,6 +326,23 @@ namespace Eto.Forms
 		/// </summary>
 		/// <value>The focus control.</value>
 		protected virtual Control FocusControl => KeyboardControl;
+
+		/// <summary>
+		/// Gets or sets the tab index order for this control within its container.
+		/// </summary>
+		/// <remarks>
+		/// This sets the order when using the tab key to cycle through controls
+		/// 
+		/// Note that some platforms (Gtk and WinForms) may not support setting the context of the tab order to StackLayout 
+		/// or DynamicLayout containers and may not behave exactly as expected. Use the 
+		/// <see cref="PlatformFeatures.TabIndexWithCustomContainers"/> flag to determine if it is supported.
+		/// </remarks>
+		/// <value>The index of the control in the tab order.</value>
+		public int TabIndex
+		{
+			get { return FocusControl.TabIndex; }
+			set { FocusControl.TabIndex = value; }
+		}
 
 		#region Events
 
