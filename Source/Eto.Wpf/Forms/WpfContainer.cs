@@ -1,8 +1,10 @@
 using swc = System.Windows.Controls;
 using sw = System.Windows;
+using swi = System.Windows.Input;
 using Eto.Forms;
 using Eto.Drawing;
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Wpf.Forms
 {
@@ -70,5 +72,15 @@ namespace Eto.Wpf.Forms
 				}
 			}
 		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			// group TabIndex by logical containers, not by visual ones.
+			if (!Widget.IsVisualControl)
+				swi.KeyboardNavigation.SetTabNavigation(ContainerControl, swi.KeyboardNavigationMode.Local);
+		}
+
+		public override IEnumerable<Control> VisualControls => Widget.Controls;
 	}
 }

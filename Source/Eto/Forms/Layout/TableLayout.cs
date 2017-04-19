@@ -576,13 +576,13 @@ namespace Eto.Forms
 
 		internal void InternalSetLogicalParent(Control control)
 		{
-			if (control?.LogicalParent == null)
+			if (control?.InternalLogicalParent == null)
 				SetLogicalParent(control);
 		}
 
 		internal void InternalRemoveLogicalParent(Control control)
 		{
-			if (ReferenceEquals(control?.LogicalParent, this))
+			if (ReferenceEquals(control?.InternalLogicalParent, this))
 				RemoveLogicalParent(control);
 		}
 	}

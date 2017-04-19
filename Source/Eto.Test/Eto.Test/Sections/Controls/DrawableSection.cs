@@ -53,7 +53,7 @@ namespace Eto.Test.Sections.Controls
 						)
 					)),
 
-					(Platform.SupportedFeatures & PlatformFeatureFlags.DrawableWithTransparentContent) == 0 ?
+					(Platform.SupportedFeatures & PlatformFeatures.DrawableWithTransparentContent) == 0 ?
 					new TableRow(
 						"(Transparent content on drawable not supported on this platform)"
 					) : null,

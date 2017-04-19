@@ -636,5 +636,13 @@ namespace Eto.Wpf.Forms
 				return Control.TranslatePoint(new sw.Point(0, 0), Widget.VisualParent.GetContainerControl()).ToEtoPoint();
 			}
 		}
+
+		public virtual int TabIndex
+		{
+			get { return swi.KeyboardNavigation.GetTabIndex(ContainerControl); }
+			set { swi.KeyboardNavigation.SetTabIndex(ContainerControl, value); }
+		}
+
+		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 	}
 }

@@ -2,6 +2,8 @@ using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.GtkSharp.Forms.Controls;
+using System.Collections.Generic;
+using System;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -16,6 +18,32 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return Size; }
 			set { Size = value; }
+		}
+
+		public override IEnumerable<Control> VisualControls => Widget.Controls;
+
+		protected virtual void SetFocusChain()
+		{
+			var container = Control as Gtk.Container;
+			if (container == null)
+				return;
+			var widgets = GetOrderedWidgets().Distinct().ToArray();
+			container.FocusChain = widgets;
+		}
+
+		IEnumerable<Gtk.Widget> GetOrderedWidgets()
+		{
+			var parent = Widget.IsVisualControl ? Widget.LogicalParent : Widget;
+			foreach (var ctl in parent.Controls.OrderBy(r => r.TabIndex))
+			{
+				var widget = ctl.GetContainerWidget();
+				while (widget != null && !ReferenceEquals(widget.Parent, Control))
+				{
+					widget = widget.Parent;
+				}
+				if (widget != null)
+					yield return widget;
+			}
 		}
 
 #if GTK2

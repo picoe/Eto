@@ -140,7 +140,6 @@ namespace Eto.Forms.ThemedControls
 		/// in the widget constructor, after all of the widget's constructor code has been called.</remarks>
 		protected override void Initialize()
 		{
-			base.Initialize();
 			Control = new Drawable();
 			Control.Size = new Size(16, 16);
 			Control.Paint += HandlePaint;
@@ -159,6 +158,7 @@ namespace Eto.Forms.ThemedControls
 			LineThickness = 1f;
 			LineCap = PenLineCap.Round;
 			Direction = ThemedSpinnerDirection.Clockwise;
+			base.Initialize();
 		}
 
 		void HandleElapsed(object sender, EventArgs e)

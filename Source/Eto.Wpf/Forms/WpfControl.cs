@@ -47,5 +47,11 @@ namespace Eto.Wpf.Forms
 			get { return Control.Foreground.ToEtoColor(); }
 			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
+
+		public override int TabIndex
+		{
+			get { return Control.TabIndex; }
+			set { Control.TabIndex = value; }
+		}
 	}
 }

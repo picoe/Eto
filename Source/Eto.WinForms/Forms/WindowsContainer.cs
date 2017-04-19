@@ -5,6 +5,7 @@ using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.WinForms.Forms.Controls;
+using System.Collections.Generic;
 
 namespace Eto.WinForms.Forms
 {
@@ -159,5 +160,7 @@ namespace Eto.WinForms.Forms
 				Widget.Properties[restoreRedrawKey] = null;
 			}
 		}
+
+		public override IEnumerable<Control> VisualControls => Widget.Controls;
 	}
 }

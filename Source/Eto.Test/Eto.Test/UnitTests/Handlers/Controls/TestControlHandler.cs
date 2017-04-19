@@ -1,6 +1,7 @@
 ﻿using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Test.UnitTests.Handlers.Controls
 {
@@ -169,6 +170,27 @@ namespace Eto.Test.UnitTests.Handlers.Controls
 				throw new NotImplementedException();
 			}
 			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public int TabIndex
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public IEnumerable<Control> VisualControls
+		{
+			get
 			{
 				throw new NotImplementedException();
 			}

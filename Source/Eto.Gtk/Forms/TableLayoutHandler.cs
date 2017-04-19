@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.GtkSharp.Forms
 {
@@ -185,9 +186,9 @@ namespace Eto.GtkSharp.Forms
 
 		public void Remove(Control child)
 		{
-			for (int y = 0; y<controls.GetLength(0); y++)
+			for (int y = 0; y < controls.GetLength(0); y++)
 			{
-				for (int x = 0; x<controls.GetLength(1); x++)
+				for (int x = 0; x < controls.GetLength(1); x++)
 				{
 					if (ReferenceEquals(controls[y, x], child))
 					{
@@ -223,6 +224,12 @@ namespace Eto.GtkSharp.Forms
 		public void Update()
 		{
 			Control.ResizeChildren();
+		}
+
+		public override void OnLoadComplete(System.EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			SetFocusChain();
 		}
 	}
 }
