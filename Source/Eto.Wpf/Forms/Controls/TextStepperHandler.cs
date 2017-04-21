@@ -40,6 +40,8 @@ namespace Eto.Wpf.Forms.Controls
 			};
 		}
 
+		public override sw.FrameworkElement TabControl => WatermarkTextBox;
+
 		public override string PlaceholderText
 		{
 			get { return WatermarkTextBox.Watermark as string; }

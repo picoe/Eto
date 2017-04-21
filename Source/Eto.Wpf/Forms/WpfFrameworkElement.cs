@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
@@ -637,10 +637,11 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		public virtual sw.FrameworkElement TabControl => ContainerControl;
 		public virtual int TabIndex
 		{
-			get { return swi.KeyboardNavigation.GetTabIndex(ContainerControl); }
-			set { swi.KeyboardNavigation.SetTabIndex(ContainerControl, value); }
+			get { return swi.KeyboardNavigation.GetTabIndex(TabControl); }
+			set { swi.KeyboardNavigation.SetTabIndex(TabControl, value); }
 		}
 
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
