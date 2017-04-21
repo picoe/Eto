@@ -1,4 +1,4 @@
-using Eto.Forms;
+﻿using Eto.Forms;
 using Eto.Drawing;
 using Eto.Wpf.Drawing;
 using swc = System.Windows.Controls;
@@ -48,10 +48,6 @@ namespace Eto.Wpf.Forms
 			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
 		}
 
-		public override int TabIndex
-		{
-			get { return Control.TabIndex; }
-			set { Control.TabIndex = value; }
-		}
+		public override sw.FrameworkElement TabControl => Control;
 	}
 }
