@@ -56,11 +56,11 @@ namespace Eto.GtkSharp
 				case ImageInterpolation.Default:
 					return Cairo.Filter.Bilinear;
 				case ImageInterpolation.None:
-					return Cairo.Filter.Nearest;
+					return Cairo.Filter.Fast;
 				case ImageInterpolation.High:
 					return Cairo.Filter.Best;
 				case ImageInterpolation.Low:
-					return Cairo.Filter.Fast;
+					return Cairo.Filter.Nearest;
 				case ImageInterpolation.Medium:
 					return Cairo.Filter.Good;
 				default:
