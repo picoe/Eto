@@ -216,10 +216,12 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		static readonly object ReadOnly_Key = new object();
+
 		public bool ReadOnly
 		{
-			get { return !Control.Editable; }
-			set { Control.Editable = !value; }
+			get { return Widget.Properties.Get<bool>(ReadOnly_Key); }
+			set { Widget.Properties.Set(ReadOnly_Key, value, () => Control.Editable = !value); }
 		}
 
 		public override bool Enabled
@@ -237,6 +239,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					Control.TextColor = TextColor.ToNSUI();
 					Control.BackgroundColor = BackgroundColor.ToNSUI();
+					Control.Editable = !ReadOnly; // this gets set to false when Selectable is set to false, so we need to re-enable it.
 				}
 			}
 		}
