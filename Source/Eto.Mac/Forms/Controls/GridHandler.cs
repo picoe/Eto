@@ -410,8 +410,11 @@ namespace Eto.Mac.Forms.Controls
 			{
 				SuppressSelectionChanged++;
 				UnselectAll();
-				var indexes = NSIndexSet.FromArray(value.ToArray());
-				Control.SelectRows(indexes, AllowMultipleSelection);
+				if (value != null)
+				{
+					var indexes = NSIndexSet.FromArray(value.ToArray());
+					Control.SelectRows(indexes, AllowMultipleSelection);
+				}
 				SuppressSelectionChanged--;
 				if (SuppressSelectionChanged == 0)
 					Callback.OnSelectionChanged(Widget, EventArgs.Empty);
