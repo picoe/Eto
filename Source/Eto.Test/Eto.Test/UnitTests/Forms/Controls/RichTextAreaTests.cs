@@ -40,5 +40,22 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				TestSelectionAttributes(richText, "#6", underline: true, italic: true, bold: true, strikethrough: true);
 			});
 		}
+
+		[Test]
+		public void EnabledShouldNotAffectReadOnly()
+		{
+			Invoke(() =>
+			{
+				var richText = new RichTextArea();
+				Assert.IsTrue(richText.Enabled, "#1");
+				Assert.IsFalse(richText.ReadOnly, "#2");
+				richText.Enabled = false;
+				Assert.IsFalse(richText.Enabled, "#3");
+				Assert.IsFalse(richText.ReadOnly, "#4");
+				richText.Enabled = true;
+				Assert.IsTrue(richText.Enabled, "#5");
+				Assert.IsFalse(richText.ReadOnly, "#6");
+			});
+		}
 	}
 }
