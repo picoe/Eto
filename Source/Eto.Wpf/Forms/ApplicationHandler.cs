@@ -77,7 +77,7 @@ namespace Eto.Wpf.Forms
 				return;
 
 			// Support (better) high DPI in the NumericUpDown control by theming the Extended WPF Toolkit's spinner.
-			var assemblyName = Assembly.GetCallingAssembly ().GetName ().Name;
+			var assemblyName = typeof(ApplicationHandler).Assembly.GetName().Name;
 			Control.Resources.MergedDictionaries.Add(new sw.ResourceDictionary { Source = new Uri($"pack://application:,,,/{assemblyName};component/themes/wpftoolkit/ButtonSpinner.xaml", UriKind.RelativeOrAbsolute) });
 		}
 
