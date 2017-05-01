@@ -38,7 +38,7 @@ namespace Eto.Mac.Forms.Cells
 
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
-			if (Widget.Binding != null)
+			if (Widget.Binding != null && !ColumnHandler.DataViewHandler.SuppressUpdate)
 			{
 				var num = value as NSNumber;
 				if (num != null)

@@ -125,7 +125,7 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var item = Handler.collection.ElementAt((int)row);
 				var colHandler = Handler.GetColumn(tableColumn);
-				if (colHandler != null)
+				if (colHandler != null && Handler.SuppressUpdate == 0)
 				{
 					colHandler.SetObjectValue(item, theObject);
 
@@ -381,6 +381,16 @@ namespace Eto.Mac.Forms.Controls
 		{
 			Control.ReloadData(NSIndexSet.FromArray(rows.Select(r => (nuint)r).ToArray()), NSIndexSet.FromNSRange(new NSRange(0, Control.TableColumns().Length)));
 		}
+
+		public object GetCellAt(PointF location, out int column, out int row)
+		{
+			location += ScrollView.ContentView.Bounds.Location.ToEto();
+			var nslocation = location.ToNS();
+			column = (int)Control.GetColumn(nslocation);
+			row = (int)Control.GetRow(nslocation);
+			return row >= 0 ? GetItem(row) : null;
+		}
+
 	}
 }
 

@@ -152,7 +152,7 @@ namespace Eto.Mac.Forms.Cells
 
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
-			if (Widget.Binding != null)
+			if (Widget.Binding != null && !ColumnHandler.DataViewHandler.SuppressUpdate)
 			{
 				var row = ((NSNumber)value).Int32Value;
 				var item = collection.ElementAt(row);
@@ -176,6 +176,14 @@ namespace Eto.Mac.Forms.Cells
 
 		static EtoPopUpButton field = new EtoPopUpButton { Cell = new EtoCell() };
 		static NSFont defaultFont = field.Font;
+		static IntPtr sel_GetTitle = Selector.GetHandle("title");
+
+		static bool IsDifferent(EtoPopUpButton field, NSMenu menu)
+		{
+			var fieldTitle = Messaging.IntPtr_objc_msgSend(field.Handle, sel_GetTitle);
+			var menuTitle = Messaging.IntPtr_objc_msgSend(menu.Handle, sel_GetTitle);
+			return fieldTitle != menuTitle;
+		}
 
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
@@ -185,7 +193,8 @@ namespace Eto.Mac.Forms.Cells
 			field.Font = defaultFont;
 			if (args.FontSet)
 				field.Font = args.Font.ToNS();
-			if (field.Title != menu.Title)
+
+			if (IsDifferent(field, menu))
 			{
 				field.Menu = menu.Copy() as NSMenu;
 			}
@@ -278,7 +287,7 @@ namespace Eto.Mac.Forms.Cells
 				view.Bind("enabled", tableColumn, "editable", null);
 				view.Menu = menu.Copy() as NSMenu;
 			}
-			else if (view.Title != menu.Title)
+			else if (IsDifferent(view, menu))
 				view.Menu = menu.Copy() as NSMenu;
 
 			view.Tag = row;

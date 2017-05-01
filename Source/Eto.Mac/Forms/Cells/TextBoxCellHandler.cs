@@ -48,7 +48,7 @@ namespace Eto.Mac.Forms.Cells
 
 			if (args.FontSet)
 				field.Font = args.Font.ToNS();
-			field.ObjectValue = value as NSObject;
+			field.ObjectValue = value as NSObject ?? new NSString(string.Empty);
 			return field.Cell.CellSizeForBounds(new CGRect(0, 0, nfloat.MaxValue, cellSize.Height)).Width;
 		}
 
@@ -64,7 +64,7 @@ namespace Eto.Mac.Forms.Cells
 
 		public override void SetObjectValue(object dataItem, NSObject value)
 		{
-			if (Widget.Binding != null)
+			if (Widget.Binding != null && !ColumnHandler.DataViewHandler.SuppressUpdate)
 			{
 				var str = value as NSString;
 				if (str != null)
@@ -178,7 +178,7 @@ namespace Eto.Mac.Forms.Cells
 
 					var ee = new GridViewCellEventArgs(ColumnHandler.Widget, r, (int)col, item);
 					ColumnHandler.DataViewHandler.Callback.OnCellEdited(ColumnHandler.DataViewHandler.Widget, ee);
-					control.ObjectValue = GetObjectValue(item);
+					control.ObjectValue = GetObjectValue(item) ?? new NSString(string.Empty);
 				};
 				view.ResignedFirstResponder += (sender, e) =>
 				{

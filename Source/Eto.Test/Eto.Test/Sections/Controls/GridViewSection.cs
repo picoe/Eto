@@ -51,15 +51,27 @@ namespace Eto.Test.Sections.Controls
 				Rows =
 				{
 					new TableRow(
-						"Grid", 
+						"Grid",
 						new TableLayout(
 							CreateOptions(gridView, filteredCollection),
-							gridView
+							new TableRow(gridView) { ScaleHeight = true },
+                            CreatePositionLabel(gridView)
 						)
 					) { ScaleHeight = true },
 					new TableRow("Selected Items", selectionGridView)
 				}
 			};
+		}
+
+		Label CreatePositionLabel(GridView grid)
+		{
+			var label = new Label();
+			grid.MouseMove += (sender, e) =>
+			{
+				var cell = grid.GetCellAt(e.Location);
+				label.Text = $"Row: {cell?.RowIndex}, Column: {cell?.ColumnIndex} ({cell?.Column?.HeaderText}), Item: {cell?.Item}";
+			};
+			return label;
 		}
 
 		StackLayout CreateOptions(GridView grid, SelectableFilterCollection<MyGridItem> filtered)
@@ -336,6 +348,23 @@ namespace Eto.Test.Sections.Controls
 		{
 			// Context menu
 			var menu = new ContextMenu();
+
+			var commitEditItem = new ButtonMenuItem { Text = "CommitEdit" };
+			commitEditItem.Click += (s, e) =>
+			{
+				var result = grid.CommitEdit();
+				Log.Write(grid, $"CommitEdit, Result: {result}");
+			};
+			menu.Items.Add(commitEditItem);
+
+			var abortEditItem = new ButtonMenuItem { Text = "CancelEdit" };
+			abortEditItem.Click += (s, e) =>
+			{
+				var result = grid.CancelEdit();
+				Log.Write(grid, $"CancelEdit, Result: {result}");
+			};
+			menu.Items.Add(abortEditItem);
+
 			var item = new ButtonMenuItem { Text = "Click Me!" };
 			item.Click += (sender, e) =>
 			{

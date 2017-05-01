@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
@@ -495,6 +495,18 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// Commits a current edit operation and sets the current value to the model.
+		/// </summary>
+		/// <returns><c>true</c>, if edit was commited or if there was no current edit operation, <c>false</c> if the commit was cancelled..</returns>
+		public bool CommitEdit() => Handler.CommitEdit();
+
+		/// <summary>
+		/// Cancels the current edit operation and reverts the cell value to the value in the model.
+		/// </summary>
+		/// <returns><c>true</c>, if edit was canceled or there was no current edit operation, <c>false</c> if the cancel was aborted.</returns>
+		public bool CancelEdit() => Handler.CancelEdit();
+
+		/// <summary>
 		/// Scrolls to show the specified row in the view
 		/// </summary>
 		/// <param name="row">Row to scroll to.</param>
@@ -697,6 +709,18 @@ namespace Eto.Forms
 			/// <param name="row">Row to edit</param>
 			/// <param name="column">Column to edit</param>
 			void BeginEdit(int row, int column);
+
+			/// <summary>
+			/// Commits a current edit operation and sets the current value to the model.
+			/// </summary>
+			/// <returns><c>true</c>, if edit was commited or there was no current edit operation, <c>false</c> if the commit was cancelled..</returns>
+			bool CommitEdit();
+
+			/// <summary>
+			/// Cancels the current edit operation and reverts the cell value to the value in the model.
+			/// </summary>
+			/// <returns><c>true</c>, if edit was canceled or there was no current edit operation, <c>false</c> if the cancel was aborted.</returns>
+			bool CancelEdit();
 
 			/// <summary>
 			/// Scrolls to show the specified row in the view
